@@ -23,22 +23,22 @@ their goldens, its rulings and its copy. The visual system is in
 | 05 | Tags | 12 | FE-B2 | built | [05-tags.md](05-tags.md) |
 | 06 | Trash | 15 | FE-B1 | built | [06-trash.md](06-trash.md) |
 | 07 | Card list | 15 | FE-A2 | built | [07-card-list.md](07-card-list.md) |
-| 08 | Card create | 9 | FE-A2 | built | [08-card-create.md](08-card-create.md) |
-| 09 | Card edit | 9 | FE-A2 | built | [09-card-edit.md](09-card-edit.md) |
+| 08 | Card create | 10 | FE-A2 | built | [08-card-create.md](08-card-create.md) |
+| 09 | Card edit | 12 | FE-A2 | built | [09-card-edit.md](09-card-edit.md) |
 | 10 | Card detail | 7 | FE-A2 | built | [10-card-detail.md](10-card-detail.md) |
-| 11 | Card import | 16 | FE-B3 | built | [11-card-import.md](11-card-import.md) |
-| 12 | Card export | 9 | FE-B3 | built | [12-card-export.md](12-card-export.md) |
+| 11 | Card import | 18 | FE-B3 | built | [11-card-import.md](11-card-import.md) |
+| 12 | Card export | 10 | FE-B3 | built | [12-card-export.md](12-card-export.md) |
 | 13 | Study home | 9 | FE-A8, SB-U1 | built | [13-study-home.md](13-study-home.md) |
-| 14 | Study entry | 9 | FE-A6, FE-A7 | built | [14-study-entry.md](14-study-entry.md) |
-| 15 | Study options | 7 | FE-A3 | built | [15-study-options.md](15-study-options.md) |
+| 14 | Study entry | 11 | FE-A6, FE-A7 | built | [14-study-entry.md](14-study-entry.md) |
+| 15 | Study options | 8 | FE-A3 | built | [15-study-options.md](15-study-options.md) |
 | 16 | Study · Browse | 1 | FE-A6 | built | [16-study-browse.md](16-study-browse.md) |
 | 16a | Study · Self-assess (`self_assess`) | — | FE-A6 | built | [16a-study-self-assess.md](16a-study-self-assess.md) (shape brief) |
 | 17 | Study · Match | 1 | FE-A6 | built | [17-study-match.md](17-study-match.md) |
 | 18 | Study · Guess | 1 | FE-A6 | built | [18-study-guess.md](18-study-guess.md) |
-| 19 | Study · Recall | 3 | FE-A6 | built | [19-study-recall.md](19-study-recall.md) |
+| 19 | Study · Recall | 4 | FE-A6 | built | [19-study-recall.md](19-study-recall.md) |
 | 20 | Study · Fill | 3 | FE-A6 | built | [20-study-fill.md](20-study-fill.md) |
-| 21 | Session summary | 10 | FE-A6 | built | [21-session-summary.md](21-session-summary.md) |
-| 22 | Progress | 8 | FE-A9 | built | [22-progress.md](22-progress.md) |
+| 21 | Session summary | 11 | FE-A6 | built | [21-session-summary.md](21-session-summary.md) |
+| 22 | Progress | 9 | FE-A9 | built | [22-progress.md](22-progress.md) |
 | 23 | Settings | 12 | FE-A3, SB-U1, FE-B8, FE-B9 | built | [23-settings.md](23-settings.md) |
 | 24 | Daily reminder | 9 | FE-B5, FE-B6 | built | [24-daily-reminder.md](24-daily-reminder.md) |
 | 25 | Theme | 3 | FE-A3 | built | [25-theme.md](25-theme.md) |
@@ -58,6 +58,6 @@ their goldens, its rulings and its copy. The visual system is in
 - **Data displays without their data** are hidden, never drawn empty: an empty mastery
   bar would claim 0 % (spec A5).
 - **Delete moves to the Trash** (UC-TRASH-001). "Move to Trash", "Recoverable for 30
-  days" and "Undo" are built as follows: Undo after one item, for 8
-  seconds and until acted on under TalkBack (FE-B1 D3, D14).
+  days" and "Undo" are built as follows: Undo after one item or after several, for 8
+  seconds and until acted on under TalkBack (FE-B1 D3, D14; SP2a 2.20).
 - **Copy** is written in English first; Vietnamese is added to the ARB with the screen.

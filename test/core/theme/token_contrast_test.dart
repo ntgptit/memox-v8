@@ -78,6 +78,19 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       Color.alphaBlend(derived.warningSoft, page),
       _nonText,
     ),
+    // SP2a R9: the neutral banner sits on the MxNote's low ground.
+    (
+      'neutral banner title',
+      scheme.onSurface,
+      scheme.surfaceContainerLow,
+      _text,
+    ),
+    (
+      'neutral banner glyph',
+      scheme.onSurfaceVariant,
+      scheme.surfaceContainerLow,
+      _nonText,
+    ),
     ('toggle off edge on a row', scheme.outline, row, _nonText),
     (
       'toggle off thumb on its track',

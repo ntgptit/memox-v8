@@ -13,6 +13,7 @@ import 'package:memox/features/study/presentation/screens/study_session_screen.d
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
@@ -368,5 +369,125 @@ void main() {
     await tester.tap(find.text(_en.studyRecallRemembered));
     await _settle(tester);
     expect(haptics, ['HapticFeedbackType.lightImpact']);
+  });
+
+  libraryTest('the clock stops under the exit dialog and runs on when it '
+      'closes: the turn never times out unseen (2.11)', (tester, env) async {
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await tester.pump(const Duration(seconds: 5));
+    expect(find.text('15s / 20s'), findsOneWidget);
+
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text(_en.studyExitTitle), findsOneWidget);
+    await tester.pump(const Duration(seconds: 10));
+    expect(find.text('15s / 20s'), findsOneWidget);
+    // The time left was kept when the clock stopped.
+    expect(await _rowOf(env.db, id), (15000, false));
+
+    await tester.tap(find.text(_en.studyExitKeep));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('14s / 20s'), findsOneWidget);
+  });
+
+  libraryTest('a resume from the background does not restart the clock '
+      'while the exit dialog is open (2.11)', (tester, env) async {
+    final id = await _recall(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await tester.pump(const Duration(seconds: 5));
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    await _lifecycle(tester, const [
+      AppLifecycleState.inactive,
+      AppLifecycleState.hidden,
+      AppLifecycleState.paused,
+      AppLifecycleState.hidden,
+      AppLifecycleState.inactive,
+      AppLifecycleState.resumed,
+    ]);
+    await tester.pump(const Duration(seconds: 3));
+
+    expect(find.text('15s / 20s'), findsOneWidget);
+  });
+
+  libraryTest('a reveal that fails says so in the banner; the next tap '
+      'works and clears it (2.12)', (tester, env) async {
+    final id = await _recall(env);
+    env.sessions.isRevealFailing = true;
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+    // The failure lands after the write starts (the fixture's timer).
+    await tester.pump(Duration.zero);
+    await _settle(tester);
+
+    expect(find.text(_en.studyRevealFailedTitle), findsOneWidget);
+    expect(find.text(_en.studyRevealFailedBody), findsOneWidget);
+    // Nothing was lost: a warning, not danger (DESIGN.md).
+    expect(
+      tester.widget<MxInlineBanner>(find.byType(MxInlineBanner)).tone,
+      MxBannerTone.warning,
+    );
+    expect(find.text(_en.commonRetry), findsNothing);
+    expect(find.text('apple'), findsNothing);
+
+    env.sessions.isRevealFailing = false;
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+
+    expect(find.text(_en.studyRevealFailedTitle), findsNothing);
+    expect(find.text('apple'), findsOneWidget);
+  });
+
+  libraryTest('a reveal that fails before any frame still leaves the button '
+      'working behind the banner (2.12)', (tester, env) async {
+    final id = await _recall(env);
+    env.sessions
+      ..isRevealFailing = true
+      ..isRevealFailingAtOnce = true;
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+
+    expect(find.text(_en.studyRevealFailedTitle), findsOneWidget);
+    env.sessions.isRevealFailing = false;
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+
+    expect(find.text(_en.studyRevealFailedTitle), findsNothing);
+    expect(find.text('apple'), findsOneWidget);
+  });
+
+  libraryTest('a reveal that fails under the exit dialog resumes the clock '
+      'once, when the dialog closes (2.12, 2.11)', (tester, env) async {
+    final id = await _recall(env);
+    env.sessions.isRevealFailing = true;
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await tester.pump(const Duration(seconds: 5));
+
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await tester.pump();
+    await tester.tap(find.byTooltip(_en.studySessionClose));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    // The failure lands while the dialog is up: the clock stays stopped.
+    await tester.pump(Duration.zero);
+    await _settle(tester);
+    await tester.pump(const Duration(seconds: 5));
+    expect(find.text('15s / 20s'), findsOneWidget);
+
+    await tester.tap(find.text(_en.studyExitKeep));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('14s / 20s'), findsOneWidget);
   });
 }

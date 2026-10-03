@@ -11,6 +11,7 @@ final class ImportSummary {
     required this.written,
     required this.blank,
     required this.skipped,
+    this.writtenIds = const [],
   });
 
   final int written;
@@ -22,6 +23,10 @@ final class ImportSummary {
   /// critique 2026-10-02, F4). A blank row is ignored, not skipped
   /// (BR-TRANSFER-002).
   final List<ImportRow> skipped;
+
+  /// The ids of the cards written, which Undo import moves to the Trash
+  /// (SP2a 2.25).
+  final List<String> writtenIds;
 
   int get duplicatesSkipped => skipped.where((row) => row.isDuplicate).length;
 

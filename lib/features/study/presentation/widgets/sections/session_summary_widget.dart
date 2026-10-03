@@ -6,6 +6,7 @@ import 'package:memox/features/study/presentation/states/session_ending_state.da
 import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_facts_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_hero_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -24,6 +25,7 @@ class SessionSummaryWidget extends StatelessWidget {
     required this.outcome,
     required this.onDone,
     required this.onStudyDeck,
+    this.canStudyDeck = true,
   });
 
   final StudySessionView view;
@@ -34,6 +36,10 @@ class SessionSummaryWidget extends StatelessWidget {
 
   /// The deck's Study Entry (handoff 21 ruling).
   final VoidCallback onStudyDeck;
+
+  /// False once the deck is gone: Study this deck has nowhere to go and is
+  /// not drawn (2.51).
+  final bool canStudyDeck;
 
   static const int _studyFlex = 5;
   static const int _doneFlex = 6;
@@ -70,26 +76,31 @@ class SessionSummaryWidget extends StatelessWidget {
       ),
       footer: MxFooterBar(
         caption: l10n.summaryDoneCaption,
-        child: MxActionPair(
-          leading: outcome.canStudyAgain
-              ? MxButton(
-                  label: l10n.studyThisDeck,
-                  tone: MxButtonTone.outline,
-                  icon: AppIcons.play,
-                  isBlock: true,
-                  isSingleLine: true,
-                  onPressed: onStudyDeck,
-                )
-              : null,
-          trailing: MxButton(
-            label: l10n.summaryDone,
-            icon: AppIcons.check,
-            isBlock: true,
-            isSingleLine: true,
-            onPressed: onDone,
+        // The last answer's double tap must not reach Done (2.09).
+        child: StudySettleGuardWidget(
+          phase: view.sessionId,
+          isGuardedAtStart: true,
+          child: MxActionPair(
+            leading: outcome.canStudyAgain && canStudyDeck
+                ? MxButton(
+                    label: l10n.studyThisDeck,
+                    tone: MxButtonTone.outline,
+                    icon: AppIcons.play,
+                    isBlock: true,
+                    isSingleLine: true,
+                    onPressed: onStudyDeck,
+                  )
+                : null,
+            trailing: MxButton(
+              label: l10n.summaryDone,
+              icon: AppIcons.check,
+              isBlock: true,
+              isSingleLine: true,
+              onPressed: onDone,
+            ),
+            leadingFlex: _studyFlex,
+            trailingFlex: _doneFlex,
           ),
-          leadingFlex: _studyFlex,
-          trailingFlex: _doneFlex,
         ),
       ),
     );

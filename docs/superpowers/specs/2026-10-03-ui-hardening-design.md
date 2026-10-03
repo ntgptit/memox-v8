@@ -1,7 +1,7 @@
 # UI hardening after the 2026-10-02 critique, harden and audit — design
 
 Status: approved 2026-10-03 (SP1 design) ·
-Path: architectural, five sub-projects plus a final polish · Owner rulings 2026-10-03 (§3): R1–R7
+Path: architectural, five sub-projects plus a final polish · Owner rulings 2026-10-03 (§3): R1–R11
 
 ## 1. Intent
 
@@ -51,6 +51,10 @@ Success for the whole effort:
 | R5 | Five sub-projects in the order of §4, then the polish pass. |
 | R6 | SP1's design (§5) is approved. |
 | R7 | A new toast keeps replacing the one on screen, Undo included (FE-B1 D14 stands). A trashed item stays recoverable for 30 days, and TalkBack is never held back by a queue. The harden finding "toast replacement drops Undo" is closed by this ruling. |
+| R8 | SP2 is two PRs: SP2a (study and cards, items 2.01–2.25 and 2.49–2.51; [design](2026-10-03-ui-hardening-sp2a-design.md)) first, then SP2b (2.26–2.48). |
+| R9 | A card being written survives process death and a refused or deleted target in a device-local `card_draft` table (never synced, never logged), offered back when the editor opens. |
+| R10 | The Trash auto-purge runs only when the device clock agrees (within one day) with the server time seen at the last sync; otherwise the purge waits. (SP2b, item 2.30.) |
+| R11 (V7) | A stuck account layer explains that this phone's data is safe and that the move resumes on the next launch, and offers "Close MemoX" beside Retry. No data changes. (SP2b, item 2.43.) |
 
 ## 4. Decomposition
 
@@ -408,7 +412,7 @@ Asked with `AskUserQuestion` at that sub-project's brainstorm:
 - **V5 Accent-insensitive fallback** in search (C; 04, BR-SEARCH-002) and the Fill judge
   (H; 20). Decided in SP3/SP4.
 - **V6 Duplicate-term hint** on manual create (H; 08). Decided in SP3.
-- **V7 Escape from a stuck account layer** (H; 30). Decided in SP2.
+- **V7 Escape from a stuck account layer** (H; 30). Decided 2026-10-03: R11.
 
 ## 8. Testing and the gate
 

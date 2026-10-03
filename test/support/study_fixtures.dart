@@ -373,6 +373,19 @@ final class LockableSessions implements StudySessionRepository {
   final StudySessionRepository _inner;
   var isLocked = false;
 
+  /// While set, [abandonSession] fails as a broken write does (SP2a 2.08).
+  var isAbandonFailing = false;
+
+  /// While set, [revealRecallAnswer] fails as a broken write does (SP2a 2.12).
+  var isRevealFailing = false;
+
+  /// While set, [resumeSession] fails as a broken write does (SP2a 2.49).
+  var isResumeFailing = false;
+
+  /// With [isRevealFailing], the failure lands before any frame (a gate shut
+  /// at the start of the write) instead of after the screen saw it busy.
+  var isRevealFailingAtOnce = false;
+
   @override
   Future<Outcome<TurnResult, StudyRejection>> answerTurn({
     required String sessionId,
@@ -401,12 +414,20 @@ final class LockableSessions implements StudySessionRepository {
     required String cardId,
     required int remainingMs,
     DateTime? now,
-  }) => _inner.revealRecallAnswer(
-    sessionId: sessionId,
-    cardId: cardId,
-    remainingMs: remainingMs,
-    now: now,
-  );
+  }) async {
+    // Found after the write starts, as a real failure is: the screen sees it
+    // busy first.
+    if (isRevealFailing) {
+      if (!isRevealFailingAtOnce) await Future<void>.delayed(Duration.zero);
+      throw const UnknownDatabaseFailure(cause: 'test');
+    }
+    return _inner.revealRecallAnswer(
+      sessionId: sessionId,
+      cardId: cardId,
+      remainingMs: remainingMs,
+      now: now,
+    );
+  }
 
   @override
   Future<Outcome<void, StudyRejection>> saveRecallTime({
@@ -436,13 +457,19 @@ final class LockableSessions implements StudySessionRepository {
   Future<Outcome<void, StudyRejection>> abandonSession({
     required String sessionId,
     DateTime? now,
-  }) => _inner.abandonSession(sessionId: sessionId, now: now);
+  }) async {
+    if (isAbandonFailing) throw const UnknownDatabaseFailure(cause: 'test');
+    return _inner.abandonSession(sessionId: sessionId, now: now);
+  }
 
   @override
   Future<Outcome<void, StudyRejection>> resumeSession({
     required String sessionId,
     DateTime? now,
-  }) => _inner.resumeSession(sessionId: sessionId, now: now);
+  }) async {
+    if (isResumeFailing) throw const UnknownDatabaseFailure(cause: 'test');
+    return _inner.resumeSession(sessionId: sessionId, now: now);
+  }
 
   @override
   Future<void> abandonStaleSessions({DateTime? now}) =>

@@ -581,6 +581,15 @@
     },
     "description": "Snackbar after tagging."
   },
+  "cardTagLimitReached": "{count, plural, =1{1 card already has 10 tags; nothing was tagged.} other{{count} cards already have 10 tags; nothing was tagged.}}",
+  "@cardTagLimitReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar when a bulk tag is refused because cards already hold the 10-tag limit (BR-TAG-002); count is how many."
+  },
   "cardMoveTitle": "Move to deck",
   "@cardMoveTitle": {
     "description": "Title of the card move picker."
@@ -609,6 +618,27 @@
     },
     "description": "Snackbar after a move; deck is the target's name."
   },
+  "cardBulkWithSkipped": "{message}. {count, plural, =1{1 was already gone.} other{{count} were already gone.}}",
+  "@cardBulkWithSkipped": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "A bulk action's toast plus how many of the selected cards were already gone when it ran (SP2a 2.19); message is the toast without that part."
+  },
+  "cardBulkAllGone": "{count, plural, =1{The selected card is already gone. Nothing changed.} other{The {count} selected cards are already gone. Nothing changed.}}",
+  "@cardBulkAllGone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar when a bulk action ran and every selected card was already gone, so nothing was written (SP2a 2.19)."
+  },
   "cardDeleteTitle": "{count, plural, =1{Move this card to Trash?} other{Move {count} cards to Trash?}}",
   "@cardDeleteTitle": {
     "placeholders": {
@@ -630,6 +660,15 @@
   "cardMoveToTrash": "Move to Trash",
   "@cardMoveToTrash": {
     "description": "The Move to Trash dialog's confirm (kit 07, 09)."
+  },
+  "cardMoveToTrashCount": "{count, plural, =1{Move to Trash} other{Move {count} cards to Trash}}",
+  "@cardMoveToTrashCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "The Move to Trash dialog's confirm when it names how many cards move (SP2a 2.20); one card keeps the short form."
   },
   "cardTrashedToast": "“{front}” moved to Trash",
   "@cardTrashedToast": {
@@ -725,6 +764,10 @@
   "cardRejectionTargetInTrash": "That deck is in the Trash.",
   "@cardRejectionTargetInTrash": {
     "description": "Card restore or Undo refusal: the deck it goes to is in the Trash."
+  },
+  "cardRejectionChangedElsewhere": "This card changed on another device.",
+  "@cardRejectionChangedElsewhere": {
+    "description": "Card edit refusal: another device saved the card since the editor opened (SP2a 2.18). The editor asks Use theirs or Keep mine instead of showing this."
   },
   "tagRejectionBlankName": "Enter a tag name.",
   "@tagRejectionBlankName": {
@@ -947,9 +990,29 @@
   "@cardDeckRejectsTitle": {
     "description": "Warning banner when the deck now holds sub-decks."
   },
-  "cardDeckRejectsBody": "It now holds sub-decks.",
+  "cardDeckRejectsBody": "It now holds sub-decks. Your text is kept on this phone.",
   "@cardDeckRejectsBody": {
     "description": "Warning banner body when the deck refuses cards."
+  },
+  "cardDraftTitle": "Unsaved text from earlier",
+  "@cardDraftTitle": {
+    "description": "Neutral banner title above the card editor when a draft kept on this device is offered back (SP2a R9)."
+  },
+  "cardDraftBody": "Kept on this phone only, not synced. Restore it or discard it.",
+  "@cardDraftBody": {
+    "description": "Neutral banner body offering the kept draft back."
+  },
+  "cardDraftRestore": "Restore",
+  "@cardDraftRestore": {
+    "description": "Banner action: puts the kept draft back into the form. Its partner is cardDiscard."
+  },
+  "cardDraftRestoredAnnounce": "Draft restored",
+  "@cardDraftRestoredAnnounce": {
+    "description": "Screen-reader announcement after Restore on the kept-draft banner; the banner and its focused button are gone and the fields changed."
+  },
+  "cardDraftDiscardedAnnounce": "Draft discarded",
+  "@cardDraftDiscardedAnnounce": {
+    "description": "Screen-reader announcement after Discard on the kept-draft banner."
   },
   "cardGoneTitle": "This card is no longer here",
   "@cardGoneTitle": {
@@ -959,11 +1022,31 @@
   "@cardGoneBody": {
     "description": "Editor state when the card went to the Trash meanwhile (FE-B1 D11, kit 09)."
   },
+  "cardEditorGoneTitle": "This card was moved to Trash or deleted.",
+  "@cardEditorGoneTitle": {
+    "description": "Danger banner above the card editor when the card went away while it was open (SP2a 2.17)."
+  },
+  "cardEditorGoneBody": "Your text is kept on this phone.",
+  "@cardEditorGoneBody": {
+    "description": "Danger banner body: the typed text is in the device-local draft."
+  },
+  "cardEditorStaleTitle": "Couldn't refresh this card.",
+  "@cardEditorStaleTitle": {
+    "description": "Warning banner above the card editor when reading the card failed after it opened."
+  },
+  "cardEditorStaleBody": "Your text is kept on this phone, and you can still save.",
+  "@cardEditorStaleBody": {
+    "description": "Warning banner body: nothing typed was lost."
+  },
+  "cardCaptionGone": "This card can't be saved now.",
+  "@cardCaptionGone": {
+    "description": "Card edit footer caption once the card is gone."
+  },
   "cardDeckGoneTitle": "This deck is no longer here",
   "@cardDeckGoneTitle": {
     "description": "Editor state when the deck was deleted meanwhile."
   },
-  "cardDeckGoneBody": "It was moved to Trash or deleted while you were adding cards. This card was not saved.",
+  "cardDeckGoneBody": "It was moved to Trash or deleted while you were adding cards. This card was not saved; your text is kept on this phone.",
   "@cardDeckGoneBody": {
     "description": "Editor state when the deck went to the Trash meanwhile (FE-B1 D11)."
   },
@@ -990,6 +1073,22 @@
   "cardKeepEditing": "Keep editing",
   "@cardKeepEditing": {
     "description": "Discard dialog: stay."
+  },
+  "cardChangedTitle": "This card changed on another device",
+  "@cardChangedTitle": {
+    "description": "Dialog title when Save finds the card saved elsewhere since the editor opened (SP2a 2.18)."
+  },
+  "cardChangedBody": "Use theirs to reload the newer version and drop your edits. Keep mine to save over it.",
+  "@cardChangedBody": {
+    "description": "Dialog body naming what each choice does to the text."
+  },
+  "cardUseTheirs": "Use theirs",
+  "@cardUseTheirs": {
+    "description": "Dialog action (outline): reload the card as the other device left it."
+  },
+  "cardKeepMine": "Keep mine",
+  "@cardKeepMine": {
+    "description": "Dialog action (primary): save the typed text over the newer version."
   },
   "cardDiscard": "Discard",
   "@cardDiscard": {
@@ -3705,6 +3804,10 @@
   "@importCaptionProblemFile": {
     "description": "Import commit bar, step 1, the file could not be read (kit 11 badEncoding)."
   },
+  "importCaptionProblemTooLarge": "Split the file, then choose it again.",
+  "@importCaptionProblemTooLarge": {
+    "description": "Import commit bar, step 1, the file is over the size or row cap: the next step only, since the banner above already says nothing was read."
+  },
   "importCaptionProblemPaste": "Nothing was read. Edit the text to continue.",
   "@importCaptionProblemPaste": {
     "description": "Import commit bar, step 1, the pasted text could not be read."
@@ -3753,6 +3856,28 @@
   "importProblemEmptyBody": "The file, sheet or text has no row with anything in it.",
   "@importProblemEmptyBody": {
     "description": "Import problem: an empty source."
+  },
+  "importProblemTooLargeTitle": "This file is too large to import",
+  "@importProblemTooLargeTitle": {
+    "description": "Import problem: the source is over the size or row cap (SP2a 2.23)."
+  },
+  "importProblemTooLargeBody": "Split it into files of up to {rows} rows or {megabytes} MB. Nothing was read.",
+  "@importProblemTooLargeBody": {
+    "placeholders": {
+      "rows": { "type": "int", "format": "decimalPattern" },
+      "megabytes": {
+        "type": "int"
+      }
+    },
+    "description": "Import problem: how to fit under the cap; rows is the row cap, megabytes the size cap."
+  },
+  "importProblemPreviewTitle": "Couldn't check this deck",
+  "@importProblemPreviewTitle": {
+    "description": "Import step 2: the deck's cards could not be read for the preview (SP2a 2.22)."
+  },
+  "importProblemPreviewBody": "Nothing was imported and your mapping is kept. Choose Preview rows to try again.",
+  "@importProblemPreviewBody": {
+    "description": "Import step 2: what to do after a failed preview."
   },
   "importChooseAnother": "Choose another file",
   "@importChooseAnother": {
@@ -3843,6 +3968,32 @@
   "importBackToDeck": "Back to deck",
   "@importBackToDeck": {
     "description": "Import result: none, back to the deck."
+  },
+  "importUndoAction": "Undo import",
+  "@importUndoAction": {
+    "description": "Import result: moves the cards this import wrote to the Trash (SP2a 2.25)."
+  },
+  "importUndoTitle": "{count, plural, =1{Move the imported card to Trash?} other{Move the {count} imported cards to Trash?}}",
+  "@importUndoTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Undo import confirm title."
+  },
+  "importUndoneToast": "{count, plural, =1{1 imported card moved to Trash} other{{count} imported cards moved to Trash}}",
+  "@importUndoneToast": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Snackbar after Undo import."
+  },
+  "importUndoGone": "None of the imported cards is left to move.",
+  "@importUndoGone": {
+    "description": "Snackbar when every imported card was already gone."
   },
   "importCloseAction": "Close",
   "@importCloseAction": {
@@ -4074,6 +4225,14 @@
   "studyAnswerBusyBody": "The device is busy. Your answer is kept — try again.",
   "@studyAnswerBusyBody": {
     "description": "Study session shell (FE-A6 P1c): the busy-database banner's message."
+  },
+  "studyRevealFailedTitle": "Couldn't show the meaning",
+  "@studyRevealFailedTitle": {
+    "description": "Session screen (SP2a 2.12): banner title when the Recall reveal was refused or failed."
+  },
+  "studyRevealFailedBody": "Nothing was lost. Tap Show the meaning to try again.",
+  "@studyRevealFailedBody": {
+    "description": "Session screen (SP2a 2.12): banner message for a failed Recall reveal; the button is the retry."
   },
   "studySessionErrorTitle": "Couldn't read this session",
   "@studySessionErrorTitle": {
@@ -4458,9 +4617,13 @@
   "@studyHomeResume": {
     "description": "Screen handoff 13 (FE-A8): takes the session up (UC-STUDY-002)."
   },
-  "studyHomeResumeRefused": "This session can't be continued any more",
+  "studyHomeResumeRefused": "This session can't be continued. Your answers are kept.",
   "@studyHomeResumeRefused": {
     "description": "Screen handoff 13 (FE-A8): toast when Resume is refused (H3)."
+  },
+  "studyHomeResumeFailed": "Couldn't open the session. Nothing was lost; try Resume again.",
+  "@studyHomeResumeFailed": {
+    "description": "Screen handoff 13 (SP2a 2.49): toast when the Resume write failed; local-first."
   },
   "studyHomeWaiting": "Waiting for you",
   "@studyHomeWaiting": {
@@ -4719,6 +4882,14 @@
   "progressErrorBody": "Your study history is safe on this device. Try again in a moment.",
   "@progressErrorBody": {
     "description": "Screen handoff 22 (FE-A9): the error state's body."
+  },
+  "progressStaleTitle": "Couldn't refresh your progress",
+  "@progressStaleTitle": {
+    "description": "Screen handoff 22 (SP2a 2.50): warning banner title when a refresh failed after figures were read."
+  },
+  "progressStaleBody": "These are the figures last read. Your study history is safe on this device.",
+  "@progressStaleBody": {
+    "description": "Screen handoff 22 (SP2a 2.50): the banner's message; local-first."
   },
   "progressLoading": "Loading your progress",
   "@progressLoading": {
@@ -5298,6 +5469,22 @@
   "@studyOptionsSaved": {
     "description": "Screen handoff 15 (FE-A3 plan 2): toast after a save."
   },
+  "studyOptionsDiscardTitle": "Discard your changes?",
+  "@studyOptionsDiscardTitle": {
+    "description": "Screen 15 (SP2a 2.06): the confirm title when Back is pressed with unsaved edits."
+  },
+  "studyOptionsDiscardBody": "Leaving now keeps the options as they were saved.",
+  "@studyOptionsDiscardBody": {
+    "description": "Screen 15 (SP2a 2.06): the confirm body; names what Back keeps."
+  },
+  "studyOptionsKeepEditing": "Keep editing",
+  "@studyOptionsKeepEditing": {
+    "description": "Screen 15 (SP2a 2.06): stays on the screen with the draft."
+  },
+  "studyOptionsDiscard": "Discard changes",
+  "@studyOptionsDiscard": {
+    "description": "Screen 15 (SP2a 2.06): drops the draft and leaves; names the loss."
+  },
   "starterTitle": "Starter decks",
   "@starterTitle": {
     "description": "Screen 03: the app bar title."
@@ -5803,6 +5990,31 @@
   "studyExitStop": "Stop",
   "@studyExitStop": {
     "description": "The exit confirm dialog: stop the session."
+  },
+  "studyEndOtherTitle": "End your session in {deck}?",
+  "@studyEndOtherTitle": {
+    "placeholders": {
+      "deck": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 14 (SP2a 2.01, R3): the confirm title when a start would end the open session of another deck."
+  },
+  "studyEndOtherBody": "Its answers are kept; the rest of that round is dropped.",
+  "@studyEndOtherBody": {
+    "description": "Screen 14 (SP2a 2.01): the confirm body; names what is kept and what is dropped."
+  },
+  "studyEndOtherKeep": "Keep it",
+  "@studyEndOtherKeep": {
+    "description": "Screen 14 (SP2a 2.01): leaves the other deck's session open and starts nothing."
+  },
+  "studyEndOtherConfirm": "End it and start",
+  "@studyEndOtherConfirm": {
+    "description": "Screen 14 (SP2a 2.01): ends the other deck's session and starts this one."
+  },
+  "studyStopFailed": "Couldn't stop the session. Your answers are kept; try again.",
+  "@studyStopFailed": {
+    "description": "Session screen (SP2a 2.08): toast when the Stop write failed and the session stays open."
   },
   "cardCaptionAddMissing": "Add the missing field to enable save.",
   "@cardCaptionAddMissing": {

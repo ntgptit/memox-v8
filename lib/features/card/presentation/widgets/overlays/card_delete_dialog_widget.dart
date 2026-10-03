@@ -5,9 +5,11 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_trashed_snackbar_widget.dart';
+import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -21,12 +23,14 @@ typedef CardTrashPreview = ({String front, String back});
 
 /// Asks before the cards of [cardIds] move to the Trash with their history
 /// (IT-ORG-014, FE-B1). A single card shows [preview] when the caller has
-/// it. Completes true once they have, and the toast is up.
+/// it. Completes true once they have, and the toast is up. [onAllGone] runs
+/// when every card was already gone (SP2a 2.19).
 Future<bool> showDeleteCardsDialog(
   BuildContext context, {
   required Set<String> cardIds,
   CardTrashPreview? preview,
   VoidCallback? onOpenTrash,
+  VoidCallback? onAllGone,
 }) async =>
     await showMxDialog<bool>(
       context,
@@ -34,18 +38,21 @@ Future<bool> showDeleteCardsDialog(
         cardIds: cardIds,
         preview: cardIds.length == 1 ? preview : null,
         onOpenTrash: onOpenTrash,
+        onAllGone: onAllGone,
       ),
     ) ??
     false;
 
-/// The confirm is not destructive, since the Trash keeps the cards for 30
-/// days, and it spins while they move (FE-B1 D15).
+/// The confirm names how many cards move; it is not destructive, since the
+/// Trash keeps the cards for 30 days, and it spins while they move (FE-B1 D15,
+/// SP2a 2.20).
 class CardDeleteDialogWidget extends ConsumerStatefulWidget {
   const CardDeleteDialogWidget({
     super.key,
     required this.cardIds,
     this.preview,
     this.onOpenTrash,
+    this.onAllGone,
   });
 
   final Set<String> cardIds;
@@ -53,6 +60,7 @@ class CardDeleteDialogWidget extends ConsumerStatefulWidget {
 
   /// Rides on the toast of several cards and on a refused Undo (FE-B1).
   final VoidCallback? onOpenTrash;
+  final VoidCallback? onAllGone;
 
   @override
   ConsumerState<CardDeleteDialogWidget> createState() =>
@@ -74,15 +82,26 @@ class _CardDeleteDialogWidgetState
           .deleteCards(cardIds: widget.cardIds);
       if (!mounted) return;
       switch (outcome) {
-        case Ok(value: final batchIds):
+        case Ok(:final value):
           showCardsTrashedSnackbar(
             context,
-            batchIds: batchIds,
+            batchIds: value.batchIds,
             front: widget.preview?.front,
             onOpenTrash: widget.onOpenTrash,
+            skipped: value.skipped.length,
           );
         case Rejected(:final reason):
-          showMxSnackbar(context, message: context.l10n.cardRejection(reason));
+          if (reason == CardRejection.notFound) widget.onAllGone?.call();
+          showMxSnackbar(
+            context,
+            message: context.l10n.cardBulkRejection(
+              reason,
+              widget.cardIds.length,
+            ),
+            duration: bulkToastDuration(
+              hasNews: isBulkAllGone(reason, widget.cardIds.length),
+            ),
+          );
       }
       Navigator.of(context).pop(outcome is Ok);
     } on Failure catch (failure) {
@@ -97,6 +116,8 @@ class _CardDeleteDialogWidgetState
     final l10n = context.l10n;
     final count = widget.cardIds.length;
     return MxDialog(
+      // The result must reach the screen: Back and a scrim tap wait for it.
+      isHeld: _isDeleting,
       title: l10n.cardDeleteTitle(count),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -109,7 +130,7 @@ class _CardDeleteDialogWidgetState
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(false),
-        confirmLabel: l10n.cardMoveToTrash,
+        confirmLabel: l10n.cardMoveToTrashCount(count),
         confirmIcon: AppIcons.delete,
         isConfirmLoading: _isDeleting,
         onConfirm: _isDeleting ? null : _delete,

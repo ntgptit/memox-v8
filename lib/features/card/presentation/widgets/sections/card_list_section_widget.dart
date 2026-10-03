@@ -6,6 +6,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
@@ -25,6 +26,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_list_empt
 import 'package:memox/features/card/presentation/widgets/sections/card_list_toolbar_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
+import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
@@ -136,6 +138,12 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     _selection().clear();
   }
 
+  /// Every one of [cardIds] was already gone, so none stays selected (SP2a
+  /// 2.19). The section may be gone by then, hence the `mounted` check.
+  void _prune(Set<String> cardIds) {
+    if (mounted) _selection().prune(cardIds);
+  }
+
   Future<void> _flag(Set<String> cardIds) async {
     setState(() => _failedFlag = null);
     final isFlagged = await showCardFlagSheet(context);
@@ -158,16 +166,27 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       final l10n = context.l10n;
       setState(() => _failedFlag = null);
       switch (outcome) {
-        case Ok():
+        case Ok(:final value):
           _selection().clear();
           showMxSnackbar(
             context,
-            message: isFlagged
-                ? l10n.cardFlaggedToast(cardIds.length)
-                : l10n.cardUnflaggedToast(cardIds.length),
+            message: l10n.bulkToast(
+              isFlagged
+                  ? l10n.cardFlaggedToast(value.done.length)
+                  : l10n.cardUnflaggedToast(value.done.length),
+              value.skipped.length,
+            ),
+            duration: bulkToastDuration(hasNews: value.skipped.isNotEmpty),
           );
         case Rejected(:final reason):
-          showMxSnackbar(context, message: l10n.cardRejection(reason));
+          if (reason == CardRejection.notFound) _prune(cardIds);
+          showMxSnackbar(
+            context,
+            message: l10n.cardBulkRejection(reason, cardIds.length),
+            duration: bulkToastDuration(
+              hasNews: isBulkAllGone(reason, cardIds.length),
+            ),
+          );
       }
     } on Failure {
       if (!mounted) return;
@@ -210,6 +229,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
               context,
               sourceDeckId: widget.deckId,
               cardIds: selected,
+              onAllGone: () => _prune(selected),
             ),
           ),
         ),
@@ -223,7 +243,13 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
         icon: AppIcons.tag,
         label: l10n.cardTag,
         onTap: () => unawaited(
-          _clearAfter(showCardTagDialog(context, cardIds: selected)),
+          _clearAfter(
+            showCardTagDialog(
+              context,
+              cardIds: selected,
+              onAllGone: () => _prune(selected),
+            ),
+          ),
         ),
       ),
       if (onExport != null)
@@ -242,6 +268,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
               cardIds: selected,
               preview: _previewOf(selected),
               onOpenTrash: widget.onOpenTrash,
+              onAllGone: () => _prune(selected),
             ),
           ),
         ),

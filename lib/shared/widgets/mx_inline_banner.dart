@@ -8,9 +8,10 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
-/// Warning is a refusal or a limit, and nothing was lost. Danger means an
-/// operation failed.
-enum MxBannerTone { warning, danger }
+/// Neutral offers a choice and nothing is wrong (a draft kept for the person).
+/// Warning is a refusal or a limit, and nothing was lost. Danger means
+/// something was lost or is at risk.
+enum MxBannerTone { neutral, warning, danger }
 
 /// One in-place message about an operation or an object, with the compact
 /// Buttons that resolve it. It is not a Note (info, no action) and not an
@@ -45,6 +46,14 @@ class MxInlineBanner extends StatelessWidget {
     final derived = context.derivedColors;
     final styles = context.textStyles;
     final (ground, edge, ink, titleInk) = switch (tone) {
+      // The MxNote's ground, so a calm notice that offers a choice does not
+      // read as a problem (SP2a R9).
+      MxBannerTone.neutral => (
+        colors.surfaceContainerLow,
+        derived.ghostBorder,
+        colors.onSurfaceVariant,
+        colors.onSurface,
+      ),
       MxBannerTone.warning => (
         derived.warningSoft,
         derived.warningBorder,
@@ -100,7 +109,9 @@ class MxInlineBanner extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(top: glyphInset),
                   child: Icon(
-                    AppIcons.alert,
+                    tone == MxBannerTone.neutral
+                        ? AppIcons.info
+                        : AppIcons.alert,
                     size: AppIconSize.inline,
                     color: ink,
                   ),

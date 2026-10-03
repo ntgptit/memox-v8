@@ -1,4 +1,5 @@
 import 'package:characters/characters.dart';
+import 'package:collection/collection.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
@@ -15,6 +16,7 @@ final class CardDraft {
     this.pronunciation,
     this.isFlagged = false,
     this.tagNames = const [],
+    this.baseUpdatedAt,
   });
 
   final String front;
@@ -24,6 +26,12 @@ final class CardDraft {
   final String? pronunciation;
   final bool isFlagged;
   final List<String> tagNames;
+
+  /// The card's `updatedAt` this edit was written against; null for a new
+  /// card. Kept with an edit draft so that restoring it later still knows
+  /// which version it replaces (SP2a 2.18). Not content: [sameContentAs]
+  /// ignores it.
+  final DateTime? baseUpdatedAt;
 
   /// BR-CARD-002 and BR-CARD-003, in characters as a person sees them.
   static const maxFrontLength = 60;
@@ -78,6 +86,22 @@ final class CardDraft {
     }
     return const Ok(null);
   }
+
+  /// Whether the example, the hint or the pronunciation holds text.
+  bool get hasOptionalText =>
+      example != null || hint != null || pronunciation != null;
+
+  /// Whether [other] is the same card as typed: the same text, flag and tag
+  /// names, in the same order. The draft kept on the device is dropped when
+  /// it equals the form it would restore.
+  bool sameContentAs(CardDraft other) =>
+      front == other.front &&
+      back == other.back &&
+      example == other.example &&
+      hint == other.hint &&
+      pronunciation == other.pronunciation &&
+      isFlagged == other.isFlagged &&
+      const ListEquality<String>().equals(tagNames, other.tagNames);
 
   static Outcome<void, CardRejection> _checkSide(
     String side,

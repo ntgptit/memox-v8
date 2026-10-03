@@ -74,10 +74,16 @@ final class _CountingEdits implements CardRepository {
   Future<Outcome<void, CardRejection>> editCard({
     required String cardId,
     required CardDraft draft,
+    DateTime? expectedUpdatedAt,
     DateTime? now,
   }) {
     edits++;
-    return _cards.editCard(cardId: cardId, draft: draft, now: now);
+    return _cards.editCard(
+      cardId: cardId,
+      draft: draft,
+      expectedUpdatedAt: expectedUpdatedAt,
+      now: now,
+    );
   }
 
   @override
@@ -283,10 +289,8 @@ void main() {
     );
   });
 
-  libraryTest('a card deleted while editing shows it is gone (RF3)', (
-    tester,
-    env,
-  ) async {
+  libraryTest('a card deleted while editing keeps the form and tells why '
+      '(RF3, SP2a 2.17)', (tester, env) async {
     final deckId = await _words(env);
     final card = await env.cards.card(deckId);
     await pumpLibraryScreen(tester, env, _edit(card.id));
@@ -296,8 +300,9 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text(_en.cardGoneTitle), findsOneWidget);
-    expect(find.text(_en.cardBackToDeck), findsOneWidget);
+    expect(find.text(_en.cardEditorGoneTitle), findsOneWidget);
+    expect(find.text('changed'), findsOneWidget);
+    expect(find.text(_en.cardGoneTitle), findsNothing);
     expect(
       await _count(
         env,

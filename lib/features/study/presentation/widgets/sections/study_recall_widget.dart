@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
@@ -36,11 +37,13 @@ class StudyRecallWidget extends StatefulWidget {
     required this.item,
     required this.result,
     required this.isBusy,
+    required this.hasWriteFailed,
     required this.onReveal,
     required this.onSaveTime,
     required this.onAnswer,
     required this.onTimeUp,
     required this.onContinue,
+    required this.overlayOpen,
   });
 
   final StudyItem item;
@@ -48,6 +51,10 @@ class StudyRecallWidget extends StatefulWidget {
   /// The timed-out turn's committed result, held on screen (spec D5).
   final TurnResult? result;
   final bool isBusy;
+
+  /// The reveal was refused or failed (2.12): the turn counts down again and
+  /// Show the meaning is tappable, whether or not a busy frame was seen.
+  final bool hasWriteFailed;
 
   /// Show the meaning, with the time left.
   final ValueChanged<int> onReveal;
@@ -61,6 +68,11 @@ class StudyRecallWidget extends StatefulWidget {
   /// The clock reached zero.
   final VoidCallback onTimeUp;
   final VoidCallback onContinue;
+
+  /// True while the session screen has an overlay over the turn (the exit
+  /// dialog): the clock stops under it and runs on when it turns false
+  /// (2.11).
+  final ValueListenable<bool> overlayOpen;
 
   @override
   State<StudyRecallWidget> createState() => _StudyRecallWidgetState();
@@ -94,6 +106,7 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
       value: left / recallTurnMs,
     )..addStatusListener(_onClockStatus);
     _lifecycle = AppLifecycleListener(onStateChange: _onLifecycle);
+    widget.overlayOpen.addListener(_onOverlay);
     if (!_isRunning) return;
     if (left == 0) {
       // A turn saved at zero: its time is already up.
@@ -106,22 +119,25 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
   @override
   void didUpdateWidget(StudyRecallWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.overlayOpen != widget.overlayOpen) {
+      oldWidget.overlayOpen.removeListener(_onOverlay);
+      widget.overlayOpen.addListener(_onOverlay);
+    }
     if (oldWidget.result == null && widget.result != null) _announceTimeout();
-    // A reveal the database refused: the turn counts down again.
+    // A reveal that was refused or failed: the turn counts down again. Under
+    // an open overlay it stays stopped and the overlay's close resumes it.
     final isRefused =
-        oldWidget.isBusy &&
-        !widget.isBusy &&
-        _isStopped &&
-        !widget.item.isRevealed;
+        widget.hasWriteFailed && _isStopped && !widget.item.isRevealed;
     if (isRefused) {
       _isStopped = false;
-      unawaited(_clock.reverse());
+      if (!widget.overlayOpen.value) unawaited(_clock.reverse());
     }
   }
 
   @override
   void dispose() {
     if (_isRunning) widget.onSaveTime(_remainingMs);
+    widget.overlayOpen.removeListener(_onOverlay);
     _lifecycle.dispose();
     _clock.dispose();
     super.dispose();
@@ -142,11 +158,25 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
   void _onLifecycle(AppLifecycleState state) {
     if (!_isRunning) return;
     if (state == AppLifecycleState.resumed) {
-      unawaited(_clock.reverse());
+      // An overlay still holds the clock (2.11).
+      if (!widget.overlayOpen.value) unawaited(_clock.reverse());
       return;
     }
     _clock.stop();
     if (state == AppLifecycleState.paused) widget.onSaveTime(_remainingMs);
+  }
+
+  /// An overlay (the exit dialog) is over the turn: the clock stops and its
+  /// time left is kept; it runs on when the overlay goes (2.11,
+  /// BR-STUDY-036).
+  void _onOverlay() {
+    if (!_isRunning) return;
+    if (widget.overlayOpen.value) {
+      _clock.stop();
+      widget.onSaveTime(_remainingMs);
+      return;
+    }
+    unawaited(_clock.reverse());
   }
 
   void _reveal() {

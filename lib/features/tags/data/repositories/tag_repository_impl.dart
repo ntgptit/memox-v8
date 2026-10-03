@@ -1,11 +1,13 @@
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/mapped_transaction.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
 import 'package:memox/features/tags/data/datasources/tag_dao.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
+import 'package:memox/features/tags/domain/models/tag_attach_model.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/tags/domain/models/tag_rename_plan_model.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
@@ -23,7 +25,7 @@ final class TagRepositoryImpl implements TagRepository {
   final DateTime Function() _now;
 
   @override
-  Future<Outcome<void, TagRejection>> attachByName({
+  Future<Outcome<TagAttach, TagRejection>> attachByName({
     required Set<String> cardIds,
     required String name,
     DateTime? now,
@@ -33,24 +35,29 @@ final class TagRepositoryImpl implements TagRepository {
       if (TagEntity.checkName(name) case Rejected(:final reason)) {
         return Rejected(reason);
       }
-      if (cardIds.isEmpty) return const Ok(null);
-      if (await _dao.liveCardCount(cardIds) != cardIds.length) {
-        return const Rejected(TagRejection.notFound);
+      if (cardIds.isEmpty) {
+        return const Ok(TagAttached(BulkOutcome(done: {})));
       }
+      final live = await _dao.liveCardIds(cardIds);
+      if (live.isEmpty) return const Rejected(TagRejection.notFound);
       final existing = await _dao.findByFoldedName(TagEntity.fold(name));
       final lacking = existing == null
-          ? cardIds
-          : cardIds.difference(await _dao.cardsCarrying(cardIds, existing.id));
+          ? live
+          : live.difference(await _dao.cardsCarrying(live, existing.id));
       final counts = await _dao.tagCounts(lacking);
-      if (counts.values.any((count) => count >= TagEntity.maxPerCard)) {
-        return const Rejected(TagRejection.tooManyTags);
-      }
+      final full = {
+        for (final MapEntry(key: cardId, value: count) in counts.entries)
+          if (count >= TagEntity.maxPerCard) cardId,
+      };
+      if (full.isNotEmpty) return Ok(TagLimitReached(full));
 
       final tagId = existing?.id ?? await _createTag(name, at);
       for (final cardId in lacking) {
         await _dao.link(cardId, tagId);
       }
-      return const Ok(null);
+      return Ok(
+        TagAttached(BulkOutcome(done: live, skipped: cardIds.difference(live))),
+      );
     });
   }
 

@@ -106,6 +106,88 @@ void main() {
     expect(entry.errorMessage, contains('missing'));
   });
 
+  // SP2a R9 (owner ruling): a draft's text is card content and the log ships
+  // to the server, so a statement on card_draft logs without its arguments.
+  group('a statement on card_draft', () {
+    const draftText = 'DRAFT-TEXT-NEVER-LOGGED';
+    const insert =
+        'INSERT INTO card_draft (draft_key, front, back, extras, tags, '
+        'updated_at) VALUES (?, ?, ?, ?, ?, ?)';
+
+    Future<AppDatabase> openWithDraftTable() async {
+      final db = await open(const []);
+      await db.customStatement(
+        'CREATE TEMP TABLE draft_probe (x TEXT NOT NULL)',
+      );
+      sink.entries.clear();
+      return db;
+    }
+
+    test(
+      'logs its SQL and the number of arguments, not the arguments',
+      () async {
+        final db = await open(const []);
+
+        await db.customInsert(
+          insert,
+          variables: [
+            Variable.withString('edit:1'),
+            Variable.withString(draftText),
+            Variable.withString(draftText),
+            Variable.withString('{}'),
+            Variable.withString('[]'),
+            Variable.withInt(0),
+          ],
+        );
+
+        final entry = sink.entries.single;
+        expect(entry.event, 'db.query');
+        expect(entry.context['sql'], insert);
+        expect(entry.context['arg_count'], 6);
+        expect(entry.context.containsKey('args'), isFalse);
+        expect(entry.context.toString(), isNot(contains(draftText)));
+      },
+    );
+
+    test('a failing one leaves no draft text in the log either', () async {
+      final db = await open(const []);
+
+      await expectLater(
+        db.customInsert(
+          // back is NOT NULL: the statement fails with the text as an argument.
+          insert,
+          variables: [
+            Variable.withString('edit:1'),
+            Variable.withString(draftText),
+            const Variable<String>(null),
+            Variable.withString('{}'),
+            Variable.withString('[]'),
+            Variable.withInt(0),
+          ],
+        ),
+        throwsA(anything),
+      );
+
+      final entry = sink.entries.single;
+      expect((entry.level, entry.event), (LogLevel.error, 'db.query_failed'));
+      expect(entry.context['arg_count'], 6);
+      expect(entry.context.containsKey('args'), isFalse);
+      expect(entry.context.toString(), isNot(contains(draftText)));
+      expect(entry.errorMessage, isNot(contains(draftText)));
+    });
+
+    test('a statement on another table still logs its arguments', () async {
+      final db = await openWithDraftTable();
+
+      await db.customInsert(
+        'INSERT INTO draft_probe VALUES (?)',
+        variables: [Variable.withString('visible')],
+      );
+
+      expect(sink.entries.single.context['args'], ['visible']);
+    });
+  });
+
   test('a transaction logs one debug db.transaction when it commits', () async {
     final db = await open(const []);
 

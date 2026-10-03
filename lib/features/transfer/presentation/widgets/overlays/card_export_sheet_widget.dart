@@ -9,6 +9,7 @@ import 'package:memox/features/transfer/presentation/controllers/card_export_con
 import 'package:memox/features/transfer/presentation/providers/count_export_cards_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/export_labels_widget.dart';
+import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -23,22 +24,33 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Opens the export sheet over [scope] (kit 12, UC-TRANSFER-002) and, once
 /// the share sheet took the file, says so without naming where it went
-/// (BR-TRANSFER-014, ruling E2).
-Future<void> showCardExportSheet(
+/// (BR-TRANSFER-014, ruling E2). Completes with the ids the file left out
+/// (empty when none); the toast says how many were skipped. When every
+/// selected card turned out to be gone the sheet reports them however it is
+/// dismissed, and no toast is shown (SP2a 2.19).
+Future<Set<String>> showCardExportSheet(
   BuildContext context,
   CardExportScope scope,
 ) async {
-  final isHandedOver =
-      await showMxBottomSheet<bool>(
-        context,
-        builder: (_) => CardExportSheetWidget(scope: scope),
-      ) ??
-      false;
-  if (!isHandedOver || !context.mounted) return;
-  showMxSnackbar(
+  Set<String>? staleIds;
+  final skipped = await showMxBottomSheet<Set<String>>(
     context,
-    message: context.l10n.exportHandedOver(scope.cardCount),
+    builder: (_) =>
+        CardExportSheetWidget(scope: scope, onStale: (ids) => staleIds = ids),
   );
+  if (skipped == null) return staleIds ?? const {};
+  if (context.mounted) {
+    final l10n = context.l10n;
+    showMxSnackbar(
+      context,
+      message: l10n.bulkToast(
+        l10n.exportHandedOver(scope.cardCount - skipped.length),
+        skipped.length,
+      ),
+      duration: bulkToastDuration(hasNews: skipped.isNotEmpty),
+    );
+  }
+  return skipped;
 }
 
 /// The whole-deck entry (the deck's ⋮): counts the deck's cards first, so
@@ -74,9 +86,13 @@ Future<void> showDeckExportSheet(
 /// Kit 12: the fixed scope, the three formats, what the file holds, and one
 /// action. It closes itself once the file is handed over.
 class CardExportSheetWidget extends ConsumerWidget {
-  const CardExportSheetWidget({super.key, required this.scope});
+  const CardExportSheetWidget({super.key, required this.scope, this.onStale});
 
   final CardExportScope scope;
+
+  /// Called with the selected ids once every one proved gone, so the caller
+  /// can drop them whichever way the sheet is dismissed (SP2a 2.19).
+  final void Function(Set<String> ids)? onStale;
 
   CardExportController _sheet(WidgetRef ref) =>
       ref.read(cardExportControllerProvider(scope).notifier);
@@ -85,7 +101,10 @@ class CardExportSheetWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = cardExportControllerProvider(scope);
     ref.listen(provider, (_, next) {
-      if (next.isHandedOver) Navigator.of(context).pop(true);
+      if (next.isHandedOver) Navigator.of(context).pop(next.skipped);
+      if (next.problem == CardExportProblem.staleSelection) {
+        onStale?.call(scope.cardIds ?? const {});
+      }
     });
     final state = ref.watch(provider);
     final problem = state.problem;
@@ -257,7 +276,7 @@ class _Actions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    void close() => Navigator.of(context).pop(false);
+    void close() => Navigator.of(context).pop();
     final problem = state.problem;
     if (problem != null && problem.isFinal) {
       return MxSheetActions.custom(

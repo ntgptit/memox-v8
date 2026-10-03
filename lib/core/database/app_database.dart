@@ -34,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
   final MutationGate mutationGate;
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -177,6 +177,11 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(schema.accountState);
         await m.createTable(schema.accountTransition);
         await m.addColumn(schema.appSettings, schema.appSettings.welcomeSeen);
+      },
+      from12To13: (m, schema) async {
+        // SP2a R9: the card being written, device-local. One new, empty
+        // table; no row changes, no sync trigger.
+        await m.createTable(schema.cardDraft);
       },
     ),
     beforeOpen: (details) async {

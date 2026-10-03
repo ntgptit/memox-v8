@@ -135,36 +135,39 @@ void main() {
       },
     );
 
-    test('an empty deck, an empty selection and a stale selection are refused (E5, E6)', () async {
-      expect(
-        _reason(
-          await export(
-            deckId: leaf.id,
-            format: TransferFormat.csv,
-            today: _now(),
+    test('an empty deck and an empty selection are refused (E5); a selection '
+        'with a card gone exports the rest and names it; one with nothing '
+        'left is stale (E6, SP2a 2.19)', () async {
+      for (final cardIds in <Set<String>?>[null, const {}]) {
+        expect(
+          _reason(
+            await export(
+              deckId: leaf.id,
+              format: TransferFormat.csv,
+              today: _now(),
+              cardIds: cardIds,
+            ),
           ),
-        ),
-        TransferRejection.emptyScope,
-      );
-      expect(
-        _reason(
-          await export(
-            deckId: leaf.id,
-            format: TransferFormat.csv,
-            today: _now(),
-            cardIds: const {},
-          ),
-        ),
-        TransferRejection.emptyScope,
-      );
+          TransferRejection.emptyScope,
+        );
+      }
       await insertCard(db, id: 'a', deckId: leaf.id);
+      final artifact = _ok(
+        await export(
+          deckId: leaf.id,
+          format: TransferFormat.csv,
+          today: _now(),
+          cardIds: const {'a', 'gone'},
+        ),
+      );
+      expect(artifact.skipped, {'gone'});
       expect(
         _reason(
           await export(
             deckId: leaf.id,
             format: TransferFormat.csv,
             today: _now(),
-            cardIds: const {'a', 'gone'},
+            cardIds: const {'gone'},
           ),
         ),
         TransferRejection.staleSelection,

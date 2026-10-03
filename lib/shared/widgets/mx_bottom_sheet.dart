@@ -29,22 +29,38 @@ Future<T?> showMxBottomSheet<T>(
 
 /// The bottom-anchored modal for action lists and pickers. It stops at 85% of
 /// the screen:
-/// - only [child] scrolls, so [header] and [footer] stay in view (ruling
-///   O12);
+/// - only [child] (or the builder's list) scrolls, so [header] and [footer]
+///   stay in view (ruling O12);
 /// - the fill runs under the gesture bar, and the content stays above it.
 ///
 /// It is a Material, so the ripple of a row inside is visible.
 class MxBottomSheet extends StatelessWidget {
   const MxBottomSheet({
     super.key,
-    required this.child,
+    required Widget this.child,
     this.header,
     this.footer,
     this.hasGrabber = true,
     this.isHeld = false,
-  });
+  }) : itemCount = null,
+       itemBuilder = null;
 
-  final Widget child;
+  /// A sheet whose body is a long list: [itemBuilder] builds only the rows in
+  /// view, where [child] is laid out whole (SP2a 2.23). The list fills the
+  /// sheet's 85% cap.
+  const MxBottomSheet.builder({
+    super.key,
+    required int this.itemCount,
+    required IndexedWidgetBuilder this.itemBuilder,
+    this.header,
+    this.footer,
+    this.hasGrabber = true,
+    this.isHeld = false,
+  }) : child = null;
+
+  final Widget? child;
+  final int? itemCount;
+  final IndexedWidgetBuilder? itemBuilder;
   final Widget? header;
 
   /// Usually MxSheetActions in its sheet form.
@@ -125,7 +141,16 @@ class MxBottomSheet extends StatelessWidget {
                     ),
                   ),
                 ?header,
-                Flexible(child: SingleChildScrollView(child: child)),
+                Flexible(
+                  child: switch (itemBuilder) {
+                    final builder? => ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: itemCount,
+                      itemBuilder: builder,
+                    ),
+                    null => SingleChildScrollView(child: child),
+                  },
+                ),
                 ?footer,
               ],
             ),

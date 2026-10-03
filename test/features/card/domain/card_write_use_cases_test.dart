@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/app_database.dart' hide CardDraft;
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
@@ -135,10 +136,11 @@ void main() {
       final lesson = await decks.sub((await decks.root('Korean')).id, 'Lesson');
       await insertCard(db, id: 'c1', deckId: lesson.id);
       final deleted = await DeleteCardsUseCase(cards)(cardIds: {'c1'});
-      final [batchId] = (deleted as Ok<List<String>, CardRejection>).value;
+      final [batchId] =
+          (deleted as Ok<BulkOutcome, CardRejection>).value.batchIds;
 
       expect(
-        await UndoCardDeletionUseCase(cards)(batchId: batchId),
+        await UndoCardDeletionUseCase(cards)(batchIds: {batchId}),
         isA<Ok<void, CardRejection>>(),
       );
       expect(await cards.watchDetail('c1').first, isNotNull);

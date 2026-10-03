@@ -1,4 +1,4 @@
-import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/app_database.dart' hide CardDraft;
 import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -56,6 +56,7 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
 
       final taken = await _dao.foldedPairs(deckId);
       final skipped = <int>[];
+      final writtenIds = <String>[];
       for (final (index, draft) in drafts.indexed) {
         final pair = (front: foldText(draft.front), back: foldText(draft.back));
         if (!includeDuplicates && taken.contains(pair)) {
@@ -63,13 +64,19 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
           continue;
         }
         taken.add(pair);
-        await _cards.insertCard(deckId, draft, at);
+        writtenIds.add(await _cards.insertCard(deckId, draft, at));
       }
-      final written = drafts.length - skipped.length;
+      final written = writtenIds.length;
       if (written > 0 && contentType == DeckContentType.unset) {
         await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
       }
-      return Ok(CardImportResult(written: written, skippedIndexes: skipped));
+      return Ok(
+        CardImportResult(
+          written: written,
+          skippedIndexes: skipped,
+          writtenIds: writtenIds,
+        ),
+      );
     });
   }
 
@@ -86,13 +93,14 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
       final deck = await _dao.deckRow(deckId);
       if (deck == null) return const Rejected(CardRejection.notFound);
       final rows = await _dao.exportRows(deckId, cardIds);
-      if (cardIds != null && rows.length != cardIds.length) {
-        return const Rejected(CardRejection.notFound);
-      }
+      final skipped = cardIds == null
+          ? const <String>{}
+          : cardIds.difference({for (final row in rows) row.id});
       final tags = await _listDao.tagsOf([for (final row in rows) row.id]);
       return Ok(
         CardExportSnapshot(
           deckName: deck.name,
+          skipped: skipped,
           rows: [
             for (final row in rows)
               CardExportRow(

@@ -3,6 +3,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/card/data/repositories/card_draft_repository_impl.dart';
+import 'package:memox/features/card/domain/models/card_draft_key_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_form_widget.dart';
@@ -154,6 +156,94 @@ void main() {
         await expectBoundaryGolden(
           tester,
           'goldens/card_editor_edit_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('card editor, a kept draft is offered, $theme', (
+      tester,
+      env,
+    ) async {
+      final deckId = await _words(env);
+      await CardDraftRepositoryImpl(env.db).save(
+        CardDraftKey.create(deckId),
+        const CardDraft(front: 'gamsahamnida', back: 'thank you'),
+      );
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          CardEditorScreen.create(deckId: deckId, deckContext: _context),
+          brightness,
+        );
+        await tester.pumpAndSettle();
+        expect(find.text(_en.cardDraftTitle), findsOneWidget);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/card_editor_draft_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('card editor, the card was deleted, $theme', (
+      tester,
+      env,
+    ) async {
+      final deckId = await _words(env);
+      final card = await env.cards.card(
+        deckId,
+        const CardDraft(front: 'gamsahamnida', back: 'thank you'),
+      );
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          CardEditorScreen.edit(cardId: card.id, deckContext: _context),
+          brightness,
+        );
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(EditableText).at(1), 'thank you!');
+        await env.cards.deleteCards(cardIds: {card.id});
+        await tester.pumpAndSettle();
+        expect(find.text(_en.cardEditorGoneTitle), findsOneWidget);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/card_editor_gone_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('card editor, changed on another device, $theme', (
+      tester,
+      env,
+    ) async {
+      final deckId = await _words(env);
+      final card = await env.cards.card(
+        deckId,
+        const CardDraft(front: 'gamsahamnida', back: 'thank you'),
+      );
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          CardEditorScreen.edit(cardId: card.id, deckContext: _context),
+          brightness,
+        );
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(EditableText).at(1), 'thank you!');
+        await env.cards.editCard(
+          cardId: card.id,
+          draft: const CardDraft(front: 'gamsahamnida', back: 'thanks'),
+          now: libraryToday.add(const Duration(days: 1)),
+        );
+        await tester.pump();
+        await tester.pump();
+        await tester.tap(find.text(_en.cardSaveChanges));
+        await tester.pumpAndSettle();
+        expect(find.text(_en.cardChangedTitle), findsOneWidget);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/card_editor_changed_dialog_$theme.png',
         );
       });
     });

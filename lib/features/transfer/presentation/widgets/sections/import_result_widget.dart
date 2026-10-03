@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -6,6 +8,7 @@ import 'package:memox/features/transfer/domain/models/import_preview_model.dart'
 import 'package:memox/features/transfer/domain/models/import_summary_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_preview_row_widget.dart';
+import 'package:memox/features/transfer/presentation/widgets/overlays/import_skipped_sheet_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
@@ -19,10 +22,13 @@ import 'package:memox/shared/widgets/mx_section.dart';
 /// then what was added and skipped, and each skipped row with why (critique
 /// 2026-10-02, F4).
 class ImportResultWidget extends StatelessWidget {
-  const ImportResultWidget({super.key, required this.state});
+  const ImportResultWidget({super.key, required this.state, this.onUndo});
 
   /// A [CardImportDone] or a [CardImportFailed].
   final CardImportState state;
+
+  /// Opens the Undo import confirm; null hides the button (SP2a 2.25).
+  final VoidCallback? onUndo;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +60,21 @@ class ImportResultWidget extends StatelessWidget {
           if (summary.kind != ImportSummaryKind.none) ...[
             const SizedBox(height: AppSpacing.gutter),
             _Counts(summary: summary),
+            // It acts on the counts above, so it sits with them, and a full
+            // step apart from what follows (SP2a audit m3).
+            if (summary.written > 0 && onUndo != null) ...[
+              const SizedBox(height: AppSpacing.grouped),
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: MxButton(
+                  label: l10n.importUndoAction,
+                  tone: MxButtonTone.outline,
+                  size: MxButtonSize.small,
+                  onPressed: onUndo,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.section),
+            ],
           ],
           if (summary.skipped.isNotEmpty) _SkippedRows(rows: summary.skipped),
           // The rule explains the duplicate rows only (final review).
@@ -108,8 +129,9 @@ class _Counts extends StatelessWidget {
 
 /// The rows the import skipped, each as the preview drew it: number, term,
 /// meaning, why, and its mark (critique 2026-10-02, F4). The first
-/// [shownRows] show; "Show all" opens the rest in place.
-class _SkippedRows extends StatefulWidget {
+/// [shownRows] show here; "Show all" opens every row in a sheet that builds
+/// them lazily (SP2a 2.23).
+class _SkippedRows extends StatelessWidget {
   const _SkippedRows({required this.rows});
 
   final List<ImportRow> rows;
@@ -117,34 +139,27 @@ class _SkippedRows extends StatefulWidget {
   static const int shownRows = 5;
 
   @override
-  State<_SkippedRows> createState() => _SkippedRowsState();
-}
-
-class _SkippedRowsState extends State<_SkippedRows> {
-  var _isShowingAll = false;
-
-  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final rows = widget.rows;
-    final shown = _isShowingAll
-        ? rows
-        : rows.take(_SkippedRows.shownRows).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         MxSection(
           title: l10n.importSkippedHeader,
-          children: [for (final row in shown) ImportPreviewRowWidget(row: row)],
+          children: [
+            for (final row in rows.take(shownRows))
+              ImportPreviewRowWidget(row: row),
+          ],
         ),
-        if (shown.length < rows.length)
+        if (rows.length > shownRows)
           Align(
             alignment: AlignmentDirectional.centerStart,
             child: MxButton(
               label: l10n.importSkippedShowAll(rows.length),
               tone: MxButtonTone.text,
               size: MxButtonSize.compact,
-              onPressed: () => setState(() => _isShowingAll = true),
+              onPressed: () =>
+                  unawaited(showImportSkippedSheet(context, rows: rows)),
             ),
           ),
       ],

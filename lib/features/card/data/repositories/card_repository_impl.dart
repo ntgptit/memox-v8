@@ -1,5 +1,6 @@
-import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/app_database.dart' hide CardDraft;
 import 'package:memox/core/database/mapped_transaction.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
@@ -7,6 +8,7 @@ import 'package:memox/features/card/data/datasources/card_dao.dart';
 import 'package:memox/features/card/data/datasources/card_detail_dao.dart';
 import 'package:memox/features/card/data/datasources/card_list_dao.dart';
 import 'package:memox/features/card/data/mappers/card_mapper.dart';
+import 'package:memox/features/card/data/repositories/card_restore_repository_impl.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
@@ -35,6 +37,7 @@ final class CardRepositoryImpl implements CardRepository {
   }) : _dao = CardDao(_db),
        _listDao = CardListDao(_db),
        _detailDao = CardDetailDao(_db),
+       _restore = CardRestoreRepositoryImpl(CardDao(_db)),
        _now = now ?? DateTime.now;
 
   final AppDatabase _db;
@@ -43,6 +46,7 @@ final class CardRepositoryImpl implements CardRepository {
   final CardDao _dao;
   final CardListDao _listDao;
   final CardDetailDao _detailDao;
+  final CardRestoreRepositoryImpl _restore;
   final DateTime Function() _now;
 
   @override
@@ -76,13 +80,20 @@ final class CardRepositoryImpl implements CardRepository {
   Future<Outcome<void, CardRejection>> editCard({
     required String cardId,
     required CardDraft draft,
+    DateTime? expectedUpdatedAt,
     DateTime? now,
   }) {
     final at = now ?? _now();
     return _db.mappedTransaction(() async {
       if (draft.check() case Rejected(:final reason)) return Rejected(reason);
-      if (await _dao.findRow(cardId) == null) {
-        return const Rejected(CardRejection.notFound);
+      final row = await _dao.findRow(cardId);
+      if (row == null) return const Rejected(CardRejection.notFound);
+      // ponytail: `updated_at` is stored in seconds, so a change in the same
+      // second as the editor's version goes unseen; a version column would
+      // close it.
+      if (expectedUpdatedAt != null &&
+          !row.updatedAt.isAtSameMomentAs(expectedUpdatedAt)) {
+        return const Rejected(CardRejection.changedElsewhere);
       }
       await _dao.updateContent(cardId, draft, at);
       await _replaceTags(cardId, draft, at);
@@ -91,21 +102,26 @@ final class CardRepositoryImpl implements CardRepository {
   }
 
   @override
-  Future<Outcome<List<String>, CardRejection>> deleteCards({
+  Future<Outcome<BulkOutcome, CardRejection>> deleteCards({
     required Set<String> cardIds,
     DateTime? now,
   }) {
     final at = now ?? _now();
     return _db.mappedTransaction(() async {
-      if (cardIds.isEmpty) return const Ok([]);
+      if (cardIds.isEmpty) return const Ok(BulkOutcome(done: {}));
       final rows = await _dao.liveRows(cardIds);
-      if (rows.length != cardIds.length) {
-        return const Rejected(CardRejection.notFound);
-      }
+      if (rows.isEmpty) return const Rejected(CardRejection.notFound);
+      final live = {for (final row in rows) row.id};
+      // In the order asked; a card already gone is skipped, not refused
+      // (SP2a 2.19).
+      final done = {
+        for (final id in cardIds)
+          if (live.contains(id)) id,
+      };
       // One batch per card, all at one time: each card is an item the person
       // can restore on its own (BR-TRASH-001).
       final batchIds = <String>[];
-      for (final cardId in cardIds) {
+      for (final cardId in done) {
         final batchId = newId();
         await _dao.moveToTrash(cardId, batchId, at);
         batchIds.add(batchId);
@@ -114,7 +130,13 @@ final class CardRepositoryImpl implements CardRepository {
       for (final batchId in batchIds) {
         await _dao.closeSessionsTouching(batchId, at);
       }
-      return Ok(batchIds);
+      return Ok(
+        BulkOutcome(
+          done: done,
+          skipped: cardIds.difference(live),
+          batchIds: batchIds,
+        ),
+      );
     });
   }
 
@@ -139,32 +161,45 @@ final class CardRepositoryImpl implements CardRepository {
 
   @override
   Future<Outcome<void, CardRejection>> undoCardDeletion({
-    required String batchId,
+    required Set<String> batchIds,
     DateTime? now,
   }) {
     final at = now ?? _now();
     return _db.mappedTransaction(() async {
-      final card = await _dao.itemOf(batchId);
-      if (card == null) return const Rejected(CardRejection.notFound);
+      if (batchIds.isEmpty) return const Ok(null);
       // Back into its own deck with its own updated_at: an Undo is not a
-      // move (trash spec D9).
-      return _restoreInto(card.deckId, {batchId: card}, at: at);
+      // move (trash spec D9). Grouped by deck so each target is checked once
+      // and a refusal leaves every card where it is.
+      final byDeck = <String, Map<String, CardRow>>{};
+      for (final batchId in batchIds) {
+        final card = await _dao.itemOf(batchId);
+        if (card == null) return const Rejected(CardRejection.notFound);
+        (byDeck[card.deckId] ??= {})[batchId] = card;
+      }
+      for (final MapEntry(key: deckId, value: cards) in byDeck.entries) {
+        if (await _restore.refusal(deckId, cards) case final reason?) {
+          return Rejected(reason);
+        }
+      }
+      for (final MapEntry(key: deckId, value: cards) in byDeck.entries) {
+        await _restore.write(deckId, cards, at: at);
+      }
+      return const Ok(null);
     });
   }
 
   @override
-  Future<Outcome<void, CardRejection>> moveCards({
+  Future<Outcome<BulkOutcome, CardRejection>> moveCards({
     required Set<String> cardIds,
     required String targetDeckId,
     DateTime? now,
   }) {
     final at = now ?? _now();
     return _db.mappedTransaction(() async {
-      if (cardIds.isEmpty) return const Ok(null);
+      if (cardIds.isEmpty) return const Ok(BulkOutcome(done: {}));
       final rows = await _dao.liveRows(cardIds);
-      if (rows.length != cardIds.length) {
-        return const Rejected(CardRejection.notFound);
-      }
+      if (rows.isEmpty) return const Rejected(CardRejection.notFound);
+      final live = {for (final row in rows) row.id};
       final target = await _dao.deckRow(targetDeckId);
       if (target == null) return const Rejected(CardRejection.targetNotFound);
       final sourceDeckIds = {for (final row in rows) row.deckId};
@@ -185,7 +220,7 @@ final class CardRepositoryImpl implements CardRepository {
       );
       if (rule case Rejected(:final reason)) return Rejected(reason);
 
-      await _dao.moveCards(cardIds, targetDeckId, at);
+      await _dao.moveCards(live, targetDeckId, at);
       await _unsetEmptied(sourceDeckIds, at);
       if (targetContentType == DeckContentType.unset) {
         await _dao.setDeckContentType(
@@ -194,24 +229,24 @@ final class CardRepositoryImpl implements CardRepository {
           at,
         );
       }
-      return const Ok(null);
+      return Ok(BulkOutcome(done: live, skipped: cardIds.difference(live)));
     });
   }
 
   @override
-  Future<Outcome<void, CardRejection>> setFlagged({
+  Future<Outcome<BulkOutcome, CardRejection>> setFlagged({
     required Set<String> cardIds,
     required bool isFlagged,
     DateTime? now,
   }) {
     final at = now ?? _now();
     return _db.mappedTransaction(() async {
-      if (cardIds.isEmpty) return const Ok(null);
-      if ((await _dao.liveRows(cardIds)).length != cardIds.length) {
-        return const Rejected(CardRejection.notFound);
-      }
-      await _dao.setFlagged(cardIds, isFlagged, at);
-      return const Ok(null);
+      if (cardIds.isEmpty) return const Ok(BulkOutcome(done: {}));
+      final rows = await _dao.liveRows(cardIds);
+      if (rows.isEmpty) return const Rejected(CardRejection.notFound);
+      final live = {for (final row in rows) row.id};
+      await _dao.setFlagged(live, isFlagged, at);
+      return Ok(BulkOutcome(done: live, skipped: cardIds.difference(live)));
     });
   }
 
@@ -400,35 +435,10 @@ final class CardRepositoryImpl implements CardRepository {
     DateTime? updatedAt,
     required DateTime at,
   }) async {
-    final target = await _dao.deckRow(deckId);
-    if (target == null) {
-      return Rejected(
-        await _dao.isDeckInTrash(deckId)
-            ? CardRejection.targetInTrash
-            : CardRejection.targetNotFound,
-      );
+    if (await _restore.refusal(deckId, cards) case final reason?) {
+      return Rejected(reason);
     }
-    final targetContentType = DeckContentType.values.byName(target.contentType);
-    final rule = CardEntity.checkTarget(
-      targetRootId: target.rootId,
-      targetIsRoot: target.parentId == null,
-      targetContentType: targetContentType,
-      sourceRootIds: await _dao.rootIdsOf({
-        for (final card in cards.values) card.deckId,
-      }),
-    );
-    if (rule case Rejected(:final reason)) return Rejected(reason);
-    for (final MapEntry(key: batchId, value: card) in cards.entries) {
-      await _dao.restoreFromBatch(
-        batchId,
-        card.id,
-        deckId: deckId,
-        updatedAt: updatedAt,
-      );
-    }
-    if (targetContentType == DeckContentType.unset) {
-      await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
-    }
+    await _restore.write(deckId, cards, updatedAt: updatedAt, at: at);
     return const Ok(null);
   }
 

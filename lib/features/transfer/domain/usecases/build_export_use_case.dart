@@ -39,7 +39,13 @@ final class BuildExportUseCase {
               : TransferRejection.staleSelection,
         );
     }
-    if (value.rows.isEmpty) return const Rejected(TransferRejection.emptyScope);
+    if (value.rows.isEmpty) {
+      return Rejected(
+        value.skipped.isEmpty
+            ? TransferRejection.emptyScope
+            : TransferRejection.staleSelection,
+      );
+    }
 
     final written = await _files.write(rowsOf(value), format);
     return switch (written) {
@@ -52,6 +58,7 @@ final class BuildExportUseCase {
             format: format,
           ),
           format: format,
+          skipped: value.skipped,
         ),
       ),
       Rejected(:final reason) => Rejected(reason),

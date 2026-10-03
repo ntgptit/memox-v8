@@ -9,6 +9,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
+import 'package:memox/features/progress/presentation/providers/watch_progress_use_case_provider.dart';
 import 'package:memox/features/progress/presentation/screens/progress_screen.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_skeleton_widget.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_streak_widget.dart';
@@ -16,6 +17,8 @@ import 'package:memox/features/progress/presentation/widgets/sections/progress_t
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_dashed_note.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -376,5 +379,41 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  libraryTest('a failed refresh keeps the figures last read and shows a '
+      'warning banner with Retry; the error page is for no value yet '
+      '(2.50)', (tester, env) async {
+    await progressLibrary(env);
+    var reads = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(_Taps()),
+      overrides: [
+        progressProvider.overrideWith((ref) {
+          reads++;
+          return snapshotThenError(
+            ref,
+            ref.watch(watchProgressUseCaseProvider)(),
+          );
+        }),
+      ],
+    );
+    await _settle(tester);
+
+    expect(find.text('17'), findsOneWidget);
+    expect(find.byType(MxErrorState), findsNothing);
+    final banner = find.widgetWithText(MxInlineBanner, _en.progressStaleTitle);
+    expect(banner, findsOneWidget);
+    expect(tester.widget<MxInlineBanner>(banner).tone, MxBannerTone.warning);
+    expect(find.text(_en.progressStaleBody), findsOneWidget);
+
+    await tester.tap(find.text(_en.commonRetry));
+    await _settle(tester);
+
+    expect(reads, 2);
+    expect(find.text('17'), findsOneWidget);
+    expect(banner, findsOneWidget);
   });
 }

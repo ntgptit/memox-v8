@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/presentation/controllers/review_mode_pick_controller.dart';
 import 'package:memox/features/study/presentation/controllers/study_entry_controller.dart';
 import 'package:memox/features/study/presentation/states/study_start_state.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
@@ -175,4 +178,133 @@ void main() {
     expect(stateOf(leaf).status, StudyStartStatus.refused);
     expect(stateOf(leaf).refusal, StudyRejection.sessionClosed);
   });
+
+  test("another deck's open session asks first; Keep it starts nothing and "
+      'writes nothing (R3, 2.01)', () async {
+    final other = await openOtherDeckSession(env.db, env.decks, env.entries);
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 1);
+    final asked = <String>[];
+
+    final id = await controllerOf(leaf).start(
+      const LearnStart(),
+      confirmEnd: (deckName) async {
+        asked.add(deckName);
+        return false;
+      },
+    );
+
+    expect(id, isNull);
+    expect(asked, ['Unit']);
+    expect(stateOf(leaf).status, StudyStartStatus.idle);
+    expect(
+      (await sessionOf(env.db, other)).read<String>('status'),
+      'in_progress',
+    );
+    // Only the other deck's opening reached the store.
+    expect(env.entries.opened, 1);
+  });
+
+  test("End it and start closes the other deck's session and opens the new "
+      'one (R3, 2.01)', () async {
+    final other = await openOtherDeckSession(env.db, env.decks, env.entries);
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 1);
+
+    final id = await controllerOf(leaf)
+        .start(const LearnStart(), confirmEnd: (_) async => true);
+
+    expect(id, isNotNull);
+    final ended = await sessionOf(env.db, other);
+    expect(
+      (ended.read<String>('status'), ended.read<String>('end_reason')),
+      ('abandoned', 'user_exit'),
+    );
+  });
+
+  test('a start on the deck that holds the open session asks nothing '
+      '(spec 3.1, 2.01)', () async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 2);
+    await env.entries.openLearningSession(deckId: leaf);
+
+    final id = await controllerOf(leaf).start(
+      const LearnStart(),
+      confirmEnd: (_) async => fail("asked about the deck's own session"),
+    );
+
+    expect(id, isNotNull);
+  });
+
+  test('a failed check of the other session does not hold the start back '
+      '(R3, 2.01)', () async {
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 1);
+    env.entries.isOtherSessionReadFailing = true;
+
+    final id = await controllerOf(
+      leaf,
+    ).start(const LearnStart(), confirmEnd: (_) async => fail('must not ask'));
+
+    expect(id, isNotNull);
+    expect(stateOf(leaf).status, StudyStartStatus.idle);
+  });
+
+  test("another deck's session left open on an earlier day is closed as "
+      'stale and never asks (R3, 2.01 review focus)', () async {
+    final other = await openOtherDeckSession(
+      env.db,
+      env.decks,
+      env.entries,
+      at: DateTime(2026, 9, 23, 9),
+    );
+    final leaf = await sm2Leaf(env.db, env.decks, newCards: 1);
+
+    final id = await controllerOf(
+      leaf,
+    ).start(const LearnStart(), confirmEnd: (_) async => fail('must not ask'));
+
+    expect(id, isNotNull);
+    final closed = await sessionOf(env.db, other);
+    expect(
+      (closed.read<String>('status'), closed.read<String>('end_reason')),
+      ('abandoned', 'interrupted'),
+    );
+  });
+
+  test('picking a review mode drops a failed start, so Try again cannot '
+      'replay the mode picked before (2.02)', () async {
+    final leaf = (await insertFiveDue(env.db, env.decks)).id;
+    final controller = controllerOf(leaf);
+    container.listen(reviewModePickControllerProvider(leaf), (_, _) {});
+    env.entries.isFailing = true;
+
+    await controller.start(const ReviewStart(mode: StudyMode.match));
+    expect(stateOf(leaf).status, StudyStartStatus.failed);
+
+    container
+        .read(reviewModePickControllerProvider(leaf).notifier)
+        .pick(StudyMode.guess);
+
+    expect(stateOf(leaf).status, StudyStartStatus.idle);
+    expect(stateOf(leaf).lastStart, isNull);
+    expect(await controller.retry(), isNull);
+    expect(env.entries.opened, 1);
+  });
+
+  test(
+    'a pick does not drop a start that is running (2.02, BR-STUDY-004)',
+    () async {
+      final leaf = (await insertFiveDue(env.db, env.decks)).id;
+      final controller = controllerOf(leaf);
+      container.listen(reviewModePickControllerProvider(leaf), (_, _) {});
+      final gate = Completer<void>();
+      env.entries.gate = gate.future;
+
+      final running = controller.start(
+        const ReviewStart(mode: StudyMode.match),
+      );
+      controller.dismissFailure();
+      expect(stateOf(leaf).status, StudyStartStatus.starting);
+
+      gate.complete();
+      await running;
+    },
+  );
 }

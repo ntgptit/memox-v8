@@ -2,6 +2,7 @@ import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
+import 'package:memox/features/transfer/domain/models/transfer_limits_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
@@ -57,6 +58,17 @@ extension ImportLabels on AppLocalizations {
         TransferRejection.emptySource => (
           title: importProblemEmptyTitle,
           body: importProblemEmptyBody,
+        ),
+        TransferRejection.previewFailed => (
+          title: importProblemPreviewTitle,
+          body: importProblemPreviewBody,
+        ),
+        TransferRejection.tooLarge => (
+          title: importProblemTooLargeTitle,
+          body: importProblemTooLargeBody(
+            TransferLimits.maxRows,
+            TransferLimits.maxMegabytes,
+          ),
         ),
         _ => (
           title: importProblemUnreadableTitle,

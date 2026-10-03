@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show compute;
@@ -8,6 +9,7 @@ import 'package:memox/features/transfer/data/datasources/xlsx_data_source.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/source_table_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
+import 'package:memox/features/transfer/domain/models/transfer_limits_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_source_model.dart';
 import 'package:memox/features/transfer/domain/repositories/transfer_file_repository.dart';
 
@@ -46,6 +48,10 @@ const _xlsx = XlsxDataSource();
 
 Outcome<SourceTable, TransferRejection> _read((TransferSource, int?) request) {
   final (source, sheetIndex) = request;
+  // Before any decoding: an XLSX unzips to far more than its size.
+  if (_size(source) > TransferLimits.maxBytes) {
+    return const Rejected(TransferRejection.tooLarge);
+  }
   final table = switch (source) {
     PastedSource(:final text) => _pasted(text),
     FileSource(:final bytes, format: TransferFormat.xlsx) => _workbook(
@@ -54,11 +60,21 @@ Outcome<SourceTable, TransferRejection> _read((TransferSource, int?) request) {
     ),
     FileSource(:final bytes, :final format) => _delimitedFile(bytes, format),
   };
-  if (table case Ok(:final value) when value.isBlank) {
-    return const Rejected(TransferRejection.emptySource);
+  if (table case Ok(:final value)) {
+    if (value.rows.length > TransferLimits.maxRows) {
+      return const Rejected(TransferRejection.tooLarge);
+    }
+    if (value.isBlank) return const Rejected(TransferRejection.emptySource);
   }
   return table;
 }
+
+/// A source's size in bytes: a paste is counted as the UTF-8 it would be
+/// written as, so the cap means the same for both.
+int _size(TransferSource source) => switch (source) {
+  FileSource(:final bytes) => bytes.lengthInBytes,
+  PastedSource(:final text) => utf8.encode(text).length,
+};
 
 Outcome<SourceTable, TransferRejection> _pasted(String text) => Ok(
   SourceTable(rows: _delimited.parse(text, _delimited.delimiterOfPasted(text))),

@@ -109,6 +109,14 @@ final class StudySessionDao extends DatabaseAccessor<AppDatabase>
     startOfToday,
   );
 
+  /// The name of the deck whose open session of today Continue could still
+  /// take up and that is not [deckId]'s: what a start on [deckId] would end
+  /// (R3, BR-STUDY-072, BR-STUDY-075); null when none.
+  Future<String?> otherDeckSessionName(
+    String deckId, {
+    required DateTime startOfToday,
+  }) => openSessionDeckNameOutside(startOfToday, deckId).getSingleOrNull();
+
   Future<void> insertSession(StudySessionCompanion row) => createSession(row);
 
   Future<StudySession?> sessionRow(String id) =>

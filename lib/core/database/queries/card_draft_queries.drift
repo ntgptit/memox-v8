@@ -1,0 +1,34 @@
+import '../tables/ui_state.drift';
+
+-- The card being written, kept on this device (never synced; SP2a R9).
+-- draft_key is the primary key, so one draft per key.
+
+-- The draft of :draft_key, or no row.
+findCardDraft:
+SELECT * FROM card_draft WHERE draft_key = :draft_key;
+
+-- Replaces the draft of :draft_key, so a later save never leaves two.
+upsertCardDraft(
+  :draft_key AS TEXT,
+  :front AS TEXT,
+  :back AS TEXT,
+  :extras AS TEXT,
+  :tags AS TEXT,
+  :updated_at AS DATETIME
+):
+INSERT INTO card_draft (draft_key, front, back, extras, tags, updated_at)
+VALUES (:draft_key, :front, :back, :extras, :tags, :updated_at)
+ON CONFLICT (draft_key) DO UPDATE SET
+  front = excluded.front,
+  back = excluded.back,
+  extras = excluded.extras,
+  tags = excluded.tags,
+  updated_at = excluded.updated_at;
+
+-- Dropping a draft that is not there changes nothing.
+deleteCardDraft(:draft_key AS TEXT):
+DELETE FROM card_draft WHERE draft_key = :draft_key;
+
+-- Drafts nobody wrote to since :before; their deck or card may be gone.
+deleteCardDraftsBefore(:before AS DATETIME):
+DELETE FROM card_draft WHERE updated_at < :before;

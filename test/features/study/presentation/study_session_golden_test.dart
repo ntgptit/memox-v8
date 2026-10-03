@@ -10,6 +10,7 @@ import 'package:memox/features/study/domain/models/study_session_view_model.dart
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 
@@ -195,6 +196,7 @@ void main() {
             ),
             brightness,
           );
+          await tester.pump(StudySettleGuardWidget.settle);
           await expectBoundaryGolden(
             tester,
             'goldens/summary_${name}_$theme.png',

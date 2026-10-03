@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'library_harness.dart';
 import 'progress_fixtures.dart';
 import 'deck_fixtures.dart';
@@ -123,4 +127,25 @@ Future<void> progressLibrary(
     'Korean Basics',
     days: shifted([(daysAgo: 20, learning: 0, reviewing: 10)]),
   );
+}
+
+/// [source]'s first snapshot, then a failure: a refresh that fails after
+/// figures were read (2.50). It listens and never cancels in-line: a Drift
+/// stream's cancel only completes on real async work, which `.first` would
+/// wait for forever in a widget test's fake time.
+Stream<T> snapshotThenError<T>(Ref ref, Stream<T> source) {
+  final out = StreamController<T>();
+  var done = false;
+  final sub = source.listen((snapshot) {
+    if (done) return;
+    done = true;
+    out
+      ..add(snapshot)
+      ..addError(StateError('refresh failed'));
+  });
+  ref.onDispose(() {
+    unawaited(sub.cancel());
+    unawaited(out.close());
+  });
+  return out.stream;
 }

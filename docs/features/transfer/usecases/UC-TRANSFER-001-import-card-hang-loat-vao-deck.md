@@ -27,7 +27,7 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
    hàng không trống đầu tiên; khi cả hai dấu hoặc không dấu nào như vậy, file phân cách
    bằng `;` nếu hàng không trống đầu tiên có `;` mà không có `,`, còn lại bằng `,` (spec
    card transfer D9).
-4. Hệ thống mặc định coi hàng đầu là header và tự map các cột trùng tên
+4. Hệ thống coi hàng đầu là header khi nó gọi tên ít nhất một cột, và tự map các cột trùng tên
    (front, back, example, hint, pronunciation, tags — không phân biệt hoa
    thường); người dùng chỉnh mapping nếu cần. `front` và `back` bắt buộc phải
    được map; một cột nguồn không map vào hai đích (BR-TRANSFER-002).
@@ -39,9 +39,11 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
 7. Hệ thống ghi toàn bộ trong một transaction (BR-TRANSFER-004): card, study state mới
    cho từng card, tag, và `content_type` nếu deck đang `unset` (BR-TRANSFER-005).
 8. Hệ thống hiện kết quả — số đã ghi, số trùng bỏ qua, số invalid bị loại, và
-   từng dòng bị bỏ qua với số dòng và lý do (critique 2026-10-02) — với
-   hai lối ra: View cards về card list (danh sách tự cập nhật qua stream),
-   hoặc Import another file giữ deck đích và làm lại từ bước Source.
+   từng dòng bị bỏ qua với số dòng và lý do (critique 2026-10-02; năm dòng
+   đầu hiện tại chỗ, "Show all" mở danh sách đầy đủ trong một sheet dựng
+   lười) — với hai lối ra: View cards về card list (danh sách tự cập nhật
+   qua stream), hoặc Import another file giữ deck đích và làm lại từ bước
+   Source.
 
 ## Alternative / Error flow
 
@@ -52,13 +54,20 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
   đọc như một file CSV, kể cả phân cách `;` của bước 3.
 - **A2 — XLSX nhiều sheet:** hệ thống mặc định chọn sheet không rỗng đầu tiên
   và cho người dùng đổi sheet; đổi sheet chạy lại bước 4–5.
-- **A3 — Không có header:** người dùng tắt "First row contains headers"; các
+- **A3 — Không có header:** hệ thống tự tắt "First row is a header" khi hàng đầu không gọi tên cột nào
+  (người dùng cũng có thể tự bật/tắt); công tắc luôn nêu các ô của hàng 1; các
   cột hiển thị tên vị trí ổn định (Column A, Column B, …) và hàng đầu được
   validate như dữ liệu.
 - **A4 — Bao gồm trùng lặp:** người dùng bật "Include duplicates"; số sẵn sàng
   gồm cả các hàng trùng, và commit ghi chúng như card mới (BR-TRANSFER-003).
 - **A5 — Đổi file:** người dùng thay file đã chọn; hủy hộp chọn file không
   phải lỗi và không xoá lựa chọn trước đó.
+- **A6 — Undo import:** từ màn kết quả có ghi card, người dùng bấm Undo import
+  và xác nhận ("Move the {n} imported cards to Trash?"); các card vừa ghi mà
+  còn active vào Trash, mỗi card một batch (BR-TRASH-001), khôi phục được 30
+  ngày; card đã không còn bị bỏ qua và được báo số lượng (BR-CARD-011); màn
+  import đóng. Hủy ở bước xem trước vẫn dùng được; khi transaction commit đã
+  chạy, Hủy bị khoá.
 
 **Error flows:**
 - **E1 — File không đọc được:** file hỏng, có mật khẩu, đuôi không hỗ trợ hoặc
@@ -77,6 +86,10 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
   các card trùng với mọi hàng sẽ ghi; kiểm tra trùng chạy lại trong transaction
   (BR-TRANSFER-003) nên không ghi card nào → màn kết quả "Nothing added", deck
   không đổi kể cả `content_type` (BR-TRANSFER-005); một lối về deck.
+- **E7 — Nguồn quá lớn:** file hoặc văn bản dán vượt 5 MB, hoặc bảng sau parse
+  vượt 20.000 hàng (tính cả hàng header) → bị từ chối trước khi giải mã bằng lý
+  do có kiểu, kèm hướng dẫn chia nhỏ; nguồn đã chọn trước đó giữ nguyên và không
+  đọc gì.
 
 ## UI
 
@@ -103,3 +116,4 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 - [ ] **Given** một file UTF-16 hoặc Latin-1, **when** chọn file, **then** hệ thống từ chối bằng lý do encoding kèm hướng dẫn và không ghi gì (BR-TRANSFER-006).
 - [ ] **Given** preview đã xong và deck vừa nhận deck con, **when** commit, **then** transaction từ chối bằng lý do có kiểu và không ghi gì (BR-TRANSFER-001, E4).
 - [ ] **Given** một write lỗi giữa batch, **when** commit, **then** không card, study state, tag hay `content_type` nào đổi (BR-TRANSFER-004, E5).
+- [ ] **Given** một import đã ghi card, **when** người dùng bấm Undo import và xác nhận, **then** các card đó vào Trash, mỗi card một batch, và màn import đóng (BR-TRASH-001, A6).

@@ -34,6 +34,11 @@ final class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
     return total;
   }
 
+  /// The ids of [cardIds] that exist as live cards, read in chunks (BE-C2).
+  Future<Set<String>> liveCardIds(Set<String> cardIds) async => {
+    for (final chunk in idChunks(cardIds)) ...await liveCardIdsIn(chunk).get(),
+  };
+
   /// The tag ids [cardId] carries.
   Future<Set<String>> tagIdsOf(String cardId) async =>
       (await tagIdsOfCard(cardId).get()).toSet();

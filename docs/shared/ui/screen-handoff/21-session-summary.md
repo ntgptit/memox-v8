@@ -14,7 +14,7 @@ UC-STUDY-001 (steps 13, A3, E3, E4).
 | Hero | `MxCard` (hero) + `MxIconTile` (large, tone-coloured) + `MxStatTile` × 1–2 | Icon and tone by outcome — ok `success`, paused tinted, ended `warning`, error `danger` (FE-A6 spec D14) — a title, one body sentence with the headline count bold, and — where the session has facts — only the numbers the body does not state: the finished count when the body has none (an interrupted session), Answered when it differs from the finished count, and Wrong turns "{wrong} of {total}", with "Wrong cards came back in later rounds." under the tiles when wrong > 0 (critique 2026-09-30 part 3c-1, R3). When it fits, the hero and its note sit centred between the app bar and the footer; longer content scrolls from the top (R4). |
 | Facts | `MxListSectionHeader` + `MxCard` (full-bleed) + `MxListRow` × 3 | "This session"; rows: finished (label depends on session kind), cards answered, wrong turns — leading a small tinted `MxIconTile`, trailing the value in tabular numerals, warning ink when wrong > 0. Shown only where the hero draws no stats (reset, content deleted, save error); with stats it would repeat them (critique 2026-09-30, R3). Omitted where the session has no facts (`schedulerChanged`). |
 | End note | `MxNote` | One calm info line, only for the states that need it. |
-| Footer | `MxFooterBar` + `MxButton` × 2 | Outline "Study this deck" (hidden once the outcome is `ended`/`error`) + primary "Done" (disabled while loading); a caption line under them. |
+| Footer | `MxFooterBar` + `MxButton` × 2 | Outline "Study this deck" (hidden once the outcome is `ended`/`error`, and once the deck is lost) + primary "Done" (disabled while loading); a caption line under them. The pair sits in `StudySettleGuardWidget` and takes no tap for 400 ms after the summary swaps in, so the last answer's double tap cannot reach Done (SP2a 2.09). |
 | Loading | `MxSkeleton` | Hero and fact-row shapes while the summary is read. |
 
 ## States
@@ -29,6 +29,7 @@ UC-STUDY-001 (steps 13, A3, E3, E4).
 | reset | `summary_reset_light.png` | `summary_reset_dark.png` | `invalidated`/`scheduler_reset`: reset while the session was open, reached on returning to it (BR-STUDY-015). |
 | schedulerChanged | `summary_scheduler_changed_light.png` | `summary_scheduler_changed_dark.png` | `invalidated`/`scheduler_changed` (BR-STUDY-016). No Facts card. |
 | saveError | `summary_save_error_light.png` | `summary_save_error_dark.png` | `failed`/`persistence_error` (BR-STUDY-018); turns saved before the failure are kept (BR-STUDY-019). |
+| deckLost | no golden | no golden | The deck went to the Trash while the summary was up: the summary stays as it was drawn, only "Study this deck" goes, and Done and Back leave for the Library (SP2a 2.51). |
 | loading | no golden | no golden | — |
 Other goldens: `summary_content_deleted_light.png` / `summary_content_deleted_dark.png` (ended because content moved to Trash).
 
@@ -59,6 +60,7 @@ A session that ended before its first turn shows the hero without stats and no F
 
 - **Critique 2026-09-30 part 3c-1 (spec `2026-09-30-critique-fixes-part3c1-design.md`), R3, amends FE-A6 D17:** a tile states only what the body does not; the finished tile is gone except after an interruption, whose body states no count, Answered shows only when it differs, Wrong turns is explained under the tiles. R4: a short summary sits centred.
 
+- **SP2a 2.09, 2.51 (spec `2026-10-03-ui-hardening-sp2a-design.md` §3.1):** the footer settles for 400 ms (2.09); when the deck is lost the screen keeps the summary it drew instead of leaving, and only Study this deck goes (2.51).
 - `stale_generation` never reaches this screen: the write is refused, the session closes, and
   the app returns to the deck list (UC-STUDY-001 E4; it is not folded into `reset`).
   `reset` here is `scheduler_reset` only.

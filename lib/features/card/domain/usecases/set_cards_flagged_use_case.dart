@@ -1,3 +1,4 @@
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
@@ -9,7 +10,7 @@ final class SetCardsFlaggedUseCase {
 
   final CardRepository _cards;
 
-  Future<Outcome<void, CardRejection>> call({
+  Future<Outcome<BulkOutcome, CardRejection>> call({
     required Set<String> cardIds,
     required bool isFlagged,
   }) => _cards.setFlagged(cardIds: cardIds, isFlagged: isFlagged);

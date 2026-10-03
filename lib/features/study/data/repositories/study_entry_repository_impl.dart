@@ -153,6 +153,17 @@ final class StudyEntryRepositoryImpl implements StudyEntryRepository {
       .asyncMap((deck) async => deck == null ? null : _entryOf(deckId, now))
       .mapDatabaseErrors();
 
+  @override
+  Future<String?> otherDeckSessionName({
+    required String deckId,
+    DateTime? now,
+  }) => guardDatabase(
+    () => _dao.otherDeckSessionName(
+      deckId,
+      startOfToday: startOfLocalDay(now ?? _now()),
+    ),
+  );
+
   /// The Study Entry of [deckId] as it stands (spec §8.1): the options come
   /// from the one-shot settings read, so a change of them emits again
   /// through [watchEntry].

@@ -33,8 +33,9 @@ Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và c
   transaction, mỗi card là **một** batch của riêng nó, cùng một `deleted_at`
   (BR-TRASH-001). Nội dung, study state và history giữ nguyên tới khi purge
   (BR-TRASH-004); phiên `in_progress` có card trong hàng đợi hoặc dùng card làm
-  lựa chọn của câu `guess` kết thúc với `content_deleted`. Xoá **một** card thì có
-  Undo ngay tại chỗ (BR-TRASH-008); khôi phục về sau qua Trash (UC-TRASH-001).
+  lựa chọn của câu `guess` kết thúc với `content_deleted`. Xoá một hay nhiều
+  card đều có Undo ngay tại chỗ, đảo ngược mọi batch vừa tạo (BR-TRASH-008);
+  khôi phục về sau qua Trash (UC-TRASH-001).
   Nếu đó là card **cuối cùng** đang active,
   deck atomically trở về `content_type = unset` trong cùng transaction
   (BR-DECK-015, BR-TRASH-005); sau đó người dùng quay về màn hình deck và
@@ -50,7 +51,7 @@ Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và c
   app bar để vào chế độ chọn. Thanh hành động ngữ cảnh hiện số đã chọn và các
   thao tác hàng loạt: Move, Add tag, Flag, Remove flag, Delete. **Select all**
   chọn toàn bộ tập kết quả theo filter và search hiện tại, không chỉ phần đã
-  tải (BR-CARD-012). Mỗi thao tác là all-or-nothing (BR-CARD-011).
+  tải (BR-CARD-012). Mỗi thao tác chạy trong một transaction: thẻ vi phạm luật làm cả lô rollback, thẻ đã không còn bị bỏ qua (BR-CARD-011).
 - **A4 — Thêm liên tiếp nhiều card:** sau khi lưu, giữ form mở và xoá trống các ô.
 - **A7 — Cờ:** người dùng bật hoặc bỏ cờ của một thẻ (BR-CARD-009).
 - **A8 — Tag:** người dùng gắn tag theo tên — dùng lại tag trùng tên đã fold, tạo
@@ -72,6 +73,7 @@ Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và c
 state.
 - **E7 — Tag không hợp lệ, hoặc thẻ đã đủ 10 tag:** lỗi có kiểu; tag của thẻ giữ
   nguyên (BR-TAG-001, BR-TAG-002).
+- **E8 — Một thẻ trong lô đã không còn:** thẻ đó bị bỏ qua, các thẻ còn lại được ghi; thông báo nêu số thẻ đã bỏ qua và selection được dọn id đó; không còn thẻ nào thì lỗi `notFound` (BR-CARD-011).
 
 ## UI
 
@@ -91,7 +93,7 @@ Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../.
 - [ ] **Given** một deck `unset` và một draft hợp lệ, **when** người dùng thêm card, **then** card và study state mới của nó (theo scheduler và generation của root) được ghi trong một transaction, và deck thành `content_type = card` (BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004).
 - [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa nội dung, **then** nội dung, cờ và tag đổi nhưng study state và `review_log` không đổi (BR-CARD-005, A1).
 - [ ] **Given** người dùng xoá đúng một card, **when** xác nhận, **then** card vào Trash, nội dung, study state và lịch sử giữ nguyên tới khi purge, và có Undo ngay tại chỗ (BR-TRASH-001, BR-TRASH-004, BR-TRASH-008, A2).
-- [ ] **Given** người dùng xoá nhiều card, **when** xác nhận, **then** tất cả vào Trash cùng lúc và không có Undo (BR-TRASH-001, A2).
+- [ ] **Given** người dùng xoá nhiều card, **when** xác nhận (nút xác nhận nêu số card), **then** tất cả vào Trash cùng lúc, mỗi card một batch, và snackbar có Undo đưa cả nhóm về đúng deck cũ (BR-TRASH-001, BR-TRASH-008, A2).
 - [ ] **Given** card bị xoá là card active cuối cùng của deck, **when** xoá thành công, **then** deck về `content_type = unset` trong cùng transaction (BR-DECK-015, BR-TRASH-005, A2).
 - [ ] **Given** deck còn card nhưng bộ lọc đang bật không khớp card nào, **when** danh sách hiện, **then** hệ thống hiện empty state của bộ lọc (khác empty state của deck) kèm lối hiện tất cả (A3).
 - [ ] **Given** form thêm card, **when** Save ghi xong, **then** form vẫn mở, các ô được xoá trống và focus về ô mặt trước để thêm card kế tiếp (A4).

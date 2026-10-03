@@ -4,6 +4,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
+import 'package:memox/features/tags/domain/models/tag_attach_model.dart';
 
 import '../../../support/test_database.dart';
 
@@ -140,17 +141,21 @@ void main() {
       expect(await totalChanges(db), before);
     });
 
-    test('one card at 10 tags refuses the whole batch, writing nothing (BR-TAG-002)', () async {
-      await _cards(db, ['full', 'free']);
+    test('cards at 10 tags refuse the whole batch and are named, writing '
+        'nothing (BR-TAG-002, SP2a 2.21)', () async {
+      await _cards(db, ['full', 'free', 'full2']);
       await _tagged(db, 'full', 10);
+      await _tagged(db, 'full2', 10);
       final before = await totalChanges(db);
 
       final result = await tags.attachByName(
-        cardIds: {'full', 'free'},
+        cardIds: {'full', 'free', 'full2'},
         name: 'Noun',
       );
 
-      expect(_reasonOf(result), TagRejection.tooManyTags);
+      final limit =
+          (result as Ok<TagAttach, TagRejection>).value as TagLimitReached;
+      expect(limit.fullCardIds, {'full', 'full2'});
       expect(await totalChanges(db), before);
       expect(await _tagNamesOf(db, 'free'), isEmpty);
     });
@@ -165,18 +170,53 @@ void main() {
       expect(_reasonOf(result), isNull);
     });
 
-    test('a missing card refuses the batch with notFound', () async {
-      await _cards(db, ['c1']);
+    test(
+      'a card already gone is skipped; the others are tagged (SP2a 2.19)',
+      () async {
+        await _cards(db, ['c1']);
+
+        final result = await tags.attachByName(
+          cardIds: {'c1', 'gone'},
+          name: 'Noun',
+        );
+
+        final attached =
+            ((result as Ok<TagAttach, TagRejection>).value as TagAttached)
+                .outcome;
+        expect(attached.done, {'c1'});
+        expect(attached.skipped, {'gone'});
+        expect(await _tagNamesOf(db, 'c1'), ['Noun']);
+      },
+    );
+
+    test('a gone card does not hide a full one: the limit still refuses and '
+        'names only the full card', () async {
+      await _cards(db, ['full', 'free']);
+      await _tagged(db, 'full', 10);
       final before = await totalChanges(db);
 
       final result = await tags.attachByName(
-        cardIds: {'c1', 'gone'},
+        cardIds: {'full', 'free', 'gone'},
         name: 'Noun',
       );
 
-      expect(_reasonOf(result), TagRejection.notFound);
+      final limit =
+          (result as Ok<TagAttach, TagRejection>).value as TagLimitReached;
+      expect(limit.fullCardIds, {'full'});
       expect(await totalChanges(db), before);
     });
+
+    test(
+      'when every card is gone the batch is notFound, writing nothing',
+      () async {
+        final before = await totalChanges(db);
+
+        final result = await tags.attachByName(cardIds: {'gone'}, name: 'Noun');
+
+        expect(_reasonOf(result), TagRejection.notFound);
+        expect(await totalChanges(db), before);
+      },
+    );
   });
 
   group('detach', () {

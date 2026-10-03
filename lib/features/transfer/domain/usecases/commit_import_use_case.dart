@@ -33,6 +33,7 @@ final class CommitImportUseCase {
         ImportSummary(
           written: value.written,
           blank: preview.blank,
+          writtenIds: value.writtenIds,
           skipped: _skipped(
             preview,
             toWrite,

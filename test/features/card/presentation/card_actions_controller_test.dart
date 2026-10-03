@@ -2,8 +2,9 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
-import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/app_database.dart' hide CardDraft;
 import 'package:memox/core/database/di/database_provider.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
@@ -114,7 +115,10 @@ void main() {
       await seed();
       final outcome = await actions().deleteCards(cardIds: {'a', 'c'});
 
-      expect((outcome as Ok<List<String>, CardRejection>).value, hasLength(2));
+      expect(
+        (outcome as Ok<BulkOutcome, CardRejection>).value.batchIds,
+        hasLength(2),
+      );
       expect(
         await count(
           'SELECT COUNT(*) AS n FROM card WHERE delete_batch_id IS NULL',
@@ -153,6 +157,31 @@ void main() {
       1,
     );
     expect(await count('SELECT COUNT(*) AS n FROM card_tags'), 2);
+  });
+
+  test('editCard carries the version it read: an older one is refused as '
+      'changedElsewhere (2.18)', () async {
+    await seed();
+    final stale = await actions().editCard(
+      cardId: 'a',
+      draft: const CardDraft(front: 'new', back: 'back'),
+      expectedUpdatedAt: DateTime(2026, 8, 1),
+    );
+    expect(
+      stale,
+      isA<Rejected<Object?, CardRejection>>().having(
+        (rejected) => rejected.reason,
+        'reason',
+        CardRejection.changedElsewhere,
+      ),
+    );
+
+    final current = await actions().editCard(
+      cardId: 'a',
+      draft: const CardDraft(front: 'new', back: 'back'),
+      expectedUpdatedAt: DateTime(2026, 9, 1),
+    );
+    expect(current, isA<Ok<Object?, CardRejection>>());
   });
 
   test('editCard is refused for a card that is gone', () async {

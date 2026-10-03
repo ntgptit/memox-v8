@@ -10,8 +10,8 @@ place the person picks, or deleted for good. UC-TRASH-001; spec
 ## Entry points
 
 - **The Library's app bar:** the Trash icon, beside Coming soon (D1).
-- **Toasts:** the toast after several cards move to the Trash, and every refused Undo,
-  both through "Open Trash" (D4, UC-TRASH-001 E3).
+- **Toasts:** every refused Undo, through "Open Trash" (D4, UC-TRASH-001 E3); the toast
+  after several cards move to the Trash carries Undo instead (SP2a 2.20).
 - **Gone states:** the "no longer here" states of an open deck, the card editor and the
   card detail, through "Open Trash" (D11).
 

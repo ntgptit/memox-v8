@@ -62,23 +62,32 @@ void main() {
     expect(find.byType(MxBottomNav), findsOneWidget);
   });
 
-  libraryTest('the toast of several cards opens the Trash (FE-B1 D4)', (
-    tester,
-    env,
-  ) async {
-    await _seed(env);
+  libraryTest('the toast of several cards carries Undo; a refused Undo opens '
+      'the Trash (FE-B1 D4, SP2a 2.20)', (tester, env) async {
+    final words = await _seed(env);
     await pumpMemoxApp(tester, env);
     await _openWords(tester);
     await tester.longPress(find.text('bap'));
     await tester.pumpAndSettle();
     await _tap(tester, find.text('gim'));
     await _tap(tester, find.text(_en.cardDelete));
-    await _tap(tester, _inDialog(_en.cardMoveToTrash));
+    await _tap(tester, _inDialog(_en.cardMoveToTrashCount(2)));
 
     expect(find.text(_en.cardsTrashedToast(2)), findsOneWidget);
-    await _tap(tester, find.text(_en.commonOpenTrash));
+    expect(find.text(_en.commonOpenTrash), findsNothing);
+    // Meanwhile their deck goes to the Trash as well.
+    await env.decks.deleteDeck(deckId: words);
+    await tester.pumpAndSettle();
+
+    await _tap(tester, find.text(_en.commonUndo));
+    await _tap(
+      tester,
+      find.descendant(
+        of: find.byType(SnackBar),
+        matching: find.text(_en.commonOpenTrash),
+      ),
+    );
     _expectTrash();
-    expect(find.text(_en.trashEntriesHeader(2).toUpperCase()), findsOneWidget);
   });
 
   libraryTest('a refused Undo opens the Trash (UC-TRASH-001 E3)', (

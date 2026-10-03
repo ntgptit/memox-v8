@@ -1,4 +1,4 @@
-import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/app_database.dart' hide CardDraft;
 import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';

@@ -20,7 +20,8 @@ abstract interface class CardTransferRepository {
   /// kept is written as `CardRepository.createCard` writes one (BR-TRANSFER-004). The deck
   /// becomes a deck of cards only when a card was written (BR-TRANSFER-005).
   /// A draft the card rules refuse refuses the batch, and nothing is
-  /// written.
+  /// written. The result names the ids written, which an Undo import moves to
+  /// the Trash (SP2a 2.25).
   Future<Outcome<CardImportResult, CardRejection>> importCards({
     required String deckId,
     required List<CardDraft> drafts,
@@ -35,9 +36,10 @@ abstract interface class CardTransferRepository {
 
   /// UC-TRANSFER-002 step 4: the deck's name and its live cards, or those of
   /// [cardIds], in one read that writes nothing (BR-TRANSFER-010,
-  /// BR-TRANSFER-011). A missing deck, or an id that is gone or in another
-  /// deck, is `notFound` for the whole request (BR-TRANSFER-007). An empty
-  /// scope is an empty snapshot; the caller refuses it.
+  /// BR-TRANSFER-011). An id that is gone, in the Trash or in another deck is
+  /// skipped and named in `skipped` (SP2a 2.19, BR-TRANSFER-007); a missing
+  /// deck is `notFound`. An empty scope is an empty snapshot; the caller
+  /// refuses it.
   Future<Outcome<CardExportSnapshot, CardRejection>> exportSnapshot({
     required String deckId,
     Set<String>? cardIds,

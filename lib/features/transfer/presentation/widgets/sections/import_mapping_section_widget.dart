@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
+import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -29,9 +31,10 @@ class ImportMappingSectionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final table = draft.table!;
-    final header = draft.hasHeaderRow && table.rows.isNotEmpty
-        ? table.rows.first
-        : null;
+    // Row 1's cells, header or not: the toggle's subtitle shows what it
+    // governs (SP2a 2.24).
+    final firstRow = table.rows.isEmpty ? null : table.rows.first;
+    final header = draft.hasHeaderRow ? firstRow : null;
     String? headerOf(int column) =>
         header != null && column < header.length ? header[column] : null;
     // The first data row, so a column is recognised by what it holds
@@ -49,13 +52,24 @@ class ImportMappingSectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // The deck could not be read for the preview: nothing was lost, so a
+        // warning, and Preview rows is live again (SP2a 2.22, audit M2). It
+        // leads the step, under the file, so it is seen without scrolling.
+        if (draft.problem == TransferRejection.previewFailed) ...[
+          MxInlineBanner(
+            tone: MxBannerTone.warning,
+            title: l10n.importProblem(TransferRejection.previewFailed).title,
+            message: l10n.importProblem(TransferRejection.previewFailed).body,
+          ),
+          const SizedBox(height: AppSpacing.grouped),
+        ],
         MxSection(
           title: l10n.importSectionColumns,
           children: [
             MxSettingsRow(
               label: l10n.importHeaderToggle,
               onTap: () => onHeaderRow(!draft.hasHeaderRow),
-              subtitle: header
+              subtitle: firstRow
                   ?.where((cell) => cell.trim().isNotEmpty)
                   .join(' · '),
               trailing: MxToggle(
@@ -81,8 +95,10 @@ class ImportMappingSectionWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.grouped),
         ],
-        // It says columns were mapped: only once they are.
-        if (draft.mapping.isComplete) MxNote.hint(text: l10n.importMappingNote),
+        // It says known header names were mapped: only once they are, and
+        // only while row 1 is read as a header (SP2a audit m5).
+        if (draft.mapping.isComplete && draft.hasHeaderRow)
+          MxNote.hint(text: l10n.importMappingNote),
       ],
     );
   }

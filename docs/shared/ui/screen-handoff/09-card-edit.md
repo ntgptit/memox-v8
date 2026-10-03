@@ -13,6 +13,7 @@ touch the study state or history).
 |---|---|---|
 | App bar | `MxAppBar` (content density) | Back; title "Edit card"; a flag `MxIconButton` that toggles here, edit only (ruling P4a-L6, §9 row 80); trailing compact `MxButton` "Save". |
 | Deck path | `DeckContextHeaderWidget` | Library › ancestors › deck › "Edit". |
+| Draft banner | `CardDraftBannerWidget` (`MxInlineBanner` neutral) | "Unsaved text from earlier" / "Kept on this phone only, not synced. Restore it or discard it."; Discard (outline) and Restore (secondary), above the fields. Shown only when a draft kept for this card differs from the saved card (SP2a R9, 2.14). The slot eases open and shut (Remove animations: at once); Restore and Discard move focus to the front field and announce "Draft restored" / "Draft discarded" (SP2a audit m1, m2). |
 | History summary | `CardEditSummaryWidget` (full-bleed `MxCard`, `MxListRow`, `MxIconTile`) | "{status} · {n} answers · {n} lapses · due {date}"; its chevron opens the card detail, which closes the editor underneath it (ruling P4a-L10, §9 row 82). |
 | Front / Back | `CardFieldWidget` | Same fields as create, prefilled from the card. |
 | Optional details | `CardOptionalFieldsWidget` (always open, "Optional details" overline, no disclosure) | Example, hint, pronunciation prefilled. |
@@ -21,7 +22,10 @@ touch the study state or history).
 | Footer | `CardEditorFooterWidget` | Cancel + "Save changes" / "Retry save"; danger banner after a failed save. |
 | Move to Trash dialog | `CardDeleteDialogWidget` (`MxDialog`, `MxNote`, `MxSheetActions`) | "Move this card to Trash?", a front/back preview card, "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected."; the confirm spins while it moves (FE-B1 D15). |
 | Discard dialog | `CardDiscardDialogWidget` | "Discard changes?" / "You edited {parts}. Leaving now keeps the card as it was saved.", naming what changed; Keep editing / Discard (ruling P4a-L5). |
-| Gone state | `CardGoneWidget` (`MxEmptyState`) | "This card is no longer here" / "It was moved to Trash while you were editing. Your unsaved changes were not applied; the card can still be restored from Trash."; Back to deck + Open Trash (FE-B1 D11). |
+| Card-gone banner | `MxInlineBanner` (danger) above the form | "This card was moved to Trash or deleted." / "Your text is kept on this phone."; Save is off (caption "This card can't be saved now."), the flag and the More card go, the form and its text stay and the draft is kept; leaving asks nothing (SP2a 2.17). |
+| Stale banner | `MxInlineBanner` (warning) | "Couldn't refresh this card." / "Your text is kept on this phone, and you can still save."; shown when reading the card fails after the form opened. |
+| Changed-elsewhere dialog | `CardChangedDialogWidget` (`MxDialog`, `MxSheetActions`) | "This card changed on another device" / "Use theirs to reload the newer version and drop your edits. Keep mine to save over it."; Use theirs (outline) and Keep mine (primary). Opens when Save finds another `updated_at` than the one the editor opened with (SP2a 2.18). |
+| Gone state | `CardGoneWidget` (`MxEmptyState`) | Only when the card is gone before the form ever opened: "This card is no longer here" … (FE-B1 D11). |
 
 ## States
 
@@ -30,7 +34,10 @@ touch the study state or history).
 | loaded | `card_editor_edit_light.png` | `card_editor_edit_dark.png` | — |
 | loading | no golden | no golden | A single generic `MxSkeletonList` (4 rows) stands in for the whole form; no field-shaped skeletons — see Rulings. The flag/Save actions and the deck path also hold off until loaded. |
 | loadError | no golden | no golden | Full-screen `MxErrorState`, "Couldn't load this card" — the body is the shared "Nothing was lost. Try again in a moment." |
-| notFound | no golden | no golden | `CardGoneWidget`; both actions are live now that Trash exists (§9 row 87, closed by FE-B1 D11). |
+| notFound | no golden | no golden | The full-page `CardGoneWidget` only when the card is already gone as the editor opens; once the form is open it stays with a danger banner. Both actions are live now that Trash exists (§9 row 87, closed by FE-B1 D11). |
+| cardDeleted | `card_editor_gone_light.png` | `card_editor_gone_dark.png` | The banner above the form, Save off. |
+| changedElsewhere | `card_editor_changed_dialog_light.png` | `card_editor_changed_dialog_dark.png` | The dialog over the form. |
+| draftOffered | no golden | no golden | As screen 08. |
 | validationErr | `card_editor_errors_light.png` | `card_editor_errors_dark.png` | Error shown only once the back field is touched (ruling P4a-L2). |
 | dirtySaving | no golden | no golden | The button shows only its spinner in place of the label (see Rulings). |
 | saveFailed | no golden | no golden | — |
@@ -54,6 +61,7 @@ Every state above is built.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** in edit, Save is enabled only once the draft differs from the saved card; create is unchanged.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the tag field has the same "Add" button and add rule as create; Save adds the tag still typed (so pending tag text enables Save, and is saved), and an invalid one shows its error and saves nothing.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain ink everywhere, the card list included (F6).
+- **SP2a R9 (2026-10-03, §3.2):** as screen 08, per `edit:<cardId>`; the editor remembers the card's `updatedAt` when it opens and `editCard` compares it at save (`CardRejection.changedElsewhere`); "Keep mine" saves without the check, "Use theirs" reloads the card and clears the draft.
 
 ## Copy
 
@@ -65,4 +73,7 @@ Every state above is built.
 - Move to Trash dialog: "Move this card to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move to Trash".
 - Discard: "Discard changes?" · "You edited {parts}. Leaving now keeps the card as it was saved." (parts: "the term", "the meaning", "the example", "the hint", "the pronunciation", "the flag", "the tags", joined "a, b and c") · "Keep editing" · "Discard".
 - Gone: "This card is no longer here" · "It was moved to Trash while you were editing. Your unsaved changes were not applied; the card can still be restored from Trash." · "Back to deck" · "Open Trash".
+- Draft: "Unsaved text from earlier" · "Kept on this phone only, not synced. Restore it or discard it." · "Restore" · "Discard".
+- Card gone banner: "This card was moved to Trash or deleted." · "Your text is kept on this phone." · "This card can't be saved now." · stale: "Couldn't refresh this card." · "Your text is kept on this phone, and you can still save."
+- Changed elsewhere: "This card changed on another device" · "Use theirs to reload the newer version and drop your edits. Keep mine to save over it." · "Use theirs" · "Keep mine".
 - Load error: "Couldn't load this card" · "Nothing was lost. Try again in a moment." · "Retry".

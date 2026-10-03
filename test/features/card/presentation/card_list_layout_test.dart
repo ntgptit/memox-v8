@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
@@ -71,7 +72,7 @@ Future<void> _openSearch(WidgetTester tester, String deckId) async {
 /// Flags that fail the first way a real database can.
 final class _FailingFlags implements CardRepository {
   @override
-  Future<Outcome<void, CardRejection>> setFlagged({
+  Future<Outcome<BulkOutcome, CardRejection>> setFlagged({
     required Set<String> cardIds,
     required bool isFlagged,
     DateTime? now,
@@ -87,7 +88,7 @@ final class _FlakyFlags implements CardRepository {
   var isFailing = true;
 
   @override
-  Future<Outcome<void, CardRejection>> setFlagged({
+  Future<Outcome<BulkOutcome, CardRejection>> setFlagged({
     required Set<String> cardIds,
     required bool isFlagged,
     DateTime? now,
@@ -96,7 +97,7 @@ final class _FlakyFlags implements CardRepository {
     if (isFailing) {
       return Future.error(const UnknownDatabaseFailure(cause: 'locked'));
     }
-    return Future.value(const Ok(null));
+    return Future.value(Ok(BulkOutcome(done: cardIds)));
   }
 
   @override

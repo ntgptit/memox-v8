@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/app_database.dart' hide CardDraft;
 import 'package:memox/core/database/id_chunks.dart';
 import 'package:memox/core/database/table_changes.dart';
 import 'package:memox/core/text/folded_text.dart';

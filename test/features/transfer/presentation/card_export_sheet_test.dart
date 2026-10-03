@@ -15,6 +15,7 @@ import 'package:memox/features/transfer/domain/usecases/build_export_use_case.da
 import 'package:memox/features/transfer/presentation/providers/build_export_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart';
+import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
@@ -190,7 +191,7 @@ void main() {
     },
   );
 
-  libraryTest('a selection with a card gone meanwhile exports nothing (E6)', (
+  libraryTest('a selection whose cards are all gone exports nothing (E6)', (
     tester,
     env,
   ) async {
@@ -198,10 +199,10 @@ void main() {
       tester,
       env,
       scope: (deckId) =>
-          CardExportScope.selection(deckId: deckId, ids: {'a', 'gone'}),
+          CardExportScope.selection(deckId: deckId, ids: {'gone'}),
     );
 
-    await _tap(tester, _button(_en.exportAction(2)));
+    await _tap(tester, _button(_en.exportAction(1)));
 
     expect(find.text(_en.exportStaleTitle), findsOneWidget);
     expect(_button(_en.exportClose), findsOneWidget);
@@ -213,6 +214,24 @@ void main() {
       expect(row.onSelected, isNull);
     }
     expectOnePrimaryPerDecision(tester);
+  });
+
+  libraryTest('a selection with a card gone says how many were skipped '
+      '(SP2a 2.19)', (tester, env) async {
+    final (:deckId, :share) = await _seed(
+      tester,
+      env,
+      scope: (deckId) =>
+          CardExportScope.selection(deckId: deckId, ids: {'a', 'b', 'gone'}),
+    );
+
+    await _tap(tester, _button(_en.exportAction(3)));
+
+    expect(
+      find.text(_en.bulkToast(_en.exportHandedOver(2), 1)),
+      findsOneWidget,
+    );
+    expect(share.shared, hasLength(1));
   });
 
   for (final (how, dismiss) in <(String, Future<void> Function(WidgetTester))>[

@@ -1,125 +1,25 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
-import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/error/outcome.dart';
-import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
-import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
-import 'package:memox/features/card/domain/failures/card_failure.dart';
-import 'package:memox/features/card/domain/models/card_draft_model.dart';
-import 'package:memox/features/card/domain/models/card_import_result_model.dart';
-import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
-import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/deck/domain/entities/deck_entity.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
-import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/domain/models/import_summary_model.dart';
-import 'package:memox/features/transfer/domain/usecases/commit_import_use_case.dart';
 import 'package:memox/features/transfer/presentation/controllers/card_import_controller.dart';
-import 'package:memox/features/transfer/presentation/providers/commit_import_use_case_provider.dart';
 import 'package:memox/features/transfer/presentation/providers/import_file_picker_provider.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 
-import '../../../support/card_fixtures.dart';
-import '../../../support/deck_fixtures.dart';
-import '../../../support/test_database.dart';
+import 'card_import_controller_harness.dart';
 
 // The import wizard's steps over the real repositories and a fake picker
 // (UC-TRANSFER-001, IT-NAV-012 step 4).
-
-DateTime _now() => DateTime(2026, 9, 26);
-
-ImportPickedFile _file(String name, String text) =>
-    (name: name, bytes: Uint8List.fromList(utf8.encode(text)));
-
-/// Throws on the commit, the way a full disk does (E5), until [isBroken]
-/// turns false; holds the commit open while [hold] is pending.
-final class _BrokenImport implements CardTransferRepository {
-  _BrokenImport(this._cards);
-
-  final CardTransferRepository _cards;
-  var isBroken = true;
-  Completer<void>? hold;
-
-  @override
-  Future<Set<({String front, String back})>> foldedPairs(String deckId) =>
-      _cards.foldedPairs(deckId);
-
-  @override
-  Future<Outcome<CardImportResult, CardRejection>> importCards({
-    required String deckId,
-    required List<CardDraft> drafts,
-    required bool includeDuplicates,
-    DateTime? now,
-  }) async {
-    await hold?.future;
-    if (isBroken) throw const UnknownDatabaseFailure(cause: 'disk full');
-    return _cards.importCards(
-      deckId: deckId,
-      drafts: drafts,
-      includeDuplicates: includeDuplicates,
-      now: now,
-    );
-  }
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
+//
+// The steps: source, mapping, preview and Back.
 
 void main() {
-  late AppDatabase db;
-  late DeckRepositoryImpl decks;
-  late DeckEntity root;
-  late DeckEntity leaf;
-  ImportPickedFile? picked;
-
-  setUp(() async {
-    db = openTestDatabase();
-    decks = DeckRepositoryImpl(db, now: _now);
-    root = await decks.root('r');
-    leaf = await decks.sub(root.id, 'Nhà hàng');
-    picked = _file(
-      'vocab.csv',
-      'front,back,tags\nmenu,thực đơn,food\nbill,,\n',
-    );
-  });
-  tearDown(() => db.close());
-
-  ProviderContainer container({
-    CardTransferRepository Function(CardTransferRepository)? wrap,
-  }) {
-    final cards = CardTransferRepositoryImpl(
-      db,
-      CardRepositoryImpl(
-        db,
-        ScheduleRepositoryImpl(db, now: _now),
-        TagRepositoryImpl(db, now: _now),
-        now: _now,
-      ),
-    );
-    final result = ProviderContainer(
-      overrides: [
-        databaseProvider.overrideWithValue(db),
-        importFilePickerProvider.overrideWithValue(() async => picked),
-        if (wrap != null)
-          commitImportUseCaseProvider.overrideWithValue(
-            CommitImportUseCase(wrap(cards)),
-          ),
-      ],
-    );
-    addTearDown(result.dispose);
-    return result;
-  }
-
-  CardImportDraft draftOf(ProviderContainer c) =>
-      c.read(cardImportControllerProvider(leaf.id)) as CardImportDraft;
+  useImportFixture();
 
   test(
     'a file goes through the four steps and ends on a summary (steps 1–8)',
@@ -144,7 +44,7 @@ void main() {
       final done =
           c.read(cardImportControllerProvider(leaf.id)) as CardImportDone;
       expect(done.summary.kind, ImportSummaryKind.partial);
-      expect(await _count(db), 1);
+      expect(await countCards(db), 1);
     },
   );
 
@@ -193,7 +93,7 @@ void main() {
     final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
     c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
 
-    picked = _file('deck.apkg', 'x');
+    picked = pickedFile('deck.apkg', 'x');
     await wizard.chooseFile();
     expect(draftOf(c).problem, TransferRejection.unreadableFile);
 
@@ -225,7 +125,7 @@ void main() {
   });
 
   test('an unmapped back stops the preview, and mapping it lets it through (BR-TRANSFER-002)', () async {
-    picked = _file('vocab.csv', 'term,meaning\na,b\n');
+    picked = pickedFile('vocab.csv', 'term,meaning\na,b\n');
     final c = container();
     final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
     c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
@@ -262,135 +162,4 @@ void main() {
     );
     expect(wizard.stepBack(), isFalse);
   });
-
-  test(
-    'Back does nothing while the cards are written (IT-NAV-012 step 5)',
-    () async {
-      late _BrokenImport held;
-      final c = container(
-        wrap: (cards) => held = _BrokenImport(cards)
-          ..isBroken = false
-          ..hold = Completer<void>(),
-      );
-      final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
-      c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
-      await wizard.chooseFile();
-      await wizard.readSource();
-      await wizard.previewRows();
-
-      final writing = wizard.commit();
-      await pumpEventQueue();
-      expect(draftOf(c).step, CardImportStep.importing);
-      expect(wizard.stepBack(), isTrue);
-      expect(draftOf(c).step, CardImportStep.importing);
-
-      held.hold!.complete();
-      await writing;
-      expect(
-        c.read(cardImportControllerProvider(leaf.id)),
-        isA<CardImportDone>(),
-      );
-    },
-  );
-
-  test('Include duplicates writes them as new cards (A4)', () async {
-    await insertCard(
-      db,
-      id: 'x',
-      deckId: leaf.id,
-      front: 'menu',
-      back: 'thực đơn',
-    );
-    final c = container();
-    final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
-    c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
-    await wizard.chooseFile();
-    await wizard.readSource();
-    await wizard.previewRows();
-    expect(draftOf(c).willWrite, 0);
-
-    wizard.setIncludingDuplicates(isIncluding: true);
-    expect(draftOf(c).willWrite, 1);
-    await wizard.commit();
-
-    final done =
-        c.read(cardImportControllerProvider(leaf.id)) as CardImportDone;
-    expect(done.summary.written, 1);
-    expect(await _count(db), 2);
-  });
-
-  test(
-    'a deck that gained sub-decks refuses the commit: the rejects result (E4)',
-    () async {
-      final c = container();
-      final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
-      c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
-      await wizard.chooseFile();
-      await wizard.readSource();
-      await wizard.previewRows();
-      await decks.sub(leaf.id, 'child');
-
-      await wizard.commit();
-
-      final failed =
-          c.read(cardImportControllerProvider(leaf.id)) as CardImportFailed;
-      expect(failed.isTargetRejected, isTrue);
-    },
-  );
-
-  test(
-    'a write that fails keeps the preview, and Try again commits it again (E5)',
-    () async {
-      late _BrokenImport broken;
-      final c = container(wrap: (cards) => broken = _BrokenImport(cards));
-      final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
-      c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
-      await wizard.chooseFile();
-      await wizard.readSource();
-      await wizard.previewRows();
-
-      await wizard.commit();
-      final failed =
-          c.read(cardImportControllerProvider(leaf.id)) as CardImportFailed;
-      expect(
-        (failed.isTargetRejected, failed.draft.step),
-        (false, CardImportStep.preview),
-      );
-      expect(await _count(db), 0);
-
-      broken.isBroken = false;
-      await wizard.retry();
-      expect(
-        c.read(cardImportControllerProvider(leaf.id)),
-        isA<CardImportDone>(),
-      );
-    },
-  );
-
-  test('Import another file starts a fresh step 1', () async {
-    await insertCard(
-      db,
-      id: 'x',
-      deckId: leaf.id,
-      front: 'menu',
-      back: 'thực đơn',
-    );
-    final c = container();
-    final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
-    c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
-    await wizard.chooseFile();
-    await wizard.readSource();
-    await wizard.previewRows();
-    expect(draftOf(c).willWrite, 0);
-
-    await wizard.commit();
-    expect(draftOf(c).step, CardImportStep.preview);
-
-    wizard.startOver();
-    expect(draftOf(c).source, isNull);
-  });
 }
-
-Future<int> _count(AppDatabase db) async =>
-    (await db.customSelect('SELECT COUNT(*) AS n FROM card').getSingle())
-        .read<int>('n');

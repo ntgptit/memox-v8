@@ -12,6 +12,7 @@ import 'package:memox/features/study/presentation/providers/study_entry_provider
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
 import 'package:memox/features/study/presentation/states/study_start_state.dart';
 import 'package:memox/features/study/presentation/widgets/overlays/study_direction_sheet_widget.dart';
+import 'package:memox/features/study/presentation/widgets/overlays/study_end_other_session_dialog_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_body_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_entry_footer_widget.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
@@ -57,48 +58,69 @@ class StudyEntryScreen extends ConsumerWidget {
       (_, next) => _onEntry(context, next),
     );
     final l10n = context.l10n;
-    return MxAppShell(
-      appBar: MxAppBar(
-        titleWidget: title,
-        density: MxAppBarDensity.content,
-        leading: MxIconButton(
-          icon: AppIcons.back,
-          semanticLabel: l10n.commonBack,
-          onPressed: () => unawaited(Navigator.of(context).maybePop()),
+    final isStarting = ref
+        .watch(studyEntryControllerProvider(deckId))
+        .isStarting;
+    // A session is being written: Back or Study options would leave it
+    // orphaned (2.04).
+    return PopScope(
+      canPop: !isStarting,
+      child: MxAppShell(
+        appBar: MxAppBar(
+          titleWidget: title,
+          density: MxAppBarDensity.content,
+          leading: MxIconButton(
+            icon: AppIcons.back,
+            semanticLabel: l10n.commonBack,
+            onPressed: isStarting
+                ? null
+                : () => unawaited(Navigator.of(context).maybePop()),
+          ),
+          actions: [
+            if (onOpenStudyOptions case final open?)
+              MxIconButton(
+                icon: AppIcons.studyOptions,
+                semanticLabel: l10n.deckStudyOptions,
+                onPressed: isStarting ? null : open,
+              ),
+          ],
         ),
-        actions: [
-          if (onOpenStudyOptions case final open?)
-            MxIconButton(
-              icon: AppIcons.studyOptions,
-              semanticLabel: l10n.deckStudyOptions,
-              onPressed: open,
-            ),
-        ],
-      ),
-      body: StudyEntryBodyWidget(
-        deckId: deckId,
-        breadcrumb: breadcrumb,
-        onLearn: () => unawaited(_start(context, ref, const LearnStart())),
-        onContinue: (sessionId) =>
-            unawaited(_start(context, ref, ContinueStart(sessionId))),
-      ),
-      footer: switch (ref.watch(studyEntryProvider(deckId))) {
-        AsyncData(value: Ok(:final value)) => StudyEntryFooterWidget(
+        body: StudyEntryBodyWidget(
           deckId: deckId,
-          entry: value,
-          onReview: () => unawaited(_review(context, ref, value)),
+          breadcrumb: breadcrumb,
           onLearn: () => unawaited(_start(context, ref, const LearnStart())),
-          onRetry: () => unawaited(_retry(context, ref)),
+          onContinue: (sessionId) =>
+              unawaited(_start(context, ref, ContinueStart(sessionId))),
         ),
-        _ => null,
-      },
+        footer: switch (ref.watch(studyEntryProvider(deckId))) {
+          AsyncData(value: Ok(:final value)) => StudyEntryFooterWidget(
+            deckId: deckId,
+            entry: value,
+            onReview: () => unawaited(_review(context, ref, value)),
+            onLearn: () => unawaited(_start(context, ref, const LearnStart())),
+            onRetry: () => unawaited(_retry(context, ref)),
+          ),
+          _ => null,
+        },
+      ),
     );
   }
 
   Future<void> _start(BuildContext context, WidgetRef ref, StudyStart start) =>
       _open(
         context,
-        ref.read(studyEntryControllerProvider(deckId).notifier).start(start),
+        ref
+            .read(studyEntryControllerProvider(deckId).notifier)
+            .start(
+              start,
+              // R3: a Learn or a Review ends another deck's open session.
+              confirmEnd: (deckName) async =>
+                  context.mounted &&
+                  await showStudyEndOtherSessionDialog(
+                    context,
+                    deckName: deckName,
+                  ),
+            ),
       );
 
   Future<void> _retry(BuildContext context, WidgetRef ref) => _open(

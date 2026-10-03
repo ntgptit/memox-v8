@@ -1,3 +1,4 @@
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -12,6 +13,7 @@ import 'package:memox/features/card/presentation/providers/select_all_card_ids_u
 import 'package:memox/features/card/presentation/providers/set_cards_flagged_use_case_provider.dart';
 import 'package:memox/features/card/presentation/providers/undo_card_deletion_use_case_provider.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
+import 'package:memox/features/tags/domain/models/tag_attach_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'card_actions_controller.g.dart';
@@ -32,7 +34,7 @@ class CardActionsController extends _$CardActionsController {
     required CardListQuery query,
   }) => ref.read(selectAllCardIdsUseCaseProvider)(deckId: deckId, query: query);
 
-  Future<Outcome<void, CardRejection>> setFlagged({
+  Future<Outcome<BulkOutcome, CardRejection>> setFlagged({
     required Set<String> cardIds,
     required bool isFlagged,
   }) => ref.read(setCardsFlaggedUseCaseProvider)(
@@ -40,7 +42,7 @@ class CardActionsController extends _$CardActionsController {
     isFlagged: isFlagged,
   );
 
-  Future<Outcome<void, TagRejection>> addTag({
+  Future<Outcome<TagAttach, TagRejection>> addTag({
     required Set<String> cardIds,
     required String tagName,
   }) => ref.read(addTagToCardsUseCaseProvider)(
@@ -48,7 +50,7 @@ class CardActionsController extends _$CardActionsController {
     tagName: tagName,
   );
 
-  Future<Outcome<void, CardRejection>> moveCards({
+  Future<Outcome<BulkOutcome, CardRejection>> moveCards({
     required Set<String> cardIds,
     required String targetDeckId,
   }) => ref.read(moveCardsUseCaseProvider)(
@@ -56,15 +58,15 @@ class CardActionsController extends _$CardActionsController {
     targetDeckId: targetDeckId,
   );
 
-  /// Moves the cards to the Trash; its value is one batch per card, which
-  /// an Undo names.
-  Future<Outcome<List<String>, CardRejection>> deleteCards({
+  /// Moves the cards that still exist to the Trash; `BulkOutcome.batchIds`
+  /// holds one batch per card, which an Undo names.
+  Future<Outcome<BulkOutcome, CardRejection>> deleteCards({
     required Set<String> cardIds,
   }) => ref.read(deleteCardsUseCaseProvider)(cardIds: cardIds);
 
   Future<Outcome<void, CardRejection>> undoCardDeletion({
-    required String batchId,
-  }) => ref.read(undoCardDeletionUseCaseProvider)(batchId: batchId);
+    required Set<String> batchIds,
+  }) => ref.read(undoCardDeletionUseCaseProvider)(batchIds: batchIds);
 
   Future<Outcome<CardEntity, CardRejection>> createCard({
     required String deckId,
@@ -74,5 +76,10 @@ class CardActionsController extends _$CardActionsController {
   Future<Outcome<void, CardRejection>> editCard({
     required String cardId,
     required CardDraft draft,
-  }) => ref.read(editCardUseCaseProvider)(cardId: cardId, draft: draft);
+    DateTime? expectedUpdatedAt,
+  }) => ref.read(editCardUseCaseProvider)(
+    cardId: cardId,
+    draft: draft,
+    expectedUpdatedAt: expectedUpdatedAt,
+  );
 }

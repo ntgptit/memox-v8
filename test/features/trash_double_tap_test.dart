@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/bulk_outcome.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
@@ -46,7 +47,7 @@ final class _CountingCards implements CardRepository {
   var deletes = 0;
 
   @override
-  Future<Outcome<List<String>, CardRejection>> deleteCards({
+  Future<Outcome<BulkOutcome, CardRejection>> deleteCards({
     required Set<String> cardIds,
     DateTime? now,
   }) {

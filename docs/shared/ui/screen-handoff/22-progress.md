@@ -49,6 +49,7 @@ every local midnight with no skeleton once shown (BR-PROGRESS-018, D8).
 | never | `progress_never_light.png` | `progress_never_dark.png` | "Start studying" (primary, the only action) under Today's placeholder opens the Study tab (UC-PROGRESS-001 A2); no range and no by-deck list, which would read 0 everywhere (critique 2026-09-30). |
 | loading | `progress_loading_light.png` | `progress_loading_dark.png` | The screen's own skeleton: Today card, Streak card, deck-list card; deck progress shows the deck-list card under its range control (UI-base row 125, part 3d-2). |
 | error | `progress_error_light.png` | `progress_error_dark.png` | With Retry, under the alert glyph: a local read failed, not the network (critique 2026-09-30). |
+| stale | `progress_stale_light.png` | `progress_stale_dark.png` | A refresh failed after figures were read: the last figures stay and a warning `MxInlineBanner` above them says "Couldn't refresh your progress" / "These are the figures last read. Your study history is safe on this device.", with Retry spinning while it reloads. A deck's level does the same above its range. The full error page shows only when no figures were read yet (SP2a 2.50). |
 | quiet range | — | — | (UC-PROGRESS-002 A3) the note under the list. |
 | no decks | — | — | (A2) only "No decks yet · Create a deck in the Library and its progress appears here". No range, no total, no button. |
 | no sub-decks | — | — | (A1) the total row and its note. |
@@ -56,13 +57,14 @@ every local midnight with no skeleton once shown (BR-PROGRESS-018, D8).
 Other goldens: `deck_progress_leaf_light.png` / `deck_progress_leaf_dark.png` (a deck's progress, leaf deck); `deck_progress_gone_light.png` / `deck_progress_gone_dark.png` (a deck's progress, deck gone); `progress_no_decks_light.png` / `progress_no_decks_dark.png` (no decks); `progress_quiet_light.png` / `progress_quiet_dark.png` (a quiet range).
 
 
-Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held,lost,never,quiet,no_decks,loading,error}_{light,dark}.png` and `deck_progress_{deck,leaf,gone}_{light,dark}.png`.
+Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held,lost,never,quiet,no_decks,loading,error,stale}_{light,dark}.png` and `deck_progress_{deck,leaf,gone}_{light,dark}.png`.
 
 ## Rulings
 
 - **UC-PROGRESS-001 step 4, UC-PROGRESS-002 step 1, D10:** the range tray sits directly above the list it changes.
 - **BR-PROGRESS-001, D2:** the list has a total row with the four numbers, no header totals.
 - **Critique P2, D11:** an idle deck row keeps full contrast and reads "No activity in this range" (its 0 went with the trailing count, critique 2026-09-30 part 3d-1).
+- **SP2a 2.50 (spec `2026-10-03-ui-hardening-sp2a-design.md` §3.1):** the stream's last value survives an error: a failed refresh is a banner over the figures, not a page that hides them, in the local-first voice (warning: nothing was lost).
 - **UC-PROGRESS-001 A2, D1:** never studied shows the placeholders plus "Start studying" to the Study tab.
 - **UI-base row 125:** loading shows the screen's own skeleton (Today, Streak and deck-list cards), not generic rows (part 3d-2).
 - **UC-PROGRESS-002 A1–A3, E2:** quiet range, no deck, leaf and gone states are built from the UC.
@@ -86,4 +88,4 @@ activity in this range" · "Nothing studied in the last 7 days. Switch to Last 3
 see older study." · "No decks yet" · "Create a deck in the Library and its progress
 appears here." · "This deck holds its cards directly, so the total above is all of it." ·
 "Read-only · resets change nothing here" · "Couldn't summarise your progress" · "Your study history is safe on this device.
-Try again in a moment."
+Try again in a moment." · "Couldn't refresh your progress" · "These are the figures last read. Your study history is safe on this device."

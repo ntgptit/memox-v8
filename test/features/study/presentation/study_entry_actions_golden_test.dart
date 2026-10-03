@@ -15,6 +15,7 @@ import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/study_entry_fixtures.dart';
 
 // Screen 14's kit states that need a start: resume, starting, refused,
 // startFailed; and the direction sheet (FE-A7).
@@ -120,6 +121,20 @@ void main() {
         await tester.tap(find.text(_en.studyEntryReviewCta(4)));
         await tester.pumpAndSettle();
         await _golden(tester, 'direction_sheet', theme);
+      });
+    });
+
+    libraryTest('study entry, end the other session, $theme', (
+      tester,
+      env,
+    ) async {
+      final leaf = await _sm2(env);
+      await openOtherDeckSession(env.db, env.decks, env.entries);
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, _screen(leaf), brightness);
+        await tester.tap(find.text(_en.studyEntryLearn));
+        await tester.pumpAndSettle();
+        await _golden(tester, 'end_other_session', theme);
       });
     });
   }

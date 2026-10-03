@@ -91,4 +91,24 @@ void main() {
     await tester.tap(find.text('Go'));
     expect(taps, 1);
   });
+
+  testWidgets('a row guarded at its start takes no tap until it has settled, '
+      'then takes one (2.09)', (tester) async {
+    var taps = 0;
+    await pumpMx(
+      tester,
+      StudySettleGuardWidget(
+        phase: 'summary',
+        isGuardedAtStart: true,
+        child: MxButton(label: 'Go', onPressed: () => taps++),
+      ),
+    );
+
+    await tester.tap(find.text('Go'), warnIfMissed: false);
+    expect(taps, 0);
+
+    await tester.pump(StudySettleGuardWidget.settle);
+    await tester.tap(find.text('Go'));
+    expect(taps, 1);
+  });
 }

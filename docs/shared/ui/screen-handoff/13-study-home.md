@@ -38,8 +38,9 @@ Every state above is built.
 **Built (FE-A8, study roadmap P6):** `StudyHomeScreen` in the Study tab's branch, over
 `WatchStudyHomeUseCase`; it writes nothing but Resume (BR-STUDY-075).
 - Resume runs `ResumeStudySessionUseCase` and opens the session route. A refusal
-  shows the toast "This session can't be continued any more", and a failed write shows
-  "Couldn't start the session."; the stream refreshes by itself.
+  shows the toast "This session can't be continued. Your answers are kept.", and a failed
+  write shows "Couldn't open the session. Nothing was lost; try Resume again." (SP2a 2.49);
+  the stream refreshes by itself.
 - A deck row opens that deck's Study Entry; "Library" and "Go to Library" open the
   Library root, and "Browse starter decks" the Starter Library. All navigate into the
   Library branch, as the summary's "Study this deck" does.
@@ -50,6 +51,7 @@ Every state above is built.
 
 - **BR-STUDY-068 (owner 2026-09-30):** the hero states "{n} cards due" over its two halves, overdue · today (`MxWorkloadBreakdownLine`); new and scheduled cards are not in the hero, new ones show in each deck row.
 - **UI-base row 28:** the resume dot and paused tile use primary; there is no streak tone.
+- **SP2a 2.49 (spec `2026-10-03-ui-hardening-sp2a-design.md` §3.1):** both Resume toasts say what happened to the person's work, in the local-first voice: the answers are kept.
 - The app bar carries no date: `MxAppBar.actions` takes buttons only and no BR/UC calls for one.
 - **FE-A8 ruling S3:** the dot beside "Continue studying" is static, as on 14; no looping motion. The resume progress is the shared 4-tall `MxLinearProgress`.
 - **FE-A8 ruling S2, BR-STUDY-074:** the zero-workload body says "…tomorrow." on the next local day, "…on {date}." later, and "Every card is resting." with no next date.
@@ -76,7 +78,7 @@ Every state above is built.
 - Resume: "Continue studying" · "{kind} · {mode}" e.g. "Review · Self-assess" · "{done} / {total} cards" · "Resume".
 - Workload: "Waiting for you" · "{n} cards due" · "across {n} decks".
 - Workload, zero: "Nothing due right now" · "Every card is resting. The next one becomes due tomorrow." · "…on {date}." · "Every card is resting." (ruling S2).
-- Resume refused: "This session can't be continued any more".
+- Resume refused: "This session can't be continued. Your answers are kept." · Resume failed: "Couldn't open the session. Nothing was lost; try Resume again." (SP2a 2.49).
 - Section: "Your decks" · "Library".
 - No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck to begin with content, or create a deck in Library." · "Browse starter decks" · "Go to Library" (since the Impeccable audit of 2026-09-28).
 - No cards: "Your decks have no cards yet" · "Add cards to a sub-deck, or import them from a file, and they will show up here." · "Go to Library".
