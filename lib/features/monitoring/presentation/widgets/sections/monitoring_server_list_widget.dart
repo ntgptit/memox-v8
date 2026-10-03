@@ -164,11 +164,20 @@ class _Rows extends ConsumerWidget {
     final header = hasMore
         ? l10n.monitoringCountLogsMore(count)
         : l10n.monitoringCountLogs(count);
-    return NotificationListener<ScrollNotification>(
+    // A scroll asks for the next page near the end; so does a change of the
+    // metrics after layout, so a page shorter than the screen is not
+    // stranded (SP2b 2.48).
+    return NotificationListener<Notification>(
       onNotification: (notification) {
-        if (loaded.more == MonitoringMore.idle &&
+        final metrics = switch (notification) {
+          ScrollNotification(:final metrics) => metrics,
+          ScrollMetricsNotification(:final metrics) => metrics,
+          _ => null,
+        };
+        if (metrics != null &&
+            loaded.more == MonitoringMore.idle &&
             hasMore &&
-            notification.metrics.extentAfter < _prefetchExtent) {
+            metrics.extentAfter < _prefetchExtent) {
           unawaited(controller.loadMore());
         }
         return false;

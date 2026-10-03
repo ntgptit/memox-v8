@@ -256,6 +256,20 @@ void main() {
     expect(find.text('103 LOGS'), findsOneWidget);
   });
 
+  libraryTest('a full first page on a screen taller than its rows asks for '
+      'the next one after layout (2.48)', (tester, env) async {
+    final repository = FakeMonitoringRepository();
+    await pumpMonitoring(tester, env, repository);
+    // 100 rows of 48 are shorter than this viewport: nothing can scroll.
+    tester.view.physicalSize = const Size(360, 20000);
+    repository.lastQuery.answer(pageOf(LogPage.size));
+    await settleMonitoring(tester);
+    await tester.pump();
+
+    expect(repository.queries, hasLength(2));
+    expect(repository.lastQuery.after!.id, 'r99');
+  });
+
   libraryTest('a failed page keeps the rows and offers Retry, not a loop', (
     tester,
     env,
