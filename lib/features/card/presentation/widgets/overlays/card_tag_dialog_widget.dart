@@ -11,6 +11,7 @@ import 'package:memox/l10n/bulk_message.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
@@ -54,6 +55,10 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
   TagRejection? _rejection;
   var _isSubmitting = false;
 
+  /// The last write's failure, shown above the field until the next try
+  /// (SP2b 2.27).
+  Failure? _failure;
+
   @override
   void dispose() {
     _name.dispose();
@@ -64,6 +69,7 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
     setState(() {
       _isSubmitting = true;
       _rejection = null;
+      _failure = null;
     });
     try {
       final outcome = await ref
@@ -111,23 +117,34 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
           showMxSnackbar(context, message: l10n.tagRejection(reason));
           Navigator.of(context).pop(false);
       }
-    } on Failure catch (failure) {
+    } on Object catch (error, stack) {
+      final failure = failureOfThrown(error, stack, library: 'card tag');
       if (!mounted) return;
-      setState(() => _isSubmitting = false);
-      showMxSnackbar(context, message: context.l10n.failure(failure));
+      setState(() {
+        _isSubmitting = false;
+        _failure = failure;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final failure = _failure;
     return MxDialog(
+      // The toast and the cleared selection must reach the screen (SP2b 2.26).
+      isHeld: _isSubmitting,
       title: l10n.cardTagTitle,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: AppSpacing.grouped,
         children: [
+          if (failure != null)
+            MxInlineBanner(
+              tone: MxBannerTone.warning,
+              message: l10n.failure(failure),
+            ),
           MxTextField(
             controller: _name,
             label: l10n.cardTagHint,
@@ -143,7 +160,7 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(false),
+        onCancel: _isSubmitting ? null : () => Navigator.of(context).pop(false),
         confirmLabel: l10n.cardTagConfirm,
         onConfirm: _isSubmitting ? null : _submit,
       ),
