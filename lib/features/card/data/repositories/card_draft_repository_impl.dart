@@ -49,7 +49,12 @@ final class CardDraftRepositoryImpl implements CardDraftRepository {
       tags: jsonEncode(draft.tagNames),
       at: at,
     );
-    await _dao.removeBefore(at.subtract(expiry));
+    try {
+      await _dao.removeBefore(at.subtract(expiry));
+    } on Object {
+      // The draft is kept; a prune that fails goes with the next save, and
+      // must not report this one as lost.
+    }
   });
 
   @override

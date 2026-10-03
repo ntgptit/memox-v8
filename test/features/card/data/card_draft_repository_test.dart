@@ -95,6 +95,19 @@ void main() {
     expect(await drafts.read(CardDraftKey.create('b')), isNotNull);
   });
 
+  test('a failed prune never fails the save: the draft is kept', () async {
+    await drafts.save(CardDraftKey.edit('old'), hangul);
+    await db.customStatement(
+      'CREATE TRIGGER refuse_delete BEFORE DELETE ON card_draft '
+      "BEGIN SELECT RAISE(ABORT, 'prune refused'); END",
+    );
+    clock = clock.add(const Duration(days: 31));
+
+    await drafts.save(CardDraftKey.create('a'), hangul);
+
+    expect(await drafts.read(CardDraftKey.create('a')), isNotNull);
+  });
+
   test('a row nothing in the app wrote reads as no draft', () async {
     await db.customStatement(
       "INSERT INTO card_draft (draft_key, front, back, extras, tags, updated_at) "
