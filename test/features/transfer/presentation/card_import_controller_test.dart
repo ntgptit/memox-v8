@@ -106,15 +106,56 @@ final class _ExplodingFiles implements TransferFileRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-/// Throws a bug the card feature never types, on the commit.
+/// Throws a bug the card feature never types on the commit, until
+/// [isBroken] turns false; then it writes through [_inner].
 final class _ThrowingImport implements CardTransferRepository {
+  _ThrowingImport(this._inner);
+
+  final CardTransferRepository _inner;
+  var isBroken = true;
+
   @override
   Future<Outcome<CardImportResult, CardRejection>> importCards({
     required String deckId,
     required List<CardDraft> drafts,
     required bool includeDuplicates,
     DateTime? now,
-  }) async => throw StateError('writer exploded');
+  }) async {
+    if (isBroken) throw StateError('writer exploded');
+    return _inner.importCards(
+      deckId: deckId,
+      drafts: drafts,
+      includeDuplicates: includeDuplicates,
+      now: now,
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Holds the commit's write until [release] completes.
+final class _GatedImport implements CardTransferRepository {
+  _GatedImport(this._inner);
+
+  final CardTransferRepository _inner;
+  final release = Completer<void>();
+
+  @override
+  Future<Outcome<CardImportResult, CardRejection>> importCards({
+    required String deckId,
+    required List<CardDraft> drafts,
+    required bool includeDuplicates,
+    DateTime? now,
+  }) async {
+    await release.future;
+    return _inner.importCards(
+      deckId: deckId,
+      drafts: drafts,
+      includeDuplicates: includeDuplicates,
+      now: now,
+    );
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -500,7 +541,8 @@ void main() {
 
   test('a commit that throws something that is not a Failure frees the '
       'wizard on the failed result (SP2a 2.25)', () async {
-    final c = container(wrap: (_) => _ThrowingImport());
+    late _ThrowingImport writer;
+    final c = container(wrap: (cards) => writer = _ThrowingImport(cards));
     final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
     c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
     await wizard.chooseFile();
@@ -515,7 +557,47 @@ void main() {
     expect(failed.draft.isBusy, isFalse);
     expect(failed.draft.step, CardImportStep.preview);
     expect(await _count(db), 0);
+
+    // The failure was the writer's, not the preview's: Try again writes it.
+    writer.isBroken = false;
+    await wizard.retry();
+
+    expect(
+      c.read(cardImportControllerProvider(leaf.id)),
+      isA<CardImportDone>(),
+    );
+    expect(await _count(db), 1);
   });
+
+  test(
+    'commit holds the wizard busy on the importing step before its first '
+    'await, so Cancel and a second commit cannot slip in (SP2a 2.25)',
+    () async {
+      late _GatedImport gated;
+      final c = container(wrap: (cards) => gated = _GatedImport(cards));
+      final wizard = c.read(cardImportControllerProvider(leaf.id).notifier);
+      c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
+      await wizard.chooseFile();
+      await wizard.readSource();
+      await wizard.previewRows();
+
+      final commit = wizard.commit();
+
+      // Read before any await has let the write run.
+      expect(draftOf(c).step, CardImportStep.importing);
+      expect(draftOf(c).isBusy, isTrue);
+      await wizard.commit();
+      expect(await _count(db), 0);
+
+      gated.release.complete();
+      await commit;
+      expect(
+        c.read(cardImportControllerProvider(leaf.id)),
+        isA<CardImportDone>(),
+      );
+      expect(await _count(db), 1);
+    },
+  );
 
   Future<List<String>> importTwo(
     ProviderContainer c,
@@ -568,9 +650,10 @@ void main() {
       ScheduleRepositoryImpl(db, now: _now),
       TagRepositoryImpl(db, now: _now),
       now: _now,
-    ).restoreCards(batchIds: {outcome.value.batchIds.first}, deckId: leaf.id);
+    ).restoreCards(batchIds: outcome.value.batchIds.toSet(), deckId: leaf.id);
+    expect(outcome.value.batchIds, hasLength(2));
     expect(restored, isA<Ok<void, CardRejection>>());
-    expect(await _active(db), 1);
+    expect(await _active(db), 2);
   });
 
   test('Import another file starts a fresh step 1', () async {

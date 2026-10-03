@@ -71,9 +71,14 @@ class _ImportUndoDialogWidgetState
           showMxSnackbar(context, message: l10n.importUndoGone);
           Navigator.of(context).pop(const BulkOutcome(done: {}));
       }
-    } on Failure catch (failure) {
+    } on Object catch (error) {
+      // A database `Failure` is told as it is; anything else the move threw
+      // is told the same way, and the dialog stays for another try.
       if (!mounted) return;
       setState(() => _isUndoing = false);
+      final failure = error is Failure
+          ? error
+          : UnknownDatabaseFailure(cause: error);
       showMxSnackbar(context, message: context.l10n.failure(failure));
     }
   }

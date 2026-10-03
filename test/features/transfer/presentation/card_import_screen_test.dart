@@ -2,16 +2,20 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
 import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
+import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/domain/usecases/preview_import_use_case.dart';
+import 'package:memox/features/transfer/domain/usecases/undo_import_use_case.dart';
+import 'package:memox/features/transfer/presentation/providers/undo_import_use_case_provider.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_limits_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
@@ -65,6 +69,7 @@ Future<void> _pump(
   ImportPickedFile? file,
   VoidCallback? onClose,
   VoidCallback? onViewCards,
+  List<Override> overrides = const [],
 }) => pumpLibraryScreen(
   tester,
   env,
@@ -74,7 +79,10 @@ Future<void> _pump(
     onClose: onClose ?? () {},
     onViewCards: onViewCards ?? () {},
   ),
-  overrides: [importFilePickerProvider.overrideWithValue(() async => file)],
+  overrides: [
+    importFilePickerProvider.overrideWithValue(() async => file),
+    ...overrides,
+  ],
 );
 
 Future<void> _tap(WidgetTester tester, String label) async {
@@ -95,6 +103,22 @@ final class _FlakyDeckRead implements CardTransferRepository {
     if (isBroken) throw const UnknownDatabaseFailure(cause: 'locked');
     return _inner.foldedPairs(deckId);
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Throws [error] when the cards are moved to the Trash.
+final class _ThrowingTrash implements CardRepository {
+  _ThrowingTrash(this.error);
+
+  final Object error;
+
+  @override
+  Future<Never> deleteCards({
+    required Set<String> cardIds,
+    DateTime? now,
+  }) async => throw error;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -578,4 +602,47 @@ void main() {
     );
     expect(cancel(), isNull);
   });
+
+  for (final error in <Object>[
+    StateError('trash exploded'),
+    const UnknownDatabaseFailure(cause: 'locked'),
+  ]) {
+    libraryTest('an Undo whose move throws ${error.runtimeType} says so, '
+        'keeps the cards and frees the dialog (SP2a 2.25)', (
+      tester,
+      env,
+    ) async {
+      final root = await env.decks.root('Korean');
+      final deck = await env.decks.sub(root.id, 'Words');
+      await _pump(
+        tester,
+        env,
+        deck.id,
+        file: _file('front,back\nmul,water\nbul,fire\n'),
+        overrides: [
+          undoImportUseCaseProvider.overrideWithValue(
+            UndoImportUseCase(_ThrowingTrash(error)),
+          ),
+        ],
+      );
+      await _tap(tester, _en.importSourceFile);
+      await _tap(tester, _en.importReadAction);
+      await _tap(tester, _en.importPreviewAction);
+      await _tap(tester, _en.importCommitAction(2));
+      await _tap(tester, _en.importUndoAction);
+      final confirm = find.descendant(
+        of: find.byType(MxDialog),
+        matching: find.widgetWithText(MxButton, _en.cardMoveToTrash),
+      );
+
+      await tester.tap(confirm);
+      await tester.pumpAndSettle();
+
+      expect(find.text(_en.failureUnknown), findsOneWidget);
+      expect(find.byType(MxDialog), findsOneWidget);
+      expect(tester.widget<MxButton>(confirm).onPressed, isNotNull);
+      expect(tester.widget<MxButton>(confirm).isLoading, isFalse);
+      expect(await _active(env), 2);
+    });
+  }
 }
