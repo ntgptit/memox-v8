@@ -13,6 +13,7 @@ import 'package:memox/features/study/presentation/screens/study_session_screen.d
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
@@ -429,6 +430,11 @@ void main() {
 
     expect(find.text(_en.studyRevealFailedTitle), findsOneWidget);
     expect(find.text(_en.studyRevealFailedBody), findsOneWidget);
+    // Nothing was lost: a warning, not danger (DESIGN.md).
+    expect(
+      tester.widget<MxInlineBanner>(find.byType(MxInlineBanner)).tone,
+      MxBannerTone.warning,
+    );
     expect(find.text(_en.commonRetry), findsNothing);
     expect(find.text('apple'), findsNothing);
 

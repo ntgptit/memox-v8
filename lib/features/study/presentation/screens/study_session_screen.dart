@@ -399,7 +399,11 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
                 AppSpacing.grouped,
               ),
               child: MxInlineBanner(
-                tone: MxBannerTone.danger,
+                // A refused answer is unsaved (danger); a failed reveal lost
+                // nothing (warning).
+                tone: isAnswerUnsaved
+                    ? MxBannerTone.danger
+                    : MxBannerTone.warning,
                 title: bannerTitle,
                 message: bannerBody,
                 actions: [

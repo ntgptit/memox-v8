@@ -11,6 +11,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_recall_widget.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -141,6 +142,11 @@ void main() {
 
     await swipeLeft(tester);
     expect(find.text(studyEn.studyAnswerBusyTitle), findsOneWidget);
+    // The answer is not saved yet: that stays danger.
+    expect(
+      tester.widget<MxInlineBanner>(find.byType(MxInlineBanner)).tone,
+      MxBannerTone.danger,
+    );
     expect(_front(tester), front);
 
     sessions.isLocked = false;
