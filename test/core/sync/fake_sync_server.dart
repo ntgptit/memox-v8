@@ -27,6 +27,10 @@ class FakeSyncServer implements SyncApi {
   /// old server that sends none (SP2b 2.30).
   int? serverTimeMillis;
 
+  /// The server clock of each page in turn, before [serverTimeMillis] takes
+  /// over: a server whose clock moves between the pages of one pull.
+  final pageTimes = <int?>[];
+
   SyncChangeModel? row(String type, String id) => _rows['$type/$id'];
 
   void seed(String type, String id, Map<String, Object?>? row) {
@@ -86,7 +90,7 @@ class FakeSyncServer implements SyncApi {
       changes: page,
       nextSince: page.isEmpty ? since : page.last.serverVersion,
       hasMore: sorted.length > limit,
-      serverTime: serverTimeMillis,
+      serverTime: pageTimes.isEmpty ? serverTimeMillis : pageTimes.removeAt(0),
     );
   }
 

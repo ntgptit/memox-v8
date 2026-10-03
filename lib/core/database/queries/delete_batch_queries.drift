@@ -2,16 +2,22 @@ import '../tables/trash.drift';
 import '../tables/deck.drift';
 import '../tables/card.drift';
 import '../tables/study.drift';
+import '../tables/sync.drift';
 
 -- ADR-020: the delete-batch writes CardDao and DeckDao share; both include
 -- this file.
 
 -- BR-TRASH-001: the batch of one deletion, with its item root and the one
--- time the retention counts from (BR-TRASH-009).
+-- time the retention counts from (BR-TRASH-009). R10: never earlier than the
+-- server time the last pull stored ('server_time', epoch milliseconds, see
+-- sync_keys.dart), so a device clock set back cannot stamp a fresh batch as
+-- an old one; a value that is not a number counts as 0.
 insertDeleteBatch(:id AS TEXT, :item_type AS TEXT, :root_item_id AS TEXT,
   :deleted_at AS DATETIME):
 INSERT INTO delete_batches (id, item_type, root_item_id, deleted_at)
-VALUES (:id, :item_type, :root_item_id, :deleted_at);
+VALUES (:id, :item_type, :root_item_id, MAX(:deleted_at, COALESCE(
+  (SELECT CAST(value AS INTEGER) / 1000 FROM sync_state
+    WHERE name = 'server_time'), :deleted_at)));
 
 -- BR-TRASH-006: whether :deck_id is a deck in the Trash, which a restore
 -- refuses as its target (targetInTrash) rather than as gone.
