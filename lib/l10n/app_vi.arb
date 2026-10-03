@@ -219,7 +219,7 @@
   "cardEditorStaleBody": "Nội dung bạn nhập được giữ trên điện thoại này, và bạn vẫn có thể lưu.",
   "cardCaptionGone": "Hiện không lưu được thẻ này.",
   "cardDeckGoneTitle": "Bộ thẻ này không còn nữa",
-  "cardDeckGoneBody": "Bộ thẻ đã được chuyển vào Thùng rác hoặc bị xoá trong lúc bạn thêm thẻ. Thẻ này chưa được lưu.",
+  "cardDeckGoneBody": "Bộ thẻ đã được chuyển vào Thùng rác hoặc bị xoá trong lúc bạn thêm thẻ. Thẻ này chưa được lưu; chữ bạn đã nhập vẫn được giữ trên điện thoại này.",
   "cardBackToDeck": "Về bộ thẻ",
   "cardDiscardTitle": "Bỏ các thay đổi?",
   "cardDiscardBody": "Rời đi bây giờ thì thẻ giữ nguyên như lần lưu trước.",

@@ -1038,7 +1038,7 @@
   "@cardDeckGoneTitle": {
     "description": "Editor state when the deck was deleted meanwhile."
   },
-  "cardDeckGoneBody": "It was moved to Trash or deleted while you were adding cards. This card was not saved.",
+  "cardDeckGoneBody": "It was moved to Trash or deleted while you were adding cards. This card was not saved; your text is kept on this phone.",
   "@cardDeckGoneBody": {
     "description": "Editor state when the deck went to the Trash meanwhile (FE-B1 D11)."
   },

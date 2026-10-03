@@ -20,7 +20,7 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 | Tags | `CardTagEditorWidget` (`CardRemovableTagChipWidget` × n, `MxButton` "Add tag", `MxFieldMessage`) | "Tags · optional · {n} / 10"; removable chips, an inline add input with an "Add" button beside it (enabled while the field holds text; Done adds too). At 10 tags, Add tag is withdrawn and a warning message shows (BR-TAG-002). |
 | Footer | `CardEditorFooterWidget` (`MxFooterBar`) | Caption line; Cancel (`MxButton` outline) + a block primary "Save card" / "Retry save"; a danger `MxInlineBanner` after a failed save. Cancel, the close button and Back are held while a save is in flight (SP2a 2.16). |
 | Discard dialog | `CardDiscardDialogWidget` (`MxDialog`, `MxSheetActions`) | "Discard this card?" / "What you typed is not saved."; Keep editing / Discard. Guards leaving a dirty new-card form (ruling P4a-L5). |
-| Gone state | `CardGoneWidget` (`MxEmptyState`) | "This deck is no longer here" / "It was moved to Trash or deleted while you were adding cards. This card was not saved."; Back to deck + Open Trash (FE-B1 D11). |
+| Gone state | `CardGoneWidget` (`MxEmptyState`) | "This deck is no longer here" / "It was moved to Trash or deleted while you were adding cards. This card was not saved; your text is kept on this phone."; Back to deck + Open Trash (FE-B1 D11). |
 
 ## States
 
@@ -66,5 +66,5 @@ card?") when leaving a dirty new-card form without saving.
 - Tags: "Tags" · "optional · {count} / {limit}" · "Add tag" · "Add" · "Remove {tag}" · "A card can carry 10 tags. Remove one to add another."
 - Footer: "Cancel" · "Save card" · "Retry save" · "Couldn't save card." · "Nothing was lost. Tap Save to try again."
 - Discard: "Discard this card?" · "What you typed is not saved." · "Keep editing" · "Discard".
-- Gone: "This deck is no longer here" · "It was moved to Trash or deleted while you were adding cards. This card was not saved." · "Back to deck" · "Open Trash".
+- Gone: "This deck is no longer here" · "It was moved to Trash or deleted while you were adding cards. This card was not saved; your text is kept on this phone." · "Back to deck" · "Open Trash".
 - Toast: "Card added".

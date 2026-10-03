@@ -386,6 +386,24 @@ void main() {
     expect(find.text(_en.cardDraftTitle), findsOneWidget);
   });
 
+  libraryTest('a deck that is gone says the text is kept on this phone, and '
+      'it is (D10)', (tester, env) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+    await tester.enterText(_field(0), 'bap');
+    await tester.enterText(_field(1), 'rice');
+    await env.decks.deleteDeck(deckId: deckId);
+    await tester.pump();
+    await tester.tap(_footerSave(_en.cardSaveCard));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardDeckGoneTitle), findsOneWidget);
+    expect(find.text(_en.cardDeckGoneBody), findsOneWidget);
+    expect(_en.cardDeckGoneBody, contains('kept on this phone'));
+    final kept = await _drafts(env).read(CardDraftKey.create(deckId));
+    expect((kept!.front, kept.back), ('bap', 'rice'));
+  });
+
   libraryTest('Cancel, close and Back are held while a save is in flight '
       '(2.16)', (tester, env) async {
     final deckId = await _words(env);
