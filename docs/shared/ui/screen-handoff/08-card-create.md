@@ -54,7 +54,7 @@ card?") when leaving a dirty new-card form without saving.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in primary ink beside them; Optional details stays a section label.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the tag field has an "Add" button (`cardTagConfirm`) beside it, enabled while the field holds text; Done or Add adds the tag through the same checks (BR-TAG-001, BR-TAG-002); Save first adds the tag still typed, and an invalid one shows its error and saves nothing; "Save and add another" clears the tag field with the rest of the form.
 
-- **SP2a R9 (2026-10-03, spec `2026-10-03-ui-hardening-sp2a-design.md` §3.2):** what is typed is kept in `card_draft`, 500 ms after the last change, per `create:<deckId>`. It is device-local: never synced, never logged, dropped after 30 days. A save, Discard on the discard dialog and an unchanged form clear it; a refused deck keeps it. No autosave runs while a kept draft is on offer.
+- **SP2a R9 (2026-10-03, spec `2026-10-03-ui-hardening-sp2a-design.md` §3.2):** what is typed is kept in `card_draft`, 500 ms after the last change, per `create:<deckId>`. It is device-local: never synced, its text never logged (the DB tracer logs a `card_draft` statement without its arguments), dropped after 30 days. A save, Discard on the discard dialog and an unchanged form clear it; a refused deck keeps it. No autosave runs while a kept draft is on offer.
 
 ## Copy
 

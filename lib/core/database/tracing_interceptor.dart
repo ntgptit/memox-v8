@@ -8,6 +8,10 @@ import 'package:memox/core/logging/app_logger.dart';
 /// The log buffer has its own database without this tracer, so writing a log
 /// never logs.
 ///
+/// A statement on the `card_draft` table logs its SQL and the number of its
+/// arguments, never the arguments: they are the card text being written, and
+/// the log ships to the server (SP2a R9).
+///
 /// A statement's time is what its caller waits for: it starts when the tracer
 /// sees the call, so it includes the wait for Drift's lock on the connection
 /// (statements queue behind each other). A `db.slow_query` can therefore mean
@@ -23,6 +27,9 @@ final class TracingInterceptor extends QueryInterceptor {
   /// thousands of runs of one statement. Its context carries `runs`, the real
   /// count.
   static const maxBatchArgs = 50;
+
+  /// The table whose statements log without their arguments.
+  static const _draftTable = 'card_draft';
 
   // Elapsed time only: the database layer never reads the wall clock.
   static final _stopwatch = Stopwatch()..start();
@@ -180,7 +187,7 @@ final class TracingInterceptor extends QueryInterceptor {
   }) => _log.error(
     'db.query_failed',
     category: LogCategory.db,
-    error: error,
+    error: _isDraft(sql) ? _DraftStatementError(error) : error,
     stackTrace: stackTrace,
     context: _context(kind, sql, args, _elapsedMs(start), runs),
   );
@@ -207,10 +214,15 @@ final class TracingInterceptor extends QueryInterceptor {
   ) => {
     'kind': kind,
     'sql': sql,
-    'args': [for (final arg in args) _arg(arg)],
+    if (_isDraft(sql))
+      'arg_count': args.length
+    else
+      'args': [for (final arg in args) _arg(arg)],
     'duration_ms': ms,
     'runs': ?runs,
   };
+
+  static bool _isDraft(String sql) => sql.contains(_draftTable);
 
   // A blob is logged by its size; everything else as it is.
   static Object? _arg(Object? arg) => switch (arg) {
@@ -218,4 +230,15 @@ final class TracingInterceptor extends QueryInterceptor {
     List<Object?>() => [for (final item in arg) _arg(item)],
     _ => arg,
   };
+}
+
+/// What a failing `card_draft` statement logs in place of its error: the
+/// driver's message repeats the statement's parameters, which are the draft.
+final class _DraftStatementError implements Exception {
+  _DraftStatementError(Object cause) : _type = cause.runtimeType;
+
+  final Type _type;
+
+  @override
+  String toString() => '$_type on a card_draft statement (message withheld)';
 }

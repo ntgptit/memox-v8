@@ -8,7 +8,8 @@ import 'package:memox/features/card/domain/repositories/card_draft_repository.da
 
 /// `card_draft` through [CardDraftDao]. The optional fields and the flag are
 /// one JSON object, the tag names a JSON array. The text is card content, so
-/// nothing here logs it (ADR-002).
+/// nothing here logs it (ADR-002), and the DB tracer logs a `card_draft`
+/// statement without its arguments.
 final class CardDraftRepositoryImpl implements CardDraftRepository {
   CardDraftRepositoryImpl(AppDatabase db, {DateTime Function()? now})
     : _dao = CardDraftDao(db),
