@@ -8,6 +8,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
+import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
@@ -103,4 +104,44 @@ void main() {
     await _tap(tester, find.byTooltip(_en.commonBack));
     expect(find.byType(StudyEntryScreen), findsOneWidget);
   });
+
+  /// Korean's Study options with an edit that Save has not written.
+  Future<void> openEditedOptions(WidgetTester tester, LibraryEnv env) async {
+    await env.decks.root('Korean');
+    await pumpMemoxApp(tester, env);
+    await _tap(tester, find.text('Korean'));
+    await _tap(tester, find.byTooltip(_en.deckActions));
+    await _tap(
+      tester,
+      find.descendant(
+        of: find.byType(MxActionSheetCommandRow),
+        matching: find.text(_en.deckStudyOptions),
+      ),
+    );
+    await _tap(tester, find.byType(MxToggle));
+    await _tap(tester, find.byTooltip(_en.settingsMoreCards));
+  }
+
+  for (final (via, goBack) in <(String, Future<void> Function(WidgetTester))>[
+    ('system Back', (tester) => tester.binding.handlePopRoute()),
+    (
+      'the app bar Back',
+      (tester) => tester.tap(find.byTooltip(_en.commonBack)),
+    ),
+  ]) {
+    libraryTest('edits then $via ask first; Discard leaves the routed screen '
+        '(SP2a 2.06)', (tester, env) async {
+      await openEditedOptions(tester, env);
+
+      await goBack(tester);
+      await tester.pumpAndSettle();
+      expect(find.text(_en.studyOptionsDiscardTitle), findsOneWidget);
+      expect(find.byType(StudyOptionsScreen), findsOneWidget);
+
+      await _tap(tester, find.text(_en.studyOptionsDiscard));
+
+      expect(find.byType(StudyOptionsScreen), findsNothing);
+      expect(_barTitle('Korean'), findsOneWidget);
+    });
+  }
 }
