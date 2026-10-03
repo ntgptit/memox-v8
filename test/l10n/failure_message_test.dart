@@ -29,4 +29,30 @@ void main() {
       }
     });
   }
+
+  test(
+    'failureOfThrown tells a Failure as it is and reports anything else',
+    () {
+      final reported = <FlutterErrorDetails>[];
+      final previous = FlutterError.onError;
+      FlutterError.onError = reported.add;
+      addTearDown(() => FlutterError.onError = previous);
+      const known = DatabaseLockedFailure(cause: 'locked');
+
+      expect(
+        failureOfThrown(known, StackTrace.empty, library: 'x'),
+        same(known),
+      );
+      expect(reported, isEmpty);
+
+      final told = failureOfThrown(
+        StateError('boom'),
+        StackTrace.empty,
+        library: 'deck delete',
+      );
+      expect(told, isA<UnknownDatabaseFailure>());
+      expect(reported.single.exception, isA<StateError>());
+      expect(reported.single.library, 'deck delete');
+    },
+  );
 }
