@@ -151,6 +151,47 @@ void main() {
     },
   );
 
+  test('a page asked while a refresh runs is dropped when the refresh fails: '
+      'the next ask appends once, not twice (final fix 7)', () async {
+    await open(pageOf(LogPage.size));
+    final refreshing = controller().refresh();
+    await pumpEventQueue();
+    final asked = controller().loadMore();
+    await pumpEventQueue();
+    expect(loaded().more, MonitoringMore.loading);
+
+    repository.queries[1].fail(const OfflineFailure(cause: 'x'));
+    await refreshing;
+    expect(loaded().more, MonitoringMore.idle);
+
+    final again = controller().loadMore();
+    await pumpEventQueue();
+    repository.queries[2].answer(pageOf(3, prefix: 'p'));
+    repository.queries[3].answer(pageOf(3, prefix: 'q'));
+    await Future.wait([asked, again]);
+
+    expect(loaded().items, hasLength(LogPage.size + 3));
+    expect(ids().where((id) => id.startsWith('p')), isEmpty);
+    expect(loaded().more, MonitoringMore.idle);
+  });
+
+  test('a page asked while a refresh runs never lands on the new rows '
+      '(final fix 7)', () async {
+    await open(pageOf(LogPage.size));
+    final refreshing = controller().refresh();
+    await pumpEventQueue();
+    final asked = controller().loadMore();
+    await pumpEventQueue();
+
+    repository.queries[1].answer(pageOf(2, prefix: 'n'));
+    await refreshing;
+    repository.queries[2].answer(pageOf(3, prefix: 'p'));
+    await asked;
+
+    expect(ids(), ['n0', 'n1']);
+    expect(loaded().more, MonitoringMore.idle);
+  });
+
   test('a next page that lands keeps the warning: the first rows are still '
       'from the earlier load', () async {
     await open(pageOf(LogPage.size));

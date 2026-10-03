@@ -320,7 +320,7 @@ void main() {
     await tester.pumpAndSettle();
 
     const warning =
-        "Couldn't refresh the list. The rows below are from the last time it loaded.";
+        "Nothing was lost. Couldn't refresh the list. The rows below are from the last time it loaded.";
     expect(find.text(warning), findsOneWidget);
     expect(find.text('2 LOGS'), findsOneWidget);
     expect(find.text('message of r0'), findsOneWidget);

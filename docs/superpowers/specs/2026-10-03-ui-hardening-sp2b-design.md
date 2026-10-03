@@ -100,7 +100,7 @@ Copy (EN · VI):
 Copy (EN · VI):
 
 - `syncSignInAgain`: "Your sign-in expired, so sync is paused. Your changes are safe on this device. Sign in again to resume." · "Phiên đăng nhập đã hết hạn nên đồng bộ đang tạm dừng. Thay đổi vẫn an toàn trên điện thoại này. Đăng nhập lại để tiếp tục."
-- `monitoringRefreshFailed`: "Couldn't refresh the list. The rows below are from the last time it loaded." · "Không làm mới được danh sách. Các dòng bên dưới là lần tải trước."
+- `monitoringRefreshFailed`: "Nothing was lost. Couldn't refresh the list. The rows below are from the last time it loaded." · "Không mất dữ liệu nào. Không làm mới được danh sách. Các dòng bên dưới là lần tải trước." (final fix 7: says nothing was lost first, per DESIGN.md)
 
 ### 3.7 Account (screens 29–33)
 

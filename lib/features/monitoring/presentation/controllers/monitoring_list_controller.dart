@@ -26,6 +26,12 @@ class MonitoringListController extends _$MonitoringListController {
   /// it was asked under.
   var _generation = 0;
 
+  /// Bumped by every next-page ask and by every first page that answers, so
+  /// a next page belongs to the list it was asked of: one asked while a
+  /// refresh ran is dropped once that refresh answers, whichever way, and
+  /// can never append over the rows it did not extend (SP2b final 7).
+  var _moreTicket = 0;
+
   @override
   MonitoringListState build() {
     ref.onDispose(() => _debounce?.cancel());
@@ -100,6 +106,7 @@ class MonitoringListController extends _$MonitoringListController {
     final after = current.next;
     if (after == null || current.more == MonitoringMore.loading) return;
     final generation = _generation;
+    final ticket = ++_moreTicket;
     final filter = state.filter;
     _show(current.withMore(MonitoringMore.loading));
     try {
@@ -107,7 +114,7 @@ class MonitoringListController extends _$MonitoringListController {
         filter,
         after: after,
       );
-      if (!_isCurrent(generation)) return;
+      if (!_isMoreCurrent(generation, ticket)) return;
       final latest = _loaded;
       if (latest == null) return;
       state = MonitoringListState(
@@ -119,7 +126,7 @@ class MonitoringListController extends _$MonitoringListController {
         ),
       );
     } on Object {
-      if (!_isCurrent(generation)) return;
+      if (!_isMoreCurrent(generation, ticket)) return;
       final latest = _loaded;
       if (latest == null) return;
       _show(latest.withMore(MonitoringMore.failed));
@@ -151,6 +158,9 @@ class MonitoringListController extends _$MonitoringListController {
 
   bool _isCurrent(int generation) => ref.mounted && generation == _generation;
 
+  bool _isMoreCurrent(int generation, int ticket) =>
+      _isCurrent(generation) && ticket == _moreTicket;
+
   Future<void> _loadFirst() async {
     if (!ref.mounted) return;
     final generation = ++_generation;
@@ -158,12 +168,14 @@ class MonitoringListController extends _$MonitoringListController {
     try {
       final page = await ref.read(queryServerLogsUseCaseProvider)(filter);
       if (!_isCurrent(generation)) return;
+      _moreTicket++;
       state = MonitoringListState(
         filter: filter,
         content: MonitoringListLoaded(items: page.items, next: page.next),
       );
     } on Object catch (error) {
       if (!_isCurrent(generation)) return;
+      _moreTicket++;
       final failure = MonitoringLoadFailure.of(error);
       final shown = _loaded;
       // A pull to refresh that fails keeps the rows (SP2b 2.38). A new filter
