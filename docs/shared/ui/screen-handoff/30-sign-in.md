@@ -75,8 +75,11 @@ form inside it. Its content is centred in the page.
 | Before the target signs in | "Cancel" at the top returns to where the switch started. |
 
 Notices at the app root: toasts "Couldn't merge. Your decks are still on this phone." and
-"Couldn't delete the account. Nothing changed." (plan ruling 8); a refused deletion of the
-last admin is a dialog on screen 32's record (P3b B7).
+"Couldn't delete the account. Nothing changed." (plan ruling 8), except a deletion refused
+for want of a session, or one that timed out after it was sent, which says "Couldn't confirm
+the deletion. Sign in again to check." because the server may have taken it (SP2b 2.47,
+final fix 8); a refused deletion of the last admin is a dialog on screen 32's record
+(P3b B7).
 
 ## States
 

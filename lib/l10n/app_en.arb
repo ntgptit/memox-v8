@@ -7294,7 +7294,7 @@
   },
   "accountDeleteUnknown": "Couldn't confirm the deletion. Sign in again to check.",
   "@accountDeleteUnknown": {
-    "description": "Toast: a deletion refused for want of a session; the server may have taken it, so it must not say nothing changed (SP2b 2.47)."
+    "description": "Toast: a deletion refused for want of a session, or one that timed out after it was sent; the server may have taken it, so it must not say nothing changed (SP2b 2.47, final fix 8)."
   },
   "accountTitle": "Account",
   "@accountTitle": {

@@ -153,10 +153,12 @@ allowed). `PopScope` swallows Back; the status line is a live region.
 Notices (`MergeNotDone`, `DeleteRefused`) are read at the app root:
 `MergeNotDone` → snackbar "Couldn't merge. Your decks are still on this
 phone."; `DeleteRefused(LastAdmin)` → dialog "An admin must remain. Give
-another person the admin role first."; any other `DeleteRefused` → snackbar
-"Couldn't delete the account. Nothing changed."; `DeleteRefused(SessionInvalid)` →
-"Couldn't confirm the deletion. Sign in again to check." (the server may have taken
-it; SP2b 2.47)
+another person the admin role first."; any `DeleteRefused` other than
+`SessionInvalid` and an offline refusal that timed out → snackbar "Couldn't delete
+the account. Nothing changed."; `DeleteRefused(SessionInvalid)`, and
+`DeleteRefused(Offline)` whose cause is a timeout (the request may have reached the
+server), → "Couldn't confirm the deletion. Sign in again to check." (the server may
+have taken it; SP2b 2.47, final fix 8)
 
 ### 5.5 Settings › Account (23, first section)
 
