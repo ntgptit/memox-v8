@@ -321,4 +321,52 @@ void main() {
     expect(await controller.abandon(), isTrue);
     expect((await sessionOf(db, id)).read<String>('status'), 'abandoned');
   });
+
+  test('a failed reveal sets the write-failed flag, the next write clears it '
+      '(2.12)', () async {
+    final id = await graded(StudyMode.recall);
+    final controller = await controllerOf(id);
+    final item = await servedOf(id);
+
+    sessions.isRevealFailing = true;
+    await controller.revealRecall(item, 12000);
+    var state = container.read(studySessionControllerProvider(id));
+    expect((state.hasWriteFailed, state.isBusy), (true, false));
+    expect((await servedOf(id)).isRevealed, isFalse);
+
+    sessions.isRevealFailing = false;
+    await controller.revealRecall(item, 12000);
+    state = container.read(studySessionControllerProvider(id));
+    expect(state.hasWriteFailed, isFalse);
+    expect((await servedOf(id)).isRevealed, isTrue);
+  });
+
+  test('a refused reveal sets the flag too (2.12)', () async {
+    final id = await graded(StudyMode.recall);
+    final controller = await controllerOf(id);
+    final item = await servedOf(id);
+    await controller.abandon();
+
+    await controller.revealRecall(item, 12000);
+
+    expect(
+      container.read(studySessionControllerProvider(id)).hasWriteFailed,
+      isTrue,
+    );
+  });
+
+  test('a refused fill hint is not flagged: the card may simply have no '
+      'hint (2.12)', () async {
+    final id = await graded(StudyMode.fill);
+    final controller = await controllerOf(id);
+    final item = await servedOf(id);
+    await controller.abandon();
+
+    await controller.showFillHint(item);
+
+    expect(
+      container.read(studySessionControllerProvider(id)).hasWriteFailed,
+      isFalse,
+    );
+  });
 }

@@ -329,6 +329,12 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       return const StudySessionLoadingWidget();
     }
     final mode = l10n.studyMode(view.currentMode);
+    // A busy database refused an answer (Retry saves it), or a reveal was
+    // refused or failed (the Show the meaning button is its retry, 2.12).
+    final isAnswerUnsaved = turn.unsaved != null;
+    final (bannerTitle, bannerBody) = isAnswerUnsaved
+        ? (l10n.studyAnswerBusyTitle, l10n.studyAnswerBusyBody)
+        : (l10n.studyRevealFailedTitle, l10n.studyRevealFailedBody);
     return MxAppShell(
       appBar: MxStudyTopBar(
         modeLabel: mode,
@@ -348,7 +354,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
             text: sessionContextOf(l10n, view),
             shown: sessionContextShownOf(l10n, view),
           ),
-          if (turn.unsaved != null)
+          if (isAnswerUnsaved || turn.hasWriteFailed)
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.gutter,
@@ -358,18 +364,24 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
               ),
               child: MxInlineBanner(
                 tone: MxBannerTone.danger,
-                title: l10n.studyAnswerBusyTitle,
-                message: l10n.studyAnswerBusyBody,
+                title: bannerTitle,
+                message: bannerBody,
                 actions: [
-                  MxButton(
-                    label: l10n.commonRetry,
-                    size: MxButtonSize.compact,
-                    onPressed: _retry,
-                  ),
+                  if (isAnswerUnsaved)
+                    MxButton(
+                      label: l10n.commonRetry,
+                      size: MxButtonSize.compact,
+                      onPressed: _retry,
+                    ),
                 ],
               ),
             ),
-          Expanded(child: _modeBody(view, item, turn)),
+          // Keyed so a banner above it coming or going keeps the mode's state
+          // (Recall's clock) instead of rebuilding it.
+          Expanded(
+            key: const ValueKey('mode-body'),
+            child: _modeBody(view, item, turn),
+          ),
         ],
       ),
     );

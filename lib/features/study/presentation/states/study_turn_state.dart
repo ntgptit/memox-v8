@@ -4,7 +4,12 @@ import 'package:memox/features/study_mode/domain/models/study_answer_model.dart'
 
 /// What the session screen holds that its stream cannot show (spec D4, D5).
 final class StudyTurnState {
-  const StudyTurnState({this.isBusy = false, this.held, this.unsaved});
+  const StudyTurnState({
+    this.isBusy = false,
+    this.held,
+    this.unsaved,
+    this.hasWriteFailed = false,
+  });
 
   /// A write is running; every other command is dropped (BR-STUDY-004).
   final bool isBusy;
@@ -15,6 +20,10 @@ final class StudyTurnState {
 
   /// The answer a busy database refused, kept for Retry (UC-STUDY-001 E2).
   final PendingAnswer? unsaved;
+
+  /// A reveal was refused or failed: nothing changed and the person is told
+  /// (2.12). The next write or answer clears it.
+  final bool hasWriteFailed;
 }
 
 /// A turn whose outcome stays on screen after its write committed

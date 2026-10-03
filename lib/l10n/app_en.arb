@@ -4075,6 +4075,14 @@
   "@studyAnswerBusyBody": {
     "description": "Study session shell (FE-A6 P1c): the busy-database banner's message."
   },
+  "studyRevealFailedTitle": "Couldn't show the meaning",
+  "@studyRevealFailedTitle": {
+    "description": "Session screen (SP2a 2.12): banner title when the Recall reveal was refused or failed."
+  },
+  "studyRevealFailedBody": "Nothing was lost. Tap Show the meaning to try again.",
+  "@studyRevealFailedBody": {
+    "description": "Session screen (SP2a 2.12): banner message for a failed Recall reveal; the button is the retry."
+  },
   "studySessionErrorTitle": "Couldn't read this session",
   "@studySessionErrorTitle": {
     "description": "Study session shell (FE-A6 P1c): the session could not be read (UC-STUDY-001 E5)."

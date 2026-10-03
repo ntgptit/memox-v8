@@ -414,4 +414,29 @@ void main() {
 
     expect(find.text('15s / 20s'), findsOneWidget);
   });
+
+  libraryTest('a reveal that fails says so in the banner; the next tap '
+      'works and clears it (2.12)', (tester, env) async {
+    final id = await _recall(env);
+    env.sessions.isRevealFailing = true;
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+    // The failure lands after the write starts (the fixture's timer).
+    await tester.pump(const Duration(milliseconds: 1));
+    await _settle(tester);
+
+    expect(find.text(_en.studyRevealFailedTitle), findsOneWidget);
+    expect(find.text(_en.studyRevealFailedBody), findsOneWidget);
+    expect(find.text(_en.commonRetry), findsNothing);
+    expect(find.text('apple'), findsNothing);
+
+    env.sessions.isRevealFailing = false;
+    await tester.tap(find.text(_en.studyRecallShowMeaning));
+    await _settle(tester);
+
+    expect(find.text(_en.studyRevealFailedTitle), findsNothing);
+    expect(find.text('apple'), findsOneWidget);
+  });
 }

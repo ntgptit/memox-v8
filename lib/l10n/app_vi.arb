@@ -786,6 +786,8 @@
   "studyBrowsePrevious": "Thẻ trước",
   "studyAnswerBusyTitle": "Chưa lưu được câu trả lời",
   "studyAnswerBusyBody": "Máy đang bận. Câu trả lời vẫn được giữ — hãy thử lại.",
+  "studyRevealFailedTitle": "Chưa hiện được nghĩa",
+  "studyRevealFailedBody": "Chưa mất gì. Hãy bấm Hiện nghĩa để thử lại.",
   "studySessionErrorTitle": "Không đọc được phiên này",
   "studySessionErrorBody": "Câu trả lời của bạn vẫn an toàn trên máy. Hãy thử lại sau giây lát.",
   "studySessionStaleToast": "Phiên đã kết thúc: tiến độ học của bộ thẻ vừa được đặt lại.",

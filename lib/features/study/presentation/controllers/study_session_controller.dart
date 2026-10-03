@@ -1,5 +1,6 @@
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/providers/abandon_study_session_use_case_provider.dart';
 import 'package:memox/features/study/presentation/providers/answer_study_turn_use_case_provider.dart';
@@ -81,7 +82,8 @@ class StudySessionController extends _$StudySessionController {
 
   /// `recall`: shows [item]'s meaning with [remainingMs] left; records no
   /// outcome (BR-STUDY-065, BR-STUDY-036). The stream shows it revealed. A
-  /// refusal or a failure leaves the turn as it was, to be tapped again.
+  /// refusal or a failure leaves the turn as it was, to be tapped again, and
+  /// sets [StudyTurnState.hasWriteFailed] so the screen says so (2.12).
   /// Dropped while a write runs (BR-STUDY-004).
   Future<void> revealRecall(StudyItem item, int remainingMs) => _write(
     () => ref.read(revealRecallAnswerUseCaseProvider)(
@@ -89,6 +91,7 @@ class StudySessionController extends _$StudySessionController {
       cardId: item.cardId,
       remainingMs: _turnTime(remainingMs),
     ),
+    flagsFailure: true,
   );
 
   /// `fill`: shows [item]'s hint; noted, it changes no result
@@ -118,17 +121,23 @@ class StudySessionController extends _$StudySessionController {
   }
 
   /// One write with no outcome to hold: busy while it runs, then back to
-  /// idle whatever happened; the stream shows what changed.
-  Future<void> _write(Future<Object?> Function() command) async {
+  /// idle whatever happened; the stream shows what changed. With
+  /// [flagsFailure] a refusal or a failure is said (2.12).
+  Future<void> _write(
+    Future<Outcome<void, StudyRejection>> Function() command, {
+    bool flagsFailure = false,
+  }) async {
     if (state.isBusy) return;
     state = const StudyTurnState(isBusy: true);
+    var hasFailed = false;
     try {
-      await command();
+      hasFailed = await command() is Rejected;
     } on Failure {
       // The turn stays as it was.
+      hasFailed = true;
     }
     if (!ref.mounted) return;
-    state = const StudyTurnState();
+    state = StudyTurnState(hasWriteFailed: flagsFailure && hasFailed);
   }
 
   static int _turnTime(int remainingMs) => remainingMs.clamp(0, recallTurnMs);
