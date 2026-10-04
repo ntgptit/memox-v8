@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate docs/_generated/{index,traceability,open-questions}.md.
+"""Generate docs/_generated/{index,traceability,screens,navigation-graph,open-questions}.md.
 
     python tools/docs/generate.py [--out DIR]
 
@@ -299,6 +299,7 @@ def group_order(docs: list[Doc]) -> list[str]:
 
 def render_index(docs: list[Doc]) -> str:
     usage = used_by(docs)
+    invoked = invoked_by(docs)
     lines = [GENERATED_HEADER, "", "# Index", ""]
     by_id = lambda d: d.id  # noqa: E731
     for group in group_order(docs):
@@ -309,7 +310,9 @@ def render_index(docs: list[Doc]) -> str:
         rules = sorted((d for d in group_docs if d.kind == "BR"), key=by_id)
         cases = sorted((d for d in group_docs if d.kind == "UC"), key=by_id)
         decisions = sorted((d for d in group_docs if d.kind == "ADR"), key=by_id)
-        if not (rules or cases or decisions):
+        functions = sorted((d for d in group_docs if d.kind == "FN"), key=by_id)
+        screens = sorted((d for d in group_docs if d.kind == "SCR"), key=by_id)
+        if not (rules or cases or decisions or functions or screens):
             lines += ["Chưa có tài liệu.", ""]
             continue
         if rules:
@@ -319,6 +322,14 @@ def render_index(docs: list[Doc]) -> str:
                 lines.append(
                     f"| [{d.id}]({rel_link(d.path, GENERATED)}) | {cell(d.title)} | {cell(d.status)} "
                     f"| {cell(str(d.meta.get('summary', '')))} | {users} |"
+                )
+            lines.append("")
+        if functions:
+            lines += ["### Functions", "", "| ID | Title | Status | Invoked by |", "|---|---|---|---|"]
+            for d in functions:
+                lines.append(
+                    f"| [{d.id}]({rel_link(d.path, GENERATED)}) | {cell(d.title)} | {cell(d.status)} "
+                    f"| {', '.join(invoked.get(d.id, [])) or '—'} |"
                 )
             lines.append("")
         for heading, items in (("Use cases", cases), ("Decisions", decisions)):
@@ -331,33 +342,106 @@ def render_index(docs: list[Doc]) -> str:
                     f"| {cell(str(d.meta.get('summary', '')))} |"
                 )
             lines.append("")
+        if screens:
+            lines += ["### Screens", "", "| ID | Name | Status | Route |", "|---|---|---|---|"]
+            for d in screens:
+                routes = ", ".join(f"`{route}`" for route in d.as_list("route"))
+                lines.append(
+                    f"| [{d.id}]({rel_link(d.path, GENERATED)}) | {cell(str(d.meta.get('name', '')))} "
+                    f"| {cell(d.status)} | {routes or '—'} |"
+                )
+            lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
 
 def render_traceability(docs: list[Doc]) -> str:
     cases = sorted((d for d in docs if d.kind == "UC"), key=lambda d: (d.feature, d.id))
+    functions = {d.id: d for d in docs if d.kind == "FN"}
     tests = tests_by_id([d.id for d in cases])
     lines = [
         GENERATED_HEADER,
         "",
         "# Traceability",
         "",
-        "Use case → rules → code → test. Test = file trong "
+        "Use case → functions → rules → code → test. Test = file trong "
         + ", ".join(f"`{name}/`" for name in TEST_DIRS)
         + " có chứa chuỗi ID của UC.",
         "",
-        "| UC | Status | Rules | Code | Tests |",
-        "|---|---|---|---|---|",
+        "| UC | Status | Functions | Rules | Code | Tests |",
+        "|---|---|---|---|---|---|",
     ]
     for d in cases:
+        invoked = [functions[f] for f in d.as_list("invokes") if f in functions]
+        rules = d.as_list("rules") if not d.is_section else sorted({r for f in invoked for r in f.as_list("rules")})
+        code = list(dict.fromkeys(d.as_list("code") + [c for f in invoked for c in f.as_list("code")]))
         lines.append(
             f"| [{d.id}]({rel_link(d.path, GENERATED)}) | {cell(d.status)} "
-            f"| {cell(', '.join(d.as_list('rules')))} "
-            f"| {cell(', '.join(f'`{c}`' for c in d.as_list('code')))} "
+            f"| {cell(', '.join(d.as_list('invokes')))} "
+            f"| {cell(', '.join(rules))} "
+            f"| {cell(', '.join(f'`{c}`' for c in code))} "
             f"| {cell(', '.join(f'`{t}`' for t in tests[d.id]))} |"
         )
     if not cases:
-        lines.append("| — | — | — | — | — |")
+        lines.append("| — | — | — | — | — | — |")
+    return "\n".join(lines) + "\n"
+
+
+def router_entries() -> list[str]:
+    path = navigation_file()
+    return specdocs.ids_in(path.read_text(encoding="utf-8"), "SCR") if path.exists() else []
+
+
+def render_screens(docs: list[Doc]) -> str:
+    screens = sorted((d for d in docs if d.kind == "SCR" and d.screen is not None), key=lambda d: d.id)
+    functions = {d.id: d for d in docs if d.kind == "FN"}
+    incoming: dict[str, set[str]] = {}
+    for doc in screens:
+        for target in doc.screen.navigates:
+            incoming.setdefault(target, set()).add(doc.id)
+    routed = router_entries()
+    goldens = golden_files()
+    lines = [GENERATED_HEADER, "", "# Screens", ""]
+    if not screens:
+        lines += ["Không có.", ""]
+    for doc in screens:
+        rules = sorted({r for f in doc.screen.invokes if f in functions for r in functions[f].as_list("rules")})
+        entries = sorted(incoming.get(doc.id, set())) + (["NAVIGATION.md"] if doc.id in routed else [])
+        lines += [
+            f"## [{doc.id}]({rel_link(doc.path, GENERATED)}) · {cell(str(doc.meta.get('name', '')))}",
+            "",
+            f"- Invokes: {', '.join(doc.screen.invokes) or '—'}",
+            f"- Rules via FN: {', '.join(rules) or '—'}",
+            f"- Use cases: {', '.join(doc.screen.related_ucs) or '—'}",
+            f"- Entry points: {', '.join(entries) or '—'}",
+            "",
+        ]
+        states = [s for s in doc.screen.states if s.key and not s.removed]
+        if states:
+            lines += ["| State | Golden | Present |", "|---|---|---|"]
+            for state in states:
+                names = [specdocs.golden_name(doc.id, state.key, v) for v in state.variants]
+                present = ", ".join(f"`{n}`" for n in names if n in goldens) or "—"
+                lines.append(f"| `{state.key}` | {', '.join(state.variants) or 'none'} | {present} |")
+            lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def render_navigation(docs: list[Doc]) -> str:
+    screens = [d for d in docs if d.kind == "SCR" and d.screen is not None]
+    edges = sorted({(d.id, target) for d in screens for target in d.screen.navigates})
+    lines = [
+        GENERATED_HEADER,
+        "",
+        "# Navigation graph",
+        "",
+        "Screen → screen edges from each spec's `Navigate to:` lines (spec R9).",
+        "",
+        "| From | To |",
+        "|---|---|",
+    ]
+    lines += [f"| {source} | {target} |" for source, target in edges] or ["| — | — |"]
+    lines += ["", "## Router entries", "", "Screens that `NAVIGATION.md` routes to.", ""]
+    lines += [f"- {doc_id}" for doc_id in sorted(router_entries())] or ["Không có."]
     return "\n".join(lines) + "\n"
 
 
@@ -407,6 +491,8 @@ def render_all() -> dict[str, str]:
     return {
         "index.md": render_index(docs),
         "traceability.md": render_traceability(docs),
+        "screens.md": render_screens(docs),
+        "navigation-graph.md": render_navigation(docs),
         "open-questions.md": render_open_questions(),
     }
 
@@ -424,8 +510,12 @@ def main() -> int:
     if not DOCS.is_dir():
         print("ERROR docs: not found — run from the repository root")
         return 1
-    write_all(args.out)
-    print(f"OK {args.out.relative_to(ROOT) if args.out.is_relative_to(ROOT) else args.out}: generated 3 files")
+    files = render_all()
+    args.out.mkdir(parents=True, exist_ok=True)
+    for name, content in files.items():
+        (args.out / name).write_text(content, encoding="utf-8", newline="\n")
+    shown = args.out.relative_to(ROOT) if args.out.is_relative_to(ROOT) else args.out
+    print(f"OK {shown}: generated {len(files)} files")
     return 0
 
 

@@ -427,5 +427,37 @@ class WarningTest(unittest.TestCase):
         self.assertTrue(has(found, "BR-DECK-001", "active BR is cited by no FN"))
 
 
+class GeneratedTest(unittest.TestCase):
+    def render(self, files) -> dict[str, str]:
+        with DocsTree(files):
+            return check.g.render_all()
+
+    def test_index_lists_a_function_with_who_invokes_it(self):
+        out = self.render(base())["index.md"]
+        self.assertIn("| [FN-DECK-001](../functional-spec/deck.md) | Tạo deck | active | SCR-DECK-001, UC-DECK-001 |", out)
+
+    def test_index_says_which_function_uses_a_rule(self):
+        self.assertIn("| x | FN-DECK-001 |", self.render(base())["index.md"])
+
+    def test_index_lists_the_screens_of_a_feature(self):
+        self.assertIn("| [SCR-DECK-001](../screens/spec/SCR-DECK-001-deck-list.md) | Library | ready | `/decks` |", self.render(base())["index.md"])
+
+    def test_traceability_goes_through_functions(self):
+        self.assertIn("| ready | FN-DECK-001 | BR-DECK-001 |", self.render(base())["traceability.md"])
+
+    def test_screens_show_rules_entry_points_and_router_entries(self):
+        files = base(**{"docs/NAVIGATION.md": "# Navigation\n\nDeep link `/decks` opens SCR-DECK-001.\n"})
+        out = self.render(files)["screens.md"]
+        self.assertIn("- Rules via FN: BR-DECK-001", out)
+        self.assertIn("- Entry points: SCR-DECK-001, NAVIGATION.md", out)
+        self.assertIn("| `root_loaded` | light, dark | — |", out)
+
+    def test_the_navigation_graph_has_the_edge(self):
+        self.assertIn("| SCR-DECK-001 | SCR-DECK-001 |", self.render(base())["navigation-graph.md"])
+
+    def test_output_is_stable(self):
+        self.assertEqual(self.render(base()), self.render(base()))
+
+
 if __name__ == "__main__":
     unittest.main()
