@@ -14,7 +14,13 @@ ERROR
 - a cycle in the feature `depends_on` graph (it must stay a DAG)
 - a broken relative link; a BR/UC id or `invariant Qn` cited but not defined
 - a UC / BR / feature README missing a required `##` section
-- a BR carrying a hand-written "used by" section (it is generated)
+- a hand-written reverse relation (`Used by`, `Invoked by`, `Related Screens`,
+  `Related BR`, `Entry points`, `Functional capabilities`) in a BR, feature
+  README, UC, FN or screen spec — generate.py writes those
+- an id kind a new-layout document may not cite (USE_CASES.md: FN;
+  functional-spec/: BR; screens/spec/: FN, UC, SCR, INV-UI; the catalog: SCR,
+  INV-UI; NAVIGATION.md: SCR, UC); OPEN QUESTION lines are exempt. In these
+  documents an id in `inline code` still counts
 - docs/_generated/ stale compared with a fresh `generate.py` run
 - a UC section of docs/USE_CASES.md or an FN section of docs/functional-spec/
   with a malformed heading or meta line, a bad field, or a missing `####`/`###`
@@ -52,13 +58,11 @@ BR_ID = re.compile(r"^BR-[A-Z]+-\d{3}$")
 UC_ID = re.compile(r"^UC-[A-Z]+-\d{3}$")
 ADR_ID = re.compile(r"^ADR-\d{3}$")
 SLUG = r"[a-z0-9]+(?:-[a-z0-9]+)*"
-ID_IN_TEXT = re.compile(r"\b((?:BR|UC)-[A-Z]+-\d{3})\b")
 INVARIANT_CITE = re.compile(r"\binvariant Q(\d+)\b")
 INVARIANT_DEF = re.compile(r"^--\s*(\d+)\.", re.M)
 # The one file that defines the numbered invariants cited as `invariant Qn`.
 INVARIANT_FILE = "shared/data/schema.md"
 LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
-USED_BY_SECTION = re.compile(r"^##+\s*(được dùng bởi|used by)\b", re.I | re.M)
 
 FN_ID = re.compile(r"^FN-[A-Z]+-\d{3}$")
 SCR_ID = re.compile(r"^SCR-[A-Z]+-\d{3}$")
@@ -117,6 +121,22 @@ SKIP_ID_CHECK = ("superpowers", "_generated")
 # Historical plans and specs keep links to files later retired (ADR-019); they are
 # records, not maintained docs, so their links are not checked.
 SKIP_LINK_CHECK = ("superpowers",)
+# Which ID kinds each new-layout document may cite (spec §4.8, R13); other docs: any kind.
+CITE_RULES: tuple[tuple[str, set[str]], ...] = (
+    ("USE_CASES.md", {"FN"}),
+    ("functional-spec/", {"BR"}),
+    ("screens/spec/", {"FN", "UC", "SCR", "INV"}),
+    ("screens/SCREEN_CATALOG.md", {"SCR", "INV"}),
+    ("NAVIGATION.md", {"SCR", "UC"}),
+)
+# A UC or FN heading defines its id; it does not cite it.
+DEFINITION_LINE = re.compile(r"^#{2,3} (?:UC|FN)-[A-Z]+-\d{3} — ")
+REVERSE_HEADING = re.compile(
+    r"^#{2,6}\s*(được dùng bởi|used by|invoked by|related screens|related br|"
+    r"related business rules|entry points|functional capabilities)\b",
+    re.I,
+)
+REVERSE_CHECKED = {"BR", "FEATURE", "UC", "UCS", "FN", "SCR"}
 
 
 class Report:
@@ -152,6 +172,22 @@ def schema(doc: g.Doc) -> str:
 
 def where(doc: g.Doc) -> Path | str:
     return f"{show(doc.path)}:{doc.line}" if doc.is_section else doc.path
+
+
+def allowed_kinds(path: Path) -> set[str] | None:
+    rel = path.relative_to(g.DOCS).as_posix()
+    for prefix, kinds in CITE_RULES:
+        if rel == prefix or (prefix.endswith("/") and rel.startswith(prefix)):
+            return kinds
+    return None
+
+
+def screen_catalog() -> tuple[list[specdocs.CatalogScreen], list[specdocs.Invariant]]:
+    path = g.screen_catalog_file()
+    if not path.exists():
+        return [], []
+    text = path.read_text(encoding="utf-8")
+    return specdocs.catalog_screens(text), specdocs.catalog_invariants(text)
 
 
 # ------------------------------------------------------------ per document
@@ -201,8 +237,13 @@ def check_sections(doc: g.Doc, report: Report) -> None:
     for name in REQUIRED_SECTIONS.get(schema(doc), ()):
         if name not in doc.sections:
             report.error(where(doc), f"missing section `{mark} {name}`")
-    if doc.kind == "BR" and USED_BY_SECTION.search(doc.body):
-        report.error(doc.path, "a BR must not carry a \"Được dùng bởi\" section — generate.py produces it")
+    if schema(doc) in REVERSE_CHECKED:
+        for _, line in g.iter_unfenced(doc.body):
+            if REVERSE_HEADING.match(line):
+                report.error(
+                    where(doc),
+                    f"`{line.strip()}` states a reverse relation; only generate.py writes those (spec R7)",
+                )
 
 
 def check_paths(doc: g.Doc, report: Report) -> None:
@@ -311,7 +352,9 @@ def check_warnings(docs: list[g.Doc], report: Report) -> None:
 
 
 def defined_ids(docs: list[g.Doc]) -> set[str]:
-    return {d.id for d in docs if d.kind in ("BR", "UC")}
+    _, invariants = screen_catalog()
+    ids = {d.id for d in docs if d.kind in ("BR", "UC", "FN", "SCR") and d.id}
+    return ids | {inv.id for inv in invariants}
 
 
 def defined_invariants() -> set[int] | None:
@@ -339,22 +382,32 @@ def check_text(docs: list[g.Doc], report: Report) -> None:
     for path in markdown_files():
         check_ids = not is_skipped_for_ids(path)
         skip_links = is_skipped_for_links(path)
+        kinds = allowed_kinds(path)
+        rel = path.relative_to(g.DOCS).as_posix()
         text = path.read_text(encoding="utf-8")
         body_start = frontmatter_end(text)
         for line_no, raw in g.iter_unfenced(text):
-            where = f"{show(path)}:{line_no}"
+            where_line = f"{show(path)}:{line_no}"
             # `inline code` holds examples and markers, not citations or links.
             line = g.INLINE_CODE.sub("", raw)
             if not skip_links:
-                check_links(path, line, where, report)
+                check_links(path, line, where_line, report)
             # Frontmatter ids are checked as fields (`rules`, `superseded_by`).
             if not check_ids or line_no <= body_start:
                 continue
-            for cited in sorted(set(ID_IN_TEXT.findall(line)) - ids):
-                report.error(where, f"`{cited}` is cited but not defined")
+            # In the new layout an id in `inline code` is still a citation (plan PT4).
+            cited = set(specdocs.ANY_ID.findall(raw if kinds is not None else line))
+            for missing in sorted(cited - ids):
+                report.error(where_line, f"`{missing}` is cited but not defined")
+            if kinds is not None and g.OPEN_QUESTION not in raw and not DEFINITION_LINE.match(raw):
+                for wrong in sorted(c for c in cited if specdocs.id_kind(c) not in kinds):
+                    report.error(
+                        where_line,
+                        f"`{wrong}` is a {specdocs.id_kind(wrong)} ID; {rel} may cite only {', '.join(sorted(kinds))}",
+                    )
             for n in INVARIANT_CITE.findall(line):
                 if invariants is not None and int(n) not in invariants:
-                    report.error(where, f"`invariant Q{n}` is cited but there is no `-- {n}.`")
+                    report.error(where_line, f"`invariant Q{n}` is cited but there is no `-- {n}.`")
 
 
 def frontmatter_end(text: str) -> int:

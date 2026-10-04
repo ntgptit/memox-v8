@@ -260,5 +260,49 @@ class LayoutLoadTest(unittest.TestCase):
         self.assertTrue(has(errors(base(**{SCREEN_PATH: text})), "`domain: decks` is not a feature folder"))
 
 
+class CitationTest(unittest.TestCase):
+    def test_a_use_case_may_not_cite_a_rule(self):
+        text = USE_CASES.replace("#### Alternative / Error flow\nx", "#### Alternative / Error flow\nTheo BR-DECK-001.")
+        found = errors(base(**{"docs/USE_CASES.md": text}))
+        self.assertTrue(has(found, "`BR-DECK-001` is a BR ID; USE_CASES.md may cite only FN"))
+
+    def test_an_open_question_may_name_a_rule(self):
+        text = USE_CASES + "\n> ⚠️ OPEN QUESTION: BR-DECK-001 không thuộc FN nào.\n"
+        self.assertEqual(errors(base(**{"docs/USE_CASES.md": text})), [])
+
+    def test_an_adr_citation_is_free(self):
+        text = USE_CASES.replace("#### Alternative / Error flow\nx", "#### Alternative / Error flow\nXem ADR-013.")
+        self.assertEqual(errors(base(**{"docs/USE_CASES.md": text})), [])
+
+    def test_a_function_may_not_cite_a_use_case(self):
+        text = FUNCTIONS.replace("### Kết quả\nx", "### Kết quả\nDùng trong UC-DECK-001.")
+        found = errors(base(**{"docs/functional-spec/deck.md": text}))
+        self.assertTrue(has(found, "`UC-DECK-001` is a UC ID; functional-spec/deck.md may cite only BR"))
+
+    def test_a_backticked_rule_in_a_screen_is_still_caught(self):
+        text = screen().replace("## Layout\nx", "## Layout\nName field (`BR-DECK-001`).")
+        found = errors(base(**{SCREEN_PATH: text}))
+        self.assertTrue(has(found, "`BR-DECK-001` is a BR ID; screens/spec/SCR-DECK-001-deck-list.md may cite only"))
+
+    def test_an_undefined_function_in_a_screen_is_caught(self):
+        text = screen().replace("## Purpose\nx", "## Purpose\nRuns FN-DECK-404.")
+        self.assertTrue(has(errors(base(**{SCREEN_PATH: text})), "`FN-DECK-404` is cited but not defined"))
+
+    def test_the_catalog_may_not_cite_a_use_case(self):
+        text = catalog().replace("A failed save keeps what was typed.", "See UC-DECK-001.")
+        found = errors(base(**{CATALOG_PATH: text}))
+        self.assertTrue(has(found, "`UC-DECK-001` is a UC ID; screens/SCREEN_CATALOG.md may cite only INV, SCR"))
+
+    def test_hand_written_reverse_relations_are_errors(self):
+        cases = {
+            "docs/functional-spec/deck.md": FUNCTIONS + "### Related Screens\n- SCR-DECK-001\n",
+            SCREEN_PATH: screen().replace("## Copy\nx", "## Copy\nx\n## Related BR\nx"),
+            "docs/features/deck/rules/BR-DECK-001-ten-deck.md": BR_FILE + "## Used by\nx\n",
+        }
+        for path, text in cases.items():
+            with self.subTest(path=path):
+                self.assertTrue(has(errors(base(**{path: text})), "states a reverse relation"))
+
+
 if __name__ == "__main__":
     unittest.main()
