@@ -3449,3 +3449,30 @@ Claude-Session: https://claude.ai/code/session_01Y8YmUXn5BengVUKKmQjAv5"
   - the geometry DESIGN.md states, measured with `getRect`.
 - No Phase 2 or Phase 3 golden changes.
 - Impeccable has critiqued the build, the fix has had its one audit, the Opus review is resolved, the owner has the `golden-compare` page and the gallery, and the owner has signed off.
+
+---
+
+## Outcome (owner sign-off, 2026-10-04)
+
+Phase 4 is accepted: 9/9 components built, gate 2017/2017, 78/78 goldens, no Critical finding. The three Important findings of the final review (scaffold insets) and the owner's breadcrumb finding (a non-colour cue: an openable ancestor is underlined) are fixed with regression tests (`5d60346`, `b85e7667`).
+
+**Rulings kept** (owner, at sign-off):
+- In dark, the text action "Select" reads near-white. This is the Indigo Accent (`on-primary-container`), and its contrast passes. It is reviewed again in SP3b on a real screen.
+- The bar's ground switches without a transition, because DESIGN.md asks for none. No animation is added just for polish.
+- Checkbox rows start their text earlier than tile rows. A selecting list never mixes the two leadings.
+- The title starts at 60 after a leading control (contract).
+- The "…" place keeps a 48 width (The 48 Floor Rule).
+
+**Deferred minors** (final review). These are not pulled into a later phase as a batch. One is taken up only if it blocks a composition, breaks a contract, or becomes Important.
+- `MxScreenScaffold` centres a short body (an empty state wants that; a short form may not).
+- `MxBreadcrumb` measures without the bold-text setting.
+- `MxAppBar` cannot grow past 56 above 2.0× text.
+- `MxListRow` and `MxSettingsRow` use a `LayoutBuilder` for a capped trailing, which rules out intrinsic sizing.
+- On a 720–800 window the cutout inset is partly doubled inside the column.
+- Test gaps around the bar's ground:
+  - nested or horizontal scrolls;
+  - a bare `Scaffold`;
+  - an observer swap.
+- The text-scale tests assert that no exception is thrown, not that nothing clips.
+- Tooling: `run_tests.sh` did not report a test file that failed to compile. `flutter analyze` in the gate catches it.
+
