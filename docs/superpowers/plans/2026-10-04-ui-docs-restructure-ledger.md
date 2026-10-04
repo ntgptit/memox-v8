@@ -2815,62 +2815,62 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:2` id: UC-TAG-001 |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:3` title: Quản lý tag và lọc thẻ theo tag |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:4` status: ready |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:5` rules: [BR-CARD-012, BR-DECK-015, BR-TAG-001, BR-TAG-002, BR-TAG-003, BR-TAG-004 |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:6` code: [lib/features/tags/domain/usecases/watch_tag_catalog_use_case.dart, lib/fe |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:10` **Phạm vi:** Tag Management, phần store (BE-B2, gồm BE-C4). Màn catalog và overl |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:13` **Actor:** Người dùng |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:20` ## Main flow |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:22` **Main flow:** |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:23` 1. Người dùng mở tag catalog. Hệ thống đọc mọi tag của owner hiện tại kèm số thẻ |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:25` 2. Hệ thống hiển thị mỗi tag thành một hàng: tên canonical, số thẻ, và một menu |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:27` 3. Người dùng gõ vào ô tìm kiếm để thu hẹp catalog. Hệ thống lọc theo cùng phép |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:30` 4. Người dùng chọn `Rename` trên một hàng. Hệ thống mở form với tên hiện tại đã |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:32` 5. Người dùng sửa tên rồi xác nhận. Hệ thống validate theo BR-TAG-001 và, vì tên |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:35` 6. Người dùng quay lại card list và chạm pill `Tags`. Hệ thống mở overlay lọc |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:37` 7. Người dùng chọn nhiều tag rồi bấm `Apply`. Hệ thống áp vị từ **OR giữa các |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:40` 8. Card list hiển thị đúng tập thẻ khớp, mỗi thẻ đúng một lần, với count khớp |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:43` ## Alternative / Error flow |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:45` **Alternative flows:** |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:46` - **A1 — Đổi tên gây trùng (gộp):** tên mới fold trùng một tag khác đang tồn |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:52` - **A2 — Đổi tên chỉ đổi cách viết hoa:** `noun` → `Noun`. Tên đã fold không |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:55` - **A3 — Xoá tag:** người dùng chọn `Delete`. Hệ thống hỏi xác nhận, nêu rõ số |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:58` - **A4 — Bỏ chọn hết tag trong overlay lọc:** `Clear` đưa tập chọn về rỗng. Tập |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:61` - **A5 — Huỷ overlay lọc:** đóng overlay mà không `Apply` giữ nguyên tập tag |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:63` - **A6 — Tìm kiếm trong catalog không khớp gì:** catalog hiển thị trạng thái |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:66` - **A7 — Lọc theo tag không còn thẻ nào khớp:** card list hiển thị trạng thái |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:69` **Error flows:** |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:70` - **E1 — Đọc catalog thất bại:** hệ thống hiện trạng thái lỗi có Retry; chưa |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:72` - **E2 — Đổi tên với tên không hợp lệ:** rỗng sau trim, quá 50 ký tự, hoặc chứa |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:75` - **E3 — Tag đã biến mất:** tag bị xoá ở nơi khác giữa lúc mở form và lúc ghi → |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:77` - **E4 — Ghi thất bại giữa lúc gộp:** transaction rollback toàn bộ; cả hai tag |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:80` - **E5 — Xoá thất bại:** transaction rollback; tag và mọi liên kết còn nguyên, |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:83` ## UI |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:85` **UI states:** catalog loading · catalog populated · catalog empty (chưa có tag |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:91` ## Local |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:93` **Postconditions:** Chỉ hàng `tags` và hàng `card_tags` thay đổi. Nội dung thẻ, |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:98` ## API |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:100` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:102` ## Acceptance criteria |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:104` - [ ] **Given** người dùng mở catalog tag, **when** đọc xong, **then** mọi tag c |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:105` - [ ] **Given** người dùng gõ vào ô tìm của catalog, **when** lọc, **then** hệ t |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:106` - [ ] **Given** đổi tên chỉ khác chữ hoa hoặc dấu và tên đã fold không trùng tag |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:107` - [ ] **Given** chọn nhiều tag trong overlay lọc, **when** bấm Apply, **then** c |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:108` - [ ] **Given** một tập tag lọc mới, **when** Apply, **then** cửa sổ phân trang |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:109` - [ ] **Given** tên mới fold trùng một tag khác, **when** xác nhận đổi tên, **th |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:110` - [ ] **Given** người dùng chọn Delete trên một tag, **when** xác nhận, **then** |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:111` - [ ] **Given** overlay lọc đang có tag chọn, **when** bấm Clear rồi Apply, **th |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:112` - [ ] **Given** một tập tag đã Apply, **when** đóng overlay mà không Apply lại, |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:113` - [ ] **Given** tìm trong catalog không khớp tag nào, **when** hiển thị, **then* |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:114` - [ ] **Given** lọc theo một tag không có card nào trong deck đang mở, **when** |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:115` - [ ] **Given** đọc catalog thất bại, **when** lỗi xảy ra, **then** hệ thống hiệ |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:116` - [ ] **Given** tên mới rỗng sau khi trim, quá 50 ký tự hoặc chứa ký tự điều khi |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:117` - [ ] **Given** tag bị xoá ở nơi khác giữa lúc mở form và lúc ghi, **when** ghi |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:118` - [ ] **Given** ghi thất bại giữa lúc gộp tag, **when** lỗi xảy ra, **then** cả |  |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:119` - [ ] **Given** ghi thất bại khi xoá tag, **when** lỗi xảy ra, **then** tag và m |  |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:2` id: UC-TAG-001 | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:3` title: Quản lý tag và lọc thẻ theo tag | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:5` rules: [BR-CARD-012, BR-DECK-015, BR-TAG-001, BR-TAG-002, BR-TAG-003, BR-TAG-004 | superseded → FN-TAG-001…FN-TAG-004 + FN-CARD-001 + FN-CARD-012 (Business rules) |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:6` code: [lib/features/tags/domain/usecases/watch_tag_catalog_use_case.dart, lib/fe | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:10` **Phạm vi:** Tag Management, phần store (BE-B2, gồm BE-C4). Màn catalog và overl | dropped — history of how the work was split (BE-B2, BE-C4, FE-B2); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:13` **Actor:** Người dùng | pending → SCR-TAG-001 (entry points: Tags on the Library app bar, Manage tags in the card list overflow; the Tags pill on the card list filter bar opens the filter); intent kept in UC-TAG-001 (Mục tiêu, Preconditions) |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:20` ## Main flow | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:22` **Main flow:** | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:23` 1. Người dùng mở tag catalog. Hệ thống đọc mọi tag của owner hiện tại kèm số thẻ | superseded → FN-TAG-001 (every tag with its active card count, folded-name order) + UC-TAG-001 step 1 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:25` 2. Hệ thống hiển thị mỗi tag thành một hàng: tên canonical, số thẻ, và một menu | pending → SCR-TAG-001 (each row: canonical name, card count, an action menu with Rename and Delete); intent kept in UC-TAG-001 step 2 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:27` 3. Người dùng gõ vào ô tìm kiếm để thu hẹp catalog. Hệ thống lọc theo cùng phép | superseded → FN-TAG-001 (the search uses the identity fold) + UC-TAG-001 step 3 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:30` 4. Người dùng chọn `Rename` trên một hàng. Hệ thống mở form với tên hiện tại đã | pending → SCR-TAG-001 (Rename opens a form with the current name filled in); intent kept in UC-TAG-001 step 4 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:32` 5. Người dùng sửa tên rồi xác nhận. Hệ thống validate theo BR-TAG-001 và, vì tên | superseded → FN-TAG-003 (rename on the same row; id and links kept) + UC-TAG-001 step 5 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:35` 6. Người dùng quay lại card list và chạm pill `Tags`. Hệ thống mở overlay lọc | pending → SCR-CARD-001 (the Tags pill opens the filter overlay with every tag, its count and the current selection); intent kept in UC-TAG-001 step 6 + FN-CARD-012 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:37` 7. Người dùng chọn nhiều tag rồi bấm `Apply`. Hệ thống áp vị từ **OR giữa các | pending → SCR-CARD-001 (multi-select then Apply; the page window resets and the selection clears); intent kept in UC-TAG-001 step 7 + FN-CARD-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:40` 8. Card list hiển thị đúng tập thẻ khớp, mỗi thẻ đúng một lần, với count khớp | superseded → FN-CARD-001 (each card once; counts read the same query) + UC-TAG-001 step 8 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:43` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:45` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:46` - **A1 — Đổi tên gây trùng (gộp):** tên mới fold trùng một tag khác đang tồn | pending → SCR-TAG-001 (the form discloses the merge and names the target before the confirm); intent kept in UC-TAG-001 A1 + FN-TAG-002 + FN-TAG-003 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:52` - **A2 — Đổi tên chỉ đổi cách viết hoa:** `noun` → `Noun`. Tên đã fold không | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:55` - **A3 — Xoá tag:** người dùng chọn `Delete`. Hệ thống hỏi xác nhận, nêu rõ số | pending → SCR-TAG-001 (Delete asks to confirm, naming the card count and saying cards are not deleted); intent kept in UC-TAG-001 A3 + FN-TAG-004 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:58` - **A4 — Bỏ chọn hết tag trong overlay lọc:** `Clear` đưa tập chọn về rỗng. Tập | pending → SCR-CARD-001 (Clear empties the selection in the filter overlay); intent kept in UC-TAG-001 A4 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:61` - **A5 — Huỷ overlay lọc:** đóng overlay mà không `Apply` giữ nguyên tập tag | pending → SCR-CARD-001 (closing the overlay without Apply drops the draft); intent kept in UC-TAG-001 A5 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:63` - **A6 — Tìm kiếm trong catalog không khớp gì:** catalog hiển thị trạng thái | pending → SCR-TAG-001 (the "no tag matches" state with the typed text, unlike "no tags yet"); intent kept in UC-TAG-001 A6 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:66` - **A7 — Lọc theo tag không còn thẻ nào khớp:** card list hiển thị trạng thái | pending → SCR-CARD-001 (the filtered empty state with Clear); intent kept in UC-TAG-001 A7 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:69` **Error flows:** | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:70` - **E1 — Đọc catalog thất bại:** hệ thống hiện trạng thái lỗi có Retry; chưa | pending → SCR-TAG-001 (the error state with Retry); intent kept in UC-TAG-001 E1 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:72` - **E2 — Đổi tên với tên không hợp lệ:** rỗng sau trim, quá 50 ký tự, hoặc chứa | pending → SCR-TAG-001 (the typed error under the field, the typed text kept); intent kept in UC-TAG-001 E2 + FN-TAG-003 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:75` - **E3 — Tag đã biến mất:** tag bị xoá ở nơi khác giữa lúc mở form và lúc ghi → | pending → SCR-TAG-001 (the typed "no longer exists" reason; the catalog updates itself); intent kept in UC-TAG-001 E3 + FN-TAG-003 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:77` - **E4 — Ghi thất bại giữa lúc gộp:** transaction rollback toàn bộ; cả hai tag | pending → SCR-TAG-001 (the error shown instead of success); intent kept in UC-TAG-001 E4 + FN-TAG-003 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:80` - **E5 — Xoá thất bại:** transaction rollback; tag và mọi liên kết còn nguyên, | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:83` ## UI | pending → SCR-TAG-001 (states catalog loading · populated · empty · search empty · rename normal · rename collision · submitting · rename failure · delete confirm · delete failure; filter overlay and filtered list states → SCR-CARD-001) |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:85` **UI states:** catalog loading · catalog populated · catalog empty (chưa có tag | pending → SCR-TAG-001 (states catalog loading · populated · empty · search empty · rename normal · rename collision · submitting · rename failure · delete confirm · delete failure; filter overlay and filtered list states → SCR-CARD-001) |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:91` ## Local | superseded → FN-TAG-003 + FN-TAG-004 (Kết quả) + FN-TAG-001 + FN-CARD-001 (counts and filter read the same links) |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:93` **Postconditions:** Chỉ hàng `tags` và hàng `card_tags` thay đổi. Nội dung thẻ, | superseded → FN-TAG-003 + FN-TAG-004 (Kết quả) + FN-TAG-001 + FN-CARD-001 (counts and filter read the same links) |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:98` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:100` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:102` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:104` - [ ] **Given** người dùng mở catalog tag, **when** đọc xong, **then** mọi tag c | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:105` - [ ] **Given** người dùng gõ vào ô tìm của catalog, **when** lọc, **then** hệ t | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:106` - [ ] **Given** đổi tên chỉ khác chữ hoa hoặc dấu và tên đã fold không trùng tag | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:107` - [ ] **Given** chọn nhiều tag trong overlay lọc, **when** bấm Apply, **then** c | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:108` - [ ] **Given** một tập tag lọc mới, **when** Apply, **then** cửa sổ phân trang | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:109` - [ ] **Given** tên mới fold trùng một tag khác, **when** xác nhận đổi tên, **th | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:110` - [ ] **Given** người dùng chọn Delete trên một tag, **when** xác nhận, **then** | moved → `USE_CASES.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:111` - [ ] **Given** overlay lọc đang có tag chọn, **when** bấm Clear rồi Apply, **th | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:112` - [ ] **Given** một tập tag đã Apply, **when** đóng overlay mà không Apply lại, | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:113` - [ ] **Given** tìm trong catalog không khớp tag nào, **when** hiển thị, **then* | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:114` - [ ] **Given** lọc theo một tag không có card nào trong deck đang mở, **when** | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:115` - [ ] **Given** đọc catalog thất bại, **when** lỗi xảy ra, **then** hệ thống hiệ | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:116` - [ ] **Given** tên mới rỗng sau khi trim, quá 50 ký tự hoặc chứa ký tự điều khi | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:117` - [ ] **Given** tag bị xoá ở nơi khác giữa lúc mở form và lúc ghi, **when** ghi | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:118` - [ ] **Given** ghi thất bại giữa lúc gộp tag, **when** lỗi xảy ra, **then** cả | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:119` - [ ] **Given** ghi thất bại khi xoá tag, **when** lỗi xảy ra, **then** tag và m | moved → `USE_CASES.md` |
 
 ## features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md
 
@@ -3241,20 +3241,20 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/tags/ui.md:1` # Tags — UI |  |
-| `features/tags/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên |  |
-| `features/tags/ui.md:5` ## Màn hình và điều hướng |  |
-| `features/tags/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| |  |
-| `features/tags/ui.md:9` \| 05 · Tags \| `/decks/tags`, toàn màn hình trên root navigator, không có bottom |  |
-| `features/tags/ui.md:10` \| 07 · Overlay lọc theo tag \| Bottom sheet trên card list \| Chip Tags trên thanh |  |
-| `features/tags/ui.md:12` "Find cards with this tag" mở tìm kiếm thư viện với tên tag; tìm kiếm nằm trong |  |
-| `features/tags/ui.md:18` ## Validation |  |
-| `features/tags/ui.md:20` \| Trường \| Rule \| Message hiển thị \| Enforced by \| |  |
-| `features/tags/ui.md:22` \| Tag.name \| không rỗng sau trim (BR-TAG-001) \| "Tên tag không được để trống" \| |  |
-| `features/tags/ui.md:23` \| Tag.name \| ≤ 50 ký tự (BR-TAG-001) \| "Tên tag tối đa 50 ký tự" \| rule \| |  |
-| `features/tags/ui.md:24` \| Tag.name \| không trùng, không phân biệt hoa thường (BR-TAG-001) \| "Tag này đã |  |
-| `features/tags/ui.md:25` \| Card.tags \| ≤ 10 tag mỗi thẻ (BR-TAG-002) \| "Mỗi thẻ tối đa 10 tag" \| rule \| |  |
-| `features/tags/ui.md:27` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid |  |
+| `features/tags/ui.md:1` # Tags — UI | superseded → UC-TAG-001 + FN-TAG-001…FN-TAG-004; per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/tags/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên | superseded → UC-TAG-001 + FN-TAG-001…FN-TAG-004; per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/tags/ui.md:5` ## Màn hình và điều hướng | pending → SCR-TAG-001 (routes and where each surface opens from, with NAVIGATION.md) |
+| `features/tags/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | pending → SCR-TAG-001 (routes and where each surface opens from, with NAVIGATION.md) |
+| `features/tags/ui.md:9` \| 05 · Tags \| `/decks/tags`, toàn màn hình trên root navigator, không có bottom | pending → SCR-TAG-001 (route /decks/tags, full screen on the root navigator, no bottom bar; opened from Tags on the Library app bar) |
+| `features/tags/ui.md:10` \| 07 · Overlay lọc theo tag \| Bottom sheet trên card list \| Chip Tags trên thanh | pending → SCR-CARD-001 (the tag filter overlay: a bottom sheet over the card list, opened from the Tags chip) |
+| `features/tags/ui.md:12` "Find cards with this tag" mở tìm kiếm thư viện với tên tag; tìm kiếm nằm trong | pending → SCR-TAG-001 ("Find cards with this tag" navigates to SCR-SEARCH-001 with the tag name; the plan runs 250 ms after typing stops; mergeNotConfirmed reopens the dialog with the typed name); contract kept in FN-TAG-002 + FN-TAG-003 |
+| `features/tags/ui.md:18` ## Validation | superseded → FN-TAG-002 + FN-TAG-003 + FN-CARD-010 (Lỗi) |
+| `features/tags/ui.md:20` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | superseded → FN-TAG-002 + FN-TAG-003 + FN-CARD-010 (Lỗi) |
+| `features/tags/ui.md:22` \| Tag.name \| không rỗng sau trim (BR-TAG-001) \| "Tên tag không được để trống" \| | pending → SCR-TAG-001 (Copy of blankName); rule kept in FN-TAG-003 (Lỗi) |
+| `features/tags/ui.md:23` \| Tag.name \| ≤ 50 ký tự (BR-TAG-001) \| "Tên tag tối đa 50 ký tự" \| rule \| | pending → SCR-TAG-001 (Copy of nameTooLong); rule kept in FN-TAG-003 (Lỗi) |
+| `features/tags/ui.md:24` \| Tag.name \| không trùng, không phân biệt hoa thường (BR-TAG-001) \| "Tag này đã | superseded → FN-TAG-002 + FN-TAG-003 (a folded-name clash merges, BR-TAG-007) + FN-CARD-010 (attaching by name reuses the existing tag); no "already exists" error remains |
+| `features/tags/ui.md:25` \| Card.tags \| ≤ 10 tag mỗi thẻ (BR-TAG-002) \| "Mỗi thẻ tối đa 10 tag" \| rule \| | superseded → FN-CARD-010 (Lỗi: tooManyTags); its copy goes to SCR-CARD-002 |
+| `features/tags/ui.md:27` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | dropped — restates ADR-015 (the server checks integrity, business rules live in the app), approved PENDING |
 
 ## features/account/README.md
 
@@ -4197,3 +4197,25 @@ search_library FN-SEARCH-001. Search has no ui.md; its screen is SCR-SEARCH-001 
   UC-SEARCH-001 step 6 and pending for SCR-SEARCH-001's `Navigate to:`; FN-SEARCH-001 states only
   that nothing is written and no session opens.
 - Warning delta: 36 → 37 = +1 migrated legacy UC file. Every BR-SEARCH is cited by FN-SEARCH-001.
+
+## Task 21 notes — tags
+
+| Use case class | FN |
+|---|---|
+| watch_tag_catalog | FN-TAG-001 |
+| plan_tag_rename | FN-TAG-002 |
+| rename_tag | FN-TAG-003 |
+| delete_tag | FN-TAG-004 |
+| watch_deck_tag_counts | not an FN — the same read as `watch_card_tag_filter` (FN-CARD-012); only a test calls it |
+
+- UC-TAG-001 invokes FN-CARD-012 (the filter's source) and FN-CARD-001 (the filtered list), closing
+  the Task 14 note.
+- BR-TAG-005 (a new tag set restarts the page window and clears the selection) is now cited by
+  FN-CARD-001, whose Kết quả states that each query is its own and a stale result never replaces
+  the current one — the same treatment BR-CARD-012 got in Task 14.
+- Code debt for the owner, not changed here (no lib/ edits in this migration):
+  `lib/features/tags/domain/usecases/watch_deck_tag_counts_use_case.dart` duplicates
+  `watch_card_tag_filter_use_case.dart` and has no caller in the app.
+- tags/ui.md:24 ("Tag này đã tồn tại") is superseded: a name clash merges on rename (BR-TAG-007) and
+  reuses the tag on attach; no such error exists in the code.
+- Warning delta: 37 → 38 = +1 migrated legacy UC file. Every BR-TAG is cited by an FN.

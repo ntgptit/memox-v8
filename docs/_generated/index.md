@@ -61,7 +61,7 @@ Chưa có tài liệu.
 | [BR-CARD-009](../features/card/rules/BR-CARD-009-co-la-noi-dung.md) | Cờ là nội dung | active | Cờ là nội dung: sửa thẻ và reset không đụng tới, xoá thẻ thì xoá cờ theo cascade; hệ thống có thể bật nhưng không tự tắt. | FN-CARD-001, FN-CARD-002, FN-CARD-003, FN-CARD-009, FN-CARD-013, FN-STUDY-005 |
 | [BR-CARD-010](../features/card/rules/BR-CARD-010-di-chuyen-the-cung-root.md) | Di chuyển thẻ chỉ trong cùng root | active | Di chuyển thẻ chỉ giữa hai sub-deck cùng root, giữ nguyên thẻ và lịch sử, cập nhật `content_type` hai phía trong một transaction. | FN-CARD-005, FN-CARD-006, FN-CARD-007, UC-TRASH-001 |
 | [BR-CARD-011](../features/card/rules/BR-CARD-011-mutation-hang-loat-all-or-nothing.md) | Mutation hàng loạt all-or-nothing | active | Mọi mutation hàng loạt trên thẻ là all-or-nothing trong một transaction, giữ quy tắc của thao tác đơn lẻ. | FN-CARD-004, FN-CARD-007, FN-CARD-009, FN-CARD-010, FN-CARD-011 |
-| [BR-CARD-012](../features/card/rules/BR-CARD-012-chon-nhieu-tren-toan-tap-ket-qua.md) | Chọn nhiều trên toàn tập kết quả | active | Chọn nhiều áp lên toàn bộ tập kết quả theo filter/search đang bật; đổi ngữ cảnh thì xoá selection. | FN-CARD-008, UC-TAG-001, UC-TRANSFER-002, UC-TRASH-001 |
+| [BR-CARD-012](../features/card/rules/BR-CARD-012-chon-nhieu-tren-toan-tap-ket-qua.md) | Chọn nhiều trên toàn tập kết quả | active | Chọn nhiều áp lên toàn bộ tập kết quả theo filter/search đang bật; đổi ngữ cảnh thì xoá selection. | FN-CARD-008, UC-TRANSFER-002, UC-TRASH-001 |
 | [BR-CARD-013](../features/card/rules/BR-CARD-013-chi-tiet-card-chi-doc.md) | Chi tiết card là chỉ đọc | active | Mở, cuộn chi tiết và tải lịch sử là chỉ đọc; xem một thẻ không phải là học nó. | FN-CARD-013 |
 | [BR-CARD-014](../features/card/rules/BR-CARD-014-noi-dung-man-chi-tiet.md) | Nội dung màn chi tiết | active | Màn chi tiết hiện đầy đủ nội dung, tag, cờ và trạng thái lịch hiện tại theo scheduler đang gắn. | FN-CARD-013 |
 | [BR-CARD-015](../features/card/rules/BR-CARD-015-lich-su-phan-trang-keyset.md) | Lịch sử học phân trang keyset | active | Lịch sử đọc từ `review_log` của đúng thẻ, mới nhất trước, phân trang keyset 50 hàng. | FN-CARD-014 |
@@ -75,7 +75,7 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-CARD-001](../functional-spec/card.md) | Xem danh sách card của một deck | active | UC-CARD-001 |
+| [FN-CARD-001](../functional-spec/card.md) | Xem danh sách card của một deck | active | UC-CARD-001, UC-TAG-001 |
 | [FN-CARD-002](../functional-spec/card.md) | Tạo card | active | UC-CARD-001, UC-DECK-004 |
 | [FN-CARD-003](../functional-spec/card.md) | Sửa card | active | UC-CARD-001, UC-CARD-002 |
 | [FN-CARD-004](../functional-spec/card.md) | Chuyển card vào Trash | active | UC-CARD-001 |
@@ -86,7 +86,7 @@ Chưa có tài liệu.
 | [FN-CARD-009](../functional-spec/card.md) | Bật hoặc bỏ cờ của card | active | UC-CARD-001 |
 | [FN-CARD-010](../functional-spec/card.md) | Gắn tag cho card theo tên | active | UC-CARD-001 |
 | [FN-CARD-011](../functional-spec/card.md) | Gỡ tag khỏi card | active | UC-CARD-001 |
-| [FN-CARD-012](../functional-spec/card.md) | Xem tag của thư viện kèm số card của một deck | active | UC-CARD-001 |
+| [FN-CARD-012](../functional-spec/card.md) | Xem tag của thư viện kèm số card của một deck | active | UC-CARD-001, UC-TAG-001 |
 | [FN-CARD-013](../functional-spec/card.md) | Xem chi tiết một card | active | UC-CARD-002 |
 | [FN-CARD-014](../functional-spec/card.md) | Tải một trang lịch sử học của card | active | UC-CARD-002 |
 
@@ -117,7 +117,7 @@ Chưa có tài liệu.
 | [BR-DECK-012](../features/deck/rules/BR-DECK-012-create-chi-hien-hanh-dong-theo-content-type.md) | Create chỉ hiện hành động theo content_type | active | Sau khi `content_type` được xác lập, nút Create chỉ hiển thị hành động tương ứng. | FN-DECK-008 |
 | [BR-DECK-013](../features/deck/rules/BR-DECK-013-xoa-het-noi-dung-khong-tu-ve-unset.md) | Xoá hết nội dung không tự về unset | deprecated | Đã thay bằng BR-DECK-015. Xoá hết nội dung không tự động đưa `content_type` về `unset`. | — |
 | [BR-DECK-014](../features/deck/rules/BR-DECK-014-reset-content-type-thu-cong-khi-deck-rong.md) | Reset content_type thủ công khi deck rỗng | deprecated | Đã thay bằng BR-DECK-015. Đưa `content_type` về `unset` là thao tác riêng, có xác nhận, chỉ khi deck rỗng. | — |
-| [BR-DECK-015](../features/deck/rules/BR-DECK-015-content-type-tu-cap-nhat-theo-direct-children.md) | content_type tự cập nhật theo direct children | active | Hệ thống cập nhật `content_type` của sub-deck atomically cùng mutation direct children; không có reset thủ công. | FN-CARD-004, FN-CARD-005, FN-CARD-007, FN-DECK-005, FN-DECK-011, UC-TAG-001, UC-TRANSFER-002, UC-TRASH-001 |
+| [BR-DECK-015](../features/deck/rules/BR-DECK-015-content-type-tu-cap-nhat-theo-direct-children.md) | content_type tự cập nhật theo direct children | active | Hệ thống cập nhật `content_type` của sub-deck atomically cùng mutation direct children; không có reset thủ công. | FN-CARD-004, FN-CARD-005, FN-CARD-007, FN-DECK-005, FN-DECK-011, UC-TRANSFER-002, UC-TRASH-001 |
 | [BR-DECK-016](../features/deck/rules/BR-DECK-016-cay-deck-khong-co-cycle.md) | Cây deck không có cycle | active | Cây deck không có cycle. | FN-DECK-011 |
 | [BR-DECK-017](../features/deck/rules/BR-DECK-017-khong-di-chuyen-deck-vao-chinh-no-hoac-descendant.md) | Không di chuyển deck vào chính nó hoặc descendant | active | Không di chuyển một deck vào chính nó hoặc vào descendant của nó. | FN-DECK-006, FN-DECK-010, FN-DECK-011, UC-TRASH-001 |
 | [BR-DECK-018](../features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md) | Di chuyển subtree cập nhật root_id và depth | active | Di chuyển subtree cập nhật `root_id` và `depth` cho toàn bộ subtree trong một transaction. | FN-DECK-011, UC-TRASH-001 |
@@ -522,23 +522,32 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-TAG-001](../features/tags/rules/BR-TAG-001-tag-la-noi-dung-ten-duy-nhat.md) | Tag là nội dung, tên duy nhất | active | Tag là nội dung, nhiều-nhiều với thẻ; tên không rỗng, tối đa 50 ký tự, không ký tự điều khiển, duy nhất không phân biệt hoa thường. | FN-CARD-001, FN-CARD-002, FN-CARD-003, FN-CARD-010, FN-CARD-011, FN-CARD-012, FN-CARD-013, FN-SEARCH-001, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002 |
-| [BR-TAG-002](../features/tags/rules/BR-TAG-002-toi-da-10-tag-moi-the.md) | Tối đa 10 tag mỗi thẻ | active | Một thẻ mang tối đa 10 tag. | FN-CARD-002, FN-CARD-003, FN-CARD-010, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002 |
-| [BR-TAG-003](../features/tags/rules/BR-TAG-003-tag-catalog-pham-vi-library.md) | Tag catalog phạm vi library | active | Tag catalog ở phạm vi library, mỗi hàng hiện tên canonical và số thẻ đang hoạt động. | UC-TAG-001 |
-| [BR-TAG-004](../features/tags/rules/BR-TAG-004-loc-theo-nhieu-tag-la-or.md) | Lọc theo nhiều tag là OR | active | Lọc nhiều tag là OR giữa các tag, AND với filter trạng thái và search term. | FN-CARD-001, FN-CARD-012, UC-TAG-001 |
-| [BR-TAG-005](../features/tags/rules/BR-TAG-005-doi-tap-tag-loc-reset-phan-trang.md) | Đổi tập tag lọc reset phân trang | active | Đổi tập tag đang lọc reset cửa sổ phân trang và xoá selection. | UC-TAG-001 |
-| [BR-TAG-006](../features/tags/rules/BR-TAG-006-doi-ten-tag.md) | Đổi tên tag | active | Đổi tên tag qua đúng validation của BR-TAG-001; tên chưa thuộc tag khác thì giữ nguyên tag. | UC-TAG-001 |
-| [BR-TAG-007](../features/tags/rules/BR-TAG-007-doi-ten-trung-thi-gop.md) | Đổi tên trùng thì gộp | active | Đổi tên trùng tag khác thì gộp nguồn vào đích nguyên tử trong một transaction. | UC-TAG-001 |
-| [BR-TAG-008](../features/tags/rules/BR-TAG-008-xoa-tag-chi-go-lien-ket.md) | Xoá tag chỉ gỡ liên kết | active | Xoá tag chỉ gỡ `card_tags` rồi xoá `tags`, không đụng thẻ nào. | UC-TAG-001 |
-| [BR-TAG-009](../features/tags/rules/BR-TAG-009-thao-tac-catalog-khong-dung-noi-dung-the.md) | Thao tác catalog không đụng nội dung thẻ | active | Đổi tên, gộp, xoá tag không ghi nội dung thẻ hay dữ liệu học. | UC-TAG-001 |
-| [BR-TAG-010](../features/tags/rules/BR-TAG-010-the-trong-trash-khong-tinh.md) | Thẻ trong Trash không được tính | active | Khi có Trash, thẻ trong Trash không được đếm và không xuất hiện khi lọc theo tag. | UC-TAG-001 |
-| [BR-TAG-011](../features/tags/rules/BR-TAG-011-mot-codec-mot-ham-fold.md) | Một codec và một hàm fold | active | Import, export và catalog dùng chung một codec tag và một phép chuẩn hoá tên. | UC-TAG-001 |
+| [BR-TAG-001](../features/tags/rules/BR-TAG-001-tag-la-noi-dung-ten-duy-nhat.md) | Tag là nội dung, tên duy nhất | active | Tag là nội dung, nhiều-nhiều với thẻ; tên không rỗng, tối đa 50 ký tự, không ký tự điều khiển, duy nhất không phân biệt hoa thường. | FN-CARD-001, FN-CARD-002, FN-CARD-003, FN-CARD-010, FN-CARD-011, FN-CARD-012, FN-CARD-013, FN-SEARCH-001, FN-TAG-001, FN-TAG-002, FN-TAG-003, UC-TRANSFER-001, UC-TRANSFER-002 |
+| [BR-TAG-002](../features/tags/rules/BR-TAG-002-toi-da-10-tag-moi-the.md) | Tối đa 10 tag mỗi thẻ | active | Một thẻ mang tối đa 10 tag. | FN-CARD-002, FN-CARD-003, FN-CARD-010, FN-TAG-003, UC-TRANSFER-001, UC-TRANSFER-002 |
+| [BR-TAG-003](../features/tags/rules/BR-TAG-003-tag-catalog-pham-vi-library.md) | Tag catalog phạm vi library | active | Tag catalog ở phạm vi library, mỗi hàng hiện tên canonical và số thẻ đang hoạt động. | FN-TAG-001 |
+| [BR-TAG-004](../features/tags/rules/BR-TAG-004-loc-theo-nhieu-tag-la-or.md) | Lọc theo nhiều tag là OR | active | Lọc nhiều tag là OR giữa các tag, AND với filter trạng thái và search term. | FN-CARD-001, FN-CARD-012 |
+| [BR-TAG-005](../features/tags/rules/BR-TAG-005-doi-tap-tag-loc-reset-phan-trang.md) | Đổi tập tag lọc reset phân trang | active | Đổi tập tag đang lọc reset cửa sổ phân trang và xoá selection. | FN-CARD-001 |
+| [BR-TAG-006](../features/tags/rules/BR-TAG-006-doi-ten-tag.md) | Đổi tên tag | active | Đổi tên tag qua đúng validation của BR-TAG-001; tên chưa thuộc tag khác thì giữ nguyên tag. | FN-TAG-002, FN-TAG-003 |
+| [BR-TAG-007](../features/tags/rules/BR-TAG-007-doi-ten-trung-thi-gop.md) | Đổi tên trùng thì gộp | active | Đổi tên trùng tag khác thì gộp nguồn vào đích nguyên tử trong một transaction. | FN-TAG-002, FN-TAG-003 |
+| [BR-TAG-008](../features/tags/rules/BR-TAG-008-xoa-tag-chi-go-lien-ket.md) | Xoá tag chỉ gỡ liên kết | active | Xoá tag chỉ gỡ `card_tags` rồi xoá `tags`, không đụng thẻ nào. | FN-TAG-004 |
+| [BR-TAG-009](../features/tags/rules/BR-TAG-009-thao-tac-catalog-khong-dung-noi-dung-the.md) | Thao tác catalog không đụng nội dung thẻ | active | Đổi tên, gộp, xoá tag không ghi nội dung thẻ hay dữ liệu học. | FN-TAG-003, FN-TAG-004 |
+| [BR-TAG-010](../features/tags/rules/BR-TAG-010-the-trong-trash-khong-tinh.md) | Thẻ trong Trash không được tính | active | Khi có Trash, thẻ trong Trash không được đếm và không xuất hiện khi lọc theo tag. | FN-TAG-001 |
+| [BR-TAG-011](../features/tags/rules/BR-TAG-011-mot-codec-mot-ham-fold.md) | Một codec và một hàm fold | active | Import, export và catalog dùng chung một codec tag và một phép chuẩn hoá tên. | FN-TAG-001 |
+
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-TAG-001](../functional-spec/tags.md) | Xem danh mục tag | active | UC-TAG-001 |
+| [FN-TAG-002](../functional-spec/tags.md) | Xem trước việc đổi tên một tag | active | UC-TAG-001 |
+| [FN-TAG-003](../functional-spec/tags.md) | Đổi tên một tag | active | UC-TAG-001 |
+| [FN-TAG-004](../functional-spec/tags.md) | Xoá một tag | active | UC-TAG-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [UC-TAG-001](../features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md) | Quản lý tag và lọc thẻ theo tag | ready | — |
+| [UC-TAG-001](../USE_CASES.md) | Quản lý tag và lọc thẻ theo tag | ready | — |
 
 ## [transfer](../features/transfer/README.md)
 
@@ -554,7 +563,7 @@ Chưa có tài liệu.
 | [BR-TRANSFER-006](../features/transfer/rules/BR-TRANSFER-006-noi-dung-import-la-du-lieu-rieng-tu.md) | Nội dung import là dữ liệu riêng tư | active | File import xử lý trong bộ nhớ ứng dụng, chỉ nhận UTF-8, không đoán encoding. | UC-TRANSFER-001 |
 | [BR-TRANSFER-007](../features/transfer/rules/BR-TRANSFER-007-hai-scope-export.md) | Hai scope export | active | Export có đúng hai scope `all` và `selected`. | UC-TRANSFER-002 |
 | [BR-TRANSFER-008](../features/transfer/rules/BR-TRANSFER-008-sau-field-noi-dung-canonical.md) | Sáu field nội dung canonical | active | Artifact export chỉ mang sáu field: front, back, example, hint, pronunciation, tags. | UC-TRANSFER-002 |
-| [BR-TRANSFER-009](../features/transfer/rules/BR-TRANSFER-009-mot-codec-cho-o-tags.md) | Một codec cho ô tags | active | Ô `tags` đi qua đúng một codec dùng chung cho Import và Export. | UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002 |
+| [BR-TRANSFER-009](../features/transfer/rules/BR-TRANSFER-009-mot-codec-cho-o-tags.md) | Một codec cho ô tags | active | Ô `tags` đi qua đúng một codec dùng chung cho Import và Export. | UC-TRANSFER-001, UC-TRANSFER-002 |
 | [BR-TRANSFER-010](../features/transfer/rules/BR-TRANSFER-010-export-deterministic-ve-noi-dung.md) | Export deterministic về nội dung | active | Cùng dữ liệu cho cùng artifact về nội dung logic. | UC-TRANSFER-002 |
 | [BR-TRANSFER-011](../features/transfer/rules/BR-TRANSFER-011-export-chi-doc.md) | Export là chỉ đọc | active | Export không ghi hay chạm tới dữ liệu nào. | UC-TRANSFER-002 |
 | [BR-TRANSFER-012](../features/transfer/rules/BR-TRANSFER-012-sau-header-canonical.md) | Sáu header canonical | active | File export mở đầu bằng sáu header canonical, chữ thường tiếng Anh, không localize. | UC-TRANSFER-002 |

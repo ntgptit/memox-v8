@@ -13,3 +13,4 @@ section. Định dạng: [docs/README.md](../README.md), mục "UC, FN và scree
 | Reminders | [reminders.md](reminders.md) |
 | Progress | [progress.md](progress.md) |
 | Search | [search.md](search.md) |
+| Tags | [tags.md](tags.md) |

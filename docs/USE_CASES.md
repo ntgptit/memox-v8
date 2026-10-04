@@ -1099,3 +1099,80 @@ tới nó — từ bất kỳ đâu trong Library.
 - [ ] **Given** đang có từ để tìm, **when** người dùng xoá hết, **then** về trạng thái ban đầu ngay, không chờ và không đọc gì (A4).
 - [ ] **Given** đọc trang đầu thất bại, **when** lỗi xảy ra, **then** người dùng được báo lỗi, không còn kết quả cũ, và thử lại đọc lại từ trang đầu (E1).
 - [ ] **Given** đọc một trang sau thất bại, **when** lỗi xảy ra, **then** kết quả đã có giữ nguyên, người dùng được báo lỗi ở phần đọc thêm, và thử lại đọc lại đúng con trỏ đó (E2).
+
+## Tags
+
+### UC-TAG-001 — Quản lý tag và lọc thẻ theo tag
+Status: ready · Code: [lib/features/tags/domain/usecases/watch_tag_catalog_use_case.dart, lib/features/tags/domain/usecases/plan_tag_rename_use_case.dart, lib/features/tags/domain/usecases/rename_tag_use_case.dart, lib/features/tags/domain/usecases/delete_tag_use_case.dart, lib/features/card/domain/usecases/watch_card_tag_filter_use_case.dart, lib/features/card/domain/usecases/watch_card_list_use_case.dart] · Invokes: [FN-TAG-001, FN-TAG-002, FN-TAG-003, FN-TAG-004, FN-CARD-012, FN-CARD-001]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Giữ bộ tag của thư viện gọn gàng — xem, tìm, đổi tên, gộp, xoá — và lọc thẻ của một
+deck theo tag.
+**Preconditions:** Không có. Thư viện chưa có tag nào là một trạng thái hợp lệ, không phải lỗi.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng muốn xem các tag. Hệ thống thực hiện FN-TAG-001: người dùng biết mọi tag của thư viện
+   cùng số thẻ đang mang mỗi tag.
+2. Với mỗi tag, người dùng có thể đổi tên hoặc xoá nó.
+3. Người dùng tìm trong danh mục để thu hẹp nó. Việc tìm không phân biệt hoa thường hay khoảng
+   trắng hai đầu, đúng như khi tag được tạo: `ĐỘNG TỪ` và `động từ` tìm thấy nhau.
+4. Người dùng muốn đổi tên một tag, bắt đầu từ tên hiện tại.
+5. Người dùng sửa tên và xác nhận. Hệ thống thực hiện FN-TAG-003; khi tên mới không trùng tag nào
+   khác, đó vẫn là chính tag đó và mọi thẻ của nó giữ nguyên.
+6. Trong một deck, người dùng muốn lọc thẻ theo tag. Hệ thống thực hiện FN-CARD-012: người dùng biết
+   mọi tag cùng số thẻ của deck mang nó, và tập tag đang chọn.
+7. Người dùng chọn nhiều tag và áp dụng. Hệ thống thực hiện FN-CARD-001 với tập đó: một thẻ qua khi
+   mang **bất kỳ** tag nào đã chọn, đồng thời vẫn khớp bộ lọc trạng thái và từ khoá đang bật. Danh
+   sách bắt đầu lại từ đầu, và lựa chọn đang có bị bỏ.
+8. Người dùng biết đúng tập thẻ khớp, mỗi thẻ đúng một lần, với số đếm khớp danh sách.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Đổi tên gây trùng (gộp):** tên mới trùng một tag khác khi bỏ qua hoa thường. Hệ thống thực
+  hiện FN-TAG-002, và người dùng biết **trước khi xác nhận** rằng việc này sẽ gộp vào tag đích, tên
+  của nó và số thẻ sau khi gộp. Xác nhận thì mọi thẻ của hai tag về chung tag đích, liên kết trùng
+  được bỏ và tag nguồn biến mất — tất cả cùng lúc. Không thẻ nào vượt quá 10 tag.
+- **A2 — Đổi tên chỉ đổi cách viết hoa:** `noun` → `Noun` là đổi cách viết, không phải gộp: vẫn là
+  chính tag đó, mọi thẻ giữ nguyên.
+- **A3 — Xoá tag:** người dùng xác nhận trước, biết số thẻ sẽ bị gỡ tag và biết rằng thẻ **không**
+  bị xoá. Hệ thống thực hiện FN-TAG-004.
+- **A4 — Bỏ chọn hết tag khi lọc:** tập rỗng không lọc gì — danh sách trở lại đúng như trước khi lọc.
+- **A5 — Thôi lọc mà không áp dụng:** tập tag đang áp giữ nguyên; lựa chọn dở bị bỏ.
+- **A6 — Tìm trong danh mục không khớp gì:** người dùng biết không có tag nào khớp với từ đã gõ, khác
+  với việc thư viện chưa có tag nào.
+- **A7 — Lọc theo tag không còn thẻ nào khớp:** người dùng biết bộ lọc không cho kết quả nào, và bỏ
+  được bộ lọc tag.
+
+**Error flows:**
+- **E1 — Đọc danh mục thất bại:** người dùng được báo lỗi và thử lại được; chưa gì bị thay đổi.
+- **E2 — Đổi tên với tên không hợp lệ:** rỗng, quá 50 ký tự, hoặc chứa ký tự điều khiển — người dùng
+  biết lý do ngay, và tên đang nhập giữ nguyên.
+- **E3 — Tag đã biến mất:** tag bị xoá ở nơi khác giữa lúc bắt đầu đổi tên và lúc ghi — người dùng
+  biết tag không còn, danh mục tự cập nhật, và không gì được ghi.
+- **E4 — Ghi thất bại giữa lúc gộp:** cả hai tag và mọi liên kết trở lại đúng như trước, và người
+  dùng được báo lỗi chứ không phải thành công.
+- **E5 — Xoá thất bại:** tag và mọi liên kết còn nguyên, không thẻ nào bị đụng tới.
+
+#### Acceptance criteria
+
+- [ ] **Given** người dùng muốn xem các tag, **when** đọc xong, **then** mọi tag của thư viện có mặt kèm số card active đang mang nó, sắp theo tên đã gập rồi `id`.
+- [ ] **Given** người dùng tìm trong danh mục, **when** lọc, **then** hệ thống dùng đúng hàm gập của danh tính tag, nên `ĐỘNG TỪ` tìm thấy `động từ`.
+- [ ] **Given** đổi tên chỉ khác chữ hoa hoặc dấu và tên đã gập không trùng tag khác, **when** xác nhận, **then** `name` và `name_folded` được ghi lên chính hàng tag đó, `id` và liên kết thẻ giữ nguyên (A2).
+- [ ] **Given** người dùng chọn nhiều tag để lọc, **when** áp dụng, **then** danh sách có các card mang bất kỳ tag nào đã chọn, đồng thời khớp bộ lọc và từ khoá hiện tại, mỗi card đúng một lần.
+- [ ] **Given** một tập tag lọc mới, **when** áp dụng, **then** danh sách bắt đầu lại từ đầu và lựa chọn đang có bị bỏ.
+- [ ] **Given** tên mới gập trùng một tag khác, **when** xác nhận đổi tên, **then** người dùng đã biết trước việc gộp và tên đích; xác nhận thì mọi thẻ của hai tag về chung tag đích, liên kết trùng được bỏ, tag nguồn bị xoá, tất cả trong một transaction, và không thẻ nào vượt 10 tag (A1).
+- [ ] **Given** người dùng muốn xoá một tag, **when** xác nhận, **then** liên kết `card_tags` bị gỡ và hàng `tags` bị xoá trong một transaction, không card nào bị xoá (A3).
+- [ ] **Given** đang có tag được chọn để lọc, **when** người dùng bỏ chọn hết rồi áp dụng, **then** không bộ lọc tag nào được áp và danh sách trở lại như trước khi lọc (A4).
+- [ ] **Given** một tập tag đã áp dụng, **when** người dùng thôi mà không áp dụng lại, **then** tập tag đang áp giữ nguyên và lựa chọn dở bị bỏ (A5).
+- [ ] **Given** tìm trong danh mục không khớp tag nào, **when** người dùng xem, **then** người dùng biết không có tag nào khớp từ đã gõ, khác với trạng thái chưa có tag nào (A6).
+- [ ] **Given** lọc theo một tag không có card nào trong deck đang mở, **when** áp dụng, **then** người dùng biết không có kết quả và bỏ được bộ lọc tag (A7).
+- [ ] **Given** đọc danh mục thất bại, **when** lỗi xảy ra, **then** người dùng được báo lỗi, thử lại được, và không gì được ghi (E1).
+- [ ] **Given** tên mới rỗng sau khi bỏ khoảng trắng, quá 50 ký tự hoặc chứa ký tự điều khiển, **when** xác nhận, **then** người dùng biết lý do và tên đang nhập được giữ nguyên (E2).
+- [ ] **Given** tag bị xoá ở nơi khác giữa lúc bắt đầu đổi tên và lúc ghi, **when** ghi chạy, **then** thao tác bị từ chối vì tag không còn, danh mục tự cập nhật, và không gì được ghi (E3).
+- [ ] **Given** ghi thất bại giữa lúc gộp tag, **when** lỗi xảy ra, **then** cả hai tag và mọi liên kết trở lại đúng như trước, và người dùng được báo lỗi chứ không phải thành công (E4).
+- [ ] **Given** ghi thất bại khi xoá tag, **when** lỗi xảy ra, **then** tag và mọi liên kết còn nguyên, không thẻ nào bị đụng tới (E5).

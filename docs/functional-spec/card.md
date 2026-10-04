@@ -32,7 +32,9 @@ mà không có lần ghi nào). Mỗi lần phát gồm:
 - số thẻ mà mỗi bộ lọc sẽ cho dưới từ khoá và tập tag hiện tại: tất cả, đến hạn, New, có cờ.
   "Đến hạn" và "New" dùng đúng định nghĩa mà các con số New/Due ở nơi khác dùng.
 
-Không ghi gì.
+Mỗi bộ deck, bộ lọc, cách sắp xếp, từ khoá và tập tag là một query riêng: đổi một trong số đó thì
+người gọi đọc lại từ cửa sổ đầu, và kết quả của query cũ không bao giờ thay kết quả của query hiện
+tại. Không ghi gì.
 
 ### Lỗi
 
@@ -46,6 +48,7 @@ Không ghi gì.
 - BR-CARD-009
 - BR-TAG-001
 - BR-TAG-004
+- BR-TAG-005
 - BR-STUDY-047
 - BR-STUDY-068
 
