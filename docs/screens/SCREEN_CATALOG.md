@@ -29,10 +29,10 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 | SCR-STUDY-007 | Study · Recall | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-007-study-recall.md` |
 | SCR-STUDY-008 | Study · Fill | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-008-study-fill.md` |
 | SCR-STUDY-009 | Session summary | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-009-session-summary.md` |
-| SCR-SETTINGS-001 | Study options | settings | — | pending | — |
-| SCR-SETTINGS-002 | Settings | settings | — | pending | — |
-| SCR-SETTINGS-003 | Theme | settings | — | pending | — |
-| SCR-SETTINGS-004 | Language | settings | — | pending | — |
+| SCR-SETTINGS-001 | Study options | settings | `/decks/deck/:deckId/options` | ready | `spec/SCR-SETTINGS-001-study-options.md` |
+| SCR-SETTINGS-002 | Settings | settings | `/settings` | ready | `spec/SCR-SETTINGS-002-settings.md` |
+| SCR-SETTINGS-003 | Theme | settings | `/settings/theme` | ready | `spec/SCR-SETTINGS-003-theme.md` |
+| SCR-SETTINGS-004 | Language | settings | `/settings/language` | ready | `spec/SCR-SETTINGS-004-language.md` |
 | SCR-PROGRESS-001 | Progress | progress | — | pending | — |
 | SCR-REMINDER-001 | Daily reminder | reminders | — | pending | — |
 | SCR-ACCOUNT-001 | Sync | account | — | pending | — |

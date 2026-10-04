@@ -97,7 +97,7 @@
 - Invokes: FN-DECK-007, FN-DECK-008, FN-DECK-001, FN-DECK-009, FN-DECK-002, FN-DECK-012, FN-DECK-010, FN-DECK-011, FN-DECK-004, FN-DECK-005, FN-DECK-006
 - Rules via FN: BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-DECK-005, BR-DECK-006, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-DECK-020, BR-DECK-021, BR-DECK-022, BR-DECK-023, BR-DECK-024, BR-DECK-025, BR-DECK-026, BR-DECK-027, BR-SRS-001, BR-SRS-003, BR-SRS-005, BR-SRS-006, BR-SRS-007, BR-SRS-013, BR-SRS-028, BR-SRS-029, BR-STUDY-008, BR-STUDY-046, BR-STUDY-051, BR-STUDY-067, BR-STUDY-068, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-006, BR-TRASH-008, BR-TRASH-010
 - Use cases: UC-DECK-001, UC-DECK-002, UC-DECK-003, UC-DECK-004, UC-DECK-005, UC-DECK-006
-- Entry points: SCR-CARD-002, SCR-DECK-001, SCR-SEARCH-001, SCR-SRS-001, SCR-STARTER-001, SCR-STUDY-001, SCR-STUDY-009, SCR-TAG-001
+- Entry points: SCR-CARD-002, SCR-DECK-001, SCR-SEARCH-001, SCR-SETTINGS-001, SCR-SRS-001, SCR-STARTER-001, SCR-STUDY-001, SCR-STUDY-009, SCR-TAG-001
 
 | State | Golden | Present |
 |---|---|---|
@@ -140,6 +140,75 @@
 | `no_results` | light, dark | — |
 | `error` | light, dark | — |
 | `load_more_failed` | light, dark | — |
+
+## [SCR-SETTINGS-001](../screens/spec/SCR-SETTINGS-001-study-options.md) · Study options
+
+- Invokes: FN-SETTINGS-006, FN-SETTINGS-007, FN-SETTINGS-008
+- Rules via FN: BR-SETTINGS-002, BR-SETTINGS-003, BR-SETTINGS-004, BR-SETTINGS-007, BR-STUDY-056
+- Use cases: UC-SETTINGS-001
+- Entry points: SCR-DECK-001, SCR-STUDY-002
+
+| State | Golden | Present |
+|---|---|---|
+| `override` | light, dark | — |
+| `defaults` | light, dark | — |
+| `invalid` | light, dark | — |
+| `saving` | light, dark | — |
+| `saved` | light, dark | — |
+| `save_failed` | light, dark | — |
+| `loading` | light, dark | — |
+| `gone` | none | — |
+| `read_error` | none | — |
+
+## [SCR-SETTINGS-002](../screens/spec/SCR-SETTINGS-002-settings.md) · Settings
+
+- Invokes: FN-SETTINGS-001, FN-ACCOUNT-002, FN-ACCOUNT-015, FN-SETTINGS-002, FN-SETTINGS-005
+- Rules via FN: BR-SETTINGS-001, BR-SETTINGS-002, BR-SETTINGS-004, BR-SETTINGS-007, BR-SETTINGS-008, BR-STUDY-003, BR-STUDY-024, BR-STUDY-057
+- Use cases: UC-SETTINGS-001
+- Entry points: —
+
+| State | Golden | Present |
+|---|---|---|
+| `loaded` | light, dark | — |
+| `loading` | light, dark | — |
+| `saving` | light, dark | — |
+| `saved` | light, dark | — |
+| `invalid_limit` | light, dark | — |
+| `save_failed` | light, dark | — |
+| `reset_confirm` | light, dark | — |
+| `reset_done` | light, dark | — |
+| `sync_synced` | light, dark | — |
+| `sync_failed` | light, dark | — |
+| `sync_rejected` | light, dark | — |
+| `read_error` | none | — |
+
+## [SCR-SETTINGS-003](../screens/spec/SCR-SETTINGS-003-theme.md) · Theme
+
+- Invokes: FN-SETTINGS-001, FN-SETTINGS-003
+- Rules via FN: BR-SETTINGS-001, BR-SETTINGS-005, BR-SETTINGS-007
+- Use cases: UC-SETTINGS-001
+- Entry points: SCR-SETTINGS-002
+
+| State | Golden | Present |
+|---|---|---|
+| `system` | light, dark | — |
+| `light` | light, dark | — |
+| `dark` | light, dark | — |
+| `read_error` | none | — |
+
+## [SCR-SETTINGS-004](../screens/spec/SCR-SETTINGS-004-language.md) · Language
+
+- Invokes: FN-SETTINGS-001, FN-SETTINGS-004
+- Rules via FN: BR-SETTINGS-001, BR-SETTINGS-006, BR-SETTINGS-007, BR-STUDY-035
+- Use cases: UC-SETTINGS-001
+- Entry points: SCR-SETTINGS-002
+
+| State | Golden | Present |
+|---|---|---|
+| `english` | light, dark | — |
+| `vietnamese` | light, dark | — |
+| `system` | light, dark | — |
+| `read_error` | none | — |
 
 ## [SCR-SRS-001](../screens/spec/SCR-SRS-001-review-algorithm.md) · Review algorithm & reset
 

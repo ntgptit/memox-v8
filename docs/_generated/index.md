@@ -47,7 +47,7 @@
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
 | [FN-ACCOUNT-001](../functional-spec/account.md) | Hiện Welcome một lần trên mỗi thiết bị | active | — |
-| [FN-ACCOUNT-002](../functional-spec/account.md) | Theo dõi trạng thái tài khoản | active | SCR-STUDY-001 |
+| [FN-ACCOUNT-002](../functional-spec/account.md) | Theo dõi trạng thái tài khoản | active | SCR-SETTINGS-002, SCR-STUDY-001 |
 | [FN-ACCOUNT-003](../functional-spec/account.md) | Gửi mã đăng nhập qua email | active | — |
 | [FN-ACCOUNT-004](../functional-spec/account.md) | Xác nhận mã đăng nhập | active | — |
 | [FN-ACCOUNT-005](../functional-spec/account.md) | Đăng nhập bằng Google | active | — |
@@ -60,7 +60,7 @@
 | [FN-ACCOUNT-012](../functional-spec/account.md) | Tìm người dùng (admin) | active | — |
 | [FN-ACCOUNT-013](../functional-spec/account.md) | Đặt vai trò của một người dùng (admin) | active | — |
 | [FN-ACCOUNT-014](../functional-spec/account.md) | Đồng bộ thư viện với server | active | — |
-| [FN-ACCOUNT-015](../functional-spec/account.md) | Theo dõi trạng thái đồng bộ | active | SCR-STUDY-001 |
+| [FN-ACCOUNT-015](../functional-spec/account.md) | Theo dõi trạng thái đồng bộ | active | SCR-SETTINGS-002, SCR-STUDY-001 |
 | [FN-ACCOUNT-016](../functional-spec/account.md) | Đồng bộ ngay | active | — |
 | [FN-ACCOUNT-017](../functional-spec/account.md) | Gửi lại các thay đổi bị từ chối | active | — |
 | [FN-ACCOUNT-018](../functional-spec/account.md) | Giữ các thay đổi bị từ chối chỉ trên thiết bị | active | — |
@@ -336,20 +336,29 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-SETTINGS-001](../functional-spec/settings.md) | Theo dõi tuỳ chọn ứng dụng | active | UC-SETTINGS-001 |
-| [FN-SETTINGS-002](../functional-spec/settings.md) | Lưu mặc định học toàn app | active | UC-SETTINGS-001 |
-| [FN-SETTINGS-003](../functional-spec/settings.md) | Đặt theme | active | UC-SETTINGS-001 |
-| [FN-SETTINGS-004](../functional-spec/settings.md) | Đặt ngôn ngữ | active | UC-SETTINGS-001 |
-| [FN-SETTINGS-005](../functional-spec/settings.md) | Đưa tuỳ chọn ứng dụng về mặc định | active | UC-SETTINGS-001 |
-| [FN-SETTINGS-006](../functional-spec/settings.md) | Theo dõi tuỳ chọn học đang áp cho một deck | active | UC-SETTINGS-001 |
-| [FN-SETTINGS-007](../functional-spec/settings.md) | Lưu tuỳ chọn học riêng của một root deck | active | UC-SETTINGS-001 |
-| [FN-SETTINGS-008](../functional-spec/settings.md) | Cho một root deck dùng lại mặc định toàn app | active | UC-SETTINGS-001 |
+| [FN-SETTINGS-001](../functional-spec/settings.md) | Theo dõi tuỳ chọn ứng dụng | active | SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004, UC-SETTINGS-001 |
+| [FN-SETTINGS-002](../functional-spec/settings.md) | Lưu mặc định học toàn app | active | SCR-SETTINGS-002, UC-SETTINGS-001 |
+| [FN-SETTINGS-003](../functional-spec/settings.md) | Đặt theme | active | SCR-SETTINGS-003, UC-SETTINGS-001 |
+| [FN-SETTINGS-004](../functional-spec/settings.md) | Đặt ngôn ngữ | active | SCR-SETTINGS-004, UC-SETTINGS-001 |
+| [FN-SETTINGS-005](../functional-spec/settings.md) | Đưa tuỳ chọn ứng dụng về mặc định | active | SCR-SETTINGS-002, UC-SETTINGS-001 |
+| [FN-SETTINGS-006](../functional-spec/settings.md) | Theo dõi tuỳ chọn học đang áp cho một deck | active | SCR-SETTINGS-001, UC-SETTINGS-001 |
+| [FN-SETTINGS-007](../functional-spec/settings.md) | Lưu tuỳ chọn học riêng của một root deck | active | SCR-SETTINGS-001, UC-SETTINGS-001 |
+| [FN-SETTINGS-008](../functional-spec/settings.md) | Cho một root deck dùng lại mặc định toàn app | active | SCR-SETTINGS-001, UC-SETTINGS-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
 | [UC-SETTINGS-001](../USE_CASES.md) | Đặt tuỳ chọn ứng dụng | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-SETTINGS-001](../screens/spec/SCR-SETTINGS-001-study-options.md) | Study options | ready | `/decks/deck/:deckId/options` |
+| [SCR-SETTINGS-002](../screens/spec/SCR-SETTINGS-002-settings.md) | Settings | ready | `/settings` |
+| [SCR-SETTINGS-003](../screens/spec/SCR-SETTINGS-003-theme.md) | Theme | ready | `/settings/theme` |
+| [SCR-SETTINGS-004](../screens/spec/SCR-SETTINGS-004-language.md) | Language | ready | `/settings/language` |
 
 ## [srs](../features/srs/README.md)
 

@@ -875,47 +875,47 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/15-study-options.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/15-study-options.md:3` # 15 · Study options |  |
-| `shared/ui/screen-handoff/15-study-options.md:5` A root deck's study options, opened from any deck in its tree: its own cards per |  |
-| `shared/ui/screen-handoff/15-study-options.md:12` ## Entry points |  |
-| `shared/ui/screen-handoff/15-study-options.md:14` - **The deck action sheet (screen 01):** "Study options" / "Cards per session · |  |
-| `shared/ui/screen-handoff/15-study-options.md:16` - **Screen 14's app bar:** the sliders icon, "Study options" (D3). |  |
-| `shared/ui/screen-handoff/15-study-options.md:18` Both open `/decks/deck/:deckId/options` on the root navigator, with no bottom ba |  |
-| `shared/ui/screen-handoff/15-study-options.md:21` ## Layout |  |
-| `shared/ui/screen-handoff/15-study-options.md:23` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/15-study-options.md:25` \| App bar \| `MxAppBar` (content) \| Back and "Study options". \| |  |
-| `shared/ui/screen-handoff/15-study-options.md:26` \| Breadcrumb \| `MxBreadcrumb` \| Library › the deck's path › the deck › "Study op |  |
-| `shared/ui/screen-handoff/15-study-options.md:27` \| Note \| `MxNote` (layers) \| The screen's one note (critique 2026-09-30): "These |  |
-| `shared/ui/screen-handoff/15-study-options.md:28` \| Unreadable override \| `MxInlineBanner` (warning) \| "This deck's options could |  |
-| `shared/ui/screen-handoff/15-study-options.md:29` \| Toggle \| `MxSection` + `MxSettingsRow` + `MxToggle` \| "Use app defaults"; on: |  |
-| `shared/ui/screen-handoff/15-study-options.md:30` \| Options \| `MxSection` \| "App defaults (read-only here)" or "This deck"; "Cards |  |
-| `shared/ui/screen-handoff/15-study-options.md:31` \| Card limit message \| `MxFieldMessage` (error) \| "Enter a number from 1 to 200" |  |
-| `shared/ui/screen-handoff/15-study-options.md:32` \| Footer \| `MxFooterBar` + `MxButton` \| "Save", enabled only for a valid change |  |
-| `shared/ui/screen-handoff/15-study-options.md:33` \| Toast \| `MxSnackbar` \| "Saved · applies to the next session". \| |  |
-| `shared/ui/screen-handoff/15-study-options.md:35` Save runs Use app defaults when the toggle is on and the root had its own option |  |
-| `shared/ui/screen-handoff/15-study-options.md:38` ## States |  |
-| `shared/ui/screen-handoff/15-study-options.md:40` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/15-study-options.md:42` \| override \| `study_options_override_light.png` \| `study_options_override_dark.p |  |
-| `shared/ui/screen-handoff/15-study-options.md:43` \| defaults \| `study_options_defaults_light.png` \| `study_options_defaults_dark.p |  |
-| `shared/ui/screen-handoff/15-study-options.md:44` \| invalid \| `study_options_invalid_light.png` \| `study_options_invalid_dark.png` |  |
-| `shared/ui/screen-handoff/15-study-options.md:45` \| saving \| `study_options_saving_light.png` \| `study_options_saving_dark.png` \| |  |
-| `shared/ui/screen-handoff/15-study-options.md:46` \| saved \| `study_options_saved_light.png` \| `study_options_saved_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/15-study-options.md:47` \| saveFailed \| `study_options_save_failed_light.png` \| `study_options_save_faile |  |
-| `shared/ui/screen-handoff/15-study-options.md:48` \| loading \| `study_options_loading_light.png` \| `study_options_loading_dark.png` |  |
-| `shared/ui/screen-handoff/15-study-options.md:49` \| gone \| — \| — \| (spec §6) a deck gone to the Trash shows "This deck is no longe |  |
-| `shared/ui/screen-handoff/15-study-options.md:50` \| read error \| — \| — \| `MxErrorState` with Retry and no invented value. \| |  |
-| `shared/ui/screen-handoff/15-study-options.md:52` Goldens: `test/features/settings/presentation/goldens/study_options_{override,de |  |
-| `shared/ui/screen-handoff/15-study-options.md:54` ## Rulings |  |
-| `shared/ui/screen-handoff/15-study-options.md:56` - `MxNote` carries one plain string, so the root's name is not bold. |  |
-| `shared/ui/screen-handoff/15-study-options.md:57` - **UC-SETTINGS-001 E1:** "Enter a number from 1 to 200" sits under the stepper |  |
-| `shared/ui/screen-handoff/15-study-options.md:58` - **D9:** Save is enabled only for a valid change; while saving the button spins |  |
-| `shared/ui/screen-handoff/15-study-options.md:59` - **Spec §6, UI-base row 129:** a gone root shows the Library's gone state with |  |
-| `shared/ui/screen-handoff/15-study-options.md:60` - **M3 review 2026-09-28 E1, E2:** new-card order is one `MxSettingsRow` + `MxSe |  |
-| `shared/ui/screen-handoff/15-study-options.md:61` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig |  |
-| `shared/ui/screen-handoff/15-study-options.md:62` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/15-study-options.md:64` ## Copy |  |
-| `shared/ui/screen-handoff/15-study-options.md:66` "Study options" · "These options belong to {root} and every sub-deck in it. Chan |  |
+| `shared/ui/screen-handoff/15-study-options.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:3` # 15 · Study options | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:5` A root deck's study options, opened from any deck in its tree: its own cards per | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:12` ## Entry points | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:14` - **The deck action sheet (screen 01):** "Study options" / "Cards per session · | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:16` - **Screen 14's app bar:** the sliders icon, "Study options" (D3). | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:18` Both open `/decks/deck/:deckId/options` on the root navigator, with no bottom ba | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:21` ## Layout | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:23` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:25` \| App bar \| `MxAppBar` (content) \| Back and "Study options". \| | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:26` \| Breadcrumb \| `MxBreadcrumb` \| Library › the deck's path › the deck › "Study op | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:27` \| Note \| `MxNote` (layers) \| The screen's one note (critique 2026-09-30): "These | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:28` \| Unreadable override \| `MxInlineBanner` (warning) \| "This deck's options could | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:29` \| Toggle \| `MxSection` + `MxSettingsRow` + `MxToggle` \| "Use app defaults"; on: | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:30` \| Options \| `MxSection` \| "App defaults (read-only here)" or "This deck"; "Cards | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:31` \| Card limit message \| `MxFieldMessage` (error) \| "Enter a number from 1 to 200" | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:32` \| Footer \| `MxFooterBar` + `MxButton` \| "Save", enabled only for a valid change | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:33` \| Toast \| `MxSnackbar` \| "Saved · applies to the next session". \| | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:35` Save runs Use app defaults when the toggle is on and the root had its own option | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:38` ## States | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:40` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:42` \| override \| `study_options_override_light.png` \| `study_options_override_dark.p | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:43` \| defaults \| `study_options_defaults_light.png` \| `study_options_defaults_dark.p | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:44` \| invalid \| `study_options_invalid_light.png` \| `study_options_invalid_dark.png` | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:45` \| saving \| `study_options_saving_light.png` \| `study_options_saving_dark.png` \| | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:46` \| saved \| `study_options_saved_light.png` \| `study_options_saved_dark.png` \| — \| | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:47` \| saveFailed \| `study_options_save_failed_light.png` \| `study_options_save_faile | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:48` \| loading \| `study_options_loading_light.png` \| `study_options_loading_dark.png` | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:49` \| gone \| — \| — \| (spec §6) a deck gone to the Trash shows "This deck is no longe | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:50` \| read error \| — \| — \| `MxErrorState` with Retry and no invented value. \| | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:52` Goldens: `test/features/settings/presentation/goldens/study_options_{override,de | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:54` ## Rulings | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:56` - `MxNote` carries one plain string, so the root's name is not bold. | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:57` - **UC-SETTINGS-001 E1:** "Enter a number from 1 to 200" sits under the stepper | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:58` - **D9:** Save is enabled only for a valid change; while saving the button spins | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:59` - **Spec §6, UI-base row 129:** a gone root shows the Library's gone state with | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:60` - **M3 review 2026-09-28 E1, E2:** new-card order is one `MxSettingsRow` + `MxSe | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:61` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:62` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:64` ## Copy | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `shared/ui/screen-handoff/15-study-options.md:66` "Study options" · "These options belong to {root} and every sub-deck in it. Chan | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
 
 ## shared/ui/screen-handoff/16-study-browse.md
 
@@ -1295,66 +1295,66 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/23-settings.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/23-settings.md:3` # 23 · Settings |  |
-| `shared/ui/screen-handoff/23-settings.md:5` The Settings tab: the app-wide study defaults, the Theme and Language pages, and |  |
-| `shared/ui/screen-handoff/23-settings.md:11` ## Entry points |  |
-| `shared/ui/screen-handoff/23-settings.md:13` - **The Settings tab** of the bottom bar, `/settings`. It replaces the tab's pla |  |
-| `shared/ui/screen-handoff/23-settings.md:14` - **Debug builds only:** the app bar's gallery icon opens the component gallery. |  |
-| `shared/ui/screen-handoff/23-settings.md:16` The Theme and Language rows open screens 25 and 26 on the root navigator, with n |  |
-| `shared/ui/screen-handoff/23-settings.md:19` ## Layout |  |
-| `shared/ui/screen-handoff/23-settings.md:21` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/23-settings.md:23` \| App bar \| `MxAppBar` \| "Settings"; the gallery icon in debug builds. \| |  |
-| `shared/ui/screen-handoff/23-settings.md:24` \| Account \| `MxSection` + `MxSettingsRow` \| FE-B9, first: "Account". An anonymou |  |
-| `shared/ui/screen-handoff/23-settings.md:25` \| Study defaults \| `MxSection` + `MxSettingsRow` × 2 \| "Cards per session" / "1 |  |
-| `shared/ui/screen-handoff/23-settings.md:26` \| Card limit message \| `MxFieldMessage` (error) \| "Enter a number from 1 to 200" |  |
-| `shared/ui/screen-handoff/23-settings.md:27` \| App \| `MxSection` + `MxSettingsRow` × 3 \| "Theme" with the choice ("Follows th |  |
-| `shared/ui/screen-handoff/23-settings.md:28` \| Sync \| `MxSection` + `MxSettingsRow` \| SB-U1: "Sync", one row with the cloud-s |  |
-| `shared/ui/screen-handoff/23-settings.md:29` \| Admin \| `MxSection` + `MxSettingsRow` × 2 \| FE-B8, FE-B11: "Admin", then "Moni |  |
-| `shared/ui/screen-handoff/23-settings.md:30` \| Reset \| `MxSection` + `MxSettingsRow` (`isAction`: it opens a dialog, so no ch |  |
-| `shared/ui/screen-handoff/23-settings.md:31` \| Reset dialog \| `MxDialog` + `MxNote` + `MxSheetActions.custom` \| "Reset app op |  |
-| `shared/ui/screen-handoff/23-settings.md:32` \| Toasts \| `MxSnackbar` \| "Saved"; "Couldn't save cards per session. Still {n}." |  |
-| `shared/ui/screen-handoff/23-settings.md:34` The card limit is saved once a change settles: 600 ms after the last step, a hol |  |
-| `shared/ui/screen-handoff/23-settings.md:37` ## States |  |
-| `shared/ui/screen-handoff/23-settings.md:39` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/23-settings.md:41` \| loaded \| `settings_loaded_light.png` \| `settings_loaded_dark.png` \| Theme is a |  |
-| `shared/ui/screen-handoff/23-settings.md:42` \| loading \| `settings_loading_light.png` \| `settings_loading_dark.png` \| Three s |  |
-| `shared/ui/screen-handoff/23-settings.md:43` \| saving \| `settings_saving_light.png` \| `settings_saving_dark.png` \| The steppe |  |
-| `shared/ui/screen-handoff/23-settings.md:44` \| saved \| `settings_saved_light.png` \| `settings_saved_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/23-settings.md:45` \| invalidLimit \| `settings_invalid_limit_light.png` \| `settings_invalid_limit_da |  |
-| `shared/ui/screen-handoff/23-settings.md:46` \| saveFailed \| `settings_save_failed_light.png` \| `settings_save_failed_dark.png |  |
-| `shared/ui/screen-handoff/23-settings.md:47` \| resetConfirm \| `settings_reset_confirm_light.png` \| `settings_reset_confirm_da |  |
-| `shared/ui/screen-handoff/23-settings.md:48` \| resetDone \| `settings_reset_done_light.png` \| `settings_reset_done_dark.png` \| |  |
-| `shared/ui/screen-handoff/23-settings.md:49` \| syncSynced \| ![](../../../../test/features/settings/presentation/goldens/setti |  |
-| `shared/ui/screen-handoff/23-settings.md:50` \| syncFailed \| ![](../../../../test/features/settings/presentation/goldens/setti |  |
-| `shared/ui/screen-handoff/23-settings.md:51` \| syncRejected \| ![](../../../../test/features/settings/presentation/goldens/set |  |
-| `shared/ui/screen-handoff/23-settings.md:52` \| account \| ![](../../../../test/features/account/presentation/goldens/settings_ |  |
-| `shared/ui/screen-handoff/23-settings.md:53` \| account, signed in \| ![](../../../../test/features/account/presentation/golden |  |
-| `shared/ui/screen-handoff/23-settings.md:54` \| account, re-auth \| ![](../../../../test/features/account/presentation/goldens/ |  |
-| `shared/ui/screen-handoff/23-settings.md:55` \| admin rows \| ![](../../../../test/features/account/presentation/goldens/settin |  |
-| `shared/ui/screen-handoff/23-settings.md:56` \| read error \| — \| — \| (UC E3) `MxErrorState` "Couldn't open Settings" with the |  |
-| `shared/ui/screen-handoff/23-settings.md:59` Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s |  |
-| `shared/ui/screen-handoff/23-settings.md:61` ## Rulings |  |
-| `shared/ui/screen-handoff/23-settings.md:63` - **D2 (owner), UI-base row 124:** Theme is a row naming the choice and opens sc |  |
-| `shared/ui/screen-handoff/23-settings.md:64` - **UC-SETTINGS-001 E1:** "Enter a number from 1 to 200" sits under the stepper |  |
-| `shared/ui/screen-handoff/23-settings.md:65` - **D6 (owner), UI-base row 126:** the stepper takes −/+, a hold that repeats, a |  |
-| `shared/ui/screen-handoff/23-settings.md:66` - **UI-base row 125, UC E3:** loading is three section-shaped skeleton cards (pa |  |
-| `shared/ui/screen-handoff/23-settings.md:67` - **UI-base row 127:** tray options stack when their labels do not fit. |  |
-| `shared/ui/screen-handoff/23-settings.md:68` - **ADR-015, SB-U1 (owner rulings R1, R5):** a Sync section with one row opens s |  |
-| `shared/ui/screen-handoff/23-settings.md:69` - **UI-base row 128:** the tile sits beside the label on a row with a wide contr |  |
-| `shared/ui/screen-handoff/23-settings.md:70` - **Account UI spec §5.5, R2, P3b plan ruling 1:** the attached account opens sc |  |
-| `shared/ui/screen-handoff/23-settings.md:71` - **ADR-018 §8, monitoring spec §3.1, users spec U2:** the Admin section holds M |  |
-| `shared/ui/screen-handoff/23-settings.md:72` - **Critique 2026-09-30 tone pass, T4:** the Sync row's tile is success when syn |  |
-| `shared/ui/screen-handoff/23-settings.md:73` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig |  |
-| `shared/ui/screen-handoff/23-settings.md:74` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/23-settings.md:76` ## Copy |  |
-| `shared/ui/screen-handoff/23-settings.md:78` - Study defaults: "Study defaults" · "Cards per session" · "1 to {max} · default |  |
-| `shared/ui/screen-handoff/23-settings.md:79` - App: "App" · "Theme" · "Follows the system setting" · "Light" · "Dark" · "Lang |  |
-| `shared/ui/screen-handoff/23-settings.md:80` - Reset: "Reset" · "Reset app options" · "Theme, language, study defaults, remin |  |
-| `shared/ui/screen-handoff/23-settings.md:81` - Sync (SB-U1): "Sync" · "{n} changes weren't accepted" · "Couldn't sync · no co |  |
-| `shared/ui/screen-handoff/23-settings.md:82` - Admin (FE-B8, FE-B11): "Admin" · "Monitoring" · "Logs of the app and the serve |  |
-| `shared/ui/screen-handoff/23-settings.md:83` - Toasts: "Saved" · "Couldn't save cards per session. Still {n}." · "Couldn't sa |  |
-| `shared/ui/screen-handoff/23-settings.md:84` - Error: "Couldn't open Settings" · "Nothing was lost. Try again in a moment." · |  |
+| `shared/ui/screen-handoff/23-settings.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:3` # 23 · Settings | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:5` The Settings tab: the app-wide study defaults, the Theme and Language pages, and | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:11` ## Entry points | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:13` - **The Settings tab** of the bottom bar, `/settings`. It replaces the tab's pla | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:14` - **Debug builds only:** the app bar's gallery icon opens the component gallery. | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:16` The Theme and Language rows open screens 25 and 26 on the root navigator, with n | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:19` ## Layout | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:21` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:23` \| App bar \| `MxAppBar` \| "Settings"; the gallery icon in debug builds. \| | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:24` \| Account \| `MxSection` + `MxSettingsRow` \| FE-B9, first: "Account". An anonymou | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:25` \| Study defaults \| `MxSection` + `MxSettingsRow` × 2 \| "Cards per session" / "1 | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:26` \| Card limit message \| `MxFieldMessage` (error) \| "Enter a number from 1 to 200" | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:27` \| App \| `MxSection` + `MxSettingsRow` × 3 \| "Theme" with the choice ("Follows th | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:28` \| Sync \| `MxSection` + `MxSettingsRow` \| SB-U1: "Sync", one row with the cloud-s | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:29` \| Admin \| `MxSection` + `MxSettingsRow` × 2 \| FE-B8, FE-B11: "Admin", then "Moni | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:30` \| Reset \| `MxSection` + `MxSettingsRow` (`isAction`: it opens a dialog, so no ch | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:31` \| Reset dialog \| `MxDialog` + `MxNote` + `MxSheetActions.custom` \| "Reset app op | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:32` \| Toasts \| `MxSnackbar` \| "Saved"; "Couldn't save cards per session. Still {n}." | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:34` The card limit is saved once a change settles: 600 ms after the last step, a hol | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:37` ## States | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:39` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:41` \| loaded \| `settings_loaded_light.png` \| `settings_loaded_dark.png` \| Theme is a | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:42` \| loading \| `settings_loading_light.png` \| `settings_loading_dark.png` \| Three s | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:43` \| saving \| `settings_saving_light.png` \| `settings_saving_dark.png` \| The steppe | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:44` \| saved \| `settings_saved_light.png` \| `settings_saved_dark.png` \| — \| | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:45` \| invalidLimit \| `settings_invalid_limit_light.png` \| `settings_invalid_limit_da | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:46` \| saveFailed \| `settings_save_failed_light.png` \| `settings_save_failed_dark.png | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:47` \| resetConfirm \| `settings_reset_confirm_light.png` \| `settings_reset_confirm_da | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:48` \| resetDone \| `settings_reset_done_light.png` \| `settings_reset_done_dark.png` \| | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:49` \| syncSynced \| ![](../../../../test/features/settings/presentation/goldens/setti | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:50` \| syncFailed \| ![](../../../../test/features/settings/presentation/goldens/setti | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:51` \| syncRejected \| ![](../../../../test/features/settings/presentation/goldens/set | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:52` \| account \| ![](../../../../test/features/account/presentation/goldens/settings_ | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:53` \| account, signed in \| ![](../../../../test/features/account/presentation/golden | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:54` \| account, re-auth \| ![](../../../../test/features/account/presentation/goldens/ | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:55` \| admin rows \| ![](../../../../test/features/account/presentation/goldens/settin | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:56` \| read error \| — \| — \| (UC E3) `MxErrorState` "Couldn't open Settings" with the | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:59` Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,s | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:61` ## Rulings | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:63` - **D2 (owner), UI-base row 124:** Theme is a row naming the choice and opens sc | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:64` - **UC-SETTINGS-001 E1:** "Enter a number from 1 to 200" sits under the stepper | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:65` - **D6 (owner), UI-base row 126:** the stepper takes −/+, a hold that repeats, a | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:66` - **UI-base row 125, UC E3:** loading is three section-shaped skeleton cards (pa | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:67` - **UI-base row 127:** tray options stack when their labels do not fit. | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:68` - **ADR-015, SB-U1 (owner rulings R1, R5):** a Sync section with one row opens s | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:69` - **UI-base row 128:** the tile sits beside the label on a row with a wide contr | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:70` - **Account UI spec §5.5, R2, P3b plan ruling 1:** the attached account opens sc | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:71` - **ADR-018 §8, monitoring spec §3.1, users spec U2:** the Admin section holds M | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:72` - **Critique 2026-09-30 tone pass, T4:** the Sync row's tile is success when syn | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:73` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:74` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:76` ## Copy | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:78` - Study defaults: "Study defaults" · "Cards per session" · "1 to {max} · default | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:79` - App: "App" · "Theme" · "Follows the system setting" · "Light" · "Dark" · "Lang | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:80` - Reset: "Reset" · "Reset app options" · "Theme, language, study defaults, remin | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:81` - Sync (SB-U1): "Sync" · "{n} changes weren't accepted" · "Couldn't sync · no co | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:82` - Admin (FE-B8, FE-B11): "Admin" · "Monitoring" · "Logs of the app and the serve | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:83` - Toasts: "Saved" · "Couldn't save cards per session. Still {n}." · "Couldn't sa | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `shared/ui/screen-handoff/23-settings.md:84` - Error: "Couldn't open Settings" · "Nothing was lost. Try again in a moment." · | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 
 ## shared/ui/screen-handoff/24-daily-reminder.md
 
@@ -1420,58 +1420,58 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/25-theme.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/25-theme.md:3` # 25 · Theme |  |
-| `shared/ui/screen-handoff/25-theme.md:5` The app's theme: follow the phone, always light or always dark. A tap applies it |  |
-| `shared/ui/screen-handoff/25-theme.md:10` ## Entry points |  |
-| `shared/ui/screen-handoff/25-theme.md:12` - **Screen 23's Theme row**, `/settings/theme`, on the root navigator with no bo |  |
-| `shared/ui/screen-handoff/25-theme.md:15` ## Layout |  |
-| `shared/ui/screen-handoff/25-theme.md:17` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/25-theme.md:19` \| App bar \| `MxAppBar` \| Back and "Theme" (D7). \| |  |
-| `shared/ui/screen-handoff/25-theme.md:20` \| Cards \| `MxCard` (selected ring) + `MxRowInk` × 3 \| A preview, then "System" / |  |
-| `shared/ui/screen-handoff/25-theme.md:21` \| Note \| `MxNote.hint` \| "Applies at once — no restart, and you stay where you a |  |
-| `shared/ui/screen-handoff/25-theme.md:22` \| Toast \| `MxSnackbar` \| "Couldn't change the theme." · Retry. The stored choice |  |
-| `shared/ui/screen-handoff/25-theme.md:24` ## States |  |
-| `shared/ui/screen-handoff/25-theme.md:26` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/25-theme.md:28` \| system \| `settings_theme_system_light.png` \| `settings_theme_system_dark.png` |  |
-| `shared/ui/screen-handoff/25-theme.md:29` \| light \| `settings_theme_light_light.png` \| `settings_theme_light_dark.png` \| A |  |
-| `shared/ui/screen-handoff/25-theme.md:30` \| dark \| `settings_theme_dark_light.png` \| `settings_theme_dark_dark.png` \| As s |  |
-| `shared/ui/screen-handoff/25-theme.md:31` \| read error \| — \| — \| (UC E3) `MxErrorState` "Couldn't open Settings" with Retr |  |
-| `shared/ui/screen-handoff/25-theme.md:33` Goldens: `test/features/settings/presentation/goldens/settings_theme_{system,lig |  |
-| `shared/ui/screen-handoff/25-theme.md:35` ## Rulings |  |
-| `shared/ui/screen-handoff/25-theme.md:37` - **D7 (owner):** the screen is titled "Theme" with no overline; the choices are |  |
-| `shared/ui/screen-handoff/25-theme.md:38` - **Build audit 2026-09-26, UI-base row 127:** the three cards go one per line w |  |
-| `shared/ui/screen-handoff/25-theme.md:40` ## Copy |  |
-| `shared/ui/screen-handoff/25-theme.md:42` "Theme" · "System" · "Match phone" · "Light" · "Always light" · "Dark" · "Always |  |
+| `shared/ui/screen-handoff/25-theme.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:3` # 25 · Theme | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:5` The app's theme: follow the phone, always light or always dark. A tap applies it | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:10` ## Entry points | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:12` - **Screen 23's Theme row**, `/settings/theme`, on the root navigator with no bo | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:15` ## Layout | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:17` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:19` \| App bar \| `MxAppBar` \| Back and "Theme" (D7). \| | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:20` \| Cards \| `MxCard` (selected ring) + `MxRowInk` × 3 \| A preview, then "System" / | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:21` \| Note \| `MxNote.hint` \| "Applies at once — no restart, and you stay where you a | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:22` \| Toast \| `MxSnackbar` \| "Couldn't change the theme." · Retry. The stored choice | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:24` ## States | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:26` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:28` \| system \| `settings_theme_system_light.png` \| `settings_theme_system_dark.png` | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:29` \| light \| `settings_theme_light_light.png` \| `settings_theme_light_dark.png` \| A | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:30` \| dark \| `settings_theme_dark_light.png` \| `settings_theme_dark_dark.png` \| As s | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:31` \| read error \| — \| — \| (UC E3) `MxErrorState` "Couldn't open Settings" with Retr | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:33` Goldens: `test/features/settings/presentation/goldens/settings_theme_{system,lig | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:35` ## Rulings | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:37` - **D7 (owner):** the screen is titled "Theme" with no overline; the choices are | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:38` - **Build audit 2026-09-26, UI-base row 127:** the three cards go one per line w | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:40` ## Copy | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `shared/ui/screen-handoff/25-theme.md:42` "Theme" · "System" · "Match phone" · "Light" · "Always light" · "Dark" · "Always | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
 
 ## shared/ui/screen-handoff/26-language.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/26-language.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/26-language.md:3` # 26 · Language |  |
-| `shared/ui/screen-handoff/26-language.md:5` The app's language: follow the phone, English or Tiếng Việt. A tap applies it at |  |
-| `shared/ui/screen-handoff/26-language.md:10` ## Entry points |  |
-| `shared/ui/screen-handoff/26-language.md:12` - **Screen 23's Language row**, `/settings/language`, on the root navigator with |  |
-| `shared/ui/screen-handoff/26-language.md:15` ## Layout |  |
-| `shared/ui/screen-handoff/26-language.md:17` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/26-language.md:19` \| App bar \| `MxAppBar` \| Back and "Language". \| |  |
-| `shared/ui/screen-handoff/26-language.md:20` \| Rows \| `MxSection` + `MxOptionRow` × 3, the note as its `MxNote` \| "Follow the |  |
-| `shared/ui/screen-handoff/26-language.md:21` \| Note \| Text \| "Applies at once — no restart, and you stay where you are. Your |  |
-| `shared/ui/screen-handoff/26-language.md:22` \| Toasts \| `MxSnackbar` \| After a switch, in the new language: "Switched to Engl |  |
-| `shared/ui/screen-handoff/26-language.md:24` ## States |  |
-| `shared/ui/screen-handoff/26-language.md:26` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/26-language.md:28` \| english \| `settings_language_english_light.png` \| `settings_language_english_d |  |
-| `shared/ui/screen-handoff/26-language.md:29` \| vietnamese \| `settings_language_switched_light.png` \| `settings_language_switc |  |
-| `shared/ui/screen-handoff/26-language.md:30` \| system \| `settings_language_system_light.png` \| `settings_language_system_dark |  |
-| `shared/ui/screen-handoff/26-language.md:31` \| read error \| — \| — \| (UC E3) `MxErrorState` "Couldn't open Settings" with Retr |  |
-| `shared/ui/screen-handoff/26-language.md:33` Goldens: `test/features/settings/presentation/goldens/settings_language_{english |  |
-| `shared/ui/screen-handoff/26-language.md:35` ## Rulings |  |
-| `shared/ui/screen-handoff/26-language.md:37` - **D8, BR-SETTINGS-006:** the system row says "Phone is set to {language}"; the |  |
-| `shared/ui/screen-handoff/26-language.md:38` - The choices are `MxOptionRow` radios, the app's single-choice list; the note i |  |
-| `shared/ui/screen-handoff/26-language.md:39` - **Critique 2026-09-26:** a row has no sub-line when it would repeat the title. |  |
-| `shared/ui/screen-handoff/26-language.md:41` ## Copy |  |
-| `shared/ui/screen-handoff/26-language.md:43` "Language" · "Follow the system" · "Phone is set to {language}" · "Your phone's |  |
+| `shared/ui/screen-handoff/26-language.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:3` # 26 · Language | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:5` The app's language: follow the phone, English or Tiếng Việt. A tap applies it at | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:10` ## Entry points | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:12` - **Screen 23's Language row**, `/settings/language`, on the root navigator with | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:15` ## Layout | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:17` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:19` \| App bar \| `MxAppBar` \| Back and "Language". \| | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:20` \| Rows \| `MxSection` + `MxOptionRow` × 3, the note as its `MxNote` \| "Follow the | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:21` \| Note \| Text \| "Applies at once — no restart, and you stay where you are. Your | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:22` \| Toasts \| `MxSnackbar` \| After a switch, in the new language: "Switched to Engl | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:24` ## States | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:26` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:28` \| english \| `settings_language_english_light.png` \| `settings_language_english_d | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:29` \| vietnamese \| `settings_language_switched_light.png` \| `settings_language_switc | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:30` \| system \| `settings_language_system_light.png` \| `settings_language_system_dark | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:31` \| read error \| — \| — \| (UC E3) `MxErrorState` "Couldn't open Settings" with Retr | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:33` Goldens: `test/features/settings/presentation/goldens/settings_language_{english | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:35` ## Rulings | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:37` - **D8, BR-SETTINGS-006:** the system row says "Phone is set to {language}"; the | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:38` - The choices are `MxOptionRow` radios, the app's single-choice list; the note i | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:39` - **Critique 2026-09-26:** a row has no sub-line when it would repeat the title. | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:41` ## Copy | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
+| `shared/ui/screen-handoff/26-language.md:43` "Language" · "Follow the system" · "Phone is set to {language}" · "Your phone's | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
 
 ## shared/ui/screen-handoff/27-sync.md
 
@@ -2474,48 +2474,48 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:5` rules: [BR-SETTINGS-001, BR-SETTINGS-002, BR-SETTINGS-003, BR-SETTINGS-004, BR-S | superseded → FN-SETTINGS-001…FN-SETTINGS-008 (Business rules) |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:6` code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, l | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:10` **Actor:** Người dùng | pending → SCR-SETTINGS-002 (entry points: the Settings tab and the /settings deep link); intent kept in UC-SETTINGS-001 (Mục tiêu, Preconditions) |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:10` **Actor:** Người dùng | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:15` ## Main flow | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:17` **Main flow:** | moved → `USE_CASES.md` |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:18` 1. Người dùng mở tab Settings. Hệ thống đọc dòng `app_settings` qua stream và | pending → SCR-SETTINGS-002 (three groups Study defaults, Appearance, Language, each showing the value in force); intent kept in UC-SETTINGS-001 step 1 + FN-SETTINGS-001 |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:21` 2. Người dùng đổi trần thẻ mỗi phiên và/hoặc thứ tự thẻ mới. Không có nút lưu: m | pending → SCR-SETTINGS-002 (the card-limit stepper saves 600 ms after the last step, holding −/+ included; a typed number and the new-card order save at once); intent kept in UC-SETTINGS-001 step 2 + FN-SETTINGS-002 |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:28` 3. Hệ thống nói rõ tại chỗ rằng mặc định mới áp cho **phiên tạo sau đó**; phiên | pending → SCR-SETTINGS-002 (the note in place that new defaults apply to later sessions); intent kept in UC-SETTINGS-001 step 3 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:18` 1. Người dùng mở tab Settings. Hệ thống đọc dòng `app_settings` qua stream và | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:21` 2. Người dùng đổi trần thẻ mỗi phiên và/hoặc thứ tự thẻ mới. Không có nút lưu: m | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:28` 3. Hệ thống nói rõ tại chỗ rằng mặc định mới áp cho **phiên tạo sau đó**; phiên | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:30` 4. Người dùng chọn theme trong `System` / `Light` / `Dark`. Lựa chọn là một | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:33` 5. Người dùng chọn ngôn ngữ trong `System` / `English` / `Tiếng Việt`. Cùng cơ | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:35` 6. Rời tab và quay lại, hoặc khởi động lại app: mọi lựa chọn tường minh vẫn còn | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:38` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:40` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:41` - **A1 — Root deck có override:** deck đó không đổi gì khi mặc định toàn app | pending → SCR-SETTINGS-001 (Use app defaults on the deck study options, absent when there is no override); intent kept in UC-SETTINGS-001 A1 + FN-SETTINGS-006…FN-SETTINGS-008 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:41` - **A1 — Root deck có override:** deck đó không đổi gì khi mặc định toàn app | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:46` - **A2 — `System` khi platform đổi:** người dùng đổi dark mode hoặc ngôn ngữ của | moved → `USE_CASES.md` |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:49` - **A3 — Reset về mặc định:** người dùng chọn `Reset to defaults`, hệ thống hỏi | pending → SCR-SETTINGS-002 (Reset to defaults and its confirmation saying learning progress is untouched); intent kept in UC-SETTINGS-001 A3 + FN-SETTINGS-005 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:49` - **A3 — Reset về mặc định:** người dùng chọn `Reset to defaults`, hệ thống hỏi | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:54` - **A4 — Bấm lưu lần thứ hai khi lần đầu chưa xong:** hệ thống bỏ qua lần bấm | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:57` **Error flows:** | moved → `USE_CASES.md` |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:58` - **E1 — Trần thẻ không hợp lệ:** không phải số, nhỏ hơn tối thiểu hoặc lớn hơn | pending → SCR-SETTINGS-002 (the typed reason right under the field); intent kept in UC-SETTINGS-001 E1 |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:61` - **E2 — Ghi thất bại:** thao tác ghi lỗi → thông báo có kiểu và `Retry`. Draft | pending → SCR-SETTINGS-002 (the typed message with Retry; no SQL or stack trace); intent kept in UC-SETTINGS-001 E2 |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:64` - **E3 — Đọc thất bại:** stream lỗi → trạng thái lỗi của cả màn với `Retry`; | pending → SCR-SETTINGS-002 (the whole-screen error with Retry); intent kept in UC-SETTINGS-001 E3 |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:66` - **E4 — Xoá override của deck thất bại:** override giữ nguyên, lý do có kiểu, | pending → SCR-SETTINGS-001 (the typed reason, the override kept); intent kept in UC-SETTINGS-001 E4 + FN-SETTINGS-008 |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:69` ## UI | pending → SCR-SETTINGS-002 (states loading · loaded at defaults · loaded off defaults · saving per group · validation error · persistence error + retry · reset confirm · System resolution; no empty) |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:71` **UI states:** loading (đọc lần đầu) · loaded ở mặc định · loaded ở giá trị | pending → SCR-SETTINGS-002 (states loading · loaded at defaults · loaded off defaults · saving per group · validation error · persistence error + retry · reset confirm · System resolution; no empty) |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:58` - **E1 — Trần thẻ không hợp lệ:** không phải số, nhỏ hơn tối thiểu hoặc lớn hơn | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:61` - **E2 — Ghi thất bại:** thao tác ghi lỗi → thông báo có kiểu và `Retry`. Draft | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:64` - **E3 — Đọc thất bại:** stream lỗi → trạng thái lỗi của cả màn với `Retry`; | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:66` - **E4 — Xoá override của deck thất bại:** override giữ nguyên, lý do có kiểu, | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:69` ## UI | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:71` **UI states:** loading (đọc lần đầu) · loaded ở mặc định · loaded ở giá trị | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:77` ## Local | superseded → FN-SETTINGS-001 + FN-SETTINGS-005 + FN-SETTINGS-007 + FN-SETTINGS-008 (Kết quả) |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:79` **Postconditions:** `app_settings` giữ đúng một dòng với giá trị người dùng đã | superseded → FN-SETTINGS-001 + FN-SETTINGS-005 + FN-SETTINGS-007 + FN-SETTINGS-008 (Kết quả) |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:85` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:87` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:89` ## Acceptance criteria | moved → `USE_CASES.md` |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:91` - [ ] **Given** app vừa cài hoặc mở tab Settings, **when** đọc xong dòng `app_se | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:92` - [ ] **Given** người dùng bấm nút −/+ hoặc giữ trên trần thẻ mỗi phiên, **when* | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:91` - [ ] **Given** app vừa cài hoặc mở tab Settings, **when** đọc xong dòng `app_se | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:92` - [ ] **Given** người dùng bấm nút −/+ hoặc giữ trên trần thẻ mỗi phiên, **when* | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:93` - [ ] **Given** người dùng đổi thứ tự thẻ mới hoặc gõ tay một trần thẻ hợp lệ (1 | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:94` - [ ] **Given** người dùng chọn theme `System`, `Light` hoặc `Dark`, **when** ch | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:95` - [ ] **Given** người dùng chọn ngôn ngữ `System`, `English` hoặc `Tiếng Việt`, | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:96` - [ ] **Given** một root deck đang có override `study_config`, **when** mặc định | moved → `USE_CASES.md` |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:97` - [ ] **Given** một root deck đang có override, **when** người dùng bấm "Use app | pending → SCR-SETTINGS-001 (presentation of the criterion); intent kept in UC-SETTINGS-001 A1 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:97` - [ ] **Given** một root deck đang có override, **when** người dùng bấm "Use app | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:98` - [ ] **Given** một deck không phải root, **when** ghi hoặc xoá override qua đườ | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:99` - [ ] **Given** app đang để `System` cho theme hoặc ngôn ngữ, **when** brightnes | moved → `USE_CASES.md` |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:100` - [ ] **Given** người dùng chọn "Reset to defaults" và xác nhận, **when** transa | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:100` - [ ] **Given** người dùng chọn "Reset to defaults" và xác nhận, **when** transa | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:101` - [ ] **Given** một lần ghi của một nhóm (theme, ngôn ngữ hoặc study defaults) đ | moved → `USE_CASES.md` |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:102` - [ ] **Given** người dùng gõ một trần thẻ không phải số, nhỏ hơn 1 hoặc lớn hơn | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:103` - [ ] **Given** một lần ghi tuỳ chọn thất bại, **when** người dùng thấy thông bá | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:104` - [ ] **Given** stream đọc `app_settings` lỗi, **when** màn Settings nhận lỗi, * | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:105` - [ ] **Given** "Use app defaults" của một deck thất bại khi ghi, **when** người | pending → SCR-SETTINGS-001 (presentation of the criterion); intent kept in UC-SETTINGS-001 A1 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:102` - [ ] **Given** người dùng gõ một trần thẻ không phải số, nhỏ hơn 1 hoặc lớn hơn | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:103` - [ ] **Given** một lần ghi tuỳ chọn thất bại, **when** người dùng thấy thông bá | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:104` - [ ] **Given** stream đọc `app_settings` lỗi, **when** màn Settings nhận lỗi, * | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:105` - [ ] **Given** "Use app defaults" của một deck thất bại khi ghi, **when** người | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
 
 ## features/srs/usecases/UC-SRS-001-reset-learning-progress.md
 
@@ -3156,18 +3156,18 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 |---|---|
 | `features/settings/ui.md:1` # Settings — UI | superseded → UC-SETTINGS-001 + FN-SETTINGS-001…FN-SETTINGS-008; per-feature UI files are replaced by screen specs (ADR-021) |
 | `features/settings/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên | superseded → UC-SETTINGS-001 + FN-SETTINGS-001…FN-SETTINGS-008; per-feature UI files are replaced by screen specs (ADR-021) |
-| `features/settings/ui.md:5` ## Màn hình và điều hướng | pending → SCR-SETTINGS-002 (routes and where each settings screen opens from, with NAVIGATION.md) |
-| `features/settings/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | pending → SCR-SETTINGS-002 (routes and where each settings screen opens from, with NAVIGATION.md) |
-| `features/settings/ui.md:9` \| 23 · Settings \| `/settings` (tab Settings) \| Bottom bar \| [23-settings.md](../ | pending → SCR-SETTINGS-002 (route /settings, the Settings tab, opened from the bottom bar) |
-| `features/settings/ui.md:10` \| 25 · Theme \| `/settings/theme`, trên root navigator, không có bottom bar \| Hàn | pending → SCR-SETTINGS-003 (route /settings/theme on the root navigator, no bottom bar; opened from the Theme row) |
-| `features/settings/ui.md:11` \| 26 · Language \| `/settings/language`, trên root navigator, không có bottom bar | pending → SCR-SETTINGS-004 (route /settings/language on the root navigator, no bottom bar; opened from the Language row) |
+| `features/settings/ui.md:5` ## Màn hình và điều hướng | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/ui.md:9` \| 23 · Settings \| `/settings` (tab Settings) \| Bottom bar \| [23-settings.md](../ | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
+| `features/settings/ui.md:10` \| 25 · Theme \| `/settings/theme`, trên root navigator, không có bottom bar \| Hàn | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
+| `features/settings/ui.md:11` \| 26 · Language \| `/settings/language`, trên root navigator, không có bottom bar | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
 | `features/settings/ui.md:12` \| 24 · Daily reminder \| `/settings/reminder`, trên root navigator, không có bott | pending → SCR-REMINDER-001 (route /settings/reminder on the root navigator, no bottom bar; opened from the Daily reminder row "Off" or "On · HH:mm") |
-| `features/settings/ui.md:13` \| 15 · Study options \| `/decks/deck/:deckId/options`, trên root navigator, không | pending → SCR-SETTINGS-001 (route /decks/deck/:deckId/options on the root navigator, no bottom bar; opened from the deck action sheet and the Study Entry app bar) |
-| `features/settings/ui.md:15` Reset app options đưa cả nhắc học về tắt lúc 20:00 (BR-SETTINGS-008) và câu chữ | pending → SCR-SETTINGS-002 (the reset copy names the reminder going off at 20:00); contract kept in FN-SETTINGS-005; the reminder rescheduling after a reset goes to the reminders FNs (Task 18) |
+| `features/settings/ui.md:13` \| 15 · Study options \| `/decks/deck/:deckId/options`, trên root navigator, không | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
+| `features/settings/ui.md:15` Reset app options đưa cả nhắc học về tắt lúc 20:00 (BR-SETTINGS-008) và câu chữ | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/ui.md:18` Theme và ngôn ngữ áp cho cả app: `main()` đọc dòng `app_settings` một lần trước | superseded → FN-SETTINGS-001 (read once before the first frame, 2 s at most, then the stream) + FN-SETTINGS-003 + FN-SETTINGS-004 (applied app-wide) |
 | `features/settings/ui.md:22` ## Validation | superseded → FN-SETTINGS-002 + FN-SETTINGS-003 + FN-SETTINGS-004 (Input and Lỗi) |
 | `features/settings/ui.md:24` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | superseded → FN-SETTINGS-002 + FN-SETTINGS-003 + FN-SETTINGS-004 (Input and Lỗi) |
-| `features/settings/ui.md:26` \| app_settings.cardLimit \| cùng bound với tùy chọn của deck (BR-STUDY-003, BR-SE | pending → SCR-SETTINGS-002 (Copy: "Enter a number from 1 to 200" under the stepper); rule kept in FN-SETTINGS-002 (Lỗi: cardLimitOutOfRange) |
+| `features/settings/ui.md:26` \| app_settings.cardLimit \| cùng bound với tùy chọn của deck (BR-STUDY-003, BR-SE | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/ui.md:27` \| app_settings.themeMode \| thuộc `system` \\| `light` \\| `dark` (BR-SETTINGS-005) | superseded → FN-SETTINGS-003 (Input: system, light or dark; the control offers only these) |
 | `features/settings/ui.md:28` \| app_settings.language \| thuộc `system` \\| `en` \\| `vi` (BR-SETTINGS-006) \| khô | superseded → FN-SETTINGS-004 (Input: system, en or vi; the control offers only these) |
 | `features/settings/ui.md:30` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | dropped — restates ADR-015 (the server checks integrity, business rules live in the app), approved PENDING |
@@ -3330,13 +3330,13 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/settings/README.md:10` ## Màn hình → Use case |  |
-| `features/settings/README.md:12` \| Màn hình \| UC \| |  |
-| `features/settings/README.md:14` \| Tab Settings (màn 23) \| UC-SETTINGS-001 \| |  |
-| `features/settings/README.md:15` \| Theme (màn 25) \| UC-SETTINGS-001 \| |  |
-| `features/settings/README.md:16` \| Language (màn 26) \| UC-SETTINGS-001 \| |  |
-| `features/settings/README.md:17` \| Study options của bộ thẻ (màn 15) \| UC-SETTINGS-001 (A1, E4) \| |  |
-| `features/settings/README.md:19` Nguồn: trigger của UC-SETTINGS-001 ("Mở tab `Settings` của navigation shell, hoặ |  |
+| `features/settings/README.md:10` ## Màn hình → Use case || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:12` \| Màn hình \| UC \| || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:14` \| Tab Settings (màn 23) \| UC-SETTINGS-001 \| || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:15` \| Theme (màn 25) \| UC-SETTINGS-001 \| || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:16` \| Language (màn 26) \| UC-SETTINGS-001 \| || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:17` \| Study options của bộ thẻ (màn 15) \| UC-SETTINGS-001 (A1, E4) \| || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:19` Nguồn: trigger của UC-SETTINGS-001 ("Mở tab `Settings` của navigation shell, hoặ || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/srs/README.md
 
@@ -3747,54 +3747,54 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/search/presentation/goldens/search_no_results_light.png` | superseded → SCR-SEARCH-001 `no_results` light |
 | `test/features/search/presentation/goldens/search_results_dark.png` | superseded → SCR-SEARCH-001 `results` dark |
 | `test/features/search/presentation/goldens/search_results_light.png` | superseded → SCR-SEARCH-001 `results` light |
-| `test/features/settings/presentation/goldens/settings_invalid_limit_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_invalid_limit_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_language_english_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_language_english_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_language_switched_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_language_switched_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_language_system_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_language_system_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_loaded_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_loaded_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_loading_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_loading_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_reset_confirm_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_reset_confirm_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_reset_done_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_reset_done_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_save_failed_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_save_failed_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_saved_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_saved_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_saving_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_saving_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_sync_failed_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_sync_failed_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_sync_rejected_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_sync_rejected_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_sync_synced_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_sync_synced_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_theme_dark_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_theme_dark_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_theme_light_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_theme_light_light.png` |  |
-| `test/features/settings/presentation/goldens/settings_theme_system_dark.png` |  |
-| `test/features/settings/presentation/goldens/settings_theme_system_light.png` |  |
-| `test/features/settings/presentation/goldens/study_options_defaults_dark.png` |  |
-| `test/features/settings/presentation/goldens/study_options_defaults_light.png` |  |
-| `test/features/settings/presentation/goldens/study_options_invalid_dark.png` |  |
-| `test/features/settings/presentation/goldens/study_options_invalid_light.png` |  |
-| `test/features/settings/presentation/goldens/study_options_loading_dark.png` |  |
-| `test/features/settings/presentation/goldens/study_options_loading_light.png` |  |
-| `test/features/settings/presentation/goldens/study_options_override_dark.png` |  |
-| `test/features/settings/presentation/goldens/study_options_override_light.png` |  |
-| `test/features/settings/presentation/goldens/study_options_save_failed_dark.png` |  |
-| `test/features/settings/presentation/goldens/study_options_save_failed_light.png` |  |
-| `test/features/settings/presentation/goldens/study_options_saved_dark.png` |  |
-| `test/features/settings/presentation/goldens/study_options_saved_light.png` |  |
-| `test/features/settings/presentation/goldens/study_options_saving_dark.png` |  |
-| `test/features/settings/presentation/goldens/study_options_saving_light.png` |  |
+| `test/features/settings/presentation/goldens/settings_invalid_limit_dark.png` | superseded → SCR-SETTINGS-002 `invalid_limit` dark |
+| `test/features/settings/presentation/goldens/settings_invalid_limit_light.png` | superseded → SCR-SETTINGS-002 `invalid_limit` light |
+| `test/features/settings/presentation/goldens/settings_language_english_dark.png` | superseded → SCR-SETTINGS-004 `english` dark |
+| `test/features/settings/presentation/goldens/settings_language_english_light.png` | superseded → SCR-SETTINGS-004 `english` light |
+| `test/features/settings/presentation/goldens/settings_language_switched_dark.png` | superseded → SCR-SETTINGS-004 `vietnamese` dark |
+| `test/features/settings/presentation/goldens/settings_language_switched_light.png` | superseded → SCR-SETTINGS-004 `vietnamese` light |
+| `test/features/settings/presentation/goldens/settings_language_system_dark.png` | superseded → SCR-SETTINGS-004 `system` dark |
+| `test/features/settings/presentation/goldens/settings_language_system_light.png` | superseded → SCR-SETTINGS-004 `system` light |
+| `test/features/settings/presentation/goldens/settings_loaded_dark.png` | superseded → SCR-SETTINGS-002 `loaded` dark |
+| `test/features/settings/presentation/goldens/settings_loaded_light.png` | superseded → SCR-SETTINGS-002 `loaded` light |
+| `test/features/settings/presentation/goldens/settings_loading_dark.png` | superseded → SCR-SETTINGS-002 `loading` dark |
+| `test/features/settings/presentation/goldens/settings_loading_light.png` | superseded → SCR-SETTINGS-002 `loading` light |
+| `test/features/settings/presentation/goldens/settings_reset_confirm_dark.png` | superseded → SCR-SETTINGS-002 `reset_confirm` dark |
+| `test/features/settings/presentation/goldens/settings_reset_confirm_light.png` | superseded → SCR-SETTINGS-002 `reset_confirm` light |
+| `test/features/settings/presentation/goldens/settings_reset_done_dark.png` | superseded → SCR-SETTINGS-002 `reset_done` dark |
+| `test/features/settings/presentation/goldens/settings_reset_done_light.png` | superseded → SCR-SETTINGS-002 `reset_done` light |
+| `test/features/settings/presentation/goldens/settings_save_failed_dark.png` | superseded → SCR-SETTINGS-002 `save_failed` dark |
+| `test/features/settings/presentation/goldens/settings_save_failed_light.png` | superseded → SCR-SETTINGS-002 `save_failed` light |
+| `test/features/settings/presentation/goldens/settings_saved_dark.png` | superseded → SCR-SETTINGS-002 `saved` dark |
+| `test/features/settings/presentation/goldens/settings_saved_light.png` | superseded → SCR-SETTINGS-002 `saved` light |
+| `test/features/settings/presentation/goldens/settings_saving_dark.png` | superseded → SCR-SETTINGS-002 `saving` dark |
+| `test/features/settings/presentation/goldens/settings_saving_light.png` | superseded → SCR-SETTINGS-002 `saving` light |
+| `test/features/settings/presentation/goldens/settings_sync_failed_dark.png` | superseded → SCR-SETTINGS-002 `sync_failed` dark |
+| `test/features/settings/presentation/goldens/settings_sync_failed_light.png` | superseded → SCR-SETTINGS-002 `sync_failed` light |
+| `test/features/settings/presentation/goldens/settings_sync_rejected_dark.png` | superseded → SCR-SETTINGS-002 `sync_rejected` dark |
+| `test/features/settings/presentation/goldens/settings_sync_rejected_light.png` | superseded → SCR-SETTINGS-002 `sync_rejected` light |
+| `test/features/settings/presentation/goldens/settings_sync_synced_dark.png` | superseded → SCR-SETTINGS-002 `sync_synced` dark |
+| `test/features/settings/presentation/goldens/settings_sync_synced_light.png` | superseded → SCR-SETTINGS-002 `sync_synced` light |
+| `test/features/settings/presentation/goldens/settings_theme_dark_dark.png` | superseded → SCR-SETTINGS-003 `dark` dark |
+| `test/features/settings/presentation/goldens/settings_theme_dark_light.png` | superseded → SCR-SETTINGS-003 `dark` light |
+| `test/features/settings/presentation/goldens/settings_theme_light_dark.png` | superseded → SCR-SETTINGS-003 `light` dark |
+| `test/features/settings/presentation/goldens/settings_theme_light_light.png` | superseded → SCR-SETTINGS-003 `light` light |
+| `test/features/settings/presentation/goldens/settings_theme_system_dark.png` | superseded → SCR-SETTINGS-003 `system` dark |
+| `test/features/settings/presentation/goldens/settings_theme_system_light.png` | superseded → SCR-SETTINGS-003 `system` light |
+| `test/features/settings/presentation/goldens/study_options_defaults_dark.png` | superseded → SCR-SETTINGS-001 `defaults` dark |
+| `test/features/settings/presentation/goldens/study_options_defaults_light.png` | superseded → SCR-SETTINGS-001 `defaults` light |
+| `test/features/settings/presentation/goldens/study_options_invalid_dark.png` | superseded → SCR-SETTINGS-001 `invalid` dark |
+| `test/features/settings/presentation/goldens/study_options_invalid_light.png` | superseded → SCR-SETTINGS-001 `invalid` light |
+| `test/features/settings/presentation/goldens/study_options_loading_dark.png` | superseded → SCR-SETTINGS-001 `loading` dark |
+| `test/features/settings/presentation/goldens/study_options_loading_light.png` | superseded → SCR-SETTINGS-001 `loading` light |
+| `test/features/settings/presentation/goldens/study_options_override_dark.png` | superseded → SCR-SETTINGS-001 `override` dark |
+| `test/features/settings/presentation/goldens/study_options_override_light.png` | superseded → SCR-SETTINGS-001 `override` light |
+| `test/features/settings/presentation/goldens/study_options_save_failed_dark.png` | superseded → SCR-SETTINGS-001 `save_failed` dark |
+| `test/features/settings/presentation/goldens/study_options_save_failed_light.png` | superseded → SCR-SETTINGS-001 `save_failed` light |
+| `test/features/settings/presentation/goldens/study_options_saved_dark.png` | superseded → SCR-SETTINGS-001 `saved` dark |
+| `test/features/settings/presentation/goldens/study_options_saved_light.png` | superseded → SCR-SETTINGS-001 `saved` light |
+| `test/features/settings/presentation/goldens/study_options_saving_dark.png` | superseded → SCR-SETTINGS-001 `saving` dark |
+| `test/features/settings/presentation/goldens/study_options_saving_light.png` | superseded → SCR-SETTINGS-001 `saving` light |
 | `test/features/settings/presentation/goldens/sync_failed_network_dark.png` |  |
 | `test/features/settings/presentation/goldens/sync_failed_network_light.png` |  |
 | `test/features/settings/presentation/goldens/sync_failed_server_dark.png` |  |
@@ -4383,3 +4383,10 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - Followed the code where the legacy UC differed (presentation only): an unrecoverable save error shows SCR-STUDY-009 "Stopped by a save error" rather than the deck list; eight boxes never runs self-assess, so its two-button grade row does not exist.
 - Record 19's open item (the 20-second turn for TalkBack users is a business-rule decision) is kept as a Pending ruling in SCR-STUDY-007.
 - Warning delta: 67 → 55 = −11 navigations to pending study screens, −1 FN-STUDY-013 now invoked by SCR-STUDY-004.
+
+## Task 37 notes — SCR-SETTINGS-001…004
+
+- Records 15, 23, 25, 26 → `SCR-SETTINGS-001…004-*.md`; their goldens superseded (the sync_* goldens under test/features/settings belong to record 27, Task 40).
+- 28 pending rows moved; settings README rows superseded.
+- The legacy UC named three Settings groups; V8 draws Account, Study defaults, App, Sync, Admin and Reset — ruled in SCR-SETTINGS-002 (presentation).
+- Warning delta: 55 → 59 = +6 SCR-SETTINGS-002 navigations to specs still pending (account and monitoring Tasks 40–41, reminder Task 39), −2 navigations to SCR-SETTINGS-001.
