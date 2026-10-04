@@ -4259,3 +4259,32 @@ FN-DECK-001.
   NAVIGATION.md in Task 42. The Welcome screen that account builds show first is SCR-ACCOUNT-002
   (Task 25).
 - Warning delta: 41 → 42 = +1 migrated legacy UC file. Every BR-STARTER is cited by an FN.
+
+## Task 25 notes — account and sync
+
+| Code | FN |
+|---|---|
+| is_welcome_seen + mark_welcome_seen + `lib/app/startup_welcome.dart` | FN-ACCOUNT-001 (one contract: Welcome once per device) |
+| `lib/core/auth/auth_state.dart` (the state stream) | FN-ACCOUNT-002 |
+| `AccountSwitching.requestCode` / `verifyCode` / `continueWithGoogle` | FN-ACCOUNT-003 / 004 / 005 |
+| count_local_library | FN-ACCOUNT-006 |
+| `beginSwitch` + `cancelSwitch` | FN-ACCOUNT-007 |
+| `signOut` + `cancelSignOut` | FN-ACCOUNT-008 |
+| `deleteAccount` / `continueWithoutAccount` / `retry` | FN-ACCOUNT-009 / 010 / 011 |
+| search_users / set_user_role | FN-ACCOUNT-012 / 013 |
+| `lib/core/sync/` scheduler + coordinator / status / syncNow / retryRejected / keepRejectedOnDevice | FN-ACCOUNT-014 / 015 / 016 / 017 / 018 |
+
+- Ruling: the account commands of `lib/core/auth/` that screens 29–32 trigger get FN-ACCOUNT FNs,
+  beyond the brief's five classes and sync — plan P1 step 1 adds an FN for a behaviour no class
+  covers, PT1 already does so for `lib/core/sync/`, and without them SCR-ACCOUNT-002…005 would have
+  no FN to invoke and the account behaviour would live only in retired handoffs — cost if wrong:
+  eleven FNs to fold into the account specs.
+- Ruling: is_welcome_seen and mark_welcome_seen are one FN (FN-ACCOUNT-001): together they are the
+  one thing a QA tests, "Welcome shows once per device" — cost if wrong: one FN to split.
+- `### Business rules` of each FN: "Không áp dụng — feature account chưa có BR (<spec>)" as the
+  brief says; FN-ACCOUNT-014 adds what the sync code does and the specs leave implicit: a server
+  copy wins over a sent row, and a refused row the server never saw is kept, never deleted.
+- Warning delta: 42 → 60 = +18 FN-ACCOUNT invoked by no UC and no screen. Account has no UC; the
+  SCR-ACCOUNT specs (Task 28–41) invoke FN-ACCOUNT-001…013 and 015…018. FN-ACCOUNT-014 (automatic
+  sync) has no control that calls it, so its warning stays unless the owner wants an account UC;
+  Task 43 lists it.

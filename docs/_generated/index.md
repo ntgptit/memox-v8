@@ -42,7 +42,28 @@
 
 ## [account](../features/account/README.md)
 
-Chưa có tài liệu.
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-ACCOUNT-001](../functional-spec/account.md) | Hiện Welcome một lần trên mỗi thiết bị | active | — |
+| [FN-ACCOUNT-002](../functional-spec/account.md) | Theo dõi trạng thái tài khoản | active | — |
+| [FN-ACCOUNT-003](../functional-spec/account.md) | Gửi mã đăng nhập qua email | active | — |
+| [FN-ACCOUNT-004](../functional-spec/account.md) | Xác nhận mã đăng nhập | active | — |
+| [FN-ACCOUNT-005](../functional-spec/account.md) | Đăng nhập bằng Google | active | — |
+| [FN-ACCOUNT-006](../functional-spec/account.md) | Đếm thư viện trên thiết bị | active | — |
+| [FN-ACCOUNT-007](../functional-spec/account.md) | Chuyển thiết bị sang tài khoản khác | active | — |
+| [FN-ACCOUNT-008](../functional-spec/account.md) | Đăng xuất | active | — |
+| [FN-ACCOUNT-009](../functional-spec/account.md) | Xoá tài khoản | active | — |
+| [FN-ACCOUNT-010](../functional-spec/account.md) | Tiếp tục không cần tài khoản | active | — |
+| [FN-ACCOUNT-011](../functional-spec/account.md) | Thử lại một chuyển tiếp đã dừng | active | — |
+| [FN-ACCOUNT-012](../functional-spec/account.md) | Tìm người dùng (admin) | active | — |
+| [FN-ACCOUNT-013](../functional-spec/account.md) | Đặt vai trò của một người dùng (admin) | active | — |
+| [FN-ACCOUNT-014](../functional-spec/account.md) | Đồng bộ thư viện với server | active | — |
+| [FN-ACCOUNT-015](../functional-spec/account.md) | Theo dõi trạng thái đồng bộ | active | — |
+| [FN-ACCOUNT-016](../functional-spec/account.md) | Đồng bộ ngay | active | — |
+| [FN-ACCOUNT-017](../functional-spec/account.md) | Gửi lại các thay đổi bị từ chối | active | — |
+| [FN-ACCOUNT-018](../functional-spec/account.md) | Giữ các thay đổi bị từ chối chỉ trên thiết bị | active | — |
 
 ## [card](../features/card/README.md)
 

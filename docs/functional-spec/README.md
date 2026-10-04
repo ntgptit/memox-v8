@@ -17,3 +17,4 @@ section. Định dạng: [docs/README.md](../README.md), mục "UC, FN và scree
 | Trash | [trash.md](trash.md) |
 | Transfer | [transfer.md](transfer.md) |
 | Starter decks | [starter-decks.md](starter-decks.md) |
+| Account | [account.md](account.md) |
