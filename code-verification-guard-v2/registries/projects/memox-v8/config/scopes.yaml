@@ -296,6 +296,14 @@ scopes:
     exclude:
       - '**/*.g.dart'
       - lib/core/theme/generated/**
+  # The hand-written theme: every value it uses comes from the generated file
+  # (spec 2026-10-04-sp3a D10).
+  hand_written_theme_files:
+    include:
+      - lib/core/theme/**/*.dart
+    exclude:
+      - '**/*.g.dart'
+      - lib/core/theme/generated/**
   theme_files:
     include:
       - lib/core/theme/**/*.dart

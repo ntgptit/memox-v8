@@ -219,3 +219,24 @@ def test_no_colour_literal_outside_generated_accepts_roles_and_prose(tmp_path: P
     final mixed = Color.lerp(ink, other, t);
     """
     assert not _violations(COLOUR_LITERAL, tmp_path, good)
+
+
+THEME_CONSTANT = "memox_v8.design_system.theme_constant_reads_generated"
+
+
+def test_theme_constant_reads_generated_goes_red_on_a_literal(tmp_path: Path) -> None:
+    for bad in (
+        "  static const double gap = 16;",
+        "  static const Color ink = Color(0xFF0F1638);",
+        "  static const Duration fade = Duration(milliseconds: 200);",
+    ):
+        assert _violations(THEME_CONSTANT, tmp_path, bad), bad
+
+
+def test_theme_constant_reads_generated_accepts_generated_values(tmp_path: Path) -> None:
+    good = """
+    // static const double gap = 16; was the old spelling.
+    static const double gap = AppSpacing.gutter;
+    static const Duration fade = AppDurations.standard;
+    """
+    assert not _violations(THEME_CONSTANT, tmp_path, good)

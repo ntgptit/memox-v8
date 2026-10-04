@@ -406,3 +406,23 @@ rules:
     tags:
       - memox-v8
       - design-system
+
+  # SP3a (spec 2026-10-04-sp3a D10): every token has one source. The
+  # generator writes the constant token classes; hand-written theme code
+  # reads them and never states a value of its own.
+  - id: memox_v8.design_system.theme_constant_reads_generated
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      A `static const` in the hand-written theme takes its value from
+      lib/core/theme/generated/design_values.dart (`AppSpacing.gutter`,
+      `DesignPalette.light.primary`), never from a literal: the DESIGN.md
+      frontmatter is the one source of every value.
+    scopes:
+      - hand_written_theme_files
+    patterns:
+      - '^\s*static\s+const\s+(?:double|int|num|Color|Duration)\s+\w+\s*=\s*(?:-?[0-9]|Color\s*\(|Duration\s*\()'
+    tags:
+      - memox-v8
+      - design-system
