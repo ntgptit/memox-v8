@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check docs/ against the structure described in docs/README.md.
 
-    python tools/docs/check.py [--plan <mapping.md>]
+    python tools/docs/check.py [--plan <mapping.md>] [--ledger <ledger.md>]
 
 Run from the repository root. Prints `LEVEL path: message`, one per line.
 Exit code 1 when any ERROR is found; WARNINGs never fail.
@@ -44,6 +44,8 @@ ERROR
 - with --plan: a mapping row whose destination does not exist (a mapping
   table is one whose first header cell starts with "Nguồn"; destinations are
   backticked paths relative to docs/, `<slug>` and `*` are wildcards)
+- with --ledger: a row without a valid outcome, a moved row whose destination
+  does not exist, or an OPEN QUESTION left in the new-layout documents
 WARNING
 - active BR cited by no FN (nor by a legacy UC file); active FN invoked by no
   UC and no screen; ready UC with no code (legacy: `code: []`; section: it
@@ -69,6 +71,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import generate as g  # noqa: E402
 import specdocs  # noqa: E402
+import ledger  # noqa: E402
 
 BR_ID = re.compile(r"^BR-[A-Z]+-\d{3}$")
 UC_ID = re.compile(r"^UC-[A-Z]+-\d{3}$")
@@ -637,6 +640,40 @@ def destination_exists(dest: str) -> bool:
     return (g.DOCS / pattern).exists()
 
 
+def new_layout_files() -> list[Path]:
+    paths = [g.use_cases_file(), g.navigation_file()]
+    paths += sorted(g.functional_spec_dir().glob("*.md")) if g.functional_spec_dir().is_dir() else []
+    screens = g.DOCS / "screens"
+    paths += sorted(screens.rglob("*.md")) if screens.is_dir() else []
+    return [path for path in paths if path.exists()]
+
+
+def check_ledger(path: Path, defined: set[str], report: Report) -> None:
+    """Spec §7.1 conditions 1–3: every row has a valid outcome; a moved row's
+    destination exists; nothing is still OPEN QUESTION in the new docs."""
+    if not path.exists():
+        report.error(path, "ledger file not found")
+        return
+    found = ledger.rows(path.read_text(encoding="utf-8"))
+    if not found:
+        report.error(path, "ledger has no rows")
+    for line_no, _, outcome in found:
+        at = f"{show(path)}:{line_no}"
+        match = ledger.OUTCOME.match(outcome)
+        if match is None:
+            report.error(at, f"outcome `{outcome or '(empty)'}` is not `moved → …`, `superseded → …` or `dropped — …, approved <date>`")
+        elif match["dest"] and not destination_exists(match["dest"].split("#", 1)[0]):
+            report.error(at, f"moved to a path that does not exist: `{match['dest']}`")
+        elif match["by"]:
+            cited = specdocs.ANY_ID.match(match["by"])
+            if cited and cited[1] not in defined:
+                report.error(at, f"superseded by an undefined id: `{cited[1]}`")
+    for new in new_layout_files():
+        for line_no, line in g.iter_unfenced(new.read_text(encoding="utf-8")):
+            if g.OPEN_QUESTION in g.INLINE_CODE.sub("", line):
+                report.error(f"{show(new)}:{line_no}", "an OPEN QUESTION is still open in the new docs (spec §7.1)")
+
+
 # ------------------------------------------------------- acceptance criteria
 
 ACCEPTANCE_SECTION = "Acceptance criteria"
@@ -736,7 +773,7 @@ def check_v7_residue(report: Report) -> None:
 # ------------------------------------------------------------------- main
 
 
-def run(plan: Path | None, base_keys=base_state_keys) -> Report:
+def run(plan: Path | None, base_keys=base_state_keys, ledger_path: Path | None = None) -> Report:
     report = Report()
     docs, migrated = g.load_all()
     features = g.feature_names()
@@ -766,6 +803,8 @@ def run(plan: Path | None, base_keys=base_state_keys) -> Report:
     check_v7_residue(report)
     if plan is not None:
         check_plan(plan, report)
+    if ledger_path is not None:
+        check_ledger(ledger_path, defined_ids(docs), report)
     check_warnings(docs, migrated, report)
     return report
 
@@ -773,11 +812,12 @@ def run(plan: Path | None, base_keys=base_state_keys) -> Report:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--plan", type=Path, help="Markdown file with mapping tables (first header cell \"Nguồn\")")
+    parser.add_argument("--ledger", type=Path, help="migration ledger to verify (spec 2026-10-04 §7.1)")
     args = parser.parse_args()
     if not g.DOCS.is_dir():
         print("ERROR docs: not found — run from the repository root")
         return 1
-    report = run(args.plan)
+    report = run(args.plan, ledger_path=args.ledger)
     report.print()
     return 1 if report.errors else 0
 

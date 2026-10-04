@@ -11,6 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check  # noqa: E402
+import ledger  # noqa: E402  (next to `import check`)
 
 FEATURE_README = """---
 feature: deck
@@ -457,6 +458,72 @@ class GeneratedTest(unittest.TestCase):
 
     def test_output_is_stable(self):
         self.assertEqual(self.render(base()), self.render(base()))
+
+
+LEDGER_ROW = "| `features/deck/usecases/UC-DECK-001-x.md:5` Para | {} |\n"
+
+
+class LedgerItemsTest(unittest.TestCase):
+    def test_every_kind_of_item_is_a_row(self):
+        fence = "`" * 3
+        text = (
+            "---\nid: UC-X-001\nrules: [BR-X-001]\n---\n# Title\n\nPara one\ncontinues\n\n"
+            "- item a\n  wrapped\n- item b\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n"
+            + fence + "mermaid\nA --> B\n" + fence + "\n"
+        )
+        self.assertEqual(
+            [n for n, _ in ledger.items(text)],
+            [2, 3, 5, 7, 10, 12, 14, 16, 19],
+        )
+
+    def test_reseeding_keeps_outcomes_and_reads_only_the_named_sections(self):
+        files = {
+            "docs/features/deck/usecases/UC-DECK-001-x.md": "# T\n\nPara\n",
+            "docs/features/deck/README.md": "# D\n\n## Phạm vi\n\nS\n\n## Màn hình → Use case\n\nM\n",
+            "docs/README.md": "# D\n\n## Sản phẩm\n\nP1\n\n## Bản đồ\n\nX\n",
+        }
+        with DocsTree(files):
+            first = ledger.render({})
+            source = next(src for _, src, _ in ledger.rows(first) if "UC-DECK-001" in src)
+            second = ledger.render({source: "superseded → R11"})
+        self.assertIn(f"| {source} | superseded → R11 |", second)
+        self.assertIn("P1", second)
+        self.assertNotIn("`README.md:9`", second)
+        self.assertIn("`features/deck/README.md:9`", second)
+        self.assertNotIn("`features/deck/README.md:5`", second)
+
+
+class LedgerCheckTest(unittest.TestCase):
+    def found(self, outcomes: list[str], **extra: str) -> list[str]:
+        files = base(**extra)
+        files["ledger.md"] = "## x\n\n| Source item | Outcome |\n|---|---|\n" + "".join(
+            LEDGER_ROW.format(outcome) for outcome in outcomes
+        )
+        with DocsTree(files) as root:
+            docs = check.g.load_docs()
+            report = check.Report()
+            check.check_ledger(root / "ledger.md", check.defined_ids(docs), report)
+        return [message for _, _, message in report.lines]
+
+    def test_valid_outcomes_pass(self):
+        outcomes = ["moved → `USE_CASES.md`", "superseded → FN-DECK-001", "dropped — implementation detail, approved 2026-10-20"]
+        self.assertEqual(self.found(outcomes), [])
+
+    def test_an_empty_outcome_fails(self):
+        self.assertTrue(has(self.found([""]), "(empty)"))
+
+    def test_moved_to_a_missing_path_fails(self):
+        self.assertTrue(has(self.found(["moved → `nowhere.md`"]), "does not exist"))
+
+    def test_dropped_without_approval_fails(self):
+        self.assertTrue(has(self.found(["dropped — not needed"]), "is not"))
+
+    def test_superseded_by_an_undefined_id_fails(self):
+        self.assertTrue(has(self.found(["superseded → FN-DECK-404"]), "undefined id"))
+
+    def test_an_open_question_left_in_the_new_docs_fails(self):
+        text = USE_CASES + "\n> ⚠️ OPEN QUESTION: x\n"
+        self.assertTrue(has(self.found(["moved → `USE_CASES.md`"], **{"docs/USE_CASES.md": text}), "still open"))
 
 
 if __name__ == "__main__":
