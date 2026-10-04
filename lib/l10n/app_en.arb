@@ -20,6 +20,10 @@
   "@navSettings": {
     "description": "Bottom navigation: the settings tab."
   },
+  "placeholderBeingRebuilt": "Being rebuilt",
+  "@placeholderBeingRebuilt": {
+    "description": "Temporary placeholder line under a screen id while SP3 rebuilds the UI (spec 2026-10-04-sp2 §5.2)."
+  },
   "openGallery": "Component gallery",
   "@openGallery": {
     "description": "Debug builds only: the Settings action that opens the component gallery."

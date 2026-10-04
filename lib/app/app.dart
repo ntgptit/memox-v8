@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,9 +13,7 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
-import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
-import 'package:memox/features/account/presentation/widgets/sections/account_layer_host_widget.dart';
 import 'package:memox/features/reminders/data/datasources/reminder_plugins_data_source.dart';
 import 'package:memox/features/reminders/di/reminder_plugins_data_source_provider.dart';
 import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
@@ -31,18 +28,15 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 /// The composition root: themes, localization and the router, the start-up
 /// close of an earlier day's open study session (FE-A6 D9), and the Trash's
 /// auto-purge at start and on every resume (FE-B1 D5), and the daily
-/// reminder's start-up Reconcile and tap route (BE-B5b), and the account
-/// transition layer (account UI spec U4). The theme and the language follow
-/// the `app_settings` row (BR-SETTINGS-005, BR-SETTINGS-006).
+/// reminder's start-up Reconcile and tap route (BE-B5b). The theme mode and
+/// the language follow the `app_settings` row (BR-SETTINGS-005,
+/// BR-SETTINGS-006).
+///
+/// SP2: the account transition layer has no UI until SP3 rebuilds it;
+/// transitions still run through the coordinator. The themes are Flutter's
+/// Material 3 defaults until SP3a rebuilds them from DESIGN.md.
 class MemoxApp extends ConsumerStatefulWidget {
-  const MemoxApp({
-    super.key,
-    this.hasGallery = kDebugMode,
-    this.initialSettings,
-  });
-
-  /// Registers the debug-only component gallery.
-  final bool hasGallery;
+  const MemoxApp({super.key, this.initialSettings});
 
   /// The row `main()` read before the first frame (FE-A3 D5); null follows
   /// the platform until the stream answers.
@@ -59,7 +53,6 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
   // Owned here, not at top level, so each app instance starts at its initial
   // location and a disposed app releases its router.
   late final GoRouter _router = buildAppRouter(
-    hasGallery: widget.hasGallery,
     refreshListenable: _accountRoutes,
     redirect: (context, state) => accountRedirect(
       state.uri,
@@ -189,20 +182,13 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      theme: buildLightTheme(),
-      darkTheme: buildDarkTheme(),
+      theme: ThemeData(useMaterial3: true),
+      darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
       themeMode: _themeMode(settings?.theme),
       locale: _locale(settings?.language),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routerConfig: _router,
-      // Account UI spec U4: the transition layer sits above the router,
-      // with the router's Back dispatcher to take priority over.
-      builder: (context, child) => AccountLayerHostWidget(
-        backButtons: _router.backButtonDispatcher,
-        dialogNavigator: _router.routerDelegate.navigatorKey,
-        child: child!,
-      ),
     );
   }
 }

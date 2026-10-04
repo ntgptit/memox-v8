@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/reminders/data/datasources/reminder_plugins_data_source.dart';
 import 'package:memox/features/reminders/di/reminder_plugins_data_source_provider.dart';
-import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
 
 import '../support/library_harness.dart';
 
@@ -61,12 +60,12 @@ void main() {
       env,
       overrides: [reminderPluginsDataSourceProvider.overrideWithValue(plugins)],
     );
-    expect(find.byType(StudyHomeScreen), findsNothing);
+    expect(find.text('SCR-STUDY-001'), findsNothing);
 
     plugins.tap(reminderTapPayload);
     await tester.pumpAndSettle();
 
-    expect(find.byType(StudyHomeScreen), findsOneWidget);
+    expect(find.text('SCR-STUDY-001'), findsOneWidget);
   });
 
   libraryTest('a reminder that launched the app opens on Study Home', (
@@ -83,7 +82,7 @@ void main() {
       ],
     );
 
-    expect(find.byType(StudyHomeScreen), findsOneWidget);
+    expect(find.text('SCR-STUDY-001'), findsOneWidget);
   });
 
   libraryTest('a tap that carries anything else leaves the app where it is', (
@@ -102,7 +101,7 @@ void main() {
       ..tap('something-else');
     await tester.pumpAndSettle();
 
-    expect(find.byType(StudyHomeScreen), findsNothing);
+    expect(find.text('SCR-STUDY-001'), findsNothing);
   });
 
   libraryTest('a launch payload that cannot be read leaves the app running', (
@@ -119,6 +118,6 @@ void main() {
       ],
     );
 
-    expect(find.byType(StudyHomeScreen), findsNothing);
+    expect(find.text('SCR-STUDY-001'), findsNothing);
   });
 }
