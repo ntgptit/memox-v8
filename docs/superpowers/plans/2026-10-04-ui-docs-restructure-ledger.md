@@ -2635,181 +2635,181 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:2` id: UC-STUDY-001 |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:3` title: Ôn tập một deck — luồng chính |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:4` status: ready |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:5` rules: [BR-DECK-024, BR-MODE-002, BR-MODE-003, BR-MODE-006, BR-MODE-009, BR-SRS- |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:6` code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/f |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:10` **Actor:** Người dùng |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:14` Đây là luồng chạy hằng ngày và là vertical slice đầu tiên nên xây. |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:16` **Hai loại phiên, không phải một.** *Học mới* đưa thẻ chưa biết qua chuỗi stage |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:20` ## Main flow |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:22` **Main flow:** |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:23` 1. Người dùng bấm Study. Còn phiên `in_progress` của cùng ngày học thì màn chọn |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:28` 2. Tập ôn tập rỗng ⇒ lối đó không mở được, kèm thời điểm thẻ gần nhất đến hạn |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:30` 3. **Chọn Học mới** — hệ thống lấy tối đa `card_limit` thẻ chưa học, theo |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:34` 4. **Chọn Ôn tập** — hệ thống hiện các mode chấm điểm của thuật toán: `eight_box |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:41` 5. Cả hai loại phiên ghi `card_limit` đã dùng vào phiên (BR-STUDY-024) và dựng h |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:43` 6. Người dùng trả lời một thẻ. Nguồn của `action` tùy mode: `self_assess` lấy |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:48` 7. Hệ thống xác định `kind` và ghi tường minh (BR-SRS-015): |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:49` - phiên `learning` ⇒ `learning`, hoặc `relearning` nếu là lượt lặp trong round; |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:51` - phiên `reviewing` ⇒ `scheduled` ở lượt đầu của thẻ, `relearning` ở các lượt |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:53` 8. Lượt `scheduled` tính trạng thái mới bằng thuật toán (BR-SRS-008/BR-SRS-009 h |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:56` 9. Hệ thống ghi một dòng `review_log` kèm `kind` (BR-SRS-019) — ngay lập tức |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:58` 10. **Chỉ ở phiên `learning`:** thẻ đi hết **stage cuối mà chính nó tham gia** — |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:63` 11. Nếu đây là thẻ **đầu tiên hoàn tất chuỗi học mới** của root ở generation này |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:65` 12. Nếu action khác `forgotten`/`again`, card rời hàng đợi (BR-STUDY-007). |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:66` 13. Hết hàng đợi: session → `completed`, `end_reason = NULL`, `ended_at` được đặ |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:69` ## Alternative / Error flow |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:71` **Alternative flows:** |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:72` - **A1 — Thẻ trả lời sai:** cách nó quay lại **tùy mode**, không tùy loại phiên. |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:76` - **A0 — Hết hàng đợi của một stage (chỉ phiên `learning`):** hệ thống chuyển |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:80` - **A0c — Hết một round của stage chấm điểm:** tập thẻ không đạt rỗng thì stage |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:84` - **A0b — Thẻ không đủ dữ liệu cho stage đang chạy:** bỏ qua **có ghi nhận** ở s |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:87` - **A2b — Thẻ chạm trần 3 lượt `relearning` ở `self_assess`:** thẻ rời hàng đợi |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:93` - **A2 — Card quay lại được đánh giá lần nữa:** lượt đó là `relearning` (BR-SRS- |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:97` - **A3 — Thoát giữa phiên:** session → `abandoned`, `end_reason = user_exit`, |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:100` - **A3b — Mở lại app khi còn phiên `in_progress`:** cùng ngày học thì cho tiếp |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:105` - **A4 — Còn card quá hạn ngoài giới hạn 50:** ở tổng kết nói rõ còn bao nhiêu v |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:107` - **A5 — Xoá deck đang ôn dở:** kết thúc phiên với `content_deleted`, hiện tổng |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:111` **Error flows:** |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:112` - **E1 — Không còn card nào đến hạn lúc bắt đầu:** empty state tích cực (BR-STUD |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:115` - **E2 — Ghi đánh giá thất bại nhưng còn tiếp tục được:** hiện lỗi ngay, **không |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:118` - **E3 — Lỗi ghi không thể tiếp tục:** session → `failed`, |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:121` - **E4 — Generation của session đã lỗi thời** (root bị reset ở màn khác trong lú |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:126` - **E5 — Đọc card thất bại:** màn hình lỗi có nút thử lại. |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:128` ## UI |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:130` **UI states:** loading · loaded (mặt trước) · loaded (đã lật) · submitting · |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:133` `submitting` tách khỏi `loaded` là đúng nguyên tắc "dữ liệu và trạng thái tác vụ |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:137` ## Local |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:139` **Postconditions:** |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:140` - Mỗi card đã đánh giá có trạng thái lịch đúng loại lượt, đúng scheduler và đúng |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:142` - Mỗi lượt đánh giá có đúng một dòng `review_log` mang `kind`, |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:144` - `first_answered_at` của root khác NULL sau khi **thẻ đầu tiên hoàn tất chuỗi |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:148` - `study_session.status` và `end_reason` phản ánh đúng cách phiên kết thúc, theo |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:150` - Nếu E4 xảy ra, **không** có dòng history nào được ghi cho lượt đó. |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:152` ## API |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:154` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:156` ## Acceptance criteria |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:158` - [ ] **Given** một deck có cả thẻ `learned_at IS NULL` và thẻ đến hạn, **when** |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:159` - [ ] **Given** một root có nhiều thẻ chưa học hơn `card_limit`, **when** người |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:160` - [ ] **Given** một phiên `learning` vừa mở, **when** hết hàng đợi của một stage |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:161` - [ ] **Given** một root có thẻ đến hạn, **when** người dùng mở lối Ôn tập, **th |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:162` - [ ] **Given** một phiên `reviewing` đã mở, **when** hệ thống dựng hàng đợi, ** |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:163` - [ ] **Given** một lượt trả lời của mode khác mode đang chạy, hoặc mang action |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:164` - [ ] **Given** một thẻ học mới đi hết stage cuối mà nó tham gia, **when** lượt |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:165` - [ ] **Given** một thẻ được đánh giá khác `forgotten`/`again`, **when** lượt đư |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:166` - [ ] **Given** một thẻ bị đánh giá `forgotten`/`again` ở `self_assess`, **when* |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:167` - [ ] **Given** một thẻ sai trong một round của stage chấm điểm, **when** round |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:168` - [ ] **Given** một phiên `reviewing` `eight_box` có một thẻ sai ở lượt đầu rồi |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:169` - [ ] **Given** một thẻ thiếu dữ liệu cho stage đang chạy (ví dụ không có `examp |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:170` - [ ] **Given** một thẻ đã quay lại 3 lượt `relearning` ở `self_assess`, **when* |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:171` - [ ] **Given** người dùng thoát giữa phiên, **when** thoát, **then** phiên thàn |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:172` - [ ] **Given** còn một phiên `in_progress`, **when** người dùng mở lại app cùng |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:173` - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** việc xoá xảy ra, * |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:174` - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** phiên nhận việc xo |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:175` - [ ] **Given** tập ôn tập rỗng, **when** người dùng mở Study Entry, **then** lố |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:176` - [ ] **Given** ghi một đánh giá gặp database bận, **when** người dùng thử lại đ |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:177` - [ ] **Given** ghi một đánh giá gặp lỗi không thể tiếp tục, **when** hệ thống x |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:178` - [ ] **Given** root của phiên vừa bị reset ở màn khác, **when** người dùng trả |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:179` - [ ] **Given** phiên không đọc được, **when** màn hình mở, **then** hệ thống hi |  |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:180` - [ ] **Given** một phiên ôn chạm giới hạn thẻ trong khi cây deck còn thẻ đến hạ |  |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:2` id: UC-STUDY-001 | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:3` title: Ôn tập một deck — luồng chính | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:5` rules: [BR-DECK-024, BR-MODE-002, BR-MODE-003, BR-MODE-006, BR-MODE-009, BR-SRS- | superseded → FN-STUDY-001…FN-STUDY-011 (Business rules) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:6` code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/f | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:10` **Actor:** Người dùng | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:14` Đây là luồng chạy hằng ngày và là vertical slice đầu tiên nên xây. | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:16` **Hai loại phiên, không phải một.** *Học mới* đưa thẻ chưa biết qua chuỗi stage | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:20` ## Main flow | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:22` **Main flow:** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:23` 1. Người dùng bấm Study. Còn phiên `in_progress` của cùng ngày học thì màn chọn | superseded → UC-STUDY-001 step 1 (intent) + FN-STUDY-001 (two sets with counts, never mixed) + FN-STUDY-010 (continue) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:28` 2. Tập ôn tập rỗng ⇒ lối đó không mở được, kèm thời điểm thẻ gần nhất đến hạn | pending → SCR-STUDY-002 (the review choice unavailable, with the next due time); intent kept in UC-STUDY-001 step 2 + FN-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:30` 3. **Chọn Học mới** — hệ thống lấy tối đa `card_limit` thẻ chưa học, theo | superseded → FN-STUDY-002 (Kết quả: card_limit, new_card_order, stage sequence) + UC-STUDY-001 step 3 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:34` 4. **Chọn Ôn tập** — hệ thống hiện các mode chấm điểm của thuật toán: `eight_box | pending → SCR-STUDY-002 (the mode choice: browse absent, each mode with its own count, disabled with its reason, skipped when one mode); intent kept in UC-STUDY-001 step 4 + FN-STUDY-001 + FN-STUDY-003 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:41` 5. Cả hai loại phiên ghi `card_limit` đã dùng vào phiên (BR-STUDY-024) và dựng h | superseded → FN-STUDY-002 + FN-STUDY-003 (card_limit stored and queue built in one transaction) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:43` 6. Người dùng trả lời một thẻ. Nguồn của `action` tùy mode: `self_assess` lấy | superseded → FN-STUDY-005 (action source per mode; generation check) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:48` 7. Hệ thống xác định `kind` và ghi tường minh (BR-SRS-015): | superseded → FN-STUDY-005 (kind of the turn) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:49` - phiên `learning` ⇒ `learning`, hoặc `relearning` nếu là lượt lặp trong round; | superseded → FN-STUDY-005 (kind of the turn) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:51` - phiên `reviewing` ⇒ `scheduled` ở lượt đầu của thẻ, `relearning` ở các lượt | superseded → FN-STUDY-005 (kind of the turn) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:53` 8. Lượt `scheduled` tính trạng thái mới bằng thuật toán (BR-SRS-008/BR-SRS-009 h | superseded → FN-STUDY-005 (scheduled turn updates the schedule; learning and relearning only last_answered_at) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:56` 9. Hệ thống ghi một dòng `review_log` kèm `kind` (BR-SRS-019) — ngay lập tức | superseded → FN-STUDY-005 (one review_log row, written at once) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:58` 10. **Chỉ ở phiên `learning`:** thẻ đi hết **stage cuối mà chính nó tham gia** — | superseded → FN-STUDY-005 (learning completion sets learned_at and the first schedule) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:63` 11. Nếu đây là thẻ **đầu tiên hoàn tất chuỗi học mới** của root ở generation này | superseded → FN-STUDY-005 (first_answered_at on the first card to finish learning) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:65` 12. Nếu action khác `forgotten`/`again`, card rời hàng đợi (BR-STUDY-007). | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:66` 13. Hết hàng đợi: session → `completed`, `end_reason = NULL`, `ended_at` được đặ | superseded → UC-STUDY-001 step 8 (intent) + FN-STUDY-005 (completed, end_reason NULL) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:69` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:71` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:72` - **A1 — Thẻ trả lời sai:** cách nó quay lại **tùy mode**, không tùy loại phiên. | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:76` - **A0 — Hết hàng đợi của một stage (chỉ phiên `learning`):** hệ thống chuyển | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:80` - **A0c — Hết một round của stage chấm điểm:** tập thẻ không đạt rỗng thì stage | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:84` - **A0b — Thẻ không đủ dữ liệu cho stage đang chạy:** bỏ qua **có ghi nhận** ở s | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:87` - **A2b — Thẻ chạm trần 3 lượt `relearning` ở `self_assess`:** thẻ rời hàng đợi | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:93` - **A2 — Card quay lại được đánh giá lần nữa:** lượt đó là `relearning` (BR-SRS- | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:97` - **A3 — Thoát giữa phiên:** session → `abandoned`, `end_reason = user_exit`, | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:100` - **A3b — Mở lại app khi còn phiên `in_progress`:** cùng ngày học thì cho tiếp | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:105` - **A4 — Còn card quá hạn ngoài giới hạn 50:** ở tổng kết nói rõ còn bao nhiêu v | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:107` - **A5 — Xoá deck đang ôn dở:** kết thúc phiên với `content_deleted`, hiện tổng | pending → SCR-STUDY-009 (the summary "Ended — content moved to Trash", then back to the list); intent kept in UC-STUDY-001 A5 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:111` **Error flows:** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:112` - **E1 — Không còn card nào đến hạn lúc bắt đầu:** empty state tích cực (BR-STUD | pending → SCR-STUDY-002 (the positive empty state, not an error screen); intent kept in UC-STUDY-001 E1 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:115` - **E2 — Ghi đánh giá thất bại nhưng còn tiếp tục được:** hiện lỗi ngay, **không | pending → SCR-STUDY-004 (the error shown at once, the card stays, in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 E2 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:118` - **E3 — Lỗi ghi không thể tiếp tục:** session → `failed`, | pending → SCR-STUDY-004 (the error, then back to the deck list, in every mode screen); intent kept in UC-STUDY-001 E3 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:121` - **E4 — Generation của session đã lỗi thời** (root bị reset ở màn khác trong lú | pending → SCR-STUDY-004 (the notice that the session ended because progress was reset, then back to the list, in every mode screen); intent kept in UC-STUDY-001 E4 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:126` - **E5 — Đọc card thất bại:** màn hình lỗi có nút thử lại. | pending → SCR-STUDY-004 (the error screen with Retry, in every mode screen); intent kept in UC-STUDY-001 E5 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:128` ## UI | pending → SCR-STUDY-004 (states loading · front · flipped · submitting · empty · error, in every mode screen) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:130` **UI states:** loading · loaded (mặt trước) · loaded (đã lật) · submitting · | pending → SCR-STUDY-004 (states loading · front · flipped · submitting · empty · error, in every mode screen) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:133` `submitting` tách khỏi `loaded` là đúng nguyên tắc "dữ liệu và trạng thái tác vụ | pending → SCR-STUDY-004 (submitting keeps the card content and locks only the actions) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:137` ## Local | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:139` **Postconditions:** | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:140` - Mỗi card đã đánh giá có trạng thái lịch đúng loại lượt, đúng scheduler và đúng | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:142` - Mỗi lượt đánh giá có đúng một dòng `review_log` mang `kind`, | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:144` - `first_answered_at` của root khác NULL sau khi **thẻ đầu tiên hoàn tất chuỗi | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:148` - `study_session.status` và `end_reason` phản ánh đúng cách phiên kết thúc, theo | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:150` - Nếu E4 xảy ra, **không** có dòng history nào được ghi cho lượt đó. | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:152` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:154` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:156` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:158` - [ ] **Given** một deck có cả thẻ `learned_at IS NULL` và thẻ đến hạn, **when** | pending → SCR-STUDY-002 (presentation of the criterion); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:159` - [ ] **Given** một root có nhiều thẻ chưa học hơn `card_limit`, **when** người | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:160` - [ ] **Given** một phiên `learning` vừa mở, **when** hết hàng đợi của một stage | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:161` - [ ] **Given** một root có thẻ đến hạn, **when** người dùng mở lối Ôn tập, **th | pending → SCR-STUDY-002 (presentation of the criterion); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:162` - [ ] **Given** một phiên `reviewing` đã mở, **when** hệ thống dựng hàng đợi, ** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:163` - [ ] **Given** một lượt trả lời của mode khác mode đang chạy, hoặc mang action | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:164` - [ ] **Given** một thẻ học mới đi hết stage cuối mà nó tham gia, **when** lượt | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:165` - [ ] **Given** một thẻ được đánh giá khác `forgotten`/`again`, **when** lượt đư | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:166` - [ ] **Given** một thẻ bị đánh giá `forgotten`/`again` ở `self_assess`, **when* | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:167` - [ ] **Given** một thẻ sai trong một round của stage chấm điểm, **when** round | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:168` - [ ] **Given** một phiên `reviewing` `eight_box` có một thẻ sai ở lượt đầu rồi | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:169` - [ ] **Given** một thẻ thiếu dữ liệu cho stage đang chạy (ví dụ không có `examp | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:170` - [ ] **Given** một thẻ đã quay lại 3 lượt `relearning` ở `self_assess`, **when* | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:171` - [ ] **Given** người dùng thoát giữa phiên, **when** thoát, **then** phiên thàn | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:172` - [ ] **Given** còn một phiên `in_progress`, **when** người dùng mở lại app cùng | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:173` - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** việc xoá xảy ra, * | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:174` - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** phiên nhận việc xo | pending → SCR-STUDY-009 (presentation of the criterion); intent kept in UC-STUDY-001 A5 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:175` - [ ] **Given** tập ôn tập rỗng, **when** người dùng mở Study Entry, **then** lố | pending → SCR-STUDY-002 (presentation of the criterion); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:176` - [ ] **Given** ghi một đánh giá gặp database bận, **when** người dùng thử lại đ | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:177` - [ ] **Given** ghi một đánh giá gặp lỗi không thể tiếp tục, **when** hệ thống x | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:178` - [ ] **Given** root của phiên vừa bị reset ở màn khác, **when** người dùng trả | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:179` - [ ] **Given** phiên không đọc được, **when** màn hình mở, **then** hệ thống hi | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:180` - [ ] **Given** một phiên ôn chạm giới hạn thẻ trong khi cây deck còn thẻ đến hạ | pending → SCR-STUDY-009 (the copy "34 more cards are due." and "Study this deck"); intent kept in UC-STUDY-001 A4 |
 
 ## features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md
 
 | Source item | Outcome |
 |---|---|
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:2` id: UC-STUDY-002 |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:3` title: Mở tab Study và chọn việc để học |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:4` status: ready |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:5` rules: [BR-STUDY-008, BR-STUDY-017, BR-STUDY-020, BR-STUDY-036, BR-STUDY-051, BR |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:6` code: [lib/features/study/domain/usecases/watch_study_home_use_case.dart] |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:10` **Actor:** Người dùng |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:14` ## Main flow |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:16` **Main flow:** |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:17` 1. Hệ thống đọc **một snapshot** gồm session có thể học tiếp và toàn bộ root dec |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:20` 2. Nếu có đúng một session hợp lệ đang mở, Resume card đứng đầu màn hình và nói |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:23` 3. Dưới Resume là danh sách root deck, mỗi hàng có tên deck, nhãn scheduler khi |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:26` 4. Chạm Resume mở đúng session và đúng lượt đã lưu (BR-STUDY-036), không tạo ses |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:29` 5. Kết thúc, bỏ dở hoặc invalidate một phiên rồi quay lại: danh sách tự cập nhật |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:32` ## Alternative / Error flow |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:34` **Alternative flows:** |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:35` - **A1 — Không có session nào đang mở:** không có Resume card — không phải một |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:37` - **A2 — Session của ngày học cũ, generation đã đổi, deck hoặc card đã bị xoá:** |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:40` - **A3 — Mọi deck đều không còn gì đến hạn:** danh sách vẫn hiển thị, kèm một dò |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:42` - **A4 — Thư viện chưa có deck nào:** empty state dẫn tới Starter Library (UC-ST |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:44` - **A5 — Có deck nhưng chưa có card nào:** zero state riêng, dẫn về Library để t |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:47` **Error flows:** |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:48` - **E1 — Đọc thất bại:** trạng thái lỗi có nút thử lại, không nêu tên bảng, câu |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:52` ## UI |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:54` **UI states:** loading · loaded (resume + danh sách) · loaded (không resume) · |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:57` ## Local |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:59` **Postconditions:** Không đổi gì — use case chỉ đọc. Mọi write phát sinh sau đó |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:62` Ghi chú từ mục "Business rules" của nguồn: |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:64` BR-STUDY-075, BR-STUDY-076, BR-STUDY-077. Ngoài ra BR-STUDY-008, BR-STUDY-017, B |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:67` ## API |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:69` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:71` ## Acceptance criteria |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:73` - [ ] **Given** tab Study được mở, **when** hệ thống đọc dữ liệu, **then** phiên |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:74` - [ ] **Given** đúng một phiên hợp lệ đang mở, **when** màn hình tải, **then** t |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:75` - [ ] **Given** nhiều root deck có workload khác nhau, **when** danh sách hiện, |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:76` - [ ] **Given** thẻ Resume đang hiện, **when** người dùng chạm Resume, **then** |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:77` - [ ] **Given** không có phiên nào đang mở, hoặc phiên đang mở đã kết thúc, thuộ |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:78` - [ ] **Given** mọi deck đều không còn gì đến hạn, **when** màn hình tải, **then |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:79` - [ ] **Given** thư viện có deck nhưng chưa deck nào có card, **when** màn hình |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:80` - [ ] **Given** việc đọc thất bại, **when** màn hình tải, **then** hệ thống hiện |  |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:81` - [ ] **Given** thư viện chưa có root deck nào, **when** màn hình tải, **then** |  |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:2` id: UC-STUDY-002 | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:3` title: Mở tab Study và chọn việc để học | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:5` rules: [BR-STUDY-008, BR-STUDY-017, BR-STUDY-020, BR-STUDY-036, BR-STUDY-051, BR | superseded → FN-STUDY-012 (Business rules) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:6` code: [lib/features/study/domain/usecases/watch_study_home_use_case.dart] | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:10` **Actor:** Người dùng | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:14` ## Main flow | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:16` **Main flow:** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:17` 1. Hệ thống đọc **một snapshot** gồm session có thể học tiếp và toàn bộ root dec | superseded → FN-STUDY-012 (one snapshot in one transaction; read-only) + UC-STUDY-002 step 1 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:20` 2. Nếu có đúng một session hợp lệ đang mở, Resume card đứng đầu màn hình và nói | pending → SCR-STUDY-001 (the Resume card at the top: deck, kind, stage); intent kept in UC-STUDY-002 step 2 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:23` 3. Dưới Resume là danh sách root deck, mỗi hàng có tên deck, nhãn scheduler khi | pending → SCR-STUDY-001 (the root deck rows: name, scheduler label, Overdue/Due today/New, one Study action); intent kept in UC-STUDY-002 step 3 + FN-STUDY-012 (order) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:26` 4. Chạm Resume mở đúng session và đúng lượt đã lưu (BR-STUDY-036), không tạo ses | superseded → UC-STUDY-002 step 4 (intent) + FN-STUDY-010 (resume the saved turn) + FN-STUDY-001 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:29` 5. Kết thúc, bỏ dở hoặc invalidate một phiên rồi quay lại: danh sách tự cập nhật | superseded → UC-STUDY-002 step 5 (intent) + FN-STUDY-012 (a stream that re-emits on change) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:32` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:34` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:35` - **A1 — Không có session nào đang mở:** không có Resume card — không phải một | pending → SCR-STUDY-001 (no Resume card: not an empty card, not a disabled button); intent kept in UC-STUDY-002 A1 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:37` - **A2 — Session của ngày học cũ, generation đã đổi, deck hoặc card đã bị xoá:** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:40` - **A3 — Mọi deck đều không còn gì đến hạn:** danh sách vẫn hiển thị, kèm một dò | pending → SCR-STUDY-001 (the caught-up line above the list); intent kept in UC-STUDY-002 A3 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:42` - **A4 — Thư viện chưa có deck nào:** empty state dẫn tới Starter Library (UC-ST | pending → SCR-STUDY-001 (the empty state to the Starter Library, second way to Library); intent kept in UC-STUDY-002 A4 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:44` - **A5 — Có deck nhưng chưa có card nào:** zero state riêng, dẫn về Library để t | pending → SCR-STUDY-001 (the separate zero state to Library, no starter CTA); intent kept in UC-STUDY-002 A5 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:47` **Error flows:** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:48` - **E1 — Đọc thất bại:** trạng thái lỗi có nút thử lại, không nêu tên bảng, câu | pending → SCR-STUDY-001 (the error state with Retry; copy says nothing was changed; no table, query or path); intent kept in UC-STUDY-002 E1 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:52` ## UI | pending → SCR-STUDY-001 (states loading · resume + list · no resume · all zero · no deck · no card · error) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:54` **UI states:** loading · loaded (resume + danh sách) · loaded (không resume) · | pending → SCR-STUDY-001 (states loading · resume + list · no resume · all zero · no deck · no card · error) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:57` ## Local | superseded → FN-STUDY-012 (Kết quả: reading writes nothing) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:59` **Postconditions:** Không đổi gì — use case chỉ đọc. Mọi write phát sinh sau đó | superseded → FN-STUDY-012 (Kết quả: reading writes nothing) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:62` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-STUDY-012 (Business rules) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:64` BR-STUDY-075, BR-STUDY-076, BR-STUDY-077. Ngoài ra BR-STUDY-008, BR-STUDY-017, B | superseded → FN-STUDY-012 (Business rules) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:67` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:69` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:71` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:73` - [ ] **Given** tab Study được mở, **when** hệ thống đọc dữ liệu, **then** phiên | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:74` - [ ] **Given** đúng một phiên hợp lệ đang mở, **when** màn hình tải, **then** t | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:75` - [ ] **Given** nhiều root deck có workload khác nhau, **when** danh sách hiện, | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:76` - [ ] **Given** thẻ Resume đang hiện, **when** người dùng chạm Resume, **then** | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:77` - [ ] **Given** không có phiên nào đang mở, hoặc phiên đang mở đã kết thúc, thuộ | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:78` - [ ] **Given** mọi deck đều không còn gì đến hạn, **when** màn hình tải, **then | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:79` - [ ] **Given** thư viện có deck nhưng chưa deck nào có card, **when** màn hình | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:80` - [ ] **Given** việc đọc thất bại, **when** màn hình tải, **then** hệ thống hiện | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:81` - [ ] **Given** thư viện chưa có root deck nào, **when** màn hình tải, **then** | pending → SCR-STUDY-001 (the empty state copy "Browse starter decks" and "Go to Library"); intent kept in UC-STUDY-002 A4 |
 
 ## features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md
 
 | Source item | Outcome |
 |---|---|
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:2` id: UC-STUDY-003 |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:3` title: Chọn chiều hỏi cho một phiên self-assess |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:4` status: ready |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:5` rules: [BR-MODE-013, BR-MODE-014, BR-MODE-015, BR-MODE-016, BR-MODE-017, BR-MODE |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:6` code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/f |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:10` **Actor:** Người dùng |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:16` ## Main flow |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:18` **Main flow:** |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:19` 1. Người dùng bấm `Review`. Vì `sm2` chỉ offer một mode, hệ thống bỏ qua màn chọ |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:21` 2. Hệ thống hiển thị ba lựa chọn — `Term first` (gắn nhãn Recommended; nhãn khôn |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:25` 3. Người dùng chạm một lựa chọn. Chạm chỉ **chọn**, không mở phiên: lựa chọn bị |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:28` 4. Người dùng bấm `Start review`. Hệ thống khoá sheet trong lúc mở phiên — cú |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:30` 5. Hệ thống mở phiên với chiều đã chọn, materialize hàng đợi trong cùng |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:33` 6. Màn phiên học mở ra. Mỗi thẻ hiện đề ở nửa trên theo chiều của dòng nó, và |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:37` ## Alternative / Error flow |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:39` **Alternative flows:** |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:40` - **A1 — Đóng sheet:** người dùng vuốt xuống hoặc chạm ra ngoài. Chưa có gì được |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:43` - **A2 — Deck chạy `eight_box`:** sheet này không xuất hiện. Lối vào là màn chọn |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:45` - **A3 — Còn phiên bỏ dở:** sheet ba lối của BR-STUDY-072 hiện trước. Chọn `Cont |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:48` - **A4 — Phiên `mixed` đang chạy:** hai thẻ liên tiếp có thể hỏi hai chiều khác |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:52` **Error flows:** |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:53` - **E1 — Deck đổi scheduler hoặc bị reset trong lúc sheet đang mở:** hệ thống đọ |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:58` - **E2 — Không còn thẻ đến hạn tại thời điểm bấm Start:** phiên bị từ chối và |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:60` - **E3 — Yêu cầu thiếu chiều:** không thể tạo từ UI này; use case vẫn từ chối là |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:63` ## UI |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:65` **UI states:** initial (ba lựa chọn, Term first đã chọn sẵn) · submitting |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:71` ## Local |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:73` **Postconditions:** `study_session.direction` giữ lựa chọn của phiên, |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:78` ## API |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:80` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:82` ## Acceptance criteria |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:84` - [ ] **Given** một root dùng `sm2` có thẻ đến hạn, **when** người dùng bấm Revi |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:85` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng chọn `Meaning firs |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:86` - [ ] **Given** phiên mở với `Term first` hoặc `Meaning first`, **when** hệ thốn |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:87` - [ ] **Given** một thẻ hỏi theo `Meaning first`, **when** thẻ hiện ra, **then** |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:88` - [ ] **Given** Start review đang mở phiên, **when** người dùng bấm thêm lần nữa |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:89` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng đóng sheet mà khôn |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:90` - [ ] **Given** deck chạy `eight_box`, **when** người dùng bấm Review, **then** |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:91` - [ ] **Given** còn một phiên `self_assess` bỏ dở, **when** người dùng chọn Cont |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:92` - [ ] **Given** một phiên `Mixed` đang chạy, **when** một thẻ quay lại hàng đợi, |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:93` - [ ] **Given** không còn thẻ nào đến hạn lúc bấm Start review, **when** người d |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:94` - [ ] **Given** yêu cầu mở phiên `self_assess` không kèm chiều, hoặc kèm chiều c |  |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:95` - [ ] **Given** sheet chọn chiều đang mở và scheduler của root đổi sang `eight_b |  |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:2` id: UC-STUDY-003 | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:3` title: Chọn chiều hỏi cho một phiên self-assess | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:5` rules: [BR-MODE-013, BR-MODE-014, BR-MODE-015, BR-MODE-016, BR-MODE-017, BR-MODE | superseded → FN-STUDY-003 + FN-STUDY-004 (Business rules) |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:6` code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/f | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:10` **Actor:** Người dùng | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:16` ## Main flow | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:18` **Main flow:** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:19` 1. Người dùng bấm `Review`. Vì `sm2` chỉ offer một mode, hệ thống bỏ qua màn chọ | pending → SCR-STUDY-002 (Review skips the mode choice and opens the direction sheet); intent kept in UC-STUDY-003 step 1 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:21` 2. Hệ thống hiển thị ba lựa chọn — `Term first` (gắn nhãn Recommended; nhãn khôn | pending → SCR-STUDY-002 (Term first with Recommended, Meaning first, Mixed, each with a line; the locked-for-the-session line); intent kept in UC-STUDY-003 step 2 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:25` 3. Người dùng chạm một lựa chọn. Chạm chỉ **chọn**, không mở phiên: lựa chọn bị | pending → SCR-STUDY-002 (a tap only selects); intent kept in UC-STUDY-003 step 3 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:28` 4. Người dùng bấm `Start review`. Hệ thống khoá sheet trong lúc mở phiên — cú | pending → SCR-STUDY-002 (Start review locks the sheet while the session opens); intent kept in UC-STUDY-003 step 4 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:30` 5. Hệ thống mở phiên với chiều đã chọn, materialize hàng đợi trong cùng | superseded → FN-STUDY-003 (direction per queue row; mixed split once) + UC-STUDY-003 step 5 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:33` 6. Màn phiên học mở ra. Mỗi thẻ hiện đề ở nửa trên theo chiều của dòng nó, và | pending → SCR-STUDY-004 (prompt on the top half, answer on the bottom half after the flip); intent kept in UC-STUDY-003 step 6 + FN-STUDY-004 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:37` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:39` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:40` - **A1 — Đóng sheet:** người dùng vuốt xuống hoặc chạm ra ngoài. Chưa có gì được | pending → SCR-STUDY-002 (swipe down or tap outside closes the sheet; Study Entry unchanged); intent kept in UC-STUDY-003 A1 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:43` - **A2 — Deck chạy `eight_box`:** sheet này không xuất hiện. Lối vào là màn chọn | pending → SCR-STUDY-002 (no direction sheet for eight_box; the mode choice instead); intent kept in UC-STUDY-003 A2 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:45` - **A3 — Còn phiên bỏ dở:** sheet ba lối của BR-STUDY-072 hiện trước. Chọn `Cont | pending → SCR-STUDY-002 (the three-way sheet comes first; Continue does not reopen the direction sheet); intent kept in UC-STUDY-003 A3 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:48` - **A4 — Phiên `mixed` đang chạy:** hai thẻ liên tiếp có thể hỏi hai chiều khác | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:52` **Error flows:** | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:53` - **E1 — Deck đổi scheduler hoặc bị reset trong lúc sheet đang mở:** hệ thống đọ | pending → SCR-STUDY-002 (the banner "Self-check is no longer offered for this deck."); intent kept in UC-STUDY-003 E1 + FN-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:58` - **E2 — Không còn thẻ đến hạn tại thời điểm bấm Start:** phiên bị từ chối và | pending → SCR-STUDY-002 (the sheet shows the error as in E1); intent kept in UC-STUDY-003 E2 + FN-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:60` - **E3 — Yêu cầu thiếu chiều:** không thể tạo từ UI này; use case vẫn từ chối là | superseded → FN-STUDY-003 (Lỗi: direction missing or not used by the mode) + UC-STUDY-003 E3 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:63` ## UI | pending → SCR-STUDY-002 (sheet states initial · submitting · failure; no loading, no empty) |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:65` **UI states:** initial (ba lựa chọn, Term first đã chọn sẵn) · submitting | pending → SCR-STUDY-002 (sheet states initial · submitting · failure; no loading, no empty) |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:71` ## Local | superseded → FN-STUDY-003 (Kết quả: direction on the session, the queue rows and each review_log row; schedule unchanged) |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:73` **Postconditions:** `study_session.direction` giữ lựa chọn của phiên, | superseded → FN-STUDY-003 (Kết quả: direction on the session, the queue rows and each review_log row; schedule unchanged) |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:78` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:80` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:82` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:84` - [ ] **Given** một root dùng `sm2` có thẻ đến hạn, **when** người dùng bấm Revi | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:85` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng chọn `Meaning firs | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:86` - [ ] **Given** phiên mở với `Term first` hoặc `Meaning first`, **when** hệ thốn | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:87` - [ ] **Given** một thẻ hỏi theo `Meaning first`, **when** thẻ hiện ra, **then** | pending → SCR-STUDY-004 (presentation of the criterion: prompt and answer faces); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:88` - [ ] **Given** Start review đang mở phiên, **when** người dùng bấm thêm lần nữa | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:89` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng đóng sheet mà khôn | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:90` - [ ] **Given** deck chạy `eight_box`, **when** người dùng bấm Review, **then** | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:91` - [ ] **Given** còn một phiên `self_assess` bỏ dở, **when** người dùng chọn Cont | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:92` - [ ] **Given** một phiên `Mixed` đang chạy, **when** một thẻ quay lại hàng đợi, | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:93` - [ ] **Given** không còn thẻ nào đến hạn lúc bấm Start review, **when** người d | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:94` - [ ] **Given** yêu cầu mở phiên `self_assess` không kèm chiều, hoặc kèm chiều c | moved → `USE_CASES.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:95` - [ ] **Given** sheet chọn chiều đang mở và scheduler của root đổi sang `eight_b | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
 
 ## features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md
 
@@ -3107,7 +3107,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/ui.md:44` I2 --> I3["UC-SRS-001 · mục 5"] | superseded → FN-DECK-003; Reset learning progress là FN của feature srs (Task 15) |
 | `features/deck/ui.md:47` **Nhánh `I` là chỗ hai đối tượng gặp nhau.** Chế độ ôn tập là thuộc tính của dec | superseded → FN-DECK-008 (trạng thái khoá hiện, không ẩn) |
 | `features/deck/ui.md:51` **`I1` và `I3` là hai thao tác, không phải một thao tác với hai cách gọi.** Cả h | superseded → FN-DECK-003 (Kết quả: không phải Reset learning progress) |
-| `features/deck/ui.md:57` **Ai đặt khoá ở `I`:** chính lần một thẻ hoàn tất chuỗi học mới, trong cùng |  |
+| `features/deck/ui.md:57` **Ai đặt khoá ở `I`:** chính lần một thẻ hoàn tất chuỗi học mới, trong cùng | superseded → FN-STUDY-005 (first_answered_at set in the same transaction as the first card to finish learning; no deck operation writes it) |
 | `features/deck/ui.md:61` ## Validation | superseded → SCR-DECK-001 (Copy: rejections — the app's English copy; these Vietnamese messages are not the app's) |
 | `features/deck/ui.md:63` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | superseded → SCR-DECK-001 (Copy: rejections — the app's English copy; these Vietnamese messages are not the app's) |
 | `features/deck/ui.md:65` \| Deck.name \| không rỗng sau trim (BR-DECK-020) \| "Tên deck không được để trống" | superseded → SCR-DECK-001 (Copy: rejections — the app's English copy; these Vietnamese messages are not the app's) |
@@ -3205,37 +3205,37 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/study/ui.md:1` # Study session — UI |  |
-| `features/study/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên |  |
-| `features/study/ui.md:5` ## Điều hướng phiên học và ôn tập |  |
-| `features/study/ui.md:7` Hai UC dùng chung một đối tượng: phiên ôn tập (UC-STUDY-001) và việc đặt lại tiế |  |
-| `features/study/ui.md:12` flowchart TD |  |
-| `features/study/ui.md:13` A["Bấm ôn tập trên một deck"] --> B{"Còn thẻ đến hạn không · BR-STUDY-051, BR-ST |  |
-| `features/study/ui.md:14` B -->\|"Không"\| B1["Empty state tích cực kèm thời điểm đến hạn gần nhất; KHÔNG tạ |  |
-| `features/study/ui.md:15` B -->\|"Còn"\| C["Tạo study_session in_progress mang root_id và generation hiện tạ |  |
-| `features/study/ui.md:16` C --> D["Chọn Học mới hoặc Ôn tập · tối đa `card_limit` thẻ · BR-STUDY-051, BR-S |  |
-| `features/study/ui.md:17` D --> E["Render nút đánh giá từ supportedActions: 2 với eight_box, 4 với sm2 · B |  |
-| `features/study/ui.md:18` E --> F["Hiện mặt trước và tiến độ phiên"] |  |
-| `features/study/ui.md:19` F --> G["Người dùng lật rồi chọn một action"] |  |
-| `features/study/ui.md:21` G --> H{"session.generation còn khớp root không · BR-SRS-026"} |  |
-| `features/study/ui.md:22` H -->\|"Lệch"\| H1["Từ chối ghi; session invalidated, end_reason stale_generation |  |
-| `features/study/ui.md:23` H -->\|"Khớp"\| I{"Lượt đầu tiên của card này trong phiên"} |  |
-| `features/study/ui.md:24` I -->\|"Đúng"\| J["kind = scheduled: tính lịch mới rồi ghi history · BR-SRS-016"] |  |
-| `features/study/ui.md:25` I -->\|"Không"\| K["kind = relearning: chỉ cập nhật last_answered_at · BR-SRS-017" |  |
-| `features/study/ui.md:27` J --> L{"Action có phải forgotten hoặc again"} |  |
-| `features/study/ui.md:28` K --> L |  |
-| `features/study/ui.md:29` L -->\|"Đúng"\| M["Card quay lại trong phiên sau ít nhất 3 card khác · UC-STUDY-00 |  |
-| `features/study/ui.md:30` L -->\|"Không"\| N["Card rời hàng đợi · BR-STUDY-007"] |  |
-| `features/study/ui.md:31` M --> F |  |
-| `features/study/ui.md:32` N --> O{"Hàng đợi còn card không"} |  |
-| `features/study/ui.md:33` O -->\|"Còn"\| F |  |
-| `features/study/ui.md:34` O -->\|"Hết"\| P["session completed, end_reason NULL; hiện tổng kết · BR-STUDY-013 |  |
-| `features/study/ui.md:36` G -->\|"Thoát giữa phiên"\| Q["session abandoned, end_reason user_exit; mọi đánh g |  |
-| `features/study/ui.md:38` R["Đặt lại tiến độ học trên root · UC-SRS-001"] --> S["Xác nhận, nêu rõ giữ gì v |  |
-| `features/study/ui.md:39` S --> T["Một transaction: generation +1, first_answered_at NULL, khởi tạo lại st |  |
-| `features/study/ui.md:40` T --> U["review_log giữ nguyên, mang generation cũ · BR-SRS-023"] |  |
-| `features/study/ui.md:41` T -.->\|"Phiên đang mở ở màn khác"\| H1 |  |
-| `features/study/ui.md:44` **Cạnh nét đứt `T -.-> H1` là lý do hai UC này ở chung một mục.** Reset chạy ở m |  |
+| `features/study/ui.md:1` # Study session — UI | superseded → UC-STUDY-001 + FN-STUDY-005 (the shared session flow); per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/study/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên | superseded → UC-STUDY-001 + FN-STUDY-005 (behaviour) + SCR-DECK-001 (screens live in screen specs, ADR-021) |
+| `features/study/ui.md:5` ## Điều hướng phiên học và ôn tập | superseded → UC-STUDY-001 + FN-STUDY-005 + FN-SRS-002 (the session and the reset, linked by generation) |
+| `features/study/ui.md:7` Hai UC dùng chung một đối tượng: phiên ôn tập (UC-STUDY-001) và việc đặt lại tiế | superseded → FN-STUDY-005 (Lỗi: stale generation) + FN-SRS-002 (Kết quả: open sessions invalidated); the link between the two UCs is now stated in both FNs |
+| `features/study/ui.md:12` flowchart TD | superseded → UC-STUDY-001 (the flow, as text) + FN-STUDY-005 |
+| `features/study/ui.md:13` A["Bấm ôn tập trên một deck"] --> B{"Còn thẻ đến hạn không · BR-STUDY-051, BR-ST | superseded → UC-STUDY-001 step 1 + FN-STUDY-001 |
+| `features/study/ui.md:14` B -->\|"Không"\| B1["Empty state tích cực kèm thời điểm đến hạn gần nhất; KHÔNG tạ | pending → SCR-STUDY-002 (the positive empty state with the next due time); intent kept in UC-STUDY-001 E1 + FN-STUDY-001 |
+| `features/study/ui.md:15` B -->\|"Còn"\| C["Tạo study_session in_progress mang root_id và generation hiện tạ | superseded → FN-STUDY-002 + FN-STUDY-003 (the session carries root and generation; it is created when learning or review is chosen, per the code) |
+| `features/study/ui.md:16` C --> D["Chọn Học mới hoặc Ôn tập · tối đa `card_limit` thẻ · BR-STUDY-051, BR-S | superseded → FN-STUDY-002 + FN-STUDY-003 (card_limit) + UC-STUDY-001 steps 3–4 |
+| `features/study/ui.md:17` D --> E["Render nút đánh giá từ supportedActions: 2 với eight_box, 4 với sm2 · B | pending → SCR-STUDY-004 (the assessment buttons drawn from supportedActions: 2 for eight_box, 4 for sm2); contract kept in FN-STUDY-005 |
+| `features/study/ui.md:18` E --> F["Hiện mặt trước và tiến độ phiên"] | pending → SCR-STUDY-004 (the front face and the session progress, in every mode screen); contract kept in FN-STUDY-004 |
+| `features/study/ui.md:19` F --> G["Người dùng lật rồi chọn một action"] | pending → SCR-STUDY-004 (flip, then pick an action); contract kept in FN-STUDY-006 + FN-STUDY-005 |
+| `features/study/ui.md:21` G --> H{"session.generation còn khớp root không · BR-SRS-026"} | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:22` H -->\|"Lệch"\| H1["Từ chối ghi; session invalidated, end_reason stale_generation | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:23` H -->\|"Khớp"\| I{"Lượt đầu tiên của card này trong phiên"} | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:24` I -->\|"Đúng"\| J["kind = scheduled: tính lịch mới rồi ghi history · BR-SRS-016"] | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:25` I -->\|"Không"\| K["kind = relearning: chỉ cập nhật last_answered_at · BR-SRS-017" | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:27` J --> L{"Action có phải forgotten hoặc again"} | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:28` K --> L | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:29` L -->\|"Đúng"\| M["Card quay lại trong phiên sau ít nhất 3 card khác · UC-STUDY-00 | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:30` L -->\|"Không"\| N["Card rời hàng đợi · BR-STUDY-007"] | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:31` M --> F | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:32` N --> O{"Hàng đợi còn card không"} | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:33` O -->\|"Còn"\| F | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
+| `features/study/ui.md:34` O -->\|"Hết"\| P["session completed, end_reason NULL; hiện tổng kết · BR-STUDY-013 | superseded → FN-STUDY-005 (completed, end_reason NULL) + UC-STUDY-001 step 8 |
+| `features/study/ui.md:36` G -->\|"Thoát giữa phiên"\| Q["session abandoned, end_reason user_exit; mọi đánh g | superseded → FN-STUDY-009 (abandoned, user_exit; recorded turns kept) |
+| `features/study/ui.md:38` R["Đặt lại tiến độ học trên root · UC-SRS-001"] --> S["Xác nhận, nêu rõ giữ gì v | superseded → FN-SRS-001 + FN-SRS-002 (reset with what it keeps and loses, and the new algorithm) |
+| `features/study/ui.md:39` S --> T["Một transaction: generation +1, first_answered_at NULL, khởi tạo lại st | superseded → FN-SRS-002 (one transaction: generation +1, first_answered_at NULL, tree reinitialised, open sessions invalidated) |
+| `features/study/ui.md:40` T --> U["review_log giữ nguyên, mang generation cũ · BR-SRS-023"] | superseded → FN-SRS-002 (review_log kept with the old generation) |
+| `features/study/ui.md:41` T -.->\|"Phiên đang mở ở màn khác"\| H1 | superseded → FN-SRS-002 (open sessions invalidated) + FN-STUDY-005 (Lỗi: stale generation) |
+| `features/study/ui.md:44` **Cạnh nét đứt `T -.-> H1` là lý do hai UC này ở chung một mục.** Reset chạy ở m | superseded → FN-STUDY-005 (Lỗi: stale generation) + FN-SRS-002; the edge between the two UCs is now stated in both FNs |
 
 ## features/tags/ui.md
 
@@ -4111,3 +4111,30 @@ Task 21), watch_card_detail 013, load_card_history_page 014.
 
 get_reset_learning_summary → FN-SRS-001, reset_learning_progress → FN-SRS-002. Warning delta
 69 → 69: +1 migrated UC-SRS-001, −1 BR-STUDY-050 now cited by FN-SRS-002.
+
+## Task 16 notes — study + study-mode
+
+Every study use case class is an FN: watch_study_entry FN-STUDY-001, open_learning_session 002,
+open_review_session 003, watch_study_session 004, answer_study_turn 005, reveal_recall_answer 006,
+save_recall_time 007, show_fill_hint 008, abandon_study_session 009, resume_study_session 010,
+abandon_stale_sessions 011, watch_study_home 012, preview_self_assess_intervals 013.
+
+- study-mode has no use case class of its own (`lib/features/study_mode/` holds only the domain mode models
+  the study FNs run), so it gets no functional-spec file: its BR-MODE rules are cited by
+  FN-STUDY-001…005. Every active BR-MODE and BR-STUDY is now cited by an FN.
+- Ruling: opening a session closes the app's open session (`user_exit` if it started today,
+  `interrupted` if earlier), not only the tree's — the legacy UC said "the tree's"; the code
+  (`closeOpenSessions`) closes the one open session app-wide, and BR-STUDY-072 allows one open
+  session — cost if wrong: one sentence in FN-STUDY-002/003.
+- Ruling: legacy study/ui.md drew the session as created before Learn/Review is chosen; the code
+  creates it in open_learning/open_review. FN-STUDY-002/003 follow the code; the mermaid row is
+  `superseded` — cost if wrong: none to behaviour, the diagram was imprecise.
+- FN-DECK-007 now cites BR-SRS-013 (its "mastered" count), found while mapping study BRs.
+- `features/deck/ui.md:57` (who sets the scheduler lock) → FN-STUDY-005, as planned in Task 13.
+- Presentation taken out of UC-STUDY-001…003 waits for SCR-STUDY-001 (home), SCR-STUDY-002
+  (entry, mode choice, direction sheet), SCR-STUDY-004 (shared mode-screen states; the other mode
+  screens SCR-STUDY-003…008 take their share in P2) and SCR-STUDY-009 (summary).
+- Warning delta: 69 → 32 = −40 BR-STUDY/BR-MODE now cited by the study FNs, −1 BR-SRS-013 now
+  cited by FN-DECK-007, +3 migrated legacy UC files, +1 FN-STUDY-013 invoked by no UC and no
+  screen: the interval preview exists only for the self-assess buttons, so SCR-STUDY-004 will
+  invoke it (P2); no use case names it.

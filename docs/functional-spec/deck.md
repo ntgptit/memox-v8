@@ -232,7 +232,7 @@ cấp. Với mỗi deck của cấp:
 - hai số tách biệt, không bao giờ gộp: card chưa học (New) và card đến hạn (Due), với Due bằng
   Overdue cộng Due today. Hai tập này khớp hệt tập mà phiên học dùng, qua cùng một named query;
 - trạng thái lịch: chưa đến hạn, đến hạn hôm nay, hoặc quá hạn kèm số ngày;
-- mastery: số card `mastered` trên mọi card active của cây; card ở Trash không tính ở cả tử số
+- mastery: số card `mastered` (theo định nghĩa "đã thuộc") trên mọi card active của cây; card ở Trash không tính ở cả tử số
   lẫn mẫu số; deck không có card không có tỉ lệ.
 
 Cùng với đó là tóm tắt của cấp: bốn tập rời nhau Overdue, Due today, New, Scheduled; Scheduled
@@ -249,6 +249,7 @@ không phải lỗi. Không ghi gì.
 - BR-DECK-003
 - BR-DECK-026
 - BR-DECK-027
+- BR-SRS-013
 - BR-STUDY-008
 - BR-STUDY-046
 - BR-STUDY-051

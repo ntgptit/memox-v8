@@ -553,3 +553,227 @@ Status: ready · Code: [lib/features/srs/domain/usecases/get_reset_learning_summ
 - [ ] **Given** một ghi lỗi giữa transaction đặt lại, **when** hệ thống xử lý, **then** toàn bộ rollback: root giữ `generation`, chế độ, study state và trạng thái phiên cũ (E1).
 - [ ] **Given** cây có một phiên `in_progress`, **when** đặt lại được thực hiện, **then** phiên đó thành `invalidated` với `end_reason = scheduler_reset`, lượt trả lời kế tiếp của nó bị từ chối, và các lượt đã ghi trước khi đặt lại vẫn giữ (E2).
 - [ ] **Given** một root không tồn tại hoặc đang ở Trash, **when** yêu cầu đặt lại hoặc xem những gì sẽ mất, **then** thao tác bị từ chối và không ghi gì.
+
+## Study
+
+### UC-STUDY-001 — Ôn tập một deck — luồng chính
+Status: ready · Code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/features/study/domain/usecases/open_learning_session_use_case.dart, lib/features/study/domain/usecases/open_review_session_use_case.dart, lib/features/study/domain/usecases/watch_study_session_use_case.dart, lib/features/study/domain/usecases/answer_study_turn_use_case.dart, lib/features/study/domain/usecases/reveal_recall_answer_use_case.dart, lib/features/study/domain/usecases/save_recall_time_use_case.dart, lib/features/study/domain/usecases/show_fill_hint_use_case.dart, lib/features/study/domain/usecases/abandon_study_session_use_case.dart, lib/features/study/domain/usecases/resume_study_session_use_case.dart, lib/features/study/domain/usecases/abandon_stale_sessions_use_case.dart] · Invokes: [FN-STUDY-001, FN-STUDY-002, FN-STUDY-003, FN-STUDY-004, FN-STUDY-005, FN-STUDY-006, FN-STUDY-007, FN-STUDY-008, FN-STUDY-009, FN-STUDY-010, FN-STUDY-011]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Học thẻ mới hoặc ôn thẻ đến hạn của một deck, và để lịch ôn của từng thẻ được cập
+nhật đúng. Chỉ hành động học tường minh của người dùng tạo phiên — con số đến hạn ở bất kỳ đâu
+không tạo phiên.
+**Preconditions:** Deck tồn tại và có ít nhất một thẻ thuộc một trong hai tập học mới và ôn tập.
+
+Đây là luồng chạy hằng ngày và là vertical slice đầu tiên nên xây.
+
+**Hai loại phiên, không phải một.** *Học mới* đưa thẻ chưa biết qua chuỗi stage và kết thúc bằng
+việc khởi tạo lịch; *ôn tập* đưa thẻ đến hạn qua **một** cách hỏi do người dùng chọn và cập nhật
+lịch. Chúng không bao giờ trộn thẻ.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng muốn học một deck. Hệ thống thực hiện FN-STUDY-001: người dùng biết hai tập học
+   mới và ôn tập, mỗi tập kèm số lượng, **không trộn**. Còn phiên `in_progress` của cùng ngày
+   học thì người dùng có thêm lựa chọn tiếp tục phiên đó (FN-STUDY-010); chọn học mới hay ôn tập
+   sẽ đóng nó lại.
+2. Tập ôn tập rỗng ⇒ không ôn tập được, và người dùng biết khi nào thẻ gần nhất đến hạn. Không có
+   thao tác nào ôn sớm hơn hạn.
+3. **Chọn học mới** — hệ thống thực hiện FN-STUDY-002. Người dùng **không chọn** stage.
+4. **Chọn ôn tập** — người dùng chọn một trong các mode thuật toán của deck cung cấp, mỗi mode với
+   số thẻ của riêng nó; mode không đủ dữ liệu không chọn được, và người dùng biết vì sao. Chỉ có
+   một mode thì không phải chọn. Hệ thống thực hiện FN-STUDY-003.
+5. Hệ thống thực hiện FN-STUDY-004: người dùng làm từng lượt mà mode đang chạy đưa ra.
+6. Người dùng trả lời một lượt; hệ thống thực hiện FN-STUDY-005. Với `recall`, người dùng có thể
+   mở đáp án trước khi hết giờ (FN-STUDY-006), và thời gian còn lại được giữ khi app vào nền
+   (FN-STUDY-007); với `fill`, người dùng có thể xin gợi ý (FN-STUDY-008).
+7. Lượt kế tiếp được đưa ra, cho tới khi hết hàng đợi — hoặc, với phiên học mới, hết stage cuối.
+8. Hết phiên: phiên `completed` và người dùng biết tổng kết của phiên.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Thẻ trả lời sai:** cách nó quay lại **tùy mode**, không tùy loại phiên. Với `self_assess`:
+  quay lại trong cùng hàng đợi sau ít nhất 3 thẻ khác, trần 3 lượt. Với bốn mode chấm điểm: thẻ ở
+  lại tập không đạt và quay lại ở **round sau**, không trần — xem A0c.
+- **A0 — Hết hàng đợi của một stage (chỉ phiên học mới):** phiên chuyển sang stage kế trên **cùng
+  tập thẻ**, với thứ tự xáo riêng. Hết stage cuối mới là hết phiên. Phiên ôn tập chỉ có một mode,
+  nên hết hàng đợi là hết phiên.
+- **A0c — Hết một round của stage chấm điểm:** tập thẻ không đạt rỗng thì stage hoàn tất; còn thẻ
+  thì có round mới **chỉ từ tập đó**, với thứ tự xáo riêng. Thẻ từng sai trong round vẫn thuộc tập
+  đó kể cả khi sau đó làm đúng. Không có trần số round.
+- **A0b — Thẻ không đủ dữ liệu cho stage đang chạy:** bỏ qua **có ghi nhận** ở stage đó, không xoá
+  khỏi deck, và vẫn xuất hiện ở các stage khác mà nó đủ dữ liệu — ví dụ thẻ không có `example` thì
+  vắng ở `fill` nhưng có ở `guess`.
+- **A2b — Thẻ chạm trần 3 lượt `relearning` ở `self_assess`:** thẻ rời hàng đợi dù lượt cuối vẫn
+  là `forgotten`/`again`, và cờ của thẻ được bật. Trong phiên ôn tập, lịch đã được đặt ở lượt
+  `scheduled` đầu nên thẻ vẫn đến hạn lại sớm. Trong phiên học mới, thẻ chưa có lịch và chưa
+  `learned_at`, nên nó ở lại tập học mới — cờ là dấu cho lần sau. Cờ chỉ được bật, không bao giờ
+  tự tắt.
+- **A2 — Thẻ quay lại được đánh giá lần nữa:** lượt đó là `relearning`: ghi lịch sử và cập nhật
+  `last_answered_at`, nhưng không đổi lịch. Đánh giá khác `forgotten`/`again` thì rời hàng đợi;
+  lại `forgotten`/`again` thì quay lại lần nữa.
+- **A3 — Rời giữa phiên:** hệ thống thực hiện FN-STUDY-009. Mọi đánh giá đã ghi **vẫn giữ**. Hàng
+  đợi **được lưu**, nên xem A3b.
+- **A3b — Mở lại app khi còn phiên `in_progress`:** cùng ngày học thì tiếp đúng hàng đợi đó
+  (FN-STUDY-010) — đúng thẻ đang dở, đúng thứ tự, đúng số lượt đã dùng. Ngày học khác thì phiên đó
+  đóng `interrupted` (FN-STUDY-011), và người dùng dựng phiên mới. App bị hệ điều hành thu hồi rơi
+  vào đúng nhánh này, và nó khác `user_exit`: người dùng không hề bỏ cuộc.
+- **A4 — Còn thẻ đến hạn ngoài giới hạn của phiên:** tổng kết cho người dùng biết còn bao nhiêu và
+  cho bắt đầu phiên tiếp theo ngay.
+- **A5 — Deck đang ôn dở vào Trash:** phiên kết thúc với `content_deleted`; người dùng biết phiên đã
+  kết thúc vì nội dung vào Trash (quyết định của chủ dự án 2026-09-28).
+
+**Error flows:**
+- **E1 — Không còn thẻ nào đến hạn lúc bắt đầu:** một trạng thái bình thường, kèm thời điểm thẻ
+  gần nhất đến hạn. **Không** phải lỗi, và **không** tạo phiên.
+- **E2 — Ghi đánh giá thất bại nhưng còn tiếp tục được:** người dùng được báo ngay, và **không**
+  sang thẻ tiếp theo. Người dùng thử lại đúng câu trả lời đó. Chuyển tiếp khi chưa ghi được là âm
+  thầm mất tiến độ.
+- **E3 — Lỗi ghi không thể tiếp tục:** phiên `failed`, `end_reason = persistence_error`. Các lượt
+  đã ghi thành công **vẫn giữ**. Người dùng được báo lỗi và rời phiên.
+- **E4 — Generation của phiên đã lỗi thời** (root bị đặt lại ở nơi khác trong lúc phiên đang mở):
+  **từ chối ghi**, phiên `invalidated`, `end_reason = stale_generation`. Người dùng biết phiên đã hết
+  hiệu lực vì tiến độ học vừa được đặt lại, và rời phiên. **Không** ghi phần nào của đánh giá đó.
+- **E5 — Đọc phiên thất bại:** người dùng được báo lỗi và thử lại được.
+
+#### Acceptance criteria
+
+- [ ] **Given** một deck có cả thẻ `learned_at IS NULL` và thẻ đến hạn, **when** người dùng muốn học deck đó, **then** hệ thống đếm hai tập tách biệt, không thẻ nào thuộc cả hai.
+- [ ] **Given** một root có nhiều thẻ chưa học hơn `card_limit`, **when** người dùng chọn học mới, **then** phiên `learning` lấy đúng `card_limit` thẻ theo `new_card_order` đang hiệu lực (`created` lấy thẻ cũ nhất, `random` lấy một tập con) và giữ số này cho phiên dù cấu hình đổi ngay sau đó.
+- [ ] **Given** một phiên `learning` vừa mở, **when** hết hàng đợi của một stage, **then** phiên chuyển sang stage kế (`eight_box`: `browse → match → guess → recall → fill`; `sm2`: `browse → self_assess`) trên cùng tập thẻ với thứ tự xáo riêng, và hết stage cuối mới hết phiên (A0).
+- [ ] **Given** một root có thẻ đến hạn, **when** người dùng chọn ôn tập, **then** mỗi mode có số thẻ của riêng nó, `fill` chỉ tính thẻ có `example`, và mode không đủ dữ liệu không chọn được kèm lý do.
+- [ ] **Given** một phiên `reviewing` đã mở, **when** hệ thống dựng hàng đợi, **then** các thẻ đến hạn được lấy theo `due_at` tăng dần, tối đa `card_limit`.
+- [ ] **Given** một lượt trả lời của mode khác mode đang chạy, hoặc mang action mà thuật toán không có, **when** hệ thống nhận nó, **then** lượt bị từ chối và không ghi gì.
+- [ ] **Given** một thẻ học mới đi hết stage cuối mà nó tham gia, **when** lượt đó được ghi, **then** thẻ được đặt `learned_at` và khởi tạo lịch ở mức đầu; nếu đây là thẻ đầu tiên của root hoàn tất chuỗi học mới ở generation hiện tại thì `first_answered_at` cũng được đặt.
+- [ ] **Given** một thẻ được đánh giá khác `forgotten`/`again`, **when** lượt được ghi, **then** thẻ rời hàng đợi; khi hàng đợi hết, phiên thành `completed` với `end_reason = NULL`.
+- [ ] **Given** một thẻ bị đánh giá `forgotten`/`again` ở `self_assess`, **when** hàng đợi dựng lại, **then** thẻ quay lại trong cùng hàng đợi sau ít nhất 3 thẻ khác, hoặc ở cuối hàng đợi khi còn ít hơn 3 thẻ khác (A1).
+- [ ] **Given** một thẻ sai trong một round của stage chấm điểm, **when** round kết thúc, **then** round mới chỉ gồm các thẻ không đạt với thứ tự xáo riêng, và stage hoàn tất khi tập không đạt rỗng (A0c).
+- [ ] **Given** một phiên `reviewing` `eight_box` có một thẻ sai ở lượt đầu rồi đúng ở round sau, **when** hai lượt được ghi, **then** lượt đầu có `kind = scheduled` và đổi lịch (về box 1), lượt sau có `kind = relearning`, được ghi lịch sử nhưng không đổi lịch (A2).
+- [ ] **Given** một thẻ thiếu dữ liệu cho stage đang chạy (ví dụ không có `example` ở `fill`), **when** stage đó chạy, **then** thẻ bị bỏ qua có ghi nhận, không bị xoá khỏi deck, và vẫn có ở các stage khác mà nó đủ dữ liệu (A0b).
+- [ ] **Given** một thẻ đã quay lại 3 lượt `relearning` ở `self_assess`, **when** lượt thứ ba vẫn là `forgotten`/`again`, **then** thẻ rời hàng đợi, cờ được bật và không bao giờ tự tắt (A2b).
+- [ ] **Given** người dùng rời giữa phiên, **when** rời, **then** phiên thành `abandoned` với `end_reason = user_exit`, và mọi lượt đã ghi vẫn giữ (A3).
+- [ ] **Given** còn một phiên `in_progress`, **when** người dùng mở lại app cùng ngày học, **then** tiếp tục phiên phục hồi đúng thẻ, thứ tự và số lượt đã dùng; mở lại ở ngày học khác thì phiên cũ thành `abandoned` với `end_reason = interrupted` (A3b).
+- [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** việc xoá xảy ra, **then** phiên kết thúc với `end_reason = content_deleted`, và tiếp tục phiên đó bị từ chối (A5).
+- [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** phiên nhận việc xoá, **then** người dùng biết phiên đã kết thúc vì nội dung vào Trash (A5).
+- [ ] **Given** tập ôn tập rỗng, **when** người dùng muốn học deck, **then** không ôn tập được, người dùng biết thời điểm thẻ gần nhất đến hạn như một trạng thái bình thường, và không có phiên nào được tạo (E1).
+- [ ] **Given** ghi một đánh giá gặp database bận, **when** người dùng thử lại đúng câu trả lời đó, **then** lượt được ghi đúng một lần, không sang thẻ trước khi ghi được, và phiên vẫn `in_progress` (E2).
+- [ ] **Given** ghi một đánh giá gặp lỗi không thể tiếp tục, **when** hệ thống xử lý, **then** phiên thành `failed` với `end_reason = persistence_error`, và các lượt đã ghi trước đó vẫn giữ (E3).
+- [ ] **Given** root của phiên vừa bị đặt lại ở nơi khác, **when** người dùng trả lời hoặc tiếp tục phiên, **then** hệ thống từ chối ghi, phiên thành `invalidated` với `end_reason = stale_generation`, và không phần nào của lượt đó được ghi (E4).
+- [ ] **Given** phiên không đọc được, **when** người dùng mở phiên, **then** người dùng được báo lỗi, và thử lại thì đọc lại (E5).
+- [ ] **Given** một phiên ôn chạm giới hạn thẻ trong khi cây deck còn thẻ đến hạn, **when** tổng kết đến, **then** người dùng biết số thẻ còn đến hạn và có thể mở phiên tiếp theo; dưới giới hạn thì không nêu số này (A4).
+
+### UC-STUDY-002 — Mở tab Study và chọn việc để học
+Status: ready · Code: [lib/features/study/domain/usecases/watch_study_home_use_case.dart] · Invokes: [FN-STUDY-012, FN-STUDY-010, FN-STUDY-001]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Biết ở đâu có việc để học và bắt đầu từ đó, hoặc học tiếp phiên đang dở.
+**Preconditions:** Không có
+
+#### Main flow
+
+**Main flow:**
+1. Hệ thống thực hiện FN-STUDY-012: **một snapshot** gồm phiên có thể học tiếp và toàn bộ root
+   deck kèm khối lượng việc. Xem không ghi gì.
+2. Nếu có đúng một phiên hợp lệ đang mở, người dùng biết trước hết nó là phiên của deck nào, loại
+   gì, đang ở chặng nào.
+3. Người dùng biết mọi root deck với tên, chế độ ôn tập khi biết, ba con số Overdue / Due today /
+   New, theo thứ tự giảm dần của ba con số đó, hoà thì theo tên.
+4. Học tiếp mở đúng phiên đó và đúng lượt đã lưu (FN-STUDY-010), không tạo phiên thứ hai. Chọn học
+   một deck đưa người dùng tới lối vào học của deck đó (FN-STUDY-001), nơi có lựa chọn giữa học mới
+   và ôn tập.
+5. Kết thúc, bỏ dở hay mất hiệu lực một phiên rồi quay lại: danh sách tự cập nhật, không giữ con
+   số cũ.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Không có phiên nào đang mở:** không có gì để học tiếp.
+- **A2 — Phiên của ngày học cũ, generation đã đổi, deck hoặc thẻ đã bị xoá:** không được đưa ra để
+  học tiếp. Việc đóng phiên cũ xảy ra khi người dùng thực sự vào học, không phải khi xem tab.
+- **A3 — Mọi deck đều không còn gì đến hạn:** danh sách vẫn có, và người dùng biết hiện chưa có thẻ
+  nào tới hạn; deck vẫn mở được để học trước.
+- **A4 — Thư viện chưa có deck nào:** người dùng được đưa tới thư viện starter, hoặc về Library.
+- **A5 — Có deck nhưng chưa có card nào:** người dùng được đưa về Library để thêm thẻ — không phải
+  tới thư viện starter, và không có con số Due bịa ra.
+
+**Error flows:**
+- **E1 — Đọc thất bại:** người dùng được báo lỗi, không kèm chi tiết kỹ thuật, và thử lại được;
+  không có gì bị thay đổi, vì xem tab không ghi gì.
+
+#### Acceptance criteria
+
+- [ ] **Given** tab Study được mở, **when** hệ thống đọc dữ liệu, **then** phiên có thể tiếp tục và khối lượng việc của các root deck đến từ một snapshot, và việc đọc không ghi gì, kể cả khi còn phiên của ngày trước đang mở.
+- [ ] **Given** đúng một phiên hợp lệ đang mở, **when** người dùng xem tab, **then** người dùng biết đúng tên deck, `kind` và mode lấy từ hàng session, kể cả khi phiên mở trên deck con.
+- [ ] **Given** nhiều root deck có khối lượng việc khác nhau, **when** người dùng xem danh sách, **then** thứ tự giảm dần theo Overdue, rồi Due today, rồi New (không theo tổng), hoà thì theo tên đã gập rồi `id`.
+- [ ] **Given** có một phiên để học tiếp, **when** người dùng học tiếp, **then** đúng phiên đó được mở lại tại lượt đã lưu và không có phiên thứ hai; nếu phiên vừa hết hạn thì bị từ chối và tab sẵn sàng lại.
+- [ ] **Given** không có phiên nào đang mở, hoặc phiên đang mở đã kết thúc, thuộc ngày học cũ, hết hàng đợi hay thuộc generation cũ, **when** người dùng xem tab, **then** không có phiên nào để học tiếp (A1, A2).
+- [ ] **Given** mọi deck đều không còn gì đến hạn, **when** người dùng xem tab, **then** người dùng biết mình đã bắt kịp, và các deck vẫn mở được để học trước (A3).
+- [ ] **Given** thư viện có deck nhưng chưa deck nào có card, **when** người dùng xem tab, **then** người dùng được đưa về Library để thêm thẻ, không có con số nào (A5).
+- [ ] **Given** việc đọc thất bại, **when** người dùng xem tab, **then** người dùng được báo lỗi, và thử lại thì đọc lại (E1).
+- [ ] **Given** thư viện chưa có root deck nào, **when** người dùng xem tab, **then** người dùng được đưa tới thư viện starter, hoặc về Library (A4).
+
+### UC-STUDY-003 — Chọn chiều hỏi cho một phiên self-assess
+Status: ready · Code: [lib/features/study/domain/usecases/open_review_session_use_case.dart, lib/features/study/domain/usecases/watch_study_entry_use_case.dart] · Invokes: [FN-STUDY-001, FN-STUDY-003, FN-STUDY-004, FN-STUDY-010]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Ôn một deck `sm2` theo chiều hỏi mình muốn: hỏi thuật ngữ, hỏi nghĩa, hay trộn.
+**Preconditions:** Root deck của deck đang mở dùng scheduler `sm2`, có ít nhất một thẻ đến hạn, và
+mode ôn duy nhất thuật toán này cung cấp là `self_assess`.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng chọn ôn tập (FN-STUDY-001 cho biết mode `self_assess` nhận chiều). Vì `sm2` chỉ có
+   một mode, người dùng không phải chọn mode mà chọn **chiều hỏi**.
+2. Người dùng biết ba chiều — hỏi thuật ngữ trước (khuyến nghị), hỏi nghĩa trước, trộn — mỗi chiều
+   là bài tập gì, và rằng chiều không đổi được sau khi phiên bắt đầu.
+3. Người dùng chọn một chiều. Chọn chiều chưa mở phiên: chiều bị khoá suốt phiên, nên một lựa chọn
+   nhầm không được phép tiêu mất một phiên.
+4. Người dùng bắt đầu ôn. Dù yêu cầu bắt đầu đến hai lần, chỉ một phiên được tạo.
+5. Hệ thống thực hiện FN-STUDY-003 với chiều đã chọn.
+6. Hệ thống thực hiện FN-STUDY-004: mỗi thẻ hỏi theo chiều của dòng nó, đáp án sau khi lật; tập
+   action vẫn là bốn action của `sm2` và lịch chạy như thường.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Người dùng thôi chọn chiều:** chưa có gì được ghi, nên không có phiên nào để dọn.
+- **A2 — Deck chạy `eight_box`:** không có chọn chiều; người dùng chọn mode, và không mode nào của
+  nó nhận chiều.
+- **A3 — Còn phiên bỏ dở:** người dùng được hỏi tiếp tục, học mới hay ôn tập trước. Tiếp tục
+  (FN-STUDY-010) dùng chiều đã lưu và **không** hỏi lại; ôn tập kết thúc phiên cũ rồi đi vào bước 1.
+- **A4 — Phiên trộn đang chạy:** hai thẻ liên tiếp có thể hỏi hai chiều khác nhau. Đó là đúng bài
+  tập người dùng chọn; chiều của mỗi thẻ đã cố định từ bước 5 và không đổi khi thẻ quay lại.
+
+**Error flows:**
+- **E1 — Deck đổi scheduler hoặc bị đặt lại trong lúc người dùng đang chọn:** hệ thống đọc lại trước
+  khi mở phiên; nếu `self_assess` không còn được cung cấp thì phiên bị từ chối như một thay đổi giữa
+  chừng, không ghi gì, và người dùng biết self-check không còn được cung cấp cho deck này (quyết định
+  của chủ dự án 2026-09-28).
+- **E2 — Không còn thẻ đến hạn lúc bắt đầu:** phiên bị từ chối và không ghi gì; người dùng được báo
+  như E1.
+- **E3 — Yêu cầu thiếu chiều:** không thể tạo từ luồng này; hệ thống vẫn từ chối như một lỗi
+  validation và không ghi phiên.
+
+#### Acceptance criteria
+
+- [ ] **Given** một root dùng `sm2` có thẻ đến hạn, **when** người dùng chọn ôn tập, **then** người dùng không phải chọn mode mà chọn chiều hỏi, với hỏi thuật ngữ trước được chọn sẵn.
+- [ ] **Given** người dùng đang chọn chiều, **when** người dùng chọn hỏi nghĩa trước rồi bắt đầu, **then** phiên mở với đúng chiều đó, lưu ở `study_session.direction`.
+- [ ] **Given** phiên mở với hỏi thuật ngữ trước hoặc hỏi nghĩa trước, **when** hệ thống dựng hàng đợi, **then** mọi dòng có cùng chiều đó; với trộn, mỗi dòng nhận một trong hai chiều, chia gần đều một lần lúc mở phiên.
+- [ ] **Given** một thẻ hỏi theo hỏi nghĩa trước, **when** thẻ được đưa ra, **then** đề là mặt nghĩa, mặt thuật ngữ và ví dụ chỉ có sau khi lật, và vẫn là 4 action của `sm2` với lịch chạy như thường.
+- [ ] **Given** yêu cầu bắt đầu đang mở phiên, **when** người dùng yêu cầu lần nữa, **then** chỉ một phiên được tạo.
+- [ ] **Given** người dùng đang chọn chiều, **when** người dùng thôi mà không bắt đầu, **then** không có gì được ghi (A1).
+- [ ] **Given** deck chạy `eight_box`, **when** người dùng chọn ôn tập, **then** không có chọn chiều, chỉ có chọn mode (A2).
+- [ ] **Given** còn một phiên `self_assess` bỏ dở, **when** người dùng tiếp tục, **then** phiên tiếp tục với chiều đã lưu ở `study_session.direction` và không hỏi lại chiều (A3).
+- [ ] **Given** một phiên trộn đang chạy, **when** một thẻ quay lại hàng đợi, **then** chiều của thẻ vẫn là chiều đã gán lúc mở phiên (A4).
+- [ ] **Given** không còn thẻ nào đến hạn lúc bắt đầu, **when** người dùng bắt đầu, **then** phiên bị từ chối, người dùng được báo, và không ghi gì (E2).
+- [ ] **Given** yêu cầu mở phiên `self_assess` không kèm chiều, hoặc kèm chiều cho một mode không dùng chiều, **when** hệ thống xử lý, **then** yêu cầu bị từ chối và không ghi gì (E3).
+- [ ] **Given** người dùng đang chọn chiều và scheduler của root đổi sang `eight_box`, **when** người dùng bắt đầu, **then** phiên bị từ chối với `modeNotOffered`, không ghi gì, và người dùng biết self-check không còn được cung cấp (E1).
