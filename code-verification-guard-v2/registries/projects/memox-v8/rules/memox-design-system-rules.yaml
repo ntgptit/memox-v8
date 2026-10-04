@@ -371,18 +371,10 @@ rules:
       leading/trailing layout goes on this rule's `exclude:` with its reason.
     scopes:
       - dart_lib
-    exclude:
-      # Prose callouts: the glyph sits on the first line of a paragraph,
-      # and a banner's actions sit under its text (kit Note, InlineBanner).
-      - lib/shared/widgets/mx_note.dart
-      - lib/shared/widgets/mx_inline_banner.dart
-      - lib/shared/widgets/mx_field_message.dart
-      # A two-column grid of facts: each cell starts at the top of its line.
-      - lib/features/card/presentation/widgets/sections/card_schedule_widget.dart
-      # Three stat tiles side by side: their tops align, not their centres.
-      - lib/features/study/presentation/widgets/sections/session_summary_hero_widget.dart
-      # Three theme cards side by side (screen 25): their tops align.
-      - lib/features/settings/presentation/screens/theme_screen.dart
+    # SP2 (spec 2026-10-04-sp2 §6) deleted every file this rule excluded (the
+    # legacy note, banner, field message, card schedule grid, summary hero and
+    # theme cards). SP3 adds an exception back with its reason when the rebuilt
+    # widget needs one.
     patterns:
       - '\bRow\((?:(?!\bchildren:)[\s\S]){0,240}?\bcrossAxisAlignment:\s*CrossAxisAlignment\.start\b'
     tags:

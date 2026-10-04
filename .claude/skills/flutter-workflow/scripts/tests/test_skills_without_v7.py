@@ -118,6 +118,15 @@ CITED_PATH = re.compile(
 )
 PLACEHOLDER = re.compile(r"[<>*{}$…]")
 GENERATED = re.compile(r"\.g\.dart$|/generated/")
+# SP2 (spec 2026-10-04-sp2 §3, §6) removed the legacy UI. The design skills
+# still cite it: their component contract is what SP3a rebuilds, so these
+# roots wait for the rebuild, as the guard's `targets_pending` rules do. Any
+# other missing path is still an error. Remove a root when SP3 brings it back.
+REMOVED_BY_SP2 = re.compile(
+    r"^(?:lib/shared|lib/core/theme|lib/app/gallery|test/shared|test/core/theme"
+    r"|test/visual_audit|integration_test|test/support/(?:golden|widget)_harness\.dart"
+    r"|lib/features/[a-z_]+/presentation/(?:screens|widgets|controllers|states))(?:/|$)"
+)
 
 # V7 had a `Failure` per error kind; V8 has the few `lib/core/error/failure.dart`
 # defines (ADR-011 D6), so a skill that names another sends the agent to a type
@@ -151,6 +160,8 @@ def _missing_paths(root: Path = REPO_ROOT, names: tuple[str, ...] = REPO_OWNED_S
                 for match in CITED_PATH.finditer(line):
                     cited = match.group(1).rstrip(".,:;")
                     if PLACEHOLDER.search(cited) or GENERATED.search(cited):
+                        continue
+                    if REMOVED_BY_SP2.match(cited):
                         continue
                     if (root / cited).exists() or (skill / cited).exists():
                         continue
@@ -314,6 +325,21 @@ class RepoOwnedSkillsTest(unittest.TestCase):
 
     def test_no_repo_owned_skill_names_v7(self):
         self.assertEqual(_occurrences(), [])
+
+    def test_a_path_sp2_removed_waits_for_the_rebuild_but_no_other_path_does(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = root / ".claude" / "skills" / "probe"
+            skill.mkdir(parents=True)
+            (skill / "SKILL.md").write_text(
+                "`lib/shared/widgets/mx_button.dart` `lib/core/theme/app_theme.dart` "
+                "`lib/features/deck/presentation/screens/x_screen.dart` `lib/nowhere/x.dart`\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                _missing_paths(root, ("probe",)),
+                [".claude/skills/probe/SKILL.md:1: lib/nowhere/x.dart"],
+            )
 
     def test_every_path_a_skill_cites_exists(self):
         self.assertEqual(_missing_paths(), [])

@@ -70,13 +70,22 @@ else
   JOBS="$("$PY" -c 'import os; print(max(1, min(os.cpu_count() or 1, 8)))')"
 fi
 
+# No golden test file is a pass: SP2 (spec 2026-10-04-sp2) deleted the old UI's
+# goldens, and the set is empty until SP3b adds the first `scr_*` one. A golden
+# that vanished by mistake still shows: docs/screens' `Golden:` lines, and
+# tools/docs/check.py's missing-golden check for a built screen.
+no_goldens() {
+  echo "no golden test file under test/ — nothing to compare"
+  exit 0
+}
+
 if [[ $UPDATE -eq 1 || "${MEMOX_TEST_BUNDLES:-}" == "0" ]]; then
   if ! listed="$("$PY" "$SCRIPTS/bundle_tests.py" --root "$REPO_ROOT" --goldens --list test)"; then
     exit 1
   fi
   mapfile -t files <<<"$listed"
   files=("${files[@]%$'\r'}")
-  [[ -n "${files[0]:-}" ]] || { echo "no golden test file under test/" >&2; exit 1; }
+  [[ -n "${files[0]:-}" ]] || no_goldens
   update_flag=()
   [[ $UPDATE -eq 1 ]] && update_flag=(--update-goldens)
   echo "goldens: ${#files[@]} files, one by one${update_flag:+, updating}"
@@ -88,7 +97,7 @@ else
   fi
   mapfile -t bundles <<<"$listed"
   bundles=("${bundles[@]%$'\r'}")
-  [[ -n "${bundles[0]:-}" ]] || { echo "no golden test file under test/" >&2; exit 1; }
+  [[ -n "${bundles[0]:-}" ]] || no_goldens
   TZ=UTC flutter test -j "${#bundles[@]}" --file-reporter "json:$REPORT" "${bundles[@]}"
 fi
 rc=$?
