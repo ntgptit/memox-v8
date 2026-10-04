@@ -106,8 +106,10 @@ Golden: none — no golden in V8 (record 16)
 
 - A database failure → `read_error`.
 - The session invalidated by a reset elsewhere → the toast "This session ended: the deck's learning
-  progress was reset." and the app returns to the deck; nothing of that turn is written.
-- The deck gone → the toast "This deck no longer exists" and the app returns.
+  progress was reset." and Navigate to: SCR-DECK-001 (the session's deck); nothing of that turn is
+  written.
+- The deck gone → the toast "This deck no longer exists" and Navigate to: SCR-DECK-001 (the
+  Library).
 - The session ended (completed, abandoned, failed, invalidated otherwise) → Navigate to:
   SCR-STUDY-009.
 
@@ -157,6 +159,10 @@ Golden: none — no golden in V8 (record 16)
 - Type: buttons
 - Invokes: FN-STUDY-004
 - Purpose: Retry reads the session again; Close leaves it.
+
+#### On success
+
+- Close: Navigate to: SCR-DECK-001 (the Library).
 
 ## Responsive Behavior
 

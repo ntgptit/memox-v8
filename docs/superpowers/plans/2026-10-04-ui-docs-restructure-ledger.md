@@ -3407,73 +3407,73 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/navigation.md:1` # Điều hướng toàn app |  |
-| `shared/ui/navigation.md:3` Điều hướng và hành trình dùng chung toàn app. Sơ đồ điều hướng riêng của từng |  |
-| `shared/ui/navigation.md:7` ## Điều hướng top-level |  |
-| `shared/ui/navigation.md:9` App dùng đúng **bốn** destination ở bottom navigation, thứ tự cố định: |  |
-| `shared/ui/navigation.md:14` - Cold start mở Decks (UC-DECK-003). |  |
-| `shared/ui/navigation.md:15` - **Progress** (UC-PROGRESS-001, UC-PROGRESS-002): streak, hôm nay và bảy ngày g |  |
-| `shared/ui/navigation.md:21` - Thư viện starter (M6) là child flow bên trong tab Thư viện (branch Decks), khô |  |
-| `shared/ui/navigation.md:22` - Không có tab Profile chừng nào chưa có auth/profile domain — nhất quán với |  |
-| `shared/ui/navigation.md:25` ## Primary business flows |  |
-| `shared/ui/navigation.md:27` 1. **Tạo nội dung**: mở app → tạo deck → thêm card → deck xuất hiện trong danh |  |
-| `shared/ui/navigation.md:29` 2. **Ôn tập** (luồng chính, chạy hằng ngày): mở app → thấy deck có card đến hạn |  |
-| `shared/ui/navigation.md:33` Luồng 2 là vertical slice đầu tiên nên xây, vì nó chạm vào toàn bộ chiều sâu |  |
-| `shared/ui/navigation.md:38` ## Sơ đồ là gì, và không là gì |  |
-| `shared/ui/navigation.md:40` `features/*/usecases/` đặc tả **từng** UC. Nó cố ý không vẽ đồ thị nối |  |
-| `shared/ui/navigation.md:44` Tài liệu này chỉ giữ **các cạnh của đồ thị đó**. Mọi đỉnh đều trỏ về một UC hoặc |  |
-| `shared/ui/navigation.md:47` **MUST NOT** đọc sơ đồ ở đây như một đặc tả. Theo mục "X viết ở đâu" của [`READM |  |
-| `shared/ui/navigation.md:52` **Tách theo đối tượng, không theo hành động.** Mục 3–5 chia theo *deck*, *card*, |  |
-| `shared/ui/navigation.md:57` ## Master flow — toàn app |  |
-| `shared/ui/navigation.md:59` Hành trình từ lúc mở app tới lúc vào được một phiên ôn tập. Nhánh nào đi sâu vào |  |
-| `shared/ui/navigation.md:63` flowchart TD |  |
-| `shared/ui/navigation.md:64` A["Mở app"] --> B["Khởi tạo database"] |  |
-| `shared/ui/navigation.md:65` B -->\|"Thất bại"\| B1["Màn hình lỗi có nút thử lại · UC-STARTER-001 E1"] |  |
-| `shared/ui/navigation.md:66` B --> C{"Đã có deck nào chưa?"} |  |
-| `shared/ui/navigation.md:68` C -->\|"Chưa"\| D["Empty state, hai lối đi · UC-DECK-003 A1"] |  |
-| `shared/ui/navigation.md:69` D -->\|"Thư viện starter"\| E["Chọn starter deck và chế độ ôn tập · UC-STARTER-001 |  |
-| `shared/ui/navigation.md:70` D -->\|"Tạo deck mới"\| F["Tạo root deck · UC-DECK-001"] |  |
-| `shared/ui/navigation.md:72` C -->\|"Rồi"\| G["Danh sách deck kèm tiến độ · UC-DECK-003"] |  |
-| `shared/ui/navigation.md:73` E --> G |  |
-| `shared/ui/navigation.md:74` F --> G |  |
-| `shared/ui/navigation.md:76` G --> H["Mở một deck"] |  |
-| `shared/ui/navigation.md:77` H --> I{"content_type của deck"} |  |
-| `shared/ui/navigation.md:78` I -->\|"deck"\| J["Danh sách deck con · UC-DECK-003 A3"] |  |
-| `shared/ui/navigation.md:79` I -->\|"card"\| K["Danh sách card · UC-CARD-001"] |  |
-| `shared/ui/navigation.md:80` I -->\|"unset"\| L["Deck rỗng, tạo được cả hai loại · UC-DECK-004"] |  |
-| `shared/ui/navigation.md:82` J --> H |  |
-| `shared/ui/navigation.md:83` L -->\|"Tạo deck con"\| J |  |
-| `shared/ui/navigation.md:84` L -->\|"Tạo card"\| K |  |
-| `shared/ui/navigation.md:86` H --> M["Quản lý deck: đổi tên, xoá, di chuyển · mục 3"] |  |
-| `shared/ui/navigation.md:87` G --> N["Bắt đầu phiên ôn tập · mục 5"] |  |
-| `shared/ui/navigation.md:88` K --> N |  |
-| `shared/ui/navigation.md:89` N --> G |  |
-| `shared/ui/navigation.md:92` **`J --> H` là vòng lặp cố ý.** Deck lồng tới 10 cấp (BR-DECK-001) và một cấp bấ |  |
-| `shared/ui/navigation.md:96` ## UC theo đối tượng nghiệp vụ |  |
-| `shared/ui/navigation.md:98` Phân loại 22 UC theo đối tượng nghiệp vụ. Mục 2–5 chỉ vẽ sơ đồ cho các UC quanh |  |
-| `shared/ui/navigation.md:101` \| UC \| Đối tượng \| |  |
-| `shared/ui/navigation.md:103` \| UC-STARTER-001 \| deck \| |  |
-| `shared/ui/navigation.md:104` \| UC-DECK-001 \| deck \| |  |
-| `shared/ui/navigation.md:105` \| UC-DECK-002 \| deck \| |  |
-| `shared/ui/navigation.md:106` \| UC-CARD-001 \| card \| |  |
-| `shared/ui/navigation.md:107` \| UC-STUDY-001 \| review \| |  |
-| `shared/ui/navigation.md:108` \| UC-DECK-003 \| deck \| |  |
-| `shared/ui/navigation.md:109` \| UC-SRS-001 \| review \| |  |
-| `shared/ui/navigation.md:110` \| UC-DECK-004 \| deck \| |  |
-| `shared/ui/navigation.md:111` \| UC-DECK-005 \| deck \| |  |
-| `shared/ui/navigation.md:112` \| UC-TRANSFER-001 \| card \| |  |
-| `shared/ui/navigation.md:113` \| UC-TRANSFER-002 \| card \| |  |
-| `shared/ui/navigation.md:114` \| UC-PROGRESS-001 \| progress \| |  |
-| `shared/ui/navigation.md:115` \| UC-PROGRESS-002 \| progress \| |  |
-| `shared/ui/navigation.md:116` \| UC-STUDY-002 \| review \| |  |
-| `shared/ui/navigation.md:117` \| UC-STUDY-003 \| review \| |  |
-| `shared/ui/navigation.md:118` \| UC-SETTINGS-001 \| settings \| |  |
-| `shared/ui/navigation.md:119` \| UC-REMINDER-001 \| settings \| |  |
-| `shared/ui/navigation.md:120` \| UC-TAG-001 \| card \| |  |
-| `shared/ui/navigation.md:121` \| UC-CARD-002 \| card \| |  |
-| `shared/ui/navigation.md:122` \| UC-SEARCH-001 \| search \| |  |
-| `shared/ui/navigation.md:123` \| UC-TRASH-001 \| trash \| |  |
-| `shared/ui/navigation.md:124` \| UC-DECK-006 \| deck \| |  |
+| `shared/ui/navigation.md:1` # Điều hướng toàn app | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:3` Điều hướng và hành trình dùng chung toàn app. Sơ đồ điều hướng riêng của từng | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:7` ## Điều hướng top-level | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:9` App dùng đúng **bốn** destination ở bottom navigation, thứ tự cố định: | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:14` - Cold start mở Decks (UC-DECK-003). | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:15` - **Progress** (UC-PROGRESS-001, UC-PROGRESS-002): streak, hôm nay và bảy ngày g | superseded → SCR-PROGRESS-001, SCR-SETTINGS-002 (what each tab shows), SCR-REMINDER-001 (its route on the root navigator, with NAVIGATION.md `## Root navigation`) |
+| `shared/ui/navigation.md:21` - Thư viện starter (M6) là child flow bên trong tab Thư viện (branch Decks), khô | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:22` - Không có tab Profile chừng nào chưa có auth/profile domain — nhất quán với | superseded → NAVIGATION.md `## Shell and tabs` (no account tab: the account lives in SCR-SETTINGS-002) |
+| `shared/ui/navigation.md:25` ## Primary business flows | superseded → NAVIGATION.md `## Master flows` |
+| `shared/ui/navigation.md:27` 1. **Tạo nội dung**: mở app → tạo deck → thêm card → deck xuất hiện trong danh | superseded → UC-DECK-001, UC-CARD-001, UC-DECK-003 (create content, then see the deck in the list) |
+| `shared/ui/navigation.md:29` 2. **Ôn tập** (luồng chính, chạy hằng ngày): mở app → thấy deck có card đến hạn | superseded → UC-STUDY-001 (the daily review flow) |
+| `shared/ui/navigation.md:33` Luồng 2 là vertical slice đầu tiên nên xây, vì nó chạm vào toàn bộ chiều sâu | dropped — V8.0 build-order advice (which slice to build first); the rebuild plan sets its own order, approved PENDING |
+| `shared/ui/navigation.md:38` ## Sơ đồ là gì, và không là gì | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:40` `features/*/usecases/` đặc tả **từng** UC. Nó cố ý không vẽ đồ thị nối | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:44` Tài liệu này chỉ giữ **các cạnh của đồ thị đó**. Mọi đỉnh đều trỏ về một UC hoặc | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:47` **MUST NOT** đọc sơ đồ ở đây như một đặc tả. Theo mục "X viết ở đâu" của [`READM | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:52` **Tách theo đối tượng, không theo hành động.** Mục 3–5 chia theo *deck*, *card*, | superseded → R9 (screen-to-screen edges are each spec's `Navigate to:` lines; _generated/navigation-graph.md draws them) |
+| `shared/ui/navigation.md:57` ## Master flow — toàn app | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:59` Hành trình từ lúc mở app tới lúc vào được một phiên ôn tập. Nhánh nào đi sâu vào | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:63` flowchart TD | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:64` A["Mở app"] --> B["Khởi tạo database"] | superseded → NAVIGATION.md `## Boot and system routing` (no separate start-up failure screen: SCR-DECK-001 `root_error`, UC-STARTER-001 E1) |
+| `shared/ui/navigation.md:65` B -->\|"Thất bại"\| B1["Màn hình lỗi có nút thử lại · UC-STARTER-001 E1"] | superseded → NAVIGATION.md `## Boot and system routing` (no separate start-up failure screen: SCR-DECK-001 `root_error`, UC-STARTER-001 E1) |
+| `shared/ui/navigation.md:66` B --> C{"Đã có deck nào chưa?"} | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:68` C -->\|"Chưa"\| D["Empty state, hai lối đi · UC-DECK-003 A1"] | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:69` D -->\|"Thư viện starter"\| E["Chọn starter deck và chế độ ôn tập · UC-STARTER-001 | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:70` D -->\|"Tạo deck mới"\| F["Tạo root deck · UC-DECK-001"] | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:72` C -->\|"Rồi"\| G["Danh sách deck kèm tiến độ · UC-DECK-003"] | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:73` E --> G | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:74` F --> G | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:76` G --> H["Mở một deck"] | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:77` H --> I{"content_type của deck"} | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:78` I -->\|"deck"\| J["Danh sách deck con · UC-DECK-003 A3"] | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:79` I -->\|"card"\| K["Danh sách card · UC-CARD-001"] | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:80` I -->\|"unset"\| L["Deck rỗng, tạo được cả hai loại · UC-DECK-004"] | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:82` J --> H | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:83` L -->\|"Tạo deck con"\| J | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:84` L -->\|"Tạo card"\| K | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:86` H --> M["Quản lý deck: đổi tên, xoá, di chuyển · mục 3"] | superseded → SCR-DECK-001 (deck actions: rename, move, Trash), UC-DECK-002, UC-DECK-005 |
+| `shared/ui/navigation.md:87` G --> N["Bắt đầu phiên ôn tập · mục 5"] | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:88` K --> N | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:89` N --> G | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:92` **`J --> H` là vòng lặp cố ý.** Deck lồng tới 10 cấp (BR-DECK-001) và một cấp bấ | moved → `NAVIGATION.md` |
+| `shared/ui/navigation.md:96` ## UC theo đối tượng nghiệp vụ | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:98` Phân loại 22 UC theo đối tượng nghiệp vụ. Mục 2–5 chỉ vẽ sơ đồ cho các UC quanh | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:101` \| UC \| Đối tượng \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:103` \| UC-STARTER-001 \| deck \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:104` \| UC-DECK-001 \| deck \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:105` \| UC-DECK-002 \| deck \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:106` \| UC-CARD-001 \| card \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:107` \| UC-STUDY-001 \| review \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:108` \| UC-DECK-003 \| deck \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:109` \| UC-SRS-001 \| review \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:110` \| UC-DECK-004 \| deck \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:111` \| UC-DECK-005 \| deck \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:112` \| UC-TRANSFER-001 \| card \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:113` \| UC-TRANSFER-002 \| card \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:114` \| UC-PROGRESS-001 \| progress \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:115` \| UC-PROGRESS-002 \| progress \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:116` \| UC-STUDY-002 \| review \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:117` \| UC-STUDY-003 \| review \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:118` \| UC-SETTINGS-001 \| settings \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:119` \| UC-REMINDER-001 \| settings \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:120` \| UC-TAG-001 \| card \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:121` \| UC-CARD-002 \| card \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:122` \| UC-SEARCH-001 \| search \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:123` \| UC-TRASH-001 \| trash \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
+| `shared/ui/navigation.md:124` \| UC-DECK-006 \| deck \| | superseded → USE_CASES.md (each UC sits under its feature's heading; the generated index lists them) |
 
 ## README.md
 
@@ -3523,14 +3523,14 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `test/app/goldens/app_gallery_dark.png` |  |
-| `test/app/goldens/app_gallery_light.png` |  |
-| `test/app/goldens/app_library_dark.png` |  |
-| `test/app/goldens/app_library_light.png` |  |
-| `test/app/goldens/app_tablet_landscape_library_dark.png` |  |
-| `test/app/goldens/app_tablet_landscape_library_light.png` |  |
-| `test/app/goldens/app_tablet_portrait_deck_dark.png` |  |
-| `test/app/goldens/app_tablet_portrait_deck_light.png` |  |
+| `test/app/goldens/app_gallery_dark.png` | superseded → DESIGN.md `## Components` (the debug-only component gallery, not a screen state) dark |
+| `test/app/goldens/app_gallery_light.png` | superseded → DESIGN.md `## Components` (the debug-only component gallery, not a screen state) light |
+| `test/app/goldens/app_library_dark.png` | superseded → SCR-DECK-001 `root_empty` dark (the first-run Library inside the shell; the shell is NAVIGATION.md `## Shell and tabs`) |
+| `test/app/goldens/app_library_light.png` | superseded → SCR-DECK-001 `root_empty` light (the first-run Library inside the shell; the shell is NAVIGATION.md `## Shell and tabs`) |
+| `test/app/goldens/app_tablet_landscape_library_dark.png` | superseded → NAVIGATION.md `## Shell and tabs` (the rail at tablet width, landscape, around SCR-DECK-001) dark |
+| `test/app/goldens/app_tablet_landscape_library_light.png` | superseded → NAVIGATION.md `## Shell and tabs` (the rail at tablet width, landscape, around SCR-DECK-001) light |
+| `test/app/goldens/app_tablet_portrait_deck_dark.png` | superseded → NAVIGATION.md `## Shell and tabs` (the rail at tablet width, portrait, around an open deck of SCR-DECK-001) dark |
+| `test/app/goldens/app_tablet_portrait_deck_light.png` | superseded → NAVIGATION.md `## Shell and tabs` (the rail at tablet width, portrait, around an open deck of SCR-DECK-001) light |
 | `test/features/account/presentation/goldens/account_delete_confirm_dark.png` | superseded → SCR-ACCOUNT-005 `delete_confirm` dark |
 | `test/features/account/presentation/goldens/account_delete_confirm_light.png` | superseded → SCR-ACCOUNT-005 `delete_confirm` light |
 | `test/features/account/presentation/goldens/account_delete_offline_dark.png` | superseded → SCR-ACCOUNT-005 `delete_offline` dark |
@@ -4420,3 +4420,14 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - Remaining empty ledger rows: `shared/ui/navigation.md` (67) and `test/app/goldens` (8) — Task 42.
 - Warnings 37 → 31: 5 FN-MONITORING and SCR-SETTINGS-002 → SCR-MONITORING-001 resolved.
 - Gate: dod_check.sh → ✓ mechanical gates passed (scratchpad gate41.log).
+
+## Task 42 notes — NAVIGATION.md
+
+- `docs/NAVIGATION.md` (Vietnamese, SCR and UC ids only): Root navigation · Shell and tabs · Back behaviour · Deep links · Guards · Boot and system routing · Master flows. Sources: `shared/ui/navigation.md`, `lib/app/router/` (`app_router.dart`, `account_redirect.dart`, `account_routes.dart`, `admin_routes.dart`, `app_tab_shell.dart`), `lib/app/app.dart`, `lib/main.dart`.
+- Ruling: `specdocs._ids_after` now reads the indented lines a `Navigate to:` / `Invokes:` bullet wraps onto (test `test_a_wrapped_line_carries_its_ids_but_the_next_bullet_does_not`, RED→GREEN, 106/106). Wrapped targets were silently lost: SCR-STUDY-001 → SCR-STUDY-008, SCR-CARD-003 → SCR-TRASH-001, SCR-ACCOUNT-003 → SCR-STUDY-001 — cost if wrong: one regex loop in the docs tooling.
+- Ruling: SCR-STUDY-003 (the session screens' shared controls) gains the leave edges the router wires (`onLeave`): an invalidated session → SCR-DECK-001 (its deck), a deck gone and Close on `read_error` → SCR-DECK-001 (the Library) — cost if wrong: three Navigate-to lines.
+- No start-up failure screen exists in V8: the legacy master flow's "database init failed" node is satisfied by SCR-DECK-001 `root_error` with Retry (UC-STARTER-001 E1); not a contradiction.
+- Legacy master-flow edges all exist in `_generated/navigation-graph.md` (Library → deck → card list → study entry → session → summary → Library; Library ↔ starter decks). All 34 screens are router entries.
+- `test/app/goldens`: `app_library` → SCR-DECK-001 `root_empty`; the tablet rail goldens → NAVIGATION.md `## Shell and tabs`; `app_gallery` → DESIGN.md `## Components`.
+- Ledger: every row now has an outcome; `check.py --ledger` fails only on the 53 `dropped — …, approved PENDING` rows awaiting the owner (Task 43).
+- Gate: dod_check.sh → ✓ mechanical gates passed (scratchpad gate42.log).

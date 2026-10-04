@@ -183,11 +183,20 @@ def _state(title: str, line: int, text: str) -> State:
 
 
 def _ids_after(text: str, pattern: re.Pattern[str]) -> list[str]:
+    """IDs after `pattern` on its line and on the indented lines its bullet
+    wraps onto; the next bullet, heading or unindented line ends it."""
     found: list[str] = []
+    is_open = False
     for _, line in iter_unfenced(text):
         match = pattern.search(line)
         if match:
-            found += [doc_id for doc_id in ANY_ID.findall(match[1]) if doc_id not in found]
+            tail, is_open = match[1], True
+        elif is_open and line.startswith("  ") and not line.lstrip().startswith("- "):
+            tail = line
+        else:
+            is_open = False
+            continue
+        found += [doc_id for doc_id in ANY_ID.findall(tail) if doc_id not in found]
     return found
 
 

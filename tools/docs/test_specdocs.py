@@ -205,6 +205,15 @@ class ScreenTest(unittest.TestCase):
         self.assertEqual(self.screen.navigates, ["SCR-DECK-002"])
         self.assertEqual(self.screen.related_ucs, ["UC-DECK-001"])
 
+    def test_a_wrapped_line_carries_its_ids_but_the_next_bullet_does_not(self):
+        screen = specdocs.parse_screen(
+            "## Controls\n### Resume\n- Invokes: FN-STUDY-001,\n  FN-STUDY-002\n"
+            "#### On success\n- Navigate to: SCR-STUDY-003,\n  SCR-STUDY-008 (the mode screen).\n"
+            "- The toast names SCR-STUDY-009.\n"
+        )
+        self.assertEqual(screen.invokes, ["FN-STUDY-001", "FN-STUDY-002"])
+        self.assertEqual(screen.navigates, ["SCR-STUDY-003", "SCR-STUDY-008"])
+
     def test_golden_name_round_trips_through_the_file_pattern(self):
         name = specdocs.golden_name("SCR-DECK-001", "root_loaded", "light")
         self.assertEqual(name, "scr_deck_001__root_loaded__light.png")
