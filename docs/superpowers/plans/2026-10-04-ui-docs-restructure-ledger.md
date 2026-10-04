@@ -1477,51 +1477,51 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/27-sync.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/27-sync.md:3` # 27 · Sync |  |
-| `shared/ui/screen-handoff/27-sync.md:5` What sync did and what waits: the last success, the changes not yet on the serve |  |
-| `shared/ui/screen-handoff/27-sync.md:11` ## Entry points |  |
-| `shared/ui/screen-handoff/27-sync.md:13` - Screen 23, Sync section, row "Sync". Route `/settings/sync`, on the root navig |  |
-| `shared/ui/screen-handoff/27-sync.md:15` - Screen 13's sync banner, "Details" (`context.go`, as Study home opens the Libr |  |
-| `shared/ui/screen-handoff/27-sync.md:17` - Neither exists when the build has no Supabase. |  |
-| `shared/ui/screen-handoff/27-sync.md:19` ## Layout |  |
-| `shared/ui/screen-handoff/27-sync.md:21` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/27-sync.md:23` \| App bar \| `MxAppBar` (content density) + back `MxIconButton` \| "Sync". \| |  |
-| `shared/ui/screen-handoff/27-sync.md:24` \| Problem \| `MxInlineBanner` (warning); a network failure is an `MxNote` (critiq |  |
-| `shared/ui/screen-handoff/27-sync.md:25` \| Status \| `MxSection` + two `MxSettingsRow`s + note \| "Last synced" · "{Today, |  |
-| `shared/ui/screen-handoff/27-sync.md:26` \| Sync now \| `MxButton` (block, cloud-sync glyph): primary while changes wait or |  |
-| `shared/ui/screen-handoff/27-sync.md:27` \| Keep dialog \| `MxDialog` + `MxSheetActions` \| "Keep {n} changes on this device |  |
-| `shared/ui/screen-handoff/27-sync.md:28` \| Toasts \| `MxSnackbar` \| "Synced"; "Couldn't sync. Nothing was lost."; "Kept on |  |
-| `shared/ui/screen-handoff/27-sync.md:30` Only one of Sync now, Try again and Keep on this device runs at a time; the othe |  |
-| `shared/ui/screen-handoff/27-sync.md:33` ## States |  |
-| `shared/ui/screen-handoff/27-sync.md:35` The images are the goldens. |  |
-| `shared/ui/screen-handoff/27-sync.md:37` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/27-sync.md:39` \| synced \| ![](../../../../test/features/settings/presentation/goldens/sync_sync |  |
-| `shared/ui/screen-handoff/27-sync.md:40` \| neverSynced \| ![](../../../../test/features/settings/presentation/goldens/sync |  |
-| `shared/ui/screen-handoff/27-sync.md:41` \| pending \| ![](../../../../test/features/settings/presentation/goldens/sync_pen |  |
-| `shared/ui/screen-handoff/27-sync.md:42` \| failedNetwork \| ![](../../../../test/features/settings/presentation/goldens/sy |  |
-| `shared/ui/screen-handoff/27-sync.md:43` \| failedServer \| ![](../../../../test/features/settings/presentation/goldens/syn |  |
-| `shared/ui/screen-handoff/27-sync.md:44` \| rejected \| ![](../../../../test/features/settings/presentation/goldens/sync_re |  |
-| `shared/ui/screen-handoff/27-sync.md:45` \| keepDialog \| ![](../../../../test/features/settings/presentation/goldens/sync_ |  |
-| `shared/ui/screen-handoff/27-sync.md:46` \| syncing \| ![](../../../../test/features/settings/presentation/goldens/sync_syn |  |
-| `shared/ui/screen-handoff/27-sync.md:47` \| loading \| — \| — \| `MxSkeletonList`, two rows. \| |  |
-| `shared/ui/screen-handoff/27-sync.md:48` \| read error \| — \| — \| `MxErrorState` "Couldn't open Sync" with the local-first |  |
-| `shared/ui/screen-handoff/27-sync.md:50` ## Rulings |  |
-| `shared/ui/screen-handoff/27-sync.md:52` - **ADR-015, SB-U1 owner rulings R1, R3, R5–R7:** sync has its own screen, and i |  |
-| `shared/ui/screen-handoff/27-sync.md:53` - **Critique 2026-09-30 part 1 (spec `2026-09-30-critique-fixes-part1-design.md` |  |
-| `shared/ui/screen-handoff/27-sync.md:54` - **Spec R6, FE-B5 D9:** times are 24-hour `HH:mm` in every language; dates read |  |
-| `shared/ui/screen-handoff/27-sync.md:55` - **Critique 2026-09-30 tone pass (spec `2026-09-30-critique-fixes-tone-design.m |  |
-| `shared/ui/screen-handoff/27-sync.md:56` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig |  |
-| `shared/ui/screen-handoff/27-sync.md:57` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/27-sync.md:58` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** a run t |  |
-| `shared/ui/screen-handoff/27-sync.md:60` ## Copy |  |
-| `shared/ui/screen-handoff/27-sync.md:62` - App bar: "Sync". |  |
-| `shared/ui/screen-handoff/27-sync.md:63` - Refused rows: "{n} changes weren't accepted" · "1 change wasn't accepted" · "T |  |
-| `shared/ui/screen-handoff/27-sync.md:64` - Keep dialog: "Keep {n} changes on this device only?" · "They won't sync to you |  |
-| `shared/ui/screen-handoff/27-sync.md:65` - Failures: "No connection. Your changes are safe on this device and will sync w |  |
-| `shared/ui/screen-handoff/27-sync.md:66` - Status: "Status" · "Last synced" · "Not yet" · "Waiting to sync" · "{n} change |  |
-| `shared/ui/screen-handoff/27-sync.md:67` - Toasts: "Synced" · "Couldn't sync. Nothing was lost." · "Kept on this device" |  |
-| `shared/ui/screen-handoff/27-sync.md:68` - Error: "Couldn't open Sync" · "Nothing was lost. Try again in a moment." · "Re |  |
+| `shared/ui/screen-handoff/27-sync.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:3` # 27 · Sync | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:5` What sync did and what waits: the last success, the changes not yet on the serve | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:11` ## Entry points | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:13` - Screen 23, Sync section, row "Sync". Route `/settings/sync`, on the root navig | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:15` - Screen 13's sync banner, "Details" (`context.go`, as Study home opens the Libr | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:17` - Neither exists when the build has no Supabase. | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:19` ## Layout | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:21` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:23` \| App bar \| `MxAppBar` (content density) + back `MxIconButton` \| "Sync". \| | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:24` \| Problem \| `MxInlineBanner` (warning); a network failure is an `MxNote` (critiq | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:25` \| Status \| `MxSection` + two `MxSettingsRow`s + note \| "Last synced" · "{Today, | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:26` \| Sync now \| `MxButton` (block, cloud-sync glyph): primary while changes wait or | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:27` \| Keep dialog \| `MxDialog` + `MxSheetActions` \| "Keep {n} changes on this device | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:28` \| Toasts \| `MxSnackbar` \| "Synced"; "Couldn't sync. Nothing was lost."; "Kept on | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:30` Only one of Sync now, Try again and Keep on this device runs at a time; the othe | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:33` ## States | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:35` The images are the goldens. | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:37` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:39` \| synced \| ![](../../../../test/features/settings/presentation/goldens/sync_sync | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:40` \| neverSynced \| ![](../../../../test/features/settings/presentation/goldens/sync | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:41` \| pending \| ![](../../../../test/features/settings/presentation/goldens/sync_pen | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:42` \| failedNetwork \| ![](../../../../test/features/settings/presentation/goldens/sy | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:43` \| failedServer \| ![](../../../../test/features/settings/presentation/goldens/syn | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:44` \| rejected \| ![](../../../../test/features/settings/presentation/goldens/sync_re | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:45` \| keepDialog \| ![](../../../../test/features/settings/presentation/goldens/sync_ | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:46` \| syncing \| ![](../../../../test/features/settings/presentation/goldens/sync_syn | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:47` \| loading \| — \| — \| `MxSkeletonList`, two rows. \| | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:48` \| read error \| — \| — \| `MxErrorState` "Couldn't open Sync" with the local-first | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:50` ## Rulings | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:52` - **ADR-015, SB-U1 owner rulings R1, R3, R5–R7:** sync has its own screen, and i | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:53` - **Critique 2026-09-30 part 1 (spec `2026-09-30-critique-fixes-part1-design.md` | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:54` - **Spec R6, FE-B5 D9:** times are 24-hour `HH:mm` in every language; dates read | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:55` - **Critique 2026-09-30 tone pass (spec `2026-09-30-critique-fixes-tone-design.m | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:56` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:57` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:58` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** a run t | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:60` ## Copy | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:62` - App bar: "Sync". | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:63` - Refused rows: "{n} changes weren't accepted" · "1 change wasn't accepted" · "T | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:64` - Keep dialog: "Keep {n} changes on this device only?" · "They won't sync to you | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:65` - Failures: "No connection. Your changes are safe on this device and will sync w | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:66` - Status: "Status" · "Last synced" · "Not yet" · "Waiting to sync" · "{n} change | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:67` - Toasts: "Synced" · "Couldn't sync. Nothing was lost." · "Kept on this device" | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
+| `shared/ui/screen-handoff/27-sync.md:68` - Error: "Couldn't open Sync" · "Nothing was lost. Try again in a moment." · "Re | moved → `screens/spec/SCR-ACCOUNT-001-sync.md` |
 
 ## shared/ui/screen-handoff/28-monitoring.md
 
@@ -1601,239 +1601,239 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/29-welcome.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/29-welcome.md:3` # 29 · Welcome |  |
-| `shared/ui/screen-handoff/29-welcome.md:5` The first launch invites an account: the name, one promise, three benefits, and |  |
-| `shared/ui/screen-handoff/29-welcome.md:10` ## Entry points |  |
-| `shared/ui/screen-handoff/29-welcome.md:12` - The launch, once per device, on a build that can sign in: `main` reads |  |
-| `shared/ui/screen-handoff/29-welcome.md:15` - No back arrow: Android Back leaves the app, as on any root. |  |
-| `shared/ui/screen-handoff/29-welcome.md:17` ## Layout |  |
-| `shared/ui/screen-handoff/29-welcome.md:19` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/29-welcome.md:21` \| Head \| `MxIconTile` (large, tinted, deck glyph) \| Stands in for the app icon, |  |
-| `shared/ui/screen-handoff/29-welcome.md:22` \| Name and promise \| `screenTitle` + `emptyBody` \| "MemoX"; "Sign in to keep you |  |
-| `shared/ui/screen-handoff/29-welcome.md:23` \| Benefits \| `MxSection` + `MxSettingsRow` × 3 \| Shield "Keep your decks when yo |  |
-| `shared/ui/screen-handoff/29-welcome.md:24` \| Offline note \| `MxNote` \| "Signing in needs a connection. You can do it later |  |
-| `shared/ui/screen-handoff/29-welcome.md:25` \| Actions \| `MxFooterBar` + `MxButton` × 3, 12 apart \| "Continue with Google" (p |  |
-| `shared/ui/screen-handoff/29-welcome.md:27` Every exit answers Welcome first, then goes on: Google and "without" to `from`, |  |
-| `shared/ui/screen-handoff/29-welcome.md:31` ## States |  |
-| `shared/ui/screen-handoff/29-welcome.md:33` The images are the goldens. |  |
-| `shared/ui/screen-handoff/29-welcome.md:35` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/29-welcome.md:37` \| ready \| ![](../../../../test/features/account/presentation/goldens/welcome_rea |  |
-| `shared/ui/screen-handoff/29-welcome.md:38` \| offline \| ![](../../../../test/features/account/presentation/goldens/welcome_o |  |
-| `shared/ui/screen-handoff/29-welcome.md:40` ## Rulings |  |
-| `shared/ui/screen-handoff/29-welcome.md:42` - **U1:** shown once on every device, including one that used the app before the |  |
-| `shared/ui/screen-handoff/29-welcome.md:43` - **U5:** the tile until MemoX has its own icon (UI-base row 149). |  |
-| `shared/ui/screen-handoff/29-welcome.md:44` - **U6:** Google's G mark on the Google button. |  |
-| `shared/ui/screen-handoff/29-welcome.md:45` - **P3a plan rulings 3, 4, 6:** only on a build that can sign in; the email exit |  |
-| `shared/ui/screen-handoff/29-welcome.md:47` ## Copy |  |
-| `shared/ui/screen-handoff/29-welcome.md:49` - "MemoX" · "Sign in to keep your decks safe and the same on every phone." |  |
-| `shared/ui/screen-handoff/29-welcome.md:50` - "Keep your decks when you reinstall" · "Study on several phones" · "Still work |  |
-| `shared/ui/screen-handoff/29-welcome.md:51` - "Continue with Google" · "Continue with email" · "Continue without an account" |  |
-| `shared/ui/screen-handoff/29-welcome.md:52` - "Signing in needs a connection. You can do it later in Settings." |  |
-| `shared/ui/screen-handoff/29-welcome.md:53` - Toast: "Signed in as {email}" (or "Signed in"). |  |
+| `shared/ui/screen-handoff/29-welcome.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:3` # 29 · Welcome | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:5` The first launch invites an account: the name, one promise, three benefits, and | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:10` ## Entry points | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:12` - The launch, once per device, on a build that can sign in: `main` reads | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:15` - No back arrow: Android Back leaves the app, as on any root. | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:17` ## Layout | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:19` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:21` \| Head \| `MxIconTile` (large, tinted, deck glyph) \| Stands in for the app icon, | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:22` \| Name and promise \| `screenTitle` + `emptyBody` \| "MemoX"; "Sign in to keep you | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:23` \| Benefits \| `MxSection` + `MxSettingsRow` × 3 \| Shield "Keep your decks when yo | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:24` \| Offline note \| `MxNote` \| "Signing in needs a connection. You can do it later | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:25` \| Actions \| `MxFooterBar` + `MxButton` × 3, 12 apart \| "Continue with Google" (p | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:27` Every exit answers Welcome first, then goes on: Google and "without" to `from`, | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:31` ## States | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:33` The images are the goldens. | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:35` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:37` \| ready \| ![](../../../../test/features/account/presentation/goldens/welcome_rea | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:38` \| offline \| ![](../../../../test/features/account/presentation/goldens/welcome_o | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:40` ## Rulings | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:42` - **U1:** shown once on every device, including one that used the app before the | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:43` - **U5:** the tile until MemoX has its own icon (UI-base row 149). | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:44` - **U6:** Google's G mark on the Google button. | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:45` - **P3a plan rulings 3, 4, 6:** only on a build that can sign in; the email exit | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:47` ## Copy | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:49` - "MemoX" · "Sign in to keep your decks safe and the same on every phone." | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:50` - "Keep your decks when you reinstall" · "Study on several phones" · "Still work | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:51` - "Continue with Google" · "Continue with email" · "Continue without an account" | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:52` - "Signing in needs a connection. You can do it later in Settings." | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
+| `shared/ui/screen-handoff/29-welcome.md:53` - Toast: "Signed in as {email}" (or "Signed in"). | moved → `screens/spec/SCR-ACCOUNT-002-welcome.md` |
 
 ## shared/ui/screen-handoff/30-sign-in.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/30-sign-in.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/30-sign-in.md:3` # 30 · Sign-in, the merge sheet and the transition layer |  |
-| `shared/ui/screen-handoff/30-sign-in.md:5` Attach Google or an email to this device's anonymous user (`link`), or sign in a |  |
-| `shared/ui/screen-handoff/30-sign-in.md:12` ## Entry points |  |
-| `shared/ui/screen-handoff/30-sign-in.md:14` - Screen 23, Account section, row "Sign in". Route `/settings/sign-in?mode=link` |  |
-| `shared/ui/screen-handoff/30-sign-in.md:16` - Screen 29, "Continue with email" (`go`, so Settings sits under it). |  |
-| `shared/ui/screen-handoff/30-sign-in.md:17` - The transition layer, while a switch waits for its target sign-in. |  |
-| `shared/ui/screen-handoff/30-sign-in.md:18` - A device that already holds an account is sent from `mode=link` to screen 32 ( |  |
-| `shared/ui/screen-handoff/30-sign-in.md:19` - `reauth`: the re-auth banner's "Sign in" on 23 and 32, and the notice on 13 |  |
-| `shared/ui/screen-handoff/30-sign-in.md:25` ## Layout |  |
-| `shared/ui/screen-handoff/30-sign-in.md:27` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/30-sign-in.md:29` \| App bar \| `MxAppBar` (content) + back \| "Sign in". The layer has no app bar, o |  |
-| `shared/ui/screen-handoff/30-sign-in.md:30` \| Mode line \| `emptyBody` \| Link: "Your decks stay on this phone and join the ac |  |
-| `shared/ui/screen-handoff/30-sign-in.md:31` \| Google \| `MxButton` (outline, block, G mark) \| "Continue with Google". Its fai |  |
-| `shared/ui/screen-handoff/30-sign-in.md:32` \| Divider \| two hairlines + `footerCaption` \| "or". \| |  |
-| `shared/ui/screen-handoff/30-sign-in.md:33` \| Email \| `MxTextField` (form) \| "Email address". Checked on send; its problem s |  |
-| `shared/ui/screen-handoff/30-sign-in.md:34` \| Send code \| `MxButton` (primary, block) \| "Send code", the form's one fill; sp |  |
-| `shared/ui/screen-handoff/30-sign-in.md:35` \| Offline note \| `MxNote` \| "Signing in needs a connection. You can do it later |  |
-| `shared/ui/screen-handoff/30-sign-in.md:37` ### Re-auth (`mode=reauth`, P3b) |  |
-| `shared/ui/screen-handoff/30-sign-in.md:39` \| Region \| Design \| |  |
-| `shared/ui/screen-handoff/30-sign-in.md:41` \| Mode line \| "Sign in again to keep syncing. Your decks are still here." \| |  |
-| `shared/ui/screen-handoff/30-sign-in.md:42` \| Email \| Filled with the last account's email (the usual case signs in again to |  |
-| `shared/ui/screen-handoff/30-sign-in.md:43` \| Another account, changes unsent \| A dialog "Lose {n} changes?" · "{n} changes |  |
-| `shared/ui/screen-handoff/30-sign-in.md:44` \| Continue without an account \| `MxButton` (text, block) under the form (P3b pla |  |
-| `shared/ui/screen-handoff/30-sign-in.md:45` \| Code step (31) \| A resend to another account names the unsent changes again, i |  |
-| `shared/ui/screen-handoff/30-sign-in.md:47` ### Merge sheet (auth spec #17) |  |
-| `shared/ui/screen-handoff/30-sign-in.md:49` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/30-sign-in.md:51` \| Title \| `compactTitle` \| "{email} already has an account" or "This Google acco |  |
-| `shared/ui/screen-handoff/30-sign-in.md:52` \| Choices \| `MxOptionRow` × 2 \| "Merge into the account" (selected) · "Your {n} |  |
-| `shared/ui/screen-handoff/30-sign-in.md:53` \| Warning \| `MxInlineBanner` (danger) \| "This phone's decks and progress go for |  |
-| `shared/ui/screen-handoff/30-sign-in.md:54` \| Footer \| `MxSheetActions` \| Cancel · "Continue" (primary) or "Discard and cont |  |
-| `shared/ui/screen-handoff/30-sign-in.md:56` A phone with no live deck skips the sheet and moves at once (R6). |  |
-| `shared/ui/screen-handoff/30-sign-in.md:58` ### Transition layer (app root, U4) |  |
-| `shared/ui/screen-handoff/30-sign-in.md:60` Over the whole app while a switch, sign-out, deletion or clear runs. It is not a |  |
-| `shared/ui/screen-handoff/30-sign-in.md:65` \| Condition \| Design \| |  |
-| `shared/ui/screen-handoff/30-sign-in.md:67` \| Running \| `MxSpinner` (large), the step in `screenTitle` ("Sending your change |  |
-| `shared/ui/screen-handoff/30-sign-in.md:68` \| Network error \| `MxInlineBanner` (warning) "No connection. Your data is safe o |  |
-| `shared/ui/screen-handoff/30-sign-in.md:69` \| Other error \| "Something went wrong. Your data is safe on this phone." + Retry |  |
-| `shared/ui/screen-handoff/30-sign-in.md:70` \| Sign-out stopped offline \| "No connection. Nothing has been removed yet." + Re |  |
-| `shared/ui/screen-handoff/30-sign-in.md:71` \| Target sign-in \| The form above in target mode, the address pre-filled; the co |  |
-| `shared/ui/screen-handoff/30-sign-in.md:72` \| Stuck \| "Something went wrong while moving your account. Your data is safe on |  |
-| `shared/ui/screen-handoff/30-sign-in.md:73` \| Before the target signs in \| "Cancel" at the top returns to where the switch s |  |
-| `shared/ui/screen-handoff/30-sign-in.md:75` Notices at the app root: toasts "Couldn't merge. Your decks are still on this ph |  |
-| `shared/ui/screen-handoff/30-sign-in.md:79` ## States |  |
-| `shared/ui/screen-handoff/30-sign-in.md:81` The images are the goldens. |  |
-| `shared/ui/screen-handoff/30-sign-in.md:83` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/30-sign-in.md:85` \| link \| ![](../../../../test/features/account/presentation/goldens/sign_in_link |  |
-| `shared/ui/screen-handoff/30-sign-in.md:86` \| invalid \| ![](../../../../test/features/account/presentation/goldens/sign_in_i |  |
-| `shared/ui/screen-handoff/30-sign-in.md:87` \| merge sheet, merge \| ![](../../../../test/features/account/presentation/golden |  |
-| `shared/ui/screen-handoff/30-sign-in.md:88` \| merge sheet, discard \| ![](../../../../test/features/account/presentation/gold |  |
-| `shared/ui/screen-handoff/30-sign-in.md:89` \| layer, sending \| ![](../../../../test/features/account/presentation/goldens/la |  |
-| `shared/ui/screen-handoff/30-sign-in.md:90` \| layer, merging \| ![](../../../../test/features/account/presentation/goldens/la |  |
-| `shared/ui/screen-handoff/30-sign-in.md:91` \| layer, offline \| ![](../../../../test/features/account/presentation/goldens/la |  |
-| `shared/ui/screen-handoff/30-sign-in.md:92` \| layer, target sign-in \| ![](../../../../test/features/account/presentation/gol |  |
-| `shared/ui/screen-handoff/30-sign-in.md:93` \| layer, sign-out offline \| ![](../../../../test/features/account/presentation/g |  |
-| `shared/ui/screen-handoff/30-sign-in.md:94` \| reauth \| ![](../../../../test/features/account/presentation/goldens/sign_in_re |  |
-| `shared/ui/screen-handoff/30-sign-in.md:95` \| reauth, unsent loss \| ![](../../../../test/features/account/presentation/golde |  |
-| `shared/ui/screen-handoff/30-sign-in.md:96` \| reauth, continue without \| ![](../../../../test/features/account/presentation/ |  |
-| `shared/ui/screen-handoff/30-sign-in.md:97` \| layer, stuck \| ![](../../../../test/features/account/presentation/goldens/laye |  |
-| `shared/ui/screen-handoff/30-sign-in.md:99` ## Rulings |  |
-| `shared/ui/screen-handoff/30-sign-in.md:101` - **R1:** no `mode=switch`: "Switch account" (32, P3b) signs in the target insid |  |
-| `shared/ui/screen-handoff/30-sign-in.md:102` - **R3:** a wrong and an expired code read alike; a rate limit asks to wait a mi |  |
-| `shared/ui/screen-handoff/30-sign-in.md:103` - **B8, B9 and P3b plan rulings 3, 10:** the re-auth's loss and way out; where f |  |
-| `shared/ui/screen-handoff/30-sign-in.md:104` - **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ended |  |
-| `shared/ui/screen-handoff/30-sign-in.md:105` - **Impeccable after the build (F1):** the layer's content is centred, not top-a |  |
-| `shared/ui/screen-handoff/30-sign-in.md:106` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** a sign- |  |
-| `shared/ui/screen-handoff/30-sign-in.md:108` ## Copy |  |
-| `shared/ui/screen-handoff/30-sign-in.md:110` - "Sign in" · "Your decks stay on this phone and join the account." · "Continue |  |
-| `shared/ui/screen-handoff/30-sign-in.md:111` - Problems: "Enter an email address, like name@example.com." · "Too many tries. |  |
-| `shared/ui/screen-handoff/30-sign-in.md:112` - Re-auth: "Sign in again to keep syncing. Your decks are still here." · "Contin |  |
-| `shared/ui/screen-handoff/30-sign-in.md:113` - Toast: "Signed in as {email}" once `me()` confirmed the account, "Signed in" w |  |
-| `shared/ui/screen-handoff/30-sign-in.md:114` - Merge sheet and layer: as in the tables above. |  |
+| `shared/ui/screen-handoff/30-sign-in.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:3` # 30 · Sign-in, the merge sheet and the transition layer | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:5` Attach Google or an email to this device's anonymous user (`link`), or sign in a | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:12` ## Entry points | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:14` - Screen 23, Account section, row "Sign in". Route `/settings/sign-in?mode=link` | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:16` - Screen 29, "Continue with email" (`go`, so Settings sits under it). | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:17` - The transition layer, while a switch waits for its target sign-in. | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:18` - A device that already holds an account is sent from `mode=link` to screen 32 ( | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:19` - `reauth`: the re-auth banner's "Sign in" on 23 and 32, and the notice on 13 | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:25` ## Layout | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:27` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:29` \| App bar \| `MxAppBar` (content) + back \| "Sign in". The layer has no app bar, o | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:30` \| Mode line \| `emptyBody` \| Link: "Your decks stay on this phone and join the ac | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:31` \| Google \| `MxButton` (outline, block, G mark) \| "Continue with Google". Its fai | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:32` \| Divider \| two hairlines + `footerCaption` \| "or". \| | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:33` \| Email \| `MxTextField` (form) \| "Email address". Checked on send; its problem s | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:34` \| Send code \| `MxButton` (primary, block) \| "Send code", the form's one fill; sp | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:35` \| Offline note \| `MxNote` \| "Signing in needs a connection. You can do it later | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:37` ### Re-auth (`mode=reauth`, P3b) | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:39` \| Region \| Design \| | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:41` \| Mode line \| "Sign in again to keep syncing. Your decks are still here." \| | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:42` \| Email \| Filled with the last account's email (the usual case signs in again to | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:43` \| Another account, changes unsent \| A dialog "Lose {n} changes?" · "{n} changes | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:44` \| Continue without an account \| `MxButton` (text, block) under the form (P3b pla | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:45` \| Code step (31) \| A resend to another account names the unsent changes again, i | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:47` ### Merge sheet (auth spec #17) | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:49` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:51` \| Title \| `compactTitle` \| "{email} already has an account" or "This Google acco | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:52` \| Choices \| `MxOptionRow` × 2 \| "Merge into the account" (selected) · "Your {n} | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:53` \| Warning \| `MxInlineBanner` (danger) \| "This phone's decks and progress go for | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:54` \| Footer \| `MxSheetActions` \| Cancel · "Continue" (primary) or "Discard and cont | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:56` A phone with no live deck skips the sheet and moves at once (R6). | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:58` ### Transition layer (app root, U4) | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:60` Over the whole app while a switch, sign-out, deletion or clear runs. It is not a | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:65` \| Condition \| Design \| | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:67` \| Running \| `MxSpinner` (large), the step in `screenTitle` ("Sending your change | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:68` \| Network error \| `MxInlineBanner` (warning) "No connection. Your data is safe o | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:69` \| Other error \| "Something went wrong. Your data is safe on this phone." + Retry | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:70` \| Sign-out stopped offline \| "No connection. Nothing has been removed yet." + Re | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:71` \| Target sign-in \| The form above in target mode, the address pre-filled; the co | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:72` \| Stuck \| "Something went wrong while moving your account. Your data is safe on | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:73` \| Before the target signs in \| "Cancel" at the top returns to where the switch s | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:75` Notices at the app root: toasts "Couldn't merge. Your decks are still on this ph | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:79` ## States | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:81` The images are the goldens. | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:83` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:85` \| link \| ![](../../../../test/features/account/presentation/goldens/sign_in_link | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:86` \| invalid \| ![](../../../../test/features/account/presentation/goldens/sign_in_i | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:87` \| merge sheet, merge \| ![](../../../../test/features/account/presentation/golden | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:88` \| merge sheet, discard \| ![](../../../../test/features/account/presentation/gold | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:89` \| layer, sending \| ![](../../../../test/features/account/presentation/goldens/la | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:90` \| layer, merging \| ![](../../../../test/features/account/presentation/goldens/la | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:91` \| layer, offline \| ![](../../../../test/features/account/presentation/goldens/la | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:92` \| layer, target sign-in \| ![](../../../../test/features/account/presentation/gol | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:93` \| layer, sign-out offline \| ![](../../../../test/features/account/presentation/g | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:94` \| reauth \| ![](../../../../test/features/account/presentation/goldens/sign_in_re | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:95` \| reauth, unsent loss \| ![](../../../../test/features/account/presentation/golde | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:96` \| reauth, continue without \| ![](../../../../test/features/account/presentation/ | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:97` \| layer, stuck \| ![](../../../../test/features/account/presentation/goldens/laye | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:99` ## Rulings | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:101` - **R1:** no `mode=switch`: "Switch account" (32, P3b) signs in the target insid | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:102` - **R3:** a wrong and an expired code read alike; a rate limit asks to wait a mi | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:103` - **B8, B9 and P3b plan rulings 3, 10:** the re-auth's loss and way out; where f | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:104` - **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ended | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:105` - **Impeccable after the build (F1):** the layer's content is centred, not top-a | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:106` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** a sign- | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:108` ## Copy | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:110` - "Sign in" · "Your decks stay on this phone and join the account." · "Continue | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:111` - Problems: "Enter an email address, like name@example.com." · "Too many tries. | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:112` - Re-auth: "Sign in again to keep syncing. Your decks are still here." · "Contin | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:113` - Toast: "Signed in as {email}" once `me()` confirmed the account, "Signed in" w | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
+| `shared/ui/screen-handoff/30-sign-in.md:114` - Merge sheet and layer: as in the tables above. | moved → `screens/spec/SCR-ACCOUNT-003-sign-in.md` |
 
 ## shared/ui/screen-handoff/31-code.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/31-code.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/31-code.md:3` # 31 · Code |  |
-| `shared/ui/screen-handoff/31-code.md:5` The six digits sent to the address. SB-A2; spec |  |
-| `shared/ui/screen-handoff/31-code.md:9` ## Entry points |  |
-| `shared/ui/screen-handoff/31-code.md:11` - Screen 30, "Send code". Route `/settings/sign-in/code?mode=link&email=…`, on t |  |
-| `shared/ui/screen-handoff/31-code.md:13` - The transition layer's target sign-in, on the layer's own navigator. |  |
-| `shared/ui/screen-handoff/31-code.md:15` ## Layout |  |
-| `shared/ui/screen-handoff/31-code.md:17` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/31-code.md:19` \| App bar \| `MxAppBar` (content) + back \| "Enter the code". \| |  |
-| `shared/ui/screen-handoff/31-code.md:20` \| Lead \| `emptyBody` \| "Enter the 6-digit code sent to {email}". \| |  |
-| `shared/ui/screen-handoff/31-code.md:21` \| Code \| `MxTextField` (code) \| Six digits, numeric keyboard, one-time-code auto |  |
-| `shared/ui/screen-handoff/31-code.md:22` \| Resend \| `MxButton` (text) \| "Resend code in 0:42", disabled, until the 60 s w |  |
-| `shared/ui/screen-handoff/31-code.md:23` \| Another email \| `MxButton` (text) \| "Use another email". \| |  |
-| `shared/ui/screen-handoff/31-code.md:25` A right code attaches the account, toasts "Signed in as {email}" and closes the |  |
-| `shared/ui/screen-handoff/31-code.md:30` ## States |  |
-| `shared/ui/screen-handoff/31-code.md:32` The images are the goldens. |  |
-| `shared/ui/screen-handoff/31-code.md:34` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/31-code.md:36` \| waiting \| ![](../../../../test/features/account/presentation/goldens/code_wait |  |
-| `shared/ui/screen-handoff/31-code.md:37` \| wrong \| ![](../../../../test/features/account/presentation/goldens/code_wrong_ |  |
-| `shared/ui/screen-handoff/31-code.md:38` \| verifying \| — \| — \| The field disabled, `MxSpinner` under it. \| |  |
-| `shared/ui/screen-handoff/31-code.md:40` ## Rulings |  |
-| `shared/ui/screen-handoff/31-code.md:42` - **R3:** "wrong or expired" is one state: GoTrue answers both alike. |  |
-| `shared/ui/screen-handoff/31-code.md:43` - **P3a plan ruling 11:** a wrong code clears the field. |  |
-| `shared/ui/screen-handoff/31-code.md:45` ## Copy |  |
-| `shared/ui/screen-handoff/31-code.md:47` - "Enter the code" · "Enter the 6-digit code sent to {email}" · "Code, 6 digits" |  |
-| `shared/ui/screen-handoff/31-code.md:48` - "That code is wrong or has expired. Check the latest email, or send a new code |  |
-| `shared/ui/screen-handoff/31-code.md:49` - "Resend code in {m:ss}" · "Resend code" · "A new code is on its way." · "Use a |  |
+| `shared/ui/screen-handoff/31-code.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:3` # 31 · Code | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:5` The six digits sent to the address. SB-A2; spec | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:9` ## Entry points | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:11` - Screen 30, "Send code". Route `/settings/sign-in/code?mode=link&email=…`, on t | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:13` - The transition layer's target sign-in, on the layer's own navigator. | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:15` ## Layout | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:17` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:19` \| App bar \| `MxAppBar` (content) + back \| "Enter the code". \| | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:20` \| Lead \| `emptyBody` \| "Enter the 6-digit code sent to {email}". \| | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:21` \| Code \| `MxTextField` (code) \| Six digits, numeric keyboard, one-time-code auto | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:22` \| Resend \| `MxButton` (text) \| "Resend code in 0:42", disabled, until the 60 s w | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:23` \| Another email \| `MxButton` (text) \| "Use another email". \| | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:25` A right code attaches the account, toasts "Signed in as {email}" and closes the | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:30` ## States | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:32` The images are the goldens. | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:34` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:36` \| waiting \| ![](../../../../test/features/account/presentation/goldens/code_wait | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:37` \| wrong \| ![](../../../../test/features/account/presentation/goldens/code_wrong_ | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:38` \| verifying \| — \| — \| The field disabled, `MxSpinner` under it. \| | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:40` ## Rulings | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:42` - **R3:** "wrong or expired" is one state: GoTrue answers both alike. | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:43` - **P3a plan ruling 11:** a wrong code clears the field. | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:45` ## Copy | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:47` - "Enter the code" · "Enter the 6-digit code sent to {email}" · "Code, 6 digits" | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:48` - "That code is wrong or has expired. Check the latest email, or send a new code | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
+| `shared/ui/screen-handoff/31-code.md:49` - "Resend code in {m:ss}" · "Resend code" · "A new code is on its way." · "Use a | moved → `screens/spec/SCR-ACCOUNT-004-code.md` |
 
 ## shared/ui/screen-handoff/32-account.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/32-account.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/32-account.md:3` # 32 · Account |  |
-| `shared/ui/screen-handoff/32-account.md:5` The account this phone's data belongs to, and what can be done with it: switch, |  |
-| `shared/ui/screen-handoff/32-account.md:10` ## Entry points |  |
-| `shared/ui/screen-handoff/32-account.md:12` - Screen 23, the Account section's row once the device holds an account (its che |  |
-| `shared/ui/screen-handoff/32-account.md:14` - The link flow (29, 30, 31) ends here (B9). |  |
-| `shared/ui/screen-handoff/32-account.md:15` - On a plainly anonymous device the route redirects to 23; during a transition i |  |
-| `shared/ui/screen-handoff/32-account.md:19` ## Layout |  |
-| `shared/ui/screen-handoff/32-account.md:21` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/32-account.md:23` \| App bar \| `MxAppBar` (content) + back \| "Account". \| |  |
-| `shared/ui/screen-handoff/32-account.md:24` \| Re-auth banner \| `MxInlineBanner` (warning) \| Only in `ReauthRequired`: "Your |  |
-| `shared/ui/screen-handoff/32-account.md:25` \| Connection note \| `MxNote` \| Only in `Validating`: "Managing your account need |  |
-| `shared/ui/screen-handoff/32-account.md:26` \| Account \| `MxSection` "ACCOUNT" + `MxSettingsRow` \| The person tile, the email |  |
-| `shared/ui/screen-handoff/32-account.md:27` \| This phone \| `MxSection` "THIS PHONE" \| "Switch account" · "Move this phone to |  |
-| `shared/ui/screen-handoff/32-account.md:28` \| Delete \| `MxSection` "DELETE" \| "Delete account" · "Your account and its data, |  |
-| `shared/ui/screen-handoff/32-account.md:30` The three command rows are disabled before `Ready` (auth spec #39 needs a confir |  |
-| `shared/ui/screen-handoff/32-account.md:35` \| Dialog \| Design \| |  |
-| `shared/ui/screen-handoff/32-account.md:37` \| Switch \| "Switch account?" · "This phone's data is replaced by the other accou |  |
-| `shared/ui/screen-handoff/32-account.md:38` \| Sign out \| Online, or nothing unsent: "Sign out?" · "Your changes are sent fir |  |
-| `shared/ui/screen-handoff/32-account.md:39` \| Delete \| "Delete your account?" · "Your account and its decks, cards and progr |  |
-| `shared/ui/screen-handoff/32-account.md:40` \| Last admin \| "An admin must remain" · "Give another person the admin role firs |  |
-| `shared/ui/screen-handoff/32-account.md:42` A command refused before anything changed toasts "No connection. Nothing changed |  |
-| `shared/ui/screen-handoff/32-account.md:45` ## States |  |
-| `shared/ui/screen-handoff/32-account.md:47` The images are the goldens. |  |
-| `shared/ui/screen-handoff/32-account.md:49` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/32-account.md:51` \| ready \| ![](../../../../test/features/account/presentation/goldens/account_rea |  |
-| `shared/ui/screen-handoff/32-account.md:52` \| validating \| ![](../../../../test/features/account/presentation/goldens/accoun |  |
-| `shared/ui/screen-handoff/32-account.md:53` \| reauth \| ![](../../../../test/features/account/presentation/goldens/account_re |  |
-| `shared/ui/screen-handoff/32-account.md:54` \| switch dialog \| ![](../../../../test/features/account/presentation/goldens/acc |  |
-| `shared/ui/screen-handoff/32-account.md:55` \| sign-out dialog \| ![](../../../../test/features/account/presentation/goldens/a |  |
-| `shared/ui/screen-handoff/32-account.md:56` \| sign-out, loss \| ![](../../../../test/features/account/presentation/goldens/ac |  |
-| `shared/ui/screen-handoff/32-account.md:57` \| delete dialog \| ![](../../../../test/features/account/presentation/goldens/acc |  |
-| `shared/ui/screen-handoff/32-account.md:58` \| delete, offline \| ![](../../../../test/features/account/presentation/goldens/a |  |
-| `shared/ui/screen-handoff/32-account.md:59` \| last admin \| ![](../../../../test/features/account/presentation/goldens/accoun |  |
-| `shared/ui/screen-handoff/32-account.md:61` ## Rulings |  |
-| `shared/ui/screen-handoff/32-account.md:63` - **B1–B4, B6, B7, B12** (spec §9): the method from the session; one network sta |  |
-| `shared/ui/screen-handoff/32-account.md:66` - **P3b plan rulings 1, 2, 4–7, 9:** the banner above the section; the email wra |  |
-| `shared/ui/screen-handoff/32-account.md:69` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** Switch |  |
-| `shared/ui/screen-handoff/32-account.md:71` ## Copy |  |
-| `shared/ui/screen-handoff/32-account.md:73` - "Account" · "ACCOUNT" · "THIS PHONE" · "DELETE". |  |
-| `shared/ui/screen-handoff/32-account.md:74` - "Signed in with Google" · "Signed in with email" · "Signed in with Google and |  |
-| `shared/ui/screen-handoff/32-account.md:75` - "Switch account" · "Move this phone to another account" · "Sign out" · "Your c |  |
-| `shared/ui/screen-handoff/32-account.md:77` - The dialogs' copy is in the table above. |  |
+| `shared/ui/screen-handoff/32-account.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:3` # 32 · Account | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:5` The account this phone's data belongs to, and what can be done with it: switch, | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:10` ## Entry points | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:12` - Screen 23, the Account section's row once the device holds an account (its che | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:14` - The link flow (29, 30, 31) ends here (B9). | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:15` - On a plainly anonymous device the route redirects to 23; during a transition i | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:19` ## Layout | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:21` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:23` \| App bar \| `MxAppBar` (content) + back \| "Account". \| | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:24` \| Re-auth banner \| `MxInlineBanner` (warning) \| Only in `ReauthRequired`: "Your | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:25` \| Connection note \| `MxNote` \| Only in `Validating`: "Managing your account need | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:26` \| Account \| `MxSection` "ACCOUNT" + `MxSettingsRow` \| The person tile, the email | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:27` \| This phone \| `MxSection` "THIS PHONE" \| "Switch account" · "Move this phone to | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:28` \| Delete \| `MxSection` "DELETE" \| "Delete account" · "Your account and its data, | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:30` The three command rows are disabled before `Ready` (auth spec #39 needs a confir | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:35` \| Dialog \| Design \| | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:37` \| Switch \| "Switch account?" · "This phone's data is replaced by the other accou | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:38` \| Sign out \| Online, or nothing unsent: "Sign out?" · "Your changes are sent fir | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:39` \| Delete \| "Delete your account?" · "Your account and its decks, cards and progr | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:40` \| Last admin \| "An admin must remain" · "Give another person the admin role firs | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:42` A command refused before anything changed toasts "No connection. Nothing changed | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:45` ## States | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:47` The images are the goldens. | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:49` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:51` \| ready \| ![](../../../../test/features/account/presentation/goldens/account_rea | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:52` \| validating \| ![](../../../../test/features/account/presentation/goldens/accoun | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:53` \| reauth \| ![](../../../../test/features/account/presentation/goldens/account_re | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:54` \| switch dialog \| ![](../../../../test/features/account/presentation/goldens/acc | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:55` \| sign-out dialog \| ![](../../../../test/features/account/presentation/goldens/a | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:56` \| sign-out, loss \| ![](../../../../test/features/account/presentation/goldens/ac | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:57` \| delete dialog \| ![](../../../../test/features/account/presentation/goldens/acc | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:58` \| delete, offline \| ![](../../../../test/features/account/presentation/goldens/a | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:59` \| last admin \| ![](../../../../test/features/account/presentation/goldens/accoun | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:61` ## Rulings | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:63` - **B1–B4, B6, B7, B12** (spec §9): the method from the session; one network sta | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:66` - **P3b plan rulings 1, 2, 4–7, 9:** the banner above the section; the email wra | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:69` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** Switch | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:71` ## Copy | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:73` - "Account" · "ACCOUNT" · "THIS PHONE" · "DELETE". | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:74` - "Signed in with Google" · "Signed in with email" · "Signed in with Google and | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:75` - "Switch account" · "Move this phone to another account" · "Sign out" · "Your c | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
+| `shared/ui/screen-handoff/32-account.md:77` - The dialogs' copy is in the table above. | moved → `screens/spec/SCR-ACCOUNT-005-account.md` |
 
 ## shared/ui/screen-handoff/33-users.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/33-users.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/33-users.md:3` # 33 · Users (admin) |  |
-| `shared/ui/screen-handoff/33-users.md:5` An admin finds any signed-in account by email and makes it an admin or a user. F |  |
-| `shared/ui/screen-handoff/33-users.md:9` ## Entry points |  |
-| `shared/ui/screen-handoff/33-users.md:11` - Screen 23, Admin section, row "Users" · "Who can manage the app" (shown only t |  |
-| `shared/ui/screen-handoff/33-users.md:13` - A deep link meets the admin gate: a non-admin sees "Only an admin can see this |  |
-| `shared/ui/screen-handoff/33-users.md:16` ## Layout |  |
-| `shared/ui/screen-handoff/33-users.md:18` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/33-users.md:20` \| App bar \| `MxAppBar` (content) + back \| "Users". \| |  |
-| `shared/ui/screen-handoff/33-users.md:21` \| Search \| `MxSearchField` \| "Search by email"; asks 400 ms after the last keyst |  |
-| `shared/ui/screen-handoff/33-users.md:22` \| Overline \| `MxListSectionHeader` \| "ACCOUNTS" (no count: `role_list` has no to |  |
-| `shared/ui/screen-handoff/33-users.md:23` \| Rows \| `MxListRow` \| Person tile (tinted, the same for all), the email, "Joine |  |
-| `shared/ui/screen-handoff/33-users.md:24` \| End \| as screen 28 \| The next page loads near the end; "No more users"; a fail |  |
-| `shared/ui/screen-handoff/33-users.md:26` **Role sheet** (`MxBottomSheet`, the merge sheet's form): the email as title; `M |  |
-| `shared/ui/screen-handoff/33-users.md:33` \| Outcome \| Shows \| |  |
-| `shared/ui/screen-handoff/33-users.md:35` \| saved \| the sheet closes, the badge changes in place, toast "{email} is now an |  |
-| `shared/ui/screen-handoff/33-users.md:36` \| last admin \| the sheet stays and says, in a warning `MxInlineBanner` under the |  |
-| `shared/ui/screen-handoff/33-users.md:37` \| anonymous \| the sheet stays, banner "This account isn't signed in with an emai |  |
-| `shared/ui/screen-handoff/33-users.md:38` \| gone \| the sheet closes, toast "That account no longer exists.", the list relo |  |
-| `shared/ui/screen-handoff/33-users.md:39` \| not an admin \| the sheet closes, the screen shows the not-admin state \| |  |
-| `shared/ui/screen-handoff/33-users.md:40` \| offline / other \| the sheet stays, banner "No connection. Nothing changed." / |  |
-| `shared/ui/screen-handoff/33-users.md:42` ## States |  |
-| `shared/ui/screen-handoff/33-users.md:44` The images are the goldens. |  |
-| `shared/ui/screen-handoff/33-users.md:46` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/33-users.md:48` \| loaded \| ![](../../../../test/features/account/presentation/goldens/users_load |  |
-| `shared/ui/screen-handoff/33-users.md:49` \| no match \| ![](../../../../test/features/account/presentation/goldens/users_em |  |
-| `shared/ui/screen-handoff/33-users.md:50` \| offline \| ![](../../../../test/features/account/presentation/goldens/users_off |  |
-| `shared/ui/screen-handoff/33-users.md:51` \| role sheet \| ![](../../../../test/features/account/presentation/goldens/users_ |  |
-| `shared/ui/screen-handoff/33-users.md:52` \| role sheet, changed \| ![](../../../../test/features/account/presentation/golde |  |
-| `shared/ui/screen-handoff/33-users.md:53` \| role sheet, refused \| ![](../../../../test/features/account/presentation/golde |  |
-| `shared/ui/screen-handoff/33-users.md:54` \| loading \| — \| — \| `MxSkeletonList`. \| |  |
-| `shared/ui/screen-handoff/33-users.md:55` \| no accounts \| — \| — \| "No accounts yet". \| |  |
-| `shared/ui/screen-handoff/33-users.md:56` \| error \| — \| — \| "Couldn't load users" + Retry. \| |  |
-| `shared/ui/screen-handoff/33-users.md:57` \| not an admin \| — \| — \| the lock empty state, no search. \| |  |
-| `shared/ui/screen-handoff/33-users.md:59` ## Rulings |  |
-| `shared/ui/screen-handoff/33-users.md:61` - **U1–U5** (spec §1): the own row is read-only; Settings owns the Admin section |  |
-| `shared/ui/screen-handoff/33-users.md:64` - **Spec §6 (shape):** screen 28 is the pattern: pages load at the end of the sc |  |
-| `shared/ui/screen-handoff/33-users.md:66` - **P4 plan rulings 1–6:** errors through core's `classifyAuthError`; the gate t |  |
-| `shared/ui/screen-handoff/33-users.md:70` ## Copy |  |
-| `shared/ui/screen-handoff/33-users.md:72` - "Users" · "Search by email" · "ACCOUNTS" · "Joined {date}" · "Joined {date} · |  |
-| `shared/ui/screen-handoff/33-users.md:74` - The sheet's and the toasts' copy is in the tables above. |  |
+| `shared/ui/screen-handoff/33-users.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:3` # 33 · Users (admin) | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:5` An admin finds any signed-in account by email and makes it an admin or a user. F | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:9` ## Entry points | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:11` - Screen 23, Admin section, row "Users" · "Who can manage the app" (shown only t | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:13` - A deep link meets the admin gate: a non-admin sees "Only an admin can see this | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:16` ## Layout | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:18` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:20` \| App bar \| `MxAppBar` (content) + back \| "Users". \| | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:21` \| Search \| `MxSearchField` \| "Search by email"; asks 400 ms after the last keyst | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:22` \| Overline \| `MxListSectionHeader` \| "ACCOUNTS" (no count: `role_list` has no to | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:23` \| Rows \| `MxListRow` \| Person tile (tinted, the same for all), the email, "Joine | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:24` \| End \| as screen 28 \| The next page loads near the end; "No more users"; a fail | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:26` **Role sheet** (`MxBottomSheet`, the merge sheet's form): the email as title; `M | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:33` \| Outcome \| Shows \| | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:35` \| saved \| the sheet closes, the badge changes in place, toast "{email} is now an | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:36` \| last admin \| the sheet stays and says, in a warning `MxInlineBanner` under the | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:37` \| anonymous \| the sheet stays, banner "This account isn't signed in with an emai | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:38` \| gone \| the sheet closes, toast "That account no longer exists.", the list relo | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:39` \| not an admin \| the sheet closes, the screen shows the not-admin state \| | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:40` \| offline / other \| the sheet stays, banner "No connection. Nothing changed." / | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:42` ## States | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:44` The images are the goldens. | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:46` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:48` \| loaded \| ![](../../../../test/features/account/presentation/goldens/users_load | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:49` \| no match \| ![](../../../../test/features/account/presentation/goldens/users_em | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:50` \| offline \| ![](../../../../test/features/account/presentation/goldens/users_off | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:51` \| role sheet \| ![](../../../../test/features/account/presentation/goldens/users_ | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:52` \| role sheet, changed \| ![](../../../../test/features/account/presentation/golde | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:53` \| role sheet, refused \| ![](../../../../test/features/account/presentation/golde | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:54` \| loading \| — \| — \| `MxSkeletonList`. \| | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:55` \| no accounts \| — \| — \| "No accounts yet". \| | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:56` \| error \| — \| — \| "Couldn't load users" + Retry. \| | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:57` \| not an admin \| — \| — \| the lock empty state, no search. \| | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:59` ## Rulings | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:61` - **U1–U5** (spec §1): the own row is read-only; Settings owns the Admin section | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:64` - **Spec §6 (shape):** screen 28 is the pattern: pages load at the end of the sc | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:66` - **P4 plan rulings 1–6:** errors through core's `classifyAuthError`; the gate t | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:70` ## Copy | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:72` - "Users" · "Search by email" · "ACCOUNTS" · "Joined {date}" · "Joined {date} · | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
+| `shared/ui/screen-handoff/33-users.md:74` - The sheet's and the toasts' copy is in the tables above. | moved → `screens/spec/SCR-ACCOUNT-006-users.md` |
 
 ## features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md
 
@@ -3260,13 +3260,13 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/account/README.md:12` ## Màn hình → Use case |  |
-| `features/account/README.md:14` \| Màn hình \| UC \| |  |
-| `features/account/README.md:16` \| Welcome, lần mở đầu tiên (màn 29) \| Chưa có UC; hành vi theo account UI spec § |  |
-| `features/account/README.md:17` \| Đăng nhập, sheet gộp thư viện, lớp chuyển tiếp (màn 30) \| Chưa có UC; hành vi |  |
-| `features/account/README.md:18` \| Nhập mã (màn 31) \| Chưa có UC; hành vi theo account UI spec §5 \| |  |
-| `features/account/README.md:19` \| Tài khoản: đăng nhập lại, đổi tài khoản, đăng xuất, xoá (màn 32) \| Chưa có UC; |  |
-| `features/account/README.md:20` \| Mục tài khoản trong tab Settings (màn 23) \| Lối vào \| |  |
+| `features/account/README.md:12` ## Màn hình → Use case || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:14` \| Màn hình \| UC \| || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:16` \| Welcome, lần mở đầu tiên (màn 29) \| Chưa có UC; hành vi theo account UI spec § || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:17` \| Đăng nhập, sheet gộp thư viện, lớp chuyển tiếp (màn 30) \| Chưa có UC; hành vi || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:18` \| Nhập mã (màn 31) \| Chưa có UC; hành vi theo account UI spec §5 \| || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:19` \| Tài khoản: đăng nhập lại, đổi tài khoản, đăng xuất, xoá (màn 32) \| Chưa có UC; || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:20` \| Mục tài khoản trong tab Settings (màn 23) \| Lối vào \| || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/card/README.md
 
@@ -3531,80 +3531,80 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/app/goldens/app_tablet_landscape_library_light.png` |  |
 | `test/app/goldens/app_tablet_portrait_deck_dark.png` |  |
 | `test/app/goldens/app_tablet_portrait_deck_light.png` |  |
-| `test/features/account/presentation/goldens/account_delete_confirm_dark.png` |  |
-| `test/features/account/presentation/goldens/account_delete_confirm_light.png` |  |
-| `test/features/account/presentation/goldens/account_delete_offline_dark.png` |  |
-| `test/features/account/presentation/goldens/account_delete_offline_light.png` |  |
-| `test/features/account/presentation/goldens/account_last_admin_dark.png` |  |
-| `test/features/account/presentation/goldens/account_last_admin_light.png` |  |
-| `test/features/account/presentation/goldens/account_ready_dark.png` |  |
-| `test/features/account/presentation/goldens/account_ready_light.png` |  |
-| `test/features/account/presentation/goldens/account_reauth_dark.png` |  |
-| `test/features/account/presentation/goldens/account_reauth_light.png` |  |
-| `test/features/account/presentation/goldens/account_sign_out_confirm_dark.png` |  |
-| `test/features/account/presentation/goldens/account_sign_out_confirm_light.png` |  |
-| `test/features/account/presentation/goldens/account_sign_out_loss_dark.png` |  |
-| `test/features/account/presentation/goldens/account_sign_out_loss_light.png` |  |
-| `test/features/account/presentation/goldens/account_switch_confirm_dark.png` |  |
-| `test/features/account/presentation/goldens/account_switch_confirm_light.png` |  |
-| `test/features/account/presentation/goldens/account_validating_dark.png` |  |
-| `test/features/account/presentation/goldens/account_validating_light.png` |  |
-| `test/features/account/presentation/goldens/code_waiting_dark.png` |  |
-| `test/features/account/presentation/goldens/code_waiting_light.png` |  |
-| `test/features/account/presentation/goldens/code_wrong_dark.png` |  |
-| `test/features/account/presentation/goldens/code_wrong_light.png` |  |
-| `test/features/account/presentation/goldens/layer_merging_dark.png` |  |
-| `test/features/account/presentation/goldens/layer_merging_light.png` |  |
-| `test/features/account/presentation/goldens/layer_offline_dark.png` |  |
-| `test/features/account/presentation/goldens/layer_offline_light.png` |  |
-| `test/features/account/presentation/goldens/layer_sending_dark.png` |  |
-| `test/features/account/presentation/goldens/layer_sending_light.png` |  |
-| `test/features/account/presentation/goldens/layer_sign_out_offline_dark.png` |  |
-| `test/features/account/presentation/goldens/layer_sign_out_offline_light.png` |  |
-| `test/features/account/presentation/goldens/layer_stuck_dark.png` |  |
-| `test/features/account/presentation/goldens/layer_stuck_light.png` |  |
-| `test/features/account/presentation/goldens/layer_target_dark.png` |  |
-| `test/features/account/presentation/goldens/layer_target_light.png` |  |
-| `test/features/account/presentation/goldens/merge_sheet_discard_dark.png` |  |
-| `test/features/account/presentation/goldens/merge_sheet_discard_light.png` |  |
-| `test/features/account/presentation/goldens/merge_sheet_merge_dark.png` |  |
-| `test/features/account/presentation/goldens/merge_sheet_merge_light.png` |  |
-| `test/features/account/presentation/goldens/settings_account_dark.png` |  |
-| `test/features/account/presentation/goldens/settings_account_light.png` |  |
-| `test/features/account/presentation/goldens/settings_account_reauth_dark.png` |  |
-| `test/features/account/presentation/goldens/settings_account_reauth_light.png` |  |
-| `test/features/account/presentation/goldens/settings_account_signed_in_dark.png` |  |
-| `test/features/account/presentation/goldens/settings_account_signed_in_light.png` |  |
-| `test/features/account/presentation/goldens/settings_admin_rows_dark.png` |  |
-| `test/features/account/presentation/goldens/settings_admin_rows_light.png` |  |
-| `test/features/account/presentation/goldens/sign_in_continue_without_dark.png` |  |
-| `test/features/account/presentation/goldens/sign_in_continue_without_light.png` |  |
-| `test/features/account/presentation/goldens/sign_in_invalid_dark.png` |  |
-| `test/features/account/presentation/goldens/sign_in_invalid_light.png` |  |
-| `test/features/account/presentation/goldens/sign_in_link_dark.png` |  |
-| `test/features/account/presentation/goldens/sign_in_link_light.png` |  |
-| `test/features/account/presentation/goldens/sign_in_reauth_dark.png` |  |
-| `test/features/account/presentation/goldens/sign_in_reauth_light.png` |  |
-| `test/features/account/presentation/goldens/sign_in_unsent_loss_dark.png` |  |
-| `test/features/account/presentation/goldens/sign_in_unsent_loss_light.png` |  |
+| `test/features/account/presentation/goldens/account_delete_confirm_dark.png` | superseded → SCR-ACCOUNT-005 `delete_confirm` dark |
+| `test/features/account/presentation/goldens/account_delete_confirm_light.png` | superseded → SCR-ACCOUNT-005 `delete_confirm` light |
+| `test/features/account/presentation/goldens/account_delete_offline_dark.png` | superseded → SCR-ACCOUNT-005 `delete_offline` dark |
+| `test/features/account/presentation/goldens/account_delete_offline_light.png` | superseded → SCR-ACCOUNT-005 `delete_offline` light |
+| `test/features/account/presentation/goldens/account_last_admin_dark.png` | superseded → SCR-ACCOUNT-005 `last_admin` dark |
+| `test/features/account/presentation/goldens/account_last_admin_light.png` | superseded → SCR-ACCOUNT-005 `last_admin` light |
+| `test/features/account/presentation/goldens/account_ready_dark.png` | superseded → SCR-ACCOUNT-005 `ready` dark |
+| `test/features/account/presentation/goldens/account_ready_light.png` | superseded → SCR-ACCOUNT-005 `ready` light |
+| `test/features/account/presentation/goldens/account_reauth_dark.png` | superseded → SCR-ACCOUNT-005 `reauth` dark |
+| `test/features/account/presentation/goldens/account_reauth_light.png` | superseded → SCR-ACCOUNT-005 `reauth` light |
+| `test/features/account/presentation/goldens/account_sign_out_confirm_dark.png` | superseded → SCR-ACCOUNT-005 `sign_out_confirm` dark |
+| `test/features/account/presentation/goldens/account_sign_out_confirm_light.png` | superseded → SCR-ACCOUNT-005 `sign_out_confirm` light |
+| `test/features/account/presentation/goldens/account_sign_out_loss_dark.png` | superseded → SCR-ACCOUNT-005 `sign_out_loss` dark |
+| `test/features/account/presentation/goldens/account_sign_out_loss_light.png` | superseded → SCR-ACCOUNT-005 `sign_out_loss` light |
+| `test/features/account/presentation/goldens/account_switch_confirm_dark.png` | superseded → SCR-ACCOUNT-005 `switch_confirm` dark |
+| `test/features/account/presentation/goldens/account_switch_confirm_light.png` | superseded → SCR-ACCOUNT-005 `switch_confirm` light |
+| `test/features/account/presentation/goldens/account_validating_dark.png` | superseded → SCR-ACCOUNT-005 `validating` dark |
+| `test/features/account/presentation/goldens/account_validating_light.png` | superseded → SCR-ACCOUNT-005 `validating` light |
+| `test/features/account/presentation/goldens/code_waiting_dark.png` | superseded → SCR-ACCOUNT-004 `waiting` dark |
+| `test/features/account/presentation/goldens/code_waiting_light.png` | superseded → SCR-ACCOUNT-004 `waiting` light |
+| `test/features/account/presentation/goldens/code_wrong_dark.png` | superseded → SCR-ACCOUNT-004 `wrong` dark |
+| `test/features/account/presentation/goldens/code_wrong_light.png` | superseded → SCR-ACCOUNT-004 `wrong` light |
+| `test/features/account/presentation/goldens/layer_merging_dark.png` | superseded → SCR-ACCOUNT-003 `layer_merging` dark |
+| `test/features/account/presentation/goldens/layer_merging_light.png` | superseded → SCR-ACCOUNT-003 `layer_merging` light |
+| `test/features/account/presentation/goldens/layer_offline_dark.png` | superseded → SCR-ACCOUNT-003 `layer_offline` dark |
+| `test/features/account/presentation/goldens/layer_offline_light.png` | superseded → SCR-ACCOUNT-003 `layer_offline` light |
+| `test/features/account/presentation/goldens/layer_sending_dark.png` | superseded → SCR-ACCOUNT-003 `layer_sending` dark |
+| `test/features/account/presentation/goldens/layer_sending_light.png` | superseded → SCR-ACCOUNT-003 `layer_sending` light |
+| `test/features/account/presentation/goldens/layer_sign_out_offline_dark.png` | superseded → SCR-ACCOUNT-003 `layer_sign_out_offline` dark |
+| `test/features/account/presentation/goldens/layer_sign_out_offline_light.png` | superseded → SCR-ACCOUNT-003 `layer_sign_out_offline` light |
+| `test/features/account/presentation/goldens/layer_stuck_dark.png` | superseded → SCR-ACCOUNT-003 `layer_stuck` dark |
+| `test/features/account/presentation/goldens/layer_stuck_light.png` | superseded → SCR-ACCOUNT-003 `layer_stuck` light |
+| `test/features/account/presentation/goldens/layer_target_dark.png` | superseded → SCR-ACCOUNT-003 `layer_target` dark |
+| `test/features/account/presentation/goldens/layer_target_light.png` | superseded → SCR-ACCOUNT-003 `layer_target` light |
+| `test/features/account/presentation/goldens/merge_sheet_discard_dark.png` | superseded → SCR-ACCOUNT-003 `merge_sheet_discard` dark |
+| `test/features/account/presentation/goldens/merge_sheet_discard_light.png` | superseded → SCR-ACCOUNT-003 `merge_sheet_discard` light |
+| `test/features/account/presentation/goldens/merge_sheet_merge_dark.png` | superseded → SCR-ACCOUNT-003 `merge_sheet_merge` dark |
+| `test/features/account/presentation/goldens/merge_sheet_merge_light.png` | superseded → SCR-ACCOUNT-003 `merge_sheet_merge` light |
+| `test/features/account/presentation/goldens/settings_account_dark.png` | superseded → SCR-SETTINGS-002 `account` dark |
+| `test/features/account/presentation/goldens/settings_account_light.png` | superseded → SCR-SETTINGS-002 `account` light |
+| `test/features/account/presentation/goldens/settings_account_reauth_dark.png` | superseded → SCR-SETTINGS-002 `account_reauth` dark |
+| `test/features/account/presentation/goldens/settings_account_reauth_light.png` | superseded → SCR-SETTINGS-002 `account_reauth` light |
+| `test/features/account/presentation/goldens/settings_account_signed_in_dark.png` | superseded → SCR-SETTINGS-002 `account_signed_in` dark |
+| `test/features/account/presentation/goldens/settings_account_signed_in_light.png` | superseded → SCR-SETTINGS-002 `account_signed_in` light |
+| `test/features/account/presentation/goldens/settings_admin_rows_dark.png` | superseded → SCR-SETTINGS-002 `admin_rows` dark |
+| `test/features/account/presentation/goldens/settings_admin_rows_light.png` | superseded → SCR-SETTINGS-002 `admin_rows` light |
+| `test/features/account/presentation/goldens/sign_in_continue_without_dark.png` | superseded → SCR-ACCOUNT-003 `continue_without` dark |
+| `test/features/account/presentation/goldens/sign_in_continue_without_light.png` | superseded → SCR-ACCOUNT-003 `continue_without` light |
+| `test/features/account/presentation/goldens/sign_in_invalid_dark.png` | superseded → SCR-ACCOUNT-003 `invalid` dark |
+| `test/features/account/presentation/goldens/sign_in_invalid_light.png` | superseded → SCR-ACCOUNT-003 `invalid` light |
+| `test/features/account/presentation/goldens/sign_in_link_dark.png` | superseded → SCR-ACCOUNT-003 `link` dark |
+| `test/features/account/presentation/goldens/sign_in_link_light.png` | superseded → SCR-ACCOUNT-003 `link` light |
+| `test/features/account/presentation/goldens/sign_in_reauth_dark.png` | superseded → SCR-ACCOUNT-003 `reauth` dark |
+| `test/features/account/presentation/goldens/sign_in_reauth_light.png` | superseded → SCR-ACCOUNT-003 `reauth` light |
+| `test/features/account/presentation/goldens/sign_in_unsent_loss_dark.png` | superseded → SCR-ACCOUNT-003 `unsent_loss` dark |
+| `test/features/account/presentation/goldens/sign_in_unsent_loss_light.png` | superseded → SCR-ACCOUNT-003 `unsent_loss` light |
 | `test/features/account/presentation/goldens/study_home_reauth_dark.png` | superseded → SCR-STUDY-001 `reauth` dark |
 | `test/features/account/presentation/goldens/study_home_reauth_light.png` | superseded → SCR-STUDY-001 `reauth` light |
-| `test/features/account/presentation/goldens/users_empty_search_dark.png` |  |
-| `test/features/account/presentation/goldens/users_empty_search_light.png` |  |
-| `test/features/account/presentation/goldens/users_loaded_dark.png` |  |
-| `test/features/account/presentation/goldens/users_loaded_light.png` |  |
-| `test/features/account/presentation/goldens/users_offline_dark.png` |  |
-| `test/features/account/presentation/goldens/users_offline_light.png` |  |
-| `test/features/account/presentation/goldens/users_role_sheet_changed_dark.png` |  |
-| `test/features/account/presentation/goldens/users_role_sheet_changed_light.png` |  |
-| `test/features/account/presentation/goldens/users_role_sheet_dark.png` |  |
-| `test/features/account/presentation/goldens/users_role_sheet_light.png` |  |
-| `test/features/account/presentation/goldens/users_role_sheet_refused_dark.png` |  |
-| `test/features/account/presentation/goldens/users_role_sheet_refused_light.png` |  |
-| `test/features/account/presentation/goldens/welcome_offline_dark.png` |  |
-| `test/features/account/presentation/goldens/welcome_offline_light.png` |  |
-| `test/features/account/presentation/goldens/welcome_ready_dark.png` |  |
-| `test/features/account/presentation/goldens/welcome_ready_light.png` |  |
+| `test/features/account/presentation/goldens/users_empty_search_dark.png` | superseded → SCR-ACCOUNT-006 `empty_search` dark |
+| `test/features/account/presentation/goldens/users_empty_search_light.png` | superseded → SCR-ACCOUNT-006 `empty_search` light |
+| `test/features/account/presentation/goldens/users_loaded_dark.png` | superseded → SCR-ACCOUNT-006 `loaded` dark |
+| `test/features/account/presentation/goldens/users_loaded_light.png` | superseded → SCR-ACCOUNT-006 `loaded` light |
+| `test/features/account/presentation/goldens/users_offline_dark.png` | superseded → SCR-ACCOUNT-006 `offline` dark |
+| `test/features/account/presentation/goldens/users_offline_light.png` | superseded → SCR-ACCOUNT-006 `offline` light |
+| `test/features/account/presentation/goldens/users_role_sheet_changed_dark.png` | superseded → SCR-ACCOUNT-006 `role_sheet_changed` dark |
+| `test/features/account/presentation/goldens/users_role_sheet_changed_light.png` | superseded → SCR-ACCOUNT-006 `role_sheet_changed` light |
+| `test/features/account/presentation/goldens/users_role_sheet_dark.png` | superseded → SCR-ACCOUNT-006 `role_sheet` dark |
+| `test/features/account/presentation/goldens/users_role_sheet_light.png` | superseded → SCR-ACCOUNT-006 `role_sheet` light |
+| `test/features/account/presentation/goldens/users_role_sheet_refused_dark.png` | superseded → SCR-ACCOUNT-006 `role_sheet_refused` dark |
+| `test/features/account/presentation/goldens/users_role_sheet_refused_light.png` | superseded → SCR-ACCOUNT-006 `role_sheet_refused` light |
+| `test/features/account/presentation/goldens/welcome_offline_dark.png` | superseded → SCR-ACCOUNT-002 `offline` dark |
+| `test/features/account/presentation/goldens/welcome_offline_light.png` | superseded → SCR-ACCOUNT-002 `offline` light |
+| `test/features/account/presentation/goldens/welcome_ready_dark.png` | superseded → SCR-ACCOUNT-002 `ready` dark |
+| `test/features/account/presentation/goldens/welcome_ready_light.png` | superseded → SCR-ACCOUNT-002 `ready` light |
 | `test/features/card/presentation/goldens/card_detail_history_dark.png` | superseded → SCR-CARD-004 `history` dark |
 | `test/features/card/presentation/goldens/card_detail_history_light.png` | superseded → SCR-CARD-004 `history` light |
 | `test/features/card/presentation/goldens/card_detail_top_dark.png` | superseded → SCR-CARD-004 `loaded` dark |
@@ -3795,22 +3795,22 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/settings/presentation/goldens/study_options_saved_light.png` | superseded → SCR-SETTINGS-001 `saved` light |
 | `test/features/settings/presentation/goldens/study_options_saving_dark.png` | superseded → SCR-SETTINGS-001 `saving` dark |
 | `test/features/settings/presentation/goldens/study_options_saving_light.png` | superseded → SCR-SETTINGS-001 `saving` light |
-| `test/features/settings/presentation/goldens/sync_failed_network_dark.png` |  |
-| `test/features/settings/presentation/goldens/sync_failed_network_light.png` |  |
-| `test/features/settings/presentation/goldens/sync_failed_server_dark.png` |  |
-| `test/features/settings/presentation/goldens/sync_failed_server_light.png` |  |
-| `test/features/settings/presentation/goldens/sync_keep_dialog_dark.png` |  |
-| `test/features/settings/presentation/goldens/sync_keep_dialog_light.png` |  |
-| `test/features/settings/presentation/goldens/sync_never_synced_dark.png` |  |
-| `test/features/settings/presentation/goldens/sync_never_synced_light.png` |  |
-| `test/features/settings/presentation/goldens/sync_pending_dark.png` |  |
-| `test/features/settings/presentation/goldens/sync_pending_light.png` |  |
-| `test/features/settings/presentation/goldens/sync_rejected_dark.png` |  |
-| `test/features/settings/presentation/goldens/sync_rejected_light.png` |  |
-| `test/features/settings/presentation/goldens/sync_synced_dark.png` |  |
-| `test/features/settings/presentation/goldens/sync_synced_light.png` |  |
-| `test/features/settings/presentation/goldens/sync_syncing_dark.png` |  |
-| `test/features/settings/presentation/goldens/sync_syncing_light.png` |  |
+| `test/features/settings/presentation/goldens/sync_failed_network_dark.png` | superseded → SCR-ACCOUNT-001 `failed_network` dark |
+| `test/features/settings/presentation/goldens/sync_failed_network_light.png` | superseded → SCR-ACCOUNT-001 `failed_network` light |
+| `test/features/settings/presentation/goldens/sync_failed_server_dark.png` | superseded → SCR-ACCOUNT-001 `failed_server` dark |
+| `test/features/settings/presentation/goldens/sync_failed_server_light.png` | superseded → SCR-ACCOUNT-001 `failed_server` light |
+| `test/features/settings/presentation/goldens/sync_keep_dialog_dark.png` | superseded → SCR-ACCOUNT-001 `keep_dialog` dark |
+| `test/features/settings/presentation/goldens/sync_keep_dialog_light.png` | superseded → SCR-ACCOUNT-001 `keep_dialog` light |
+| `test/features/settings/presentation/goldens/sync_never_synced_dark.png` | superseded → SCR-ACCOUNT-001 `never_synced` dark |
+| `test/features/settings/presentation/goldens/sync_never_synced_light.png` | superseded → SCR-ACCOUNT-001 `never_synced` light |
+| `test/features/settings/presentation/goldens/sync_pending_dark.png` | superseded → SCR-ACCOUNT-001 `pending` dark |
+| `test/features/settings/presentation/goldens/sync_pending_light.png` | superseded → SCR-ACCOUNT-001 `pending` light |
+| `test/features/settings/presentation/goldens/sync_rejected_dark.png` | superseded → SCR-ACCOUNT-001 `rejected` dark |
+| `test/features/settings/presentation/goldens/sync_rejected_light.png` | superseded → SCR-ACCOUNT-001 `rejected` light |
+| `test/features/settings/presentation/goldens/sync_synced_dark.png` | superseded → SCR-ACCOUNT-001 `synced` dark |
+| `test/features/settings/presentation/goldens/sync_synced_light.png` | superseded → SCR-ACCOUNT-001 `synced` light |
+| `test/features/settings/presentation/goldens/sync_syncing_dark.png` | superseded → SCR-ACCOUNT-001 `syncing` dark |
+| `test/features/settings/presentation/goldens/sync_syncing_light.png` | superseded → SCR-ACCOUNT-001 `syncing` light |
 | `test/features/starter_decks/presentation/goldens/starter_add_failed_dark.png` | superseded → SCR-STARTER-001 `add_failed` dark |
 | `test/features/starter_decks/presentation/goldens/starter_add_failed_light.png` | superseded → SCR-STARTER-001 `add_failed` light |
 | `test/features/starter_decks/presentation/goldens/starter_added_dark.png` | superseded → SCR-STARTER-001 `added` dark |
@@ -4402,3 +4402,11 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - Record 24's 11 golden states map 1:1 (`turning_on`, `perm_denied`… keys follow the golden stems).
 - "Open system settings" invokes no FN: it opens a platform page and writes nothing (FE-B6).
 - Warnings 59 → 58: SCR-SETTINGS-002's Navigate to SCR-REMINDER-001 now resolves.
+
+## Task 40 notes — SCR-ACCOUNT-001…006
+
+- Ruling: SCR-SETTINGS-002 gains states `account`, `account_signed_in`, `account_reauth`, `admin_rows` (record 23 lines 52–55, goldens `settings_account*` / `settings_admin_rows` under test/features/account) — Task 37 left them out; their ledger rows now point at the spec — cost if wrong: four state headings.
+- Account has no UC: each spec's Related Use Cases says so and points at `functional-spec/account.md` (plan Task 25).
+- The transition layer is not a route; it lives in SCR-ACCOUNT-003 with its seven layer states, as record 30 held it.
+- FN-ACCOUNT-014 (background sync) is invoked by no screen and stays a warning — for Task 43.
+- Warnings 58 → 37: 15 FN-ACCOUNT warnings and 6 pending Navigate-to targets (SCR-SETTINGS-002, SCR-STUDY-001) resolved.

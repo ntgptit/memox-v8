@@ -35,12 +35,12 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 | SCR-SETTINGS-004 | Language | settings | `/settings/language` | ready | `spec/SCR-SETTINGS-004-language.md` |
 | SCR-PROGRESS-001 | Progress | progress | `/progress`, `/progress/:deckId` | ready | `spec/SCR-PROGRESS-001-progress.md` |
 | SCR-REMINDER-001 | Daily reminder | reminders | `/settings/reminder` | ready | `spec/SCR-REMINDER-001-daily-reminder.md` |
-| SCR-ACCOUNT-001 | Sync | account | — | pending | — |
-| SCR-ACCOUNT-002 | Welcome | account | — | pending | — |
-| SCR-ACCOUNT-003 | Sign-in, the merge sheet and the transition layer | account | — | pending | — |
-| SCR-ACCOUNT-004 | Code | account | — | pending | — |
-| SCR-ACCOUNT-005 | Account | account | — | pending | — |
-| SCR-ACCOUNT-006 | Users (admin) | account | — | pending | — |
+| SCR-ACCOUNT-001 | Sync | account | `/settings/sync` | ready | `spec/SCR-ACCOUNT-001-sync.md` |
+| SCR-ACCOUNT-002 | Welcome | account | `/welcome` | ready | `spec/SCR-ACCOUNT-002-welcome.md` |
+| SCR-ACCOUNT-003 | Sign-in, the merge sheet and the transition layer | account | `/settings/sign-in` | ready | `spec/SCR-ACCOUNT-003-sign-in.md` |
+| SCR-ACCOUNT-004 | Code | account | `/settings/sign-in/code` | ready | `spec/SCR-ACCOUNT-004-code.md` |
+| SCR-ACCOUNT-005 | Account | account | `/settings/account` | ready | `spec/SCR-ACCOUNT-005-account.md` |
+| SCR-ACCOUNT-006 | Users (admin) | account | `/settings/users` | ready | `spec/SCR-ACCOUNT-006-users.md` |
 | SCR-MONITORING-001 | Monitoring | monitoring | — | pending | — |
 
 ## Invariants for every screen

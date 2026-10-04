@@ -113,6 +113,30 @@ Golden: light, dark
 
 Golden: light, dark
 
+### `account` · Account, anonymous
+
+The Account section first, with "Sign in".
+
+Golden: light, dark
+
+### `account_signed_in` · Account, signed in
+
+The account row with its email and chevron.
+
+Golden: light, dark
+
+### `account_reauth` · Account, sign-in expired
+
+The re-auth banner leads the Account section.
+
+Golden: light, dark
+
+### `admin_rows` · Admin rows
+
+The Admin section: Monitoring, then Users.
+
+Golden: light, dark
+
 ### `read_error` · Read error
 
 "Couldn't open Settings" with the local-first body and Retry; no value is shown.

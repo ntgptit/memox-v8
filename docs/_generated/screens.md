@@ -2,6 +2,113 @@
 
 # Screens
 
+## [SCR-ACCOUNT-001](../screens/spec/SCR-ACCOUNT-001-sync.md) · Sync
+
+- Invokes: FN-ACCOUNT-015, FN-ACCOUNT-016, FN-ACCOUNT-017, FN-ACCOUNT-018
+- Rules via FN: —
+- Use cases: —
+- Entry points: SCR-SETTINGS-002, SCR-STUDY-001
+
+| State | Golden | Present |
+|---|---|---|
+| `synced` | light, dark | — |
+| `never_synced` | light, dark | — |
+| `pending` | light, dark | — |
+| `failed_network` | light, dark | — |
+| `failed_server` | light, dark | — |
+| `rejected` | light, dark | — |
+| `keep_dialog` | light, dark | — |
+| `syncing` | light, dark | — |
+| `loading` | none | — |
+| `read_error` | none | — |
+
+## [SCR-ACCOUNT-002](../screens/spec/SCR-ACCOUNT-002-welcome.md) · Welcome
+
+- Invokes: FN-ACCOUNT-001, FN-ACCOUNT-002, FN-ACCOUNT-005
+- Rules via FN: —
+- Use cases: —
+- Entry points: —
+
+| State | Golden | Present |
+|---|---|---|
+| `ready` | light, dark | — |
+| `offline` | light, dark | — |
+
+## [SCR-ACCOUNT-003](../screens/spec/SCR-ACCOUNT-003-sign-in.md) · Sign-in, the merge sheet and the transition layer
+
+- Invokes: FN-ACCOUNT-002, FN-ACCOUNT-005, FN-ACCOUNT-003, FN-ACCOUNT-010, FN-ACCOUNT-006, FN-ACCOUNT-007, FN-ACCOUNT-011, FN-ACCOUNT-008
+- Rules via FN: —
+- Use cases: —
+- Entry points: SCR-ACCOUNT-002, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002, SCR-STUDY-001
+
+| State | Golden | Present |
+|---|---|---|
+| `link` | light, dark | — |
+| `invalid` | light, dark | — |
+| `reauth` | light, dark | — |
+| `unsent_loss` | light, dark | — |
+| `continue_without` | light, dark | — |
+| `merge_sheet_merge` | light, dark | — |
+| `merge_sheet_discard` | light, dark | — |
+| `layer_sending` | light, dark | — |
+| `layer_merging` | light, dark | — |
+| `layer_offline` | light, dark | — |
+| `layer_target` | light, dark | — |
+| `layer_sign_out_offline` | light, dark | — |
+| `layer_stuck` | light, dark | — |
+
+## [SCR-ACCOUNT-004](../screens/spec/SCR-ACCOUNT-004-code.md) · Code
+
+- Invokes: FN-ACCOUNT-004, FN-ACCOUNT-003
+- Rules via FN: —
+- Use cases: —
+- Entry points: SCR-ACCOUNT-003
+
+| State | Golden | Present |
+|---|---|---|
+| `waiting` | light, dark | — |
+| `wrong` | light, dark | — |
+| `verifying` | none | — |
+
+## [SCR-ACCOUNT-005](../screens/spec/SCR-ACCOUNT-005-account.md) · Account
+
+- Invokes: FN-ACCOUNT-002, FN-ACCOUNT-007, FN-ACCOUNT-008, FN-ACCOUNT-009
+- Rules via FN: —
+- Use cases: —
+- Entry points: SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-SETTINGS-002
+
+| State | Golden | Present |
+|---|---|---|
+| `ready` | light, dark | — |
+| `validating` | light, dark | — |
+| `reauth` | light, dark | — |
+| `switch_confirm` | light, dark | — |
+| `sign_out_confirm` | light, dark | — |
+| `sign_out_loss` | light, dark | — |
+| `delete_confirm` | light, dark | — |
+| `delete_offline` | light, dark | — |
+| `last_admin` | light, dark | — |
+
+## [SCR-ACCOUNT-006](../screens/spec/SCR-ACCOUNT-006-users.md) · Users (admin)
+
+- Invokes: FN-ACCOUNT-012, FN-ACCOUNT-013
+- Rules via FN: —
+- Use cases: —
+- Entry points: SCR-SETTINGS-002
+
+| State | Golden | Present |
+|---|---|---|
+| `loaded` | light, dark | — |
+| `empty_search` | light, dark | — |
+| `offline` | light, dark | — |
+| `role_sheet` | light, dark | — |
+| `role_sheet_changed` | light, dark | — |
+| `role_sheet_refused` | light, dark | — |
+| `loading` | none | — |
+| `no_accounts` | none | — |
+| `error` | none | — |
+| `not_admin` | none | — |
+
 ## [SCR-CARD-001](../screens/spec/SCR-CARD-001-card-list.md) · Card list
 
 - Invokes: FN-DECK-008, FN-CARD-001, FN-CARD-012, FN-CARD-008, FN-CARD-006, FN-CARD-007, FN-CARD-009, FN-CARD-010, FN-CARD-004, FN-CARD-005, FN-DECK-002, FN-DECK-010, FN-DECK-011, FN-DECK-004, FN-DECK-005
@@ -97,7 +204,7 @@
 - Invokes: FN-DECK-007, FN-DECK-008, FN-DECK-001, FN-DECK-009, FN-DECK-002, FN-DECK-012, FN-DECK-010, FN-DECK-011, FN-DECK-004, FN-DECK-005, FN-DECK-006
 - Rules via FN: BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-DECK-005, BR-DECK-006, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-DECK-020, BR-DECK-021, BR-DECK-022, BR-DECK-023, BR-DECK-024, BR-DECK-025, BR-DECK-026, BR-DECK-027, BR-SRS-001, BR-SRS-003, BR-SRS-005, BR-SRS-006, BR-SRS-007, BR-SRS-013, BR-SRS-028, BR-SRS-029, BR-STUDY-008, BR-STUDY-046, BR-STUDY-051, BR-STUDY-067, BR-STUDY-068, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-006, BR-TRASH-008, BR-TRASH-010
 - Use cases: UC-DECK-001, UC-DECK-002, UC-DECK-003, UC-DECK-004, UC-DECK-005, UC-DECK-006
-- Entry points: SCR-CARD-002, SCR-DECK-001, SCR-SEARCH-001, SCR-SETTINGS-001, SCR-SRS-001, SCR-STARTER-001, SCR-STUDY-001, SCR-STUDY-009, SCR-TAG-001
+- Entry points: SCR-ACCOUNT-002, SCR-CARD-002, SCR-DECK-001, SCR-SEARCH-001, SCR-SETTINGS-001, SCR-SRS-001, SCR-STARTER-001, SCR-STUDY-001, SCR-STUDY-009, SCR-TAG-001
 
 | State | Golden | Present |
 |---|---|---|
@@ -208,7 +315,7 @@
 - Invokes: FN-SETTINGS-001, FN-ACCOUNT-002, FN-ACCOUNT-015, FN-SETTINGS-002, FN-SETTINGS-005
 - Rules via FN: BR-SETTINGS-001, BR-SETTINGS-002, BR-SETTINGS-004, BR-SETTINGS-007, BR-SETTINGS-008, BR-STUDY-003, BR-STUDY-024, BR-STUDY-057
 - Use cases: UC-SETTINGS-001
-- Entry points: —
+- Entry points: SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005
 
 | State | Golden | Present |
 |---|---|---|
@@ -223,6 +330,10 @@
 | `sync_synced` | light, dark | — |
 | `sync_failed` | light, dark | — |
 | `sync_rejected` | light, dark | — |
+| `account` | light, dark | — |
+| `account_signed_in` | light, dark | — |
+| `account_reauth` | light, dark | — |
+| `admin_rows` | light, dark | — |
 | `read_error` | none | — |
 
 ## [SCR-SETTINGS-003](../screens/spec/SCR-SETTINGS-003-theme.md) · Theme

@@ -46,24 +46,35 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-ACCOUNT-001](../functional-spec/account.md) | Hiện Welcome một lần trên mỗi thiết bị | active | — |
-| [FN-ACCOUNT-002](../functional-spec/account.md) | Theo dõi trạng thái tài khoản | active | SCR-SETTINGS-002, SCR-STUDY-001 |
-| [FN-ACCOUNT-003](../functional-spec/account.md) | Gửi mã đăng nhập qua email | active | — |
-| [FN-ACCOUNT-004](../functional-spec/account.md) | Xác nhận mã đăng nhập | active | — |
-| [FN-ACCOUNT-005](../functional-spec/account.md) | Đăng nhập bằng Google | active | — |
-| [FN-ACCOUNT-006](../functional-spec/account.md) | Đếm thư viện trên thiết bị | active | — |
-| [FN-ACCOUNT-007](../functional-spec/account.md) | Chuyển thiết bị sang tài khoản khác | active | — |
-| [FN-ACCOUNT-008](../functional-spec/account.md) | Đăng xuất | active | — |
-| [FN-ACCOUNT-009](../functional-spec/account.md) | Xoá tài khoản | active | — |
-| [FN-ACCOUNT-010](../functional-spec/account.md) | Tiếp tục không cần tài khoản | active | — |
-| [FN-ACCOUNT-011](../functional-spec/account.md) | Thử lại một chuyển tiếp đã dừng | active | — |
-| [FN-ACCOUNT-012](../functional-spec/account.md) | Tìm người dùng (admin) | active | — |
-| [FN-ACCOUNT-013](../functional-spec/account.md) | Đặt vai trò của một người dùng (admin) | active | — |
+| [FN-ACCOUNT-001](../functional-spec/account.md) | Hiện Welcome một lần trên mỗi thiết bị | active | SCR-ACCOUNT-002 |
+| [FN-ACCOUNT-002](../functional-spec/account.md) | Theo dõi trạng thái tài khoản | active | SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-005, SCR-SETTINGS-002, SCR-STUDY-001 |
+| [FN-ACCOUNT-003](../functional-spec/account.md) | Gửi mã đăng nhập qua email | active | SCR-ACCOUNT-003, SCR-ACCOUNT-004 |
+| [FN-ACCOUNT-004](../functional-spec/account.md) | Xác nhận mã đăng nhập | active | SCR-ACCOUNT-004 |
+| [FN-ACCOUNT-005](../functional-spec/account.md) | Đăng nhập bằng Google | active | SCR-ACCOUNT-002, SCR-ACCOUNT-003 |
+| [FN-ACCOUNT-006](../functional-spec/account.md) | Đếm thư viện trên thiết bị | active | SCR-ACCOUNT-003 |
+| [FN-ACCOUNT-007](../functional-spec/account.md) | Chuyển thiết bị sang tài khoản khác | active | SCR-ACCOUNT-003, SCR-ACCOUNT-005 |
+| [FN-ACCOUNT-008](../functional-spec/account.md) | Đăng xuất | active | SCR-ACCOUNT-003, SCR-ACCOUNT-005 |
+| [FN-ACCOUNT-009](../functional-spec/account.md) | Xoá tài khoản | active | SCR-ACCOUNT-005 |
+| [FN-ACCOUNT-010](../functional-spec/account.md) | Tiếp tục không cần tài khoản | active | SCR-ACCOUNT-003 |
+| [FN-ACCOUNT-011](../functional-spec/account.md) | Thử lại một chuyển tiếp đã dừng | active | SCR-ACCOUNT-003 |
+| [FN-ACCOUNT-012](../functional-spec/account.md) | Tìm người dùng (admin) | active | SCR-ACCOUNT-006 |
+| [FN-ACCOUNT-013](../functional-spec/account.md) | Đặt vai trò của một người dùng (admin) | active | SCR-ACCOUNT-006 |
 | [FN-ACCOUNT-014](../functional-spec/account.md) | Đồng bộ thư viện với server | active | — |
-| [FN-ACCOUNT-015](../functional-spec/account.md) | Theo dõi trạng thái đồng bộ | active | SCR-SETTINGS-002, SCR-STUDY-001 |
-| [FN-ACCOUNT-016](../functional-spec/account.md) | Đồng bộ ngay | active | — |
-| [FN-ACCOUNT-017](../functional-spec/account.md) | Gửi lại các thay đổi bị từ chối | active | — |
-| [FN-ACCOUNT-018](../functional-spec/account.md) | Giữ các thay đổi bị từ chối chỉ trên thiết bị | active | — |
+| [FN-ACCOUNT-015](../functional-spec/account.md) | Theo dõi trạng thái đồng bộ | active | SCR-ACCOUNT-001, SCR-SETTINGS-002, SCR-STUDY-001 |
+| [FN-ACCOUNT-016](../functional-spec/account.md) | Đồng bộ ngay | active | SCR-ACCOUNT-001 |
+| [FN-ACCOUNT-017](../functional-spec/account.md) | Gửi lại các thay đổi bị từ chối | active | SCR-ACCOUNT-001 |
+| [FN-ACCOUNT-018](../functional-spec/account.md) | Giữ các thay đổi bị từ chối chỉ trên thiết bị | active | SCR-ACCOUNT-001 |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-ACCOUNT-001](../screens/spec/SCR-ACCOUNT-001-sync.md) | Sync | ready | `/settings/sync` |
+| [SCR-ACCOUNT-002](../screens/spec/SCR-ACCOUNT-002-welcome.md) | Welcome | ready | `/welcome` |
+| [SCR-ACCOUNT-003](../screens/spec/SCR-ACCOUNT-003-sign-in.md) | Sign-in, the merge sheet and the transition layer | ready | `/settings/sign-in` |
+| [SCR-ACCOUNT-004](../screens/spec/SCR-ACCOUNT-004-code.md) | Code | ready | `/settings/sign-in/code` |
+| [SCR-ACCOUNT-005](../screens/spec/SCR-ACCOUNT-005-account.md) | Account | ready | `/settings/account` |
+| [SCR-ACCOUNT-006](../screens/spec/SCR-ACCOUNT-006-users.md) | Users (admin) | ready | `/settings/users` |
 
 ## [card](../features/card/README.md)
 
