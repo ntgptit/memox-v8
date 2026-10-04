@@ -1360,61 +1360,61 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/24-daily-reminder.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:3` # 24 · Daily reminder |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:5` The daily reminder: turn it on or off, choose its time, and see what the notific |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:12` ## Entry points |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:14` - Screen 23, App section, row "Daily reminder" ("Off" or "On · {HH:mm}"). Route |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:17` ## Layout |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:19` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:21` \| App bar \| `MxAppBar` (content density) + back `MxIconButton` \| "Daily reminder |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:22` \| Reminder section \| `MxSection` with note, two `MxSettingsRow`s \| Row bell "Dai |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:23` \| Banner \| `MxInlineBanner` \| Only after an operation left a problem: E1 `warnin |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:24` \| What it says \| `MxSection` "What it says", one `MxSettingsRow` \| The notificat |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:25` \| Time dialog \| `MxDialog` + two `MxStepper`s + `MxSheetActions` \| "Reminder tim |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:27` ## States |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:29` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:31` \| off \| `reminder_off_light.png` \| `reminder_off_dark.png` \| The toggle off; the |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:32` \| turningOn \| `reminder_turning_on_light.png` \| `reminder_turning_on_dark.png` \| |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:33` \| on \| `reminder_on_light.png` \| `reminder_on_dark.png` \| The toggle on, the tim |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:34` \| previewDue \| `reminder_preview_due_light.png` \| `reminder_preview_due_dark.png |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:35` \| changingTime \| `reminder_changing_time_light.png` \| `reminder_changing_time_da |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:36` \| permDenied \| `reminder_perm_denied_light.png` \| `reminder_perm_denied_dark.png |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:37` \| couldNotSchedule \| `reminder_could_not_schedule_light.png` \| `reminder_could_n |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:38` \| offMayShow \| `reminder_off_may_show_light.png` \| `reminder_off_may_show_dark.p |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:39` \| unavailable \| `reminder_unavailable_light.png` \| `reminder_unavailable_dark.pn |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:40` \| loading \| `reminder_loading_light.png` \| `reminder_loading_dark.png` \| `MxSkel |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:42` Built from UC-REMINDER-001: |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:44` - **E4, a save that failed:** snackbar "Couldn't save the reminder. Nothing chan |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:46` - **E7, a read that failed:** `MxErrorState` "Couldn't read the reminder setting |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:50` **Built (FE-B5):** `ReminderScreen` over `reminderStatusProvider` (the stream of |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:56` **Built (FE-B6):** "Open system settings" calls `openNotificationSettingsProvide |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:64` ## Rulings |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:66` - **Critique 2026-09-30 part 1:** the preview reads the live workload (no sample |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:67` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:68` - **UC-REMINDER-001 E6 (spec D8):** offMayShow is a `warning` `MxInlineBanner` w |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:69` - **UC-REMINDER-001 E3:** a refused Change time says "Couldn't change the time. |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:70` - **Owner 2026-09-28 (spec D2), UC A1:** the time is chosen in an `MxDialog` wit |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:71` - **UI-base ruling O3 (spec D10):** loading is `MxSkeletonList`. |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:72` - The note is the section's `MxNote.hint` footnote (critique 2026-09-30); the ti |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:73` - "What it says" is built from the notification's own strings, in en and vi, so |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:75` ## Accessibility |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:77` - The toggle is read as "Daily reminder" with its on/off state; while an operati |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:79` - The time button is read as "Reminder time, {HH:mm}"; disabled while off. |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:80` - The steppers name their buttons ("Earlier hour", "Later minute"…) and read the |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:82` - Every control is at least 48 tall; the visual-audit companion checks both them |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:85` ## Copy |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:87` - App bar and toggle: "Daily reminder" · "One notification a day at the time bel |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:89` - Time: "Time" · "Local time · stays the same if you travel" · "Turn the reminde |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:91` - Note: "Fires once a day, only when cards are due. Never for new cards, never t |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:92` - E1: "Notifications are blocked for MemoX" · "Allow them in Android Settings › |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:94` - E3: "Couldn’t schedule the reminder." · "It stays off. Try turning it on again |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:96` - E6: "Turned off. A reminder already scheduled for today may still appear once. |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:98` - E2: "Reminders are not available on this device" · "This build cannot deliver |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:100` - E4: "Couldn't save the reminder. Nothing changed." · E7: "Couldn't read the re |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:102` - What it says: the notification's sentence, e.g. "“3 cards are due in Korean.”" |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:105` - Dialog: "Reminder time" · "Hour" · "Minute" · "Cancel" · "Save". |  |
-| `shared/ui/screen-handoff/24-daily-reminder.md:106` - Screen 23: "Daily reminder" · "Off" · "On · {HH:mm}"; reset body names "the da |  |
+| `shared/ui/screen-handoff/24-daily-reminder.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:3` # 24 · Daily reminder | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:5` The daily reminder: turn it on or off, choose its time, and see what the notific | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:12` ## Entry points | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:14` - Screen 23, App section, row "Daily reminder" ("Off" or "On · {HH:mm}"). Route | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:17` ## Layout | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:19` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:21` \| App bar \| `MxAppBar` (content density) + back `MxIconButton` \| "Daily reminder | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:22` \| Reminder section \| `MxSection` with note, two `MxSettingsRow`s \| Row bell "Dai | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:23` \| Banner \| `MxInlineBanner` \| Only after an operation left a problem: E1 `warnin | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:24` \| What it says \| `MxSection` "What it says", one `MxSettingsRow` \| The notificat | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:25` \| Time dialog \| `MxDialog` + two `MxStepper`s + `MxSheetActions` \| "Reminder tim | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:27` ## States | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:29` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:31` \| off \| `reminder_off_light.png` \| `reminder_off_dark.png` \| The toggle off; the | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:32` \| turningOn \| `reminder_turning_on_light.png` \| `reminder_turning_on_dark.png` \| | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:33` \| on \| `reminder_on_light.png` \| `reminder_on_dark.png` \| The toggle on, the tim | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:34` \| previewDue \| `reminder_preview_due_light.png` \| `reminder_preview_due_dark.png | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:35` \| changingTime \| `reminder_changing_time_light.png` \| `reminder_changing_time_da | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:36` \| permDenied \| `reminder_perm_denied_light.png` \| `reminder_perm_denied_dark.png | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:37` \| couldNotSchedule \| `reminder_could_not_schedule_light.png` \| `reminder_could_n | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:38` \| offMayShow \| `reminder_off_may_show_light.png` \| `reminder_off_may_show_dark.p | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:39` \| unavailable \| `reminder_unavailable_light.png` \| `reminder_unavailable_dark.pn | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:40` \| loading \| `reminder_loading_light.png` \| `reminder_loading_dark.png` \| `MxSkel | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:42` Built from UC-REMINDER-001: | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:44` - **E4, a save that failed:** snackbar "Couldn't save the reminder. Nothing chan | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:46` - **E7, a read that failed:** `MxErrorState` "Couldn't read the reminder setting | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:50` **Built (FE-B5):** `ReminderScreen` over `reminderStatusProvider` (the stream of | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:56` **Built (FE-B6):** "Open system settings" calls `openNotificationSettingsProvide | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:64` ## Rulings | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:66` - **Critique 2026-09-30 part 1:** the preview reads the live workload (no sample | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:67` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:68` - **UC-REMINDER-001 E6 (spec D8):** offMayShow is a `warning` `MxInlineBanner` w | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:69` - **UC-REMINDER-001 E3:** a refused Change time says "Couldn't change the time. | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:70` - **Owner 2026-09-28 (spec D2), UC A1:** the time is chosen in an `MxDialog` wit | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:71` - **UI-base ruling O3 (spec D10):** loading is `MxSkeletonList`. | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:72` - The note is the section's `MxNote.hint` footnote (critique 2026-09-30); the ti | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:73` - "What it says" is built from the notification's own strings, in en and vi, so | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:75` ## Accessibility | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:77` - The toggle is read as "Daily reminder" with its on/off state; while an operati | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:79` - The time button is read as "Reminder time, {HH:mm}"; disabled while off. | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:80` - The steppers name their buttons ("Earlier hour", "Later minute"…) and read the | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:82` - Every control is at least 48 tall; the visual-audit companion checks both them | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:85` ## Copy | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:87` - App bar and toggle: "Daily reminder" · "One notification a day at the time bel | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:89` - Time: "Time" · "Local time · stays the same if you travel" · "Turn the reminde | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:91` - Note: "Fires once a day, only when cards are due. Never for new cards, never t | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:92` - E1: "Notifications are blocked for MemoX" · "Allow them in Android Settings › | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:94` - E3: "Couldn’t schedule the reminder." · "It stays off. Try turning it on again | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:96` - E6: "Turned off. A reminder already scheduled for today may still appear once. | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:98` - E2: "Reminders are not available on this device" · "This build cannot deliver | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:100` - E4: "Couldn't save the reminder. Nothing changed." · E7: "Couldn't read the re | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:102` - What it says: the notification's sentence, e.g. "“3 cards are due in Korean.”" | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:105` - Dialog: "Reminder time" · "Hour" · "Minute" · "Cancel" · "Save". | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `shared/ui/screen-handoff/24-daily-reminder.md:106` - Screen 23: "Daily reminder" · "Off" · "On · {HH:mm}"; reset body names "the da | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 
 ## shared/ui/screen-handoff/25-theme.md
 
@@ -2368,32 +2368,32 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:6` code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/ | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:10` **Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2). Phần logic xong ở B | dropped — history of how the work was split (BE-B5a, BE-B5b, FE-B5); those specs stay under docs/superpowers/specs, approved PENDING |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:15` **Actor:** Người dùng | pending → SCR-REMINDER-001 (entry point: Settings → Daily reminder); intent kept in UC-REMINDER-001 (Mục tiêu, Preconditions) |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:15` **Actor:** Người dùng | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:20` ## Main flow | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:22` **Main flow:** | moved → `USE_CASES.md` |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:23` 1. Người dùng mở màn nhắc học từ Settings. Hệ thống hiển thị toggle **tắt**, giờ | pending → SCR-REMINDER-001 (the toggle off, 20:00 shown inactive, the two explaining lines); intent kept in UC-REMINDER-001 step 1 + FN-REMINDER-001 |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:27` 2. Người dùng bật toggle. Hệ thống chuyển sang trạng thái `enabling` và **chỉ | pending → SCR-REMINDER-001 (the enabling state with the toggle locked); intent kept in UC-REMINDER-001 step 2 + FN-REMINDER-003 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:23` 1. Người dùng mở màn nhắc học từ Settings. Hệ thống hiển thị toggle **tắt**, giờ | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:27` 2. Người dùng bật toggle. Hệ thống chuyển sang trạng thái `enabling` và **chỉ | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:29` 3. Người dùng cấp quyền. Hệ thống lưu `enabled = true` cùng giờ đang chọn, đặt | superseded → FN-REMINDER-003 (Kết quả) + UC-REMINDER-001 step 3 |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:32` 4. Đến giờ, hệ thống đọc lại workload đến hạn. Còn `overdue + due-today > 0` thì | superseded → FN-REMINDER-004 (Kết quả) + UC-REMINDER-001 step 4 |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:36` 5. Người dùng chạm notification. Hệ thống mở Study Home, không mở phiên nào | superseded → FN-REMINDER-005 + UC-REMINDER-001 step 5 |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:39` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:41` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:42` - **A1 — Đổi giờ nhắc:** chạm hàng giờ → dialog chọn giờ; xác nhận thì lưu giờ | pending → SCR-REMINDER-001 (a tap on the time row opens the time dialog; Cancel changes nothing); intent kept in UC-REMINDER-001 A1 + FN-REMINDER-006 |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:45` - **A2 — Tắt nhắc:** tắt toggle → lịch bị huỷ và mọi notification đang chờ bị | pending → SCR-REMINDER-001 (the toggle turned off, no confirmation); intent kept in UC-REMINDER-001 A2 + FN-REMINDER-007 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:42` - **A1 — Đổi giờ nhắc:** chạm hàng giờ → dialog chọn giờ; xác nhận thì lưu giờ | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:45` - **A2 — Tắt nhắc:** tắt toggle → lịch bị huỷ và mọi notification đang chờ bị | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:47` - **A3 — Đến giờ nhưng không còn thẻ đến hạn:** bỏ lượt nhắc, không hiện gì, vẫn | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:49` - **A4 — Chỉ còn thẻ chưa học:** như A3 — thẻ mới không làm phát notification | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:51` - **A5 — Đổi múi giờ hoặc mở lại app:** hệ thống hoà giải lịch lúc khởi động; | superseded → UC-REMINDER-001 A5 (intent) + the reconcile note at the top of functional-spec/reminders.md (not an FN, spec R6) |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:53` - **A6 — Vuốt bỏ notification:** không có mutation nào; lượt nhắc hôm sau không | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:56` **Error flows:** | moved → `USE_CASES.md` |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:57` - **E1 — Từ chối quyền (Android 13+):** settings giữ nguyên **tắt**, không đặt | pending → SCR-REMINDER-001 (the typed reason, the system-settings guidance and Retry); intent kept in UC-REMINDER-001 E1 |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:60` - **E2 — Nền tảng không hỗ trợ:** toggle bị vô hiệu và màn nói rõ nhắc học chưa | pending → SCR-REMINDER-001 (the disabled toggle and the unavailable line); intent kept in UC-REMINDER-001 E2 |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:62` - **E3 — Đặt lịch thất bại:** lỗi của nền tảng map thành lý do có kiểu; settings | pending → SCR-REMINDER-001 (the typed error with Retry, no technical detail); intent kept in UC-REMINDER-001 E3 |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:65` - **E4 — Lưu settings thất bại:** không đặt lịch, trạng thái UI quay về giá trị | pending → SCR-REMINDER-001 (the screen back to the stored value, the typed reason and Retry); intent kept in UC-REMINDER-001 E4 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:57` - **E1 — Từ chối quyền (Android 13+):** settings giữ nguyên **tắt**, không đặt | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:60` - **E2 — Nền tảng không hỗ trợ:** toggle bị vô hiệu và màn nói rõ nhắc học chưa | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:62` - **E3 — Đặt lịch thất bại:** lỗi của nền tảng map thành lý do có kiểu; settings | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:65` - **E4 — Lưu settings thất bại:** không đặt lịch, trạng thái UI quay về giá trị | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:67` - **E5 — Đọc workload thất bại lúc fire:** bỏ lượt nhắc thay vì hiện notificatio | moved → `USE_CASES.md` |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:69` - **E6 — Huỷ lịch thất bại khi tắt:** settings **đã** ở trạng thái tắt — ghi đã | pending → SCR-REMINDER-001 (Copy unlike E3: one old reminder may remain; Retry); intent kept in UC-REMINDER-001 E6 + FN-REMINDER-007 |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:74` - **E7 — Đọc settings thất bại khi mở màn:** không vẽ hàng nào — không toggle, | pending → SCR-REMINDER-001 (the whole-body error with Retry and no rows; Copy about a read, not E4's); intent kept in UC-REMINDER-001 E7 |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:80` ## UI | pending → SCR-REMINDER-001 (states loading · off · enabling · on · time picker · permission denied · unavailable · schedule error · settings error · cancel error · read error; no empty) |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:82` **UI states:** loading (đọc settings) · off · enabling (đang xin quyền/đặt lịch, | pending → SCR-REMINDER-001 (states loading · off · enabling · on · time picker · permission denied · unavailable · schedule error · settings error · cancel error · read error; no empty) |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:69` - **E6 — Huỷ lịch thất bại khi tắt:** settings **đã** ở trạng thái tắt — ghi đã | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:74` - **E7 — Đọc settings thất bại khi mở màn:** không vẽ hàng nào — không toggle, | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:80` ## UI | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:82` **UI states:** loading (đọc settings) · off · enabling (đang xin quyền/đặt lịch, | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:89` ## Local | superseded → FN-REMINDER-003 + FN-REMINDER-007 (Kết quả) + the reconcile note at the top of functional-spec/reminders.md (one pending reminder when on, none when off) |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:91` **Postconditions:** `app_settings` mang đúng trạng thái bật/tắt và giờ nhắc mà | superseded → FN-REMINDER-003 + FN-REMINDER-007 (Kết quả) + the reconcile note at the top of functional-spec/reminders.md (one pending reminder when on, none when off) |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:95` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
@@ -3140,15 +3140,15 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 |---|---|
 | `features/reminders/ui.md:1` # Reminders — UI | superseded → UC-REMINDER-001 + FN-REMINDER-001…FN-REMINDER-007; per-feature UI files are replaced by screen specs (ADR-021) |
 | `features/reminders/ui.md:3` Màn hình, điều hướng và validation của nhắc học hằng ngày. Hành vi riêng nằm tro | superseded → UC-REMINDER-001 + FN-REMINDER-001…FN-REMINDER-007; per-feature UI files are replaced by screen specs (ADR-021) |
-| `features/reminders/ui.md:6` ## Màn hình và điều hướng | pending → SCR-REMINDER-001 (route and where it opens from, with NAVIGATION.md) |
-| `features/reminders/ui.md:8` \| Màn \| Route \| Mở từ \| Handoff \| | pending → SCR-REMINDER-001 (route and where it opens from, with NAVIGATION.md) |
-| `features/reminders/ui.md:10` \| 24 · Daily reminder \| `/settings/reminder`, trên root navigator, không có bott | pending → SCR-REMINDER-001 (route /settings/reminder on the root navigator, no bottom bar; opened from the Daily reminder row of SCR-SETTINGS-002) |
+| `features/reminders/ui.md:6` ## Màn hình và điều hướng | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/ui.md:8` \| Màn \| Route \| Mở từ \| Handoff \| | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/ui.md:10` \| 24 · Daily reminder \| `/settings/reminder`, trên root navigator, không có bott | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 | `features/reminders/ui.md:11` \| Notification \| chạm mở `/study` (Study Home), không mở phiên nào (BR-REMINDER- | superseded → FN-REMINDER-005 (a tap opens the Study tab, no session); the deep link itself goes to NAVIGATION.md in Task 42 |
 | `features/reminders/ui.md:13` Màn 24 đọc nhắc học đã lưu qua stream của `WatchReminderUseCase`; bật, tắt và đổ | superseded → FN-REMINDER-001 (the stream) + FN-REMINDER-003, FN-REMINDER-006, FN-REMINDER-007 (one operation at a time, stated at the top of functional-spec/reminders.md) |
 | `features/reminders/ui.md:18` ## Validation | superseded → FN-REMINDER-003 + FN-REMINDER-006 (Input, Lỗi) |
 | `features/reminders/ui.md:20` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | superseded → FN-REMINDER-003 + FN-REMINDER-006 (Input, Lỗi) |
-| `features/reminders/ui.md:22` \| app_settings.reminder_minute_of_day \| 0–1439, phút trong ngày địa phương (BR-R | pending → SCR-REMINDER-001 (the time dialog: hour 0–23, minute 0–59; an out-of-range number marks the stepper and locks Save; nothing written); rule kept in FN-REMINDER-006 (minuteOutOfRange) |
-| `features/reminders/ui.md:23` \| app_settings.reminder_enabled \| chỉ lưu bật khi đã có quyền và đã đặt lịch (BR | pending → SCR-REMINDER-001 (the E1 or E3 banner, the toggle stays off); rule kept in FN-REMINDER-003 (on is stored only with permission and a pending reminder) |
+| `features/reminders/ui.md:22` \| app_settings.reminder_minute_of_day \| 0–1439, phút trong ngày địa phương (BR-R | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
+| `features/reminders/ui.md:23` \| app_settings.reminder_enabled \| chỉ lưu bật khi đã có quyền và đã đặt lịch (BR | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 
 ## features/settings/ui.md
 
@@ -3161,7 +3161,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/settings/ui.md:9` \| 23 · Settings \| `/settings` (tab Settings) \| Bottom bar \| [23-settings.md](../ | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/ui.md:10` \| 25 · Theme \| `/settings/theme`, trên root navigator, không có bottom bar \| Hàn | moved → `screens/spec/SCR-SETTINGS-003-theme.md` |
 | `features/settings/ui.md:11` \| 26 · Language \| `/settings/language`, trên root navigator, không có bottom bar | moved → `screens/spec/SCR-SETTINGS-004-language.md` |
-| `features/settings/ui.md:12` \| 24 · Daily reminder \| `/settings/reminder`, trên root navigator, không có bott | pending → SCR-REMINDER-001 (route /settings/reminder on the root navigator, no bottom bar; opened from the Daily reminder row "Off" or "On · HH:mm") |
+| `features/settings/ui.md:12` \| 24 · Daily reminder \| `/settings/reminder`, trên root navigator, không có bott | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 | `features/settings/ui.md:13` \| 15 · Study options \| `/decks/deck/:deckId/options`, trên root navigator, không | moved → `screens/spec/SCR-SETTINGS-001-study-options.md` |
 | `features/settings/ui.md:15` Reset app options đưa cả nhắc học về tắt lúc 20:00 (BR-SETTINGS-008) và câu chữ | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/ui.md:18` Theme và ngôn ngữ áp cho cả app: `main()` đọc dòng `app_settings` một lần trước | superseded → FN-SETTINGS-001 (read once before the first frame, 2 s at most, then the stream) + FN-SETTINGS-003 + FN-SETTINGS-004 (applied app-wide) |
@@ -3312,10 +3312,10 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/reminders/README.md:63` ## Màn hình → Use case |  |
-| `features/reminders/README.md:65` \| Màn hình \| UC \| |  |
-| `features/reminders/README.md:67` \| `Settings → Daily reminder` \| UC-REMINDER-001 \| |  |
-| `features/reminders/README.md:69` Nguồn: trigger của UC-REMINDER-001. |  |
+| `features/reminders/README.md:63` ## Màn hình → Use case || superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/reminders/README.md:65` \| Màn hình \| UC \| || superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/reminders/README.md:67` \| `Settings → Daily reminder` \| UC-REMINDER-001 \| || superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/reminders/README.md:69` Nguồn: trigger của UC-REMINDER-001. || superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/search/README.md
 
@@ -3713,28 +3713,28 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/progress/presentation/goldens/progress_quiet_light.png` | superseded → SCR-PROGRESS-001 `quiet` light |
 | `test/features/progress/presentation/goldens/progress_week_dark.png` | superseded → SCR-PROGRESS-001 `week` dark |
 | `test/features/progress/presentation/goldens/progress_week_light.png` | superseded → SCR-PROGRESS-001 `week` light |
-| `test/features/reminders/presentation/goldens/reminder_changing_time_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_changing_time_light.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_could_not_schedule_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_could_not_schedule_light.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_loading_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_loading_light.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_off_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_off_light.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_off_may_show_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_off_may_show_light.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_on_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_on_light.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_perm_denied_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_perm_denied_light.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_preview_due_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_preview_due_light.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_read_error_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_read_error_light.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_turning_on_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_turning_on_light.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_unavailable_dark.png` |  |
-| `test/features/reminders/presentation/goldens/reminder_unavailable_light.png` |  |
+| `test/features/reminders/presentation/goldens/reminder_changing_time_dark.png` | superseded → SCR-REMINDER-001 `changing_time` dark |
+| `test/features/reminders/presentation/goldens/reminder_changing_time_light.png` | superseded → SCR-REMINDER-001 `changing_time` light |
+| `test/features/reminders/presentation/goldens/reminder_could_not_schedule_dark.png` | superseded → SCR-REMINDER-001 `could_not_schedule` dark |
+| `test/features/reminders/presentation/goldens/reminder_could_not_schedule_light.png` | superseded → SCR-REMINDER-001 `could_not_schedule` light |
+| `test/features/reminders/presentation/goldens/reminder_loading_dark.png` | superseded → SCR-REMINDER-001 `loading` dark |
+| `test/features/reminders/presentation/goldens/reminder_loading_light.png` | superseded → SCR-REMINDER-001 `loading` light |
+| `test/features/reminders/presentation/goldens/reminder_off_dark.png` | superseded → SCR-REMINDER-001 `off` dark |
+| `test/features/reminders/presentation/goldens/reminder_off_light.png` | superseded → SCR-REMINDER-001 `off` light |
+| `test/features/reminders/presentation/goldens/reminder_off_may_show_dark.png` | superseded → SCR-REMINDER-001 `off_may_show` dark |
+| `test/features/reminders/presentation/goldens/reminder_off_may_show_light.png` | superseded → SCR-REMINDER-001 `off_may_show` light |
+| `test/features/reminders/presentation/goldens/reminder_on_dark.png` | superseded → SCR-REMINDER-001 `on` dark |
+| `test/features/reminders/presentation/goldens/reminder_on_light.png` | superseded → SCR-REMINDER-001 `on` light |
+| `test/features/reminders/presentation/goldens/reminder_perm_denied_dark.png` | superseded → SCR-REMINDER-001 `perm_denied` dark |
+| `test/features/reminders/presentation/goldens/reminder_perm_denied_light.png` | superseded → SCR-REMINDER-001 `perm_denied` light |
+| `test/features/reminders/presentation/goldens/reminder_preview_due_dark.png` | superseded → SCR-REMINDER-001 `preview_due` dark |
+| `test/features/reminders/presentation/goldens/reminder_preview_due_light.png` | superseded → SCR-REMINDER-001 `preview_due` light |
+| `test/features/reminders/presentation/goldens/reminder_read_error_dark.png` | superseded → SCR-REMINDER-001 `read_error` dark |
+| `test/features/reminders/presentation/goldens/reminder_read_error_light.png` | superseded → SCR-REMINDER-001 `read_error` light |
+| `test/features/reminders/presentation/goldens/reminder_turning_on_dark.png` | superseded → SCR-REMINDER-001 `turning_on` dark |
+| `test/features/reminders/presentation/goldens/reminder_turning_on_light.png` | superseded → SCR-REMINDER-001 `turning_on` light |
+| `test/features/reminders/presentation/goldens/reminder_unavailable_dark.png` | superseded → SCR-REMINDER-001 `unavailable` dark |
+| `test/features/reminders/presentation/goldens/reminder_unavailable_light.png` | superseded → SCR-REMINDER-001 `unavailable` light |
 | `test/features/search/presentation/goldens/search_empty_query_dark.png` | superseded → SCR-SEARCH-001 `empty_query` dark |
 | `test/features/search/presentation/goldens/search_empty_query_light.png` | superseded → SCR-SEARCH-001 `empty_query` light |
 | `test/features/search/presentation/goldens/search_error_dark.png` | superseded → SCR-SEARCH-001 `error` dark |
@@ -4396,3 +4396,9 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - Record 22 → `SCR-PROGRESS-001-progress.md`; 24 goldens superseded.
 - 41 pending rows moved; progress README rows superseded.
 - Warning delta: 59 → 59 (no navigation pointed at SCR-PROGRESS-001; its own targets, SCR-STUDY-001 and itself, are written).
+
+## Task 39 notes — SCR-REMINDER-001
+
+- Record 24's 11 golden states map 1:1 (`turning_on`, `perm_denied`… keys follow the golden stems).
+- "Open system settings" invokes no FN: it opens a platform page and writes nothing (FE-B6).
+- Warnings 59 → 58: SCR-SETTINGS-002's Navigate to SCR-REMINDER-001 now resolves.

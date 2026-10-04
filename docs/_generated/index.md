@@ -275,19 +275,25 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-REMINDER-001](../functional-spec/reminders.md) | Theo dõi nhắc học | active | UC-REMINDER-001 |
-| [FN-REMINDER-002](../functional-spec/reminders.md) | Xem trước nội dung nhắc học | active | UC-REMINDER-001 |
-| [FN-REMINDER-003](../functional-spec/reminders.md) | Bật nhắc học | active | UC-REMINDER-001 |
+| [FN-REMINDER-001](../functional-spec/reminders.md) | Theo dõi nhắc học | active | SCR-REMINDER-001, UC-REMINDER-001 |
+| [FN-REMINDER-002](../functional-spec/reminders.md) | Xem trước nội dung nhắc học | active | SCR-REMINDER-001, UC-REMINDER-001 |
+| [FN-REMINDER-003](../functional-spec/reminders.md) | Bật nhắc học | active | SCR-REMINDER-001, UC-REMINDER-001 |
 | [FN-REMINDER-004](../functional-spec/reminders.md) | Gửi nhắc học khi đến giờ | active | UC-REMINDER-001 |
 | [FN-REMINDER-005](../functional-spec/reminders.md) | Mở lối học từ notification | active | UC-REMINDER-001 |
-| [FN-REMINDER-006](../functional-spec/reminders.md) | Đổi giờ nhắc | active | UC-REMINDER-001 |
-| [FN-REMINDER-007](../functional-spec/reminders.md) | Tắt nhắc học | active | UC-REMINDER-001 |
+| [FN-REMINDER-006](../functional-spec/reminders.md) | Đổi giờ nhắc | active | SCR-REMINDER-001, UC-REMINDER-001 |
+| [FN-REMINDER-007](../functional-spec/reminders.md) | Tắt nhắc học | active | SCR-REMINDER-001, UC-REMINDER-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
 | [UC-REMINDER-001](../USE_CASES.md) | Bật nhắc học hằng ngày | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-REMINDER-001](../screens/spec/SCR-REMINDER-001-daily-reminder.md) | Daily reminder | ready | `/settings/reminder` |
 
 ## [search](../features/search/README.md)
 

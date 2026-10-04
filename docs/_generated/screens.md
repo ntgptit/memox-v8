@@ -147,6 +147,27 @@
 | `deck_leaf` | light, dark | — |
 | `deck_gone` | light, dark | — |
 
+## [SCR-REMINDER-001](../screens/spec/SCR-REMINDER-001-daily-reminder.md) · Daily reminder
+
+- Invokes: FN-REMINDER-001, FN-REMINDER-002, FN-REMINDER-003, FN-REMINDER-007, FN-REMINDER-006
+- Rules via FN: BR-REMINDER-001, BR-REMINDER-002, BR-REMINDER-003, BR-REMINDER-005, BR-REMINDER-006, BR-REMINDER-007, BR-REMINDER-009, BR-REMINDER-010, BR-REMINDER-011, BR-REMINDER-012
+- Use cases: UC-REMINDER-001
+- Entry points: SCR-SETTINGS-002
+
+| State | Golden | Present |
+|---|---|---|
+| `off` | light, dark | — |
+| `turning_on` | light, dark | — |
+| `on` | light, dark | — |
+| `preview_due` | light, dark | — |
+| `changing_time` | light, dark | — |
+| `perm_denied` | light, dark | — |
+| `could_not_schedule` | light, dark | — |
+| `off_may_show` | light, dark | — |
+| `unavailable` | light, dark | — |
+| `loading` | light, dark | — |
+| `read_error` | light, dark | — |
+
 ## [SCR-SEARCH-001](../screens/spec/SCR-SEARCH-001-library-search.md) · Library search
 
 - Invokes: FN-SEARCH-001
