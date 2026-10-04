@@ -320,6 +320,17 @@ class AdrTest(unittest.TestCase):
             found = errors(base(**{path: "# Old\n"}))
             self.assertTrue(has(found, path.removeprefix("docs/"), "retired home"), path)
 
+    def test_a_legacy_golden_is_an_error_and_an_scr_golden_is_not(self):
+        legacy = errors(base(**{"test/features/deck/presentation/goldens/library_root_light.png": ""}))
+        self.assertTrue(has(legacy, "library_root_light.png", "legacy golden (SP2)"))
+        self.assertFalse(has(errors(base()), "legacy golden (SP2)"))
+
+    def test_the_gallery_is_a_retired_home_but_visual_audits_come_back(self):
+        self.assertTrue(has(errors(base(**{"lib/app/gallery/gallery_screen.dart": "// old\n"})), "retired home (SP2)"))
+        # MX-VIS-001: the rebuilt screens keep their visual-audit companions.
+        audit = "test/visual_audit/screens/features/deck/screens/deck_visual_audit_test.dart"
+        self.assertFalse(has(errors(base(**{audit: "// new\n"})), "retired home (SP2)"))
+
     def test_links_of_a_superseded_adr_are_not_checked(self):
         files = base(**{
             ADR1: adr("ADR-001", "superseded", "superseded_by: ADR-002\n", "[gone](gone.md)"),

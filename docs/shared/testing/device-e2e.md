@@ -6,6 +6,10 @@ thoại Android bằng một lệnh. Thiết kế nằm trong
 [spec FE-D3](../../superpowers/specs/2026-09-28-device-e2e-design.md). Lệnh
 chạy tay, không nằm trong CI.
 
+> **Sau SP2 (2026-10-04):** `integration_test/` đã bị xoá cùng UI cũ (spec
+> `2026-10-04-sp2-remove-legacy-ui-design.md`, S6). Tám kịch bản và catalog vẫn là mục tiêu:
+> SP3 viết lại các phase trên UI mới. Cho tới lúc đó script không có phase nào để chạy.
+
 ## Chạy
 
 Cần có:

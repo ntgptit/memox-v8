@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
@@ -7,10 +8,7 @@ import 'package:memox/features/settings/domain/models/reminder_settings_model.da
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_app_bar.dart';
-import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
-import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -24,13 +22,13 @@ const _dark = AppSettingsEntity(
 );
 
 Brightness _brightness(WidgetTester tester) =>
-    Theme.of(tester.element(find.byType(MxBottomNav))).brightness;
+    Theme.of(tester.element(find.byType(NavigationBar))).brightness;
 
 Finder _tab(String label) =>
-    find.descendant(of: find.byType(MxBottomNav), matching: find.text(label));
+    find.descendant(of: find.byType(NavigationBar), matching: find.text(label));
 
-Finder _barTitle(String title) =>
-    find.descendant(of: find.byType(MxAppBar), matching: find.text(title));
+/// The open deck's placeholder (SP2): the stack the theme change must keep.
+Finder _openDeck() => find.text('SCR-DECK-001 · SCR-CARD-001');
 
 void main() {
   libraryTest('the first frame already paints the stored theme (FE-A3 D5)', (
@@ -45,16 +43,16 @@ void main() {
 
   libraryTest('a theme change keeps the open deck; System follows the '
       'platform (BR-SETTINGS-005, UC A2)', (tester, env) async {
-    await env.decks.root('Korean');
     await pumpMemoxApp(tester, env);
-    await tester.tap(find.text('Korean'));
+    GoRouter.of(tester.element(find.byType(NavigationBar)))
+        .go('/decks/deck/d1');
     await tester.pumpAndSettle();
-    expect(_barTitle('Korean'), findsOneWidget);
+    expect(_openDeck(), findsOneWidget);
 
     await SettingsRepositoryImpl(env.db).setTheme(theme: ThemeChoice.dark);
     await tester.pumpAndSettle();
     expect(_brightness(tester), Brightness.dark);
-    expect(_barTitle('Korean'), findsOneWidget);
+    expect(_openDeck(), findsOneWidget);
 
     await SettingsRepositoryImpl(env.db).setTheme(theme: ThemeChoice.system);
     tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;

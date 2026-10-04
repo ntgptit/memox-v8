@@ -11,28 +11,16 @@ import 'package:memox/features/study/di/study_entry_repository_provider.dart'
     show studyEntryRepositoryProvider;
 import 'package:memox/features/study/di/study_session_repository_provider.dart'
     show studySessionRepositoryProvider;
-import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_deck_breadcrumb_widget.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
-import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/features/transfer/data/repositories/transfer_file_repository_impl.dart';
 import 'package:memox/features/transfer/di/transfer_file_repository_provider.dart';
-import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_app_bar.dart';
-import 'package:memox/features/deck/presentation/screens/deck_algorithm_screen.dart';
-import 'package:memox/features/deck/domain/models/deck_view_model.dart';
-import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 
 import 'fake_day_clock.dart';
-import 'golden_harness.dart';
 import 'study_entry_fixtures.dart';
 import 'study_fixtures.dart';
 import 'test_database.dart';
@@ -108,170 +96,6 @@ ProviderContainer libraryContainer(
   addTearDown(container.dispose);
   return container;
 }
-
-Widget _app(
-  LibraryEnv env,
-  Widget screen, {
-  required Brightness brightness,
-  required double textScale,
-  required Locale locale,
-  required List<Override> overrides,
-}) => ProviderScope(
-  overrides: [..._backend(env), ...overrides],
-  retry: _noRetry,
-  child: MaterialApp(
-    debugShowCheckedModeBanner: false,
-    themeAnimationDuration: Duration.zero,
-    theme: brightness == Brightness.light
-        ? buildLightTheme()
-        : buildDarkTheme(),
-    locale: locale,
-    localizationsDelegates: AppLocalizations.localizationsDelegates,
-    supportedLocales: AppLocalizations.supportedLocales,
-    // Above the navigator, so sheets and dialogs scale with the screen.
-    builder: (context, child) => MediaQuery(
-      data: MediaQuery.of(context)
-          .copyWith(textScaler: TextScaler.linear(textScale)),
-      child: child!,
-    ),
-    home: screen,
-  ),
-);
-
-/// Pumps [screen] on a 360×800 phone over the real backend and lets its
-/// first streams emit.
-Future<void> pumpLibraryScreen(
-  WidgetTester tester,
-  LibraryEnv env,
-  Widget screen, {
-  Brightness brightness = Brightness.light,
-  double textScale = 1,
-  Locale locale = const Locale('en'),
-  List<Override> overrides = const [],
-}) async {
-  tester.view.physicalSize = const Size(360, 800);
-  tester.view.devicePixelRatio = 1;
-  addTearDown(tester.view.reset);
-  await tester.pumpWidget(
-    _app(
-      env,
-      screen,
-      brightness: brightness,
-      textScale: textScale,
-      locale: locale,
-      overrides: overrides,
-    ),
-  );
-  await tester.pump();
-  await tester.pump();
-}
-
-/// [screen] over the real backend at 1080×2400 (3x), inside the golden
-/// boundary. Compare with [expectBoundaryGolden] inside [withRealShadows].
-Future<void> pumpLibraryGolden(
-  WidgetTester tester,
-  LibraryEnv env,
-  Widget screen,
-  Brightness brightness, {
-  List<Override> overrides = const [],
-  double textScale = 1,
-}) async {
-  tester.view.physicalSize = const Size(1080, 2400);
-  tester.view.devicePixelRatio = 3;
-  addTearDown(tester.view.reset);
-  await tester.pumpWidget(
-    RepaintBoundary(
-      key: goldenBoundaryKey,
-      child: _app(
-        env,
-        screen,
-        brightness: brightness,
-        textScale: textScale,
-        locale: const Locale('en'),
-        overrides: overrides,
-      ),
-    ),
-  );
-  await tester.pump();
-  await tester.pump(const Duration(milliseconds: 300));
-}
-
-/// A deck level whose navigation goes nowhere, for screen tests: the Library
-/// root when [deckId] is null.
-DeckLevelScreen deckScreen({
-  String? deckId,
-  ValueChanged<String>? onOpenDeck,
-  ValueChanged<String?>? onOpenAncestor,
-  ValueChanged<String>? onAddCard,
-  Widget Function(DeckView view)? cardContent,
-  Widget Function(DeckView view, Widget back, Widget deckActions)? cardAppBar,
-  Widget Function(String deckId, Widget breadcrumb)? cardBreadcrumb,
-  Widget Function(String deckId)? cardFab,
-  VoidCallback? onSearch,
-  ValueChanged<String>? onOpenAlgorithm,
-  ValueChanged<String>? onImportCards,
-  ValueChanged<DeckEntity>? onExportCards,
-  ValueChanged<String>? onOpenStudy,
-  ValueChanged<String>? onOpenStudyOptions,
-  VoidCallback? onOpenTrash,
-  VoidCallback? onOpenStarterDecks,
-  VoidCallback? onOpenTags,
-  VoidCallback? onOpenStudyHome,
-}) => DeckLevelScreen(
-  deckId: deckId,
-  onOpenDeck: onOpenDeck ?? (_) {},
-  onOpenAncestor: onOpenAncestor ?? (_) {},
-  onSearch: onSearch ?? () {},
-  onOpenAlgorithm: onOpenAlgorithm ?? (_) {},
-  onOpenStudy: onOpenStudy ?? (_) {},
-  onOpenStudyOptions: onOpenStudyOptions ?? (_) {},
-  onAddCard: onAddCard ?? (_) {},
-  onImportCards: onImportCards ?? (_) {},
-  onExportCards: onExportCards ?? (_) {},
-  onOpenTrash: onOpenTrash ?? () {},
-  onOpenStarterDecks: onOpenStarterDecks ?? () {},
-  onOpenTags: onOpenTags ?? () {},
-  onOpenStudyHome: onOpenStudyHome,
-  cardContent: cardContent ?? (_) => const SizedBox.shrink(),
-  cardAppBar:
-      cardAppBar ??
-      (view, back, actions) => MxAppBar(
-        title: view.deck.name,
-        density: MxAppBarDensity.content,
-        leading: back,
-        actions: [actions],
-      ),
-  cardBreadcrumb: cardBreadcrumb ?? (_, breadcrumb) => breadcrumb,
-  cardFab: cardFab ?? (_) => const SizedBox.shrink(),
-);
-
-/// Screen 07: the open deck as `app/` composes it (A14).
-DeckLevelScreen cardDeckScreen(String deckId) => deckScreen(
-  deckId: deckId,
-  cardContent: (view) => CardListSectionWidget(
-    deckId: view.deck.id,
-    algorithm: 'Eight boxes',
-    onAddCard: () {},
-    onOpenCard: (_) {},
-    onExport: (_) {},
-    onStudy: () {},
-    onOpenTrash: () {},
-  ),
-  cardAppBar: (view, back, actions) =>
-      CardDeckAppBarWidget(view: view, back: back, deckActions: actions),
-  cardBreadcrumb: (id, child) =>
-      CardDeckBreadcrumbWidget(deckId: id, child: child),
-  cardFab: (id) => CardAddFabWidget(deckId: id, onAddCard: () {}),
-);
-
-/// Screen 02 for [deckId], with its breadcrumb callback.
-DeckAlgorithmScreen deckAlgorithmScreen({
-  required String deckId,
-  ValueChanged<String?>? onOpenAncestor,
-}) => DeckAlgorithmScreen(
-  deckId: deckId,
-  onOpenAncestor: onOpenAncestor ?? (_) {},
-);
 
 /// The whole app over [env] on a 1080×2400 (3x) phone, or at
 /// [physicalSize], settled on the Library root.

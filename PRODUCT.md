@@ -116,12 +116,12 @@ Two independent axes (the SRS algorithm and the StudyMode) and two session kinds
 - **Copy voice for failures is local-first:** say first that nothing was lost, then offer the retry (`DESIGN.md`, Do's and Don'ts).
 - **Copy is caller-supplied and localized.** Components hold no copy.
 - No brand guide, logo system or tone document exists beyond these points. The only identity asset is the Android launcher icon (`android/app/src/main/res/mipmap-*/ic_launcher.png`).
-- The visual system is recorded in `DESIGN.md`, generated from the Flutter UI base (ADR-021). It is recorded there, not here.
+- The visual system is defined in `DESIGN.md`, the canonical source the UI implements (ADR-021). It is recorded there, not here.
 
 ## Evidence on Hand
 
-- `DESIGN.md`: foundations, theme binding, the shared widgets and the copy voice, generated from the code.
-- Goldens for the implemented UI, light and dark, at 3x: components (`test/shared/widgets/goldens/`, `test/app/goldens/`) and every screen (`test/features/*/presentation/goldens/`), written on Linux.
+- `DESIGN.md`: foundations, theme binding, the shared widgets and the copy voice — the source the rebuild implements.
+- The 526 goldens of the V8 UI before the rebuild, recoverable at the git tag `legacy-ui-v8-goldens`.
 - Each screen's spec with its states, controls and rulings (`docs/screens/spec/`; the catalog is `docs/screens/SCREEN_CATALOG.md`).
 - The phase 6 native audit: score 13/20, findings in spec §9 rows 56–66 (`docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`).
 - There are no testimonials, users, pricing, monetization, marketing screenshots, press, or production starter-deck content. Future work must not fabricate any of them.

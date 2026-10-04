@@ -144,6 +144,18 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | FE-D25 | `.drift` P7: `core/sync`, `core/auth/account_store` (upsert thay `batch`, đo pull 1.000 dòng) | xong | FE-D24 | L | [plan](superpowers/plans/2026-10-02-drift-queries-only-p7.md); `dod_check.sh` xanh | FE-D26 |
 | FE-D26 | `.drift` P8: log DB sang `log.drift`, xoá exclude tạm, `@DriftDatabase` chỉ còn bảng | xong | FE-D19…FE-D25 | S | [plan](superpowers/plans/2026-10-02-drift-queries-only-p8.md); `dod_check.sh` xanh | — |
 
+### Rebuild (2026-10-04)
+
+UI được dựng lại từ đầu theo tài liệu chuẩn (ADR-021); mỗi sub-project có spec, plan, duyệt và
+sign-off riêng.
+
+| ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
+|---|---|---|---|---|---|---|
+| SP2 | Gỡ UI cũ: presentation của 13 feature, `Mx*`, theme, gallery, test UI, `integration_test/` và 526 golden; shell placeholder 4 tab giữ route contract | xong | sub-project 1 (PR #196) | L | [spec](superpowers/specs/2026-10-04-sp2-remove-legacy-ui-design.md), [plan](superpowers/plans/2026-10-04-sp2-remove-legacy-ui.md), [ma trận](superpowers/plans/2026-10-04-sp2-remove-legacy-ui-matrix.md); branch `ccr-841d461f-jofe0s`; tag `legacy-ui-v8-goldens`; gate 1634/1634, review cuối (Opus), APK build pass, chủ dự án sign-off 2026-10-04 | Spec SP3a |
+| SP3a | Design-system foundation: DESIGN.md (45 role M3, bảng ánh xạ) → token → theme sáng/tối → primitive → `Mx*` | chưa bắt đầu | SP2 | L | — | Spec SP3a |
+| SP3b | App shell theo NAVIGATION.md + lát dọc SCR-DECK-001, audit Impeccable, golden `scr_*` đầu tiên | chưa bắt đầu | SP3a | L | — | Spec SP3b |
+| SP3c | 33 màn còn lại, theo nhóm domain | chưa bắt đầu | SP3b | XL | — | Spec SP3c |
+
 ## Đã xong và đã kiểm chứng
 
 - **Viết và review:** UI base (FE-01…FE-06) đã merge. Mỗi component có widget test và

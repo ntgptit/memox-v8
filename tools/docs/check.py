@@ -42,6 +42,7 @@ ERROR
   `Navigate to:` or `## Related Use Cases` naming an id that does not exist
   or is deprecated; an FN cited in a UC flow but missing from its `Invokes:`
 - a file in a retired home: features/*/usecases/, features/*/ui.md, shared/ui/
+- a legacy-named golden, or a file under lib/app/gallery/ (SP2)
 - with --plan: a mapping row whose destination does not exist (a mapping
   table is one whose first header cell starts with "Nguồn"; destinations are
   backticked paths relative to docs/, `<slug>` and `*` are wildcards)
@@ -363,6 +364,23 @@ def check_retired_homes(report: Report) -> None:
             if path.is_file():
                 report.error(path, "retired home (spec §6.1): UCs go in USE_CASES.md, "
                              "screens in screens/spec/, app navigation in NAVIGATION.md")
+
+
+# SP2 removed the legacy goldens and the debug gallery (spec 2026-10-04-sp2 §6);
+# a golden is named scr_<screen>__<state>__<variant>.png from now on (R16).
+# test/visual_audit/ is not retired: MX-VIS-001 gives each rebuilt screen its
+# visual-audit companion there again.
+RETIRED_UI_HOMES = ("lib/app/gallery/**/*",)
+
+
+def check_legacy_ui(report: Report) -> None:
+    for path in sorted(g.ROOT.glob("test/**/goldens/*.png")):
+        if not path.name.startswith("scr_"):
+            report.error(path, "legacy golden (SP2): new goldens are named scr_<screen>__<state>__<variant>.png")
+    for pattern in RETIRED_UI_HOMES:
+        for path in sorted(g.ROOT.glob(pattern)):
+            if path.is_file():
+                report.error(path, "retired home (SP2): the legacy component gallery is gone")
 
 
 def check_catalog(docs: list[g.Doc], report: Report) -> None:
@@ -815,6 +833,7 @@ def run(plan: Path | None, base_keys=base_state_keys, ledger_path: Path | None =
     check_supersession(docs, by_id, report)
     check_single_product(report)
     check_retired_homes(report)
+    check_legacy_ui(report)
     check_catalog(docs, report)
     check_screen_states(docs, report, g.golden_files(), base_keys)
     check_text(docs, report)
