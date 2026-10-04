@@ -55,14 +55,20 @@ class MxCard extends StatelessWidget {
     if (tap != null) {
       body = MxRowInk(onTap: tap, borderRadius: radius, child: body);
     }
-    final Widget card = DecoratedBox(
-      decoration: BoxDecoration(
-        color: surface.ground,
-        borderRadius: radius,
-        border: Border.fromBorderSide(surface.edge),
-        boxShadow: surface.shadows,
+    // The chosen edge is a visual cue only; TalkBack hears the state too.
+    final Widget card = Semantics(
+      container: true,
+      button: tap != null,
+      selected: isSelected,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: surface.ground,
+          borderRadius: radius,
+          border: Border.fromBorderSide(surface.edge),
+          boxShadow: surface.shadows,
+        ),
+        child: ClipRRect(borderRadius: radius, child: body),
       ),
-      child: ClipRRect(borderRadius: radius, child: body),
     );
     if (tap == null) {
       return card;

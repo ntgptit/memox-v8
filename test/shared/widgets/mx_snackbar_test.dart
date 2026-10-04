@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:flutter/rendering.dart';
 
 import 'support/mx_harness.dart';
 
@@ -21,6 +22,11 @@ Widget _trigger({
     ),
     child: const Text('Go'),
   ),
+);
+
+Widget _large(Widget child) => MediaQuery(
+  data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+  child: child,
 );
 
 void main() {
@@ -79,6 +85,30 @@ void main() {
     expect(
       tester.widget<MxButton>(find.byType(MxButton)).size,
       MxButtonSize.small,
+    );
+  });
+
+  testWidgets('at large text the message is never cut', (tester) async {
+    const String message =
+        'Spanish and its 120 cards moved to Trash, where they stay for 30 days';
+    await pumpMx(
+      tester,
+      _large(
+        SizedBox(
+          width: 360,
+          child: MxSnackbar(
+            message: message,
+            actionLabel: 'Undo',
+            onAction: () {},
+          ),
+        ),
+      ),
+    );
+    expect(
+      tester
+          .renderObject<RenderParagraph>(find.text(message))
+          .didExceedMaxLines,
+      isFalse,
     );
   });
 }

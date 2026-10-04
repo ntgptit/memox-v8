@@ -66,8 +66,6 @@ class MxSnackbar extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               style: context.texts.bodyMedium?.apply(
                 color: context.colors.onInverseSurface,
               ),

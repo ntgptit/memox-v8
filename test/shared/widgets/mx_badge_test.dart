@@ -3,8 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_semantic_colors.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:flutter/rendering.dart';
 
 import 'support/mx_harness.dart';
+
+Widget _large(Widget child) => MediaQuery(
+  data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+  child: child,
+);
 
 void main() {
   for (final MapEntry(key: name, value: theme) in mxThemes.entries) {
@@ -53,6 +59,21 @@ void main() {
     expect(
       tester.getSize(find.byType(MxBadge)).height,
       greaterThan(AppSize.badge),
+    );
+  });
+
+  testWidgets('at large text a narrow badge wraps rather than cut its unit', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _large(const SizedBox(width: 64, child: MxBadge(label: '23 due'))),
+    );
+    expect(
+      tester
+          .renderObject<RenderParagraph>(find.text('23 due'))
+          .didExceedMaxLines,
+      isFalse,
     );
   });
 }

@@ -123,4 +123,49 @@ void main() {
       AppSpacing.gutter,
     );
   });
+
+  testWidgets('under a status bar it still stops 72 below the safe area', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1;
+    tester.view.padding = const FakeViewPadding(top: 47);
+    addTearDown(tester.view.reset);
+    await pumpMx(
+      tester,
+      _opener(
+        (_) => MxBottomSheet(
+          child: Column(children: List<Widget>.filled(60, const Text('Row'))),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getTopLeft(find.byType(MxBottomSheet)).dy,
+      greaterThanOrEqualTo(47 + AppSize.sheetTopClearance),
+    );
+  });
+
+  testWidgets('its last row clears the navigation bar', (tester) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1;
+    tester.view.padding = const FakeViewPadding(bottom: 48);
+    tester.view.viewPadding = const FakeViewPadding(bottom: 48);
+    addTearDown(tester.view.reset);
+    const Key last = ValueKey<String>('last');
+    await pumpMx(
+      tester,
+      _opener(
+        (_) => const MxBottomSheet(child: SizedBox(key: last, height: 80)),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getBottomLeft(find.byKey(last)).dy,
+      lessThanOrEqualTo(800 - 48),
+    );
+    expect(tester.getBottomLeft(find.byType(MxBottomSheet)).dy, 800);
+  });
 }

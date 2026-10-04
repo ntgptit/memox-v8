@@ -713,7 +713,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxCard
 - Variants: tones raised, hero, warning, success, danger, recessed (one at a time); `isSelected`; `isFullBleed`; tappable with `onTap`
 - States: resting, selected (2dp Indigo Accent edge), pressed and focused when tappable
-- Accessibility: a tappable card is one target with the keyboard ring; its content reads in the tone's `on-` role
+- Accessibility: a tappable card is one button with the keyboard ring; TalkBack hears it selected when chosen; its content reads in the tone's `on-` role
 - Tokens: `surface-container-lowest` (raised; whisper shadow in light, `outline-variant` hairline in dark), `primary-container`, `warning-container`, `success-container`, `error-container`, `surface-container-low` and their `on-` roles; `on-primary-container` (selected edge); `AppRadius.md`; `AppSpacing.card`
 - Golden: tones__light, tones__dark
 
@@ -736,7 +736,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxBadge
 - Variants: tones primary, mastery, success, warning, danger, neutral; optional glyph
 - States: one
-- Accessibility: read as its label; 24 is a minimum, the label centred, and it grows with text
+- Accessibility: read as its label; 24 is a minimum, the label centred, and it grows with text, wrapping rather than cutting the unit
 - Tokens: each tone's container under its `on-…-container` (`surface-container-high` / `on-surface-variant` for neutral); `labelSmall`; `AppSize.badge`; `AppRadius.full`
 - Golden: tones__light, tones__dark
 
@@ -744,13 +744,13 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxStatusBadge
 - Variants: kinds new, learning, reviewing, mastered; pill or bare dot (`isDot`)
 - States: one
-- Accessibility: a status is never colour alone: the pill shows its label, the dot is named by it for TalkBack
+- Accessibility: a status is never colour alone: the pill shows its label (it wraps rather than cuts), the dot is named by it for TalkBack
 - Tokens: `status-*` (dot), `status-*-container` / `on-status-*-container` (pill); one 8 dot (`AppSize.statusDot`), 4 from its label; `AppSize.badge`
 - Golden: kinds__light, kinds__dark
 
 
 #### MxTagChip
-- Variants: 24 on its own line, 20 dense (both minimums); hugs its name up to half the width it is given
+- Variants: 24 on its own line, 20 dense (both minimums); hugs its name up to half the width it is given (in a row, inside a `Flexible`; with no width bound, half the window)
 - States: one
 - Accessibility: read whole even when the chip ends in an ellipsis
 - Tokens: `surface-container-high`, `on-surface-variant`; `labelSmall`; `AppSize.tagChip`, `AppSize.tagChipDense`
@@ -790,7 +790,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxDialog
 - Variants: widths small (300), medium (320), large (340), never wider than the window less its gutters; optional message and content
 - States: opening (fade and scale from 0.92 over 200ms, a component contract; at once under reduced motion), open
-- Accessibility: a named route scope; the 45% scrim dismisses unless told not to; its footer is `MxSheetActions`
+- Accessibility: a route scope named by its title, which is a header; the 45% scrim dismisses unless told not to; it stays inside the safe area and above the keyboard; its footer is `MxSheetActions`
 - Tokens: `surface-container-high`; `AppRadius.xl`; overlay shadow; `scrim` at `AppOpacity.scrim`; `titleLarge`, `bodyMedium` in `on-surface-variant`; `AppSpacing.card`
 - Golden: decision__light, decision__dark
 
@@ -798,12 +798,12 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxBottomSheet
 - Variants: with or without a title and a pinned footer
 - States: opening (slides up over 260ms; at once under reduced motion), open, above the keyboard
-- Accessibility: the title is a header; the sheet stops 72 below the top safe area (Material 3) and the body scrolls; it rides above the keyboard; the grabber sits in a 48 band
+- Accessibility: the title is a header; the sheet stops 72 below the top safe area (Material 3) and the body scrolls; it rides above the keyboard; its ground runs under the navigation bar while its content clears it; the grabber sits in a 48 band
 - Tokens: `surface-container-high`; top corners `AppRadius.xl`; chrome shadow; grabber 32 × 4 in `outline` (3:1; Material 3's handle); `AppSize.sheetTopClearance` (72), `AppSize.sheetMaxWidth` (640)
 - Golden: picker__light, picker__dark
 
 #### MxSnackbar
-- Variants: message only (at most two lines); one action (`isUndo` keeps it 8s)
+- Variants: message only (it grows, never cut); one action (`isUndo` keeps it 8s)
 - States: shown 4s or 8s; held while TalkBack is on and it carries an action
 - Accessibility: the action is reachable for TalkBack; it replaces any snackbar already shown
 - Tokens: `inverse-surface`, `on-inverse-surface`, `inverse-primary` (the action: `MxButton`'s inverse tone, for any action on an inverse surface, with its pressed overlay and an `inverse-primary` focus ring); `AppRadius.md`; `AppDurations.toast`, `AppDurations.toastWithUndo`

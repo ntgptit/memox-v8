@@ -52,8 +52,6 @@ class MxStatusBadge extends StatelessWidget {
               Flexible(
                 child: Text(
                   label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: context.texts.labelSmall?.apply(color: paint.content),
                 ),
               ),

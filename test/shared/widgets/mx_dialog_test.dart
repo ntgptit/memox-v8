@@ -113,4 +113,81 @@ void main() {
     );
     expect(scale.scale.value, 1);
   });
+
+  testWidgets('it rides above the keyboard', (tester) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1;
+    tester.view.viewInsets = const FakeViewPadding(bottom: 400);
+    addTearDown(tester.view.reset);
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => TextButton(
+          onPressed: () =>
+              showMxDialog<void>(context, builder: (_) => _dialog(() {})),
+          child: const Text('Open'),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    final Rect sheet = tester.getRect(
+      find
+          .descendant(
+            of: find.byType(MxDialog),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    expect(sheet.bottom, lessThanOrEqualTo(400));
+  });
+
+  testWidgets('its title is a header that names the route', (tester) async {
+    final SemanticsHandle semantics = tester.ensureSemantics();
+    await pumpMx(tester, _dialog(() {}));
+    expect(
+      tester.getSemantics(find.text('Move to Trash?')),
+      containsSemantics(
+        label: 'Move to Trash?',
+        isHeader: true,
+        namesRoute: true,
+      ),
+    );
+    semantics.dispose();
+  });
+
+  testWidgets('it keeps clear of a display cutout', (tester) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1;
+    tester.view.padding = const FakeViewPadding(left: 100);
+    tester.view.viewPadding = const FakeViewPadding(left: 100);
+    addTearDown(tester.view.reset);
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => TextButton(
+          onPressed: () => showMxDialog<void>(
+            context,
+            builder: (_) => _dialog(() {}, width: MxDialogWidth.large),
+          ),
+          child: const Text('Open'),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .getRect(
+            find
+                .descendant(
+                  of: find.byType(MxDialog),
+                  matching: find.byType(DecoratedBox),
+                )
+                .first,
+          )
+          .left,
+      greaterThanOrEqualTo(100 + 16),
+    );
+  });
 }

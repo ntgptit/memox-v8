@@ -84,52 +84,64 @@ class MxDialog extends StatelessWidget {
     final String? body = message;
     final Widget? extra = content;
     final BorderRadius radius = BorderRadius.circular(AppRadius.xl);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.gutter),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: width.extent),
-          child: Semantics(
-            scopesRoute: true,
-            namesRoute: true,
-            explicitChildNodes: true,
-            label: title,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: mxOverlayGround(colors),
-                borderRadius: radius,
-                boxShadow: [overlay.on(colors.shadow)],
-              ),
-              child: Material(
-                type: MaterialType.transparency,
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.card),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Flexible(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            spacing: AppSpacing.control,
-                            children: [
-                              Text(title, style: context.texts.titleLarge),
-                              if (body != null)
-                                Text(
-                                  body,
-                                  style: context.texts.bodyMedium?.apply(
-                                    color: colors.onSurfaceVariant,
+    // Centred in the safe window less the keyboard, so a short form stays in
+    // view.
+    return Padding(
+      padding: MediaQuery.viewInsetsOf(context),
+      child: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.gutter),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: width.extent),
+              child: Semantics(
+                scopesRoute: true,
+                explicitChildNodes: true,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: mxOverlayGround(colors),
+                    borderRadius: radius,
+                    boxShadow: [overlay.on(colors.shadow)],
+                  ),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.card),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Flexible(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                spacing: AppSpacing.control,
+                                children: [
+                                  Semantics(
+                                    header: true,
+                                    namesRoute: true,
+                                    child: Text(
+                                      title,
+                                      style: context.texts.titleLarge,
+                                    ),
                                   ),
-                                ),
-                              ?extra,
-                            ],
+                                  if (body != null)
+                                    Text(
+                                      body,
+                                      style: context.texts.bodyMedium?.apply(
+                                        color: colors.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ?extra,
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: AppSpacing.section),
+                          actions,
+                        ],
                       ),
-                      const SizedBox(height: AppSpacing.section),
-                      actions,
-                    ],
+                    ),
                   ),
                 ),
               ),

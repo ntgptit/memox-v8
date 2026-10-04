@@ -113,4 +113,53 @@ void main() {
     final Size painted = tester.getSize(find.byType(MxCard));
     await expectMxKeyboardRingOnly(tester, card, painted: painted);
   });
+
+  testWidgets('TalkBack hears a tappable card as a button, and its choice', (
+    tester,
+  ) async {
+    final SemanticsHandle semantics = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      MxCard(isSelected: true, onTap: () {}, child: const Text('Spanish')),
+    );
+    expect(
+      tester.getSemantics(find.text('Spanish')),
+      containsSemantics(
+        label: 'Spanish',
+        isButton: true,
+        isSelected: true,
+        hasTapAction: true,
+      ),
+    );
+    await pumpMx(tester, const MxCard(child: Text('Spanish')));
+    expect(
+      tester.getSemantics(find.text('Spanish')),
+      containsSemantics(label: 'Spanish', isButton: false, isSelected: false),
+    );
+    semantics.dispose();
+  });
+
+  testWidgets('choosing a card moves neither its size nor its content', (
+    tester,
+  ) async {
+    for (final ThemeData theme in mxThemes.values) {
+      await pumpMx(
+        tester,
+        const SizedBox(width: 200, child: MxCard(child: Text('Spanish'))),
+        theme: theme,
+      );
+      final Rect rest = tester.getRect(find.text('Spanish'));
+      final Size card = tester.getSize(find.byType(MxCard));
+      await pumpMx(
+        tester,
+        const SizedBox(
+          width: 200,
+          child: MxCard(isSelected: true, child: Text('Spanish')),
+        ),
+        theme: theme,
+      );
+      expect(tester.getRect(find.text('Spanish')), rest);
+      expect(tester.getSize(find.byType(MxCard)), card);
+    }
+  });
 }

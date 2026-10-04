@@ -3,8 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_semantic_colors.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
+import 'package:flutter/rendering.dart';
 
 import 'support/mx_harness.dart';
+
+Widget _large(Widget child) => MediaQuery(
+  data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+  child: child,
+);
 
 void main() {
   for (final MapEntry(key: name, value: theme) in mxThemes.entries) {
@@ -56,5 +62,28 @@ void main() {
       isSemantics(label: 'Learning'),
     );
     semantics.dispose();
+  });
+
+  testWidgets('at large text a narrow badge wraps rather than cut its label', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _large(
+        const SizedBox(
+          width: 80,
+          child: MxStatusBadge(
+            kind: MxStatusBadgeKind.reviewing,
+            label: 'Reviewing',
+          ),
+        ),
+      ),
+    );
+    expect(
+      tester
+          .renderObject<RenderParagraph>(find.text('Reviewing'))
+          .didExceedMaxLines,
+      isFalse,
+    );
   });
 }

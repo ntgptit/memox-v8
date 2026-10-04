@@ -53,47 +53,49 @@ class MxBottomSheet extends StatelessWidget {
     final AppShadow chrome = isDark
         ? AppShadows.chromeDark
         : AppShadows.chromeLight;
-    final MediaQueryData media = MediaQuery.of(context);
+    final double keyboard = MediaQuery.viewInsetsOf(context).bottom;
+    // The navigation bar; zero while the keyboard covers it.
+    final double systemBar = MediaQuery.paddingOf(context).bottom;
     final String? heading = title;
     final MxSheetActions? footer = actions;
-    return Padding(
-      padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight:
-              media.size.height -
-              media.padding.top -
-              media.viewInsets.bottom -
-              AppSize.sheetTopClearance,
-        ),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: mxOverlayGround(colors),
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(AppRadius.xl),
-            ),
-            boxShadow: [chrome.on(colors.shadow)],
+    // The route already lays the sheet out below the top safe area.
+    return LayoutBuilder(
+      builder: (context, route) => Padding(
+        padding: EdgeInsets.only(bottom: keyboard),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: route.maxHeight - keyboard - AppSize.sheetTopClearance,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const _Grabber(),
-              if (heading != null)
-                Padding(
-                  padding: const EdgeInsetsDirectional.only(
-                    start: AppSpacing.gutter,
-                    end: AppSpacing.gutter,
-                    bottom: AppSpacing.grouped,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: mxOverlayGround(colors),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(AppRadius.xl),
+              ),
+              boxShadow: [chrome.on(colors.shadow)],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const _Grabber(),
+                if (heading != null)
+                  Padding(
+                    padding: const EdgeInsetsDirectional.only(
+                      start: AppSpacing.gutter,
+                      end: AppSpacing.gutter,
+                      bottom: AppSpacing.grouped,
+                    ),
+                    child: Semantics(
+                      header: true,
+                      child: Text(heading, style: context.texts.titleLarge),
+                    ),
                   ),
-                  child: Semantics(
-                    header: true,
-                    child: Text(heading, style: context.texts.titleLarge),
-                  ),
-                ),
-              Flexible(child: SingleChildScrollView(child: child)),
-              ?footer,
-            ],
+                Flexible(child: SingleChildScrollView(child: child)),
+                ?footer,
+                SizedBox(height: systemBar),
+              ],
+            ),
           ),
         ),
       ),
