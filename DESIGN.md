@@ -553,10 +553,10 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxAppBar | Top bar in two densities | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
 | MxBreadcrumb | Path of presentation-neutral items; knows no deck | shared | CARD, DECK, PROGRESS, SETTINGS, SRS, STUDY, TRANSFER | SP3a | planned |
 | MxFooterBar | In-flow commit bar | shared | ACCOUNT, CARD, MONITORING, PROGRESS, SEARCH, SETTINGS, STUDY, TRANSFER, TRASH | SP3a | planned |
-| MxListRow | List row, 48 minimum, a one-line title | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
-| MxSettingsRow | Settings row with a trailing value or control | shared | ACCOUNT, DECK, REMINDER, SETTINGS | SP3a | planned |
-| MxListSectionHeader | Header over a list | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, SRS, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
-| MxActionSheetCommandRow | Command row of an action sheet | shared | CARD, DECK, TAG, TRASH | SP3a | planned |
+| MxListRow | List row, 48 minimum, a one-line title | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
+| MxSettingsRow | Settings row with a trailing value or control | shared | ACCOUNT, DECK, REMINDER, SETTINGS | SP3a | built |
+| MxListSectionHeader | Header over a list | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, SRS, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
+| MxActionSheetCommandRow | Command row of an action sheet | shared | CARD, DECK, TAG, TRASH | SP3a | built |
 | AppNavigationShell | The four-tab navigation shell | app-shell | SCR-DECK-001, SCR-STUDY-001, SCR-PROGRESS-001, SCR-SETTINGS-002 | SP3b | planned |
 | MxBottomNav | Bottom bar of the navigation shell | app-shell | AppNavigationShell | SP3b | planned |
 | MxNavRail | Navigation rail from 600dp | app-shell | AppNavigationShell | SP3b | planned |
@@ -835,6 +835,37 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - States: one
 - Accessibility: the title is a header and a live region; the message speaks in the local-first voice
 - Tokens: `error-container`, `on-error-container`; the empty state's tile (`AppSize.emptyTile`, 64); `AppRadius.lg`; glyph `AppIconSize.large`; `titleLarge`, `bodyMedium`
+- Golden: forms__light, forms__dark
+
+#### MxListRow
+- Variants: leading none, an `MxIconTile` (medium, 40, in `iconTone`) or an `MxSelectionCheckbox`; a title and an optional subtitle; trailing exactly one of none, chevron, `MxBadge`, a value, or one `MxIconButton`
+- States: tappable or inert; disabled; checked while selecting
+- Accessibility: 48 minimum, 16 across and 12 down, the leading mark 12 from the text; the title keeps one line with an ellipsis and is read whole; the subtitle wraps to two lines; a tappable row is one button with the shared ripple and the keyboard ring; an inert row stays at full contrast; disabled dims the leading mark, title and chevron (`AppOpacity.disabled`), never the subtitle that says why; one TalkBack node carrying every fact; a trailing icon button is its own node and focus stop; the chevron mirrors in right-to-left text
+- Tokens: `on-surface` (title, row tracking), `on-surface-variant` (subtitle, value, chevron); `bodyLarge`, `bodyMedium`; `AppSize.tapTarget`; `AppSpacing.gutter`, `AppSpacing.grouped`
+- Golden: forms__light, forms__dark
+
+
+#### MxListSectionHeader
+- Variants: a title alone, or with a trailing `MxChipTrigger` (sort or filter)
+- States: one
+- Accessibility: the overline over a list (`MxSection` heads a card); the Section Label upper-cased by the widget, so it takes the app's own words, never user data; a header; 16 across and 8 down alone, at least 48 tall with a trigger
+- Tokens: `labelMedium` (Section Label) in `on-surface-variant`; `AppSize.tapTarget`
+- Golden: forms__light, forms__dark
+
+
+#### MxSettingsRow
+- Variants: navigation (chevron), action (no chevron), value (plain text that follows another setting), toggle (the whole row is the switch); a lead `MxIconTile` in `iconTone` (tinted by default) and an optional subtitle
+- States: enabled, disabled; toggle on and off
+- Accessibility: 48 minimum, 16 across and 12 down; the label wraps beside its end mark at any text scale; disabled dims the tile, label and chevron, never the subtitle that says why, and the toggle draws its own disabled state, not dimmed again; one TalkBack node: a button, or the switch for a toggle row
+- Tokens: `on-surface`, `on-surface-variant`; `bodyLarge`, `bodyMedium`; `AppOpacity.disabled`; through `MxIconTile` and `MxToggle`
+- Golden: kinds__light, kinds__dark
+
+
+#### MxActionSheetCommandRow
+- Variants: a glyph, a label and an optional subtitle; `isDestructive`
+- States: one
+- Accessibility: a 24 glyph in `on-surface-variant` (Material 3's menu leading icon, not a tile); a destructive command paints its glyph and label in `error` (4.5:1 on the sheet ground, declared) and its words say so; 48 minimum, 16 across and 12 down; one TalkBack node, a button
+- Tokens: `on-surface`, `on-surface-variant`, `error`; `bodyLarge`, `bodyMedium`; `AppIconSize.large`
 - Golden: forms__light, forms__dark
 
 ## Do's and Don'ts
