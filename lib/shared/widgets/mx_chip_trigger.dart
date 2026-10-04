@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:memox/shared/widgets/primitives/mx_chip_shell.dart';
 
-/// A ghost chip that opens a menu or a sheet ("Manual ⌄"); tinted
-/// `primary-container` while what it opened is in force ("Manual · Due only").
+/// A ghost chip that opens a menu or a sheet ("Manual ⌄"); while what it
+/// opened is in force ("Manual · Due only") it is tinted `primary-container`
+/// with an Indigo Accent edge, and announced as selected.
 class MxChipTrigger extends StatelessWidget {
   const MxChipTrigger({
     required this.label,
@@ -19,6 +20,7 @@ class MxChipTrigger extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
+      selected: isActive,
       excludeSemantics: true,
       label: label,
       onTap: onOpen,

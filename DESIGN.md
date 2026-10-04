@@ -357,7 +357,7 @@ A cool indigo-tinted neutral field with one brand indigo, one reserved violet, a
 
 **The Selection Ladder Rule.** Strength follows meaning, so a selection never competes with the screen's one action:
 - **Action:** `primary` fill under `on-primary`: the primary button and the FAB, plus progress fills. Nothing else fills `primary`.
-- **Chosen:** a tonal ground: `primary-container` under `on-primary-container`, with a non-colour cue. A selected filter chip shows a leading check, a chip trigger in force is tinted the same way, and the chosen segment is raised on its tray.
+- **Chosen:** a tonal ground: `primary-container` under `on-primary-container`, with a non-colour cue. A selected filter chip shows a leading check, a chip trigger in force is tinted the same way with a 1dp Indigo Accent edge and is announced as selected, and the chosen segment is raised on its tray.
 - **On / checked:** the Indigo Accent mark. A toggle that is on has an `on-primary-container` track with a `primary-container` thumb at the end. A checked checkbox is an `on-primary-container` box with a `primary-container` check. A selected radio is an `on-primary-container` ring.
 - **Neutral:** `surface` / `on-surface` / `outline`: unselected chips, the off toggle (`surface-container-highest` track, `outline` thumb and edge) and the empty checkbox (`outline` edge).
 

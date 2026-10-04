@@ -708,6 +708,13 @@
         "b": "status-reviewing-container",
         "minDeltaE": 8,
         "why": "the four status badges keep their own ground"
+      },
+      {
+        "a": "status-new",
+        "b": "status-mastered",
+        "minDeltaE": 15,
+        "minDeltaECvd": 8,
+        "why": "the four statuses keep their own colour"
       }
     ],
     "iconSize": {
@@ -795,7 +802,7 @@
       "name": "Filter Chip",
       "kind": "chip",
       "refersTo": "filter-chip",
-      "description": "28 tall pill; selected swaps fill to primary and ink to on-primary.",
+      "description": "28 tall pill; selected turns to the tonal primary-container under on-primary-container with a leading check (The Selection Ladder Rule).",
       "html": "<span class=\"ds-chip\">All</span> <span class=\"ds-chip ds-chip-on\">Cards</span>",
       "css": ".ds-chip{display:inline-flex;align-items:center;height:28px;padding:0 8px;border-radius:999px;background:var(--color-surface-container-lowest);color:var(--color-on-surface);box-shadow:inset 0 0 0 1px var(--color-outline);font:600 12px \"Plus Jakarta Sans\",sans-serif;letter-spacing:0.1px} .ds-chip-on{background:var(--color-primary-container);color:var(--color-on-primary-container);box-shadow:none}"
     },
