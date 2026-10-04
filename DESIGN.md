@@ -548,11 +548,11 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxEmptyState | Nothing here yet, and what to do | shared | ACCOUNT, CARD, DECK, SEARCH, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
 | MxErrorState | Inline load failure with Retry, or not found | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | built |
 | MxSkeleton | Loading placeholder family | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | built |
-| MxScreenScaffold | Screen frame: app-bar slot, one body, footer slot, FAB slot; not the navigation shell | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
-| MxScreenScroll | The screen's scroll body with tail clearance | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
-| MxAppBar | Top bar in two densities | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
-| MxBreadcrumb | Path of presentation-neutral items; knows no deck | shared | CARD, DECK, PROGRESS, SETTINGS, SRS, STUDY, TRANSFER | SP3a | planned |
-| MxFooterBar | In-flow commit bar | shared | ACCOUNT, CARD, MONITORING, PROGRESS, SEARCH, SETTINGS, STUDY, TRANSFER, TRASH | SP3a | planned |
+| MxScreenScaffold | Screen frame: app-bar slot, one body, footer slot, FAB slot; not the navigation shell | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
+| MxScreenScroll | The screen's scroll body with tail clearance | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
+| MxAppBar | Top bar in two densities | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
+| MxBreadcrumb | Path of presentation-neutral items; knows no deck | shared | CARD, DECK, PROGRESS, SETTINGS, SRS, STUDY, TRANSFER | SP3a | built |
+| MxFooterBar | In-flow commit bar | shared | ACCOUNT, CARD, MONITORING, PROGRESS, SEARCH, SETTINGS, STUDY, TRANSFER, TRASH | SP3a | built |
 | MxListRow | List row, 48 minimum, a one-line title | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
 | MxSettingsRow | Settings row with a trailing value or control | shared | ACCOUNT, DECK, REMINDER, SETTINGS | SP3a | built |
 | MxListSectionHeader | Header over a list | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, SRS, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
@@ -867,6 +867,46 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: a 24 glyph in `on-surface-variant` (Material 3's menu leading icon, not a tile); a destructive command paints its glyph and label in `error` (4.5:1 on the sheet ground, declared) and its words say so; 48 minimum, 16 across and 12 down; one TalkBack node, a button
 - Tokens: `on-surface`, `on-surface-variant`, `error`; `bodyLarge`, `bodyMedium`; `AppIconSize.large`
 - Golden: forms__light, forms__dark
+
+#### MxAppBar
+- Variants: densities screen (the Title role, -0.5 tracking as a component override) and content (Body Large); leading none (the title starts on the gutter), back or close (the title starts 8 past the control's 48 target); up to three `MxIconButton` actions, or one text action in the text tone (never a primary fill)
+- States: flat `surface` at rest; `surface-container` once content scrolls under it (Material 3's scrolled-under container; no shadow, no tint)
+- Accessibility: 56 tall; the title keeps one line with an ellipsis and is a header; `isTitleLive` makes a selection count a live region; back and close are named by the platform's words and pop through `Navigator.maybePop` unless the caller runs its own; the ground spans the window, the content keeps to the 720 column
+- Tokens: `surface`, `surface-container`, `on-surface`, `on-surface-variant`; `titleLarge`, `titleMedium`; `AppSize.appBar`; the `appBarTheme` slot matches it
+- Golden: forms__light, forms__dark
+
+
+#### MxBreadcrumb
+- Variants: items of a label and an optional `onTap`; the last item is the current place
+- States: one
+- Accessibility: presentation-neutral (knows no deck, ancestor or route); one line; the current place keeps its full width while each ancestor keeps at least a 48 target, the ancestors share the rest and end in an ellipsis; each ancestor that can be tapped is a 48 button with the ripple and the keyboard ring; the current place reads as selected; every label is read whole; the separator mirrors in right-to-left text
+- Tokens: `bodyMedium`; `on-surface` (current), `on-surface-variant` (ancestors, separator); `chevron_right` at `AppIconSize.small`
+- Golden: forms__light, forms__dark
+
+
+#### MxFooterBar
+- Variants: a caption, actions (a slot: `MxSheetActions` today, `MxActionPair` once built), or both
+- States: as its actions (enabled, disabled, loading)
+- Accessibility: in flow under the body, the page ground under a 1dp `outline-variant` hairline and no shadow; 16 across, 12 down, the caption 8 above the actions; it clears the system bar and rides above the keyboard; its content keeps to the 720 column
+- Tokens: `surface`, `outline-variant`; caption `bodySmall` in `on-surface-variant`
+- Golden: forms__light, forms__dark
+
+
+#### MxScreenScaffold
+- Variants: a top bar (optional), a pinned breadcrumb (optional, outside the scroll), one body (any widget), an in-flow footer (optional), a FAB (optional)
+- States: with or without a FAB (the caller passes none while its own state hides it), above the keyboard
+- Accessibility: knows no tab, route or bottom bar; the shell hands it the room left as the bottom inset; the FAB sits 16 inside the column's end edge (the start edge in right-to-left text) and 16 above the footer or the system bar, never over the footer; the body and the footer ride above the keyboard
+- Tokens: `surface` (page ground); `AppBreakpoints.contentMax` (720 column); `AppSpacing.gutter`
+- Golden: frames__light, frames__dark
+
+
+#### MxScreenScroll
+- Variants: a list of children, or `builder` for a long list
+- States: tail 48 (`pageEnd`) under pinned chrome; with a FAB the tail clears it (the FAB's 52 plus a gutter on each side)
+- Accessibility: the gutter and the tail add the system insets the scaffold leaves to the body; the first item starts flush, the gaps between items are the screen's own; rows sit in a full-bleed surface (`MxCard`), not straight on the gutter
+- Tokens: `AppSpacing.gutter`, `AppSpacing.pageEnd`, `AppSize.fab`
+- Golden: none — seen in `mx_screen_scaffold__frames`
+
 
 ## Do's and Don'ts
 
