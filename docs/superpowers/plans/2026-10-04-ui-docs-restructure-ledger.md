@@ -1242,54 +1242,54 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/22-progress.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/22-progress.md:3` # 22 · Progress |  |
-| `shared/ui/screen-handoff/22-progress.md:5` The Progress tab: what was studied today and over the last seven days, the curre |  |
-| `shared/ui/screen-handoff/22-progress.md:10` ## Entry points |  |
-| `shared/ui/screen-handoff/22-progress.md:12` - **The bottom navigation:** the Progress tab opens the library level, `/progres |  |
-| `shared/ui/screen-handoff/22-progress.md:13` - **A deck row:** opens that deck's level, `/progress/:deckId`, under the tab ba |  |
-| `shared/ui/screen-handoff/22-progress.md:15` - **The breadcrumb of a deck's level:** "Progress" returns to the library level; |  |
-| `shared/ui/screen-handoff/22-progress.md:18` ## Layout |  |
-| `shared/ui/screen-handoff/22-progress.md:20` The library level, top to bottom: |  |
-| `shared/ui/screen-handoff/22-progress.md:22` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/22-progress.md:24` \| App bar \| `MxAppBar` (screen) \| "Progress". \| |  |
-| `shared/ui/screen-handoff/22-progress.md:25` \| Today \| `MxCard` \| The overline "Today", the day's card-days, and "{l} learnin |  |
-| `shared/ui/screen-handoff/22-progress.md:26` \| Streak \| `MxCard` \| One tile, "Current" (the flame in the `streak` colour, "{n |  |
-| `shared/ui/screen-handoff/22-progress.md:27` \| Range \| `MxSegmentedTray` (wide) \| "Last 7 days" · "Last 30 days", directly ab |  |
-| `shared/ui/screen-handoff/22-progress.md:28` \| List \| `MxListSectionHeader` + `MxCard` + `MxListRow`s \| "By deck" (the range |  |
-| `shared/ui/screen-handoff/22-progress.md:29` \| Note \| `MxNote` \| A quiet range: "Nothing studied in the last 7 days. Switch t |  |
-| `shared/ui/screen-handoff/22-progress.md:30` \| Footer line \| text \| "Read-only · resets change nothing here" (Today states th |  |
-| `shared/ui/screen-handoff/22-progress.md:32` A deck's level: the app bar with Back and the deck's name, the breadcrumb "Progr |  |
-| `shared/ui/screen-handoff/22-progress.md:37` Switching the range reads nothing (BR-PROGRESS-003). The numbers follow every wr |  |
-| `shared/ui/screen-handoff/22-progress.md:40` ## States |  |
-| `shared/ui/screen-handoff/22-progress.md:42` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/22-progress.md:44` \| loaded (Last 7 days) \| `progress_week_light.png` \| `progress_week_dark.png` \| |  |
-| `shared/ui/screen-handoff/22-progress.md:45` \| month (Last 30 days) \| `progress_month_light.png` \| `progress_month_dark.png` |  |
-| `shared/ui/screen-handoff/22-progress.md:46` \| held \| `progress_held_light.png` \| `progress_held_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/22-progress.md:47` \| lost \| `progress_lost_light.png` \| `progress_lost_dark.png` \| The note names t |  |
-| `shared/ui/screen-handoff/22-progress.md:48` \| deck \| `deck_progress_deck_light.png` \| `deck_progress_deck_dark.png` \| "Whole |  |
-| `shared/ui/screen-handoff/22-progress.md:49` \| never \| `progress_never_light.png` \| `progress_never_dark.png` \| "Start studyi |  |
-| `shared/ui/screen-handoff/22-progress.md:50` \| loading \| `progress_loading_light.png` \| `progress_loading_dark.png` \| The scr |  |
-| `shared/ui/screen-handoff/22-progress.md:51` \| error \| `progress_error_light.png` \| `progress_error_dark.png` \| With Retry, u |  |
-| `shared/ui/screen-handoff/22-progress.md:52` \| quiet range \| — \| — \| (UC-PROGRESS-002 A3) the note under the list. \| |  |
-| `shared/ui/screen-handoff/22-progress.md:53` \| no decks \| — \| — \| (A2) only "No decks yet · Create a deck in the Library and |  |
-| `shared/ui/screen-handoff/22-progress.md:54` \| no sub-decks \| — \| — \| (A1) the total row and its note. \| |  |
-| `shared/ui/screen-handoff/22-progress.md:55` \| deck gone \| — \| — \| (E2) "This deck is no longer here" with Back, no Retry (UI |  |
-| `shared/ui/screen-handoff/22-progress.md:56` Other goldens: `deck_progress_leaf_light.png` / `deck_progress_leaf_dark.png` (a |  |
-| `shared/ui/screen-handoff/22-progress.md:59` Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held, |  |
-| `shared/ui/screen-handoff/22-progress.md:61` ## Rulings |  |
-| `shared/ui/screen-handoff/22-progress.md:63` - **UC-PROGRESS-001 step 4, UC-PROGRESS-002 step 1, D10:** the range tray sits d |  |
-| `shared/ui/screen-handoff/22-progress.md:64` - **BR-PROGRESS-001, D2:** the list has a total row with the four numbers, no he |  |
-| `shared/ui/screen-handoff/22-progress.md:65` - **Critique P2, D11:** an idle deck row keeps full contrast and reads "No activ |  |
-| `shared/ui/screen-handoff/22-progress.md:66` - **UC-PROGRESS-001 A2, D1:** never studied shows the placeholders plus "Start s |  |
-| `shared/ui/screen-handoff/22-progress.md:67` - **UI-base row 125:** loading shows the screen's own skeleton (Today, Streak an |  |
-| `shared/ui/screen-handoff/22-progress.md:68` - **UC-PROGRESS-002 A1–A3, E2:** quiet range, no deck, leaf and gone states are |  |
-| `shared/ui/screen-handoff/22-progress.md:69` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/22-progress.md:70` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig |  |
-| `shared/ui/screen-handoff/22-progress.md:71` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/22-progress.md:72` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** every d |  |
-| `shared/ui/screen-handoff/22-progress.md:74` ## Copy |  |
-| `shared/ui/screen-handoff/22-progress.md:76` "Progress" · "Today" · "{l} learning · {r} reviewing · a card counts once per da |  |
+| `shared/ui/screen-handoff/22-progress.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:3` # 22 · Progress | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:5` The Progress tab: what was studied today and over the last seven days, the curre | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:10` ## Entry points | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:12` - **The bottom navigation:** the Progress tab opens the library level, `/progres | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:13` - **A deck row:** opens that deck's level, `/progress/:deckId`, under the tab ba | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:15` - **The breadcrumb of a deck's level:** "Progress" returns to the library level; | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:18` ## Layout | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:20` The library level, top to bottom: | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:22` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:24` \| App bar \| `MxAppBar` (screen) \| "Progress". \| | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:25` \| Today \| `MxCard` \| The overline "Today", the day's card-days, and "{l} learnin | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:26` \| Streak \| `MxCard` \| One tile, "Current" (the flame in the `streak` colour, "{n | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:27` \| Range \| `MxSegmentedTray` (wide) \| "Last 7 days" · "Last 30 days", directly ab | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:28` \| List \| `MxListSectionHeader` + `MxCard` + `MxListRow`s \| "By deck" (the range | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:29` \| Note \| `MxNote` \| A quiet range: "Nothing studied in the last 7 days. Switch t | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:30` \| Footer line \| text \| "Read-only · resets change nothing here" (Today states th | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:32` A deck's level: the app bar with Back and the deck's name, the breadcrumb "Progr | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:37` Switching the range reads nothing (BR-PROGRESS-003). The numbers follow every wr | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:40` ## States | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:42` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:44` \| loaded (Last 7 days) \| `progress_week_light.png` \| `progress_week_dark.png` \| | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:45` \| month (Last 30 days) \| `progress_month_light.png` \| `progress_month_dark.png` | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:46` \| held \| `progress_held_light.png` \| `progress_held_dark.png` \| — \| | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:47` \| lost \| `progress_lost_light.png` \| `progress_lost_dark.png` \| The note names t | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:48` \| deck \| `deck_progress_deck_light.png` \| `deck_progress_deck_dark.png` \| "Whole | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:49` \| never \| `progress_never_light.png` \| `progress_never_dark.png` \| "Start studyi | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:50` \| loading \| `progress_loading_light.png` \| `progress_loading_dark.png` \| The scr | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:51` \| error \| `progress_error_light.png` \| `progress_error_dark.png` \| With Retry, u | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:52` \| quiet range \| — \| — \| (UC-PROGRESS-002 A3) the note under the list. \| | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:53` \| no decks \| — \| — \| (A2) only "No decks yet · Create a deck in the Library and | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:54` \| no sub-decks \| — \| — \| (A1) the total row and its note. \| | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:55` \| deck gone \| — \| — \| (E2) "This deck is no longer here" with Back, no Retry (UI | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:56` Other goldens: `deck_progress_leaf_light.png` / `deck_progress_leaf_dark.png` (a | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:59` Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held, | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:61` ## Rulings | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:63` - **UC-PROGRESS-001 step 4, UC-PROGRESS-002 step 1, D10:** the range tray sits d | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:64` - **BR-PROGRESS-001, D2:** the list has a total row with the four numbers, no he | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:65` - **Critique P2, D11:** an idle deck row keeps full contrast and reads "No activ | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:66` - **UC-PROGRESS-001 A2, D1:** never studied shows the placeholders plus "Start s | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:67` - **UI-base row 125:** loading shows the screen's own skeleton (Today, Streak an | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:68` - **UC-PROGRESS-002 A1–A3, E2:** quiet range, no deck, leaf and gone states are | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:69` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:70` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:71` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:72` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** every d | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:74` ## Copy | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `shared/ui/screen-handoff/22-progress.md:76` "Progress" · "Today" · "{l} learning · {r} reviewing · a card counts once per da | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 
 ## shared/ui/screen-handoff/23-settings.md
 
@@ -2271,43 +2271,43 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:5` rules: [BR-MODE-005, BR-PROGRESS-009, BR-PROGRESS-010, BR-PROGRESS-011, BR-PROGR | superseded → FN-PROGRESS-001 (Business rules) |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:6` code: [lib/features/progress/domain/usecases/watch_progress_use_case.dart, lib/f | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:10` **Actor:** Người dùng | pending → SCR-PROGRESS-001 (entry points: the Progress tab and the /progress deep link); intent kept in UC-PROGRESS-001 (Mục tiêu, Preconditions) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:10` **Actor:** Người dùng | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:16` ## Main flow | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:18` **Main flow:** | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:19` 1. Người dùng mở tab Progress. Hệ thống chụp **một** snapshot của | superseded → FN-PROGRESS-001 (one clock and offset reading per emission, stated at the top of functional-spec/progress.md) |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:21` 2. Hệ thống mở **một** stream đọc lịch sử học, gộp ngay trong SQLite thành các | superseded → FN-PROGRESS-001 (one stream; card-day aggregation done in SQL is an implementation note of the BRs) |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:24` 3. Trong lúc chờ emission đầu tiên, màn hình hiện trạng thái loading có nhãn | pending → SCR-PROGRESS-001 (the loading state labelled for screen readers) |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:26` 4. Emission tới. Hệ thống hiển thị ba khối, cùng một snapshot: | pending → SCR-PROGRESS-001 (the three blocks Current streak, Today, Last 7 days at the top of the one /progress scroll, above the range selector, totals and deck list); intent kept in UC-PROGRESS-001 steps 2–3 + FN-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:24` 3. Trong lúc chờ emission đầu tiên, màn hình hiện trạng thái loading có nhãn | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:26` 4. Emission tới. Hệ thống hiển thị ba khối, cùng một snapshot: | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:35` 5. Người dùng đọc xong và rời tab. Hệ thống không ghi gì trong toàn bộ luồng | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:38` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:40` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:41` - **A1 — Hôm nay chưa học nhưng hôm qua có:** Today hiện 0, và streak **vẫn | pending → SCR-PROGRESS-001 (Copy says the streak is held, not lost); intent kept in UC-PROGRESS-001 A1 |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:44` - **A2 — Chưa từng học lượt nào:** cả ba khối rỗng. Hệ thống hiện một mặt | pending → SCR-PROGRESS-001 (the whole-screen empty face with a real CTA to the Study branch); intent kept in UC-PROGRESS-001 A2 |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:47` - **A3 — Có một lượt mới ghi trong lúc màn đang mở:** người dùng học ở tab khác | pending → SCR-PROGRESS-001 (numbers update in place, no Retry, no full-page flash); intent kept in UC-PROGRESS-001 A3 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:41` - **A1 — Hôm nay chưa học nhưng hôm qua có:** Today hiện 0, và streak **vẫn | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:44` - **A2 — Chưa từng học lượt nào:** cả ba khối rỗng. Hệ thống hiện một mặt | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:47` - **A3 — Có một lượt mới ghi trong lúc màn đang mở:** người dùng học ở tab khác | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:50` - **A4 — Local midnight trôi qua trong lúc màn đang mở:** cửa sổ bảy ngày trượt | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:53` - **A5 — Reset learning progress ở màn khác rồi quay lại:** mọi con số giữ | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:55` - **A6 — Xoá một card hoặc một deck ở màn khác rồi quay lại:** hoạt động của | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:57` - **A7 — Chỉ lướt `browse` rồi thoát:** không có gì đổi — `browse` không ghi | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:60` **Error flows:** | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:61` - **E1 — Đọc lịch sử thất bại:** hệ thống map exception thành `Failure`; màn | pending → SCR-PROGRESS-001 (the error face with Retry; no SQL, table or card content); intent kept in UC-PROGRESS-001 E1 |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:64` - **E2 — Retry vẫn lỗi:** màn hình ở lại mặt lỗi; MUST NOT tự thử lại vòng lặp | pending → SCR-PROGRESS-001 (the screen stays on the error face); intent kept in UC-PROGRESS-001 E2 |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:67` ## UI | pending → SCR-PROGRESS-001 (states loading · loaded · today zero with streak held · lifetime empty + CTA · error + Retry; live refresh and midnight are transitions between loaded faces) |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:69` **UI states:** loading · loaded-normal (có hoạt động trong cửa sổ) · | pending → SCR-PROGRESS-001 (states loading · loaded · today zero with streak held · lifetime empty + CTA · error + Retry; live refresh and midnight are transitions between loaded faces) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:61` - **E1 — Đọc lịch sử thất bại:** hệ thống map exception thành `Failure`; màn | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:64` - **E2 — Retry vẫn lỗi:** màn hình ở lại mặt lỗi; MUST NOT tự thử lại vòng lặp | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:67` ## UI | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:69` **UI states:** loading · loaded-normal (có hoạt động trong cửa sổ) · | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:75` ## Local | superseded → FN-PROGRESS-001 (read-only, stated at the top of functional-spec/progress.md) |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:77` **Postconditions:** Database không đổi ở mọi nhánh, kể cả nhánh lỗi và nhánh | superseded → FN-PROGRESS-001 (read-only, stated at the top of functional-spec/progress.md) |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:80` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:82` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:84` ## Acceptance criteria | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:86` - [ ] **Given** người dùng mở tab Progress, **when** hệ thống đọc xong, **then** | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:86` - [ ] **Given** người dùng mở tab Progress, **when** hệ thống đọc xong, **then** | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:87` - [ ] **Given** màn Progress đang mở, **when** người dùng chỉ đọc rồi rời tab ho | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:88` - [ ] **Given** hôm nay chưa học nhưng hôm qua có, **when** mở Progress, **then* | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-001 |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:89` - [ ] **Given** đã có deck nhưng chưa từng học lượt nào, **when** mở Progress, * | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-001 |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:90` - [ ] **Given** màn Progress đang mở, **when** một answer mới được ghi ở nơi khá | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:88` - [ ] **Given** hôm nay chưa học nhưng hôm qua có, **when** mở Progress, **then* | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:89` - [ ] **Given** đã có deck nhưng chưa từng học lượt nào, **when** mở Progress, * | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:90` - [ ] **Given** màn Progress đang mở, **when** một answer mới được ghi ở nơi khá | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:91` - [ ] **Given** màn Progress đang mở lúc gần nửa đêm, **when** local midnight tr | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:92` - [ ] **Given** đã học rồi reset learning progress ở màn khác, **when** quay lại | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:93` - [ ] **Given** một card đã được trả lời rồi bị xoá cứng (trực tiếp hoặc theo ca | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:94` - [ ] **Given** một phiên chỉ lướt `browse`, một card hoặc deck trong Trash, hoặ | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:95` - [ ] **Given** lần đọc lịch sử thất bại, **when** màn Progress nhận lỗi, **then | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:95` - [ ] **Given** lần đọc lịch sử thất bại, **when** màn Progress nhận lỗi, **then | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:96` - [ ] **Given** Retry vẫn lỗi, **when** người dùng ở lại màn lỗi, **then** hệ th | moved → `USE_CASES.md` |
 
 ## features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md
@@ -2320,42 +2320,42 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:5` rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-CORE-001, BR-PROGRESS-001, BR- | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (Business rules) |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:6` code: [lib/features/progress/domain/usecases/watch_progress_use_case.dart, lib/f | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:10` **Actor:** Người dùng | pending → SCR-PROGRESS-001 (entry points: the Progress tab and a deck row of the screen); intent kept in UC-PROGRESS-002 (Mục tiêu, Preconditions) |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:10` **Actor:** Người dùng | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:15` ## Main flow | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:17` **Main flow:** | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:18` 1. Người dùng mở tab Progress. Hệ thống hiển thị **cấp thư viện** ngay dưới | pending → SCR-PROGRESS-001 (the library level below the three overview blocks in one /progress scroll: the 7/30-day selector, a totals table, one row per root deck; /progress/:deckId opens straight on the selector); intent kept in UC-PROGRESS-002 step 1 + FN-PROGRESS-001 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:23` 2. Mỗi hàng mang tên deck, đường dẫn của nó khi có, và bốn số của khoảng đang | pending → SCR-PROGRESS-001 (each row: deck name, its path when it has one, and the four numbers); intent kept in UC-PROGRESS-002 step 2 + FN-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:18` 1. Người dùng mở tab Progress. Hệ thống hiển thị **cấp thư viện** ngay dưới | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:23` 2. Mỗi hàng mang tên deck, đường dẫn của nó khi có, và bốn số của khoảng đang | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:27` 3. Danh sách sắp theo số thẻ đã học giảm dần, tie-break bằng tên đã fold rồi | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:29` 4. Người dùng chạm `30 ngày`. Mọi số trên màn hình và thứ tự danh sách đổi ngay | pending → SCR-PROGRESS-001 (tapping 30 days changes every number and the order at once, no loading state); intent kept in UC-PROGRESS-002 step 4 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:32` 5. Người dùng chạm một hàng. Hệ thống mở **cấp của deck đó**: cùng bố cục, tổng | pending → SCR-PROGRESS-001 (a row opens the deck level with the same layout; Back returns to the level left, at any depth); intent kept in UC-PROGRESS-002 step 5 + FN-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:29` 4. Người dùng chạm `30 ngày`. Mọi số trên màn hình và thứ tự danh sách đổi ngay | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:32` 5. Người dùng chạm một hàng. Hệ thống mở **cấp của deck đó**: cùng bố cục, tổng | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:35` 6. Trong lúc màn hình mở, một lượt học được ghi ở nơi khác — hoặc một thẻ được | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:38` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:40` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:41` - **A1 — Deck chứa thẻ chứ không chứa deck con:** cấp đó không có hàng nào để | pending → SCR-PROGRESS-001 (selector and totals of the deck itself with the line saying the total above is all); intent kept in UC-PROGRESS-002 A1 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:45` - **A2 — Thư viện chưa có deck nào:** hệ thống chỉ hiện empty state và **không** | pending → SCR-PROGRESS-001 (empty state only, no selector, no totals, no action button); intent kept in UC-PROGRESS-002 A2 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:49` - **A3 — Có deck nhưng khoảng đang chọn không có hoạt động nào:** danh sách | pending → SCR-PROGRESS-001 (every deck listed with zeros, the totals carry an explaining line and a hint to a longer range; neutral, no error colour); intent kept in UC-PROGRESS-002 A3 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:41` - **A1 — Deck chứa thẻ chứ không chứa deck con:** cấp đó không có hàng nào để | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:45` - **A2 — Thư viện chưa có deck nào:** hệ thống chỉ hiện empty state và **không** | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:49` - **A3 — Có deck nhưng khoảng đang chọn không có hoạt động nào:** danh sách | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:53` - **A4 — Nửa đêm địa phương đi qua khi màn hình đang mở:** cửa sổ trượt một | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:57` **Error flows:** | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:58` - **E1 — Đọc dữ liệu thất bại:** hệ thống hiện lý do đã localize theo **kiểu** | pending → SCR-PROGRESS-001 (the localized reason by failure type, never Failure.message, with Try again; says study history is unaffected); intent kept in UC-PROGRESS-002 E1 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:62` - **E2 — Deck của deep link không còn tồn tại:** đây **không** phải lỗi. Hệ | pending → SCR-PROGRESS-001 (a separate empty state offering only the way back to the library level; no Try again); intent kept in UC-PROGRESS-002 E2 + FN-PROGRESS-002 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:66` ## UI | pending → SCR-PROGRESS-001 (states loading · mixed activity · all zero · no decks · no sub-decks · read error + retry · deck missing + way back; no empty selection) |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:68` **UI states:** loading · mixed activity (một số deck có, một số không) · | pending → SCR-PROGRESS-001 (states loading · mixed activity · all zero · no decks · no sub-decks · read error + retry · deck missing + way back; no empty selection) |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:58` - **E1 — Đọc dữ liệu thất bại:** hệ thống hiện lý do đã localize theo **kiểu** | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:62` - **E2 — Deck của deep link không còn tồn tại:** đây **không** phải lỗi. Hệ | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:66` ## UI | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:68` **UI states:** loading · mixed activity (một số deck có, một số không) · | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:73` ## Local | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (read-only, stated at the top of functional-spec/progress.md) |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:75` **Postconditions:** Database không đổi — nội dung, timestamp, `content_type`, | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (read-only, stated at the top of functional-spec/progress.md) |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:79` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:81` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:83` ## Acceptance criteria | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:85` - [ ] **Given** thư viện có ít nhất một root deck, **when** mở tab Progress, **t | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:86` - [ ] **Given** cấp thư viện hoặc cấp một deck đang mở ở khoảng 7 ngày, **when** | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:87` - [ ] **Given** người dùng chạm một hàng deck, **when** cấp của deck đó mở ra, * | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:85` - [ ] **Given** thư viện có ít nhất một root deck, **when** mở tab Progress, **t | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:86` - [ ] **Given** cấp thư viện hoặc cấp một deck đang mở ở khoảng 7 ngày, **when** | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:87` - [ ] **Given** người dùng chạm một hàng deck, **when** cấp của deck đó mở ra, * | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:88` - [ ] **Given** cấp của một deck đang mở, **when** một lượt học được ghi, một de | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:89` - [ ] **Given** một deck chỉ chứa thẻ (không có deck con), **when** mở cấp của d | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:90` - [ ] **Given** thư viện chưa có deck nào, **when** mở tab Progress, **then** hệ | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:91` - [ ] **Given** có deck nhưng khoảng đang chọn không có hoạt động nào, **when** | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:89` - [ ] **Given** một deck chỉ chứa thẻ (không có deck con), **when** mở cấp của d | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:90` - [ ] **Given** thư viện chưa có deck nào, **when** mở tab Progress, **then** hệ | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:91` - [ ] **Given** có deck nhưng khoảng đang chọn không có hoạt động nào, **when** | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:92` - [ ] **Given** cấp thư viện hoặc cấp một deck đang mở gần nửa đêm, **when** loc | moved → `USE_CASES.md` |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:93` - [ ] **Given** lần đọc tiến độ theo deck thất bại, **when** màn hình nhận lỗi, | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:94` - [ ] **Given** deep link tới `/progress/:deckId` của một deck đã bị xoá, ở tron | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:95` - [ ] **Given** lần đọc tiến độ theo deck thất bại với một `Failure`, **when** m | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:93` - [ ] **Given** lần đọc tiến độ theo deck thất bại, **when** màn hình nhận lỗi, | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:94` - [ ] **Given** deep link tới `/progress/:deckId` của một deck đã bị xoá, ở tron | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:95` - [ ] **Given** lần đọc tiến độ theo deck thất bại với một `Failure`, **when** m | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 
 ## features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md
 
@@ -3126,11 +3126,11 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 |---|---|
 | `features/progress/ui.md:1` # Progress — UI | superseded → UC-PROGRESS-001 + UC-PROGRESS-002 + FN-PROGRESS-001 + FN-PROGRESS-002; per-feature UI files are replaced by screen specs (ADR-021) |
 | `features/progress/ui.md:3` Màn hình và điều hướng dùng chung hai UC của feature. Hành vi riêng của từng UC | superseded → UC-PROGRESS-001 + UC-PROGRESS-002 + FN-PROGRESS-001 + FN-PROGRESS-002; per-feature UI files are replaced by screen specs (ADR-021) |
-| `features/progress/ui.md:5` ## Màn hình và điều hướng | pending → SCR-PROGRESS-001 (routes and where each level opens from, with NAVIGATION.md) |
-| `features/progress/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | pending → SCR-PROGRESS-001 (routes and where each level opens from, with NAVIGATION.md) |
-| `features/progress/ui.md:9` \| 22 · Progress, cấp thư viện \| `/progress` (tab Progress) \| Bottom bar \| [22-pr | pending → SCR-PROGRESS-001 (library level: route /progress, the Progress tab, opened from the bottom bar) |
-| `features/progress/ui.md:10` \| 22 · Progress, cấp của một deck \| `/progress/:deckId`, trong branch Progress, | pending → SCR-PROGRESS-001 (deck level: route /progress/:deckId inside the Progress branch with the bottom bar; opened from a deck row or a breadcrumb segment) |
-| `features/progress/ui.md:12` Mỗi hàng deck push thêm một cấp; Back về đúng cấp vừa rời. Khoảng 7 hoặc 30 ngày | pending → SCR-PROGRESS-001 (each row pushes a level, Back returns to it; the 7/30-day choice is shared by every level of the tab; "Start studying" opens the Study tab); the no-reread rule is kept in functional-spec/progress.md (intro) and BR-PROGRESS-003 |
+| `features/progress/ui.md:5` ## Màn hình và điều hướng | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/ui.md:9` \| 22 · Progress, cấp thư viện \| `/progress` (tab Progress) \| Bottom bar \| [22-pr | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/ui.md:10` \| 22 · Progress, cấp của một deck \| `/progress/:deckId`, trong branch Progress, | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
+| `features/progress/ui.md:12` Mỗi hàng deck push thêm một cấp; Back về đúng cấp vừa rời. Khoảng 7 hoặc 30 ngày | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/ui.md:18` ## Validation | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (Input: none to validate; read-only) |
 | `features/progress/ui.md:20` Không có: màn chỉ đọc, không có trường nhập (BR-PROGRESS-009). | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (Input: none to validate; read-only) |
 
@@ -3301,12 +3301,12 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/progress/README.md:10` ## Màn hình → Use case |  |
-| `features/progress/README.md:12` \| Màn hình \| UC \| |  |
-| `features/progress/README.md:14` \| Tab Tiến độ / Progress \| UC-PROGRESS-001, UC-PROGRESS-002 \| |  |
-| `features/progress/README.md:15` \| Hàng deck trên màn tiến độ (drill-down) \| UC-PROGRESS-002 \| |  |
-| `features/progress/README.md:17` Màn 22 và điều hướng giữa các cấp: [ui.md](ui.md). |  |
-| `features/progress/README.md:19` Nguồn: trigger của UC-PROGRESS-001 ("Chạm tab **Tiến độ / Progress** ở bottom na |  |
+| `features/progress/README.md:10` ## Màn hình → Use case || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:12` \| Màn hình \| UC \| || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:14` \| Tab Tiến độ / Progress \| UC-PROGRESS-001, UC-PROGRESS-002 \| || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:15` \| Hàng deck trên màn tiến độ (drill-down) \| UC-PROGRESS-002 \| || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:17` Màn 22 và điều hướng giữa các cấp: [ui.md](ui.md). || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:19` Nguồn: trigger của UC-PROGRESS-001 ("Chạm tab **Tiến độ / Progress** ở bottom na || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/reminders/README.md
 
@@ -3689,30 +3689,30 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/monitoring/presentation/goldens/monitoring_list_offline_light.png` |  |
 | `test/features/monitoring/presentation/goldens/monitoring_not_sent_dark.png` |  |
 | `test/features/monitoring/presentation/goldens/monitoring_not_sent_light.png` |  |
-| `test/features/progress/presentation/goldens/deck_progress_deck_dark.png` |  |
-| `test/features/progress/presentation/goldens/deck_progress_deck_light.png` |  |
-| `test/features/progress/presentation/goldens/deck_progress_gone_dark.png` |  |
-| `test/features/progress/presentation/goldens/deck_progress_gone_light.png` |  |
-| `test/features/progress/presentation/goldens/deck_progress_leaf_dark.png` |  |
-| `test/features/progress/presentation/goldens/deck_progress_leaf_light.png` |  |
-| `test/features/progress/presentation/goldens/progress_error_dark.png` |  |
-| `test/features/progress/presentation/goldens/progress_error_light.png` |  |
-| `test/features/progress/presentation/goldens/progress_held_dark.png` |  |
-| `test/features/progress/presentation/goldens/progress_held_light.png` |  |
-| `test/features/progress/presentation/goldens/progress_loading_dark.png` |  |
-| `test/features/progress/presentation/goldens/progress_loading_light.png` |  |
-| `test/features/progress/presentation/goldens/progress_lost_dark.png` |  |
-| `test/features/progress/presentation/goldens/progress_lost_light.png` |  |
-| `test/features/progress/presentation/goldens/progress_month_dark.png` |  |
-| `test/features/progress/presentation/goldens/progress_month_light.png` |  |
-| `test/features/progress/presentation/goldens/progress_never_dark.png` |  |
-| `test/features/progress/presentation/goldens/progress_never_light.png` |  |
-| `test/features/progress/presentation/goldens/progress_no_decks_dark.png` |  |
-| `test/features/progress/presentation/goldens/progress_no_decks_light.png` |  |
-| `test/features/progress/presentation/goldens/progress_quiet_dark.png` |  |
-| `test/features/progress/presentation/goldens/progress_quiet_light.png` |  |
-| `test/features/progress/presentation/goldens/progress_week_dark.png` |  |
-| `test/features/progress/presentation/goldens/progress_week_light.png` |  |
+| `test/features/progress/presentation/goldens/deck_progress_deck_dark.png` | superseded → SCR-PROGRESS-001 `deck` dark |
+| `test/features/progress/presentation/goldens/deck_progress_deck_light.png` | superseded → SCR-PROGRESS-001 `deck` light |
+| `test/features/progress/presentation/goldens/deck_progress_gone_dark.png` | superseded → SCR-PROGRESS-001 `deck_gone` dark |
+| `test/features/progress/presentation/goldens/deck_progress_gone_light.png` | superseded → SCR-PROGRESS-001 `deck_gone` light |
+| `test/features/progress/presentation/goldens/deck_progress_leaf_dark.png` | superseded → SCR-PROGRESS-001 `deck_leaf` dark |
+| `test/features/progress/presentation/goldens/deck_progress_leaf_light.png` | superseded → SCR-PROGRESS-001 `deck_leaf` light |
+| `test/features/progress/presentation/goldens/progress_error_dark.png` | superseded → SCR-PROGRESS-001 `error` dark |
+| `test/features/progress/presentation/goldens/progress_error_light.png` | superseded → SCR-PROGRESS-001 `error` light |
+| `test/features/progress/presentation/goldens/progress_held_dark.png` | superseded → SCR-PROGRESS-001 `held` dark |
+| `test/features/progress/presentation/goldens/progress_held_light.png` | superseded → SCR-PROGRESS-001 `held` light |
+| `test/features/progress/presentation/goldens/progress_loading_dark.png` | superseded → SCR-PROGRESS-001 `loading` dark |
+| `test/features/progress/presentation/goldens/progress_loading_light.png` | superseded → SCR-PROGRESS-001 `loading` light |
+| `test/features/progress/presentation/goldens/progress_lost_dark.png` | superseded → SCR-PROGRESS-001 `lost` dark |
+| `test/features/progress/presentation/goldens/progress_lost_light.png` | superseded → SCR-PROGRESS-001 `lost` light |
+| `test/features/progress/presentation/goldens/progress_month_dark.png` | superseded → SCR-PROGRESS-001 `month` dark |
+| `test/features/progress/presentation/goldens/progress_month_light.png` | superseded → SCR-PROGRESS-001 `month` light |
+| `test/features/progress/presentation/goldens/progress_never_dark.png` | superseded → SCR-PROGRESS-001 `never` dark |
+| `test/features/progress/presentation/goldens/progress_never_light.png` | superseded → SCR-PROGRESS-001 `never` light |
+| `test/features/progress/presentation/goldens/progress_no_decks_dark.png` | superseded → SCR-PROGRESS-001 `no_decks` dark |
+| `test/features/progress/presentation/goldens/progress_no_decks_light.png` | superseded → SCR-PROGRESS-001 `no_decks` light |
+| `test/features/progress/presentation/goldens/progress_quiet_dark.png` | superseded → SCR-PROGRESS-001 `quiet` dark |
+| `test/features/progress/presentation/goldens/progress_quiet_light.png` | superseded → SCR-PROGRESS-001 `quiet` light |
+| `test/features/progress/presentation/goldens/progress_week_dark.png` | superseded → SCR-PROGRESS-001 `week` dark |
+| `test/features/progress/presentation/goldens/progress_week_light.png` | superseded → SCR-PROGRESS-001 `week` light |
 | `test/features/reminders/presentation/goldens/reminder_changing_time_dark.png` |  |
 | `test/features/reminders/presentation/goldens/reminder_changing_time_light.png` |  |
 | `test/features/reminders/presentation/goldens/reminder_could_not_schedule_dark.png` |  |
@@ -4390,3 +4390,9 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - 28 pending rows moved; settings README rows superseded.
 - The legacy UC named three Settings groups; V8 draws Account, Study defaults, App, Sync, Admin and Reset — ruled in SCR-SETTINGS-002 (presentation).
 - Warning delta: 55 → 59 = +6 SCR-SETTINGS-002 navigations to specs still pending (account and monitoring Tasks 40–41, reminder Task 39), −2 navigations to SCR-SETTINGS-001.
+
+## Task 38 notes — SCR-PROGRESS-001
+
+- Record 22 → `SCR-PROGRESS-001-progress.md`; 24 goldens superseded.
+- 41 pending rows moved; progress README rows superseded.
+- Warning delta: 59 → 59 (no navigation pointed at SCR-PROGRESS-001; its own targets, SCR-STUDY-001 and itself, are written).

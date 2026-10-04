@@ -236,8 +236,8 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-PROGRESS-001](../functional-spec/progress.md) | Xem tiến độ của thư viện | active | UC-PROGRESS-001, UC-PROGRESS-002 |
-| [FN-PROGRESS-002](../functional-spec/progress.md) | Xem tiến độ của một deck | active | UC-PROGRESS-002 |
+| [FN-PROGRESS-001](../functional-spec/progress.md) | Xem tiến độ của thư viện | active | SCR-PROGRESS-001, UC-PROGRESS-001, UC-PROGRESS-002 |
+| [FN-PROGRESS-002](../functional-spec/progress.md) | Xem tiến độ của một deck | active | SCR-PROGRESS-001, UC-PROGRESS-002 |
 
 ### Use cases
 
@@ -245,6 +245,12 @@
 |---|---|---|---|
 | [UC-PROGRESS-001](../USE_CASES.md) | Xem tiến độ học | ready | — |
 | [UC-PROGRESS-002](../USE_CASES.md) | Xem tiến độ theo deck | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-PROGRESS-001](../screens/spec/SCR-PROGRESS-001-progress.md) | Progress | ready | `/progress`, `/progress/:deckId` |
 
 ## [reminders](../features/reminders/README.md)
 

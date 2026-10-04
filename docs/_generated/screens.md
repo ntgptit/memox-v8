@@ -125,6 +125,28 @@
 | `deck_delete` | none | — |
 | `deck_trashed` | none | — |
 
+## [SCR-PROGRESS-001](../screens/spec/SCR-PROGRESS-001-progress.md) · Progress
+
+- Invokes: FN-PROGRESS-001, FN-PROGRESS-002
+- Rules via FN: BR-DECK-003, BR-MODE-005, BR-PROGRESS-001, BR-PROGRESS-002, BR-PROGRESS-003, BR-PROGRESS-004, BR-PROGRESS-005, BR-PROGRESS-006, BR-PROGRESS-007, BR-PROGRESS-008, BR-PROGRESS-009, BR-PROGRESS-010, BR-PROGRESS-011, BR-PROGRESS-012, BR-PROGRESS-013, BR-PROGRESS-014, BR-PROGRESS-015, BR-PROGRESS-016, BR-PROGRESS-017, BR-PROGRESS-018, BR-SRS-015, BR-SRS-023, BR-STUDY-074
+- Use cases: UC-PROGRESS-001, UC-PROGRESS-002
+- Entry points: SCR-PROGRESS-001
+
+| State | Golden | Present |
+|---|---|---|
+| `week` | light, dark | — |
+| `month` | light, dark | — |
+| `held` | light, dark | — |
+| `lost` | light, dark | — |
+| `never` | light, dark | — |
+| `quiet` | light, dark | — |
+| `no_decks` | light, dark | — |
+| `loading` | light, dark | — |
+| `error` | light, dark | — |
+| `deck` | light, dark | — |
+| `deck_leaf` | light, dark | — |
+| `deck_gone` | light, dark | — |
+
 ## [SCR-SEARCH-001](../screens/spec/SCR-SEARCH-001-library-search.md) · Library search
 
 - Invokes: FN-SEARCH-001
@@ -257,7 +279,7 @@
 - Invokes: FN-STUDY-012, FN-STUDY-010, FN-ACCOUNT-015, FN-ACCOUNT-002
 - Rules via FN: BR-MODE-008, BR-MODE-017, BR-PROGRESS-011, BR-SRS-015, BR-STUDY-008, BR-STUDY-017, BR-STUDY-021, BR-STUDY-036, BR-STUDY-051, BR-STUDY-068, BR-STUDY-072, BR-STUDY-074, BR-STUDY-075, BR-STUDY-076, BR-STUDY-077
 - Use cases: UC-STUDY-002
-- Entry points: SCR-DECK-001
+- Entry points: SCR-DECK-001, SCR-PROGRESS-001
 
 | State | Golden | Present |
 |---|---|---|

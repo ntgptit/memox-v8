@@ -33,7 +33,7 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 | SCR-SETTINGS-002 | Settings | settings | `/settings` | ready | `spec/SCR-SETTINGS-002-settings.md` |
 | SCR-SETTINGS-003 | Theme | settings | `/settings/theme` | ready | `spec/SCR-SETTINGS-003-theme.md` |
 | SCR-SETTINGS-004 | Language | settings | `/settings/language` | ready | `spec/SCR-SETTINGS-004-language.md` |
-| SCR-PROGRESS-001 | Progress | progress | — | pending | — |
+| SCR-PROGRESS-001 | Progress | progress | `/progress`, `/progress/:deckId` | ready | `spec/SCR-PROGRESS-001-progress.md` |
 | SCR-REMINDER-001 | Daily reminder | reminders | — | pending | — |
 | SCR-ACCOUNT-001 | Sync | account | — | pending | — |
 | SCR-ACCOUNT-002 | Welcome | account | — | pending | — |
