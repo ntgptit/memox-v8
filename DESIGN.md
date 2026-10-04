@@ -500,8 +500,8 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxToggle | On/off switch | shared | ACCOUNT, DECK, MONITORING, PROGRESS, REMINDER, SETTINGS, SRS, TRANSFER | SP3a | built |
 | MxOptionRow | Single-choice radio row | shared | ACCOUNT, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TRANSFER | SP3a | built |
 | MxSelectionCheckbox | Multi-select mark | shared | CARD, TRASH | SP3a | built |
-| MxStepper | Bounded integer with press-and-hold repeat | shared | REMINDER, SETTINGS | SP3a | planned |
-| MxSegmentedTray | One of a few segments | shared | MONITORING, PROGRESS, SETTINGS | SP3a | planned |
+| MxStepper | Bounded integer with press-and-hold repeat | shared | REMINDER, SETTINGS | SP3a | built |
+| MxSegmentedTray | One of a few segments | shared | MONITORING, PROGRESS, SETTINGS | SP3a | built |
 | MxFilterChip | Filter toggle chip | shared | CARD, TRASH | SP3a | planned |
 | MxChipTrigger | Ghost chip that opens a menu or sheet | shared | CARD, DECK, MONITORING, TRANSFER | SP3a | planned |
 | MxCard | Raised surface in six tones | shared | CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
@@ -644,6 +644,21 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - States: selected, idle, locked (dims the radio and title only), locked and selected (never dimmed)
 - Accessibility: a checked or unchecked member of a mutually exclusive group; 48 minimum height
 - Tokens: `primary`, `outline`, `on-surface`, `on-surface-variant`; `bodyLarge`, `bodyMedium`; `AppStroke.control` / `indicator`; `AppSize.radio`
+- Golden: states__light, states__dark
+
+#### MxStepper
+- Variants: `minDigits` zero-padding
+- States: inside its bounds, at a bound (that button disabled), held (repeating)
+- Accessibility: reads its value with increase and decrease actions; its buttons are named by the caller; the value keeps a fixed, tabular width so the buttons never move
+- Tokens: `primary`, `on-surface`; `titleLarge` with tabular figures; `AppDurations.repeat`
+- Golden: states__light, states__dark
+- Debt: a typed entry (SCR-SETTINGS-001, "a typed entry") is not built; its first consumer in SP3c adds it
+
+#### MxSegmentedTray
+- Variants: hugging its segments, or `isExpanded` sharing the width equally
+- States: selected segment raised, idle segments
+- Accessibility: each segment is a selected or unselected member of a mutually exclusive group; 48 to the touch, 36 painted
+- Tokens: `surface-container-low`, `surface-container-lowest` (dark: `surface-container-highest`), `on-surface`, `on-surface-variant`, `shadow`; `labelLarge`; `AppSize.segment`
 - Golden: states__light, states__dark
 
 ## Do's and Don'ts
