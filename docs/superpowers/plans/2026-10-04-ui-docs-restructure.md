@@ -3078,6 +3078,11 @@ routes); the FNs of Phase B; the feature's `ui.md`; `DESIGN.md`.
    presentation (read the error mapping in the controller or its state class).
 7. `## Responsive Behavior`, `## Accessibility`: what the record or code does specially;
    otherwise "Follows the shared floor (DESIGN.md, SCREEN_CATALOG.md)".
+7a. Where an active BR requires a presentation the V8 app does not draw, the spec states the
+    required form and records `IMPLEMENTATION GAP — Required: … Current V8 implementation: …
+    Status: IMPLEMENTATION GAP` in `## Rulings` (owner ruling 2026-10-04, SCR-DECK-001 deck row).
+    The BR is not changed and no code is changed. A contradiction about behaviour or data (not
+    presentation) between code and a BR or FN still stops the run for the owner.
 8. `## UI Invariants`: rulings of this screen that are checkable invariants, as
    `| Invariant | Enforced by |` (`—` unless a test enforces it). A global one is cited by its
    `INV-UI` id.
