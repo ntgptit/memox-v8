@@ -46,5 +46,84 @@ class GenerateReexportTest(unittest.TestCase):
             self.assertIs(getattr(generate, name), getattr(mdparse, name))
 
 
+import specdocs  # noqa: E402
+
+UC_TEXT = """# Use cases
+
+## Deck
+
+### UC-DECK-001 — Tạo deck
+Status: ready · Code: [lib/a.dart] · Invokes: [FN-DECK-001, FN-DECK-002]
+
+#### Mục tiêu / Actor / Precondition
+x
+#### Main flow
+1. Hệ thống thực hiện `FN-DECK-001`.
+
+### UC-DECK-002 - Sửa deck
+Status: draft · Code: []
+"""
+
+FN_TEXT = (
+    "# Deck\n\n"
+    "## FN-DECK-001 — Tạo deck\n"
+    "Status: active · Code: [lib/features/deck/domain/usecases/create_root_deck_use_case.dart]\n\n"
+    "### Precondition\nx\n"
+    "### Business rules\n- BR-DECK-020\n- `BR-DECK-021`\n\n"
+    + FENCE + "\n## FN-DECK-009 — inside a fence\n" + FENCE + "\n\n"
+    "## FN-DECK-002 — Đổi tên\nStatus: active · Code: []\n"
+)
+
+
+class UseCaseSectionTest(unittest.TestCase):
+    def test_a_section_reads_its_meta_line_and_subsections(self):
+        first = specdocs.use_case_sections(UC_TEXT)[0]
+        self.assertEqual((first.id, first.title, first.line), ("UC-DECK-001", "Tạo deck", 5))
+        self.assertEqual(first.meta["status"], "ready")
+        self.assertEqual(first.meta["code"], ["lib/a.dart"])
+        self.assertEqual(first.meta["invokes"], ["FN-DECK-001", "FN-DECK-002"])
+        self.assertEqual(first.subsections, ["Mục tiêu / Actor / Precondition", "Main flow"])
+        self.assertIsNone(first.error)
+
+    def test_a_hyphen_instead_of_an_em_dash_is_an_error_not_a_silent_skip(self):
+        second = specdocs.use_case_sections(UC_TEXT)[1]
+        self.assertEqual((second.id, second.line), ("", 13))
+        self.assertIn("em dash", second.error)
+
+    def test_a_bare_invokes_value_is_a_one_item_list(self):
+        meta, error = specdocs.parse_meta_line("Status: ready · Code: [] · Invokes: FN-DECK-001")
+        self.assertIsNone(error)
+        self.assertEqual(meta["invokes"], ["FN-DECK-001"])
+
+    def test_a_missing_meta_line_is_reported(self):
+        section = specdocs.use_case_sections("### UC-DECK-003 — X\n\n#### Main flow\n")[0]
+        self.assertIn("missing meta line", section.error)
+
+    def test_an_unknown_meta_key_is_reported(self):
+        _, error = specdocs.parse_meta_line("Status: ready · Owner: me")
+        self.assertIn("unknown meta key `Owner`", error)
+
+    def test_a_wrong_separator_is_reported(self):
+        _, error = specdocs.parse_meta_line("Status: ready | Code: []")
+        self.assertIn("` · `", error)
+
+
+class FunctionSectionTest(unittest.TestCase):
+    def test_rules_come_from_the_business_rules_subsection(self):
+        first = specdocs.function_sections(FN_TEXT)[0]
+        self.assertEqual(first.meta["rules"], ["BR-DECK-020", "BR-DECK-021"])
+
+    def test_a_fenced_heading_defines_nothing(self):
+        ids = [s.id for s in specdocs.function_sections(FN_TEXT)]
+        self.assertEqual(ids, ["FN-DECK-001", "FN-DECK-002"])
+
+    def test_ids_in_counts_inline_code_but_not_fences(self):
+        text = "a `FN-DECK-001`\n" + FENCE + "\nFN-DECK-002\n" + FENCE + "\n"
+        self.assertEqual(specdocs.ids_in(text, "FN"), ["FN-DECK-001"])
+
+    def test_id_kind(self):
+        self.assertEqual([specdocs.id_kind(i) for i in ("BR-X-001", "INV-UI-001", "SCR-A-001")], ["BR", "INV", "SCR"])
+
+
 if __name__ == "__main__":
     unittest.main()
