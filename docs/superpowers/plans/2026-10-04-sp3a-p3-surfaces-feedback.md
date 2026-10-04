@@ -10,7 +10,7 @@
   - `mark_style.dart` (badge, status, tag, icon tile, progress tones);
   - `feedback_style.dart` (banner, empty-state tile);
   - `overlay_style.dart` (dialog, sheet, snackbar and card theme slots, the scrim).
-- **Where widgets live.** Widgets in `lib/shared/widgets/` read only those functions and the generated scales (`AppSize`, `AppRatio`, …). No literal colour, text style, size or duration appears in `lib/shared/`.
+- **Where widgets live.** Widgets in `lib/shared/widgets/` read only those functions and the generated scales (`AppSize`, `AppSpacing`, …). No literal colour, text style, size or duration appears in `lib/shared/`.
 - **Overlays.** Opened through `showMxDialog`, `showMxBottomSheet` and `showMxSnackbar`, which own the route, the scrim and the motion, including reduced motion.
 
 **Tech Stack:** Flutter 3.47.5 / Dart 3.13 (Material 3 `DialogThemeData`, `BottomSheetThemeData`, `SnackBarThemeData`, `CardThemeData`); `flutter_test` goldens through the Phase 2 harness (`expectMxGolden`, 1080 × 2400 at 2.625); Python 3 standard library for the generator.
@@ -22,124 +22,110 @@
 - **The API takes meaning, not looks.** Callers pass semantic tones, sizes and localized copy only. They never pass a `Color`, `TextStyle`, `BorderRadius`, `BorderSide`, `BoxShadow`, padding or icon size (spec §5). A composition slot (`MxCard.child`, `MxDialog.content`, `MxBottomSheet.child`) is allowed; a styling slot is not.
 - **Every control keeps a 48 × 48 hit area** (The 48 Floor Rule). Text grows: every height is a minimum (The Text Grows Rule).
 - **The owner's rulings of 2026-10-04 hold:**
-  - `primary` (#4151C6, both themes) only fills the primary button and the FAB.
-  - The Indigo Accent `on-primary-container` is every indigo foreground.
-  - The Selection Ladder Rule applies.
-  - The Contrast Floor Rule applies in both themes.
+  - `primary` is #4151C6 in both themes.
+  - A selection never fills `primary`.
+  - The Indigo Accent `on-primary-container` is the indigo foreground.
+  - The Selection Ladder Rule and The Contrast Floor Rule apply in both themes.
+  - The pre-SP2 code never supplies a value.
 - **Every text restyle lives in `lib/core/theme/components/`.** `.apply(color:)` on a theme role is allowed in `lib/shared/`; `.copyWith(` and `TextStyle(` are not (guard `no_text_restyle`, `no_raw_text_style`).
 - **No raw colour in `lib/shared/`**, not even `Colors.transparent` (guard `no_raw_color`). Do not name a record local `colors`: the guard reads `colors.x` as a `ColorScheme` role.
 - **Code style.** Booleans read as predicates. There is no `else`; code returns early. A row centres its leading and trailing marks (guard `row_marks_centre_on_the_row`).
 - **Goldens are full-HD composite sheets** named `mx_<component>__<state>__<variant>.png`, generated in the Linux container only.
 - **Commit attribution.** Every commit ends with this session's two attribution lines.
 
-## Decisions this plan makes (for the owner's review)
+## Decisions (approved by the owner, 2026-10-04)
 
-1. **Progress fills use the Indigo Accent, not `primary`.** #4151C6 on the dark track (`surface-container-low`) is 2.35:1, under The Contrast Floor Rule's 3:1 for "a progress fill on its track". `MxLinearProgress`'s default tone is `accent` (`on-primary-container`: 9.9:1 light, 12.2:1 dark). The Selection Ladder's Action line drops "progress fills", and `primary` now fills only the primary button and the FAB. The generator gains a 3:1 pair for every progress fill on its track.
-2. **Geometry from the shipped app before SP2.** DESIGN.md does not state these sizes. The values come from the pre-SP2 widgets, which DESIGN.md was generated from, and become sidecar tokens:
-   - icon tiles 28 / 36 / 44;
-   - badge and tag chip 22, dense tag 18, tag max width 140;
-   - status dot 8, and 6 inside a badge;
-   - progress 4 and thick 5;
-   - empty tile 64 and compact 52; error tile 52;
-   - dialog widths 300 / 320 / 340;
-   - grabber 36 × 4;
-   - skeleton line 12 and tile 28.
-3. **A new `AppRatio` scale.** Proportions that are not sizes become generated tokens: dialog enter scale 0.94, sheet max height 0.85, skeleton line shares 0.7 and 0.45. This is one more `emit_scale` in the generator.
-4. **`MxButtonTone.inverse`.** A snackbar's action needs `inverse-primary` on the inverse surface (5.36:1). The accent tones fail there (1.5:1). The tone joins `MxButton` rather than becoming a one-off style.
-5. **The icon tile drops the per-deck colour seed** of the old app. It passed a raw `Color`, which spec §5 forbids. If a deck colour is wanted, SP3b adds it as a semantic input.
-6. **`MxSheetActions` keeps its 10 : 13 flex shares** as named constants beside DESIGN.md's "the confirm takes 1.3 shares". A flex count is not a size token.
+The owner ruled that the pre-SP2 code may only flag that a decision is needed, never supply a value. Each value below comes from a semantic requirement, Material 3, accessibility or DESIGN.md. Impeccable (`shape`) reviewed each one, and the owner approved them.
+
+| # | Decision | Value | Source |
+|---|---|---|---|
+| 1 | Generic progress fill | `secondary` (5.08:1 light, 6.71:1 dark on `surface-container-low`); a component that means a state passes that state's tone; never `primary` (2.35:1 on the dark track); no raw colour | The Contrast Floor Rule; Material 3 roles; owner |
+| 2a | Icon tile | 32 / 40 / 48, glyph 16 / 20 / 24, r8 / r12 / r12 | Material 3 list leading container 40; 4dp grid; Shapes |
+| 2b | Badge | at least 24, label centred, grows with text | Caption line plus padding on the 4dp grid |
+| 2c | Tag chip | at least 24, dense 20; at most half the width it is given | 4dp grid; component layout policy |
+| 2d | Status dot | 8, standalone and in the pill, 4 from its label | above Material 3's 6; one size |
+| 2e | Progress | 4 regular, 8 thick | Material 3 track; Material 3 Expressive thick |
+| 2f | Empty and error tile | 64, compact 48; empty r20, error r16; glyph 24 | 8dp grid; Shapes |
+| 2g | Dialog widths | 340 / 320 / 300, never wider than the window less 2 × 16 | already in DESIGN.md |
+| 2h | Grabber | 32 × 4 in `outline`, in a 48 band | Material 3 drag handle; The 48 Floor Rule |
+| 2i | Skeleton | a line as tall as the text it stands for; the row tile is the medium icon tile | the layout does not jump on load |
+| 3a | Sheet height | stops 72 below the top safe area; at most 640 wide | Material 3 modal bottom sheet |
+| 3b | Component-internal values | the dialog scales from 0.92 over 200ms; skeleton lines at 60% / 40% | component contracts, not global tokens |
+| 3c | `AppRatio` | not created | no reusable token remained |
+| 4 | `MxButtonTone.inverse` | an `inverse-primary` label for any action on an inverse surface, with its pressed overlay and an `inverse-primary` focus ring | Material 3 inverse roles |
+| 5 | Icon tile colour | semantic tones only, a closed set | spec §5 |
+| 6 | Footer actions | equal shares while both labels fit one line (measured with `TextPainter`), the confirm trailing; otherwise stacked full width with the confirm on top; Cancel is outline; labels never cut | Material 3 stacked buttons; Android order |
 
 ## Review Focus
 
 - **An overlay under reduced motion.** `showMxDialog` and `showMxBottomSheet` must open with no animation. Tested through `MediaQuery.disableAnimations` in Task 5.
 - **A snackbar action for a TalkBack user.** It must not vanish after 4–8s. Tested in Task 6 (`persist`).
-- **A tall sheet with a keyboard.** It stops at 85% of the window, scrolls, and rides above the keyboard. Tested in Task 5.
-- **A long tag name or badge at large text.** It must not clip or overflow. The tag stops at 140 and is read whole. Tested in Task 3.
+- **A tall sheet with a keyboard.** It stops 72 below the top safe area, scrolls, and rides above the keyboard. Tested in Task 5.
+- **A long tag name or badge at large text.** It must not clip or overflow. The tag stops at half its row and is read whole. Tested in Task 3.
 - **Status told by colour alone.** A bare status dot must still be named for TalkBack. Tested in Task 3.
 
 ---
 
-### Task 1: Tokens, the AppRatio scale, theme slots and the inverse button tone
+### Task 1: Tokens, theme slots, the inverse tone and the footer measure
 
 **Files:**
-- Modify: `tools/design/generate.py` (`emit`), `tools/design/test_generate.py`
-- Modify: `.impeccable/design.json` (`extensions.size`, new `extensions.ratio`, `contrastPairs`)
-- Create (generated): `lib/core/theme/foundations/app_ratio.dart`; regenerated `app_size.dart`
+- Modify: `.impeccable/design.json` (`extensions.size`, `contrastPairs`)
+- Regenerate: `lib/core/theme/foundations/app_size.dart`
 - Create: `lib/core/theme/components/overlay_style.dart`
-- Modify: `lib/core/theme/app_theme.dart`, `lib/core/theme/components/button_style.dart`, `test/core/theme/app_theme_test.dart`, `test/shared/widgets/mx_button_test.dart`
-- Modify: `DESIGN.md` (Colors › Primary and The Selection Ladder Rule: decision 1)
+- Modify: `lib/core/theme/app_theme.dart`, `lib/core/theme/components/button_style.dart`, `lib/shared/widgets/primitives/mx_focus_ring.dart`, `lib/shared/widgets/mx_button.dart`
+- Test: `test/core/theme/app_theme_test.dart`, `test/shared/widgets/mx_button_test.dart`; golden `mx_button__tones__*` re-rendered (it shows every tone)
+- Modify: `DESIGN.md` (Colors › Primary and Secondary, The Selection Ladder Rule, and the component lines for the tag chip, sheet actions and bottom sheet: decisions 1, 2c, 3a, 6)
 
 **Interfaces:**
 - Produces:
-  - `AppRatio.dialogEnterScale`, `sheetMaxHeight`, `skeletonTitle` and `skeletonMeta`;
-  - the `AppSize` tokens of decision 2;
+  - the `AppSize` tokens of decision 2: `iconTileSmall/Medium/Large`, `badge`, `tagChip`, `tagChipDense`, `statusDot`, `progress`, `progressThick`, `emptyTile`, `emptyTileCompact`, `dialogSmall/Medium/Large`, `grabberWidth`, `grabberHeight`, `sheetTopClearance` and `sheetMaxWidth`;
   - `mxScrim(ColorScheme)`, `mxOverlayGround(ColorScheme)`, `mxDialogTheme`, `mxBottomSheetTheme`, `mxSnackBarTheme` and `mxCardTheme`;
-  - `MxButtonTone.inverse`.
+  - `MxButtonTone.inverse`;
+  - `mxCanButtonLabelFit({texts, label, width, textScaler})`;
+  - `MxFocusRing(isOnInverse:)`.
 
-- [ ] **Step 1: Write the failing generator test**
+- [ ] **Step 1: The token values and pairs**
 
-In `tools/design/test_generate.py`, add `"ratio": {"sheet-max-height": 0.85},` to the `extensions()` fixture after `"size"`. Add to `EmitTest`:
-
-```python
-    def test_ratios_are_generated(self):
-        emitted = g.emit(design())
-        self.assertIn("static const double sheetMaxHeight = 0.85;", emitted[g.OUT_DIR / "app_ratio.dart"])
-```
-
-Run: `python3 tools/design/test_generate.py` → ERROR, `KeyError` on `app_ratio.dart`.
-
-- [ ] **Step 2: Emit the scale**
-
-In `tools/design/generate.py`, `emit()`, after the `app_size.dart` line:
-
-```python
-        OUT_DIR / "app_ratio.dart": emit_scale("AppRatio", "Proportions: shares of a width or height, and motion scales.", ext["ratio"]),
-```
-
-Run: `python3 tools/design/test_generate.py` → `OK`.
-
-- [ ] **Step 3: The token values and pairs**
-
-Run from the repo root (a one-off, not committed):
+Run from the repo root (a one-off, not committed). The status, success, warning and error fills already have their pairs on `surface-container-low`; only four pairs are new:
 
 ```bash
-python3 - <<'EOF'
+python3 - <<'PYEOF'
 import json
 from pathlib import Path
 s = Path(".impeccable/design.json")
 d = json.loads(s.read_text(encoding="utf-8"))
 e = d["extensions"]
-e["size"].update({"icon-tile-small": 28, "icon-tile-medium": 36, "icon-tile-large": 44, "badge": 22,
-    "tag-chip": 22, "tag-chip-dense": 18, "tag-chip-max-width": 140, "status-dot": 8,
-    "status-dot-in-badge": 6, "progress": 4, "progress-thick": 5, "empty-tile": 64,
-    "empty-tile-compact": 52, "error-tile": 52, "dialog-small": 300, "dialog-medium": 320,
-    "dialog-large": 340, "grabber-width": 36, "grabber-height": 4, "skeleton-line": 12,
-    "skeleton-tile": 28})
-e["ratio"] = {"dialog-enter-scale": 0.94, "sheet-max-height": 0.85, "skeleton-title": 0.7, "skeleton-meta": 0.45}
+e["size"].update({"icon-tile-small": 32, "icon-tile-medium": 40, "icon-tile-large": 48, "badge": 24,
+    "tag-chip": 24, "tag-chip-dense": 20, "status-dot": 8, "progress": 4, "progress-thick": 8,
+    "empty-tile": 64, "empty-tile-compact": 48, "dialog-small": 300, "dialog-medium": 320,
+    "dialog-large": 340, "grabber-width": 32, "grabber-height": 4, "sheet-top-clearance": 72,
+    "sheet-max-width": 640})
 pairs = e["contrastPairs"]
-for fg in ["on-primary-container", "status-new", "status-learning", "status-reviewing",
-           "status-mastered", "success", "warning", "error"]:
-    pairs.append({"fg": fg, "bg": "surface-container-low", "min": 3.0, "use": "a progress fill on its track"})
-pairs.append({"fg": "on-surface-variant", "bg": "surface-container-high", "min": 4.5, "use": "a neutral badge, tag or tile"})
-pairs.append({"fg": "outline", "bg": "surface-container-high", "min": 3.0, "use": "the sheet grabber"})
+for bg in ("surface-container-low", "surface-container"):
+    pairs.append({"fg": "secondary", "bg": bg, "min": 3.0, "use": "the generic progress fill on its track"})
 for bg in ("warning-container", "error-container"):
     pairs.append({"fg": "on-primary-container", "bg": bg, "min": 4.5, "use": "a banner's text action"})
 s.write_text(json.dumps(d, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
-EOF
+PYEOF
 python3 tools/design/generate.py --write && python3 tools/design/generate.py --check
 ```
 
-Expected: `wrote 13 files …` then `PASS …`. (Adding `primary` on `surface-container-low` would fail at 2.35:1 in dark: decision 1.)
+Expected: `wrote 12 files …` then `PASS …`. A `primary` on `surface-container-low` pair would fail at 2.35:1 in dark (decision 1).
 
-- [ ] **Step 4: DESIGN.md, decision 1**
+- [ ] **Step 2: DESIGN.md first**
 
-In `DESIGN.md`, Colors › Primary, change "Primary buttons, the FAB and progress fills, always under `on-primary`" to "Primary buttons and the FAB, always under `on-primary`". In The Selection Ladder Rule, replace the Action line with:
+In `DESIGN.md`:
+- **Colors › Primary.** Replace "Primary buttons, the FAB and progress fills, always under `on-primary` (#FFFFFF, 6.53:1); a selection is never a `primary` fill (The Selection Ladder Rule)." with "Primary buttons and the FAB, always under `on-primary` (#FFFFFF, 6.53:1); a selection is never a `primary` fill (The Selection Ladder Rule). `primary` stays the brand action role for any consumer whose contrast pair and meaning fit; the generic progress fill is `secondary` because #4151C6 holds only 2.35:1 on the dark track."
+- **Colors › Secondary.** Replace "supporting tonal role; rarely painted directly." with "supporting tonal role; painted directly as the generic progress fill (`MxLinearProgress`), 3:1 or better on its track in both themes."
+- **The Selection Ladder Rule.** Replace the Action line with "- **Action:** `primary` fill under `on-primary`: the primary button and the FAB. A selection never fills `primary`; a progress fill is `secondary` (the generic bar) or the tone of the state it means."
+- **Component lines:**
+  - "**MxTagChip** (22 or 18)" becomes "**MxTagChip** (24 or 20, minimums; at most half its row)";
+  - "**MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares)" becomes "**MxSheetActions** (dialog and sheet footer: equal shares while both labels fit one line, else stacked with the confirm on top)";
+  - "**MxBottomSheet** (top corners 20, chrome shadow, grabber)" becomes "**MxBottomSheet** (top corners 20, chrome shadow, a 32 × 4 grabber, 72 clear of the top, at most 640 wide)".
 
-```markdown
-- **Action:** `primary` fill under `on-primary`: the primary button and the FAB. Nothing else fills `primary`. A progress fill is the Indigo Accent (`on-primary-container`) or a status role: `primary` holds only 2.35:1 on the dark track, under The Contrast Floor Rule's 3:1.
-```
+Run: `python3 tools/docs/check.py | tail -1` → `PASS`.
 
-- [ ] **Step 5: Failing theme tests**
+- [ ] **Step 3: Failing tests**
 
 In `test/core/theme/app_theme_test.dart`, add inside the per-theme group, before `'the FAB slot has no elevation in any state'`:
 
@@ -164,19 +150,42 @@ In `test/core/theme/app_theme_test.dart`, add inside the per-theme group, before
       });
 ```
 
-In `test/shared/widgets/mx_button_test.dart`, add `MxButtonTone.inverse: (Colors.transparent, s.inversePrimary),` to the `pairs` map after the warning entry.
+In `test/shared/widgets/mx_button_test.dart`, add `MxButtonTone.inverse: (Colors.transparent, s.inversePrimary),` to the `pairs` map after the warning entry, and at the end of `main`:
+
+```dart
+  testWidgets('on an inverse surface the ring is inverse-primary', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxButton(label: 'Undo', tone: MxButtonTone.inverse, onPressed: () {}),
+    );
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(
+      find.byType(MxButton),
+      paints..rrect(color: mxThemes['light']!.colorScheme.inversePrimary),
+    );
+  });
+```
 
 Run: `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/core/theme test/shared/widgets/mx_button_test.dart` → compile failure on `MxButtonTone.inverse`.
 
-- [ ] **Step 6: The slots and the tone**
+- [ ] **Step 4: The slots, the tone, the ring and the measure**
 
 Create `lib/core/theme/components/overlay_style.dart`:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_breakpoints.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 
 /// The modal scrim: the scheme's `scrim` at 45% (DESIGN.md, Elevation).
@@ -203,7 +212,7 @@ DialogThemeData mxDialogTheme(ColorScheme colors, TextTheme texts) =>
 
 /// The bottom-sheet slot, matching `MxBottomSheet`: the sheet ground, top
 /// corners 20, the scrim, no Material drag handle (the sheet draws its own
-/// grabber), centred at the content column's width.
+/// grabber), at most 640 wide (Material 3).
 BottomSheetThemeData mxBottomSheetTheme(ColorScheme colors) =>
     BottomSheetThemeData(
       backgroundColor: mxOverlayGround(colors),
@@ -213,7 +222,7 @@ BottomSheetThemeData mxBottomSheetTheme(ColorScheme colors) =>
       modalElevation: 0,
       modalBarrierColor: mxScrim(colors),
       showDragHandle: false,
-      constraints: const BoxConstraints(maxWidth: AppBreakpoints.contentMax),
+      constraints: const BoxConstraints(maxWidth: AppSize.sheetMaxWidth),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
@@ -264,23 +273,61 @@ In `lib/core/theme/components/button_style.dart`, add the tone at the end of `Mx
   inverse,
 ```
 
-and its pair at the end of the switch in `mxButtonStyle`:
+add its pair at the end of the switch in `mxButtonStyle`:
 
 ```dart
     MxButtonTone.inverse => (Colors.transparent, colors.inversePrimary),
 ```
 
-Run: `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/core/theme test/shared/widgets/mx_button_test.dart` → all pass.
+and append the footer measure (decision 6):
+
+```dart
+/// Whether [label] fits one line of a regular button [width] wide at the
+/// reader's text scale; footers that share a row stack when it does not.
+bool mxCanButtonLabelFit({
+  required TextTheme texts,
+  required String label,
+  required double width,
+  required TextScaler textScaler,
+}) {
+  final TextPainter painter = TextPainter(
+    text: TextSpan(text: label, style: texts.labelLarge),
+    textDirection: TextDirection.ltr,
+    textScaler: textScaler,
+    maxLines: 1,
+  )..layout();
+  final bool canFit =
+      painter.width <= width - 2 * MxButtonSize.regular.horizontalPadding;
+  painter.dispose();
+  return canFit;
+}
+```
+
+In `lib/shared/widgets/primitives/mx_focus_ring.dart`:
+- add this field and a constructor parameter `this.isOnInverse = false,`;
+- paint the ring with `widget.isOnInverse ? context.colors.inversePrimary : context.colors.onPrimaryContainer`.
+
+```dart
+  /// On an inverse surface (a snackbar) the ring is `inverse-primary`, the
+  /// role that holds there; elsewhere it is the Indigo Accent.
+  final bool isOnInverse;
+```
+
+In `lib/shared/widgets/mx_button.dart`, pass `isOnInverse: tone == MxButtonTone.inverse,` to its `MxFocusRing`.
+
+Run: `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/core/theme test/shared/widgets` → all pass.
+
+Run (Linux container): `flutter test --update-goldens test/shared/widgets/mx_button_golden_test.dart`. Expected: `mx_button__tones__light.png` and `__dark.png` change, because they now show the inverse tone. The other button goldens do not change.
 
 - [ ] **Verify**
 
-Run: `dart format --output=none --set-exit-if-changed lib test` → no change; `flutter analyze lib/core/theme lib/shared test/shared test/core` → `No issues found!`; `python3.13 code-verification-guard-v2/guard/run.py check --project "$PWD" --ruleset memox-v8` → `Errors: 0`. Also: `python3 tools/docs/check.py | tail -1` → `PASS`.
+Run: `dart format --output=none --set-exit-if-changed lib test` → no change; `flutter analyze lib/core/theme lib/shared test/shared test/core` → `No issues found!`; `python3.13 code-verification-guard-v2/guard/run.py check --project "$PWD" --ruleset memox-v8` → `Errors: 0`. Also: `python3 tools/design/test_generate.py` → `OK`.
 
 - [ ] **Commit**
 
 ```bash
-git add tools/design .impeccable/design.json lib/core/theme test/core test/shared DESIGN.md
-git commit -m "feat(sp3a-p3): Phase 3 tokens, AppRatio, overlay theme slots and the inverse button tone
+git add .impeccable/design.json lib test/core test/shared DESIGN.md
+git commit -m "feat(sp3a-p3): Phase 3 tokens, overlay theme slots, the inverse tone and the footer measure
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01Y8YmUXn5BengVUKKmQjAv5"
@@ -973,7 +1020,7 @@ Set the `Status` cell of `MxCard`, `MxSection`, `MxNote` to `built`. Append thes
 #### MxSection
 - Variants: with or without an overline and a footnote
 - States: one
-- Accessibility: the overline is a header, upper-cased by the widget; rows keep their own semantics
+- Accessibility: the overline is a header, upper-cased by the widget, 8 above the card; rows keep their own semantics
 - Tokens: Section Label (`labelMedium`) in `on-surface-variant`; a full-bleed `MxCard`; `outline-variant` hairlines between rows; `MxNote.hint`
 - Golden: default__light, default__dark
 
@@ -981,7 +1028,7 @@ Set the `Status` cell of `MxCard`, `MxSection`, `MxNote` to `built`. Append thes
 #### MxNote
 - Variants: note (muted fill and hairline), dismissible note (with a named close button), hint (no fill, no edge)
 - States: one
-- Accessibility: the close button is named by `dismissLabel`; the glyph is decorative
+- Accessibility: the close button is named by `dismissLabel` and keeps its 48 hit; the glyph is decorative
 - Tokens: `surface-container-low`, `outline-variant`, `on-surface-variant`; `bodyMedium` (note), `bodySmall` (hint); `AppIconSize.small`; `AppRadius.md`
 - Golden: forms__light, forms__dark
 
@@ -1150,6 +1197,7 @@ void main() {
 Create `test/shared/widgets/mx_tag_chip_test.dart`:
 
 ```dart
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
@@ -1164,13 +1212,24 @@ void main() {
     expect(tester.getSize(find.byType(MxTagChip)).height, AppSize.tagChipDense);
   });
 
-  testWidgets('a long name stops at 140 and is read whole', (tester) async {
+  testWidgets('a long name stops at half its row and is read whole', (
+    tester,
+  ) async {
     final SemanticsHandle semantics = tester.ensureSemantics();
     const String name = 'irregular verbs of the past tense, chapter twelve';
-    await pumpMx(tester, const MxTagChip(label: name));
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 300,
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: MxTagChip(label: name),
+        ),
+      ),
+    );
     expect(
-      tester.getSize(find.byType(MxTagChip)).width,
-      AppSize.tagChipMaxWidth,
+      tester.getSize(find.byType(DecoratedBox).last).width,
+      lessThanOrEqualTo(150),
     );
     expect(
       tester.getSemantics(find.byType(MxTagChip)),
@@ -1375,10 +1434,12 @@ ToneColors mxIconTileColors(
   ),
 };
 
-/// A progress fill's colour. `accent` is the Indigo Accent, not `primary`:
-/// #4151C6 holds only 2.35:1 on the dark track (The Contrast Floor Rule).
+/// A progress fill's colour (DESIGN.md, MxLinearProgress). The generic bar
+/// is `secondary`; a component that means a state (mastery, success, a
+/// warning) passes that state's tone. Never `primary`: #4151C6 holds only
+/// 2.35:1 on the dark track (The Contrast Floor Rule).
 enum MxLinearProgressTone {
-  accent,
+  secondary,
   newCard,
   learning,
   reviewing,
@@ -1395,7 +1456,7 @@ enum MxLinearProgressTone {
   MxLinearProgressTone tone,
 ) => (
   fill: switch (tone) {
-    MxLinearProgressTone.accent => colors.onPrimaryContainer,
+    MxLinearProgressTone.secondary => colors.secondary,
     MxLinearProgressTone.newCard => semantic.statusNew,
     MxLinearProgressTone.learning => semantic.statusLearning,
     MxLinearProgressTone.reviewing => semantic.statusReviewing,
@@ -1421,8 +1482,8 @@ import 'package:memox/core/theme/theme_context.dart';
 
 export 'package:memox/core/theme/components/mark_style.dart' show MxBadgeTone;
 
-/// A short label in a semantic tone (DESIGN.md, MxBadge): a 22 pill that
-/// grows with text, the tone's container under its `on-…-container`. The unit
+/// A short label in a semantic tone (DESIGN.md, MxBadge): a pill at least
+/// 24 tall, its label centred, that grows with text; the tone's container under its `on-…-container`. The unit
 /// belongs inside the label ("23 due").
 class MxBadge extends StatelessWidget {
   const MxBadge({
@@ -1531,7 +1592,7 @@ class MxStatusBadge extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: AppSpacing.micro,
             children: [
-              _Dot(color: paint.mark, size: AppSize.statusDotInBadge),
+              _Dot(color: paint.mark, size: AppSize.statusDot),
               Flexible(
                 child: Text(
                   label,
@@ -1576,9 +1637,10 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
-/// A tag as read-only metadata (DESIGN.md, MxTagChip): a pill, 22 on its own
-/// line or 18 ([isDense]) inside a row, never wider than 140; a long name
-/// ends in an ellipsis and stays whole for TalkBack.
+/// A tag as read-only metadata (DESIGN.md, MxTagChip): a pill at least 24
+/// tall on its own line, or 20 ([isDense]) inside a row. It hugs its name up
+/// to half the width it is given, so a tag never dominates its row; a longer
+/// name ends in an ellipsis and stays whole for TalkBack.
 class MxTagChip extends StatelessWidget {
   const MxTagChip({required this.label, this.isDense = false, super.key});
 
@@ -1591,26 +1653,30 @@ class MxTagChip extends StatelessWidget {
     return Semantics(
       label: label,
       excludeSemantics: true,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: isDense ? AppSize.tagChipDense : AppSize.tagChip,
-          maxWidth: AppSize.tagChipMaxWidth,
-        ),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: pair.ground,
-            borderRadius: BorderRadius.circular(AppRadius.full),
+      child: LayoutBuilder(
+        builder: (context, row) => ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: isDense ? AppSize.tagChipDense : AppSize.tagChip,
+            maxWidth: row.maxWidth / 2,
           ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
-            child: Center(
-              widthFactor: 1,
-              heightFactor: 1,
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.texts.labelSmall?.apply(color: pair.content),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: pair.ground,
+              borderRadius: BorderRadius.circular(AppRadius.full),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.control,
+              ),
+              child: Center(
+                widthFactor: 1,
+                heightFactor: 1,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.texts.labelSmall?.apply(color: pair.content),
+                ),
               ),
             ),
           ),
@@ -1638,7 +1704,7 @@ export 'package:memox/core/theme/components/mark_style.dart'
 enum MxIconTileSize {
   small(AppSize.iconTileSmall, AppRadius.sm, AppIconSize.small),
   medium(AppSize.iconTileMedium, AppRadius.md, AppIconSize.medium),
-  large(AppSize.iconTileLarge, AppRadius.md, AppIconSize.medium);
+  large(AppSize.iconTileLarge, AppRadius.md, AppIconSize.large);
 
   const MxIconTileSize(this.box, this.radius, this.glyph);
 
@@ -1764,7 +1830,7 @@ Set the `Status` cell of `MxBadge`, `MxStatusBadge`, `MxTagChip`, `MxIconTile` t
 #### MxBadge
 - Variants: tones primary, mastery, success, warning, danger, neutral; optional glyph
 - States: one
-- Accessibility: read as its label; 22 is a minimum that grows with text
+- Accessibility: read as its label; 24 is a minimum, the label centred, and it grows with text
 - Tokens: each tone's container under its `on-…-container` (`surface-container-high` / `on-surface-variant` for neutral); `labelSmall`; `AppSize.badge`; `AppRadius.full`
 - Golden: tones__light, tones__dark
 
@@ -1773,20 +1839,20 @@ Set the `Status` cell of `MxBadge`, `MxStatusBadge`, `MxTagChip`, `MxIconTile` t
 - Variants: kinds new, learning, reviewing, mastered; pill or bare dot (`isDot`)
 - States: one
 - Accessibility: a status is never colour alone: the pill shows its label, the dot is named by it for TalkBack
-- Tokens: `status-*` (dot), `status-*-container` / `on-status-*-container` (pill); `AppSize.statusDot`, `AppSize.statusDotInBadge`, `AppSize.badge`
+- Tokens: `status-*` (dot), `status-*-container` / `on-status-*-container` (pill); one 8 dot (`AppSize.statusDot`), 4 from its label; `AppSize.badge`
 - Golden: kinds__light, kinds__dark
 
 
 #### MxTagChip
-- Variants: 22 on its own line, 18 dense
+- Variants: 24 on its own line, 20 dense (both minimums); hugs its name up to half the width it is given
 - States: one
-- Accessibility: read whole even when the chip ends in an ellipsis at 140
-- Tokens: `surface-container-high`, `on-surface-variant`; `labelSmall`; `AppSize.tagChip`, `AppSize.tagChipDense`, `AppSize.tagChipMaxWidth`
+- Accessibility: read whole even when the chip ends in an ellipsis
+- Tokens: `surface-container-high`, `on-surface-variant`; `labelSmall`; `AppSize.tagChip`, `AppSize.tagChipDense`
 - Golden: sizes__light, sizes__dark
 
 
 #### MxIconTile
-- Variants: sizes small (28, r8, 16 glyph), medium (36, r12, 20), large (44, r12, 20); tones tinted, primary, warning (solid), success, caution (warning container), danger
+- Variants: sizes small (32, r8, 16 glyph), medium (40, r12, 20; Material 3's list leading container), large (48, r12, 24); tones tinted, primary, warning (solid), success, caution (warning container), danger — a closed set; no raw colour
 - States: one
 - Accessibility: decorative; the row or heading beside it names it
 - Tokens: `surface-container-high` / `on-surface-variant`, `primary-container`, `warning` / `on-warning`, `success-container`, `warning-container`, `error-container` and their `on-` roles; `AppSize.iconTile*`
@@ -1821,7 +1887,7 @@ Claude-Session: https://claude.ai/code/session_01Y8YmUXn5BengVUKKmQjAv5"
 - Modify: `DESIGN.md` (catalog)
 
 **Interfaces:**
-- Consumes: `mxProgressColors`, `MxLinearProgressTone` (Task 3); `AppRatio` (Task 1).
+- Consumes: `mxProgressColors`, `MxLinearProgressTone` (Task 3); the Task 1 sizes.
 - Produces: `MxLinearProgress({{value, semanticLabel, semanticValue, tone, size}})`, `MxLinearProgressSize`; `MxSkeleton.line({{widthFactor}})`, `MxSkeleton.tile()`, `MxSkeletonRow`, `MxSkeletonList({{semanticLabel, rowCount}})`, `MxSkeletonGroup({{semanticLabel, child}})`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -1837,17 +1903,24 @@ import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
 import 'support/mx_harness.dart';
 
-Finder _fill() => find.byType(FractionallySizedBox);
+Finder _fill() => find
+    .descendant(
+      of: find.byType(MxLinearProgress),
+      matching: find.byType(DecoratedBox),
+    )
+    .at(1);
+
+Widget _bar(
+  double value, {
+  MxLinearProgressSize size = MxLinearProgressSize.regular,
+}) => SizedBox(
+  width: 200,
+  child: MxLinearProgress(value: value, semanticLabel: 'Session', size: size),
+);
 
 void main() {
   testWidgets('the fill is the value\'s share of the track', (tester) async {
-    await pumpMx(
-      tester,
-      const SizedBox(
-        width: 200,
-        child: MxLinearProgress(value: 0.25, semanticLabel: 'Session'),
-      ),
-    );
+    await pumpMx(tester, _bar(0.25));
     await tester.pumpAndSettle();
     expect(tester.getSize(_fill()).width, 50);
     expect(
@@ -1856,15 +1929,29 @@ void main() {
     );
   });
 
-  testWidgets('it fills from the start edge in RTL', (tester) async {
-    await pumpMx(
-      tester,
-      const SizedBox(
-        width: 200,
-        child: MxLinearProgress(value: 0.25, semanticLabel: 'Session'),
+  testWidgets('0 draws no fill; 100% fills the track', (tester) async {
+    await pumpMx(tester, _bar(0));
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(MxLinearProgress),
+        matching: find.byType(DecoratedBox),
       ),
-      textDirection: TextDirection.rtl,
+      findsOneWidget,
     );
+    await pumpMx(tester, _bar(1));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(_fill()).width, 200);
+  });
+
+  testWidgets('a small share above 0 still shows a dot', (tester) async {
+    await pumpMx(tester, _bar(0.001, size: MxLinearProgressSize.thick));
+    await tester.pumpAndSettle();
+    expect(tester.getSize(_fill()), const Size.square(AppSize.progressThick));
+  });
+
+  testWidgets('it fills from the start edge in RTL', (tester) async {
+    await pumpMx(tester, _bar(0.25), textDirection: TextDirection.rtl);
     await tester.pumpAndSettle();
     expect(
       tester.getTopRight(_fill()).dx,
@@ -1872,18 +1959,8 @@ void main() {
     );
   });
 
-  testWidgets('thick is 5', (tester) async {
-    await pumpMx(
-      tester,
-      const SizedBox(
-        width: 200,
-        child: MxLinearProgress(
-          value: 0.5,
-          semanticLabel: 'Mastery',
-          size: MxLinearProgressSize.thick,
-        ),
-      ),
-    );
+  testWidgets('thick is 8', (tester) async {
+    await pumpMx(tester, _bar(0.5, size: MxLinearProgressSize.thick));
     expect(
       tester.getSize(find.byType(MxLinearProgress)).height,
       AppSize.progressThick,
@@ -1914,7 +1991,7 @@ void main() {
     final ColorScheme s = theme.colorScheme;
     final AppSemanticColors x = theme.extension<AppSemanticColors>()!;
     final Map<MxLinearProgressTone, Color> fills = {
-      MxLinearProgressTone.accent: s.onPrimaryContainer,
+      MxLinearProgressTone.secondary: s.secondary,
       MxLinearProgressTone.newCard: x.statusNew,
       MxLinearProgressTone.learning: x.statusLearning,
       MxLinearProgressTone.reviewing: x.statusReviewing,
@@ -1937,13 +2014,31 @@ void main() {
           ),
           theme: theme,
         );
+        await tester.pumpAndSettle();
         final List<Color?> colors = tester
-            .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+            .widgetList<DecoratedBox>(
+              find.descendant(
+                of: find.byType(MxLinearProgress),
+                matching: find.byType(DecoratedBox),
+              ),
+            )
             .map((box) => (box.decoration as BoxDecoration).color)
             .toList();
         expect(colors, [s.surfaceContainerLow, fill]);
       });
     }
+
+    testWidgets('$name: the generic bar is secondary, never primary', (
+      tester,
+    ) async {
+      await pumpMx(tester, _bar(0.5), theme: theme);
+      await tester.pumpAndSettle();
+      final Color? fill =
+          (tester.widget<DecoratedBox>(_fill()).decoration as BoxDecoration)
+              .color;
+      expect(fill, s.secondary);
+      expect(fill, isNot(s.primary));
+    });
   }
 }
 ```
@@ -1974,7 +2069,9 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('a row is a 28 tile and two lines', (tester) async {
+  testWidgets('a row is the medium icon tile and two text-high lines', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const SizedBox(
@@ -1987,9 +2084,17 @@ void main() {
     );
     expect(
       tester.getSize(find.byType(MxSkeleton).first),
-      const Size.square(AppSize.skeletonTile),
+      const Size.square(AppSize.iconTileMedium),
     );
-    expect(find.byType(MxSkeleton), findsNWidgets(3));
+    final TextTheme texts = mxThemes['light']!.textTheme;
+    expect(
+      tester.getSize(find.byType(MxSkeleton).at(1)).height,
+      texts.bodyLarge!.fontSize,
+    );
+    expect(
+      tester.getSize(find.byType(MxSkeleton).at(2)).height,
+      texts.bodySmall!.fontSize,
+    );
   });
 
   testWidgets('it pulses, and rests under reduced motion', (tester) async {
@@ -2082,13 +2187,14 @@ enum MxLinearProgressSize {
 /// A determinate bar (DESIGN.md, MxLinearProgress): a flat fill on a
 /// `surface-container-low` pill track, never a gradient. It knows a value, a
 /// tone, a size and what TalkBack reads; it knows nothing of mastery, which
-/// is composed on top of it.
+/// is composed on top of it. Any value above 0 shows at least a dot as long
+/// as the bar is thick, so a small share never reads as none.
 class MxLinearProgress extends StatelessWidget {
   const MxLinearProgress({
     required this.value,
     required this.semanticLabel,
     this.semanticValue,
-    this.tone = MxLinearProgressTone.accent,
+    this.tone = MxLinearProgressTone.secondary,
     this.size = MxLinearProgressSize.regular,
     super.key,
   }) : assert(value >= 0 && value <= 1, 'value is a fraction in [0, 1]');
@@ -2122,18 +2228,26 @@ class MxLinearProgress extends StatelessWidget {
           child: TweenAnimationBuilder<double>(
             tween: Tween<double>(end: value),
             duration: isStill ? Duration.zero : AppDurations.standard,
-            builder: (context, fraction, _) => Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: FractionallySizedBox(
-                widthFactor: fraction,
-                heightFactor: 1,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: paint.fill,
-                    borderRadius: pill,
+            builder: (context, fraction, _) => LayoutBuilder(
+              builder: (context, track) {
+                if (fraction <= 0) {
+                  return const SizedBox.shrink();
+                }
+                final double share = track.maxWidth * fraction;
+                return Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: SizedBox(
+                    width: share < size.height ? size.height : share,
+                    height: size.height,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: paint.fill,
+                        borderRadius: pill,
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),
@@ -2150,41 +2264,64 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_ratio.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
-/// One placeholder shape (DESIGN.md, MxSkeleton). It pulses with the
+/// The share of the text column a row's title and meta lines take, so the
+/// placeholder reads as a title over a shorter line (component contract).
+const double _titleShare = 0.6;
+const double _metaShare = 0.4;
+
+/// One placeholder shape (DESIGN.md, MxSkeleton), as large as what replaces
+/// it, so the layout does not jump on load. It pulses with the
 /// `MxSkeletonGroup` above it (opacity 0.45 to 0.75 over 1.4s, no shimmer)
 /// and rests at 0.45 without one or under reduced motion.
 class MxSkeleton extends StatelessWidget {
-  /// A text line, [widthFactor] of the space it is given.
-  const MxSkeleton.line({this.widthFactor = 1, super.key}) : isTile = false;
+  /// A text line as tall as the row title it stands for ([isMeta]: the
+  /// caption under it), [widthFactor] of the space it is given.
+  const MxSkeleton.line({this.widthFactor = 1, this.isMeta = false, super.key})
+    : isTile = false;
 
-  /// The 28 tile a row leads with.
-  const MxSkeleton.tile({super.key}) : isTile = true, widthFactor = 1;
+  /// The tile a row leads with: the medium `MxIconTile`.
+  const MxSkeleton.tile({super.key})
+    : isTile = true,
+      isMeta = false,
+      widthFactor = 1;
 
   final double widthFactor;
+  final bool isMeta;
   final bool isTile;
 
   @override
   Widget build(BuildContext context) {
     final Animation<double>? pulse = _Pulse.of(context);
-    final Widget shape = DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.colors.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(
-          isTile ? AppRadius.sm : AppRadius.xs,
-        ),
-      ),
-    );
+    final Color fill = context.colors.surfaceContainerHighest;
+    final TextStyle? text = isMeta
+        ? context.texts.bodySmall
+        : context.texts.bodyLarge;
     final Widget sized = isTile
-        ? SizedBox.square(dimension: AppSize.skeletonTile, child: shape)
+        ? SizedBox.square(
+            dimension: AppSize.iconTileMedium,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: fill,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+            ),
+          )
         : FractionallySizedBox(
             alignment: AlignmentDirectional.centerStart,
             widthFactor: widthFactor,
-            child: SizedBox(height: AppSize.skeletonLine, child: shape),
+            child: SizedBox(
+              height: text?.fontSize,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: fill,
+                  borderRadius: BorderRadius.circular(AppRadius.full),
+                ),
+              ),
+            ),
           );
     if (pulse == null) {
       return Opacity(opacity: AppOpacity.skeletonLow, child: sized);
@@ -2193,8 +2330,8 @@ class MxSkeleton extends StatelessWidget {
   }
 }
 
-/// The standard list placeholder: a tile and two lines at 70% and 45% of the
-/// text column, on a list row's padding.
+/// The standard list placeholder: the row's tile and two lines, title and
+/// meta, on a list row's padding.
 class MxSkeletonRow extends StatelessWidget {
   const MxSkeletonRow({super.key});
 
@@ -2214,8 +2351,8 @@ class MxSkeletonRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: AppSpacing.control,
               children: [
-                MxSkeleton.line(widthFactor: AppRatio.skeletonTitle),
-                MxSkeleton.line(widthFactor: AppRatio.skeletonMeta),
+                MxSkeleton.line(widthFactor: _titleShare),
+                MxSkeleton.line(widthFactor: _metaShare, isMeta: true),
               ],
             ),
           ),
@@ -2401,10 +2538,10 @@ Set the `Status` cell of `MxLinearProgress`, `MxSkeleton` to `built`. Append the
 
 ```markdown
 #### MxLinearProgress
-- Variants: tones accent, newCard, learning, reviewing, mastered, success, warning, danger; sizes regular (4), thick (5)
-- States: any value in [0, 1], animated over 200ms, still under reduced motion
+- Variants: tones secondary (the generic bar, default), newCard, learning, reviewing, mastered, success, warning, danger — a component that means a state passes that state's tone; sizes regular (4, Material 3's track), thick (8, Material 3 Expressive)
+- States: 0 (no fill), any share (a value above 0 shows at least a dot as long as the bar is thick), 1 (full); animated over 200ms, still under reduced motion
 - Accessibility: named by `semanticLabel` with a localized `semanticValue`; fills from the start edge in RTL; knows nothing of mastery
-- Tokens: fill `on-primary-container` (accent; `primary` holds only 2.35:1 on the dark track), `status-*`, `success`, `warning`, `error`; track `surface-container-low`; `AppSize.progress*`; `AppRadius.full`; every fill 3:1 on its track
+- Tokens: fill `secondary` (5.08:1 light, 6.71:1 dark on the track; never `primary`, 2.35:1 on the dark track), `status-*`, `success`, `warning`, `error`; track `surface-container-low`; `AppSize.progress*`; `AppRadius.full`; every fill 3:1 on its track
 - Golden: tones__light, tones__dark
 
 
@@ -2412,7 +2549,7 @@ Set the `Status` cell of `MxLinearProgress`, `MxSkeleton` to `built`. Append the
 - Variants: a line and a tile shape, the standard row (a tile and two lines), a list of rows, and a group that shares one pulse
 - States: pulsing (0.45 to 0.75 over 1.4s), resting at 0.45 under reduced motion
 - Accessibility: one live region names what is loading; the shapes are silent
-- Tokens: `surface-container-highest`; `AppOpacity.skeleton*`; `AppDurations.skeletonPulse`; `AppSize.skeletonLine`, `AppSize.skeletonTile`; `AppRatio.skeletonTitle`, `AppRatio.skeletonMeta`
+- Tokens: `surface-container-highest`; `AppOpacity.skeleton*`; `AppDurations.skeletonPulse`; a line as tall as the text it stands for (title `bodyLarge`, meta `bodySmall`), the title line at 60% and the meta at 40% of the text column (component contract); the row tile is the medium icon tile (40, r12)
 - Golden: list__light, list__dark
 
 ```
@@ -2444,7 +2581,7 @@ Claude-Session: https://claude.ai/code/session_01Y8YmUXn5BengVUKKmQjAv5"
 - Modify: `DESIGN.md` (catalog)
 
 **Interfaces:**
-- Consumes: `mxScrim`, `mxOverlayGround` (Task 1); `MxButton`, `MxOptionRow` (Phase 2).
+- Consumes: `mxScrim`, `mxOverlayGround`, `mxCanButtonLabelFit` (Task 1); `MxButton`, `MxOptionRow` (Phase 2).
 - Produces: `MxSheetActions({{confirmLabel, onConfirm, cancelLabel, onCancel, tone, isConfirmLoading, isInSheet}})`, `MxSheetActionsTone`; `showMxDialog<T>(context, {{builder, isDismissible}})`, `MxDialog({{title, actions, message, content, width}})`, `MxDialogWidth`; `showMxBottomSheet<T>(context, {{builder}})`, `MxBottomSheet({{child, title, actions}})`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -2460,23 +2597,53 @@ import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 import 'support/mx_harness.dart';
 
+Widget _footer(String confirm, {double width = 328}) => SizedBox(
+  width: width,
+  child: MxSheetActions(
+    cancelLabel: 'Cancel',
+    onCancel: () {},
+    confirmLabel: confirm,
+    onConfirm: () {},
+  ),
+);
+
 void main() {
-  testWidgets('the confirm takes 1.3 shares to Cancel\'s 1', (tester) async {
+  testWidgets('short labels share the row equally, the confirm trailing', (
+    tester,
+  ) async {
+    await pumpMx(tester, _footer('Save'));
+    final Rect cancel = tester.getRect(find.byType(MxButton).first);
+    final Rect confirm = tester.getRect(find.byType(MxButton).last);
+    expect(cancel.width, confirm.width);
+    expect(cancel.top, confirm.top);
+    expect(confirm.left, greaterThan(cancel.left));
+    expect(
+      tester.widget<MxButton>(find.byType(MxButton).first).tone,
+      MxButtonTone.outline,
+    );
+  });
+
+  testWidgets('a label that would wrap stacks them, the confirm on top', (
+    tester,
+  ) async {
+    await pumpMx(tester, _footer('Move everything to Trash for good'));
+    final Rect top = tester.getRect(
+      find.text('Move everything to Trash for good'),
+    );
+    final Rect bottom = tester.getRect(find.text('Cancel'));
+    expect(top.top, lessThan(bottom.top));
+    expect(tester.getSize(find.byType(MxButton).first).width, 328);
+  });
+
+  testWidgets('a lone confirm spans the row', (tester) async {
     await pumpMx(
       tester,
       SizedBox(
-        width: 300 + AppSpacing.control,
-        child: MxSheetActions(
-          cancelLabel: 'Cancel',
-          onCancel: () {},
-          confirmLabel: 'Save',
-          onConfirm: () {},
-        ),
+        width: 328,
+        child: MxSheetActions(confirmLabel: 'Done', onConfirm: () {}),
       ),
     );
-    final double cancel = tester.getSize(find.byType(MxButton).first).width;
-    final double confirm = tester.getSize(find.byType(MxButton).last).width;
-    expect(confirm / cancel, moreOrLessEquals(1.3, epsilon: 0.01));
+    expect(tester.getSize(find.byType(MxButton)).width, 328);
   });
 
   testWidgets('the tone sets the confirm; loading blocks it', (tester) async {
@@ -2656,7 +2823,6 @@ Create `test/shared/widgets/mx_bottom_sheet_test.dart`:
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/foundations/app_ratio.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -2707,9 +2873,7 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('a long body stops at 85% of the window and scrolls', (
-    tester,
-  ) async {
+  testWidgets('a long body stops 72 below the top and scrolls', (tester) async {
     await pumpMx(
       tester,
       _opener(
@@ -2720,11 +2884,9 @@ void main() {
     );
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
-    final double window =
-        tester.view.physicalSize.height / tester.view.devicePixelRatio;
     expect(
-      tester.getSize(find.byType(MxBottomSheet)).height,
-      lessThanOrEqualTo(window * AppRatio.sheetMaxHeight + 0.5),
+      tester.getTopLeft(find.byType(MxBottomSheet)).dy,
+      greaterThanOrEqualTo(AppSize.sheetTopClearance),
     );
     expect(find.byType(Scrollable), findsOneWidget);
   });
@@ -2784,19 +2946,18 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/components/button_style.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 /// What a dialog's or sheet's confirm does.
 enum MxSheetActionsTone { primary, destructive, warning }
 
-/// Cancel takes 10 shares of the row and the confirm 13 (DESIGN.md: the
-/// confirm takes 1.3 shares), so a real verb ("Move to Trash") keeps its line.
-const int _cancelShare = 10;
-const int _confirmShare = 13;
-
-/// The footer every dialog and sheet ends with (DESIGN.md, MxSheetActions):
-/// Cancel, then the confirm in its tone. In a sheet it sits under a hairline
-/// on the gutter.
+/// The footer every dialog and sheet ends with (DESIGN.md, MxSheetActions).
+/// Cancel and the confirm share the row equally while both labels fit one
+/// line at the reader's text scale, the confirm on the trailing side; when
+/// either would wrap they stack full width, the confirm on top. A lone
+/// confirm spans the row. Labels are never cut. In a sheet it sits under a
+/// hairline on the gutter.
 class MxSheetActions extends StatelessWidget {
   const MxSheetActions({
     required this.confirmLabel,
@@ -2823,7 +2984,6 @@ class MxSheetActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String? cancel = cancelLabel;
     final Widget confirm = MxButton(
       label: confirmLabel,
       onPressed: onConfirm,
@@ -2834,23 +2994,59 @@ class MxSheetActions extends StatelessWidget {
         MxSheetActionsTone.warning => MxButtonTone.warning,
       },
     );
-    final Widget row = Row(
-      spacing: AppSpacing.control,
-      children: [
-        if (cancel != null)
-          Expanded(
-            flex: _cancelShare,
-            child: MxButton(
-              label: cancel,
-              onPressed: onCancel,
-              tone: MxButtonTone.secondary,
-            ),
-          ),
-        Expanded(flex: _confirmShare, child: confirm),
-      ],
+    return _framed(context, _actions(context, confirm));
+  }
+
+  Widget _actions(BuildContext context, Widget confirm) {
+    final String? cancel = cancelLabel;
+    if (cancel == null) {
+      return confirm;
+    }
+    // One primary per decision: Cancel is the outline tone.
+    final Widget dismiss = MxButton(
+      label: cancel,
+      onPressed: onCancel,
+      tone: MxButtonTone.outline,
     );
+    final TextScaler scaler = MediaQuery.textScalerOf(context);
+    return LayoutBuilder(
+      builder: (context, footer) {
+        final double share = (footer.maxWidth - AppSpacing.control) / 2;
+        final bool isSideBySide =
+            mxCanButtonLabelFit(
+              texts: context.texts,
+              label: cancel,
+              width: share,
+              textScaler: scaler,
+            ) &&
+            mxCanButtonLabelFit(
+              texts: context.texts,
+              label: confirmLabel,
+              width: share,
+              textScaler: scaler,
+            );
+        if (isSideBySide) {
+          return Row(
+            spacing: AppSpacing.control,
+            children: [
+              Expanded(child: dismiss),
+              Expanded(child: confirm),
+            ],
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          spacing: AppSpacing.control,
+          children: [confirm, dismiss],
+        );
+      },
+    );
+  }
+
+  Widget _framed(BuildContext context, Widget actions) {
     if (!isInSheet) {
-      return row;
+      return actions;
     }
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -2868,7 +3064,7 @@ class MxSheetActions extends StatelessWidget {
           AppSpacing.gutter,
           AppSpacing.gutter,
         ),
-        child: row,
+        child: actions,
       ),
     );
   }
@@ -2882,7 +3078,6 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/components/overlay_style.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_ratio.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -2900,8 +3095,11 @@ enum MxDialogWidth {
   final double extent;
 }
 
+/// The scale a dialog grows from as it fades in (component contract).
+const double _enterScale = 0.92;
+
 /// Opens [builder] (an `MxDialog`) over the 45% scrim. It fades in and
-/// scales from 0.94 over 200ms, and opens at once under reduced motion.
+/// scales from 0.92 over 200ms, and opens at once under reduced motion.
 Future<T?> showMxDialog<T>(
   BuildContext context, {
   required WidgetBuilder builder,
@@ -2923,10 +3121,7 @@ Future<T?> showMxDialog<T>(
       return FadeTransition(
         opacity: curved,
         child: ScaleTransition(
-          scale: Tween<double>(
-            begin: AppRatio.dialogEnterScale,
-            end: 1,
-          ).animate(curved),
+          scale: Tween<double>(begin: _enterScale, end: 1).animate(curved),
           child: child,
         ),
       );
@@ -3030,7 +3225,6 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/components/overlay_style.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_ratio.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -3058,8 +3252,9 @@ Future<T?> showMxBottomSheet<T>(
 
 /// The bottom-anchored modal for action lists, pickers and short forms
 /// (DESIGN.md, MxBottomSheet): top corners 20, the chrome shadow, a grabber,
-/// an optional title, a scrolling body and a pinned footer. It stops at 85%
-/// of the window and rides above the keyboard.
+/// an optional title, a scrolling body and a pinned footer. It stops 72
+/// below the top safe area (Material 3), so the page behind stays in view to
+/// tap away, and rides above the keyboard.
 class MxBottomSheet extends StatelessWidget {
   const MxBottomSheet({
     required this.child,
@@ -3088,7 +3283,11 @@ class MxBottomSheet extends StatelessWidget {
       padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: media.size.height * AppRatio.sheetMaxHeight,
+          maxHeight:
+              media.size.height -
+              media.padding.top -
+              media.viewInsets.bottom -
+              AppSize.sheetTopClearance,
         ),
         child: DecoratedBox(
           decoration: BoxDecoration(
@@ -3105,11 +3304,10 @@ class MxBottomSheet extends StatelessWidget {
               const _Grabber(),
               if (heading != null)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.card,
-                    AppSpacing.control,
-                    AppSpacing.card,
-                    AppSpacing.grouped,
+                  padding: const EdgeInsetsDirectional.only(
+                    start: AppSpacing.card,
+                    end: AppSpacing.card,
+                    bottom: AppSpacing.grouped,
                   ),
                   child: Semantics(
                     header: true,
@@ -3126,17 +3324,15 @@ class MxBottomSheet extends StatelessWidget {
   }
 }
 
-/// The 36 × 4 pill at the top: `outline`, 3:1 on the sheet ground.
+/// The 32 × 4 pill at the top (Material 3's drag handle) in `outline`, 3:1
+/// on the sheet ground, centred in a 48 band so the drag has a full target.
 class _Grabber extends StatelessWidget {
   const _Grabber();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: AppSpacing.control,
-        bottom: AppSpacing.micro,
-      ),
+    return SizedBox(
+      height: AppSize.tapTarget,
       child: Center(
         child: SizedBox(
           width: AppSize.grabberWidth,
@@ -3246,16 +3442,16 @@ Set the `Status` cell of `MxSheetActions`, `MxDialog`, `MxBottomSheet` to `built
 
 ```markdown
 #### MxSheetActions
-- Variants: confirm tones primary, destructive, warning; with or without Cancel; in a dialog or in a sheet (under a hairline, on the gutter)
+- Variants: confirm tones primary, destructive, warning; with or without Cancel (outline tone: one primary per decision); in a dialog or in a sheet (under a hairline, on the gutter)
 - States: enabled, confirm disabled, confirm loading
-- Accessibility: buttons named by their labels; the confirm takes 1.3 shares so its verb keeps its line
+- Accessibility: buttons named by their labels; Cancel and the confirm share the row equally, the confirm trailing, while both labels fit one line at the reader's text scale (measured); otherwise they stack full width, the confirm on top; a label is never cut; a lone confirm spans the row
 - Tokens: through `MxButton`; `outline-variant` hairline in a sheet
 - Golden: none — seen in `mx_dialog__decision` and `mx_bottom_sheet__picker`
 
 
 #### MxDialog
 - Variants: widths small (300), medium (320), large (340), never wider than the window less its gutters; optional message and content
-- States: opening (fade and scale from 0.94 over 200ms; at once under reduced motion), open
+- States: opening (fade and scale from 0.92 over 200ms, a component contract; at once under reduced motion), open
 - Accessibility: a named route scope; the 45% scrim dismisses unless told not to; its footer is `MxSheetActions`
 - Tokens: `surface-container-high`; `AppRadius.xl`; overlay shadow; `scrim` at `AppOpacity.scrim`; `titleLarge`, `bodyMedium` in `on-surface-variant`; `AppSpacing.card`
 - Golden: decision__light, decision__dark
@@ -3264,8 +3460,8 @@ Set the `Status` cell of `MxSheetActions`, `MxDialog`, `MxBottomSheet` to `built
 #### MxBottomSheet
 - Variants: with or without a title and a pinned footer
 - States: opening (slides up over 260ms; at once under reduced motion), open, above the keyboard
-- Accessibility: the title is a header; the body scrolls past 85% of the window; the grabber is decorative
-- Tokens: `surface-container-high`; top corners `AppRadius.xl`; chrome shadow; grabber 36 × 4 in `outline` (3:1); `AppRatio.sheetMaxHeight`
+- Accessibility: the title is a header; the sheet stops 72 below the top safe area (Material 3) and the body scrolls; it rides above the keyboard; the grabber sits in a 48 band
+- Tokens: `surface-container-high`; top corners `AppRadius.xl`; chrome shadow; grabber 32 × 4 in `outline` (3:1; Material 3's handle); `AppSize.sheetTopClearance` (72), `AppSize.sheetMaxWidth` (640)
 - Golden: picker__light, picker__dark
 
 ```
@@ -3547,7 +3743,7 @@ void main() {
     semantics.dispose();
   });
 
-  testWidgets('compact is a 52 tile', (tester) async {
+  testWidgets('compact is a 48 tile', (tester) async {
     await pumpMx(
       tester,
       const SizedBox(
@@ -3633,7 +3829,7 @@ void main() {
             )
             .first,
       ),
-      const Size.square(AppSize.errorTile),
+      const Size.square(AppSize.emptyTile),
     );
   });
 
@@ -3814,6 +4010,8 @@ class MxSnackbar extends StatelessWidget {
           Expanded(
             child: Text(
               message,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: context.texts.bodyMedium?.apply(
                 color: context.colors.onInverseSurface,
               ),
@@ -3990,8 +4188,8 @@ class MxEmptyStateAction {
 }
 
 /// Nothing here yet, and what to do (DESIGN.md, MxEmptyState): a toned r20
-/// tile (64, or 52 [isCompact]), a title, a message, up to two actions (the
-/// first filled) and an optional footnote.
+/// tile (64, or 48 [isCompact]), 8 to the title and its message, 12 to up to
+/// two actions (the first filled, 8 apart) and an optional footnote.
 class MxEmptyState extends StatelessWidget {
   const MxEmptyState({
     required this.icon,
@@ -4037,7 +4235,6 @@ class MxEmptyState extends StatelessWidget {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        spacing: AppSpacing.control,
         children: [
           ExcludeSemantics(
             child: SizedBox.square(
@@ -4062,7 +4259,8 @@ class MxEmptyState extends StatelessWidget {
               style: context.texts.titleLarge,
             ),
           ),
-          if (body != null)
+          if (body != null) ...[
+            const SizedBox(height: AppSpacing.control),
             Text(
               body,
               textAlign: TextAlign.center,
@@ -4070,17 +4268,23 @@ class MxEmptyState extends StatelessWidget {
                 color: context.colors.onSurfaceVariant,
               ),
             ),
+          ],
           if (first != null) ...[
             const SizedBox(height: AppSpacing.grouped),
             MxButton(label: first.label, onPressed: first.onPressed),
           ],
-          if (second != null)
+          if (second != null) ...[
+            const SizedBox(height: AppSpacing.control),
             MxButton(
               label: second.label,
               onPressed: second.onPressed,
               tone: MxButtonTone.text,
             ),
-          if (rule != null) MxNote.hint(text: rule),
+          ],
+          if (rule != null) ...[
+            const SizedBox(height: AppSpacing.control),
+            MxNote.hint(text: rule),
+          ],
         ],
       ),
     );
@@ -4100,7 +4304,8 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 /// An inline load failure with Retry, or, without [onRetry], the "not
-/// found" form (DESIGN.md, MxErrorState): an r16 `error-container` tile with
+/// found" form (DESIGN.md, MxErrorState): an r16 `error-container` tile, the
+/// empty state's 64, with
 /// the alert glyph (cloud-off only for a network failure), a title, an
 /// optional message in the local-first voice and the Retry button.
 class MxErrorState extends StatelessWidget {
@@ -4134,11 +4339,10 @@ class MxErrorState extends StatelessWidget {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        spacing: AppSpacing.control,
         children: [
           ExcludeSemantics(
             child: SizedBox.square(
-              dimension: AppSize.errorTile,
+              dimension: AppSize.emptyTile,
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: colors.errorContainer,
@@ -4162,7 +4366,8 @@ class MxErrorState extends StatelessWidget {
               style: context.texts.titleLarge,
             ),
           ),
-          if (body != null)
+          if (body != null) ...[
+            const SizedBox(height: AppSpacing.control),
             Text(
               body,
               textAlign: TextAlign.center,
@@ -4170,6 +4375,7 @@ class MxErrorState extends StatelessWidget {
                 color: colors.onSurfaceVariant,
               ),
             ),
+          ],
           if (retry != null) ...[
             const SizedBox(height: AppSpacing.grouped),
             MxButton(
@@ -4347,10 +4553,10 @@ Set the `Status` cell of `MxSnackbar`, `MxInlineBanner`, `MxEmptyState`, `MxErro
 
 ```markdown
 #### MxSnackbar
-- Variants: message only; one action (`isUndo` keeps it 8s)
+- Variants: message only (at most two lines); one action (`isUndo` keeps it 8s)
 - States: shown 4s or 8s; held while TalkBack is on and it carries an action
 - Accessibility: the action is reachable for TalkBack; it replaces any snackbar already shown
-- Tokens: `inverse-surface`, `on-inverse-surface`, `inverse-primary` (the action, `MxButton`'s inverse tone); `AppRadius.md`; `AppDurations.toast`, `AppDurations.toastWithUndo`
+- Tokens: `inverse-surface`, `on-inverse-surface`, `inverse-primary` (the action: `MxButton`'s inverse tone, for any action on an inverse surface, with its pressed overlay and an `inverse-primary` focus ring); `AppRadius.md`; `AppDurations.toast`, `AppDurations.toastWithUndo`
 - Golden: forms__light, forms__dark
 
 
@@ -4363,10 +4569,10 @@ Set the `Status` cell of `MxSnackbar`, `MxInlineBanner`, `MxEmptyState`, `MxErro
 
 
 #### MxEmptyState
-- Variants: tones primary, neutral, success, warning, danger; compact; up to two actions; footnote
+- Variants: tones primary, neutral, success, warning, danger; compact; up to two actions (the first filled); footnote; tile 8 to the title, 8 to the message, 12 to the actions, 8 between them
 - States: one
 - Accessibility: the title is a header; the tile is decorative
-- Tokens: each tone's container under its `on-…-container`; `AppSize.emptyTile`, `AppSize.emptyTileCompact`; `AppRadius.xl`; `titleLarge`, `bodyMedium`
+- Tokens: each tone's container under its `on-…-container`; `AppSize.emptyTile` (64), `AppSize.emptyTileCompact` (48); `AppRadius.xl`; glyph `AppIconSize.large`; `titleLarge`, `bodyMedium`
 - Golden: forms__light, forms__dark
 
 
@@ -4374,7 +4580,7 @@ Set the `Status` cell of `MxSnackbar`, `MxInlineBanner`, `MxEmptyState`, `MxErro
 - Variants: with Retry (load failure), without (not found); network glyph
 - States: one
 - Accessibility: the title is a header and a live region; the message speaks in the local-first voice
-- Tokens: `error-container`, `on-error-container`; `AppSize.errorTile`; `AppRadius.lg`; `titleLarge`, `bodyMedium`
+- Tokens: `error-container`, `on-error-container`; the empty state's tile (`AppSize.emptyTile`, 64); `AppRadius.lg`; glyph `AppIconSize.large`; `titleLarge`, `bodyMedium`
 - Golden: forms__light, forms__dark
 ```
 
@@ -4422,4 +4628,4 @@ Build the `golden-compare` page for the 30 added goldens (base: the commit befor
 
 - [ ] **Step 5: WBS, push and sign-off**
 
-In `docs/wbs_FE.md`, set SP3a-P3 to `xong` with this plan's link and the evidence; set the next column of SP3a to Plan P4. Run `python3 tools/docs/generate.py` and `python3 tools/docs/check.py | tail -1` → `PASS`. Commit, push, and ask the owner for the Phase 3 sign-off through `AskUserQuestion`. Include the gate, the golden page, the gallery, the Impeccable and review findings, and decisions 1–6.
+In `docs/wbs_FE.md`, set SP3a-P3 to `xong` with this plan's link and the evidence; set the next column of SP3a to Plan P4. Run `python3 tools/docs/generate.py` and `python3 tools/docs/check.py | tail -1` → `PASS`. Commit, push, and ask the owner for the Phase 3 sign-off through `AskUserQuestion`. Include the gate, the golden page, the gallery, the Impeccable and review findings, and the decision table.
