@@ -9,53 +9,53 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/00-index.md:1` <!-- Hand-written screen index. --> |  |
-| `shared/ui/screen-handoff/00-index.md:3` # MemoX screen index |  |
-| `shared/ui/screen-handoff/00-index.md:5` Every screen of the app. Each detail file records the screen's layout, its state |  |
-| `shared/ui/screen-handoff/00-index.md:10` ## Status values |  |
-| `shared/ui/screen-handoff/00-index.md:12` - **built:** the app has the screen and its detail file describes it. |  |
-| `shared/ui/screen-handoff/00-index.md:13` - **out of V8:** belongs to a sub-project after V8.0 (`PRODUCT.md`, deferred). |  |
-| `shared/ui/screen-handoff/00-index.md:15` ## Screens |  |
-| `shared/ui/screen-handoff/00-index.md:17` \| # \| Screen \| States \| FE item \| Status \| Detail \| |  |
-| `shared/ui/screen-handoff/00-index.md:19` \| 01 \| Deck list · recursive \| 22 \| FE-A1 \| built \| [01-deck-list.md](01-deck-li |  |
-| `shared/ui/screen-handoff/00-index.md:20` \| 02 \| Review algorithm & reset \| 9 \| FE-A4 \| built \| [02-review-algorithm.md](0 |  |
-| `shared/ui/screen-handoff/00-index.md:21` \| 03 \| Starter decks \| 10 \| FE-B4 \| built \| [03-starter-decks.md](03-starter-dec |  |
-| `shared/ui/screen-handoff/00-index.md:22` \| 04 \| Library search \| 5 \| FE-A1, FE-A10 \| built \| [04-library-search.md](04-li |  |
-| `shared/ui/screen-handoff/00-index.md:23` \| 05 \| Tags \| 12 \| FE-B2 \| built \| [05-tags.md](05-tags.md) \| |  |
-| `shared/ui/screen-handoff/00-index.md:24` \| 06 \| Trash \| 15 \| FE-B1 \| built \| [06-trash.md](06-trash.md) \| |  |
-| `shared/ui/screen-handoff/00-index.md:25` \| 07 \| Card list \| 15 \| FE-A2 \| built \| [07-card-list.md](07-card-list.md) \| |  |
-| `shared/ui/screen-handoff/00-index.md:26` \| 08 \| Card create \| 9 \| FE-A2 \| built \| [08-card-create.md](08-card-create.md) |  |
-| `shared/ui/screen-handoff/00-index.md:27` \| 09 \| Card edit \| 9 \| FE-A2 \| built \| [09-card-edit.md](09-card-edit.md) \| |  |
-| `shared/ui/screen-handoff/00-index.md:28` \| 10 \| Card detail \| 7 \| FE-A2 \| built \| [10-card-detail.md](10-card-detail.md) |  |
-| `shared/ui/screen-handoff/00-index.md:29` \| 11 \| Card import \| 16 \| FE-B3 \| built \| [11-card-import.md](11-card-import.md) |  |
-| `shared/ui/screen-handoff/00-index.md:30` \| 12 \| Card export \| 9 \| FE-B3 \| built \| [12-card-export.md](12-card-export.md) |  |
-| `shared/ui/screen-handoff/00-index.md:31` \| 13 \| Study home \| 9 \| FE-A8, SB-U1 \| built \| [13-study-home.md](13-study-home. |  |
-| `shared/ui/screen-handoff/00-index.md:32` \| 14 \| Study entry \| 9 \| FE-A6, FE-A7 \| built \| [14-study-entry.md](14-study-ent |  |
-| `shared/ui/screen-handoff/00-index.md:33` \| 15 \| Study options \| 7 \| FE-A3 \| built \| [15-study-options.md](15-study-option |  |
-| `shared/ui/screen-handoff/00-index.md:34` \| 16 \| Study · Browse \| 1 \| FE-A6 \| built \| [16-study-browse.md](16-study-browse |  |
-| `shared/ui/screen-handoff/00-index.md:35` \| 16a \| Study · Self-assess (`self_assess`) \| — \| FE-A6 \| built \| [16a-study-sel |  |
-| `shared/ui/screen-handoff/00-index.md:36` \| 17 \| Study · Match \| 1 \| FE-A6 \| built \| [17-study-match.md](17-study-match.md |  |
-| `shared/ui/screen-handoff/00-index.md:37` \| 18 \| Study · Guess \| 1 \| FE-A6 \| built \| [18-study-guess.md](18-study-guess.md |  |
-| `shared/ui/screen-handoff/00-index.md:38` \| 19 \| Study · Recall \| 3 \| FE-A6 \| built \| [19-study-recall.md](19-study-recall |  |
-| `shared/ui/screen-handoff/00-index.md:39` \| 20 \| Study · Fill \| 3 \| FE-A6 \| built \| [20-study-fill.md](20-study-fill.md) \| |  |
-| `shared/ui/screen-handoff/00-index.md:40` \| 21 \| Session summary \| 10 \| FE-A6 \| built \| [21-session-summary.md](21-session |  |
-| `shared/ui/screen-handoff/00-index.md:41` \| 22 \| Progress \| 8 \| FE-A9 \| built \| [22-progress.md](22-progress.md) \| |  |
-| `shared/ui/screen-handoff/00-index.md:42` \| 23 \| Settings \| 12 \| FE-A3, SB-U1, FE-B8, FE-B9 \| built \| [23-settings.md](23- |  |
-| `shared/ui/screen-handoff/00-index.md:43` \| 24 \| Daily reminder \| 9 \| FE-B5, FE-B6 \| built \| [24-daily-reminder.md](24-dai |  |
-| `shared/ui/screen-handoff/00-index.md:44` \| 25 \| Theme \| 3 \| FE-A3 \| built \| [25-theme.md](25-theme.md) \| |  |
-| `shared/ui/screen-handoff/00-index.md:45` \| 26 \| Language \| 3 \| FE-A3 \| built \| [26-language.md](26-language.md) \| |  |
-| `shared/ui/screen-handoff/00-index.md:46` \| 27 \| Sync \| 7 \| SB-U1 \| built \| [27-sync.md](27-sync.md) (shape brief in the s |  |
-| `shared/ui/screen-handoff/00-index.md:47` \| 28 \| Monitoring (admin only) \| 15 \| FE-B8 \| built \| [28-monitoring.md](28-moni |  |
-| `shared/ui/screen-handoff/00-index.md:48` \| 29 \| Welcome (first launch) \| 2 \| FE-B9 \| built \| [29-welcome.md](29-welcome.m |  |
-| `shared/ui/screen-handoff/00-index.md:49` \| 30 \| Sign-in, merge sheet, transition layer \| 13 \| FE-B9, FE-B10 \| built \| [30 |  |
-| `shared/ui/screen-handoff/00-index.md:50` \| 31 \| Code \| 2 \| FE-B9 \| built \| [31-code.md](31-code.md) \| |  |
-| `shared/ui/screen-handoff/00-index.md:51` \| 32 \| Account \| 9 \| FE-B10 \| built \| [32-account.md](32-account.md) (shape in t |  |
-| `shared/ui/screen-handoff/00-index.md:52` \| 33 \| Users (admin) \| 5 \| FE-B11 \| built \| [33-users.md](33-users.md) (shape in |  |
-| `shared/ui/screen-handoff/00-index.md:54` ## Rules shared by every screen |  |
-| `shared/ui/screen-handoff/00-index.md:56` - **Controls without their feature** are hidden. The Library root's "Coming soon |  |
-| `shared/ui/screen-handoff/00-index.md:58` - **Data displays without their data** are hidden, never drawn empty: an empty m |  |
-| `shared/ui/screen-handoff/00-index.md:60` - **Delete moves to the Trash** (UC-TRASH-001). "Move to Trash", "Recoverable fo |  |
-| `shared/ui/screen-handoff/00-index.md:63` - **Copy** is written in English first; Vietnamese is added to the ARB with the |  |
+| `shared/ui/screen-handoff/00-index.md:1` <!-- Hand-written screen index. --> | moved → `screens/SCREEN_CATALOG.md` |
+| `shared/ui/screen-handoff/00-index.md:3` # MemoX screen index | moved → `screens/SCREEN_CATALOG.md` |
+| `shared/ui/screen-handoff/00-index.md:5` Every screen of the app. Each detail file records the screen's layout, its state | moved → `screens/SCREEN_CATALOG.md` |
+| `shared/ui/screen-handoff/00-index.md:10` ## Status values | moved → `screens/SCREEN_CATALOG.md` |
+| `shared/ui/screen-handoff/00-index.md:12` - **built:** the app has the screen and its detail file describes it. | moved → `screens/SCREEN_CATALOG.md` |
+| `shared/ui/screen-handoff/00-index.md:13` - **out of V8:** belongs to a sub-project after V8.0 (`PRODUCT.md`, deferred). | superseded → PRODUCT.md `## MVP Scope` (Out of scope); the catalog has no out-of-V8 status |
+| `shared/ui/screen-handoff/00-index.md:15` ## Screens | moved → `screens/SCREEN_CATALOG.md` |
+| `shared/ui/screen-handoff/00-index.md:17` \| # \| Screen \| States \| FE item \| Status \| Detail \| | moved → `screens/SCREEN_CATALOG.md` |
+| `shared/ui/screen-handoff/00-index.md:19` \| 01 \| Deck list · recursive \| 22 \| FE-A1 \| built \| [01-deck-list.md](01-deck-li | superseded → SCR-DECK-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:20` \| 02 \| Review algorithm & reset \| 9 \| FE-A4 \| built \| [02-review-algorithm.md](0 | superseded → SCR-SRS-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:21` \| 03 \| Starter decks \| 10 \| FE-B4 \| built \| [03-starter-decks.md](03-starter-dec | superseded → SCR-STARTER-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:22` \| 04 \| Library search \| 5 \| FE-A1, FE-A10 \| built \| [04-library-search.md](04-li | superseded → SCR-SEARCH-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:23` \| 05 \| Tags \| 12 \| FE-B2 \| built \| [05-tags.md](05-tags.md) \| | superseded → SCR-TAG-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:24` \| 06 \| Trash \| 15 \| FE-B1 \| built \| [06-trash.md](06-trash.md) \| | superseded → SCR-TRASH-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:25` \| 07 \| Card list \| 15 \| FE-A2 \| built \| [07-card-list.md](07-card-list.md) \| | superseded → SCR-CARD-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:26` \| 08 \| Card create \| 9 \| FE-A2 \| built \| [08-card-create.md](08-card-create.md) | superseded → SCR-CARD-002 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:27` \| 09 \| Card edit \| 9 \| FE-A2 \| built \| [09-card-edit.md](09-card-edit.md) \| | superseded → SCR-CARD-003 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:28` \| 10 \| Card detail \| 7 \| FE-A2 \| built \| [10-card-detail.md](10-card-detail.md) | superseded → SCR-CARD-004 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:29` \| 11 \| Card import \| 16 \| FE-B3 \| built \| [11-card-import.md](11-card-import.md) | superseded → SCR-TRANSFER-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:30` \| 12 \| Card export \| 9 \| FE-B3 \| built \| [12-card-export.md](12-card-export.md) | superseded → SCR-TRANSFER-002 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:31` \| 13 \| Study home \| 9 \| FE-A8, SB-U1 \| built \| [13-study-home.md](13-study-home. | superseded → SCR-STUDY-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:32` \| 14 \| Study entry \| 9 \| FE-A6, FE-A7 \| built \| [14-study-entry.md](14-study-ent | superseded → SCR-STUDY-002 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:33` \| 15 \| Study options \| 7 \| FE-A3 \| built \| [15-study-options.md](15-study-option | superseded → SCR-SETTINGS-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:34` \| 16 \| Study · Browse \| 1 \| FE-A6 \| built \| [16-study-browse.md](16-study-browse | superseded → SCR-STUDY-003 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:35` \| 16a \| Study · Self-assess (`self_assess`) \| — \| FE-A6 \| built \| [16a-study-sel | superseded → SCR-STUDY-004 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:36` \| 17 \| Study · Match \| 1 \| FE-A6 \| built \| [17-study-match.md](17-study-match.md | superseded → SCR-STUDY-005 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:37` \| 18 \| Study · Guess \| 1 \| FE-A6 \| built \| [18-study-guess.md](18-study-guess.md | superseded → SCR-STUDY-006 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:38` \| 19 \| Study · Recall \| 3 \| FE-A6 \| built \| [19-study-recall.md](19-study-recall | superseded → SCR-STUDY-007 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:39` \| 20 \| Study · Fill \| 3 \| FE-A6 \| built \| [20-study-fill.md](20-study-fill.md) \| | superseded → SCR-STUDY-008 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:40` \| 21 \| Session summary \| 10 \| FE-A6 \| built \| [21-session-summary.md](21-session | superseded → SCR-STUDY-009 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:41` \| 22 \| Progress \| 8 \| FE-A9 \| built \| [22-progress.md](22-progress.md) \| | superseded → SCR-PROGRESS-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:42` \| 23 \| Settings \| 12 \| FE-A3, SB-U1, FE-B8, FE-B9 \| built \| [23-settings.md](23- | superseded → SCR-SETTINGS-002 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:43` \| 24 \| Daily reminder \| 9 \| FE-B5, FE-B6 \| built \| [24-daily-reminder.md](24-dai | superseded → SCR-REMINDER-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:44` \| 25 \| Theme \| 3 \| FE-A3 \| built \| [25-theme.md](25-theme.md) \| | superseded → SCR-SETTINGS-003 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:45` \| 26 \| Language \| 3 \| FE-A3 \| built \| [26-language.md](26-language.md) \| | superseded → SCR-SETTINGS-004 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:46` \| 27 \| Sync \| 7 \| SB-U1 \| built \| [27-sync.md](27-sync.md) (shape brief in the s | superseded → SCR-ACCOUNT-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:47` \| 28 \| Monitoring (admin only) \| 15 \| FE-B8 \| built \| [28-monitoring.md](28-moni | superseded → SCR-MONITORING-001 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:48` \| 29 \| Welcome (first launch) \| 2 \| FE-B9 \| built \| [29-welcome.md](29-welcome.m | superseded → SCR-ACCOUNT-002 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:49` \| 30 \| Sign-in, merge sheet, transition layer \| 13 \| FE-B9, FE-B10 \| built \| [30 | superseded → SCR-ACCOUNT-003 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:50` \| 31 \| Code \| 2 \| FE-B9 \| built \| [31-code.md](31-code.md) \| | superseded → SCR-ACCOUNT-004 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:51` \| 32 \| Account \| 9 \| FE-B10 \| built \| [32-account.md](32-account.md) (shape in t | superseded → SCR-ACCOUNT-005 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:52` \| 33 \| Users (admin) \| 5 \| FE-B11 \| built \| [33-users.md](33-users.md) (shape in | superseded → SCR-ACCOUNT-006 (its SCREEN_CATALOG.md row and spec) |
+| `shared/ui/screen-handoff/00-index.md:54` ## Rules shared by every screen | superseded → INV-UI-001…INV-UI-007 (the INV-UI table of SCREEN_CATALOG.md) |
+| `shared/ui/screen-handoff/00-index.md:56` - **Controls without their feature** are hidden. The Library root's "Coming soon | superseded → INV-UI-001 |
+| `shared/ui/screen-handoff/00-index.md:58` - **Data displays without their data** are hidden, never drawn empty: an empty m | superseded → INV-UI-002 |
+| `shared/ui/screen-handoff/00-index.md:60` - **Delete moves to the Trash** (UC-TRASH-001). "Move to Trash", "Recoverable fo | superseded → INV-UI-003 |
+| `shared/ui/screen-handoff/00-index.md:63` - **Copy** is written in English first; Vietnamese is added to the ARB with the | superseded → R11 (screen specs and copy in English; Vietnamese lives in the ARB) |
 
 ## shared/ui/screen-handoff/01-deck-list.md
 
@@ -1527,75 +1527,75 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/28-monitoring.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/28-monitoring.md:3` # 28 · Monitoring |  |
-| `shared/ui/screen-handoff/28-monitoring.md:5` The admin's window on the app's logs: the server's, and the device's own buffer. |  |
-| `shared/ui/screen-handoff/28-monitoring.md:14` ## Entry points |  |
-| `shared/ui/screen-handoff/28-monitoring.md:16` - Screen 23, Admin section, row "Monitoring". Route `/settings/monitoring`, on t |  |
-| `shared/ui/screen-handoff/28-monitoring.md:18` - A row opens its detail at `/settings/monitoring/:id` (`?local=1` for a row of |  |
-| `shared/ui/screen-handoff/28-monitoring.md:21` - The row exists only while the session's account has `app_metadata.role = admin |  |
-| `shared/ui/screen-handoff/28-monitoring.md:27` ## Layout: the list |  |
-| `shared/ui/screen-handoff/28-monitoring.md:29` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/28-monitoring.md:31` \| App bar \| `MxAppBar` (content density) + back `MxIconButton` \| "Monitoring". \| |  |
-| `shared/ui/screen-handoff/28-monitoring.md:32` \| Tabs \| `MxSegmentedTray` \| "Server" · "Not sent ({n})"; n is every row of the |  |
-| `shared/ui/screen-handoff/28-monitoring.md:33` \| Search (Server) \| `MxSearchField` \| "Search event or message"; asks 400 ms aft |  |
-| `shared/ui/screen-handoff/28-monitoring.md:34` \| Filters (Server) \| `MxChipTrigger` × 5 in a row that scrolls \| Level (default |  |
-| `shared/ui/screen-handoff/28-monitoring.md:35` \| Count \| `MxListSectionHeader` \| "{n} logs" with any filter (the chip names the |  |
-| `shared/ui/screen-handoff/28-monitoring.md:36` \| Rows \| `MxListRow` \| Leading `MxIconTile` with a glyph per level (debug bug, i |  |
-| `shared/ui/screen-handoff/28-monitoring.md:37` \| End \| `MxSpinner` / `MxInlineBanner` / caption \| The next 100 rows load when t |  |
-| `shared/ui/screen-handoff/28-monitoring.md:38` \| Not sent \| `MxNote` + one `MxChipTrigger` (Level, default warning + error) + r |  |
-| `shared/ui/screen-handoff/28-monitoring.md:39` \| Filter sheets \| `MxBottomSheet` \| Level, Status and Category: a toggle per val |  |
-| `shared/ui/screen-handoff/28-monitoring.md:41` Choosing Debug or Info, or no level at all (every level), clears the status filt |  |
-| `shared/ui/screen-handoff/28-monitoring.md:46` ## Layout: the detail |  |
-| `shared/ui/screen-handoff/28-monitoring.md:48` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/28-monitoring.md:50` \| App bar \| `MxAppBar` + back, action `MxIconButton` \| Title: the event. The act |  |
-| `shared/ui/screen-handoff/28-monitoring.md:51` \| Head \| `MxIconTile` + text + `MxBadge` \| The level's glyph tile and name, the |  |
-| `shared/ui/screen-handoff/28-monitoring.md:52` \| Message, Error \| `MxListSectionHeader` + `MxCard` \| Selectable text. Error: th |  |
-| `shared/ui/screen-handoff/28-monitoring.md:53` \| Stack trace, Context \| `MxListSectionHeader` + `MxCard`, `code` style \| Select |  |
-| `shared/ui/screen-handoff/28-monitoring.md:54` \| Details \| `MxSection` of label/value rows, last \| Fixed by, Fixed at (a fixed |  |
-| `shared/ui/screen-handoff/28-monitoring.md:55` \| Triage \| `MxFooterBar` + `MxButton` (primary, block) \| "Mark fixed", or "Reope |  |
-| `shared/ui/screen-handoff/28-monitoring.md:56` \| Toasts \| `MxSnackbar` \| "Marked fixed"; "Reopened"; "Couldn't change that. Not |  |
-| `shared/ui/screen-handoff/28-monitoring.md:58` ## States |  |
-| `shared/ui/screen-handoff/28-monitoring.md:60` The images are the goldens. |  |
-| `shared/ui/screen-handoff/28-monitoring.md:62` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/28-monitoring.md:64` \| list, loaded \| ![](../../../../test/features/monitoring/presentation/goldens/m |  |
-| `shared/ui/screen-handoff/28-monitoring.md:65` \| list, every level \| ![](../../../../test/features/monitoring/presentation/gold |  |
-| `shared/ui/screen-handoff/28-monitoring.md:66` \| list, empty \| ![](../../../../test/features/monitoring/presentation/goldens/mo |  |
-| `shared/ui/screen-handoff/28-monitoring.md:67` \| list, offline \| ![](../../../../test/features/monitoring/presentation/goldens/ |  |
-| `shared/ui/screen-handoff/28-monitoring.md:68` \| Not sent \| ![](../../../../test/features/monitoring/presentation/goldens/monit |  |
-| `shared/ui/screen-handoff/28-monitoring.md:69` \| Level sheet \| ![](../../../../test/features/monitoring/presentation/goldens/mo |  |
-| `shared/ui/screen-handoff/28-monitoring.md:70` \| detail, open error \| ![](../../../../test/features/monitoring/presentation/gol |  |
-| `shared/ui/screen-handoff/28-monitoring.md:71` \| detail, scrolled to the end \| ![](../../../../test/features/monitoring/present |  |
-| `shared/ui/screen-handoff/28-monitoring.md:72` \| detail, fixed with a note \| ![](../../../../test/features/monitoring/presentat |  |
-| `shared/ui/screen-handoff/28-monitoring.md:73` \| detail, a row of the buffer \| ![](../../../../test/features/monitoring/present |  |
-| `shared/ui/screen-handoff/28-monitoring.md:74` \| list, loading \| — \| — \| `MxSkeletonList`, six rows. \| |  |
-| `shared/ui/screen-handoff/28-monitoring.md:75` \| list, no match \| — \| — \| `MxEmptyState` "Nothing matches" with Clear filters. |  |
-| `shared/ui/screen-handoff/28-monitoring.md:76` \| list, error \| — \| — \| `MxErrorState` "Couldn't load logs" with the local-first |  |
-| `shared/ui/screen-handoff/28-monitoring.md:77` \| list, not an admin \| — \| — \| `MxEmptyState` "Only an admin can see this" (the |  |
-| `shared/ui/screen-handoff/28-monitoring.md:78` \| detail, loading / error / offline / gone \| — \| — \| Skeleton; `MxErrorState` wi |  |
-| `shared/ui/screen-handoff/28-monitoring.md:80` Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded, |  |
-| `shared/ui/screen-handoff/28-monitoring.md:82` ## Rulings |  |
-| `shared/ui/screen-handoff/28-monitoring.md:84` - **ADR-018 §8, Impeccable shape 2026-09-29:** screen 28 is built from the share |  |
-| `shared/ui/screen-handoff/28-monitoring.md:85` - **Plan ruling 1, UI-base row 147:** open and fixed are `MxBadge`s, open in the |  |
-| `shared/ui/screen-handoff/28-monitoring.md:86` - **Plan ruling 2:** Level, Status and Category filter with toggles; only the on |  |
-| `shared/ui/screen-handoff/28-monitoring.md:87` - **Plan ruling 3:** a category shows its stored code, from `LogCategory.values` |  |
-| `shared/ui/screen-handoff/28-monitoring.md:88` - **Plan ruling 4:** the device / user filter is a sheet of two text fields, a d |  |
-| `shared/ui/screen-handoff/28-monitoring.md:89` - **Plan ruling 12:** the offline state offers Retry above Not sent. |  |
-| `shared/ui/screen-handoff/28-monitoring.md:90` - **Plan ruling 13:** rows sit directly in the page's scroll, with no card aroun |  |
-| `shared/ui/screen-handoff/28-monitoring.md:91` - **Owner 2026-09-29, UI-base row 147:** code uses `MxTextStyles.code`: the syst |  |
-| `shared/ui/screen-handoff/28-monitoring.md:92` - **Owner 2026-09-29 (Impeccable audit):** the detail shows the level and status |  |
-| `shared/ui/screen-handoff/28-monitoring.md:93` - **Spec §3.2, §3.5 (ADR-008):** a row shows `HH:mm` today and "Sep 26" before; |  |
-| `shared/ui/screen-handoff/28-monitoring.md:94` - **Critique 2026-09-30 tone pass, T7:** a Fixed log is success; the empty lists |  |
-| `shared/ui/screen-handoff/28-monitoring.md:95` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/28-monitoring.md:97` ## Copy |  |
-| `shared/ui/screen-handoff/28-monitoring.md:99` - App bar and tabs: "Monitoring" · "Server" · "Not sent ({n})". |  |
-| `shared/ui/screen-handoff/28-monitoring.md:100` - Search and chips: "Search event or message" · "Clear search" · "Level" · "Stat |  |
-| `shared/ui/screen-handoff/28-monitoring.md:101` - List: "{n} logs" · "{n}+ logs" · "No more logs" · "Couldn't load more logs." · |  |
-| `shared/ui/screen-handoff/28-monitoring.md:102` - States: "No open problems" · "Warnings and errors will show here." · "Nothing |  |
-| `shared/ui/screen-handoff/28-monitoring.md:103` - Not sent: "These logs wait on this device. They are sent when MemoX is online. |  |
-| `shared/ui/screen-handoff/28-monitoring.md:104` - Detail: "Log" · "Copy log" · "Copied" · "Copy device ID" · "Copy user ID" · "D |  |
-| `shared/ui/screen-handoff/28-monitoring.md:105` - Triage: "Mark fixed" · "Reopen" · "Note (optional)" · "What did you do?" · "Ma |  |
-| `shared/ui/screen-handoff/28-monitoring.md:106` - Detail states: "Couldn't load this log" · "Nothing was lost. Try again when yo |  |
+| `shared/ui/screen-handoff/28-monitoring.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:3` # 28 · Monitoring | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:5` The admin's window on the app's logs: the server's, and the device's own buffer. | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:14` ## Entry points | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:16` - Screen 23, Admin section, row "Monitoring". Route `/settings/monitoring`, on t | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:18` - A row opens its detail at `/settings/monitoring/:id` (`?local=1` for a row of | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:21` - The row exists only while the session's account has `app_metadata.role = admin | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:27` ## Layout: the list | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:29` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:31` \| App bar \| `MxAppBar` (content density) + back `MxIconButton` \| "Monitoring". \| | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:32` \| Tabs \| `MxSegmentedTray` \| "Server" · "Not sent ({n})"; n is every row of the | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:33` \| Search (Server) \| `MxSearchField` \| "Search event or message"; asks 400 ms aft | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:34` \| Filters (Server) \| `MxChipTrigger` × 5 in a row that scrolls \| Level (default | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:35` \| Count \| `MxListSectionHeader` \| "{n} logs" with any filter (the chip names the | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:36` \| Rows \| `MxListRow` \| Leading `MxIconTile` with a glyph per level (debug bug, i | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:37` \| End \| `MxSpinner` / `MxInlineBanner` / caption \| The next 100 rows load when t | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:38` \| Not sent \| `MxNote` + one `MxChipTrigger` (Level, default warning + error) + r | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:39` \| Filter sheets \| `MxBottomSheet` \| Level, Status and Category: a toggle per val | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:41` Choosing Debug or Info, or no level at all (every level), clears the status filt | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:46` ## Layout: the detail | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:48` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:50` \| App bar \| `MxAppBar` + back, action `MxIconButton` \| Title: the event. The act | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:51` \| Head \| `MxIconTile` + text + `MxBadge` \| The level's glyph tile and name, the | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:52` \| Message, Error \| `MxListSectionHeader` + `MxCard` \| Selectable text. Error: th | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:53` \| Stack trace, Context \| `MxListSectionHeader` + `MxCard`, `code` style \| Select | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:54` \| Details \| `MxSection` of label/value rows, last \| Fixed by, Fixed at (a fixed | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:55` \| Triage \| `MxFooterBar` + `MxButton` (primary, block) \| "Mark fixed", or "Reope | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:56` \| Toasts \| `MxSnackbar` \| "Marked fixed"; "Reopened"; "Couldn't change that. Not | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:58` ## States | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:60` The images are the goldens. | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:62` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:64` \| list, loaded \| ![](../../../../test/features/monitoring/presentation/goldens/m | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:65` \| list, every level \| ![](../../../../test/features/monitoring/presentation/gold | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:66` \| list, empty \| ![](../../../../test/features/monitoring/presentation/goldens/mo | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:67` \| list, offline \| ![](../../../../test/features/monitoring/presentation/goldens/ | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:68` \| Not sent \| ![](../../../../test/features/monitoring/presentation/goldens/monit | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:69` \| Level sheet \| ![](../../../../test/features/monitoring/presentation/goldens/mo | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:70` \| detail, open error \| ![](../../../../test/features/monitoring/presentation/gol | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:71` \| detail, scrolled to the end \| ![](../../../../test/features/monitoring/present | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:72` \| detail, fixed with a note \| ![](../../../../test/features/monitoring/presentat | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:73` \| detail, a row of the buffer \| ![](../../../../test/features/monitoring/present | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:74` \| list, loading \| — \| — \| `MxSkeletonList`, six rows. \| | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:75` \| list, no match \| — \| — \| `MxEmptyState` "Nothing matches" with Clear filters. | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:76` \| list, error \| — \| — \| `MxErrorState` "Couldn't load logs" with the local-first | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:77` \| list, not an admin \| — \| — \| `MxEmptyState` "Only an admin can see this" (the | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:78` \| detail, loading / error / offline / gone \| — \| — \| Skeleton; `MxErrorState` wi | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:80` Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded, | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:82` ## Rulings | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:84` - **ADR-018 §8, Impeccable shape 2026-09-29:** screen 28 is built from the share | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:85` - **Plan ruling 1, UI-base row 147:** open and fixed are `MxBadge`s, open in the | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:86` - **Plan ruling 2:** Level, Status and Category filter with toggles; only the on | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:87` - **Plan ruling 3:** a category shows its stored code, from `LogCategory.values` | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:88` - **Plan ruling 4:** the device / user filter is a sheet of two text fields, a d | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:89` - **Plan ruling 12:** the offline state offers Retry above Not sent. | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:90` - **Plan ruling 13:** rows sit directly in the page's scroll, with no card aroun | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:91` - **Owner 2026-09-29, UI-base row 147:** code uses `MxTextStyles.code`: the syst | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:92` - **Owner 2026-09-29 (Impeccable audit):** the detail shows the level and status | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:93` - **Spec §3.2, §3.5 (ADR-008):** a row shows `HH:mm` today and "Sep 26" before; | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:94` - **Critique 2026-09-30 tone pass, T7:** a Fixed log is success; the empty lists | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:95` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:97` ## Copy | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:99` - App bar and tabs: "Monitoring" · "Server" · "Not sent ({n})". | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:100` - Search and chips: "Search event or message" · "Clear search" · "Level" · "Stat | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:101` - List: "{n} logs" · "{n}+ logs" · "No more logs" · "Couldn't load more logs." · | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:102` - States: "No open problems" · "Warnings and errors will show here." · "Nothing | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:103` - Not sent: "These logs wait on this device. They are sent when MemoX is online. | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:104` - Detail: "Log" · "Copy log" · "Copied" · "Copy device ID" · "Copy user ID" · "D | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:105` - Triage: "Mark fixed" · "Reopen" · "Note (optional)" · "What did you do?" · "Ma | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
+| `shared/ui/screen-handoff/28-monitoring.md:106` - Detail states: "Couldn't load this log" · "Nothing was lost. Try again when yo | moved → `screens/spec/SCR-MONITORING-001-monitoring.md` |
 
 ## shared/ui/screen-handoff/29-welcome.md
 
@@ -3292,10 +3292,10 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/monitoring/README.md:12` ## Màn hình → Use case |  |
-| `features/monitoring/README.md:14` \| Màn hình \| UC \| |  |
-| `features/monitoring/README.md:16` \| Monitoring, danh sách và chi tiết (màn 28) \| Chưa có UC; hành vi theo ADR-018 |  |
-| `features/monitoring/README.md:17` \| Mục Admin trong tab Settings (màn 23) \| Lối vào; widget `MonitoringEntrySectio |  |
+| `features/monitoring/README.md:12` ## Màn hình → Use case || superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/monitoring/README.md:14` \| Màn hình \| UC \| || superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/monitoring/README.md:16` \| Monitoring, danh sách và chi tiết (màn 28) \| Chưa có UC; hành vi theo ADR-018 || superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/monitoring/README.md:17` \| Mục Admin trong tab Settings (màn 23) \| Lối vào; widget `MonitoringEntrySectio || superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/progress/README.md
 
@@ -3371,9 +3371,9 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/study-mode/README.md:53` ## Màn hình → Use case |  |
-| `features/study-mode/README.md:55` \| Màn hình \| UC \| |  |
-| `features/study-mode/README.md:57` \| Không có màn hình riêng — mode chạy trong phiên học \| UC-STUDY-001, UC-STUDY-0 |  |
+| `features/study-mode/README.md:53` ## Màn hình → Use case || superseded → SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study-mode/README.md:55` \| Màn hình \| UC \| || superseded → SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study-mode/README.md:57` \| Không có màn hình riêng — mode chạy trong phiên học \| UC-STUDY-001, UC-STUDY-0 || superseded → SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/tags/README.md
 
@@ -3669,26 +3669,26 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/deck/presentation/goldens/library_reorder_light.png` | superseded → SCR-DECK-001 `root_reorder` light |
 | `test/features/deck/presentation/goldens/library_sort_dark.png` | superseded → SCR-DECK-001 `root_sort_filter` dark |
 | `test/features/deck/presentation/goldens/library_sort_light.png` | superseded → SCR-DECK-001 `root_sort_filter` light |
-| `test/features/monitoring/presentation/goldens/monitoring_detail_fixed_dark.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_detail_fixed_light.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_detail_local_dark.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_detail_local_light.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_detail_open_dark.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_detail_open_light.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_detail_open_trace_dark.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_detail_open_trace_light.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_level_sheet_dark.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_level_sheet_light.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_list_all_levels_dark.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_list_all_levels_light.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_list_empty_dark.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_list_empty_light.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_list_loaded_dark.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_list_loaded_light.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_list_offline_dark.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_list_offline_light.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_not_sent_dark.png` |  |
-| `test/features/monitoring/presentation/goldens/monitoring_not_sent_light.png` |  |
+| `test/features/monitoring/presentation/goldens/monitoring_detail_fixed_dark.png` | superseded → SCR-MONITORING-001 `detail_fixed` dark |
+| `test/features/monitoring/presentation/goldens/monitoring_detail_fixed_light.png` | superseded → SCR-MONITORING-001 `detail_fixed` light |
+| `test/features/monitoring/presentation/goldens/monitoring_detail_local_dark.png` | superseded → SCR-MONITORING-001 `detail_local` dark |
+| `test/features/monitoring/presentation/goldens/monitoring_detail_local_light.png` | superseded → SCR-MONITORING-001 `detail_local` light |
+| `test/features/monitoring/presentation/goldens/monitoring_detail_open_dark.png` | superseded → SCR-MONITORING-001 `detail_open` dark |
+| `test/features/monitoring/presentation/goldens/monitoring_detail_open_light.png` | superseded → SCR-MONITORING-001 `detail_open` light |
+| `test/features/monitoring/presentation/goldens/monitoring_detail_open_trace_dark.png` | superseded → SCR-MONITORING-001 `detail_open_trace` dark |
+| `test/features/monitoring/presentation/goldens/monitoring_detail_open_trace_light.png` | superseded → SCR-MONITORING-001 `detail_open_trace` light |
+| `test/features/monitoring/presentation/goldens/monitoring_level_sheet_dark.png` | superseded → SCR-MONITORING-001 `level_sheet` dark |
+| `test/features/monitoring/presentation/goldens/monitoring_level_sheet_light.png` | superseded → SCR-MONITORING-001 `level_sheet` light |
+| `test/features/monitoring/presentation/goldens/monitoring_list_all_levels_dark.png` | superseded → SCR-MONITORING-001 `list_all_levels` dark |
+| `test/features/monitoring/presentation/goldens/monitoring_list_all_levels_light.png` | superseded → SCR-MONITORING-001 `list_all_levels` light |
+| `test/features/monitoring/presentation/goldens/monitoring_list_empty_dark.png` | superseded → SCR-MONITORING-001 `list_empty` dark |
+| `test/features/monitoring/presentation/goldens/monitoring_list_empty_light.png` | superseded → SCR-MONITORING-001 `list_empty` light |
+| `test/features/monitoring/presentation/goldens/monitoring_list_loaded_dark.png` | superseded → SCR-MONITORING-001 `list_loaded` dark |
+| `test/features/monitoring/presentation/goldens/monitoring_list_loaded_light.png` | superseded → SCR-MONITORING-001 `list_loaded` light |
+| `test/features/monitoring/presentation/goldens/monitoring_list_offline_dark.png` | superseded → SCR-MONITORING-001 `list_offline` dark |
+| `test/features/monitoring/presentation/goldens/monitoring_list_offline_light.png` | superseded → SCR-MONITORING-001 `list_offline` light |
+| `test/features/monitoring/presentation/goldens/monitoring_not_sent_dark.png` | superseded → SCR-MONITORING-001 `not_sent` dark |
+| `test/features/monitoring/presentation/goldens/monitoring_not_sent_light.png` | superseded → SCR-MONITORING-001 `not_sent` light |
 | `test/features/progress/presentation/goldens/deck_progress_deck_dark.png` | superseded → SCR-PROGRESS-001 `deck` dark |
 | `test/features/progress/presentation/goldens/deck_progress_deck_light.png` | superseded → SCR-PROGRESS-001 `deck` light |
 | `test/features/progress/presentation/goldens/deck_progress_gone_dark.png` | superseded → SCR-PROGRESS-001 `deck_gone` dark |
@@ -3983,72 +3983,72 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/trash/presentation/goldens/trash_restore_target_light.png` | superseded → SCR-TRASH-001 `restore_target` light |
 | `test/features/trash/presentation/goldens/trash_selection_dark.png` | superseded → SCR-TRASH-001 `selection` dark |
 | `test/features/trash/presentation/goldens/trash_selection_light.png` | superseded → SCR-TRASH-001 `selection` light |
-| `test/shared/widgets/goldens/mx_app_bar_dark.png` |  |
-| `test/shared/widgets/goldens/mx_app_bar_light.png` |  |
-| `test/shared/widgets/goldens/mx_app_shell_dark.png` |  |
-| `test/shared/widgets/goldens/mx_app_shell_light.png` |  |
-| `test/shared/widgets/goldens/mx_badges_tags_dark.png` |  |
-| `test/shared/widgets/goldens/mx_badges_tags_light.png` |  |
-| `test/shared/widgets/goldens/mx_bottom_nav_dark.png` |  |
-| `test/shared/widgets/goldens/mx_bottom_nav_light.png` |  |
-| `test/shared/widgets/goldens/mx_bottom_sheet_dark.png` |  |
-| `test/shared/widgets/goldens/mx_bottom_sheet_light.png` |  |
-| `test/shared/widgets/goldens/mx_breadcrumb_dark.png` |  |
-| `test/shared/widgets/goldens/mx_breadcrumb_light.png` |  |
-| `test/shared/widgets/goldens/mx_button_dark.png` |  |
-| `test/shared/widgets/goldens/mx_button_light.png` |  |
-| `test/shared/widgets/goldens/mx_card_icon_tile_dark.png` |  |
-| `test/shared/widgets/goldens/mx_card_icon_tile_light.png` |  |
-| `test/shared/widgets/goldens/mx_chips_dark.png` |  |
-| `test/shared/widgets/goldens/mx_chips_light.png` |  |
-| `test/shared/widgets/goldens/mx_day_bars_dark.png` |  |
-| `test/shared/widgets/goldens/mx_day_bars_light.png` |  |
-| `test/shared/widgets/goldens/mx_deck_picker_dark.png` |  |
-| `test/shared/widgets/goldens/mx_deck_picker_light.png` |  |
-| `test/shared/widgets/goldens/mx_dialog_dark.png` |  |
-| `test/shared/widgets/goldens/mx_dialog_light.png` |  |
-| `test/shared/widgets/goldens/mx_empty_state_dark.png` |  |
-| `test/shared/widgets/goldens/mx_empty_state_light.png` |  |
-| `test/shared/widgets/goldens/mx_error_state_dark.png` |  |
-| `test/shared/widgets/goldens/mx_error_state_light.png` |  |
-| `test/shared/widgets/goldens/mx_fab_dark.png` |  |
-| `test/shared/widgets/goldens/mx_fab_light.png` |  |
-| `test/shared/widgets/goldens/mx_icon_button_dark.png` |  |
-| `test/shared/widgets/goldens/mx_icon_button_light.png` |  |
-| `test/shared/widgets/goldens/mx_list_row_dark.png` |  |
-| `test/shared/widgets/goldens/mx_list_row_light.png` |  |
-| `test/shared/widgets/goldens/mx_nav_rail_dark.png` |  |
-| `test/shared/widgets/goldens/mx_nav_rail_light.png` |  |
-| `test/shared/widgets/goldens/mx_option_tray_dark.png` |  |
-| `test/shared/widgets/goldens/mx_option_tray_light.png` |  |
-| `test/shared/widgets/goldens/mx_search_field_dark.png` |  |
-| `test/shared/widgets/goldens/mx_search_field_light.png` |  |
-| `test/shared/widgets/goldens/mx_section_header_note_dark.png` |  |
-| `test/shared/widgets/goldens/mx_section_header_note_light.png` |  |
-| `test/shared/widgets/goldens/mx_settings_command_rows_dark.png` |  |
-| `test/shared/widgets/goldens/mx_settings_command_rows_light.png` |  |
-| `test/shared/widgets/goldens/mx_sheet_actions_banner_dark.png` |  |
-| `test/shared/widgets/goldens/mx_sheet_actions_banner_light.png` |  |
-| `test/shared/widgets/goldens/mx_snackbar_dark.png` |  |
-| `test/shared/widgets/goldens/mx_snackbar_light.png` |  |
-| `test/shared/widgets/goldens/mx_spinner_skeleton_dark.png` |  |
-| `test/shared/widgets/goldens/mx_spinner_skeleton_light.png` |  |
-| `test/shared/widgets/goldens/mx_stat_tile_dark.png` |  |
-| `test/shared/widgets/goldens/mx_stat_tile_light.png` |  |
-| `test/shared/widgets/goldens/mx_stepper_dark.png` |  |
-| `test/shared/widgets/goldens/mx_stepper_light.png` |  |
-| `test/shared/widgets/goldens/mx_study_top_bar_dark.png` |  |
-| `test/shared/widgets/goldens/mx_study_top_bar_light.png` |  |
-| `test/shared/widgets/goldens/mx_text_field_code_dark.png` |  |
-| `test/shared/widgets/goldens/mx_text_field_code_light.png` |  |
-| `test/shared/widgets/goldens/mx_text_field_dark.png` |  |
-| `test/shared/widgets/goldens/mx_text_field_light.png` |  |
-| `test/shared/widgets/goldens/mx_toggle_checkbox_dark.png` |  |
-| `test/shared/widgets/goldens/mx_toggle_checkbox_light.png` |  |
-| `test/shared/widgets/goldens/mx_vietnamese_ellipsis_dark.png` |  |
-| `test/shared/widgets/goldens/mx_vietnamese_ellipsis_light.png` |  |
-| `test/shared/widgets/goldens/mx_workload_donut_dark.png` |  |
-| `test/shared/widgets/goldens/mx_workload_donut_light.png` |  |
+| `test/shared/widgets/goldens/mx_app_bar_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_app_bar`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_app_bar_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_app_bar`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_app_shell_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_app_shell`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_app_shell_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_app_shell`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_badges_tags_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_badges_tags`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_badges_tags_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_badges_tags`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_bottom_nav_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_bottom_nav`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_bottom_nav_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_bottom_nav`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_bottom_sheet_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_bottom_sheet`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_bottom_sheet_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_bottom_sheet`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_breadcrumb_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_breadcrumb`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_breadcrumb_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_breadcrumb`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_button_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_button`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_button_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_button`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_card_icon_tile_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_card_icon_tile`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_card_icon_tile_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_card_icon_tile`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_chips_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_chips`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_chips_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_chips`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_day_bars_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_day_bars`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_day_bars_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_day_bars`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_deck_picker_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_deck_picker`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_deck_picker_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_deck_picker`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_dialog_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_dialog`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_dialog_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_dialog`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_empty_state_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_empty_state`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_empty_state_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_empty_state`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_error_state_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_error_state`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_error_state_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_error_state`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_fab_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_fab`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_fab_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_fab`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_icon_button_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_icon_button`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_icon_button_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_icon_button`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_list_row_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_list_row`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_list_row_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_list_row`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_nav_rail_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_nav_rail`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_nav_rail_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_nav_rail`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_option_tray_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_option_tray`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_option_tray_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_option_tray`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_search_field_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_search_field`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_search_field_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_search_field`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_section_header_note_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_section_header_note`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_section_header_note_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_section_header_note`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_settings_command_rows_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_settings_command_rows`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_settings_command_rows_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_settings_command_rows`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_sheet_actions_banner_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_sheet_actions_banner`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_sheet_actions_banner_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_sheet_actions_banner`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_snackbar_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_snackbar`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_snackbar_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_snackbar`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_spinner_skeleton_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_spinner_skeleton`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_spinner_skeleton_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_spinner_skeleton`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_stat_tile_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_stat_tile`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_stat_tile_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_stat_tile`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_stepper_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_stepper`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_stepper_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_stepper`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_study_top_bar_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_study_top_bar`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_study_top_bar_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_study_top_bar`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_text_field_code_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_text_field_code`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_text_field_code_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_text_field_code`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_text_field_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_text_field`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_text_field_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_text_field`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_toggle_checkbox_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_toggle_checkbox`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_toggle_checkbox_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_toggle_checkbox`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_vietnamese_ellipsis_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_vietnamese_ellipsis`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_vietnamese_ellipsis_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_vietnamese_ellipsis`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_workload_donut_dark.png` | superseded → DESIGN.md `## Components` (component golden `mx_workload_donut`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
+| `test/shared/widgets/goldens/mx_workload_donut_light.png` | superseded → DESIGN.md `## Components` (component golden `mx_workload_donut`, not a screen state; DESIGN.md is derived from lib/shared/widgets/) |
 
 <!-- Notes below are kept by `ledger.py seed`. -->
 
@@ -4265,14 +4265,14 @@ FN-DECK-001.
 | Code | FN |
 |---|---|
 | is_welcome_seen + mark_welcome_seen + `lib/app/startup_welcome.dart` | FN-ACCOUNT-001 (one contract: Welcome once per device) |
-| `lib/core/auth/auth_state.dart` (the state stream) | FN-ACCOUNT-002 |
-| `AccountSwitching.requestCode` / `verifyCode` / `continueWithGoogle` | FN-ACCOUNT-003 / 004 / 005 |
+| code `lib/core/auth/auth_state.dart` (the state stream) | FN-ACCOUNT-002 |
+| code `AccountSwitching.requestCode` / `verifyCode` / `continueWithGoogle` | FN-ACCOUNT-003 / 004 / 005 |
 | count_local_library | FN-ACCOUNT-006 |
-| `beginSwitch` + `cancelSwitch` | FN-ACCOUNT-007 |
-| `signOut` + `cancelSignOut` | FN-ACCOUNT-008 |
-| `deleteAccount` / `continueWithoutAccount` / `retry` | FN-ACCOUNT-009 / 010 / 011 |
+| code `beginSwitch` + `cancelSwitch` | FN-ACCOUNT-007 |
+| code `signOut` + `cancelSignOut` | FN-ACCOUNT-008 |
+| code `deleteAccount` / `continueWithoutAccount` / `retry` | FN-ACCOUNT-009 / 010 / 011 |
 | search_users / set_user_role | FN-ACCOUNT-012 / 013 |
-| `lib/core/sync/` scheduler + coordinator / status / syncNow / retryRejected / keepRejectedOnDevice | FN-ACCOUNT-014 / 015 / 016 / 017 / 018 |
+| code `lib/core/sync/` scheduler + coordinator / status / syncNow / retryRejected / keepRejectedOnDevice | FN-ACCOUNT-014 / 015 / 016 / 017 / 018 |
 
 - Ruling: the account commands of `lib/core/auth/` that screens 29–32 trigger get FN-ACCOUNT FNs,
   beyond the brief's five classes and sync — plan P1 step 1 adds an FN for a behaviour no class
@@ -4410,3 +4410,13 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - The transition layer is not a route; it lives in SCR-ACCOUNT-003 with its seven layer states, as record 30 held it.
 - FN-ACCOUNT-014 (background sync) is invoked by no screen and stays a warning — for Task 43.
 - Warnings 58 → 37: 15 FN-ACCOUNT warnings and 6 pending Navigate-to targets (SCR-SETTINGS-002, SCR-STUDY-001) resolved.
+
+## Task 41 notes — SCR-MONITORING-001
+
+- Ruling: the 66 `test/shared/widgets/goldens` rows → `superseded → DESIGN.md ## Components` — component goldens, not screen states; DESIGN.md is derived from lib/shared/widgets/ (spec §1); no task owned them — cost if wrong: re-label 66 rows.
+- Ruling: the Task 25 notes table (code → FN) was parsed as ledger rows because its first cells began with a backtick; those cells now start with "code" — no outcome changed.
+- `features/study-mode/README.md` rows (3) → SCR-STUDY-003…008 (missed in Task 36).
+- 00-index rows: intro, status values and the screens table header → moved to SCREEN_CATALOG.md; "out of V8" → PRODUCT.md MVP Scope; each screen row → its SCR; the rules heading → the INV-UI table.
+- Remaining empty ledger rows: `shared/ui/navigation.md` (67) and `test/app/goldens` (8) — Task 42.
+- Warnings 37 → 31: 5 FN-MONITORING and SCR-SETTINGS-002 → SCR-MONITORING-001 resolved.
+- Gate: dod_check.sh → ✓ mechanical gates passed (scratchpad gate41.log).

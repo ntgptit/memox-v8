@@ -212,11 +212,17 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-MONITORING-001](../functional-spec/monitoring.md) | Xem log trên server | active | — |
-| [FN-MONITORING-002](../functional-spec/monitoring.md) | Xem chi tiết một log trên server | active | — |
-| [FN-MONITORING-003](../functional-spec/monitoring.md) | Đánh dấu một log đã sửa hoặc mở lại | active | — |
-| [FN-MONITORING-004](../functional-spec/monitoring.md) | Xem log chưa gửi của thiết bị | active | — |
-| [FN-MONITORING-005](../functional-spec/monitoring.md) | Xem chi tiết một log chưa gửi | active | — |
+| [FN-MONITORING-001](../functional-spec/monitoring.md) | Xem log trên server | active | SCR-MONITORING-001 |
+| [FN-MONITORING-002](../functional-spec/monitoring.md) | Xem chi tiết một log trên server | active | SCR-MONITORING-001 |
+| [FN-MONITORING-003](../functional-spec/monitoring.md) | Đánh dấu một log đã sửa hoặc mở lại | active | SCR-MONITORING-001 |
+| [FN-MONITORING-004](../functional-spec/monitoring.md) | Xem log chưa gửi của thiết bị | active | SCR-MONITORING-001 |
+| [FN-MONITORING-005](../functional-spec/monitoring.md) | Xem chi tiết một log chưa gửi | active | SCR-MONITORING-001 |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-MONITORING-001](../screens/spec/SCR-MONITORING-001-monitoring.md) | Monitoring | ready | `/settings/monitoring`, `/settings/monitoring/:id` |
 
 ## [progress](../features/progress/README.md)
 

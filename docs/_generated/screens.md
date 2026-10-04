@@ -232,6 +232,33 @@
 | `deck_delete` | none | — |
 | `deck_trashed` | none | — |
 
+## [SCR-MONITORING-001](../screens/spec/SCR-MONITORING-001-monitoring.md) · Monitoring
+
+- Invokes: FN-MONITORING-001, FN-MONITORING-004, FN-MONITORING-002, FN-MONITORING-005, FN-MONITORING-003
+- Rules via FN: —
+- Use cases: —
+- Entry points: SCR-MONITORING-001, SCR-SETTINGS-002
+
+| State | Golden | Present |
+|---|---|---|
+| `list_loaded` | light, dark | — |
+| `list_all_levels` | light, dark | — |
+| `list_empty` | light, dark | — |
+| `list_offline` | light, dark | — |
+| `not_sent` | light, dark | — |
+| `level_sheet` | light, dark | — |
+| `detail_open` | light, dark | — |
+| `detail_open_trace` | light, dark | — |
+| `detail_fixed` | light, dark | — |
+| `detail_local` | light, dark | — |
+| `list_loading` | none | — |
+| `list_no_match` | none | — |
+| `list_error` | none | — |
+| `not_admin` | none | — |
+| `detail_loading` | none | — |
+| `detail_error` | none | — |
+| `detail_gone` | none | — |
+
 ## [SCR-PROGRESS-001](../screens/spec/SCR-PROGRESS-001-progress.md) · Progress
 
 - Invokes: FN-PROGRESS-001, FN-PROGRESS-002
