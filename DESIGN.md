@@ -497,9 +497,9 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxTextField | Text input in six variants | shared | ACCOUNT, CARD, DECK, MONITORING, SEARCH, STARTER, STUDY, TAG, TRANSFER | SP3a | built |
 | MxFieldMessage | Error or warning line under a field | shared | ACCOUNT, CARD, DECK, TAG | SP3a | built |
 | MxSearchField | Search input, or a trigger that opens search | shared | ACCOUNT, CARD, DECK, SEARCH, TAG | SP3a | built |
-| MxToggle | On/off switch | shared | ACCOUNT, DECK, MONITORING, PROGRESS, REMINDER, SETTINGS, SRS, TRANSFER | SP3a | planned |
-| MxOptionRow | Single-choice radio row | shared | ACCOUNT, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TRANSFER | SP3a | planned |
-| MxSelectionCheckbox | Multi-select mark | shared | CARD, TRASH | SP3a | planned |
+| MxToggle | On/off switch | shared | ACCOUNT, DECK, MONITORING, PROGRESS, REMINDER, SETTINGS, SRS, TRANSFER | SP3a | built |
+| MxOptionRow | Single-choice radio row | shared | ACCOUNT, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TRANSFER | SP3a | built |
+| MxSelectionCheckbox | Multi-select mark | shared | CARD, TRASH | SP3a | built |
 | MxStepper | Bounded integer with press-and-hold repeat | shared | REMINDER, SETTINGS | SP3a | planned |
 | MxSegmentedTray | One of a few segments | shared | MONITORING, PROGRESS, SETTINGS | SP3a | planned |
 | MxFilterChip | Filter toggle chip | shared | CARD, TRASH | SP3a | planned |
@@ -624,6 +624,27 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: the clear button is named by `clearLabel`; the trigger is a button named by its hint; the trigger's hint starts where typed text starts
 - Tokens: `surface-container-low`, `outline-variant`, `on-surface-variant`; `bodyMedium`; `AppIconSize.medium`; `AppSize.field`
 - Golden: modes__light, modes__dark
+
+#### MxToggle
+- Variants: one
+- States: on, off, disabled on, disabled off, focused
+- Accessibility: announced as toggled; Space and Enter switch it; 44 × 26 painted inside a 48 hit
+- Tokens: `primary`, `on-primary`, `surface-container-highest`, `outline`, `shadow`; `AppShadows.whisper*`; `AppSize.toggle*`; `AppDurations.toggle`
+- Golden: states__light, states__dark
+
+#### MxSelectionCheckbox
+- Variants: one
+- States: checked, unchecked
+- Accessibility: carries its checked state into the row that holds it; the row owns the tap, the name and the 48 area
+- Tokens: `primary`, `on-primary`, `outline`; `AppRadius.xs`; `AppStroke.control`; `AppSize.checkbox`
+- Golden: states__light, states__dark
+
+#### MxOptionRow
+- Variants: with or without a description
+- States: selected, idle, locked (dims the radio and title only), locked and selected (never dimmed)
+- Accessibility: a checked or unchecked member of a mutually exclusive group; 48 minimum height
+- Tokens: `primary`, `outline`, `on-surface`, `on-surface-variant`; `bodyLarge`, `bodyMedium`; `AppStroke.control` / `indicator`; `AppSize.radio`
+- Golden: states__light, states__dark
 
 ## Do's and Don'ts
 
