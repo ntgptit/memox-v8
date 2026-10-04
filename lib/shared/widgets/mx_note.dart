@@ -38,9 +38,9 @@ class MxNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colors = context.colors;
-    final TextStyle? style = isHint
-        ? context.texts.bodySmall?.apply(color: colors.onSurfaceVariant)
-        : context.texts.bodyMedium?.apply(color: colors.onSurfaceVariant);
+    final TextStyle? style = context.texts.bodyMedium?.apply(
+      color: colors.onSurfaceVariant,
+    );
     final VoidCallback? dismiss = onDismiss;
     final Widget line = Row(
       spacing: AppSpacing.control,

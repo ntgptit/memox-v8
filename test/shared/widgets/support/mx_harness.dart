@@ -55,6 +55,9 @@ Future<void> expectMxGolden(
 }) async {
   // A full-HD phone, 412 dp wide; the picture is rasterized at its density
   // (below), so a golden is as sharp as the device it stands for.
+  // flutter_test draws shadows unblurred by default; a golden shows them as
+  // the device does, so the whisper, chrome and overlay shadows can be judged.
+  debugDisableShadows = false;
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = mxGoldenPixelRatio;
   addTearDown(tester.view.reset);
@@ -99,6 +102,8 @@ Future<void> expectMxGolden(
   final ui.Image picture = (await tester.runAsync(
     () => boundary.toImage(pixelRatio: mxGoldenPixelRatio),
   ))!;
+  // Restored before the test ends: flutter_test checks it is unchanged.
+  debugDisableShadows = true;
   addTearDown(picture.dispose);
   await expectLater(
     picture,

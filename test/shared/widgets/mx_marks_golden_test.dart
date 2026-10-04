@@ -15,6 +15,13 @@ Widget _wrap(List<Widget> children) => SizedBox(
   child: Wrap(spacing: 8, runSpacing: 12, children: children),
 );
 
+const Map<MxStatusBadgeKind, String> _statusCopy = {
+  MxStatusBadgeKind.newCard: 'New',
+  MxStatusBadgeKind.learning: 'Learning',
+  MxStatusBadgeKind.reviewing: 'Reviewing',
+  MxStatusBadgeKind.mastered: 'Mastered',
+};
+
 void main() {
   final Map<(String, String), Widget Function()> sheets = {
     ('badge', 'tones'): () => _wrap([
@@ -23,10 +30,10 @@ void main() {
       const MxBadge(label: '4 due', icon: Icons.schedule),
     ]),
     ('status_badge', 'kinds'): () => _wrap([
-      for (final kind in MxStatusBadgeKind.values)
-        MxStatusBadge(kind: kind, label: kind.name),
-      for (final kind in MxStatusBadgeKind.values)
-        MxStatusBadge(kind: kind, label: kind.name, isDot: true),
+      for (final MapEntry(key: kind, value: label) in _statusCopy.entries)
+        MxStatusBadge(kind: kind, label: label),
+      for (final MapEntry(key: kind, value: label) in _statusCopy.entries)
+        MxStatusBadge(kind: kind, label: label, isDot: true),
     ]),
     ('tag_chip', 'sizes'): () => _wrap(const [
       MxTagChip(label: 'verbs'),
@@ -34,11 +41,28 @@ void main() {
       MxTagChip(label: 'verbs', isDense: true),
       MxTagChip(label: 'travel', isDense: true),
     ]),
-    ('icon_tile', 'tones'): () => _wrap([
-      for (final size in MxIconTileSize.values)
-        for (final tone in MxIconTileTone.values)
-          MxIconTile(icon: Icons.style_outlined, size: size, tone: tone),
-    ]),
+    // One row per size, the tones in the same order on each.
+    ('icon_tile', 'tones'): () => SizedBox(
+      width: 380,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 12,
+        children: [
+          for (final size in MxIconTileSize.values)
+            Row(
+              spacing: 8,
+              children: [
+                for (final tone in MxIconTileTone.values)
+                  MxIconTile(
+                    icon: Icons.style_outlined,
+                    size: size,
+                    tone: tone,
+                  ),
+              ],
+            ),
+        ],
+      ),
+    ),
   };
   for (final MapEntry(key: (component, state), value: sheet)
       in sheets.entries) {

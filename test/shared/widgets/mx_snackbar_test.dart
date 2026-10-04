@@ -69,4 +69,16 @@ void main() {
     await tester.pump();
     expect(tester.widget<SnackBar>(find.byType(SnackBar)).persist, isTrue);
   });
+
+  testWidgets('the action is the small size: the message\'s type, a 48 hit', (
+    tester,
+  ) async {
+    await pumpMx(tester, _trigger(action: 'Undo', onAction: () {}));
+    await tester.tap(find.text('Go'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<MxButton>(find.byType(MxButton)).size,
+      MxButtonSize.small,
+    );
+  });
 }

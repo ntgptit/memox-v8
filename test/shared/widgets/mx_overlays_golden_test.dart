@@ -14,6 +14,7 @@ void main() {
   final Map<(String, String), Widget Function()> sheets = {
     ('dialog', 'decision'): () => SizedBox(
       width: 380,
+      height: 360,
       child: MxDialog(
         title: 'Move "Spanish" to Trash?',
         message: 'Its 120 cards go with it. Trash keeps them for 30 days.',

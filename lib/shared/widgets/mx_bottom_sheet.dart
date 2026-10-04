@@ -82,8 +82,8 @@ class MxBottomSheet extends StatelessWidget {
               if (heading != null)
                 Padding(
                   padding: const EdgeInsetsDirectional.only(
-                    start: AppSpacing.card,
-                    end: AppSpacing.card,
+                    start: AppSpacing.gutter,
+                    end: AppSpacing.gutter,
                     bottom: AppSpacing.grouped,
                   ),
                   child: Semantics(

@@ -62,4 +62,19 @@ void main() {
     await tester.tap(find.byTooltip('Dismiss tip'));
     expect(dismissed, 1);
   });
+
+  testWidgets('the hint is calm Body, not the semibold caption', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const SizedBox(width: 300, child: MxNote.hint(text: 'Kept for 30 days')),
+    );
+    final TextStyle style = tester
+        .widget<Text>(find.text('Kept for 30 days'))
+        .style!;
+    final TextTheme texts = mxThemes['light']!.textTheme;
+    expect(style.fontSize, texts.bodyMedium!.fontSize);
+    expect(style.fontWeight, texts.bodyMedium!.fontWeight);
+  });
 }

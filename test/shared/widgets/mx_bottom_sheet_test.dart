@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
@@ -105,5 +106,21 @@ void main() {
     final Offset opened = tester.getTopLeft(find.byType(MxBottomSheet));
     await tester.pumpAndSettle();
     expect(tester.getTopLeft(find.byType(MxBottomSheet)), opened);
+  });
+
+  testWidgets('the title starts on the gutter, in line with the rows', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _opener((_) => const MxBottomSheet(title: 'Sort', child: Text('Row'))),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getTopLeft(find.text('Sort')).dx -
+          tester.getTopLeft(find.byType(MxBottomSheet)).dx,
+      AppSpacing.gutter,
+    );
   });
 }

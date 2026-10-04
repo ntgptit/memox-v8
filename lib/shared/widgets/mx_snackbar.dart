@@ -78,7 +78,7 @@ class MxSnackbar extends StatelessWidget {
               label: action,
               onPressed: onAction,
               tone: MxButtonTone.inverse,
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
             ),
         ],
       ),

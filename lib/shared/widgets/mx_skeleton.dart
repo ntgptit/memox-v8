@@ -17,17 +17,13 @@ const double _metaShare = 0.4;
 /// and rests at 0.45 without one or under reduced motion.
 class MxSkeleton extends StatelessWidget {
   /// A text line as tall as the row title it stands for ([isMeta]: the
-  /// caption under it), [widthFactor] of the space it is given.
-  const MxSkeleton.line({this.widthFactor = 1, this.isMeta = false, super.key})
-    : isTile = false;
+  /// caption under it); the title line takes 60% of its column, the meta
+  /// line 40%.
+  const MxSkeleton.line({this.isMeta = false, super.key}) : isTile = false;
 
   /// The tile a row leads with: the medium `MxIconTile`.
-  const MxSkeleton.tile({super.key})
-    : isTile = true,
-      isMeta = false,
-      widthFactor = 1;
+  const MxSkeleton.tile({super.key}) : isTile = true, isMeta = false;
 
-  final double widthFactor;
   final bool isMeta;
   final bool isTile;
 
@@ -50,7 +46,7 @@ class MxSkeleton extends StatelessWidget {
           )
         : FractionallySizedBox(
             alignment: AlignmentDirectional.centerStart,
-            widthFactor: widthFactor,
+            widthFactor: isMeta ? _metaShare : _titleShare,
             child: SizedBox(
               height: text?.fontSize,
               child: DecoratedBox(
@@ -88,10 +84,7 @@ class MxSkeletonRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: AppSpacing.control,
-              children: [
-                MxSkeleton.line(widthFactor: _titleShare),
-                MxSkeleton.line(widthFactor: _metaShare, isMeta: true),
-              ],
+              children: [MxSkeleton.line(), MxSkeleton.line(isMeta: true)],
             ),
           ),
         ],

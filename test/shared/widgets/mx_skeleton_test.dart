@@ -103,4 +103,20 @@ void main() {
       AppOpacity.skeletonLow,
     );
   });
+
+  testWidgets('a title line takes 60% of its column, a meta line 40%', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 200,
+        child: Column(
+          children: [MxSkeleton.line(), MxSkeleton.line(isMeta: true)],
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(MxSkeleton).first).width, 120);
+    expect(tester.getSize(find.byType(MxSkeleton).last).width, 80);
+  });
 }
