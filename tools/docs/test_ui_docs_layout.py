@@ -311,6 +311,15 @@ class AdrTest(unittest.TestCase):
         found = errors(base(**{"docs/features/deck/PRODUCT.md": "# Product\n"}))
         self.assertTrue(has(found, "product definition lives only in /PRODUCT.md"))
 
+    def test_a_file_in_a_retired_home_is_an_error(self):
+        for path in (
+            "docs/features/deck/usecases/UC-DECK-009-x.md",
+            "docs/features/deck/ui.md",
+            "docs/shared/ui/screen-handoff/01-deck-list.md",
+        ):
+            found = errors(base(**{path: "# Old\n"}))
+            self.assertTrue(has(found, path.removeprefix("docs/"), "retired home"), path)
+
     def test_links_of_a_superseded_adr_are_not_checked(self):
         files = base(**{
             ADR1: adr("ADR-001", "superseded", "superseded_by: ADR-002\n", "[gone](gone.md)"),
@@ -553,6 +562,16 @@ class LedgerPendingTest(unittest.TestCase):
             report = check.Report()
             check.check_ledger(root / "ledger.md", check.defined_ids(docs), report)
         self.assertTrue(has([m for _, _, m in report.lines], "still pending"))
+
+
+class LedgerRetiredSourcesTest(unittest.TestCase):
+    def test_seeding_after_a_source_is_deleted_refuses_instead_of_dropping_its_rows(self):
+        files = {"docs/features/deck/usecases/UC-DECK-001-x.md": "# T\n\nPara\n"}
+        with DocsTree(files) as root:
+            seeded = ledger.render({})
+            (root / "docs/features/deck/usecases/UC-DECK-001-x.md").unlink()
+            missing = ledger.missing_sources(seeded)
+        self.assertEqual(missing, ["features/deck/usecases/UC-DECK-001-x.md"])
 
 
 class LedgerNotesTest(unittest.TestCase):

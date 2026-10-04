@@ -41,6 +41,7 @@ ERROR
 - `invokes`, an FN's `### Business rules`, or a screen's `Invokes:`,
   `Navigate to:` or `## Related Use Cases` naming an id that does not exist
   or is deprecated; an FN cited in a UC flow but missing from its `Invokes:`
+- a file in a retired home: features/*/usecases/, features/*/ui.md, shared/ui/
 - with --plan: a mapping row whose destination does not exist (a mapping
   table is one whose first header cell starts with "Nguồn"; destinations are
   backticked paths relative to docs/, `<slug>` and `*` are wildcards)
@@ -349,6 +350,19 @@ def check_supersession(docs: list[g.Doc], by_id: dict[str, g.Doc], report: Repor
 def check_single_product(report: Report) -> None:
     for path in sorted(g.DOCS.rglob("PRODUCT.md")):
         report.error(path, "product definition lives only in /PRODUCT.md (spec R12)")
+
+
+# Homes retired after the verified migration (spec §6.1, plan Task 44); their
+# content lives in USE_CASES.md, the screen specs and NAVIGATION.md.
+RETIRED_HOMES = ("features/*/usecases/*", "features/*/ui.md", "shared/ui/**/*")
+
+
+def check_retired_homes(report: Report) -> None:
+    for pattern in RETIRED_HOMES:
+        for path in sorted(g.DOCS.glob(pattern)):
+            if path.is_file():
+                report.error(path, "retired home (spec §6.1): UCs go in USE_CASES.md, "
+                             "screens in screens/spec/, app navigation in NAVIGATION.md")
 
 
 def check_catalog(docs: list[g.Doc], report: Report) -> None:
@@ -800,6 +814,7 @@ def run(plan: Path | None, base_keys=base_state_keys, ledger_path: Path | None =
     check_references(docs, by_id, report)
     check_supersession(docs, by_id, report)
     check_single_product(report)
+    check_retired_homes(report)
     check_catalog(docs, report)
     check_screen_states(docs, report, g.golden_files(), base_keys)
     check_text(docs, report)

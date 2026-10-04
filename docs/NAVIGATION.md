@@ -75,7 +75,7 @@ SCR-SETTINGS-002).
 - `/settings/sign-in?mode=link|reauth&from=…` và `/settings/sign-in/code?mode=…&email=…&from=…` mở
   SCR-ACCOUNT-003 và SCR-ACCOUNT-004. Một `from` ở ngoài app (có scheme, có host, hay bắt đầu bằng
   `//`) bị bỏ qua và thay bằng đích mặc định.
-- `/settings/monitoring/:id?local=1` mở chi tiết một log còn trên thiết bị (SCR-MONITORING-001).
+- `/settings/monitoring/:logId?local=1` mở chi tiết một log còn trên thiết bị (SCR-MONITORING-001).
 - `/welcome?from=…` giữ location mà Welcome đứng thay; cùng luật bỏ qua `from` ngoài app, mặc định
   là Thư viện.
 

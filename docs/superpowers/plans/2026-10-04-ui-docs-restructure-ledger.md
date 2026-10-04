@@ -4469,3 +4469,18 @@ IMPLEMENTATION GAPs of SCR-DECK-001 and SCR-STUDY-002 stay; no code changes in t
 - Minor (deferred): `.claude/skills/flutter-product-spec/assets/use_case_template.md` describes the legacy UC file format and is no longer referenced.
 - Warnings 31 → 9: the 22 "now lives in USE_CASES.md" warnings are gone; left: 7 INV-UI enforced by nothing, BR-CORE-003 cited by no FN, FN-ACCOUNT-014 invoked by nothing.
 - `check.py --ledger` → PASS. Gate: dod_check.sh → ✓ mechanical gates passed (scratchpad gate44.log).
+
+## Final review notes (Task 45)
+
+Reviewer: Opus, fresh context, read-only. Verdict: ready to merge with fixes; no Critical. Commands green: 105 tests, `check.py` PASS (9 warnings), `--ledger` PASS; sign-off numbers re-counted exactly; CRLF parity confirmed on a scratch copy.
+
+- Final: fixed `flutter-feature-slice` pre-flight still sent "Use case approved" to the deleted `docs/features/<feature>/usecases/` (SKILL.md Step 0, assets/feature_checklist.md) — now USE_CASES.md + FNs + catalog row + spec; regression guard `check_retired_homes` — `test_a_file_in_a_retired_home_is_an_error` RED→GREEN.
+- Final: fixed (re-graded Minor → Important: docs/README.md told readers to run it) `ledger.py seed` silently cut the ledger from 3625 to 528 rows once the sources were gone — it now refuses and writes nothing; README drops the seed command — `test_seeding_after_a_source_is_deleted_refuses_instead_of_dropping_its_rows` RED→GREEN; on the real ledger: `REFUSED …`, file unchanged.
+- Final: fixed (re-graded Minor → Important: a wrong route in the catalog the rebuild reads) `/settings/monitoring/:id` → `:logId` as `app_routes.dart` names it, in SCREEN_CATALOG.md, SCR-MONITORING-001 and NAVIGATION.md; every catalog path parameter now matches the router (checked by grep; no route-check tooling, see the minor below).
+- Final: minor (deferred): the first `scr_*` golden turns all 526 old-named goldens into orphan ERRORs at once (per spec); sub-project 2 must delete or rename the old goldens before its first `scr_*` golden, and no test covers an old name becoming an orphan after the switch.
+- Final: minor (deferred): catalog routes are not checked against `lib/app/router/` although spec §4.5 says they are.
+- Final: minor (deferred): `Invokes:` takes the rest of its line (a `· Navigate to:` on the same line would be read as an FN); a lowercase `invokes:` is silently not counted.
+- Final: minor (deferred): an FN in a functional-spec file that is not a feature (`foo.md`, `FN-FOO-001`) passes `check_identity`.
+- Final: minor (deferred): a UC/FN heading at the wrong level reports "cited but not defined" instead of naming the heading level.
+- Final: minor (deferred): check.py docstring says `functional-spec/` may cite only BR; the code allows BR and FN.
+- Final: minor (deferred): `.claude/skills/flutter-product-spec/assets/use_case_template.md` keeps the legacy UC format (cites BRs, against R13/R20) and is unreferenced.

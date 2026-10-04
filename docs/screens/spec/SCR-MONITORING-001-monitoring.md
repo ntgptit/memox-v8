@@ -3,7 +3,7 @@ id: SCR-MONITORING-001
 name: Monitoring
 domain: monitoring
 status: ready
-route: [/settings/monitoring, /settings/monitoring/:id]
+route: [/settings/monitoring, /settings/monitoring/:logId]
 ---
 
 # Monitoring
@@ -14,7 +14,7 @@ The admin's window on the app's logs: the server's, and the device's own buffer.
 warnings and errors, newest first, and lets the admin filter and search them, open one whole, and
 mark it fixed or reopen it. On the root navigator with no bottom bar, like Sync. Opened from the Admin
 section's "Monitoring" row of Settings (SCR-SETTINGS-002), shown only to an admin and not at all in a
-build with no server; Back returns there. A row opens its detail at `/settings/monitoring/:id`
+build with no server; Back returns there. A row opens its detail at `/settings/monitoring/:logId`
 (`?local=1` for a row of the device buffer), nested under the list, so Back climbs one page at a time
 and the list keeps its pages and scroll position. A deep link from any other account, to the list or
 to a log (`?local=1` included), gets "Only an admin can see this" before anything is read: the

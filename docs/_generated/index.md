@@ -222,7 +222,7 @@
 
 | ID | Name | Status | Route |
 |---|---|---|---|
-| [SCR-MONITORING-001](../screens/spec/SCR-MONITORING-001-monitoring.md) | Monitoring | ready | `/settings/monitoring`, `/settings/monitoring/:id` |
+| [SCR-MONITORING-001](../screens/spec/SCR-MONITORING-001-monitoring.md) | Monitoring | ready | `/settings/monitoring`, `/settings/monitoring/:logId` |
 
 ## [progress](../features/progress/README.md)
 

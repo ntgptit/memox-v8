@@ -142,12 +142,31 @@ def rows(text: str) -> list[tuple[int, str, str]]:
     return found
 
 
+def missing_sources(text: str) -> list[str]:
+    """Sources the ledger names that no longer exist: a section's file under
+    docs/, or a golden. Seeding then would drop their rows and outcomes, so
+    `seed` refuses (the migration record outlives its sources)."""
+    gone: list[str] = []
+    for line in text.split(NOTES_MARK)[0].splitlines():
+        if line.startswith("## ") and line != "## Goldens" and not (g.DOCS / line[3:]).exists():
+            gone.append(line[3:])
+    for _, source, _ in rows(text.split(NOTES_MARK)[0]):
+        if source.startswith("`test/") and not (g.ROOT / source.strip("`")).exists():
+            gone.append(source.strip("`"))
+    return gone
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("command", choices=["seed"])
     parser.add_argument("out", type=Path)
     args = parser.parse_args()
     text = args.out.read_text(encoding="utf-8") if args.out.exists() else ""
+    gone = missing_sources(text)
+    if gone:
+        print(f"REFUSED {args.out}: {len(gone)} source(s) it records no longer exist, "
+              f"e.g. {gone[0]}; seeding would drop their rows. The ledger is a record now.")
+        return 1
     existing = {src: outcome for _, src, outcome in rows(text)}
     notes = text[text.index(NOTES_MARK):] if NOTES_MARK in text else ""
     args.out.write_text(render(existing, notes), encoding="utf-8", newline="\n")

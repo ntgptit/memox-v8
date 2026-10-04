@@ -18,8 +18,10 @@ the same problems until they are expensive.
 Do not skip this because the feature "seems obvious". Every item here that turns
 out to be open becomes rework, and the rework is always larger than the check.
 
-- [ ] **Use case approved** — exists in `docs/features/<feature>/usecases/` with main,
-      alternative and error flows.
+- [ ] **Use case approved** — its section in `docs/USE_CASES.md` (`ready`) has main,
+      alternative and error flows, and the FNs it invokes are in
+      `docs/functional-spec/<feature>.md`; for a screen, its row in
+      `docs/screens/SCREEN_CATALOG.md` and its spec in `docs/screens/spec/`.
 - [ ] **Business rules clear** — the `BR-xx` rules this feature enforces are
       written, and validation rules have their exact user-facing messages.
 - [ ] **Design available** — or an explicit agreement to use existing components

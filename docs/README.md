@@ -383,8 +383,7 @@ Chạy từ root repo, Python 3, không cần thư viện ngoài:
 ```sh
 python tools/docs/generate.py                                  # sinh docs/_generated/
 python tools/docs/check.py                                     # ERROR → exit 1
-python tools/docs/ledger.py seed docs/superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md
-python tools/docs/check.py --ledger docs/superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md
+python tools/docs/check.py --ledger docs/superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md  # ledger là bản ghi; seed từ chối vì nguồn đã gỡ
 python -m unittest discover -s tools/docs -p 'test_*.py'
 ```
 
