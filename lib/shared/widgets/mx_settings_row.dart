@@ -102,37 +102,39 @@ class MxSettingsRow extends StatelessWidget {
     final VoidCallback? tap = _tap();
     final String? why = subtitle;
     final bool isToggle = kind == MxSettingsRowKind.toggle;
-    final Widget facts = Row(
-      children: [
-        Opacity(
-          opacity: emphasis,
-          child: MxIconTile(icon: icon, tone: iconTone),
-        ),
-        const SizedBox(width: AppSpacing.grouped),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Opacity(
-                opacity: emphasis,
-                child: Text(
-                  title,
-                  style: mxRowTitleStyle(context.texts, colors),
-                ),
-              ),
-              if (why != null)
-                Text(
-                  why,
-                  style: context.texts.bodyMedium?.apply(
-                    color: colors.onSurfaceVariant,
+    final Widget facts = LayoutBuilder(
+      builder: (context, line) => Row(
+        children: [
+          Opacity(
+            opacity: emphasis,
+            child: MxIconTile(icon: icon, tone: iconTone),
+          ),
+          const SizedBox(width: AppSpacing.grouped),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Opacity(
+                  opacity: emphasis,
+                  child: Text(
+                    title,
+                    style: mxRowTitleStyle(context.texts, colors),
                   ),
                 ),
-            ],
+                if (why != null)
+                  Text(
+                    why,
+                    style: context.texts.bodyMedium?.apply(
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+              ],
+            ),
           ),
-        ),
-        ..._end(context, emphasis),
-      ],
+          ..._end(context, emphasis, line.maxWidth),
+        ],
+      ),
     );
     final Widget body = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: AppSize.tapTarget),
@@ -172,7 +174,7 @@ class MxSettingsRow extends StatelessWidget {
     return onTap;
   }
 
-  List<Widget> _end(BuildContext context, double emphasis) {
+  List<Widget> _end(BuildContext context, double emphasis, double line) {
     final ColorScheme colors = context.colors;
     final String? shown = value;
     return switch (kind) {
@@ -192,10 +194,16 @@ class MxSettingsRow extends StatelessWidget {
       ],
       MxSettingsRowKind.value => [
         const SizedBox(width: AppSpacing.grouped),
-        Text(
-          shown ?? '',
-          style: context.texts.bodyMedium?.apply(
-            color: colors.onSurfaceVariant,
+        // A value keeps its width up to half the line, so a long one wraps
+        // there and the label keeps the rest.
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: line / 2),
+          child: Text(
+            shown ?? '',
+            textAlign: TextAlign.end,
+            style: context.texts.bodyMedium?.apply(
+              color: colors.onSurfaceVariant,
+            ),
           ),
         ),
       ],

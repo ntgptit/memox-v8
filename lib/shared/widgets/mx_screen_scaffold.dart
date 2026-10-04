@@ -69,7 +69,9 @@ class MxScreenScaffold extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (path != null) _InColumn(child: path),
+          // The pinned breadcrumb is part of the top chrome: one ground with
+          // the bar as content passes under them.
+          if (path != null) MxAppBarGround(child: _InColumn(child: path)),
           Expanded(child: _InColumn(child: region)),
           ?commit,
         ],

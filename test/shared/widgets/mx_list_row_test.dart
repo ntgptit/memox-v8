@@ -245,4 +245,24 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('a long value wraps beside the title instead of overflowing', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _in(
+        const MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: MxListRow(
+            title: 'Card language',
+            trailing: MxListRowTrailing.value(
+              'Brazilian Portuguese, São Paulo',
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+  });
 }

@@ -78,4 +78,22 @@ void main() {
       AppBreakpoints.contentMax - 32,
     );
   });
+
+  testWidgets('its content keeps clear of a display cutout', (tester) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 400,
+        child: MediaQuery(
+          data: const MediaQueryData(padding: EdgeInsets.only(left: 40)),
+          child: _footer(),
+        ),
+      ),
+    );
+    expect(
+      tester.getRect(find.text('Saved on this phone')).left -
+          tester.getRect(find.byType(MxFooterBar)).left,
+      40 + 16,
+    );
+  });
 }

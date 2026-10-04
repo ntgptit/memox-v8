@@ -79,4 +79,25 @@ void main() {
     expect(ran, 1);
     semantics.dispose();
   });
+
+  testWidgets('the label starts 12 past its glyph, as a menu item', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 380,
+        child: MxActionSheetCommandRow(
+          icon: Icons.edit,
+          label: 'Rename',
+          onTap: () {},
+        ),
+      ),
+    );
+    expect(
+      tester.getRect(find.text('Rename')).left -
+          tester.getRect(find.byIcon(Icons.edit)).right,
+      12,
+    );
+  });
 }

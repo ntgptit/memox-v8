@@ -70,9 +70,10 @@ void main() {
       tester.renderObject<RenderParagraph>(find.text(long)).didExceedMaxLines,
       isFalse,
     );
+    // What does not fit whole folds into "…", which reads every place.
     expect(
-      tester.getSemantics(find.text('Spanish for travellers')),
-      isSemantics(label: 'Spanish for travellers'),
+      tester.getSemantics(find.text('…')),
+      isSemantics(label: 'Library › Spanish for travellers', isButton: true),
     );
     semantics.dispose();
   });
@@ -107,17 +108,82 @@ void main() {
       );
       expect(tester.takeException(), isNull);
       expect(tester.widget<Text>(find.text('New card')).maxLines, 1);
-      expect(
-        tester
-            .getSize(
-              find.ancestor(
-                of: find.text('Library'),
-                matching: find.byType(InkWell),
-              ),
-            )
-            .width,
-        greaterThanOrEqualTo(AppSize.tapTarget),
-      );
+      for (final Element place in find.byType(InkWell).evaluate()) {
+        final Size size = (place.renderObject! as RenderBox).size;
+        expect(size.width, greaterThanOrEqualTo(AppSize.tapTarget));
+        expect(size.height, greaterThanOrEqualTo(AppSize.tapTarget));
+      }
     });
   }
+
+  testWidgets('a path too long for the row folds its oldest places into one', (
+    tester,
+  ) async {
+    final SemanticsHandle semantics = tester.ensureSemantics();
+    final List<String> went = [];
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 412,
+        child: MxBreadcrumb(
+          items: [
+            MxBreadcrumbItem(
+              label: 'Library',
+              onTap: () => went.add('Library'),
+            ),
+            MxBreadcrumbItem(
+              label: 'Languages',
+              onTap: () => went.add('Languages'),
+            ),
+            MxBreadcrumbItem(
+              label: 'Spanish for travellers',
+              onTap: () => went.add('Spanish'),
+            ),
+            const MxBreadcrumbItem(label: 'Review algorithm'),
+          ],
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    for (final whole in ['Spanish for travellers', 'Review algorithm']) {
+      expect(
+        tester
+            .renderObject<RenderParagraph>(find.text(whole))
+            .didExceedMaxLines,
+        isFalse,
+      );
+    }
+    expect(find.text('Library'), findsNothing);
+    expect(
+      tester.getSemantics(find.text('…')),
+      isSemantics(label: 'Library › Languages', isButton: true),
+    );
+    for (final Element place in find.byType(InkWell).evaluate()) {
+      expect(
+        (place.renderObject! as RenderBox).size.width,
+        greaterThanOrEqualTo(AppSize.tapTarget),
+      );
+    }
+    await tester.tap(find.text('…'));
+    expect(went, ['Languages']);
+    semantics.dispose();
+  });
+
+  testWidgets('its labels keep clear of a display cutout', (tester) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 400,
+        child: MediaQuery(
+          data: const MediaQueryData(padding: EdgeInsets.only(left: 40)),
+          child: _path(() {}),
+        ),
+      ),
+    );
+    expect(
+      tester.getRect(find.text('Library')).left -
+          tester.getRect(find.byType(MxBreadcrumb)).left,
+      40 + 16,
+    );
+  });
 }

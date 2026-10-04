@@ -21,14 +21,18 @@ class MxBreadcrumbItem {
 /// A path of places (DESIGN.md, MxBreadcrumb), presentation-neutral: it knows
 /// no deck, ancestor or route. The last item is where the reader is; the ones
 /// before it are ancestors, each a 48 target when it can be tapped. One line:
-/// when the path does not fit, the current place keeps its full width and
-/// the ancestors share what is left, each cut with an ellipsis but read whole
-/// by TalkBack. The separator mirrors in right-to-left text.
+/// when the path does not fit, the current place keeps its full width, the
+/// nearest ancestors stay whole, and the oldest fold into one "…" place that
+/// goes to the nearest of them and reads them all to TalkBack. The separator
+/// mirrors in right-to-left text.
 class MxBreadcrumb extends StatelessWidget {
   const MxBreadcrumb({required this.items, super.key});
 
   /// At least one; the last is the current place.
   final List<MxBreadcrumbItem> items;
+
+  /// The folded places' mark.
+  static const String _fold = '…';
 
   @override
   Widget build(BuildContext context) {
@@ -36,33 +40,55 @@ class MxBreadcrumb extends StatelessWidget {
     final TextStyle? style = context.texts.bodyMedium;
     final TextScaler scaler = MediaQuery.textScalerOf(context);
     final TextDirection direction = Directionality.of(context);
+    final EdgeInsets system = MediaQuery.paddingOf(context);
+    // A place is at least a 48 target wide, however short its label.
+    double widthOf(String label) => math.max(
+      AppSize.tapTarget,
+      _labelWidth(label, style, scaler, direction) + 2 * AppSpacing.micro,
+    );
     return Padding(
-      // The labels line up with the body's gutter; the ripple reaches past them.
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.gutter - AppSpacing.micro,
+      // The labels line up with the body's gutter, clear of any cutout; the
+      // ripple reaches past them.
+      padding: EdgeInsets.only(
+        left: AppSpacing.gutter - AppSpacing.micro + system.left,
+        right: AppSpacing.gutter - AppSpacing.micro + system.right,
       ),
       child: LayoutBuilder(
         builder: (context, box) {
           final List<double> natural = [
-            for (final item in items)
-              _labelWidth(item.label, style, scaler, direction) +
-                  2 * AppSpacing.micro,
+            for (final item in items) widthOf(item.label),
           ];
-          final double separators =
-              (items.length - 1) * (AppIconSize.small + 2 * AppSpacing.micro);
-          final List<double> widths = _share(
+          final int hidden = _hiddenCount(
             natural,
-            math.max(0, box.maxWidth - separators),
+            box.maxWidth,
+            widthOf(_fold),
           );
-          final int last = items.length - 1;
+          final List<MxBreadcrumbItem> folded = items.sublist(0, hidden);
+          final List<MxBreadcrumbItem> shown = items.sublist(hidden);
+          final int last = shown.length - 1;
           return Row(
             children: [
-              for (final (index, item) in items.indexed) ...[
-                if (index > 0) const _Separator(),
-                SizedBox(
-                  width: widths[index],
-                  child: _Place(item: item, isCurrent: index == last),
+              if (folded.isNotEmpty) ...[
+                _Place(
+                  item: MxBreadcrumbItem(
+                    label: _fold,
+                    onTap: folded.last.onTap,
+                  ),
+                  semanticLabel: [for (final item in folded) item.label]
+                      .join(' › '),
+                  isCurrent: false,
                 ),
+                const _Separator(),
+              ],
+              for (final (index, item) in shown.indexed) ...[
+                if (index > 0) const _Separator(),
+                if (index == last)
+                  Flexible(child: _Place(item: item, isCurrent: true))
+                else
+                  Flexible(
+                    flex: 0,
+                    child: _Place(item: item, isCurrent: false),
+                  ),
               ],
             ],
           );
@@ -88,25 +114,26 @@ class MxBreadcrumb extends StatelessWidget {
     return width;
   }
 
-  /// The current place (last) takes its natural width while at least a 48
-  /// target is left for each ancestor; the ancestors then share the rest,
-  /// a short one keeping its natural width and giving the remainder on.
-  static List<double> _share(List<double> natural, double room) {
+  /// How many of the oldest ancestors fold into one place: none when the
+  /// whole path fits; otherwise the current place and the nearest ancestors
+  /// that fit whole beside the fold stay.
+  static int _hiddenCount(List<double> natural, double room, double fold) {
+    const double separator = AppIconSize.small + 2 * AppSpacing.micro;
     final int last = natural.length - 1;
-    final double floor = last * AppSize.tapTarget;
-    final double current = math.min(natural[last], math.max(0, room - floor));
-    final List<double> widths = List<double>.filled(natural.length, 0);
-    widths[last] = current;
-    double left = room - current;
-    final List<int> open = [for (var i = 0; i < last; i++) i]
-      ..sort((a, b) => natural[a].compareTo(natural[b]));
-    for (final (rank, index) in open.indexed) {
-      final double fair = left / (open.length - rank);
-      final double take = math.min(natural[index], fair);
-      widths[index] = take;
-      left -= take;
+    double whole = natural[last];
+    for (var i = 0; i < last; i++) {
+      whole += natural[i] + separator;
     }
-    return widths;
+    if (whole <= room) {
+      return 0;
+    }
+    double left = room - natural[last] - fold - separator;
+    var index = last - 1;
+    while (index >= 0 && natural[index] + separator <= left) {
+      left -= natural[index] + separator;
+      index--;
+    }
+    return index + 1;
   }
 }
 
@@ -129,17 +156,27 @@ class _Separator extends StatelessWidget {
 }
 
 class _Place extends StatelessWidget {
-  const _Place({required this.item, required this.isCurrent});
+  const _Place({
+    required this.item,
+    required this.isCurrent,
+    this.semanticLabel,
+  });
 
   final MxBreadcrumbItem item;
   final bool isCurrent;
+
+  /// What TalkBack reads instead of the label (the folded places).
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
     final ColorScheme colors = context.colors;
     final VoidCallback? tap = isCurrent ? null : item.onTap;
     final Widget label = ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: AppSize.tapTarget),
+      constraints: const BoxConstraints(
+        minWidth: AppSize.tapTarget,
+        minHeight: AppSize.tapTarget,
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.micro),
         child: Align(
@@ -156,7 +193,7 @@ class _Place extends StatelessWidget {
       ),
     );
     final Widget read = Semantics(
-      label: item.label,
+      label: semanticLabel ?? item.label,
       selected: isCurrent,
       button: tap != null,
       excludeSemantics: true,

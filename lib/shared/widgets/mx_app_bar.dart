@@ -35,7 +35,7 @@ const int _maxIconActions = 3;
 /// Selecting is not a mode of the bar: the caller passes `close` and the
 /// count as the title ("3 selected"), and [isTitleLive] so TalkBack hears the
 /// count change.
-class MxAppBar extends StatefulWidget implements PreferredSizeWidget {
+class MxAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MxAppBar({
     required this.title,
     this.density = MxAppBarDensity.screen,
@@ -64,10 +64,107 @@ class MxAppBar extends StatefulWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(AppSize.appBar);
 
   @override
-  State<MxAppBar> createState() => _MxAppBarState();
+  Widget build(BuildContext context) {
+    assert(
+      actions.length <= _maxIconActions,
+      'MxAppBar carries at most $_maxIconActions icon actions.',
+    );
+    assert(
+      textAction == null || actions.isEmpty,
+      'MxAppBar carries icon actions or one text action, not both.',
+    );
+    final ColorScheme colors = context.colors;
+    return MxAppBarGround(
+      child: SafeArea(
+        bottom: false,
+        child: Center(
+          heightFactor: 1,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: AppBreakpoints.contentMax,
+              minHeight: AppSize.appBar,
+            ),
+            child: Row(
+              children: [
+                _leading(context),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    liveRegion: isTitleLive,
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: mxAppBarTitleStyle(context.texts, colors, density),
+                    ),
+                  ),
+                ),
+                ..._trailing(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // The title starts on the gutter; after a leading control it starts 8
+  // past that control's 48 target, which sits 4 from the edge.
+  Widget _leading(BuildContext context) {
+    if (leading == MxAppBarLeading.none) {
+      return const SizedBox(width: AppSpacing.gutter);
+    }
+    final MaterialLocalizations words = MaterialLocalizations.of(context);
+    final bool isBack = leading == MxAppBarLeading.back;
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(
+        start: AppSpacing.micro,
+        end: AppSpacing.control,
+      ),
+      child: MxIconButton(
+        icon: isBack ? Icons.arrow_back : Icons.close,
+        semanticLabel: isBack
+            ? words.backButtonTooltip
+            : words.closeButtonTooltip,
+        onPressed: onLeading ?? () => Navigator.maybePop(context),
+      ),
+    );
+  }
+
+  List<Widget> _trailing() {
+    final MxAppBarTextAction? text = textAction;
+    if (text != null) {
+      return [
+        MxButton(
+          label: text.label,
+          onPressed: text.onPressed,
+          tone: MxButtonTone.text,
+          size: MxButtonSize.small,
+        ),
+        const SizedBox(width: AppSpacing.micro),
+      ];
+    }
+    if (actions.isEmpty) {
+      return const [SizedBox(width: AppSpacing.gutter)];
+    }
+    return [...actions, const SizedBox(width: AppSpacing.micro)];
+  }
 }
 
-class _MxAppBarState extends State<MxAppBar> {
+/// The top chrome's ground (DESIGN.md, MxAppBar): flat `surface` while the
+/// screen's own scroll is at its start, `surface-container` once content
+/// passes under the chrome. `MxAppBar` paints on it, and so does a
+/// breadcrumb pinned under the bar, so the chrome reads as one piece.
+class MxAppBarGround extends StatefulWidget {
+  const MxAppBarGround({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  State<MxAppBarGround> createState() => _MxAppBarGroundState();
+}
+
+class _MxAppBarGroundState extends State<MxAppBarGround> {
   ScrollNotificationObserverState? _observer;
   bool _isScrolledUnder = false;
 
@@ -106,93 +203,9 @@ class _MxAppBarState extends State<MxAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    assert(
-      widget.actions.length <= _maxIconActions,
-      'MxAppBar carries at most $_maxIconActions icon actions.',
-    );
-    assert(
-      widget.textAction == null || widget.actions.isEmpty,
-      'MxAppBar carries icon actions or one text action, not both.',
-    );
-    final ColorScheme colors = context.colors;
     return Material(
-      color: mxAppBarGround(colors, isScrolledUnder: _isScrolledUnder),
-      child: SafeArea(
-        bottom: false,
-        child: Center(
-          heightFactor: 1,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: AppBreakpoints.contentMax,
-              minHeight: AppSize.appBar,
-            ),
-            child: Row(
-              children: [
-                _leading(context),
-                Expanded(
-                  child: Semantics(
-                    header: true,
-                    liveRegion: widget.isTitleLive,
-                    child: Text(
-                      widget.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: mxAppBarTitleStyle(
-                        context.texts,
-                        colors,
-                        widget.density,
-                      ),
-                    ),
-                  ),
-                ),
-                ..._trailing(),
-              ],
-            ),
-          ),
-        ),
-      ),
+      color: mxAppBarGround(context.colors, isScrolledUnder: _isScrolledUnder),
+      child: widget.child,
     );
-  }
-
-  // The title starts on the gutter; after a leading control it starts 8
-  // past that control's 48 target, which sits 4 from the edge.
-  Widget _leading(BuildContext context) {
-    if (widget.leading == MxAppBarLeading.none) {
-      return const SizedBox(width: AppSpacing.gutter);
-    }
-    final MaterialLocalizations words = MaterialLocalizations.of(context);
-    final bool isBack = widget.leading == MxAppBarLeading.back;
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(
-        start: AppSpacing.micro,
-        end: AppSpacing.control,
-      ),
-      child: MxIconButton(
-        icon: isBack ? Icons.arrow_back : Icons.close,
-        semanticLabel: isBack
-            ? words.backButtonTooltip
-            : words.closeButtonTooltip,
-        onPressed: widget.onLeading ?? () => Navigator.maybePop(context),
-      ),
-    );
-  }
-
-  List<Widget> _trailing() {
-    final MxAppBarTextAction? text = widget.textAction;
-    if (text != null) {
-      return [
-        MxButton(
-          label: text.label,
-          onPressed: text.onPressed,
-          tone: MxButtonTone.text,
-          size: MxButtonSize.small,
-        ),
-        const SizedBox(width: AppSpacing.micro),
-      ];
-    }
-    if (widget.actions.isEmpty) {
-      return const [SizedBox(width: AppSpacing.gutter)];
-    }
-    return [...widget.actions, const SizedBox(width: AppSpacing.micro)];
   }
 }

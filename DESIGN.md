@@ -840,7 +840,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxListRow
 - Variants: leading none, an `MxIconTile` (medium, 40, in `iconTone`) or an `MxSelectionCheckbox`; a title and an optional subtitle; trailing exactly one of none, chevron, `MxBadge`, a value, or one `MxIconButton`
 - States: tappable or inert; disabled; checked while selecting
-- Accessibility: 48 minimum, 16 across and 12 down, the leading mark 12 from the text; the title keeps one line with an ellipsis and is read whole; the subtitle wraps to two lines; a tappable row is one button with the shared ripple and the keyboard ring; an inert row stays at full contrast; disabled dims the leading mark, title and chevron (`AppOpacity.disabled`), never the subtitle that says why; one TalkBack node carrying every fact; a trailing icon button is its own node and focus stop; the chevron mirrors in right-to-left text
+- Accessibility: 48 minimum, 16 across and 12 down, the leading mark 12 from the text; the title keeps one line with an ellipsis and is read whole; the subtitle wraps to two lines; a long value shares the line and wraps; a tappable row is one button with the shared ripple and the keyboard ring; an inert row stays at full contrast; disabled dims the leading mark, title and chevron (`AppOpacity.disabled`), never the subtitle that says why; one TalkBack node carrying every fact; a trailing icon button is its own node and focus stop; the chevron mirrors in right-to-left text
 - Tokens: `on-surface` (title, row tracking), `on-surface-variant` (subtitle, value, chevron); `bodyLarge`, `bodyMedium`; `AppSize.tapTarget`; `AppSpacing.gutter`, `AppSpacing.grouped`
 - Golden: forms__light, forms__dark
 
@@ -856,7 +856,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxSettingsRow
 - Variants: navigation (chevron), action (no chevron), value (plain text that follows another setting), toggle (the whole row is the switch); a lead `MxIconTile` in `iconTone` (tinted by default) and an optional subtitle
 - States: enabled, disabled; toggle on and off
-- Accessibility: 48 minimum, 16 across and 12 down; the label wraps beside its end mark at any text scale; disabled dims the tile, label and chevron, never the subtitle that says why, and the toggle draws its own disabled state, not dimmed again; one TalkBack node: a button, or the switch for a toggle row
+- Accessibility: 48 minimum, 16 across and 12 down; the label, and a long value, wrap beside each other at any text scale; disabled dims the tile, label and chevron, never the subtitle that says why, and the toggle draws its own disabled state, not dimmed again; one TalkBack node: a button, or the switch for a toggle row
 - Tokens: `on-surface`, `on-surface-variant`; `bodyLarge`, `bodyMedium`; `AppOpacity.disabled`; through `MxIconTile` and `MxToggle`
 - Golden: kinds__light, kinds__dark
 
@@ -864,13 +864,13 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxActionSheetCommandRow
 - Variants: a glyph, a label and an optional subtitle; `isDestructive`
 - States: one
-- Accessibility: a 24 glyph in `on-surface-variant` (Material 3's menu leading icon, not a tile); a destructive command paints its glyph and label in `error` (4.5:1 on the sheet ground, declared) and its words say so; 48 minimum, 16 across and 12 down; one TalkBack node, a button
+- Accessibility: a 24 glyph in `on-surface-variant` (Material 3's menu leading icon, not a tile), 12 from the label; a destructive command paints its glyph and label in `error` (4.5:1 on the sheet ground, declared) and its words say so; 48 minimum, 16 across and 12 down; one TalkBack node, a button
 - Tokens: `on-surface`, `on-surface-variant`, `error`; `bodyLarge`, `bodyMedium`; `AppIconSize.large`
 - Golden: forms__light, forms__dark
 
 #### MxAppBar
 - Variants: densities screen (the Title role, -0.5 tracking as a component override) and content (Body Large); leading none (the title starts on the gutter), back or close (the title starts 8 past the control's 48 target); up to three `MxIconButton` actions, or one text action in the text tone (never a primary fill)
-- States: flat `surface` at rest; `surface-container` once content scrolls under it (Material 3's scrolled-under container; no shadow, no tint)
+- States: flat `surface` at rest; `surface-container` once content scrolls under it (Material 3's scrolled-under container; no shadow, no tint), shared with a breadcrumb pinned under it
 - Accessibility: 56 tall; the title keeps one line with an ellipsis and is a header; `isTitleLive` makes a selection count a live region; back and close are named by the platform's words and pop through `Navigator.maybePop` unless the caller runs its own; the ground spans the window, the content keeps to the 720 column
 - Tokens: `surface`, `surface-container`, `on-surface`, `on-surface-variant`; `titleLarge`, `titleMedium`; `AppSize.appBar`; the `appBarTheme` slot matches it
 - Golden: forms__light, forms__dark
@@ -879,7 +879,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxBreadcrumb
 - Variants: items of a label and an optional `onTap`; the last item is the current place
 - States: one
-- Accessibility: presentation-neutral (knows no deck, ancestor or route); one line; the current place keeps its full width while each ancestor keeps at least a 48 target, the ancestors share the rest and end in an ellipsis; each ancestor that can be tapped is a 48 button with the ripple and the keyboard ring; the current place reads as selected; every label is read whole; the separator mirrors in right-to-left text
+- Accessibility: presentation-neutral (knows no deck, ancestor or route); one line, its labels on the gutter and clear of a cutout; when the path does not fit, the current place keeps its full width, the nearest ancestors stay whole and the oldest fold into one "…" place that goes to the nearest of them and reads them all; each ancestor that can be tapped is a 48 button with the ripple and the keyboard ring; the current place reads as selected; the separator mirrors in right-to-left text; pinned under the bar it shares the bar's ground
 - Tokens: `bodyMedium`; `on-surface` (current), `on-surface-variant` (ancestors, separator); `chevron_right` at `AppIconSize.small`
 - Golden: forms__light, forms__dark
 
@@ -887,7 +887,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxFooterBar
 - Variants: a caption, actions (a slot: `MxSheetActions` today, `MxActionPair` once built), or both
 - States: as its actions (enabled, disabled, loading)
-- Accessibility: in flow under the body, the page ground under a 1dp `outline-variant` hairline and no shadow; 16 across, 12 down, the caption 8 above the actions; it clears the system bar and rides above the keyboard; its content keeps to the 720 column
+- Accessibility: in flow under the body, the page ground under a 1dp `outline-variant` hairline and no shadow; 16 across, 12 down, the caption 8 above the actions; it clears the system bar and any cutout and rides above the keyboard; its content keeps to the 720 column
 - Tokens: `surface`, `outline-variant`; caption `bodySmall` in `on-surface-variant`
 - Golden: forms__light, forms__dark
 

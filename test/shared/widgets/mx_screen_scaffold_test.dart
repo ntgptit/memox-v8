@@ -131,4 +131,39 @@ void main() {
     await _pump(tester, _screen(hasFooter: true));
     expect(tester.getRect(find.byType(MxFooterBar)).bottom, 800 - 300);
   });
+
+  testWidgets(
+    'a pinned breadcrumb shares the bar ground as content passes under',
+    (tester) async {
+      await _pump(
+        tester,
+        MxScreenScaffold(
+          appBar: const MxAppBar(title: 'Spanish'),
+          breadcrumb: const MxBreadcrumb(
+            items: [
+              MxBreadcrumbItem(label: 'Library'),
+              MxBreadcrumbItem(label: 'Spanish'),
+            ],
+          ),
+          body: ListView(
+            children: [
+              for (var i = 0; i < 40; i++)
+                const SizedBox(height: 56, child: Text('Row')),
+            ],
+          ),
+        ),
+      );
+      Color ground(Finder of) => tester
+          .widget<Material>(
+            find.ancestor(of: of, matching: find.byType(Material)).first,
+          )
+          .color!;
+      final ColorScheme s = mxThemes['light']!.colorScheme;
+      expect(ground(find.byType(MxBreadcrumb)), s.surface);
+      await tester.drag(find.byType(Scrollable), const Offset(0, -200));
+      await tester.pumpAndSettle();
+      expect(ground(find.text('Spanish').first), s.surfaceContainer);
+      expect(ground(find.byType(MxBreadcrumb)), s.surfaceContainer);
+    },
+  );
 }

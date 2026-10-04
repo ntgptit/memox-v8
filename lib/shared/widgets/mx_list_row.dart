@@ -101,50 +101,49 @@ class MxListRow extends StatelessWidget {
     final String? detail = subtitle;
     final Widget? lead = _leading();
     final Widget? end = _trailing(context);
-    final Widget facts = Row(
-      children: [
-        if (lead != null) ...[
-          Opacity(opacity: emphasis, child: lead),
-          const SizedBox(width: AppSpacing.grouped),
-        ],
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Opacity(
-                opacity: emphasis,
-                child: Semantics(
-                  label: title,
-                  excludeSemantics: true,
-                  child: Text(
-                    title,
-                    maxLines: 1,
+    final Widget facts = LayoutBuilder(
+      builder: (context, line) => Row(
+        children: [
+          if (lead != null) ...[
+            Opacity(opacity: emphasis, child: lead),
+            const SizedBox(width: AppSpacing.grouped),
+          ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Opacity(
+                  opacity: emphasis,
+                  child: Semantics(
+                    label: title,
+                    excludeSemantics: true,
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: mxRowTitleStyle(context.texts, colors),
+                    ),
+                  ),
+                ),
+                if (detail != null)
+                  Text(
+                    detail,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: mxRowTitleStyle(context.texts, colors),
+                    style: context.texts.bodyMedium?.apply(
+                      color: colors.onSurfaceVariant,
+                    ),
                   ),
-                ),
-              ),
-              if (detail != null)
-                Text(
-                  detail,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.texts.bodyMedium?.apply(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
-        if (end != null) ...[
-          const SizedBox(width: AppSpacing.grouped),
-          if (trailing._kind == _Trailing.chevron)
-            Opacity(opacity: emphasis, child: end)
-          else
-            end,
+          if (end != null) ...[
+            const SizedBox(width: AppSpacing.grouped),
+            ..._placed(end, emphasis, line.maxWidth),
+          ],
         ],
-      ],
+      ),
     );
     final MxIconButton? action = trailing._button;
     // Beside a trailing action the row stops short; the action's 48 target
@@ -191,6 +190,23 @@ class MxListRow extends StatelessWidget {
     );
   }
 
+  // The chevron dims with the row; a value keeps its width up to half the
+  // line, so a long one wraps there and the title keeps the rest.
+  List<Widget> _placed(Widget end, double emphasis, double line) {
+    if (trailing._kind == _Trailing.chevron) {
+      return [Opacity(opacity: emphasis, child: end)];
+    }
+    if (trailing._kind == _Trailing.value) {
+      return [
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: line / 2),
+          child: end,
+        ),
+      ];
+    }
+    return [end];
+  }
+
   Widget? _leading() {
     final bool? checked = isChecked;
     if (checked != null) {
@@ -217,6 +233,7 @@ class MxListRow extends StatelessWidget {
       _Trailing.badge => MxBadge(label: trailing._text!, tone: trailing._tone),
       _Trailing.value => Text(
         trailing._text!,
+        textAlign: TextAlign.end,
         style: context.texts.bodyMedium?.apply(color: colors.onSurfaceVariant),
       ),
     };

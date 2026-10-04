@@ -33,7 +33,8 @@ class MxFooterBar extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+        // The system bar below and any cutout at the sides.
+        padding: MediaQuery.paddingOf(context).copyWith(top: 0),
         child: Center(
           heightFactor: 1,
           child: ConstrainedBox(

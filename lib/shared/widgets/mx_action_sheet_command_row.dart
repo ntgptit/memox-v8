@@ -9,7 +9,7 @@ import 'package:memox/shared/widgets/primitives/mx_row_ink.dart';
 
 /// One command in an action sheet (DESIGN.md, MxActionSheetCommandRow): a 24
 /// glyph in `on-surface-variant` (Material 3's menu leading icon, not a
-/// tile), the label in Body Large and an optional subtitle; a destructive
+/// tile) 12 from the label in Body Large, an optional subtitle; a destructive
 /// command paints its glyph and label in `error` (4.5:1 on the sheet ground)
 /// and its words say so too. 48 minimum, 16 across and 12 down; a button.
 class MxActionSheetCommandRow extends StatelessWidget {
@@ -57,7 +57,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
                         color: paint.glyph,
                       ),
                     ),
-                    const SizedBox(width: AppSpacing.gutter),
+                    const SizedBox(width: AppSpacing.grouped),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
