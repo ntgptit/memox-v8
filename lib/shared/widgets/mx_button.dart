@@ -7,6 +7,7 @@ import 'package:memox/core/theme/foundations/app_text_styles.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/primitives/mx_focus_ring.dart';
+import 'package:memox/shared/widgets/primitives/mx_tap_target.dart';
 
 export 'package:memox/core/theme/components/button_style.dart'
     show MxButtonSize, MxButtonTone;
@@ -81,13 +82,17 @@ class MxButton extends StatelessWidget {
         ],
       );
     }
-    final Widget button = MxFocusRing(
-      borderRadius: BorderRadius.circular(size.radius),
-      paintedHeight: size.height,
-      child: TextButton(
-        style: style,
-        onPressed: isLoading ? null : onPressed,
-        child: content,
+    // The ring hugs the painted button; the 48 hit area is the tap target's.
+    final Widget button = MxTapTarget(
+      child: MxFocusRing(
+        borderRadius: BorderRadius.circular(size.radius),
+        child: TextButton(
+          style: style.copyWith(
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          onPressed: isLoading ? null : onPressed,
+          child: content,
+        ),
       ),
     );
     if (isEnabled) {

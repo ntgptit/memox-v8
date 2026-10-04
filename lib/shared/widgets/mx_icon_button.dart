@@ -4,6 +4,7 @@ import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/primitives/mx_focus_ring.dart';
+import 'package:memox/shared/widgets/primitives/mx_tap_target.dart';
 
 export 'package:memox/core/theme/components/icon_button_style.dart'
     show MxIconButtonTone;
@@ -28,14 +29,19 @@ class MxIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget button = MxFocusRing(
-      borderRadius: BorderRadius.circular(AppSize.iconButton / 2),
-      paintedHeight: AppSize.iconButton,
-      child: IconButton(
-        style: mxIconButtonStyle(colors: context.colors, tone: tone),
-        tooltip: semanticLabel,
-        onPressed: onPressed,
-        icon: Icon(icon),
+    // The ring hugs the 36 ink circle; the 48 hit area is the tap target's.
+    final Widget button = MxTapTarget(
+      child: MxFocusRing(
+        borderRadius: BorderRadius.circular(AppSize.iconButton / 2),
+        child: IconButton(
+          style: mxIconButtonStyle(
+            colors: context.colors,
+            tone: tone,
+          ).copyWith(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+          tooltip: semanticLabel,
+          onPressed: onPressed,
+          icon: Icon(icon),
+        ),
       ),
     );
     if (onPressed != null) {

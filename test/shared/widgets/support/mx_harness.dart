@@ -2,8 +2,11 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 
 /// Both themes, by the variant name a golden carries (`light`, `dark`).
 final Map<String, ThemeData> mxThemes = {
@@ -96,4 +99,61 @@ Future<void> expectMxGolden(
     picture,
     matchesGoldenFile('goldens/mx_${component}__${state}__$variant.png'),
   );
+}
+
+/// The ring `MxFocusRing` paints: the stroke rect, or `null` when none shows.
+RRect? mxFocusRingOf(WidgetTester tester, Finder control) {
+  final Finder painters = find.descendant(
+    of: control,
+    matching: find.byWidgetPredicate(
+      (w) =>
+          w is CustomPaint &&
+          w.foregroundPainter.runtimeType.toString() == '_RingPainter',
+    ),
+  );
+  if (painters.evaluate().isEmpty) {
+    return null;
+  }
+  RRect? ring;
+  final CustomPaint paint = tester.widget(painters.first);
+  final _RecordingCanvas canvas = _RecordingCanvas((r) => ring = r);
+  paint.foregroundPainter!.paint(canvas, tester.getSize(painters.first));
+  return ring;
+}
+
+/// A control reached by Tab shows the ring; one touched by a finger does not.
+/// [painted] is the size the control paints, which the ring must hug.
+Future<void> expectMxKeyboardRingOnly(
+  WidgetTester tester,
+  Widget control, {
+  required Size painted,
+  ThemeData? theme,
+}) async {
+  await pumpMx(tester, control, theme: theme);
+  final Finder root = find.byWidget(control);
+  FocusManager.instance.highlightStrategy =
+      FocusHighlightStrategy.alwaysTraditional;
+  await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+  await tester.pump();
+  final RRect? ring = mxFocusRingOf(tester, root);
+  expect(ring, isNotNull, reason: 'Tab focus shows the ring');
+  const double grow = 2 * (AppSize.focusOffset + AppStroke.focus / 2);
+  expect(ring!.width, moreOrLessEquals(painted.width + grow, epsilon: 0.5));
+  expect(ring.height, moreOrLessEquals(painted.height + grow, epsilon: 0.5));
+  FocusManager.instance.highlightStrategy = FocusHighlightStrategy.automatic;
+  await tester.tap(root, warnIfMissed: false);
+  await tester.pump();
+  expect(mxFocusRingOf(tester, root), isNull, reason: 'a tap leaves no ring');
+}
+
+class _RecordingCanvas implements Canvas {
+  _RecordingCanvas(this.onRRect);
+
+  final void Function(RRect) onRRect;
+
+  @override
+  void drawRRect(RRect rrect, Paint paint) => onRRect(rrect);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => null;
 }

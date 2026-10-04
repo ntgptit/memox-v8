@@ -6,6 +6,7 @@ import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_semantic_colors.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/primitives/mx_tap_target.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import 'support/mx_harness.dart';
@@ -95,11 +96,18 @@ void main() {
     testWidgets('${size.name} paints ${size.height} and hits at least 48', (
       tester,
     ) async {
-      await pumpMx(tester, MxButton(label: 'Go', size: size, onPressed: () {}));
+      var taps = 0;
+      await pumpMx(
+        tester,
+        MxButton(label: 'Go', size: size, onPressed: () => taps++),
+      );
       expect(_painted(tester).height, size.height);
-      final Size hit = tester.getSize(find.byType(TextButton));
+      final Rect hit = tester.getRect(find.byType(MxTapTarget));
       expect(hit.height, greaterThanOrEqualTo(AppSize.tapTarget));
       expect(hit.width, greaterThanOrEqualTo(AppSize.tapTarget));
+      // A touch at the corner of the 48 box, outside the paint, presses it.
+      await tester.tapAt(hit.topLeft + const Offset(1, 1));
+      expect(taps, 1);
     });
   }
 

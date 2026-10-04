@@ -148,16 +148,28 @@ class MxTextField extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (title != null) ...[
-          _Label(text: title, requiredText: requiredText),
+          // Read once, as the field's own name, not as a loose line above it.
+          ExcludeSemantics(
+            child: _Label(text: title, requiredText: requiredText),
+          ),
           const SizedBox(height: AppSpacing.control),
         ],
-        field,
+        _named(field, title),
         if (line != null) ...[
           const SizedBox(height: AppSpacing.micro),
           MxFieldMessage(message: line, tone: messageTone),
         ],
       ],
     );
+  }
+
+  /// The visible label is the field's accessible name (WCAG 4.1.2).
+  Widget _named(Widget field, String? title) {
+    if (title == null) {
+      return field;
+    }
+    // The "Required" mark follows the name as its hint.
+    return Semantics(label: title, hint: requiredText, child: field);
   }
 
   InputDecoration _decoration(BuildContext context, bool hasError) {

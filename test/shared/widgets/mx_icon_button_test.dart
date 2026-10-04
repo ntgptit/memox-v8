@@ -4,6 +4,7 @@ import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/primitives/mx_tap_target.dart';
 
 import 'support/mx_harness.dart';
 
@@ -42,9 +43,14 @@ void main() {
   }
 
   testWidgets('a 20 glyph in a 36 circle with a 48 hit', (tester) async {
+    var taps = 0;
     await pumpMx(
       tester,
-      MxIconButton(icon: Icons.close, semanticLabel: 'Close', onPressed: () {}),
+      MxIconButton(
+        icon: Icons.close,
+        semanticLabel: 'Close',
+        onPressed: () => taps++,
+      ),
     );
     expect(tester.getSize(find.byIcon(Icons.close)).width, AppIconSize.medium);
     final Size painted = tester.getSize(
@@ -54,10 +60,10 @@ void main() {
       ),
     );
     expect(painted, const Size.square(AppSize.iconButton));
-    expect(
-      tester.getSize(find.byType(IconButton)).height,
-      greaterThanOrEqualTo(AppSize.tapTarget),
-    );
+    final Rect hit = tester.getRect(find.byType(MxTapTarget));
+    expect(hit.size, const Size.square(AppSize.tapTarget));
+    await tester.tapAt(hit.topLeft + const Offset(1, 1));
+    expect(taps, 1);
   });
 
   testWidgets('it is read by its label and is dimmed when disabled', (

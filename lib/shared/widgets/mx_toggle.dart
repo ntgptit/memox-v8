@@ -12,8 +12,8 @@ import 'package:memox/shared/widgets/primitives/mx_focus_ring.dart';
 import 'package:memox/shared/widgets/primitives/mx_tap_target.dart';
 
 /// An on/off switch: a 44×26 pill track and a 20 thumb (DESIGN.md, Inputs),
-/// `primary` with an `on-primary` thumb when on, the highest container with
-/// an `outline` edge and thumb when off.
+/// an Indigo Accent track with a `primary-container` thumb when on, the
+/// highest container with an `outline` edge and thumb when off.
 class MxToggle extends StatefulWidget {
   const MxToggle({
     required this.isOn,

@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/primitives/mx_focus_ring.dart';
 import 'package:memox/shared/widgets/primitives/mx_row_ink.dart';
 
 /// One choice of a single-choice list: a radio, a title and an optional
@@ -37,42 +38,45 @@ class MxOptionRow extends StatelessWidget {
       inMutuallyExclusiveGroup: true,
       checked: isSelected,
       enabled: select != null,
-      child: MxRowInk(
-        onTap: select,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSize.tapTarget),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.gutter,
-              vertical: AppSpacing.grouped,
-            ),
-            child: Row(
-              children: [
-                Opacity(
-                  opacity: emphasis,
-                  child: _Radio(isSelected: isSelected),
-                ),
-                const SizedBox(width: AppSpacing.grouped),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Opacity(
-                        opacity: emphasis,
-                        child: Text(title, style: context.texts.bodyLarge),
-                      ),
-                      if (why != null)
-                        Text(
-                          why,
-                          style: context.texts.bodyMedium?.apply(
-                            color: context.colors.onSurfaceVariant,
-                          ),
-                        ),
-                    ],
+      child: MxFocusRing(
+        borderRadius: BorderRadius.zero,
+        child: MxRowInk(
+          onTap: select,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: AppSize.tapTarget),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.gutter,
+                vertical: AppSpacing.grouped,
+              ),
+              child: Row(
+                children: [
+                  Opacity(
+                    opacity: emphasis,
+                    child: _Radio(isSelected: isSelected),
                   ),
-                ),
-              ],
+                  const SizedBox(width: AppSpacing.grouped),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Opacity(
+                          opacity: emphasis,
+                          child: Text(title, style: context.texts.bodyLarge),
+                        ),
+                        if (why != null)
+                          Text(
+                            why,
+                            style: context.texts.bodyMedium?.apply(
+                              color: context.colors.onSurfaceVariant,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

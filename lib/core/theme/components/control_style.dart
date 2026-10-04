@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_typography.dart';
 
 /// A stepper's value: the title role with tabular figures, so the buttons
 /// stay put as the digits change.
@@ -48,4 +49,27 @@ Color mxRaisedInTray(ColorScheme colors) => colors.brightness == Brightness.dark
     );
   }
   return (box: null, check: colors.primaryContainer, edge: colors.outline);
+}
+
+/// A segment's label: the chosen one is bolder (700) than the idle ones (500),
+/// so the choice reads without colour (DESIGN.md, The Selection Ladder Rule).
+TextStyle? mxSegmentLabelStyle(
+  TextTheme texts,
+  ColorScheme colors, {
+  required bool isSelected,
+}) {
+  final TextStyle? label = texts.labelLarge;
+  if (label == null) {
+    return null;
+  }
+  if (isSelected) {
+    return AppTypography.withWeight(
+      label.apply(color: colors.onSurface),
+      FontWeight.w700,
+    );
+  }
+  return AppTypography.withWeight(
+    label.apply(color: colors.onSurfaceVariant),
+    FontWeight.w500,
+  );
 }

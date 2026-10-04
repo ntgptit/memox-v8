@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:memox/shared/widgets/primitives/mx_chip_shell.dart';
 
-/// A filter that is on or off: 28 pill, `primary` under `on-primary` when
-/// selected (DESIGN.md, Inputs). Announced as a selected or unselected button.
+/// A filter that is on or off: 28 pill, the tonal `primary-container` with a
+/// leading check when selected (DESIGN.md, The Selection Ladder Rule).
+/// Announced as a selected or unselected button.
 class MxFilterChip extends StatelessWidget {
   const MxFilterChip({
     required this.label,

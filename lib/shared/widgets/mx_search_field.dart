@@ -4,6 +4,7 @@ import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/shared/widgets/primitives/mx_focus_ring.dart';
 import 'package:memox/shared/widgets/primitives/mx_row_ink.dart';
 
 /// A search input, or (with [onOpen]) a trigger that looks like one and
@@ -93,22 +94,29 @@ class _Trigger extends StatelessWidget {
       label: hint,
       onTap: onOpen,
       excludeSemantics: true,
-      child: Stack(
-        children: [
-          InputDecorator(
-            decoration: decoration,
-            isEmpty: true,
-            child: Text('', style: context.texts.bodyMedium, maxLines: 1),
-          ),
-          // The ripple sits above the field's fill, inside its corners.
-          Positioned.fill(
-            child: MxRowInk(
-              onTap: onOpen,
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              child: const SizedBox.expand(),
+      child: MxFocusRing(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Stack(
+          children: [
+            InputDecorator(
+              decoration: decoration,
+              isEmpty: true,
+              child: Text(
+                '',
+                style: mxFieldTextStyle(context.texts, MxTextFieldVariant.form),
+                maxLines: 1,
+              ),
             ),
-          ),
-        ],
+            // The ripple sits above the field's fill, inside its corners.
+            Positioned.fill(
+              child: MxRowInk(
+                onTap: onOpen,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                child: const SizedBox.expand(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

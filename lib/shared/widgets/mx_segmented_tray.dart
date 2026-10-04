@@ -7,6 +7,8 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/primitives/mx_row_ink.dart';
+import 'package:memox/shared/widgets/primitives/mx_tap_target.dart';
+import 'package:memox/shared/widgets/primitives/mx_focus_ring.dart';
 
 /// One segment: the value it stands for and its localized label.
 @immutable
@@ -89,12 +91,13 @@ class _Segment<T> extends StatelessWidget {
       button: true,
       selected: isSelected,
       inMutuallyExclusiveGroup: true,
-      child: MxRowInk(
-        onTap: onTap,
-        borderRadius: radius,
-        child: SizedBox(
-          height: AppSize.tapTarget,
-          child: Center(
+      // 36 painted inside a 48 target; the ring and the ripple hug the paint.
+      child: MxTapTarget(
+        child: MxFocusRing(
+          borderRadius: radius,
+          child: MxRowInk(
+            onTap: onTap,
+            borderRadius: radius,
             child: AnimatedContainer(
               duration: AppDurations.standard,
               height: AppSize.segment,
@@ -111,10 +114,10 @@ class _Segment<T> extends StatelessWidget {
                 segment.label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.texts.labelLarge?.apply(
-                  color: isSelected
-                      ? colors.onSurface
-                      : colors.onSurfaceVariant,
+                style: mxSegmentLabelStyle(
+                  context.texts,
+                  colors,
+                  isSelected: isSelected,
                 ),
               ),
             ),

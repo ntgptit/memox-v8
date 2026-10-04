@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/primitives/mx_focus_ring.dart';
 import 'package:memox/shared/widgets/primitives/mx_row_ink.dart';
 import 'package:memox/shared/widgets/primitives/mx_tap_target.dart';
 
@@ -36,48 +37,55 @@ class MxChipShell extends StatelessWidget {
     final BorderRadius pill = BorderRadius.circular(AppRadius.full);
     final IconData? glyph = trailing;
     return MxTapTarget(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: style.fill,
-          borderRadius: pill,
-          border: Border.fromBorderSide(style.edge),
-        ),
-        child: MxRowInk(
-          onTap: onTap,
-          borderRadius: pill,
-          child: SizedBox(
-            height: AppSize.chip,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.control,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // A selected filter chip says so without colour.
-                  if (isSelected && !isGhost) ...[
-                    Icon(
-                      Icons.check,
-                      size: AppIconSize.small,
-                      color: style.content,
-                    ),
-                    const SizedBox(width: AppSpacing.micro),
-                  ],
-                  Flexible(
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.texts.labelSmall?.apply(
+      child: MxFocusRing(
+        borderRadius: pill,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: style.fill,
+            borderRadius: pill,
+            border: Border.fromBorderSide(style.edge),
+          ),
+          child: MxRowInk(
+            onTap: onTap,
+            borderRadius: pill,
+            child: SizedBox(
+              height: AppSize.chip,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.control,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // A selected filter chip says so without colour.
+                    if (isSelected && !isGhost) ...[
+                      Icon(
+                        Icons.check,
+                        size: AppIconSize.small,
                         color: style.content,
                       ),
+                      const SizedBox(width: AppSpacing.micro),
+                    ],
+                    Flexible(
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.texts.labelSmall?.apply(
+                          color: style.content,
+                        ),
+                      ),
                     ),
-                  ),
-                  if (glyph != null) ...[
-                    const SizedBox(width: AppSpacing.micro),
-                    Icon(glyph, size: AppIconSize.small, color: style.content),
+                    if (glyph != null) ...[
+                      const SizedBox(width: AppSpacing.micro),
+                      Icon(
+                        glyph,
+                        size: AppIconSize.small,
+                        color: style.content,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),

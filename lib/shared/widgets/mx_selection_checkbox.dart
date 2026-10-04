@@ -8,7 +8,8 @@ import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The mark of a multi-select row: an 18 box, r4, a 2dp `outline` stroke when
-/// empty and a `primary` fill with an `on-primary` check when chosen. It
+/// empty and an Indigo Accent box with a `primary-container` check when
+/// chosen. It
 /// paints only; the row that holds it owns the tap, the label and the 48 area,
 /// and its semantics merge this checked state.
 class MxSelectionCheckbox extends StatelessWidget {

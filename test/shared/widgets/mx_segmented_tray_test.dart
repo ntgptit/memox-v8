@@ -107,4 +107,24 @@ void main() {
       );
     }
   });
+
+  testWidgets('the chosen segment is told by weight, not only by its ground', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxSegmentedTray<int>(
+        segments: const [
+          MxSegmentedTrayItem(value: 1, label: 'Day'),
+          MxSegmentedTrayItem(value: 2, label: 'Week'),
+        ],
+        selected: 1,
+        onChanged: (_) {},
+      ),
+    );
+    FontWeight? weight(String label) =>
+        tester.widget<Text>(find.text(label)).style!.fontWeight;
+    expect(weight('Day'), FontWeight.w700);
+    expect(weight('Week'), FontWeight.w500);
+  });
 }

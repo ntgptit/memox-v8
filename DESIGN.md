@@ -357,7 +357,7 @@ A cool indigo-tinted neutral field with one brand indigo, one reserved violet, a
 
 **The Selection Ladder Rule.** Strength follows meaning, so a selection never competes with the screen's one action:
 - **Action:** `primary` fill under `on-primary`: the primary button and the FAB, plus progress fills. Nothing else fills `primary`.
-- **Chosen:** a tonal ground: `primary-container` under `on-primary-container`, with a non-colour cue. A selected filter chip shows a leading check, a chip trigger in force is tinted the same way with a 1dp Indigo Accent edge and is announced as selected, and the chosen segment is raised on its tray.
+- **Chosen:** a tonal ground: `primary-container` under `on-primary-container`, with a non-colour cue. A selected filter chip shows a leading check, a chip trigger in force is tinted the same way with a 1dp Indigo Accent edge and is announced as selected, and the chosen segment is raised on its tray with a bolder label (700 against 500).
 - **On / checked:** the Indigo Accent mark. A toggle that is on has an `on-primary-container` track with a `primary-container` thumb at the end. A checked checkbox is an `on-primary-container` box with a `primary-container` check. A selected radio is an `on-primary-container` ring.
 - **Neutral:** `surface` / `on-surface` / `outline`: unselected chips, the off toggle (`surface-container-highest` track, `outline` thumb and edge) and the empty checkbox (`outline` edge).
 
@@ -461,7 +461,7 @@ Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` b
 - **MxActionPair** (two footer actions, side by side or stacked when labels do not fit) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
 
 ### Containers
-- **MxCard**: raised (surface-container-lowest, r12, whisper shadow, or the `outline-variant` edge in dark), plus hero, warning, success, danger and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
+- **MxCard**: raised (surface-container-lowest, r12, whisper shadow, or the `outline-variant` edge in dark), plus hero, warning, success, danger and recessed tones (one at a time), `isSelected` a 2dp Indigo Accent (`on-primary-container`) edge on its own ground (The Selection Ladder Rule; never `primary`), `isFullBleed` for edge-to-edge rows. Card interior 20.
 - **MxDialog** (widths 340, 320, 300; scale-in), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **DeckPickerSheet**, **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption at `AppOpacity.muted`).
 
 ### Inputs
@@ -485,6 +485,7 @@ Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` b
 | Trailing action | one `MxIconButton` (36 painted, 48 hit), named by its label |
 | Disabled | the whole field (label, field, message) at `AppOpacity.disabled`, its edge `outline-variant` (exempt from contrast, faint by design); a tap cannot focus it and the text cannot be selected; announced as disabled |
 | Read-only | full-contrast text on `surface-container`, no edge and no cursor; focusable, the text can be selected and copied; announced as read-only; shows the focus edge |
+| Name | the visible label (with its "Required" mark) is the field's accessible name, read once |
 | Touch | the field is at least 48 tall; the trailing action keeps its 48 hit |
 | Hover | none (Android only) |
 
@@ -514,8 +515,8 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | Component | Purpose | Layer | Consumers | Owner phase | Status |
 |---|---|---|---|---|---|
 | MxRowInk | Shared row ripple and press | primitive | MxListRow, MxSettingsRow, MxOptionRow, MxActionSheetCommandRow | SP3a | built |
-| MxFocusRing | The 2dp keyboard focus ring at a 2dp offset | primitive | MxButton, MxIconButton, MxFab, MxToggle | SP3a | built |
-| MxTapTarget | Grows a small control's hit area to 48 | primitive | MxToggle, MxFilterChip, MxChipTrigger | SP3a | built |
+| MxFocusRing | The 2dp keyboard focus ring at a 2dp offset | primitive | MxButton, MxIconButton, MxFab, MxToggle, MxChipShell, MxSegmentedTray, MxOptionRow, MxSearchField | SP3a | built |
+| MxTapTarget | Grows a small control's hit area to 48 | primitive | MxButton, MxIconButton, MxToggle, MxChipShell, MxSegmentedTray | SP3a | built |
 | MxChipShell | The 28 pill both chips are drawn as | primitive | MxFilterChip, MxChipTrigger | SP3a | built |
 | MxButton | Text-labelled action in seven tones and five sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
 | MxIconButton | Icon-only action with a 48 target | shared | CARD, DECK, MONITORING, STARTER, STUDY, TAG, TRASH | SP3a | built |
@@ -592,14 +593,14 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxFocusRing
 - Variants: listens to the focus inside it, or is driven by `isShown`
 - States: hidden, shown (keyboard highlight only)
-- Accessibility: the visible focus of every Mx control; never shown after a tap
+- Accessibility: the visible focus of every Mx control (buttons, icon buttons, FAB, toggle, chips, segments, option rows, the search trigger), hugging what the control paints, inside its 48 `MxTapTarget`; never shown after a tap
 - Tokens: `on-primary-container` (the Indigo Accent), `AppStroke.focus`, `AppSize.focusOffset`
 - Golden: none — a ring around another component, covered by that component's tests
 
 #### MxTapTarget
 - Variants: one
 - States: one
-- Accessibility: guarantees the 48 × 48 hit area ("The 48 Floor Rule")
+- Accessibility: guarantees the 48 × 48 hit area ("The 48 Floor Rule"): a touch anywhere in the 48 box reaches the control painted inside it, as Material's padded tap target does
 - Tokens: `AppSize.tapTarget`
 - Golden: none — paints nothing
 
@@ -683,7 +684,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 
 #### MxSegmentedTray
 - Variants: hugging its segments, or `isExpanded` sharing the width equally
-- States: selected segment raised, idle segments
+- States: selected segment raised with a 700 label, idle segments at 500
 - Accessibility: each segment is a selected or unselected member of a mutually exclusive group; 48 to the touch, 36 painted
 - Tokens: `surface-container-low`, `surface-container-lowest` (dark: `surface-container-highest`), `on-surface`, `on-surface-variant`, `shadow`; `labelLarge`; `AppSize.segment`
 - Golden: states__light, states__dark
