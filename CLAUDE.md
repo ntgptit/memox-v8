@@ -54,7 +54,7 @@ Each layer answers one question; none takes over another's.
 | Architecture and product decisions | an ADR in `docs/shared/decisions/` (read its `status:`) |
 | The visual system | `DESIGN.md` |
 | A screen's layout, states, rulings and copy | its spec in `docs/screens/spec/` (catalog: `docs/screens/SCREEN_CATALOG.md`) |
-| Known UI debt | the UI-base register (§9 of `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`) |
+| Known UI debt | beside its owner: a screen's in its spec's Rulings, a component's in its `DESIGN.md` catalog contract (`- Debt:`) |
 | Work progress | `docs/wbs_FE.md`, `docs/wbs_BE.md`, `docs/wbs_supabase.md` (`flutter-workflow`) |
 | Plan-time rulings | the plan and its execution ledger, then the PR |
 | The agent's working preferences and lessons | Claude Code auto-memory |

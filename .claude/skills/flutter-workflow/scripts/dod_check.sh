@@ -272,6 +272,24 @@ else
   FAILED+=("document gate unavailable: $DOCS_PY")
 fi
 
+# DESIGN.md is the only hand-written source of a design value (spec
+# 2026-10-04-sp3a A3). The generator validates it (every M3 role in both themes,
+# no colour in the sidecar, no ink role, every contrast pair) and fails when
+# lib/core/theme/foundations/ is stale or edited by hand.
+DESIGN_PY="$REPO_ROOT/tools/design/generate.py"
+if [[ -n "$PY" && -f "$DESIGN_PY" ]]; then
+  plan design_tokens "design tokens (DESIGN.md → theme)" "$PY '$DESIGN_PY' --check"
+else
+  FAILED+=("design token gate unavailable: $DESIGN_PY")
+fi
+
+# The two tools above enforce the rebuild's contracts; their own tests are what
+# notice when a rule has stopped matching.
+if [[ -n "$PY" ]]; then
+  plan tooling_tests "docs and design tooling tests" \
+    "$PY -m unittest discover -s '$REPO_ROOT/tools/docs' -p 'test_*.py' && $PY -m unittest discover -s '$REPO_ROOT/tools/design' -p 'test_*.py'"
+fi
+
 # **The SDK on PATH is the SDK `.fvmrc` names.** Planned rather than run before
 # the stamp check, for the reason the stamp's own header gives: paying
 # `flutter --version` on every invocation costs most of what the stamp saves.

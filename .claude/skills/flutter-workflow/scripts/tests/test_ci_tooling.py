@@ -1165,5 +1165,21 @@ class GateReadsThePlanTest(unittest.TestCase):
                 self.assertFalse((SCRIPTS / removed).exists())
 
 
+class GateRunsTheDesignTokensTest(unittest.TestCase):
+    """DESIGN.md is the only hand-written source of a colour (spec 2026-10-04-sp3a A3):
+    the gate validates it and fails when the generated theme is stale, and it runs the
+    tests of the two tools that enforce that."""
+
+    def test_the_gate_checks_the_design_tokens(self) -> None:
+        script = (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
+        self.assertIn('DESIGN_PY="$REPO_ROOT/tools/design/generate.py"', script)
+        self.assertIn("'$DESIGN_PY' --check", script)
+
+    def test_the_gate_runs_the_docs_and_design_tooling_tests(self) -> None:
+        script = (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
+        self.assertIn("-m unittest discover -s '$REPO_ROOT/tools/docs' -p 'test_*.py'", script)
+        self.assertIn("-m unittest discover -s '$REPO_ROOT/tools/design' -p 'test_*.py'", script)
+
+
 if __name__ == "__main__":
     unittest.main()
