@@ -140,7 +140,7 @@ Two independent axes (the SRS algorithm and the StudyMode) and two session kinds
   - Text contrast is at least 4.5:1, and 3:1 for large text and meaningful non-text elements.
   - TalkBack labels, states and reading order are complete.
   - Touch targets are 48 × 48 dp.
-  - The default system font scale is the committed target. Larger scales are not a design target (owner 2026-09-30: the users are young and keep the default size); text still grows with the system setting and is never clamped, but a cut line at large text is not a defect, and tests (widget, golden, visual audit) run at the default scale only.
+  - The default system font scale is the committed target for screens. Larger scales are not a design target for screens (owner 2026-09-30: the users are young and keep the default size); text still grows with the system setting and is never clamped, and a cut line at large text on a screen is not a defect. The shared design system (tokens, primitives, `Mx*`) is the exception (owner 2026-10-04, spec 2026-10-04-sp3a D17): its widget and layout tests run at text scale 1.0, 1.3, 1.5 and 2.0 with no overflow, no clipped meaningful text, a 48 dp target and the semantics label kept. Screen tests (widget, golden, visual audit) run at the default scale.
   - The system "remove animations" setting is honored.
 - **Mixed-script content:** vocabulary in any script (Korean, Vietnamese with stacked diacritics, Latin) must render without clipping. Tight line-heights are a known risk (spec §9 row 5).
 - **Known gaps against this standard** are recorded in spec §9 rows 1–5 and 56–66: contrast of several status and warning colours, and missing loading semantics.

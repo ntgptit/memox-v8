@@ -7,29 +7,46 @@ colors:
   primary-container: "#E0E5FE"
   on-primary-container: "#1A2580"
   secondary: "#6E7CD9"
+  on-secondary: "#0F1638"
   secondary-container: "#E3E6F7"
   on-secondary-container: "#262E6E"
   tertiary: "#8B6FF5"
+  on-tertiary: "#0F1638"
   tertiary-container: "#EBE3FE"
   on-tertiary-container: "#33177E"
   error: "#C02447"
+  on-error: "#FFFFFF"
   error-container: "#FBDDE3"
   on-error-container: "#7A0A23"
   surface: "#F7F9FE"
+  on-surface: "#0F1638"
+  on-surface-variant: "#4A5278"
+  outline: "#7C85AB"
+  outline-variant: "#C5CBE3"
+  shadow: "#0F1638"
+  scrim: "#0A0E27"
+  inverse-surface: "#34395D"
+  on-inverse-surface: "#E8EAFC"
+  inverse-primary: "#A0ACFF"
+  primary-fixed: "#E0E5FE"
+  primary-fixed-dim: "#B5BFFB"
+  on-primary-fixed: "#1A2580"
+  on-primary-fixed-variant: "#2B38A3"
+  secondary-fixed: "#E3E6F7"
+  secondary-fixed-dim: "#C0C6EE"
+  on-secondary-fixed: "#262E6E"
+  on-secondary-fixed-variant: "#3C458E"
+  tertiary-fixed: "#EBE3FE"
+  tertiary-fixed-dim: "#CEC0FB"
+  on-tertiary-fixed: "#33177E"
+  on-tertiary-fixed-variant: "#4D31A2"
+  surface-dim: "#D2D9EB"
   surface-bright: "#FFFFFF"
   surface-container-lowest: "#FFFFFF"
   surface-container-low: "#F1F4FB"
   surface-container: "#E9EDF7"
   surface-container-high: "#E2E7F3"
   surface-container-highest: "#DAE0EF"
-  on-surface: "#0F1638"
-  on-surface-variant: "#4A5278"
-  outline: "#7C85AB"
-  outline-variant: "#C5CBE3"
-  inverse-surface: "#34395D"
-  on-inverse-surface: "#E8EAFC"
-  inverse-primary: "#A0ACFF"
-  scrim: "#0A0E27"
   mastery: "#1F8A5B"
   on-mastery: "#FFFFFF"
   success: "#2BA88B"
@@ -43,6 +60,65 @@ colors:
   status-reviewing: "#5265F5"
   status-mastered: "#1F8A5B"
   streak: "#F97316"
+colors-dark:
+  primary: "#5265F5"
+  on-primary: "#FFFFFF"
+  primary-container: "#2D346A"
+  on-primary-container: "#D9DFFF"
+  secondary: "#9DA8E8"
+  on-secondary: "#0F1638"
+  secondary-container: "#343C78"
+  on-secondary-container: "#DDE2FB"
+  tertiary: "#B5A0FF"
+  on-tertiary: "#0F1638"
+  tertiary-container: "#443078"
+  on-tertiary-container: "#E6DCFF"
+  error: "#FF8FA3"
+  on-error: "#0F1638"
+  error-container: "#7A2036"
+  on-error-container: "#FFD9DF"
+  surface: "#0A0E27"
+  on-surface: "#E4E8FA"
+  on-surface-variant: "#A4ACD0"
+  outline: "#5A6BAE"
+  outline-variant: "#2A3267"
+  shadow: "#000000"
+  scrim: "#000000"
+  inverse-surface: "#34395D"
+  on-inverse-surface: "#E8EAFC"
+  inverse-primary: "#A0ACFF"
+  primary-fixed: "#E0E5FE"
+  primary-fixed-dim: "#B5BFFB"
+  on-primary-fixed: "#1A2580"
+  on-primary-fixed-variant: "#2B38A3"
+  secondary-fixed: "#E3E6F7"
+  secondary-fixed-dim: "#C0C6EE"
+  on-secondary-fixed: "#262E6E"
+  on-secondary-fixed-variant: "#3C458E"
+  tertiary-fixed: "#EBE3FE"
+  tertiary-fixed-dim: "#CEC0FB"
+  on-tertiary-fixed: "#33177E"
+  on-tertiary-fixed-variant: "#4D31A2"
+  surface-dim: "#0A0E27"
+  surface-bright: "#232B5A"
+  surface-container-lowest: "#131A3A"
+  surface-container-low: "#1B2249"
+  surface-container: "#232B5A"
+  surface-container-high: "#2C356E"
+  surface-container-highest: "#353D7E"
+  mastery: "#6FE0BD"
+  on-mastery: "#11173A"
+  success: "#6FE0BD"
+  warning: "#FFC658"
+  on-warning: "#2A1E00"
+  warning-ink: "#FFC658"
+  error-fill: "#B0485C"
+  on-error-fill: "#FFFFFF"
+  status-new: "#6B75A3"
+  status-learning: "#FFC658"
+  status-reviewing: "#8B9AFF"
+  status-mastered: "#6FE0BD"
+  streak: "#FFAE6E"
 typography:
   stat:
     fontFamily: "PlusJakartaSans"
@@ -97,6 +173,18 @@ typography:
     lineHeight: 1.4
     letterSpacing: "0.6px"
     fontFeature: "tnum"
+  eyebrow:
+    fontFamily: "PlusJakartaSans"
+    fontSize: "12px"
+    fontWeight: 600
+    lineHeight: 1.4
+    letterSpacing: "0.8px"
+    fontFeature: "tnum"
+  field-label:
+    fontFamily: "PlusJakartaSans"
+    fontSize: "14px"
+    fontWeight: 600
+    lineHeight: 1.5
 rounded:
   xs: "4px"
   sm: "8px"
@@ -113,6 +201,338 @@ spacing:
   section: "24px"
   major: "32px"
   page-end: "48px"
+derived:
+  primary-ink:
+    light:
+      base: primary
+      toward: on-surface
+      amount: 0.25
+    dark:
+      base: primary
+      toward: on-surface
+      amount: 0.45
+  ghost-border:
+    light:
+      base: primary
+      alpha: 0.14
+    dark:
+      base: primary
+      alpha: 0.16
+  outline-edge:
+    light:
+      base: outline-variant
+      toward: on-surface
+      amount: 0
+    dark:
+      base: outline
+      toward: on-surface
+      amount: 0.25
+  status-new-ink:
+    light:
+      base: status-new
+      toward: on-surface
+      amount: 0.4
+    dark:
+      base: status-new
+      toward: on-surface
+      amount: 0.4
+  status-learning-ink:
+    light:
+      base: status-learning
+      toward: on-surface
+      amount: 0.5
+    dark:
+      base: status-learning
+      toward: on-surface
+      amount: 0
+  status-reviewing-ink:
+    light:
+      base: status-reviewing
+      toward: on-surface
+      amount: 0.25
+    dark:
+      base: status-reviewing
+      toward: on-surface
+      amount: 0.1
+  status-mastered-ink:
+    light:
+      base: status-mastered
+      toward: on-surface
+      amount: 0.25
+    dark:
+      base: status-mastered
+      toward: on-surface
+      amount: 0
+  success-ink:
+    light:
+      base: success
+      toward: on-surface
+      amount: 0.4
+    dark:
+      base: success
+      toward: on-surface
+      amount: 0
+  danger-ink:
+    light:
+      base: error
+      toward: on-surface
+      amount: 0.1
+    dark:
+      base: error
+      toward: on-surface
+      amount: 0.3
+  danger-tint:
+    light:
+      base: error
+      alpha: 0.08
+    dark:
+      base: error
+      alpha: 0.16
+  danger-tint-border:
+    light:
+      base: error
+      alpha: 0.22
+    dark:
+      base: error
+      alpha: 0.32
+  warning-tint:
+    light:
+      base: warning
+      alpha: 0.12
+    dark:
+      base: warning
+      alpha: 0.18
+  warning-tint-border:
+    light:
+      base: warning
+      alpha: 0.22
+    dark:
+      base: warning
+      alpha: 0.32
+  success-tint:
+    light:
+      base: success
+      alpha: 0.1
+    dark:
+      base: success
+      alpha: 0.18
+  success-tint-border:
+    light:
+      base: success
+      alpha: 0.22
+    dark:
+      base: success
+      alpha: 0.32
+contrast:
+  on-surface:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  on-surface-variant:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  primary-ink:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  error:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  danger-ink:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  warning-ink:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  success-ink:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  status-new-ink:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  status-learning-ink:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  status-reviewing-ink:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  status-mastered-ink:
+    surface: 4.5
+    surface-container-lowest: 4.5
+    surface-container-low: 4.5
+    surface-container-high: 4.5
+  on-primary:
+    primary: 4.5
+  on-secondary:
+    secondary: 4.5
+  on-tertiary:
+    tertiary: 4.5
+  on-error:
+    error: 4.5
+  on-primary-container:
+    primary-container: 4.5
+  on-secondary-container:
+    secondary-container: 4.5
+  on-tertiary-container:
+    tertiary-container: 4.5
+  on-error-container:
+    error-container: 4.5
+  on-primary-fixed:
+    primary-fixed: 4.5
+    primary-fixed-dim: 4.5
+  on-primary-fixed-variant:
+    primary-fixed: 4.5
+    primary-fixed-dim: 4.5
+  on-secondary-fixed:
+    secondary-fixed: 4.5
+    secondary-fixed-dim: 4.5
+  on-secondary-fixed-variant:
+    secondary-fixed: 4.5
+    secondary-fixed-dim: 4.5
+  on-tertiary-fixed:
+    tertiary-fixed: 4.5
+    tertiary-fixed-dim: 4.5
+  on-tertiary-fixed-variant:
+    tertiary-fixed: 4.5
+    tertiary-fixed-dim: 4.5
+  on-inverse-surface:
+    inverse-surface: 4.5
+  inverse-primary:
+    inverse-surface: 4.5
+  on-error-fill:
+    error-fill: 4.5
+  on-warning:
+    warning: 4.5
+  on-mastery:
+    mastery: 3
+  outline:
+    surface: 3
+    surface-container-lowest: 3
+    surface-container-low: 3
+  primary:
+    surface-container-low: 3
+type-slots:
+  display-large: stat
+  display-medium: display
+  display-small: display
+  headline-large: headline
+  headline-medium: headline
+  headline-small: headline
+  title-large: title
+  title-medium: body-large
+  title-small: button-label
+  body-large: body-large
+  body-medium: body
+  body-small: caption
+  label-large: button-label
+  label-medium: caption
+  label-small: caption
+opacity:
+  disabled: 0.38
+  pressed: 0.12
+  muted: 0.7
+  skeleton-low: 0.45
+  skeleton-high: 0.75
+stroke:
+  hairline: 1
+  focus: 2
+  focus-offset: 2
+  control: 2
+  selected-ring: 6
+motion:
+  toggle: 160
+  standard: 200
+  scrim-fade: 220
+  sheet: 260
+  spinner-cycle: 800
+  skeleton-pulse: 1400
+  snackbar: 4000
+  snackbar-with-undo: 8000
+  answer-settle: 400
+size:
+  touch-target: 48
+  button-regular: 48
+  button-small: 36
+  button-compact: 32
+  button-chip: 28
+  field: 52
+  app-bar: 56
+  bottom-bar: 64
+  bottom-bar-block: 80
+  rail: 80
+  fab: 52
+  icon-button-ink: 36
+icon-size:
+  small: 16
+  medium: 20
+  large: 24
+breakpoints:
+  rail: 600
+  content-max: 720
+shadows:
+  whisper:
+    x: 0
+    y: 1
+    blur: 2
+    alpha: 0.04
+  chrome:
+    x: 0
+    y: -2
+    blur: 12
+    alpha: 0.05
+  overlay:
+    x: 0
+    y: 12
+    blur: 32
+    alpha: 0.1
+  fab:
+    x: 0
+    y: 8
+    blur: 24
+    alpha: 0.12
+shadows-dark:
+  whisper:
+    x: 0
+    y: 0
+    blur: 0
+    alpha: 0
+  chrome:
+    x: 0
+    y: -2
+    blur: 14
+    alpha: 0.36
+  overlay:
+    x: 0
+    y: 16
+    blur: 40
+    alpha: 0.42
+  fab:
+    x: 0
+    y: 10
+    blur: 28
+    alpha: 0.5
+effects:
+  scrim-alpha: 0.45
+  glass-alpha: 0.84
+  glass-blur: 18
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
@@ -263,6 +683,13 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 
 **The Contrast Floor Rule.** Text and glyphs hold 4.5:1 and non-text (edges, thumbs, progress fill on its track, grabber) hold 3:1, on page, row, low and sheet grounds, in both themes. Pull the ink, not the ground, to pass.
 
+### Values
+
+Every colour the app draws, light and dark, with its rule and its lowest measured contrast against the grounds the frontmatter's `contrast` list names. Generated from the frontmatter.
+
+<!-- generated:design-values:start -->
+<!-- generated:design-values:end -->
+
 ## Typography
 
 **Display, Body and Label Font:** Plus Jakarta Sans (variable, bundled as `PlusJakartaSans`; weight also moves the variable `wght` axis).
@@ -304,7 +731,7 @@ Touch targets are 48dp minimum for every interactive control, whatever the paint
 
 **The Column Rule.** Content never grows wider than 720dp; wide windows gain empty ground, not longer lines.
 
-**The Wrap Rule.** A meta line, a breakdown line, a session context line or a hint that already wraps (the study session, Study home, the Library row meta) keeps doing so between whole terms. Large text scales are not a design target (PRODUCT.md, owner 2026-09-30), so no new work goes into wrapping for them; a title keeps one line.
+**The Wrap Rule.** A meta line, a breakdown line, a session context line or a hint that already wraps (the study session, Study home, the Library row meta) keeps doing so between whole terms. Large text scales are not a design target for screens (PRODUCT.md, owner 2026-09-30), so no new screen work goes into wrapping for them; a title keeps one line. The shared components are the exception: each grows or wraps by its contract up to text scale 2.0, and a one-line title keeps its full text in its semantics label (owner 2026-10-04, PRODUCT.md).
 
 **The Clear Tail Rule.** A list under a FAB ends clear of it (`MxScrollClearance.fab` or `fabAboveNav`); when the FAB hides (selection), the clearance goes with it.
 
