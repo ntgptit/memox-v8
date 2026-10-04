@@ -66,7 +66,7 @@ flutter:
     - assets/brand/
   fonts:
     # Variable font (wght axis). Weights are set through
-    # AppTypography.withWeight, which moves the axis with fontWeight.
+    # AppTypography.withWeight (lib/core/theme/app_typography.dart), which moves the axis with fontWeight.
     - family: PlusJakartaSans
       fonts:
         - asset: assets/fonts/PlusJakartaSans-Variable.ttf

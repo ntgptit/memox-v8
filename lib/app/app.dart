@@ -13,6 +13,7 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
+import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
 import 'package:memox/features/reminders/data/datasources/reminder_plugins_data_source.dart';
 import 'package:memox/features/reminders/di/reminder_plugins_data_source_provider.dart';
@@ -33,8 +34,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 /// BR-SETTINGS-006).
 ///
 /// SP2: the account transition layer has no UI until SP3 rebuilds it;
-/// transitions still run through the coordinator. The themes are Flutter's
-/// Material 3 defaults until SP3a rebuilds them from DESIGN.md.
+/// transitions still run through the coordinator. The themes are
+/// generated from DESIGN.md (SP3a); the placeholder shell paints on them until SP3b.
 class MemoxApp extends ConsumerStatefulWidget {
   const MemoxApp({super.key, this.initialSettings});
 
@@ -182,8 +183,8 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      theme: ThemeData(useMaterial3: true),
-      darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
       themeMode: _themeMode(settings?.theme),
       locale: _locale(settings?.language),
       localizationsDelegates: AppLocalizations.localizationsDelegates,

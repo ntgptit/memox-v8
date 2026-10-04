@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memox/core/theme/foundations/app_color_schemes.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
@@ -39,6 +40,10 @@ void main() {
     await pumpMemoxApp(tester, env, initialSettings: _dark, isSettled: false);
 
     expect(_brightness(tester), Brightness.dark);
+    expect(
+      Theme.of(tester.element(find.byType(NavigationBar))).colorScheme,
+      AppColorSchemes.dark,
+    );
   });
 
   libraryTest('a theme change keeps the open deck; System follows the '
