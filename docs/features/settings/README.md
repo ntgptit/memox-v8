@@ -7,6 +7,17 @@ depends_on: [deck, srs, study]
 
 Tuỳ chọn ứng dụng (V8.0): mặc định học toàn app, theme và ngôn ngữ trong một dòng `app_settings`. Feature này cũng lưu công tắc, giờ và lần gửi gần nhất của nhắc học hằng ngày trong dòng đó, cho feature `reminders` ([spec gói 11a](../../superpowers/specs/2026-09-26-reminders-backend-design.md) D2).
 
+## Màn hình → Use case
+
+| Màn hình | UC |
+|---|---|
+| Tab Settings (màn 23) | UC-SETTINGS-001 |
+| Theme (màn 25) | UC-SETTINGS-001 |
+| Language (màn 26) | UC-SETTINGS-001 |
+| Study options của bộ thẻ (màn 15) | UC-SETTINGS-001 (A1, E4) |
+
+Nguồn: trigger của UC-SETTINGS-001 ("Mở tab `Settings` của navigation shell, hoặc deep link `/settings`"). Nhắc học hằng ngày (UC-REMINDER-001) nằm trong branch Settings nhưng thuộc feature `reminders`.
+
 ## Không thuộc phạm vi
 
 | Thứ | Vì sao |

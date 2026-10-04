@@ -60,6 +60,14 @@ Hai điều cần biết khi kiểm lại:
 Tên app trên Android là "MemoX", khớp với câu chữ của màn 24 ("Android Settings › Apps ›
 MemoX").
 
+## Màn hình → Use case
+
+| Màn hình | UC |
+|---|---|
+| `Settings → Daily reminder` | UC-REMINDER-001 |
+
+Nguồn: trigger của UC-REMINDER-001.
+
 ## Không thuộc phạm vi
 
 | Thứ | Vì sao |

@@ -1,0 +1,124 @@
+---
+id: UC-TRASH-001
+title: Trash và khôi phục item đã xoá
+status: ready
+rules: [BR-CARD-010, BR-CARD-012, BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK-015, BR-DECK-017, BR-DECK-018, BR-SRS-006, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-006, BR-TRASH-007, BR-TRASH-008, BR-TRASH-009, BR-TRASH-010, BR-TRASH-011, BR-TRASH-012]
+code: [lib/features/trash/domain/usecases/watch_trash_use_case.dart, lib/features/trash/domain/usecases/watch_deck_restore_targets_use_case.dart, lib/features/trash/domain/usecases/watch_card_restore_targets_use_case.dart, lib/features/trash/domain/usecases/restore_decks_from_trash_use_case.dart, lib/features/trash/domain/usecases/restore_cards_from_trash_use_case.dart, lib/features/trash/domain/usecases/purge_trash_use_case.dart, lib/features/trash/domain/usecases/purge_expired_trash_use_case.dart, lib/features/deck/domain/usecases/delete_deck_use_case.dart, lib/features/deck/domain/usecases/undo_deck_deletion_use_case.dart, lib/features/card/domain/usecases/delete_cards_use_case.dart, lib/features/card/domain/usecases/undo_card_deletion_use_case.dart, lib/features/trash/presentation/controllers/trash_controller.dart, lib/features/trash/presentation/screens/trash_screen.dart, lib/features/trash/presentation/widgets/overlays/trash_restore_sheet_widget.dart, lib/features/trash/presentation/widgets/overlays/trash_purge_dialog_widget.dart]
+---
+## Mục tiêu / Actor / Precondition
+
+**Phạm vi:** Trash, từ schema v3 (BE-B1). Màn Trash và snackbar Undo thuộc FE-B1.
+
+**Actor:** Người dùng
+**Trigger:** Xoá một card hoặc deck (vào Trash), hoặc mở `Trash` từ app bar của
+Library
+**Preconditions:** Không có. Trash mở được kể cả khi rỗng — đó là cách người
+dùng biết nó tồn tại (BR-TRASH-002 chỉ nói cái gì bị ẩn khỏi *bề mặt active*)
+
+## Main flow
+
+**Main flow:**
+1. Người dùng xoá một card hoặc một deck từ luồng đã có (UC-CARD-001, UC-DECK-004). Hệ thống
+   chạy một transaction: tạo batch, đánh dấu item root cùng mọi descendant đang
+   active, đưa parent về `unset` nếu nó vừa mất direct child cuối, và đóng phiên
+   `in_progress` nào chạm tới item đó với lý do `content_deleted`
+   (BR-TRASH-001, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005).
+2. Màn đang đứng báo item đã chuyển vào Trash và hiện Undo trong một khoảng thời
+   gian có hạn (BR-TRASH-001). Mọi bề mặt active cập nhật ngay — item biến mất khỏi
+   danh sách, khỏi đếm, khỏi search và khỏi study (BR-TRASH-002).
+3. Người dùng mở `Trash` từ app bar của Library. Hệ thống chạy auto-purge trước
+   khi vẽ, rồi hiển thị các batch còn lại, tách theo loại: Cards và Decks
+   (BR-TRASH-009, BR-TRASH-011).
+4. Mỗi hàng nêu tên item, thời điểm đã xoá, đường dẫn gốc **như thông tin**, số
+   ngày còn lại trước khi bị xoá vĩnh viễn, và — với deck — số deck/card đi kèm
+   trong batch (BR-TRASH-012).
+5. Người dùng chọn `Restore` trên một hàng. Hệ thống mở picker target dựng từ
+   **đúng** eligibility của move: chỉ deck đang active thoả loại nội dung, độ
+   sâu và scheduler/generation mới xuất hiện (BR-TRASH-006).
+6. Người dùng chọn một target và xác nhận. Hệ thống chạy một transaction: gỡ
+   tombstone của **đúng** batch đó, gắn item root vào target, viết lại
+   `root_id` cho cả subtree kể cả tombstone bên trong, và set `content_type`
+   của target nếu nó đang `unset` (BR-TRASH-006, BR-TRASH-007).
+7. Trash bỏ hàng vừa khôi phục; Library hiện item ở vị trí mới với nguyên id,
+   study state, history và tag (BR-TRASH-007).
+
+## Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Undo ngay sau khi xoá:** người dùng bấm Undo trên snackbar. Hệ thống
+  đảo ngược đúng batch đó về **vị trí cũ**, không hỏi target (BR-TRASH-008).
+- **A2 — Chọn nhiều:** người dùng bật chế độ chọn trong Trash. Thanh hành động
+  hiện `Restore` và `Delete permanently` cho tập đang chọn. Chọn một card làm
+  mọi hàng deck không chọn được và ngược lại; UI nói rõ vì sao (BR-TRASH-011).
+- **A3 — Purge vĩnh viễn:** người dùng chọn `Delete permanently`. Hộp thoại nêu
+  đúng số item, nói lịch sử học không khôi phục được, đặt focus mặc định ở hành
+  động an toàn, và chỉ hành động phá huỷ mang vai trò màu destructive (BR-TRASH-011).
+  Xác nhận chạy một transaction xoá cứng batch và cascade (BR-TRASH-010).
+- **A4 — Batch hết hạn khi Trash đang mở:** auto-purge chạy lại khi màn được
+  focus lại và bỏ các hàng đã hết hạn; danh sách cập nhật tại chỗ, không nhảy vị
+  trí cuộn (BR-TRASH-009).
+- **A5 — Deck có descendant đã ở Trash từ trước:** restore batch của deck cha
+  chỉ hồi sinh hàng của batch đó; descendant kia vẫn nằm trong Trash như một
+  hàng riêng (BR-TRASH-003).
+- **A6 — Trash rỗng:** màn hiển thị trạng thái rỗng giải thích item đã xoá sẽ ở
+  đây 30 ngày, không hiện thanh hành động và không hiện filter.
+
+**Error flows:**
+- **E1 — Không có target hợp lệ:** picker mở ra rỗng và giải thích vì sao (cây
+  đã đầy 10 cấp, hoặc không còn deck nhận được loại nội dung này). Hệ thống
+  MUST NOT hiện hàng bị vô hiệu hoá trông như chọn được (BR-TRASH-006).
+- **E2 — Target hết hợp lệ giữa chừng:** cây đổi sau khi picker mở. Transaction
+  từ chối bằng lý do có kiểu, không ghi gì, và picker tải lại danh sách (BR-TRASH-006).
+- **E3 — Undo không còn dùng được:** vị trí cũ đã bị xoá, đã thành `card`, hoặc
+  đã đầy. Undo báo lý do có kiểu và chỉ người dùng sang Trash; item vẫn nằm
+  nguyên trong Trash (BR-TRASH-008).
+- **E4 — Purge bị chặn:** một descendant của batch thuộc batch chưa tới hạn hoặc
+  còn active. Batch đó bị bỏ qua, không purge một phần, và người dùng thấy lý do
+  có kiểu (BR-TRASH-010).
+- **E5 — Lỗi ghi:** bất kỳ bước nào của xoá, restore hay purge thất bại →
+  transaction rollback toàn bộ, trạng thái cũ giữ nguyên, UI hiện error + Retry.
+- **E6 — Item đã biến mất:** batch được chọn đã bị purge bởi một lần chạy khác.
+  Thao tác báo not-found có kiểu và danh sách tự làm mới, không dừng ở hàng ma.
+
+## UI
+
+**UI states:** loading · empty · cards-only · decks-only · mixed · selection
+(card) · selection (deck) · restoring · purging · target picker (rỗng / nhiều /
+không hợp lệ) · validation conflict · expired-live-removal · error + Retry ·
+undo snackbar. Không có state `refreshing` riêng — danh sách là một `watch()`
+stream, nên auto-purge biểu hiện thành hàng biến mất chứ không thành spinner.
+
+## Local
+
+**Postconditions:** Sau bước 7, item nằm dưới target đã chọn với đúng id cũ, và
+không hàng nào của batch khác bị chạm. Sau A3, các hàng của batch và mọi thứ
+cascade từ chúng không còn trong database, và không batch nào khác mất hàng.
+
+Ghi chú từ mục "Business rules" của nguồn:
+
+BR-TRASH-001…BR-TRASH-012, và BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK-017, BR-DECK-018, BR-SRS-006,
+BR-DECK-015, BR-CARD-010, BR-CARD-012 qua đường dùng lại eligibility của move.
+
+
+## API
+
+Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+
+## Acceptance criteria
+
+- [ ] **Given** người dùng xoá một card hoặc một deck, **when** thao tác chạy, **then** hệ thống tạo đúng một batch trong một transaction, đánh dấu item root cùng mọi descendant đang active bằng batch đó, đưa parent về `unset` khi nó vừa mất direct child active cuối, và đóng mọi phiên `in_progress` chạm tới item với `end_reason = content_deleted` (BR-TRASH-001, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005).
+- [ ] **Given** một item vừa xoá xong, **when** người dùng nhìn Library hoặc Card List, **then** item và mọi hoạt động của nó biến mất khỏi mọi bề mặt active, và một snackbar Undo hiện ra (BR-TRASH-001, BR-TRASH-002).
+- [ ] **Given** người dùng mở Trash từ app bar của Library, **when** màn vẽ xong, **then** hệ thống chạy auto-purge trước, rồi liệt kê các batch còn lại, mỗi hàng nêu loại, tên, thời điểm đã xoá, đường dẫn gốc và số ngày còn lại (BR-TRASH-009, BR-TRASH-011, BR-TRASH-012).
+- [ ] **Given** người dùng chọn Restore trên một hàng, **when** picker target mở, **then** danh sách chỉ gồm deck đang active hợp lệ cho item; xác nhận một target ghi lại đúng batch đó trong một transaction, giữ nguyên id, nội dung, trạng thái học, lịch sử và tag (BR-TRASH-006, BR-TRASH-007).
+- [ ] **Given** người dùng bấm Undo trên snackbar sau khi xoá, **when** Undo chạy, **then** hệ thống đảo ngược đúng batch đó về vị trí cũ mà không hỏi target (BR-TRASH-008, A1).
+- [ ] **Given** Trash đang mở ở chế độ chọn nhiều, **when** người dùng chọn một card rồi thử chọn một deck, **then** lựa chọn bị khoá theo loại chọn đầu tiên, và thanh hành động hiện Restore và Delete permanently cho đúng tập đang chọn (BR-TRASH-011, A2).
+- [ ] **Given** người dùng chọn "Delete permanently" cho một hoặc nhiều item, **when** hộp thoại xác nhận mở, **then** hộp thoại nêu đúng số lượng, nói lịch sử học không khôi phục được, focus mặc định ở hành động an toàn (Keep in Trash), và chỉ nút xoá vĩnh viễn thực hiện xoá (BR-TRASH-011, A3).
+- [ ] **Given** Trash đang mở khi một batch vừa quá 30 ngày, **when** app trở lại foreground, **then** auto-purge chạy lại và các hàng hết hạn biến mất tại chỗ (BR-TRASH-009, A4).
+- [ ] **Given** một deck cha bị xoá trong khi một descendant đã ở Trash từ một batch cũ hơn, **when** xem lại Trash, **then** descendant đó vẫn là một hàng riêng với batch cũ của nó, không bị gộp vào batch mới (BR-TRASH-003, A5).
+- [ ] **Given** Trash không có batch nào, **when** mở màn, **then** hệ thống hiện trạng thái rỗng giải thích item đã xoá nằm ở đây 30 ngày, không hiện filter (A6).
+- [ ] **Given** một item không còn target hợp lệ để restore, **when** picker mở, **then** picker nói lý do và chỉ đưa nút đóng, không hiện hàng bị vô hiệu hoá trông như chọn được (BR-TRASH-006, E1).
+- [ ] **Given** picker restore đang mở, **when** cây deck đổi, **then** danh sách target đi theo cây; nếu target đã chọn không còn hợp lệ lúc xác nhận thì transaction từ chối có kiểu và không ghi gì (BR-TRASH-006, E2).
+- [ ] **Given** vị trí cũ của một batch không còn nhận nó, **when** người dùng bấm Undo, **then** Undo báo lý do có kiểu và item vẫn nằm trong Trash (BR-TRASH-008, E3).
+- [ ] **Given** một deck được chọn để xoá vĩnh viễn còn giữ một batch khác không được chọn, **when** purge chạy, **then** deck đó bị bỏ qua nguyên vẹn và được báo cáo kèm lý do (BR-TRASH-010, E4).
+- [ ] **Given** một bước ghi giữa chừng của purge lỗi, **when** transaction chạy, **then** toàn bộ purge rollback và dữ liệu giữ nguyên như trước (BR-TRASH-010, E5).
+- [ ] **Given** một batch được chọn để restore hoặc purge đã bị xoá vĩnh viễn trước đó, **when** thao tác chạy, **then** hệ thống báo not-found có kiểu cho đúng batch đó (BR-TRASH-010, E6).

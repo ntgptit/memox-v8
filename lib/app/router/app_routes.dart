@@ -134,6 +134,9 @@ abstract final class AppRoutes {
     },
   ).toString();
 
+  /// Debug builds only: the component gallery.
+  static const String gallery = '/gallery';
+
   /// The path parameter that names an open deck.
   static const String deckIdParam = 'deckId';
 

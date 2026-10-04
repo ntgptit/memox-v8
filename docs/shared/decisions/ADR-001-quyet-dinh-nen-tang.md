@@ -1,7 +1,7 @@
 ---
 id: ADR-001
 title: Quyết định nền tảng
-status: accepted
+status: active
 superseded_by:
 ---
 ## Quyết định

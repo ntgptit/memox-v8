@@ -194,11 +194,6 @@ components:
 
 # Design System: MemoX V8
 
-This document is the canonical visual source of truth ([ADR-021](docs/shared/decisions/ADR-021-tai-lieu-dan-dat-ui-khi-xay-lai.md)).
-Code implements it; it is never derived from code. SP2 (2026-10-04) removed the previous
-implementation; SP3a rebuilds tokens, the Material 3 colour scheme, the light and dark themes,
-primitives and the `Mx*` components from this document.
-
 ## Overview
 
 **Creative North Star: "The Quiet Study Desk"**
@@ -328,7 +323,7 @@ One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, not
 
 ## Components
 
-Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` by SP3a); they hold no copy (callers pass localized strings) and read colour only from the theme.
+Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no copy (callers pass localized strings) and read colour only from the theme.
 
 ### Actions
 - **MxButton**: tones primary, secondary, outline, text (no fill and no edge, Indigo Ink: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outlineEdge`.

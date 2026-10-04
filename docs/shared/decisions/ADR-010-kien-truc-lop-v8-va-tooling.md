@@ -1,7 +1,7 @@
 ---
 id: ADR-010
 title: Kiến trúc lớp V8, tên thư mục feature và phiên bản Flutter
-status: accepted
+status: active
 superseded_by:
 ---
 ## Bối cảnh

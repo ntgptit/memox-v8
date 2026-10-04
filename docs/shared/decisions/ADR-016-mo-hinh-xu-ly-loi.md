@@ -1,7 +1,7 @@
 ---
 id: ADR-016
 title: Mô hình xử lý lỗi — không có handler lỗi toàn cục
-status: accepted
+status: active
 superseded_by:
 ---
 ## Bối cảnh

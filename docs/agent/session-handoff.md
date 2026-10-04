@@ -1,7 +1,8 @@
 # Session handoff
 
 A session handoff is a short file that carries the live thread of one piece of
-unfinished work to a fresh agent. Write one when the owner asks for a handoff.
+unfinished work to a fresh agent. It is unrelated to the screen files under
+`docs/shared/ui/screen-handoff/`. Write one when the owner asks for a handoff.
 
 - **When:** only when the work moves to another harness (Claude ↔ Codex),
   another machine or cloud container, another person, or a side task forked to

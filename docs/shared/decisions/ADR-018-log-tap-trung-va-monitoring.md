@@ -1,7 +1,7 @@
 ---
 id: ADR-018
 title: Log tập trung và monitoring cho admin
-status: accepted
+status: active
 superseded_by:
 ---
 ## Bối cảnh

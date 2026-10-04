@@ -17,7 +17,7 @@ vết tới UC/BR nào. `—` nghĩa là kịch bản không truy vết tới m�
 (thường là một ranh giới nền tảng thuần tuý, không phải một luật nghiệp vụ).
 
 Tám kịch bản `DEVICE-E2E` chạy trên thiết bị bằng `tools/device/run_device_e2e.sh`
-(`integration_test/`, xoá ở SP2 và được viết lại ở SP3); cách chạy và lần chạy gần nhất ở
+(`integration_test/`); cách chạy và lần chạy gần nhất ở
 [device-e2e.md](device-e2e.md).
 
 | ID | Profile | Truy vết (UC/BR) |

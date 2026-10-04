@@ -1,7 +1,7 @@
 ---
 id: ADR-011
 title: Cấu trúc thư mục V8
-status: accepted
+status: active
 superseded_by:
 ---
 ## Bối cảnh

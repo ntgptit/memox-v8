@@ -1,7 +1,7 @@
 ---
 id: ADR-008
 title: DATETIME lưu UTC
-status: accepted
+status: active
 superseded_by:
 ---
 ## Quyết định

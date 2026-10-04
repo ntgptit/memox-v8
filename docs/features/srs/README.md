@@ -7,6 +7,14 @@ depends_on: [card, deck]
 
 Hai scheduler (`eight_box`, `sm2`), chọn và khoá/đổi scheduler, loại lượt ôn, reset learning progress và `generation` (V8.0).
 
+## Màn hình → Use case
+
+| Màn hình | UC |
+|---|---|
+| Xác nhận "Đặt lại tiến độ học" trên một root deck | UC-SRS-001 |
+
+Nguồn: trigger của UC-SRS-001 ("thường từ chỗ giải thích vì sao chế độ ôn tập đang bị khoá (UC-DECK-002 A1)"). Chọn và đổi scheduler là một phần của UC-DECK-001 và UC-DECK-002 (feature `deck`).
+
 ## Không thuộc phạm vi
 
 | Thứ | Vì sao |

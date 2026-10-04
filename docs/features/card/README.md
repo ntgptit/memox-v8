@@ -7,6 +7,15 @@ depends_on: [deck]
 
 Nội dung card, cờ, di chuyển, thao tác hàng loạt và chi tiết card kèm lịch sử học (V8.0): quản lý card trong một deck loại `card` và màn chi tiết chỉ đọc.
 
+## Màn hình → Use case
+
+| Màn hình | UC |
+|---|---|
+| Danh sách card (deck có `content_type = card`) | UC-CARD-001 |
+| Chi tiết card, chỉ đọc | UC-CARD-002 |
+
+Nguồn: trigger của UC-CARD-001 ("Mở một deck có `content_type = 'card'`") và UC-CARD-002 ("Chạm vào một hàng card trong danh sách card"); sơ đồ ở [`ui.md`](ui.md).
+
 ## Không thuộc phạm vi
 
 | Thứ | Vì sao |

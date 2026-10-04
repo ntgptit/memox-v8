@@ -332,14 +332,7 @@ class _ScriptCase(unittest.TestCase):
 
     script = ""
 
-    def _run(
-        self,
-        *args: str,
-        exit_code: int = 0,
-        env_extra: dict[str, str] | None = None,
-        root: Path | None = None,
-    ):
-        root = root or SCRIPTS.parents[3]
+    def _run(self, *args: str, exit_code: int = 0, env_extra: dict[str, str] | None = None):
         tmp = Path(tempfile.mkdtemp())
         self.addCleanup(shutil.rmtree, tmp, True)
         fake = tmp / "flutter"
@@ -356,14 +349,14 @@ class _ScriptCase(unittest.TestCase):
         env.update(env_extra or {})
         # A failed run keeps its bundles on purpose; the test removes the ones
         # it caused, and only those.
-        bundles = root / bundle_tests.BUNDLE_DIR
+        bundles = SCRIPTS.parents[3] / bundle_tests.BUNDLE_DIR
         before = set(bundles.glob("*"))
         self.addCleanup(
             lambda: [shutil.rmtree(d, True) for d in set(bundles.glob("*")) - before]
         )
         completed = subprocess.run(
-            ["bash", str(root / SCRIPTS.relative_to(SCRIPTS.parents[3]) / self.script), *args],
-            cwd=root, env=env, capture_output=True, text=True,
+            ["bash", str(SCRIPTS / self.script), *args],
+            cwd=SCRIPTS.parents[3], env=env, capture_output=True, text=True,
         )
         argv = recorded.read_text(encoding="utf-8").split("\n") if recorded.exists() else []
         self.output = completed.stdout + completed.stderr
@@ -416,45 +409,9 @@ class RunTestsTest(_ScriptCase):
 @_needs_bash
 @_needs_app
 class RunGoldensTest(_ScriptCase):
-    """`run_goldens.sh` in a scratch repository holding a copy of the scripts.
-
-    SP2 (spec 2026-10-04-sp2) deleted every golden of the old UI and SP3b adds
-    the first new one, so the real tree's golden set changes under these
-    tests; a scratch tree holds the goldens each case needs.
-    """
+    """`run_goldens.sh` against the real tree."""
 
     script = "run_goldens.sh"
-
-    def _tree(self, *, has_golden: bool) -> Path:
-        root = Path(tempfile.mkdtemp())
-        self.addCleanup(shutil.rmtree, root, True)
-        shutil.copytree(
-            SCRIPTS,
-            root / SCRIPTS.relative_to(SCRIPTS.parents[3]),
-            ignore=shutil.ignore_patterns("tests", "__pycache__"),
-        )
-        shutil.copy(SCRIPTS.parents[3] / "pubspec.yaml", root / "pubspec.yaml")
-        (root / "test").mkdir()
-        (root / "test" / "host_test.dart").write_text("void main() {}\n", encoding="utf-8")
-        if has_golden:
-            (root / "test" / "probe_golden_test.dart").write_text(
-                "@Tags(['golden'])\nlibrary;\n\nvoid main() {}\n", encoding="utf-8"
-            )
-        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
-        subprocess.run(["git", "add", "-A"], cwd=root, check=True)
-        return root
-
-    def _run(self, *args: str, **kwargs):
-        kwargs.setdefault("root", self._tree(has_golden=True))
-        return super()._run(*args, **kwargs)
-
-    def test_no_golden_yet_is_a_pass_that_says_so(self) -> None:
-        """Between SP2 and SP3b's first golden there is nothing to compare."""
-        for args in ((), ("--update",)):
-            code, argv = self._run(*args, root=self._tree(has_golden=False))
-            self.assertEqual(code, 0, self.output)
-            self.assertEqual(argv, [])
-            self.assertIn("no golden test file under test/", self.output)
 
     def test_a_comparison_runs_the_golden_bundles(self) -> None:
         code, argv = self._run()

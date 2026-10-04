@@ -45,15 +45,14 @@ Write into `docs/`. Templates are in `assets/`.
 
 | File | Contains | Template |
 |---|---|---|
-| `/PRODUCT.md` + `docs/shared/decisions/` | Problem, users, core value, MVP scope (must/should/nice/out with completion conditions) in `PRODUCT.md`; platforms, online/offline, auth and sensitive data as ADRs | `assets/product_template.md` |
-| `docs/USE_CASES.md` | One section per use case (`### UC-<DOMAIN>-NNN — <title>`) under its feature, format per `docs/README.md` ("UC, FN và screen spec") | — |
-| `docs/functional-spec/<feature>.md` | One section per function (`## FN-<DOMAIN>-NNN — <title>`): precondition, input, result, errors, the BRs it applies | — |
-| `docs/features/<feature>/rules/` (+ `data.md` for entity states) | One file per rule (`BR-<DOMAIN>-NNN-<slug>.md`) with its edge cases | `assets/business_rules_template.md` |
+| `docs/README.md` (mục Sản phẩm) + `docs/shared/decisions/` | Problem, users, core value, MVP scope (must/should/nice/out with completion conditions) in the README; platforms, online/offline, auth and sensitive data as ADRs | `assets/product_template.md` |
+| `docs/features/<feature>/usecases/` | One file per use case (`UC-<DOMAIN>-NNN-<slug>.md`), frontmatter + sections per `docs/README.md` | `assets/use_case_template.md` |
+| `docs/features/<feature>/rules/` (+ `ui.md` for validation, `data.md` for entity states) | One file per rule (`BR-<DOMAIN>-NNN-<slug>.md`) with its edge cases | `assets/business_rules_template.md` |
 | `docs/wbs_BE.md`, `docs/wbs_FE.md` | Work packages with status, dependencies and evidence, the live progress ledger; the files themselves are the format | — |
 | `docs/shared/decisions/` | Architecture and product decisions and their deviations, one ADR each, written as they are made | — |
 | `docs/shared/data/schema.md` | Entities, relationships, Drift schema intent, invariants | — |
 | `docs/features/<feature>/api.md` | Endpoints, request/response shapes, error format, pagination — from the first slice that calls the API (ADR-012) | — |
-| `docs/screens/` + `docs/NAVIGATION.md` | The screen catalog, one spec per screen, and app-level navigation (ADR-021); owned by `flutter-design-system` | — |
+| `docs/shared/ui/` | The design and screen handoffs from the kit; owned by `flutter-design-system` | — |
 | `docs/shared/testing/` | Scenario catalog, coverage map, execution guide; owned by `flutter-testing` | — |
 
 Do not create an empty placeholder before the work that owns it — an `api.md`

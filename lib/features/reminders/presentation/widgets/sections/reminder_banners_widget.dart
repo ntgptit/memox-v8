@@ -1,0 +1,73 @@
+import 'package:flutter/material.dart';
+import 'package:memox/features/reminders/presentation/states/reminder_action_state.dart';
+import 'package:memox/features/reminders/presentation/widgets/sections/reminder_settings_section_widget.dart';
+import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
+
+/// The last operation's problem, with the action that repeats it (E1, E3,
+/// E6). E1 leads with kit 24's "Open system settings" (FE-B6).
+class ReminderBannersWidget extends StatelessWidget {
+  const ReminderBannersWidget({
+    super.key,
+    required this.problem,
+    required this.storedMinute,
+    required this.isBusy,
+    required this.onRetry,
+    required this.onOpenSettings,
+  });
+
+  final ReminderProblem? problem;
+  final int storedMinute;
+  final bool isBusy;
+  final VoidCallback onRetry;
+  final VoidCallback onOpenSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    Widget action(String label, {MxButtonTone tone = MxButtonTone.primary}) =>
+        MxButton(
+          label: label,
+          tone: tone,
+          size: MxButtonSize.compact,
+          onPressed: isBusy ? null : onRetry,
+        );
+    return switch (problem) {
+      null => const SizedBox.shrink(),
+      ReminderProblem.permissionDenied => MxInlineBanner(
+        tone: MxBannerTone.warning,
+        title: l10n.reminderDeniedTitle,
+        message: l10n.reminderDeniedBody,
+        // The primary last, as every banner (R5; critique 2026-09-30 part 3a).
+        actions: [
+          action(l10n.reminderTryAgain, tone: MxButtonTone.outline),
+          MxButton(
+            label: l10n.reminderOpenSystemSettings,
+            size: MxButtonSize.compact,
+            onPressed: onOpenSettings,
+          ),
+        ],
+      ),
+      ReminderProblem.couldNotTurnOn => MxInlineBanner(
+        tone: MxBannerTone.danger,
+        title: l10n.reminderCouldNotTurnOnTitle,
+        message: l10n.reminderCouldNotTurnOnBody,
+        actions: [action(l10n.commonRetry)],
+      ),
+      ReminderProblem.couldNotChangeTime => MxInlineBanner(
+        tone: MxBannerTone.danger,
+        title: l10n.reminderCouldNotChangeTimeTitle,
+        message: l10n.reminderCouldNotChangeTimeBody(
+          reminderTimeLabel(context, storedMinute),
+        ),
+        actions: [action(l10n.commonRetry)],
+      ),
+      ReminderProblem.mayStillShow => MxInlineBanner(
+        tone: MxBannerTone.warning,
+        message: l10n.reminderMayStillShow,
+        actions: [action(l10n.reminderTryAgain)],
+      ),
+    };
+  }
+}

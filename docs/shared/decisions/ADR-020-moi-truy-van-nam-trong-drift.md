@@ -1,7 +1,7 @@
 ---
 id: ADR-020
 title: Mọi truy vấn SQLite nằm trong file .drift; DAO là @DriftAccessor
-status: accepted
+status: active
 superseded_by:
 ---
 ## Bối cảnh
