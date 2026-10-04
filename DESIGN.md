@@ -490,6 +490,7 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxRowInk | Shared row ripple and press | primitive | MxListRow, MxSettingsRow, MxOptionRow, MxActionSheetCommandRow | SP3a | built |
 | MxFocusRing | The 2dp keyboard focus ring at a 2dp offset | primitive | MxButton, MxIconButton, MxFab, MxToggle | SP3a | built |
 | MxTapTarget | Grows a small control's hit area to 48 | primitive | MxToggle, MxFilterChip, MxChipTrigger | SP3a | built |
+| MxChipShell | The 28 pill both chips are drawn as | primitive | MxFilterChip, MxChipTrigger | SP3a | built |
 | MxButton | Text-labelled action in seven tones and five sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
 | MxIconButton | Icon-only action with a 48 target | shared | CARD, DECK, MONITORING, STARTER, STUDY, TAG, TRASH | SP3a | built |
 | MxFab | Floating primary action, icon only | shared | CARD, DECK | SP3a | built |
@@ -502,8 +503,8 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxSelectionCheckbox | Multi-select mark | shared | CARD, TRASH | SP3a | built |
 | MxStepper | Bounded integer with press-and-hold repeat | shared | REMINDER, SETTINGS | SP3a | built |
 | MxSegmentedTray | One of a few segments | shared | MONITORING, PROGRESS, SETTINGS | SP3a | built |
-| MxFilterChip | Filter toggle chip | shared | CARD, TRASH | SP3a | planned |
-| MxChipTrigger | Ghost chip that opens a menu or sheet | shared | CARD, DECK, MONITORING, TRANSFER | SP3a | planned |
+| MxFilterChip | Filter toggle chip | shared | CARD, TRASH | SP3a | built |
+| MxChipTrigger | Ghost chip that opens a menu or sheet | shared | CARD, DECK, MONITORING, TRANSFER | SP3a | built |
 | MxCard | Raised surface in six tones | shared | CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
 | MxSection | Section label over a card | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, STUDY, TAG, TRANSFER | SP3a | planned |
 | MxNote | One calm information line, or its footnote form | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
@@ -659,6 +660,27 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - States: selected segment raised, idle segments
 - Accessibility: each segment is a selected or unselected member of a mutually exclusive group; 48 to the touch, 36 painted
 - Tokens: `surface-container-low`, `surface-container-lowest` (dark: `surface-container-highest`), `on-surface`, `on-surface-variant`, `shadow`; `labelLarge`; `AppSize.segment`
+- Golden: states__light, states__dark
+
+#### MxChipShell
+- Variants: filled (filter), ghost (trigger); optional trailing glyph
+- States: resting, selected or active, pressed
+- Accessibility: 28 painted inside a 48 hit; the chip that uses it owns the semantics
+- Tokens: `surface-container-lowest`, `outline-variant`, `primary` / `on-primary`, `primary-container` / `on-primary-container`, `labelSmall`, `AppSize.chip`
+- Golden: none — seen in `MxFilterChip` and `MxChipTrigger`
+
+#### MxFilterChip
+- Variants: one
+- States: selected, unselected
+- Accessibility: a selected or unselected button named by its label; 28 painted inside a 48 hit
+- Tokens: through `MxChipShell`
+- Golden: states__light, states__dark
+
+#### MxChipTrigger
+- Variants: one; a trailing chevron
+- States: idle, active (what it opened is in force)
+- Accessibility: a button named by its label; 28 painted inside a 48 hit
+- Tokens: through `MxChipShell`
 - Golden: states__light, states__dark
 
 ## Do's and Don'ts
