@@ -18,3 +18,4 @@ section. Định dạng: [docs/README.md](../README.md), mục "UC, FN và scree
 | Transfer | [transfer.md](transfer.md) |
 | Starter decks | [starter-decks.md](starter-decks.md) |
 | Account | [account.md](account.md) |
+| Monitoring | [monitoring.md](monitoring.md) |

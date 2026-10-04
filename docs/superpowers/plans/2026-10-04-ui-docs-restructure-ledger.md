@@ -4288,3 +4288,14 @@ FN-DECK-001.
   SCR-ACCOUNT specs (Task 28–41) invoke FN-ACCOUNT-001…013 and 015…018. FN-ACCOUNT-014 (automatic
   sync) has no control that calls it, so its warning stays unless the owner wants an account UC;
   Task 43 lists it.
+
+## Task 26 notes — monitoring
+
+query_server_logs FN-MONITORING-001, get_server_log 002, set_log_status 003, watch_pending_logs 004,
+get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and the monitoring spec.
+
+- The filter rule "choosing debug, info or every level clears the status filter" lives in
+  `LogFilter.withLevels`; it is a contract of what the server is asked for, so it is in
+  FN-MONITORING-001's Input.
+- Warning delta: 60 → 65 = +5 FN-MONITORING invoked by no UC and no screen; SCR-MONITORING-001
+  (Task 28–41) invokes them.

@@ -188,7 +188,15 @@
 
 ## [monitoring](../features/monitoring/README.md)
 
-Chưa có tài liệu.
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-MONITORING-001](../functional-spec/monitoring.md) | Xem log trên server | active | — |
+| [FN-MONITORING-002](../functional-spec/monitoring.md) | Xem chi tiết một log trên server | active | — |
+| [FN-MONITORING-003](../functional-spec/monitoring.md) | Đánh dấu một log đã sửa hoặc mở lại | active | — |
+| [FN-MONITORING-004](../functional-spec/monitoring.md) | Xem log chưa gửi của thiết bị | active | — |
+| [FN-MONITORING-005](../functional-spec/monitoring.md) | Xem chi tiết một log chưa gửi | active | — |
 
 ## [progress](../features/progress/README.md)
 
