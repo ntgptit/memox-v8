@@ -255,6 +255,63 @@ void main() {
     expect(find.byType(SettingsScreen), findsOneWidget);
   });
 
+  accountTest('signing out from screen 32 pushed over Settings leaves it '
+      '(device check D6, F1)', (tester, env, world) async {
+    await linkEmail(world);
+    world.device.pending = 0;
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+    _router(tester).go(AppRoutes.settings);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('a@example.com'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AccountScreen), findsOneWidget);
+
+    await tester.tap(find.text(_en.accountSignOut));
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(MxDialog),
+        matching: find.widgetWithText(MxButton, _en.accountSignOut),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(world.state, isA<Ready>());
+    expect(find.byType(AccountScreen), findsNothing);
+    expect(find.byType(SettingsScreen), findsOneWidget);
+  });
+
+  accountTest('a Google sign-in that moves the phone to its account leaves '
+      'the pushed sign-in for screen 32 (device check D6, F2)', (
+    tester,
+    env,
+    world,
+  ) async {
+    world.server.addUser(email: world.gateway.google.email);
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+    _router(tester).go(AppRoutes.settings);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.accountSignIn));
+    await _settle(tester);
+    expect(find.byType(SignInScreen), findsOneWidget);
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await tester.pumpAndSettle();
+    // The phone holds no library: no merge sheet, straight to the target
+    // sign-in of the transition layer.
+    await tester.tap(find.text(_en.accountContinueGoogle).last);
+    await tester.pumpAndSettle();
+
+    expect(world.state, isA<Ready>());
+    expect(find.byType(SignInScreen), findsNothing);
+    expect(find.byType(AccountScreen), findsOneWidget);
+    expect(find.text(_en.accountOfflineNote), findsNothing);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byType(SettingsScreen), findsOneWidget);
+  });
+
   libraryTest('a build that cannot sign in has no Account section and no '
       'Welcome', (tester, env) async {
     await pumpMemoxApp(tester, env);
