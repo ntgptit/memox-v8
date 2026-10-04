@@ -921,270 +921,270 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/16-study-browse.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/16-study-browse.md:3` # 16 · Study · Browse |  |
-| `shared/ui/screen-handoff/16-study-browse.md:5` The first stage of every learning session, for both algorithms (BR-MODE-003, |  |
-| `shared/ui/screen-handoff/16-study-browse.md:10` ## Layout |  |
-| `shared/ui/screen-handoff/16-study-browse.md:12` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/16-study-browse.md:14` \| Top bar \| `MxStudyTopBar` \| See [Shared by the session screens](#shared-by-the |  |
-| `shared/ui/screen-handoff/16-study-browse.md:15` \| Context line \| new: `SessionContextLine` (feature-local, deliberately not a sh |  |
-| `shared/ui/screen-handoff/16-study-browse.md:16` \| Card \| `MxCard`, full-bleed, feature-local two-pane layout (`StudyFaceCard` is |  |
-| `shared/ui/screen-handoff/16-study-browse.md:17` \| Navigation \| swipe on the card, and a "Next card" button (`StudyCtaRow`, criti |  |
-| `shared/ui/screen-handoff/16-study-browse.md:18` \| Footer hint \| new: `SessionFooterHint` (feature-local) \| "Swipe for next or ba |  |
-| `shared/ui/screen-handoff/16-study-browse.md:20` ## Shared by the session screens |  |
-| `shared/ui/screen-handoff/16-study-browse.md:22` Common to Browse, Match, Guess, Recall and Fill (17–20). |  |
-| `shared/ui/screen-handoff/16-study-browse.md:24` - **`MxStudyTopBar`.** Close icon exits the session (see Exit/abandon below). |  |
-| `shared/ui/screen-handoff/16-study-browse.md:34` - **Exit / abandon.** The close icon, system Back and Guess's blocked-question |  |
-| `shared/ui/screen-handoff/16-study-browse.md:39` - **Round behaviour (Match, Guess, Recall, Fill only).** These four run in |  |
-| `shared/ui/screen-handoff/16-study-browse.md:50` - **"Result after commit."** The UI shows a turn's outcome only after its |  |
-| `shared/ui/screen-handoff/16-study-browse.md:54` - **The unit stays on screen between turns.** The card being answered stays |  |
-| `shared/ui/screen-handoff/16-study-browse.md:59` - **Keyboard / IME.** Only `fill` (20-study-fill.md) takes typed input; every |  |
-| `shared/ui/screen-handoff/16-study-browse.md:61` - **`self_assess`.** See |  |
-| `shared/ui/screen-handoff/16-study-browse.md:63` - **Icon colour guard.** The `Icon(color:)` guard forbids inline glyph colours |  |
-| `shared/ui/screen-handoff/16-study-browse.md:67` ## Accessibility |  |
-| `shared/ui/screen-handoff/16-study-browse.md:69` - TalkBack reads the top bar (close, mode, "{done} of {total}"), the context lin |  |
-| `shared/ui/screen-handoff/16-study-browse.md:70` - Card faces wrap and never ellipsize; Korean and Vietnamese with stacked marks |  |
-| `shared/ui/screen-handoff/16-study-browse.md:71` - Swipes have accessible actions on the card: "Next card" and, when an earlier c |  |
-| `shared/ui/screen-handoff/16-study-browse.md:72` - Edges (FE-A6 spec D20): the hint does not change; a right swipe on the round's |  |
-| `shared/ui/screen-handoff/16-study-browse.md:74` ## States |  |
-| `shared/ui/screen-handoff/16-study-browse.md:76` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/16-study-browse.md:78` \| default \| `study_browse_light.png` \| `study_browse_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/16-study-browse.md:79` Other goldens: `study_browse_looking_back_light.png` / `study_browse_looking_bac |  |
-| `shared/ui/screen-handoff/16-study-browse.md:82` Not captured: the swipe-back preview of an earlier card in the round |  |
-| `shared/ui/screen-handoff/16-study-browse.md:85` **Built (FE-A6 P1c):** `StudyBrowseWidget` inside `StudySessionScreen`. Looking |  |
-| `shared/ui/screen-handoff/16-study-browse.md:91` ## Rulings |  |
-| `shared/ui/screen-handoff/16-study-browse.md:93` - **Owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004:** the close icon and syste |  |
-| `shared/ui/screen-handoff/16-study-browse.md:94` - The card follows the finger without a tilt while dragged, and stays still with |  |
-| `shared/ui/screen-handoff/16-study-browse.md:95` - Pronunciation uses the detail role of the body face; V8's typography has one f |  |
-| `shared/ui/screen-handoff/16-study-browse.md:96` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/16-study-browse.md:97` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig |  |
-| `shared/ui/screen-handoff/16-study-browse.md:99` ## Copy |  |
-| `shared/ui/screen-handoff/16-study-browse.md:101` - Context line: "{deck} · Learning · stage {n} of {total}". |  |
-| `shared/ui/screen-handoff/16-study-browse.md:102` - Footer hint: "Swipe for next or back · nothing is graded" / "Vuốt để sang hoặc |  |
+| `shared/ui/screen-handoff/16-study-browse.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:3` # 16 · Study · Browse | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:5` The first stage of every learning session, for both algorithms (BR-MODE-003, | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:10` ## Layout | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:12` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:14` \| Top bar \| `MxStudyTopBar` \| See [Shared by the session screens](#shared-by-the | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:15` \| Context line \| new: `SessionContextLine` (feature-local, deliberately not a sh | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:16` \| Card \| `MxCard`, full-bleed, feature-local two-pane layout (`StudyFaceCard` is | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:17` \| Navigation \| swipe on the card, and a "Next card" button (`StudyCtaRow`, criti | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:18` \| Footer hint \| new: `SessionFooterHint` (feature-local) \| "Swipe for next or ba | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:20` ## Shared by the session screens | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:22` Common to Browse, Match, Guess, Recall and Fill (17–20). | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:24` - **`MxStudyTopBar`.** Close icon exits the session (see Exit/abandon below). | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:34` - **Exit / abandon.** The close icon, system Back and Guess's blocked-question | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:39` - **Round behaviour (Match, Guess, Recall, Fill only).** These four run in | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:50` - **"Result after commit."** The UI shows a turn's outcome only after its | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:54` - **The unit stays on screen between turns.** The card being answered stays | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:59` - **Keyboard / IME.** Only `fill` (20-study-fill.md) takes typed input; every | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:61` - **`self_assess`.** See | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:63` - **Icon colour guard.** The `Icon(color:)` guard forbids inline glyph colours | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:67` ## Accessibility | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:69` - TalkBack reads the top bar (close, mode, "{done} of {total}"), the context lin | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:70` - Card faces wrap and never ellipsize; Korean and Vietnamese with stacked marks | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:71` - Swipes have accessible actions on the card: "Next card" and, when an earlier c | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:72` - Edges (FE-A6 spec D20): the hint does not change; a right swipe on the round's | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:74` ## States | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:76` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:78` \| default \| `study_browse_light.png` \| `study_browse_dark.png` \| — \| | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:79` Other goldens: `study_browse_looking_back_light.png` / `study_browse_looking_bac | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:82` Not captured: the swipe-back preview of an earlier card in the round | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:85` **Built (FE-A6 P1c):** `StudyBrowseWidget` inside `StudySessionScreen`. Looking | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:91` ## Rulings | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:93` - **Owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004:** the close icon and syste | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:94` - The card follows the finger without a tilt while dragged, and stays still with | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:95` - Pronunciation uses the detail role of the body face; V8's typography has one f | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:96` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:97` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:99` ## Copy | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:101` - Context line: "{deck} · Learning · stage {n} of {total}". | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `shared/ui/screen-handoff/16-study-browse.md:102` - Footer hint: "Swipe for next or back · nothing is graded" / "Vuốt để sang hoặc | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
 
 ## shared/ui/screen-handoff/16a-study-self-assess.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/16a-study-self-assess.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:3` # 16a · Study · Self-assess |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:5` The `self_assess` session: `sm2`'s review mode, and the second stage of an `sm2` |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:10` ## Job |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:12` A learner on an `sm2` deck, one-handed, in a short gap in the day, grades how we |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:17` ## Layout |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:19` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:21` \| Top bar \| `MxStudyTopBar` \| Close, mode badge "Self-assess", counter "{n} / {t |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:22` \| Context line \| as 16–20 \| "{deck} · Review · Self-assess" (learning session: " |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:23` \| Prompt card \| the study face card (as 19's term card) \| The prompt side for th |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:24` \| Answer card \| the study face card, answer tone \| Hidden until revealed (BR-MOD |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:25` \| Action area, before reveal \| primary block `MxButton` \| "Show answer". \| |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:26` \| Action area, after reveal \| four `MxButton`s in one row, new: `StudyGradeRow` |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:28` ## Behaviour |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:30` - **Reveal:** tapping the card or "Show answer" does the same thing. Revealing w |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:31` - **Grade:** one tap commits the turn and advances to the next card, with no con |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:32` - **Again:** the card comes back after at least three other cards, or at the end |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:33` - **Leaving:** Close and system Back follow the shared exit of 16–20. Everything |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:34` - **Resume:** a resumed session re-opens on the current card unrevealed (BR-STUD |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:35` - **Motion:** the answer card fades and slides in under the prompt (fade-through |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:37` ## Interval preview |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:39` - For a **scheduled** turn (the card's first answer in this session), each grade |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:40` - For a **relearning** turn, the schedule does not move (BR-SRS-016, BR-SRS-017) |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:41` - Format: under 30 days "{n}d"; under a year "{n}mo" (days / 30, rounded); from |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:42` - Needs a backend addition in FE-A6: a read-only preview of the four next interv |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:44` ## States |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:46` \| State \| V8 \| |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:48` \| prompt \| Prompt card and "Show answer"; the answer is hidden. \| |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:49` \| revealed \| Both cards and the grade row; previews on a scheduled turn. \| |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:50` \| relearning \| As revealed, without previews. \| |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:51` \| saving \| The grade row is locked on the tapped grade, with no spinner under 30 |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:52` \| saveFailed \| The session ends as `failed` and the summary (21, Save error) ope |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:53` \| stale \| A reset or algorithm change elsewhere invalidates the session on the n |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:54` Other goldens: `study_self_assess_prompt_light.png` / `study_self_assess_prompt_ |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:56` The goldens `study_self_assess_*` in `test/features/study/presentation/goldens/` |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:59` **Built (FE-A6 P2):** `StudySelfAssessWidget` in the session route's mode switch |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:75` ## Rulings |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:77` - **FE-A6 P2 plan R1:** the mode badge and context line read "Self-assess", as t |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:78` - **Plan R2:** the recessed answer face is always laid out, with a still placeho |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:79` - **Plan R3:** while the grade is written the row takes no tap and draws no chan |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:80` - **Plan R4:** the interval preview is read when the card is served, so the grad |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:81` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:82` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:83` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the foo |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:85` ## Accessibility |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:87` - TalkBack reads the prompt, then "Show answer". After the reveal, focus moves t |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:88` - Stacked diacritics in either card follow the single-line rule where a line is |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:89` - Touch targets are at least 48 × 48, with 8 between the grades. |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:91` ## Anti-goals |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:93` - No colour-coded rainbow of four grades, and no new rating tokens. |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:94` - No swipe-to-grade, no auto-advance timer, and no per-answer toast or confetti. |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:95` - No editing a card mid-session (as 19 and 20). |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:97` ## Copy |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:99` - "Self-assess" (see Rulings) · "Show answer" · "Again" · "Hard" · "Good" · "Eas |  |
-| `shared/ui/screen-handoff/16a-study-self-assess.md:100` - TalkBack: "{grade}, next in {interval}". |  |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:3` # 16a · Study · Self-assess | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:5` The `self_assess` session: `sm2`'s review mode, and the second stage of an `sm2` | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:10` ## Job | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:12` A learner on an `sm2` deck, one-handed, in a short gap in the day, grades how we | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:17` ## Layout | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:19` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:21` \| Top bar \| `MxStudyTopBar` \| Close, mode badge "Self-assess", counter "{n} / {t | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:22` \| Context line \| as 16–20 \| "{deck} · Review · Self-assess" (learning session: " | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:23` \| Prompt card \| the study face card (as 19's term card) \| The prompt side for th | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:24` \| Answer card \| the study face card, answer tone \| Hidden until revealed (BR-MOD | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:25` \| Action area, before reveal \| primary block `MxButton` \| "Show answer". \| | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:26` \| Action area, after reveal \| four `MxButton`s in one row, new: `StudyGradeRow` | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:28` ## Behaviour | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:30` - **Reveal:** tapping the card or "Show answer" does the same thing. Revealing w | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:31` - **Grade:** one tap commits the turn and advances to the next card, with no con | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:32` - **Again:** the card comes back after at least three other cards, or at the end | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:33` - **Leaving:** Close and system Back follow the shared exit of 16–20. Everything | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:34` - **Resume:** a resumed session re-opens on the current card unrevealed (BR-STUD | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:35` - **Motion:** the answer card fades and slides in under the prompt (fade-through | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:37` ## Interval preview | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:39` - For a **scheduled** turn (the card's first answer in this session), each grade | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:40` - For a **relearning** turn, the schedule does not move (BR-SRS-016, BR-SRS-017) | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:41` - Format: under 30 days "{n}d"; under a year "{n}mo" (days / 30, rounded); from | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:42` - Needs a backend addition in FE-A6: a read-only preview of the four next interv | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:44` ## States | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:46` \| State \| V8 \| | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:48` \| prompt \| Prompt card and "Show answer"; the answer is hidden. \| | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:49` \| revealed \| Both cards and the grade row; previews on a scheduled turn. \| | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:50` \| relearning \| As revealed, without previews. \| | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:51` \| saving \| The grade row is locked on the tapped grade, with no spinner under 30 | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:52` \| saveFailed \| The session ends as `failed` and the summary (21, Save error) ope | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:53` \| stale \| A reset or algorithm change elsewhere invalidates the session on the n | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:54` Other goldens: `study_self_assess_prompt_light.png` / `study_self_assess_prompt_ | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:56` The goldens `study_self_assess_*` in `test/features/study/presentation/goldens/` | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:59` **Built (FE-A6 P2):** `StudySelfAssessWidget` in the session route's mode switch | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:75` ## Rulings | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:77` - **FE-A6 P2 plan R1:** the mode badge and context line read "Self-assess", as t | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:78` - **Plan R2:** the recessed answer face is always laid out, with a still placeho | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:79` - **Plan R3:** while the grade is written the row takes no tap and draws no chan | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:80` - **Plan R4:** the interval preview is read when the card is served, so the grad | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:81` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:82` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:83` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the foo | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:85` ## Accessibility | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:87` - TalkBack reads the prompt, then "Show answer". After the reveal, focus moves t | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:88` - Stacked diacritics in either card follow the single-line rule where a line is | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:89` - Touch targets are at least 48 × 48, with 8 between the grades. | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:91` ## Anti-goals | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:93` - No colour-coded rainbow of four grades, and no new rating tokens. | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:94` - No swipe-to-grade, no auto-advance timer, and no per-answer toast or confetti. | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:95` - No editing a card mid-session (as 19 and 20). | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:97` ## Copy | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:99` - "Self-assess" (see Rulings) · "Show answer" · "Again" · "Hard" · "Good" · "Eas | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `shared/ui/screen-handoff/16a-study-self-assess.md:100` - TalkBack: "{grade}, next in {interval}". | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
 
 ## shared/ui/screen-handoff/17-study-match.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/17-study-match.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/17-study-match.md:3` # 17 · Study · Match |  |
-| `shared/ui/screen-handoff/17-study-match.md:5` A round-based graded stage: `eight_box` only — `sm2` never runs `match` |  |
-| `shared/ui/screen-handoff/17-study-match.md:12` ## Layout |  |
-| `shared/ui/screen-handoff/17-study-match.md:14` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/17-study-match.md:16` \| Top bar \| `MxStudyTopBar` \| Indigo, as every mode (3c-2 R8); see the shared se |  |
-| `shared/ui/screen-handoff/17-study-match.md:17` \| Context line \| `SessionContextLine` \| "{deck} · {Learning/Review} · round {n}" |  |
-| `shared/ui/screen-handoff/17-study-match.md:18` \| Board \| grid, up to 10 tiles (5 pairs); new: `MatchBoardTile` (feature-local; |  |
-| `shared/ui/screen-handoff/17-study-match.md:19` \| Footer hint \| `SessionFooterHint` \| "Tap a term and its meaning, in either ord |  |
-| `shared/ui/screen-handoff/17-study-match.md:21` ## States |  |
-| `shared/ui/screen-handoff/17-study-match.md:23` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/17-study-match.md:25` \| default \| `study_match_board_light.png` \| `study_match_board_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/17-study-match.md:26` Other goldens: `study_match_wrong_light.png` / `study_match_wrong_dark.png` (the |  |
-| `shared/ui/screen-handoff/17-study-match.md:28` Not captured: the tile's `idle`/`selected`/`matched` micro-states and the |  |
-| `shared/ui/screen-handoff/17-study-match.md:32` **Built (FE-A6 P3):** `StudyMatchWidget` in the session route's mode switch: the |  |
-| `shared/ui/screen-handoff/17-study-match.md:38` ## Rulings |  |
-| `shared/ui/screen-handoff/17-study-match.md:40` - **FE-A6 spec D14 (P3 ruling C1):** a matched tile uses the `success` semantic; |  |
-| `shared/ui/screen-handoff/17-study-match.md:41` - **P3 ruling C7:** during a wrong pair's flash the footer hint reads "Not a mat |  |
-| `shared/ui/screen-handoff/17-study-match.md:42` - **BR-STUDY-063, BR-STUDY-070:** a wrong pair flashes the error tone on both ti |  |
-| `shared/ui/screen-handoff/17-study-match.md:43` - **BR-STUDY-060, BR-STUDY-062:** a wrong pair keeps its row `pending` for this |  |
-| `shared/ui/screen-handoff/17-study-match.md:44` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/17-study-match.md:45` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig |  |
-| `shared/ui/screen-handoff/17-study-match.md:46` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the foo |  |
-| `shared/ui/screen-handoff/17-study-match.md:48` ## Accessibility |  |
-| `shared/ui/screen-handoff/17-study-match.md:50` - TalkBack reads the terms first, then the meanings (P3 ruling C8); each tile re |  |
-| `shared/ui/screen-handoff/17-study-match.md:51` - Each outcome is announced when its write commits: "Matched", or the wrong-pair |  |
-| `shared/ui/screen-handoff/17-study-match.md:52` - The board scrolls once it outgrows the screen at large text, and a soft fade o |  |
-| `shared/ui/screen-handoff/17-study-match.md:53` - A word too wide for its tile is drawn just small enough to stay whole; tiles w |  |
-| `shared/ui/screen-handoff/17-study-match.md:54` - A tile eases into its tone, surface and ink together (standard duration; at on |  |
-| `shared/ui/screen-handoff/17-study-match.md:56` ## Copy |  |
-| `shared/ui/screen-handoff/17-study-match.md:58` - Context line: "{deck} · {Learning/Review} · round {n}". |  |
-| `shared/ui/screen-handoff/17-study-match.md:59` - Footer hint: "Tap a term and its meaning, in either order" · "Not a match — th |  |
-| `shared/ui/screen-handoff/17-study-match.md:60` - TalkBack: "Term: {text}" · "Meaning: {text}" · "{tile}, selected" · "{tile}, m |  |
+| `shared/ui/screen-handoff/17-study-match.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:3` # 17 · Study · Match | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:5` A round-based graded stage: `eight_box` only — `sm2` never runs `match` | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:12` ## Layout | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:14` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:16` \| Top bar \| `MxStudyTopBar` \| Indigo, as every mode (3c-2 R8); see the shared se | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:17` \| Context line \| `SessionContextLine` \| "{deck} · {Learning/Review} · round {n}" | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:18` \| Board \| grid, up to 10 tiles (5 pairs); new: `MatchBoardTile` (feature-local; | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:19` \| Footer hint \| `SessionFooterHint` \| "Tap a term and its meaning, in either ord | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:21` ## States | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:23` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:25` \| default \| `study_match_board_light.png` \| `study_match_board_dark.png` \| — \| | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:26` Other goldens: `study_match_wrong_light.png` / `study_match_wrong_dark.png` (the | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:28` Not captured: the tile's `idle`/`selected`/`matched` micro-states and the | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:32` **Built (FE-A6 P3):** `StudyMatchWidget` in the session route's mode switch: the | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:38` ## Rulings | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:40` - **FE-A6 spec D14 (P3 ruling C1):** a matched tile uses the `success` semantic; | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:41` - **P3 ruling C7:** during a wrong pair's flash the footer hint reads "Not a mat | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:42` - **BR-STUDY-063, BR-STUDY-070:** a wrong pair flashes the error tone on both ti | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:43` - **BR-STUDY-060, BR-STUDY-062:** a wrong pair keeps its row `pending` for this | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:44` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:45` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:46` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the foo | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:48` ## Accessibility | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:50` - TalkBack reads the terms first, then the meanings (P3 ruling C8); each tile re | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:51` - Each outcome is announced when its write commits: "Matched", or the wrong-pair | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:52` - The board scrolls once it outgrows the screen at large text, and a soft fade o | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:53` - A word too wide for its tile is drawn just small enough to stay whole; tiles w | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:54` - A tile eases into its tone, surface and ink together (standard duration; at on | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:56` ## Copy | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:58` - Context line: "{deck} · {Learning/Review} · round {n}". | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:59` - Footer hint: "Tap a term and its meaning, in either order" · "Not a match — th | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
+| `shared/ui/screen-handoff/17-study-match.md:60` - TalkBack: "Term: {text}" · "Meaning: {text}" · "{tile}, selected" · "{tile}, m | moved → `screens/spec/SCR-STUDY-005-study-match.md` |
 
 ## shared/ui/screen-handoff/18-study-guess.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/18-study-guess.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/18-study-guess.md:3` # 18 · Study · Guess |  |
-| `shared/ui/screen-handoff/18-study-guess.md:5` A round-based graded stage: `eight_box` only (BR-MODE-004). One term, exactly |  |
-| `shared/ui/screen-handoff/18-study-guess.md:12` ## Layout |  |
-| `shared/ui/screen-handoff/18-study-guess.md:14` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/18-study-guess.md:16` \| Top bar \| `MxStudyTopBar` \| Indigo, as every mode (3c-2 R8); see the shared se |  |
-| `shared/ui/screen-handoff/18-study-guess.md:17` \| Context line \| `SessionContextLine` \| "{deck} · Review · round {n}". \| |  |
-| `shared/ui/screen-handoff/18-study-guess.md:18` \| Prompt \| new: `StudyFaceCard` (feature-local; `MxCard`-based, never promoted t |  |
-| `shared/ui/screen-handoff/18-study-guess.md:19` \| Options \| 5 rows, new: `GuessOptionRow` (feature-local) \| Lettered A–E badge + |  |
-| `shared/ui/screen-handoff/18-study-guess.md:20` \| Footer hint \| `SessionFooterHint` \| "Answer shown — the correct option is high |  |
-| `shared/ui/screen-handoff/18-study-guess.md:22` ## States |  |
-| `shared/ui/screen-handoff/18-study-guess.md:24` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/18-study-guess.md:26` \| default \| `study_guess_idle_light.png` \| `study_guess_idle_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/18-study-guess.md:27` Other goldens: `study_guess_right_light.png` / `study_guess_right_dark.png` (ans |  |
-| `shared/ui/screen-handoff/18-study-guess.md:29` Not captured: the pre-tap idle appearance of the five options is an |  |
-| `shared/ui/screen-handoff/18-study-guess.md:32` **Built (FE-A6 P3):** `StudyGuessWidget` in the session route's mode switch: the |  |
-| `shared/ui/screen-handoff/18-study-guess.md:39` ## Rulings |  |
-| `shared/ui/screen-handoff/18-study-guess.md:41` - **FE-A6 spec D14 (P3 ruling C1):** the right option uses the `success` semanti |  |
-| `shared/ui/screen-handoff/18-study-guess.md:42` - **BR-STUDY-040 (P3 ruling C2):** a question that cannot be built shows "This q |  |
-| `shared/ui/screen-handoff/18-study-guess.md:43` - **P3 ruling C6:** with TalkBack on, the answered state waits on a "Next" butto |  |
-| `shared/ui/screen-handoff/18-study-guess.md:44` - **BR-STUDY-042:** before the pick the footer hint reads "Only your first pick |  |
-| `shared/ui/screen-handoff/18-study-guess.md:45` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/18-study-guess.md:46` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig |  |
-| `shared/ui/screen-handoff/18-study-guess.md:47` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the foo |  |
-| `shared/ui/screen-handoff/18-study-guess.md:49` ## Accessibility |  |
-| `shared/ui/screen-handoff/18-study-guess.md:51` - Each option reads "Option {letter}: {meaning}"; once answered, "…, correct" or |  |
-| `shared/ui/screen-handoff/18-study-guess.md:52` - The outcome is announced when its write commits: "Correct", or "Wrong. The ans |  |
-| `shared/ui/screen-handoff/18-study-guess.md:53` - The options scroll with the prompt once they outgrow the screen at large text, |  |
-| `shared/ui/screen-handoff/18-study-guess.md:54` - A term word too wide for the prompt is drawn just small enough to stay whole; |  |
-| `shared/ui/screen-handoff/18-study-guess.md:55` - The options ease into their tones, surface and ink together (standard duration |  |
-| `shared/ui/screen-handoff/18-study-guess.md:57` ## Copy |  |
-| `shared/ui/screen-handoff/18-study-guess.md:59` - Context line: "{deck} · Review · round {n}". |  |
-| `shared/ui/screen-handoff/18-study-guess.md:60` - Prompt overline: "What is this?". |  |
-| `shared/ui/screen-handoff/18-study-guess.md:61` - Footer hint: "Only your first pick counts" (before the pick) · "Answer shown — |  |
-| `shared/ui/screen-handoff/18-study-guess.md:62` - Blocked: "This question can't be shown" · "Its options could not be built. Clo |  |
-| `shared/ui/screen-handoff/18-study-guess.md:63` - TalkBack: "Option {letter}: {meaning}" · "Correct" · "Wrong. The answer is {me |  |
+| `shared/ui/screen-handoff/18-study-guess.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:3` # 18 · Study · Guess | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:5` A round-based graded stage: `eight_box` only (BR-MODE-004). One term, exactly | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:12` ## Layout | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:14` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:16` \| Top bar \| `MxStudyTopBar` \| Indigo, as every mode (3c-2 R8); see the shared se | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:17` \| Context line \| `SessionContextLine` \| "{deck} · Review · round {n}". \| | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:18` \| Prompt \| new: `StudyFaceCard` (feature-local; `MxCard`-based, never promoted t | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:19` \| Options \| 5 rows, new: `GuessOptionRow` (feature-local) \| Lettered A–E badge + | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:20` \| Footer hint \| `SessionFooterHint` \| "Answer shown — the correct option is high | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:22` ## States | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:24` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:26` \| default \| `study_guess_idle_light.png` \| `study_guess_idle_dark.png` \| — \| | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:27` Other goldens: `study_guess_right_light.png` / `study_guess_right_dark.png` (ans | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:29` Not captured: the pre-tap idle appearance of the five options is an | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:32` **Built (FE-A6 P3):** `StudyGuessWidget` in the session route's mode switch: the | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:39` ## Rulings | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:41` - **FE-A6 spec D14 (P3 ruling C1):** the right option uses the `success` semanti | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:42` - **BR-STUDY-040 (P3 ruling C2):** a question that cannot be built shows "This q | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:43` - **P3 ruling C6:** with TalkBack on, the answered state waits on a "Next" butto | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:44` - **BR-STUDY-042:** before the pick the footer hint reads "Only your first pick | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:45` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:46` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:47` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the foo | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:49` ## Accessibility | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:51` - Each option reads "Option {letter}: {meaning}"; once answered, "…, correct" or | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:52` - The outcome is announced when its write commits: "Correct", or "Wrong. The ans | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:53` - The options scroll with the prompt once they outgrow the screen at large text, | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:54` - A term word too wide for the prompt is drawn just small enough to stay whole; | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:55` - The options ease into their tones, surface and ink together (standard duration | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:57` ## Copy | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:59` - Context line: "{deck} · Review · round {n}". | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:60` - Prompt overline: "What is this?". | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:61` - Footer hint: "Only your first pick counts" (before the pick) · "Answer shown — | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:62` - Blocked: "This question can't be shown" · "Its options could not be built. Clo | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
+| `shared/ui/screen-handoff/18-study-guess.md:63` - TalkBack: "Option {letter}: {meaning}" · "Correct" · "Wrong. The answer is {me | moved → `screens/spec/SCR-STUDY-006-study-guess.md` |
 
 ## shared/ui/screen-handoff/19-study-recall.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/19-study-recall.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/19-study-recall.md:3` # 19 · Study · Recall |  |
-| `shared/ui/screen-handoff/19-study-recall.md:5` A round-based graded stage: `eight_box` only (BR-MODE-004). The term is |  |
-| `shared/ui/screen-handoff/19-study-recall.md:13` ## Layout |  |
-| `shared/ui/screen-handoff/19-study-recall.md:15` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/19-study-recall.md:17` \| Top bar \| `MxStudyTopBar` \| Indigo, as every mode (3c-2 R8). \| |  |
-| `shared/ui/screen-handoff/19-study-recall.md:18` \| Context line \| `SessionContextLine` \| "{deck} · Review · round {n}". \| |  |
-| `shared/ui/screen-handoff/19-study-recall.md:19` \| Turn clock \| new: `RecallCountdownBar` (feature-local; distinct from `MxStudyT |  |
-| `shared/ui/screen-handoff/19-study-recall.md:20` \| Term face \| `StudyFaceCard` (label "Term") \| The prompt; always visible. \| |  |
-| `shared/ui/screen-handoff/19-study-recall.md:21` \| Meaning face \| `StudyFaceCard` (`role: answer`) \| Blurred placeholder before r |  |
-| `shared/ui/screen-handoff/19-study-recall.md:22` \| CTA row \| new: `StudyCtaRow` (feature-local) \| `countingDown`: one "Show the m |  |
-| `shared/ui/screen-handoff/19-study-recall.md:23` \| Footer hint \| `SessionFooterHint` \| Varies by state; see Copy. \| |  |
-| `shared/ui/screen-handoff/19-study-recall.md:25` ## States |  |
-| `shared/ui/screen-handoff/19-study-recall.md:27` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/19-study-recall.md:29` \| countingDown \| `study_recall_counting_light.png` \| `study_recall_counting_dark |  |
-| `shared/ui/screen-handoff/19-study-recall.md:30` \| revealed \| `study_recall_revealed_light.png` \| `study_recall_revealed_dark.png |  |
-| `shared/ui/screen-handoff/19-study-recall.md:31` \| timedOut \| `study_recall_timed_out_light.png` \| `study_recall_timed_out_dark.p |  |
-| `shared/ui/screen-handoff/19-study-recall.md:33` **Built (FE-A6 P4):** `StudyRecallWidget` in the session route's mode switch, ov |  |
-| `shared/ui/screen-handoff/19-study-recall.md:43` ## Rulings |  |
-| `shared/ui/screen-handoff/19-study-recall.md:45` - **BR-STUDY-032, BR-STUDY-033, BR-STUDY-066:** the ending has two branches: a s |  |
-| `shared/ui/screen-handoff/19-study-recall.md:46` - **FE-A6 spec D14 (P4 ruling V2):** the clock's fill and caption are a neutral |  |
-| `shared/ui/screen-handoff/19-study-recall.md:47` - **M3 review 2026-09-28 F2:** the clock track is 4dp, the app's thin track. |  |
-| `shared/ui/screen-handoff/19-study-recall.md:48` - **P2 face-label fix:** the answer face carries its "Meaning" label in flow, as |  |
-| `shared/ui/screen-handoff/19-study-recall.md:49` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/19-study-recall.md:50` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig |  |
-| `shared/ui/screen-handoff/19-study-recall.md:51` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the foo |  |
-| `shared/ui/screen-handoff/19-study-recall.md:53` ## Accessibility |  |
-| `shared/ui/screen-handoff/19-study-recall.md:55` - The clock is one node: its caption, with "{n} seconds left" as its value. It i |  |
-| `shared/ui/screen-handoff/19-study-recall.md:56` - A timeout is announced when its write commits: "Time is up. Counted as forgot. |  |
-| `shared/ui/screen-handoff/19-study-recall.md:57` - Under Remove animations the clock's fill steps once a second and the meaning a |  |
-| `shared/ui/screen-handoff/19-study-recall.md:58` - At large text the faces scroll inside and the two self-check buttons stack (C4 |  |
-| `shared/ui/screen-handoff/19-study-recall.md:59` - **Open for the owner:** the 20-second turn (BR-STUDY-031) is the same for Talk |  |
-| `shared/ui/screen-handoff/19-study-recall.md:61` ## Copy |  |
-| `shared/ui/screen-handoff/19-study-recall.md:63` - Context line: "{deck} · Review · round {n}". |  |
-| `shared/ui/screen-handoff/19-study-recall.md:64` - Clock caption: "Time to recall" (`countingDown`) · "Revealed with time left" ( |  |
-| `shared/ui/screen-handoff/19-study-recall.md:65` - Meaning tag: "Counted as forgot" (`timedOut`). |  |
-| `shared/ui/screen-handoff/19-study-recall.md:66` - CTAs: "Show the meaning" · "Forgot" · "Remembered" · "Continue". |  |
-| `shared/ui/screen-handoff/19-study-recall.md:67` - Footer hint: "Recall the meaning before the time runs out" (`countingDown`) · |  |
+| `shared/ui/screen-handoff/19-study-recall.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:3` # 19 · Study · Recall | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:5` A round-based graded stage: `eight_box` only (BR-MODE-004). The term is | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:13` ## Layout | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:15` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:17` \| Top bar \| `MxStudyTopBar` \| Indigo, as every mode (3c-2 R8). \| | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:18` \| Context line \| `SessionContextLine` \| "{deck} · Review · round {n}". \| | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:19` \| Turn clock \| new: `RecallCountdownBar` (feature-local; distinct from `MxStudyT | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:20` \| Term face \| `StudyFaceCard` (label "Term") \| The prompt; always visible. \| | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:21` \| Meaning face \| `StudyFaceCard` (`role: answer`) \| Blurred placeholder before r | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:22` \| CTA row \| new: `StudyCtaRow` (feature-local) \| `countingDown`: one "Show the m | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:23` \| Footer hint \| `SessionFooterHint` \| Varies by state; see Copy. \| | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:25` ## States | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:27` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:29` \| countingDown \| `study_recall_counting_light.png` \| `study_recall_counting_dark | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:30` \| revealed \| `study_recall_revealed_light.png` \| `study_recall_revealed_dark.png | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:31` \| timedOut \| `study_recall_timed_out_light.png` \| `study_recall_timed_out_dark.p | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:33` **Built (FE-A6 P4):** `StudyRecallWidget` in the session route's mode switch, ov | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:43` ## Rulings | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:45` - **BR-STUDY-032, BR-STUDY-033, BR-STUDY-066:** the ending has two branches: a s | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:46` - **FE-A6 spec D14 (P4 ruling V2):** the clock's fill and caption are a neutral | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:47` - **M3 review 2026-09-28 F2:** the clock track is 4dp, the app's thin track. | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:48` - **P2 face-label fix:** the answer face carries its "Meaning" label in flow, as | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:49` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:50` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:51` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the foo | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:53` ## Accessibility | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:55` - The clock is one node: its caption, with "{n} seconds left" as its value. It i | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:56` - A timeout is announced when its write commits: "Time is up. Counted as forgot. | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:57` - Under Remove animations the clock's fill steps once a second and the meaning a | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:58` - At large text the faces scroll inside and the two self-check buttons stack (C4 | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:59` - **Open for the owner:** the 20-second turn (BR-STUDY-031) is the same for Talk | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:61` ## Copy | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:63` - Context line: "{deck} · Review · round {n}". | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:64` - Clock caption: "Time to recall" (`countingDown`) · "Revealed with time left" ( | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:65` - Meaning tag: "Counted as forgot" (`timedOut`). | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:66` - CTAs: "Show the meaning" · "Forgot" · "Remembered" · "Continue". | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
+| `shared/ui/screen-handoff/19-study-recall.md:67` - Footer hint: "Recall the meaning before the time runs out" (`countingDown`) · | moved → `screens/spec/SCR-STUDY-007-study-recall.md` |
 
 ## shared/ui/screen-handoff/20-study-fill.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/20-study-fill.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/20-study-fill.md:3` # 20 · Study · Fill |  |
-| `shared/ui/screen-handoff/20-study-fill.md:5` A round-based graded stage: `eight_box` only (BR-MODE-004), and only for |  |
-| `shared/ui/screen-handoff/20-study-fill.md:13` ## Layout |  |
-| `shared/ui/screen-handoff/20-study-fill.md:15` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/20-study-fill.md:17` \| Top bar \| `MxStudyTopBar` \| Indigo, as every mode (3c-2 R8). \| |  |
-| `shared/ui/screen-handoff/20-study-fill.md:18` \| Context line \| `SessionContextLine` \| "{deck} · Review · round {n}". \| |  |
-| `shared/ui/screen-handoff/20-study-fill.md:19` \| Prompt face \| `StudyFaceCard` \| The card's meaning. \| |  |
-| `shared/ui/screen-handoff/20-study-fill.md:20` \| Answer face \| `StudyFaceCard` (`role: answer`); the typed text itself: `MxText |  |
-| `shared/ui/screen-handoff/20-study-fill.md:21` \| Hint row \| inline row inside the answer face, shown only in `hint`, its line r |  |
-| `shared/ui/screen-handoff/20-study-fill.md:22` \| CTA row \| `StudyCtaRow` \| `input`: "Show hint" (only if the card has a hint) + |  |
-| `shared/ui/screen-handoff/20-study-fill.md:23` \| Footer hint \| `SessionFooterHint` \| Varies by state; see Copy. \| |  |
-| `shared/ui/screen-handoff/20-study-fill.md:25` ## Keyboard / IME |  |
-| `shared/ui/screen-handoff/20-study-fill.md:27` The system keyboard opens for `input`/`hint` and the CTA row sits above it; |  |
-| `shared/ui/screen-handoff/20-study-fill.md:35` ## States |  |
-| `shared/ui/screen-handoff/20-study-fill.md:37` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/20-study-fill.md:39` \| input \| `study_fill_input_light.png` \| `study_fill_input_dark.png` \| No edit b |  |
-| `shared/ui/screen-handoff/20-study-fill.md:40` \| hint \| `study_fill_hint_light.png` \| `study_fill_hint_dark.png` \| "Show hint" |  |
-| `shared/ui/screen-handoff/20-study-fill.md:41` \| wrong \| `study_fill_wrong_light.png` \| `study_fill_wrong_dark.png` \| With the |  |
-| `shared/ui/screen-handoff/20-study-fill.md:43` Not captured: the correct-answer path has no dedicated visual — the turn |  |
-| `shared/ui/screen-handoff/20-study-fill.md:46` **Built (FE-A6 P4):** `StudyFillWidget` in the session route's mode switch. The |  |
-| `shared/ui/screen-handoff/20-study-fill.md:55` ## Rulings |  |
-| `shared/ui/screen-handoff/20-study-fill.md:57` - **P4 ruling V1:** the struck-through wrong answer uses the `error` ink, as Gue |  |
-| `shared/ui/screen-handoff/20-study-fill.md:58` - **BR-STUDY-059, BR-STUDY-069 (P4 ruling V10):** the wrong tag and footer read |  |
-| `shared/ui/screen-handoff/20-study-fill.md:59` - **P4:** the prompt uses the study passage role at 16, and both faces carry the |  |
-| `shared/ui/screen-handoff/20-study-fill.md:60` - No card can be edited mid-session, so the prompt face has no edit button. |  |
-| `shared/ui/screen-handoff/20-study-fill.md:61` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/20-study-fill.md:62` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig |  |
-| `shared/ui/screen-handoff/20-study-fill.md:64` ## Accessibility |  |
-| `shared/ui/screen-handoff/20-study-fill.md:66` - The field reads "Your answer"; the hint row reads "Hint: {hint}"; the struck-t |  |
-| `shared/ui/screen-handoff/20-study-fill.md:67` - A wrong answer is announced when its write commits: "Wrong. The answer is {ter |  |
-| `shared/ui/screen-handoff/20-study-fill.md:68` - With the keyboard open the shell resizes above it, so Check and the footer sta |  |
-| `shared/ui/screen-handoff/20-study-fill.md:70` ## Copy |  |
-| `shared/ui/screen-handoff/20-study-fill.md:72` - Context line: "{deck} · Review · round {n}". |  |
-| `shared/ui/screen-handoff/20-study-fill.md:73` - CTAs: "Show hint" · "Check" · "Continue". |  |
-| `shared/ui/screen-handoff/20-study-fill.md:74` - Wrong tag: "Wrong · comes back next round" (see Rulings). |  |
-| `shared/ui/screen-handoff/20-study-fill.md:75` - Footer hint: "Type the term for this meaning, then check" (`input`) · "Using t |  |
+| `shared/ui/screen-handoff/20-study-fill.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:3` # 20 · Study · Fill | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:5` A round-based graded stage: `eight_box` only (BR-MODE-004), and only for | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:13` ## Layout | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:15` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:17` \| Top bar \| `MxStudyTopBar` \| Indigo, as every mode (3c-2 R8). \| | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:18` \| Context line \| `SessionContextLine` \| "{deck} · Review · round {n}". \| | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:19` \| Prompt face \| `StudyFaceCard` \| The card's meaning. \| | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:20` \| Answer face \| `StudyFaceCard` (`role: answer`); the typed text itself: `MxText | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:21` \| Hint row \| inline row inside the answer face, shown only in `hint`, its line r | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:22` \| CTA row \| `StudyCtaRow` \| `input`: "Show hint" (only if the card has a hint) + | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:23` \| Footer hint \| `SessionFooterHint` \| Varies by state; see Copy. \| | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:25` ## Keyboard / IME | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:27` The system keyboard opens for `input`/`hint` and the CTA row sits above it; | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:35` ## States | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:37` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:39` \| input \| `study_fill_input_light.png` \| `study_fill_input_dark.png` \| No edit b | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:40` \| hint \| `study_fill_hint_light.png` \| `study_fill_hint_dark.png` \| "Show hint" | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:41` \| wrong \| `study_fill_wrong_light.png` \| `study_fill_wrong_dark.png` \| With the | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:43` Not captured: the correct-answer path has no dedicated visual — the turn | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:46` **Built (FE-A6 P4):** `StudyFillWidget` in the session route's mode switch. The | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:55` ## Rulings | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:57` - **P4 ruling V1:** the struck-through wrong answer uses the `error` ink, as Gue | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:58` - **BR-STUDY-059, BR-STUDY-069 (P4 ruling V10):** the wrong tag and footer read | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:59` - **P4:** the prompt uses the study passage role at 16, and both faces carry the | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:60` - No card can be edited mid-session, so the prompt face has no edit button. | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:61` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:62` - **Critique 2026-09-30 part 3c-2 (spec `2026-10-01-critique-fixes-part3c2-desig | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:64` ## Accessibility | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:66` - The field reads "Your answer"; the hint row reads "Hint: {hint}"; the struck-t | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:67` - A wrong answer is announced when its write commits: "Wrong. The answer is {ter | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:68` - With the keyboard open the shell resizes above it, so Check and the footer sta | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:70` ## Copy | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:72` - Context line: "{deck} · Review · round {n}". | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:73` - CTAs: "Show hint" · "Check" · "Continue". | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:74` - Wrong tag: "Wrong · comes back next round" (see Rulings). | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
+| `shared/ui/screen-handoff/20-study-fill.md:75` - Footer hint: "Type the term for this meaning, then check" (`input`) · "Using t | moved → `screens/spec/SCR-STUDY-008-study-fill.md` |
 
 ## shared/ui/screen-handoff/21-session-summary.md
 
@@ -2675,13 +2675,13 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:107` - **A5 — Xoá deck đang ôn dở:** kết thúc phiên với `content_deleted`, hiện tổng | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:111` **Error flows:** | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:112` - **E1 — Không còn card nào đến hạn lúc bắt đầu:** empty state tích cực (BR-STUD | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:115` - **E2 — Ghi đánh giá thất bại nhưng còn tiếp tục được:** hiện lỗi ngay, **không | pending → SCR-STUDY-004 (the error shown at once, the card stays, in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 E2 |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:118` - **E3 — Lỗi ghi không thể tiếp tục:** session → `failed`, | pending → SCR-STUDY-004 (the error, then back to the deck list, in every mode screen); intent kept in UC-STUDY-001 E3 |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:121` - **E4 — Generation của session đã lỗi thời** (root bị reset ở màn khác trong lú | pending → SCR-STUDY-004 (the notice that the session ended because progress was reset, then back to the list, in every mode screen); intent kept in UC-STUDY-001 E4 |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:126` - **E5 — Đọc card thất bại:** màn hình lỗi có nút thử lại. | pending → SCR-STUDY-004 (the error screen with Retry, in every mode screen); intent kept in UC-STUDY-001 E5 |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:128` ## UI | pending → SCR-STUDY-004 (states loading · front · flipped · submitting · empty · error, in every mode screen) |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:130` **UI states:** loading · loaded (mặt trước) · loaded (đã lật) · submitting · | pending → SCR-STUDY-004 (states loading · front · flipped · submitting · empty · error, in every mode screen) |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:133` `submitting` tách khỏi `loaded` là đúng nguyên tắc "dữ liệu và trạng thái tác vụ | pending → SCR-STUDY-004 (submitting keeps the card content and locks only the actions) |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:115` - **E2 — Ghi đánh giá thất bại nhưng còn tiếp tục được:** hiện lỗi ngay, **không | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:118` - **E3 — Lỗi ghi không thể tiếp tục:** session → `failed`, | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:121` - **E4 — Generation của session đã lỗi thời** (root bị reset ở màn khác trong lú | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:126` - **E5 — Đọc card thất bại:** màn hình lỗi có nút thử lại. | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:128` ## UI | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:130` **UI states:** loading · loaded (mặt trước) · loaded (đã lật) · submitting · | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:133` `submitting` tách khỏi `loaded` là đúng nguyên tắc "dữ liệu và trạng thái tác vụ | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:137` ## Local | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:139` **Postconditions:** | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:140` - Mỗi card đã đánh giá có trạng thái lịch đúng loại lượt, đúng scheduler và đúng | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
@@ -2706,14 +2706,14 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:169` - [ ] **Given** một thẻ thiếu dữ liệu cho stage đang chạy (ví dụ không có `examp | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:170` - [ ] **Given** một thẻ đã quay lại 3 lượt `relearning` ở `self_assess`, **when* | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:171` - [ ] **Given** người dùng thoát giữa phiên, **when** thoát, **then** phiên thàn | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:172` - [ ] **Given** còn một phiên `in_progress`, **when** người dùng mở lại app cùng | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:173` - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** việc xoá xảy ra, * | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:172` - [ ] **Given** còn một phiên `in_progress`, **when** người dùng mở lại app cùng | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:173` - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** việc xoá xảy ra, * | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:174` - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** phiên nhận việc xo | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:175` - [ ] **Given** tập ôn tập rỗng, **when** người dùng mở Study Entry, **then** lố | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:176` - [ ] **Given** ghi một đánh giá gặp database bận, **when** người dùng thử lại đ | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:177` - [ ] **Given** ghi một đánh giá gặp lỗi không thể tiếp tục, **when** hệ thống x | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:178` - [ ] **Given** root của phiên vừa bị reset ở màn khác, **when** người dùng trả | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:179` - [ ] **Given** phiên không đọc được, **when** màn hình mở, **then** hệ thống hi | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:178` - [ ] **Given** root của phiên vừa bị reset ở màn khác, **when** người dùng trả | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:179` - [ ] **Given** phiên không đọc được, **when** màn hình mở, **then** hệ thống hi | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:180` - [ ] **Given** một phiên ôn chạm giới hạn thẻ trong khi cây deck còn thẻ đến hạ | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
 
 ## features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md
@@ -2780,7 +2780,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:25` 3. Người dùng chạm một lựa chọn. Chạm chỉ **chọn**, không mở phiên: lựa chọn bị | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:28` 4. Người dùng bấm `Start review`. Hệ thống khoá sheet trong lúc mở phiên — cú | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:30` 5. Hệ thống mở phiên với chiều đã chọn, materialize hàng đợi trong cùng | superseded → FN-STUDY-003 (direction per queue row; mixed split once) + UC-STUDY-003 step 5 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:33` 6. Màn phiên học mở ra. Mỗi thẻ hiện đề ở nửa trên theo chiều của dòng nó, và | pending → SCR-STUDY-004 (prompt on the top half, answer on the bottom half after the flip); intent kept in UC-STUDY-003 step 6 + FN-STUDY-004 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:33` 6. Màn phiên học mở ra. Mỗi thẻ hiện đề ở nửa trên theo chiều của dòng nó, và | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:37` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:39` **Alternative flows:** | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:40` - **A1 — Đóng sheet:** người dùng vuốt xuống hoặc chạm ra ngoài. Chưa có gì được | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
@@ -2801,7 +2801,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:84` - [ ] **Given** một root dùng `sm2` có thẻ đến hạn, **when** người dùng bấm Revi | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:85` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng chọn `Meaning firs | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:86` - [ ] **Given** phiên mở với `Term first` hoặc `Meaning first`, **when** hệ thốn | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:87` - [ ] **Given** một thẻ hỏi theo `Meaning first`, **when** thẻ hiện ra, **then** | pending → SCR-STUDY-004 (presentation of the criterion: prompt and answer faces); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:87` - [ ] **Given** một thẻ hỏi theo `Meaning first`, **when** thẻ hiện ra, **then** | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:88` - [ ] **Given** Start review đang mở phiên, **when** người dùng bấm thêm lần nữa | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:89` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng đóng sheet mà khôn | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:90` - [ ] **Given** deck chạy `eight_box`, **when** người dùng bấm Review, **then** | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
@@ -3214,9 +3214,9 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/ui.md:14` B -->\|"Không"\| B1["Empty state tích cực kèm thời điểm đến hạn gần nhất; KHÔNG tạ | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/ui.md:15` B -->\|"Còn"\| C["Tạo study_session in_progress mang root_id và generation hiện tạ | superseded → FN-STUDY-002 + FN-STUDY-003 (the session carries root and generation; it is created when learning or review is chosen, per the code) |
 | `features/study/ui.md:16` C --> D["Chọn Học mới hoặc Ôn tập · tối đa `card_limit` thẻ · BR-STUDY-051, BR-S | superseded → FN-STUDY-002 + FN-STUDY-003 (card_limit) + UC-STUDY-001 steps 3–4 |
-| `features/study/ui.md:17` D --> E["Render nút đánh giá từ supportedActions: 2 với eight_box, 4 với sm2 · B | pending → SCR-STUDY-004 (the assessment buttons drawn from supportedActions: 2 for eight_box, 4 for sm2); contract kept in FN-STUDY-005 |
-| `features/study/ui.md:18` E --> F["Hiện mặt trước và tiến độ phiên"] | pending → SCR-STUDY-004 (the front face and the session progress, in every mode screen); contract kept in FN-STUDY-004 |
-| `features/study/ui.md:19` F --> G["Người dùng lật rồi chọn một action"] | pending → SCR-STUDY-004 (flip, then pick an action); contract kept in FN-STUDY-006 + FN-STUDY-005 |
+| `features/study/ui.md:17` D --> E["Render nút đánh giá từ supportedActions: 2 với eight_box, 4 với sm2 · B | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
+| `features/study/ui.md:18` E --> F["Hiện mặt trước và tiến độ phiên"] | moved → `screens/spec/SCR-STUDY-003-study-browse.md` |
+| `features/study/ui.md:19` F --> G["Người dùng lật rồi chọn một action"] | moved → `screens/spec/SCR-STUDY-004-study-self-assess.md` |
 | `features/study/ui.md:21` G --> H{"session.generation còn khớp root không · BR-SRS-026"} | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
 | `features/study/ui.md:22` H -->\|"Lệch"\| H1["Từ chối ghi; session invalidated, end_reason stale_generation | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
 | `features/study/ui.md:23` H -->\|"Khớp"\| I{"Lượt đầu tiên của card này trong phiên"} | superseded → FN-STUDY-005 (the turn: generation check, kind, schedule, requeue) |
@@ -3831,10 +3831,10 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/starter_decks/presentation/goldens/starter_none_light.png` | superseded → SCR-STARTER-001 `none` light |
 | `test/features/starter_decks/presentation/goldens/starter_second_copy_dark.png` | superseded → SCR-STARTER-001 `second_copy` dark |
 | `test/features/starter_decks/presentation/goldens/starter_second_copy_light.png` | superseded → SCR-STARTER-001 `second_copy` light |
-| `test/features/study/presentation/goldens/study_browse_dark.png` |  |
-| `test/features/study/presentation/goldens/study_browse_light.png` |  |
-| `test/features/study/presentation/goldens/study_browse_looking_back_dark.png` |  |
-| `test/features/study/presentation/goldens/study_browse_looking_back_light.png` |  |
+| `test/features/study/presentation/goldens/study_browse_dark.png` | superseded → SCR-STUDY-003 `default` dark |
+| `test/features/study/presentation/goldens/study_browse_light.png` | superseded → SCR-STUDY-003 `default` light |
+| `test/features/study/presentation/goldens/study_browse_looking_back_dark.png` | superseded → SCR-STUDY-003 `looking_back` dark |
+| `test/features/study/presentation/goldens/study_browse_looking_back_light.png` | superseded → SCR-STUDY-003 `looking_back` light |
 | `test/features/study/presentation/goldens/study_entry_direction_sheet_dark.png` | superseded → SCR-STUDY-002 `direction_sheet` dark |
 | `test/features/study/presentation/goldens/study_entry_direction_sheet_light.png` | superseded → SCR-STUDY-002 `direction_sheet` light |
 | `test/features/study/presentation/goldens/study_entry_eight_box_dark.png` | superseded → SCR-STUDY-002 `eight_box` dark |
@@ -3855,20 +3855,20 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/study/presentation/goldens/study_entry_start_failed_light.png` | superseded → SCR-STUDY-002 `start_failed` light |
 | `test/features/study/presentation/goldens/study_entry_starting_dark.png` | superseded → SCR-STUDY-002 `starting` dark |
 | `test/features/study/presentation/goldens/study_entry_starting_light.png` | superseded → SCR-STUDY-002 `starting` light |
-| `test/features/study/presentation/goldens/study_fill_hint_dark.png` |  |
-| `test/features/study/presentation/goldens/study_fill_hint_light.png` |  |
-| `test/features/study/presentation/goldens/study_fill_input_dark.png` |  |
-| `test/features/study/presentation/goldens/study_fill_input_light.png` |  |
-| `test/features/study/presentation/goldens/study_fill_wrong_dark.png` |  |
-| `test/features/study/presentation/goldens/study_fill_wrong_light.png` |  |
-| `test/features/study/presentation/goldens/study_guess_blocked_dark.png` |  |
-| `test/features/study/presentation/goldens/study_guess_blocked_light.png` |  |
-| `test/features/study/presentation/goldens/study_guess_idle_dark.png` |  |
-| `test/features/study/presentation/goldens/study_guess_idle_light.png` |  |
-| `test/features/study/presentation/goldens/study_guess_right_dark.png` |  |
-| `test/features/study/presentation/goldens/study_guess_right_light.png` |  |
-| `test/features/study/presentation/goldens/study_guess_wrong_dark.png` |  |
-| `test/features/study/presentation/goldens/study_guess_wrong_light.png` |  |
+| `test/features/study/presentation/goldens/study_fill_hint_dark.png` | superseded → SCR-STUDY-008 `hint` dark |
+| `test/features/study/presentation/goldens/study_fill_hint_light.png` | superseded → SCR-STUDY-008 `hint` light |
+| `test/features/study/presentation/goldens/study_fill_input_dark.png` | superseded → SCR-STUDY-008 `input` dark |
+| `test/features/study/presentation/goldens/study_fill_input_light.png` | superseded → SCR-STUDY-008 `input` light |
+| `test/features/study/presentation/goldens/study_fill_wrong_dark.png` | superseded → SCR-STUDY-008 `wrong` dark |
+| `test/features/study/presentation/goldens/study_fill_wrong_light.png` | superseded → SCR-STUDY-008 `wrong` light |
+| `test/features/study/presentation/goldens/study_guess_blocked_dark.png` | superseded → SCR-STUDY-006 `blocked` dark |
+| `test/features/study/presentation/goldens/study_guess_blocked_light.png` | superseded → SCR-STUDY-006 `blocked` light |
+| `test/features/study/presentation/goldens/study_guess_idle_dark.png` | superseded → SCR-STUDY-006 `idle` dark |
+| `test/features/study/presentation/goldens/study_guess_idle_light.png` | superseded → SCR-STUDY-006 `idle` light |
+| `test/features/study/presentation/goldens/study_guess_right_dark.png` | superseded → SCR-STUDY-006 `right` dark |
+| `test/features/study/presentation/goldens/study_guess_right_light.png` | superseded → SCR-STUDY-006 `right` light |
+| `test/features/study/presentation/goldens/study_guess_wrong_dark.png` | superseded → SCR-STUDY-006 `wrong` dark |
+| `test/features/study/presentation/goldens/study_guess_wrong_light.png` | superseded → SCR-STUDY-006 `wrong` light |
 | `test/features/study/presentation/goldens/study_home_error_dark.png` | superseded → SCR-STUDY-001 `error` dark |
 | `test/features/study/presentation/goldens/study_home_error_light.png` | superseded → SCR-STUDY-001 `error` light |
 | `test/features/study/presentation/goldens/study_home_loaded_dark.png` | superseded → SCR-STUDY-001 `loaded` dark |
@@ -3887,24 +3887,24 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/study/presentation/goldens/study_home_sync_stale_light.png` | superseded → SCR-STUDY-001 `sync_stale` light |
 | `test/features/study/presentation/goldens/study_home_zero_dark.png` | superseded → SCR-STUDY-001 `zero` dark |
 | `test/features/study/presentation/goldens/study_home_zero_light.png` | superseded → SCR-STUDY-001 `zero` light |
-| `test/features/study/presentation/goldens/study_match_board_dark.png` |  |
-| `test/features/study/presentation/goldens/study_match_board_light.png` |  |
-| `test/features/study/presentation/goldens/study_match_wrong_dark.png` |  |
-| `test/features/study/presentation/goldens/study_match_wrong_light.png` |  |
-| `test/features/study/presentation/goldens/study_recall_counting_dark.png` |  |
-| `test/features/study/presentation/goldens/study_recall_counting_light.png` |  |
-| `test/features/study/presentation/goldens/study_recall_revealed_dark.png` |  |
-| `test/features/study/presentation/goldens/study_recall_revealed_light.png` |  |
-| `test/features/study/presentation/goldens/study_recall_timed_out_dark.png` |  |
-| `test/features/study/presentation/goldens/study_recall_timed_out_light.png` |  |
-| `test/features/study/presentation/goldens/study_self_assess_meaning_first_dark.png` |  |
-| `test/features/study/presentation/goldens/study_self_assess_meaning_first_light.png` |  |
-| `test/features/study/presentation/goldens/study_self_assess_prompt_dark.png` |  |
-| `test/features/study/presentation/goldens/study_self_assess_prompt_light.png` |  |
-| `test/features/study/presentation/goldens/study_self_assess_relearning_dark.png` |  |
-| `test/features/study/presentation/goldens/study_self_assess_relearning_light.png` |  |
-| `test/features/study/presentation/goldens/study_self_assess_revealed_dark.png` |  |
-| `test/features/study/presentation/goldens/study_self_assess_revealed_light.png` |  |
+| `test/features/study/presentation/goldens/study_match_board_dark.png` | superseded → SCR-STUDY-005 `board` dark |
+| `test/features/study/presentation/goldens/study_match_board_light.png` | superseded → SCR-STUDY-005 `board` light |
+| `test/features/study/presentation/goldens/study_match_wrong_dark.png` | superseded → SCR-STUDY-005 `wrong` dark |
+| `test/features/study/presentation/goldens/study_match_wrong_light.png` | superseded → SCR-STUDY-005 `wrong` light |
+| `test/features/study/presentation/goldens/study_recall_counting_dark.png` | superseded → SCR-STUDY-007 `counting` dark |
+| `test/features/study/presentation/goldens/study_recall_counting_light.png` | superseded → SCR-STUDY-007 `counting` light |
+| `test/features/study/presentation/goldens/study_recall_revealed_dark.png` | superseded → SCR-STUDY-007 `revealed` dark |
+| `test/features/study/presentation/goldens/study_recall_revealed_light.png` | superseded → SCR-STUDY-007 `revealed` light |
+| `test/features/study/presentation/goldens/study_recall_timed_out_dark.png` | superseded → SCR-STUDY-007 `timed_out` dark |
+| `test/features/study/presentation/goldens/study_recall_timed_out_light.png` | superseded → SCR-STUDY-007 `timed_out` light |
+| `test/features/study/presentation/goldens/study_self_assess_meaning_first_dark.png` | superseded → SCR-STUDY-004 `meaning_first` dark |
+| `test/features/study/presentation/goldens/study_self_assess_meaning_first_light.png` | superseded → SCR-STUDY-004 `meaning_first` light |
+| `test/features/study/presentation/goldens/study_self_assess_prompt_dark.png` | superseded → SCR-STUDY-004 `prompt` dark |
+| `test/features/study/presentation/goldens/study_self_assess_prompt_light.png` | superseded → SCR-STUDY-004 `prompt` light |
+| `test/features/study/presentation/goldens/study_self_assess_relearning_dark.png` | superseded → SCR-STUDY-004 `relearning` dark |
+| `test/features/study/presentation/goldens/study_self_assess_relearning_light.png` | superseded → SCR-STUDY-004 `relearning` light |
+| `test/features/study/presentation/goldens/study_self_assess_revealed_dark.png` | superseded → SCR-STUDY-004 `revealed` dark |
+| `test/features/study/presentation/goldens/study_self_assess_revealed_light.png` | superseded → SCR-STUDY-004 `revealed` light |
 | `test/features/study/presentation/goldens/summary_content_deleted_dark.png` | superseded → SCR-STUDY-009 `content_deleted` dark |
 | `test/features/study/presentation/goldens/summary_content_deleted_light.png` | superseded → SCR-STUDY-009 `content_deleted` light |
 | `test/features/study/presentation/goldens/summary_interrupted_dark.png` | superseded → SCR-STUDY-009 `interrupted` dark |
@@ -4374,3 +4374,12 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - Ruling: UC-STUDY-002 step 3 no longer says the deck rows show the review algorithm — V8 draws no scheduler label and no BR asks for one; owner precedent 2026-10-04 (tri-state icon): the UC keeps intent, the spec follows the app — cost if wrong: one clause back in the UC and an IMPLEMENTATION GAP.
 - IMPLEMENTATION GAP recorded in SCR-STUDY-002: UC-STUDY-001 step 2/E1 and FN-STUDY-001 give the next due time when nothing is due; the entry's nothing-due state does not show it (Study home's zero card does). Presentation only; FN and UC unchanged, no code change.
 - Warning delta: 58 → 67 = +14 navigations to specs still pending (study mode screens Task 36, settings Task 37, account Task 40), −3 navigations to SCR-STUDY-001/002, −2 FN-ACCOUNT-002/015 now invoked by SCR-STUDY-001.
+
+## Task 36 notes — SCR-STUDY-003…008
+
+- Records 16, 16a, 17–20 → `SCR-STUDY-003…008-*.md`; their goldens superseded.
+- Ruling: record 16a is a shape brief, but FE-A6 P2 built it with goldens (`study_self_assess_{prompt,revealed,meaning_first,relearning}`), so SCR-STUDY-004 names those goldens instead of the plan's `Golden: none — shape brief`; its unbuilt states (saving, save_failed, stale) are `Golden: none` — cost if wrong: four golden lines.
+- What every session screen shares (top bar, exit dialog, rounds, result after commit, unsaved-answer banner, session errors) is written once in SCR-STUDY-003 "Session screens"; the other five cite SCR-STUDY-003. The 12 pending rows saying "in every mode screen" moved to SCR-STUDY-003, the other 4 to SCR-STUDY-004.
+- Followed the code where the legacy UC differed (presentation only): an unrecoverable save error shows SCR-STUDY-009 "Stopped by a save error" rather than the deck list; eight boxes never runs self-assess, so its two-button grade row does not exist.
+- Record 19's open item (the 20-second turn for TalkBack users is a business-rule decision) is kept as a Pending ruling in SCR-STUDY-007.
+- Warning delta: 67 → 55 = −11 navigations to pending study screens, −1 FN-STUDY-013 now invoked by SCR-STUDY-004.

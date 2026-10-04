@@ -50,6 +50,7 @@ Screen → screen edges from each spec's `Navigate to:` lines (spec R9).
 | SCR-STUDY-002 | SCR-STUDY-006 |
 | SCR-STUDY-002 | SCR-STUDY-007 |
 | SCR-STUDY-002 | SCR-STUDY-008 |
+| SCR-STUDY-003 | SCR-STUDY-009 |
 | SCR-STUDY-009 | SCR-DECK-001 |
 | SCR-STUDY-009 | SCR-STUDY-002 |
 | SCR-TAG-001 | SCR-DECK-001 |

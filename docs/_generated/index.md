@@ -534,16 +534,16 @@
 | [FN-STUDY-001](../functional-spec/study.md) | Xem lối vào học của một deck | active | SCR-STUDY-002, UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
 | [FN-STUDY-002](../functional-spec/study.md) | Mở phiên học mới | active | SCR-STUDY-002, UC-STUDY-001 |
 | [FN-STUDY-003](../functional-spec/study.md) | Mở phiên ôn tập | active | SCR-STUDY-002, UC-STUDY-001, UC-STUDY-003 |
-| [FN-STUDY-004](../functional-spec/study.md) | Xem một phiên học | active | SCR-STUDY-009, UC-STUDY-001, UC-STUDY-003 |
-| [FN-STUDY-005](../functional-spec/study.md) | Trả lời một lượt học | active | UC-STUDY-001 |
-| [FN-STUDY-006](../functional-spec/study.md) | Mở đáp án của lượt recall | active | UC-STUDY-001 |
-| [FN-STUDY-007](../functional-spec/study.md) | Lưu thời gian còn lại của lượt recall | active | UC-STUDY-001 |
-| [FN-STUDY-008](../functional-spec/study.md) | Hiện gợi ý của lượt fill | active | UC-STUDY-001 |
-| [FN-STUDY-009](../functional-spec/study.md) | Rời phiên học | active | UC-STUDY-001 |
+| [FN-STUDY-004](../functional-spec/study.md) | Xem một phiên học | active | SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008, SCR-STUDY-009, UC-STUDY-001, UC-STUDY-003 |
+| [FN-STUDY-005](../functional-spec/study.md) | Trả lời một lượt học | active | SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008, UC-STUDY-001 |
+| [FN-STUDY-006](../functional-spec/study.md) | Mở đáp án của lượt recall | active | SCR-STUDY-007, UC-STUDY-001 |
+| [FN-STUDY-007](../functional-spec/study.md) | Lưu thời gian còn lại của lượt recall | active | SCR-STUDY-007, UC-STUDY-001 |
+| [FN-STUDY-008](../functional-spec/study.md) | Hiện gợi ý của lượt fill | active | SCR-STUDY-008, UC-STUDY-001 |
+| [FN-STUDY-009](../functional-spec/study.md) | Rời phiên học | active | SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008, UC-STUDY-001 |
 | [FN-STUDY-010](../functional-spec/study.md) | Tiếp tục một phiên đang dở | active | SCR-STUDY-001, SCR-STUDY-002, UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
 | [FN-STUDY-011](../functional-spec/study.md) | Đóng các phiên của ngày học trước khi app mở | active | UC-STUDY-001 |
 | [FN-STUDY-012](../functional-spec/study.md) | Xem tab Study | active | SCR-STUDY-001, UC-STUDY-002 |
-| [FN-STUDY-013](../functional-spec/study.md) | Xem trước khoảng ôn của từng mức tự đánh giá | active | — |
+| [FN-STUDY-013](../functional-spec/study.md) | Xem trước khoảng ôn của từng mức tự đánh giá | active | SCR-STUDY-004 |
 
 ### Use cases
 
@@ -559,6 +559,12 @@
 |---|---|---|---|
 | [SCR-STUDY-001](../screens/spec/SCR-STUDY-001-study-home.md) | Study home | ready | `/study` |
 | [SCR-STUDY-002](../screens/spec/SCR-STUDY-002-study-entry.md) | Study entry | ready | `/decks/deck/:deckId/study` |
+| [SCR-STUDY-003](../screens/spec/SCR-STUDY-003-study-browse.md) | Study · Browse | ready | `/study/session/:sessionId` |
+| [SCR-STUDY-004](../screens/spec/SCR-STUDY-004-study-self-assess.md) | Study · Self-assess | ready | `/study/session/:sessionId` |
+| [SCR-STUDY-005](../screens/spec/SCR-STUDY-005-study-match.md) | Study · Match | ready | `/study/session/:sessionId` |
+| [SCR-STUDY-006](../screens/spec/SCR-STUDY-006-study-guess.md) | Study · Guess | ready | `/study/session/:sessionId` |
+| [SCR-STUDY-007](../screens/spec/SCR-STUDY-007-study-recall.md) | Study · Recall | ready | `/study/session/:sessionId` |
+| [SCR-STUDY-008](../screens/spec/SCR-STUDY-008-study-fill.md) | Study · Fill | ready | `/study/session/:sessionId` |
 | [SCR-STUDY-009](../screens/spec/SCR-STUDY-009-session-summary.md) | Session summary | ready | `/study/session/:sessionId` |
 
 ## [study-mode](../features/study-mode/README.md)

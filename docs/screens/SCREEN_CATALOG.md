@@ -22,12 +22,12 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 | SCR-TRANSFER-002 | Card export | transfer | — | ready | `spec/SCR-TRANSFER-002-card-export.md` |
 | SCR-STUDY-001 | Study home | study | `/study` | ready | `spec/SCR-STUDY-001-study-home.md` |
 | SCR-STUDY-002 | Study entry | study | `/decks/deck/:deckId/study` | ready | `spec/SCR-STUDY-002-study-entry.md` |
-| SCR-STUDY-003 | Study · Browse | study | — | pending | — |
-| SCR-STUDY-004 | Study · Self-assess | study | — | pending | — |
-| SCR-STUDY-005 | Study · Match | study | — | pending | — |
-| SCR-STUDY-006 | Study · Guess | study | — | pending | — |
-| SCR-STUDY-007 | Study · Recall | study | — | pending | — |
-| SCR-STUDY-008 | Study · Fill | study | — | pending | — |
+| SCR-STUDY-003 | Study · Browse | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-003-study-browse.md` |
+| SCR-STUDY-004 | Study · Self-assess | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-004-study-self-assess.md` |
+| SCR-STUDY-005 | Study · Match | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-005-study-match.md` |
+| SCR-STUDY-006 | Study · Guess | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-006-study-guess.md` |
+| SCR-STUDY-007 | Study · Recall | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-007-study-recall.md` |
+| SCR-STUDY-008 | Study · Fill | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-008-study-fill.md` |
 | SCR-STUDY-009 | Session summary | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-009-session-summary.md` |
 | SCR-SETTINGS-001 | Study options | settings | — | pending | — |
 | SCR-SETTINGS-002 | Settings | settings | — | pending | — |
