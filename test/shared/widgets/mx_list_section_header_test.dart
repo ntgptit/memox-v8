@@ -63,4 +63,16 @@ void main() {
     await tester.tap(find.text('Newest'));
     expect(opened, 1);
   });
+
+  testWidgets('TalkBack reads the words as written, not spelled in capitals', (
+    tester,
+  ) async {
+    final SemanticsHandle semantics = tester.ensureSemantics();
+    await pumpMx(tester, const MxListSectionHeader(title: 'Decks'));
+    expect(
+      tester.getSemantics(find.text('DECKS')),
+      isSemantics(label: 'Decks', isHeader: true),
+    );
+    semantics.dispose();
+  });
 }

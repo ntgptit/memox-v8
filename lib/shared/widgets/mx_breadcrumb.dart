@@ -23,7 +23,8 @@ class MxBreadcrumbItem {
 /// before it are ancestors, each a 48 target when it can be tapped. One line:
 /// when the path does not fit, the current place keeps its full width, the
 /// nearest ancestors stay whole, and the oldest fold into one "…" place that
-/// goes to the nearest of them and reads them all to TalkBack. The separator
+/// goes to the nearest of them that can be opened and reads them all to
+/// TalkBack. The separator
 /// mirrors in right-to-left text.
 class MxBreadcrumb extends StatelessWidget {
   const MxBreadcrumb({required this.items, super.key});
@@ -70,31 +71,38 @@ class MxBreadcrumb extends StatelessWidget {
             children: [
               if (folded.isNotEmpty) ...[
                 _Place(
-                  item: MxBreadcrumbItem(
-                    label: _fold,
-                    onTap: folded.last.onTap,
-                  ),
+                  item: MxBreadcrumbItem(label: _fold, onTap: _nearest(folded)),
                   semanticLabel: [for (final item in folded) item.label]
-                      .join(' › '),
+                      .join(', '),
                   isCurrent: false,
                 ),
                 const _Separator(),
               ],
               for (final (index, item) in shown.indexed) ...[
                 if (index > 0) const _Separator(),
-                if (index == last)
-                  Flexible(child: _Place(item: item, isCurrent: true))
-                else
-                  Flexible(
-                    flex: 0,
-                    child: _Place(item: item, isCurrent: false),
-                  ),
+                // Ancestors keep their measured width; the current place
+                // takes what is left.
+                Flexible(
+                  flex: index == last ? 1 : 0,
+                  child: _Place(item: item, isCurrent: index == last),
+                ),
               ],
             ],
           );
         },
       ),
     );
+  }
+
+  /// Where the fold goes: the nearest folded place that can be opened.
+  static VoidCallback? _nearest(List<MxBreadcrumbItem> folded) {
+    for (final item in folded.reversed) {
+      final VoidCallback? tap = item.onTap;
+      if (tap != null) {
+        return tap;
+      }
+    }
+    return null;
   }
 
   static double _labelWidth(

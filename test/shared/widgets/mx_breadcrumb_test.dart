@@ -73,7 +73,7 @@ void main() {
     // What does not fit whole folds into "…", which reads every place.
     expect(
       tester.getSemantics(find.text('…')),
-      isSemantics(label: 'Library › Spanish for travellers', isButton: true),
+      isSemantics(label: 'Library, Spanish for travellers', isButton: true),
     );
     semantics.dispose();
   });
@@ -156,7 +156,7 @@ void main() {
     expect(find.text('Library'), findsNothing);
     expect(
       tester.getSemantics(find.text('…')),
-      isSemantics(label: 'Library › Languages', isButton: true),
+      isSemantics(label: 'Library, Languages', isButton: true),
     );
     for (final Element place in find.byType(InkWell).evaluate()) {
       expect(
@@ -185,5 +185,29 @@ void main() {
           tester.getRect(find.byType(MxBreadcrumb)).left,
       40 + 16,
     );
+  });
+
+  testWidgets('the fold goes to the nearest folded place that can be opened', (
+    tester,
+  ) async {
+    final List<String> went = [];
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: MxBreadcrumb(
+          items: [
+            MxBreadcrumbItem(
+              label: 'Library',
+              onTap: () => went.add('Library'),
+            ),
+            const MxBreadcrumbItem(label: 'Languages and alphabets'),
+            const MxBreadcrumbItem(label: 'Review algorithm settings'),
+          ],
+        ),
+      ),
+    );
+    await tester.tap(find.text('…'));
+    expect(went, ['Library']);
   });
 }

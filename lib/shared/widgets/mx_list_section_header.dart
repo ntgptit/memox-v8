@@ -19,8 +19,11 @@ class MxListSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MxChipTrigger? end = trigger;
+    // TalkBack reads the words as written, not spelled out in capitals.
     final Widget label = Semantics(
       header: true,
+      label: title,
+      excludeSemantics: true,
       child: Text(
         title.toUpperCase(),
         maxLines: 1,

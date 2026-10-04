@@ -40,42 +40,61 @@ class MxScreenScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      breadcrumb == null || appBar != null,
+      'MxScreenScaffold pins a breadcrumb under its bar; give it the bar.',
+    );
+    // The Scaffold hides the keyboard from its body; read it here, once.
+    final bool isTyping = MediaQuery.viewInsetsOf(context).bottom > 0;
+    return Scaffold(
+      appBar: appBar,
+      // The body's own MediaQuery: the Scaffold has already taken the bar's
+      // top inset and the keyboard out of it.
+      body: Builder(builder: (context) => _frame(context, isTyping)),
+    );
+  }
+
+  Widget _frame(BuildContext context, bool isTyping) {
     final MxBreadcrumb? path = breadcrumb;
     final MxFooterBar? commit = footer;
     final MxFab? action = fab;
+    final MediaQueryData media = MediaQuery.of(context);
+    // While typing, the keyboard covers the system bar (a bottom inset the
+    // shell hands down included); with a footer, the footer clears it. The
+    // body takes no bottom inset in either case.
+    final MediaQueryData clear = media.removePadding(removeBottom: true);
+    final bool isBottomHeld = commit != null || isTyping;
+    final MediaQueryData inner = isBottomHeld ? clear : media;
     Widget region = MxScreenScaffoldScope(hasFab: action != null, child: body);
     if (action != null) {
+      final bool isRtl = Directionality.of(context) == TextDirection.rtl;
+      final double endInset = isRtl ? inner.padding.left : inner.padding.right;
       region = Stack(
         children: [
           Positioned.fill(child: region),
           PositionedDirectional(
-            end: AppSpacing.gutter,
-            bottom: AppSpacing.gutter + MediaQuery.paddingOf(context).bottom,
+            end: AppSpacing.gutter + endInset,
+            bottom: AppSpacing.gutter + inner.padding.bottom,
             child: action,
           ),
         ],
       );
     }
-    // The footer clears the system bar itself; the body above it does not.
-    if (commit != null) {
-      region = MediaQuery.removePadding(
-        context: context,
-        removeBottom: true,
-        child: region,
-      );
-    }
-    return Scaffold(
-      appBar: appBar,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // The pinned breadcrumb is part of the top chrome: one ground with
-          // the bar as content passes under them.
-          if (path != null) MxAppBarGround(child: _InColumn(child: path)),
-          Expanded(child: _InColumn(child: region)),
-          ?commit,
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // The pinned breadcrumb is part of the top chrome: one ground with
+        // the bar as content passes under them.
+        if (path != null) MxAppBarGround(child: _InColumn(child: path)),
+        Expanded(
+          child: MediaQuery(
+            data: inner,
+            child: _InColumn(child: region),
+          ),
+        ),
+        if (commit != null)
+          MediaQuery(data: isTyping ? clear : media, child: commit),
+      ],
     );
   }
 }

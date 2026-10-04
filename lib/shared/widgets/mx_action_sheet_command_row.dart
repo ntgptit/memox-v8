@@ -65,6 +65,8 @@ class MxActionSheetCommandRow extends StatelessWidget {
                         children: [
                           Text(
                             label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: mxRowTitleStyle(
                               context.texts,
                               colors,
@@ -73,6 +75,8 @@ class MxActionSheetCommandRow extends StatelessWidget {
                           if (detail != null)
                             Text(
                               detail,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: context.texts.bodyMedium?.apply(
                                 color: colors.onSurfaceVariant,
                               ),

@@ -191,4 +191,48 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('the label keeps one line and is read whole; the reason two', (
+    tester,
+  ) async {
+    final SemanticsHandle semantics = tester.ensureSemantics();
+    const String long = 'Show the answer side first when a card is new to you';
+    await pumpMx(
+      tester,
+      _in(
+        MxSettingsRow.navigation(
+          title: long,
+          subtitle:
+              'Applies to every deck, the ones you add later included, '
+              'until you change it here again',
+          icon: Icons.flip,
+          onTap: () {},
+        ),
+      ),
+    );
+    expect(tester.widget<Text>(find.text(long)).maxLines, 1);
+    expect(tester.widget<Text>(find.textContaining('Applies')).maxLines, 2);
+    expect(tester.getSemantics(find.text(long)).label, startsWith('$long\n'));
+    semantics.dispose();
+  });
+
+  testWidgets('a toggle that cannot change now reads disabled', (tester) async {
+    final SemanticsHandle semantics = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      _in(
+        const MxSettingsRow.toggle(
+          title: 'Daily reminder',
+          icon: Icons.notifications,
+          isOn: false,
+          onChanged: null,
+        ),
+      ),
+    );
+    expect(
+      tester.getSemantics(find.text('Daily reminder')),
+      isSemantics(hasEnabledState: true, isEnabled: false),
+    );
+    semantics.dispose();
+  });
 }

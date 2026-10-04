@@ -127,7 +127,7 @@ void main() {
     );
     expect(
       tester.getSemantics(find.text('hola')),
-      isSemantics(isChecked: true, hasCheckedState: true, isButton: true),
+      isSemantics(isChecked: true, hasCheckedState: true, isButton: false),
     );
     semantics.dispose();
   });
@@ -265,4 +265,55 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('a badge keeps to half the line so the title keeps the rest', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _in(
+        const MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: MxListRow(
+            title: 'French verbs',
+            trailing: MxListRowTrailing.badge('3 days left before it goes'),
+          ),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getSize(find.byType(MxBadge)).width,
+      lessThanOrEqualTo((380 - 32) / 2),
+    );
+  });
+
+  testWidgets(
+    'a disabled row is still a button; a selecting row is a checkbox',
+    (tester) async {
+      final SemanticsHandle semantics = tester.ensureSemantics();
+      await pumpMx(
+        tester,
+        _in(MxListRow(title: 'Sync', onTap: () {}, isEnabled: false)),
+      );
+      expect(
+        tester.getSemantics(find.text('Sync')),
+        isSemantics(isButton: true, hasEnabledState: true, isEnabled: false),
+      );
+      await pumpMx(
+        tester,
+        _in(MxListRow(title: 'hola', isChecked: false, onTap: () {})),
+      );
+      expect(
+        tester.getSemantics(find.text('hola')),
+        isSemantics(isButton: false, hasCheckedState: true, isChecked: false),
+      );
+      await pumpMx(tester, _in(const MxListRow(title: 'Total cards')));
+      expect(
+        tester.getSemantics(find.text('Total cards')),
+        isSemantics(hasEnabledState: false),
+      );
+      semantics.dispose();
+    },
+  );
 }

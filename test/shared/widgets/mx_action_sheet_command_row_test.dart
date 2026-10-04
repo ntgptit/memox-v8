@@ -100,4 +100,26 @@ void main() {
       12,
     );
   });
+
+  testWidgets('the label keeps one line and the subtitle two', (tester) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 380,
+        child: MxActionSheetCommandRow(
+          icon: Icons.tune,
+          label: 'Study options for this deck and every deck inside it',
+          subtitle:
+              'Cards per session, new-card order, the review algorithm '
+              'and the daily limits',
+          onTap: () {},
+        ),
+      ),
+    );
+    expect(
+      tester.widget<Text>(find.textContaining('Study options')).maxLines,
+      1,
+    );
+    expect(tester.widget<Text>(find.textContaining('Cards per')).maxLines, 2);
+  });
 }

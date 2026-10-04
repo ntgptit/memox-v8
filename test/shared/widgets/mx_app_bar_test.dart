@@ -248,4 +248,21 @@ void main() {
       expect(tester.getSize(find.byType(MxAppBar)).height, AppSize.appBar);
     });
   }
+
+  testWidgets('at 2.0x text back, a title and a text action fit a phone', (
+    tester,
+  ) async {
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await _pump(
+      tester,
+      MxAppBar(
+        title: 'Trash',
+        leading: MxAppBarLeading.back,
+        textAction: MxAppBarTextAction(label: 'Select', onPressed: () {}),
+      ),
+      size: const Size(360, 800),
+    );
+    expect(tester.takeException(), isNull);
+  });
 }

@@ -6,6 +6,7 @@ import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_screen_scaffold.dart';
+import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 import 'support/mx_harness.dart';
 
@@ -166,4 +167,88 @@ void main() {
       expect(ground(find.byType(MxBreadcrumb)), s.surfaceContainer);
     },
   );
+
+  testWidgets('with a footer the body still gets one status-bar inset', (
+    tester,
+  ) async {
+    tester.view.padding = const FakeViewPadding(top: 40);
+    await _pump(
+      tester,
+      const MxScreenScaffold(
+        appBar: MxAppBar(title: 'New card'),
+        body: MxScreenScroll(children: [SizedBox(key: _body, height: 40)]),
+        footer: MxFooterBar(caption: 'Saved on this phone'),
+      ),
+    );
+    expect(
+      tester.getRect(find.byKey(_body)).top,
+      tester.getRect(find.byType(MxAppBar)).bottom,
+    );
+  });
+
+  testWidgets('with a footer the body does not see the keyboard again', (
+    tester,
+  ) async {
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    late double seen;
+    await _pump(
+      tester,
+      MxScreenScaffold(
+        appBar: const MxAppBar(title: 'New card'),
+        body: Builder(
+          builder: (context) {
+            seen = MediaQuery.viewInsetsOf(context).bottom;
+            return const SizedBox.expand();
+          },
+        ),
+        footer: const MxFooterBar(caption: 'Saved on this phone'),
+      ),
+    );
+    expect(seen, 0);
+  });
+
+  testWidgets('over a footer the FAB keeps 16, whatever the system bar', (
+    tester,
+  ) async {
+    tester.view.padding = const FakeViewPadding(bottom: 48);
+    tester.view.viewPadding = const FakeViewPadding(bottom: 48);
+    await _pump(tester, _screen(hasFooter: true, hasFab: true));
+    expect(
+      tester.getRect(find.byType(MxFab)).bottom,
+      tester.getRect(find.byType(MxFooterBar)).top - 16,
+    );
+  });
+
+  testWidgets('a bottom inset handed down by the shell drops while typing', (
+    tester,
+  ) async {
+    await _pump(tester, _screen(hasFooter: true));
+    final double rest = tester.getSize(find.byType(MxFooterBar)).height;
+    tester.view.padding = const FakeViewPadding(bottom: 80);
+    tester.view.viewPadding = const FakeViewPadding(bottom: 80);
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    await _pump(tester, _screen(hasFooter: true));
+    expect(tester.getRect(find.byType(MxFooterBar)).bottom, 800 - 300);
+    expect(tester.getSize(find.byType(MxFooterBar)).height, rest);
+  });
+
+  testWidgets('the FAB keeps clear of a display cutout at its end', (
+    tester,
+  ) async {
+    tester.view.padding = const FakeViewPadding(right: 40);
+    tester.view.viewPadding = const FakeViewPadding(right: 40);
+    await _pump(tester, _screen(hasFab: true));
+    expect(tester.getRect(find.byType(MxFab)).right, 400 - 40 - 16);
+  });
+
+  testWidgets('a breadcrumb needs the bar it is pinned under', (tester) async {
+    await _pump(
+      tester,
+      const MxScreenScaffold(
+        breadcrumb: MxBreadcrumb(items: [MxBreadcrumbItem(label: 'Library')]),
+        body: SizedBox.expand(),
+      ),
+    );
+    expect(tester.takeException(), isAssertionError);
+  });
 }

@@ -101,50 +101,53 @@ class MxListRow extends StatelessWidget {
     final String? detail = subtitle;
     final Widget? lead = _leading();
     final Widget? end = _trailing(context);
-    final Widget facts = LayoutBuilder(
-      builder: (context, line) => Row(
-        children: [
-          if (lead != null) ...[
-            Opacity(opacity: emphasis, child: lead),
-            const SizedBox(width: AppSpacing.grouped),
-          ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Opacity(
-                  opacity: emphasis,
-                  child: Semantics(
-                    label: title,
-                    excludeSemantics: true,
-                    child: Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: mxRowTitleStyle(context.texts, colors),
-                    ),
+    Widget laidOut(double line) => Row(
+      children: [
+        if (lead != null) ...[
+          Opacity(opacity: emphasis, child: lead),
+          const SizedBox(width: AppSpacing.grouped),
+        ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Opacity(
+                opacity: emphasis,
+                child: Semantics(
+                  label: title,
+                  excludeSemantics: true,
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: mxRowTitleStyle(context.texts, colors),
                   ),
                 ),
-                if (detail != null)
-                  Text(
-                    detail,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: context.texts.bodyMedium?.apply(
-                      color: colors.onSurfaceVariant,
-                    ),
+              ),
+              if (detail != null)
+                Text(
+                  detail,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.texts.bodyMedium?.apply(
+                    color: colors.onSurfaceVariant,
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
-          if (end != null) ...[
-            const SizedBox(width: AppSpacing.grouped),
-            ..._placed(end, emphasis, line.maxWidth),
-          ],
+        ),
+        if (end != null) ...[
+          const SizedBox(width: AppSpacing.grouped),
+          ..._placed(end, emphasis, line),
         ],
-      ),
+      ],
     );
+    // Only a capped trailing needs the line's width.
+    final Widget facts =
+        trailing._kind == _Trailing.value || trailing._kind == _Trailing.badge
+        ? LayoutBuilder(builder: (context, box) => laidOut(box.maxWidth))
+        : laidOut(double.infinity);
     final MxIconButton? action = trailing._button;
     // Beside a trailing action the row stops short; the action's 48 target
     // carries its own inner space.
@@ -169,8 +172,10 @@ class MxListRow extends StatelessWidget {
     // One TalkBack node carrying every fact, the ripple's tap and focus included.
     final Widget row = MergeSemantics(
       child: Semantics(
-        button: tap != null,
-        enabled: isEnabled,
+        // A selecting row is a checkbox, any other tappable row a button,
+        // disabled or not; an inert row has no enabled state to read.
+        button: onTap != null && isChecked == null,
+        enabled: onTap == null ? null : isEnabled,
         checked: isChecked,
         child: pressable,
       ),
@@ -190,13 +195,14 @@ class MxListRow extends StatelessWidget {
     );
   }
 
-  // The chevron dims with the row; a value keeps its width up to half the
-  // line, so a long one wraps there and the title keeps the rest.
+  // The chevron dims with the row; a value or a badge keeps its width up to
+  // half the line, so a long one wraps there and the title keeps the rest.
   List<Widget> _placed(Widget end, double emphasis, double line) {
     if (trailing._kind == _Trailing.chevron) {
       return [Opacity(opacity: emphasis, child: end)];
     }
-    if (trailing._kind == _Trailing.value) {
+    if (trailing._kind == _Trailing.value ||
+        trailing._kind == _Trailing.badge) {
       return [
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: line / 2),
