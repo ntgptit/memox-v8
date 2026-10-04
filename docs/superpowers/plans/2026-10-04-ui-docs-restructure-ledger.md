@@ -1839,118 +1839,118 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:2` id: UC-CARD-001 |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:3` title: Quản lý card trong deck |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:4` status: ready |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:5` rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-CARD-005, BR-CARD |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:6` code: [lib/features/card/domain/usecases/watch_card_list_use_case.dart, lib/feat |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:10` **Actor:** Người dùng |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:14` ## Main flow |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:16` **Main flow:** |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:17` 1. Người dùng thấy danh sách card của deck. |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:18` 2. Người dùng thêm card: nhập mặt trước và mặt sau, tuỳ chọn thêm ví dụ, gợi ý |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:20` 3. Hệ thống validate (BR-CARD-001, BR-CARD-002, BR-CARD-003). |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:21` 4. Hệ thống tạo card **và** study state của nó trong cùng transaction, theo |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:23` 5. Card xuất hiện; số card đến hạn của deck tăng. |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:25` Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và chính nó xác lập |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:28` ## Alternative / Error flow |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:30` **Alternative flows:** |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:31` - **A1 — Sửa card:** nội dung đổi; study state và history **không** đổi (BR-CARD |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:32` - **A2 — Xoá card:** hỏi xác nhận; xác nhận thì card vào Trash trong một |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:43` - **A3 — Deck còn card nhưng danh sách rỗng theo bộ lọc:** empty state của bộ |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:45` - **A5 — Di chuyển thẻ sang deck khác:** chọn deck đích trong cùng root; thẻ giữ |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:49` - **A6 — Chọn nhiều thẻ:** long-press một thẻ hoặc dùng action **Select** trên |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:54` - **A4 — Thêm liên tiếp nhiều card:** sau khi lưu, giữ form mở và xoá trống các |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:55` - **A7 — Cờ:** người dùng bật hoặc bỏ cờ của một thẻ (BR-CARD-009). |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:56` - **A8 — Tag:** người dùng gắn tag theo tên — dùng lại tag trùng tên đã fold, tạ |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:58` - **A9 — Mở chi tiết:** chạm một thẻ ở chế độ thường mở chi tiết chỉ đọc (UC-CAR |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:61` **Error flows:** |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:62` - **E1 — Mặt trước hoặc mặt sau rỗng:** lỗi inline ở đúng ô đó. |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:63` - **E5 — Deck đích không hợp lệ:** picker chỉ liệt kê deck cùng root, không phải |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:68` - **E6 — Một thẻ trong lô vi phạm:** cả lô rollback; danh sách và selection giữ |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:70` - **E2 — Vượt giới hạn độ dài** (BR-CARD-002, BR-CARD-003): lỗi inline ở đúng ô |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:71` - **E3 — Ghi thất bại:** hiện lỗi, giữ nội dung; không tạo card không có study |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:73` - **E7 — Tag không hợp lệ, hoặc thẻ đã đủ 10 tag:** lỗi có kiểu; tag của thẻ giữ |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:76` ## UI |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:78` **UI states:** loading · loaded · empty · submitting · error |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:80` ## Local |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:82` **Postconditions:** Card tồn tại kèm đúng một study state, đúng scheduler và |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:85` ## API |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:87` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:89` ## Acceptance criteria |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:91` - [ ] **Given** một deck `unset` và một draft hợp lệ, **when** người dùng thêm c |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:92` - [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa n |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:93` - [ ] **Given** người dùng xoá đúng một card, **when** xác nhận, **then** card v |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:94` - [ ] **Given** người dùng xoá nhiều card, **when** xác nhận, **then** tất cả và |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:95` - [ ] **Given** card bị xoá là card active cuối cùng của deck, **when** xoá thàn |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:96` - [ ] **Given** deck còn card nhưng bộ lọc đang bật không khớp card nào, **when* |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:97` - [ ] **Given** form thêm card, **when** Save ghi xong, **then** form vẫn mở, cá |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:98` - [ ] **Given** người dùng di chuyển card sang deck khác cùng root, **when** xác |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:99` - [ ] **Given** bộ lọc hoặc search đang áp và mới tải một phần kết quả, **when** |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:100` - [ ] **Given** một hoặc nhiều card đã chọn, **when** áp Flag hoặc Remove flag, |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:101` - [ ] **Given** một tên tag gắn cho nhiều card, **when** attach, **then** hệ thố |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:102` - [ ] **Given** card list ở chế độ thường, **when** chạm một hàng, **then** chi |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:103` - [ ] **Given** mặt trước hoặc mặt sau rỗng, hoặc vượt giới hạn độ dài, **when** |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:104` - [ ] **Given** ghi card mới thất bại, **when** người dùng thấy lỗi, **then** nộ |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:105` - [ ] **Given** deck đích không còn hợp lệ (mất, là root, giữ deck con, hoặc chí |  |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:106` - [ ] **Given** một card trong lô vi phạm luật (ví dụ đã đủ 10 tag), **when** th |  |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:2` id: UC-CARD-001 | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:3` title: Quản lý card trong deck | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:5` rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-CARD-005, BR-CARD | superseded → FN-CARD-001…FN-CARD-012 (Business rules) |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:6` code: [lib/features/card/domain/usecases/watch_card_list_use_case.dart, lib/feat | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:10` **Actor:** Người dùng | superseded → UC-CARD-001 (Mục tiêu replaces the Trigger "mở một deck") |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:14` ## Main flow | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:16` **Main flow:** | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:17` 1. Người dùng thấy danh sách card của deck. | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:18` 2. Người dùng thêm card: nhập mặt trước và mặt sau, tuỳ chọn thêm ví dụ, gợi ý | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:20` 3. Hệ thống validate (BR-CARD-001, BR-CARD-002, BR-CARD-003). | superseded → FN-CARD-002 (Lỗi: draft limits) |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:21` 4. Hệ thống tạo card **và** study state của nó trong cùng transaction, theo | superseded → FN-CARD-002 (Kết quả) |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:23` 5. Card xuất hiện; số card đến hạn của deck tăng. | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:25` Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và chính nó xác lập | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:28` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:30` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:31` - **A1 — Sửa card:** nội dung đổi; study state và history **không** đổi (BR-CARD | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:32` - **A2 — Xoá card:** hỏi xác nhận; xác nhận thì card vào Trash trong một | pending → SCR-CARD-001 (the delete confirmation and the Undo toast where the card was deleted); intent kept in UC-CARD-001 A2 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:43` - **A3 — Deck còn card nhưng danh sách rỗng theo bộ lọc:** empty state của bộ | pending → SCR-CARD-001 (the filter's empty state, different from the deck's, with a way to show all); intent kept in UC-CARD-001 A3 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:45` - **A5 — Di chuyển thẻ sang deck khác:** chọn deck đích trong cùng root; thẻ giữ | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:49` - **A6 — Chọn nhiều thẻ:** long-press một thẻ hoặc dùng action **Select** trên | pending → SCR-CARD-001 (long-press or the Select app-bar action; the contextual bar with the count and Move, Add tag, Flag, Remove flag, Delete; Select all); intent kept in UC-CARD-001 A6 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:54` - **A4 — Thêm liên tiếp nhiều card:** sau khi lưu, giữ form mở và xoá trống các | pending → SCR-CARD-002 (the form stays open with its fields cleared after a save); intent kept in UC-CARD-001 A4 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:55` - **A7 — Cờ:** người dùng bật hoặc bỏ cờ của một thẻ (BR-CARD-009). | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:56` - **A8 — Tag:** người dùng gắn tag theo tên — dùng lại tag trùng tên đã fold, tạ | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:58` - **A9 — Mở chi tiết:** chạm một thẻ ở chế độ thường mở chi tiết chỉ đọc (UC-CAR | pending → SCR-CARD-001 (a tap on a row in normal mode opens the detail); intent kept in UC-CARD-001 A9 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:61` **Error flows:** | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:62` - **E1 — Mặt trước hoặc mặt sau rỗng:** lỗi inline ở đúng ô đó. | pending → SCR-CARD-002 (inline error at that field); intent kept in UC-CARD-001 E1 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:63` - **E5 — Deck đích không hợp lệ:** picker chỉ liệt kê deck cùng root, không phải | superseded → FN-CARD-006 (the targets the picker lists) + FN-CARD-007 (Lỗi); intent kept in UC-CARD-001 E5 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:68` - **E6 — Một thẻ trong lô vi phạm:** cả lô rollback; danh sách và selection giữ | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:70` - **E2 — Vượt giới hạn độ dài** (BR-CARD-002, BR-CARD-003): lỗi inline ở đúng ô | pending → SCR-CARD-002 (inline error at that field); intent kept in UC-CARD-001 E2 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:71` - **E3 — Ghi thất bại:** hiện lỗi, giữ nội dung; không tạo card không có study | pending → SCR-CARD-002 (the error with the form content kept); intent kept in UC-CARD-001 E3 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:73` - **E7 — Tag không hợp lệ, hoặc thẻ đã đủ 10 tag:** lỗi có kiểu; tag của thẻ giữ | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:76` ## UI | pending → SCR-CARD-001 (states loading · loaded · empty · submitting · error) |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:78` **UI states:** loading · loaded · empty · submitting · error | pending → SCR-CARD-001 (states loading · loaded · empty · submitting · error) |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:80` ## Local | superseded → FN-CARD-002 (Kết quả) |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:82` **Postconditions:** Card tồn tại kèm đúng một study state, đúng scheduler và | superseded → FN-CARD-002 (Kết quả) |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:85` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:87` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:89` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:91` - [ ] **Given** một deck `unset` và một draft hợp lệ, **when** người dùng thêm c | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:92` - [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa n | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:93` - [ ] **Given** người dùng xoá đúng một card, **when** xác nhận, **then** card v | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:94` - [ ] **Given** người dùng xoá nhiều card, **when** xác nhận, **then** tất cả và | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:95` - [ ] **Given** card bị xoá là card active cuối cùng của deck, **when** xoá thàn | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:96` - [ ] **Given** deck còn card nhưng bộ lọc đang bật không khớp card nào, **when* | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:97` - [ ] **Given** form thêm card, **when** Save ghi xong, **then** form vẫn mở, cá | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:98` - [ ] **Given** người dùng di chuyển card sang deck khác cùng root, **when** xác | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:99` - [ ] **Given** bộ lọc hoặc search đang áp và mới tải một phần kết quả, **when** | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:100` - [ ] **Given** một hoặc nhiều card đã chọn, **when** áp Flag hoặc Remove flag, | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:101` - [ ] **Given** một tên tag gắn cho nhiều card, **when** attach, **then** hệ thố | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:102` - [ ] **Given** card list ở chế độ thường, **when** chạm một hàng, **then** chi | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:103` - [ ] **Given** mặt trước hoặc mặt sau rỗng, hoặc vượt giới hạn độ dài, **when** | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:104` - [ ] **Given** ghi card mới thất bại, **when** người dùng thấy lỗi, **then** nộ | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:105` - [ ] **Given** deck đích không còn hợp lệ (mất, là root, giữ deck con, hoặc chí | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:106` - [ ] **Given** một card trong lô vi phạm luật (ví dụ đã đủ 10 tag), **when** th | moved → `USE_CASES.md` |
 
 ## features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md
 
 | Source item | Outcome |
 |---|---|
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:2` id: UC-CARD-002 |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:3` title: Xem chi tiết một card và lịch sử học của nó |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:4` status: ready |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:5` rules: [BR-CARD-003, BR-CARD-005, BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:6` code: [lib/features/card/domain/usecases/watch_card_detail_use_case.dart, lib/fe |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:10` **Actor:** Người dùng |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:16` ## Main flow |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:18` **Main flow:** |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:19` 1. Người dùng chạm một hàng card. Hệ thống mở màn chi tiết **chỉ đọc** của đúng |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:21` 2. Hệ thống hiển thị toàn bộ nội dung thẻ: mặt trước đầy đủ, mặt sau đầy đủ, và |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:24` 3. Hệ thống hiển thị phần siêu dữ liệu và trạng thái học **hiện tại**: tag, cờ, |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:28` 4. Hệ thống tải trang lịch sử đầu tiên — 50 event gần nhất, mới nhất trước |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:31` 5. Mỗi event nói: thời điểm, chế độ học, loại lượt, hành động đã ghi, lý do kết |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:34` 6. Người dùng cuộn tới cuối danh sách lịch sử và chọn tải thêm; hệ thống nối |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:37` 7. Người dùng quay lại. Hệ thống trả về danh sách card **đúng như lúc rời đi** — |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:41` ## Alternative / Error flow |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:43` **Alternative flows:** |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:44` - **A1 — Sửa thẻ:** người dùng chọn hành động `Edit` tường minh trên màn chi |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:48` - **A2 — Thẻ chưa có lịch sử:** phần dòng thời gian hiện trạng thái rỗng có nội |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:51` - **A3 — Lịch sử trải nhiều generation:** sau một lần Reset (UC-SRS-001), các ev |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:54` - **A4 — Chạm khi đang ở chế độ chọn nhiều:** chạm giữ nguyên nghĩa chọn/bỏ |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:56` - **A5 — Đã tải hết lịch sử:** hệ thống nói rõ đã hết thay vì để một nút tải |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:59` **Error flows:** |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:60` - **E1 — Thẻ không tồn tại khi mở:** deep link hoặc route cũ trỏ tới một id đã |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:63` - **E2 — Thẻ bị xoá từ màn khác khi chi tiết đang mở:** stream nội dung chuyển |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:66` - **E3 — Đọc nội dung/trạng thái thất bại:** lỗi database map thành lý do có |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:69` - **E4 — Tải một trang lịch sử thất bại:** các event đã hiện **giữ nguyên**; |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:72` - **E5 — Kết quả trang tới muộn sau khi người dùng đã rời hoặc đã thử lại:** hệ |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:76` ## UI |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:78` **UI states:** loading (đọc nội dung + trạng thái) · loaded không có lịch sử · |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:83` ## Local |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:85` **Postconditions:** Database không đổi — nội dung, `updated_at`, study state, |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:89` ## API |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:91` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:93` ## Acceptance criteria |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:95` - [ ] **Given** chạm một hàng card ở chế độ thường, **when** chi tiết mở, **then |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:96` - [ ] **Given** chi tiết đang mở, **when** tag, study state hoặc nội dung đổi, * |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:97` - [ ] **Given** một card có lịch sử, **when** chi tiết tải, **then** trang đầu l |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:98` - [ ] **Given** một event lịch sử, **when** hiển thị, **then** nó nêu thời điểm, |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:99` - [ ] **Given** đã cuộn tới cuối trang đã tải, **when** người dùng tải thêm, **t |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:100` - [ ] **Given** người dùng chọn Edit trên chi tiết, **when** editor mở, **then** |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:101` - [ ] **Given** một card chưa có lịch sử, **when** chi tiết mở, **then** dòng th |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:102` - [ ] **Given** người dùng đang ở chi tiết mở từ card list, **when** quay lại, * |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:103` - [ ] **Given** đang ở chế độ chọn nhiều, **when** chạm một hàng, **then** hàng |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:104` - [ ] **Given** đã tải hết lịch sử, **when** tới cuối, **then** hệ thống nói rõ |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:105` - [ ] **Given** id card không còn tồn tại (deep link hoặc route cũ), **when** mở |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:106` - [ ] **Given** chi tiết đang mở, **when** card bị xoá ở nơi khác, **then** màn |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:107` - [ ] **Given** đọc nội dung hoặc trạng thái thất bại, **when** lỗi xảy ra, **th |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:108` - [ ] **Given** tải một trang lịch sử thất bại, **when** lỗi xảy ra, **then** cá |  |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:109` - [ ] **Given** một trang lịch sử đang tải, **when** người dùng rời màn hoặc yêu |  |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:2` id: UC-CARD-002 | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:3` title: Xem chi tiết một card và lịch sử học của nó | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:5` rules: [BR-CARD-003, BR-CARD-005, BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD | superseded → FN-CARD-013, FN-CARD-014 (Business rules) |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:6` code: [lib/features/card/domain/usecases/watch_card_detail_use_case.dart, lib/fe | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:10` **Actor:** Người dùng | pending → SCR-CARD-001 (a tap on a card row outside selection mode is the Trigger); intent kept in UC-CARD-002 (Mục tiêu) |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:16` ## Main flow | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:18` **Main flow:** | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:19` 1. Người dùng chạm một hàng card. Hệ thống mở màn chi tiết **chỉ đọc** của đúng | pending → SCR-CARD-004 (the read-only detail is pushed over the list, not replacing it); intent kept in UC-CARD-002 step 1 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:21` 2. Hệ thống hiển thị toàn bộ nội dung thẻ: mặt trước đầy đủ, mặt sau đầy đủ, và | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:24` 3. Hệ thống hiển thị phần siêu dữ liệu và trạng thái học **hiện tại**: tag, cờ, | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:28` 4. Hệ thống tải trang lịch sử đầu tiên — 50 event gần nhất, mới nhất trước | pending → SCR-CARD-004 (the history shown as a timeline grouped by generation); intent kept in UC-CARD-002 step 4 + FN-CARD-014 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:31` 5. Mỗi event nói: thời điểm, chế độ học, loại lượt, hành động đã ghi, lý do kết | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:34` 6. Người dùng cuộn tới cuối danh sách lịch sử và chọn tải thêm; hệ thống nối | pending → SCR-CARD-004 (scrolling to the end and choosing to load more); intent kept in UC-CARD-002 step 6 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:37` 7. Người dùng quay lại. Hệ thống trả về danh sách card **đúng như lúc rời đi** — | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:41` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:43` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:44` - **A1 — Sửa thẻ:** người dùng chọn hành động `Edit` tường minh trên màn chi | pending → SCR-CARD-004 (an explicit Edit action that opens the editor, SCR-CARD-003); intent kept in UC-CARD-002 A1 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:48` - **A2 — Thẻ chưa có lịch sử:** phần dòng thời gian hiện trạng thái rỗng có nội | pending → SCR-CARD-004 (the timeline's explained empty state); intent kept in UC-CARD-002 A2 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:51` - **A3 — Lịch sử trải nhiều generation:** sau một lần Reset (UC-SRS-001), các ev | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:54` - **A4 — Chạm khi đang ở chế độ chọn nhiều:** chạm giữ nguyên nghĩa chọn/bỏ | pending → SCR-CARD-001 (a tap in selection mode only toggles selection); intent kept in UC-CARD-002 A4 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:56` - **A5 — Đã tải hết lịch sử:** hệ thống nói rõ đã hết thay vì để một nút tải | pending → SCR-CARD-004 (the end-of-history note instead of a dead load-more button); intent kept in UC-CARD-002 A5 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:59` **Error flows:** | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:60` - **E1 — Thẻ không tồn tại khi mở:** deep link hoặc route cũ trỏ tới một id đã | pending → SCR-CARD-004 (the typed not-found face with the way back; no blank screen); intent kept in UC-CARD-002 E1 + FN-CARD-013 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:63` - **E2 — Thẻ bị xoá từ màn khác khi chi tiết đang mở:** stream nội dung chuyển | pending → SCR-CARD-004 (the not-found face when the card goes away); intent kept in UC-CARD-002 E2 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:66` - **E3 — Đọc nội dung/trạng thái thất bại:** lỗi database map thành lý do có | pending → SCR-CARD-004 (the top-level error face with Retry); intent kept in UC-CARD-002 E3 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:69` - **E4 — Tải một trang lịch sử thất bại:** các event đã hiện **giữ nguyên**; | pending → SCR-CARD-004 (the error strip with Retry at the end of the list); intent kept in UC-CARD-002 E4 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:72` - **E5 — Kết quả trang tới muộn sau khi người dùng đã rời hoặc đã thử lại:** hệ | pending → SCR-CARD-004 (a late page result is dropped); intent kept in UC-CARD-002 E5 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:76` ## UI | pending → SCR-CARD-004 (the detail's states) |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:78` **UI states:** loading (đọc nội dung + trạng thái) · loaded không có lịch sử · | pending → SCR-CARD-004 (the detail's states) |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:83` ## Local | superseded → FN-CARD-013 (Kết quả: không ghi gì) |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:85` **Postconditions:** Database không đổi — nội dung, `updated_at`, study state, | superseded → FN-CARD-013 (Kết quả: không ghi gì) |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:89` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:91` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:93` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:95` - [ ] **Given** chạm một hàng card ở chế độ thường, **when** chi tiết mở, **then | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:96` - [ ] **Given** chi tiết đang mở, **when** tag, study state hoặc nội dung đổi, * | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:97` - [ ] **Given** một card có lịch sử, **when** chi tiết tải, **then** trang đầu l | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:98` - [ ] **Given** một event lịch sử, **when** hiển thị, **then** nó nêu thời điểm, | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:99` - [ ] **Given** đã cuộn tới cuối trang đã tải, **when** người dùng tải thêm, **t | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:100` - [ ] **Given** người dùng chọn Edit trên chi tiết, **when** editor mở, **then** | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:101` - [ ] **Given** một card chưa có lịch sử, **when** chi tiết mở, **then** dòng th | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:102` - [ ] **Given** người dùng đang ở chi tiết mở từ card list, **when** quay lại, * | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:103` - [ ] **Given** đang ở chế độ chọn nhiều, **when** chạm một hàng, **then** hàng | moved → `USE_CASES.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:104` - [ ] **Given** đã tải hết lịch sử, **when** tới cuối, **then** hệ thống nói rõ | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:105` - [ ] **Given** id card không còn tồn tại (deep link hoặc route cũ), **when** mở | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:106` - [ ] **Given** chi tiết đang mở, **when** card bị xoá ở nơi khác, **then** màn | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:107` - [ ] **Given** đọc nội dung hoặc trạng thái thất bại, **when** lỗi xảy ra, **th | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:108` - [ ] **Given** tải một trang lịch sử thất bại, **when** lỗi xảy ra, **then** cá | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:109` - [ ] **Given** một trang lịch sử đang tải, **when** người dùng rời màn hoặc yêu | moved → `USE_CASES.md` |
 
 ## features/deck/usecases/UC-DECK-001-tao-root-deck.md
 
@@ -3035,39 +3035,39 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/card/ui.md:1` # Card — UI |  |
-| `features/card/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên |  |
-| `features/card/ui.md:5` ## Điều hướng card |  |
-| `features/card/ui.md:7` Điểm vào là một deck đã có `content_type = 'card'` (BR-DECK-009). Card **đầu tiê |  |
-| `features/card/ui.md:12` flowchart TD |  |
-| `features/card/ui.md:13` A["Deck có content_type = card"] --> B["Danh sách card · UC-CARD-001"] |  |
-| `features/card/ui.md:14` B -->\|"Chưa có card nào"\| B1["Empty state kèm hành động Thêm card · UC-CARD-001 |  |
-| `features/card/ui.md:16` B --> C{"Người dùng chọn gì"} |  |
-| `features/card/ui.md:18` C -->\|"Thêm"\| D["Nhập mặt trước và mặt sau"] |  |
-| `features/card/ui.md:19` D --> E{"Validate · BR-CARD-001, BR-CARD-002"} |  |
-| `features/card/ui.md:20` E -->\|"Rỗng hoặc quá dài"\| E1["Lỗi inline ở đúng ô · UC-CARD-001 E1, E2"] |  |
-| `features/card/ui.md:21` E -->\|"Hợp lệ"\| F["Tạo card và study state trong cùng transaction, theo schedule |  |
-| `features/card/ui.md:22` F -->\|"Ghi thất bại"\| F1["Hiện lỗi, giữ nội dung, không tạo card thiếu study sta |  |
-| `features/card/ui.md:23` F -->\|"Thành công"\| G["Giữ form mở và xoá trống các ô · UC-CARD-001 A4"] |  |
-| `features/card/ui.md:24` G --> B |  |
-| `features/card/ui.md:26` C -->\|"Chạm một hàng"\| J["Chi tiết card, chỉ đọc · UC-CARD-002"] |  |
-| `features/card/ui.md:27` J --> J1["Lịch sử học phân trang keyset, nhóm theo generation · UC-CARD-002, BR- |  |
-| `features/card/ui.md:28` J -->\|"Edit — action riêng, không phải cử chỉ chạm"\| H |  |
-| `features/card/ui.md:29` J -->\|"Back"\| B |  |
-| `features/card/ui.md:31` C -->\|"Sửa"\| H["Đổi nội dung; study state và history không đổi · UC-CARD-001 A1, |  |
-| `features/card/ui.md:32` C -->\|"Xoá"\| I["Xác nhận, xoá kèm study state và history của card đó · UC-CARD-0 |  |
-| `features/card/ui.md:33` I --> I1["Card cuối cùng bị xoá → deck tự về unset trong cùng transaction · BR-D |  |
-| `features/card/ui.md:36` **`J` đổi nghĩa của một lần chạm, và đó là cạnh dễ nhớ sai thứ hai ở đây.** Chạm |  |
-| `features/card/ui.md:41` **`I1` là cạnh dễ vẽ sai nhất trong tài liệu này.** Xoá card cuối cùng **có** đư |  |
-| `features/card/ui.md:46` **Card cũng mang cờ, tag và ba trường phụ (BR-CARD-009, BR-TAG-001, BR-TAG-002, |  |
-| `features/card/ui.md:49` ## Validation |  |
-| `features/card/ui.md:51` \| Trường \| Rule \| Message hiển thị \| Enforced by \| |  |
-| `features/card/ui.md:53` \| Card.front \| không rỗng sau trim (BR-CARD-001) \| "Mặt trước không được để trốn |  |
-| `features/card/ui.md:54` \| Card.back \| không rỗng sau trim (BR-CARD-001) \| "Mặt sau không được để trống" |  |
-| `features/card/ui.md:55` \| Card.front \| ≤ 60 ký tự (BR-CARD-002) \| "Mặt trước tối đa 60 ký tự" \| rule \| |  |
-| `features/card/ui.md:56` \| Card.back \| ≤ 240 ký tự (BR-CARD-002) \| "Mặt sau tối đa 240 ký tự" \| rule \| |  |
-| `features/card/ui.md:57` \| Card.example / hint / pronunciation \| ≤ 240 ký tự (BR-CARD-003) \| "Tối đa 240 |  |
-| `features/card/ui.md:59` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid |  |
+| `features/card/ui.md:1` # Card — UI | superseded → FN-CARD-001…FN-CARD-014 and UC-CARD-001/002 (the diagram's flows); navigation edges → pending SCR-CARD-001 (Task 33) |
+| `features/card/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên | superseded → FN-CARD-001 (đoạn mở đầu) |
+| `features/card/ui.md:5` ## Điều hướng card | superseded → FN-CARD-001 |
+| `features/card/ui.md:7` Điểm vào là một deck đã có `content_type = 'card'` (BR-DECK-009). Card **đầu tiê | superseded → FN-CARD-002 (Kết quả: the first card sets content_type) |
+| `features/card/ui.md:12` flowchart TD | superseded → FN-CARD-001 |
+| `features/card/ui.md:13` A["Deck có content_type = card"] --> B["Danh sách card · UC-CARD-001"] | superseded → FN-CARD-001 |
+| `features/card/ui.md:14` B -->\|"Chưa có card nào"\| B1["Empty state kèm hành động Thêm card · UC-CARD-001 | pending → SCR-CARD-001 (empty state with Add card) |
+| `features/card/ui.md:16` B --> C{"Người dùng chọn gì"} | superseded → FN-CARD-001 |
+| `features/card/ui.md:18` C -->\|"Thêm"\| D["Nhập mặt trước và mặt sau"] | superseded → FN-CARD-002 (Input) |
+| `features/card/ui.md:19` D --> E{"Validate · BR-CARD-001, BR-CARD-002"} | superseded → FN-CARD-002 (Lỗi) |
+| `features/card/ui.md:20` E -->\|"Rỗng hoặc quá dài"\| E1["Lỗi inline ở đúng ô · UC-CARD-001 E1, E2"] | pending → SCR-CARD-002 (inline error at that field) |
+| `features/card/ui.md:21` E -->\|"Hợp lệ"\| F["Tạo card và study state trong cùng transaction, theo schedule | superseded → FN-CARD-002 (Kết quả) |
+| `features/card/ui.md:22` F -->\|"Ghi thất bại"\| F1["Hiện lỗi, giữ nội dung, không tạo card thiếu study sta | superseded → FN-CARD-002 (Lỗi: no card without study state); presentation pending → SCR-CARD-002 |
+| `features/card/ui.md:23` F -->\|"Thành công"\| G["Giữ form mở và xoá trống các ô · UC-CARD-001 A4"] | pending → SCR-CARD-002 (the form stays open with its fields cleared) |
+| `features/card/ui.md:24` G --> B | pending → SCR-CARD-002 (back to the list after Add) |
+| `features/card/ui.md:26` C -->\|"Chạm một hàng"\| J["Chi tiết card, chỉ đọc · UC-CARD-002"] | superseded → FN-CARD-013 |
+| `features/card/ui.md:27` J --> J1["Lịch sử học phân trang keyset, nhóm theo generation · UC-CARD-002, BR- | superseded → FN-CARD-014 |
+| `features/card/ui.md:28` J -->\|"Edit — action riêng, không phải cử chỉ chạm"\| H | pending → SCR-CARD-004 (Edit is a separate action, not the tap) |
+| `features/card/ui.md:29` J -->\|"Back"\| B | pending → SCR-CARD-004 (Back to the list) |
+| `features/card/ui.md:31` C -->\|"Sửa"\| H["Đổi nội dung; study state và history không đổi · UC-CARD-001 A1, | superseded → FN-CARD-003 |
+| `features/card/ui.md:32` C -->\|"Xoá"\| I["Xác nhận, xoá kèm study state và history của card đó · UC-CARD-0 | superseded → FN-CARD-004 |
+| `features/card/ui.md:33` I --> I1["Card cuối cùng bị xoá → deck tự về unset trong cùng transaction · BR-D | superseded → FN-CARD-004 (Kết quả: the last card sends the deck back to unset) |
+| `features/card/ui.md:36` **`J` đổi nghĩa của một lần chạm, và đó là cạnh dễ nhớ sai thứ hai ở đây.** Chạm | superseded → FN-CARD-013 (opening the detail is what selecting a card means outside selection mode); presentation pending → SCR-CARD-001 |
+| `features/card/ui.md:41` **`I1` là cạnh dễ vẽ sai nhất trong tài liệu này.** Xoá card cuối cùng **có** đư | superseded → FN-CARD-004 (Kết quả) |
+| `features/card/ui.md:46` **Card cũng mang cờ, tag và ba trường phụ (BR-CARD-009, BR-TAG-001, BR-TAG-002, | superseded → FN-CARD-002, FN-CARD-003 (flag, tags, optional fields) |
+| `features/card/ui.md:49` ## Validation | pending → SCR-CARD-002 (Copy: field errors — compare with the app's English copy) |
+| `features/card/ui.md:51` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | pending → SCR-CARD-002 (Copy: field errors) |
+| `features/card/ui.md:53` \| Card.front \| không rỗng sau trim (BR-CARD-001) \| "Mặt trước không được để trốn | pending → SCR-CARD-002 (Copy: field errors) |
+| `features/card/ui.md:54` \| Card.back \| không rỗng sau trim (BR-CARD-001) \| "Mặt sau không được để trống" | pending → SCR-CARD-002 (Copy: field errors) |
+| `features/card/ui.md:55` \| Card.front \| ≤ 60 ký tự (BR-CARD-002) \| "Mặt trước tối đa 60 ký tự" \| rule \| | pending → SCR-CARD-002 (Copy: field errors) |
+| `features/card/ui.md:56` \| Card.back \| ≤ 240 ký tự (BR-CARD-002) \| "Mặt sau tối đa 240 ký tự" \| rule \| | pending → SCR-CARD-002 (Copy: field errors) |
+| `features/card/ui.md:57` \| Card.example / hint / pronunciation \| ≤ 240 ký tự (BR-CARD-003) \| "Tối đa 240 | pending → SCR-CARD-002 (Copy: field errors) |
+| `features/card/ui.md:59` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | superseded → ADR-015 (the server checks integrity only; business rules live in the app) |
 
 ## features/deck/ui.md
 
@@ -4094,3 +4094,15 @@ Candidate FNs (plan P1 step 1); every deck use case class is an FN:
 - IMPLEMENTATION GAP recorded in SCR-DECK-001 (owner ruling 2026-10-04): BR-STUDY-046/068 require
   Overdue / Due / New told apart on each deck row; V8 draws one "{n} due" badge. BRs unchanged;
   no code change in this migration.
+
+## Task 14 notes — card
+
+Every card use case class is an FN: watch_card_list FN-CARD-001, create_card 002, edit_card 003,
+delete_cards 004, undo_card_deletion 005, watch_card_move_targets 006, move_cards 007,
+select_all_card_ids 008, set_cards_flagged 009, add_tag_to_cards 010, remove_tag_from_cards 011,
+watch_card_tag_filter 012 (serves the card list's tag filter; UC-TAG-001 step 6 will invoke it in
+Task 21), watch_card_detail 013, load_card_history_page 014.
+
+- UC-DECK-004 now invokes FN-CARD-002 for its card branch (Task 12 note closed).
+- Presentation taken out of UC-CARD-001/002 waits for SCR-CARD-001…004 (`pending` rows).
+- Warning delta: 68 → 69 = +2 migrated legacy UC files, −1 BR-STUDY-047 now cited by FN-CARD-001.

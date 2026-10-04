@@ -180,7 +180,7 @@ Status: ready · Code: [lib/features/deck/domain/usecases/watch_deck_level_use_c
 - [ ] **Given** đọc dữ liệu lỗi, **when** tải danh sách, **then** người dùng được báo lỗi bằng lời thường và có thể thử lại; thử lại thì đọc lại (E1).
 
 ### UC-DECK-004 — Tạo phần tử con và xác lập `content_type`
-Status: ready · Code: [lib/features/deck/domain/usecases/watch_deck_use_case.dart, lib/features/deck/domain/usecases/create_sub_deck_use_case.dart, lib/features/card/domain/usecases/create_card_use_case.dart] · Invokes: [FN-DECK-008, FN-DECK-009]
+Status: ready · Code: [lib/features/deck/domain/usecases/watch_deck_use_case.dart, lib/features/deck/domain/usecases/create_sub_deck_use_case.dart, lib/features/card/domain/usecases/create_card_use_case.dart] · Invokes: [FN-DECK-008, FN-DECK-009, FN-CARD-002]
 
 #### Mục tiêu / Actor / Precondition
 
@@ -207,8 +207,7 @@ hành vi khác nhau tuỳ trạng thái deck.
 3. Người dùng chọn loại phần tử và đưa nội dung.
 4. Hệ thống tạo phần tử **trong một transaction**:
    - nếu deck đang `unset`: đặt `content_type` theo loại phần tử vừa tạo;
-   - tạo phần tử con: một card kèm study state (chức năng của feature card), hoặc một deck con
-     qua FN-DECK-009.
+   - tạo phần tử con: một card kèm study state qua FN-CARD-002, hoặc một deck con qua FN-DECK-009.
 5. Từ đây deck này chỉ nhận loại phần tử tương ứng.
 
 #### Alternative / Error flow
@@ -352,3 +351,152 @@ giữ nguyên.
 - [ ] **Given** deck hoặc deck mốc không còn, **when** sắp xếp lại, **then** thao tác bị từ chối, không ghi gì và thứ tự cũ giữ nguyên.
 - [ ] **Given** một update lỗi giữa lúc đánh số lại nhóm sibling, **when** transaction dừng, **then** toàn bộ rollback và thứ tự cũ giữ nguyên.
 - [ ] **Given** cấp đang ở thứ tự Manual với từ hai deck, **when** người dùng chuyển một deck lên trước hoặc xuống sau sibling kề nó, **then** deck đổi chỗ với sibling đó và không có deck nào khác đổi thứ tự.
+
+## Card
+
+### UC-CARD-001 — Quản lý card trong deck
+Status: ready · Code: [lib/features/card/domain/usecases/watch_card_list_use_case.dart, lib/features/card/domain/usecases/select_all_card_ids_use_case.dart, lib/features/card/domain/usecases/create_card_use_case.dart, lib/features/card/domain/usecases/edit_card_use_case.dart, lib/features/card/domain/usecases/delete_cards_use_case.dart, lib/features/card/domain/usecases/move_cards_use_case.dart, lib/features/card/domain/usecases/watch_card_move_targets_use_case.dart, lib/features/card/domain/usecases/set_cards_flagged_use_case.dart, lib/features/card/domain/usecases/add_tag_to_cards_use_case.dart, lib/features/card/domain/usecases/remove_tag_from_cards_use_case.dart] · Invokes: [FN-CARD-001, FN-CARD-002, FN-CARD-003, FN-CARD-004, FN-CARD-005, FN-CARD-006, FN-CARD-007, FN-CARD-008, FN-CARD-009, FN-CARD-010, FN-CARD-011, FN-CARD-012]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Xem, thêm, sửa, sắp xếp lại và bỏ các card của một deck chứa card.
+**Preconditions:** Deck tồn tại và `content_type = 'card'`.
+
+#### Main flow
+
+**Main flow:**
+1. Hệ thống thực hiện FN-CARD-001; người dùng biết các card của deck.
+2. Người dùng thêm một card: mặt trước và mặt sau, tuỳ chọn ví dụ, gợi ý và phiên âm.
+3. Hệ thống thực hiện FN-CARD-002.
+4. Card mới có trong deck; số card của deck tăng.
+
+Card đầu tiên của một deck `unset` được tạo qua use case tạo phần tử con, và chính nó xác lập
+`content_type = 'card'`.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Sửa card:** hệ thống thực hiện FN-CARD-003; nội dung đổi, study state và lịch sử **không**
+  đổi.
+- **A2 — Xoá card:** hệ thống chờ người dùng xác nhận, rồi thực hiện FN-CARD-004. Xoá **một** card
+  thì người dùng có thể hoàn tác ngay (hệ thống thực hiện FN-CARD-005); khôi phục về sau qua
+  Trash. Nếu đó là card active **cuối cùng**, deck trở về `unset` trong cùng transaction; người
+  dùng lại chọn được tạo card hay tạo deck con. "Deck `card` rỗng" không còn là một trạng thái ổn
+  định của hệ thống.
+- **A3 — Deck còn card nhưng không card nào khớp bộ lọc:** đó là kết quả rỗng của bộ lọc, không
+  phải deck rỗng, và người dùng có lối bỏ bộ lọc.
+- **A4 — Thêm liên tiếp nhiều card:** sau mỗi lần lưu, người dùng thêm được card kế tiếp ngay.
+- **A5 — Di chuyển card sang deck khác:** hệ thống thực hiện FN-CARD-006, người dùng chọn deck
+  đích trong cùng root, rồi hệ thống thực hiện FN-CARD-007; card chỉ đổi chỗ.
+- **A6 — Thao tác trên nhiều card:** người dùng chọn nhiều card và áp một thao tác hàng loạt: di
+  chuyển, gắn tag, bật cờ, bỏ cờ, xoá. Chọn tất cả lấy mọi card khớp bộ lọc và tìm kiếm hiện tại,
+  không chỉ phần đã tải (FN-CARD-008). Mỗi thao tác là all-or-nothing.
+- **A7 — Cờ:** người dùng bật hoặc bỏ cờ của card (FN-CARD-009).
+- **A8 — Tag:** người dùng gắn tag theo tên — dùng lại tag cùng tên, tạo mới nếu chưa có
+  (FN-CARD-010) — hoặc gỡ tag khỏi card (FN-CARD-011); người dùng lọc danh sách theo tag
+  (FN-CARD-012).
+- **A9 — Mở chi tiết:** chọn một card khi không ở chế độ chọn nhiều mở chi tiết chỉ đọc của nó;
+  sửa là một hành động riêng.
+
+**Error flows:**
+- **E1 — Mặt trước hoặc mặt sau rỗng:** không ghi gì; người dùng được báo đúng mặt nào.
+- **E2 — Vượt giới hạn độ dài:** không ghi gì; người dùng được báo đúng trường nào.
+- **E3 — Ghi thất bại:** người dùng được báo lỗi, nội dung đã nhập vẫn còn; không có card nào thiếu
+  study state.
+- **E5 — Deck đích không hợp lệ:** chỉ deck cùng root, không phải root, không chứa deck con và
+  không phải chính deck nguồn mới là đích. Nếu một thao tác vẫn mang đích không hợp lệ tới trước
+  khi ghi — deep link, hoặc cây đổi giữa lúc chọn và lúc xác nhận — nó bị từ chối kèm lý do có kiểu
+  và không ghi gì.
+- **E6 — Một card trong lô vi phạm:** cả lô rollback; danh sách và lựa chọn giữ nguyên; người dùng
+  biết vì sao.
+- **E7 — Tag không hợp lệ, hoặc card đã đủ 10 tag:** lỗi có kiểu; tag của card giữ nguyên.
+
+#### Acceptance criteria
+
+- [ ] **Given** một deck `unset` và một bản nháp hợp lệ, **when** người dùng thêm card, **then** card và study state mới của nó (theo scheduler và generation của root) được ghi trong một transaction, và deck thành `content_type = card`.
+- [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa nội dung, **then** nội dung, cờ và tag đổi nhưng study state và `review_log` không đổi (A1).
+- [ ] **Given** người dùng xoá đúng một card, **when** xác nhận, **then** card vào Trash, nội dung, study state và lịch sử giữ nguyên tới khi purge, và người dùng có thể hoàn tác ngay (A2).
+- [ ] **Given** người dùng xoá nhiều card, **when** xác nhận, **then** tất cả vào Trash cùng lúc và không có hoàn tác ngay (A2).
+- [ ] **Given** card bị xoá là card active cuối cùng của deck, **when** xoá thành công, **then** deck về `content_type = unset` trong cùng transaction (A2).
+- [ ] **Given** deck còn card nhưng bộ lọc đang bật không khớp card nào, **when** xem danh sách, **then** người dùng biết đó là kết quả của bộ lọc, khác với deck rỗng, và có lối hiện tất cả (A3).
+- [ ] **Given** người dùng đang thêm card, **when** một card được lưu xong, **then** người dùng thêm được card kế tiếp ngay mà không phải mở lại (A4).
+- [ ] **Given** người dùng di chuyển card sang deck khác cùng root, **when** xác nhận, **then** id, nội dung, study state, lịch sử, cờ và tag giữ nguyên, chỉ `deck_id` và `updated_at` đổi; deck nguồn rỗng thì về `unset`, deck đích `unset` thì thành `card` (A5).
+- [ ] **Given** bộ lọc hoặc tìm kiếm đang áp và mới tải một phần kết quả, **when** người dùng chọn tất cả, **then** mọi id khớp bộ lọc và tìm kiếm hiện tại được chọn, không chỉ các hàng đã tải (A6).
+- [ ] **Given** một hoặc nhiều card đã chọn, **when** bật hoặc bỏ cờ, **then** `is_flagged` đúng giá trị trên mọi card, và card đã đúng giá trị không bị ghi lại (A7).
+- [ ] **Given** một tên tag gắn cho nhiều card, **when** gắn, **then** hệ thống dùng lại tag có cùng tên đã gập hoặc tạo tag mới, và gắn cho mọi card đã chọn; gỡ tag chỉ xoá liên kết, không xoá tag (A8).
+- [ ] **Given** không ở chế độ chọn nhiều, **when** người dùng chọn một card, **then** chi tiết chỉ đọc của đúng card đó mở ra; khi đang chọn nhiều, cùng lựa chọn đó chỉ đổi trạng thái chọn (A9).
+- [ ] **Given** mặt trước hoặc mặt sau rỗng, hoặc vượt giới hạn độ dài, **when** người dùng nhập, **then** người dùng được báo đúng trường sai và không lưu được (E1, E2).
+- [ ] **Given** ghi card mới thất bại, **when** người dùng được báo lỗi, **then** nội dung đã nhập vẫn còn, có thể thử lại, và không có card nào được tạo mà thiếu study state (E3).
+- [ ] **Given** deck đích không còn hợp lệ (mất, là root, chứa deck con, hoặc chính deck nguồn), **when** di chuyển chạy, **then** bị từ chối với lý do có kiểu và không ghi gì (E5).
+- [ ] **Given** một card trong lô vi phạm luật (ví dụ đã đủ 10 tag), **when** thao tác hàng loạt chạy, **then** cả lô không ghi gì, danh sách và lựa chọn giữ nguyên, và người dùng biết lý do (E6, E7).
+
+### UC-CARD-002 — Xem chi tiết một card và lịch sử học của nó
+Status: ready · Code: [lib/features/card/domain/usecases/watch_card_detail_use_case.dart, lib/features/card/domain/usecases/load_card_history_page_use_case.dart] · Invokes: [FN-CARD-013, FN-CARD-014, FN-CARD-003]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Biết toàn bộ nội dung một card, trạng thái học hiện tại của nó, và nó đã được ôn ra
+sao.
+**Preconditions:** Deck đang mở là deck con loại `card`; card được chọn còn tồn tại.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng chọn một card khi không ở chế độ chọn nhiều. Hệ thống thực hiện FN-CARD-013 và cho
+   người dùng xem chi tiết **chỉ đọc** của đúng card đó, mà không bỏ danh sách đang xem.
+2. Người dùng biết toàn bộ nội dung card: mặt trước, mặt sau, và các trường tuỳ chọn có giá trị.
+3. Người dùng biết trạng thái học hiện tại: tag, cờ, trạng thái hiển thị, ngày tới hạn, lần trả
+   lời gần nhất, số lượt đã trả lời, số lần quên, và các trường riêng của scheduler.
+4. Hệ thống thực hiện FN-CARD-014 cho trang lịch sử đầu tiên; người dùng biết lịch sử, nhóm theo
+   generation của scheduler.
+5. Mỗi event cho biết thời điểm, chế độ học, loại lượt, hành động, lý do kết thúc và việc dùng
+   gợi ý khi có, cùng thay đổi lịch trước → sau đã lưu.
+6. Người dùng xin thêm lịch sử; hệ thống thực hiện FN-CARD-014 với con trỏ của trang trước và nối
+   thêm, không lặp event nào.
+7. Người dùng quay lại danh sách, **đúng như lúc rời đi** — bộ lọc, tìm kiếm, sắp xếp, phần đã tải
+   và lựa chọn đều nguyên vẹn.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Sửa card:** người dùng chọn sửa một cách tường minh; hệ thống thực hiện FN-CARD-003 cho
+  đúng card đó. Sửa nội dung không đụng tới trạng thái lịch hay lịch sử; quay lại thì chi tiết có
+  nội dung mới và lịch sử không đổi.
+- **A2 — Card chưa có lịch sử:** người dùng được giải thích là chưa có lịch sử, không phải lỗi; nội
+  dung và trạng thái hiện tại vẫn đủ.
+- **A3 — Lịch sử trải nhiều generation:** sau một lần Reset, các event cũ vẫn còn, dưới nhóm
+  generation của chúng; generation hiện tại trên cùng.
+- **A4 — Chọn khi đang ở chế độ chọn nhiều:** chỉ đổi trạng thái chọn; không mở chi tiết.
+- **A5 — Đã hết lịch sử:** người dùng biết đã hết, thay vì được mời tải thêm vô ích.
+
+**Error flows:**
+- **E1 — Card không tồn tại khi mở:** deep link hoặc route cũ trỏ tới một id đã bị xoá → người dùng
+  được báo card không còn và có lối quay lại danh sách; không lộ id hay chi tiết kỹ thuật.
+- **E2 — Card bị xoá ở nơi khác khi đang xem:** như E1; không có mutation nào được thực hiện từ
+  đây.
+- **E3 — Đọc nội dung hoặc trạng thái thất bại:** người dùng được báo lỗi có kiểu và thử lại được;
+  thử lại chạy lại đúng lần đọc đó.
+- **E4 — Tải một trang lịch sử thất bại:** các event đã có **giữ nguyên**; người dùng thử lại được,
+  và thử lại tiếp tục từ đúng con trỏ trước đó chứ không tải lại từ đầu.
+- **E5 — Kết quả một trang tới muộn sau khi người dùng đã rời hoặc đã thử lại:** kết quả cũ bị bỏ
+  qua; lịch sử MUST NOT bị nối hai lần cùng một tập event.
+
+#### Acceptance criteria
+
+- [ ] **Given** chọn một card khi không ở chế độ chọn nhiều, **when** chi tiết mở, **then** người dùng thấy toàn bộ mặt trước, mặt sau và chỉ các trường tuỳ chọn có giá trị; việc đọc không ghi gì.
+- [ ] **Given** chi tiết đang mở, **when** tag, study state hoặc nội dung đổi, **then** thông tin hiện tại (tag, cờ, trạng thái, ngày tới hạn, số liệu học) cập nhật theo.
+- [ ] **Given** một card có lịch sử, **when** chi tiết tải, **then** trang đầu là 50 event gần nhất, mới nhất trước, nhóm theo generation với generation hiện tại trên cùng, kể cả event của generation cũ sau một lần Reset (A3).
+- [ ] **Given** một event lịch sử, **when** người dùng xem nó, **then** nó nêu thời điểm, chế độ học, loại lượt, hành động và đúng giá trị lịch trước và sau đã lưu trên hàng đó.
+- [ ] **Given** đã tới cuối phần lịch sử đã tải, **when** người dùng xin thêm, **then** 50 event kế tiếp nối vào theo con trỏ keyset, không lặp và không sót, kể cả khi có câu trả lời mới ghi giữa lúc phân trang.
+- [ ] **Given** người dùng chọn sửa trên chi tiết, **when** sửa xong, **then** đó là việc sửa đúng card đó, và sửa nội dung không đụng study state hay lịch sử (A1).
+- [ ] **Given** một card chưa có lịch sử, **when** chi tiết mở, **then** người dùng được giải thích là chưa có lịch sử, không phải lỗi, và nội dung cùng trạng thái hiện tại vẫn đủ (A2).
+- [ ] **Given** người dùng đang xem chi tiết mở từ danh sách card, **when** quay lại, **then** danh sách giữ nguyên bộ lọc, tìm kiếm, sắp xếp, phần đã tải và lựa chọn.
+- [ ] **Given** đang ở chế độ chọn nhiều, **when** chọn một card, **then** card chỉ đổi trạng thái chọn, chi tiết không mở (A4).
+- [ ] **Given** đã tải hết lịch sử, **when** tới cuối, **then** người dùng biết đã hết thay vì được mời tải thêm vô ích (A5).
+- [ ] **Given** id card không còn tồn tại (deep link hoặc route cũ), **when** mở chi tiết, **then** người dùng được báo card không còn và có lối về danh sách, không lộ id hay chi tiết kỹ thuật (E1).
+- [ ] **Given** chi tiết đang mở, **when** card bị xoá ở nơi khác, **then** người dùng được báo card không còn, và không có thao tác ghi nào từ đây (E2).
+- [ ] **Given** đọc nội dung hoặc trạng thái thất bại, **when** lỗi xảy ra, **then** người dùng được báo lỗi kèm thử lại, không lộ nguyên nhân kỹ thuật, và thử lại chạy lại đúng lần đọc đó (E3).
+- [ ] **Given** tải một trang lịch sử thất bại, **when** lỗi xảy ra, **then** các event đã có giữ nguyên, người dùng thử lại được, và thử lại tiếp tục từ đúng con trỏ trước đó (E4).
+- [ ] **Given** một trang lịch sử đang tải, **when** người dùng rời đi hoặc xin thêm lần nữa trước khi nó về, **then** kết quả tới muộn bị bỏ qua và lịch sử không bao giờ nối cùng một tập event hai lần (E5).
