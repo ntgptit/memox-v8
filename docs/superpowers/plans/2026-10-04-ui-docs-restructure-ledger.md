@@ -200,43 +200,43 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/03-starter-decks.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:3` # 03 · Starter decks |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:5` The templates bundled with the build, each copied into the library as a deck of |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:10` ## Entry points |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:12` - **The Library's app bar:** the sparkles action pushes `/decks/starter`, full s |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:14` - **The empty Library:** "Browse starter decks" under "Create deck" (screen 01 |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:17` ## Layout |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:19` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:21` \| App bar \| `MxAppBar` (content) \| Back and "Starter decks". \| |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:22` \| Note \| `MxNote` (flask), dismissible \| "These decks are practice fixtures for |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:23` \| A card per template \| `MxCard` + `MxIconTile` (sparkles) + `MxBadge` \| The tit |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:24` \| Algorithm sheet \| `MxBottomSheet` + `MxOptionRow` ×2 + `MxSheetActions` \| "Add |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:26` Language names come from a small table of the tags the build ships: English, |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:30` ## States |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:32` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:34` \| list \| `starter_list_light.png` \| `starter_list_dark.png` \| The badge and the |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:35` \| choose \| `starter_choose_light.png` \| `starter_choose_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:36` \| adding \| `starter_adding_light.png` \| `starter_adding_dark.png` \| The options |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:37` \| added \| `starter_added_light.png` \| `starter_added_dark.png` \| The sheet close |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:38` \| alreadyPresent \| `starter_already_present_light.png` \| `starter_already_presen |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:39` \| secondCopy \| `starter_second_copy_light.png` \| `starter_second_copy_dark.png` |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:40` \| addFailed \| `starter_add_failed_light.png` \| `starter_add_failed_dark.png` \| T |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:41` \| loading \| `starter_loading_light.png` \| `starter_loading_dark.png` \| The note, |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:42` \| none \| `starter_none_light.png` \| `starter_none_dark.png` \| "Create a deck" re |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:43` \| loadFailed \| `starter_load_failed_light.png` \| `starter_load_failed_dark.png` |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:45` Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose, |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:47` ## Rulings |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:49` - **Critique P3:** "In library" follows the title and moves to the next line whe |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:50` - **Critique P2a:** "Suggests {algorithm}" drops below the add button, whole, ra |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:51` - **D13 (FE-A3 C8):** the add button shows the spinner alone, no "Adding…" text. |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:52` - **UI-base row 125:** loading shows the note, then generic skeleton rows. |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:53` - **Critique 2026-09-30:** "Add to library" is primary; "Add another copy", for |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:54` - **Critique 2026-09-30:** the fixture note has a close button ("Hide this note" |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:55` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:56` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:58` ## Copy |  |
-| `shared/ui/screen-handoff/03-starter-decks.md:60` "Starter decks" · "These decks are practice fixtures for development and testing |  |
+| `shared/ui/screen-handoff/03-starter-decks.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:3` # 03 · Starter decks | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:5` The templates bundled with the build, each copied into the library as a deck of | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:10` ## Entry points | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:12` - **The Library's app bar:** the sparkles action pushes `/decks/starter`, full s | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:14` - **The empty Library:** "Browse starter decks" under "Create deck" (screen 01 | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:17` ## Layout | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:19` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:21` \| App bar \| `MxAppBar` (content) \| Back and "Starter decks". \| | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:22` \| Note \| `MxNote` (flask), dismissible \| "These decks are practice fixtures for | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:23` \| A card per template \| `MxCard` + `MxIconTile` (sparkles) + `MxBadge` \| The tit | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:24` \| Algorithm sheet \| `MxBottomSheet` + `MxOptionRow` ×2 + `MxSheetActions` \| "Add | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:26` Language names come from a small table of the tags the build ships: English, | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:30` ## States | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:32` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:34` \| list \| `starter_list_light.png` \| `starter_list_dark.png` \| The badge and the | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:35` \| choose \| `starter_choose_light.png` \| `starter_choose_dark.png` \| — \| | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:36` \| adding \| `starter_adding_light.png` \| `starter_adding_dark.png` \| The options | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:37` \| added \| `starter_added_light.png` \| `starter_added_dark.png` \| The sheet close | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:38` \| alreadyPresent \| `starter_already_present_light.png` \| `starter_already_presen | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:39` \| secondCopy \| `starter_second_copy_light.png` \| `starter_second_copy_dark.png` | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:40` \| addFailed \| `starter_add_failed_light.png` \| `starter_add_failed_dark.png` \| T | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:41` \| loading \| `starter_loading_light.png` \| `starter_loading_dark.png` \| The note, | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:42` \| none \| `starter_none_light.png` \| `starter_none_dark.png` \| "Create a deck" re | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:43` \| loadFailed \| `starter_load_failed_light.png` \| `starter_load_failed_dark.png` | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:45` Goldens: `test/features/starter_decks/presentation/goldens/starter_{list,choose, | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:47` ## Rulings | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:49` - **Critique P3:** "In library" follows the title and moves to the next line whe | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:50` - **Critique P2a:** "Suggests {algorithm}" drops below the add button, whole, ra | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:51` - **D13 (FE-A3 C8):** the add button shows the spinner alone, no "Adding…" text. | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:52` - **UI-base row 125:** loading shows the note, then generic skeleton rows. | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:53` - **Critique 2026-09-30:** "Add to library" is primary; "Add another copy", for | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:54` - **Critique 2026-09-30:** the fixture note has a close button ("Hide this note" | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:55` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:56` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:58` ## Copy | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `shared/ui/screen-handoff/03-starter-decks.md:60` "Starter decks" · "These decks are practice fixtures for development and testing | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
 
 ## shared/ui/screen-handoff/04-library-search.md
 
@@ -2597,9 +2597,9 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:21` 2. Hệ thống khởi tạo database. | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:22` 3. Người dùng thấy màn hình chưa có deck, kèm hai lối đi: **chọn từ thư viện | superseded → UC-STARTER-001 step 3 (intent) + SCR-DECK-001 (root_empty: Create deck, Browse starter decks) |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:24` 4. Người dùng mở thư viện starter deck. | moved → `USE_CASES.md` |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:25` 5. Hệ thống đọc manifest template và hiện danh sách: tên, số card, ngôn ngữ, | pending → SCR-STARTER-001 (each template card: name, card count, languages, content source; the fixture note); intent kept in UC-STARTER-001 step 5 + FN-STARTER-001 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:25` 5. Hệ thống đọc manifest template và hiện danh sách: tên, số card, ngôn ngữ, | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:28` 6. Người dùng chọn một starter deck. | moved → `USE_CASES.md` |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:29` 7. Hệ thống hỏi **chế độ ôn tập** cho bản sao, gợi ý sẵn `default_scheduler_type | pending → SCR-STARTER-001 (the add sheet with the template's scheduler preselected); intent kept in UC-STARTER-001 step 7 + FN-STARTER-002 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:29` 7. Hệ thống hỏi **chế độ ôn tập** cho bản sao, gợi ý sẵn `default_scheduler_type | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:31` 8. Hệ thống **tạo bản sao** trong một transaction (BR-STARTER-009): root deck mớ | superseded → FN-STARTER-002 (one transaction: root, sub-decks in template order, cards, study states) + UC-STARTER-001 step 8 |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:35` 9. Bản sao xuất hiện trong danh sách deck. Toàn bộ card là thẻ **chưa học** | superseded → UC-STARTER-001 step 9 (intent) + SCR-DECK-001 (the deck row workload; the presentation gap is recorded there) |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:38` 10. Người dùng bấm Study và bắt đầu phiên **học mới** ngay. | superseded → UC-STARTER-001 step 10 (intent); Study on a deck → SCR-DECK-001 Navigate to SCR-STUDY-002 |
@@ -2611,11 +2611,11 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:49` - **A4 — Người dùng đã xoá bản sao:** template vẫn còn trong thư viện, lấy lại | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:52` **Error flows:** | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:53` - **E1 — Không mở được database:** màn hình lỗi rõ ràng với hành động thử lại. | superseded → UC-STARTER-001 E1 (intent); the startup failure face goes to NAVIGATION.md (app shell) in Task 42 |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:55` - **E2 — Manifest hỏng hoặc thiếu:** thư viện hiện empty state; app vẫn dùng bìn | pending → SCR-STARTER-001 (the empty library state; manual deck creation still works); intent kept in UC-STARTER-001 E2 + FN-STARTER-001 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:55` - **E2 — Manifest hỏng hoặc thiếu:** thư viện hiện empty state; app vẫn dùng bìn | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:57` - **E3 — Một file template hỏng:** bỏ qua đúng template đó, các template khác vẫ | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:59` - **E4 — Sao chép thất bại giữa chừng:** transaction rollback (BR-STARTER-009). | moved → `USE_CASES.md` |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:62` ## UI | pending → SCR-STARTER-001 (states initial · loading · loaded · empty · submitting · error) |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:64` **UI states:** initial · loading · loaded · empty · submitting · error | pending → SCR-STARTER-001 (states initial · loading · loaded · empty · submitting · error) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:62` ## UI | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:64` **UI states:** initial · loading · loaded · empty · submitting · error | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:66` ## Local | superseded → FN-STARTER-002 (Kết quả) |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:68` **Postconditions:** | superseded → FN-STARTER-002 (Kết quả) |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:69` - Bản sao có `source_template_id`, `source_template_version`, `scheduler_type` đ | superseded → FN-STARTER-002 (Kết quả) |
@@ -2628,7 +2628,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:81` - [ ] **Given** đã có một bản sao của đúng template và version đó nằm ngoài Tras | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:82` - [ ] **Given** bản sao duy nhất của một template nằm trong Trash, **when** ngườ | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:83` - [ ] **Given** bản app mới nâng version của một template đã có bản sao, **when* | moved → `USE_CASES.md` |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:84` - [ ] **Given** manifest thiếu hoặc hỏng, **when** mở thư viện, **then** thư việ | pending → SCR-STARTER-001 (presentation of the criterion); intent kept in UC-STARTER-001 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:84` - [ ] **Given** manifest thiếu hoặc hỏng, **when** mở thư viện, **then** thư việ | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:85` - [ ] **Given** một lần ghi thất bại giữa chừng khi sao chép, **when** thêm temp | moved → `USE_CASES.md` |
 
 ## features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md
@@ -3193,10 +3193,10 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 |---|---|
 | `features/starter-decks/ui.md:1` # Starter decks — UI | superseded → UC-STARTER-001 + FN-STARTER-001 + FN-STARTER-002; per-feature UI files are replaced by screen specs (ADR-021) |
 | `features/starter-decks/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên | superseded → UC-STARTER-001 + FN-STARTER-001 + FN-STARTER-002; per-feature UI files are replaced by screen specs (ADR-021) |
-| `features/starter-decks/ui.md:5` ## Màn hình và điều hướng | pending → SCR-STARTER-001 (route and where it opens from, with NAVIGATION.md) |
-| `features/starter-decks/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | pending → SCR-STARTER-001 (route and where it opens from, with NAVIGATION.md) |
-| `features/starter-decks/ui.md:9` \| 03 · Starter decks \| `/decks/starter`, toàn màn hình trên root navigator, khôn | pending → SCR-STARTER-001 (route /decks/starter, full screen on the root navigator, no bottom bar; opened from Starter decks on the Library app bar and from Browse starter decks on the empty Library) |
-| `features/starter-decks/ui.md:11` Open trên toast "Added" đi tới deck gốc mới trong Thư viện; "Create a deck" (bản | pending → SCR-STARTER-001 (Open on the "Added" toast navigates to the new root in SCR-DECK-001; "Create a deck" in a build without templates returns to SCR-DECK-001 and opens its create dialog) |
+| `features/starter-decks/ui.md:5` ## Màn hình và điều hướng | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `features/starter-decks/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `features/starter-decks/ui.md:9` \| 03 · Starter decks \| `/decks/starter`, toàn màn hình trên root navigator, khôn | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
+| `features/starter-decks/ui.md:11` Open trên toast "Added" đi tới deck gốc mới trong Thư viện; "Create a deck" (bản | moved → `screens/spec/SCR-STARTER-001-starter-decks.md` |
 | `features/starter-decks/ui.md:16` ## Edge case | superseded → UC-STARTER-001 (first launch) + FN-STARTER-001 (nothing is inserted on its own) |
 | `features/starter-decks/ui.md:18` \| Case \| Expected behaviour \| | superseded → UC-STARTER-001 (first launch) + FN-STARTER-001 (nothing is inserted on its own) |
 | `features/starter-decks/ui.md:20` \| Mở app lần đầu \| Hiện thư viện starter deck để chọn (UC-STARTER-001). Không tự | superseded → UC-STARTER-001 steps 1–5 (the empty library offers the starter library; nothing is inserted into the person's data) + FN-STARTER-001 |
@@ -3351,10 +3351,10 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/starter-decks/README.md:15` ## Màn hình → Use case |  |
-| `features/starter-decks/README.md:17` \| Màn hình \| UC \| |  |
-| `features/starter-decks/README.md:19` \| Thư viện starter (child flow trong tab Thư viện; empty state khi chưa có deck) |  |
-| `features/starter-decks/README.md:21` Nguồn: trigger của UC-STARTER-001 ("Mở app lần đầu sau khi cài"); [`shared/ui/na |  |
+| `features/starter-decks/README.md:15` ## Màn hình → Use case || superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/starter-decks/README.md:17` \| Màn hình \| UC \| || superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/starter-decks/README.md:19` \| Thư viện starter (child flow trong tab Thư viện; empty state khi chưa có deck) || superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/starter-decks/README.md:21` Nguồn: trigger của UC-STARTER-001 ("Mở app lần đầu sau khi cài"); [`shared/ui/na || superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/study/README.md
 
@@ -3811,26 +3811,26 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/settings/presentation/goldens/sync_synced_light.png` |  |
 | `test/features/settings/presentation/goldens/sync_syncing_dark.png` |  |
 | `test/features/settings/presentation/goldens/sync_syncing_light.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_add_failed_dark.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_add_failed_light.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_added_dark.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_added_light.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_adding_dark.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_adding_light.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_already_present_dark.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_already_present_light.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_choose_dark.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_choose_light.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_list_dark.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_list_light.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_load_failed_dark.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_load_failed_light.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_loading_dark.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_loading_light.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_none_dark.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_none_light.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_second_copy_dark.png` |  |
-| `test/features/starter_decks/presentation/goldens/starter_second_copy_light.png` |  |
+| `test/features/starter_decks/presentation/goldens/starter_add_failed_dark.png` | superseded → SCR-STARTER-001 `add_failed` dark |
+| `test/features/starter_decks/presentation/goldens/starter_add_failed_light.png` | superseded → SCR-STARTER-001 `add_failed` light |
+| `test/features/starter_decks/presentation/goldens/starter_added_dark.png` | superseded → SCR-STARTER-001 `added` dark |
+| `test/features/starter_decks/presentation/goldens/starter_added_light.png` | superseded → SCR-STARTER-001 `added` light |
+| `test/features/starter_decks/presentation/goldens/starter_adding_dark.png` | superseded → SCR-STARTER-001 `adding` dark |
+| `test/features/starter_decks/presentation/goldens/starter_adding_light.png` | superseded → SCR-STARTER-001 `adding` light |
+| `test/features/starter_decks/presentation/goldens/starter_already_present_dark.png` | superseded → SCR-STARTER-001 `already_present` dark |
+| `test/features/starter_decks/presentation/goldens/starter_already_present_light.png` | superseded → SCR-STARTER-001 `already_present` light |
+| `test/features/starter_decks/presentation/goldens/starter_choose_dark.png` | superseded → SCR-STARTER-001 `choose` dark |
+| `test/features/starter_decks/presentation/goldens/starter_choose_light.png` | superseded → SCR-STARTER-001 `choose` light |
+| `test/features/starter_decks/presentation/goldens/starter_list_dark.png` | superseded → SCR-STARTER-001 `list` dark |
+| `test/features/starter_decks/presentation/goldens/starter_list_light.png` | superseded → SCR-STARTER-001 `list` light |
+| `test/features/starter_decks/presentation/goldens/starter_load_failed_dark.png` | superseded → SCR-STARTER-001 `load_failed` dark |
+| `test/features/starter_decks/presentation/goldens/starter_load_failed_light.png` | superseded → SCR-STARTER-001 `load_failed` light |
+| `test/features/starter_decks/presentation/goldens/starter_loading_dark.png` | superseded → SCR-STARTER-001 `loading` dark |
+| `test/features/starter_decks/presentation/goldens/starter_loading_light.png` | superseded → SCR-STARTER-001 `loading` light |
+| `test/features/starter_decks/presentation/goldens/starter_none_dark.png` | superseded → SCR-STARTER-001 `none` dark |
+| `test/features/starter_decks/presentation/goldens/starter_none_light.png` | superseded → SCR-STARTER-001 `none` light |
+| `test/features/starter_decks/presentation/goldens/starter_second_copy_dark.png` | superseded → SCR-STARTER-001 `second_copy` dark |
+| `test/features/starter_decks/presentation/goldens/starter_second_copy_light.png` | superseded → SCR-STARTER-001 `second_copy` light |
 | `test/features/study/presentation/goldens/study_browse_dark.png` |  |
 | `test/features/study/presentation/goldens/study_browse_light.png` |  |
 | `test/features/study/presentation/goldens/study_browse_looking_back_dark.png` |  |
@@ -4324,3 +4324,10 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - The README "Màn hình → Use case" rows of srs and deck are superseded by the specs' Related Use
   Cases (helper `fill_readme_ledger.py`); later tasks do the same for their feature.
 - Warning delta: 65 → 64 = −1 SCR-DECK-001 navigating to a pending SCR-SRS-001.
+
+## Task 29 notes — SCR-STARTER-001
+
+- Record 03 → `screens/spec/SCR-STARTER-001-starter-decks.md`; 20 goldens superseded by its states.
+- 10 rows `pending → SCR-STARTER-001` moved into the spec; starter-decks README rows superseded.
+- The second-copy dialog and the `already_present` snackbar follow `starter_add_controller.dart`.
+- Warning delta: 64 → 63 = −1 SCR-DECK-001 navigating to a pending SCR-STARTER-001.

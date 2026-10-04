@@ -413,14 +413,20 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-STARTER-001](../functional-spec/starter-decks.md) | Xem thư viện starter | active | UC-STARTER-001 |
-| [FN-STARTER-002](../functional-spec/starter-decks.md) | Thêm một starter deck vào thư viện | active | UC-STARTER-001 |
+| [FN-STARTER-001](../functional-spec/starter-decks.md) | Xem thư viện starter | active | SCR-STARTER-001, UC-STARTER-001 |
+| [FN-STARTER-002](../functional-spec/starter-decks.md) | Thêm một starter deck vào thư viện | active | SCR-STARTER-001, UC-STARTER-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
 | [UC-STARTER-001](../USE_CASES.md) | Khởi động lần đầu và chọn starter deck | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-STARTER-001](../screens/spec/SCR-STARTER-001-starter-decks.md) | Starter decks | ready | `/decks/starter` |
 
 ## [study](../features/study/README.md)
 
