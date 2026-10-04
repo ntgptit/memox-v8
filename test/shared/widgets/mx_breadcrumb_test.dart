@@ -210,4 +210,27 @@ void main() {
     await tester.tap(find.text('…'));
     expect(went, ['Library']);
   });
+
+  testWidgets('a place one can go to is underlined; the current one is not', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 380,
+        child: MxBreadcrumb(
+          items: [
+            MxBreadcrumbItem(label: 'Library', onTap: () {}),
+            const MxBreadcrumbItem(label: 'Archive'),
+            const MxBreadcrumbItem(label: 'Spanish'),
+          ],
+        ),
+      ),
+    );
+    TextDecoration? line(String label) =>
+        tester.widget<Text>(find.text(label)).style?.decoration;
+    expect(line('Library'), TextDecoration.underline);
+    expect(line('Archive'), isNot(TextDecoration.underline));
+    expect(line('Spanish'), isNot(TextDecoration.underline));
+  });
 }

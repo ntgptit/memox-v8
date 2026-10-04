@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/components/chrome_style.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
@@ -20,12 +21,12 @@ class MxBreadcrumbItem {
 
 /// A path of places (DESIGN.md, MxBreadcrumb), presentation-neutral: it knows
 /// no deck, ancestor or route. The last item is where the reader is; the ones
-/// before it are ancestors, each a 48 target when it can be tapped. One line:
-/// when the path does not fit, the current place keeps its full width, the
-/// nearest ancestors stay whole, and the oldest fold into one "…" place that
-/// goes to the nearest of them that can be opened and reads them all to
-/// TalkBack. The separator
-/// mirrors in right-to-left text.
+/// before it are ancestors; one that can be tapped is a 48 target and is
+/// underlined, so it is told by more than colour. One line: when the path
+/// does not fit, the current place keeps its full width, the nearest
+/// ancestors stay whole, and the oldest fold into one "…" place that goes to
+/// the nearest of them that can be opened and reads them all to TalkBack.
+/// The separator mirrors in right-to-left text.
 class MxBreadcrumb extends StatelessWidget {
   const MxBreadcrumb({required this.items, super.key});
 
@@ -193,8 +194,11 @@ class _Place extends StatelessWidget {
             item.label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: context.texts.bodyMedium?.apply(
-              color: isCurrent ? colors.onSurface : colors.onSurfaceVariant,
+            style: mxBreadcrumbStyle(
+              context.texts,
+              colors,
+              isCurrent: isCurrent,
+              canOpen: tap != null,
             ),
           ),
         ),

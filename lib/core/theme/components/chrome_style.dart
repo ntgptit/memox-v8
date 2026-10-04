@@ -42,6 +42,26 @@ TextStyle? mxRowTitleStyle(TextTheme texts, ColorScheme colors) => texts
     .bodyLarge
     ?.copyWith(color: colors.onSurface, letterSpacing: _rowTitleTracking);
 
+/// A breadcrumb place in Body: the current place in `on-surface`, the others
+/// in `on-surface-variant`. A place one can go to is also underlined, so it
+/// is told by more than colour.
+TextStyle? mxBreadcrumbStyle(
+  TextTheme texts,
+  ColorScheme colors, {
+  required bool isCurrent,
+  required bool canOpen,
+}) {
+  final Color tone = isCurrent ? colors.onSurface : colors.onSurfaceVariant;
+  final TextStyle? style = texts.bodyMedium?.apply(color: tone);
+  if (!canOpen) {
+    return style;
+  }
+  return style?.copyWith(
+    decoration: TextDecoration.underline,
+    decorationColor: tone,
+  );
+}
+
 /// The `AppBarTheme` slot, so a raw bar (the placeholder shell until SP3b)
 /// already looks like `MxAppBar`.
 AppBarThemeData mxAppBarTheme(ColorScheme colors, TextTheme texts) =>

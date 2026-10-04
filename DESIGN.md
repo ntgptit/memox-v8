@@ -879,7 +879,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxBreadcrumb
 - Variants: items of a label and an optional `onTap`; the last item is the current place
 - States: one
-- Accessibility: presentation-neutral (knows no deck, ancestor or route); one line, its labels on the gutter and clear of a cutout; when the path does not fit, the current place keeps its full width, the nearest ancestors stay whole and the oldest fold into one "…" place that goes to the nearest of them that can be opened and reads them all; each ancestor that can be tapped is a 48 button with the ripple and the keyboard ring; the current place reads as selected; the separator mirrors in right-to-left text; pinned under the bar it shares the bar's ground
+- Accessibility: presentation-neutral (knows no deck, ancestor or route); one line, its labels on the gutter and clear of a cutout; when the path does not fit, the current place keeps its full width, the nearest ancestors stay whole and the oldest fold into one "…" place that goes to the nearest of them that can be opened and reads them all; each ancestor that can be tapped is a 48 button with the ripple and the keyboard ring, underlined so it is told by more than colour; the current place and an ancestor that cannot be tapped carry no underline; the current place reads as selected; the separator mirrors in right-to-left text; pinned under the bar it shares the bar's ground
 - Tokens: `bodyMedium`; `on-surface` (current), `on-surface-variant` (ancestors, separator); `chevron_right` at `AppIconSize.small`
 - Golden: forms__light, forms__dark
 
