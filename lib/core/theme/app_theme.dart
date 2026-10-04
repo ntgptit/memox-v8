@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/components/button_style.dart';
+import 'package:memox/core/theme/components/field_style.dart';
 import 'package:memox/core/theme/components/icon_button_style.dart';
 import 'package:memox/core/theme/foundations/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
@@ -85,6 +86,15 @@ abstract final class AppTheme {
           width: AppSize.fab,
           height: AppSize.fab,
         ),
+      ),
+      inputDecorationTheme: mxInputDecorationTheme(
+        colors: scheme,
+        texts: textTheme,
+      ),
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: scheme.primary,
+        selectionColor: scheme.primaryContainer,
+        selectionHandleColor: scheme.primary,
       ),
     );
   }

@@ -64,6 +64,25 @@ void main() {
         );
       });
 
+      test('the component slots read the same roles as the Mx widgets', () {
+        expect(theme.inputDecorationTheme.filled, isTrue);
+        expect(theme.inputDecorationTheme.fillColor, isA<WidgetStateColor>());
+        expect(
+          theme.iconButtonTheme.style!.foregroundColor!.resolve({}),
+          scheme.onSurfaceVariant,
+        );
+        expect(theme.floatingActionButtonTheme.backgroundColor, scheme.primary);
+        expect(
+          theme.floatingActionButtonTheme.foregroundColor,
+          scheme.onPrimary,
+        );
+        expect(theme.textSelectionTheme.cursorColor, scheme.primary);
+        expect(
+          theme.filledButtonTheme.style!.backgroundColor!.resolve({}),
+          scheme.primary,
+        );
+      });
+
       test('pads every tap target to 48', () {
         expect(theme.materialTapTargetSize, MaterialTapTargetSize.padded);
       });
