@@ -543,10 +543,10 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxDialog | Modal decision | shared | ACCOUNT, CARD, DECK, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | built |
 | MxBottomSheet | Modal sheet with a grabber, a pinned header and footer | shared | ACCOUNT, CARD, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
 | MxSheetActions | Dialog and sheet footer actions | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, TAG, TRANSFER, TRASH | SP3a | built |
-| MxSnackbar | Transient message with one optional action | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
-| MxInlineBanner | Warning or danger banner owned by its screen | shared | ACCOUNT, CARD, DECK, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TRANSFER, TRASH | SP3a | planned |
-| MxEmptyState | Nothing here yet, and what to do | shared | ACCOUNT, CARD, DECK, SEARCH, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
-| MxErrorState | Inline load failure with Retry, or not found | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
+| MxSnackbar | Transient message with one optional action | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
+| MxInlineBanner | Warning or danger banner owned by its screen | shared | ACCOUNT, CARD, DECK, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TRANSFER, TRASH | SP3a | built |
+| MxEmptyState | Nothing here yet, and what to do | shared | ACCOUNT, CARD, DECK, SEARCH, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
+| MxErrorState | Inline load failure with Retry, or not found | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | built |
 | MxSkeleton | Loading placeholder family | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | built |
 | MxScreenScaffold | Screen frame: app-bar slot, one body, footer slot, FAB slot; not the navigation shell | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
 | MxScreenScroll | The screen's scroll body with tail clearance | shared | ACCOUNT, CARD, MONITORING, PROGRESS, STUDY, TRANSFER, TRASH | SP3a | planned |
@@ -801,6 +801,37 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: the title is a header; the sheet stops 72 below the top safe area (Material 3) and the body scrolls; it rides above the keyboard; the grabber sits in a 48 band
 - Tokens: `surface-container-high`; top corners `AppRadius.xl`; chrome shadow; grabber 32 × 4 in `outline` (3:1; Material 3's handle); `AppSize.sheetTopClearance` (72), `AppSize.sheetMaxWidth` (640)
 - Golden: picker__light, picker__dark
+
+#### MxSnackbar
+- Variants: message only (at most two lines); one action (`isUndo` keeps it 8s)
+- States: shown 4s or 8s; held while TalkBack is on and it carries an action
+- Accessibility: the action is reachable for TalkBack; it replaces any snackbar already shown
+- Tokens: `inverse-surface`, `on-inverse-surface`, `inverse-primary` (the action: `MxButton`'s inverse tone, for any action on an inverse surface, with its pressed overlay and an `inverse-primary` focus ring); `AppRadius.md`; `AppDurations.toast`, `AppDurations.toastWithUndo`
+- Golden: forms__light, forms__dark
+
+
+#### MxInlineBanner
+- Variants: tones warning, danger; optional title; up to two actions, the primary last
+- States: one
+- Accessibility: a live region; glyph plus words, never colour alone
+- Tokens: `warning-container` / `on-warning-container` / `warning` edge, `error-container` / `on-error-container` / `error` edge; `AppRadius.md`; `AppIconSize.medium`
+- Golden: tones__light, tones__dark
+
+
+#### MxEmptyState
+- Variants: tones primary, neutral, success, warning, danger; compact; up to two actions (the first filled); footnote; tile 8 to the title, 8 to the message, 12 to the actions, 8 between them
+- States: one
+- Accessibility: the title is a header; the tile is decorative
+- Tokens: each tone's container under its `on-…-container`; `AppSize.emptyTile` (64), `AppSize.emptyTileCompact` (48); `AppRadius.xl`; glyph `AppIconSize.large`; `titleLarge`, `bodyMedium`
+- Golden: forms__light, forms__dark
+
+
+#### MxErrorState
+- Variants: with Retry (load failure), without (not found); network glyph
+- States: one
+- Accessibility: the title is a header and a live region; the message speaks in the local-first voice
+- Tokens: `error-container`, `on-error-container`; the empty state's tile (`AppSize.emptyTile`, 64); `AppRadius.lg`; glyph `AppIconSize.large`; `titleLarge`, `bodyMedium`
+- Golden: forms__light, forms__dark
 
 ## Do's and Don'ts
 

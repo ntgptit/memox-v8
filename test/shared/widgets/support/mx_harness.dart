@@ -42,7 +42,8 @@ const Key mxGoldenKey = ValueKey<String>('mx-golden');
 /// One component golden: [sheet] laid out on the page ground of [variant]'s
 /// theme at a phone's width, captured as `mx_<component>__<state>__<variant>`.
 /// [focus], when given, takes keyboard focus first, so the sheet can show a
-/// focused tile as a hardware keyboard would.
+/// focused tile as a hardware keyboard would; [settle] lets an entrance
+/// (a snackbar's) finish before the capture.
 Future<void> expectMxGolden(
   WidgetTester tester, {
   required String component,
@@ -50,6 +51,7 @@ Future<void> expectMxGolden(
   required String variant,
   required Widget sheet,
   FocusNode? focus,
+  Duration? settle,
 }) async {
   // A full-HD phone, 412 dp wide; the picture is rasterized at its density
   // (below), so a golden is as sharp as the device it stands for.
@@ -85,6 +87,9 @@ Future<void> expectMxGolden(
     focus.requestFocus();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
+  }
+  if (settle != null) {
+    await tester.pump(settle);
   }
   // `matchesGoldenFile` on a finder captures at 1 px per dp; rasterize the
   // boundary at the device density instead and compare that picture.
