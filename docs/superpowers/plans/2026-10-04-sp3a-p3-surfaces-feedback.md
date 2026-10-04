@@ -4629,3 +4629,33 @@ Build the `golden-compare` page for the 30 added goldens (base: the commit befor
 - [ ] **Step 5: WBS, push and sign-off**
 
 In `docs/wbs_FE.md`, set SP3a-P3 to `xong` with this plan's link and the evidence; set the next column of SP3a to Plan P4. Run `python3 tools/docs/generate.py` and `python3 tools/docs/check.py | tail -1` → `PASS`. Commit, push, and ask the owner for the Phase 3 sign-off through `AskUserQuestion`. Include the gate, the golden page, the gallery, the Impeccable and review findings, and the decision table.
+
+---
+
+## Outcome (owner sign-off, 2026-10-04)
+
+Phase 3 is accepted as is: 16 components, gate 1931/1931, component goldens pass, no Critical finding, every Important finding fixed with a regression test (`710be57`).
+
+**Frozen contracts.** From the sign-off, the semantic contracts of the 16 components are the baseline and their goldens are the verification baseline (DESIGN.md stays the source). A later phase changes a Phase 3 component only when:
+1. the composition exposes a real root cause in the lower component;
+2. an accessibility, contrast or gate check fails; or
+3. its DESIGN.md contract changes through review.
+
+An aesthetic preference alone never reopens one.
+
+**Design debt.** Four critique questions are recorded as `- Debt:` lines with their review triggers on the `MxCard`, `MxBadge`, `MxLinearProgress` and `MxSheetActions` contracts in DESIGN.md (owner phase: SP3b review).
+
+**Deferred minors (final review).** These are not pulled into a later phase as a batch. One is taken up only if it blocks a composition, breaks a component's contract, or becomes Important once the component is composed.
+- `MxSheetActions`: no assert that `cancelLabel` and `onCancel` come together.
+- `MxSheetActions`: no text-scale stacking test; `mxCanButtonLabelFit` hardcodes `TextDirection.ltr` (width-neutral) without a comment.
+- `showMxDialog`: the transition builder allocates a `CurvedAnimation` per frame.
+- `mx_bottom_sheet_test`: the keyboard finder is brittle; the reduced-motion tests in the sheet and dialog are weak.
+- `MxSkeleton`: line height is the font size, not the text-scaled line height; a live `disableAnimations` toggle is untested.
+- `MxErrorState`: the live region covers the title only.
+- `MxInlineBanner`: its tone icon has no label.
+- `MxSection`: the overline's `toUpperCase` is not locale-aware.
+- `MxLinearProgress`: its `Semantics` has no `container`; "as long as the bar is thick" in its doc is unclear.
+- Golden harness: `debugDisableShadows` is restored outside a `finally`.
+- `MxCard`: the selected edge is painted beneath a full-bleed child.
+
+**Ruling.** "Selecting a card shifts its content" does not reproduce: a `DecoratedBox` border never insets its child. The test 'choosing a card moves neither its size nor its content' pins this.

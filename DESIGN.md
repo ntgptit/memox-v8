@@ -716,6 +716,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: a tappable card is one button with the keyboard ring; TalkBack hears it selected when chosen; its content reads in the tone's `on-` role
 - Tokens: `surface-container-lowest` (raised; whisper shadow in light, `outline-variant` hairline in dark), `primary-container`, `warning-container`, `success-container`, `error-container`, `surface-container-low` and their `on-` roles; `on-primary-container` (selected edge); `AppRadius.md`; `AppSpacing.card`
 - Golden: tones__light, tones__dark
+- Debt: in dark the warning, success and danger grounds may outweigh the hero and the primary action; review trigger: SP3b, the first screen with a status and a primary CTA together; if the hierarchy is wrong, fix the semantic status tokens in the theme, never the screen (owner, P3 sign-off 2026-10-04)
 
 
 #### MxSection
@@ -739,6 +740,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: read as its label; 24 is a minimum, the label centred, and it grows with text, wrapping rather than cutting the unit
 - Tokens: each tone's container under its `on-…-container` (`surface-container-high` / `on-surface-variant` for neutral); `labelSmall`; `AppSize.badge`; `AppRadius.full`
 - Golden: tones__light, tones__dark
+- Debt: the neutral badge and `MxTagChip` may lack a semantic distinction, and dark `primary-container` sits close to the neutral surface; review trigger: the first screen that shows a badge and a tag in one context; distinguish by shape, density, type or container semantics before colour (owner, P3 sign-off 2026-10-04)
 
 
 #### MxStatusBadge
@@ -770,6 +772,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: named by `semanticLabel` with a localized `semanticValue`; fills from the start edge in RTL; knows nothing of mastery
 - Tokens: fill `secondary` (5.08:1 light, 6.71:1 dark on the track; never `primary`, 2.35:1 on the dark track), `status-*`, `success`, `warning`, `error`; track `surface-container-low`; `AppSize.progress*`; `AppRadius.full`; every fill 3:1 on its track
 - Golden: tones__light, tones__dark
+- Debt: in light the track (and `MxSkeleton`) is about 1.11:1 on a white surface; review trigger: SP3b on a real screen; the fill against its track must stay distinct per this contract, the skeleton is a decorative loading cue and is not forced to 3:1; if the track or skeleton all but vanishes to the eye, adjust the surface or opacity token, never a token only to hit a number (owner, P3 sign-off 2026-10-04)
 
 
 #### MxSkeleton
@@ -785,6 +788,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: buttons named by their labels; Cancel and the confirm share the row equally, the confirm trailing, while both labels fit one line at the reader's text scale (measured); otherwise they stack full width, the confirm on top; a label is never cut; a lone confirm spans the row
 - Tokens: through `MxButton`; `outline-variant` hairline in a sheet
 - Golden: none — seen in `mx_dialog__decision` and `mx_bottom_sheet__picker`
+- Debt: in dark the `outline-variant` hairline over the actions is near invisible on the sheet ground; review trigger: SP3b when a bottom sheet is composed for real; strengthen it only if the footer needs a structural separation, otherwise drop the hairline and let spacing and surface carry it (owner, P3 sign-off 2026-10-04)
 
 
 #### MxDialog
