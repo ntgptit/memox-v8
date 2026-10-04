@@ -325,6 +325,10 @@ class AdrTest(unittest.TestCase):
         self.assertTrue(has(legacy, "library_root_light.png", "legacy golden (SP2)"))
         self.assertFalse(has(errors(base()), "legacy golden (SP2)"))
 
+    def test_a_component_golden_is_not_legacy(self):
+        found = errors(base(**{"test/shared/widgets/goldens/mx_button__primary_enabled__light.png": ""}))
+        self.assertFalse(has(found, "legacy golden (SP2)"))
+
     def test_the_gallery_is_a_retired_home_but_visual_audits_come_back(self):
         self.assertTrue(has(errors(base(**{"lib/app/gallery/gallery_screen.dart": "// old\n"})), "retired home (SP2)"))
         # MX-VIS-001: the rebuilt screens keep their visual-audit companions.
@@ -374,6 +378,10 @@ class ScreenStateTest(unittest.TestCase):
     def test_an_undeclared_scr_golden_is_an_orphan(self):
         found = self.found(base(), ("scr_deck_001__root_loaded__light.png", "scr_deck_001__gone__light.png"))
         self.assertTrue(has(found, "golden matches no screen state"))
+
+    def test_a_component_golden_is_not_a_screen_orphan(self):
+        found = self.found(base(), ("scr_deck_001__root_loaded__light.png", "mx_button__primary_enabled__light.png"))
+        self.assertFalse(has(found, "orphan"))
 
     def test_old_goldens_are_not_orphans_before_the_first_scr_golden(self):
         self.assertFalse(has(self.found(base(), ("library_decks_light.png",)), "orphan"))

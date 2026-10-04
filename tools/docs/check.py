@@ -43,6 +43,10 @@ ERROR
   or is deprecated; an FN cited in a UC flow but missing from its `Invokes:`
 - a file in a retired home: features/*/usecases/, features/*/ui.md, shared/ui/
 - a legacy-named golden, or a file under lib/app/gallery/ (SP2)
+- DESIGN.md's component catalog: a bad row, a missing contract, code or test
+  for its status, a public `Mx*` widget outside it or in the wrong place, an
+  `Mx*` name in DESIGN.md or a screen spec that it does not hold, or an `mx_*`
+  golden it does not declare (SP3a §4); a retired ink term (A11)
 - with --plan: a mapping row whose destination does not exist (a mapping
   table is one whose first header cell starts with "Nguồn"; destinations are
   backticked paths relative to docs/, `<slug>` and `*` are wildcards)
@@ -70,6 +74,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import design_catalog  # noqa: E402
 import generate as g  # noqa: E402
 import specdocs  # noqa: E402
 import ledger  # noqa: E402
@@ -375,12 +380,29 @@ RETIRED_UI_HOMES = ("lib/app/gallery/**/*",)
 
 def check_legacy_ui(report: Report) -> None:
     for path in sorted(g.ROOT.glob("test/**/goldens/*.png")):
-        if not path.name.startswith("scr_"):
-            report.error(path, "legacy golden (SP2): new goldens are named scr_<screen>__<state>__<variant>.png")
+        if not path.name.startswith(("scr_", "mx_")):
+            report.error(
+                path,
+                "legacy golden (SP2): a golden is scr_<screen>__<state>__<variant>.png "
+                "or mx_<component>__<state>__<variant>.png",
+            )
     for pattern in RETIRED_UI_HOMES:
         for path in sorted(g.ROOT.glob(pattern)):
             if path.is_file():
                 report.error(path, "retired home (SP2): the legacy component gallery is gone")
+
+
+def check_design(docs: list[g.Doc], report: Report) -> None:
+    """DESIGN.md's component catalog, `mx_*` goldens and the retired ink vocabulary (SP3a §4, A11)."""
+    screens = {d.id for d in docs if d.kind == "SCR" and d.id}
+    domains = {screen.split("-")[1] for screen in screens}
+    findings = design_catalog.check_catalog(g.ROOT, domains, screens, g.golden_files())
+    findings += design_catalog.check_ink_vocabulary(g.ROOT)
+    for level, where, message in findings:
+        if level == "ERROR":
+            report.error(where, message)
+            continue
+        report.warning(where, message)
 
 
 def check_catalog(docs: list[g.Doc], report: Report) -> None:
@@ -453,8 +475,9 @@ def check_screen_states(docs, report, goldens: dict[str, Path], base_keys) -> No
                 f"state key `{missing}` was renamed or deleted; keys are permanent — "
                 "keep its heading with `Status: removed`",
             )
-    if any(name.startswith("scr_") for name in goldens):
-        for name in sorted(set(goldens) - declared):
+    screen_goldens = {name for name in goldens if name.startswith("scr_")}
+    if screen_goldens:
+        for name in sorted(screen_goldens - declared):
             report.error(goldens[name], "golden matches no screen state (orphan)")
 
 
@@ -834,6 +857,7 @@ def run(plan: Path | None, base_keys=base_state_keys, ledger_path: Path | None =
     check_single_product(report)
     check_retired_homes(report)
     check_legacy_ui(report)
+    check_design(docs, report)
     check_catalog(docs, report)
     check_screen_states(docs, report, g.golden_files(), base_keys)
     check_text(docs, report)
