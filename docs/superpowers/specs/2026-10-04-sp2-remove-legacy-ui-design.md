@@ -1,6 +1,6 @@
 # SP2 — Remove the legacy UI
 
-Status: draft for owner review · Date: 2026-10-04 · Branch: `ccr-841d461f-jofe0s` (from
+Status: approved by the owner 2026-10-04 · Date: 2026-10-04 · Branch: `ccr-841d461f-jofe0s` (from
 `master` at `ac57dc4`, PR #196 merged)
 
 Sub-project 2 of the UI rebuild. Sub-project 1 (PR #196) moved every piece of UI knowledge into
@@ -53,6 +53,15 @@ source.
   session's git proxy refuses tag pushes.
 - **S8 — DESIGN.md is canonical.** DESIGN.md stops describing itself as generated from, or
   reflecting, the code. Code implements DESIGN.md; DESIGN.md is never derived from code.
+- **S10 — Tabs (approval 2026-10-04).** The placeholder shell keeps NAVIGATION.md's four
+  tabs, Library · Study · Progress · Settings. SP2 never changes the information architecture.
+- **S11 — Welcome (approval 2026-10-04).** The `/welcome` placeholder keeps "Continue"
+  (FN-ACCOUNT-001): the semantic action and the flow are preserved, only the presentation is
+  minimal. Welcome's visual design is not rebuilt here.
+- **S12 — Providers (approval 2026-10-04).** `presentation/providers/` stays as ADR-011 sets it.
+  A provider is never deleted for living under `presentation/`; only screen-specific
+  presentation goes. Moving providers elsewhere would need its own decision superseding
+  ADR-011, never part of SP2.
 - **S9 — SP2 builds nothing.** No design system, theme, `Mx*`, `SCR-*` screen or new golden.
 
 ## 3. Scope
@@ -155,7 +164,7 @@ non-provider move follows ADR-011's buckets.
 - **Tabs.** A `StatefulShellRoute` with four tabs, in NAVIGATION.md's order: Library
   (`/decks`) · Study (`/study`) · Progress (`/progress`) · Settings (`/settings`).
   - The owner's examples listed "Search" as the third tab. NAVIGATION.md, which outranks them,
-    lists Progress, so the shell follows NAVIGATION.md. **Owner to confirm at review.**
+    lists Progress, so the shell follows NAVIGATION.md (S10).
 - **Route contract.**
   - Every route path in SCREEN_CATALOG.md stays registered and points to one generic
     placeholder page. The page shows the route's SCR id and "Being rebuilt".
