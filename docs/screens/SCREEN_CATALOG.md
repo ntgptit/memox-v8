@@ -12,7 +12,7 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 | SCR-SRS-001 | Review algorithm & reset | srs | `/decks/deck/:deckId/algorithm` | ready | `spec/SCR-SRS-001-review-algorithm.md` |
 | SCR-STARTER-001 | Starter decks | starter-decks | `/decks/starter` | ready | `spec/SCR-STARTER-001-starter-decks.md` |
 | SCR-SEARCH-001 | Library search | search | `/decks/search` | ready | `spec/SCR-SEARCH-001-library-search.md` |
-| SCR-TAG-001 | Tags | tags | — | pending | — |
+| SCR-TAG-001 | Tags | tags | `/decks/tags` | ready | `spec/SCR-TAG-001-tags.md` |
 | SCR-TRASH-001 | Trash | trash | — | pending | — |
 | SCR-CARD-001 | Card list | card | — | pending | — |
 | SCR-CARD-002 | Card create | card | — | pending | — |

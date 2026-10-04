@@ -592,16 +592,22 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-TAG-001](../functional-spec/tags.md) | Xem danh mục tag | active | UC-TAG-001 |
-| [FN-TAG-002](../functional-spec/tags.md) | Xem trước việc đổi tên một tag | active | UC-TAG-001 |
-| [FN-TAG-003](../functional-spec/tags.md) | Đổi tên một tag | active | UC-TAG-001 |
-| [FN-TAG-004](../functional-spec/tags.md) | Xoá một tag | active | UC-TAG-001 |
+| [FN-TAG-001](../functional-spec/tags.md) | Xem danh mục tag | active | SCR-TAG-001, UC-TAG-001 |
+| [FN-TAG-002](../functional-spec/tags.md) | Xem trước việc đổi tên một tag | active | SCR-TAG-001, UC-TAG-001 |
+| [FN-TAG-003](../functional-spec/tags.md) | Đổi tên một tag | active | SCR-TAG-001, UC-TAG-001 |
+| [FN-TAG-004](../functional-spec/tags.md) | Xoá một tag | active | SCR-TAG-001, UC-TAG-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
 | [UC-TAG-001](../USE_CASES.md) | Quản lý tag và lọc thẻ theo tag | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-TAG-001](../screens/spec/SCR-TAG-001-tags.md) | Tags | ready | `/decks/tags` |
 
 ## [transfer](../features/transfer/README.md)
 

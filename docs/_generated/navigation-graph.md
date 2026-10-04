@@ -22,6 +22,8 @@ Screen → screen edges from each spec's `Navigate to:` lines (spec R9).
 | SCR-SEARCH-001 | SCR-DECK-001 |
 | SCR-SRS-001 | SCR-DECK-001 |
 | SCR-STARTER-001 | SCR-DECK-001 |
+| SCR-TAG-001 | SCR-DECK-001 |
+| SCR-TAG-001 | SCR-SEARCH-001 |
 
 ## Router entries
 

@@ -7,7 +7,7 @@
 - Invokes: FN-DECK-007, FN-DECK-008, FN-DECK-001, FN-DECK-009, FN-DECK-002, FN-DECK-012, FN-DECK-010, FN-DECK-011, FN-DECK-004, FN-DECK-005, FN-DECK-006
 - Rules via FN: BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-DECK-005, BR-DECK-006, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-DECK-020, BR-DECK-021, BR-DECK-022, BR-DECK-023, BR-DECK-024, BR-DECK-025, BR-DECK-026, BR-DECK-027, BR-SRS-001, BR-SRS-003, BR-SRS-005, BR-SRS-006, BR-SRS-007, BR-SRS-013, BR-SRS-028, BR-SRS-029, BR-STUDY-008, BR-STUDY-046, BR-STUDY-051, BR-STUDY-067, BR-STUDY-068, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-006, BR-TRASH-008, BR-TRASH-010
 - Use cases: UC-DECK-001, UC-DECK-002, UC-DECK-003, UC-DECK-004, UC-DECK-005, UC-DECK-006
-- Entry points: SCR-DECK-001, SCR-SEARCH-001, SCR-SRS-001, SCR-STARTER-001
+- Entry points: SCR-DECK-001, SCR-SEARCH-001, SCR-SRS-001, SCR-STARTER-001, SCR-TAG-001
 
 | State | Golden | Present |
 |---|---|---|
@@ -40,7 +40,7 @@
 - Invokes: FN-SEARCH-001
 - Rules via FN: BR-DECK-003, BR-SEARCH-001, BR-SEARCH-002, BR-SEARCH-003, BR-SEARCH-004, BR-SEARCH-005, BR-SEARCH-006, BR-SEARCH-007, BR-SEARCH-008, BR-SEARCH-009, BR-TAG-001
 - Use cases: UC-SEARCH-001
-- Entry points: SCR-DECK-001
+- Entry points: SCR-DECK-001, SCR-TAG-001
 
 | State | Golden | Present |
 |---|---|---|
@@ -92,3 +92,26 @@
 | `loading` | light, dark | — |
 | `none` | light, dark | — |
 | `load_failed` | light, dark | — |
+
+## [SCR-TAG-001](../screens/spec/SCR-TAG-001-tags.md) · Tags
+
+- Invokes: FN-TAG-001, FN-TAG-002, FN-TAG-003, FN-TAG-004
+- Rules via FN: BR-TAG-001, BR-TAG-002, BR-TAG-003, BR-TAG-006, BR-TAG-007, BR-TAG-008, BR-TAG-009, BR-TAG-010, BR-TAG-011
+- Use cases: UC-TAG-001
+- Entry points: SCR-DECK-001
+
+| State | Golden | Present |
+|---|---|---|
+| `loaded` | light, dark | — |
+| `loading` | light, dark | — |
+| `empty` | light, dark | — |
+| `search_empty` | light, dark | — |
+| `sheet` | light, dark | — |
+| `rename` | light, dark | — |
+| `rename_merge` | light, dark | — |
+| `name_too_long` | light, dark | — |
+| `del` | light, dark | — |
+| `busy` | light, dark | — |
+| `op_error` | light, dark | — |
+| `tag_gone` | light, dark | — |
+| `read_error` | light, dark | — |

@@ -279,48 +279,48 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/05-tags.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/05-tags.md:3` # 05 · Tags |  |
-| `shared/ui/screen-handoff/05-tags.md:5` The tag catalog: every tag of the library with its active cards, narrowed by a s |  |
-| `shared/ui/screen-handoff/05-tags.md:10` ## Entry points |  |
-| `shared/ui/screen-handoff/05-tags.md:12` - **The Library's app bar:** the tag action pushes `/decks/tags`, full screen on |  |
-| `shared/ui/screen-handoff/05-tags.md:15` ## Layout |  |
-| `shared/ui/screen-handoff/05-tags.md:17` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/05-tags.md:19` \| App bar \| `MxAppBar` (content) \| Back and "Tags". \| |  |
-| `shared/ui/screen-handoff/05-tags.md:20` \| Search \| `MxSearchField` \| "Search tags". It narrows the catalog with the fold |  |
-| `shared/ui/screen-handoff/05-tags.md:21` \| Header \| `MxListSectionHeader` \| "{n} tags" or "No matches", with "A→Z" as pla |  |
-| `shared/ui/screen-handoff/05-tags.md:22` \| Rows \| `MxSection` + `MxListRow` \| A tag tile, the name (one line, ellipsis), |  |
-| `shared/ui/screen-handoff/05-tags.md:23` \| Action sheet \| `MxBottomSheet` + `MxTagChip` + `MxActionSheetCommandRow` ×3 \| |  |
-| `shared/ui/screen-handoff/05-tags.md:24` \| Rename dialog \| `MxDialog` + `MxTextField` + `MxSheetActions` \| "Rename tag", |  |
-| `shared/ui/screen-handoff/05-tags.md:25` \| Delete dialog \| `MxDialog` + `MxNote` + `MxSheetActions` \| "Delete this tag?", |  |
-| `shared/ui/screen-handoff/05-tags.md:27` "Find cards with this tag" opens the Library search on the tag's name (D11). The |  |
-| `shared/ui/screen-handoff/05-tags.md:31` ## States |  |
-| `shared/ui/screen-handoff/05-tags.md:33` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/05-tags.md:35` \| loaded \| `tags_loaded_light.png` \| `tags_loaded_dark.png` \| Tags in the store' |  |
-| `shared/ui/screen-handoff/05-tags.md:36` \| loading \| `tags_loading_light.png` \| `tags_loading_dark.png` \| The search, the |  |
-| `shared/ui/screen-handoff/05-tags.md:37` \| empty \| `tags_empty_light.png` \| `tags_empty_dark.png` \| Only the empty state: |  |
-| `shared/ui/screen-handoff/05-tags.md:38` \| searchEmpty \| `tags_search_empty_light.png` \| `tags_search_empty_dark.png` \| " |  |
-| `shared/ui/screen-handoff/05-tags.md:39` \| sheet \| `tags_sheet_light.png` \| `tags_sheet_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/05-tags.md:40` \| rename \| `tags_rename_light.png` \| `tags_rename_dark.png` \| The tag's name in |  |
-| `shared/ui/screen-handoff/05-tags.md:41` \| renameMerge \| `tags_rename_merge_light.png` \| `tags_rename_merge_dark.png` \| " |  |
-| `shared/ui/screen-handoff/05-tags.md:42` \| nameTooLong \| `tags_name_too_long_light.png` \| `tags_name_too_long_dark.png` \| |  |
-| `shared/ui/screen-handoff/05-tags.md:43` \| del \| `tags_del_light.png` \| `tags_del_dark.png` \| No glyph over the title; th |  |
-| `shared/ui/screen-handoff/05-tags.md:44` \| busy \| `tags_busy_light.png` \| `tags_busy_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/05-tags.md:45` \| opError \| `tags_op_error_light.png` \| `tags_op_error_dark.png` \| One sentence, |  |
-| `shared/ui/screen-handoff/05-tags.md:46` \| tagGone \| `tags_tag_gone_light.png` \| `tags_tag_gone_dark.png` \| The gone stat |  |
-| `shared/ui/screen-handoff/05-tags.md:47` \| read error \| — \| — \| (E1, D10) `MxErrorState` "Couldn't load tags" with Retry. |  |
-| `shared/ui/screen-handoff/05-tags.md:48` Other goldens: `tags_read_error_light.png` / `tags_read_error_dark.png` (the tag |  |
-| `shared/ui/screen-handoff/05-tags.md:51` Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,sea |  |
-| `shared/ui/screen-handoff/05-tags.md:53` ## Rulings |  |
-| `shared/ui/screen-handoff/05-tags.md:55` - **D15 (AA):** "Merge tags" uses the warning role with its ink. |  |
-| `shared/ui/screen-handoff/05-tags.md:56` - **BE-B2 D6, D8:** the merge target's count is the union of both tags' cards, n |  |
-| `shared/ui/screen-handoff/05-tags.md:57` - **BR-TAG-003, critique P2b:** there is one order (the store's folded order, di |  |
-| `shared/ui/screen-handoff/05-tags.md:58` - **UC-TAG-001 E1, D10:** a read failure shows `MxErrorState` with Retry. |  |
-| `shared/ui/screen-handoff/05-tags.md:59` - Dialogs quote tag names, carry no glyph and are left-aligned (`MxDialog`); toa |  |
-| `shared/ui/screen-handoff/05-tags.md:60` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/05-tags.md:61` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/05-tags.md:63` ## Copy |  |
-| `shared/ui/screen-handoff/05-tags.md:65` "Tags" · "Search tags" · "{n} tags" · "No matches" · "A→Z" · "{n} cards" · |  |
+| `shared/ui/screen-handoff/05-tags.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:3` # 05 · Tags | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:5` The tag catalog: every tag of the library with its active cards, narrowed by a s | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:10` ## Entry points | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:12` - **The Library's app bar:** the tag action pushes `/decks/tags`, full screen on | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:15` ## Layout | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:17` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:19` \| App bar \| `MxAppBar` (content) \| Back and "Tags". \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:20` \| Search \| `MxSearchField` \| "Search tags". It narrows the catalog with the fold | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:21` \| Header \| `MxListSectionHeader` \| "{n} tags" or "No matches", with "A→Z" as pla | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:22` \| Rows \| `MxSection` + `MxListRow` \| A tag tile, the name (one line, ellipsis), | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:23` \| Action sheet \| `MxBottomSheet` + `MxTagChip` + `MxActionSheetCommandRow` ×3 \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:24` \| Rename dialog \| `MxDialog` + `MxTextField` + `MxSheetActions` \| "Rename tag", | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:25` \| Delete dialog \| `MxDialog` + `MxNote` + `MxSheetActions` \| "Delete this tag?", | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:27` "Find cards with this tag" opens the Library search on the tag's name (D11). The | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:31` ## States | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:33` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:35` \| loaded \| `tags_loaded_light.png` \| `tags_loaded_dark.png` \| Tags in the store' | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:36` \| loading \| `tags_loading_light.png` \| `tags_loading_dark.png` \| The search, the | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:37` \| empty \| `tags_empty_light.png` \| `tags_empty_dark.png` \| Only the empty state: | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:38` \| searchEmpty \| `tags_search_empty_light.png` \| `tags_search_empty_dark.png` \| " | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:39` \| sheet \| `tags_sheet_light.png` \| `tags_sheet_dark.png` \| — \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:40` \| rename \| `tags_rename_light.png` \| `tags_rename_dark.png` \| The tag's name in | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:41` \| renameMerge \| `tags_rename_merge_light.png` \| `tags_rename_merge_dark.png` \| " | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:42` \| nameTooLong \| `tags_name_too_long_light.png` \| `tags_name_too_long_dark.png` \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:43` \| del \| `tags_del_light.png` \| `tags_del_dark.png` \| No glyph over the title; th | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:44` \| busy \| `tags_busy_light.png` \| `tags_busy_dark.png` \| — \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:45` \| opError \| `tags_op_error_light.png` \| `tags_op_error_dark.png` \| One sentence, | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:46` \| tagGone \| `tags_tag_gone_light.png` \| `tags_tag_gone_dark.png` \| The gone stat | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:47` \| read error \| — \| — \| (E1, D10) `MxErrorState` "Couldn't load tags" with Retry. | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:48` Other goldens: `tags_read_error_light.png` / `tags_read_error_dark.png` (the tag | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:51` Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,sea | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:53` ## Rulings | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:55` - **D15 (AA):** "Merge tags" uses the warning role with its ink. | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:56` - **BE-B2 D6, D8:** the merge target's count is the union of both tags' cards, n | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:57` - **BR-TAG-003, critique P2b:** there is one order (the store's folded order, di | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:58` - **UC-TAG-001 E1, D10:** a read failure shows `MxErrorState` with Retry. | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:59` - Dialogs quote tag names, carry no glyph and are left-aligned (`MxDialog`); toa | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:60` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:61` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:63` ## Copy | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `shared/ui/screen-handoff/05-tags.md:65` "Tags" · "Search tags" · "{n} tags" · "No matches" · "A→Z" · "{n} cards" · | moved → `screens/spec/SCR-TAG-001-tags.md` |
 
 ## shared/ui/screen-handoff/06-trash.md
 
@@ -2822,40 +2822,40 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:6` code: [lib/features/tags/domain/usecases/watch_tag_catalog_use_case.dart, lib/fe | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:10` **Phạm vi:** Tag Management, phần store (BE-B2, gồm BE-C4). Màn catalog và overl | dropped — history of how the work was split (BE-B2, BE-C4, FE-B2); those specs stay under docs/superpowers/specs, approved PENDING |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:13` **Actor:** Người dùng | pending → SCR-TAG-001 (entry points: Tags on the Library app bar, Manage tags in the card list overflow; the Tags pill on the card list filter bar opens the filter); intent kept in UC-TAG-001 (Mục tiêu, Preconditions) |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:13` **Actor:** Người dùng | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:20` ## Main flow | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:22` **Main flow:** | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:23` 1. Người dùng mở tag catalog. Hệ thống đọc mọi tag của owner hiện tại kèm số thẻ | superseded → FN-TAG-001 (every tag with its active card count, folded-name order) + UC-TAG-001 step 1 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:25` 2. Hệ thống hiển thị mỗi tag thành một hàng: tên canonical, số thẻ, và một menu | pending → SCR-TAG-001 (each row: canonical name, card count, an action menu with Rename and Delete); intent kept in UC-TAG-001 step 2 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:25` 2. Hệ thống hiển thị mỗi tag thành một hàng: tên canonical, số thẻ, và một menu | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:27` 3. Người dùng gõ vào ô tìm kiếm để thu hẹp catalog. Hệ thống lọc theo cùng phép | superseded → FN-TAG-001 (the search uses the identity fold) + UC-TAG-001 step 3 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:30` 4. Người dùng chọn `Rename` trên một hàng. Hệ thống mở form với tên hiện tại đã | pending → SCR-TAG-001 (Rename opens a form with the current name filled in); intent kept in UC-TAG-001 step 4 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:30` 4. Người dùng chọn `Rename` trên một hàng. Hệ thống mở form với tên hiện tại đã | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:32` 5. Người dùng sửa tên rồi xác nhận. Hệ thống validate theo BR-TAG-001 và, vì tên | superseded → FN-TAG-003 (rename on the same row; id and links kept) + UC-TAG-001 step 5 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:35` 6. Người dùng quay lại card list và chạm pill `Tags`. Hệ thống mở overlay lọc | pending → SCR-CARD-001 (the Tags pill opens the filter overlay with every tag, its count and the current selection); intent kept in UC-TAG-001 step 6 + FN-CARD-012 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:37` 7. Người dùng chọn nhiều tag rồi bấm `Apply`. Hệ thống áp vị từ **OR giữa các | pending → SCR-CARD-001 (multi-select then Apply; the page window resets and the selection clears); intent kept in UC-TAG-001 step 7 + FN-CARD-001 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:40` 8. Card list hiển thị đúng tập thẻ khớp, mỗi thẻ đúng một lần, với count khớp | superseded → FN-CARD-001 (each card once; counts read the same query) + UC-TAG-001 step 8 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:43` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:45` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:46` - **A1 — Đổi tên gây trùng (gộp):** tên mới fold trùng một tag khác đang tồn | pending → SCR-TAG-001 (the form discloses the merge and names the target before the confirm); intent kept in UC-TAG-001 A1 + FN-TAG-002 + FN-TAG-003 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:46` - **A1 — Đổi tên gây trùng (gộp):** tên mới fold trùng một tag khác đang tồn | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:52` - **A2 — Đổi tên chỉ đổi cách viết hoa:** `noun` → `Noun`. Tên đã fold không | moved → `USE_CASES.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:55` - **A3 — Xoá tag:** người dùng chọn `Delete`. Hệ thống hỏi xác nhận, nêu rõ số | pending → SCR-TAG-001 (Delete asks to confirm, naming the card count and saying cards are not deleted); intent kept in UC-TAG-001 A3 + FN-TAG-004 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:55` - **A3 — Xoá tag:** người dùng chọn `Delete`. Hệ thống hỏi xác nhận, nêu rõ số | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:58` - **A4 — Bỏ chọn hết tag trong overlay lọc:** `Clear` đưa tập chọn về rỗng. Tập | pending → SCR-CARD-001 (Clear empties the selection in the filter overlay); intent kept in UC-TAG-001 A4 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:61` - **A5 — Huỷ overlay lọc:** đóng overlay mà không `Apply` giữ nguyên tập tag | pending → SCR-CARD-001 (closing the overlay without Apply drops the draft); intent kept in UC-TAG-001 A5 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:63` - **A6 — Tìm kiếm trong catalog không khớp gì:** catalog hiển thị trạng thái | pending → SCR-TAG-001 (the "no tag matches" state with the typed text, unlike "no tags yet"); intent kept in UC-TAG-001 A6 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:63` - **A6 — Tìm kiếm trong catalog không khớp gì:** catalog hiển thị trạng thái | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:66` - **A7 — Lọc theo tag không còn thẻ nào khớp:** card list hiển thị trạng thái | pending → SCR-CARD-001 (the filtered empty state with Clear); intent kept in UC-TAG-001 A7 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:69` **Error flows:** | moved → `USE_CASES.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:70` - **E1 — Đọc catalog thất bại:** hệ thống hiện trạng thái lỗi có Retry; chưa | pending → SCR-TAG-001 (the error state with Retry); intent kept in UC-TAG-001 E1 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:72` - **E2 — Đổi tên với tên không hợp lệ:** rỗng sau trim, quá 50 ký tự, hoặc chứa | pending → SCR-TAG-001 (the typed error under the field, the typed text kept); intent kept in UC-TAG-001 E2 + FN-TAG-003 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:75` - **E3 — Tag đã biến mất:** tag bị xoá ở nơi khác giữa lúc mở form và lúc ghi → | pending → SCR-TAG-001 (the typed "no longer exists" reason; the catalog updates itself); intent kept in UC-TAG-001 E3 + FN-TAG-003 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:77` - **E4 — Ghi thất bại giữa lúc gộp:** transaction rollback toàn bộ; cả hai tag | pending → SCR-TAG-001 (the error shown instead of success); intent kept in UC-TAG-001 E4 + FN-TAG-003 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:70` - **E1 — Đọc catalog thất bại:** hệ thống hiện trạng thái lỗi có Retry; chưa | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:72` - **E2 — Đổi tên với tên không hợp lệ:** rỗng sau trim, quá 50 ký tự, hoặc chứa | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:75` - **E3 — Tag đã biến mất:** tag bị xoá ở nơi khác giữa lúc mở form và lúc ghi → | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:77` - **E4 — Ghi thất bại giữa lúc gộp:** transaction rollback toàn bộ; cả hai tag | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:80` - **E5 — Xoá thất bại:** transaction rollback; tag và mọi liên kết còn nguyên, | moved → `USE_CASES.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:83` ## UI | pending → SCR-TAG-001 (states catalog loading · populated · empty · search empty · rename normal · rename collision · submitting · rename failure · delete confirm · delete failure; filter overlay and filtered list states → SCR-CARD-001) |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:85` **UI states:** catalog loading · catalog populated · catalog empty (chưa có tag | pending → SCR-TAG-001 (states catalog loading · populated · empty · search empty · rename normal · rename collision · submitting · rename failure · delete confirm · delete failure; filter overlay and filtered list states → SCR-CARD-001) |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:83` ## UI | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:85` **UI states:** catalog loading · catalog populated · catalog empty (chưa có tag | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:91` ## Local | superseded → FN-TAG-003 + FN-TAG-004 (Kết quả) + FN-TAG-001 + FN-CARD-001 (counts and filter read the same links) |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:93` **Postconditions:** Chỉ hàng `tags` và hàng `card_tags` thay đổi. Nội dung thẻ, | superseded → FN-TAG-003 + FN-TAG-004 (Kết quả) + FN-TAG-001 + FN-CARD-001 (counts and filter read the same links) |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:98` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:100` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:102` ## Acceptance criteria | moved → `USE_CASES.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:104` - [ ] **Given** người dùng mở catalog tag, **when** đọc xong, **then** mọi tag c | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:104` - [ ] **Given** người dùng mở catalog tag, **when** đọc xong, **then** mọi tag c | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:105` - [ ] **Given** người dùng gõ vào ô tìm của catalog, **when** lọc, **then** hệ t | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:106` - [ ] **Given** đổi tên chỉ khác chữ hoa hoặc dấu và tên đã fold không trùng tag | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:107` - [ ] **Given** chọn nhiều tag trong overlay lọc, **when** bấm Apply, **then** c | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
@@ -2864,12 +2864,12 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:110` - [ ] **Given** người dùng chọn Delete trên một tag, **when** xác nhận, **then** | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:111` - [ ] **Given** overlay lọc đang có tag chọn, **when** bấm Clear rồi Apply, **th | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:112` - [ ] **Given** một tập tag đã Apply, **when** đóng overlay mà không Apply lại, | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:113` - [ ] **Given** tìm trong catalog không khớp tag nào, **when** hiển thị, **then* | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:113` - [ ] **Given** tìm trong catalog không khớp tag nào, **when** hiển thị, **then* | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:114` - [ ] **Given** lọc theo một tag không có card nào trong deck đang mở, **when** | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:115` - [ ] **Given** đọc catalog thất bại, **when** lỗi xảy ra, **then** hệ thống hiệ | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:116` - [ ] **Given** tên mới rỗng sau khi trim, quá 50 ký tự hoặc chứa ký tự điều khi | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:117` - [ ] **Given** tag bị xoá ở nơi khác giữa lúc mở form và lúc ghi, **when** ghi | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:118` - [ ] **Given** ghi thất bại giữa lúc gộp tag, **when** lỗi xảy ra, **then** cả | pending → SCR-TAG-001 (presentation of the criterion); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:115` - [ ] **Given** đọc catalog thất bại, **when** lỗi xảy ra, **then** hệ thống hiệ | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:116` - [ ] **Given** tên mới rỗng sau khi trim, quá 50 ký tự hoặc chứa ký tự điều khi | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:117` - [ ] **Given** tag bị xoá ở nơi khác giữa lúc mở form và lúc ghi, **when** ghi | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:118` - [ ] **Given** ghi thất bại giữa lúc gộp tag, **when** lỗi xảy ra, **then** cả | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:119` - [ ] **Given** ghi thất bại khi xoá tag, **when** lỗi xảy ra, **then** tag và m | moved → `USE_CASES.md` |
 
 ## features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md
@@ -3243,15 +3243,15 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 |---|---|
 | `features/tags/ui.md:1` # Tags — UI | superseded → UC-TAG-001 + FN-TAG-001…FN-TAG-004; per-feature UI files are replaced by screen specs (ADR-021) |
 | `features/tags/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên | superseded → UC-TAG-001 + FN-TAG-001…FN-TAG-004; per-feature UI files are replaced by screen specs (ADR-021) |
-| `features/tags/ui.md:5` ## Màn hình và điều hướng | pending → SCR-TAG-001 (routes and where each surface opens from, with NAVIGATION.md) |
-| `features/tags/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | pending → SCR-TAG-001 (routes and where each surface opens from, with NAVIGATION.md) |
-| `features/tags/ui.md:9` \| 05 · Tags \| `/decks/tags`, toàn màn hình trên root navigator, không có bottom | pending → SCR-TAG-001 (route /decks/tags, full screen on the root navigator, no bottom bar; opened from Tags on the Library app bar) |
+| `features/tags/ui.md:5` ## Màn hình và điều hướng | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `features/tags/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `features/tags/ui.md:9` \| 05 · Tags \| `/decks/tags`, toàn màn hình trên root navigator, không có bottom | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/ui.md:10` \| 07 · Overlay lọc theo tag \| Bottom sheet trên card list \| Chip Tags trên thanh | pending → SCR-CARD-001 (the tag filter overlay: a bottom sheet over the card list, opened from the Tags chip) |
-| `features/tags/ui.md:12` "Find cards with this tag" mở tìm kiếm thư viện với tên tag; tìm kiếm nằm trong | pending → SCR-TAG-001 ("Find cards with this tag" navigates to SCR-SEARCH-001 with the tag name; the plan runs 250 ms after typing stops; mergeNotConfirmed reopens the dialog with the typed name); contract kept in FN-TAG-002 + FN-TAG-003 |
+| `features/tags/ui.md:12` "Find cards with this tag" mở tìm kiếm thư viện với tên tag; tìm kiếm nằm trong | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/ui.md:18` ## Validation | superseded → FN-TAG-002 + FN-TAG-003 + FN-CARD-010 (Lỗi) |
 | `features/tags/ui.md:20` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | superseded → FN-TAG-002 + FN-TAG-003 + FN-CARD-010 (Lỗi) |
-| `features/tags/ui.md:22` \| Tag.name \| không rỗng sau trim (BR-TAG-001) \| "Tên tag không được để trống" \| | pending → SCR-TAG-001 (Copy of blankName); rule kept in FN-TAG-003 (Lỗi) |
-| `features/tags/ui.md:23` \| Tag.name \| ≤ 50 ký tự (BR-TAG-001) \| "Tên tag tối đa 50 ký tự" \| rule \| | pending → SCR-TAG-001 (Copy of nameTooLong); rule kept in FN-TAG-003 (Lỗi) |
+| `features/tags/ui.md:22` \| Tag.name \| không rỗng sau trim (BR-TAG-001) \| "Tên tag không được để trống" \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
+| `features/tags/ui.md:23` \| Tag.name \| ≤ 50 ký tự (BR-TAG-001) \| "Tên tag tối đa 50 ký tự" \| rule \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/ui.md:24` \| Tag.name \| không trùng, không phân biệt hoa thường (BR-TAG-001) \| "Tag này đã | superseded → FN-TAG-002 + FN-TAG-003 (a folded-name clash merges, BR-TAG-007) + FN-CARD-010 (attaching by name reuses the existing tag); no "already exists" error remains |
 | `features/tags/ui.md:25` \| Card.tags \| ≤ 10 tag mỗi thẻ (BR-TAG-002) \| "Mỗi thẻ tối đa 10 tag" \| rule \| | superseded → FN-CARD-010 (Lỗi: tooManyTags); its copy goes to SCR-CARD-002 |
 | `features/tags/ui.md:27` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | dropped — restates ADR-015 (the server checks integrity, business rules live in the app), approved PENDING |
@@ -3379,10 +3379,10 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/tags/README.md:21` ## Màn hình → Use case |  |
-| `features/tags/README.md:23` \| Màn hình \| UC \| |  |
-| `features/tags/README.md:25` \| Tag catalog (hành động `Tags` trên app bar của Library, hoặc `Manage tags`) \| |  |
-| `features/tags/README.md:27` Nguồn: trigger của UC-TAG-001. |  |
+| `features/tags/README.md:21` ## Màn hình → Use case || superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/tags/README.md:23` \| Màn hình \| UC \| || superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/tags/README.md:25` \| Tag catalog (hành động `Tags` trên app bar của Library, hoặc `Manage tags`) \| || superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/tags/README.md:27` Nguồn: trigger của UC-TAG-001. || superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/transfer/README.md
 
@@ -3923,32 +3923,32 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/study/presentation/goldens/summary_save_error_light.png` |  |
 | `test/features/study/presentation/goldens/summary_scheduler_changed_dark.png` |  |
 | `test/features/study/presentation/goldens/summary_scheduler_changed_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_busy_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_busy_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_del_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_del_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_empty_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_empty_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_loaded_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_loaded_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_loading_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_loading_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_name_too_long_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_name_too_long_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_op_error_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_op_error_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_read_error_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_read_error_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_rename_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_rename_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_rename_merge_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_rename_merge_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_search_empty_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_search_empty_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_sheet_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_sheet_light.png` |  |
-| `test/features/tags/presentation/goldens/tags_tag_gone_dark.png` |  |
-| `test/features/tags/presentation/goldens/tags_tag_gone_light.png` |  |
+| `test/features/tags/presentation/goldens/tags_busy_dark.png` | superseded → SCR-TAG-001 `busy` dark |
+| `test/features/tags/presentation/goldens/tags_busy_light.png` | superseded → SCR-TAG-001 `busy` light |
+| `test/features/tags/presentation/goldens/tags_del_dark.png` | superseded → SCR-TAG-001 `del` dark |
+| `test/features/tags/presentation/goldens/tags_del_light.png` | superseded → SCR-TAG-001 `del` light |
+| `test/features/tags/presentation/goldens/tags_empty_dark.png` | superseded → SCR-TAG-001 `empty` dark |
+| `test/features/tags/presentation/goldens/tags_empty_light.png` | superseded → SCR-TAG-001 `empty` light |
+| `test/features/tags/presentation/goldens/tags_loaded_dark.png` | superseded → SCR-TAG-001 `loaded` dark |
+| `test/features/tags/presentation/goldens/tags_loaded_light.png` | superseded → SCR-TAG-001 `loaded` light |
+| `test/features/tags/presentation/goldens/tags_loading_dark.png` | superseded → SCR-TAG-001 `loading` dark |
+| `test/features/tags/presentation/goldens/tags_loading_light.png` | superseded → SCR-TAG-001 `loading` light |
+| `test/features/tags/presentation/goldens/tags_name_too_long_dark.png` | superseded → SCR-TAG-001 `name_too_long` dark |
+| `test/features/tags/presentation/goldens/tags_name_too_long_light.png` | superseded → SCR-TAG-001 `name_too_long` light |
+| `test/features/tags/presentation/goldens/tags_op_error_dark.png` | superseded → SCR-TAG-001 `op_error` dark |
+| `test/features/tags/presentation/goldens/tags_op_error_light.png` | superseded → SCR-TAG-001 `op_error` light |
+| `test/features/tags/presentation/goldens/tags_read_error_dark.png` | superseded → SCR-TAG-001 `read_error` dark |
+| `test/features/tags/presentation/goldens/tags_read_error_light.png` | superseded → SCR-TAG-001 `read_error` light |
+| `test/features/tags/presentation/goldens/tags_rename_dark.png` | superseded → SCR-TAG-001 `rename` dark |
+| `test/features/tags/presentation/goldens/tags_rename_light.png` | superseded → SCR-TAG-001 `rename` light |
+| `test/features/tags/presentation/goldens/tags_rename_merge_dark.png` | superseded → SCR-TAG-001 `rename_merge` dark |
+| `test/features/tags/presentation/goldens/tags_rename_merge_light.png` | superseded → SCR-TAG-001 `rename_merge` light |
+| `test/features/tags/presentation/goldens/tags_search_empty_dark.png` | superseded → SCR-TAG-001 `search_empty` dark |
+| `test/features/tags/presentation/goldens/tags_search_empty_light.png` | superseded → SCR-TAG-001 `search_empty` light |
+| `test/features/tags/presentation/goldens/tags_sheet_dark.png` | superseded → SCR-TAG-001 `sheet` dark |
+| `test/features/tags/presentation/goldens/tags_sheet_light.png` | superseded → SCR-TAG-001 `sheet` light |
+| `test/features/tags/presentation/goldens/tags_tag_gone_dark.png` | superseded → SCR-TAG-001 `tag_gone` dark |
+| `test/features/tags/presentation/goldens/tags_tag_gone_light.png` | superseded → SCR-TAG-001 `tag_gone` light |
 | `test/features/transfer/presentation/goldens/export_deck_dark.png` |  |
 | `test/features/transfer/presentation/goldens/export_deck_light.png` |  |
 | `test/features/transfer/presentation/goldens/export_failed_dark.png` |  |
@@ -4337,3 +4337,10 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - Record 04 → `screens/spec/SCR-SEARCH-001-library-search.md`; 12 goldens superseded by its states.
 - 20 rows `pending → SCR-SEARCH-001` moved into the spec; search README rows superseded. The `q` parameter (FE-B2 D11) is in Purpose.
 - Warning delta: 63 → 63 = −1 SCR-DECK-001 → pending SCR-SEARCH-001, +1 SCR-SEARCH-001 → pending SCR-CARD-004 (Task 33).
+
+## Task 31 notes — SCR-TAG-001
+
+- Record 05 → `screens/spec/SCR-TAG-001-tags.md`; 26 goldens superseded by its states.
+- 24 rows `pending → SCR-TAG-001` moved into the spec; tags README rows superseded by SCR-TAG-001 and SCR-CARD-001 (the filter).
+- The legacy trigger "Manage tags" in the card list overflow does not exist in V8; recorded as a ruling (presentation, not a BR).
+- Warning delta: 63 → 62 = −1 SCR-DECK-001 → pending SCR-TAG-001.
