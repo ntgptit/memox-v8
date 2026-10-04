@@ -6,10 +6,10 @@ after the recovery tag is on GitHub).
 
 | Outcome | Rows |
 |---|---|
-| keep | 472 |
+| keep | 459 |
 | modify | 3 |
 | split | 5 |
-| delete | 759 |
+| delete | 772 |
 | goldens (delete, Task 5) | 526 |
 
 ## Files
@@ -663,7 +663,7 @@ after the recovery tag is on GitHub).
 | `test/app/android_manifest_test.dart` | test | keep | — | tests kept code |
 | `test/app/android_signing_test.dart` | test | keep | — | tests kept code |
 | `test/app/app_appearance_test.dart` | test (mixed) | split | `test/app/app_appearance_test.dart` | keep brightness and locale assertions; tab finder → NavigationBar |
-| `test/app/app_golden_test.dart` | test | keep | — | tests kept code |
+| `test/app/app_golden_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/app/app_test.dart` | test (UI) | delete | — | covered by test/app/placeholder_app_test.dart (Task 3) |
 | `test/app/font_license_test.dart` | test | keep | — | tests kept code |
 | `test/app/gallery_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
@@ -851,7 +851,7 @@ after the recovery tag is on GitHub).
 | `test/features/card/presentation/card_history_controller_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/card/presentation/card_history_scroll_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/card/presentation/card_list_flag_retry_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
-| `test/features/card/presentation/card_list_golden_test.dart` | test | keep | — | tests kept code |
+| `test/features/card/presentation/card_list_golden_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/card/presentation/card_list_layout_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/card/presentation/card_list_section_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/card/presentation/card_list_state_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
@@ -880,10 +880,10 @@ after the recovery tag is on GitHub).
 | `test/features/deck/presentation/create_root_deck_dialog_widget_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_action_sheet_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_actions_controller_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
-| `test/features/deck/presentation/deck_algorithm_golden_test.dart` | test | keep | — | tests kept code |
+| `test/features/deck/presentation/deck_algorithm_golden_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_algorithm_screen_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_level_provider_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
-| `test/features/deck/presentation/deck_level_screen_golden_test.dart` | test | keep | — | tests kept code |
+| `test/features/deck/presentation/deck_level_screen_golden_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_level_screen_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_messages_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_name_dialog_widget_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
@@ -892,7 +892,7 @@ after the recovery tag is on GitHub).
 | `test/features/deck/presentation/deck_reset_dialog_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_reset_wiring_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_row_widget_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
-| `test/features/deck/presentation/deck_screens_golden_test.dart` | test | keep | — | tests kept code |
+| `test/features/deck/presentation/deck_screens_golden_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_sort_filter_sheet_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/deck_study_header_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/features/deck/presentation/open_deck_screen_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
@@ -1182,35 +1182,35 @@ after the recovery tag is on GitHub).
 | `test/support/account_harness.dart` | test (mixed) | split | `test/support/account_harness.dart` | keep the account environment; drop screen helpers |
 | `test/support/auth_fakes.dart` | test | keep | — | tests kept code |
 | `test/support/card_fixtures.dart` | test | keep | — | tests kept code |
-| `test/support/color_matchers.dart` | test | keep | — | tests kept code |
+| `test/support/color_matchers.dart` | test (UI) | delete | — | helper used only by deleted tests |
 | `test/support/deck_fixtures.dart` | test | keep | — | tests kept code |
 | `test/support/fake_auth_server.dart` | test | keep | — | tests kept code |
 | `test/support/fake_day_clock.dart` | test | keep | — | tests kept code |
-| `test/support/fake_export_share.dart` | test | keep | — | tests kept code |
+| `test/support/fake_export_share.dart` | test (UI) | delete | — | helper used only by deleted tests |
 | `test/support/fake_reminder_platform.dart` | test | keep | — | tests kept code |
 | `test/support/fake_secret_store.dart` | test | keep | — | tests kept code |
-| `test/support/golden_harness.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
+| `test/support/golden_harness.dart` | test (UI) | delete | — | helper used only by deleted tests |
 | `test/support/invariant_queries.dart` | test | keep | — | tests kept code |
 | `test/support/library_harness.dart` | test (mixed) | split | `test/support/library_harness.dart` | keep LibraryEnv, libraryTest, libraryContainer, pumpMemoxApp; drop screen helpers |
 | `test/support/monitoring_fakes.dart` | test | keep | — | tests kept code |
-| `test/support/monitoring_screen_harness.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
+| `test/support/monitoring_screen_harness.dart` | test (UI) | delete | — | helper used only by deleted tests |
 | `test/support/progress_fixtures.dart` | test | keep | — | tests kept code |
-| `test/support/progress_screen_fixtures.dart` | test | keep | — | tests kept code |
+| `test/support/progress_screen_fixtures.dart` | test (UI) | delete | — | helper used only by deleted tests |
 | `test/support/recording_log_sink.dart` | test | keep | — | tests kept code |
-| `test/support/reminder_screen_harness.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
+| `test/support/reminder_screen_harness.dart` | test (UI) | delete | — | helper used only by deleted tests |
 | `test/support/settings_fakes.dart` | test | keep | — | tests kept code |
 | `test/support/srs_fixtures.dart` | test | keep | — | tests kept code |
-| `test/support/starter_screen_fixtures.dart` | test | keep | — | tests kept code |
+| `test/support/starter_screen_fixtures.dart` | test (UI) | delete | — | helper used only by deleted tests |
 | `test/support/study_entry_fixtures.dart` | test | keep | — | tests kept code |
 | `test/support/study_fixtures.dart` | test | keep | — | tests kept code |
-| `test/support/sync_fakes.dart` | test | keep | — | tests kept code |
+| `test/support/sync_fakes.dart` | test (UI) | delete | — | helper used only by deleted tests |
 | `test/support/tag_fixtures.dart` | test | keep | — | tests kept code |
-| `test/support/tag_screen_fixtures.dart` | test | keep | — | tests kept code |
+| `test/support/tag_screen_fixtures.dart` | test (UI) | delete | — | helper used only by deleted tests |
 | `test/support/test_database.dart` | test | keep | — | tests kept code |
 | `test/support/trash_fixtures.dart` | test | keep | — | tests kept code |
-| `test/support/trash_screen_fixtures.dart` | test | keep | — | tests kept code |
-| `test/support/users_fakes.dart` | test | keep | — | tests kept code |
-| `test/support/widget_harness.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
+| `test/support/trash_screen_fixtures.dart` | test (UI) | delete | — | helper used only by deleted tests |
+| `test/support/users_fakes.dart` | test (UI) | delete | — | helper used only by deleted tests |
+| `test/support/widget_harness.dart` | test (UI) | delete | — | helper used only by deleted tests |
 | `test/visual_audit/screen_audit.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/visual_audit/screens/app/router/route_not_found_screen_visual_audit_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
 | `test/visual_audit/screens/features/account/screens/account_screen_visual_audit_test.dart` | test (UI) | delete | — | tests deleted UI, a golden, or uses a deleted helper |
@@ -1276,27 +1276,90 @@ after the recovery tag is on GitHub).
 | `test/features/trash/presentation/goldens/` | 18 | delete (Task 5) |
 | `test/shared/widgets/goldens/` | 66 | delete (Task 5) |
 
-## Review notes (Task 1, step 3)
+## Reconciliation
 
-- **No `move` row.** Two checks found nothing that must run with no screen open:
-  - every `UI (review)` provider was searched for listeners, timers, scheduling, sync, purge, reconcile and abandon;
-  - every deleted `lib/` file, controllers and states included, was searched for timers, `scheduleAlarm`, `syncNow`, reconcile, stale-session close, Trash purge, lifecycle listeners and the account, log and sync coordinators.
+The matrix has 1239 file rows, one per file (no path twice: True).
 
-  Every hit is triggered from a screen:
-  - search, users, monitoring and tag-rename debounces;
-  - the code-resend countdown;
-  - the settle timers of Settings;
-  - Sync now, Retry and Keep on the Sync screen;
-  - the Trash purge on opening the Trash screen;
-  - the Recall turn's pause on app lifecycle;
-  - the study Match/Guess flash timers;
-  - the account commands started from the sign-in, code, account and users screens.
-- **Behaviour that stays outside the deleted files:**
-  - the Trash purge at start and resume (`lib/app/app.dart`);
-  - closing stale sessions, reminder reconcile and taps, and the log upload (`app.dart`);
-  - background reminder delivery (`reminders/di/reminder_background_bindings.dart` → the kept `deliver_reminder_use_case_provider`);
-  - the account coordinator and its restore at start (`lib/core/auth/`, `main.dart`);
-  - sync scheduling (`lib/core/sync/`).
-- **What the placeholder period loses (accepted by spec §5.2):**
-  - `account_layer_host_widget.dart` and `account_transition_layer_widget.dart` showed the account transition layer and the coordinator's one-off notices ("couldn't merge", "couldn't delete", "an admin must remain"). The coordinator and its notices stream are unchanged; with no UI, nothing displays them.
-  - A transition restored at start still runs. One that waits for the target's sign-in waits until SP3 rebuilds the layer; no placeholder can start one.
+| Outcome | Rows |
+|---|---|
+| keep | 459 |
+| modify | 3 |
+| split | 5 |
+| move | 0 |
+| delete | 772 |
+| **total** | **1239** |
+
+The 526 goldens are a **separate set**, outside the 1239: 15 `goldens/` folders, one row per folder in §Goldens. The disk count is 526 PNG files. Task 5 deletes them only after the tag `legacy-ui-v8-goldens` is verified on `origin`. "modify" and "split" are kinds of **keep**: the file stays, and only its UI part changes or leaves.
+
+### Keep by group
+
+| Group | Rows |
+|---|---|
+| Providers kept by ADR-011 (lib/features/*/presentation/providers/) | 166 |
+| Test helpers still used (test/support/) | 18 |
+| Tests of kept code | 262 |
+| lib/app/ (startup, logging, redirect, navigation observer) | 6 |
+| lib/l10n/ (S5) | 7 |
+| **total** | **459** |
+
+The kept providers are 83 source files (each with its generated file): the use-case providers and the four non-UI providers `app_settings`, `welcome_due`, `device_account`, `reconcile_reminder`.
+
+Not in the matrix, because SP2 touches nothing there: `lib/features/*/{domain,data,di}/`, `lib/core/` (except `theme/`) and `lib/main.dart`. None of them has a delete row.
+
+### Delete by category
+
+| Category | Rows |
+|---|---|
+| Feature screens | 27 |
+| Feature widgets | 196 |
+| Gallery (lib/app/gallery/) | 10 |
+| Integration tests (integration_test/) | 14 |
+| Legacy Mx* (lib/shared/widgets/) | 53 |
+| Legacy theme (lib/core/theme/) | 21 |
+| Old router and shell (lib/app/router/) | 5 |
+| Presentation controllers | 48 |
+| Presentation states | 38 |
+| Screen-only providers (+ generated) | 62 |
+| Test helpers used only by deleted tests (test/support/) | 12 |
+| UI and golden tests of features (test/features/) | 161 |
+| UI tests of Mx* (test/shared/) | 64 |
+| UI tests of the app (test/app/) | 13 |
+| UI tests of the theme (test/core/theme/) | 18 |
+| Visual audits (test/visual_audit/) | 30 |
+| **total** | **772** |
+| Goldens (separate set, Task 5) | 526 |
+
+### Why there is no `move` row
+
+1. **Static proof.** Of the 643 `lib/` files that remain, only these import a deleted file: `lib/app/app.dart` (2); `lib/app/router/app_router.dart` (36). Both are `modify` rows, rewritten in Task 3. `lib/main.dart`, the background reminder entry (`reminders/di/reminder_background_bindings.dart`), every kept provider, and all of `domain`, `data`, `di` and `core` import nothing that is deleted.
+2. **Non-UI work keeps running from kept files:**
+   - the Trash purge at start and resume, closing stale sessions, reminder reconcile and taps, the log upload (`app.dart`);
+   - background reminder delivery (the kept `deliver_reminder_use_case_provider`);
+   - the account coordinator and its restore (`lib/core/auth/`, `main.dart`);
+   - sync scheduling (`lib/core/sync/`).
+3. **Every timer, listener and coordinator call in a deleted file is triggered from a screen.** Every deleted `lib/` file was searched, controllers and states included. The hits are:
+   - search, users, monitoring and tag-rename debounces;
+   - the code-resend countdown and the Settings settle timers;
+   - Sync now, Retry and Keep;
+   - the Trash purge on opening the Trash screen;
+   - the Recall turn's lifecycle pause and the Match/Guess flash timers;
+   - the account commands started from the sign-in, code, account and users screens.
+4. **The five splits are test files, not where non-UI logic is extracted.** The non-UI code under `presentation/` is the providers, kept whole under ADR-011 (S12).
+
+### What the placeholder period loses (accepted by spec §5.2)
+
+- `account_layer_host_widget.dart` and `account_transition_layer_widget.dart` showed the account transition layer and the coordinator's one-off notices. The coordinator and its notices stream are unchanged; with no UI, nothing displays them.
+- A transition restored at start still runs. One that waits for the target's sign-in waits until SP3 rebuilds the layer; no placeholder can start one.
+
+### The eight non-trivial rows
+
+| Source | Why | Kept | Removed | After | Behaviour preserved |
+|---|---|---|---|---|---|
+| `lib/app/app.dart` (modify) | It wires the old theme and the account layer host | Every lifecycle line: stale sessions, Trash purge at start and resume, reminder reconcile, taps and launch payload, log upload, the redirect inputs (Welcome flag, account state), theme mode and locale from `app_settings` | The `core/theme` import (`buildLightTheme`/`buildDarkTheme` → `ThemeData(useMaterial3: true)` light and dark); the `AccountLayerHostWidget` builder; the `hasGallery` parameter | Same file | Startup, lifecycle, notifications, the account redirect, the stored theme mode and language |
+| `lib/app/router/app_router.dart` (modify) | It imports 36 deleted screens | The route contract: every path of the screen catalogue, the shell branches, root-navigator placement, `initialLocation /decks`, the redirect and refresh hooks, navigation logging | Every screen builder | Rewritten: each route shows a placeholder naming its SCR id; `/welcome` keeps Continue (S11); unknown routes go to the Library | Deep links, the reminder tap to `/study`, the account redirect, the Welcome gate |
+| `lib/app/router/app_routes.dart` (modify) | `gallery` names a deleted route | Every other path, parameter and helper (`inAppOr`, `welcomeFrom`, sign-in links) | The `gallery` constant | Same file | The route contract |
+| `test/app/reminder_tap_test.dart` (split) | It asserts by the Study Home class | Every test and matcher: a tap while running and the launch payload open Study, a stray payload opens nothing, plugin failures are tolerated | Only the type finder `StudyHomeScreen` | Same file; finder `find.text('SCR-STUDY-001')` | BR-REMINDER-008 |
+| `test/app/trash_auto_purge_test.dart` (split) | Two of its three tests assert through the Trash screen | Test 1 unchanged (purge at start, `_batches`); test 2's resume purge, asserted with `_batches(env) == 0` in place of the screen text | Test 3 ("opening the Trash purges"): a Trash-screen behaviour SP3 rebuilds with the screen | Same file | UC-TRASH-001 A4, BR-TRASH-009 at start and resume |
+| `test/app/app_appearance_test.dart` (split) | It reads a deck title through the old app bar | Test 1 unchanged (first-frame theme); test 2's brightness and System-follows-platform assertions; test 3's language change, restart and fallback | The deck-open steps and `_barTitle` assertions (old app bar) | Same file; `_tab` finds labels in `NavigationBar` | BR-SETTINGS-005, BR-SETTINGS-006 |
+| `test/support/library_harness.dart` (split) | It also builds old screens and goldens | `libraryToday`, `LibraryEnv`, `libraryTest`, `_backend`, `libraryContainer`, `pumpMemoxApp`, `_noRetry` | `_app`, `pumpLibraryScreen`, `pumpLibraryGolden`, `deckScreen`, `cardDeckScreen`, `deckAlgorithmScreen` and their UI imports | Same file | The test environment the kept tests use |
+| `test/support/account_harness.dart` (split) | It imports the account labels widget | `accountTest`, `accountOverrides`, `linkEmail`, `refuseSession`, `authStateOf`, `transitionOf` (used by `account_redirect_test`) | `precacheGoogleMark` and the `account_labels_widget` import | Same file | The account environment of the redirect tests |
