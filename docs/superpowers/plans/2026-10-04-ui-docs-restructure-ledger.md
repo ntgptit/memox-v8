@@ -1955,310 +1955,310 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 
 | Source item | Outcome |
 |---|---|
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:2` id: UC-DECK-001 |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:3` title: Tạo root deck |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:4` status: ready |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:5` rules: [BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK-020, BR-DECK-021, BR-SRS- |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:6` code: [lib/features/deck/domain/usecases/create_root_deck_use_case.dart] |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:10` **Actor:** Người dùng |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:14` ## Main flow |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:16` **Main flow:** |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:17` 1. Người dùng nhập tên deck. |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:18` 2. Người dùng **chọn chế độ ôn tập**: `eight_box` hoặc `sm2` (BR-SRS-001). Bắt b |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:20` 3. Hệ thống hiển thị mô tả ngắn cho từng chế độ, kèm lưu ý rằng chế độ sẽ bị kho |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:22` 4. Người dùng xác nhận. |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:23` 5. Hệ thống validate tên (BR-DECK-020) và chế độ đã chọn. |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:24` 6. Hệ thống tạo root deck với: `parent_id = NULL`, `root_id = id`, |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:27` 7. Deck xuất hiện trong danh sách, rỗng. |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:29` **Root deck chỉ chứa deck con** (BR-DECK-004). Nút Create bên trong nó chỉ có mộ |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:32` ## Alternative / Error flow |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:34` **Alternative flows:** |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:35` - **A1 — Người dùng huỷ:** không tạo gì; nếu đã nhập, hỏi xác nhận trước khi bỏ. |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:37` **Error flows:** |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:38` - **E1 — Tên rỗng:** lỗi inline dưới ô nhập, không phải snackbar. |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:39` - **E2 — Tên quá 200 ký tự:** lỗi inline; chặn nhập thêm thay vì cắt âm thầm. |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:40` - **E3 — Chưa chọn chế độ:** lỗi inline ở phần chọn chế độ; không tạo. |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:41` - **E4 — Ghi database thất bại:** hiện lỗi, giữ nguyên form và dữ liệu đã nhập. |  |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:2` id: UC-DECK-001 | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:3` title: Tạo root deck | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:5` rules: [BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK-020, BR-DECK-021, BR-SRS- | superseded → FN-DECK-001 (Business rules) |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:6` code: [lib/features/deck/domain/usecases/create_root_deck_use_case.dart] | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:10` **Actor:** Người dùng | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:14` ## Main flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:16` **Main flow:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:17` 1. Người dùng nhập tên deck. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:18` 2. Người dùng **chọn chế độ ôn tập**: `eight_box` hoặc `sm2` (BR-SRS-001). Bắt b | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:20` 3. Hệ thống hiển thị mô tả ngắn cho từng chế độ, kèm lưu ý rằng chế độ sẽ bị kho | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:22` 4. Người dùng xác nhận. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:23` 5. Hệ thống validate tên (BR-DECK-020) và chế độ đã chọn. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:24` 6. Hệ thống tạo root deck với: `parent_id = NULL`, `root_id = id`, | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:27` 7. Deck xuất hiện trong danh sách, rỗng. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:29` **Root deck chỉ chứa deck con** (BR-DECK-004). Nút Create bên trong nó chỉ có mộ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:32` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:34` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:35` - **A1 — Người dùng huỷ:** không tạo gì; nếu đã nhập, hỏi xác nhận trước khi bỏ. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:37` **Error flows:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:38` - **E1 — Tên rỗng:** lỗi inline dưới ô nhập, không phải snackbar. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:39` - **E2 — Tên quá 200 ký tự:** lỗi inline; chặn nhập thêm thay vì cắt âm thầm. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:40` - **E3 — Chưa chọn chế độ:** lỗi inline ở phần chọn chế độ; không tạo. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:41` - **E4 — Ghi database thất bại:** hiện lỗi, giữ nguyên form và dữ liệu đã nhập. | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:43` ## UI |  |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:45` **UI states:** initial · submitting · error |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:47` ## Local |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:49` **Postconditions:** Root deck tồn tại với scheduler đã chọn, `content_type = |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:52` ## API |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:54` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:56` ## Acceptance criteria |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:58` - [ ] **Given** một tên hợp lệ và một chế độ ôn tập (`eight_box` hoặc `sm2`), ** |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:59` - [ ] **Given** một root deck vừa tạo, **when** người dùng bấm Create bên trong |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:60` - [ ] **Given** đã có một deck tên "Unit 5", **when** tạo thêm một root deck cũn |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:61` - [ ] **Given** tên rỗng hoặc chỉ có khoảng trắng, **when** xác nhận, **then** l |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:62` - [ ] **Given** tên dài hơn 200 ký tự, **when** xác nhận, **then** lỗi hiện ngay |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:63` - [ ] **Given** ghi database thất bại, **when** xác nhận, **then** hệ thống báo |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:64` - [ ] **Given** dialog tạo root deck đã có tên hoặc chế độ ôn, **when** người dù |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:65` - [ ] **Given** dialog tạo root deck vừa mở, **when** người dùng chưa chọn chế đ |  |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:47` ## Local | superseded → FN-DECK-001 (Kết quả) |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:49` **Postconditions:** Root deck tồn tại với scheduler đã chọn, `content_type = | superseded → FN-DECK-001 (Kết quả) |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:52` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:54` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:56` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:58` - [ ] **Given** một tên hợp lệ và một chế độ ôn tập (`eight_box` hoặc `sm2`), ** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:59` - [ ] **Given** một root deck vừa tạo, **when** người dùng bấm Create bên trong | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:60` - [ ] **Given** đã có một deck tên "Unit 5", **when** tạo thêm một root deck cũn | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:61` - [ ] **Given** tên rỗng hoặc chỉ có khoảng trắng, **when** xác nhận, **then** l | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:62` - [ ] **Given** tên dài hơn 200 ký tự, **when** xác nhận, **then** lỗi hiện ngay | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:63` - [ ] **Given** ghi database thất bại, **when** xác nhận, **then** hệ thống báo | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:64` - [ ] **Given** dialog tạo root deck đã có tên hoặc chế độ ôn, **when** người dù | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:65` - [ ] **Given** dialog tạo root deck vừa mở, **when** người dùng chưa chọn chế đ | moved → `USE_CASES.md` |
 
 ## features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md
 
 | Source item | Outcome |
 |---|---|
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:2` id: UC-DECK-002 |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:3` title: Sửa và xoá deck |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:4` status: ready |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:5` rules: [BR-DECK-015, BR-DECK-020, BR-DECK-022, BR-DECK-023, BR-DECK-025, BR-SRS- |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:6` code: [lib/features/deck/domain/usecases/rename_deck_use_case.dart, lib/features |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:10` **Actor:** Người dùng |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:14` ## Main flow |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:16` **Main flow (sửa tên):** |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:17` 1. Người dùng đổi tên deck. |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:18` 2. Hệ thống validate (BR-DECK-020) và lưu. |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:20` **Main flow (đổi chế độ ôn tập — chỉ trên root deck, chỉ khi chưa có thẻ nào học |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:21` 1. Hệ thống hiển thị phần chọn chế độ ở trạng thái **mở khoá** |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:23` 2. Người dùng chọn chế độ khác. |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:24` 3. Hệ thống cảnh báo study state của **toàn bộ card trong cây** sẽ được khởi tạo |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:28` 4. Người dùng xác nhận. |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:29` 5. Hệ thống đổi scheduler, khởi tạo lại study state toàn cây, **và** đóng mọi |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:32` **Main flow (xoá):** |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:33` 1. Hệ thống hỏi xác nhận, nêu rõ số deck con và số card sẽ vào Trash cùng deck |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:35` 2. Người dùng xác nhận. |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:36` 3. Hệ thống chuyển deck cùng mọi deck con và card còn active bên dưới vào Trash, |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:41` 4. Người dùng có thể Undo ngay tại chỗ (BR-TRASH-008) hoặc khôi phục về sau từ |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:44` ## Alternative / Error flow |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:46` **Alternative flows:** |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:47` - **A1 — Root deck đã có thẻ học xong chuỗi học mới:** phần chọn chế độ hiển thị |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:50` - **A2 — Sửa deck con:** không có phần chọn chế độ (BR-DECK-025). |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:51` - **A3 — Huỷ xác nhận xoá:** không xảy ra gì. |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:52` - **A4 — Xác nhận đúng chế độ deck đang chạy:** thao tác được chấp nhận và không |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:57` **Error flows:** |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:58` - **E1 — Deck đã bị xoá ở nơi khác:** thao tác không thành, quay về danh sách vớ |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:60` - **E2 — Đổi chế độ thất bại giữa chừng:** transaction rollback; deck giữ nguyên |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:62` - **E3 — Xoá thất bại:** hiện lỗi; deck còn nguyên vẹn, và `content_type` của |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:64` - **E4 — Scheduler bị khoá trong lúc bảng chọn đang mở:** người dùng học xong mộ |  |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:2` id: UC-DECK-002 | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:3` title: Sửa và xoá deck | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:5` rules: [BR-DECK-015, BR-DECK-020, BR-DECK-022, BR-DECK-023, BR-DECK-025, BR-SRS- | superseded → FN-DECK-002…FN-DECK-006 (Business rules) |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:6` code: [lib/features/deck/domain/usecases/rename_deck_use_case.dart, lib/features | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:10` **Actor:** Người dùng | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:14` ## Main flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:16` **Main flow (sửa tên):** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:17` 1. Người dùng đổi tên deck. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:18` 2. Hệ thống validate (BR-DECK-020) và lưu. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:20` **Main flow (đổi chế độ ôn tập — chỉ trên root deck, chỉ khi chưa có thẻ nào học | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:21` 1. Hệ thống hiển thị phần chọn chế độ ở trạng thái **mở khoá** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:23` 2. Người dùng chọn chế độ khác. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:24` 3. Hệ thống cảnh báo study state của **toàn bộ card trong cây** sẽ được khởi tạo | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:28` 4. Người dùng xác nhận. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:29` 5. Hệ thống đổi scheduler, khởi tạo lại study state toàn cây, **và** đóng mọi | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:32` **Main flow (xoá):** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:33` 1. Hệ thống hỏi xác nhận, nêu rõ số deck con và số card sẽ vào Trash cùng deck | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:35` 2. Người dùng xác nhận. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:36` 3. Hệ thống chuyển deck cùng mọi deck con và card còn active bên dưới vào Trash, | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:41` 4. Người dùng có thể Undo ngay tại chỗ (BR-TRASH-008) hoặc khôi phục về sau từ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:44` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:46` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:47` - **A1 — Root deck đã có thẻ học xong chuỗi học mới:** phần chọn chế độ hiển thị | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:50` - **A2 — Sửa deck con:** không có phần chọn chế độ (BR-DECK-025). | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:51` - **A3 — Huỷ xác nhận xoá:** không xảy ra gì. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:52` - **A4 — Xác nhận đúng chế độ deck đang chạy:** thao tác được chấp nhận và không | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:57` **Error flows:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:58` - **E1 — Deck đã bị xoá ở nơi khác:** thao tác không thành, quay về danh sách vớ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:60` - **E2 — Đổi chế độ thất bại giữa chừng:** transaction rollback; deck giữ nguyên | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:62` - **E3 — Xoá thất bại:** hiện lỗi; deck còn nguyên vẹn, và `content_type` của | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:64` - **E4 — Scheduler bị khoá trong lúc bảng chọn đang mở:** người dùng học xong mộ | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:70` ## UI |  |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:72` **UI states:** loaded · submitting · error |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:74` ## Local |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:76` **Postconditions:** |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:77` - Sau đổi chế độ: `scheduler_type` mới, mọi study state trong cây khởi tạo lại, |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:80` - Sau xoá: deck và mọi descendant active của nó nằm trong Trash, cùng một batch |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:85` - Sau xoá một deck con: nếu deck cha là **sub-deck** và vừa mất phần tử con |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:89` ## API |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:91` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:93` ## Acceptance criteria |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:95` - [ ] **Given** một tên mới hợp lệ, **when** người dùng đổi tên deck, **then** t |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:96` - [ ] **Given** một root chưa có `first_answered_at`, **when** người dùng chọn c |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:97` - [ ] **Given** người dùng xoá một deck có N deck con active và M card active, * |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:98` - [ ] **Given** người dùng đã xác nhận xoá, **when** transaction xong, **then** |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:99` - [ ] **Given** vừa xoá một deck, **when** người dùng bấm Undo, **then** deck cù |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:100` - [ ] **Given** một descendant đã ở Trash từ một batch cũ hơn, **when** xoá deck |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:101` - [ ] **Given** một deck cha không phải root vừa mất direct child active cuối cù |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:102` - [ ] **Given** một phiên `in_progress` chạm tới item của batch, **when** xoá xả |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:103` - [ ] **Given** root đã có thẻ hoàn tất chuỗi học mới (`first_answered_at` khác |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:104` - [ ] **Given** đang sửa một deck con, **when** mở phần sửa, **then** không có p |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:105` - [ ] **Given** hộp thoại xác nhận xoá đang mở, **when** người dùng bấm Cancel, |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:106` - [ ] **Given** root đang chạy chế độ X, khoá hay chưa khoá, **when** người dùng |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:107` - [ ] **Given** deck đã bị xoá ở nơi khác, **when** người dùng đổi tên hoặc xoá |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:108` - [ ] **Given** đổi chế độ thất bại giữa chừng, **when** transaction dừng, **the |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:109` - [ ] **Given** xoá thất bại giữa chừng, **when** transaction dừng, **then** hệ |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:110` - [ ] **Given** bảng chọn chế độ đang mở trên một cây chưa khoá, **when** cây bị |  |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:74` ## Local | superseded → FN-DECK-005 (Kết quả) |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:76` **Postconditions:** | superseded → FN-DECK-005 (Kết quả) |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:77` - Sau đổi chế độ: `scheduler_type` mới, mọi study state trong cây khởi tạo lại, | superseded → FN-DECK-003 (Kết quả) |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:80` - Sau xoá: deck và mọi descendant active của nó nằm trong Trash, cùng một batch | superseded → FN-DECK-005 (Kết quả) |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:85` - Sau xoá một deck con: nếu deck cha là **sub-deck** và vừa mất phần tử con | superseded → FN-DECK-005 (Kết quả) |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:89` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:91` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:93` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:95` - [ ] **Given** một tên mới hợp lệ, **when** người dùng đổi tên deck, **then** t | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:96` - [ ] **Given** một root chưa có `first_answered_at`, **when** người dùng chọn c | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:97` - [ ] **Given** người dùng xoá một deck có N deck con active và M card active, * | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:98` - [ ] **Given** người dùng đã xác nhận xoá, **when** transaction xong, **then** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:99` - [ ] **Given** vừa xoá một deck, **when** người dùng bấm Undo, **then** deck cù | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:100` - [ ] **Given** một descendant đã ở Trash từ một batch cũ hơn, **when** xoá deck | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:101` - [ ] **Given** một deck cha không phải root vừa mất direct child active cuối cù | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:102` - [ ] **Given** một phiên `in_progress` chạm tới item của batch, **when** xoá xả | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:103` - [ ] **Given** root đã có thẻ hoàn tất chuỗi học mới (`first_answered_at` khác | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:104` - [ ] **Given** đang sửa một deck con, **when** mở phần sửa, **then** không có p | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:105` - [ ] **Given** hộp thoại xác nhận xoá đang mở, **when** người dùng bấm Cancel, | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:106` - [ ] **Given** root đang chạy chế độ X, khoá hay chưa khoá, **when** người dùng | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:107` - [ ] **Given** deck đã bị xoá ở nơi khác, **when** người dùng đổi tên hoặc xoá | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:108` - [ ] **Given** đổi chế độ thất bại giữa chừng, **when** transaction dừng, **the | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:109` - [ ] **Given** xoá thất bại giữa chừng, **when** transaction dừng, **then** hệ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:110` - [ ] **Given** bảng chọn chế độ đang mở trên một cây chưa khoá, **when** cây bị | moved → `USE_CASES.md` |
 
 ## features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md
 
 | Source item | Outcome |
 |---|---|
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:2` id: UC-DECK-003 |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:3` title: Xem danh sách deck với tiến độ |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:4` status: ready |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:5` rules: [BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-DECK-026, BR-DECK-027, BR-STUD |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:6` code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/fea |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:10` **Actor:** Người dùng |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:14` ## Main flow |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:16` **Main flow:** |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:17` 1. Hệ thống lấy toàn bộ root deck kèm số card đến hạn — **một query gộp** theo |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:19` 2. Người dùng thấy mỗi deck với tên, tổng số card trong cây, **hai** số của |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:22` 3. Deck có card đến hạn được làm nổi bật bằng **cả biểu tượng lẫn chữ**, không |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:31` 4. Mỗi deck có một thanh mastery: số thẻ `mastered` trên mọi thẻ của cây |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:34` 5. Mở một deck chứa deck con hiển thị ở tóm tắt một donut mastery của cả level, |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:36` 6. Mở một deck hiển thị nội dung theo `content_type`: danh sách deck con, hoặc |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:39` ## Alternative / Error flow |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:41` **Alternative flows:** |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:42` - **A1 — Chưa có deck nào:** empty state với hai lối đi — thư viện starter (UC-S |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:44` - **A2 — Dữ liệu đổi ở màn khác:** danh sách tự cập nhật qua stream từ Drift, |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:46` - **A3 — Cây sâu nhiều cấp:** điều hướng xuống từng cấp; số liệu gộp luôn tính |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:48` - **A4 — Sắp xếp và lọc:** Manual, Newest, Name, Most due hoặc Progress |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:52` **Error flows:** |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:53` - **E1 — Đọc thất bại:** màn hình lỗi có nút thử lại. |  |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:2` id: UC-DECK-003 | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:3` title: Xem danh sách deck với tiến độ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:5` rules: [BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-DECK-026, BR-DECK-027, BR-STUD | superseded → FN-DECK-007, FN-DECK-008 (Business rules) |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:6` code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/fea | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:10` **Actor:** Người dùng | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:14` ## Main flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:16` **Main flow:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:17` 1. Hệ thống lấy toàn bộ root deck kèm số card đến hạn — **một query gộp** theo | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:19` 2. Người dùng thấy mỗi deck với tên, tổng số card trong cây, **hai** số của | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:22` 3. Deck có card đến hạn được làm nổi bật bằng **cả biểu tượng lẫn chữ**, không | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:31` 4. Mỗi deck có một thanh mastery: số thẻ `mastered` trên mọi thẻ của cây | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:34` 5. Mở một deck chứa deck con hiển thị ở tóm tắt một donut mastery của cả level, | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:36` 6. Mở một deck hiển thị nội dung theo `content_type`: danh sách deck con, hoặc | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:39` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:41` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:42` - **A1 — Chưa có deck nào:** empty state với hai lối đi — thư viện starter (UC-S | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:44` - **A2 — Dữ liệu đổi ở màn khác:** danh sách tự cập nhật qua stream từ Drift, | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:46` - **A3 — Cây sâu nhiều cấp:** điều hướng xuống từng cấp; số liệu gộp luôn tính | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:48` - **A4 — Sắp xếp và lọc:** Manual, Newest, Name, Most due hoặc Progress | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:52` **Error flows:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:53` - **E1 — Đọc thất bại:** màn hình lỗi có nút thử lại. | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:55` ## UI |  |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:57` **UI states:** loading · loaded · empty · error |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:59` ## Local |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:61` **Postconditions:** Không đổi gì — use case chỉ đọc. |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:63` Ghi chú từ mục "Business rules" của nguồn: |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:65` BR-STUDY-051 — hai tập "chưa học" và "đến hạn" phải khớp **hệt** UC-STUDY-001, n |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:69` ## API |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:71` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:73` ## Acceptance criteria |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:75` - [ ] **Given** nhiều root deck với card ở nhiều cấp, **when** danh sách deck tả |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:76` - [ ] **Given** deck có card mới, card đến hạn hôm nay và card quá hạn, **when** |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:77` - [ ] **Given** cây có N card active trong đó M card `mastered`, **when** xem hà |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:78` - [ ] **Given** một card `mastered` đang ở Trash, **when** tính mastery của deck |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:79` - [ ] **Given** một deck `content_type = 'deck'`, **when** mở nó, **then** màn h |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:80` - [ ] **Given** không deck nào có card đến hạn, **when** xem danh sách, **then** |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:81` - [ ] **Given** chưa có deck nào, **when** mở danh sách, **then** hệ thống hiện |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:82` - [ ] **Given** danh sách đang mở, **when** dữ liệu đổi ở nơi khác (thêm card, c |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:83` - [ ] **Given** các deck có mastery khác nhau và có deck không có card, **when** |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:84` - [ ] **Given** bộ lọc chỉ-deck-có-thẻ-đến-hạn đang bật và không deck nào có thẻ |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:85` - [ ] **Given** đọc dữ liệu lỗi, **when** tải danh sách, **then** hệ thống hiện |  |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:59` ## Local | superseded → FN-DECK-007 (Kết quả, Business rules) |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:61` **Postconditions:** Không đổi gì — use case chỉ đọc. | superseded → FN-DECK-007 (Kết quả, Business rules) |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:63` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-DECK-007 (Kết quả, Business rules) |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:65` BR-STUDY-051 — hai tập "chưa học" và "đến hạn" phải khớp **hệt** UC-STUDY-001, n | superseded → FN-DECK-007 (Kết quả, Business rules) |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:69` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:71` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:73` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:75` - [ ] **Given** nhiều root deck với card ở nhiều cấp, **when** danh sách deck tả | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:76` - [ ] **Given** deck có card mới, card đến hạn hôm nay và card quá hạn, **when** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:77` - [ ] **Given** cây có N card active trong đó M card `mastered`, **when** xem hà | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:78` - [ ] **Given** một card `mastered` đang ở Trash, **when** tính mastery của deck | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:79` - [ ] **Given** một deck `content_type = 'deck'`, **when** mở nó, **then** màn h | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:80` - [ ] **Given** không deck nào có card đến hạn, **when** xem danh sách, **then** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:81` - [ ] **Given** chưa có deck nào, **when** mở danh sách, **then** hệ thống hiện | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:82` - [ ] **Given** danh sách đang mở, **when** dữ liệu đổi ở nơi khác (thêm card, c | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:83` - [ ] **Given** các deck có mastery khác nhau và có deck không có card, **when** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:84` - [ ] **Given** bộ lọc chỉ-deck-có-thẻ-đến-hạn đang bật và không deck nào có thẻ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:85` - [ ] **Given** đọc dữ liệu lỗi, **when** tải danh sách, **then** hệ thống hiện | moved → `USE_CASES.md` |
 
 ## features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md
 
 | Source item | Outcome |
 |---|---|
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:2` id: UC-DECK-004 |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:3` title: Tạo phần tử con và xác lập `content_type` |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:4` status: ready |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:5` rules: [BR-CARD-004, BR-DECK-001, BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:6` code: [lib/features/deck/domain/usecases/watch_deck_use_case.dart, lib/features/ |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:10` **Actor:** Người dùng |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:14` Đây là use case định hình toàn bộ cấu trúc cây, và là chỗ dễ cài sai nhất vì nút |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:17` ## Main flow |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:19` **Main flow:** |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:20` 1. Người dùng bấm Create trong một deck. |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:21` 2. Hệ thống quyết định lựa chọn hiển thị: |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:23` \| Deck \| Lựa chọn hiện ra \| |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:24` \| root deck (`content_type = 'deck'`, bất biến) \| **chỉ** Create deck (BR-DECK-0 |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:25` \| deck con, `content_type = 'unset'` \| Create card **và** Create deck (BR-DECK-0 |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:26` \| deck con, `content_type = 'card'` \| **chỉ** Create card (BR-DECK-012) \| |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:27` \| deck con, `content_type = 'deck'` \| **chỉ** Create deck (BR-DECK-012) \| |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:29` 3. Người dùng chọn một hành động và nhập nội dung. |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:30` 4. Hệ thống thực hiện **trong một transaction** (BR-DECK-008): |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:31` - nếu deck đang `unset`: đặt `content_type` theo hành động đã chọn; |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:32` - tạo phần tử con: card (kèm study state, BR-CARD-004) hoặc deck con mới với |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:36` 5. Từ đây nút Create trong deck này chỉ hiện hành động tương ứng (BR-DECK-012). |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:38` ## Alternative / Error flow |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:40` **Alternative flows:** |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:41` - **A1 — Deck đã `card`:** không có lựa chọn tạo deck con, ở bất kỳ đâu trong UI |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:43` - **A2 — Deck đã `deck`:** không có lựa chọn tạo card (BR-DECK-010). |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:44` - **A3 — Phần tử con cuối cùng rời đi:** xoá card cuối, xoá deck con cuối hoặc |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:48` - **A4 — Huỷ giữa chừng:** không tạo gì và **không** xác lập `content_type` — |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:51` **Error flows:** |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:52` - **E1 — Validate thất bại** (tên deck rỗng, card thiếu mặt): lỗi inline; không |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:54` - **E2 — Ghi thất bại giữa chừng:** transaction rollback. Deck giữ nguyên |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:57` - **E3 — Cố tạo card trong root deck:** không có đường nào tới được trạng thái |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:60` - **E4 — Deck cha đã ở cấp 10:** tạo deck con bị chặn trước khi ghi (BR-DECK-001 |  |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:2` id: UC-DECK-004 | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:3` title: Tạo phần tử con và xác lập `content_type` | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:5` rules: [BR-CARD-004, BR-DECK-001, BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK | superseded → FN-DECK-008, FN-DECK-009 (Business rules); BR-CARD-004 → FN của feature card (Task 14) |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:6` code: [lib/features/deck/domain/usecases/watch_deck_use_case.dart, lib/features/ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:10` **Actor:** Người dùng | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:14` Đây là use case định hình toàn bộ cấu trúc cây, và là chỗ dễ cài sai nhất vì nút | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:17` ## Main flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:19` **Main flow:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:20` 1. Người dùng bấm Create trong một deck. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:21` 2. Hệ thống quyết định lựa chọn hiển thị: | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:23` \| Deck \| Lựa chọn hiện ra \| | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:24` \| root deck (`content_type = 'deck'`, bất biến) \| **chỉ** Create deck (BR-DECK-0 | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:25` \| deck con, `content_type = 'unset'` \| Create card **và** Create deck (BR-DECK-0 | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:26` \| deck con, `content_type = 'card'` \| **chỉ** Create card (BR-DECK-012) \| | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:27` \| deck con, `content_type = 'deck'` \| **chỉ** Create deck (BR-DECK-012) \| | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:29` 3. Người dùng chọn một hành động và nhập nội dung. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:30` 4. Hệ thống thực hiện **trong một transaction** (BR-DECK-008): | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:31` - nếu deck đang `unset`: đặt `content_type` theo hành động đã chọn; | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:32` - tạo phần tử con: card (kèm study state, BR-CARD-004) hoặc deck con mới với | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:36` 5. Từ đây nút Create trong deck này chỉ hiện hành động tương ứng (BR-DECK-012). | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:38` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:40` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:41` - **A1 — Deck đã `card`:** không có lựa chọn tạo deck con, ở bất kỳ đâu trong UI | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:43` - **A2 — Deck đã `deck`:** không có lựa chọn tạo card (BR-DECK-010). | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:44` - **A3 — Phần tử con cuối cùng rời đi:** xoá card cuối, xoá deck con cuối hoặc | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:48` - **A4 — Huỷ giữa chừng:** không tạo gì và **không** xác lập `content_type` — | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:51` **Error flows:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:52` - **E1 — Validate thất bại** (tên deck rỗng, card thiếu mặt): lỗi inline; không | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:54` - **E2 — Ghi thất bại giữa chừng:** transaction rollback. Deck giữ nguyên | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:57` - **E3 — Cố tạo card trong root deck:** không có đường nào tới được trạng thái | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:60` - **E4 — Deck cha đã ở cấp 10:** tạo deck con bị chặn trước khi ghi (BR-DECK-001 | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:64` ## UI |  |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:66` **UI states:** initial · submitting · error |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:68` ## Local |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:70` **Postconditions:** |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:71` - Deck có `content_type` khác `unset`, khớp với loại phần tử con vừa tạo. |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:72` - Deck không đồng thời chứa card và deck con (BR-DECK-011). |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:73` - Deck con mới có `root_id` đúng bằng root của cha (BR-DECK-002, BR-DECK-019). |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:75` ## API |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:77` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:79` ## Acceptance criteria |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:81` - [ ] **Given** một root deck, **when** bấm Create, **then** chỉ có Create deck |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:82` - [ ] **Given** một deck con `content_type = 'unset'`, **when** bấm Create, **th |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:83` - [ ] **Given** một deck con `unset`, **when** tạo deck con đầu tiên, **then** n |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:84` - [ ] **Given** một deck con `unset`, **when** tạo card đầu tiên, **then** nó th |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:85` - [ ] **Given** một deck `content_type = 'card'`, **when** mở lựa chọn tạo hoặc |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:86` - [ ] **Given** một deck `content_type = 'deck'`, **when** mở lựa chọn tạo hoặc |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:87` - [ ] **Given** một deck con chỉ còn một phần tử con active, **when** phần tử đó |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:88` - [ ] **Given** dialog tạo deck con hoặc card đang mở, **when** người dùng huỷ, |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:89` - [ ] **Given** tên deck con rỗng hoặc card thiếu một mặt, **when** xác nhận, ** |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:90` - [ ] **Given** ghi thất bại giữa chừng (ví dụ không ghi được study state), **wh |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:91` - [ ] **Given** một root deck, **when** tạo card trực tiếp trong nó, **then** th |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:92` - [ ] **Given** deck cha ở cấp 10, **when** tạo deck con, **then** bị chặn trước |  |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:68` ## Local | superseded → FN-DECK-009 (Kết quả) |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:70` **Postconditions:** | superseded → FN-DECK-009 (Kết quả) |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:71` - Deck có `content_type` khác `unset`, khớp với loại phần tử con vừa tạo. | superseded → FN-DECK-009 (Kết quả) |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:72` - Deck không đồng thời chứa card và deck con (BR-DECK-011). | superseded → FN-DECK-009 (Kết quả) |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:73` - Deck con mới có `root_id` đúng bằng root của cha (BR-DECK-002, BR-DECK-019). | superseded → FN-DECK-009 (Kết quả) |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:75` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:77` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:79` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:81` - [ ] **Given** một root deck, **when** bấm Create, **then** chỉ có Create deck | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:82` - [ ] **Given** một deck con `content_type = 'unset'`, **when** bấm Create, **th | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:83` - [ ] **Given** một deck con `unset`, **when** tạo deck con đầu tiên, **then** n | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:84` - [ ] **Given** một deck con `unset`, **when** tạo card đầu tiên, **then** nó th | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:85` - [ ] **Given** một deck `content_type = 'card'`, **when** mở lựa chọn tạo hoặc | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:86` - [ ] **Given** một deck `content_type = 'deck'`, **when** mở lựa chọn tạo hoặc | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:87` - [ ] **Given** một deck con chỉ còn một phần tử con active, **when** phần tử đó | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:88` - [ ] **Given** dialog tạo deck con hoặc card đang mở, **when** người dùng huỷ, | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:89` - [ ] **Given** tên deck con rỗng hoặc card thiếu một mặt, **when** xác nhận, ** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:90` - [ ] **Given** ghi thất bại giữa chừng (ví dụ không ghi được study state), **wh | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:91` - [ ] **Given** một root deck, **when** tạo card trực tiếp trong nó, **then** th | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:92` - [ ] **Given** deck cha ở cấp 10, **when** tạo deck con, **then** bị chặn trước | moved → `USE_CASES.md` |
 
 ## features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md
 
 | Source item | Outcome |
 |---|---|
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:2` id: UC-DECK-005 |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:3` title: Di chuyển deck trong cây |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:4` status: ready |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:5` rules: [BR-DECK-001, BR-DECK-002, BR-DECK-008, BR-DECK-010, BR-DECK-015, BR-DECK |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:6` code: [lib/features/deck/domain/usecases/watch_deck_move_targets_use_case.dart, |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:10` **Actor:** Người dùng |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:14` ## Main flow |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:16` **Main flow:** |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:17` 1. Người dùng chọn deck nguồn và deck đích. |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:18` 2. Hệ thống kiểm tra, theo thứ tự: |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:19` - đích không phải chính deck nguồn hoặc descendant của nó (BR-DECK-017); |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:20` - đích có `content_type = 'deck'` hoặc `'unset'` (BR-DECK-010) — không thể đưa d |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:22` - root của đích có cùng `scheduler_type` và `generation` với root |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:24` - độ sâu sau move không vượt giới hạn (BR-DECK-001): với `targetDepth` là cấp củ |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:27` 3. Hệ thống thực hiện **trong một transaction** (BR-DECK-018): |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:28` - đặt `parent_id` của deck nguồn thành deck đích; |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:29` - cập nhật `root_id` và `depth` cho **toàn bộ subtree** của deck nguồn (BR-DECK- |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:30` - nếu đích đang `unset`, đặt `content_type = 'deck'` (BR-DECK-008); |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:31` - nếu deck cha **cũ** là sub-deck và vừa mất phần tử con cuối cùng, đặt |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:33` 4. Cây được vẽ lại. |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:35` ## Alternative / Error flow |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:37` **Alternative flows:** |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:38` - **A1 — Di chuyển trong cùng một cây (cùng root):** `root_id` không đổi, |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:40` - **A2 — Di chuyển lên thành root deck:** ngoài phạm vi MVP — deck nguồn sẽ cần |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:43` **Error flows:** |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:44` - **E1 — Đích là chính nó hoặc descendant:** chặn, lỗi rõ ràng "Không thể di |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:46` - **E2 — Đích có `content_type = 'card'`:** chặn, giải thích deck đích chỉ chứa |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:48` - **E3 — Root đích khác scheduler hoặc generation:** **chặn**, và đề nghị đặt lạ |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:51` - **E4 — Thất bại giữa chừng:** transaction rollback (BR-DECK-018) — con trỏ cha |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:55` - **E5 — Vượt độ sâu tối đa:** `targetDepth + subtreeHeight > 10` → chặn trước |  |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:2` id: UC-DECK-005 | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:3` title: Di chuyển deck trong cây | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:5` rules: [BR-DECK-001, BR-DECK-002, BR-DECK-008, BR-DECK-010, BR-DECK-015, BR-DECK | superseded → FN-DECK-011 (Business rules) |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:6` code: [lib/features/deck/domain/usecases/watch_deck_move_targets_use_case.dart, | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:10` **Actor:** Người dùng | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:14` ## Main flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:16` **Main flow:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:17` 1. Người dùng chọn deck nguồn và deck đích. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:18` 2. Hệ thống kiểm tra, theo thứ tự: | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:19` - đích không phải chính deck nguồn hoặc descendant của nó (BR-DECK-017); | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:20` - đích có `content_type = 'deck'` hoặc `'unset'` (BR-DECK-010) — không thể đưa d | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:22` - root của đích có cùng `scheduler_type` và `generation` với root | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:24` - độ sâu sau move không vượt giới hạn (BR-DECK-001): với `targetDepth` là cấp củ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:27` 3. Hệ thống thực hiện **trong một transaction** (BR-DECK-018): | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:28` - đặt `parent_id` của deck nguồn thành deck đích; | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:29` - cập nhật `root_id` và `depth` cho **toàn bộ subtree** của deck nguồn (BR-DECK- | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:30` - nếu đích đang `unset`, đặt `content_type = 'deck'` (BR-DECK-008); | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:31` - nếu deck cha **cũ** là sub-deck và vừa mất phần tử con cuối cùng, đặt | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:33` 4. Cây được vẽ lại. | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:35` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:37` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:38` - **A1 — Di chuyển trong cùng một cây (cùng root):** `root_id` không đổi, | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:40` - **A2 — Di chuyển lên thành root deck:** ngoài phạm vi MVP — deck nguồn sẽ cần | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:43` **Error flows:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:44` - **E1 — Đích là chính nó hoặc descendant:** chặn, lỗi rõ ràng "Không thể di | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:46` - **E2 — Đích có `content_type = 'card'`:** chặn, giải thích deck đích chỉ chứa | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:48` - **E3 — Root đích khác scheduler hoặc generation:** **chặn**, và đề nghị đặt lạ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:51` - **E4 — Thất bại giữa chừng:** transaction rollback (BR-DECK-018) — con trỏ cha | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:55` - **E5 — Vượt độ sâu tối đa:** `targetDepth + subtreeHeight > 10` → chặn trước | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:59` ## UI |  |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:61` **UI states:** loaded · submitting · error |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:63` ## Local |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:65` **Postconditions:** |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:66` - Cây không có cycle (BR-DECK-016). |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:67` - Mọi deck trong subtree đã di chuyển có `root_id` đúng bằng root mới |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:69` - Không deck nào đồng thời chứa card và deck con (BR-DECK-011). |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:70` - Deck đích `unset` nhận phần tử con đầu tiên thành `deck`; cha cũ là sub-deck |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:72` - Không có card study state nào lệch scheduler hoặc generation so với root |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:75` ## API |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:77` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:79` ## Acceptance criteria |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:81` - [ ] **Given** deck nguồn và đích hợp lệ (đích không phải chính nó hay descenda |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:82` - [ ] **Given** đích đang `unset` và deck cha cũ (không phải root) vừa mất phần |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:83` - [ ] **Given** nguồn và đích cùng một root, **when** di chuyển, **then** `root_ |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:84` - [ ] **Given** deck nguồn là root, **when** di chuyển, **then** bị từ chối: đưa |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:85` - [ ] **Given** đích là chính deck nguồn hoặc một descendant của nó, **when** di |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:86` - [ ] **Given** đích có `content_type = 'card'`, **when** di chuyển, **then** bị |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:87` - [ ] **Given** root của đích khác `scheduler_type` hoặc `generation` với root c |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:88` - [ ] **Given** di chuyển thất bại giữa chừng, **when** transaction dừng, **then |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:89` - [ ] **Given** cấp của đích cộng chiều cao subtree vượt 10, **when** di chuyển, |  |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:63` ## Local | superseded → FN-DECK-011 (Kết quả) |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:65` **Postconditions:** | superseded → FN-DECK-011 (Kết quả) |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:66` - Cây không có cycle (BR-DECK-016). | superseded → FN-DECK-011 (Kết quả) |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:67` - Mọi deck trong subtree đã di chuyển có `root_id` đúng bằng root mới | superseded → FN-DECK-011 (Kết quả) |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:69` - Không deck nào đồng thời chứa card và deck con (BR-DECK-011). | superseded → FN-DECK-011 (Kết quả) |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:70` - Deck đích `unset` nhận phần tử con đầu tiên thành `deck`; cha cũ là sub-deck | superseded → FN-DECK-011 (Kết quả) |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:72` - Không có card study state nào lệch scheduler hoặc generation so với root | superseded → FN-DECK-011 (Kết quả) |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:75` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:77` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:79` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:81` - [ ] **Given** deck nguồn và đích hợp lệ (đích không phải chính nó hay descenda | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:82` - [ ] **Given** đích đang `unset` và deck cha cũ (không phải root) vừa mất phần | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:83` - [ ] **Given** nguồn và đích cùng một root, **when** di chuyển, **then** `root_ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:84` - [ ] **Given** deck nguồn là root, **when** di chuyển, **then** bị từ chối: đưa | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:85` - [ ] **Given** đích là chính deck nguồn hoặc một descendant của nó, **when** di | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:86` - [ ] **Given** đích có `content_type = 'card'`, **when** di chuyển, **then** bị | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:87` - [ ] **Given** root của đích khác `scheduler_type` hoặc `generation` với root c | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:88` - [ ] **Given** di chuyển thất bại giữa chừng, **when** transaction dừng, **then | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:89` - [ ] **Given** cấp của đích cộng chiều cao subtree vượt 10, **when** di chuyển, | moved → `USE_CASES.md` |
 
 ## features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md
 
 | Source item | Outcome |
 |---|---|
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:2` id: UC-DECK-006 |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:3` title: Sắp xếp lại Deck cùng cấp |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:4` status: ready |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:5` rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-DECK-027, BR-SRS- |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:6` code: [lib/features/deck/domain/usecases/reorder_deck_use_case.dart] |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:10` **Actor:** Người dùng |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:17` ## Main flow |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:19` **Main flow:** |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:20` 1. Hệ thống lấy sibling liền trước hoặc sau từ thứ tự Manual đã lưu và gửi |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:22` 2. Hệ thống mở một transaction, đọc lại source và target active, xác nhận |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:24` 3. Watch của level phát emission mới; danh sách đổi vị trí tại chỗ. Mọi parent, |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:27` ## Alternative / Error flow |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:29` **Alternative flows:** Ở chế độ Reorder, deck đầu không có action Move up của |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:35` **Error flows:** Source hoặc target đã stale, hoặc không còn sibling → transacti |  |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:2` id: UC-DECK-006 | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:3` title: Sắp xếp lại Deck cùng cấp | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:5` rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-DECK-027, BR-SRS- | superseded → FN-DECK-012 (Business rules) |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:6` code: [lib/features/deck/domain/usecases/reorder_deck_use_case.dart] | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:10` **Actor:** Người dùng | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:17` ## Main flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:19` **Main flow:** | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:20` 1. Hệ thống lấy sibling liền trước hoặc sau từ thứ tự Manual đã lưu và gửi | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:22` 2. Hệ thống mở một transaction, đọc lại source và target active, xác nhận | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:24` 3. Watch của level phát emission mới; danh sách đổi vị trí tại chỗ. Mọi parent, | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:27` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:29` **Alternative flows:** Ở chế độ Reorder, deck đầu không có action Move up của | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:35` **Error flows:** Source hoặc target đã stale, hoặc không còn sibling → transacti | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:39` ## UI |  |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:41` **UI states:** Ở Manual order, action sheet hiện mục Reorder khi level có từ hai |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:46` ## Local |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:48` **Postconditions:** Chỉ `sibling_position` (và timestamp audit của các sibling |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:52` ## API |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:54` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:56` ## Acceptance criteria |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:58` - [ ] **Given** hai deck cùng `parent_id` ở Manual order, **when** hệ thống gửi |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:59` - [ ] **Given** nhiều root deck, **when** sắp xếp lại, **then** chúng đổi chỗ tr |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:60` - [ ] **Given** level đang ở Manual order và chỉ có một deck, **when** mở action |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:61` - [ ] **Given** level đang dùng một sort chỉ để xem (tên, ngày, due hoặc tiến độ |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:62` - [ ] **Given** source và target không còn cùng `parent_id`, **when** sắp xếp lạ |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:63` - [ ] **Given** deck hoặc anchor không còn, **when** sắp xếp lại, **then** thao |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:64` - [ ] **Given** một update lỗi giữa lúc đánh số lại nhóm sibling, **when** trans |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:65` - [ ] **Given** level đang ở Manual order với từ hai deck, **when** người dùng c |  |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:46` ## Local | superseded → FN-DECK-012 (Kết quả) |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:48` **Postconditions:** Chỉ `sibling_position` (và timestamp audit của các sibling | superseded → FN-DECK-012 (Kết quả) |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:52` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:54` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:56` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:58` - [ ] **Given** hai deck cùng `parent_id` ở Manual order, **when** hệ thống gửi | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:59` - [ ] **Given** nhiều root deck, **when** sắp xếp lại, **then** chúng đổi chỗ tr | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:60` - [ ] **Given** level đang ở Manual order và chỉ có một deck, **when** mở action | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:61` - [ ] **Given** level đang dùng một sort chỉ để xem (tên, ngày, due hoặc tiến độ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:62` - [ ] **Given** source và target không còn cùng `parent_id`, **when** sắp xếp lạ | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:63` - [ ] **Given** deck hoặc anchor không còn, **when** sắp xếp lại, **then** thao | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:64` - [ ] **Given** một update lỗi giữa lúc đánh số lại nhóm sibling, **when** trans | moved → `USE_CASES.md` |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:65` - [ ] **Given** level đang ở Manual order với từ hai deck, **when** người dùng c | moved → `USE_CASES.md` |
 
 ## features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md
 
@@ -3072,40 +3072,40 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 
 | Source item | Outcome |
 |---|---|
-| `features/deck/ui.md:1` # Deck — UI |  |
-| `features/deck/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature deck. Hành vi |  |
-| `features/deck/ui.md:6` ## Điều hướng trên cây deck |  |
-| `features/deck/ui.md:8` Mọi thao tác trên cây deck. Điểm vào là một deck bất kỳ đang mở. |  |
-| `features/deck/ui.md:11` flowchart TD |  |
-| `features/deck/ui.md:12` A["Một deck đang mở"] --> B{"Người dùng chọn gì"} |  |
-| `features/deck/ui.md:14` B -->\|"Bấm Create"\| C{"Deck này là gì"} |  |
-| `features/deck/ui.md:15` C -->\|"root"\| C1["Chỉ Create deck · BR-DECK-005"] |  |
-| `features/deck/ui.md:16` C -->\|"con · unset"\| C2["Create card và Create deck · BR-DECK-007"] |  |
-| `features/deck/ui.md:17` C -->\|"con · card"\| C3["Chỉ Create card · BR-DECK-012"] |  |
-| `features/deck/ui.md:18` C -->\|"con · deck"\| C4["Chỉ Create deck · BR-DECK-012"] |  |
-| `features/deck/ui.md:19` C1 --> D["Tạo phần tử con và xác lập content_type trong một transaction · UC-DEC |  |
-| `features/deck/ui.md:20` C2 --> D |  |
-| `features/deck/ui.md:21` C3 --> D |  |
-| `features/deck/ui.md:22` C4 --> D |  |
-| `features/deck/ui.md:23` D -->\|"Cha đã ở cấp 10"\| D1["Chặn trước khi ghi · UC-DECK-004 E4, BR-DECK-001"] |  |
-| `features/deck/ui.md:24` D -->\|"Huỷ giữa chừng"\| D2["Không tạo gì và content_type không đổi · UC-DECK-004 |  |
-| `features/deck/ui.md:25` D -->\|"Thành công"\| D3["Cây được vẽ lại"] |  |
-| `features/deck/ui.md:27` B -->\|"Đổi tên"\| E["Validate rồi lưu · UC-DECK-002, BR-DECK-020"] |  |
-| `features/deck/ui.md:29` B -->\|"Xoá"\| F["Xác nhận, nêu rõ số deck con và số card sẽ vào Trash cùng deck · |  |
-| `features/deck/ui.md:30` F -->\|"Đồng ý"\| F1["Chuyển cả cây active vào Trash thành một batch, trong một tr |  |
-| `features/deck/ui.md:31` F -->\|"Huỷ"\| F2["Không xảy ra gì · UC-DECK-002 A3"] |  |
-| `features/deck/ui.md:33` B -->\|"Di chuyển"\| G{"Bốn phép kiểm, theo thứ tự · UC-DECK-005"} |  |
-| `features/deck/ui.md:34` G -->\|"Đích là chính nó hoặc descendant"\| G1["Chặn · E1, BR-DECK-017"] |  |
-| `features/deck/ui.md:35` G -->\|"Đích có content_type card"\| G2["Chặn · E2, BR-DECK-010"] |  |
-| `features/deck/ui.md:36` G -->\|"Root đích khác scheduler hoặc generation"\| G3["Chặn, đề nghị reset tường |  |
-| `features/deck/ui.md:37` G -->\|"Vượt cấp 10"\| G4["Chặn · E5, BR-DECK-001"] |  |
-| `features/deck/ui.md:38` G -->\|"Hợp lệ"\| G5["Đổi parent và root_id toàn subtree trong một transaction · B |  |
-| `features/deck/ui.md:41` B -->\|"Đổi chế độ ôn tập · chỉ root"\| I{"first_answered_at"} |  |
-| `features/deck/ui.md:42` I -->\|"NULL"\| I1["Mở khoá: cảnh báo rồi khởi tạo lại study state toàn cây, gener |  |
-| `features/deck/ui.md:43` I -->\|"Đã có"\| I2["Khoá, hiện kèm lối đi sang Reset learning progress · UC-DECK- |  |
-| `features/deck/ui.md:44` I2 --> I3["UC-SRS-001 · mục 5"] |  |
-| `features/deck/ui.md:47` **Nhánh `I` là chỗ hai đối tượng gặp nhau.** Chế độ ôn tập là thuộc tính của dec |  |
-| `features/deck/ui.md:51` **`I1` và `I3` là hai thao tác, không phải một thao tác với hai cách gọi.** Cả h |  |
+| `features/deck/ui.md:1` # Deck — UI | superseded → FN-DECK-008, FN-DECK-009, FN-DECK-002, FN-DECK-005, FN-DECK-011, FN-DECK-003 (sơ đồ thay bằng các FN và UC-DECK-002/004/005) |
+| `features/deck/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature deck. Hành vi | superseded → FN-DECK-008 (đoạn mở đầu của sơ đồ) |
+| `features/deck/ui.md:6` ## Điều hướng trên cây deck | superseded → FN-DECK-008 |
+| `features/deck/ui.md:8` Mọi thao tác trên cây deck. Điểm vào là một deck bất kỳ đang mở. | superseded → FN-DECK-008 |
+| `features/deck/ui.md:11` flowchart TD | superseded → FN-DECK-008 |
+| `features/deck/ui.md:12` A["Một deck đang mở"] --> B{"Người dùng chọn gì"} | superseded → FN-DECK-008 |
+| `features/deck/ui.md:14` B -->\|"Bấm Create"\| C{"Deck này là gì"} | superseded → FN-DECK-008 (lựa chọn tạo) |
+| `features/deck/ui.md:15` C -->\|"root"\| C1["Chỉ Create deck · BR-DECK-005"] | superseded → FN-DECK-008 (bảng lựa chọn tạo) |
+| `features/deck/ui.md:16` C -->\|"con · unset"\| C2["Create card và Create deck · BR-DECK-007"] | superseded → FN-DECK-008 (bảng lựa chọn tạo) |
+| `features/deck/ui.md:17` C -->\|"con · card"\| C3["Chỉ Create card · BR-DECK-012"] | superseded → FN-DECK-008 (bảng lựa chọn tạo) |
+| `features/deck/ui.md:18` C -->\|"con · deck"\| C4["Chỉ Create deck · BR-DECK-012"] | superseded → FN-DECK-008 (bảng lựa chọn tạo) |
+| `features/deck/ui.md:19` C1 --> D["Tạo phần tử con và xác lập content_type trong một transaction · UC-DEC | superseded → FN-DECK-009 (Kết quả) |
+| `features/deck/ui.md:20` C2 --> D | superseded → FN-DECK-009 |
+| `features/deck/ui.md:21` C3 --> D | superseded → FN-DECK-009 |
+| `features/deck/ui.md:22` C4 --> D | superseded → FN-DECK-009 |
+| `features/deck/ui.md:23` D -->\|"Cha đã ở cấp 10"\| D1["Chặn trước khi ghi · UC-DECK-004 E4, BR-DECK-001"] | superseded → FN-DECK-009 (Lỗi: depthExceeded) |
+| `features/deck/ui.md:24` D -->\|"Huỷ giữa chừng"\| D2["Không tạo gì và content_type không đổi · UC-DECK-004 | superseded → FN-DECK-009 (Kết quả: content_type chỉ đổi khi tạo thật) |
+| `features/deck/ui.md:25` D -->\|"Thành công"\| D3["Cây được vẽ lại"] | superseded → FN-DECK-009 |
+| `features/deck/ui.md:27` B -->\|"Đổi tên"\| E["Validate rồi lưu · UC-DECK-002, BR-DECK-020"] | superseded → FN-DECK-002 |
+| `features/deck/ui.md:29` B -->\|"Xoá"\| F["Xác nhận, nêu rõ số deck con và số card sẽ vào Trash cùng deck · | superseded → FN-DECK-004 |
+| `features/deck/ui.md:30` F -->\|"Đồng ý"\| F1["Chuyển cả cây active vào Trash thành một batch, trong một tr | superseded → FN-DECK-005 |
+| `features/deck/ui.md:31` F -->\|"Huỷ"\| F2["Không xảy ra gì · UC-DECK-002 A3"] | superseded → FN-DECK-004 (không ghi gì khi huỷ; UC-DECK-002 A3 trong USE_CASES.md) |
+| `features/deck/ui.md:33` B -->\|"Di chuyển"\| G{"Bốn phép kiểm, theo thứ tự · UC-DECK-005"} | superseded → FN-DECK-011 (thứ tự kiểm) |
+| `features/deck/ui.md:34` G -->\|"Đích là chính nó hoặc descendant"\| G1["Chặn · E1, BR-DECK-017"] | superseded → FN-DECK-011 (Lỗi: movingIntoOwnSubtree) |
+| `features/deck/ui.md:35` G -->\|"Đích có content_type card"\| G2["Chặn · E2, BR-DECK-010"] | superseded → FN-DECK-011 (Lỗi: notADeckContainer) |
+| `features/deck/ui.md:36` G -->\|"Root đích khác scheduler hoặc generation"\| G3["Chặn, đề nghị reset tường | superseded → FN-DECK-011 (Lỗi: subtreeSchedulerMismatch) |
+| `features/deck/ui.md:37` G -->\|"Vượt cấp 10"\| G4["Chặn · E5, BR-DECK-001"] | superseded → FN-DECK-011 (Lỗi: depthExceeded) |
+| `features/deck/ui.md:38` G -->\|"Hợp lệ"\| G5["Đổi parent và root_id toàn subtree trong một transaction · B | superseded → FN-DECK-011 (Kết quả) |
+| `features/deck/ui.md:41` B -->\|"Đổi chế độ ôn tập · chỉ root"\| I{"first_answered_at"} | superseded → FN-DECK-003 |
+| `features/deck/ui.md:42` I -->\|"NULL"\| I1["Mở khoá: cảnh báo rồi khởi tạo lại study state toàn cây, gener | superseded → FN-DECK-003 (Kết quả) |
+| `features/deck/ui.md:43` I -->\|"Đã có"\| I2["Khoá, hiện kèm lối đi sang Reset learning progress · UC-DECK- | superseded → FN-DECK-008 (trạng thái khoá) và FN-DECK-003 (Lỗi: schedulerLocked) |
+| `features/deck/ui.md:44` I2 --> I3["UC-SRS-001 · mục 5"] | superseded → FN-DECK-003; Reset learning progress là FN của feature srs (Task 15) |
+| `features/deck/ui.md:47` **Nhánh `I` là chỗ hai đối tượng gặp nhau.** Chế độ ôn tập là thuộc tính của dec | superseded → FN-DECK-008 (trạng thái khoá hiện, không ẩn) |
+| `features/deck/ui.md:51` **`I1` và `I3` là hai thao tác, không phải một thao tác với hai cách gọi.** Cả h | superseded → FN-DECK-003 (Kết quả: không phải Reset learning progress) |
 | `features/deck/ui.md:57` **Ai đặt khoá ở `I`:** chính lần một thẻ hoàn tất chuỗi học mới, trong cùng |  |
 | `features/deck/ui.md:61` ## Validation |  |
 | `features/deck/ui.md:63` \| Trường \| Rule \| Message hiển thị \| Enforced by \| |  |
@@ -3114,9 +3114,9 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `features/deck/ui.md:67` \| Deck.move \| đích không phải chính nó hoặc descendant (BR-DECK-017) \| "Không th |  |
 | `features/deck/ui.md:68` \| Deck.create (sub-deck) \| cấp của deck mới ≤ 10 (BR-DECK-001) \| "Deck đã ở độ s |  |
 | `features/deck/ui.md:69` \| Deck.move \| cấp đích + chiều cao subtree nguồn ≤ 10 (BR-DECK-001) \| "Di chuyển |  |
-| `features/deck/ui.md:71` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid |  |
-| `features/deck/ui.md:73` ## Edge case |  |
-| `features/deck/ui.md:75` \| Case \| Expected behaviour \| |  |
+| `features/deck/ui.md:71` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | superseded → ADR-015 (server chỉ kiểm tính toàn vẹn; quy tắc nghiệp vụ nằm ở app) |
+| `features/deck/ui.md:73` ## Edge case | superseded → FN-DECK-008 |
+| `features/deck/ui.md:75` \| Case \| Expected behaviour \| | superseded → FN-DECK-008 |
 | `features/deck/ui.md:77` \| Deck rỗng (0 card) \| Empty state với hành động phù hợp `content_type` (BR-DECK |  |
 
 ## features/progress/ui.md
@@ -4048,3 +4048,30 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `test/shared/widgets/goldens/mx_vietnamese_ellipsis_light.png` |  |
 | `test/shared/widgets/goldens/mx_workload_donut_dark.png` |  |
 | `test/shared/widgets/goldens/mx_workload_donut_light.png` |  |
+
+## Task 12 notes — deck
+
+Candidate FNs (plan P1 step 1); every deck use case class is an FN:
+
+| Use case class | FN |
+|---|---|
+| create_root_deck | FN-DECK-001 Tạo root deck |
+| rename_deck | FN-DECK-002 Đổi tên deck |
+| change_deck_scheduler | FN-DECK-003 Đổi chế độ ôn tập của root deck |
+| get_deck_deletion_summary | FN-DECK-004 Xem số deck con và card sẽ vào Trash cùng deck |
+| delete_deck | FN-DECK-005 Chuyển deck và cây con vào Trash |
+| undo_deck_deletion | FN-DECK-006 Hoàn tác xoá deck |
+| watch_deck_level | FN-DECK-007 Xem một cấp của thư viện kèm tiến độ |
+| watch_deck | FN-DECK-008 Xem một deck đang mở |
+| create_sub_deck | FN-DECK-009 Tạo deck con |
+| watch_deck_move_targets | FN-DECK-010 Xem các đích di chuyển hợp lệ |
+| move_deck | FN-DECK-011 Di chuyển deck trong cây |
+| reorder_deck | FN-DECK-012 Sắp xếp lại deck cùng cấp |
+
+- The card branch of UC-DECK-004 (create a card in an `unset` deck) is a card FN: Task 14 adds it
+  to UC-DECK-004's `Invokes:`. BR-CARD-004 moves there.
+- Open rows of deck ui.md: line 57 (who sets the scheduler lock) goes to the study FNs (Task 16);
+  lines 61–69 (validation messages) and 77 (empty deck) are checked against the app's copy in
+  Task 13.
+- One OPEN QUESTION raised: the order of the move checks (FN-DECK-011), UC text vs code.
+- No new "active BR is cited by no FN" warning for deck.

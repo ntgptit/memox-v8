@@ -53,7 +53,7 @@ Chưa có tài liệu.
 | [BR-CARD-001](../features/card/rules/BR-CARD-001-hai-mat-khong-rong.md) | Card có hai mặt không rỗng | active | Card có mặt trước và mặt sau, đều không rỗng sau trim. | UC-CARD-001, UC-TRANSFER-001 |
 | [BR-CARD-002](../features/card/rules/BR-CARD-002-gioi-han-do-dai-hai-mat.md) | Giới hạn độ dài hai mặt | active | Mặt trước tối đa 60 ký tự, mặt sau tối đa 240 ký tự, đo sau trim. | UC-CARD-001, UC-TRANSFER-001 |
 | [BR-CARD-003](../features/card/rules/BR-CARD-003-ba-truong-phu-tuy-chon.md) | Ba trường phụ tuỳ chọn | active | Card có thể có ví dụ, gợi ý và phiên âm, mỗi trường tối đa 240 ký tự sau trim. | UC-CARD-001, UC-CARD-002, UC-TRANSFER-001 |
-| [BR-CARD-004](../features/card/rules/BR-CARD-004-tao-card-tao-study-state.md) | Tạo card tạo study state | active | Tạo card đồng thời tạo study state theo scheduler và `generation` của root, `due_at = NULL`. | UC-CARD-001, UC-DECK-004, UC-STARTER-001, UC-TRANSFER-001 |
+| [BR-CARD-004](../features/card/rules/BR-CARD-004-tao-card-tao-study-state.md) | Tạo card tạo study state | active | Tạo card đồng thời tạo study state theo scheduler và `generation` của root, `due_at = NULL`. | UC-CARD-001, UC-STARTER-001, UC-TRANSFER-001 |
 | [BR-CARD-005](../features/card/rules/BR-CARD-005-sua-noi-dung-khong-dung-study-state.md) | Sửa nội dung không đụng study state | active | Sửa nội dung card không đụng study state hay study answers. | UC-CARD-001, UC-CARD-002 |
 | [BR-CARD-006](../features/card/rules/BR-CARD-006-bon-trang-thai-hien-thi.md) | Bốn trạng thái hiển thị của thẻ | active | Trạng thái hiển thị là `new`, `beginning`, `reviewing` hoặc `mastered`, suy ra khi đọc, không lưu cột. | UC-CARD-001, UC-CARD-002 |
 | [BR-CARD-007](../features/card/rules/BR-CARD-007-the-chua-hoc-xong-la-new.md) | Thẻ chưa học xong lần đầu là new | active | Thẻ `learned_at IS NULL` là `new` ở cả hai thuật toán, không suy từ `answer_count`. | UC-CARD-002 |
@@ -84,44 +84,61 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | UC-DECK-004, UC-DECK-005, UC-DECK-006, UC-PROGRESS-002, UC-SEARCH-001, UC-TRASH-001 |
-| [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | UC-DECK-001, UC-DECK-003, UC-DECK-004, UC-DECK-005, UC-DECK-006, UC-PROGRESS-002, UC-SEARCH-001, UC-STARTER-001 |
-| [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | UC-DECK-003, UC-DECK-006, UC-PROGRESS-002, UC-REMINDER-001, UC-SEARCH-001 |
-| [BR-DECK-004](../features/deck/rules/BR-DECK-004-root-deck-chi-chua-deck-con.md) | Root deck chỉ chứa deck con | active | Root deck chỉ chứa deck con, không chứa card trực tiếp. | UC-DECK-001, UC-DECK-004, UC-DECK-006, UC-TRANSFER-001 |
-| [BR-DECK-005](../features/deck/rules/BR-DECK-005-create-o-root-chi-co-create-deck.md) | Create ở root deck chỉ có Create deck | active | Nút Create tại root deck chỉ có một lựa chọn: Create deck. | UC-DECK-001, UC-DECK-004 |
-| [BR-DECK-006](../features/deck/rules/BR-DECK-006-sub-deck-moi-co-content-type-unset.md) | Sub-deck mới có content_type unset | active | Sub-deck mới tạo có `content_type = unset`; người dùng không chọn `content_type` khi tạo. | UC-DECK-004 |
-| [BR-DECK-007](../features/deck/rules/BR-DECK-007-create-o-sub-deck-unset-co-hai-lua-chon.md) | Create ở sub-deck unset có hai lựa chọn | active | Bấm Create trong sub-deck `unset` hiển thị Create card và Create deck. | UC-DECK-004 |
-| [BR-DECK-008](../features/deck/rules/BR-DECK-008-phan-tu-con-dau-tien-xac-lap-content-type.md) | Phần tử con đầu tiên xác lập content_type | active | Lần tạo phần tử con đầu tiên xác lập `content_type`, trong cùng transaction với việc tạo phần tử đó. | UC-DECK-004, UC-DECK-005, UC-TRANSFER-001 |
-| [BR-DECK-009](../features/deck/rules/BR-DECK-009-deck-loai-card-chi-chua-card.md) | Deck loại card chỉ chứa card | active | Deck `content_type = card` chỉ chứa card, không chứa deck con. | UC-CARD-001, UC-DECK-004, UC-SEARCH-001, UC-TRASH-001 |
-| [BR-DECK-010](../features/deck/rules/BR-DECK-010-deck-loai-deck-chi-chua-deck-con.md) | Deck loại deck chỉ chứa deck con | active | Deck `content_type = deck` chỉ chứa deck con, không chứa card trực tiếp. | UC-DECK-004, UC-DECK-005, UC-TRANSFER-001, UC-TRASH-001 |
-| [BR-DECK-011](../features/deck/rules/BR-DECK-011-khong-tron-card-va-deck-con.md) | Không trộn card và deck con | active | Một deck không đồng thời chứa card và deck con. | UC-DECK-003, UC-DECK-004 |
-| [BR-DECK-012](../features/deck/rules/BR-DECK-012-create-chi-hien-hanh-dong-theo-content-type.md) | Create chỉ hiện hành động theo content_type | active | Sau khi `content_type` được xác lập, nút Create chỉ hiển thị hành động tương ứng. | UC-DECK-004 |
+| [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | FN-DECK-008, FN-DECK-009, FN-DECK-010, FN-DECK-011, UC-PROGRESS-002, UC-SEARCH-001, UC-TRASH-001 |
+| [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | FN-DECK-001, FN-DECK-007, FN-DECK-009, FN-DECK-011, FN-DECK-012, UC-PROGRESS-002, UC-SEARCH-001, UC-STARTER-001 |
+| [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | FN-DECK-007, UC-PROGRESS-002, UC-REMINDER-001, UC-SEARCH-001 |
+| [BR-DECK-004](../features/deck/rules/BR-DECK-004-root-deck-chi-chua-deck-con.md) | Root deck chỉ chứa deck con | active | Root deck chỉ chứa deck con, không chứa card trực tiếp. | FN-DECK-001, FN-DECK-005, FN-DECK-008, UC-TRANSFER-001 |
+| [BR-DECK-005](../features/deck/rules/BR-DECK-005-create-o-root-chi-co-create-deck.md) | Create ở root deck chỉ có Create deck | active | Nút Create tại root deck chỉ có một lựa chọn: Create deck. | FN-DECK-008 |
+| [BR-DECK-006](../features/deck/rules/BR-DECK-006-sub-deck-moi-co-content-type-unset.md) | Sub-deck mới có content_type unset | active | Sub-deck mới tạo có `content_type = unset`; người dùng không chọn `content_type` khi tạo. | FN-DECK-009 |
+| [BR-DECK-007](../features/deck/rules/BR-DECK-007-create-o-sub-deck-unset-co-hai-lua-chon.md) | Create ở sub-deck unset có hai lựa chọn | active | Bấm Create trong sub-deck `unset` hiển thị Create card và Create deck. | FN-DECK-008 |
+| [BR-DECK-008](../features/deck/rules/BR-DECK-008-phan-tu-con-dau-tien-xac-lap-content-type.md) | Phần tử con đầu tiên xác lập content_type | active | Lần tạo phần tử con đầu tiên xác lập `content_type`, trong cùng transaction với việc tạo phần tử đó. | FN-DECK-009, FN-DECK-011, UC-TRANSFER-001 |
+| [BR-DECK-009](../features/deck/rules/BR-DECK-009-deck-loai-card-chi-chua-card.md) | Deck loại card chỉ chứa card | active | Deck `content_type = card` chỉ chứa card, không chứa deck con. | FN-DECK-008, FN-DECK-009, FN-DECK-010, UC-CARD-001, UC-SEARCH-001, UC-TRASH-001 |
+| [BR-DECK-010](../features/deck/rules/BR-DECK-010-deck-loai-deck-chi-chua-deck-con.md) | Deck loại deck chỉ chứa deck con | active | Deck `content_type = deck` chỉ chứa deck con, không chứa card trực tiếp. | FN-DECK-008, FN-DECK-011, UC-TRANSFER-001, UC-TRASH-001 |
+| [BR-DECK-011](../features/deck/rules/BR-DECK-011-khong-tron-card-va-deck-con.md) | Không trộn card và deck con | active | Một deck không đồng thời chứa card và deck con. | FN-DECK-008, FN-DECK-009, FN-DECK-011 |
+| [BR-DECK-012](../features/deck/rules/BR-DECK-012-create-chi-hien-hanh-dong-theo-content-type.md) | Create chỉ hiện hành động theo content_type | active | Sau khi `content_type` được xác lập, nút Create chỉ hiển thị hành động tương ứng. | FN-DECK-008 |
 | [BR-DECK-013](../features/deck/rules/BR-DECK-013-xoa-het-noi-dung-khong-tu-ve-unset.md) | Xoá hết nội dung không tự về unset | deprecated | Đã thay bằng BR-DECK-015. Xoá hết nội dung không tự động đưa `content_type` về `unset`. | — |
 | [BR-DECK-014](../features/deck/rules/BR-DECK-014-reset-content-type-thu-cong-khi-deck-rong.md) | Reset content_type thủ công khi deck rỗng | deprecated | Đã thay bằng BR-DECK-015. Đưa `content_type` về `unset` là thao tác riêng, có xác nhận, chỉ khi deck rỗng. | — |
-| [BR-DECK-015](../features/deck/rules/BR-DECK-015-content-type-tu-cap-nhat-theo-direct-children.md) | content_type tự cập nhật theo direct children | active | Hệ thống cập nhật `content_type` của sub-deck atomically cùng mutation direct children; không có reset thủ công. | UC-CARD-001, UC-CARD-002, UC-DECK-002, UC-DECK-004, UC-DECK-005, UC-TAG-001, UC-TRANSFER-002, UC-TRASH-001 |
-| [BR-DECK-016](../features/deck/rules/BR-DECK-016-cay-deck-khong-co-cycle.md) | Cây deck không có cycle | active | Cây deck không có cycle. | UC-DECK-005 |
-| [BR-DECK-017](../features/deck/rules/BR-DECK-017-khong-di-chuyen-deck-vao-chinh-no-hoac-descendant.md) | Không di chuyển deck vào chính nó hoặc descendant | active | Không di chuyển một deck vào chính nó hoặc vào descendant của nó. | UC-DECK-005, UC-TRASH-001 |
-| [BR-DECK-018](../features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md) | Di chuyển subtree cập nhật root_id và depth | active | Di chuyển subtree cập nhật `root_id` và `depth` cho toàn bộ subtree trong một transaction. | UC-DECK-005, UC-TRASH-001 |
-| [BR-DECK-019](../features/deck/rules/BR-DECK-019-khong-descendant-nao-tro-sai-root.md) | Không descendant nào trỏ sai root | active | Không có descendant trỏ sai root. | UC-DECK-004, UC-DECK-005 |
-| [BR-DECK-020](../features/deck/rules/BR-DECK-020-ten-deck-khong-rong-toi-da-200-ky-tu.md) | Tên deck không rỗng, tối đa 200 ký tự | active | Tên deck không rỗng sau trim, tối đa 200 ký tự. | UC-DECK-001, UC-DECK-002 |
-| [BR-DECK-021](../features/deck/rules/BR-DECK-021-ten-deck-duoc-phep-trung.md) | Tên deck được phép trùng | active | Tên deck được phép trùng nhau. | UC-DECK-001 |
-| [BR-DECK-022](../features/deck/rules/BR-DECK-022-xoa-deck-dua-ca-cay-vao-trash.md) | Xoá deck đưa cả cây vào Trash | active | Xoá deck chuyển deck cùng mọi deck con và card còn active bên dưới vào Trash thành một batch; chỉ purge mới xoá hẳn, theo cascade. | UC-CARD-001, UC-DECK-002 |
-| [BR-DECK-023](../features/deck/rules/BR-DECK-023-xoa-deck-can-xac-nhan-kem-so-luong.md) | Xoá deck cần xác nhận kèm số lượng | active | Xoá deck cần xác nhận, kèm số deck con và số card sẽ vào Trash cùng nó. | UC-CARD-001, UC-DECK-002 |
-| [BR-DECK-024](../features/deck/rules/BR-DECK-024-descendant-ke-thua-scheduler-tu-root.md) | Descendant kế thừa scheduler từ root | active | Scheduler thuộc root deck; mọi descendant kế thừa `scheduler_type`, `scheduler_version`, `generation` và không chọn riêng. | UC-STUDY-001 |
-| [BR-DECK-025](../features/deck/rules/BR-DECK-025-cot-scheduler-chi-co-gia-tri-tren-root.md) | Cột scheduler chỉ có giá trị trên root | active | Cột scheduler chỉ có giá trị trên root deck; deck khác để NULL và tra qua `root_id`. | UC-DECK-002 |
-| [BR-DECK-026](../features/deck/rules/BR-DECK-026-mastery-cua-deck.md) | Mastery của deck | active | Mastery của một deck là số thẻ `mastered` chia cho mọi thẻ active trong cả cây, kể cả thẻ mới; suy ra khi đọc, không lưu cột. | UC-DECK-003 |
-| [BR-DECK-027](../features/deck/rules/BR-DECK-027-sap-theo-tien-do.md) | Sắp theo tiến độ | active | Sort Progress xếp deck theo mastery tăng dần; deck không có thẻ xếp cuối; bằng nhau thì theo thứ tự thủ công. | UC-DECK-003, UC-DECK-006 |
+| [BR-DECK-015](../features/deck/rules/BR-DECK-015-content-type-tu-cap-nhat-theo-direct-children.md) | content_type tự cập nhật theo direct children | active | Hệ thống cập nhật `content_type` của sub-deck atomically cùng mutation direct children; không có reset thủ công. | FN-DECK-005, FN-DECK-011, UC-CARD-001, UC-CARD-002, UC-TAG-001, UC-TRANSFER-002, UC-TRASH-001 |
+| [BR-DECK-016](../features/deck/rules/BR-DECK-016-cay-deck-khong-co-cycle.md) | Cây deck không có cycle | active | Cây deck không có cycle. | FN-DECK-011 |
+| [BR-DECK-017](../features/deck/rules/BR-DECK-017-khong-di-chuyen-deck-vao-chinh-no-hoac-descendant.md) | Không di chuyển deck vào chính nó hoặc descendant | active | Không di chuyển một deck vào chính nó hoặc vào descendant của nó. | FN-DECK-010, FN-DECK-011, UC-TRASH-001 |
+| [BR-DECK-018](../features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md) | Di chuyển subtree cập nhật root_id và depth | active | Di chuyển subtree cập nhật `root_id` và `depth` cho toàn bộ subtree trong một transaction. | FN-DECK-011, UC-TRASH-001 |
+| [BR-DECK-019](../features/deck/rules/BR-DECK-019-khong-descendant-nao-tro-sai-root.md) | Không descendant nào trỏ sai root | active | Không có descendant trỏ sai root. | FN-DECK-009, FN-DECK-011 |
+| [BR-DECK-020](../features/deck/rules/BR-DECK-020-ten-deck-khong-rong-toi-da-200-ky-tu.md) | Tên deck không rỗng, tối đa 200 ký tự | active | Tên deck không rỗng sau trim, tối đa 200 ký tự. | FN-DECK-001, FN-DECK-002, FN-DECK-009 |
+| [BR-DECK-021](../features/deck/rules/BR-DECK-021-ten-deck-duoc-phep-trung.md) | Tên deck được phép trùng | active | Tên deck được phép trùng nhau. | FN-DECK-001, FN-DECK-002 |
+| [BR-DECK-022](../features/deck/rules/BR-DECK-022-xoa-deck-dua-ca-cay-vao-trash.md) | Xoá deck đưa cả cây vào Trash | active | Xoá deck chuyển deck cùng mọi deck con và card còn active bên dưới vào Trash thành một batch; chỉ purge mới xoá hẳn, theo cascade. | FN-DECK-005, UC-CARD-001 |
+| [BR-DECK-023](../features/deck/rules/BR-DECK-023-xoa-deck-can-xac-nhan-kem-so-luong.md) | Xoá deck cần xác nhận kèm số lượng | active | Xoá deck cần xác nhận, kèm số deck con và số card sẽ vào Trash cùng nó. | FN-DECK-004, UC-CARD-001 |
+| [BR-DECK-024](../features/deck/rules/BR-DECK-024-descendant-ke-thua-scheduler-tu-root.md) | Descendant kế thừa scheduler từ root | active | Scheduler thuộc root deck; mọi descendant kế thừa `scheduler_type`, `scheduler_version`, `generation` và không chọn riêng. | FN-DECK-009, FN-DECK-010, UC-STUDY-001 |
+| [BR-DECK-025](../features/deck/rules/BR-DECK-025-cot-scheduler-chi-co-gia-tri-tren-root.md) | Cột scheduler chỉ có giá trị trên root | active | Cột scheduler chỉ có giá trị trên root deck; deck khác để NULL và tra qua `root_id`. | FN-DECK-003, FN-DECK-009 |
+| [BR-DECK-026](../features/deck/rules/BR-DECK-026-mastery-cua-deck.md) | Mastery của deck | active | Mastery của một deck là số thẻ `mastered` chia cho mọi thẻ active trong cả cây, kể cả thẻ mới; suy ra khi đọc, không lưu cột. | FN-DECK-007 |
+| [BR-DECK-027](../features/deck/rules/BR-DECK-027-sap-theo-tien-do.md) | Sắp theo tiến độ | active | Sort Progress xếp deck theo mastery tăng dần; deck không có thẻ xếp cuối; bằng nhau thì theo thứ tự thủ công. | FN-DECK-007 |
+
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-DECK-001](../functional-spec/deck.md) | Tạo root deck | active | UC-DECK-001 |
+| [FN-DECK-002](../functional-spec/deck.md) | Đổi tên deck | active | UC-DECK-002 |
+| [FN-DECK-003](../functional-spec/deck.md) | Đổi chế độ ôn tập của root deck | active | UC-DECK-002 |
+| [FN-DECK-004](../functional-spec/deck.md) | Xem số deck con và card sẽ vào Trash cùng deck | active | UC-DECK-002 |
+| [FN-DECK-005](../functional-spec/deck.md) | Chuyển deck và cây con vào Trash | active | UC-DECK-002 |
+| [FN-DECK-006](../functional-spec/deck.md) | Hoàn tác xoá deck | active | UC-DECK-002 |
+| [FN-DECK-007](../functional-spec/deck.md) | Xem một cấp của thư viện kèm tiến độ | active | UC-DECK-003 |
+| [FN-DECK-008](../functional-spec/deck.md) | Xem một deck đang mở | active | UC-DECK-003, UC-DECK-004 |
+| [FN-DECK-009](../functional-spec/deck.md) | Tạo deck con | active | UC-DECK-004 |
+| [FN-DECK-010](../functional-spec/deck.md) | Xem các đích di chuyển hợp lệ | active | UC-DECK-005 |
+| [FN-DECK-011](../functional-spec/deck.md) | Di chuyển deck trong cây | active | UC-DECK-005 |
+| [FN-DECK-012](../functional-spec/deck.md) | Sắp xếp lại deck cùng cấp | active | UC-DECK-006 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [UC-DECK-001](../features/deck/usecases/UC-DECK-001-tao-root-deck.md) | Tạo root deck | ready | — |
-| [UC-DECK-002](../features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md) | Sửa và xoá deck | ready | — |
-| [UC-DECK-003](../features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md) | Xem danh sách deck với tiến độ | ready | — |
-| [UC-DECK-004](../features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md) | Tạo phần tử con và xác lập `content_type` | ready | — |
-| [UC-DECK-005](../features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md) | Di chuyển deck trong cây | ready | — |
-| [UC-DECK-006](../features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md) | Sắp xếp lại Deck cùng cấp | ready | — |
+| [UC-DECK-001](../USE_CASES.md) | Tạo root deck | ready | — |
+| [UC-DECK-002](../USE_CASES.md) | Sửa và xoá deck | ready | — |
+| [UC-DECK-003](../USE_CASES.md) | Xem danh sách deck với tiến độ | ready | — |
+| [UC-DECK-004](../USE_CASES.md) | Tạo phần tử con và xác lập `content_type` | ready | — |
+| [UC-DECK-005](../USE_CASES.md) | Di chuyển deck trong cây | ready | — |
+| [UC-DECK-006](../USE_CASES.md) | Sắp xếp lại Deck cùng cấp | ready | — |
 
 ## [monitoring](../features/monitoring/README.md)
 
@@ -233,13 +250,13 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-SRS-001](../features/srs/rules/BR-SRS-001-root-deck-chon-scheduler-khi-tao.md) | Root deck chọn scheduler khi tạo | active | Root deck chọn `eight_box` hoặc `sm2` khi tạo; không có mặc định ngầm. | UC-DECK-001 |
-| [BR-SRS-002](../features/srs/rules/BR-SRS-002-doi-scheduler-khi-chua-khoa.md) | Đổi scheduler khi chưa khoá | active | Scheduler, version và config đổi trực tiếp được khi `first_answered_at IS NULL`, không đi qua Reset. | UC-DECK-002 |
-| [BR-SRS-003](../features/srs/rules/BR-SRS-003-khoa-scheduler-sau-chuoi-hoc-moi-dau-tien.md) | Khoá scheduler sau chuỗi học mới đầu tiên | active | Scheduler bị khoá khi thẻ đầu tiên hoàn tất chuỗi học mới, trong cùng transaction với lần hoàn tất đó. | UC-DECK-002, UC-STUDY-001 |
-| [BR-SRS-004](../features/srs/rules/BR-SRS-004-doi-scheduler-khoi-tao-lai-study-state.md) | Đổi scheduler khởi tạo lại study state | active | Đổi scheduler khi chưa khoá khởi tạo lại study state toàn cây trong một transaction. | UC-DECK-002 |
-| [BR-SRS-005](../features/srs/rules/BR-SRS-005-khong-chuyen-doi-study-state-giua-scheduler.md) | Không chuyển đổi study state giữa hai scheduler | active | Không tự động chuyển đổi study state giữa hai scheduler. | UC-DECK-005 |
-| [BR-SRS-006](../features/srs/rules/BR-SRS-006-chan-di-chuyen-sang-root-khong-tuong-thich.md) | Chặn di chuyển sang root không tương thích | active | Di chuyển subtree sang root khác scheduler hoặc generation bị chặn hoặc yêu cầu reset tường minh. | UC-DECK-005, UC-TRASH-001 |
-| [BR-SRS-007](../features/srs/rules/BR-SRS-007-thu-tu-thu-cong-trong-nhom-sibling.md) | Thứ tự thủ công trong nhóm sibling | active | Thứ tự thủ công của deck xác định trong nhóm sibling bằng `(sibling_position, id)`; reorder chỉ đổi `sibling_position`. | UC-DECK-006 |
+| [BR-SRS-001](../features/srs/rules/BR-SRS-001-root-deck-chon-scheduler-khi-tao.md) | Root deck chọn scheduler khi tạo | active | Root deck chọn `eight_box` hoặc `sm2` khi tạo; không có mặc định ngầm. | FN-DECK-001 |
+| [BR-SRS-002](../features/srs/rules/BR-SRS-002-doi-scheduler-khi-chua-khoa.md) | Đổi scheduler khi chưa khoá | active | Scheduler, version và config đổi trực tiếp được khi `first_answered_at IS NULL`, không đi qua Reset. | FN-DECK-003 |
+| [BR-SRS-003](../features/srs/rules/BR-SRS-003-khoa-scheduler-sau-chuoi-hoc-moi-dau-tien.md) | Khoá scheduler sau chuỗi học mới đầu tiên | active | Scheduler bị khoá khi thẻ đầu tiên hoàn tất chuỗi học mới, trong cùng transaction với lần hoàn tất đó. | FN-DECK-003, FN-DECK-008, UC-STUDY-001 |
+| [BR-SRS-004](../features/srs/rules/BR-SRS-004-doi-scheduler-khoi-tao-lai-study-state.md) | Đổi scheduler khởi tạo lại study state | active | Đổi scheduler khi chưa khoá khởi tạo lại study state toàn cây trong một transaction. | FN-DECK-003 |
+| [BR-SRS-005](../features/srs/rules/BR-SRS-005-khong-chuyen-doi-study-state-giua-scheduler.md) | Không chuyển đổi study state giữa hai scheduler | active | Không tự động chuyển đổi study state giữa hai scheduler. | FN-DECK-011 |
+| [BR-SRS-006](../features/srs/rules/BR-SRS-006-chan-di-chuyen-sang-root-khong-tuong-thich.md) | Chặn di chuyển sang root không tương thích | active | Di chuyển subtree sang root khác scheduler hoặc generation bị chặn hoặc yêu cầu reset tường minh. | FN-DECK-011, UC-TRASH-001 |
+| [BR-SRS-007](../features/srs/rules/BR-SRS-007-thu-tu-thu-cong-trong-nhom-sibling.md) | Thứ tự thủ công trong nhóm sibling | active | Thứ tự thủ công của deck xác định trong nhóm sibling bằng `(sibling_position, id)`; reorder chỉ đổi `sibling_position`. | FN-DECK-012 |
 | [BR-SRS-008](../features/srs/rules/BR-SRS-008-eight-box-chuyen-box.md) | eight_box: chuyển box | active | `eight_box`: `forgotten` về box 1, `remembered` lên `min(8, current_box + 1)`. | UC-STUDY-001 |
 | [BR-SRS-009](../features/srs/rules/BR-SRS-009-eight-box-bang-interval.md) | eight_box: bảng interval | active | `eight_box`: interval theo box là 1, 2, 4, 8, 16, 32, 64, 128 ngày; box 8 là box cuối. | UC-STUDY-001 |
 | [BR-SRS-010](../features/srs/rules/BR-SRS-010-sm2-anh-xa-action-sang-chat-luong.md) | sm2: ánh xạ action sang thang chất lượng | active | `sm2`: `again`, `hard`, `good`, `easy` ánh xạ sang q = 0, 3, 4, 5. | UC-STUDY-001 |
@@ -260,8 +277,8 @@ Chưa có tài liệu.
 | [BR-SRS-025](../features/srs/rules/BR-SRS-025-trang-thai-hoc-mang-generation.md) | Trạng thái học mang generation | active | Study state, study session và study answers đều mang `generation`. | UC-SRS-001, UC-STUDY-001 |
 | [BR-SRS-026](../features/srs/rules/BR-SRS-026-tu-choi-ket-qua-generation-cu.md) | Từ chối kết quả của generation cũ | active | Mọi thao tác ghi so generation và từ chối kết quả từ session thuộc generation cũ. | UC-SRS-001, UC-STUDY-001 |
 | [BR-SRS-027](../features/srs/rules/BR-SRS-027-reset-va-doi-scheduler-mot-transaction.md) | Reset và đổi scheduler trong một transaction | active | Reset và đổi scheduler chạy trong một Drift transaction duy nhất. | UC-SRS-001 |
-| [BR-SRS-028](../features/srs/rules/BR-SRS-028-mot-active-scheduler-moi-cay.md) | Một active scheduler mỗi cây | active | Bất biến: một cây deck có đúng một active scheduler tại một thời điểm. | UC-SRS-001 |
-| [BR-SRS-029](../features/srs/rules/BR-SRS-029-mot-generation-moi-cay.md) | Một generation cho toàn cây | active | Bất biến: mọi card state trong một cây thuộc cùng một generation. | UC-SRS-001 |
+| [BR-SRS-028](../features/srs/rules/BR-SRS-028-mot-active-scheduler-moi-cay.md) | Một active scheduler mỗi cây | active | Bất biến: một cây deck có đúng một active scheduler tại một thời điểm. | FN-DECK-011, UC-SRS-001 |
+| [BR-SRS-029](../features/srs/rules/BR-SRS-029-mot-generation-moi-cay.md) | Một generation cho toàn cây | active | Bất biến: mọi card state trong một cây thuộc cùng một generation. | FN-DECK-011, UC-SRS-001 |
 | [BR-SRS-030](../features/srs/rules/BR-SRS-030-reset-can-xac-nhan.md) | Reset cần xác nhận | active | Reset cần xác nhận, nêu rõ những gì mất và những gì giữ. | UC-SRS-001 |
 
 ### Use cases
@@ -306,7 +323,7 @@ Chưa có tài liệu.
 | [BR-STUDY-005](../features/study/rules/BR-STUDY-005-self-assess-the-quen-quay-lai.md) | self_assess: thẻ quên quay lại | active | Chỉ `self_assess`: thẻ `forgotten`/`again` quay lại cùng hàng đợi sau ít nhất 3 thẻ khác. | UC-STUDY-001 |
 | [BR-STUDY-006](../features/study/rules/BR-STUDY-006-chi-luot-scheduled-doi-lich-dai-han.md) | Chỉ lượt scheduled đổi lịch dài hạn | active | Chỉ lượt `scheduled` được đổi lịch dài hạn, và chỉ có trong phiên `reviewing`. | UC-STUDY-001 |
 | [BR-STUDY-007](../features/study/rules/BR-STUDY-007-the-roi-hang-doi-khi-danh-gia-khac-quen.md) | Thẻ rời hàng đợi khi đánh giá khác quên | active | Ở stage chấm điểm, thẻ rời hàng đợi khi được đánh giá khác `forgotten`/`again`. | UC-STUDY-001 |
-| [BR-STUDY-008](../features/study/rules/BR-STUDY-008-khong-the-den-han-la-binh-thuong.md) | Không thẻ đến hạn là trạng thái bình thường | active | Không có thẻ đến hạn là trạng thái bình thường, không phải lỗi, và không mở được phiên ôn tập. | UC-DECK-003, UC-STUDY-001, UC-STUDY-002 |
+| [BR-STUDY-008](../features/study/rules/BR-STUDY-008-khong-the-den-han-la-binh-thuong.md) | Không thẻ đến hạn là trạng thái bình thường | active | Không có thẻ đến hạn là trạng thái bình thường, không phải lỗi, và không mở được phiên ôn tập. | FN-DECK-007, UC-STUDY-001, UC-STUDY-002 |
 | [BR-STUDY-009](../features/study/rules/BR-STUDY-009-ui-render-tu-supported-actions-va-stage-sequence.md) | UI render từ supportedActions và stageSequence | active | Nút đánh giá và chuỗi stage render từ scheduler của root deck, không hardcode. | UC-STUDY-001, UC-STUDY-003 |
 | [BR-STUDY-010](../features/study/rules/BR-STUDY-010-nam-gia-tri-status.md) | Năm giá trị study_session.status | active | `study_session.status` có đúng năm giá trị. | UC-STUDY-001 |
 | [BR-STUDY-011](../features/study/rules/BR-STUDY-011-nam-gia-tri-end-reason.md) | Năm giá trị end_reason | deprecated | Đã thay bằng BR-STUDY-012. `end_reason` có năm giá trị. | — |
@@ -314,7 +331,7 @@ Chưa có tài liệu.
 | [BR-STUDY-013](../features/study/rules/BR-STUDY-013-het-queue-la-completed.md) | Hết queue là completed | active | Hoàn thành toàn bộ queue cho `completed`, `end_reason` NULL. | UC-STUDY-001 |
 | [BR-STUDY-014](../features/study/rules/BR-STUDY-014-thoat-chu-dong-la-abandoned.md) | Thoát chủ động là abandoned | active | Người dùng chủ động thoát cho `abandoned`, `end_reason = user_exit`. | UC-STUDY-001 |
 | [BR-STUDY-015](../features/study/rules/BR-STUDY-015-reset-khi-dang-mo-la-invalidated.md) | Reset khi phiên đang mở là invalidated | active | Reset khi session đang mở cho `invalidated`, `end_reason = scheduler_reset`. | UC-SRS-001, UC-STUDY-001 |
-| [BR-STUDY-016](../features/study/rules/BR-STUDY-016-doi-scheduler-khi-dang-mo-la-invalidated.md) | Đổi scheduler khi phiên đang mở là invalidated | active | Đổi scheduler khi chưa khoá làm phiên đang mở `invalidated` trong cùng transaction. | UC-DECK-002 |
+| [BR-STUDY-016](../features/study/rules/BR-STUDY-016-doi-scheduler-khi-dang-mo-la-invalidated.md) | Đổi scheduler khi phiên đang mở là invalidated | active | Đổi scheduler khi chưa khoá làm phiên đang mở `invalidated` trong cùng transaction. | FN-DECK-003 |
 | [BR-STUDY-017](../features/study/rules/BR-STUDY-017-tu-choi-ghi-generation-cu.md) | Từ chối ghi của generation cũ | active | Session thuộc generation cũ bị từ chối ghi và chuyển `invalidated`/`stale_generation`. | UC-STUDY-001, UC-STUDY-002 |
 | [BR-STUDY-018](../features/study/rules/BR-STUDY-018-loi-khong-the-tiep-tuc-la-failed.md) | Lỗi không thể tiếp tục là failed | active | Lỗi không thể tiếp tục cho `failed`, `end_reason = persistence_error`. | UC-STUDY-001 |
 | [BR-STUDY-019](../features/study/rules/BR-STUDY-019-giu-luot-da-ghi.md) | Giữ các lượt đã ghi | active | Lượt đã ghi trước khi session kết thúc bất thường được giữ ở mọi trạng thái kết thúc. | UC-STUDY-001 |
@@ -344,12 +361,12 @@ Chưa có tài liệu.
 | [BR-STUDY-043](../features/study/rules/BR-STUDY-043-hai-hoan-vi-doc-lap.md) | Hai hoán vị độc lập | active | Thứ tự thẻ trong round và thứ tự năm lựa chọn là hai hoán vị độc lập, ổn định khi Resume. | — |
 | [BR-STUDY-044](../features/study/rules/BR-STUDY-044-so-the-cua-tung-mode.md) | Số thẻ của từng mode | active | Màn chọn mode ôn tập hiện số thẻ của từng mode, không dùng chung một số. | — |
 | [BR-STUDY-045](../features/study/rules/BR-STUDY-045-match-it-nhat-hai-cap.md) | match: ít nhất hai cặp | active | `match` cần ít nhất hai cặp; một cặp thì bỏ qua (learning) hoặc vô hiệu hoá (reviewing). | — |
-| [BR-STUDY-046](../features/study/rules/BR-STUDY-046-badge-deck-hai-so.md) | Badge deck hiện hai số | active | Badge trên danh sách deck hiện hai số: thẻ chưa học và thẻ đến hạn, không gộp. | — |
+| [BR-STUDY-046](../features/study/rules/BR-STUDY-046-badge-deck-hai-so.md) | Badge deck hiện hai số | active | Badge trên danh sách deck hiện hai số: thẻ chưa học và thẻ đến hạn, không gộp. | FN-DECK-007 |
 | [BR-STUDY-047](../features/study/rules/BR-STUDY-047-pill-new-due-dung-cung-dinh-nghia.md) | Pill New/Due dùng cùng định nghĩa | active | Pill New và Due trên danh sách thẻ dùng cùng định nghĩa của BR-STUDY-051, hai tập rời nhau. | — |
 | [BR-STUDY-048](../features/study/rules/BR-STUDY-048-browse-xem-lai-the-da-qua.md) | browse: xem lại thẻ đã qua | active | Chỉ `browse` cho xem lại thẻ đã qua trong round; xem lại không ghi lượt, không lùi `cursor`. | — |
 | [BR-STUDY-049](../features/study/rules/BR-STUDY-049-match-toi-da-nam-cap-moi-ban.md) | match: tối đa năm cặp mỗi bàn | active | `match` bày tối đa năm cặp một lúc, chia round thành các bàn liên tiếp theo `position`. | — |
 | [BR-STUDY-050](../features/study/rules/BR-STUDY-050-reset-dua-learned-at-va-due-at-ve-null.md) | Reset đưa learned_at và due_at về NULL | active | Reset đặt `learned_at` và `due_at` cùng về NULL. | — |
-| [BR-STUDY-051](../features/study/rules/BR-STUDY-051-hai-loai-phien-learning-reviewing.md) | Hai loại phiên learning và reviewing | active | Có đúng hai loại phiên: `learning` lấy thẻ chưa học xong, `reviewing` lấy thẻ đã học và đến hạn. | UC-DECK-003, UC-REMINDER-001, UC-STUDY-002, UC-STUDY-003 |
+| [BR-STUDY-051](../features/study/rules/BR-STUDY-051-hai-loai-phien-learning-reviewing.md) | Hai loại phiên learning và reviewing | active | Có đúng hai loại phiên: `learning` lấy thẻ chưa học xong, `reviewing` lấy thẻ đã học và đến hạn. | FN-DECK-007, UC-REMINDER-001, UC-STUDY-002, UC-STUDY-003 |
 | [BR-STUDY-052](../features/study/rules/BR-STUDY-052-kind-learning-cho-chuoi-hoc-moi.md) | kind learning cho chuỗi học mới | active | `kind = learning` dành cho lượt trong chuỗi học mới; không xuất hiện trong phiên `reviewing`. | — |
 | [BR-STUDY-053](../features/study/rules/BR-STUDY-053-hoan-tat-chuoi-hoc-moi-la-su-kien.md) | Hoàn tất chuỗi học mới là sự kiện | active | Chuỗi học mới không đổi lịch tới khi thẻ đi hết stage của nó; hoàn tất là sự kiện đặt `learned_at` và lịch đầu. | UC-CARD-002 |
 | [BR-STUDY-054](../features/study/rules/BR-STUDY-054-khong-mo-reviewing-khi-khong-co-the-den-han.md) | Không mở reviewing khi không có thẻ đến hạn | active | Phiên `reviewing` không mở khi không có thẻ đến hạn; không có ôn sớm hơn hạn. | UC-STUDY-003 |
@@ -365,8 +382,8 @@ Chưa có tài liệu.
 | [BR-STUDY-064](../features/study/rules/BR-STUDY-064-don-vi-hoc-o-lai-man-hinh-giua-luot.md) | Đơn vị học ở lại màn hình giữa hai lượt | active | Đơn vị học đang hiện ở lại trong lúc đọc kết quả và tải lượt kế; không thay bằng trạng thái tải. | — |
 | [BR-STUDY-065](../features/study/rules/BR-STUDY-065-recall-mo-dap-an-khong-phai-ket-cuc.md) | recall: mở đáp án không phải kết cục | active | Ở `recall`, mở đáp án không ghi lượt; dừng đồng hồ và chuyển sang tự đánh giá hai lựa chọn. | — |
 | [BR-STUDY-066](../features/study/rules/BR-STUDY-066-recall-nhip-hai-ket-thuc.md) | recall: nhịp của hai kết thúc | active | Tự đánh giá tự chuyển lượt sau commit; hết giờ hiện trạng thái sai và nút Tiếp theo. | — |
-| [BR-STUDY-067](../features/study/rules/BR-STUDY-067-phan-loai-deck-theo-lich.md) | Phân loại deck theo lịch | active | Danh sách deck phân loại `notDue`/`dueToday`/`overdue`, suy ra lúc đọc, badge số ngày quá hạn. | UC-REMINDER-001 |
-| [BR-STUDY-068](../features/study/rules/BR-STUDY-068-hero-summary-bon-tap-roi-nhau.md) | Hero summary nêu tổng Due và hai nửa rời nhau | active | Hero summary nêu tổng Due của level đang xem và hai nửa rời nhau Overdue, Due today; New và Scheduled không ở hero. | UC-STUDY-002 |
+| [BR-STUDY-067](../features/study/rules/BR-STUDY-067-phan-loai-deck-theo-lich.md) | Phân loại deck theo lịch | active | Danh sách deck phân loại `notDue`/`dueToday`/`overdue`, suy ra lúc đọc, badge số ngày quá hạn. | FN-DECK-007, UC-REMINDER-001 |
+| [BR-STUDY-068](../features/study/rules/BR-STUDY-068-hero-summary-bon-tap-roi-nhau.md) | Hero summary nêu tổng Due và hai nửa rời nhau | active | Hero summary nêu tổng Due của level đang xem và hai nửa rời nhau Overdue, Due today; New và Scheduled không ở hero. | FN-DECK-007, UC-STUDY-002 |
 | [BR-STUDY-069](../features/study/rules/BR-STUDY-069-mode-round-hoan-tat-khi-sach.md) | Mode dùng round hoàn tất khi sạch | active | Mode dùng round hoàn tất khi một round kết thúc mà tập không đạt rỗng; không trần số round. | — |
 | [BR-STUDY-070](../features/study/rules/BR-STUDY-070-muc-phan-hoi-khong-dung-la-sai.md) | Mức phản hồi không đúng là sai | active | Mọi mức phản hồi không phải "đúng" vào tập không đạt và ánh xạ như sai; không lưu vào `action`. | — |
 | [BR-STUDY-071](../features/study/rules/BR-STUDY-071-bo-qua-the-thieu-du-lieu-co-ghi-nhan.md) | Bỏ qua thẻ thiếu dữ liệu có ghi nhận | active | Thẻ thiếu dữ liệu cho một stage bị bỏ qua có ghi nhận ở stage đó, vẫn xuất hiện ở stage khác. | — |
@@ -469,16 +486,16 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-TRASH-001](../features/trash/rules/BR-TRASH-001-xoa-la-soft-delete.md) | Xoá là soft-delete | active | Xoá card hoặc deck là soft-delete trong một transaction, tạo đúng một batch và một item root. | UC-CARD-001, UC-DECK-002, UC-TRASH-001 |
-| [BR-TRASH-002](../features/trash/rules/BR-TRASH-002-loai-khoi-moi-be-mat-active.md) | Loại khỏi mọi bề mặt active | active | Hàng đã soft-delete bị loại khỏi mọi bề mặt active, đếm và hàng đợi học. | UC-DECK-002, UC-TRASH-001 |
-| [BR-TRASH-003](../features/trash/rules/BR-TRASH-003-xoa-deck-danh-dau-descendant-active.md) | Xoá deck đánh dấu mọi descendant active | active | Xoá deck đánh dấu deck và mọi descendant đang active bằng cùng một batch. | UC-DECK-002, UC-TRASH-001 |
-| [BR-TRASH-004](../features/trash/rules/BR-TRASH-004-soft-delete-giu-nguyen-du-lieu.md) | Soft-delete giữ nguyên dữ liệu | active | Soft-delete giữ nguyên nội dung, lịch, lịch sử, tag và id tới khi purge; phiên chạm item bị vô hiệu. | UC-CARD-001, UC-DECK-002, UC-TRASH-001 |
-| [BR-TRASH-005](../features/trash/rules/BR-TRASH-005-content-type-ve-unset-khi-soft-delete.md) | content_type về unset khi soft-delete | active | Soft-delete lấy đi direct child active cuối cùng thì deck non-root về `unset` cùng transaction. | UC-CARD-001, UC-DECK-002, UC-TRASH-001 |
-| [BR-TRASH-006](../features/trash/rules/BR-TRASH-006-restore-hoi-target.md) | Restore hỏi target | active | Restore hỏi target và không ghi gì trước khi người dùng xác nhận. | UC-TRASH-001 |
+| [BR-TRASH-001](../features/trash/rules/BR-TRASH-001-xoa-la-soft-delete.md) | Xoá là soft-delete | active | Xoá card hoặc deck là soft-delete trong một transaction, tạo đúng một batch và một item root. | FN-DECK-005, UC-CARD-001, UC-TRASH-001 |
+| [BR-TRASH-002](../features/trash/rules/BR-TRASH-002-loai-khoi-moi-be-mat-active.md) | Loại khỏi mọi bề mặt active | active | Hàng đã soft-delete bị loại khỏi mọi bề mặt active, đếm và hàng đợi học. | FN-DECK-005, UC-TRASH-001 |
+| [BR-TRASH-003](../features/trash/rules/BR-TRASH-003-xoa-deck-danh-dau-descendant-active.md) | Xoá deck đánh dấu mọi descendant active | active | Xoá deck đánh dấu deck và mọi descendant đang active bằng cùng một batch. | FN-DECK-005, UC-TRASH-001 |
+| [BR-TRASH-004](../features/trash/rules/BR-TRASH-004-soft-delete-giu-nguyen-du-lieu.md) | Soft-delete giữ nguyên dữ liệu | active | Soft-delete giữ nguyên nội dung, lịch, lịch sử, tag và id tới khi purge; phiên chạm item bị vô hiệu. | FN-DECK-005, UC-CARD-001, UC-TRASH-001 |
+| [BR-TRASH-005](../features/trash/rules/BR-TRASH-005-content-type-ve-unset-khi-soft-delete.md) | content_type về unset khi soft-delete | active | Soft-delete lấy đi direct child active cuối cùng thì deck non-root về `unset` cùng transaction. | FN-DECK-005, UC-CARD-001, UC-TRASH-001 |
+| [BR-TRASH-006](../features/trash/rules/BR-TRASH-006-restore-hoi-target.md) | Restore hỏi target | active | Restore hỏi target và không ghi gì trước khi người dùng xác nhận. | FN-DECK-006, UC-TRASH-001 |
 | [BR-TRASH-007](../features/trash/rules/BR-TRASH-007-restore-dung-mot-batch.md) | Restore đúng một batch | active | Restore một batch hồi sinh đúng các hàng của batch đó, giữ nguyên id, nội dung, lịch sử và tag. | UC-TRASH-001 |
-| [BR-TRASH-008](../features/trash/rules/BR-TRASH-008-undo-mot-batch-vua-tao.md) | Undo một batch vừa tạo | active | Undo đảo ngược một batch vừa tạo về đúng vị trí cũ, không hỏi target; không khả dụng cho thao tác xoá nhiều item. | UC-CARD-001, UC-DECK-002, UC-TRASH-001 |
+| [BR-TRASH-008](../features/trash/rules/BR-TRASH-008-undo-mot-batch-vua-tao.md) | Undo một batch vừa tạo | active | Undo đảo ngược một batch vừa tạo về đúng vị trí cũ, không hỏi target; không khả dụng cho thao tác xoá nhiều item. | FN-DECK-006, UC-CARD-001, UC-TRASH-001 |
 | [BR-TRASH-009](../features/trash/rules/BR-TRASH-009-retention-30-ngay.md) | Retention 30 ngày | active | Retention là 30 × 24 giờ từ `deleted_at`; auto-purge chạy khi khởi động, resume và mở Trash. | UC-TRASH-001 |
-| [BR-TRASH-010](../features/trash/rules/BR-TRASH-010-purge-xoa-cung-batch-eligible.md) | Purge xoá cứng batch eligible | active | Purge xoá cứng đúng các hàng của batch eligible và cascade sang dữ liệu liên quan. | UC-TRASH-001 |
+| [BR-TRASH-010](../features/trash/rules/BR-TRASH-010-purge-xoa-cung-batch-eligible.md) | Purge xoá cứng batch eligible | active | Purge xoá cứng đúng các hàng của batch eligible và cascade sang dữ liệu liên quan. | FN-DECK-005, UC-TRASH-001 |
 | [BR-TRASH-011](../features/trash/rules/BR-TRASH-011-chon-nhieu-trong-trash.md) | Chọn nhiều trong Trash | active | Chọn nhiều trong Trash tách theo loại item; Purge vĩnh viễn cần xác nhận mạnh. | UC-TRASH-001 |
 | [BR-TRASH-012](../features/trash/rules/BR-TRASH-012-noi-dung-trash-la-du-lieu-rieng-tu.md) | Nội dung Trash là dữ liệu riêng tư | active | Nội dung trong Trash là dữ liệu riêng tư; đường dẫn gốc chỉ là thông tin. | UC-TRASH-001 |
 

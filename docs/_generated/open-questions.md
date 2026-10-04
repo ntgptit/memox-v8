@@ -2,9 +2,17 @@
 
 # Open questions
 
+## [functional-spec/deck.md](../functional-spec/deck.md)
+
+- L402: > ⚠️ OPEN QUESTION: thứ tự kiểm khác nhau giữa hai nguồn — UC-DECK-005 bước 2 kiểm scheduler và generation trước độ sâu; code (`DeckEntity.checkMove`) kiểm độ sâu trước scheduler. Chỉ ảnh hưởng lỗi nào được báo khi cả hai cùng sai. Ở đây theo code; chủ dự án chốt.
+
 ## [superpowers/plans/2026-09-23-memox-v8-foundation.md](../superpowers/plans/2026-09-23-memox-v8-foundation.md)
 
 - L161: **OPEN QUESTION** line are the ones raised for review; the rest are decisions
+
+## [superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md](../superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md)
+
+- L4076: - One OPEN QUESTION raised: the order of the move checks (FN-DECK-011), UC text vs code.
 
 ## [wbs_FE.md](../wbs_FE.md)
 
