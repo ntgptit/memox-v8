@@ -158,12 +158,12 @@
 |---|---|---|---|
 | [FN-DECK-001](../functional-spec/deck.md) | Tạo root deck | active | SCR-DECK-001, UC-DECK-001, UC-STARTER-001 |
 | [FN-DECK-002](../functional-spec/deck.md) | Đổi tên deck | active | SCR-DECK-001, UC-DECK-002 |
-| [FN-DECK-003](../functional-spec/deck.md) | Đổi chế độ ôn tập của root deck | active | UC-DECK-002 |
+| [FN-DECK-003](../functional-spec/deck.md) | Đổi chế độ ôn tập của root deck | active | SCR-SRS-001, UC-DECK-002 |
 | [FN-DECK-004](../functional-spec/deck.md) | Xem số deck con và card sẽ vào Trash cùng deck | active | SCR-DECK-001, UC-DECK-002 |
 | [FN-DECK-005](../functional-spec/deck.md) | Chuyển deck và cây con vào Trash | active | SCR-DECK-001, UC-DECK-002, UC-TRASH-001 |
 | [FN-DECK-006](../functional-spec/deck.md) | Hoàn tác xoá deck | active | SCR-DECK-001, UC-DECK-002, UC-TRASH-001 |
 | [FN-DECK-007](../functional-spec/deck.md) | Xem một cấp của thư viện kèm tiến độ | active | SCR-DECK-001, UC-DECK-003 |
-| [FN-DECK-008](../functional-spec/deck.md) | Xem một deck đang mở | active | SCR-DECK-001, UC-DECK-003, UC-DECK-004 |
+| [FN-DECK-008](../functional-spec/deck.md) | Xem một deck đang mở | active | SCR-DECK-001, SCR-SRS-001, UC-DECK-003, UC-DECK-004 |
 | [FN-DECK-009](../functional-spec/deck.md) | Tạo deck con | active | SCR-DECK-001, UC-DECK-004 |
 | [FN-DECK-010](../functional-spec/deck.md) | Xem các đích di chuyển hợp lệ | active | SCR-DECK-001, UC-DECK-005 |
 | [FN-DECK-011](../functional-spec/deck.md) | Di chuyển deck trong cây | active | SCR-DECK-001, UC-DECK-005 |
@@ -377,14 +377,20 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-SRS-001](../functional-spec/srs.md) | Xem những gì đặt lại tiến độ học sẽ xoá | active | UC-SRS-001 |
-| [FN-SRS-002](../functional-spec/srs.md) | Đặt lại tiến độ học của một cây | active | UC-SRS-001 |
+| [FN-SRS-001](../functional-spec/srs.md) | Xem những gì đặt lại tiến độ học sẽ xoá | active | SCR-SRS-001, UC-SRS-001 |
+| [FN-SRS-002](../functional-spec/srs.md) | Đặt lại tiến độ học của một cây | active | SCR-SRS-001, UC-SRS-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
 | [UC-SRS-001](../USE_CASES.md) | Reset learning progress | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-SRS-001](../screens/spec/SCR-SRS-001-review-algorithm.md) | Review algorithm & reset | ready | `/decks/deck/:deckId/algorithm` |
 
 ## [starter-decks](../features/starter-decks/README.md)
 

@@ -149,52 +149,52 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/02-review-algorithm.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:3` # 02 · Review algorithm & reset |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:5` `/decks/deck/:deckId/algorithm`, root decks only (BR-DECK-025). Replaces the sch |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:8` ## Layout |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:10` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:12` \| App bar, breadcrumb \| `MxAppBar`, `MxBreadcrumb` \| Back, "Review algorithm"; L |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:13` \| Lock strip \| `MxCard` + `MxIconTile` \| Unlocked: plain card, open lock on prim |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:14` \| ALGORITHM \| `MxListSectionHeader`, `MxCard` of two `MxOptionRow`s \| The curren |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:15` \| Note \| `MxNote`, above the options (critique 2026-09-30) \| Unlocked: "Switchin |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:16` \| START OVER \| `MxListSectionHeader`, `MxCard`, `MxButton` (outline) \| "Reset le |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:18` Algorithm descriptions: |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:20` - **Eight boxes:** "Remembered moves a card up a box and forgotten sends it back |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:21` - **SM-2:** "Intervals adapt as you grade each card again, hard, good or easy in |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:23` ## States |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:25` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:27` \| locked \| `library_algorithm_locked_light.png` \| `library_algorithm_locked_dark |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:28` \| unlocked \| `library_algorithm_unlocked_light.png` \| `library_algorithm_unlocke |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:29` \| switching \| no golden \| no golden \| Reached **after** the confirmation dialog |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:30` \| switched \| no golden \| no golden \| Snackbar "Switched to {algorithm} · every c |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:31` \| switchFailed \| no golden \| no golden \| Danger banner with Retry (UC-DECK-002 E |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:32` \| resetConfirm \| `library_algorithm_reset_light.png` \| `library_algorithm_reset_ |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:33` \| resetting \| no golden \| no golden \| The confirm spins and Cancel is off (M3 re |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:34` \| resetDone \| no golden \| no golden \| Then the unlocked state. \| |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:35` \| nothingToLose \| no golden \| no golden \| When `hasProgressToLose` is false (UC- |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:37` Beyond the states above: |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:39` - **Switch confirmation:** `MxDialog`, non-destructive: "Switch to {algorithm}?" |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:40` - **Refused because the tree just locked:** the locked state and the reason (UC- |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:41` - **Loading, load error, not a root or gone:** skeleton, `MxErrorState`, the not |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:43` ## Reset dialog copy |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:45` - Title "Reset learning progress?" |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:46` - With progress: "This starts cycle {n+1} for {deck} and its {count} cards." |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:47` - Kept: "Decks, sub-decks, cards, tags, notes, and every past answer (labelled c |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:48` - Lost: "Every card's schedule, due date and progress; the open session. All {co |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:49` - Nothing to lose: "Nothing has been studied in this cycle yet, so there is noth |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:50` - "Algorithm for the new cycle": "Keep {current}" · "Switch to {other}" |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:51` - Buttons: "Cancel" · "Reset and start cycle {n+1}" (warning tone); while it run |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:52` - Done: "Cycle {n+1} started · {count} cards are new again" |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:53` - Switch failed: "Couldn’t switch." "The deck still uses {algorithm}." · "Retry" |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:55` ## Rulings |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:57` - **UC-DECK-002 steps 3–4:** choosing the other algorithm asks for confirmation |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:58` - **M3 review 2026-09-28 B2:** while a reset runs the confirm button spins (`MxS |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:59` - **Spec A10 (WCAG 2.2 AA):** "Kept" is written in `statusMasteredInk` (4.5:1) o |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:60` - **D-L1:** a switch refused because the tree just locked shows the locked state |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:61` - **Critique 2026-09-30:** each algorithm is described in one sentence. |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:62` - **Critique 2026-09-30 tone pass (final review):** the reset dialog's Kept tile |  |
-| `shared/ui/screen-handoff/02-review-algorithm.md:63` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
+| `shared/ui/screen-handoff/02-review-algorithm.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:3` # 02 · Review algorithm & reset | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:5` `/decks/deck/:deckId/algorithm`, root decks only (BR-DECK-025). Replaces the sch | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:8` ## Layout | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:10` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:12` \| App bar, breadcrumb \| `MxAppBar`, `MxBreadcrumb` \| Back, "Review algorithm"; L | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:13` \| Lock strip \| `MxCard` + `MxIconTile` \| Unlocked: plain card, open lock on prim | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:14` \| ALGORITHM \| `MxListSectionHeader`, `MxCard` of two `MxOptionRow`s \| The curren | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:15` \| Note \| `MxNote`, above the options (critique 2026-09-30) \| Unlocked: "Switchin | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:16` \| START OVER \| `MxListSectionHeader`, `MxCard`, `MxButton` (outline) \| "Reset le | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:18` Algorithm descriptions: | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:20` - **Eight boxes:** "Remembered moves a card up a box and forgotten sends it back | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:21` - **SM-2:** "Intervals adapt as you grade each card again, hard, good or easy in | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:23` ## States | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:25` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:27` \| locked \| `library_algorithm_locked_light.png` \| `library_algorithm_locked_dark | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:28` \| unlocked \| `library_algorithm_unlocked_light.png` \| `library_algorithm_unlocke | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:29` \| switching \| no golden \| no golden \| Reached **after** the confirmation dialog | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:30` \| switched \| no golden \| no golden \| Snackbar "Switched to {algorithm} · every c | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:31` \| switchFailed \| no golden \| no golden \| Danger banner with Retry (UC-DECK-002 E | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:32` \| resetConfirm \| `library_algorithm_reset_light.png` \| `library_algorithm_reset_ | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:33` \| resetting \| no golden \| no golden \| The confirm spins and Cancel is off (M3 re | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:34` \| resetDone \| no golden \| no golden \| Then the unlocked state. \| | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:35` \| nothingToLose \| no golden \| no golden \| When `hasProgressToLose` is false (UC- | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:37` Beyond the states above: | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:39` - **Switch confirmation:** `MxDialog`, non-destructive: "Switch to {algorithm}?" | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:40` - **Refused because the tree just locked:** the locked state and the reason (UC- | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:41` - **Loading, load error, not a root or gone:** skeleton, `MxErrorState`, the not | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:43` ## Reset dialog copy | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:45` - Title "Reset learning progress?" | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:46` - With progress: "This starts cycle {n+1} for {deck} and its {count} cards." | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:47` - Kept: "Decks, sub-decks, cards, tags, notes, and every past answer (labelled c | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:48` - Lost: "Every card's schedule, due date and progress; the open session. All {co | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:49` - Nothing to lose: "Nothing has been studied in this cycle yet, so there is noth | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:50` - "Algorithm for the new cycle": "Keep {current}" · "Switch to {other}" | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:51` - Buttons: "Cancel" · "Reset and start cycle {n+1}" (warning tone); while it run | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:52` - Done: "Cycle {n+1} started · {count} cards are new again" | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:53` - Switch failed: "Couldn’t switch." "The deck still uses {algorithm}." · "Retry" | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:55` ## Rulings | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:57` - **UC-DECK-002 steps 3–4:** choosing the other algorithm asks for confirmation | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:58` - **M3 review 2026-09-28 B2:** while a reset runs the confirm button spins (`MxS | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:59` - **Spec A10 (WCAG 2.2 AA):** "Kept" is written in `statusMasteredInk` (4.5:1) o | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:60` - **D-L1:** a switch refused because the tree just locked shows the locked state | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:61` - **Critique 2026-09-30:** each algorithm is described in one sentence. | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:62` - **Critique 2026-09-30 tone pass (final review):** the reset dialog's Kept tile | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `shared/ui/screen-handoff/02-review-algorithm.md:63` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
 
 ## shared/ui/screen-handoff/03-starter-decks.md
 
@@ -2013,9 +2013,9 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:17` 1. Người dùng đổi tên deck. | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:18` 2. Hệ thống validate (BR-DECK-020) và lưu. | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:20` **Main flow (đổi chế độ ôn tập — chỉ trên root deck, chỉ khi chưa có thẻ nào học | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:21` 1. Hệ thống hiển thị phần chọn chế độ ở trạng thái **mở khoá** | pending → SCR-SRS-001 (the algorithm choice shown unlocked); intent kept in UC-DECK-002 |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:21` 1. Hệ thống hiển thị phần chọn chế độ ở trạng thái **mở khoá** | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:23` 2. Người dùng chọn chế độ khác. | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:24` 3. Hệ thống cảnh báo study state của **toàn bộ card trong cây** sẽ được khởi tạo | pending → SCR-SRS-001 (the warning's non-destructive tone, unlike Reset learning progress); intent kept in UC-DECK-002 |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:24` 3. Hệ thống cảnh báo study state của **toàn bộ card trong cây** sẽ được khởi tạo | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:28` 4. Người dùng xác nhận. | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:29` 5. Hệ thống đổi scheduler, khởi tạo lại study state toàn cây, **và** đóng mọi | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:32` **Main flow (xoá):** | moved → `USE_CASES.md` |
@@ -2025,7 +2025,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:41` 4. Người dùng có thể Undo ngay tại chỗ (BR-TRASH-008) hoặc khôi phục về sau từ | superseded → UC-DECK-002 (intent) + SCR-DECK-001 (Undo toast where the deck was deleted, FE-B1 D7) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:44` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:46` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:47` - **A1 — Root deck đã có thẻ học xong chuỗi học mới:** phần chọn chế độ hiển thị | pending → SCR-SRS-001 (the locked choice shown with its reason and the way to Reset, never hidden); intent kept in UC-DECK-002 |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:47` - **A1 — Root deck đã có thẻ học xong chuỗi học mới:** phần chọn chế độ hiển thị | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:50` - **A2 — Sửa deck con:** không có phần chọn chế độ (BR-DECK-025). | superseded → UC-DECK-002 A2 (intent) + SCR-DECK-001 (Review algorithm is a root-only command of the action sheet) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:51` - **A3 — Huỷ xác nhận xoá:** không xảy ra gì. | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:52` - **A4 — Xác nhận đúng chế độ deck đang chạy:** thao tác được chấp nhận và không | moved → `USE_CASES.md` |
@@ -2033,9 +2033,9 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:58` - **E1 — Deck đã bị xoá ở nơi khác:** thao tác không thành, quay về danh sách vớ | superseded → UC-DECK-002 E1 (intent) + SCR-DECK-001 (deck_not_found and the notFound snackbar) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:60` - **E2 — Đổi chế độ thất bại giữa chừng:** transaction rollback; deck giữ nguyên | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:62` - **E3 — Xoá thất bại:** hiện lỗi; deck còn nguyên vẹn, và `content_type` của | superseded → UC-DECK-002 E3 (intent) + SCR-DECK-001 (Move to Trash On failure) |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:64` - **E4 — Scheduler bị khoá trong lúc bảng chọn đang mở:** người dùng học xong mộ | pending → SCR-SRS-001 (the refusal with its reason and the way to Reset); intent kept in UC-DECK-002 |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:70` ## UI | pending → SCR-SRS-001 (states of the scheduler change); rename and delete states → SCR-DECK-001 |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:72` **UI states:** loaded · submitting · error | pending → SCR-SRS-001 (states of the scheduler change); rename and delete states → SCR-DECK-001 |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:64` - **E4 — Scheduler bị khoá trong lúc bảng chọn đang mở:** người dùng học xong mộ | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:70` ## UI | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:72` **UI states:** loaded · submitting · error | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:74` ## Local | superseded → FN-DECK-005 (Kết quả) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:76` **Postconditions:** | superseded → FN-DECK-005 (Kết quả) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:77` - Sau đổi chế độ: `scheduler_type` mới, mọi study state trong cây khởi tạo lại, | superseded → FN-DECK-003 (Kết quả) |
@@ -2052,14 +2052,14 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:100` - [ ] **Given** một descendant đã ở Trash từ một batch cũ hơn, **when** xoá deck | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:101` - [ ] **Given** một deck cha không phải root vừa mất direct child active cuối cù | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:102` - [ ] **Given** một phiên `in_progress` chạm tới item của batch, **when** xoá xả | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:103` - [ ] **Given** root đã có thẻ hoàn tất chuỗi học mới (`first_answered_at` khác | pending → SCR-SRS-001 (presentation of the criterion); intent kept in UC-DECK-002 |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:103` - [ ] **Given** root đã có thẻ hoàn tất chuỗi học mới (`first_answered_at` khác | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:104` - [ ] **Given** đang sửa một deck con, **when** mở phần sửa, **then** không có p | superseded → UC-DECK-002 (intent) + SCR-DECK-001 (presentation of the criterion) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:105` - [ ] **Given** hộp thoại xác nhận xoá đang mở, **when** người dùng bấm Cancel, | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:106` - [ ] **Given** root đang chạy chế độ X, khoá hay chưa khoá, **when** người dùng | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:107` - [ ] **Given** deck đã bị xoá ở nơi khác, **when** người dùng đổi tên hoặc xoá | superseded → UC-DECK-002 (intent) + SCR-DECK-001 (presentation of the criterion) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:108` - [ ] **Given** đổi chế độ thất bại giữa chừng, **when** transaction dừng, **the | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:109` - [ ] **Given** xoá thất bại giữa chừng, **when** transaction dừng, **then** hệ | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:110` - [ ] **Given** bảng chọn chế độ đang mở trên một cây chưa khoá, **when** cây bị | pending → SCR-SRS-001 (presentation of the criterion); intent kept in UC-DECK-002 |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:110` - [ ] **Given** bảng chọn chế độ đang mở trên một cây chưa khoá, **when** cây bị | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
 
 ## features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md
 
@@ -2527,7 +2527,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:5` rules: [BR-SRS-020, BR-SRS-021, BR-SRS-022, BR-SRS-023, BR-SRS-024, BR-SRS-025, | superseded → FN-SRS-001, FN-SRS-002 (Business rules) |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:6` code: [lib/features/srs/domain/usecases/get_reset_learning_summary_use_case.dart | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:10` **Actor:** Người dùng | pending → SCR-SRS-001 (the "Reset learning progress" command, reached from the locked algorithm's explanation); intent kept in UC-SRS-001 (Mục tiêu) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:10` **Actor:** Người dùng | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:15` ## Main flow | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:17` **Main flow:** | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:18` 1. Người dùng chọn đặt lại tiến độ học. | moved → `USE_CASES.md` |
@@ -2553,8 +2553,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:53` **Error flows:** | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:54` - **E1 — Thất bại giữa chừng:** transaction rollback (BR-SRS-027). Root giữ nguy | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:57` - **E2 — Người dùng có phiên đang mở ở màn khác:** phiên đó đã bị chuyển | moved → `USE_CASES.md` |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:61` ## UI | pending → SCR-SRS-001 (states loaded · submitting · error) |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:63` **UI states:** loaded · submitting · error | pending → SCR-SRS-001 (states loaded · submitting · error) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:61` ## UI | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:63` **UI states:** loaded · submitting · error | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:65` ## Local | superseded → FN-SRS-002 (Kết quả) |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:67` **Postconditions:** | superseded → FN-SRS-002 (Kết quả) |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:68` - `generation` tăng đúng 1. | superseded → FN-SRS-002 (Kết quả) |
@@ -2573,7 +2573,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:85` - [ ] **Given** nhiều cây deck độc lập, **when** một cây được reset, **then** cá | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:86` - [ ] **Given** reset giữ nguyên chế độ đang chạy, **when** người dùng xác nhận, | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:87` - [ ] **Given** một root chưa từng học hoặc không có card, **when** hộp xác nhận | moved → `USE_CASES.md` |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:88` - [ ] **Given** hộp xác nhận reset đang mở, **when** người dùng bấm Huỷ, **then* | pending → SCR-SRS-001 (the confirmation's Cancel); intent kept in UC-SRS-001 A3 |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:88` - [ ] **Given** hộp xác nhận reset đang mở, **when** người dùng bấm Huỷ, **then* | moved → `screens/spec/SCR-SRS-001-review-algorithm.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:89` - [ ] **Given** một deck con, **when** người dùng tìm thao tác đặt lại tiến độ h | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:90` - [ ] **Given** một ghi lỗi giữa transaction reset, **when** hệ thống xử lý, **t | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:91` - [ ] **Given** cây có một phiên `in_progress`, **when** reset được thực hiện, * | moved → `USE_CASES.md` |
@@ -3282,11 +3282,11 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/deck/README.md:13` ## Màn hình → Use case |  |
-| `features/deck/README.md:15` \| Màn hình \| UC \| |  |
-| `features/deck/README.md:17` \| Danh sách deck (màn gốc của tab Thư viện) \| UC-DECK-003, UC-DECK-001, UC-DECK- |  |
-| `features/deck/README.md:18` \| Một deck đang mở \| UC-DECK-003 A3, UC-DECK-004, UC-DECK-002, UC-DECK-005 \| |  |
-| `features/deck/README.md:20` Nguồn: trigger của UC-DECK-001 ("màn hình danh sách deck"), UC-DECK-006 |  |
+| `features/deck/README.md:13` ## Màn hình → Use case || superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/deck/README.md:15` \| Màn hình \| UC \| || superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/deck/README.md:17` \| Danh sách deck (màn gốc của tab Thư viện) \| UC-DECK-003, UC-DECK-001, UC-DECK- || superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/deck/README.md:18` \| Một deck đang mở \| UC-DECK-003 A3, UC-DECK-004, UC-DECK-002, UC-DECK-005 \| || superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/deck/README.md:20` Nguồn: trigger của UC-DECK-001 ("màn hình danh sách deck"), UC-DECK-006 || superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/monitoring/README.md
 
@@ -3342,10 +3342,10 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/srs/README.md:10` ## Màn hình → Use case |  |
-| `features/srs/README.md:12` \| Màn hình \| UC \| |  |
-| `features/srs/README.md:14` \| Xác nhận "Đặt lại tiến độ học" trên một root deck \| UC-SRS-001 \| |  |
-| `features/srs/README.md:16` Nguồn: trigger của UC-SRS-001 ("thường từ chỗ giải thích vì sao chế độ ôn tập đa |  |
+| `features/srs/README.md:10` ## Màn hình → Use case || superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/srs/README.md:12` \| Màn hình \| UC \| || superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/srs/README.md:14` \| Xác nhận "Đặt lại tiến độ học" trên một root deck \| UC-SRS-001 \| || superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/srs/README.md:16` Nguồn: trigger của UC-SRS-001 ("thường từ chỗ giải thích vì sao chế độ ôn tập đa || superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/starter-decks/README.md
 
@@ -3645,12 +3645,12 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/card/presentation/goldens/card_tag_filter_one_light.png` |  |
 | `test/features/card/presentation/goldens/card_tag_filter_several_dark.png` |  |
 | `test/features/card/presentation/goldens/card_tag_filter_several_light.png` |  |
-| `test/features/deck/presentation/goldens/library_algorithm_locked_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_algorithm_locked_light.png` |  |
-| `test/features/deck/presentation/goldens/library_algorithm_reset_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_algorithm_reset_light.png` |  |
-| `test/features/deck/presentation/goldens/library_algorithm_unlocked_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_algorithm_unlocked_light.png` |  |
+| `test/features/deck/presentation/goldens/library_algorithm_locked_dark.png` | superseded → SCR-SRS-001 `locked` dark |
+| `test/features/deck/presentation/goldens/library_algorithm_locked_light.png` | superseded → SCR-SRS-001 `locked` light |
+| `test/features/deck/presentation/goldens/library_algorithm_reset_dark.png` | superseded → SCR-SRS-001 `reset_confirm` dark |
+| `test/features/deck/presentation/goldens/library_algorithm_reset_light.png` | superseded → SCR-SRS-001 `reset_confirm` light |
+| `test/features/deck/presentation/goldens/library_algorithm_unlocked_dark.png` | superseded → SCR-SRS-001 `unlocked` dark |
+| `test/features/deck/presentation/goldens/library_algorithm_unlocked_light.png` | superseded → SCR-SRS-001 `unlocked` light |
 | `test/features/deck/presentation/goldens/library_deck_actions_dark.png` | superseded → SCR-DECK-001 `root_overflow` dark |
 | `test/features/deck/presentation/goldens/library_deck_actions_light.png` | superseded → SCR-DECK-001 `root_overflow` light |
 | `test/features/deck/presentation/goldens/library_deck_delete_dark.png` | superseded → SCR-DECK-001 `root_delete` dark |
@@ -4314,3 +4314,13 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
   Purpose. The 39 rows of README.md's "Sản phẩm" section are `moved → ../PRODUCT.md`; the section
   itself stays until Task 44 (R18).
 - Warning delta: 65 → 65.
+
+## Task 28 notes — SCR-SRS-001
+
+- Record 02 → `screens/spec/SCR-SRS-001-review-algorithm.md`; its states add `loading`,
+  `load_error` and `not_found` from the record's "Beyond the states above" and the code.
+- The 12 rows `pending → SCR-SRS-001` from UC-DECK-002 and UC-SRS-001 are moved into the spec
+  (Layout, Controls, Rulings "moved from the UC").
+- The README "Màn hình → Use case" rows of srs and deck are superseded by the specs' Related Use
+  Cases (helper `fill_readme_ledger.py`); later tasks do the same for their feature.
+- Warning delta: 65 → 64 = −1 SCR-DECK-001 navigating to a pending SCR-SRS-001.

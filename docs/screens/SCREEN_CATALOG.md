@@ -9,7 +9,7 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 | ID | Screen | Domain | Route | Status | Spec |
 |---|---|---|---|---|---|
 | SCR-DECK-001 | Deck list | deck | `/decks`, `/decks/deck/:deckId` | ready | `spec/SCR-DECK-001-deck-list.md` |
-| SCR-SRS-001 | Review algorithm & reset | srs | — | pending | — |
+| SCR-SRS-001 | Review algorithm & reset | srs | `/decks/deck/:deckId/algorithm` | ready | `spec/SCR-SRS-001-review-algorithm.md` |
 | SCR-STARTER-001 | Starter decks | starter-decks | — | pending | — |
 | SCR-SEARCH-001 | Library search | search | — | pending | — |
 | SCR-TAG-001 | Tags | tags | — | pending | — |
