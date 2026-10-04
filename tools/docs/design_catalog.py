@@ -226,9 +226,20 @@ def check_catalog(root: Path, domains: set[str], screens: set[str], goldens: dic
     return findings
 
 
+def _word_at(line: str, match: re.Match[str]) -> str:
+    """The whole identifier a match sits in (`mx_row_ink` around `row_ink`)."""
+    start, end = match.start(), match.end()
+    while start > 0 and (line[start - 1].isalnum() or line[start - 1] == "_"):
+        start -= 1
+    while end < len(line) and (line[end].isalnum() or line[end] == "_"):
+        end += 1
+    return line[start:end]
+
+
 def check_ink_vocabulary(root: Path, allowed: frozenset[str] = frozenset()) -> list[Finding]:
     """Ink-role terms; `allowed` holds catalog names such as `MxRowInk`, whose
     "ink" is Flutter's ripple, not a colour."""
+    allowed_files = {snake(name) for name in allowed}
     findings: list[Finding] = []
     for pattern in INK_SCOPES:
         for path in sorted(root.glob(pattern)):
@@ -236,7 +247,8 @@ def check_ink_vocabulary(root: Path, allowed: frozenset[str] = frozenset()) -> l
             if not path.is_file() or relative.startswith("lib/l10n/generated/"):
                 continue
             for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
-                matches = [*PROSE_INK.finditer(line), *CAMEL_INK.finditer(line), *SNAKE_INK.finditer(line)]
+                matches = [*PROSE_INK.finditer(line), *CAMEL_INK.finditer(line)]
+                matches += [m for m in SNAKE_INK.finditer(line) if _word_at(line, m) not in allowed_files]
                 matches += [m for m in PASCAL_INK.finditer(line) if m.group(0) not in allowed]
                 for match in matches:
                     findings.append(("ERROR", f"{relative}:{number}", f"`{match.group(0)}`: the ink model is retired; name the role (A2, A11)"))

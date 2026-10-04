@@ -208,6 +208,11 @@ class InkVocabularyTest(unittest.TestCase):
         root = tree({"docs/screens/spec/SCR-X.md": "amber with dark ink; white ink on it\n"})
         self.assertEqual(len(dc.check_ink_vocabulary(root)), 2)
 
+    def test_a_catalogued_component_file_name_is_allowed(self):
+        root = tree({"lib/x.dart": "import 'package:memox/shared/widgets/primitives/mx_row_ink.dart';\n"})
+        self.assertEqual(dc.check_ink_vocabulary(root, frozenset({"MxRowInk"})), [])
+        self.assertEqual(len(dc.check_ink_vocabulary(root)), 1)
+
     def test_a_catalogued_component_named_ink_is_allowed(self):
         root = tree({"lib/x.dart": "class MxRowInk extends StatelessWidget {}\n"})
         self.assertEqual(dc.check_ink_vocabulary(root, frozenset({"MxRowInk"})), [])

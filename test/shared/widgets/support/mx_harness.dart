@@ -1,0 +1,85 @@
+import 'dart:ui' as ui;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_theme.dart';
+
+/// Both themes, by the variant name a golden carries (`light`, `dark`).
+final Map<String, ThemeData> mxThemes = {
+  'light': AppTheme.light(),
+  'dark': AppTheme.dark(),
+};
+
+/// Pumps [child] on the theme's page ground, as a screen would show it.
+Future<void> pumpMx(
+  WidgetTester tester,
+  Widget child, {
+  ThemeData? theme,
+  TextDirection textDirection = TextDirection.ltr,
+}) {
+  return tester.pumpWidget(
+    MaterialApp(
+      theme: theme ?? mxThemes['light'],
+      debugShowCheckedModeBanner: false,
+      home: Directionality(
+        textDirection: textDirection,
+        child: Scaffold(body: Center(child: child)),
+      ),
+    ),
+  );
+}
+
+/// A full-HD phone's density: 1080 px across a 412 dp screen.
+const double mxGoldenPixelRatio = 2.625;
+
+/// The key of the picture a component golden captures.
+const Key mxGoldenKey = ValueKey<String>('mx-golden');
+
+/// One component golden: [sheet] laid out on the page ground of [variant]'s
+/// theme at a phone's width, captured as `mx_<component>__<state>__<variant>`.
+Future<void> expectMxGolden(
+  WidgetTester tester, {
+  required String component,
+  required String state,
+  required String variant,
+  required Widget sheet,
+}) async {
+  // A full-HD phone, 412 dp wide; the picture is rasterized at its density
+  // (below), so a golden is as sharp as the device it stands for.
+  tester.view.physicalSize = const Size(1080, 2400);
+  tester.view.devicePixelRatio = mxGoldenPixelRatio;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: mxThemes[variant],
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Align(
+          alignment: Alignment.topLeft,
+          child: RepaintBoundary(
+            key: mxGoldenKey,
+            child: ColoredBox(
+              color: mxThemes[variant]!.colorScheme.surface,
+              child: Padding(padding: const EdgeInsets.all(16), child: sheet),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+  await tester.pump();
+  // `matchesGoldenFile` on a finder captures at 1 px per dp; rasterize the
+  // boundary at the device density instead and compare that picture.
+  final RenderRepaintBoundary boundary = tester.renderObject(
+    find.byKey(mxGoldenKey),
+  );
+  final ui.Image picture = (await tester.runAsync(
+    () => boundary.toImage(pixelRatio: mxGoldenPixelRatio),
+  ))!;
+  addTearDown(picture.dispose);
+  await expectLater(
+    picture,
+    matchesGoldenFile('goldens/mx_${component}__${state}__$variant.png'),
+  );
+}

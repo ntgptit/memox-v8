@@ -487,7 +487,9 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 
 | Component | Purpose | Layer | Consumers | Owner phase | Status |
 |---|---|---|---|---|---|
-| MxRowInk | Shared row ripple and press | primitive | MxListRow, MxSettingsRow, MxOptionRow, MxActionSheetCommandRow | SP3a | planned |
+| MxRowInk | Shared row ripple and press | primitive | MxListRow, MxSettingsRow, MxOptionRow, MxActionSheetCommandRow | SP3a | built |
+| MxFocusRing | The 2dp keyboard focus ring at a 2dp offset | primitive | MxButton, MxIconButton, MxFab, MxToggle | SP3a | built |
+| MxTapTarget | Grows a small control's hit area to 48 | primitive | MxToggle, MxFilterChip, MxChipTrigger | SP3a | built |
 | MxButton | Text-labelled action in seven tones and five sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
 | MxIconButton | Icon-only action with a 48 target | shared | CARD, DECK, MONITORING, STARTER, STUDY, TAG, TRASH | SP3a | planned |
 | MxFab | Floating primary action, icon only | shared | CARD, DECK | SP3a | planned |
@@ -552,6 +554,27 @@ The contract of every component past `planned`: one `####` block with `- Variant
 `- Accessibility:`, `- Tokens:` and `- Golden:` (a list of `<state>__<variant>`, or
 `none — <reason>`), plus `- Replacement:` once deprecated. The phase that builds a component
 writes its block before the code. Component debt lives in its block, as a `- Debt:` line.
+
+#### MxRowInk
+- Variants: one; `borderRadius` clips the ripple to the row's corners
+- States: resting, pressed, inert (no `onTap`)
+- Accessibility: adds no semantics of its own; the row it wraps names itself
+- Tokens: the theme's splash (`on-surface` at `AppOpacity.pressed`), no hover
+- Golden: none — paints only the press, seen in the rows that use it
+
+#### MxFocusRing
+- Variants: listens to the focus inside it, or is driven by `isShown`
+- States: hidden, shown (keyboard highlight only)
+- Accessibility: the visible focus of every Mx control; never shown after a tap
+- Tokens: `primary`, `AppStroke.focus`, `AppSize.focusOffset`
+- Golden: none — a ring around another component, covered by that component's tests
+
+#### MxTapTarget
+- Variants: one
+- States: one
+- Accessibility: guarantees the 48 × 48 hit area ("The 48 Floor Rule")
+- Tokens: `AppSize.tapTarget`
+- Golden: none — paints nothing
 
 ## Do's and Don'ts
 

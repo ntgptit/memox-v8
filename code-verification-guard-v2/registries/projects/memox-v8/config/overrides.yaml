@@ -25,15 +25,10 @@ overrides:
     # SP2 (spec 2026-10-04-sp2 §6) removed the legacy UI; these rules are kept
     # as written to guard the rebuild, and wait for the layer that brings their
     # targets back: SP3a rebuilds the shared widgets, SP3b/SP3c the feature
-    # presentation and its visual audits.
-    memox.architecture.widget_no_database_access:
-      targets_pending: feature presentation widgets (SP3b)
-    memox.architecture.widget_no_repository_access:
-      targets_pending: feature presentation widgets (SP3b)
+    # presentation and its visual audits. SP3a Phase 2's shared widgets gave the
+    # two widget-access rules and `no_flat_style_from` their targets.
     memox.architecture.widgets_grouped_into_buckets:
       targets_pending: feature presentation widgets (SP3b)
-    memox_v8.design_system.no_flat_style_from:
-      targets_pending: shared Mx widgets (SP3a)
     memox.visual.production_screen_audit_not_skipped:
       targets_pending: screen visual audits (SP3b)
     # Generated code is not hand-written; length limits on it are noise.
