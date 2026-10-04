@@ -39,6 +39,7 @@
 | [ADR-019](../shared/decisions/ADR-019-app-la-chuan-ui.md) | App là chuẩn UI; retire kit v3 và design handoff | superseded | — |
 | [ADR-020](../shared/decisions/ADR-020-moi-truy-van-nam-trong-drift.md) | Mọi truy vấn SQLite nằm trong file .drift; DAO là @DriftAccessor | accepted | — |
 | [ADR-021](../shared/decisions/ADR-021-tai-lieu-dan-dat-ui-khi-xay-lai.md) | Tài liệu dẫn UI khi xây lại; DESIGN.md và screen spec là chuẩn | accepted | — |
+| [ADR-022](../shared/decisions/ADR-022-lop-primitive-cua-design-system.md) | Lớp primitive nội bộ của design system | accepted | — |
 
 ## [account](../features/account/README.md)
 

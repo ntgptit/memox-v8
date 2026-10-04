@@ -25,6 +25,10 @@ void main() {
     expect(coreViolations(sources), isEmpty);
   });
 
+  test('only the shared widgets import the primitive layer (ADR-022)', () {
+    expect(primitiveViolations(sources), isEmpty);
+  });
+
   test('the feature import map is acyclic', () {
     expect(cyclesIn(allowedFeatureImports), isEmpty);
   });

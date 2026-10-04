@@ -253,4 +253,29 @@ void main() {
       'package:memox/features/deck/domain/entities/deck_entity.dart',
     );
   });
+
+  group('primitives (ADR-022)', () {
+    const primitive = 'package:memox/shared/primitives/pressable_surface.dart';
+
+    test('the shared widgets and the primitives may import them', () {
+      final sources = [
+        _file('lib/shared/widgets/mx_card.dart', [primitive]),
+        _file('lib/shared/primitives/focus_ring.dart', [primitive]),
+      ];
+
+      expect(primitiveViolations(sources), isEmpty);
+    });
+
+    test('a feature, the app or core importing them is rejected', () {
+      final sources = [
+        _file('lib/features/deck/presentation/screens/x_screen.dart', [
+          primitive,
+        ]),
+        _file('lib/app/app.dart', [primitive]),
+        _file('lib/core/theme/app_theme.dart', [primitive]),
+      ];
+
+      expect(primitiveViolations(sources), hasLength(3));
+    });
+  });
 }

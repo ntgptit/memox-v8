@@ -170,6 +170,21 @@ List<String> coreViolations(List<SourceFile> sources) => [
         if (_forbiddenInCore.any(uri.startsWith)) '${source.path} imports $uri',
 ];
 
+/// ADR-022: the primitive layer is internal to the design system. Only the
+/// shared `Mx*` widgets and the primitives themselves import it.
+List<String> primitiveViolations(List<SourceFile> sources) => [
+  for (final source in sources)
+    if (!_mayUsePrimitives(source.path))
+      for (final uri in source.imports)
+        if (uri.startsWith(_primitivesPackage)) '${source.path} imports $uri',
+];
+
+const _primitivesPackage = 'package:memox/shared/primitives/';
+
+bool _mayUsePrimitives(String path) =>
+    path.startsWith('lib/shared/widgets/') ||
+    path.startsWith('lib/shared/primitives/');
+
 /// ADR-011 D2: every cycle in [map], each written as `a -> b -> a`.
 List<String> cyclesIn(Map<String, Set<String>> map) {
   final cycles = <String>[];
