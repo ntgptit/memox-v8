@@ -30,6 +30,9 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+# Loaded by file path from other tools (test_ci_tooling.py), so find the sibling modules.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 from mdparse import (  # noqa: F401 — re-exported: check.py and the tests use g.<name>
     h2_sections,
     iter_unfenced,

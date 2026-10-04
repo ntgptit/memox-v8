@@ -79,49 +79,57 @@ Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên:
 ## Bản đồ
 
 ```
+PRODUCT.md                       # root repo — định nghĩa sản phẩm, bản duy nhất
+DESIGN.md                        # root repo — hệ thống hình ảnh (ADR-021)
 docs/
-├── README.md                    # file này
-├── glossary.md                  # thuật ngữ, trỏ về định nghĩa gốc
-├── wbs_BE.md                    # tiến độ backend: đã xong, còn lại, thứ tự làm
-├── wbs_FE.md                    # tiến độ frontend: đã xong, còn lại, thứ tự làm
-├── wbs_API.md                   # tiến độ memox-api-services: đã xong, còn lại, thứ tự làm
-├── wbs_supabase.md              # tiến độ sync và login trên Supabase: đã xong, còn lại, thứ tự làm
+├── README.md                    # file này: bản đồ và convention
+├── USE_CASES.md                 # mọi UC, nhóm theo feature
+├── NAVIGATION.md                # điều hướng cấp app và router
+├── functional-spec/
+│   ├── README.md                # feature → file
+│   └── <feature>.md             # FN-<DOMAIN>-NNN
+├── screens/
+│   ├── SCREEN_CATALOG.md        # mọi màn + invariant chung INV-UI
+│   └── spec/                    # SCR-<DOMAIN>-NNN-<slug>.md, một file một màn
+├── glossary.md
+├── wbs_BE.md, wbs_FE.md, wbs_API.md, wbs_supabase.md
 ├── shared/
-│   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu
+│   ├── rules/                   # BR-CORE-NNN-<slug>.md
 │   ├── decisions/               # ADR-NNN-<slug>.md
-│   ├── data/                    # schema.md — bảng, cột, index, invariant `-- N.`
-│   ├── ui/
-│   │   ├── navigation.md        # điều hướng toàn app
-│   │   └── screen-handoff/      # từng màn của app: layout, state kèm golden, ruling, copy
-│   └── testing/                 # hạ tầng kịch bản IT dùng chung
+│   ├── data/                    # schema.md
+│   ├── ui/                      # CŨ — screen-handoff/, navigation.md; bỏ sau khi migration được kiểm chứng
+│   └── testing/
 ├── features/<feature>/
-│   ├── README.md                # phạm vi + màn hình → use case
+│   ├── README.md                # phạm vi, thuật ngữ, depends_on
 │   ├── rules/                   # BR-<DOMAIN>-NNN-<slug>.md
-│   ├── usecases/                # UC-<DOMAIN>-NNN-<slug>.md
-│   ├── ui.md                    # TÙY CHỌN
+│   ├── usecases/                # CŨ — UC chưa chuyển vào USE_CASES.md
+│   ├── ui.md                    # CŨ — bỏ sau khi migration được kiểm chứng
 │   ├── data.md                  # TÙY CHỌN
-│   ├── api.md                   # TÙY CHỌN
-│   └── it-scenarios.md          # TÙY CHỌN — kịch bản IT truy vết về feature này
-├── superpowers/                 # spec + plan của quy trình Superpowers (giữ ID lịch sử)
-└── _generated/                  # KHÔNG SỬA TAY — index, traceability, open questions
+│   └── it-scenarios.md          # TÙY CHỌN
+├── superpowers/                 # spec + plan (giữ ID lịch sử)
+└── _generated/                  # KHÔNG SỬA TAY — index, traceability, screens, navigation-graph, open questions
 ```
 
 File/folder trong `shared/` và file tùy chọn của feature chỉ tồn tại khi có nội
 dung thật. Không tạo file rỗng.
 
-`shared/ui/screen-handoff/` ghi từng màn của app: layout, state kèm golden, ruling và copy
-([index](shared/ui/screen-handoff/00-index.md)). Hệ thống hình ảnh ở [`DESIGN.md`](../DESIGN.md);
-thứ tự ưu tiên theo [ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md).
+Mỗi màn có một spec trong `screens/spec/` và một hàng trong `screens/SCREEN_CATALOG.md`.
+Hệ thống hình ảnh ở [`DESIGN.md`](../DESIGN.md); thứ tự ưu tiên theo
+[ADR-021](shared/decisions/ADR-021-tai-lieu-dan-dat-ui-khi-xay-lai.md). Định nghĩa sản phẩm
+thuộc `/PRODUCT.md`; không chép phạm vi sản phẩm vào cây `docs/` (mục "Sản phẩm" ở trên chuyển
+sang `/PRODUCT.md` và bị xoá khi migration được kiểm chứng).
 
 ## Thứ tự đọc
 
 1. `CLAUDE.md` ở root repo — ràng buộc áp dụng ở mọi phase.
 2. File này.
-3. `features/<feature>/README.md` của feature đang làm, rồi đúng các BR/UC mà nó
-   trỏ tới. Không đọc hết `docs/`.
-4. `shared/` khi feature tham chiếu tới; `shared/decisions/` khi cần biết **vì sao**.
-5. [`_generated/open-questions.md`](_generated/open-questions.md) trước khi coi
-   một hành vi là đã chốt.
+3. `/PRODUCT.md` khi cần phạm vi sản phẩm.
+4. Việc trên một feature: `features/<feature>/README.md`, `functional-spec/<feature>.md`, các UC
+   của nó trong `USE_CASES.md`, rồi đúng các BR mà FN trỏ tới. Không đọc hết `docs/`.
+5. Việc trên một màn: `screens/SCREEN_CATALOG.md`, spec của màn, các FN nó gọi, `/DESIGN.md`.
+6. `shared/decisions/` khi cần biết **vì sao**.
+7. [`_generated/open-questions.md`](_generated/open-questions.md) trước khi coi một hành vi là
+   đã chốt.
 
 `.claude/skills/` là hướng dẫn *cách làm*, không phải quyết định sản phẩm. Khi
 skill và `docs/` mâu thuẫn, `docs/` thắng, và mâu thuẫn đó là defect phải sửa.
@@ -130,18 +138,24 @@ skill và `docs/` mâu thuẫn, `docs/` thắng, và mâu thuẫn đó là defec
 
 | Nội dung | Vị trí |
 |---|---|
-| Ràng buộc nghiệp vụ, dùng 1 feature | `features/<f>/rules/` |
-| Ràng buộc nghiệp vụ, dùng ≥ 2 feature | `shared/rules/` (BR-CORE) |
-| Hành vi chỉ xảy ra trong 1 use case (kể cả UI/local/API của UC đó) | Section tương ứng trong file UC |
-| Màn hình, điều hướng, state dùng chung nhiều UC của feature | `features/<f>/ui.md` |
+| Định nghĩa sản phẩm, phạm vi MVP | `/PRODUCT.md` |
+| Mục tiêu và luồng của người dùng | `USE_CASES.md` (UC) |
+| Hệ thống làm gì: precondition, input, kết quả, lỗi, BR áp dụng | `functional-spec/<feature>.md` (FN) |
+| Ràng buộc nghiệp vụ, một feature sở hữu | `features/<f>/rules/` |
+| Ràng buộc nghiệp vụ không feature nào sở hữu | `shared/rules/` (BR-CORE) |
+| Một màn: vùng, state, control → FN, điều hướng cục bộ, copy, ruling | `screens/spec/` |
+| Danh mục màn; invariant hành vi mọi màn phải giữ | `screens/SCREEN_CATALOG.md` |
+| Điều hướng cấp app: shell, tab, deep link, back, guard, boot | `NAVIGATION.md` |
+| Hệ thống hình ảnh | `/DESIGN.md` |
 | Bảng/field feature dùng, dữ liệu sync, conflict rule riêng | `features/<f>/data.md` |
 | Endpoint feature dùng, lỗi đặc thù | `features/<f>/api.md` |
 | Request/response, error code | `shared/api/` |
-| Cơ chế chung: cache, sync, state pattern, token | `shared/data/`, `shared/ui/` |
+| Cơ chế chung: cache, sync, token | `shared/data/` |
+| Kịch bản IT | `features/<f>/it-scenarios.md`, `shared/testing/` |
 | Quyết định kỹ thuật có lý do và phương án bị loại | `shared/decisions/` (ADR) |
 | Định nghĩa thuật ngữ | `glossary.md` |
 
-Nguyên tắc: nghiệp vụ → rule; hành vi → use case; cơ chế → shared.
+Nguyên tắc: mục tiêu → UC; hành vi hệ thống → FN; ràng buộc → BR; giao diện → screen spec.
 Không chép nội dung sang chỗ khác — chỉ reference ID hoặc link.
 
 
@@ -187,6 +201,10 @@ Một agent đọc `docs/` cần trả lời được ba câu:
 | Business rule | `BR-<DOMAIN>-NNN` | `BR-DECK-015` |
 | Use case | `UC-<DOMAIN>-NNN` | `UC-STUDY-001` |
 | Rule dùng chung | `BR-CORE-NNN` | — (chưa có) |
+| Chức năng | `FN-<DOMAIN>-NNN` | `FN-DECK-001` |
+| Màn hình | `SCR-<DOMAIN>-NNN` | `SCR-DECK-001` |
+| Invariant UI chung | `INV-UI-NNN` | `INV-UI-001` |
+| State của một màn | `snake_case`, duy nhất trong màn | `root_loaded` |
 | Quyết định | `ADR-NNN` | `ADR-001` |
 
 - DOMAIN viết hoa, NNN đúng 3 chữ số. Tên file: `<ID>-<slug-kebab-case>.md`; ID
@@ -206,7 +224,8 @@ Một agent đọc `docs/` cần trả lời được ba câu:
   ID mới lấy số tiếp theo của DOMAIN đó, nên ID không nhất thiết tăng theo thứ tự
   đọc. Lý do: một lần đánh số lại trước V8 đã làm một ID trỏ sang rule khác mà
   không test nào bắt được. Ngoại lệ duy nhất, thuộc đợt migrate này:
-  `BR-PRIVACY-00n` → `BR-CORE-00n`.
+  `BR-PRIVACY-00n` → `BR-CORE-00n`. Áp dụng cho cả FN, SCR, INV-UI
+  và state key của màn; state bị bỏ giữ heading với `Status: removed`.
 - Rule bị thay thế: `status: deprecated` + `superseded_by: <ID>`, giữ nguyên ID
   và nguyên văn. **MUST NOT xoá** — ID biến mất làm mọi tham chiếu cũ trong
   commit, comment, PR trỏ vào hư không.
@@ -242,7 +261,7 @@ Rule cần nhiều hơn một câu (ví dụ có bảng tra) MUST dùng dạng s
 `### BR-<CODE>-nnn · <tiêu đề>` và vẫn phải xuất hiện Status/Enforced by/Related
 ngay dưới tiêu đề.
 
-Use case — `features/<f>/usecases/`:
+Use case — `features/<f>/usecases/` (định dạng cũ, chỉ còn cho UC chưa chuyển vào `USE_CASES.md`):
 
 ```yaml
 ---
@@ -291,6 +310,88 @@ không được kiểm (bản ghi, không sửa).
 
 Section không áp dụng: ghi "Không áp dụng", không xoá heading. Quan hệ chỉ khai
 báo một chiều: UC khai báo `rules`; không viết reverse link hay index bằng tay.
+
+### UC, FN và screen spec
+
+Mỗi UC là một section của `USE_CASES.md`, dưới nhóm `## <Feature>`. Dòng ngay dưới heading là
+dòng meta, các phần cách nhau bởi ` · `:
+
+```markdown
+### UC-DECK-001 — <tiêu đề>
+Status: ready · Code: [<path>, …] · Invokes: [FN-DECK-001, …]
+
+#### Mục tiêu / Actor / Precondition
+#### Main flow                — bước của hệ thống trỏ FN-ID: "Hệ thống thực hiện FN-DECK-001."
+#### Alternative / Error flow
+#### Acceptance criteria
+```
+
+Mỗi FN là một section của `functional-spec/<feature>.md`; tên file là tên thư mục feature:
+
+```markdown
+## FN-DECK-001 — <tiêu đề>
+Status: active · Code: [lib/features/deck/domain/usecases/<x>_use_case.dart]
+
+### Precondition
+### Input
+### Kết quả
+### Lỗi                — failure type có thật trong lớp domain; không đặt mã lỗi mới
+### Business rules     — BR-…, một dòng một BR (quan hệ gốc FN → BR)
+```
+
+Mỗi màn là một file `screens/spec/SCR-<DOMAIN>-NNN-<slug>.md`, viết tiếng Anh:
+
+```markdown
+---
+id: SCR-DECK-001
+name: <Screen name>
+domain: <feature folder>
+status: draft | ready | built
+route: [/path, …]
+---
+# <Screen name>
+## Purpose
+## Related Use Cases          — UC-ID (quan hệ gốc màn → UC)
+## Layout                     — vùng theo vai trò, trên → dưới; không tên class widget
+## States                     — mỗi state: ### `<state_key>` · <Title>, rồi "Golden: light, dark" hoặc "Golden: none — <lý do>"
+## Controls                   — mỗi control: Type, Purpose, Enabled when, "Invokes: FN-…",
+                                #### On success ("Navigate to: SCR-…" hoặc phản hồi UI),
+                                #### On failure (<failure type> → cách hiển thị)
+## Responsive Behavior        — "Follows the shared floor" khi không có gì riêng
+## Accessibility              — như trên
+## UI Invariants              — | Invariant | Enforced by |, chỉ invariant riêng của màn
+## Copy
+## Rulings
+```
+
+Golden của state tên `<scr_id>__<state_key>__<variant>.png`, ví dụ
+`scr_deck_001__root_loaded__light.png`, nằm dưới `test/**/goldens/`.
+
+Quan hệ gốc chỉ khai báo một chiều; chiều ngược do `generate.py` sinh vào `_generated/`, và một
+section viết tay kiểu `Used by`, `Invoked by`, `Related Screens`, `Related BR`, `Entry points`
+là ERROR.
+
+| Quan hệ gốc | Viết ở |
+|---|---|
+| UC → FN | dòng `Invokes:` của UC |
+| FN → BR | `### Business rules` của FN |
+| Màn → FN | dòng `Invokes:` ở control |
+| Màn → UC | `## Related Use Cases` |
+| Màn → màn | dòng `Navigate to:` ở control |
+| App → màn | `NAVIGATION.md` (deep link, guard, tab, back, boot) |
+
+Loại ID mỗi tài liệu được trích (dòng `OPEN QUESTION` được miễn; trong các tài liệu này, ID
+trong `inline code` vẫn tính):
+
+| Tài liệu | Được trích |
+|---|---|
+| `USE_CASES.md` | FN |
+| `functional-spec/` | BR |
+| `screens/spec/` | FN, UC, SCR, INV-UI |
+| `screens/SCREEN_CATALOG.md` | SCR, INV-UI |
+| `NAVIGATION.md` | SCR, UC |
+
+UC và màn không bao giờ trích BR; BR tới UC hay màn chỉ qua FN.
 
 ### Viết use case
 
@@ -365,6 +466,9 @@ Chạy từ root repo, Python 3, không cần thư viện ngoài:
 ```sh
 python tools/docs/generate.py                                  # sinh docs/_generated/
 python tools/docs/check.py                                     # ERROR → exit 1
+python tools/docs/ledger.py seed docs/superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md
+python tools/docs/check.py --ledger docs/superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md
+python -m unittest discover -s tools/docs -p 'test_*.py'
 ```
 
 `check.py` kiểm frontmatter, ID (format, trùng, khớp tên file và DOMAIN của thư

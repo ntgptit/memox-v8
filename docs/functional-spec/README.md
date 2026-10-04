@@ -1,0 +1,7 @@
+# Functional specification
+
+Một file cho mỗi feature, tên file là tên thư mục trong `features/`; mỗi chức năng là một
+section. Định dạng: [docs/README.md](../README.md), mục "UC, FN và screen spec".
+
+| Feature | File |
+|---|---|
