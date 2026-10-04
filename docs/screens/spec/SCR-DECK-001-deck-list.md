@@ -38,8 +38,10 @@ deck that holds cards shows the card list (SCR-CARD-001) instead of sub-decks.
 - **Section header** with a chip trigger — "{n} DECKS"; pill "Manual ⌄", or "Manual · Due only"
   tinted primary while the due filter is on.
 - **Rows** — one card per deck, 8 apart: a 44 icon tile (layers = holds decks, copy = holds
-  cards, folder-open = empty); the name on one line with ellipsis; a "{n} due" badge when due
-  > 0; the meta "{n} sub-decks · {n} cards" or "Empty · add cards or a sub-deck"; the mastery
+  cards, folder-open = empty); the name on one line with ellipsis; the deck's workload as three
+  separate counts, overdue · due · new, each on its own ground and shown when its count > 0 — a
+  deck that holds cards but has no work shows zero New and zero Due on a neutral ground
+  (IMPLEMENTATION GAP: V8 draws one "{n} due" badge, see Rulings); the meta "{n} sub-decks · {n} cards" or "Empty · add cards or a sub-deck"; the mastery
   bar (5 tall, 12 under the meta, across the text column, on `surfaceContainerLow`), the bare
   track for a deck with no card; a trailing `⋮` icon button.
 - **Floating action button** — "New deck".
@@ -575,7 +577,8 @@ Otherwise follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 | Reorder is offered only under Manual order with at least two decks. | — |
 | A refused Undo names the reason, never the deck. | — |
 | A name error shows under the Name field, never as a snackbar. | — |
-| A deck with due cards is marked by text ("{n} due"), not by colour alone. | — |
+| A deck with due cards is marked by text, not by colour alone. | — |
+| Overdue, Due and New are never merged into one number on a deck row. | — |
 | An Undo happens where the item was deleted. | — |
 
 ## Copy
@@ -668,6 +671,13 @@ Otherwise follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 
 
 
+- **IMPLEMENTATION GAP — deck row workload (owner ruling 2026-10-04).** Required: Overdue, Due
+  and New are told apart independently on every deck row — three separate counts overdue · due ·
+  new, each on its own ground, shown when its count > 0, and zero New and zero Due on a neutral
+  ground for a deck with cards and no work; never one merged number. Current V8 implementation:
+  one "{n} due" badge when due > 0 (`deck_row_widget.dart`), no New or Overdue count on the row
+  outside reorder mode. Status: IMPLEMENTATION GAP — the rebuild draws the required form; no code
+  changes in the documentation migration.
 - Pending — a level-10 banner "This is level 10, the deepest a deck can go…" over sub-decks at
   level 10; absent today, the header says "· level 10"; waits for a later phase (owner decision
   C-O6).

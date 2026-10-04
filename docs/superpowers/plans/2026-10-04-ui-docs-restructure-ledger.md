@@ -4091,4 +4091,6 @@ Candidate FNs (plan P1 step 1); every deck use case class is an FN:
   UI the V8 app does not draw (input stopped at 200 characters; tri-state schedule icon, Due + New
   on the tile, a 2×2 summary grid).
 - FN-DECK-005, FN-DECK-006 cite each other and FN-DECK-011 as contract prerequisites (R21).
-
+- IMPLEMENTATION GAP recorded in SCR-DECK-001 (owner ruling 2026-10-04): BR-STUDY-046/068 require
+  Overdue / Due / New told apart on each deck row; V8 draws one "{n} due" badge. BRs unchanged;
+  no code change in this migration.
