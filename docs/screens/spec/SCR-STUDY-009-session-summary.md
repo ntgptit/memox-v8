@@ -33,9 +33,9 @@ and the app returns to the deck list.
   the app bar and the footer; longer content scrolls from the top.
 - **Facts** — "This session" and a full-bleed card of three list rows: finished (the label depends on
   the session kind), cards answered, wrong turns — each leading a small tinted icon tile, trailing the
-  value in tabular numerals, in the warning ink when wrong > 0. Shown only where the hero draws no
+  value in tabular numerals, in `warning` when wrong > 0. Shown only where the hero draws no
   stats (reset, content deleted, save error); omitted where the session has no facts. In an ended or
-  failed session the finished row reads "Kept in the history" on a neutral tile in plain ink, and the
+  failed session the finished row reads "Kept in the history" on a neutral tile in `on-surface`, and the
   wrong turns read "of {total} turns".
 - **End note** — one calm info line, only for the states that need it.
 - **More due** — after a review that reached its card limit while the tree still has cards due: "{n}
@@ -206,7 +206,7 @@ top. Otherwise follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
   stat labels are eyebrows.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** "Wrong cards came back in
   later rounds." follows only a finished session; the facts of an ended or failed session read "Kept
-  in the history" under the finished count, on a neutral tile with the value in plain ink, and "of
+  in the history" under the finished count, on a neutral tile with the value in `on-surface`, and "of
   {total} turns" under the wrong turns (F1).
 - **FE-A6 spec D18:** a session that ended before its first turn shows the hero without stats and no
   Facts card, as `scheduler_changed` does.

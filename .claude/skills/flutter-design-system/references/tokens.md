@@ -1,177 +1,50 @@
 # Design tokens
 
-Location: `core/theme/`.
+Tokens are generated, never hand-written (spec 2026-10-04-sp3a A2, A3):
 
 ```
-core/theme/
-├── app_theme.dart          # buildLightTheme() / buildDarkTheme()
-├── app_colors.dart         # semantic colour tokens
-├── app_typography.dart     # TextTheme construction
-├── app_spacing.dart        # spacing scale
-├── app_radius.dart         # corner radii
-├── app_elevation.dart      # elevation steps
-├── app_durations.dart      # animation durations
-├── app_breakpoints.dart    # responsive breakpoints
-└── app_semantic_colors.dart # ThemeExtension for success/warning/info
+DESIGN.md frontmatter (every colour, light + `-dark`; typography; radii; spacing)
+.impeccable/design.json extensions (contrast pairs, opacity, stroke, motion, breakpoints, shadows; no colour)
+        │  python3 tools/design/generate.py --write
+        ▼
+lib/core/theme/foundations/   (generated, DO NOT EDIT; the gate fails when stale)
+├── app_color_schemes.dart    # AppColorSchemes.light / .dark — the 45 Material 3 roles
+├── app_semantic_colors.dart  # AppSemanticColors — ThemeExtension, light / dark
+├── app_text_styles.dart      # AppTextStyles — DESIGN.md roles and the TextTheme mapping
+├── app_spacing.dart          # AppSpacing.micro … pageEnd
+├── app_radius.dart           # AppRadius.xs … full
+├── app_stroke.dart           # AppStroke.hairline, control, focus, indicator
+├── app_opacity.dart          # AppOpacity.disabled, muted, pressed, …
+├── app_durations.dart        # AppDurations.toggle, standard, …
+├── app_breakpoints.dart      # AppBreakpoints.navRail, contentMax
+└── app_shadows.dart          # AppShadows.<name><Light|Dark>, built on the scheme's `shadow`
+lib/core/theme/app_typography.dart  # AppTypography.withWeight — moves the variable font's axis
+lib/core/theme/app_theme.dart       # AppTheme.light() / .dark()
 ```
 
-## Scales
+To change a value, edit `DESIGN.md` (or the sidecar for a non-colour metadata
+token), run `python3 tools/design/generate.py --write`, and commit both. A value
+typed into a generated file is overwritten and fails the gate first.
 
-```dart
-abstract final class AppSpacing {
-  static const double xs = 4;
-  static const double sm = 8;
-  static const double md = 12;
-  static const double lg = 16;
-  static const double xl = 24;
-  static const double xxl = 32;
-}
+## Colour roles
 
-abstract final class AppRadius {
-  static const double sm = 4;
-  static const double md = 8;
-  static const double lg = 16;
-  static const double full = 999;
-}
-
-abstract final class AppIconSize {
-  static const double sm = 16;
-  static const double md = 24;   // Material default
-  static const double lg = 32;
-}
-
-abstract final class AppDurations {
-  static const fast = Duration(milliseconds: 150);
-  static const normal = Duration(milliseconds: 250);
-  static const slow = Duration(milliseconds: 400);
-}
-
-abstract final class AppBreakpoints {
-  static const double compact = 600;    // phone
-  static const double medium = 840;     // tablet / foldable
-  static const double expanded = 1200;  // desktop
-}
-```
-
-`abstract final class` is the idiomatic Dart namespace for constants — it cannot
-be instantiated or extended, which is exactly what you want from a token holder.
-
-## Semantic colours
-
-`ColorScheme` covers primary/secondary/tertiary/error and their containers. It
-has no success, warning or info, so add them as a `ThemeExtension` rather than
-as loose constants — an extension is theme-aware, so it changes with light/dark
-automatically, and it survives `Theme.of(context)` lookups.
-
-```dart
-@immutable
-final class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
-  const AppSemanticColors({
-    required this.success,
-    required this.onSuccess,
-    required this.warning,
-    required this.onWarning,
-    required this.info,
-    required this.onInfo,
-  });
-
-  final Color success;
-  final Color onSuccess;
-  final Color warning;
-  final Color onWarning;
-  final Color info;
-  final Color onInfo;
-
-  @override
-  AppSemanticColors copyWith({Color? success, /* ... */}) => AppSemanticColors(
-        success: success ?? this.success,
-        // ...
-      );
-
-  @override
-  AppSemanticColors lerp(AppSemanticColors? other, double t) {
-    if (other == null) return this;
-    return AppSemanticColors(
-      success: Color.lerp(success, other.success, t)!,
-      // ...
-    );
-  }
-
-  static const light = AppSemanticColors(/* ... */);
-  static const dark = AppSemanticColors(/* ... */);
-}
-```
-
-Read it with a short extension so call sites stay clean:
-
-```dart
-extension ThemeContextX on BuildContext {
-  ColorScheme get colors => Theme.of(this).colorScheme;
-  TextTheme get texts => Theme.of(this).textTheme;
-  AppSemanticColors get semanticColors =>
-      Theme.of(this).extension<AppSemanticColors>()!;
-}
-```
-
-This is the one extension worth having on `BuildContext`. Resist adding more —
-the checklist's "không lạm dụng extension" exists because a `BuildContext` with
-thirty extension getters becomes impossible to discover.
+`ColorScheme` carries the 45 Material 3 roles; MemoX's semantic roles (success,
+warning, the four statuses, streak) are `AppSemanticColors`, a `ThemeExtension`,
+so they follow light and dark like the scheme does. A role is used on the ground
+its contrast pair names; content on a coloured surface uses the role's `on-`
+pair. There is no ink palette: a role that fails its floor is changed in
+`DESIGN.md` (DESIGN.md, "The Role On Its Ground Rule").
 
 ## Typography
 
-Build a `TextTheme` once and let widgets read roles from it. Never construct a
-`TextStyle` inside a feature widget.
-
-```dart
-Text('Title', style: context.texts.titleLarge)                    // yes
-Text('Title', style: TextStyle(fontSize: 22, color: Colors.black)) // no
-```
-
-Two reasons this matters beyond consistency: a hardcoded `fontSize` does not
-respond to the platform text-scale setting the same way, and a hardcoded
-`Colors.black` is invisible in dark mode.
-
-When a variant is needed, derive it: `context.texts.bodyMedium?.copyWith(color:
-context.colors.error)`.
-
-## Theme construction
-
-```dart
-ThemeData buildLightTheme() {
-  final scheme = ColorScheme.fromSeed(
-    seedColor: AppColors.seed,
-    brightness: Brightness.light,
-  );
-  return ThemeData(
-    useMaterial3: true,
-    colorScheme: scheme,
-    textTheme: buildTextTheme(scheme),
-    extensions: const [AppSemanticColors.light],
-    appBarTheme: /* ... */,
-    cardTheme: /* ... */,
-    inputDecorationTheme: /* ... */,
-    filledButtonTheme: /* ... */,
-    // ... and the rest of the component themes
-  );
-}
-```
-
-Seeding produces a coherent, contrast-checked palette for free. Override
-individual roles where the brand requires it, but re-check contrast after each
-override — that is exactly where seeded guarantees stop applying.
+`AppTextStyles.textTheme` fills all 15 `TextTheme` slots from DESIGN.md's
+`### Text theme` table. Widgets read a slot from the theme and never build a
+`TextStyle`. A weight change goes through `AppTypography.withWeight`, because
+on the variable font `fontWeight` alone reports one weight and paints another.
 
 ## Verifying tokens are actually used
 
-```bash
-# hardcoded colours in feature code
-grep -rnE 'Colors\.[a-z]|Color\(0x' lib/features lib/shared
-
-# hardcoded text styles
-grep -rn 'TextStyle(' lib/features
-
-# raw padding values
-grep -rnE 'EdgeInsets\.(all|symmetric|only)\([^)]*[0-9]' lib/features
-```
-
-Hits in `core/theme/` are expected and fine — that is where the values are
-supposed to live. Hits anywhere else are the defect.
+The guard's design-token rules do this on every Dart file under
+`lib/features/*/presentation/` and `lib/shared/`, and the PostToolUse hook runs
+them on each edit. Hits in `lib/core/theme/` are expected: that is where values
+are defined.

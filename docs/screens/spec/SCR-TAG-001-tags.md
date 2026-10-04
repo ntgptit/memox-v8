@@ -90,7 +90,7 @@ Golden: light, dark
 
 ### `name_too_long` · Name too long
 
-The counter "{len} / 50" in the error ink, "A tag name can be at most 50 characters." under the
+The counter "{len} / 50" in `error`, "A tag name can be at most 50 characters." under the
 field, Rename off. The field keeps one line. A blank name and a control character show their own
 messages.
 
@@ -234,7 +234,7 @@ follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 
 ## Accessibility
 
-"Merge tags" uses the warning role with its ink, at AA. Otherwise follows the shared floor
+"Merge tags" uses the `warning` fill under `on-warning`, at AA. Otherwise follows the shared floor
 (DESIGN.md, SCREEN_CATALOG.md).
 
 ## UI Invariants
@@ -274,7 +274,7 @@ confirm again."
 
 ## Rulings
 
-- **D15 (AA):** "Merge tags" uses the warning role with its ink.
+- **D15 (AA):** "Merge tags" uses the `warning` fill under `on-warning`.
 - **BE-B2 D6, D8:** the merge target's count is the union of both tags' cards, not their sum.
 - **Critique P2b:** there is one order (the store's folded order, diacritics folded), so "A→Z" is
   plain text with no sort glyph.

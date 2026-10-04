@@ -65,7 +65,7 @@ down on the Server tab, and any filter or search change, reload from the first p
 - **Message, Error** — section headers over cards of selectable text; the error's type on its own line
   in the row-title weight, then its message.
 - **Stack trace, Context** — section headers over cards in the `code` style, selectable; one frame per
-  row, its `#n` in the primary ink in a fixed-width cell so a wrapped line hangs under the frame's text;
+  row, its `#n` in `primary` in a fixed-width cell so a wrapped line hangs under the frame's text;
   the context is pretty-printed JSON. Hidden when empty.
 - **Details** — last, a section of label/value rows: Fixed by, Fixed at (a fixed log only), Note,
   Category, Source, Device, App ("8.0.0 (12)"), Platform, User. A short value sits beside its label on
@@ -317,4 +317,4 @@ SCREEN_CATALOG.md).
   status badge is left out when the Status filter says it; Not sent's header counts the rows shown.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the list
   header counts logs with any filter; a stack trace lays out one frame per row with the `#n` in a
-  fixed-width cell, selectable, the `#n` in the primary ink.
+  fixed-width cell, selectable, the `#n` in `primary`.

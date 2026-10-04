@@ -39,7 +39,7 @@ into it** — not a control that happens to look like a surface. Three parts, in
 this order:
 
 1. the surface paints its own background, border and elevation;
-2. the target covers **all** of it — the ink layer in Flutter, an absolutely
+2. the target covers **all** of it — the `Ink` layer in Flutter, an absolutely
    positioned `<button>` under the content on the web;
 3. any control the surface carries sits above the target and keeps its own tap.
 
@@ -53,7 +53,7 @@ menu nested inside it, which works but makes the menu a hole in the middle of a
 large target."* Both halves of that sentence are true; the conclusion is still
 wrong, because a nested button wins the gesture arena and there was no hole.
 
-**Flutter: the ink goes inside the decoration.**
+**Flutter: the `Ink` goes inside the decoration.**
 
 `InkWell` paints its splash and its hover highlight *before* it paints its child,
 so an ink layer wrapped **around** an opaque `DecoratedBox` draws every state

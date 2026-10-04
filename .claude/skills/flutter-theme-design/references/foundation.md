@@ -73,7 +73,7 @@ Nên có semantic accessors:
 - `MxText.caption`
 
 Hoặc một lớp vai chữ đặt tên (V8: `MxTextStyles` trong
-`lib/core/theme/mx_text_styles.dart`), nhưng feature không
+`lib/core/theme/foundations/app_text_styles.dart`), nhưng feature không
 `.copyWith(fontSize: ...)`.
 
 Guard `no_text_restyle` cấm `texts.*.copyWith` lẫn đường vòng

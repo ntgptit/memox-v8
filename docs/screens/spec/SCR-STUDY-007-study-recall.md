@@ -25,7 +25,7 @@ session screen (SCR-STUDY-003, "Session screens").
 - **Context line** — "{deck} · Review · round {n}".
 - **Turn clock** — distinct from the top bar's session track: it measures the current turn. A caption
   and "{s}s / 20s", over a 4 dp fill that drains to 0. Neutral (`onSurfaceVariant`) while counting
-  down; `warning` / warning ink once timed out. It stops whenever the app leaves the foreground and
+  down; `warning` once timed out. It stops whenever the app leaves the foreground and
   for good once revealed or timed out; stopped, not zeroed, on a reveal.
 - **Term face** — the study face card labelled "Term": the prompt, always visible.
 - **Meaning face** — the study face card in the answer role, its "Meaning" label in flow: a blurred
@@ -138,7 +138,7 @@ shared floor (DESIGN.md, SCREEN_CATALOG.md).
 
 - The ending has two branches: a self-check advances by itself, a timeout waits for Continue.
 - **FE-A6 spec D14 (P4 ruling V2):** the clock's fill and caption are a neutral `onSurfaceVariant`
-  while counting down and `warning` / `warningInk` once timed out; the top bar is Indigo (3c-2 R8).
+  while counting down and `warning` once timed out; the top bar is Indigo (3c-2 R8).
 - **M3 review 2026-09-28 F2:** the clock track is 4 dp, the app's thin track.
 - **P2 face-label fix:** the answer face carries its "Meaning" label in flow, as every study face.
 - **FE-A6 spec D5, D12:** the clock is the widget's own; it saves the time left on pause and when the

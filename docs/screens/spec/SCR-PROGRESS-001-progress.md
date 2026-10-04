@@ -29,7 +29,7 @@ row pushes one level and Back climbs one; the breadcrumb of a deck's level retur
 - **Today** — a card: the eyebrow "Today", the day's card-days, and "{l} learning · {r} reviewing · a
   card counts once per day", "No cards studied yet today" or "Nothing studied yet". Below, stacked day
   bars for the last seven days, learning over reviewing, labelled by narrow weekday and "Today", with
-  the legend. Every day's bars draw at full strength, reviewing in primary and learning in its ink,
+  the legend. Every day's bars draw at full strength, reviewing in `status-reviewing` and learning in `status-learning`,
   each holding 3:1 on the card; Today is told by its bold label.
 - **Streak** — a card with one tile, "Current": the flame in the `streak` colour, "{n} days", and
   "includes today", "held from yesterday" or "no study yesterday". Today's figure is the Today card's
@@ -40,7 +40,7 @@ row pushes one level and Back climbs one; the breadcrumb of a deck's level retur
   changes. Switching reads nothing.
 - **List** — "By deck", then a card of list rows: the total row "All decks" with the four numbers
   and no chevron, then a row per root deck: the name, "{n} cards · {d} active days", and "Card-days:
-  {l} learning · {r} reviewing" (learning in the learning ink, reviewing in the primary ink), ending in
+  {l} learning · {r} reviewing" (learning in `status-learning`, reviewing in `status-reviewing`), ending in
   a chevron. An idle deck reads "No activity in this range", at full contrast, nothing dimmed. No
   header totals.
 - **Quiet-range note** — "Nothing studied in the last 7 days. Switch to Last 30 days to see older
@@ -242,5 +242,5 @@ study history is safe on this device. Try again in a moment." · "This deck is n
   the screen's own skeleton, a Today card, a Streak card and a deck-list card; deck progress keeps its
   range control and shows the deck-list card.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** every day's bars draw at full
-  strength, reviewing in primary and learning in its ink, each holding 3:1 on the card; Today is told
+  strength, reviewing in `status-reviewing` and learning in `status-learning`, each holding 3:1 on the card; Today is told
   by its bold label (F5).

@@ -244,12 +244,12 @@ colour. Otherwise follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 - **FE-B1 D13:** the editor moves its card to the Trash from its More card with the card list's
   dialog.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):**
-  field headers are field labels in sentence case (14/600); Required is a caption in primary ink
+  field headers are field labels in sentence case (14/600); Required is a caption in `primary`
   beside them; Optional details stays a section label.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** in edit,
   Save is enabled only once the draft differs from the saved card; create is unchanged.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the tag
   field has the same "Add" button and add rule as create; Save adds the tag still typed (so pending
   tag text enables Save, and is saved), and an invalid one shows its error and saves nothing.
-- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain ink
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is `on-surface-variant`
   everywhere, the card list included (F6).

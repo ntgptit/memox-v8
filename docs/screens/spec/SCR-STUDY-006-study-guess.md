@@ -25,7 +25,7 @@ errors are those of every session screen (SCR-STUDY-003, "Session screens").
 - **Prompt** — the study face card: the eyebrow "What is this?" in flow, the term below it.
 - **Options** — five rows lettered A–E: a letter badge and the meaning text. Once the pick's write
   commits, the pick and the right option — found by card id, never by display string — take their
-  tones (right in `success`: success-soft, success border, success ink; wrong in error), and the rest
+  tones (right in `success`: `success-container` under `on-success-container`; wrong in `error-container` under `on-error-container`), and the rest
   fade. The options ease into their tones, surface and ink together (standard duration; at once under
   Remove animations).
 - **Footer hint** — "Only your first pick counts" before the pick; "Answer shown — the correct option
@@ -123,7 +123,7 @@ follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 ## Rulings
 
 - **FE-A6 spec D14 (P3 ruling C1):** the right option uses the `success` semantic (`successSoft` /
-  `successBorder` / `successInk`); green is mastery-only.
+  `success-container` / `success`); green is mastery-only.
 - **P3 ruling C2:** a question that cannot be built shows "This question can't be shown", whose Close
   ends the session; nothing is written or skipped.
 - **P3 ruling C6:** with TalkBack on, the answered state waits on a "Next" button instead of

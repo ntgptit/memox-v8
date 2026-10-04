@@ -217,5 +217,5 @@ shared floor (DESIGN.md, SCREEN_CATALOG.md).
   (warning lapse, neutral relearning, success otherwise); the kind ("Learning", "Review",
   "Repeat") is plain text beside it; the metadata lines are text without glyphs; the schedule's
   "Algorithm" fact takes a full-width row of its own after the paired facts.
-- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain ink
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is `on-surface-variant`
   everywhere, the card list included (F6).

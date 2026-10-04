@@ -90,7 +90,7 @@ Golden: none — no golden in V8 (record 02)
 
 ### `reset_confirm` · Reset dialog
 
-"Kept" in the mastered ink on its tint; "the open session" only when a session is open.
+"Kept" in `on-status-mastered-container` on `status-mastered-container`; "the open session" only when a session is open.
 
 Golden: light, dark
 
@@ -246,7 +246,7 @@ Follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 
 - The lock is named in words ("Can still be changed", "Locked · cycle {n}"), never by colour
   alone.
-- "Kept" uses the mastered ink at 4.5:1 on its tint.
+- "Kept" uses `on-status-mastered-container` on `status-mastered-container`, at 4.5:1 or more.
 
 ## UI Invariants
 
@@ -296,8 +296,8 @@ Follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
   with its explanation and the way to Reset; Reset is usually reached from that explanation.
 - **M3 review 2026-09-28 B2:** while a reset runs the confirm button spins, with no "Resetting…"
   text, as every async confirm.
-- **Spec A10 (WCAG 2.2 AA):** "Kept" is written in the mastered ink (4.5:1) on an 8% mastery
-  tint; over 12% the ink falls to 4.4:1.
+- **Spec A10 (WCAG 2.2 AA):** "Kept" is written in `on-status-mastered-container` on
+  `status-mastered-container` (4.5:1 or more in both themes).
 - **D-L1:** a switch refused because the tree just locked shows the locked state from the
   stream, with the reason as a snackbar.
 - **Critique 2026-09-30:** each algorithm is described in one sentence.

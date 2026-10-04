@@ -35,7 +35,7 @@ the `/study` deep link, the return after a session, and a tap on the daily remin
 - **Section header** — "Your decks" with a trailing compact secondary "Library".
 - **Rows** — a full-bleed card of list rows: an icon tile ("layers"); the deck name; the workload
   line overdue · today · new, always shown even at 0, each led by its glyph (history, zap,
-  sparkles) in its ink, a zero term muted; "No cards yet" for a deck with no card. A chevron on every
+  sparkles) in its role, a zero term muted; "No cards yet" for a deck with no card. A chevron on every
   row that can be studied; the counts are in the meta line, so there is no due badge. A deck with no
   card has no chevron and no tap target. Rows are ordered Overdue ↓ Due today ↓ New ↓ name.
 - **Floating notice** — one slot over the bottom of the loaded page. The sync notice shows when a
@@ -236,7 +236,7 @@ shared floor (DESIGN.md, SCREEN_CATALOG.md).
   `no_decks` is the empty state's neutral secondary action; `primary-soft` is preserve-only.
 - **E-L3:** "Library" is a compact secondary button.
 - The hero and row breakdowns wrap between whole terms, never cut; a deck with cards always states
-  its three counts, a zero term muted, each led by its glyph (history, zap, sparkles) in its ink; a
+  its three counts, a zero term muted, each led by its glyph (history, zap, sparkles) in its role; a
   deck with no card reads "No cards yet".
 - **UI-base ruling O3:** loading uses a two-bar hero skeleton and the standard skeleton rows.
 - Empty-state actions carry no glyph.

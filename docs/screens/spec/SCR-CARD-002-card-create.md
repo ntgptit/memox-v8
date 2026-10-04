@@ -27,7 +27,7 @@ after another.
 - **Deck-rejects banner** — a warning banner "This deck no longer accepts cards." / "It now holds
   sub-decks.", shown only once the deck can no longer hold a card.
 - **Front** — the term field: the field label "Front · Term" with "Required" as a caption in
-  primary ink beside it, a live "{count} / 60"; an inline error once the field is touched.
+  `primary` beside it, a live "{count} / 60"; an inline error once the field is touched.
 - **Back** — the meaning field: "Back · Meaning", "Required", "{count} / 240"; an inline error
   once touched.
 - **Optional details** — a disclosure "Add details · example · hint · pronunciation" with a solid
@@ -233,7 +233,7 @@ Follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 - **§9 row 46 (plan O2):** while saving, the button swaps its label for the spinner; the words live
   only in the caption line.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):**
-  field headers are field labels in sentence case (14/600); Required is a caption in primary ink
+  field headers are field labels in sentence case (14/600); Required is a caption in `primary`
   beside them; Optional details stays a section label.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the tag
   field has an "Add" button (`cardTagConfirm`) beside it, enabled while the field holds text; Done

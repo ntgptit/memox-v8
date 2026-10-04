@@ -28,7 +28,7 @@ typed input.
   study passage role at 16. No edit button: no card can be edited mid-session.
 - **Answer face** — the study face card in the answer role with its "Term" label in flow; the typed
   text is a bare, borderless field in the study term role. In input and hint: what has been typed so
-  far with a blinking caret. In wrong: the typed answer struck through in the error ink, the right
+  far with a blinking caret. In wrong: the typed answer struck through in `error`, the right
   term below it, tagged "Wrong · comes back next round".
 - **Hint row** — inside the answer face, its line reserved from the start: a lightbulb glyph and the
   card's own hint, in the study detail role; offered only when the card has one.

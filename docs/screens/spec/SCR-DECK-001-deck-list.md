@@ -88,7 +88,7 @@ One bottom sheet, "Sort & filter":
 
 ### `root_loaded` · Root loaded
 
-Every row carries its mastery bar; the learning band is the darker learning ink in light. The
+Every row carries its mastery bar; the learning band is `status-learning`. The
 due strip shows its chevron.
 
 Golden: light, dark
@@ -632,7 +632,7 @@ Otherwise follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 - **FE-B1 D7:** an Undo happens where the item was deleted. A refused Undo says "Can't undo.
   {reason} Restore it from Trash and choose a deck."; it carries no deck name.
 - **Owner ruling R4** (deck mastery spec, §9 row 141): the < 34% mastery band uses
-  `statusLearningInk` in light (4.94:1 on the track) and the amber in dark.
+  `status-learning` in both themes (at least 3:1 on the track).
 - **§9 rows 142, 145 (FE-C1):** the mastery bar's track is `surfaceContainerLow`, so the fill
   keeps 3:1 against it in dark too.
 - **Library spec D7:** Reorder is in the root deck's action sheet too.

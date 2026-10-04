@@ -42,7 +42,7 @@ selected in bulk, moved, flagged, tagged, exported and moved to the Trash.
   holds the count. A sort trigger "Newest ⇅" / "Due first ⇅" (the sort glyph, not a chevron).
 - **Rows** — a card surface per row, 8 apart: the checkbox while selecting (no status dot: the
   label states the status once); the front 16/700 and the back 12, one line each; the uppercase
-  status label in its ink, up to two tag chips and "+{n}"; a trailing flag in plain ink (the
+  status label in its status role (`status-*`), up to two tag chips and "+{n}"; a trailing flag in `on-surface-variant` (the
   filled glyph carries the state) and the due chip, a badge: "New", "Due today", "In {n}d",
   "{n}d overdue" — overdue warning, today primary, else neutral. The status label, tags and
   "+{n}" wrap at large text. Rows build as they scroll into view.
@@ -431,7 +431,7 @@ SCREEN_CATALOG.md).
 - **FE-B2 D14 (critique P1b):** Tags is a filter chip, selected while tags are applied.
 - **E-L1:** an empty card list makes the deck unset again; SCR-DECK-001's unset state shows.
 - **E-L2:** the flag uses the warning colour; the theme has no streak token. Superseded by
-  critique 2026-10-02 (F6): plain ink.
+  critique 2026-10-02 (F6): `on-surface-variant`.
 - **E-L3:** "Select all" is a compact secondary button.
 - **E-L4:** the due chip is a badge: overdue warning, today primary, else neutral.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the
@@ -443,7 +443,7 @@ SCREEN_CATALOG.md).
   failed bulk flag's Retry runs, the banner stays and Retry shows the button's loading state; the
   bulk bar ignores taps meanwhile. A failure keeps the banner; success clears the selection as
   before.
-- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain ink
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is `on-surface-variant`
   (`onSurface`), the filled glyph carrying the state as in the editor and the detail; E-L2 is
   superseded (F6).
 - **FE-B1 D3, D4, D14:** one card moved to Trash gets Undo for 8 seconds; several get Open Trash

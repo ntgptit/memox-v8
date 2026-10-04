@@ -41,7 +41,7 @@ Light and dark are both first-class. Dark is not "light with inverted colours" â
 elevation reads through surface tint rather than shadow, and a colour that
 passes contrast on white can fail on a dark surface.
 
-Primary as text, icon or focus ring is `context.derivedColors.primaryInk`;
+Primary as text, icon or focus ring is `context.colors.primary`, on a ground its contrast pair covers;
 `colors.primary` is for fills, edges, indicators and tints (spec 2026-09-27).
 
 Check every interactive component in disabled, pressed, focused and selected
