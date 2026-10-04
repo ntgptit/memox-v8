@@ -74,6 +74,10 @@ project goes into the repo through a PR.
   `bash .claude/skills/flutter-workflow/scripts/run_tests.sh <file|dir>…`
   (bundled, failures only), once; `flutter test` on a directory or the whole
   suite compiles every file on its own and is several times slower.
+- **Auth on a real stack:** a PR that changes `lib/core/auth/`,
+  `lib/features/account/` or `supabase/migrations/` also runs
+  `bash tools/supabase/run_auth_it.sh` (Docker); it is outside the gate's
+  suite, as `npx supabase test db` is.
 - **Golden review:** when a branch adds, updates or deletes a
   `test/**/goldens/*.png`, the owner gets a before · after · diff page built
   with the `golden-compare` skill before any approve or merge. Changed images

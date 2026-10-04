@@ -1,7 +1,8 @@
 # Auth integration tests on a local Supabase
 
-Status: approved in the brainstorm of 2026-10-05 (test tier, trigger and
-design); this spec awaits the owner's review. Follows the device check of
+Status: approved 2026-10-05; implemented by
+`docs/superpowers/plans/2026-10-05-auth-local-integration-tests.md`, with the
+amendments of §10. Follows the device check of
 [the auth spec](2026-09-30-auth-design.md) §9.1, which the owner stopped after
 D1, D2, D6 and D11 (2026-10-05): checking every row by hand on an emulator
 took too long, and two bugs it found (F1, F2, `docs/wbs_supabase.md` SB-A7)
@@ -69,6 +70,9 @@ nothing and nothing is cleaned up between runs.
   templates of the real project now have a copy in the repo.
 - `[auth.rate_limit] email_sent` goes from 2 to a value the suite cannot
   reach in one run (100).
+- `[auth.email] enable_confirmations = true`, as on the real project
+  ("Confirm email"): with it off, GoTrue linked an email to an anonymous
+  user without sending a code.
 - Everything else the suite needs is already set: anonymous sign-ins,
   manual linking, a six-digit OTP.
 
@@ -131,3 +135,19 @@ GoTrue refuses it.
 - Google sign-in (D2), which needs a real Google account and Play services.
 - UI and routing, which the widget tests own.
 - Running the suite in CI, which is paused; the script is the gate.
+
+## 10. Amendments in implementation (2026-10-05)
+
+- **Location:** the suite lives in `test_supabase/auth/`, not in
+  `test/integration/auth/` with a `supabase` tag. `bundle_tests.py` refuses a
+  library-level `@Tags` in a host file and gathers every `_test.dart` under
+  `test/`; a top-level directory keeps the suite out of `run_tests.sh` and
+  `dod_check.sh` with no change to either.
+- **The script** stops the stack before starting it (a running stack keeps
+  the config it started with) and starts only GoTrue, PostgREST, Kong,
+  Mailpit and Postgres (`supabase start -x` the rest).
+- **D7** checks the coordinator's contract: offline, a sign-out stops in
+  `Transitioning` with `OfflineFailure` before anything is removed, and
+  `cancelSignOut()` restores the account; the dialog that names the loss
+  reads the unsent count (account UI spec, B2).
+- **Clients** use the app's PKCE flow with an in-memory storage.

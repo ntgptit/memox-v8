@@ -12,6 +12,13 @@ Needs Docker. From the repo root:
     npx supabase test db       # pgTAP
     npx supabase db reset      # re-apply migrations after editing one
 
+The app's auth flows run against the same stack: `bash tools/supabase/run_auth_it.sh`
+starts GoTrue, PostgREST, Kong, Mailpit and Postgres, then runs `test_supabase/auth`
+(device-check rows D1, D3–D8, D10–D12 of the auth spec §9.1; codes are read from
+Mailpit). A PR that changes `lib/core/auth/`, `lib/features/account/` or
+`supabase/migrations/` runs it. `supabase/templates/` holds the three code templates;
+the real project's are set by hand to the same text (step 3 below).
+
 Without Docker (a cloud container), `bash tools/supabase/local_pgtap.sh` runs the same
 migrations and tests on a local Postgres 16 with pgTAP (`apt-get install
 postgresql-16-pgtap`), with a shim for the Supabase roles and `auth.uid()`. It is a
