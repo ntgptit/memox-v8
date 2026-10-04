@@ -539,7 +539,7 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxStatusBadge | A card's learning status | shared | CARD, MONITORING | SP3a | built |
 | MxTagChip | A tag name | shared | CARD, SEARCH | SP3a | built |
 | MxIconTile | Icon on a toned tile in three sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | built |
-| MxLinearProgress | Determinate bar: value, tone, size; knows no mastery | shared | DECK, STUDY | SP3a | planned |
+| MxLinearProgress | Determinate bar: value, tone, size; knows no mastery | shared | DECK, STUDY | SP3a | built |
 | MxDialog | Modal decision | shared | ACCOUNT, CARD, DECK, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
 | MxBottomSheet | Modal sheet with a grabber, a pinned header and footer | shared | ACCOUNT, CARD, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
 | MxSheetActions | Dialog and sheet footer actions | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, TAG, TRANSFER, TRASH | SP3a | planned |
@@ -547,7 +547,7 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxInlineBanner | Warning or danger banner owned by its screen | shared | ACCOUNT, CARD, DECK, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TRANSFER, TRASH | SP3a | planned |
 | MxEmptyState | Nothing here yet, and what to do | shared | ACCOUNT, CARD, DECK, SEARCH, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
 | MxErrorState | Inline load failure with Retry, or not found | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
-| MxSkeleton | Loading placeholder family | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
+| MxSkeleton | Loading placeholder family | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | built |
 | MxScreenScaffold | Screen frame: app-bar slot, one body, footer slot, FAB slot; not the navigation shell | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
 | MxScreenScroll | The screen's scroll body with tail clearance | shared | ACCOUNT, CARD, MONITORING, PROGRESS, STUDY, TRANSFER, TRASH | SP3a | planned |
 | MxAppBar | Top bar in two densities | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
@@ -763,6 +763,21 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: decorative; the row or heading beside it names it
 - Tokens: `surface-container-high` / `on-surface-variant`, `primary-container`, `warning` / `on-warning`, `success-container`, `warning-container`, `error-container` and their `on-` roles; `AppSize.iconTile*`
 - Golden: tones__light, tones__dark
+
+#### MxLinearProgress
+- Variants: tones secondary (the generic bar, default), newCard, learning, reviewing, mastered, success, warning, danger — a component that means a state passes that state's tone; sizes regular (4, Material 3's track), thick (8, Material 3 Expressive)
+- States: 0 (no fill), any share (a value above 0 shows at least a dot as long as the bar is thick), 1 (full); animated over 200ms, still under reduced motion
+- Accessibility: named by `semanticLabel` with a localized `semanticValue`; fills from the start edge in RTL; knows nothing of mastery
+- Tokens: fill `secondary` (5.08:1 light, 6.71:1 dark on the track; never `primary`, 2.35:1 on the dark track), `status-*`, `success`, `warning`, `error`; track `surface-container-low`; `AppSize.progress*`; `AppRadius.full`; every fill 3:1 on its track
+- Golden: tones__light, tones__dark
+
+
+#### MxSkeleton
+- Variants: a line and a tile shape, the standard row (a tile and two lines), a list of rows, and a group that shares one pulse
+- States: pulsing (0.45 to 0.75 over 1.4s), resting at 0.45 under reduced motion
+- Accessibility: one live region names what is loading; the shapes are silent
+- Tokens: `surface-container-highest`; `AppOpacity.skeleton*`; `AppDurations.skeletonPulse`; a line as tall as the text it stands for (title `bodyLarge`, meta `bodySmall`), the title line at 60% and the meta at 40% of the text column (component contract); the row tile is the medium icon tile (40, r12)
+- Golden: list__light, list__dark
 
 ## Do's and Don'ts
 
