@@ -61,14 +61,26 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
   late final GoRouter _router = buildAppRouter(
     hasGallery: widget.hasGallery,
     refreshListenable: _accountRoutes,
-    redirect: (context, state) => accountRedirect(
-      state.uri,
-      isWelcomeDue: ref.read(welcomeDueProvider),
-      // P3b plan ruling 4: the coordinator's own state, a frame ahead of
-      // the provider's.
-      account: ref.read(accountCoordinatorProvider)?.state ?? const LocalOnly(),
-    ),
+    redirect: (context, state) => _accountTarget(state.uri),
   );
+
+  String? _accountTarget(Uri location) => accountRedirect(
+    location,
+    isWelcomeDue: ref.read(welcomeDueProvider),
+    // P3b plan ruling 4: the coordinator's own state, a frame ahead of
+    // the provider's.
+    account: ref.read(accountCoordinatorProvider)?.state ?? const LocalOnly(),
+  );
+
+  /// A refresh runs the redirect on the location under the pushed routes
+  /// only, so a pushed screen 30 or 32 the account no longer allows stayed
+  /// open (device check D6, F1 and F2): the top route is checked as well.
+  void _leavePushedAccountRoute() {
+    if (_router.routerDelegate.currentConfiguration.isEmpty) return;
+    final target = _accountTarget(_router.state.uri);
+    if (target == null) return;
+    _router.go(target);
+  }
 
   /// A resume after a day away purges what expired meanwhile (UC-TRASH-001
   /// A4); a resume and a pause are logged (ADR-018).
@@ -112,7 +124,10 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     // redirect.
     ref
       ..listenManual(welcomeDueProvider, (_, _) => _accountRoutes.ping())
-      ..listenManual(authStateProvider, (_, _) => _accountRoutes.ping());
+      ..listenManual(authStateProvider, (_, _) {
+        _accountRoutes.ping();
+        _leavePushedAccountRoute();
+      });
   }
 
   /// A tap on the reminder opens Study Home, whether the app was running or
