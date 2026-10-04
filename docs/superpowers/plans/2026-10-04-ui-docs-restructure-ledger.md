@@ -623,123 +623,123 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/11-card-import.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/11-card-import.md:3` # 11 · Card import |  |
-| `shared/ui/screen-handoff/11-card-import.md:5` A full-screen task above the shell that adds many cards to one deck from a CSV, |  |
-| `shared/ui/screen-handoff/11-card-import.md:10` ## Entry points |  |
-| `shared/ui/screen-handoff/11-card-import.md:12` - The open deck's `⋮` sheet, "Import cards": a deck that holds cards or is unset |  |
-| `shared/ui/screen-handoff/11-card-import.md:14` - The unset deck's third action, "Import cards from a file". |  |
-| `shared/ui/screen-handoff/11-card-import.md:16` Route: `/decks/deck/<id>/cards/import`, on the root navigator, so the bottom nav |  |
-| `shared/ui/screen-handoff/11-card-import.md:19` ## Layout |  |
-| `shared/ui/screen-handoff/11-card-import.md:21` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/11-card-import.md:23` \| App bar \| `MxAppBar` (content) \| Close; "Import cards", then "Import results" |  |
-| `shared/ui/screen-handoff/11-card-import.md:24` \| Deck context \| `DeckContextHeaderWidget`, injected by `app/` \| Library › ances |  |
-| `shared/ui/screen-handoff/11-card-import.md:25` \| Step tracker \| `ImportStepTrackerWidget` \| Source · Columns · Preview · Import |  |
-| `shared/ui/screen-handoff/11-card-import.md:26` \| 1 · Choose a source \| `MxCard` options (`isSelected`) \| Choose a file · Paste |  |
-| `shared/ui/screen-handoff/11-card-import.md:27` \| Source chip \| `MxCard` + `MxIconTile` \| File name, then "{format} · UTF-8 · re |  |
-| `shared/ui/screen-handoff/11-card-import.md:28` \| 2 · Map columns \| `MxSection` of `ImportMappingRowWidget` \| "First row is a he |  |
-| `shared/ui/screen-handoff/11-card-import.md:29` \| Mapping error \| `MxInlineBanner` (warning) \| Its own row when Term or Meaning |  |
-| `shared/ui/screen-handoff/11-card-import.md:30` \| 3 · Preview \| `MxListSectionHeader` + `MxBadge` + `MxSection` \| The title alon |  |
-| `shared/ui/screen-handoff/11-card-import.md:31` \| Importing \| `MxCard` + `MxSpinner` \| "Adding {n} cards…". Close and Back do no |  |
-| `shared/ui/screen-handoff/11-card-import.md:32` \| Footer \| `MxFooterBar` \| Cancel + the step action (Read and map columns · Prev |  |
-| `shared/ui/screen-handoff/11-card-import.md:33` \| Result \| `MxEmptyState` in the outcome's tone + `MxSection` counts + `MxNote` |  |
-| `shared/ui/screen-handoff/11-card-import.md:35` ## States |  |
-| `shared/ui/screen-handoff/11-card-import.md:37` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/11-card-import.md:39` \| empty (Source) \| `import_source_light.png` \| `import_source_dark.png` \| Deck c |  |
-| `shared/ui/screen-handoff/11-card-import.md:40` \| pasted \| no golden \| no golden \| The paste field uses the body font, not monos |  |
-| `shared/ui/screen-handoff/11-card-import.md:41` \| fileSelected \| no golden \| no golden \| The source options give way to the chip |  |
-| `shared/ui/screen-handoff/11-card-import.md:42` \| badEncoding \| no golden \| no golden \| Read is locked (E1) and the caption says |  |
-| `shared/ui/screen-handoff/11-card-import.md:43` \| emptySheet \| no golden \| no golden \| One copy for a file, a sheet or text with |  |
-| `shared/ui/screen-handoff/11-card-import.md:44` \| parsing \| no golden \| no golden \| "Reading your file…" in the source area. \| |  |
-| `shared/ui/screen-handoff/11-card-import.md:45` \| mapping \| `import_mapping_light.png` \| `import_mapping_dark.png` \| Only canoni |  |
-| `shared/ui/screen-handoff/11-card-import.md:46` \| mappingNoHeader \| `import_mapping_no_header_light.png` \| `import_mapping_no_he |  |
-| `shared/ui/screen-handoff/11-card-import.md:47` \| mappingIncomplete \| no golden \| no golden \| The error is a banner of its own, |  |
-| `shared/ui/screen-handoff/11-card-import.md:48` \| previewAll \| no golden \| no golden \| Rows stack front over back instead of thr |  |
-| `shared/ui/screen-handoff/11-card-import.md:49` \| previewMix \| `import_preview_light.png` \| `import_preview_dark.png` \| As previ |  |
-| `shared/ui/screen-handoff/11-card-import.md:50` \| importing \| no golden \| no golden \| Navigation is inert (IT-NAV-012 step 5). \| |  |
-| `shared/ui/screen-handoff/11-card-import.md:51` \| success \| no golden \| no golden \| `MxEmptyState`, success tone; no deck name i |  |
-| `shared/ui/screen-handoff/11-card-import.md:52` \| partial \| `import_partial_light.png` \| `import_partial_dark.png` \| As success, |  |
-| `shared/ui/screen-handoff/11-card-import.md:53` \| none \| no golden \| no golden \| Neutral tone; Import another file · Back to dec |  |
-| `shared/ui/screen-handoff/11-card-import.md:54` \| failed \| no golden \| no golden \| `MxEmptyState`, danger tone; Close · Try agai |  |
-| `shared/ui/screen-handoff/11-card-import.md:55` \| rejects \| no golden \| no golden \| `MxEmptyState`, warning tone; Close only. \| |  |
-| `shared/ui/screen-handoff/11-card-import.md:57` Goldens: `test/features/transfer/presentation/goldens/import_{source,mapping,pre |  |
-| `shared/ui/screen-handoff/11-card-import.md:59` ## Back |  |
-| `shared/ui/screen-handoff/11-card-import.md:61` Android Back steps back one step and keeps the draft: Preview → Columns → Source |  |
-| `shared/ui/screen-handoff/11-card-import.md:64` ## Rulings |  |
-| `shared/ui/screen-handoff/11-card-import.md:66` - **Critique 2026-09-30 part 1:** each mapping row shows its column's first valu |  |
-| `shared/ui/screen-handoff/11-card-import.md:67` - **Spec §8.2 K1:** once read, the source step collapses to the source chip. |  |
-| `shared/ui/screen-handoff/11-card-import.md:68` - **Spec §8.2 K2, UC-TRANSFER-001 step 5:** the preview shows the first 50 rows |  |
-| `shared/ui/screen-handoff/11-card-import.md:69` - **Spec §8.2 K3:** each status icon has a semantic label, a mapping error sits |  |
-| `shared/ui/screen-handoff/11-card-import.md:70` - **Spec §8.2 K4:** results use `MxEmptyState` in its success, neutral, warning |  |
-| `shared/ui/screen-handoff/11-card-import.md:71` - The deck is shown by the deck context header shared with the card editor and d |  |
-| `shared/ui/screen-handoff/11-card-import.md:72` - **UC-TRANSFER-001 step 8, ruling 1:** success offers Import another file · Vie |  |
-| `shared/ui/screen-handoff/11-card-import.md:73` - **UC-TRANSFER-001:** there is no deck picker, so rejects offer Close only. |  |
-| `shared/ui/screen-handoff/11-card-import.md:74` - **Spec D2:** only the six canonical header names map by themselves. |  |
-| `shared/ui/screen-handoff/11-card-import.md:75` - Paste field and header cells use the body font; the theme has no monospace rol |  |
-| `shared/ui/screen-handoff/11-card-import.md:76` - **Amends spec §5.1:** the file name shows in the chip while the wizard is open |  |
-| `shared/ui/screen-handoff/11-card-import.md:77` - **FE-B3 plan 1:** Import is live from the deck actions. |  |
-| `shared/ui/screen-handoff/11-card-import.md:78` - **Critique 2026-09-30:** the file helper ("importHelperBody") has a close butt |  |
-| `shared/ui/screen-handoff/11-card-import.md:79` - **Critique 2026-09-30 tone pass, T6:** Ready (chip and row mark) is success; t |  |
-| `shared/ui/screen-handoff/11-card-import.md:80` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/11-card-import.md:81` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the res |  |
-| `shared/ui/screen-handoff/11-card-import.md:83` ## Copy |  |
-| `shared/ui/screen-handoff/11-card-import.md:85` - Steps: "Source" · "Columns" · "Preview" · "Import" · "Step {n} of 4: {name}". |  |
-| `shared/ui/screen-handoff/11-card-import.md:86` - Source: "1 · Choose a source" · "Choose a file" · "CSV, TSV or XLSX · UTF-8" · |  |
-| `shared/ui/screen-handoff/11-card-import.md:87` - Problems: "This file is not UTF-8" · "This file can’t be read" · "There are no |  |
-| `shared/ui/screen-handoff/11-card-import.md:88` - Mapping: "2 · Map columns" · "First row is a header" · "Column {letter}" · "Te |  |
-| `shared/ui/screen-handoff/11-card-import.md:89` - Preview: "3 · Preview" · "Ready · {n}" · "Invalid · {n}" · "Duplicate · {n}" · |  |
-| `shared/ui/screen-handoff/11-card-import.md:90` - Footer: "Read and map columns" · "Preview rows" · "Import {n} cards" · "Import |  |
-| `shared/ui/screen-handoff/11-card-import.md:91` - Result: "Imported" · "Imported with skips" · "Nothing added" · "Import didn’t |  |
+| `shared/ui/screen-handoff/11-card-import.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:3` # 11 · Card import | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:5` A full-screen task above the shell that adds many cards to one deck from a CSV, | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:10` ## Entry points | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:12` - The open deck's `⋮` sheet, "Import cards": a deck that holds cards or is unset | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:14` - The unset deck's third action, "Import cards from a file". | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:16` Route: `/decks/deck/<id>/cards/import`, on the root navigator, so the bottom nav | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:19` ## Layout | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:21` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:23` \| App bar \| `MxAppBar` (content) \| Close; "Import cards", then "Import results" | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:24` \| Deck context \| `DeckContextHeaderWidget`, injected by `app/` \| Library › ances | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:25` \| Step tracker \| `ImportStepTrackerWidget` \| Source · Columns · Preview · Import | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:26` \| 1 · Choose a source \| `MxCard` options (`isSelected`) \| Choose a file · Paste | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:27` \| Source chip \| `MxCard` + `MxIconTile` \| File name, then "{format} · UTF-8 · re | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:28` \| 2 · Map columns \| `MxSection` of `ImportMappingRowWidget` \| "First row is a he | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:29` \| Mapping error \| `MxInlineBanner` (warning) \| Its own row when Term or Meaning | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:30` \| 3 · Preview \| `MxListSectionHeader` + `MxBadge` + `MxSection` \| The title alon | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:31` \| Importing \| `MxCard` + `MxSpinner` \| "Adding {n} cards…". Close and Back do no | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:32` \| Footer \| `MxFooterBar` \| Cancel + the step action (Read and map columns · Prev | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:33` \| Result \| `MxEmptyState` in the outcome's tone + `MxSection` counts + `MxNote` | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:35` ## States | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:37` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:39` \| empty (Source) \| `import_source_light.png` \| `import_source_dark.png` \| Deck c | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:40` \| pasted \| no golden \| no golden \| The paste field uses the body font, not monos | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:41` \| fileSelected \| no golden \| no golden \| The source options give way to the chip | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:42` \| badEncoding \| no golden \| no golden \| Read is locked (E1) and the caption says | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:43` \| emptySheet \| no golden \| no golden \| One copy for a file, a sheet or text with | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:44` \| parsing \| no golden \| no golden \| "Reading your file…" in the source area. \| | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:45` \| mapping \| `import_mapping_light.png` \| `import_mapping_dark.png` \| Only canoni | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:46` \| mappingNoHeader \| `import_mapping_no_header_light.png` \| `import_mapping_no_he | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:47` \| mappingIncomplete \| no golden \| no golden \| The error is a banner of its own, | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:48` \| previewAll \| no golden \| no golden \| Rows stack front over back instead of thr | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:49` \| previewMix \| `import_preview_light.png` \| `import_preview_dark.png` \| As previ | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:50` \| importing \| no golden \| no golden \| Navigation is inert (IT-NAV-012 step 5). \| | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:51` \| success \| no golden \| no golden \| `MxEmptyState`, success tone; no deck name i | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:52` \| partial \| `import_partial_light.png` \| `import_partial_dark.png` \| As success, | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:53` \| none \| no golden \| no golden \| Neutral tone; Import another file · Back to dec | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:54` \| failed \| no golden \| no golden \| `MxEmptyState`, danger tone; Close · Try agai | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:55` \| rejects \| no golden \| no golden \| `MxEmptyState`, warning tone; Close only. \| | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:57` Goldens: `test/features/transfer/presentation/goldens/import_{source,mapping,pre | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:59` ## Back | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:61` Android Back steps back one step and keeps the draft: Preview → Columns → Source | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:64` ## Rulings | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:66` - **Critique 2026-09-30 part 1:** each mapping row shows its column's first valu | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:67` - **Spec §8.2 K1:** once read, the source step collapses to the source chip. | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:68` - **Spec §8.2 K2, UC-TRANSFER-001 step 5:** the preview shows the first 50 rows | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:69` - **Spec §8.2 K3:** each status icon has a semantic label, a mapping error sits | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:70` - **Spec §8.2 K4:** results use `MxEmptyState` in its success, neutral, warning | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:71` - The deck is shown by the deck context header shared with the card editor and d | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:72` - **UC-TRANSFER-001 step 8, ruling 1:** success offers Import another file · Vie | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:73` - **UC-TRANSFER-001:** there is no deck picker, so rejects offer Close only. | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:74` - **Spec D2:** only the six canonical header names map by themselves. | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:75` - Paste field and header cells use the body font; the theme has no monospace rol | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:76` - **Amends spec §5.1:** the file name shows in the chip while the wizard is open | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:77` - **FE-B3 plan 1:** Import is live from the deck actions. | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:78` - **Critique 2026-09-30:** the file helper ("importHelperBody") has a close butt | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:79` - **Critique 2026-09-30 tone pass, T6:** Ready (chip and row mark) is success; t | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:80` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:81` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the res | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:83` ## Copy | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:85` - Steps: "Source" · "Columns" · "Preview" · "Import" · "Step {n} of 4: {name}". | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:86` - Source: "1 · Choose a source" · "Choose a file" · "CSV, TSV or XLSX · UTF-8" · | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:87` - Problems: "This file is not UTF-8" · "This file can’t be read" · "There are no | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:88` - Mapping: "2 · Map columns" · "First row is a header" · "Column {letter}" · "Te | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:89` - Preview: "3 · Preview" · "Ready · {n}" · "Invalid · {n}" · "Duplicate · {n}" · | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:90` - Footer: "Read and map columns" · "Preview rows" · "Import {n} cards" · "Import | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `shared/ui/screen-handoff/11-card-import.md:91` - Result: "Imported" · "Imported with skips" · "Nothing added" · "Import didn’t | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
 
 ## shared/ui/screen-handoff/12-card-export.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/12-card-export.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/12-card-export.md:3` # 12 · Card export |  |
-| `shared/ui/screen-handoff/12-card-export.md:5` A bottom sheet that hands a deck's cards, or the selected ones, to the system sh |  |
-| `shared/ui/screen-handoff/12-card-export.md:10` ## Entry points |  |
-| `shared/ui/screen-handoff/12-card-export.md:12` - The open deck's `⋮` sheet, "Export cards": a deck of cards only. An unset deck |  |
-| `shared/ui/screen-handoff/12-card-export.md:15` - The card list's bulk bar, "Export": the selected cards. The selection stays af |  |
-| `shared/ui/screen-handoff/12-card-export.md:18` ## Layout |  |
-| `shared/ui/screen-handoff/12-card-export.md:20` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/12-card-export.md:22` \| Header \| `MxBottomSheet` header \| "Export all {n} cards" and "Every card in {d |  |
-| `shared/ui/screen-handoff/12-card-export.md:23` \| Problem \| `MxInlineBanner` \| One banner per problem, above the formats. Danger |  |
-| `shared/ui/screen-handoff/12-card-export.md:24` \| Formats \| `MxListSectionHeader` + `MxOptionRow` × 3 \| CSV (default, "Recommend |  |
-| `shared/ui/screen-handoff/12-card-export.md:25` \| Content note \| `MxNote` (file icon) \| The six columns; no schedule, no history |  |
-| `shared/ui/screen-handoff/12-card-export.md:26` \| Footer \| `MxSheetActions` (sheet form) \| Cancel · "Export {n} cards" with the |  |
-| `shared/ui/screen-handoff/12-card-export.md:27` \| Toast \| `MxSnackbar` \| "Handed {n} cards to the system." once the share sheet |  |
-| `shared/ui/screen-handoff/12-card-export.md:29` The overline, the banner and the note line up with the title (20 dp). |  |
-| `shared/ui/screen-handoff/12-card-export.md:31` ## States |  |
-| `shared/ui/screen-handoff/12-card-export.md:33` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/12-card-export.md:35` \| wholeDeck \| `export_deck_light.png` \| `export_deck_dark.png` \| CSV carries "Re |  |
-| `shared/ui/screen-handoff/12-card-export.md:36` \| selection \| no golden \| no golden \| As wholeDeck. \| |  |
-| `shared/ui/screen-handoff/12-card-export.md:37` \| preparing \| no golden \| no golden \| Cancel closes the sheet and nothing is sha |  |
-| `shared/ui/screen-handoff/12-card-export.md:38` \| handedOver \| no golden \| no golden \| The toast names no file. \| |  |
-| `shared/ui/screen-handoff/12-card-export.md:39` \| shareClosed \| no golden \| no golden \| the export sheet stays open, as it was. |  |
-| `shared/ui/screen-handoff/12-card-export.md:40` \| failed \| `export_failed_light.png` \| `export_failed_dark.png` \| For a read or |  |
-| `shared/ui/screen-handoff/12-card-export.md:41` \| noShareTarget \| no golden \| no golden \| The banner shows the warning glyph. \| |  |
-| `shared/ui/screen-handoff/12-card-export.md:42` \| staleSelection \| `export_stale_light.png` \| `export_stale_dark.png` \| The sele |  |
-| `shared/ui/screen-handoff/12-card-export.md:43` \| nothingToExport \| no golden \| no golden \| Reached only by a deck emptied betwe |  |
-| `shared/ui/screen-handoff/12-card-export.md:45` Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale} |  |
-| `shared/ui/screen-handoff/12-card-export.md:47` ## Rulings |  |
-| `shared/ui/screen-handoff/12-card-export.md:49` - **Critique 2026-09-30 part 1, R8:** a final problem (stale, empty, no share ta |  |
-| `shared/ui/screen-handoff/12-card-export.md:50` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/12-card-export.md:51` - **UC-TRANSFER-002 A3 (E1):** closing the share sheet keeps the export sheet op |  |
-| `shared/ui/screen-handoff/12-card-export.md:52` - **Spec §7, BR-TRANSFER-014 (E2):** the result reads "Handed {n} cards to the s |  |
-| `shared/ui/screen-handoff/12-card-export.md:53` - **UC-TRANSFER-002 step 2 (E3):** CSV carries a "Recommended" badge. |  |
-| `shared/ui/screen-handoff/12-card-export.md:54` - **UC-TRANSFER-002 E2–E4 (E4):** read and encode failures share "Couldn't prepa |  |
-| `shared/ui/screen-handoff/12-card-export.md:55` - **UC-TRANSFER-002 E5 (E5):** "Export cards" appears on a deck of cards only. |  |
-| `shared/ui/screen-handoff/12-card-export.md:56` - **UC-TRANSFER-002 step 3 (owner 2026-09-26):** the action reads "Export {n} ca |  |
-| `shared/ui/screen-handoff/12-card-export.md:57` - **BR-TRANSFER-013, backend plan C5:** the file name keeps the deck's own lette |  |
-| `shared/ui/screen-handoff/12-card-export.md:58` - Banners use their tone glyph; `MxInlineBanner` has no glyph slot. |  |
-| `shared/ui/screen-handoff/12-card-export.md:60` ## Copy |  |
-| `shared/ui/screen-handoff/12-card-export.md:62` - Header: "Export all {n} cards" · "Every card in {deck}, whatever filter or sea |  |
-| `shared/ui/screen-handoff/12-card-export.md:63` - Formats: "Format" · "CSV" · "Comma-separated · opens anywhere" · "TSV" · "Tab- |  |
-| `shared/ui/screen-handoff/12-card-export.md:64` - Note: "Six columns: front, back, example, hint, pronunciation, tags. No schedu |  |
-| `shared/ui/screen-handoff/12-card-export.md:65` - Actions: "Cancel" · "Export {n} cards" · "Preparing…" · "Try again" · "Close". |  |
-| `shared/ui/screen-handoff/12-card-export.md:66` - Problems: "Couldn’t prepare the file" · "Couldn’t hand the file over" · "No ap |  |
-| `shared/ui/screen-handoff/12-card-export.md:67` - Toast: "Handed {n} cards to the system." |  |
+| `shared/ui/screen-handoff/12-card-export.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:3` # 12 · Card export | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:5` A bottom sheet that hands a deck's cards, or the selected ones, to the system sh | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:10` ## Entry points | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:12` - The open deck's `⋮` sheet, "Export cards": a deck of cards only. An unset deck | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:15` - The card list's bulk bar, "Export": the selected cards. The selection stays af | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:18` ## Layout | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:20` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:22` \| Header \| `MxBottomSheet` header \| "Export all {n} cards" and "Every card in {d | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:23` \| Problem \| `MxInlineBanner` \| One banner per problem, above the formats. Danger | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:24` \| Formats \| `MxListSectionHeader` + `MxOptionRow` × 3 \| CSV (default, "Recommend | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:25` \| Content note \| `MxNote` (file icon) \| The six columns; no schedule, no history | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:26` \| Footer \| `MxSheetActions` (sheet form) \| Cancel · "Export {n} cards" with the | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:27` \| Toast \| `MxSnackbar` \| "Handed {n} cards to the system." once the share sheet | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:29` The overline, the banner and the note line up with the title (20 dp). | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:31` ## States | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:33` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:35` \| wholeDeck \| `export_deck_light.png` \| `export_deck_dark.png` \| CSV carries "Re | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:36` \| selection \| no golden \| no golden \| As wholeDeck. \| | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:37` \| preparing \| no golden \| no golden \| Cancel closes the sheet and nothing is sha | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:38` \| handedOver \| no golden \| no golden \| The toast names no file. \| | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:39` \| shareClosed \| no golden \| no golden \| the export sheet stays open, as it was. | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:40` \| failed \| `export_failed_light.png` \| `export_failed_dark.png` \| For a read or | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:41` \| noShareTarget \| no golden \| no golden \| The banner shows the warning glyph. \| | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:42` \| staleSelection \| `export_stale_light.png` \| `export_stale_dark.png` \| The sele | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:43` \| nothingToExport \| no golden \| no golden \| Reached only by a deck emptied betwe | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:45` Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale} | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:47` ## Rulings | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:49` - **Critique 2026-09-30 part 1, R8:** a final problem (stale, empty, no share ta | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:50` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:51` - **UC-TRANSFER-002 A3 (E1):** closing the share sheet keeps the export sheet op | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:52` - **Spec §7, BR-TRANSFER-014 (E2):** the result reads "Handed {n} cards to the s | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:53` - **UC-TRANSFER-002 step 2 (E3):** CSV carries a "Recommended" badge. | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:54` - **UC-TRANSFER-002 E2–E4 (E4):** read and encode failures share "Couldn't prepa | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:55` - **UC-TRANSFER-002 E5 (E5):** "Export cards" appears on a deck of cards only. | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:56` - **UC-TRANSFER-002 step 3 (owner 2026-09-26):** the action reads "Export {n} ca | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:57` - **BR-TRANSFER-013, backend plan C5:** the file name keeps the deck's own lette | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:58` - Banners use their tone glyph; `MxInlineBanner` has no glyph slot. | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:60` ## Copy | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:62` - Header: "Export all {n} cards" · "Every card in {deck}, whatever filter or sea | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:63` - Formats: "Format" · "CSV" · "Comma-separated · opens anywhere" · "TSV" · "Tab- | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:64` - Note: "Six columns: front, back, example, hint, pronunciation, tags. No schedu | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:65` - Actions: "Cancel" · "Export {n} cards" · "Preparing…" · "Try again" · "Close". | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:66` - Problems: "Couldn’t prepare the file" · "Couldn’t hand the file over" · "No ap | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `shared/ui/screen-handoff/12-card-export.md:67` - Toast: "Handed {n} cards to the system." | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
 
 ## shared/ui/screen-handoff/13-study-home.md
 
@@ -2883,33 +2883,33 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:6` code: [lib/features/transfer/domain/usecases/read_import_source_use_case.dart, l | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:10` **Phạm vi:** backend BE-B3 và màn import FE-B3 đã xong ([spec card transfer](../ | dropped — history of how the work was split (BE-B3, FE-B3); those specs stay under docs/superpowers/specs, approved PENDING |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:12` **Actor:** Người dùng | pending → SCR-TRANSFER-001 (entry points: Import cards on the card list, its empty state, and the create-child choice of an unset deck); intent kept in UC-TRANSFER-001 (Mục tiêu, Preconditions) |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:12` **Actor:** Người dùng | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:17` ## Main flow | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:19` **Main flow:** | moved → `USE_CASES.md` |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:20` 1. Người dùng mở màn import; hệ thống hiển thị deck đích, số card hiện có và | pending → SCR-TRANSFER-001 (the target deck, its card count, the four steps Source → Columns → Preview → Import); intent kept in UC-TRANSFER-001 step 1 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:20` 1. Người dùng mở màn import; hệ thống hiển thị deck đích, số card hiện có và | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:22` 2. Người dùng chọn nguồn: một file CSV/TSV/XLSX, hoặc dán văn bản CSV/TSV. | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:23` 3. Người dùng bấm Preview; hệ thống parse nguồn trong bộ nhớ (BR-TRANSFER-006) — | superseded → FN-TRANSFER-001 (in memory, nothing written; the TSV and CSV delimiter rules) + UC-TRANSFER-001 step 3 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:30` 4. Hệ thống mặc định coi hàng đầu là header và tự map các cột trùng tên | pending → SCR-TRANSFER-001 (the header switch and the column mapping controls); intent kept in UC-TRANSFER-001 step 4 + FN-TRANSFER-002 (mapping rules) |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:34` 5. Hệ thống validate toàn bộ hàng bằng đúng các rule của card (BR-TRANSFER-002), | pending → SCR-TRANSFER-001 (the preview counts and the first rows); intent kept in UC-TRANSFER-001 step 5 + FN-TRANSFER-002 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:37` 6. Người dùng bấm Continue rồi xác nhận ở bước Import — màn xác nhận nêu deck | pending → SCR-TRANSFER-001 (Continue then the confirm step naming the deck and the counts); intent kept in UC-TRANSFER-001 step 6 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:30` 4. Hệ thống mặc định coi hàng đầu là header và tự map các cột trùng tên | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:34` 5. Hệ thống validate toàn bộ hàng bằng đúng các rule của card (BR-TRANSFER-002), | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:37` 6. Người dùng bấm Continue rồi xác nhận ở bước Import — màn xác nhận nêu deck | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:39` 7. Hệ thống ghi toàn bộ trong một transaction (BR-TRANSFER-004): card, study sta | superseded → FN-TRANSFER-003 (one transaction: cards, a fresh study state each, tags, content type) + UC-TRANSFER-001 step 7 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:41` 8. Hệ thống hiện kết quả — số đã ghi, số trùng bỏ qua, số invalid bị loại, và | pending → SCR-TRANSFER-001 (the result with the skipped rows; View cards and Import another file); intent kept in UC-TRANSFER-001 step 8 + FN-TRANSFER-003 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:41` 8. Hệ thống hiện kết quả — số đã ghi, số trùng bỏ qua, số invalid bị loại, và | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:46` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:48` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:49` - **A1 — Dán văn bản:** ở bước Source người dùng dán các hàng CSV/TSV vào ô | pending → SCR-TRANSFER-001 (the paste field; parse only on Preview; text kept on a parse error); intent kept in UC-TRANSFER-001 A1 + FN-TRANSFER-001 (paste detection) |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:53` - **A2 — XLSX nhiều sheet:** hệ thống mặc định chọn sheet không rỗng đầu tiên | pending → SCR-TRANSFER-001 (the sheet picker; a change reruns mapping and preview); intent kept in UC-TRANSFER-001 A2 + FN-TRANSFER-001 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:55` - **A3 — Không có header:** người dùng tắt "First row contains headers"; các | pending → SCR-TRANSFER-001 (the "First row contains headers" switch; Column A, Column B, …); intent kept in UC-TRANSFER-001 A3 + FN-TRANSFER-002 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:58` - **A4 — Bao gồm trùng lặp:** người dùng bật "Include duplicates"; số sẵn sàng | pending → SCR-TRANSFER-001 (the "Include duplicates" switch); intent kept in UC-TRANSFER-001 A4 + FN-TRANSFER-003 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:60` - **A5 — Đổi file:** người dùng thay file đã chọn; hủy hộp chọn file không | pending → SCR-TRANSFER-001 (replacing the file; cancelling the picker keeps the choice); intent kept in UC-TRANSFER-001 A5 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:49` - **A1 — Dán văn bản:** ở bước Source người dùng dán các hàng CSV/TSV vào ô | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:53` - **A2 — XLSX nhiều sheet:** hệ thống mặc định chọn sheet không rỗng đầu tiên | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:55` - **A3 — Không có header:** người dùng tắt "First row contains headers"; các | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:58` - **A4 — Bao gồm trùng lặp:** người dùng bật "Include duplicates"; số sẵn sàng | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:60` - **A5 — Đổi file:** người dùng thay file đã chọn; hủy hộp chọn file không | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:63` **Error flows:** | moved → `USE_CASES.md` |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:64` - **E1 — File không đọc được:** file hỏng, có mật khẩu, đuôi không hỗ trợ hoặc | pending → SCR-TRANSFER-001 (the typed error with the re-export-as-UTF-8 guidance); intent kept in UC-TRANSFER-001 E1 + FN-TRANSFER-001 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:67` - **E2 — Nguồn rỗng:** file/sheet/văn bản không có hàng dữ liệu nào → thông báo | pending → SCR-TRANSFER-001 (the message at the Preview step); intent kept in UC-TRANSFER-001 E2 + FN-TRANSFER-002 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:69` - **E3 — Không còn hàng hợp lệ:** sau validate và policy trùng lặp, số sẽ ghi | pending → SCR-TRANSFER-001 (Continue locked); intent kept in UC-TRANSFER-001 E3 + FN-TRANSFER-003 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:71` - **E4 — Deck đích không còn hợp lệ lúc ghi:** deck biến mất, thành root-level | pending → SCR-TRANSFER-001 (the typed reason; preview and mapping kept); intent kept in UC-TRANSFER-001 E4 + FN-TRANSFER-003 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:74` - **E5 — Commit thất bại giữa chừng:** một write lỗi → rollback toàn bộ | pending → SCR-TRANSFER-001 (source, mapping and preview kept; Try again); intent kept in UC-TRANSFER-001 E5 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:76` - **E6 — Mọi hàng đã thành trùng lúc ghi:** giữa Preview và Import, deck nhận | pending → SCR-TRANSFER-001 (the "Nothing added" result with one way back to the deck); intent kept in UC-TRANSFER-001 E6 + FN-TRANSFER-003 |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:81` ## UI | pending → SCR-TRANSFER-001 (states initial · source chosen · parsing · parse error · preview loaded · preview empty · confirm · submitting · commit error · result; no refreshing) |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:83` **UI states:** initial (Source trống) · source đã chọn · parsing · parse error · | pending → SCR-TRANSFER-001 (states initial · source chosen · parsing · parse error · preview loaded · preview empty · confirm · submitting · commit error · result; no refreshing) |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:64` - **E1 — File không đọc được:** file hỏng, có mật khẩu, đuôi không hỗ trợ hoặc | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:67` - **E2 — Nguồn rỗng:** file/sheet/văn bản không có hàng dữ liệu nào → thông báo | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:69` - **E3 — Không còn hàng hợp lệ:** sau validate và policy trùng lặp, số sẽ ghi | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:71` - **E4 — Deck đích không còn hợp lệ lúc ghi:** deck biến mất, thành root-level | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:74` - **E5 — Commit thất bại giữa chừng:** một write lỗi → rollback toàn bộ | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:76` - **E6 — Mọi hàng đã thành trùng lúc ghi:** giữa Preview và Import, deck nhận | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:81` ## UI | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:83` **UI states:** initial (Source trống) · source đã chọn · parsing · parse error · | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:89` ## Local | superseded → FN-TRANSFER-003 (Kết quả) |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:91` **Postconditions:** Mọi card được ghi có đúng một study state mới theo scheduler | superseded → FN-TRANSFER-003 (Kết quả) |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:95` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
@@ -2917,7 +2917,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:99` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:101` - [ ] **Given** một sub-deck `unset` và một file CSV có header `front,back,tags` | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:102` - [ ] **Given** một hàng trùng `front`+`back` (sau fold) với card đã có trong de | moved → `USE_CASES.md` |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:103` - [ ] **Given** một file UTF-16 hoặc Latin-1, **when** chọn file, **then** hệ th | pending → SCR-TRANSFER-001 (presentation of the criterion); intent kept in UC-TRANSFER-001 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:103` - [ ] **Given** một file UTF-16 hoặc Latin-1, **when** chọn file, **then** hệ th | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:104` - [ ] **Given** preview đã xong và deck vừa nhận deck con, **when** commit, **th | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:105` - [ ] **Given** một write lỗi giữa batch, **when** commit, **then** không card, | moved → `USE_CASES.md` |
 
@@ -2932,32 +2932,32 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:6` code: [lib/features/transfer/domain/usecases/build_export_use_case.dart, lib/fea | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:10` **Phạm vi:** backend BE-B3 và sheet export FE-B3 đã xong ([spec card transfer](. | dropped — history of how the work was split (BE-B3, FE-B3); those specs stay under docs/superpowers/specs, approved PENDING |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:12` **Actor:** Người dùng | pending → SCR-TRANSFER-002 (entry points: Export cards in the card list overflow, Export selected on the selection action bar); intent kept in UC-TRANSFER-002 (Mục tiêu, Preconditions) |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:12` **Actor:** Người dùng | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:18` ## Main flow | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:20` **Main flow:** | moved → `USE_CASES.md` |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:21` 1. Người dùng mở export từ một trong hai entry point; hệ thống mở một sheet và | pending → SCR-TRANSFER-002 (the sheet with the fixed read-only scope "All N cards in this deck" or "N selected cards"); intent kept in UC-TRANSFER-002 step 1 + FN-TRANSFER-004 |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:25` 2. Hệ thống hiển thị ba format — CSV (mặc định, gắn nhãn Recommended), TSV, | pending → SCR-TRANSFER-002 (CSV with Recommended, TSV, XLSX; the two explaining lines); intent kept in UC-TRANSFER-002 step 2 |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:28` 3. Người dùng chọn format nếu muốn khác mặc định, rồi bấm `Export N cards`. | pending → SCR-TRANSFER-002 (Export N cards); intent kept in UC-TRANSFER-002 step 3 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:21` 1. Người dùng mở export từ một trong hai entry point; hệ thống mở một sheet và | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:25` 2. Hệ thống hiển thị ba format — CSV (mặc định, gắn nhãn Recommended), TSV, | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:28` 3. Người dùng chọn format nếu muốn khác mặc định, rồi bấm `Export N cards`. | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:29` 4. Hệ thống đọc một snapshot nhất quán gồm tên deck, nội dung sáu field và tag | superseded → FN-TRANSFER-005 (one consistent read; nothing written) + UC-TRANSFER-002 step 4 |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:31` 5. Hệ thống encode snapshot thành artifact theo format đã chọn — sáu header | superseded → FN-TRANSFER-005 (six headers, empty cells, BOM, text cells, the file name) |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:34` 6. Hệ thống ghi artifact vào vùng riêng tạm thời của ứng dụng rồi bàn giao cho | superseded → FN-TRANSFER-006 (the private temporary area, then the system share sheet) + UC-TRANSFER-002 step 5 |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:36` 7. Người dùng chọn đích ở share sheet. Hệ thống đóng sheet export và báo đã bàn | pending → SCR-TRANSFER-002 (the sheet closes and says the file was handed to the system, never where it was saved); intent kept in UC-TRANSFER-002 step 6 + FN-TRANSFER-006 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:36` 7. Người dùng chọn đích ở share sheet. Hệ thống đóng sheet export và báo đã bàn | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:39` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:41` **Alternative flows:** | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:42` - **A1 — Scope là tập đã chọn:** vào từ thanh hành động chọn nhiều; file chứa | superseded → FN-TRANSFER-005 (the chosen set, each card once, created_at order) + UC-TRANSFER-002 A1 |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:46` - **A2 — Đổi format:** chọn TSV hoặc XLSX; canonical schema, thứ tự card và ô | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:48` - **A3 — Đóng share sheet:** người dùng thoát share sheet mà không chọn đích. | moved → `USE_CASES.md` |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:51` - **A4 — Bấm export lần thứ hai khi đang tạo file:** hệ thống MUST bỏ qua lần | pending → SCR-TRANSFER-002 (the primary action locked until the first ends); intent kept in UC-TRANSFER-002 A4 |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:54` - **A5 — Huỷ trước khi submit:** `Cancel`, chạm ra ngoài sheet hoặc Android Back | pending → SCR-TRANSFER-002 (Cancel, tap outside or Android Back closes the sheet); intent kept in UC-TRANSFER-002 A5 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:51` - **A4 — Bấm export lần thứ hai khi đang tạo file:** hệ thống MUST bỏ qua lần | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:54` - **A5 — Huỷ trước khi submit:** `Cancel`, chạm ra ngoài sheet hoặc Android Back | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:57` **Error flows:** | moved → `USE_CASES.md` |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:58` - **E1 — Nền tảng không có share sheet:** hệ thống báo rằng chia sẻ không khả | pending → SCR-TRANSFER-002 (the message; the sheet stays open); intent kept in UC-TRANSFER-002 E1 + FN-TRANSFER-006 |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:61` - **E2 — Lỗi từ nền tảng khi chia sẻ:** exception của platform channel map | pending → SCR-TRANSFER-002 (the typed reason without path, file name or card content; Retry); intent kept in UC-TRANSFER-002 E2 + FN-TRANSFER-006 |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:64` - **E3 — Đọc dữ liệu thất bại:** đọc dữ liệu lỗi khi lấy snapshot → lý do có | pending → SCR-TRANSFER-002 (the typed reason; Retry from the read); intent kept in UC-TRANSFER-002 E3 |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:66` - **E4 — Encode thất bại:** encoder lỗi → lý do có kiểu phân biệt được với lỗi | pending → SCR-TRANSFER-002 (a reason distinct from the read error); intent kept in UC-TRANSFER-002 E4 + FN-TRANSFER-005 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:58` - **E1 — Nền tảng không có share sheet:** hệ thống báo rằng chia sẻ không khả | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:61` - **E2 — Lỗi từ nền tảng khi chia sẻ:** exception của platform channel map | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:64` - **E3 — Đọc dữ liệu thất bại:** đọc dữ liệu lỗi khi lấy snapshot → lý do có | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:66` - **E4 — Encode thất bại:** encoder lỗi → lý do có kiểu phân biệt được với lỗi | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:68` - **E5 — Không có gì để export:** deck rỗng hoặc tập chọn rỗng → domain từ chối | superseded → FN-TRANSFER-005 (Lỗi: emptyScope) + UC-TRANSFER-002 E5; the entry point hidden on an empty deck → SCR-CARD-001 |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:71` - **E6 — Id đã chọn không còn hợp lệ:** một id trong tập chọn đã bị xoá hoặc đã | pending → SCR-TRANSFER-002 (the message inviting a new selection); intent kept in UC-TRANSFER-002 E6 + FN-TRANSFER-005 |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:75` ## UI | pending → SCR-TRANSFER-002 (states initial · generating · share requested · dismissed · unavailable or platform error · read error · encoder error · invalid scope; no loading, no empty) |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:77` **UI states:** initial (scope + format, primary bật) · generating (primary khoá, | pending → SCR-TRANSFER-002 (states initial · generating · share requested · dismissed · unavailable or platform error · read error · encoder error · invalid scope; no loading, no empty) |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:71` - **E6 — Id đã chọn không còn hợp lệ:** một id trong tập chọn đã bị xoá hoặc đã | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:75` ## UI | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:77` **UI states:** initial (scope + format, primary bật) · generating (primary khoá, | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:84` ## Local | superseded → FN-TRANSFER-005 + FN-TRANSFER-006 (Kết quả: database unchanged; six content fields; the file stays in the private temporary area) |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:86` **Postconditions:** Database không đổi — nội dung, timestamp, `content_type`, | superseded → FN-TRANSFER-005 + FN-TRANSFER-006 (Kết quả: database unchanged; six content fields; the file stays in the private temporary area) |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:91` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
@@ -2967,7 +2967,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:98` - [ ] **Given** một ô bắt đầu bằng `=` hoặc một chuỗi như `001`, **when** export | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:99` - [ ] **Given** một tập chọn có một id đã bị xoá hoặc đã chuyển deck, **when** e | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:100` - [ ] **Given** bất kỳ export nào, **when** export xong hoặc thất bại, **then** | moved → `USE_CASES.md` |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:101` - [ ] **Given** người dùng đóng share sheet, **when** share trả về, **then** đó | pending → SCR-TRANSFER-002 (presentation of the criterion); intent kept in UC-TRANSFER-002 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:101` - [ ] **Given** người dùng đóng share sheet, **when** share trả về, **then** đó | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
 
 ## features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md
 
@@ -3388,11 +3388,11 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/transfer/README.md:19` ## Màn hình → Use case |  |
-| `features/transfer/README.md:21` \| Màn hình \| UC \| |  |
-| `features/transfer/README.md:23` \| Card list của deck loại card — "Import cards" \| UC-TRANSFER-001 \| |  |
-| `features/transfer/README.md:24` \| Card list — `Export cards` trong overflow menu \| UC-TRANSFER-002 \| |  |
-| `features/transfer/README.md:26` Nguồn: trigger của UC-TRANSFER-001 và UC-TRANSFER-002. |  |
+| `features/transfer/README.md:19` ## Màn hình → Use case || superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/transfer/README.md:21` \| Màn hình \| UC \| || superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/transfer/README.md:23` \| Card list của deck loại card — "Import cards" \| UC-TRANSFER-001 \| || superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/transfer/README.md:24` \| Card list — `Export cards` trong overflow menu \| UC-TRANSFER-002 \| || superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/transfer/README.md:26` Nguồn: trigger của UC-TRANSFER-001 và UC-TRANSFER-002. || superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/trash/README.md
 
@@ -3949,22 +3949,22 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/tags/presentation/goldens/tags_sheet_light.png` | superseded → SCR-TAG-001 `sheet` light |
 | `test/features/tags/presentation/goldens/tags_tag_gone_dark.png` | superseded → SCR-TAG-001 `tag_gone` dark |
 | `test/features/tags/presentation/goldens/tags_tag_gone_light.png` | superseded → SCR-TAG-001 `tag_gone` light |
-| `test/features/transfer/presentation/goldens/export_deck_dark.png` |  |
-| `test/features/transfer/presentation/goldens/export_deck_light.png` |  |
-| `test/features/transfer/presentation/goldens/export_failed_dark.png` |  |
-| `test/features/transfer/presentation/goldens/export_failed_light.png` |  |
-| `test/features/transfer/presentation/goldens/export_stale_dark.png` |  |
-| `test/features/transfer/presentation/goldens/export_stale_light.png` |  |
-| `test/features/transfer/presentation/goldens/import_mapping_dark.png` |  |
-| `test/features/transfer/presentation/goldens/import_mapping_light.png` |  |
-| `test/features/transfer/presentation/goldens/import_mapping_no_header_dark.png` |  |
-| `test/features/transfer/presentation/goldens/import_mapping_no_header_light.png` |  |
-| `test/features/transfer/presentation/goldens/import_partial_dark.png` |  |
-| `test/features/transfer/presentation/goldens/import_partial_light.png` |  |
-| `test/features/transfer/presentation/goldens/import_preview_dark.png` |  |
-| `test/features/transfer/presentation/goldens/import_preview_light.png` |  |
-| `test/features/transfer/presentation/goldens/import_source_dark.png` |  |
-| `test/features/transfer/presentation/goldens/import_source_light.png` |  |
+| `test/features/transfer/presentation/goldens/export_deck_dark.png` | superseded → SCR-TRANSFER-002 `whole_deck` dark |
+| `test/features/transfer/presentation/goldens/export_deck_light.png` | superseded → SCR-TRANSFER-002 `whole_deck` light |
+| `test/features/transfer/presentation/goldens/export_failed_dark.png` | superseded → SCR-TRANSFER-002 `failed` dark |
+| `test/features/transfer/presentation/goldens/export_failed_light.png` | superseded → SCR-TRANSFER-002 `failed` light |
+| `test/features/transfer/presentation/goldens/export_stale_dark.png` | superseded → SCR-TRANSFER-002 `stale_selection` dark |
+| `test/features/transfer/presentation/goldens/export_stale_light.png` | superseded → SCR-TRANSFER-002 `stale_selection` light |
+| `test/features/transfer/presentation/goldens/import_mapping_dark.png` | superseded → SCR-TRANSFER-001 `mapping` dark |
+| `test/features/transfer/presentation/goldens/import_mapping_light.png` | superseded → SCR-TRANSFER-001 `mapping` light |
+| `test/features/transfer/presentation/goldens/import_mapping_no_header_dark.png` | superseded → SCR-TRANSFER-001 `mapping_no_header` dark |
+| `test/features/transfer/presentation/goldens/import_mapping_no_header_light.png` | superseded → SCR-TRANSFER-001 `mapping_no_header` light |
+| `test/features/transfer/presentation/goldens/import_partial_dark.png` | superseded → SCR-TRANSFER-001 `partial` dark |
+| `test/features/transfer/presentation/goldens/import_partial_light.png` | superseded → SCR-TRANSFER-001 `partial` light |
+| `test/features/transfer/presentation/goldens/import_preview_dark.png` | superseded → SCR-TRANSFER-001 `preview_mix` dark |
+| `test/features/transfer/presentation/goldens/import_preview_light.png` | superseded → SCR-TRANSFER-001 `preview_mix` light |
+| `test/features/transfer/presentation/goldens/import_source_dark.png` | superseded → SCR-TRANSFER-001 `empty` dark |
+| `test/features/transfer/presentation/goldens/import_source_light.png` | superseded → SCR-TRANSFER-001 `empty` light |
 | `test/features/trash/presentation/goldens/trash_actions_dark.png` | superseded → SCR-TRASH-001 `actions` dark |
 | `test/features/trash/presentation/goldens/trash_actions_light.png` | superseded → SCR-TRASH-001 `actions` light |
 | `test/features/trash/presentation/goldens/trash_all_dark.png` | superseded → SCR-TRASH-001 `all` dark |
@@ -4358,3 +4358,11 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - Followed the code where the record was silent: an edit save and Back from a gone state return to the screen the editor was opened from (`maybePop`); a rejection the fields' checks let through is a snackbar.
 - The legacy UC-CARD-001 A6 bar (Add tag, Flag, Remove flag, Delete) differs from V8's Move · Flag · Tag · Export · Trash; ruled in SCR-CARD-001 (presentation, no BR).
 - Warning delta: 61 → 61 = −3 navigations to pending card specs, +3 SCR-CARD-001 navigations to pending study/transfer specs.
+
+## Task 34 notes — SCR-TRANSFER-001, SCR-TRANSFER-002
+
+- Records 11–12 → `SCR-TRANSFER-001-card-import.md`, `SCR-TRANSFER-002-card-export.md`; 16 goldens superseded.
+- 35 pending rows moved; transfer README rows superseded.
+- The export sheet has no route of its own: `route: []` and "—" in the catalog; it opens over SCR-CARD-001.
+- The legacy UC's separate import confirm step is V8's "Import {n} cards" under the deck header (ruled in the spec).
+- Warning delta: 61 → 58 = −3 navigations to pending transfer specs.

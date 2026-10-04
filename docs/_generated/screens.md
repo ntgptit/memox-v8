@@ -7,7 +7,7 @@
 - Invokes: FN-DECK-008, FN-CARD-001, FN-CARD-012, FN-CARD-008, FN-CARD-006, FN-CARD-007, FN-CARD-009, FN-CARD-010, FN-CARD-004, FN-CARD-005, FN-DECK-002, FN-DECK-010, FN-DECK-011, FN-DECK-004, FN-DECK-005
 - Rules via FN: BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD-009, BR-CARD-010, BR-CARD-011, BR-CARD-012, BR-DECK-001, BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-DECK-020, BR-DECK-021, BR-DECK-022, BR-DECK-023, BR-DECK-024, BR-SRS-003, BR-SRS-005, BR-SRS-006, BR-SRS-028, BR-SRS-029, BR-STUDY-047, BR-STUDY-068, BR-TAG-001, BR-TAG-002, BR-TAG-004, BR-TAG-005, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-006, BR-TRASH-008, BR-TRASH-010
 - Use cases: UC-CARD-001, UC-CARD-002, UC-TAG-001, UC-TRASH-001
-- Entry points: SCR-DECK-001
+- Entry points: SCR-DECK-001, SCR-TRANSFER-001
 
 | State | Golden | Present |
 |---|---|---|
@@ -205,6 +205,52 @@
 | `op_error` | light, dark | — |
 | `tag_gone` | light, dark | — |
 | `read_error` | light, dark | — |
+
+## [SCR-TRANSFER-001](../screens/spec/SCR-TRANSFER-001-card-import.md) · Card import
+
+- Invokes: FN-TRANSFER-001, FN-TRANSFER-002, FN-TRANSFER-003
+- Rules via FN: BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-DECK-004, BR-DECK-008, BR-DECK-010, BR-TAG-001, BR-TAG-002, BR-TRANSFER-001, BR-TRANSFER-002, BR-TRANSFER-003, BR-TRANSFER-004, BR-TRANSFER-005, BR-TRANSFER-006, BR-TRANSFER-009
+- Use cases: UC-TRANSFER-001
+- Entry points: SCR-CARD-001, SCR-DECK-001
+
+| State | Golden | Present |
+|---|---|---|
+| `empty` | light, dark | — |
+| `pasted` | none | — |
+| `file_selected` | none | — |
+| `bad_encoding` | none | — |
+| `empty_sheet` | none | — |
+| `parsing` | none | — |
+| `mapping` | light, dark | — |
+| `mapping_no_header` | light, dark | — |
+| `mapping_incomplete` | none | — |
+| `preview_all` | none | — |
+| `preview_mix` | light, dark | — |
+| `importing` | none | — |
+| `success` | none | — |
+| `partial` | light, dark | — |
+| `none` | none | — |
+| `failed` | none | — |
+| `rejects` | none | — |
+
+## [SCR-TRANSFER-002](../screens/spec/SCR-TRANSFER-002-card-export.md) · Card export
+
+- Invokes: FN-TRANSFER-004, FN-TRANSFER-005, FN-TRANSFER-006
+- Rules via FN: BR-CORE-001, BR-CORE-004, BR-TRANSFER-007, BR-TRANSFER-008, BR-TRANSFER-009, BR-TRANSFER-010, BR-TRANSFER-011, BR-TRANSFER-012, BR-TRANSFER-013, BR-TRANSFER-014
+- Use cases: UC-TRANSFER-002
+- Entry points: SCR-CARD-001
+
+| State | Golden | Present |
+|---|---|---|
+| `whole_deck` | light, dark | — |
+| `selection` | none | — |
+| `preparing` | none | — |
+| `handed_over` | none | — |
+| `share_closed` | none | — |
+| `failed` | light, dark | — |
+| `no_share_target` | none | — |
+| `stale_selection` | light, dark | — |
+| `nothing_to_export` | none | — |
 
 ## [SCR-TRASH-001](../screens/spec/SCR-TRASH-001-trash.md) · Trash
 

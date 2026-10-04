@@ -643,12 +643,12 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-TRANSFER-001](../functional-spec/transfer.md) | Đọc nguồn import | active | UC-TRANSFER-001 |
-| [FN-TRANSFER-002](../functional-spec/transfer.md) | Xem trước một lần import | active | UC-TRANSFER-001 |
-| [FN-TRANSFER-003](../functional-spec/transfer.md) | Import card vào deck | active | UC-TRANSFER-001 |
-| [FN-TRANSFER-004](../functional-spec/transfer.md) | Đếm card một lần export sẽ có | active | UC-TRANSFER-002 |
-| [FN-TRANSFER-005](../functional-spec/transfer.md) | Tạo file export | active | UC-TRANSFER-002 |
-| [FN-TRANSFER-006](../functional-spec/transfer.md) | Chia sẻ file export | active | UC-TRANSFER-002 |
+| [FN-TRANSFER-001](../functional-spec/transfer.md) | Đọc nguồn import | active | SCR-TRANSFER-001, UC-TRANSFER-001 |
+| [FN-TRANSFER-002](../functional-spec/transfer.md) | Xem trước một lần import | active | SCR-TRANSFER-001, UC-TRANSFER-001 |
+| [FN-TRANSFER-003](../functional-spec/transfer.md) | Import card vào deck | active | SCR-TRANSFER-001, UC-TRANSFER-001 |
+| [FN-TRANSFER-004](../functional-spec/transfer.md) | Đếm card một lần export sẽ có | active | SCR-TRANSFER-002, UC-TRANSFER-002 |
+| [FN-TRANSFER-005](../functional-spec/transfer.md) | Tạo file export | active | SCR-TRANSFER-002, UC-TRANSFER-002 |
+| [FN-TRANSFER-006](../functional-spec/transfer.md) | Chia sẻ file export | active | SCR-TRANSFER-002, UC-TRANSFER-002 |
 
 ### Use cases
 
@@ -656,6 +656,13 @@
 |---|---|---|---|
 | [UC-TRANSFER-001](../USE_CASES.md) | Import card hàng loạt vào một deck | ready | — |
 | [UC-TRANSFER-002](../USE_CASES.md) | Export card của một deck ra file | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-TRANSFER-001](../screens/spec/SCR-TRANSFER-001-card-import.md) | Card import | ready | `/decks/deck/:deckId/cards/import` |
+| [SCR-TRANSFER-002](../screens/spec/SCR-TRANSFER-002-card-export.md) | Card export | ready | — |
 
 ## [trash](../features/trash/README.md)
 

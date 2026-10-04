@@ -18,8 +18,8 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 | SCR-CARD-002 | Card create | card | `/decks/deck/:deckId/cards/new` | ready | `spec/SCR-CARD-002-card-create.md` |
 | SCR-CARD-003 | Card edit | card | `/decks/card/:cardId/edit` | ready | `spec/SCR-CARD-003-card-edit.md` |
 | SCR-CARD-004 | Card detail | card | `/decks/card/:cardId` | ready | `spec/SCR-CARD-004-card-detail.md` |
-| SCR-TRANSFER-001 | Card import | transfer | — | pending | — |
-| SCR-TRANSFER-002 | Card export | transfer | — | pending | — |
+| SCR-TRANSFER-001 | Card import | transfer | `/decks/deck/:deckId/cards/import` | ready | `spec/SCR-TRANSFER-001-card-import.md` |
+| SCR-TRANSFER-002 | Card export | transfer | — | ready | `spec/SCR-TRANSFER-002-card-export.md` |
 | SCR-STUDY-001 | Study home | study | — | pending | — |
 | SCR-STUDY-002 | Study entry | study | — | pending | — |
 | SCR-STUDY-003 | Study · Browse | study | — | pending | — |
