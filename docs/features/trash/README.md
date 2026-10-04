@@ -21,6 +21,14 @@ Từ vựng: **batch** là một lần xoá của người dùng, mang một id 
 là chính card/deck người dùng đã chạm; **tombstone** là hàng còn nguyên trong
 `card`/`deck` nhưng mang `delete_batch_id`; **purge** là xoá cứng vĩnh viễn.
 
+## Màn hình → Use case
+
+| Màn hình | UC |
+|---|---|
+| `Trash` từ app bar (và thao tác xoá card/deck vào Trash) | UC-TRASH-001 |
+
+Nguồn: trigger của UC-TRASH-001.
+
 ## Không thuộc phạm vi
 
 | Thứ | Vì sao |

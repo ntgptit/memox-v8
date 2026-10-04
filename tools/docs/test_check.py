@@ -90,12 +90,13 @@ class V7ResidueTest(unittest.TestCase):
 
 def uc(status: str, criteria: str, elsewhere: str = "") -> "check.g.Doc":
     body = (
-        "#### Main flow\n\n" + elsewhere + "\n\n"
-        "#### Acceptance criteria\n\n" + criteria + "\n"
+        "## Main flow\n\n" + elsewhere + "\n\n"
+        "## Acceptance criteria\n\n" + criteria + "\n"
     )
     return check.g.Doc(
-        path=Path("docs/USE_CASES.md"), kind="UC", feature="x",
-        meta={"id": "UC-X-001", "status": status}, body=body, line=10,
+        path=Path("docs/features/x/usecases/UC-X-001-x.md"), kind="UC", feature="x",
+        meta={"id": "UC-X-001", "status": status}, body=body,
+        sections=check.g.h2_sections(body),
     )
 
 

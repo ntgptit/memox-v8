@@ -6,13 +6,6 @@
 
 - L161: **OPEN QUESTION** line are the ones raised for review; the rest are decisions
 
-## [superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md](../superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md)
-
-- L13: Re-seed adds no row. Migration OPEN QUESTION: 0. Unresolved current-spec ruling: SCR-STUDY-007 —
-- L4088: - The OPEN QUESTION on the order of the move checks (FN-DECK-011) was ruled by the owner on
-- L4099: - Two OPEN QUESTIONs raised in SCR-DECK-001, where UC-DECK-001 E2 and UC-DECK-003 step 3 described
-- L4451: Re-seed adds no row. Migration OPEN QUESTION: 0. Unresolved current-spec ruling: SCR-STUDY-007 —
-
 ## [wbs_FE.md](../wbs_FE.md)
 
-- L296: OPEN QUESTION A4 của UC-STUDY-002 đóng; màn 13 `aligned`.
+- L283: OPEN QUESTION A4 của UC-STUDY-002 đóng; màn 13 `aligned`.

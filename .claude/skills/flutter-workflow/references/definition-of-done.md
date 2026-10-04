@@ -54,7 +54,7 @@ without re-checking.
 
 ## Paperwork
 - [ ] `docs/wbs_BE.md` or `docs/wbs_FE.md` updated in this commit; for a screen,
-      its spec and its row in `docs/screens/SCREEN_CATALOG.md` too.
+      its row in the screen handoff index too.
 - [ ] Any doc the change invalidates (data model, API spec, design system) updated
       in this commit too.
 - [ ] Code reviewed.

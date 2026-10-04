@@ -1,7 +1,7 @@
 ---
 id: ADR-006
 title: Cây deck nhiều cấp, mỗi deck một loại nội dung
-status: accepted
+status: active
 superseded_by:
 ---
 Quyết định đã chốt ngày 2026-07-28 (trước migrate nằm ở `product/product.md`, mục "Quyết định đã chốt").

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+
+final _en = lookupAppLocalizations(const Locale('en'));
 
 /// Korean › Words with the card bap, deleted [age] before [libraryToday].
 Future<void> _seedDeleted(LibraryEnv env, Duration age) async {
@@ -54,7 +57,23 @@ void main() {
     expect(await _batches(env), 0);
   });
 
-  libraryTest('a resume purges what expired meanwhile (UC-TRASH-001 A4)', (
+  libraryTest('a resume purges what expired meanwhile, and the open Trash '
+      'drops it in place (UC-TRASH-001 A4)', (tester, env) async {
+    await _seedDeleted(env, trashRetention - const Duration(hours: 1));
+    await pumpMemoxApp(tester, env);
+    await tester.tap(find.byTooltip(_en.libraryTrash));
+    await tester.pumpAndSettle();
+    expect(find.text('bap · rice'), findsOneWidget);
+
+    env.clock.current = libraryToday.add(const Duration(hours: 2));
+    _cycleLifecycle(tester);
+    await tester.pumpAndSettle();
+
+    expect(find.text('bap · rice'), findsNothing);
+    expect(find.text(_en.trashEmptyTitle), findsOneWidget);
+  });
+
+  libraryTest('opening the Trash purges what expired since the start', (
     tester,
     env,
   ) async {
@@ -63,9 +82,10 @@ void main() {
     expect(await _batches(env), 1);
 
     env.clock.current = libraryToday.add(const Duration(hours: 2));
-    _cycleLifecycle(tester);
+    await tester.tap(find.byTooltip(_en.libraryTrash));
     await tester.pumpAndSettle();
 
+    expect(find.text(_en.trashEmptyTitle), findsOneWidget);
     expect(await _batches(env), 0);
   });
 }

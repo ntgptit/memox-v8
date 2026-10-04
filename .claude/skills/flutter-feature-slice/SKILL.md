@@ -18,10 +18,8 @@ the same problems until they are expensive.
 Do not skip this because the feature "seems obvious". Every item here that turns
 out to be open becomes rework, and the rework is always larger than the check.
 
-- [ ] **Use case approved** — its section in `docs/USE_CASES.md` (`ready`) has main,
-      alternative and error flows, and the FNs it invokes are in
-      `docs/functional-spec/<feature>.md`; for a screen, its row in
-      `docs/screens/SCREEN_CATALOG.md` and its spec in `docs/screens/spec/`.
+- [ ] **Use case approved** — exists in `docs/features/<feature>/usecases/` with main,
+      alternative and error flows.
 - [ ] **Business rules clear** — the `BR-xx` rules this feature enforces are
       written, and validation rules have their exact user-facing messages.
 - [ ] **Design available** — or an explicit agreement to use existing components
@@ -217,8 +215,8 @@ level, and their size is a reference for a slice of that weight.
 - [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
       (`flutter analyze` does not cover the Riverpod and layering rules).
 - [ ] `docs/wbs_BE.md` or `docs/wbs_FE.md` updated in this commit — status, and
-      anything descoped with the reason; for a screen, its spec and its row in
-      `docs/screens/SCREEN_CATALOG.md`.
+      anything descoped with the reason; for a screen, its row in the screen
+      handoff index.
 - [ ] Docs the feature changed (data model, API spec, architecture decisions)
       updated in the same commit.
 - [ ] Full Definition of Done reviewed:

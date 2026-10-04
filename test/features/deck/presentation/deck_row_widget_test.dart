@@ -1,0 +1,161 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/features/deck/domain/models/deck_level_model.dart';
+import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_workload_line_widget.dart';
+import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_linear_progress.dart';
+
+import '../../../support/library_harness.dart';
+
+final _en = lookupAppLocalizations(const Locale('en'));
+final _today = DateTime(2026, 9, 24);
+
+DeckTile _tile({
+  String name = 'Korean',
+  int subDecks = 4,
+  int cards = 1248,
+  int overdue = 41,
+  int today = 45,
+  int mastered = 0,
+}) => DeckTile(
+  id: 'k',
+  name: name,
+  siblingPosition: 0,
+  createdAt: _today,
+  schedulerType: SchedulerType.sm2,
+  subDeckCount: subDecks,
+  cardCount: cards,
+  newCount: 0,
+  overdueCount: overdue,
+  dueTodayCount: today,
+  masteredCount: mastered,
+  oldestDueAt: overdue > 0 ? DateTime(2026, 9, 20) : null,
+  startOfToday: _today,
+);
+
+void main() {
+  Future<void> pump(
+    WidgetTester tester,
+    LibraryEnv env,
+    DeckTile tile, {
+    VoidCallback? onMore,
+  }) => pumpLibraryScreen(
+    tester,
+    env,
+    Scaffold(
+      body: Center(
+        child: DeckRowWidget(tile: tile, onTap: () {}, onMore: onMore ?? () {}),
+      ),
+    ),
+  );
+
+  libraryTest('a card with the name, the due badge and the structure line', (
+    tester,
+    env,
+  ) async {
+    await pump(tester, env, _tile());
+
+    expect(find.byType(MxCard), findsOneWidget);
+    expect(find.text('Korean'), findsOneWidget);
+    expect(find.widgetWithText(MxBadge, _en.deckDueBadge(86)), findsOneWidget);
+    expect(
+      find.text(
+        _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('a deck of cards counts only its cards (screen 01)', (
+    tester,
+    env,
+  ) async {
+    await pump(tester, env, _tile(subDecks: 0, cards: 420));
+
+    expect(find.text(_en.deckCardCount(420)), findsOneWidget);
+    expect(find.textContaining(_en.deckSubDeckCount(0)), findsNothing);
+  });
+
+  libraryTest('no badge when nothing is due; an empty deck says so', (
+    tester,
+    env,
+  ) async {
+    await pump(tester, env, _tile(subDecks: 0, cards: 0, overdue: 0, today: 0));
+
+    expect(find.byType(MxBadge), findsNothing);
+    expect(find.text(_en.deckRowEmpty), findsOneWidget);
+  });
+
+  libraryTest('the mastery bar fills to the mastered share and the row says '
+      'the percent (BR-DECK-026)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await pump(tester, env, _tile(mastered: 204));
+
+    final bar = tester.widget<MxLinearProgress>(find.byType(MxLinearProgress));
+    expect((bar.isMastery, bar.value), (true, 204 / 1248));
+    expect(
+      find.bySemanticsLabel(RegExp(_en.deckRowMastered(16))),
+      findsOneWidget,
+    );
+    handle.dispose();
+  });
+
+  libraryTest('a deck with no card draws the bare track and says no percent '
+      '(BR-DECK-026)', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await pump(tester, env, _tile(subDecks: 0, cards: 0, overdue: 0, today: 0));
+
+    final bar = tester.widget<MxLinearProgress>(find.byType(MxLinearProgress));
+    expect(bar.value, 0);
+    expect(find.bySemanticsLabel(RegExp('mastered')), findsNothing);
+    handle.dispose();
+  });
+
+  libraryTest('⋮ is its own button, named for the deck', (tester, env) async {
+    var more = 0;
+    await pump(tester, env, _tile(), onMore: () => more++);
+
+    await tester.tap(find.byTooltip(_en.deckMoreActions('Korean')));
+    expect(more, 1);
+  });
+
+  libraryTest('the structure line wraps, never cut '
+      '(critique 2026-09-30)', (tester, env) async {
+    await pump(tester, env, _tile());
+    final meta = tester.widget<Text>(
+      find.text(
+        _en.deckRowMeta(_en.deckSubDeckCount(4), _en.deckCardCount(1248)),
+      ),
+    );
+
+    expect((meta.maxLines, meta.overflow), (null, null));
+  });
+
+  libraryTest('the workload line wraps between terms (critique 2026-09-30)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const Scaffold(
+        body: DeckWorkloadLineWidget(
+          overdueCount: 3,
+          todayCount: 1,
+          newCount: 2,
+          cardCount: 6,
+        ),
+      ),
+    );
+
+    final line = tester.widget<MxWorkloadBreakdownLine>(
+      find.byType(MxWorkloadBreakdownLine),
+    );
+    expect(line.canWrap, isTrue);
+  });
+}

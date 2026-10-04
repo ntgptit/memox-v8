@@ -1,0 +1,143 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/features/account/data/repositories/account_device_repository_impl.dart';
+import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
+import 'package:memox/features/account/presentation/screens/welcome_screen.dart';
+import 'package:memox/features/account/presentation/widgets/overlays/merge_choice_sheet_widget.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
+
+import '../../../support/account_harness.dart';
+import '../../../support/deck_fixtures.dart';
+import '../../../support/library_harness.dart';
+
+final _en = lookupAppLocalizations(const Locale('en'));
+
+Future<void> _settle(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 400));
+}
+
+void main() {
+  late int dones;
+  late int emails;
+
+  setUp(() {
+    dones = 0;
+    emails = 0;
+  });
+
+  WelcomeScreen screen() =>
+      WelcomeScreen(onDone: () => dones++, onEmail: () => emails++);
+
+  final shown = welcomeDueProvider.overrideWithBuild((ref, _) => true);
+
+  bool isDue(WidgetTester tester) =>
+      ProviderScope.containerOf(tester.element(find.byType(WelcomeScreen)))
+          .read(welcomeDueProvider);
+
+  accountTest('Continue without an account answers Welcome for good and '
+      'goes on', (tester, env, world) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    await tester.tap(find.text(_en.accountContinueWithout));
+    await _settle(tester);
+
+    expect(dones, 1);
+    expect(isDue(tester), isFalse);
+    expect(await AccountDeviceRepositoryImpl(env.db).isWelcomeSeen(), isTrue);
+  });
+
+  accountTest('Google attaches the account, says so and goes on', (
+    tester,
+    env,
+    world,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await _settle(tester);
+
+    expect(dones, 1);
+    expect(isDue(tester), isFalse);
+    expect(find.text(_en.accountSignedInAs('g@example.com')), findsOneWidget);
+  });
+
+  accountTest('Continue with email goes to screen 30', (
+    tester,
+    env,
+    world,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    await tester.tap(find.text(_en.accountContinueEmail));
+    await _settle(tester);
+
+    expect(emails, 1);
+    expect(isDue(tester), isFalse);
+  });
+
+  accountTest('first launch offline: sign-in waits and says why, and '
+      'without still leaves (Review Focus 1)', (tester, env, world) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [
+        ...accountOverrides(world),
+        shown,
+        authStateOf(const LocalOnly()),
+      ],
+    );
+
+    MxButton button(String label) =>
+        tester.widget<MxButton>(find.widgetWithText(MxButton, label));
+    expect(button(_en.accountContinueGoogle).onPressed, isNull);
+    expect(button(_en.accountContinueEmail).onPressed, isNull);
+    expect(find.text(_en.accountOfflineNote), findsOneWidget);
+
+    await tester.tap(find.text(_en.accountContinueWithout));
+    await _settle(tester);
+    expect(dones, 1);
+  });
+
+  accountTest("a Google account that is another account's asks to merge, "
+      'and the choice leaves Welcome', (tester, env, world) async {
+    world.server.addUser(email: 'g@example.com');
+    await env.decks.root('Korean');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await _settle(tester);
+    expect(find.byType(MergeChoiceSheetWidget), findsOneWidget);
+    expect(find.text(_en.accountTakenGoogle), findsOneWidget);
+
+    await tester.tap(find.text(_en.accountContinue));
+    await _settle(tester);
+
+    expect(dones, 1);
+    expect(world.state, isA<Transitioning>());
+  });
+}

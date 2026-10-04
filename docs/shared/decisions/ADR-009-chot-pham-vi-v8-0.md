@@ -1,7 +1,7 @@
 ---
 id: ADR-009
 title: Chốt phạm vi V8.0
-status: accepted
+status: active
 superseded_by:
 ---
 ## Bối cảnh
@@ -18,7 +18,7 @@ viện và việc gắn tag trên thẻ. Chủ dự án chốt các điểm này
 |---|---|---|
 | 1 | Mode nào ship ở V8.0 | Đủ sáu mode: `browse`, `self_assess`, `match`, `guess`, `recall`, `fill` (BR-MODE-002) |
 | 2 | Tìm kiếm toàn thư viện (UC-SEARCH-001) | Thuộc V8.0 |
-| 3 | Điều hướng top-level và nội dung Progress | Theo BR/UC hiện tại: bốn destination ở [`NAVIGATION.md`](../../NAVIGATION.md), nội dung Progress theo BR-PROGRESS-001…BR-PROGRESS-018 |
+| 3 | Điều hướng top-level và nội dung Progress | Theo BR/UC hiện tại: bốn destination ở [`navigation.md`](../ui/navigation.md), nội dung Progress theo BR-PROGRESS-001…BR-PROGRESS-018 |
 | 4 | Tag | Gắn/gỡ tag trên thẻ (BR-TAG-001, BR-TAG-002, UC-CARD-001 A8) thuộc V8.0; Tag Management (UC-TAG-001, BR-TAG-003…BR-TAG-011) vẫn là sub-project sau |
 
 ## Hệ quả

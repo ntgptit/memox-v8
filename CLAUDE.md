@@ -31,7 +31,7 @@ Each layer answers one question; none takes over another's.
 
 ### A screen's workflow
 
-1. Read the screen's spec, the FNs it invokes, `docs/screens/SCREEN_CATALOG.md` and `DESIGN.md`.
+1. Read the screen's detail file, its goldens and `DESIGN.md`.
 2. Run `superpowers:brainstorming`: goal, scope, business rules (BR/UC),
    constraints.
 3. Run Impeccable before the plan:
@@ -53,7 +53,7 @@ Each layer answers one question; none takes over another's.
 |---|---|
 | Architecture and product decisions | an ADR in `docs/shared/decisions/` (read its `status:`) |
 | The visual system | `DESIGN.md` |
-| A screen's layout, states, rulings and copy | its spec in `docs/screens/spec/` (catalog: `docs/screens/SCREEN_CATALOG.md`) |
+| A screen's layout, states, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
 | Known UI debt | the UI-base register (§9 of `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`) |
 | Work progress | `docs/wbs_FE.md`, `docs/wbs_BE.md`, `docs/wbs_supabase.md` (`flutter-workflow`) |
 | Plan-time rulings | the plan and its execution ledger, then the PR |
@@ -91,13 +91,12 @@ project goes into the repo through a PR.
   tables have RLS on, no policy and no client privilege. Its gate is
   `npx supabase db start` then `npx supabase test db`.
   `memox-api-services/` is frozen: a reference only, out of CI, not developed.
-- **Documents are the UI authority** ([ADR-021](docs/shared/decisions/ADR-021-tai-lieu-dan-dat-ui-khi-xay-lai.md),
-  superseding ADR-019): BR, FN and UC beat `DESIGN.md`; `DESIGN.md` beats a
-  screen spec (`docs/screens/spec/`); a screen spec beats its goldens, which
-  the owner reviews. The "Mobile UI Kit v3" artifact is retired and never read.
-  A PR that changes the visual system updates `DESIGN.md` first; one that
-  changes a screen updates its spec and its row in
-  `docs/screens/SCREEN_CATALOG.md`.
+- **The app is the UI authority** ([ADR-019](docs/shared/decisions/ADR-019-app-la-chuan-ui.md)):
+  `DESIGN.md` and the reviewed goldens. The "Mobile UI Kit v3" artifact is
+  retired and never read. A BR or UC beats `DESIGN.md`; `DESIGN.md` and the
+  goldens beat a screen's detail file. A PR that changes the visual system
+  updates `DESIGN.md`; one that changes a screen updates its detail file and
+  its row in the screen index.
 - **Stack and layers:** the layer architecture and folder names follow
   [ADR-010](docs/shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md);
   Riverpod and Drift, not BLoC or Freezed, whatever an ECC skill shows.

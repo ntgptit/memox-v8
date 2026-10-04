@@ -1,7 +1,7 @@
 ---
 id: ADR-002
 title: Dữ liệu nhạy cảm và chưa mã hoá database
-status: accepted
+status: active
 superseded_by:
 ---
 ## Quyết định

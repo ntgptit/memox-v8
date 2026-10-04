@@ -1,0 +1,234 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
+
+import '../../support/widget_harness.dart';
+
+Finder _tile(IconData icon) => find
+    .ancestor(of: find.byIcon(icon), matching: find.byType(DecoratedBox))
+    .first;
+
+void main() {
+  final scheme = AppColorSchemes.light;
+
+  testWidgets('title, body and a block primary action', (tester) async {
+    var taps = 0;
+    await pumpMx(
+      tester,
+      MxEmptyState(
+        icon: AppIcons.inbox,
+        title: 'No decks yet',
+        body: 'Create one to start.',
+        actionLabel: 'Create deck',
+        onAction: () => taps++,
+      ),
+    );
+    await tester.tap(find.byType(MxButton));
+
+    expect(find.text('No decks yet'), findsOneWidget);
+    expect(find.text('Create one to start.'), findsOneWidget);
+    final button = tester.widget<MxButton>(find.byType(MxButton));
+    expect(button.tone, MxButtonTone.primary);
+    expect(button.isBlock, isTrue);
+    expect(taps, 1);
+  });
+
+  testWidgets('no action paints no button', (tester) async {
+    await pumpMx(
+      tester,
+      const MxEmptyState(icon: AppIcons.search, title: 'No match'),
+    );
+
+    expect(find.byType(MxButton), findsNothing);
+  });
+
+  test('a label without a callback is a programming error', () {
+    expect(
+      () => MxEmptyState(icon: AppIcons.inbox, title: 'x', actionLabel: 'Go'),
+      throwsAssertionError,
+    );
+  });
+
+  testWidgets('tone tints the tile at 10% and paints the glyph', (
+    tester,
+  ) async {
+    final tones = {
+      MxEmptyStateTone.primary: scheme.primary,
+      MxEmptyStateTone.neutral: scheme.onSurfaceVariant,
+      MxEmptyStateTone.success: MxSemanticColors.light.success,
+      MxEmptyStateTone.warning: MxSemanticColors.light.warning,
+      MxEmptyStateTone.danger: scheme.error,
+    };
+    for (final MapEntry(key: tone, value: color) in tones.entries) {
+      await pumpMx(
+        tester,
+        MxEmptyState(icon: AppIcons.inbox, title: 'T', tone: tone),
+      );
+      final tile = tester.widget<DecoratedBox>(_tile(AppIcons.inbox));
+
+      expect(
+        (tile.decoration as BoxDecoration).color,
+        color.withValues(alpha: 0.10),
+        reason: '$tone',
+      );
+      // The primary glyph reads in primaryInk (spec 2026-09-27 D2), the
+      // success glyph in its ink (critique 2026-09-30 tone pass, T7).
+      final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+      final glyph = switch (tone) {
+        MxEmptyStateTone.primary => MxDerivedColors.primaryInkOf(scheme),
+        MxEmptyStateTone.success => derived.successInk,
+        // Warning reads in its ink too (critique 2026-09-30 part 3d-2, E14).
+        MxEmptyStateTone.warning => derived.warningInk,
+        _ => color,
+      };
+      expect(tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color, glyph);
+    }
+  });
+
+  testWidgets('full tile is 64/r20/32 glyph, compact 52/r16/24', (
+    tester,
+  ) async {
+    await pumpMx(tester, const MxEmptyState(icon: AppIcons.inbox, title: 'T'));
+    expect(tester.getSize(_tile(AppIcons.inbox)), const Size.square(64));
+    expect(tester.getSize(find.byIcon(AppIcons.inbox)).width, 32);
+
+    await pumpMx(
+      tester,
+      const MxEmptyState(icon: AppIcons.inbox, title: 'T', isCompact: true),
+    );
+    expect(tester.getSize(_tile(AppIcons.inbox)), const Size.square(52));
+    expect(tester.getSize(find.byIcon(AppIcons.inbox)).width, 24);
+  });
+
+  testWidgets('a footnote sits 20 below the action as a note', (tester) async {
+    await pumpMx(
+      tester,
+      MxEmptyState(
+        icon: AppIcons.inbox,
+        title: 'Trash is empty',
+        actionLabel: 'Back to library',
+        onAction: () {},
+        footnote: 'Deleted items stay here for 30 days.',
+      ),
+    );
+
+    expect(
+      tester.getTopLeft(find.byType(MxNote)).dy -
+          tester.getBottomLeft(find.byType(MxButton)).dy,
+      20,
+    );
+  });
+
+  testWidgets('a secondary action sits between the action and the footnote', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxEmptyState(
+        icon: AppIcons.library,
+        title: 'Start your library',
+        actionLabel: 'Create deck',
+        onAction: () {},
+        secondaryActionLabel: 'Browse starter decks',
+        footnote: 'Everything stays on this device.',
+      ),
+    );
+    final primary = tester.getTopLeft(find.text('Create deck')).dy;
+    final secondary = tester.getTopLeft(find.text('Browse starter decks')).dy;
+    final note = tester
+        .getTopLeft(find.text('Everything stays on this device.'))
+        .dy;
+
+    expect(primary, lessThan(secondary));
+    expect(secondary, lessThan(note));
+  });
+
+  testWidgets('a secondary action without a callback is disabled', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxEmptyState(
+        icon: AppIcons.library,
+        title: 'Start your library',
+        secondaryActionLabel: 'Browse starter decks',
+      ),
+    );
+    final button = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, 'Browse starter decks'),
+    );
+
+    expect(button.onPressed, isNull);
+    expect(button.tone, MxButtonTone.secondary);
+  });
+  testWidgets('a third action is an outline block button, 8 under the second', (
+    tester,
+  ) async {
+    var taps = 0;
+    await pumpMx(
+      tester,
+      MxEmptyState(
+        icon: AppIcons.folder,
+        title: 'Empty deck',
+        actionLabel: 'New card',
+        onAction: () {},
+        secondaryActionLabel: 'New sub-deck',
+        onSecondaryAction: () {},
+        tertiaryActionLabel: 'Import cards',
+        onTertiaryAction: () => taps++,
+      ),
+    );
+    final buttons = tester.widgetList<MxButton>(find.byType(MxButton)).toList();
+
+    expect(buttons.map((b) => b.tone), [
+      MxButtonTone.primary,
+      MxButtonTone.secondary,
+      MxButtonTone.outline,
+    ]);
+    expect(buttons.every((b) => b.isBlock), isTrue);
+    expect(
+      tester.getTopLeft(find.widgetWithText(MxButton, 'Import cards')).dy -
+          tester
+              .getBottomLeft(find.widgetWithText(MxButton, 'New sub-deck'))
+              .dy,
+      8,
+    );
+    await tester.tap(find.text('Import cards'));
+    expect(taps, 1);
+  });
+
+  test('a tertiary label without its callback is a programming error', () {
+    expect(
+      () => MxEmptyState(
+        icon: AppIcons.inbox,
+        title: 'x',
+        tertiaryActionLabel: 'Import',
+      ),
+      throwsAssertionError,
+    );
+  });
+
+  testWidgets('in dark the warning glyph reads in warning ink too (critique '
+      '2026-09-30 part 3d-2, E14)', (tester) async {
+    await pumpMx(
+      tester,
+      const MxEmptyState(
+        icon: AppIcons.inbox,
+        title: 'T',
+        tone: MxEmptyStateTone.warning,
+      ),
+      brightness: Brightness.dark,
+    );
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color,
+      tester.element(find.byIcon(AppIcons.inbox)).derivedColors.warningInk,
+    );
+  });
+}
