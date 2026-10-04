@@ -2265,97 +2265,97 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:2` id: UC-PROGRESS-001 |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:3` title: Xem tiến độ học |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:4` status: ready |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:5` rules: [BR-MODE-005, BR-PROGRESS-009, BR-PROGRESS-010, BR-PROGRESS-011, BR-PROGR |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:6` code: [lib/features/progress/domain/usecases/watch_progress_use_case.dart, lib/f |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:10` **Actor:** Người dùng |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:16` ## Main flow |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:18` **Main flow:** |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:19` 1. Người dùng mở tab Progress. Hệ thống chụp **một** snapshot của |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:21` 2. Hệ thống mở **một** stream đọc lịch sử học, gộp ngay trong SQLite thành các |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:24` 3. Trong lúc chờ emission đầu tiên, màn hình hiện trạng thái loading có nhãn |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:26` 4. Emission tới. Hệ thống hiển thị ba khối, cùng một snapshot: |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:35` 5. Người dùng đọc xong và rời tab. Hệ thống không ghi gì trong toàn bộ luồng |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:38` ## Alternative / Error flow |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:40` **Alternative flows:** |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:41` - **A1 — Hôm nay chưa học nhưng hôm qua có:** Today hiện 0, và streak **vẫn |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:44` - **A2 — Chưa từng học lượt nào:** cả ba khối rỗng. Hệ thống hiện một mặt |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:47` - **A3 — Có một lượt mới ghi trong lúc màn đang mở:** người dùng học ở tab khác |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:50` - **A4 — Local midnight trôi qua trong lúc màn đang mở:** cửa sổ bảy ngày trượt |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:53` - **A5 — Reset learning progress ở màn khác rồi quay lại:** mọi con số giữ |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:55` - **A6 — Xoá một card hoặc một deck ở màn khác rồi quay lại:** hoạt động của |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:57` - **A7 — Chỉ lướt `browse` rồi thoát:** không có gì đổi — `browse` không ghi |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:60` **Error flows:** |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:61` - **E1 — Đọc lịch sử thất bại:** hệ thống map exception thành `Failure`; màn |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:64` - **E2 — Retry vẫn lỗi:** màn hình ở lại mặt lỗi; MUST NOT tự thử lại vòng lặp |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:67` ## UI |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:69` **UI states:** loading · loaded-normal (có hoạt động trong cửa sổ) · |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:75` ## Local |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:77` **Postconditions:** Database không đổi ở mọi nhánh, kể cả nhánh lỗi và nhánh |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:80` ## API |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:82` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:84` ## Acceptance criteria |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:86` - [ ] **Given** người dùng mở tab Progress, **when** hệ thống đọc xong, **then** |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:87` - [ ] **Given** màn Progress đang mở, **when** người dùng chỉ đọc rồi rời tab ho |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:88` - [ ] **Given** hôm nay chưa học nhưng hôm qua có, **when** mở Progress, **then* |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:89` - [ ] **Given** đã có deck nhưng chưa từng học lượt nào, **when** mở Progress, * |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:90` - [ ] **Given** màn Progress đang mở, **when** một answer mới được ghi ở nơi khá |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:91` - [ ] **Given** màn Progress đang mở lúc gần nửa đêm, **when** local midnight tr |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:92` - [ ] **Given** đã học rồi reset learning progress ở màn khác, **when** quay lại |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:93` - [ ] **Given** một card đã được trả lời rồi bị xoá cứng (trực tiếp hoặc theo ca |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:94` - [ ] **Given** một phiên chỉ lướt `browse`, một card hoặc deck trong Trash, hoặ |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:95` - [ ] **Given** lần đọc lịch sử thất bại, **when** màn Progress nhận lỗi, **then |  |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:96` - [ ] **Given** Retry vẫn lỗi, **when** người dùng ở lại màn lỗi, **then** hệ th |  |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:2` id: UC-PROGRESS-001 | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:3` title: Xem tiến độ học | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:5` rules: [BR-MODE-005, BR-PROGRESS-009, BR-PROGRESS-010, BR-PROGRESS-011, BR-PROGR | superseded → FN-PROGRESS-001 (Business rules) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:6` code: [lib/features/progress/domain/usecases/watch_progress_use_case.dart, lib/f | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:10` **Actor:** Người dùng | pending → SCR-PROGRESS-001 (entry points: the Progress tab and the /progress deep link); intent kept in UC-PROGRESS-001 (Mục tiêu, Preconditions) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:16` ## Main flow | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:18` **Main flow:** | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:19` 1. Người dùng mở tab Progress. Hệ thống chụp **một** snapshot của | superseded → FN-PROGRESS-001 (one clock and offset reading per emission, stated at the top of functional-spec/progress.md) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:21` 2. Hệ thống mở **một** stream đọc lịch sử học, gộp ngay trong SQLite thành các | superseded → FN-PROGRESS-001 (one stream; card-day aggregation done in SQL is an implementation note of the BRs) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:24` 3. Trong lúc chờ emission đầu tiên, màn hình hiện trạng thái loading có nhãn | pending → SCR-PROGRESS-001 (the loading state labelled for screen readers) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:26` 4. Emission tới. Hệ thống hiển thị ba khối, cùng một snapshot: | pending → SCR-PROGRESS-001 (the three blocks Current streak, Today, Last 7 days at the top of the one /progress scroll, above the range selector, totals and deck list); intent kept in UC-PROGRESS-001 steps 2–3 + FN-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:35` 5. Người dùng đọc xong và rời tab. Hệ thống không ghi gì trong toàn bộ luồng | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:38` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:40` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:41` - **A1 — Hôm nay chưa học nhưng hôm qua có:** Today hiện 0, và streak **vẫn | pending → SCR-PROGRESS-001 (Copy says the streak is held, not lost); intent kept in UC-PROGRESS-001 A1 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:44` - **A2 — Chưa từng học lượt nào:** cả ba khối rỗng. Hệ thống hiện một mặt | pending → SCR-PROGRESS-001 (the whole-screen empty face with a real CTA to the Study branch); intent kept in UC-PROGRESS-001 A2 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:47` - **A3 — Có một lượt mới ghi trong lúc màn đang mở:** người dùng học ở tab khác | pending → SCR-PROGRESS-001 (numbers update in place, no Retry, no full-page flash); intent kept in UC-PROGRESS-001 A3 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:50` - **A4 — Local midnight trôi qua trong lúc màn đang mở:** cửa sổ bảy ngày trượt | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:53` - **A5 — Reset learning progress ở màn khác rồi quay lại:** mọi con số giữ | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:55` - **A6 — Xoá một card hoặc một deck ở màn khác rồi quay lại:** hoạt động của | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:57` - **A7 — Chỉ lướt `browse` rồi thoát:** không có gì đổi — `browse` không ghi | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:60` **Error flows:** | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:61` - **E1 — Đọc lịch sử thất bại:** hệ thống map exception thành `Failure`; màn | pending → SCR-PROGRESS-001 (the error face with Retry; no SQL, table or card content); intent kept in UC-PROGRESS-001 E1 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:64` - **E2 — Retry vẫn lỗi:** màn hình ở lại mặt lỗi; MUST NOT tự thử lại vòng lặp | pending → SCR-PROGRESS-001 (the screen stays on the error face); intent kept in UC-PROGRESS-001 E2 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:67` ## UI | pending → SCR-PROGRESS-001 (states loading · loaded · today zero with streak held · lifetime empty + CTA · error + Retry; live refresh and midnight are transitions between loaded faces) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:69` **UI states:** loading · loaded-normal (có hoạt động trong cửa sổ) · | pending → SCR-PROGRESS-001 (states loading · loaded · today zero with streak held · lifetime empty + CTA · error + Retry; live refresh and midnight are transitions between loaded faces) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:75` ## Local | superseded → FN-PROGRESS-001 (read-only, stated at the top of functional-spec/progress.md) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:77` **Postconditions:** Database không đổi ở mọi nhánh, kể cả nhánh lỗi và nhánh | superseded → FN-PROGRESS-001 (read-only, stated at the top of functional-spec/progress.md) |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:80` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:82` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:84` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:86` - [ ] **Given** người dùng mở tab Progress, **when** hệ thống đọc xong, **then** | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:87` - [ ] **Given** màn Progress đang mở, **when** người dùng chỉ đọc rồi rời tab ho | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:88` - [ ] **Given** hôm nay chưa học nhưng hôm qua có, **when** mở Progress, **then* | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:89` - [ ] **Given** đã có deck nhưng chưa từng học lượt nào, **when** mở Progress, * | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:90` - [ ] **Given** màn Progress đang mở, **when** một answer mới được ghi ở nơi khá | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:91` - [ ] **Given** màn Progress đang mở lúc gần nửa đêm, **when** local midnight tr | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:92` - [ ] **Given** đã học rồi reset learning progress ở màn khác, **when** quay lại | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:93` - [ ] **Given** một card đã được trả lời rồi bị xoá cứng (trực tiếp hoặc theo ca | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:94` - [ ] **Given** một phiên chỉ lướt `browse`, một card hoặc deck trong Trash, hoặ | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:95` - [ ] **Given** lần đọc lịch sử thất bại, **when** màn Progress nhận lỗi, **then | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:96` - [ ] **Given** Retry vẫn lỗi, **when** người dùng ở lại màn lỗi, **then** hệ th | moved → `USE_CASES.md` |
 
 ## features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md
 
 | Source item | Outcome |
 |---|---|
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:2` id: UC-PROGRESS-002 |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:3` title: Xem tiến độ theo deck |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:4` status: ready |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:5` rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-CORE-001, BR-PROGRESS-001, BR- |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:6` code: [lib/features/progress/domain/usecases/watch_progress_use_case.dart, lib/f |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:10` **Actor:** Người dùng |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:15` ## Main flow |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:17` **Main flow:** |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:18` 1. Người dùng mở tab Progress. Hệ thống hiển thị **cấp thư viện** ngay dưới |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:23` 2. Mỗi hàng mang tên deck, đường dẫn của nó khi có, và bốn số của khoảng đang |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:27` 3. Danh sách sắp theo số thẻ đã học giảm dần, tie-break bằng tên đã fold rồi |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:29` 4. Người dùng chạm `30 ngày`. Mọi số trên màn hình và thứ tự danh sách đổi ngay |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:32` 5. Người dùng chạm một hàng. Hệ thống mở **cấp của deck đó**: cùng bố cục, tổng |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:35` 6. Trong lúc màn hình mở, một lượt học được ghi ở nơi khác — hoặc một thẻ được |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:38` ## Alternative / Error flow |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:40` **Alternative flows:** |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:41` - **A1 — Deck chứa thẻ chứ không chứa deck con:** cấp đó không có hàng nào để |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:45` - **A2 — Thư viện chưa có deck nào:** hệ thống chỉ hiện empty state và **không** |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:49` - **A3 — Có deck nhưng khoảng đang chọn không có hoạt động nào:** danh sách |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:53` - **A4 — Nửa đêm địa phương đi qua khi màn hình đang mở:** cửa sổ trượt một |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:57` **Error flows:** |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:58` - **E1 — Đọc dữ liệu thất bại:** hệ thống hiện lý do đã localize theo **kiểu** |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:62` - **E2 — Deck của deep link không còn tồn tại:** đây **không** phải lỗi. Hệ |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:66` ## UI |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:68` **UI states:** loading · mixed activity (một số deck có, một số không) · |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:73` ## Local |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:75` **Postconditions:** Database không đổi — nội dung, timestamp, `content_type`, |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:79` ## API |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:81` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:83` ## Acceptance criteria |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:85` - [ ] **Given** thư viện có ít nhất một root deck, **when** mở tab Progress, **t |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:86` - [ ] **Given** cấp thư viện hoặc cấp một deck đang mở ở khoảng 7 ngày, **when** |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:87` - [ ] **Given** người dùng chạm một hàng deck, **when** cấp của deck đó mở ra, * |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:88` - [ ] **Given** cấp của một deck đang mở, **when** một lượt học được ghi, một de |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:89` - [ ] **Given** một deck chỉ chứa thẻ (không có deck con), **when** mở cấp của d |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:90` - [ ] **Given** thư viện chưa có deck nào, **when** mở tab Progress, **then** hệ |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:91` - [ ] **Given** có deck nhưng khoảng đang chọn không có hoạt động nào, **when** |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:92` - [ ] **Given** cấp thư viện hoặc cấp một deck đang mở gần nửa đêm, **when** loc |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:93` - [ ] **Given** lần đọc tiến độ theo deck thất bại, **when** màn hình nhận lỗi, |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:94` - [ ] **Given** deep link tới `/progress/:deckId` của một deck đã bị xoá, ở tron |  |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:95` - [ ] **Given** lần đọc tiến độ theo deck thất bại với một `Failure`, **when** m |  |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:2` id: UC-PROGRESS-002 | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:3` title: Xem tiến độ theo deck | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:5` rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-CORE-001, BR-PROGRESS-001, BR- | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (Business rules) |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:6` code: [lib/features/progress/domain/usecases/watch_progress_use_case.dart, lib/f | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:10` **Actor:** Người dùng | pending → SCR-PROGRESS-001 (entry points: the Progress tab and a deck row of the screen); intent kept in UC-PROGRESS-002 (Mục tiêu, Preconditions) |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:15` ## Main flow | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:17` **Main flow:** | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:18` 1. Người dùng mở tab Progress. Hệ thống hiển thị **cấp thư viện** ngay dưới | pending → SCR-PROGRESS-001 (the library level below the three overview blocks in one /progress scroll: the 7/30-day selector, a totals table, one row per root deck; /progress/:deckId opens straight on the selector); intent kept in UC-PROGRESS-002 step 1 + FN-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:23` 2. Mỗi hàng mang tên deck, đường dẫn của nó khi có, và bốn số của khoảng đang | pending → SCR-PROGRESS-001 (each row: deck name, its path when it has one, and the four numbers); intent kept in UC-PROGRESS-002 step 2 + FN-PROGRESS-001 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:27` 3. Danh sách sắp theo số thẻ đã học giảm dần, tie-break bằng tên đã fold rồi | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:29` 4. Người dùng chạm `30 ngày`. Mọi số trên màn hình và thứ tự danh sách đổi ngay | pending → SCR-PROGRESS-001 (tapping 30 days changes every number and the order at once, no loading state); intent kept in UC-PROGRESS-002 step 4 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:32` 5. Người dùng chạm một hàng. Hệ thống mở **cấp của deck đó**: cùng bố cục, tổng | pending → SCR-PROGRESS-001 (a row opens the deck level with the same layout; Back returns to the level left, at any depth); intent kept in UC-PROGRESS-002 step 5 + FN-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:35` 6. Trong lúc màn hình mở, một lượt học được ghi ở nơi khác — hoặc một thẻ được | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:38` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:40` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:41` - **A1 — Deck chứa thẻ chứ không chứa deck con:** cấp đó không có hàng nào để | pending → SCR-PROGRESS-001 (selector and totals of the deck itself with the line saying the total above is all); intent kept in UC-PROGRESS-002 A1 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:45` - **A2 — Thư viện chưa có deck nào:** hệ thống chỉ hiện empty state và **không** | pending → SCR-PROGRESS-001 (empty state only, no selector, no totals, no action button); intent kept in UC-PROGRESS-002 A2 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:49` - **A3 — Có deck nhưng khoảng đang chọn không có hoạt động nào:** danh sách | pending → SCR-PROGRESS-001 (every deck listed with zeros, the totals carry an explaining line and a hint to a longer range; neutral, no error colour); intent kept in UC-PROGRESS-002 A3 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:53` - **A4 — Nửa đêm địa phương đi qua khi màn hình đang mở:** cửa sổ trượt một | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:57` **Error flows:** | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:58` - **E1 — Đọc dữ liệu thất bại:** hệ thống hiện lý do đã localize theo **kiểu** | pending → SCR-PROGRESS-001 (the localized reason by failure type, never Failure.message, with Try again; says study history is unaffected); intent kept in UC-PROGRESS-002 E1 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:62` - **E2 — Deck của deep link không còn tồn tại:** đây **không** phải lỗi. Hệ | pending → SCR-PROGRESS-001 (a separate empty state offering only the way back to the library level; no Try again); intent kept in UC-PROGRESS-002 E2 + FN-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:66` ## UI | pending → SCR-PROGRESS-001 (states loading · mixed activity · all zero · no decks · no sub-decks · read error + retry · deck missing + way back; no empty selection) |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:68` **UI states:** loading · mixed activity (một số deck có, một số không) · | pending → SCR-PROGRESS-001 (states loading · mixed activity · all zero · no decks · no sub-decks · read error + retry · deck missing + way back; no empty selection) |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:73` ## Local | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (read-only, stated at the top of functional-spec/progress.md) |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:75` **Postconditions:** Database không đổi — nội dung, timestamp, `content_type`, | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (read-only, stated at the top of functional-spec/progress.md) |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:79` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:81` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:83` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:85` - [ ] **Given** thư viện có ít nhất một root deck, **when** mở tab Progress, **t | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:86` - [ ] **Given** cấp thư viện hoặc cấp một deck đang mở ở khoảng 7 ngày, **when** | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:87` - [ ] **Given** người dùng chạm một hàng deck, **when** cấp của deck đó mở ra, * | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:88` - [ ] **Given** cấp của một deck đang mở, **when** một lượt học được ghi, một de | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:89` - [ ] **Given** một deck chỉ chứa thẻ (không có deck con), **when** mở cấp của d | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:90` - [ ] **Given** thư viện chưa có deck nào, **when** mở tab Progress, **then** hệ | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:91` - [ ] **Given** có deck nhưng khoảng đang chọn không có hoạt động nào, **when** | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:92` - [ ] **Given** cấp thư viện hoặc cấp một deck đang mở gần nửa đêm, **when** loc | moved → `USE_CASES.md` |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:93` - [ ] **Given** lần đọc tiến độ theo deck thất bại, **when** màn hình nhận lỗi, | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:94` - [ ] **Given** deep link tới `/progress/:deckId` của một deck đã bị xoá, ở tron | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:95` - [ ] **Given** lần đọc tiến độ theo deck thất bại với một `Failure`, **when** m | pending → SCR-PROGRESS-001 (presentation of the criterion); intent kept in UC-PROGRESS-002 |
 
 ## features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md
 
@@ -3124,15 +3124,15 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/progress/ui.md:1` # Progress — UI |  |
-| `features/progress/ui.md:3` Màn hình và điều hướng dùng chung hai UC của feature. Hành vi riêng của từng UC |  |
-| `features/progress/ui.md:5` ## Màn hình và điều hướng |  |
-| `features/progress/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| |  |
-| `features/progress/ui.md:9` \| 22 · Progress, cấp thư viện \| `/progress` (tab Progress) \| Bottom bar \| [22-pr |  |
-| `features/progress/ui.md:10` \| 22 · Progress, cấp của một deck \| `/progress/:deckId`, trong branch Progress, |  |
-| `features/progress/ui.md:12` Mỗi hàng deck push thêm một cấp; Back về đúng cấp vừa rời. Khoảng 7 hoặc 30 ngày |  |
-| `features/progress/ui.md:18` ## Validation |  |
-| `features/progress/ui.md:20` Không có: màn chỉ đọc, không có trường nhập (BR-PROGRESS-009). |  |
+| `features/progress/ui.md:1` # Progress — UI | superseded → UC-PROGRESS-001 + UC-PROGRESS-002 + FN-PROGRESS-001 + FN-PROGRESS-002; per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/progress/ui.md:3` Màn hình và điều hướng dùng chung hai UC của feature. Hành vi riêng của từng UC | superseded → UC-PROGRESS-001 + UC-PROGRESS-002 + FN-PROGRESS-001 + FN-PROGRESS-002; per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/progress/ui.md:5` ## Màn hình và điều hướng | pending → SCR-PROGRESS-001 (routes and where each level opens from, with NAVIGATION.md) |
+| `features/progress/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | pending → SCR-PROGRESS-001 (routes and where each level opens from, with NAVIGATION.md) |
+| `features/progress/ui.md:9` \| 22 · Progress, cấp thư viện \| `/progress` (tab Progress) \| Bottom bar \| [22-pr | pending → SCR-PROGRESS-001 (library level: route /progress, the Progress tab, opened from the bottom bar) |
+| `features/progress/ui.md:10` \| 22 · Progress, cấp của một deck \| `/progress/:deckId`, trong branch Progress, | pending → SCR-PROGRESS-001 (deck level: route /progress/:deckId inside the Progress branch with the bottom bar; opened from a deck row or a breadcrumb segment) |
+| `features/progress/ui.md:12` Mỗi hàng deck push thêm một cấp; Back về đúng cấp vừa rời. Khoảng 7 hoặc 30 ngày | pending → SCR-PROGRESS-001 (each row pushes a level, Back returns to it; the 7/30-day choice is shared by every level of the tab; "Start studying" opens the Study tab); the no-reread rule is kept in functional-spec/progress.md (intro) and BR-PROGRESS-003 |
+| `features/progress/ui.md:18` ## Validation | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (Input: none to validate; read-only) |
+| `features/progress/ui.md:20` Không có: màn chỉ đọc, không có trường nhập (BR-PROGRESS-009). | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (Input: none to validate; read-only) |
 
 ## features/reminders/ui.md
 
@@ -4175,3 +4175,16 @@ reset_app_settings 005, watch_study_options 006, save_root_study_options 007, us
   of functional-spec/reminders.md; the digest names the top root's own due count, as the legacy AC
   and code do (BR-REMINDER-005 says MAY).
 - Warning delta: 33 → 34 = +1 migrated legacy UC file. Every BR-REMINDER is cited by an FN.
+
+## Task 19 notes — progress
+
+watch_progress FN-PROGRESS-001 (the overview and the library level, one stream), watch_deck_progress
+FN-PROGRESS-002 (a deck's level, or "deck missing" as a result, not an error).
+
+- The card-day unit, the four numbers, the two ranges, the order, read-only and the per-emission
+  clock reading are shared by both FNs; they are written once at the top of
+  functional-spec/progress.md and each FN cites the BRs, so FN-PROGRESS-002 does not borrow
+  FN-PROGRESS-001's text (owner ruling on FN-DECK-006).
+- UC-PROGRESS-001/002 share one screen (SCR-PROGRESS-001); each UC says so at intent level and no
+  longer cites the other (USE_CASES cites FN only).
+- Warning delta: 34 → 36 = +2 migrated legacy UC files. Every BR-PROGRESS is cited by an FN.

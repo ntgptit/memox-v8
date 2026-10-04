@@ -927,3 +927,117 @@ làm phiền khi không có gì để ôn.
 - [ ] **Given** app mở lại nhiều lần trong ngày khi đang bật, **when** lịch được đưa về khớp, **then** vẫn đúng một lượt chờ; khi đang tắt, lượt còn sót bị huỷ (A5).
 - [ ] **Given** đọc tuỳ chọn thất bại, **when** người dùng muốn đặt nhắc học, **then** người dùng được báo lỗi đọc, và không giá trị nào được bịa ra (E7).
 - [ ] **Given** notification đang hiện, **when** người dùng mở nó, **then** người dùng tới tab Study, không phiên nào được mở và không gì được ghi; bỏ qua notification thì không gì thay đổi (bước 5, A6 — kiểm trên thiết bị).
+
+## Progress
+
+### UC-PROGRESS-001 — Xem tiến độ học
+Status: ready · Code: [lib/features/progress/domain/usecases/watch_progress_use_case.dart] · Invokes: [FN-PROGRESS-001]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Biết mình đã học đều đặn tới đâu: hôm nay học bao nhiêu, bảy ngày qua ra sao, và chuỗi
+ngày học liên tiếp đang là bao nhiêu.
+**Preconditions:** Không có. Chưa từng học lượt nào là một trạng thái hợp lệ, không phải lỗi.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng muốn xem tiến độ. Hệ thống thực hiện FN-PROGRESS-001.
+2. Người dùng biết ba điều, từ cùng một thời điểm: chuỗi ngày học hiện tại; hôm nay — tổng số thẻ
+   cùng phân rã học mới / ôn tập; và bảy ngày gần nhất, cũ → mới, ngày không học là 0.
+3. Tổng quan này đi cùng tiến độ theo deck của thư viện: hai thứ là một chỗ xem, không phải hai.
+4. Người dùng xem xong và rời đi. Không gì được ghi trong toàn bộ luồng.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Hôm nay chưa học nhưng hôm qua có:** hôm nay là 0, và chuỗi **vẫn giữ** tới hôm qua. Người
+  dùng biết đây là chuỗi đang giữ, không phải chuỗi đã mất.
+- **A2 — Chưa từng học lượt nào:** người dùng biết mình chưa có gì để xem — không phải ba con số 0 —
+  và được đưa tới chỗ học.
+- **A3 — Một lượt học mới được ghi trong lúc đang xem:** các con số tự cập nhật, không cần thử lại.
+- **A4 — Nửa đêm địa phương trôi qua trong lúc đang xem:** bảy ngày trượt một ngày, hôm nay về 0, và
+  chuỗi chuyển sang nhánh đang giữ nếu phù hợp — không cần thao tác nào.
+- **A5 — Đặt lại tiến độ học ở nơi khác rồi quay lại:** mọi con số giữ nguyên, vì việc đó không đụng
+  lịch sử.
+- **A6 — Xoá một card hoặc một deck ở nơi khác rồi quay lại:** hoạt động của các card đã xoá biến
+  mất khỏi mọi ngày, kể cả ngày quá khứ.
+- **A7 — Chỉ lướt `browse` rồi thoát:** không gì đổi — `browse` không tạo hoạt động.
+
+**Error flows:**
+- **E1 — Đọc lịch sử thất bại:** người dùng được báo lỗi, không kèm SQL, tên bảng hay nội dung thẻ,
+  và thử lại được.
+- **E2 — Thử lại vẫn lỗi:** người dùng vẫn được báo lỗi; hệ thống không tự thử lại theo vòng lặp và
+  không ghi gì.
+
+#### Acceptance criteria
+
+- [ ] **Given** người dùng muốn xem tiến độ, **when** hệ thống đọc xong, **then** chuỗi hiện tại, hôm nay (kèm phân rã học mới / ôn tập) và bảy ngày gần nhất đến từ đúng một lần đọc đồng hồ và múi giờ.
+- [ ] **Given** người dùng đang xem tiến độ, **when** người dùng chỉ xem rồi rời đi hoặc thử lại, **then** không có hàng nào trong `card_schedule`, `review_log`, `app_settings` hay `study_session` bị ghi, và không phiên nào được mở, tiếp tục hay đóng.
+- [ ] **Given** hôm nay chưa học nhưng hôm qua có, **when** người dùng xem tiến độ, **then** hôm nay là 0 và chuỗi vẫn giữ nguyên số ngày tính tới hôm qua, và người dùng biết đây là chuỗi đang giữ (A1).
+- [ ] **Given** đã có deck nhưng chưa từng học lượt nào, **when** người dùng xem tiến độ, **then** người dùng biết chưa có gì để xem, không phải các số 0 trần, và được đưa tới chỗ học (A2).
+- [ ] **Given** người dùng đang xem tiến độ, **when** một lượt mới được ghi ở nơi khác, **then** các con số tự cập nhật mà không quay về trạng thái đang tải (A3).
+- [ ] **Given** người dùng đang xem tiến độ lúc gần nửa đêm, **when** nửa đêm địa phương trôi qua, **then** bảy ngày trượt một ngày, hôm nay về 0, chuỗi chuyển sang nhánh đang giữ khi phù hợp, và không có ghi nào trong database (A4).
+- [ ] **Given** đã học rồi đặt lại tiến độ học ở nơi khác, **when** quay lại xem tiến độ, **then** mọi con số giữ nguyên như trước khi đặt lại (A5).
+- [ ] **Given** một card đã được trả lời rồi bị xoá cứng (trực tiếp hoặc theo cascade từ deck), **when** quay lại xem tiến độ, **then** hoạt động của card đó biến mất khỏi mọi ngày, kể cả ngày quá khứ (A6).
+- [ ] **Given** một phiên chỉ lướt `browse`, một card hoặc deck trong Trash, hoặc một lượt có thời điểm sau ranh giới hôm nay, **when** đọc tiến độ, **then** các trường hợp đó không tạo card-day, không làm ngày thành có hoạt động và không giữ chuỗi (A7).
+- [ ] **Given** lần đọc lịch sử thất bại, **when** người dùng xem tiến độ, **then** người dùng được báo lỗi, và thử lại thì đọc lại (E1).
+- [ ] **Given** thử lại vẫn lỗi, **when** người dùng ở lại, **then** hệ thống không tự thử lại theo vòng lặp và không ghi gì (E2).
+
+### UC-PROGRESS-002 — Xem tiến độ theo deck
+Status: ready · Code: [lib/features/progress/domain/usecases/watch_progress_use_case.dart, lib/features/progress/domain/usecases/watch_deck_progress_use_case.dart] · Invokes: [FN-PROGRESS-001, FN-PROGRESS-002]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Biết mình đã học deck nào bao nhiêu trong 7 hoặc 30 ngày qua, và đi sâu vào từng cây
+deck.
+**Preconditions:** Không có. Thư viện rỗng và thư viện chưa học lần nào đều là trạng thái hợp lệ.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng muốn xem tiến độ theo deck của thư viện. Hệ thống thực hiện FN-PROGRESS-001: người
+   dùng biết, cho khoảng đang chọn (7 hoặc 30 ngày), bốn số của toàn bộ dữ liệu và bốn số của mỗi
+   root deck.
+2. Bốn số của một deck — số thẻ đã học, số ngày có học, số card-day học mới, số card-day ôn tập —
+   phủ **toàn bộ cây con** của nó.
+3. Deck học nhiều nhất trong khoảng đứng đầu; deck chưa học gì vẫn có mặt, ở cuối.
+4. Người dùng đổi sang khoảng kia. Mọi con số và thứ tự đổi ngay, không phải chờ đọc lại.
+5. Người dùng chọn một deck. Hệ thống thực hiện FN-PROGRESS-002: người dùng biết tổng của riêng cây
+   con đó và bốn số của mỗi deck con trực tiếp, và đi sâu tiếp được. Quay lại đưa người dùng về
+   đúng cấp vừa rời, ở mọi độ sâu.
+6. Trong lúc đang xem, một lượt học được ghi, một thẻ được chuyển deck hoặc một deck bị xoá ở nơi
+   khác: các con số tự cập nhật.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Deck chứa thẻ chứ không chứa deck con:** không có gì để đi sâu thêm. Người dùng vẫn biết
+  tổng của chính deck đó, và biết tổng đó đã là toàn bộ — cấp này không rỗng.
+- **A2 — Thư viện chưa có deck nào:** người dùng biết chưa có deck nào, và không có con số hay khoảng
+  nào được đưa ra; bước tiếp theo nằm ở Library.
+- **A3 — Có deck nhưng khoảng đang chọn không có hoạt động nào:** mọi deck vẫn có mặt với số 0, và
+  người dùng được gợi ý xem khoảng dài hơn. Đây là trạng thái trung tính, không phải lỗi.
+- **A4 — Nửa đêm địa phương trôi qua trong lúc đang xem:** khoảng đang chọn trượt một ngày và các con
+  số tự đọc lại, dù không có gì được ghi.
+
+**Error flows:**
+- **E1 — Đọc thất bại:** người dùng được báo lỗi theo **loại** lỗi, không kèm chi tiết kỹ thuật, biết
+  rằng lịch sử học không bị ảnh hưởng, và thử lại được.
+- **E2 — Deck được yêu cầu không còn tồn tại:** đây **không** phải lỗi. Người dùng biết deck không
+  còn, và chỉ được đưa về cấp thư viện — thử lại sẽ cho cùng kết quả nên không được đưa ra.
+
+#### Acceptance criteria
+
+- [ ] **Given** thư viện có ít nhất một root deck, **when** người dùng xem tiến độ theo deck, **then** người dùng biết khoảng đang chọn (7/30 ngày), bốn số của toàn bộ dữ liệu, và bốn số của mỗi root deck, sắp theo số thẻ đã học giảm dần rồi tên đã gập rồi `id`.
+- [ ] **Given** cấp thư viện hoặc cấp một deck đang xem ở khoảng 7 ngày, **when** người dùng đổi sang 30 ngày, **then** mọi số và thứ tự đổi ngay sang khoảng 30 ngày, không phải chờ đọc lại.
+- [ ] **Given** người dùng chọn một deck, **when** cấp của deck đó mở ra, **then** người dùng biết tổng của riêng cây con deck đó và bốn số của mỗi deck con trực tiếp; quay lại về đúng cấp vừa rời.
+- [ ] **Given** cấp của một deck đang xem, **when** một lượt học được ghi, một deck con đổi tên, hoặc deck bị xoá ở nơi khác, **then** các con số tự cập nhật.
+- [ ] **Given** một deck chỉ chứa thẻ (không có deck con), **when** xem cấp của deck đó, **then** người dùng biết tổng của chính deck đó và biết tổng đó đã là toàn bộ, không có hàng nào để đi sâu (A1).
+- [ ] **Given** thư viện chưa có deck nào, **when** người dùng xem tiến độ theo deck, **then** người dùng biết chưa có deck nào, không có khoảng và không có tổng nào được đưa ra (A2).
+- [ ] **Given** có deck nhưng khoảng đang chọn không có hoạt động nào, **when** đọc xong, **then** mọi deck vẫn có mặt với số 0, và người dùng được gợi ý xem khoảng dài hơn (A3).
+- [ ] **Given** cấp thư viện hoặc cấp một deck đang xem gần nửa đêm, **when** nửa đêm địa phương trôi qua, **then** khoảng đang chọn trượt một ngày và các con số tự đọc lại mà không có ghi nào trong database (A4).
+- [ ] **Given** lần đọc tiến độ theo deck thất bại, **when** người dùng xem, **then** người dùng được báo lỗi theo đúng loại lỗi, không nêu nguyên nhân kỹ thuật, và thử lại thì đọc lại (E1).
+- [ ] **Given** deck được yêu cầu đã bị xoá, ở trong Trash hoặc không tồn tại, **when** người dùng mở tiến độ của nó, **then** người dùng biết deck không còn và chỉ được đưa về cấp thư viện, không có thử lại (E2).

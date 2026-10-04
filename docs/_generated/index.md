@@ -8,7 +8,7 @@
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-CORE-001](../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) | Nội dung người dùng là dữ liệu riêng tư | active | Nội dung deck/card, ghi chú, lịch sử học, file import, hình ảnh, audio và backup là dữ liệu riêng tư. | FN-REMINDER-004, UC-PROGRESS-002, UC-TRANSFER-002 |
+| [BR-CORE-001](../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) | Nội dung người dùng là dữ liệu riêng tư | active | Nội dung deck/card, ghi chú, lịch sử học, file import, hình ảnh, audio và backup là dữ liệu riêng tư. | FN-REMINDER-004, UC-TRANSFER-002 |
 | [BR-CORE-002](../shared/rules/BR-CORE-002-khong-log-noi-dung.md) | Không log nội dung | deprecated | Không log nội dung flashcard hoặc ghi chú ở bất kỳ log level nào; log ID thì được. | — |
 | [BR-CORE-003](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md) | Media trong thư mục riêng của ứng dụng | active | Media lưu trong thư mục riêng của ứng dụng. | — |
 | [BR-CORE-004](../shared/rules/BR-CORE-004-export-backup-chi-khi-nguoi-dung-yeu-cau.md) | Export và backup chỉ khi người dùng yêu cầu | active | Export và backup chỉ chạy khi người dùng chủ động yêu cầu. | UC-TRANSFER-002 |
@@ -103,9 +103,9 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | FN-DECK-006, FN-DECK-008, FN-DECK-009, FN-DECK-010, FN-DECK-011, UC-PROGRESS-002, UC-SEARCH-001, UC-TRASH-001 |
-| [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | FN-DECK-001, FN-DECK-007, FN-DECK-009, FN-DECK-011, FN-DECK-012, UC-PROGRESS-002, UC-SEARCH-001, UC-STARTER-001 |
-| [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | FN-DECK-007, UC-PROGRESS-002, UC-SEARCH-001 |
+| [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | FN-DECK-006, FN-DECK-008, FN-DECK-009, FN-DECK-010, FN-DECK-011, UC-SEARCH-001, UC-TRASH-001 |
+| [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | FN-DECK-001, FN-DECK-007, FN-DECK-009, FN-DECK-011, FN-DECK-012, UC-SEARCH-001, UC-STARTER-001 |
+| [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | FN-DECK-007, FN-PROGRESS-002, UC-SEARCH-001 |
 | [BR-DECK-004](../features/deck/rules/BR-DECK-004-root-deck-chi-chua-deck-con.md) | Root deck chỉ chứa deck con | active | Root deck chỉ chứa deck con, không chứa card trực tiếp. | FN-CARD-002, FN-DECK-001, FN-DECK-005, FN-DECK-008, UC-TRANSFER-001 |
 | [BR-DECK-005](../features/deck/rules/BR-DECK-005-create-o-root-chi-co-create-deck.md) | Create ở root deck chỉ có Create deck | active | Nút Create tại root deck chỉ có một lựa chọn: Create deck. | FN-DECK-008 |
 | [BR-DECK-006](../features/deck/rules/BR-DECK-006-sub-deck-moi-co-content-type-unset.md) | Sub-deck mới có content_type unset | active | Sub-deck mới tạo có `content_type = unset`; người dùng không chọn `content_type` khi tạo. | FN-DECK-009 |
@@ -175,31 +175,38 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-PROGRESS-001](../features/progress/rules/BR-PROGRESS-001-bon-so-cua-progress-by-deck.md) | Bốn số của Progress by Deck | active | Progress by Deck v1 chỉ báo cáo bốn số: unique active cards, active days, Learning và Reviewing card-days. | UC-PROGRESS-002 |
-| [BR-PROGRESS-002](../features/progress/rules/BR-PROGRESS-002-don-vi-dem-card-day.md) | Đơn vị đếm card-day (theo deck) | active | Đơn vị đếm là card-day — cặp phân biệt (card, ngày địa phương), không phải số lượt trả lời. | UC-PROGRESS-002 |
-| [BR-PROGRESS-003](../features/progress/rules/BR-PROGRESS-003-hai-khoang-7-va-30-ngay.md) | Hai khoảng 7 và 30 ngày | active | v1 có đúng hai khoảng 7 và 30 ngày, gồm trọn các ngày địa phương kết thúc bằng hôm nay. | UC-PROGRESS-002 |
-| [BR-PROGRESS-004](../features/progress/rules/BR-PROGRESS-004-lich-su-quy-cho-vi-tri-hien-tai.md) | Lịch sử quy cho vị trí hiện tại của thẻ | active | Lịch sử quy cho vị trí hiện tại của thẻ; chuyển thẻ thì toàn bộ lịch sử đi theo. | UC-PROGRESS-002 |
-| [BR-PROGRESS-005](../features/progress/rules/BR-PROGRESS-005-phan-hoach-learning-reviewing-theo-deck.md) | Phân hoạch Learning/Reviewing (theo deck) | active | Learning và Reviewing là phân hoạch loại trừ và vét cạn của card-days, ưu tiên Learning. | UC-PROGRESS-002 |
-| [BR-PROGRESS-006](../features/progress/rules/BR-PROGRESS-006-thu-tu-danh-sach-deck.md) | Thứ tự danh sách deck | active | Danh sách deck sắp theo unique active cards giảm dần, tie-break tên đã fold rồi id. | UC-PROGRESS-002 |
-| [BR-PROGRESS-007](../features/progress/rules/BR-PROGRESS-007-doc-tien-do-chi-doc.md) | Đọc tiến độ là chỉ đọc | active | Đọc tiến độ theo deck là chỉ đọc: không ghi, không mở hay đóng session. | UC-PROGRESS-002 |
-| [BR-PROGRESS-008](../features/progress/rules/BR-PROGRESS-008-man-tien-do-theo-deck-cap-nhat-truc-tiep.md) | Màn tiến độ theo deck cập nhật trực tiếp | active | Màn tiến độ theo deck tự cập nhật khi có lượt mới, chuyển thẻ, xoá deck và qua nửa đêm. | UC-PROGRESS-002 |
-| [BR-PROGRESS-009](../features/progress/rules/BR-PROGRESS-009-progress-read-only-tuyet-doi.md) | Progress read-only tuyệt đối | active | Progress không ghi hay sửa hàng nào và không mở, tiếp tục hay đóng session. | UC-PROGRESS-001 |
-| [BR-PROGRESS-010](../features/progress/rules/BR-PROGRESS-010-chi-so-ngoai-pham-vi-v1.md) | Chỉ số ngoài phạm vi v1 | active | v1 không hiện accuracy, longest streak, goal, XP, heatmap, lọc theo deck, chia sẻ, hiệu ứng ăn mừng. | UC-PROGRESS-001 |
-| [BR-PROGRESS-011](../features/progress/rules/BR-PROGRESS-011-don-vi-hoat-dong-card-day.md) | Đơn vị hoạt động card-day (overview) | active | Đơn vị hoạt động của Progress là cặp distinct (localDay, cardId); cùng thẻ cùng ngày đếm một. | FN-STUDY-012, UC-PROGRESS-001 |
-| [BR-PROGRESS-012](../features/progress/rules/BR-PROGRESS-012-browse-khong-tao-card-day.md) | browse không tạo card-day | active | `browse` không tạo card-day, không làm ngày active, không giữ streak. | UC-PROGRESS-001 |
-| [BR-PROGRESS-013](../features/progress/rules/BR-PROGRESS-013-dinh-nghia-hom-nay.md) | Định nghĩa "hôm nay" của Progress | active | "Hôm nay" là `[startOfToday, startOfTomorrow)` theo ranh giới ngày học, dựng từ một snapshot. | UC-PROGRESS-001 |
-| [BR-PROGRESS-014](../features/progress/rules/BR-PROGRESS-014-phan-ra-mot-ngay-learning-reviewing.md) | Phân rã một ngày Learning/Reviewing (overview) | active | Card-day là Learning khi có lượt `learning`, ngược lại là Reviewing; partition loại trừ nhau. | UC-PROGRESS-001 |
-| [BR-PROGRESS-015](../features/progress/rules/BR-PROGRESS-015-last-7-days.md) | Last 7 days | active | "Last 7 days" là hôm nay và sáu ngày trước, đúng bảy phần tử cũ → mới, zero-fill. | UC-PROGRESS-001 |
-| [BR-PROGRESS-016](../features/progress/rules/BR-PROGRESS-016-current-streak.md) | Current streak | active | Current streak đếm ngày liên tiếp có hoạt động tính lùi từ anchor hôm nay hoặc hôm qua. | UC-PROGRESS-001 |
-| [BR-PROGRESS-017](../features/progress/rules/BR-PROGRESS-017-reset-va-xoa-voi-progress.md) | Reset và xoá đối với Progress | active | Reset không đổi số nào của Progress; card đã xoá cứng không còn xuất hiện. | UC-PROGRESS-001 |
-| [BR-PROGRESS-018](../features/progress/rules/BR-PROGRESS-018-progress-tu-cap-nhat.md) | Progress tự cập nhật | active | Màn Progress tự cập nhật khi lịch sử đổi và tại nửa đêm địa phương. | UC-PROGRESS-001 |
+| [BR-PROGRESS-001](../features/progress/rules/BR-PROGRESS-001-bon-so-cua-progress-by-deck.md) | Bốn số của Progress by Deck | active | Progress by Deck v1 chỉ báo cáo bốn số: unique active cards, active days, Learning và Reviewing card-days. | FN-PROGRESS-001, FN-PROGRESS-002 |
+| [BR-PROGRESS-002](../features/progress/rules/BR-PROGRESS-002-don-vi-dem-card-day.md) | Đơn vị đếm card-day (theo deck) | active | Đơn vị đếm là card-day — cặp phân biệt (card, ngày địa phương), không phải số lượt trả lời. | FN-PROGRESS-001, FN-PROGRESS-002 |
+| [BR-PROGRESS-003](../features/progress/rules/BR-PROGRESS-003-hai-khoang-7-va-30-ngay.md) | Hai khoảng 7 và 30 ngày | active | v1 có đúng hai khoảng 7 và 30 ngày, gồm trọn các ngày địa phương kết thúc bằng hôm nay. | FN-PROGRESS-001, FN-PROGRESS-002 |
+| [BR-PROGRESS-004](../features/progress/rules/BR-PROGRESS-004-lich-su-quy-cho-vi-tri-hien-tai.md) | Lịch sử quy cho vị trí hiện tại của thẻ | active | Lịch sử quy cho vị trí hiện tại của thẻ; chuyển thẻ thì toàn bộ lịch sử đi theo. | FN-PROGRESS-001, FN-PROGRESS-002 |
+| [BR-PROGRESS-005](../features/progress/rules/BR-PROGRESS-005-phan-hoach-learning-reviewing-theo-deck.md) | Phân hoạch Learning/Reviewing (theo deck) | active | Learning và Reviewing là phân hoạch loại trừ và vét cạn của card-days, ưu tiên Learning. | FN-PROGRESS-001, FN-PROGRESS-002 |
+| [BR-PROGRESS-006](../features/progress/rules/BR-PROGRESS-006-thu-tu-danh-sach-deck.md) | Thứ tự danh sách deck | active | Danh sách deck sắp theo unique active cards giảm dần, tie-break tên đã fold rồi id. | FN-PROGRESS-001, FN-PROGRESS-002 |
+| [BR-PROGRESS-007](../features/progress/rules/BR-PROGRESS-007-doc-tien-do-chi-doc.md) | Đọc tiến độ là chỉ đọc | active | Đọc tiến độ theo deck là chỉ đọc: không ghi, không mở hay đóng session. | FN-PROGRESS-001, FN-PROGRESS-002 |
+| [BR-PROGRESS-008](../features/progress/rules/BR-PROGRESS-008-man-tien-do-theo-deck-cap-nhat-truc-tiep.md) | Màn tiến độ theo deck cập nhật trực tiếp | active | Màn tiến độ theo deck tự cập nhật khi có lượt mới, chuyển thẻ, xoá deck và qua nửa đêm. | FN-PROGRESS-001, FN-PROGRESS-002 |
+| [BR-PROGRESS-009](../features/progress/rules/BR-PROGRESS-009-progress-read-only-tuyet-doi.md) | Progress read-only tuyệt đối | active | Progress không ghi hay sửa hàng nào và không mở, tiếp tục hay đóng session. | FN-PROGRESS-001 |
+| [BR-PROGRESS-010](../features/progress/rules/BR-PROGRESS-010-chi-so-ngoai-pham-vi-v1.md) | Chỉ số ngoài phạm vi v1 | active | v1 không hiện accuracy, longest streak, goal, XP, heatmap, lọc theo deck, chia sẻ, hiệu ứng ăn mừng. | FN-PROGRESS-001 |
+| [BR-PROGRESS-011](../features/progress/rules/BR-PROGRESS-011-don-vi-hoat-dong-card-day.md) | Đơn vị hoạt động card-day (overview) | active | Đơn vị hoạt động của Progress là cặp distinct (localDay, cardId); cùng thẻ cùng ngày đếm một. | FN-PROGRESS-001, FN-STUDY-012 |
+| [BR-PROGRESS-012](../features/progress/rules/BR-PROGRESS-012-browse-khong-tao-card-day.md) | browse không tạo card-day | active | `browse` không tạo card-day, không làm ngày active, không giữ streak. | FN-PROGRESS-001 |
+| [BR-PROGRESS-013](../features/progress/rules/BR-PROGRESS-013-dinh-nghia-hom-nay.md) | Định nghĩa "hôm nay" của Progress | active | "Hôm nay" là `[startOfToday, startOfTomorrow)` theo ranh giới ngày học, dựng từ một snapshot. | FN-PROGRESS-001 |
+| [BR-PROGRESS-014](../features/progress/rules/BR-PROGRESS-014-phan-ra-mot-ngay-learning-reviewing.md) | Phân rã một ngày Learning/Reviewing (overview) | active | Card-day là Learning khi có lượt `learning`, ngược lại là Reviewing; partition loại trừ nhau. | FN-PROGRESS-001 |
+| [BR-PROGRESS-015](../features/progress/rules/BR-PROGRESS-015-last-7-days.md) | Last 7 days | active | "Last 7 days" là hôm nay và sáu ngày trước, đúng bảy phần tử cũ → mới, zero-fill. | FN-PROGRESS-001 |
+| [BR-PROGRESS-016](../features/progress/rules/BR-PROGRESS-016-current-streak.md) | Current streak | active | Current streak đếm ngày liên tiếp có hoạt động tính lùi từ anchor hôm nay hoặc hôm qua. | FN-PROGRESS-001 |
+| [BR-PROGRESS-017](../features/progress/rules/BR-PROGRESS-017-reset-va-xoa-voi-progress.md) | Reset và xoá đối với Progress | active | Reset không đổi số nào của Progress; card đã xoá cứng không còn xuất hiện. | FN-PROGRESS-001 |
+| [BR-PROGRESS-018](../features/progress/rules/BR-PROGRESS-018-progress-tu-cap-nhat.md) | Progress tự cập nhật | active | Màn Progress tự cập nhật khi lịch sử đổi và tại nửa đêm địa phương. | FN-PROGRESS-001 |
+
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-PROGRESS-001](../functional-spec/progress.md) | Xem tiến độ của thư viện | active | UC-PROGRESS-001, UC-PROGRESS-002 |
+| [FN-PROGRESS-002](../functional-spec/progress.md) | Xem tiến độ của một deck | active | UC-PROGRESS-002 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [UC-PROGRESS-001](../features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md) | Xem tiến độ học | ready | — |
-| [UC-PROGRESS-002](../features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md) | Xem tiến độ theo deck | ready | — |
+| [UC-PROGRESS-001](../USE_CASES.md) | Xem tiến độ học | ready | — |
+| [UC-PROGRESS-002](../USE_CASES.md) | Xem tiến độ theo deck | ready | — |
 
 ## [reminders](../features/reminders/README.md)
 
@@ -314,7 +321,7 @@ Chưa có tài liệu.
 | [BR-SRS-012](../features/srs/rules/BR-SRS-012-sm2-cap-nhat-ease-factor.md) | sm2: cập nhật ease factor | active | `sm2`: công thức ease factor, sàn 1.3, cập nhật ở mọi lượt `scheduled`. | FN-STUDY-005 |
 | [BR-SRS-013](../features/srs/rules/BR-SRS-013-dinh-nghia-da-thuoc.md) | Định nghĩa "đã thuộc" | active | Card "đã thuộc" khi `current_box = 8` (`eight_box`) hoặc `interval_days >= 128` (`sm2`); suy ra khi đọc. | FN-DECK-007 |
 | [BR-SRS-014](../features/srs/rules/BR-SRS-014-review-log-kind-ba-gia-tri.md) | review_log.kind có ba giá trị | active | `review_log.kind` có đúng ba giá trị: `learning`, `scheduled`, `relearning`. | FN-CARD-014, FN-STUDY-005 |
-| [BR-SRS-015](../features/srs/rules/BR-SRS-015-kind-luu-tuong-minh.md) | kind lưu tường minh | active | `kind` được lưu tường minh lúc ghi, không suy từ trạng thái trước và sau. | FN-CARD-014, FN-STUDY-005, FN-STUDY-012, UC-PROGRESS-002 |
+| [BR-SRS-015](../features/srs/rules/BR-SRS-015-kind-luu-tuong-minh.md) | kind lưu tường minh | active | `kind` được lưu tường minh lúc ghi, không suy từ trạng thái trước và sau. | FN-CARD-014, FN-PROGRESS-001, FN-STUDY-005, FN-STUDY-012 |
 | [BR-SRS-016](../features/srs/rules/BR-SRS-016-luot-dau-trong-reviewing-la-scheduled.md) | Lượt đầu trong phiên reviewing là scheduled | active | Trong phiên `reviewing`, lượt đầu của thẻ là `scheduled`; chỉ lượt `scheduled` được đổi lịch. | FN-STUDY-005, FN-STUDY-013 |
 | [BR-SRS-017](../features/srs/rules/BR-SRS-017-luot-relearning-khong-doi-lich.md) | Lượt relearning không đổi lịch | active | Thẻ quay lại sau `forgotten`/`again` là `relearning`: ghi study answers, không đổi lịch. | FN-STUDY-005, FN-STUDY-013 |
 | [BR-SRS-018](../features/srs/rules/BR-SRS-018-bo-dem.md) | Bộ đếm | active | Quy tắc cập nhật `answer_count`, `lapse_count`, `last_answered_at` theo loại lượt. | FN-STUDY-005 |
@@ -322,7 +329,7 @@ Chưa có tài liệu.
 | [BR-SRS-020](../features/srs/rules/BR-SRS-020-generation-cua-root-deck.md) | Generation của root deck | active | Mỗi root deck có `generation`, bắt đầu từ 1, +1 sau mỗi lần reset. | FN-SRS-002 |
 | [BR-SRS-021](../features/srs/rules/BR-SRS-021-reset-giu-nguyen-noi-dung.md) | Reset giữ nguyên nội dung | active | Reset giữ nguyên deck, cây con, flashcard, media, tag và mọi nội dung. | FN-SRS-002 |
 | [BR-SRS-022](../features/srs/rules/BR-SRS-022-reset-dat-lai-trang-thai-hoc.md) | Reset đặt lại trạng thái học | active | Reset đặt lại scheduler state của mọi card, kể cả `learned_at`, và mọi session đang dở. | FN-SRS-002 |
-| [BR-SRS-023](../features/srs/rules/BR-SRS-023-study-answers-cu-duoc-giu.md) | Study answers cũ được giữ | active | Study answers cũ được giữ với generation cũ và không dùng cho chu kỳ mới. | FN-SRS-002, UC-PROGRESS-002 |
+| [BR-SRS-023](../features/srs/rules/BR-SRS-023-study-answers-cu-duoc-giu.md) | Study answers cũ được giữ | active | Study answers cũ được giữ với generation cũ và không dùng cho chu kỳ mới. | FN-PROGRESS-001, FN-SRS-002 |
 | [BR-SRS-024](../features/srs/rules/BR-SRS-024-reset-mo-khoa-scheduler.md) | Reset mở khoá scheduler | active | Sau reset `first_answered_at` về NULL, mở khoá scheduler. | FN-SRS-002 |
 | [BR-SRS-025](../features/srs/rules/BR-SRS-025-trang-thai-hoc-mang-generation.md) | Trạng thái học mang generation | active | Study state, study session và study answers đều mang `generation`. | FN-SRS-002, FN-STUDY-002, FN-STUDY-003 |
 | [BR-SRS-026](../features/srs/rules/BR-SRS-026-tu-choi-ket-qua-generation-cu.md) | Từ chối kết quả của generation cũ | active | Mọi thao tác ghi so generation và từ chối kết quả từ session thuộc generation cũ. | FN-SRS-002, FN-STUDY-005 |
@@ -446,7 +453,7 @@ Chưa có tài liệu.
 | [BR-STUDY-071](../features/study/rules/BR-STUDY-071-bo-qua-the-thieu-du-lieu-co-ghi-nhan.md) | Bỏ qua thẻ thiếu dữ liệu có ghi nhận | active | Thẻ thiếu dữ liệu cho một stage bị bỏ qua có ghi nhận ở stage đó, vẫn xuất hiện ở stage khác. | FN-STUDY-005 |
 | [BR-STUDY-072](../features/study/rules/BR-STUDY-072-phien-do-khi-mo-app.md) | Phiên dở khi mở app | active | Còn phiên dở cùng ngày học: ba đường tiếp tục, Học mới, Ôn tập; phiên của ngày khác bị đóng `interrupted`. | FN-STUDY-001, FN-STUDY-002, FN-STUDY-003, FN-STUDY-010, FN-STUDY-011, FN-STUDY-012 |
 | [BR-STUDY-073](../features/study/rules/BR-STUDY-073-self-assess-tran-ba-luot-relearning.md) | self_assess: trần 3 lượt relearning | active | Chỉ `self_assess`: chạm trần 3 lượt `relearning` thì thẻ rời hàng đợi và được bật cờ. | FN-STUDY-005 |
-| [BR-STUDY-074](../features/study/rules/BR-STUDY-074-next-due-at-neo-00-00-dia-phuong.md) | next_due_at neo 00:00 địa phương | active | `next_due_at` rơi vào 00:00 giờ địa phương của ngày thứ N; lưu bằng UTC. | FN-REMINDER-004, FN-STUDY-001, FN-STUDY-005, FN-STUDY-012, UC-PROGRESS-001, UC-PROGRESS-002 |
+| [BR-STUDY-074](../features/study/rules/BR-STUDY-074-next-due-at-neo-00-00-dia-phuong.md) | next_due_at neo 00:00 địa phương | active | `next_due_at` rơi vào 00:00 giờ địa phương của ngày thứ N; lưu bằng UTC. | FN-PROGRESS-001, FN-PROGRESS-002, FN-REMINDER-004, FN-STUDY-001, FN-STUDY-005, FN-STUDY-012 |
 | [BR-STUDY-075](../features/study/rules/BR-STUDY-075-tab-study-doc-thu-vien-that.md) | Tab Study đọc thư viện thật | active | Tab Study đọc thư viện thật, không phụ thuộc deck id cố định, và không ghi database. | FN-STUDY-012 |
 | [BR-STUDY-076](../features/study/rules/BR-STUDY-076-study-home-liet-ke-root-deck.md) | Study Home liệt kê root deck | active | Study Home liệt kê root deck với workload toàn subtree, xếp theo ba khoá. | FN-STUDY-012 |
 | [BR-STUDY-077](../features/study/rules/BR-STUDY-077-study-home-ba-trang-thai.md) | Study Home ba trạng thái | active | Study Home phân biệt ba trạng thái đã tải, mỗi trạng thái một bước tiếp theo. | FN-STUDY-012, UC-STARTER-001 |
@@ -487,7 +494,7 @@ Chưa có tài liệu.
 | [BR-MODE-002](../features/study-mode/rules/BR-MODE-002-sau-study-mode.md) | Sáu StudyMode | active | StudyMode là một trong sáu: `browse`, `self_assess`, `match`, `guess`, `recall`, `fill`. | FN-STUDY-004, FN-STUDY-005 |
 | [BR-MODE-003](../features/study-mode/rules/BR-MODE-003-chuoi-stage-hoc-moi-mot-mode-on-tap.md) | Chuỗi stage cho học mới, một mode cho ôn tập | active | Phiên học mới chạy chuỗi stage cố định; phiên ôn tập chạy đúng một mode người dùng chọn. | FN-STUDY-002, FN-STUDY-005 |
 | [BR-MODE-004](../features/study-mode/rules/BR-MODE-004-chuoi-stage-theo-thuat-toan.md) | Chuỗi stage theo thuật toán | active | Chuỗi stage: `eight_box` → browse, match, guess, recall, fill; `sm2` → browse, self_assess. | FN-STUDY-002, FN-STUDY-005 |
-| [BR-MODE-005](../features/study-mode/rules/BR-MODE-005-browse-khong-sinh-action.md) | browse không sinh action | active | `browse` không sinh action, không ghi `review_log`, không đổi lịch; chỉ ghi tiến độ stage. | FN-STUDY-004, UC-PROGRESS-001 |
+| [BR-MODE-005](../features/study-mode/rules/BR-MODE-005-browse-khong-sinh-action.md) | browse không sinh action | active | `browse` không sinh action, không ghi `review_log`, không đổi lịch; chỉ ghi tiến độ stage. | FN-PROGRESS-001, FN-STUDY-004 |
 | [BR-MODE-006](../features/study-mode/rules/BR-MODE-006-browse-hien-hai-mat-self-assess-lat.md) | browse hiện hai mặt, self_assess lật | active | `browse` hiện hai mặt cùng lúc; `self_assess` hiện mặt trước, lật mới hiện mặt sau và action. | FN-STUDY-004 |
 | [BR-MODE-007](../features/study-mode/rules/BR-MODE-007-stage-sequence-do-thuat-toan-khai-bao.md) | stageSequence do thuật toán khai báo | active | Chuỗi stage do thuật toán SRS của root khai báo qua `stageSequence`, không hardcode ở UI. | FN-STUDY-002, FN-STUDY-005 |
 | [BR-MODE-008](../features/study-mode/rules/BR-MODE-008-luu-tuong-minh-mode-dang-chay.md) | Lưu tường minh mode đang chạy | active | Stage đang chạy lưu trên `study_session.current_mode`, mode từng lượt trên `review_log.mode`. | FN-CARD-014, FN-STUDY-002, FN-STUDY-005, FN-STUDY-012 |
