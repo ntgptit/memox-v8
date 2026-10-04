@@ -2468,54 +2468,54 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:2` id: UC-SETTINGS-001 |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:3` title: Đặt tuỳ chọn ứng dụng |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:4` status: ready |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:5` rules: [BR-SETTINGS-001, BR-SETTINGS-002, BR-SETTINGS-003, BR-SETTINGS-004, BR-S |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:6` code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, l |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:10` **Actor:** Người dùng |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:15` ## Main flow |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:17` **Main flow:** |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:18` 1. Người dùng mở tab Settings. Hệ thống đọc dòng `app_settings` qua stream và |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:21` 2. Người dùng đổi trần thẻ mỗi phiên và/hoặc thứ tự thẻ mới. Không có nút lưu: m |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:28` 3. Hệ thống nói rõ tại chỗ rằng mặc định mới áp cho **phiên tạo sau đó**; phiên |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:30` 4. Người dùng chọn theme trong `System` / `Light` / `Dark`. Lựa chọn là một |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:33` 5. Người dùng chọn ngôn ngữ trong `System` / `English` / `Tiếng Việt`. Cùng cơ |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:35` 6. Rời tab và quay lại, hoặc khởi động lại app: mọi lựa chọn tường minh vẫn còn |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:38` ## Alternative / Error flow |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:40` **Alternative flows:** |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:41` - **A1 — Root deck có override:** deck đó không đổi gì khi mặc định toàn app |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:46` - **A2 — `System` khi platform đổi:** người dùng đổi dark mode hoặc ngôn ngữ của |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:49` - **A3 — Reset về mặc định:** người dùng chọn `Reset to defaults`, hệ thống hỏi |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:54` - **A4 — Bấm lưu lần thứ hai khi lần đầu chưa xong:** hệ thống bỏ qua lần bấm |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:57` **Error flows:** |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:58` - **E1 — Trần thẻ không hợp lệ:** không phải số, nhỏ hơn tối thiểu hoặc lớn hơn |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:61` - **E2 — Ghi thất bại:** thao tác ghi lỗi → thông báo có kiểu và `Retry`. Draft |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:64` - **E3 — Đọc thất bại:** stream lỗi → trạng thái lỗi của cả màn với `Retry`; |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:66` - **E4 — Xoá override của deck thất bại:** override giữ nguyên, lý do có kiểu, |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:69` ## UI |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:71` **UI states:** loading (đọc lần đầu) · loaded ở mặc định · loaded ở giá trị |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:77` ## Local |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:79` **Postconditions:** `app_settings` giữ đúng một dòng với giá trị người dùng đã |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:85` ## API |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:87` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:89` ## Acceptance criteria |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:91` - [ ] **Given** app vừa cài hoặc mở tab Settings, **when** đọc xong dòng `app_se |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:92` - [ ] **Given** người dùng bấm nút −/+ hoặc giữ trên trần thẻ mỗi phiên, **when* |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:93` - [ ] **Given** người dùng đổi thứ tự thẻ mới hoặc gõ tay một trần thẻ hợp lệ (1 |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:94` - [ ] **Given** người dùng chọn theme `System`, `Light` hoặc `Dark`, **when** ch |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:95` - [ ] **Given** người dùng chọn ngôn ngữ `System`, `English` hoặc `Tiếng Việt`, |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:96` - [ ] **Given** một root deck đang có override `study_config`, **when** mặc định |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:97` - [ ] **Given** một root deck đang có override, **when** người dùng bấm "Use app |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:98` - [ ] **Given** một deck không phải root, **when** ghi hoặc xoá override qua đườ |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:99` - [ ] **Given** app đang để `System` cho theme hoặc ngôn ngữ, **when** brightnes |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:100` - [ ] **Given** người dùng chọn "Reset to defaults" và xác nhận, **when** transa |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:101` - [ ] **Given** một lần ghi của một nhóm (theme, ngôn ngữ hoặc study defaults) đ |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:102` - [ ] **Given** người dùng gõ một trần thẻ không phải số, nhỏ hơn 1 hoặc lớn hơn |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:103` - [ ] **Given** một lần ghi tuỳ chọn thất bại, **when** người dùng thấy thông bá |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:104` - [ ] **Given** stream đọc `app_settings` lỗi, **when** màn Settings nhận lỗi, * |  |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:105` - [ ] **Given** "Use app defaults" của một deck thất bại khi ghi, **when** người |  |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:2` id: UC-SETTINGS-001 | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:3` title: Đặt tuỳ chọn ứng dụng | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:5` rules: [BR-SETTINGS-001, BR-SETTINGS-002, BR-SETTINGS-003, BR-SETTINGS-004, BR-S | superseded → FN-SETTINGS-001…FN-SETTINGS-008 (Business rules) |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:6` code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, l | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:10` **Actor:** Người dùng | pending → SCR-SETTINGS-002 (entry points: the Settings tab and the /settings deep link); intent kept in UC-SETTINGS-001 (Mục tiêu, Preconditions) |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:15` ## Main flow | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:17` **Main flow:** | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:18` 1. Người dùng mở tab Settings. Hệ thống đọc dòng `app_settings` qua stream và | pending → SCR-SETTINGS-002 (three groups Study defaults, Appearance, Language, each showing the value in force); intent kept in UC-SETTINGS-001 step 1 + FN-SETTINGS-001 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:21` 2. Người dùng đổi trần thẻ mỗi phiên và/hoặc thứ tự thẻ mới. Không có nút lưu: m | pending → SCR-SETTINGS-002 (the card-limit stepper saves 600 ms after the last step, holding −/+ included; a typed number and the new-card order save at once); intent kept in UC-SETTINGS-001 step 2 + FN-SETTINGS-002 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:28` 3. Hệ thống nói rõ tại chỗ rằng mặc định mới áp cho **phiên tạo sau đó**; phiên | pending → SCR-SETTINGS-002 (the note in place that new defaults apply to later sessions); intent kept in UC-SETTINGS-001 step 3 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:30` 4. Người dùng chọn theme trong `System` / `Light` / `Dark`. Lựa chọn là một | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:33` 5. Người dùng chọn ngôn ngữ trong `System` / `English` / `Tiếng Việt`. Cùng cơ | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:35` 6. Rời tab và quay lại, hoặc khởi động lại app: mọi lựa chọn tường minh vẫn còn | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:38` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:40` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:41` - **A1 — Root deck có override:** deck đó không đổi gì khi mặc định toàn app | pending → SCR-SETTINGS-001 (Use app defaults on the deck study options, absent when there is no override); intent kept in UC-SETTINGS-001 A1 + FN-SETTINGS-006…FN-SETTINGS-008 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:46` - **A2 — `System` khi platform đổi:** người dùng đổi dark mode hoặc ngôn ngữ của | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:49` - **A3 — Reset về mặc định:** người dùng chọn `Reset to defaults`, hệ thống hỏi | pending → SCR-SETTINGS-002 (Reset to defaults and its confirmation saying learning progress is untouched); intent kept in UC-SETTINGS-001 A3 + FN-SETTINGS-005 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:54` - **A4 — Bấm lưu lần thứ hai khi lần đầu chưa xong:** hệ thống bỏ qua lần bấm | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:57` **Error flows:** | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:58` - **E1 — Trần thẻ không hợp lệ:** không phải số, nhỏ hơn tối thiểu hoặc lớn hơn | pending → SCR-SETTINGS-002 (the typed reason right under the field); intent kept in UC-SETTINGS-001 E1 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:61` - **E2 — Ghi thất bại:** thao tác ghi lỗi → thông báo có kiểu và `Retry`. Draft | pending → SCR-SETTINGS-002 (the typed message with Retry; no SQL or stack trace); intent kept in UC-SETTINGS-001 E2 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:64` - **E3 — Đọc thất bại:** stream lỗi → trạng thái lỗi của cả màn với `Retry`; | pending → SCR-SETTINGS-002 (the whole-screen error with Retry); intent kept in UC-SETTINGS-001 E3 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:66` - **E4 — Xoá override của deck thất bại:** override giữ nguyên, lý do có kiểu, | pending → SCR-SETTINGS-001 (the typed reason, the override kept); intent kept in UC-SETTINGS-001 E4 + FN-SETTINGS-008 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:69` ## UI | pending → SCR-SETTINGS-002 (states loading · loaded at defaults · loaded off defaults · saving per group · validation error · persistence error + retry · reset confirm · System resolution; no empty) |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:71` **UI states:** loading (đọc lần đầu) · loaded ở mặc định · loaded ở giá trị | pending → SCR-SETTINGS-002 (states loading · loaded at defaults · loaded off defaults · saving per group · validation error · persistence error + retry · reset confirm · System resolution; no empty) |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:77` ## Local | superseded → FN-SETTINGS-001 + FN-SETTINGS-005 + FN-SETTINGS-007 + FN-SETTINGS-008 (Kết quả) |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:79` **Postconditions:** `app_settings` giữ đúng một dòng với giá trị người dùng đã | superseded → FN-SETTINGS-001 + FN-SETTINGS-005 + FN-SETTINGS-007 + FN-SETTINGS-008 (Kết quả) |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:85` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:87` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:89` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:91` - [ ] **Given** app vừa cài hoặc mở tab Settings, **when** đọc xong dòng `app_se | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:92` - [ ] **Given** người dùng bấm nút −/+ hoặc giữ trên trần thẻ mỗi phiên, **when* | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:93` - [ ] **Given** người dùng đổi thứ tự thẻ mới hoặc gõ tay một trần thẻ hợp lệ (1 | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:94` - [ ] **Given** người dùng chọn theme `System`, `Light` hoặc `Dark`, **when** ch | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:95` - [ ] **Given** người dùng chọn ngôn ngữ `System`, `English` hoặc `Tiếng Việt`, | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:96` - [ ] **Given** một root deck đang có override `study_config`, **when** mặc định | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:97` - [ ] **Given** một root deck đang có override, **when** người dùng bấm "Use app | pending → SCR-SETTINGS-001 (presentation of the criterion); intent kept in UC-SETTINGS-001 A1 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:98` - [ ] **Given** một deck không phải root, **when** ghi hoặc xoá override qua đườ | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:99` - [ ] **Given** app đang để `System` cho theme hoặc ngôn ngữ, **when** brightnes | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:100` - [ ] **Given** người dùng chọn "Reset to defaults" và xác nhận, **when** transa | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:101` - [ ] **Given** một lần ghi của một nhóm (theme, ngôn ngữ hoặc study defaults) đ | moved → `USE_CASES.md` |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:102` - [ ] **Given** người dùng gõ một trần thẻ không phải số, nhỏ hơn 1 hoặc lớn hơn | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:103` - [ ] **Given** một lần ghi tuỳ chọn thất bại, **when** người dùng thấy thông bá | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:104` - [ ] **Given** stream đọc `app_settings` lỗi, **when** màn Settings nhận lỗi, * | pending → SCR-SETTINGS-002 (presentation of the criterion); intent kept in UC-SETTINGS-001 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:105` - [ ] **Given** "Use app defaults" của một deck thất bại khi ghi, **when** người | pending → SCR-SETTINGS-001 (presentation of the criterion); intent kept in UC-SETTINGS-001 A1 |
 
 ## features/srs/usecases/UC-SRS-001-reset-learning-progress.md
 
@@ -3154,23 +3154,23 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/settings/ui.md:1` # Settings — UI |  |
-| `features/settings/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên |  |
-| `features/settings/ui.md:5` ## Màn hình và điều hướng |  |
-| `features/settings/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| |  |
-| `features/settings/ui.md:9` \| 23 · Settings \| `/settings` (tab Settings) \| Bottom bar \| [23-settings.md](../ |  |
-| `features/settings/ui.md:10` \| 25 · Theme \| `/settings/theme`, trên root navigator, không có bottom bar \| Hàn |  |
-| `features/settings/ui.md:11` \| 26 · Language \| `/settings/language`, trên root navigator, không có bottom bar |  |
-| `features/settings/ui.md:12` \| 24 · Daily reminder \| `/settings/reminder`, trên root navigator, không có bott |  |
-| `features/settings/ui.md:13` \| 15 · Study options \| `/decks/deck/:deckId/options`, trên root navigator, không |  |
-| `features/settings/ui.md:15` Reset app options đưa cả nhắc học về tắt lúc 20:00 (BR-SETTINGS-008) và câu chữ |  |
-| `features/settings/ui.md:18` Theme và ngôn ngữ áp cho cả app: `main()` đọc dòng `app_settings` một lần trước |  |
-| `features/settings/ui.md:22` ## Validation |  |
-| `features/settings/ui.md:24` \| Trường \| Rule \| Message hiển thị \| Enforced by \| |  |
-| `features/settings/ui.md:26` \| app_settings.cardLimit \| cùng bound với tùy chọn của deck (BR-STUDY-003, BR-SE |  |
-| `features/settings/ui.md:27` \| app_settings.themeMode \| thuộc `system` \\| `light` \\| `dark` (BR-SETTINGS-005) |  |
-| `features/settings/ui.md:28` \| app_settings.language \| thuộc `system` \\| `en` \\| `vi` (BR-SETTINGS-006) \| khô |  |
-| `features/settings/ui.md:30` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid |  |
+| `features/settings/ui.md:1` # Settings — UI | superseded → UC-SETTINGS-001 + FN-SETTINGS-001…FN-SETTINGS-008; per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/settings/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên | superseded → UC-SETTINGS-001 + FN-SETTINGS-001…FN-SETTINGS-008; per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/settings/ui.md:5` ## Màn hình và điều hướng | pending → SCR-SETTINGS-002 (routes and where each settings screen opens from, with NAVIGATION.md) |
+| `features/settings/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | pending → SCR-SETTINGS-002 (routes and where each settings screen opens from, with NAVIGATION.md) |
+| `features/settings/ui.md:9` \| 23 · Settings \| `/settings` (tab Settings) \| Bottom bar \| [23-settings.md](../ | pending → SCR-SETTINGS-002 (route /settings, the Settings tab, opened from the bottom bar) |
+| `features/settings/ui.md:10` \| 25 · Theme \| `/settings/theme`, trên root navigator, không có bottom bar \| Hàn | pending → SCR-SETTINGS-003 (route /settings/theme on the root navigator, no bottom bar; opened from the Theme row) |
+| `features/settings/ui.md:11` \| 26 · Language \| `/settings/language`, trên root navigator, không có bottom bar | pending → SCR-SETTINGS-004 (route /settings/language on the root navigator, no bottom bar; opened from the Language row) |
+| `features/settings/ui.md:12` \| 24 · Daily reminder \| `/settings/reminder`, trên root navigator, không có bott | pending → SCR-REMINDER-001 (route /settings/reminder on the root navigator, no bottom bar; opened from the Daily reminder row "Off" or "On · HH:mm") |
+| `features/settings/ui.md:13` \| 15 · Study options \| `/decks/deck/:deckId/options`, trên root navigator, không | pending → SCR-SETTINGS-001 (route /decks/deck/:deckId/options on the root navigator, no bottom bar; opened from the deck action sheet and the Study Entry app bar) |
+| `features/settings/ui.md:15` Reset app options đưa cả nhắc học về tắt lúc 20:00 (BR-SETTINGS-008) và câu chữ | pending → SCR-SETTINGS-002 (the reset copy names the reminder going off at 20:00); contract kept in FN-SETTINGS-005; the reminder rescheduling after a reset goes to the reminders FNs (Task 18) |
+| `features/settings/ui.md:18` Theme và ngôn ngữ áp cho cả app: `main()` đọc dòng `app_settings` một lần trước | superseded → FN-SETTINGS-001 (read once before the first frame, 2 s at most, then the stream) + FN-SETTINGS-003 + FN-SETTINGS-004 (applied app-wide) |
+| `features/settings/ui.md:22` ## Validation | superseded → FN-SETTINGS-002 + FN-SETTINGS-003 + FN-SETTINGS-004 (Input and Lỗi) |
+| `features/settings/ui.md:24` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | superseded → FN-SETTINGS-002 + FN-SETTINGS-003 + FN-SETTINGS-004 (Input and Lỗi) |
+| `features/settings/ui.md:26` \| app_settings.cardLimit \| cùng bound với tùy chọn của deck (BR-STUDY-003, BR-SE | pending → SCR-SETTINGS-002 (Copy: "Enter a number from 1 to 200" under the stepper); rule kept in FN-SETTINGS-002 (Lỗi: cardLimitOutOfRange) |
+| `features/settings/ui.md:27` \| app_settings.themeMode \| thuộc `system` \\| `light` \\| `dark` (BR-SETTINGS-005) | superseded → FN-SETTINGS-003 (Input: system, light or dark; the control offers only these) |
+| `features/settings/ui.md:28` \| app_settings.language \| thuộc `system` \\| `en` \\| `vi` (BR-SETTINGS-006) \| khô | superseded → FN-SETTINGS-004 (Input: system, en or vi; the control offers only these) |
+| `features/settings/ui.md:30` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | dropped — restates ADR-015 (the server checks integrity, business rules live in the app), approved PENDING |
 
 ## features/srs/ui.md
 
@@ -4138,3 +4138,16 @@ abandon_stale_sessions 011, watch_study_home 012, preview_self_assess_intervals 
   cited by FN-DECK-007, +3 migrated legacy UC files, +1 FN-STUDY-013 invoked by no UC and no
   screen: the interval preview exists only for the self-assess buttons, so SCR-STUDY-004 will
   invoke it (P2); no use case names it.
+
+## Task 17 notes — settings
+
+watch_app_settings FN-SETTINGS-001, save_study_defaults 002, set_theme 003, set_language 004,
+reset_app_settings 005, watch_study_options 006, save_root_study_options 007, use_app_defaults 008.
+
+- `lib/app/startup_settings.dart` (read before the first frame, 2 s at most) is part of
+  FN-SETTINGS-001's contract, so settings/ui.md:18 is superseded, not left to the app shell.
+- The reminder columns live in `app_settings` but their use cases are in reminders; FN-SETTINGS-005
+  names the reminder reset, and the rescheduling after it goes to Task 18.
+- settings/ui.md:30 ("no server yet, client validation is UX") is dropped: ADR-015 already says
+  where integrity is checked (approval PENDING until Task 43).
+- Warning delta: 32 → 33 = +1 migrated legacy UC file. Every BR-SETTINGS is cited by an FN.

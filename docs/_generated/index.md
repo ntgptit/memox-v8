@@ -254,20 +254,33 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-SETTINGS-001](../features/settings/rules/BR-SETTINGS-001-app-settings-mot-dong-cot-co-kieu.md) | app_settings một dòng, cột có kiểu | active | `app_settings` là nơi duy nhất giữ mặc định toàn app: một dòng, cột có kiểu, đọc qua một stream. | UC-SETTINGS-001 |
-| [BR-SETTINGS-002](../features/settings/rules/BR-SETTINGS-002-mac-dinh-hoc-toan-app.md) | Mặc định học toàn app | active | Mặc định học gồm `card_limit` và `new_card_order`, dùng lại validation và enum production. | UC-SETTINGS-001 |
-| [BR-SETTINGS-003](../features/settings/rules/BR-SETTINGS-003-override-root-deck-va-use-app-defaults.md) | Override của root deck và Use app defaults | active | Root có `study_config` giữ override khi mặc định đổi; `Use app defaults` xoá override của root. | UC-SETTINGS-001 |
-| [BR-SETTINGS-004](../features/settings/rules/BR-SETTINGS-004-mac-dinh-moi-chi-ap-phien-sau.md) | Mặc định mới chỉ áp phiên tạo sau | active | Đổi mặc định học chỉ có hiệu lực với phiên tạo sau đó. | UC-SETTINGS-001 |
-| [BR-SETTINGS-005](../features/settings/rules/BR-SETTINGS-005-theme.md) | Theme | active | Theme là `system`, `light` hoặc `dark`, mặc định `system`, bền qua restart. | UC-SETTINGS-001 |
-| [BR-SETTINGS-006](../features/settings/rules/BR-SETTINGS-006-ngon-ngu.md) | Ngôn ngữ | active | Ngôn ngữ là `system`, `en` hoặc `vi`, mặc định `system`, fallback `en`. | UC-SETTINGS-001 |
-| [BR-SETTINGS-007](../features/settings/rules/BR-SETTINGS-007-moi-lan-luu-mot-transaction.md) | Mỗi lần lưu một transaction | active | Mỗi lần lưu một tuỳ chọn là một transaction độc lập; lỗi là `Failure` có kiểu. | UC-SETTINGS-001 |
-| [BR-SETTINGS-008](../features/settings/rules/BR-SETTINGS-008-reset-to-defaults.md) | Reset to defaults | active | `Reset to defaults` có xác nhận, đưa `app_settings` về mặc định, không đụng dữ liệu học. | UC-SETTINGS-001 |
+| [BR-SETTINGS-001](../features/settings/rules/BR-SETTINGS-001-app-settings-mot-dong-cot-co-kieu.md) | app_settings một dòng, cột có kiểu | active | `app_settings` là nơi duy nhất giữ mặc định toàn app: một dòng, cột có kiểu, đọc qua một stream. | FN-SETTINGS-001 |
+| [BR-SETTINGS-002](../features/settings/rules/BR-SETTINGS-002-mac-dinh-hoc-toan-app.md) | Mặc định học toàn app | active | Mặc định học gồm `card_limit` và `new_card_order`, dùng lại validation và enum production. | FN-SETTINGS-002, FN-SETTINGS-007 |
+| [BR-SETTINGS-003](../features/settings/rules/BR-SETTINGS-003-override-root-deck-va-use-app-defaults.md) | Override của root deck và Use app defaults | active | Root có `study_config` giữ override khi mặc định đổi; `Use app defaults` xoá override của root. | FN-SETTINGS-006, FN-SETTINGS-007, FN-SETTINGS-008 |
+| [BR-SETTINGS-004](../features/settings/rules/BR-SETTINGS-004-mac-dinh-moi-chi-ap-phien-sau.md) | Mặc định mới chỉ áp phiên tạo sau | active | Đổi mặc định học chỉ có hiệu lực với phiên tạo sau đó. | FN-SETTINGS-002, FN-SETTINGS-007 |
+| [BR-SETTINGS-005](../features/settings/rules/BR-SETTINGS-005-theme.md) | Theme | active | Theme là `system`, `light` hoặc `dark`, mặc định `system`, bền qua restart. | FN-SETTINGS-003 |
+| [BR-SETTINGS-006](../features/settings/rules/BR-SETTINGS-006-ngon-ngu.md) | Ngôn ngữ | active | Ngôn ngữ là `system`, `en` hoặc `vi`, mặc định `system`, fallback `en`. | FN-SETTINGS-004 |
+| [BR-SETTINGS-007](../features/settings/rules/BR-SETTINGS-007-moi-lan-luu-mot-transaction.md) | Mỗi lần lưu một transaction | active | Mỗi lần lưu một tuỳ chọn là một transaction độc lập; lỗi là `Failure` có kiểu. | FN-SETTINGS-002, FN-SETTINGS-003, FN-SETTINGS-004, FN-SETTINGS-005, FN-SETTINGS-007, FN-SETTINGS-008 |
+| [BR-SETTINGS-008](../features/settings/rules/BR-SETTINGS-008-reset-to-defaults.md) | Reset to defaults | active | `Reset to defaults` có xác nhận, đưa `app_settings` về mặc định, không đụng dữ liệu học. | FN-SETTINGS-005 |
+
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-SETTINGS-001](../functional-spec/settings.md) | Theo dõi tuỳ chọn ứng dụng | active | UC-SETTINGS-001 |
+| [FN-SETTINGS-002](../functional-spec/settings.md) | Lưu mặc định học toàn app | active | UC-SETTINGS-001 |
+| [FN-SETTINGS-003](../functional-spec/settings.md) | Đặt theme | active | UC-SETTINGS-001 |
+| [FN-SETTINGS-004](../functional-spec/settings.md) | Đặt ngôn ngữ | active | UC-SETTINGS-001 |
+| [FN-SETTINGS-005](../functional-spec/settings.md) | Đưa tuỳ chọn ứng dụng về mặc định | active | UC-SETTINGS-001 |
+| [FN-SETTINGS-006](../functional-spec/settings.md) | Theo dõi tuỳ chọn học đang áp cho một deck | active | UC-SETTINGS-001 |
+| [FN-SETTINGS-007](../functional-spec/settings.md) | Lưu tuỳ chọn học riêng của một root deck | active | UC-SETTINGS-001 |
+| [FN-SETTINGS-008](../functional-spec/settings.md) | Cho một root deck dùng lại mặc định toàn app | active | UC-SETTINGS-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [UC-SETTINGS-001](../features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md) | Đặt tuỳ chọn ứng dụng | ready | — |
+| [UC-SETTINGS-001](../USE_CASES.md) | Đặt tuỳ chọn ứng dụng | ready | — |
 
 ## [srs](../features/srs/README.md)
 
@@ -296,7 +309,7 @@ Chưa có tài liệu.
 | [BR-SRS-019](../features/srs/rules/BR-SRS-019-ghi-study-answers.md) | Ghi study answers | active | Mỗi lượt `scheduled` và `relearning` ghi một dòng `review_log` với các cột đã định. | FN-STUDY-005 |
 | [BR-SRS-020](../features/srs/rules/BR-SRS-020-generation-cua-root-deck.md) | Generation của root deck | active | Mỗi root deck có `generation`, bắt đầu từ 1, +1 sau mỗi lần reset. | FN-SRS-002 |
 | [BR-SRS-021](../features/srs/rules/BR-SRS-021-reset-giu-nguyen-noi-dung.md) | Reset giữ nguyên nội dung | active | Reset giữ nguyên deck, cây con, flashcard, media, tag và mọi nội dung. | FN-SRS-002 |
-| [BR-SRS-022](../features/srs/rules/BR-SRS-022-reset-dat-lai-trang-thai-hoc.md) | Reset đặt lại trạng thái học | active | Reset đặt lại scheduler state của mọi card, kể cả `learned_at`, và mọi session đang dở. | FN-SRS-002, UC-SETTINGS-001 |
+| [BR-SRS-022](../features/srs/rules/BR-SRS-022-reset-dat-lai-trang-thai-hoc.md) | Reset đặt lại trạng thái học | active | Reset đặt lại scheduler state của mọi card, kể cả `learned_at`, và mọi session đang dở. | FN-SRS-002 |
 | [BR-SRS-023](../features/srs/rules/BR-SRS-023-study-answers-cu-duoc-giu.md) | Study answers cũ được giữ | active | Study answers cũ được giữ với generation cũ và không dùng cho chu kỳ mới. | FN-SRS-002, UC-PROGRESS-002 |
 | [BR-SRS-024](../features/srs/rules/BR-SRS-024-reset-mo-khoa-scheduler.md) | Reset mở khoá scheduler | active | Sau reset `first_answered_at` về NULL, mở khoá scheduler. | FN-SRS-002 |
 | [BR-SRS-025](../features/srs/rules/BR-SRS-025-trang-thai-hoc-mang-generation.md) | Trạng thái học mang generation | active | Study state, study session và study answers đều mang `generation`. | FN-SRS-002, FN-STUDY-002, FN-STUDY-003 |
@@ -350,7 +363,7 @@ Chưa có tài liệu.
 |---|---|---|---|---|
 | [BR-STUDY-001](../features/study/rules/BR-STUDY-001-phien-lay-card-den-han-hoac-chua-co-lich.md) | Phiên lấy card đến hạn hoặc chưa có lịch | deprecated | Đã thay bằng BR-STUDY-051. Một phiên chỉ lấy card có `due_at IS NULL OR due_at <= now`. | — |
 | [BR-STUDY-002](../features/study/rules/BR-STUDY-002-thu-tu-the-trong-phien.md) | Thứ tự thẻ trong phiên | active | Ôn tập theo `due_at` tăng dần; học mới theo `new_card_order`; hai loại phiên không trộn thẻ. | FN-STUDY-003 |
-| [BR-STUDY-003](../features/study/rules/BR-STUDY-003-gioi-han-the-rieng-biet-moi-phien.md) | Giới hạn thẻ riêng biệt mỗi phiên | active | Mỗi phiên giới hạn số thẻ riêng biệt theo `card_limit` (1–200, mặc định 20), là trần mỗi lần lấy. | FN-STUDY-003, UC-SETTINGS-001 |
+| [BR-STUDY-003](../features/study/rules/BR-STUDY-003-gioi-han-the-rieng-biet-moi-phien.md) | Giới hạn thẻ riêng biệt mỗi phiên | active | Mỗi phiên giới hạn số thẻ riêng biệt theo `card_limit` (1–200, mặc định 20), là trần mỗi lần lấy. | FN-SETTINGS-002, FN-STUDY-003 |
 | [BR-STUDY-004](../features/study/rules/BR-STUDY-004-ghi-danh-gia-ngay.md) | Ghi đánh giá ngay | active | Đánh giá được ghi ngay khi người dùng bấm, không chờ hết phiên. | FN-STUDY-005, FN-STUDY-009 |
 | [BR-STUDY-005](../features/study/rules/BR-STUDY-005-self-assess-the-quen-quay-lai.md) | self_assess: thẻ quên quay lại | active | Chỉ `self_assess`: thẻ `forgotten`/`again` quay lại cùng hàng đợi sau ít nhất 3 thẻ khác. | FN-STUDY-005 |
 | [BR-STUDY-006](../features/study/rules/BR-STUDY-006-chi-luot-scheduled-doi-lich-dai-han.md) | Chỉ lượt scheduled đổi lịch dài hạn | active | Chỉ lượt `scheduled` được đổi lịch dài hạn, và chỉ có trong phiên `reviewing`. | FN-STUDY-005 |
@@ -371,7 +384,7 @@ Chưa có tài liệu.
 | [BR-STUDY-021](../features/study/rules/BR-STUDY-021-hang-doi-luu-db-va-bat-bien.md) | Hàng đợi lưu DB và bất biến | active | Hàng đợi được lưu trong database và bất biến trong suốt phiên. | FN-STUDY-002, FN-STUDY-003, FN-STUDY-010 |
 | [BR-STUDY-022](../features/study/rules/BR-STUDY-022-moi-stage-mot-hang-doi.md) | Mỗi stage một hàng đợi | active | Mỗi stage có hàng đợi riêng trên cùng tập thẻ, thứ tự xáo độc lập. | FN-STUDY-002, FN-STUDY-005 |
 | [BR-STUDY-023](../features/study/rules/BR-STUDY-023-loai-luot-theo-loai-phien.md) | Loại lượt theo loại phiên | active | Học mới: mọi lượt là `learning`/`relearning`, không đổi lịch; ôn tập: lượt đầu `scheduled`, lượt lặp `relearning`. | FN-STUDY-005 |
-| [BR-STUDY-024](../features/study/rules/BR-STUDY-024-card-limit-chot-luc-mo-phien.md) | card_limit chốt lúc mở phiên | active | Số thẻ của phiên chốt một lần lúc mở vào `card_limit`; đổi tùy chọn sau đó không ảnh hưởng. | FN-STUDY-002, FN-STUDY-003, UC-SETTINGS-001 |
+| [BR-STUDY-024](../features/study/rules/BR-STUDY-024-card-limit-chot-luc-mo-phien.md) | card_limit chốt lúc mở phiên | active | Số thẻ của phiên chốt một lần lúc mở vào `card_limit`; đổi tùy chọn sau đó không ảnh hưởng. | FN-SETTINGS-002, FN-STUDY-002, FN-STUDY-003 |
 | [BR-STUDY-025](../features/study/rules/BR-STUDY-025-dieu-kien-dung-noi-dung-khong-phai-nguong.md) | Điều kiện dựng nội dung không phải ngưỡng thẻ | active | Điều kiện dựng được nội dung quyết định stage chạy hay bỏ qua, không quyết định số thẻ. | FN-STUDY-001 |
 | [BR-STUDY-026](../features/study/rules/BR-STUDY-026-fill-de-la-mat-sau-go-mat-truoc.md) | fill: đề là mặt sau, gõ mặt trước | active | `fill` hiện mặt sau làm đề, yêu cầu gõ mặt trước, chấm bằng so dạng fold với `front_folded`, giữ nguyên dấu. | FN-STUDY-004 |
 | [BR-STUDY-027](../features/study/rules/BR-STUDY-027-fill-luu-phien-ban-chinh-sach-so-khop.md) | fill: lưu phiên bản chính sách so khớp | active | Mỗi lượt `fill` lưu phiên bản chính sách so khớp; đổi chính sách tăng phiên bản, không sửa lượt cũ. | FN-STUDY-005 |
@@ -382,7 +395,7 @@ Chưa có tài liệu.
 | [BR-STUDY-032](../features/study/rules/BR-STUDY-032-recall-toi-da-mot-dap-an.md) | recall: tối đa một đáp án mỗi lượt | active | Một lượt `recall` ghi tối đa một đáp án; tại mốc hết giờ chỉ một nhánh thắng. | FN-STUDY-005 |
 | [BR-STUDY-033](../features/study/rules/BR-STUDY-033-het-gio-khoa-ket-cuc-sai.md) | Hết giờ khoá kết cục sai | active | Hết giờ khoá kết cục thành sai và tự lật đáp án sau khi ghi đã commit. | FN-STUDY-005 |
 | [BR-STUDY-034](../features/study/rules/BR-STUDY-034-luu-ly-do-het-gio.md) | Lưu lý do hết giờ | active | Lý do hết giờ lưu tường minh ở `review_log.outcome_reason`, không suy từ `action`. | FN-CARD-014, FN-STUDY-005 |
-| [BR-STUDY-035](../features/study/rules/BR-STUDY-035-khong-luu-nhan-man-hinh.md) | Không lưu nhãn màn hình | active | Nhãn trên màn hình không được lưu; chỉ `action` canonical vào `review_log`. | FN-CARD-014, FN-STUDY-005, UC-SETTINGS-001 |
+| [BR-STUDY-035](../features/study/rules/BR-STUDY-035-khong-luu-nhan-man-hinh.md) | Không lưu nhãn màn hình | active | Nhãn trên màn hình không được lưu; chỉ `action` canonical vào `review_log`. | FN-CARD-014, FN-SETTINGS-004, FN-STUDY-005 |
 | [BR-STUDY-036](../features/study/rules/BR-STUDY-036-luu-thoi-gian-con-lai-va-trang-thai-lat.md) | Lưu thời gian còn lại và trạng thái lật | active | Thời gian còn lại và trạng thái đã lật được lưu để Resume đúng chỗ, không đặt lại 20 giây. | FN-STUDY-004, FN-STUDY-006, FN-STUDY-007, FN-STUDY-010 |
 | [BR-STUDY-037](../features/study/rules/BR-STUDY-037-guess-dung-nam-lua-chon.md) | guess: đúng năm lựa chọn | active | Mỗi question `guess` có đúng năm lựa chọn: một đáp án đúng và bốn distractor. | FN-STUDY-004 |
 | [BR-STUDY-038](../features/study/rules/BR-STUDY-038-nguon-distractor.md) | Nguồn distractor | active | Distractor lấy từ thẻ đã học xong hoặc đang trong phiên, cùng cây deck, khác thẻ đang hỏi. | FN-STUDY-004 |
@@ -403,8 +416,8 @@ Chưa có tài liệu.
 | [BR-STUDY-053](../features/study/rules/BR-STUDY-053-hoan-tat-chuoi-hoc-moi-la-su-kien.md) | Hoàn tất chuỗi học mới là sự kiện | active | Chuỗi học mới không đổi lịch tới khi thẻ đi hết stage của nó; hoàn tất là sự kiện đặt `learned_at` và lịch đầu. | FN-CARD-014, FN-STUDY-005 |
 | [BR-STUDY-054](../features/study/rules/BR-STUDY-054-khong-mo-reviewing-khi-khong-co-the-den-han.md) | Không mở reviewing khi không có thẻ đến hạn | active | Phiên `reviewing` không mở khi không có thẻ đến hạn; không có ôn sớm hơn hạn. | FN-STUDY-001, FN-STUDY-003 |
 | [BR-STUDY-055](../features/study/rules/BR-STUDY-055-mode-kha-dung-de-on-tap.md) | Mode khả dụng để ôn tập | active | Mode ôn tập là các stage chấm điểm của thuật toán; chỉ một mode thì vào thẳng. | FN-STUDY-001, FN-STUDY-003 |
-| [BR-STUDY-056](../features/study/rules/BR-STUDY-056-tuy-chon-hoc-hai-tang.md) | Tùy chọn học hai tầng | active | Tùy chọn học có mặc định toàn app và ghi đè trên root deck; deck con không có tùy chọn riêng. | FN-STUDY-001, FN-STUDY-002, UC-SETTINGS-001 |
-| [BR-STUDY-057](../features/study/rules/BR-STUDY-057-new-card-order.md) | new_card_order | active | `new_card_order` là `created` hoặc `random`, mặc định `created`. | FN-STUDY-002, UC-SETTINGS-001 |
+| [BR-STUDY-056](../features/study/rules/BR-STUDY-056-tuy-chon-hoc-hai-tang.md) | Tùy chọn học hai tầng | active | Tùy chọn học có mặc định toàn app và ghi đè trên root deck; deck con không có tùy chọn riêng. | FN-SETTINGS-006, FN-SETTINGS-007, FN-STUDY-001, FN-STUDY-002 |
+| [BR-STUDY-057](../features/study/rules/BR-STUDY-057-new-card-order.md) | new_card_order | active | `new_card_order` là `created` hoặc `random`, mặc định `created`. | FN-SETTINGS-002, FN-STUDY-002 |
 | [BR-STUDY-058](../features/study/rules/BR-STUDY-058-the-da-hoc-phai-co-lich.md) | Thẻ đã học phải có lịch | active | Thẻ có `learned_at` có `due_at`; thẻ `learned_at IS NULL` không có lượt `scheduled`. | FN-STUDY-005 |
 | [BR-STUDY-059](../features/study/rules/BR-STUDY-059-mode-cham-diem-chay-theo-round.md) | Mode chấm điểm chạy theo round | active | Bốn mode chấm điểm chạy theo round; round sau chỉ gồm thẻ không đạt; `self_assess` không dùng round. | FN-STUDY-005 |
 | [BR-STUDY-060](../features/study/rules/BR-STUDY-060-tap-khong-dat-cua-round.md) | Tập không đạt của round | active | Thẻ từng sai trong round thuộc tập không đạt kể cả khi sau đó đúng; khử trùng theo thẻ. | FN-STUDY-005 |

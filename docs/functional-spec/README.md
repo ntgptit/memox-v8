@@ -9,3 +9,4 @@ section. Định dạng: [docs/README.md](../README.md), mục "UC, FN và scree
 | Card | [card.md](card.md) |
 | SRS | [srs.md](srs.md) |
 | Study | [study.md](study.md) |
+| Settings | [settings.md](settings.md) |

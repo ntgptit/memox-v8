@@ -777,3 +777,77 @@ mode ôn duy nhất thuật toán này cung cấp là `self_assess`.
 - [ ] **Given** không còn thẻ nào đến hạn lúc bắt đầu, **when** người dùng bắt đầu, **then** phiên bị từ chối, người dùng được báo, và không ghi gì (E2).
 - [ ] **Given** yêu cầu mở phiên `self_assess` không kèm chiều, hoặc kèm chiều cho một mode không dùng chiều, **when** hệ thống xử lý, **then** yêu cầu bị từ chối và không ghi gì (E3).
 - [ ] **Given** người dùng đang chọn chiều và scheduler của root đổi sang `eight_box`, **when** người dùng bắt đầu, **then** phiên bị từ chối với `modeNotOffered`, không ghi gì, và người dùng biết self-check không còn được cung cấp (E1).
+
+## Settings
+
+### UC-SETTINGS-001 — Đặt tuỳ chọn ứng dụng
+Status: ready · Code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, lib/features/settings/domain/usecases/save_study_defaults_use_case.dart, lib/features/settings/domain/usecases/set_theme_use_case.dart, lib/features/settings/domain/usecases/set_language_use_case.dart, lib/features/settings/domain/usecases/reset_app_settings_use_case.dart, lib/features/settings/domain/usecases/watch_study_options_use_case.dart, lib/features/settings/domain/usecases/save_root_study_options_use_case.dart, lib/features/settings/domain/usecases/use_app_defaults_use_case.dart, lib/app/startup_settings.dart] · Invokes: [FN-SETTINGS-001, FN-SETTINGS-002, FN-SETTINGS-003, FN-SETTINGS-004, FN-SETTINGS-005, FN-SETTINGS-006, FN-SETTINGS-007, FN-SETTINGS-008]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Đặt cách app học và trình bày — trần thẻ mỗi phiên, thứ tự thẻ mới, theme, ngôn ngữ
+— một lần cho cả app, và cho riêng một cây deck khi cần.
+**Preconditions:** Không có. Chỉ có một hồ sơ cục bộ, và tuỳ chọn ứng dụng luôn tồn tại.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng muốn xem tuỳ chọn. Hệ thống thực hiện FN-SETTINGS-001: người dùng biết giá trị
+   **đang có hiệu lực** của mặc định học, theme và ngôn ngữ — không phải giá trị giả định.
+2. Người dùng đổi trần thẻ mỗi phiên và/hoặc thứ tự thẻ mới. Không có bước lưu riêng: mỗi thay đổi
+   đã dừng là một lần lưu (FN-SETTINGS-002), và mọi nơi đang dùng giá trị thấy giá trị mới.
+3. Người dùng biết mặc định mới áp cho **phiên mở sau đó**; phiên đang chạy giữ nguyên trần đã
+   chốt.
+4. Người dùng chọn theme `System`, `Light` hoặc `Dark` (FN-SETTINGS-003). Lựa chọn là một lần lưu
+   riêng, và giao diện đổi ngay trong phiên chạy — không khởi động lại, không mất chỗ người dùng
+   đang đứng.
+5. Người dùng chọn ngôn ngữ `System`, `English` hoặc `Tiếng Việt` (FN-SETTINGS-004), cùng cách và
+   cùng ràng buộc như theme.
+6. Rời đi rồi quay lại, hoặc khởi động lại app: mọi lựa chọn tường minh vẫn còn.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Một cây deck có tuỳ chọn riêng:** cây đó không đổi gì khi mặc định toàn app đổi. Người
+  dùng biết tuỳ chọn đang áp cho một deck và chúng đến từ đâu (FN-SETTINGS-006), có thể đặt tuỳ
+  chọn riêng cho root của nó (FN-SETTINGS-007), và có thể cho cây dùng lại mặc định toàn app
+  (FN-SETTINGS-008). Tiến độ học, chế độ ôn tập và lịch sử không bị đụng. Cây không có tuỳ chọn
+  riêng thì không có gì để bỏ.
+- **A2 — `System` khi hệ điều hành đổi:** người dùng đổi chế độ tối hoặc ngôn ngữ của hệ điều hành
+  trong lúc app đang chạy. Đang để `System` thì app đổi theo ngay; đang để giá trị tường minh thì
+  app không đổi.
+- **A3 — Về mặc định:** người dùng muốn đưa mọi tuỳ chọn về mặc định. Người dùng xác nhận trước,
+  biết rằng việc này **không** đụng tiến độ học, rồi hệ thống thực hiện FN-SETTINGS-005: sáu giá
+  trị — bốn tuỳ chọn học và trình bày, cùng công tắc và giờ của nhắc học hằng ngày — về mặc định
+  cùng lúc.
+- **A4 — Yêu cầu lưu lần thứ hai khi lần đầu chưa xong:** lần sau bị bỏ qua; một thay đổi không bao
+  giờ thành hai lần ghi.
+
+**Error flows:**
+- **E1 — Trần thẻ không hợp lệ:** không phải số, nhỏ hơn tối thiểu hoặc lớn hơn tối đa — người
+  dùng biết lý do ngay, không gì được ghi, và giá trị đang nhập giữ nguyên.
+- **E2 — Ghi thất bại:** người dùng được báo lỗi, không kèm chi tiết kỹ thuật, và thử lại được.
+  Giá trị đang nhập giữ nguyên; các tuỳ chọn khác vẫn là giá trị đã lưu.
+- **E3 — Đọc thất bại:** người dùng được báo lỗi và thử lại được; không tuỳ chọn nào hiện giá trị
+  bịa ra.
+- **E4 — Cho cây dùng lại mặc định thất bại:** tuỳ chọn riêng giữ nguyên, người dùng biết lý do,
+  và không có thay đổi một phần.
+
+#### Acceptance criteria
+
+- [ ] **Given** app vừa cài hoặc người dùng mở tuỳ chọn, **when** đọc xong tuỳ chọn ứng dụng, **then** người dùng biết đúng giá trị đang có hiệu lực của mặc định học, theme và ngôn ngữ, không phải giá trị giả định.
+- [ ] **Given** người dùng đổi trần thẻ mỗi phiên nhiều lần liên tiếp, **when** thao tác dừng, **then** hệ thống ghi đúng một transaction với giá trị cuối cùng.
+- [ ] **Given** người dùng đổi thứ tự thẻ mới hoặc nhập một trần thẻ hợp lệ (1–200), **when** thao tác dừng, **then** hệ thống ghi ngay không cần bước lưu riêng, và mọi nơi đang dùng giá trị thấy giá trị mới.
+- [ ] **Given** người dùng chọn theme `System`, `Light` hoặc `Dark`, **when** chọn, **then** hệ thống ghi ngay trong một transaction riêng và giao diện đổi trong cùng phiên chạy, không mất chỗ người dùng đang đứng.
+- [ ] **Given** người dùng chọn ngôn ngữ `System`, `English` hoặc `Tiếng Việt`, **when** chọn, **then** hệ thống ghi ngay và áp dụng ngay trong cùng phiên, cùng cách như theme, và giá trị còn sau khi khởi động lại app.
+- [ ] **Given** một root deck đang có tuỳ chọn riêng, **when** mặc định học toàn app đổi, **then** deck đó không đổi số nào; root không có tuỳ chọn riêng đọc mặc định mới ở lần đọc kế tiếp (A1).
+- [ ] **Given** một root deck đang có tuỳ chọn riêng, **when** người dùng cho cây dùng lại mặc định toàn app, **then** hệ thống xoá tuỳ chọn riêng của root trong một transaction, cây quay về đọc mặc định toàn app, và tiến độ học cùng lịch sử không đổi (A1).
+- [ ] **Given** một deck không phải root, **when** ghi hoặc xoá tuỳ chọn riêng qua đường của root, **then** hệ thống từ chối và không ghi gì (A1).
+- [ ] **Given** app đang để `System` cho theme hoặc ngôn ngữ, **when** chế độ tối hoặc ngôn ngữ của hệ điều hành đổi trong lúc app chạy, **then** app đổi theo ngay; nếu đang để giá trị tường minh thì app không đổi (A2).
+- [ ] **Given** người dùng muốn về mặc định và xác nhận, **when** transaction chạy xong, **then** cả sáu giá trị của tuỳ chọn ứng dụng về mặc định trong một lần ghi, và tuỳ chọn riêng của mọi root không đổi (A3).
+- [ ] **Given** một lần ghi của một nhóm (theme, ngôn ngữ hoặc mặc định học) đang chạy, **when** người dùng yêu cầu lại cùng thay đổi đó, **then** lần sau bị bỏ qua, không có hai transaction (A4).
+- [ ] **Given** người dùng nhập một trần thẻ không phải số, nhỏ hơn 1 hoặc lớn hơn 200, **when** dừng nhập, **then** người dùng biết lý do ngay, không gì được ghi, và giá trị đang nhập giữ nguyên (E1).
+- [ ] **Given** một lần ghi tuỳ chọn thất bại, **when** người dùng được báo, **then** thông báo không lộ SQL hay đường dẫn file, các tuỳ chọn khác vẫn là giá trị đã lưu, và thử lại ghi lại đúng thay đổi đó (E2).
+- [ ] **Given** việc đọc tuỳ chọn ứng dụng lỗi, **when** người dùng mở tuỳ chọn, **then** người dùng được báo lỗi và thử lại được, và không tuỳ chọn nào hiện giá trị bịa ra (E3).
+- [ ] **Given** việc cho cây dùng lại mặc định thất bại khi ghi, **when** người dùng được báo, **then** tuỳ chọn riêng của root giữ nguyên như trước, người dùng biết lý do, và không có thay đổi một phần (E4).
