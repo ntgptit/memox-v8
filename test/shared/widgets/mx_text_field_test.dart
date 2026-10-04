@@ -250,6 +250,21 @@ void main() {
       field.decoration!.disabledBorder!.borderSide.color,
       s.outlineVariant,
     );
+    final SemanticsHandle semantics = tester.ensureSemantics();
+    await tester.pump();
+    expect(
+      tester.getSemantics(find.byType(EditableText)),
+      // Flutter marks every text field focusable in semantics; a disabled
+      // one is announced as disabled, and a tap cannot give it focus.
+      isSemantics(isTextField: true, isEnabled: false),
+    );
+    semantics.dispose();
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isFalse,
+    );
   });
 
   testWidgets('a leading icon and one named trailing action', (tester) async {
@@ -276,33 +291,50 @@ void main() {
     expect(tester.getSize(find.byType(TextField)).height, AppSize.field);
   });
 
-  testWidgets('grows with the text scale and never clips', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: mxThemes['light'],
-        home: MediaQuery(
-          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-          child: Scaffold(
-            body: Center(
-              child: SizedBox(
-                width: 300,
-                child: MxTextField(
-                  controller: TextEditingController(text: 'Spanish'),
-                  label: 'Deck',
-                  message: 'Enter a name',
+  for (final MapEntry(key: name, value: theme) in mxThemes.entries) {
+    for (final variant in MxTextFieldVariant.values) {
+      testWidgets('$name: ${variant.name} grows at 2x text and never clips', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: theme,
+            home: MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+              child: Scaffold(
+                body: Center(
+                  child: SizedBox(
+                    width: 300,
+                    child: MxTextField(
+                      controller: TextEditingController(text: '042917'),
+                      variant: variant,
+                      label: 'Deck',
+                      requiredText: 'Required',
+                      message: 'Enter a name',
+                      leadingIcon: Icons.search,
+                      trailingAction: MxTextFieldAction(
+                        icon: Icons.close,
+                        semanticLabel: 'Clear',
+                        onPressed: () {},
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-    );
-    expect(tester.takeException(), isNull);
-    expect(
-      tester.getSize(find.byType(TextField)).height,
-      greaterThan(AppSize.field),
-    );
-  });
+        );
+        expect(tester.takeException(), isNull);
+        final Rect field = tester.getRect(find.byType(TextField));
+        final Rect text = tester.getRect(find.byType(EditableText));
+        expect(field.top, lessThanOrEqualTo(text.top));
+        expect(field.bottom, greaterThanOrEqualTo(text.bottom));
+        if (variant != MxTextFieldVariant.study) {
+          expect(field.height, greaterThan(AppSize.field));
+        }
+      });
+    }
+  }
 
   testWidgets('a growing field keeps its text at the top', (tester) async {
     await pumpMx(

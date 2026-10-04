@@ -70,10 +70,10 @@ void main() {
         }
       });
 
-      test('focus falls back to the primary role, not a Flutter default', () {
+      test('focus falls back to the Indigo Accent, never primary', () {
         expect(
           theme.focusColor,
-          scheme.primary.withValues(alpha: AppOpacity.focus),
+          scheme.onPrimaryContainer.withValues(alpha: AppOpacity.focus),
         );
       });
 

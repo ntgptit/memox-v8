@@ -35,7 +35,7 @@ abstract final class AppTheme {
       visualDensity: VisualDensity.standard,
       splashFactory: InkRipple.splashFactory,
       splashColor: scheme.onSurface.withValues(alpha: AppOpacity.pressed),
-      focusColor: scheme.primary.withValues(alpha: AppOpacity.focus),
+      focusColor: scheme.onPrimaryContainer.withValues(alpha: AppOpacity.focus),
       highlightColor: Colors.transparent,
       hoverColor: Colors.transparent,
       iconTheme: IconThemeData(color: scheme.onSurfaceVariant),
