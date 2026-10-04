@@ -125,5 +125,113 @@ class FunctionSectionTest(unittest.TestCase):
         self.assertEqual([specdocs.id_kind(i) for i in ("BR-X-001", "INV-UI-001", "SCR-A-001")], ["BR", "INV", "SCR"])
 
 
+SCREEN_BODY = """
+# Library
+
+## Related Use Cases
+- UC-DECK-001
+
+## States
+
+### `root_loaded` · Root loaded
+Golden: light, dark
+
+### `root_error` · Root error
+Golden: none — not golden-covered in V8
+
+### `rootSearch` · Search
+Golden: light
+
+### `old_state` · Old
+Status: removed
+
+### `no_golden` · Missing line
+
+## Controls
+
+### FAB
+- Invokes: `FN-DECK-001`
+#### On success
+- Navigate to: SCR-DECK-002
+"""
+
+CATALOG = """# Screen catalog
+
+## Screens
+
+| ID | Screen | Domain | Route | Status | Spec |
+|---|---|---|---|---|---|
+| SCR-DECK-001 | Library | deck | `/decks`, `/decks/deck/:deckId` | ready | `spec/SCR-DECK-001-deck-list.md` |
+
+## Invariants for every screen
+
+| ID | Invariant | Enforced by |
+|---|---|---|
+| INV-UI-001 | A failed save keeps what was typed. | — |
+"""
+
+
+class ScreenTest(unittest.TestCase):
+    def setUp(self):
+        self.screen = specdocs.parse_screen(SCREEN_BODY, offset=6)
+
+    def test_a_state_reads_key_title_line_and_variants(self):
+        loaded = self.screen.states[0]
+        self.assertEqual(
+            (loaded.key, loaded.title, loaded.line, loaded.variants, loaded.error),
+            ("root_loaded", "Root loaded", 15, ["light", "dark"], None),
+        )
+
+    def test_none_with_a_reason_has_no_variants(self):
+        state = self.screen.states[1]
+        self.assertEqual((state.variants, state.error, state.golden_none), ([], None, True))
+
+    def test_a_camel_case_key_is_an_error(self):
+        self.assertIn("snake_case", self.screen.states[2].error)
+
+    def test_a_removed_state_needs_no_golden_line(self):
+        state = self.screen.states[3]
+        self.assertEqual((state.removed, state.error), (True, None))
+
+    def test_a_missing_golden_line_is_an_error(self):
+        self.assertIn("no `Golden:` line", self.screen.states[4].error)
+
+    def test_none_without_a_reason_is_an_error(self):
+        state = specdocs.parse_screen("## States\n### `x` · X\nGolden: none\n").states[0]
+        self.assertIn("say why", state.error)
+
+    def test_controls_give_invokes_and_navigation(self):
+        self.assertEqual(self.screen.invokes, ["FN-DECK-001"])
+        self.assertEqual(self.screen.navigates, ["SCR-DECK-002"])
+        self.assertEqual(self.screen.related_ucs, ["UC-DECK-001"])
+
+    def test_golden_name_round_trips_through_the_file_pattern(self):
+        name = specdocs.golden_name("SCR-DECK-001", "root_loaded", "light")
+        self.assertEqual(name, "scr_deck_001__root_loaded__light.png")
+        self.assertIsNotNone(specdocs.GOLDEN_FILE.match(name))
+        self.assertIsNone(specdocs.GOLDEN_FILE.match("scr_deck_001__root__loaded__light.png"))
+
+
+class CatalogTest(unittest.TestCase):
+    def test_screen_rows(self):
+        row = specdocs.catalog_screens(CATALOG)[0]
+        self.assertEqual(
+            (row.id, row.name, row.domain, row.routes, row.status, row.line),
+            ("SCR-DECK-001", "Library", "deck", ["/decks", "/decks/deck/:deckId"], "ready", 7),
+        )
+
+    def test_invariant_rows(self):
+        inv = specdocs.catalog_invariants(CATALOG)[0]
+        self.assertEqual(
+            (inv.id, inv.text, inv.enforced_by, inv.line),
+            ("INV-UI-001", "A failed save keeps what was typed.", "—", 13),
+        )
+
+    def test_a_crlf_catalog_reads_like_lf(self):
+        crlf = CATALOG.replace("\n", "\r\n")
+        self.assertEqual(specdocs.catalog_screens(crlf), specdocs.catalog_screens(CATALOG))
+        self.assertEqual(specdocs.catalog_invariants(crlf), specdocs.catalog_invariants(CATALOG))
+
+
 if __name__ == "__main__":
     unittest.main()
