@@ -2,7 +2,7 @@
 name: MemoX V8
 description: A quiet, focused study space for spaced-repetition flashcards, in two themes, Tokyo Pure Light and Tokyo Nebula.
 colors:
-  primary: "#5265F5"
+  primary: "#4151C6"
   on-primary: "#FFFFFF"
   primary-container: "#E0E5FE"
   on-primary-container: "#1A2580"
@@ -29,9 +29,9 @@ colors:
   on-inverse-surface: "#E8EAFC"
   inverse-primary: "#A0ACFF"
   primary-fixed: "#E0E5FE"
-  primary-fixed-dim: "#B5BFFB"
+  primary-fixed-dim: "#B0B9ED"
   on-primary-fixed: "#1A2580"
-  on-primary-fixed-variant: "#2B38A3"
+  on-primary-fixed-variant: "#263295"
   secondary-fixed: "#E3E6F7"
   secondary-fixed-dim: "#C0C6EE"
   on-secondary-fixed: "#262E6E"
@@ -49,20 +49,22 @@ colors:
   surface-container-highest: "#DAE0EF"
   mastery: "#1D8758"
   on-mastery: "#FFFFFF"
-  success: "#2BA88B"
-  warning: "#F59E0B"
-  on-warning: "#3A2A00"
-  warning-ink: "#895806"
-  error-fill: "#DC2D4E"
-  on-error-fill: "#FFFFFF"
-  status-new: "#8C95B8"
-  status-learning: "#F59E0B"
-  status-reviewing: "#5265F5"
-  status-mastered: "#1F8A5B"
+  success: "#206E6A"
+  on-success: "#FFFFFF"
+  success-container: "#DFF2EE"
+  on-success-container: "#174251"
+  warning: "#895806"
+  on-warning: "#FFFFFF"
+  warning-container: "#FDE3B4"
+  on-warning-container: "#3A2A00"
+  status-new: "#5A6285"
+  status-learning: "#825A22"
+  status-reviewing: "#4151C6"
+  status-mastered: "#1B6D52"
   streak: "#F97316"
 colors-dark:
-  primary: "#5265F5"
-  on-primary: "#FFFFFF"
+  primary: "#94A0F7"
+  on-primary: "#0F1638"
   primary-container: "#2D346A"
   on-primary-container: "#D9DFFF"
   secondary: "#9DA8E8"
@@ -80,7 +82,7 @@ colors-dark:
   surface: "#0A0E27"
   on-surface: "#E4E8FA"
   on-surface-variant: "#A4ACD0"
-  outline: "#5A6BAE"
+  outline: "#7D8AC1"
   outline-variant: "#2A3267"
   shadow: "#000000"
   scrim: "#000000"
@@ -88,9 +90,9 @@ colors-dark:
   on-inverse-surface: "#E8EAFC"
   inverse-primary: "#A0ACFF"
   primary-fixed: "#E0E5FE"
-  primary-fixed-dim: "#B5BFFB"
+  primary-fixed-dim: "#B0B9ED"
   on-primary-fixed: "#1A2580"
-  on-primary-fixed-variant: "#2B38A3"
+  on-primary-fixed-variant: "#263295"
   secondary-fixed: "#E3E6F7"
   secondary-fixed-dim: "#C0C6EE"
   on-secondary-fixed: "#262E6E"
@@ -109,14 +111,16 @@ colors-dark:
   mastery: "#6FE0BD"
   on-mastery: "#11173A"
   success: "#6FE0BD"
+  on-success: "#11173A"
+  success-container: "#23434D"
+  on-success-container: "#C5F3E5"
   warning: "#FFC658"
   on-warning: "#2A1E00"
-  warning-ink: "#FFC658"
-  error-fill: "#B0485C"
-  on-error-fill: "#FFFFFF"
-  status-new: "#6B75A3"
+  warning-container: "#473C33"
+  on-warning-container: "#FFE8BC"
+  status-new: "#9BA3C6"
   status-learning: "#FFC658"
-  status-reviewing: "#8B9AFF"
+  status-reviewing: "#94A2FF"
   status-mastered: "#6FE0BD"
   streak: "#FFAE6E"
 typography:
@@ -202,15 +206,6 @@ spacing:
   major: "32px"
   page-end: "48px"
 derived:
-  primary-ink:
-    light:
-      base: primary
-      toward: on-surface
-      amount: 0.25
-    dark:
-      base: primary
-      toward: on-surface
-      amount: 0.45
   ghost-border:
     light:
       base: primary
@@ -218,111 +213,6 @@ derived:
     dark:
       base: primary
       alpha: 0.16
-  outline-edge:
-    light:
-      base: outline
-      toward: on-surface
-      amount: 0
-    dark:
-      base: outline
-      toward: on-surface
-      amount: 0.25
-  status-new-ink:
-    light:
-      base: status-new
-      toward: on-surface
-      amount: 0.4
-    dark:
-      base: status-new
-      toward: on-surface
-      amount: 0.4
-  status-learning-ink:
-    light:
-      base: status-learning
-      toward: on-surface
-      amount: 0.5
-    dark:
-      base: status-learning
-      toward: on-surface
-      amount: 0
-  status-reviewing-ink:
-    light:
-      base: status-reviewing
-      toward: on-surface
-      amount: 0.25
-    dark:
-      base: status-reviewing
-      toward: on-surface
-      amount: 0.1
-  status-mastered-ink:
-    light:
-      base: status-mastered
-      toward: on-surface
-      amount: 0.25
-    dark:
-      base: status-mastered
-      toward: on-surface
-      amount: 0
-  success-ink:
-    light:
-      base: success
-      toward: on-surface
-      amount: 0.4
-    dark:
-      base: success
-      toward: on-surface
-      amount: 0
-  danger-ink:
-    light:
-      base: error
-      toward: on-surface
-      amount: 0.1
-    dark:
-      base: error
-      toward: on-surface
-      amount: 0.3
-  danger-tint:
-    light:
-      base: error
-      alpha: 0.08
-    dark:
-      base: error
-      alpha: 0.16
-  danger-tint-border:
-    light:
-      base: error
-      alpha: 0.22
-    dark:
-      base: error
-      alpha: 0.32
-  warning-tint:
-    light:
-      base: warning
-      alpha: 0.12
-    dark:
-      base: warning
-      alpha: 0.18
-  warning-tint-border:
-    light:
-      base: warning
-      alpha: 0.22
-    dark:
-      base: warning
-      alpha: 0.32
-  success-tint:
-    light:
-      base: success
-      alpha: 0.1
-    dark:
-      base: success
-      alpha: 0.18
-  success-tint-border:
-    light:
-      base: success
-      alpha: 0.22
-    dark:
-      base: success
-      alpha: 0.32
 contrast:
   on-surface:
     surface: 4.5
@@ -334,7 +224,7 @@ contrast:
     surface-container-lowest: 4.5
     surface-container-low: 4.5
     surface-container-high: 4.5
-  primary-ink:
+  primary:
     surface: 4.5
     surface-container-lowest: 4.5
     surface-container-low: 4.5
@@ -344,57 +234,66 @@ contrast:
     surface-container-lowest: 4.5
     surface-container-low: 4.5
     surface-container-high: 4.5
-  danger-ink:
+  success:
     surface: 4.5
     surface-container-lowest: 4.5
     surface-container-low: 4.5
     surface-container-high: 4.5
-  warning-ink:
+  warning:
     surface: 4.5
     surface-container-lowest: 4.5
     surface-container-low: 4.5
     surface-container-high: 4.5
-  success-ink:
+  status-new:
     surface: 4.5
     surface-container-lowest: 4.5
     surface-container-low: 4.5
     surface-container-high: 4.5
-  status-new-ink:
+  status-learning:
     surface: 4.5
     surface-container-lowest: 4.5
     surface-container-low: 4.5
     surface-container-high: 4.5
-  status-learning-ink:
+  status-reviewing:
     surface: 4.5
     surface-container-lowest: 4.5
     surface-container-low: 4.5
     surface-container-high: 4.5
-  status-reviewing-ink:
-    surface: 4.5
-    surface-container-lowest: 4.5
-    surface-container-low: 4.5
-    surface-container-high: 4.5
-  status-mastered-ink:
+  status-mastered:
     surface: 4.5
     surface-container-lowest: 4.5
     surface-container-low: 4.5
     surface-container-high: 4.5
   on-primary:
     primary: 4.5
-  on-secondary:
-    secondary: 4.5
-  on-tertiary:
-    tertiary: 4.5
-  on-error:
-    error: 4.5
   on-primary-container:
     primary-container: 4.5
+  on-secondary:
+    secondary: 4.5
   on-secondary-container:
     secondary-container: 4.5
+  on-tertiary:
+    tertiary: 4.5
   on-tertiary-container:
     tertiary-container: 4.5
+  on-error:
+    error: 4.5
   on-error-container:
     error-container: 4.5
+  on-success:
+    success: 4.5
+  on-success-container:
+    success-container: 4.5
+  on-warning:
+    warning: 4.5
+  on-warning-container:
+    warning-container: 4.5
+  on-mastery:
+    mastery: 4.5
+  on-inverse-surface:
+    inverse-surface: 4.5
+  inverse-primary:
+    inverse-surface: 4.5
   on-primary-fixed:
     primary-fixed: 4.5
     primary-fixed-dim: 4.5
@@ -413,26 +312,12 @@ contrast:
   on-tertiary-fixed-variant:
     tertiary-fixed: 4.5
     tertiary-fixed-dim: 4.5
-  on-inverse-surface:
-    inverse-surface: 4.5
-  inverse-primary:
-    inverse-surface: 4.5
-  on-error-fill:
-    error-fill: 4.5
-  on-warning:
-    warning: 4.5
-  on-mastery:
-    mastery: 4.5
   outline:
     surface: 3
     surface-container-lowest: 3
     surface-container-low: 3
-  outline-edge:
-    surface: 3
-    surface-container-lowest: 3
-    surface-container-low: 3
     surface-container-high: 3
-  primary:
+  mastery:
     surface-container-low: 3
 type-slots:
   display-large: stat
@@ -649,11 +534,10 @@ MemoX should feel like a quiet, focused study space. The system ships two themes
 
 ## Colors
 
-A cool indigo-tinted neutral field with one saturated brand indigo, one reserved violet, and a green that only ever means progress. Frontmatter holds the Tokyo Pure Light values; Tokyo Nebula values and tonal information live in `.impeccable/design.json` `colorMeta`.
+A cool indigo-tinted neutral field with one saturated brand indigo, one reserved violet, and a green that only ever means progress. The frontmatter holds every value, `colors` for Tokyo Pure Light and `colors-dark` for Tokyo Nebula; the Values table below is generated from it. A role is its own text colour: there is no separate ink palette (owner 2026-10-04, SP3a D18).
 
 ### Primary
-- **Brand Indigo** (`primary`): the fill of primary buttons, the FAB, the selected filter chip, progress fills and the selected-choice surface. Identical in both themes (#5265F5). White ink on it in both themes.
-- **Indigo Ink** (derived, not a fill): primary as text, icon, focus ring or spinner is `primary` pulled toward `on-surface` (25% in light, 45% in dark) so it reads at 4.5:1 on every ground. Outline buttons, links and the 2dp focus ring use it.
+- **Brand Indigo** (`primary`, #4151C6; dark #94A0F7): the fill of primary buttons, the FAB, the selected filter chip, progress fills and the selected-choice surface, and also indigo text, icons, links, the outline button's label and the 2dp focus ring, since it holds 4.5:1 on every ground in both themes. Content on it is `on-primary` (white in light, #0F1638 in dark).
 - **Indigo Wash** (`primary-container`, `on-primary-container`): quiet selected and informational grounds. Dark: #2D346A / #D9DFFF.
 
 ### Secondary
@@ -667,26 +551,26 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 - **Raised White** (`surface-container-lowest`): cards, list rows, chips. Dark: #131A3A.
 - **Muted Fill** (`surface-container-low`): text-field fill at rest, the mastery track, navigation rail ground, recessed study face. Dark: #1B2249.
 - **Sheet Ground** (`surface-container-high`): dialogs and bottom sheets. Dark: #2C356E.
-- **On Surface** (`on-surface`) and **Variant Ink** (`on-surface-variant`): primary and secondary text. Dark: #E4E8FA and #A4ACD0.
-- **Outline** (`outline`) and **Outline Variant** (`outline-variant`): control edges and dividers; the everyday hairline is the derived Ghost Border (primary at 14% light, 16% dark). The outline button's edge is the derived **Outline Edge** (`outlineEdge`): `outline` in light (#6F79A3, 3.43:1 on the sheet and 4.04 on the page; owner 2026-10-04, SP3a F3, so `outline-variant` is a divider only); in dark `outline` pulled 25% toward `on-surface` (≈ #7D8AC1), 3.41:1 on the sheet, 5.69 on the page and 4.27 on the warning ground, since `outline-variant` nearly vanished on the dark sheet (critique 2026-09-30 part 1, R7).
+- **On Surface** (`on-surface`) and **On Surface Variant** (`on-surface-variant`): primary and secondary text. Dark: #E4E8FA and #A4ACD0.
+- **Outline** (`outline`) and **Outline Variant** (`outline-variant`): control edges (`outline`, #6F79A3; dark #7D8AC1, 3:1 or more on page, row, low and sheet; owner 2026-10-04, SP3a F2, F3) and dividers (`outline-variant`, decorative only). The everyday hairline is the derived Ghost Border (primary at 14% light, 16% dark).
 - **Inverse Surface** (`inverse-surface`, #34395D): the snackbar ground, identical in both themes, with `inverse-primary` (#A0ACFF, 5.21:1) for its action.
 
 ### Semantic
-- **Mastery Green** (`mastery`, #1D8758, white on it 4.51:1, owner 2026-10-04, SP3a F1; dark #6FE0BD) and **Success Teal** (`success`, #2BA88B): progress and a finished session. Two roles, never interchangeable; a right answer is success, never mastery. In dark both are #6FE0BD, so there the label and the glyph tell them apart.
-- **Status ramp**: `status-new` (#8C95B8), `status-learning` (#F59E0B), `status-reviewing` (indigo), `status-mastered` (green). Dots, fills and tints use the colour itself; status text uses an Ink derived by pulling the colour toward `on-surface`.
-- **Warning Amber** (`warning`, `on-warning`, `warning-ink`): a refusal or a limit where nothing was lost. Warning text and glyphs use **Warning Ink** (`warningInk`): #895806 in light (amber's hue at 28% lightness, 4.5:1 or more on every ground and tint, the sheet included), the amber itself in dark. `on-warning` is only the ink on an amber fill (critique 2026-09-30 tone pass, T1).
-- **Error** (`error`, #C02447) is the text/icon/edge role; **Danger Ink** (`dangerInk`) is error pulled toward `on-surface` (10% light, 30% dark) for text on the danger ground, such as a banner title, 4.5:1 or more on every surface including a sheet (critique 2026-09-30 tone pass); **Destructive Fill** (`error-fill`, #DC2D4E; dark #B0485C) is the solid destructive button only.
+- **Mastery Green** (`mastery`, #1D8758, white on it 4.51:1, owner 2026-10-04, SP3a F1; dark #6FE0BD), a fill only, and **Success Teal** (`success`, #206E6A, with `on-success`, `success-container` and `on-success-container`): progress and a finished session. Two roles, never interchangeable; a right answer is success, never mastery. In dark both are #6FE0BD, so there the label and the glyph tell them apart.
+- **Status ramp**: `status-new` (#5A6285), `status-learning` (#825A22), `status-reviewing` (#4151C6), `status-mastered` (#1B6D52); dark #9BA3C6, #FFC658, #94A2FF, #6FE0BD. Each is its own label, dot and fill colour, 4.5:1 or more on every ground.
+- **Warning Amber** (`warning`, #895806; dark #FFC658, with `on-warning`, `warning-container` #FDE3B4 / #473C33 and `on-warning-container`): a refusal or a limit where nothing was lost. Warning text and glyphs on a surface use `warning`; the soft amber ground is `warning-container` with `on-warning-container` on it.
+- **Error** (`error`, #C02447; dark #FF8FA3) is danger: text, icons and edges on a surface, and the destructive button's fill with `on-error` on it. The danger ground is `error-container` with `on-error-container` on it. There is no separate danger palette.
 - **Streak Orange** (`streak`): the Progress flame only.
-- **Derived tints**: danger/warning/success soft grounds are the role at 8-18% alpha over the surface (danger 8/16, warning 12/18, success 10/18, light/dark), with borders at 22% (light) and 32% (dark).
+- **Soft grounds** are the container roles: `error-container`, `warning-container`, `success-container`, each with its `on-` partner.
 
 ### Named Rules
 **The One Indigo Rule.** Indigo means "act". A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8).
 
 **The Green Means Progress Rule.** Green is `mastery` or `success` and nothing else. Violet is never a status; green is never decoration.
 
-**The Ink Is Not The Fill Rule.** Text, icons and focus rings use the derived ink (primary ink, status inks, success ink, warning ink, `error`), never the fill colour, because the fills fail 4.5:1 as text on light surfaces.
+**The Role And Its Ground Rule.** A colour is a semantic role, used for its purpose on the ground it was tested on. Body text is `on-surface`, secondary text `on-surface-variant`; accent text or icons on a surface use the role itself (`primary`, `error`, `success`, `warning`, a status), which holds 4.5:1 there; content on a coloured fill or container uses that role's `on-` partner, and only there. A role that fails is corrected in the frontmatter, never patched with a parallel ink colour (owner 2026-10-04, SP3a D18).
 
-**The Contrast Floor Rule.** Text and glyphs hold 4.5:1 and non-text (edges, thumbs, progress fill on its track, grabber) hold 3:1, on page, row, low and sheet grounds, in both themes. Pull the ink, not the ground, to pass.
+**The Contrast Floor Rule.** Text and glyphs hold 4.5:1 and non-text (edges, thumbs, progress fill on its track, grabber) hold 3:1, on page, row, low and sheet grounds, in both themes. Correct the role, not the ground, to pass.
 
 ### Values
 
@@ -697,8 +581,8 @@ Every colour the app draws, light and dark, with its rule and its lowest measure
 
 | Colour | Light | Dark | Rule | Lowest contrast (light / dark) |
 |---|---|---|---|---|
-| `primary` | #5265F5 | #5265F5 | stated | 4.20 / 3.31 |
-| `on-primary` | #FFFFFF | #FFFFFF | stated | 4.63 / 4.63 |
+| `primary` | #4151C6 | #94A0F7 | stated | 5.27 / 4.69 |
+| `on-primary` | #FFFFFF | #0F1638 | stated | 6.53 / 7.24 |
 | `primary-container` | #E0E5FE | #2D346A | stated | — / — |
 | `on-primary-container` | #1A2580 | #D9DFFF | stated | 10.37 / 8.81 |
 | `secondary` | #6E7CD9 | #9DA8E8 | stated | — / — |
@@ -716,7 +600,7 @@ Every colour the app draws, light and dark, with its rule and its lowest measure
 | `surface` | #F7F9FE | #0A0E27 | stated | — / — |
 | `on-surface` | #0F1638 | #E4E8FA | stated | 14.22 / 9.35 |
 | `on-surface-variant` | #4A5278 | #A4ACD0 | stated | 6.12 / 5.10 |
-| `outline` | #6F79A3 | #5A6BAE | stated | 3.86 / 3.02 |
+| `outline` | #6F79A3 | #7D8AC1 | stated | 3.43 / 3.41 |
 | `outline-variant` | #C5CBE3 | #2A3267 | stated | — / — |
 | `shadow` | #0F1638 | #000000 | stated | — / — |
 | `scrim` | #0A0E27 | #000000 | stated | — / — |
@@ -724,9 +608,9 @@ Every colour the app draws, light and dark, with its rule and its lowest measure
 | `on-inverse-surface` | #E8EAFC | #E8EAFC | stated | 9.32 / 9.32 |
 | `inverse-primary` | #A0ACFF | #A0ACFF | stated | 5.21 / 5.21 |
 | `primary-fixed` | #E0E5FE | #E0E5FE | stated | — / — |
-| `primary-fixed-dim` | #B5BFFB | #B5BFFB | stated | — / — |
-| `on-primary-fixed` | #1A2580 | #1A2580 | stated | 7.29 / 7.29 |
-| `on-primary-fixed-variant` | #2B38A3 | #2B38A3 | stated | 5.37 / 5.37 |
+| `primary-fixed-dim` | #B0B9ED | #B0B9ED | stated | — / — |
+| `on-primary-fixed` | #1A2580 | #1A2580 | stated | 6.79 / 6.79 |
+| `on-primary-fixed-variant` | #263295 | #263295 | stated | 5.58 / 5.58 |
 | `secondary-fixed` | #E3E6F7 | #E3E6F7 | stated | — / — |
 | `secondary-fixed-dim` | #C0C6EE | #C0C6EE | stated | — / — |
 | `on-secondary-fixed` | #262E6E | #262E6E | stated | 7.39 / 7.39 |
@@ -742,34 +626,22 @@ Every colour the app draws, light and dark, with its rule and its lowest measure
 | `surface-container` | #E9EDF7 | #232B5A | stated | — / — |
 | `surface-container-high` | #E2E7F3 | #2C356E | stated | — / — |
 | `surface-container-highest` | #DAE0EF | #353D7E | stated | — / — |
-| `mastery` | #1D8758 | #6FE0BD | stated | — / — |
+| `mastery` | #1D8758 | #6FE0BD | stated | 4.09 / 9.53 |
 | `on-mastery` | #FFFFFF | #11173A | stated | 4.51 / 10.83 |
-| `success` | #2BA88B | #6FE0BD | stated | — / — |
-| `warning` | #F59E0B | #FFC658 | stated | — / — |
-| `on-warning` | #3A2A00 | #2A1E00 | stated | 6.47 / 10.49 |
-| `warning-ink` | #895806 | #FFC658 | stated | 4.90 / 7.32 |
-| `error-fill` | #DC2D4E | #B0485C | stated | — / — |
-| `on-error-fill` | #FFFFFF | #FFFFFF | stated | 4.64 / 5.35 |
-| `status-new` | #8C95B8 | #6B75A3 | stated | — / — |
-| `status-learning` | #F59E0B | #FFC658 | stated | — / — |
-| `status-reviewing` | #5265F5 | #8B9AFF | stated | — / — |
-| `status-mastered` | #1F8A5B | #6FE0BD | stated | — / — |
+| `success` | #206E6A | #6FE0BD | stated | 4.85 / 7.10 |
+| `on-success` | #FFFFFF | #11173A | stated | 6.00 / 10.83 |
+| `success-container` | #DFF2EE | #23434D | stated | — / — |
+| `on-success-container` | #174251 | #C5F3E5 | stated | 9.34 / 8.74 |
+| `warning` | #895806 | #FFC658 | stated | 4.90 / 7.32 |
+| `on-warning` | #FFFFFF | #2A1E00 | stated | 6.07 / 10.49 |
+| `warning-container` | #FDE3B4 | #473C33 | stated | — / — |
+| `on-warning-container` | #3A2A00 | #FFE8BC | stated | 11.13 / 8.93 |
+| `status-new` | #5A6285 | #9BA3C6 | stated | 4.82 / 4.59 |
+| `status-learning` | #825A22 | #FFC658 | stated | 4.94 / 7.32 |
+| `status-reviewing` | #4151C6 | #94A2FF | stated | 5.27 / 4.82 |
+| `status-mastered` | #1B6D52 | #6FE0BD | stated | 5.05 / 7.10 |
 | `streak` | #F97316 | #FFAE6E | stated | — / — |
-| `primary-ink` | #4151C6 | #94A0F7 | primary → on-surface 25% / primary → on-surface 45% | 5.27 / 4.69 |
-| `ghost-border` | #5265F5 @ 14% | #5265F5 @ 16% | primary at 14% / primary at 16% | — / — |
-| `outline-edge` | #6F79A3 | #7D8AC1 | outline → on-surface 0% / outline → on-surface 25% | 3.43 / 3.41 |
-| `status-new-ink` | #5A6285 | #9BA3C6 | status-new → on-surface 40% / status-new → on-surface 40% | 4.82 / 4.59 |
-| `status-learning-ink` | #825A22 | #FFC658 | status-learning → on-surface 50% / status-learning → on-surface 0% | 4.94 / 7.32 |
-| `status-reviewing-ink` | #4151C6 | #94A2FF | status-reviewing → on-surface 25% / status-reviewing → on-surface 10% | 5.27 / 4.82 |
-| `status-mastered-ink` | #1B6D52 | #6FE0BD | status-mastered → on-surface 25% / status-mastered → on-surface 0% | 5.05 / 7.10 |
-| `success-ink` | #206E6A | #6FE0BD | success → on-surface 40% / success → on-surface 0% | 4.85 / 7.10 |
-| `danger-ink` | #AE2346 | #F7AABD | error → on-surface 10% / error → on-surface 30% | 5.42 / 6.21 |
-| `danger-tint` | #C02447 @ 8% | #FF8FA3 @ 16% | error at 8% / error at 16% | — / — |
-| `danger-tint-border` | #C02447 @ 22% | #FF8FA3 @ 32% | error at 22% / error at 32% | — / — |
-| `warning-tint` | #F59E0B @ 12% | #FFC658 @ 18% | warning at 12% / warning at 18% | — / — |
-| `warning-tint-border` | #F59E0B @ 22% | #FFC658 @ 32% | warning at 22% / warning at 32% | — / — |
-| `success-tint` | #2BA88B @ 10% | #6FE0BD @ 18% | success at 10% / success at 18% | — / — |
-| `success-tint-border` | #2BA88B @ 22% | #6FE0BD @ 32% | success at 22% / success at 32% | — / — |
+| `ghost-border` | #4151C6 @ 14% | #94A0F7 @ 16% | primary at 14% / primary at 16% | — / — |
 
 <!-- generated:design-values:end -->
 
@@ -790,7 +662,7 @@ Every colour the app draws, light and dark, with its rule and its lowest measure
 - **Button Label** (600, 14px, 1.5, 0.1px): component override of Body; compact and chip buttons use the small label.
 - **Section Label** (700, 13px, 0.6px, tabular, upper-cased by the widget): the overline that introduces a list or settings group, and nothing else.
 - **Eyebrow** (600, 12px, 0.8px, tabular, `on-surface-variant`): the context line above a big title or number; the app's own words upper-cased, user data as typed (critique 2026-09-30 part 2).
-- **Field Label** (600, 14px, `on-surface`, sentence case): names an input or a read-only field; "Required" is the optional caption's size in primary ink.
+- **Field Label** (600, 14px, `on-surface`, sentence case): names an input or a read-only field; "Required" is the optional caption's size in `primary`.
 
 Component styles (row title, field term, study term, banner title) override the nearest role inside that component; they never add a global style.
 
@@ -841,7 +713,7 @@ One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, not
 Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` by SP3a); they hold no copy (callers pass localized strings) and read colour only from the theme.
 
 ### Actions
-- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, Indigo Ink: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outlineEdge`.
+- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, `primary` label: the quiet action beside a decision's fill), destructive (`error` fill), dangerSoft (`error-container`), warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in `primary`. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outline`.
 - **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area. **MxFab**: square 52, r16, icon only, no extended form.
 - **MxActionPair** (two footer actions, side by side or stacked when labels do not fit) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
 
@@ -850,29 +722,29 @@ Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` b
 - **MxDialog** (widths 340, 320, 300; scale-in), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **MxDeckPickerSheet**, **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption at `AppOpacity.muted`).
 
 ### Inputs
-- **MxTextField**: variants form (52, muted fill that lightens on focus), detail (grows from 48), meaning (16/500, grows from 76, r20), term (24/700, r20), code (one centred line of six digits on the form fill, headline role with tabular figures and wide tracking, numeric keyboard and one-time-code autofill) and study (bare). Ghost edge, primary-ink edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
-- **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills primary with on-primary ink), **MxChipTrigger** (ghost chip that opens a menu).
+- **MxTextField**: variants form (52, muted fill that lightens on focus), detail (grows from 48), meaning (16/500, grows from 76, r20), term (24/700, r20), code (one centred line of six digits on the form fill, headline role with tabular figures and wide tracking, numeric keyboard and one-time-code autofill) and study (bare). Ghost edge, `primary` edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
+- **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills `primary` with `on-primary` content), **MxChipTrigger** (ghost chip that opens a menu).
 
 ### Navigation
 - **MxAppBar** (56, content or screen density; a bar without a leading control starts its title on the gutter, in line with the body, critique 2026-09-30 part 3c-1; a form's single save lives in its footer, never also in the bar), **MxStudyTopBar** (close, mode badge, thin progress, Indigo in every mode; the session context line under it names deck, kind, stage and round in two lines at most, never the mode again; critique 2026-09-30 part 3c-2), **MxBottomNav** (glass bar, outlined resting glyph, filled selected glyph, tinted pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation), **MxAppShell** and **MxScreenScroll** (tail clearance for FAB and nav).
 
 ### Feedback and Status
-- **MxSnackbar** (inverse surface, one optional action, 4s; 8s when offering Undo), **MxFloatingNotice** (floats over a screen that does not own the problem, as Study home's sync notice; the screen that owns it shows an `MxInlineBanner` in place), **MxInlineBanner** (warning or danger; the glyph reads in warning ink or error and the bold title in warning ink or danger ink, and the message stays neutral, critique 2026-09-30 tone pass; its actions put the primary last, as Material 3 does, so screen 24's permission banner reads Try again then Open system settings; critique 2026-09-30 part 3a, R5 amends FE-B6), **MxEmptyState** (tones primary, neutral, success, warning, danger; success tints with success and draws its glyph in success ink, critique 2026-09-30 tone pass; warning draws its glyph in warning ink, part 3d-2), **MxErrorState** (inline load failure with Retry; without a retry action it is the "not found" form; the alert glyph by default, cloud-off only for a network failure), **MxSpinner** (4 sizes, 800ms cycle), **MxSkeleton** family (pulse 0.45 to 0.75 over 1.4s), **MxBadge** (primary, mastery, success, warning, danger, neutral; mastery is learning progress, success a right answer or a finished, fine state, in its success ink; critique 2026-09-30 tone pass), **MxStatusBadge** (new, learning, reviewing, mastered).
+- **MxSnackbar** (inverse surface, one optional action, 4s; 8s when offering Undo), **MxFloatingNotice** (floats over a screen that does not own the problem, as Study home's sync notice; the screen that owns it shows an `MxInlineBanner` in place), **MxInlineBanner** (warning or danger; on its container ground the glyph and the bold title read in `on-warning-container` or `on-error-container`, and the message stays neutral, critique 2026-09-30 tone pass; its actions put the primary last, as Material 3 does, so screen 24's permission banner reads Try again then Open system settings; critique 2026-09-30 part 3a, R5 amends FE-B6), **MxEmptyState** (tones primary, neutral, success, warning, danger; success draws its glyph in `success` on a `success-container` tile, critique 2026-09-30 tone pass; warning draws its glyph in `warning`, part 3d-2), **MxErrorState** (inline load failure with Retry; without a retry action it is the "not found" form; the alert glyph by default, cloud-off only for a network failure), **MxSpinner** (4 sizes, 800ms cycle), **MxSkeleton** family (pulse 0.45 to 0.75 over 1.4s), **MxBadge** (primary, mastery, success, warning, danger, neutral; mastery is learning progress, success a right answer or a finished, fine state, in `success`; critique 2026-09-30 tone pass), **MxStatusBadge** (new, learning, reviewing, mastered).
 
 ### Study-specific
-- **MxMasteryDonut**, **MxLinearProgress** and the single **MasteryRamp** threshold function: below 34% learning ink, 34 to 66% reviewing indigo, from 67% mastered green, a flat fill on a `surface-container-low` track, never a gradient; percent never rounds to 0 or 100 falsely.
+- **MxMasteryDonut**, **MxLinearProgress** and the single **MasteryRamp** threshold function: below 34% `status-learning`, 34 to 66% `status-reviewing`, from 67% mastered green, a flat fill on a `surface-container-low` track, never a gradient; percent never rounds to 0 or 100 falsely.
 - **MxOutcomeTile** (what a reset keeps, in success, or loses, in warning; critique 2026-09-30 tone pass), **MxWorkloadBreakdownLine** ("overdue, today, new" with one colour each), study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `AppOpacity.muted`, 0.7, and stays readable) and the recessed answer face, whose ground Match's idle meaning tiles share while its terms stay raised (part 3c-2).
 - **StudyCtaRow**: two actions share the row at up to 160 each and stack at text scale 1.3; a lone button spans the width of that pair (2 × 160 + 8), so Continue weighs what a pair does. Grades that judge the learner (Forgot, Remembered) share one tone. An action swapped in place under the finger (Show answer to the grades, Show meaning to Forgot · Remembered, Check to Continue) settles for 400 ms, easing in from `AppOpacity.muted`, before it takes a tap (critique 2026-09-30 part 3c-2).
 - **SessionFooterHint**: the glyph sits inline before the first line and wraps with the text; every hint is one line at normal size in English and Vietnamese, so the CTA above it stands in one place in every mode with no empty line under it (critique 2026-09-30 part 3c-2).
 
 ### Data Display
-- **MxListRow** (48 minimum, grows to two title lines; a trailing badge or the chevron, never both), **MxSettingsRow** (a value that only follows another setting reads as plain trailing text at full contrast, not as a dimmed control; a disabled row dims its tile, label and chevron, never the subtitle that says why; a trailing control that draws its own disabled state (`MxButton`, `MxToggle`, `MxStepper`) is not dimmed again (critique 2026-09-30 part 3a); an `isAction` row, which runs an action or opens a dialog, shows no chevron; `iconTone` sets the lead tile's tone, tinted by default (critique 2026-09-30 tone pass)), **MxListSectionHeader**, **MxStatTile** (boxed or inline; emphasis primary, plain, muted; its value keeps one line and scales down in a narrow column, critique 2026-09-30 part 3c-1), **MxStackedDayBars** (every day at full strength, each series in a colour that holds 3:1 on the card, learning in its ink; the current day is told by its bold label, critique 2026-10-02), **MxTagChip** (22 or 18), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press).
+- **MxListRow** (48 minimum, grows to two title lines; a trailing badge or the chevron, never both), **MxSettingsRow** (a value that only follows another setting reads as plain trailing text at full contrast, not as a dimmed control; a disabled row dims its tile, label and chevron, never the subtitle that says why; a trailing control that draws its own disabled state (`MxButton`, `MxToggle`, `MxStepper`) is not dimmed again (critique 2026-09-30 part 3a); an `isAction` row, which runs an action or opens a dialog, shows no chevron; `iconTone` sets the lead tile's tone, tinted by default (critique 2026-09-30 tone pass)), **MxListSectionHeader**, **MxStatTile** (boxed or inline; emphasis primary, plain, muted; its value keeps one line and scales down in a narrow column, critique 2026-09-30 part 3c-1), **MxStackedDayBars** (every day at full strength, each series in a colour that holds 3:1 on the card, learning in `status-learning`; the current day is told by its bold label, critique 2026-10-02), **MxTagChip** (22 or 18), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press).
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use `primary` for exactly one primary action per decision and the derived primary ink for any indigo text, icon or focus ring.
-- **Do** keep text at 4.5:1 and non-text edges, thumbs and fills at 3:1 on every surface, in both themes; adjust the ink, and keep the contrast test green.
+- **Do** use a `primary` fill for exactly one primary action per decision; `primary` is also the colour of indigo text, icons and the focus ring.
+- **Do** keep text at 4.5:1 and non-text edges, thumbs and fills at 3:1 on every surface, in both themes; correct the role in the frontmatter, and keep the contrast test green.
 - **Do** guarantee a 48x48dp touch area on every interactive element, and let text containers grow instead of clamping scale or fixing heights.
 - **Do** write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.
 - **Do** use `mastery` and `success` green only for mastery and success, and route mastery fills through `MasteryRamp`.
@@ -889,7 +761,7 @@ Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` b
 - **Do** centre content at a 720dp maximum column and switch to the navigation rail from 600dp.
 
 ### Don't:
-- **Don't** use a fill colour as text (primary fill, warning fill, success fill, status colour); use its ink.
+- **Don't** add a parallel text palette (`*-ink`) or use an `on-` colour as text on a surface; `on-X` is content on X only.
 - **Don't** use violet or green as decoration, or green for anything but progress and success.
 - **Don't** tint shadows with the brand colour, and don't add elevation where a hairline groups the content.
 - **Don't** add hover states (Android only) or a global text style for one component.

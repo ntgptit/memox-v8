@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/generated/design_values.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_elevation.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
@@ -17,7 +16,6 @@ void main() {
     'light': (
       lightColorScheme,
       MxSemanticColors.light,
-      MxDerivedColors.light,
       MxElevation.light,
       DesignPalette.light,
       Brightness.light,
@@ -25,7 +23,6 @@ void main() {
     'dark': (
       darkColorScheme,
       MxSemanticColors.dark,
-      MxDerivedColors.dark,
       MxElevation.dark,
       DesignPalette.dark,
       Brightness.dark,
@@ -33,7 +30,7 @@ void main() {
   };
 
   for (final MapEntry(key: name, value: theme) in themes.entries) {
-    final (scheme, semantic, derived, elevation, palette, brightness) = theme;
+    final (scheme, semantic, elevation, palette, brightness) = theme;
 
     test('the $name scheme sets all 45 Material 3 roles from DESIGN.md', () {
       final roles = schemeRoles(scheme);
@@ -46,11 +43,7 @@ void main() {
     });
 
     test('every $name colour is the generated value of its name', () {
-      final colours = coloursOf(
-        scheme: scheme,
-        semantic: semantic,
-        derived: derived,
-      );
+      final colours = coloursOf(scheme: scheme, semantic: semantic);
 
       expect(colours.keys.toSet(), palette.byName.keys.toSet());
       for (final MapEntry(key: key, value: colour) in colours.entries) {
@@ -66,11 +59,7 @@ void main() {
     });
 
     test('every $name contrast pair of DESIGN.md holds', () {
-      final colours = coloursOf(
-        scheme: scheme,
-        semantic: semantic,
-        derived: derived,
-      );
+      final colours = coloursOf(scheme: scheme, semantic: semantic);
 
       for (final pair in designContrastPairs) {
         final ratio = contrastRatio(

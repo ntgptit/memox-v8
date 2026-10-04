@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 /// The 45 Material 3 roles of [scheme], keyed by their DESIGN.md name. The
@@ -52,42 +51,29 @@ Map<String, Color> schemeRoles(ColorScheme scheme) => {
   'surface-container-highest': scheme.surfaceContainerHighest,
 };
 
-/// Every colour one theme holds, keyed by its DESIGN.md name: the 45 roles,
-/// the MemoX semantic colours and the derived colours.
+/// Every colour one theme holds, keyed by its DESIGN.md name: the 45 roles
+/// and the MemoX extension colours (spec D18: no ink palette).
 Map<String, Color> coloursOf({
   required ColorScheme scheme,
   required MxSemanticColors semantic,
-  required MxDerivedColors derived,
 }) => {
   ...schemeRoles(scheme),
   'mastery': semantic.mastery,
   'on-mastery': semantic.onMastery,
   'success': semantic.success,
+  'on-success': semantic.onSuccess,
+  'success-container': semantic.successContainer,
+  'on-success-container': semantic.onSuccessContainer,
   'warning': semantic.warning,
   'on-warning': semantic.onWarning,
-  'warning-ink': semantic.warningInk,
-  'error-fill': semantic.errorFill,
-  'on-error-fill': semantic.onErrorFill,
+  'warning-container': semantic.warningContainer,
+  'on-warning-container': semantic.onWarningContainer,
   'status-new': semantic.statusNew,
   'status-learning': semantic.statusLearning,
   'status-reviewing': semantic.statusReviewing,
   'status-mastered': semantic.statusMastered,
   'streak': semantic.streak,
-  'primary-ink': derived.primaryInk,
-  'ghost-border': derived.ghostBorder,
-  'outline-edge': derived.outlineEdge,
-  'status-new-ink': derived.statusNewInk,
-  'status-learning-ink': derived.statusLearningInk,
-  'status-reviewing-ink': derived.statusReviewingInk,
-  'status-mastered-ink': derived.statusMasteredInk,
-  'success-ink': derived.successInk,
-  'danger-ink': derived.dangerInk,
-  'danger-tint': derived.dangerTint,
-  'danger-tint-border': derived.dangerTintBorder,
-  'warning-tint': derived.warningTint,
-  'warning-tint-border': derived.warningTintBorder,
-  'success-tint': derived.successTint,
-  'success-tint-border': derived.successTintBorder,
+  'ghost-border': semantic.ghostBorder,
 };
 
 /// The WCAG 2 contrast ratio of two opaque colours.

@@ -27,6 +27,22 @@
 - While writing this plan, the generator, the theme layer, the primitives and their tests were built and run in a scratch copy. The run was: analyze clean, 136 tests passing across `test/core/theme`, `test/shared`, `test/architecture` and `test/app`, the generator's 15 tests passing, and `--check` passing.
 - None of it is committed. The code below is that code.
 
+## Amendment D18 (owner, 2026-10-04, after Task 3)
+
+The owner removed the ink palette (spec D18). It changes what Tasks 3–5 build. Where this section and a task's code differ, this section wins:
+- **Task 3 (already redone under D18):**
+  - `MxDerivedColors` is deleted.
+  - `MxSemanticColors` holds `mastery`, `onMastery`, the four `success*` roles, the four `warning*` roles, the four `status*` colours, `streak` and `ghostBorder`.
+  - `coloursOf` takes `scheme` and `semantic` only.
+  - The generator refuses `*-ink` names.
+- **Task 4:**
+  - `theme_context.dart` has no `derivedColors`.
+  - `AppComponentThemes` keeps `dialog`, `datePicker` and `timePicker`.
+  - `textSelection` and `progress` are dropped: Material 3's defaults already use `primary`, which now holds its floor.
+  - `textButton(scheme, styles)` uses `scheme.primary` as ink and focus ring.
+  - Tests that read `primaryInk` read `colorScheme.primary`; the app appearance test checks `primary` and `semanticColors.success`.
+- **Task 5:** `FocusRing` paints `context.colors.primary`.
+
 ## Global Constraints
 
 - **Source.** The DESIGN.md frontmatter is the only source of values. The generator reads only the frontmatter, never prose (D13).

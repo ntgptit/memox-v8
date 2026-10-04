@@ -33,7 +33,7 @@ def _valid() -> dict:
         "colors": dict(colours),
         "colors-dark": dict(colours),
         "derived": {
-            "primary-ink": {
+            "sample-mix": {
                 "light": {"base": "primary", "toward": "on-surface", "amount": "0.25"},
                 "dark": {"base": "primary", "toward": "on-surface", "amount": "0.25"},
             },
@@ -83,7 +83,7 @@ class LoadTest(unittest.TestCase):
     def test_a_valid_source_loads(self):
         data, errors = d.load(_text(_valid()))
         self.assertEqual(errors, [])
-        self.assertEqual(len(data.colors["light"]), 45 + 13 + 2)
+        self.assertEqual(len(data.colors["light"]), 45 + len(d.SEMANTIC_COLORS) + 2)
 
     def test_a_missing_role_and_an_unknown_colour_are_errors(self):
         front = _valid()
@@ -110,9 +110,16 @@ class LoadTest(unittest.TestCase):
 
     def test_a_rule_naming_an_unknown_colour_is_an_error(self):
         front = _valid()
-        front["derived"]["primary-ink"]["dark"]["toward"] = "ink"
+        front["derived"]["sample-mix"]["dark"]["toward"] = "nowhere"
         _, errors = d.load(_text(front))
-        self.assertIn("derived.primary-ink.dark: toward `ink` is not a stated colour", errors)
+        self.assertIn("derived.sample-mix.dark: toward `nowhere` is not a stated colour", errors)
+
+    def test_an_ink_colour_is_refused(self):
+        # D18: a role is its own text colour; no parallel `*-ink` palette.
+        front = _valid()
+        front["derived"]["primary-ink"] = front["derived"].pop("sample-mix")
+        _, errors = d.load(_text(front))
+        self.assertIn("derived.primary-ink: no `*-ink` colour (spec D18): fix the role's value instead", errors)
 
     def test_a_pair_below_its_floor_is_an_error(self):
         front = _valid()

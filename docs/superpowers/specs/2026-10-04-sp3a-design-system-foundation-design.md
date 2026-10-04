@@ -134,6 +134,24 @@ guard's design-system and token rules wait for the new code, three of them under
   - One lightweight RTL structural test of the pressable primitive (leading and trailing
     swap, no overflow) is added because it is cheap.
 
+- **D18 — No ink palette; Material 3 role pairs** (owner, 2026-10-04, during Task 3).
+  - Every `*-ink` colour is removed: primary ink, the status inks, success, danger and
+    warning inks, and the outline edge.
+  - A role is its own text and icon colour on a surface, and only where it holds the floor
+    there in both themes. A role that fails is corrected in the frontmatter, never patched
+    with a parallel colour. Light `primary` becomes #4151C6 and dark #94A0F7, with
+    `on-primary` #0F1638 in dark; dark `outline` becomes #7D8AC1.
+  - Content on a coloured fill or container uses that role's `on-` partner, and only there.
+  - Danger is Material 3's `error*` (`error-fill`/`on-error-fill` and the danger tints are
+    gone; the soft grounds are the `*-container` roles).
+  - MemoX extensions follow the same pairing where they have those uses: `success`,
+    `on-success`, `success-container`, `on-success-container`; the same four for `warning`;
+    `mastery`/`on-mastery`; the four status colours (text, dot and fill in one); `streak`
+    (fill only). No `info` (DESIGN.md has no consumer).
+  - The fixed roles are recomputed from the new `primary`. The only derived colour left is the
+    ghost border. The generator refuses any `*-ink` name.
+  - `MxDerivedColors` is gone; `MxSemanticColors` holds the extensions and the ghost border.
+
 ## 3. Scope
 
 **In scope**
@@ -175,12 +193,11 @@ holds a value the code reads. The keys already present stay: `colors`, `typograp
     (`on-primary-fixed-variant`, `surface-container-highest`, …): the 26 standard roles and
     the 19 add-on roles of the guard's allowlist. `surface-tint` and the deprecated roles do
     not appear;
-  - the MemoX semantic colours: mastery, on-mastery, success, warning, on-warning,
-    warning-ink, error-fill, on-error-fill, status-new, status-learning, status-reviewing,
-    status-mastered, streak.
+  - the MemoX extensions (D18): mastery, on-mastery; success, on-success,
+    success-container, on-success-container; the same four for warning; status-new,
+    status-learning, status-reviewing, status-mastered; streak.
 - **`derived`**: one entry per derived colour, holding its rule, not its value.
-  - Covers primary ink, ghost border, outline edge, the status inks, danger ink, and the soft
-    tints and their borders.
+  - Since D18 it covers the ghost border only.
   - Each rule names its base, the colour it moves toward, and an amount per theme (or an
     alpha).
   - The generator computes the values. No derived hex is written anywhere by hand.
@@ -275,14 +292,13 @@ flow collections.
 | `foundations/app_spacing.dart`, `app_radius.dart`, `app_stroke.dart`, `app_opacity.dart`, `app_durations.dart`, `app_size.dart`, `app_icon_size.dart`, `app_breakpoints.dart` | Theme-invariant tokens (D10) under DESIGN.md's names: `abstract final class` constants, each equal to a generated value and never a second literal. |
 | `app_color_schemes.dart` | `lightColorScheme` and `darkColorScheme`: `ColorScheme(...)` with all 45 roles set explicitly, never `fromSeed`. |
 | `mx_semantic_colors.dart` | `MxSemanticColors extends ThemeExtension`: the MemoX semantic colours, light and dark instances. |
-| `mx_derived_colors.dart` | `MxDerivedColors extends ThemeExtension`: primary ink, ghost border, outline edge, status, warning and danger inks, and the soft tints with their borders. Values come from the generator; nothing is computed at runtime. |
 | `mx_elevation.dart` | `MxElevation extends ThemeExtension`: the four shadows, the scrim and the glass effect, per theme. |
 | `app_typography.dart` | The `TextTheme` built from the type-slot table, and `AppTypography.withWeight`, which moves the variable `wght` axis with `fontWeight`. |
 | `mx_text_styles.dart` | `MxTextStyles extends ThemeExtension`: component-level styles that are not a type slot (button label, section label, eyebrow, field label, code, input hint). |
 | `app_button_style.dart` | `appButtonStyle(...)`: the one place that builds a `ButtonStyle` with explicit state resolution (the guard's `no_flat_style_from`). |
 | `app_component_themes.dart` | Every Material 3 component theme MemoX uses or Flutter draws on its own (text selection, scrollbar, tooltip, menu, date and time pickers, progress, divider). |
 | `app_theme.dart` | `buildLightTheme()` and `buildDarkTheme()`: Material 3, both schemes, the text theme and every extension. |
-| `theme_context.dart` | `extension ThemeContext on BuildContext`: `colors`, `texts`, `textStyles`, `semanticColors`, `derivedColors`, `elevation`. |
+| `theme_context.dart` | `extension ThemeContext on BuildContext`: `colors`, `texts`, `textStyles`, `semanticColors`, `elevation` (D18: no `derivedColors`). |
 
 `MemoxApp` passes the two themes to `MaterialApp`, and the stored theme mode keeps choosing
 between them. The placeholder shell and pages keep their raw Material widgets: `lib/app` is
@@ -317,7 +333,7 @@ not add new public API.
   - The surface decoration with a `Material` and `InkWell` inside it (the ink sits inside the
     decoration, not around it).
   - Pressed overlay at `AppOpacity.pressed`, disabled at `AppOpacity.disabled`.
-  - A 2 dp focus ring at a 2 dp offset in primary ink.
+  - A 2 dp focus ring at a 2 dp offset in `primary` (D18).
   - The 48 dp hit area.
 - **Focus ring.** The decoration the pressable surface and the text fields share.
 - **Hit target.** The constraint that grows the hit area to 48 dp around a smaller painted

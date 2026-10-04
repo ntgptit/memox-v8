@@ -27,10 +27,15 @@ M3_ROLES = (
     "surface-dim", "surface-bright", "surface-container-lowest", "surface-container-low",
     "surface-container", "surface-container-high", "surface-container-highest",
 )
+# MemoX extensions (spec D18): a role and, where it has those uses, its
+# `on-`, container and `on-` container partners, as Material 3 pairs them.
+# Danger is Material 3's `error*`; there is no `*-ink` palette.
 SEMANTIC_COLORS = (
-    "mastery", "on-mastery", "success", "warning", "on-warning", "warning-ink",
-    "error-fill", "on-error-fill", "status-new", "status-learning",
-    "status-reviewing", "status-mastered", "streak",
+    "mastery", "on-mastery",
+    "success", "on-success", "success-container", "on-success-container",
+    "warning", "on-warning", "warning-container", "on-warning-container",
+    "status-new", "status-learning", "status-reviewing", "status-mastered",
+    "streak",
 )
 TYPE_SLOTS = (
     "display-large", "display-medium", "display-small",
@@ -250,6 +255,9 @@ def _colours(section: dict, name: str, errors: list[str]) -> dict[str, Colour]:
 def _rules(section: dict, colour_names: set[str], errors: list[str]) -> dict[str, dict[str, DerivedRule]]:
     out: dict[str, dict[str, DerivedRule]] = {}
     for name, by_theme in section.items():
+        if name.endswith("-ink"):
+            errors.append(f"derived.{name}: no `*-ink` colour (spec D18): fix the role's value instead")
+            continue
         if name in colour_names:
             errors.append(f"derived.{name}: a derived colour cannot reuse a stated colour's name")
             continue

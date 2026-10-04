@@ -7,9 +7,9 @@
       "primary": {
         "role": "primary",
         "displayName": "Brand Indigo",
-        "canonical": "#5265F5",
-        "light": "#5265F5",
-        "dark": "#5265F5",
+        "canonical": "#4151C6",
+        "light": "#4151C6",
+        "dark": "#94A0F7",
         "tonalRamp": [
           "#1A2580",
           "#2D346A",
@@ -23,7 +23,7 @@
         "displayName": "White on Indigo",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#FFFFFF",
+        "dark": "#0F1638",
         "tonalRamp": [
           "#FFFFFF"
         ]
@@ -255,7 +255,7 @@
         "displayName": "Outline",
         "canonical": "#6F79A3",
         "light": "#6F79A3",
-        "dark": "#5A6BAE",
+        "dark": "#7D8AC1",
         "tonalRamp": [
           "#5A6BAE",
           "#7C85AB"
@@ -338,8 +338,8 @@
       "success": {
         "role": "semantic",
         "displayName": "Success Teal",
-        "canonical": "#2BA88B",
-        "light": "#2BA88B",
+        "canonical": "#206E6A",
+        "light": "#206E6A",
         "dark": "#6FE0BD",
         "tonalRamp": [
           "#6FE0BD",
@@ -349,8 +349,8 @@
       "warning": {
         "role": "semantic",
         "displayName": "Warning Amber",
-        "canonical": "#F59E0B",
-        "light": "#F59E0B",
+        "canonical": "#895806",
+        "light": "#895806",
         "dark": "#FFC658",
         "tonalRamp": [
           "#FFC658",
@@ -360,8 +360,8 @@
       "on-warning": {
         "role": "semantic",
         "displayName": "Ink on Warning",
-        "canonical": "#3A2A00",
-        "light": "#3A2A00",
+        "canonical": "#FFFFFF",
+        "light": "#FFFFFF",
         "dark": "#2A1E00",
         "tonalRamp": [
           "#2A1E00",
@@ -392,9 +392,9 @@
       "status-new": {
         "role": "semantic",
         "displayName": "Status New",
-        "canonical": "#8C95B8",
-        "light": "#8C95B8",
-        "dark": "#6B75A3",
+        "canonical": "#5A6285",
+        "light": "#5A6285",
+        "dark": "#9BA3C6",
         "tonalRamp": [
           "#6B75A3",
           "#8C95B8"
@@ -403,8 +403,8 @@
       "status-learning": {
         "role": "semantic",
         "displayName": "Status Learning",
-        "canonical": "#F59E0B",
-        "light": "#F59E0B",
+        "canonical": "#825A22",
+        "light": "#825A22",
         "dark": "#FFC658",
         "tonalRamp": [
           "#FFC658",
@@ -414,9 +414,9 @@
       "status-reviewing": {
         "role": "semantic",
         "displayName": "Status Reviewing",
-        "canonical": "#5265F5",
-        "light": "#5265F5",
-        "dark": "#8B9AFF",
+        "canonical": "#4151C6",
+        "light": "#4151C6",
+        "dark": "#94A2FF",
         "tonalRamp": [
           "#8B9AFF",
           "#5265F5"
@@ -425,8 +425,8 @@
       "status-mastered": {
         "role": "semantic",
         "displayName": "Status Mastered",
-        "canonical": "#1F8A5B",
-        "light": "#1F8A5B",
+        "canonical": "#1B6D52",
+        "light": "#1B6D52",
         "dark": "#6FE0BD",
         "tonalRamp": [
           "#6FE0BD",
@@ -482,9 +482,9 @@
       "primary-fixed-dim": {
         "role": "primary-fixed-dim",
         "displayName": "Primary Fixed Dim",
-        "canonical": "#B5BFFB",
-        "light": "#B5BFFB",
-        "dark": "#B5BFFB"
+        "canonical": "#B0B9ED",
+        "light": "#B0B9ED",
+        "dark": "#B0B9ED"
       },
       "on-primary-fixed": {
         "role": "on-primary-fixed",
@@ -496,9 +496,9 @@
       "on-primary-fixed-variant": {
         "role": "on-primary-fixed-variant",
         "displayName": "On Primary Fixed Variant",
-        "canonical": "#2B38A3",
-        "light": "#2B38A3",
-        "dark": "#2B38A3"
+        "canonical": "#263295",
+        "light": "#263295",
+        "dark": "#263295"
       },
       "secondary-fixed": {
         "role": "secondary-fixed",
@@ -569,6 +569,41 @@
         "canonical": "#895806",
         "light": "#895806",
         "dark": "#FFC658"
+      },
+      "on-success": {
+        "role": "on-success",
+        "displayName": "On Success",
+        "canonical": "#FFFFFF",
+        "light": "#FFFFFF",
+        "dark": "#11173A"
+      },
+      "success-container": {
+        "role": "success-container",
+        "displayName": "Success Container",
+        "canonical": "#DFF2EE",
+        "light": "#DFF2EE",
+        "dark": "#23434D"
+      },
+      "on-success-container": {
+        "role": "on-success-container",
+        "displayName": "On Success Container",
+        "canonical": "#174251",
+        "light": "#174251",
+        "dark": "#C5F3E5"
+      },
+      "warning-container": {
+        "role": "warning-container",
+        "displayName": "Warning Container",
+        "canonical": "#FDE3B4",
+        "light": "#FDE3B4",
+        "dark": "#473C33"
+      },
+      "on-warning-container": {
+        "role": "on-warning-container",
+        "displayName": "On Warning Container",
+        "canonical": "#3A2A00",
+        "light": "#3A2A00",
+        "dark": "#FFE8BC"
       }
     },
     "typographyMeta": {
