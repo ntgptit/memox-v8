@@ -85,7 +85,7 @@ abstract final class AppColorSchemes {
     surface: Color(0xFF0A0E27),
     onSurface: Color(0xFFE4E8FA),
     onSurfaceVariant: Color(0xFFA4ACD0),
-    surfaceDim: Color(0xFF0A0E27),
+    surfaceDim: Color(0xFF070A1F),
     surfaceBright: Color(0xFF2A3266),
     surfaceContainerLowest: Color(0xFF131A3A),
     surfaceContainerLow: Color(0xFF1B2249),

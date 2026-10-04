@@ -589,6 +589,18 @@
         "bg": "surface-container-lowest",
         "min": 3.0,
         "use": "streak flame on a card"
+      },
+      {
+        "fg": "streak",
+        "bg": "surface",
+        "min": 3.0,
+        "use": "streak flame on a card"
+      },
+      {
+        "fg": "streak",
+        "bg": "surface-container-low",
+        "min": 3.0,
+        "use": "streak flame on a card"
       }
     ],
     "opacity": {

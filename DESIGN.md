@@ -65,7 +65,7 @@ colors:
   on-surface-variant: "#4A5278"
   on-surface-variant-dark: "#A4ACD0"
   surface-dim: "#D5DBEA"
-  surface-dim-dark: "#0A0E27"
+  surface-dim-dark: "#070A1F"
   surface-bright: "#FFFFFF"
   surface-bright-dark: "#2A3266"
   surface-container-lowest: "#FFFFFF"
@@ -347,7 +347,7 @@ A cool indigo-tinted neutral field with one brand indigo, one reserved violet, a
 - **Error** (`error`, `on-error`, `error-container`, `on-error-container`): danger is Material's error. `error` is error text and glyphs, and the destructive button's fill under `on-error`; the danger ground is `error-container` under `on-error-container`.
 - **Success** (`success`, `on-success`, `success-container`, `on-success-container`): a right answer and a finished, fine state. Never mastery.
 - **Warning** (`warning`, `on-warning`, `warning-container`, `on-warning-container`): a refusal or a limit where nothing was lost. The warning button's fill under `on-warning`, warning text and glyphs, and the warning ground.
-- **Status** (`status-new`, `status-learning`, `status-reviewing`, `status-mastered`, each with `-container` and `on-…-container`): a card's learning status as a label, a dot or a progress fill, and as a badge on its container. Mastery is `status-mastered`.
+- **Status** (`status-new`, `status-learning`, `status-reviewing`, `status-mastered`, each with `-container` and `on-…-container`): a card's learning status as a label, a dot or a progress fill, and as a badge on its container. Mastery is `status-mastered`. A status is never told by colour alone: new and reviewing differ mostly in saturation, so its label or an accessible name always names it.
 - **Streak** (`streak`): the Progress flame only; a fill, with no text counterpart.
 
 ### Named Rules
