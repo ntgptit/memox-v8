@@ -388,3 +388,58 @@ SP3b starts from:
 - the placeholder shell, which SP3b replaces with the navigation shell.
 
 The SP3b spec sets the paths for the `app-shell`, `product-semantic` and `feature:` layers.
+
+## 10. Close-out (2026-10-04, for the owner's SP3a sign-off)
+
+**Status.** P1–P4 are each signed off by the owner. 43 SP3a catalog entries are `built`, with 78 `mx_*` goldens in light and dark. The gate passes 2046/2046 and the goldens 78/78. The 18 entries still `planned` belong to SP3b and SP3c.
+
+**Whole-SP3a review (Opus, step 6).**
+- Critical: none.
+- Important: seven, all fixed with regression tests (`722f3fda`):
+  - a snackbar clears the footer and the FAB;
+  - the sheet frames its footer;
+  - chips and the tray grow with text;
+  - row focus rings are drawn inside the row;
+  - overlays are tested in RTL;
+  - the guard covers named constructors and chips;
+  - the sidecar narrative is refreshed and scanned for retired ink terms.
+
+**Deferred minors (canonical debt).** Each is taken up by the phase named, when its trigger fires, and not before.
+
+| Debt | Owner phase | Trigger |
+|---|---|---|
+| Reduced motion is applied unevenly: the `AnimatedContainer`s in `MxToggle`, `MxSelectionCheckbox`, `MxOptionRow` and `MxSegmentedTray` animate under reduced motion, and the `isStill ? Duration.zero : d` choice is copied in five places (one helper would cover all) | SP3b | the first screen that composes a toggle or a tray |
+| Repeated code: the shadow choice by brightness, the row frame (merge, ring, ripple, 48 minimum, 16/12 padding) in four rows, and `bodyMedium.apply(onSurfaceVariant)` | SP3b | the next new row or surface; extract `MxRowFrame` then, not speculatively |
+| `design_catalog.py` accepts any public `Mx` name prefixed by a catalogued one (`MxAppBarGround`, `MxScreenScaffoldScope`) | SP3b | the first new public `Mx*` helper type |
+| `AppDurations.scrimFade` is generated but unused; the sheet's 640 cap lives in the theme slot with no test | SP3b | the first sheet on a tablet-width window |
+| `MxToggle.semanticLabel` is nullable, while `MxIconButton`, `MxFab` and `MxTextField` require a label | SP3b | the first standalone toggle outside an `MxSettingsRow` |
+| The harness reads the private painter name `_RingPainter`, and leaves `debugDisableShadows` unrestored when a capture throws | SP3b | the next change to `mx_harness.dart` |
+| `MxOptionRow` wraps its title while the other rows keep one line | SP3b | the first options list on a real screen |
+| P3 and P4 deferred minors | as recorded | the Outcome sections of the P3 and P4 plans |
+| `run_tests.sh` reported no failure for a test file that did not compile (`flutter analyze` in the gate caught it) | tooling | the next change to `run_tests.sh` |
+
+**Boundary check.** None of these is in SP3a:
+- the application navigation shell, `MxBottomNav` or `MxNavRail`;
+- SCR-DECK-001;
+- feature state, FN or navigation logic;
+- Deck/Library widgets or product-semantic components.
+
+`study` and `mastery` appear only as visual variants named by DESIGN.md (`MxTextFieldVariant.study`, the study button size, the `mastery` badge tone). They carry no feature logic.
+
+**SP3b handoff.**
+- **The navigation shell** (`AppNavigationShell`, `MxBottomNav`, `MxNavRail`) replaces `lib/app/placeholder/`.
+  - It hands `MxScreenScaffold` the room it leaves as the bottom inset; the scaffold drops it while the keyboard is up.
+  - No other inset contract is needed.
+- **The SCR-DECK-001 vertical slice** and its product-semantic components: `MasteryDonut`, `MasteryRamp` on `MxLinearProgress`, `WorkloadBreakdownLine`, `DeckPickerSheet`, the deck row and the due strip.
+- **Four P3 design debts** with their review triggers sit in DESIGN.md (`- Debt:` on `MxCard`, `MxBadge`, `MxLinearProgress` and `MxSheetActions`). Also review the dark "Select" text action on a real screen.
+- **Spec conflicts** to settle in their screen phases:
+  - CARD-003 puts "Save" in the bar; DESIGN.md wins.
+  - DECK-001's "(large)" bar is a feature header.
+- **SP3c one-domain asks:**
+  - search in the bar (SEARCH-001);
+  - the three-button footer (ACCOUNT-002);
+  - the icon bulk bar (CARD-001);
+  - the settings stepper and tray under the label (SETTINGS-002);
+  - a compact button at a row's end (STUDY-002);
+  - count, text and button trailings in a list header;
+  - centred short content (STUDY-009).
