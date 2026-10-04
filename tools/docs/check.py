@@ -47,9 +47,8 @@ ERROR
 - with --ledger: a row without a valid outcome, a moved row whose destination
   does not exist, or an OPEN QUESTION left in the new-layout documents
 WARNING
-- active BR cited by no FN (nor by a legacy UC file); active FN invoked by no
-  UC and no screen; ready UC with no code (legacy: `code: []`; section: it
-  and its FNs) or with no test; a legacy UC file already moved to USE_CASES.md
+- active BR cited by no FN; active FN invoked by no UC and no screen; ready
+  UC with no code (it and its FNs) or with no test
 - an INV-UI enforced by nothing; a built screen's state with no golden
 
 Id, invariant and link checks ignore ``` fences and `inline code`. Id checks
@@ -87,10 +86,9 @@ FN_ID = re.compile(r"^FN-[A-Z]+-\d{3}$")
 SCR_ID = re.compile(r"^SCR-[A-Z]+-\d{3}$")
 ID_PATTERNS = {"BR": BR_ID, "UC": UC_ID, "ADR": ADR_ID, "FN": FN_ID, "SCR": SCR_ID}
 
-# Keyed by schema(doc): "UCS" is a UC section of docs/USE_CASES.md, "UC" a legacy UC file.
+# Keyed by schema(doc): "UCS" is a UC section of docs/USE_CASES.md.
 STATUS = {
     "BR": {"draft", "active", "deprecated"},
-    "UC": {"draft", "ready", "deprecated"},
     "UCS": {"draft", "ready", "deprecated"},
     "FN": {"draft", "active", "deprecated"},
     "SCR": {"draft", "ready", "built"},
@@ -98,7 +96,6 @@ STATUS = {
 }
 REQUIRED_FIELDS = {
     "BR": ("id", "title", "status", "summary"),
-    "UC": ("id", "title", "status", "rules", "code"),
     "UCS": ("id", "title", "status", "code", "invokes"),
     "FN": ("id", "title", "status", "code"),
     "SCR": ("id", "name", "status", "domain", "route"),
@@ -108,15 +105,6 @@ REQUIRED_FIELDS = {
 LIST_FIELDS = {"rules", "code", "depends_on", "invokes", "route", "supersedes"}
 REQUIRED_SECTIONS = {
     "BR": ("Rule", "Lý do", "Ví dụ", "Edge case"),
-    "UC": (
-        "Mục tiêu / Actor / Precondition",
-        "Main flow",
-        "Alternative / Error flow",
-        "UI",
-        "Local",
-        "API",
-        "Acceptance criteria",
-    ),
     "UCS": ("Mục tiêu / Actor / Precondition", "Main flow", "Alternative / Error flow", "Acceptance criteria"),
     "FN": ("Precondition", "Input", "Kết quả", "Lỗi", "Business rules"),
     "SCR": (
@@ -131,13 +119,13 @@ REQUIRED_SECTIONS = {
         "Copy",
         "Rulings",
     ),
-    "FEATURE": ("Phạm vi", "Màn hình → Use case", "Không thuộc phạm vi"),
+    "FEATURE": ("Phạm vi", "Không thuộc phạm vi"),
 }
 SECTION_MARK = {"UCS": "####", "FN": "###"}
 # (field, kind of the ID it must name) per schema.
-REFERENCE_FIELDS = {"UC": (("rules", "BR"),), "UCS": (("invokes", "FN"),), "FN": (("rules", "BR"),)}
+REFERENCE_FIELDS = {"UCS": (("invokes", "FN"),), "FN": (("rules", "BR"),)}
 SKIP_ID_CHECK = ("superpowers", "_generated")
-# Historical plans and specs keep links to files later retired (ADR-019); they are
+# Historical plans and specs keep links to files later retired (ADR-019/ADR-021); they are
 # records, not maintained docs, so their links are not checked.
 SKIP_LINK_CHECK = ("superpowers",)
 # Which ID kinds each new-layout document may cite (spec §4.8, R13); other docs: any kind.
@@ -158,7 +146,7 @@ REVERSE_HEADING = re.compile(
     re.I,
 )
 PENDING = "pending"
-REVERSE_CHECKED = {"BR", "FEATURE", "UC", "UCS", "FN", "SCR"}
+REVERSE_CHECKED = {"BR", "FEATURE", "UCS", "FN", "SCR"}
 
 
 class Report:
@@ -189,7 +177,7 @@ def show(path: Path | str) -> str:
 
 
 def schema(doc: g.Doc) -> str:
-    return "UCS" if doc.kind == "UC" and doc.is_section else doc.kind
+    return "UCS" if doc.kind == "UC" else doc.kind
 
 
 def where(doc: g.Doc) -> Path | str:
@@ -496,7 +484,7 @@ def check_dependency_cycles(docs: list[g.Doc], report: Report) -> None:
         visit(feature, [])
 
 
-def check_warnings(docs: list[g.Doc], migrated: list[g.Doc], report: Report) -> None:
+def check_warnings(docs: list[g.Doc], report: Report) -> None:
     usage = g.used_by(docs)
     invoked = g.invoked_by(docs)
     functions = {d.id: d for d in docs if d.kind == "FN"}
@@ -504,20 +492,15 @@ def check_warnings(docs: list[g.Doc], migrated: list[g.Doc], report: Report) -> 
     tests = g.tests_by_id([d.id for d in ready])
     for doc in docs:
         if doc.kind == "BR" and doc.status == "active" and doc.id not in usage:
-            report.warning(doc.path, "active BR is cited by no FN (nor by a UC file not yet migrated)")
+            report.warning(doc.path, "active BR is cited by no FN")
         if doc.kind == "FN" and doc.status == "active" and doc.id not in invoked:
             report.warning(where(doc), "active FN is invoked by no UC and no screen")
     for doc in ready:
-        if doc.is_section:
-            invoked_fns = [functions[f] for f in doc.as_list("invokes") if f in functions]
-            if not doc.as_list("code") and not any(f.as_list("code") for f in invoked_fns):
-                report.warning(where(doc), "ready UC: it and every FN it invokes have `Code: []`")
-        elif not doc.as_list("code"):
-            report.warning(doc.path, "ready UC has `code: []`")
+        invoked_fns = [functions[f] for f in doc.as_list("invokes") if f in functions]
+        if not doc.as_list("code") and not any(f.as_list("code") for f in invoked_fns):
+            report.warning(where(doc), "ready UC: it and every FN it invokes have `Code: []`")
         if not tests[doc.id]:
             report.warning(where(doc), "ready UC has no test that contains its id")
-    for doc in migrated:
-        report.warning(doc.path, f"`{doc.id}` now lives in USE_CASES.md; retire this file in Task 44 (spec §7)")
 
 
 def defined_ids(docs: list[g.Doc]) -> set[str]:
@@ -706,8 +689,7 @@ def check_acceptance_criteria(doc: g.Doc, report: Report) -> None:
     """A `ready` UC is a contract; its criteria are the checkable half (BE-D4)."""
     if doc.kind != "UC" or doc.status != "ready":
         return
-    level = 4 if doc.is_section else 2
-    text = specdocs.subsection_text(doc.body, ACCEPTANCE_SECTION, level)
+    text = specdocs.subsection_text(doc.body, ACCEPTANCE_SECTION, 4)
     criteria = [line for _, line in g.iter_unfenced(text) if g.OPEN_QUESTION not in line]
     if not any(ACCEPTANCE_LINE.search(line) for line in criteria):
         report.error(where(doc), "ready UC has no Given/When/Then line under `## Acceptance criteria`")
@@ -797,7 +779,7 @@ def check_v7_residue(report: Report) -> None:
 
 def run(plan: Path | None, base_keys=base_state_keys, ledger_path: Path | None = None) -> Report:
     report = Report()
-    docs, migrated = g.load_all()
+    docs = g.load_docs()
     features = g.feature_names()
     for feature in features:
         if not (g.DOCS / "features" / feature / "README.md").exists():
@@ -827,7 +809,7 @@ def run(plan: Path | None, base_keys=base_state_keys, ledger_path: Path | None =
         check_plan(plan, report)
     if ledger_path is not None:
         check_ledger(ledger_path, defined_ids(docs), report)
-    check_warnings(docs, migrated, report)
+    check_warnings(docs, report)
     return report
 
 

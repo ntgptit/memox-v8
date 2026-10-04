@@ -6,75 +6,7 @@ kiểm chứng bằng lệnh nào. Danh mục chi tiết từng rule/use case **
 
 ## Sản phẩm
 
-### Problem
-
-Người học từ vựng quên phần lớn những gì vừa học nếu ôn tập không đúng thời
-điểm. Ôn thủ công bằng sổ tay hoặc file không cho biết *khi nào* cần ôn lại từ
-nào, nên người học hoặc ôn quá sớm (lãng phí) hoặc quá muộn (đã quên).
-
-### Target users
-
-| Group | Context | What they need | Not the target |
-|---|---|---|---|
-| Người tự học từ vựng | Học lẻ trên điện thoại, thời gian rời rạc, kết nối không ổn định | Ôn đúng thời điểm, dùng được mọi lúc kể cả offline | Lớp học có giáo viên quản lý |
-| Người ôn thi | Khối lượng từ lớn, có deadline | Theo dõi tiến độ, ưu tiên từ sắp quên | Người cần nội dung biên soạn sẵn |
-
-**Đã chốt:** người dùng tự tạo nội dung, **và** app cung cấp starter deck dưới
-dạng template để người dùng sao chép về. Nội dung starter hiện tại là
-fixture của dự án, chỉ phục vụ development và test — không phải nội dung
-production (BR-STARTER-010). Import/export vẫn ở nice-to-have.
-
-### Core value
-
-Ôn đúng từ vào đúng thời điểm, hoạt động đầy đủ khi không có mạng.
-
-Quyết định nền tảng: [ADR-001](shared/decisions/ADR-001-quyet-dinh-nen-tang.md). Dữ liệu nhạy cảm: [ADR-002](shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md).
-
-### Phạm vi MVP
-
-Nguyên tắc: MVP là **một vertical slice chạy được từ Drift đến màn hình**, đủ để
-chứng minh kiến trúc offline-first (mọi thao tác chạy từ Drift, không cần mạng —
-[ADR-013](shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md)) và cơ chế
-Drift migration hoạt động. Không phải bản đầy đủ tính năng.
-
-#### Must-have
-
-| # | Feature | Done when |
-|---|---|---|
-| M1 | Tạo/sửa/xoá deck | Deck tồn tại sau khi restart app; xoá deck cần xác nhận và cascade xoá vĩnh viễn toàn bộ card ngay, không qua Trash (BR-DECK-022, BR-DECK-023) |
-| M2 | Tạo/sửa/xoá card trong deck | Card có mặt trước/sau; sửa không làm mất lịch sử ôn tập |
-| M3 | Phiên học theo lịch SRS | Chỉ hiện card đến hạn; đánh giá kết quả cập nhật lịch ôn lần sau |
-| M4 | Danh sách deck với tiến độ | Mỗi deck hiện số card đến hạn hôm nay |
-| M5 | Hoạt động đầy đủ offline | Bật chế độ máy bay, mọi chức năng trên vẫn chạy bình thường |
-
-Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên: xem [`features/study-mode/README.md`](features/study-mode/README.md).
-
-#### Should-have
-
-| # | Feature | Done when |
-|---|---|---|
-| S1 | Tìm kiếm card trong deck | Trong phạm vi: tìm theo nội dung mặt trước/sau trong deck đang mở, không phân biệt hoa thường và giữ dấu. Tìm toàn thư viện là UC-SEARCH-001 |
-| S2 | Thống kê ôn tập cơ bản | Trong phạm vi (UC-PROGRESS-001, BR-PROGRESS-009…BR-PROGRESS-018): số card đã học hôm nay tách Learning/Reviewing, streak theo ngày, và hoạt động bảy ngày gần nhất. Ngoài phạm vi: accuracy, longest streak, goal, XP, heatmap và lọc theo deck (BR-PROGRESS-010) |
-| S3 | Đảo chiều card (nghĩa → từ) | Trong phạm vi (UC-STUDY-003, BR-MODE-013…BR-MODE-019): chọn chiều hỏi trước lượt đầu, chỉ cho phiên ôn tập `self_assess` của deck `sm2` |
-
-#### Nice-to-have
-
-| # | Feature | Notes |
-|---|---|---|
-| N1 | Import/export | Trong V8.0 theo [spec card transfer](superpowers/specs/2026-09-26-card-transfer-design.md) (UC-TRANSFER-001, UC-TRANSFER-002, BR-TRANSFER-001…BR-TRANSFER-014): import CSV/TSV/XLSX hoặc văn bản dán (màn 11), export nội dung (sheet 12) — không phải backup. Backend BE-B3 và UI FE-B3 xong |
-| N2 | Nhắc nhở ôn tập hằng ngày | Sub-project sau (UC-REMINDER-001, BR-REMINDER-001…BR-REMINDER-012): opt-in, mặc định tắt, một tóm tắt mỗi ngày dựng từ workload đến hạn tại thời điểm hiện tại. Quyền notification chỉ được xin **sau** khi người dùng bật (BR-REMINDER-011) |
-| N3 | Tag/phân loại card | Sub-project sau (UC-TAG-001, BR-TAG-003…BR-TAG-011): catalog phạm vi library, lọc nhiều tag theo OR, đổi tên có gộp, và xoá. Ngoài phạm vi: tag phân cấp, màu tag, taxonomy chia sẻ |
-
-#### Explicitly out of MVP
-
-| Feature | Why deferred | Revisit when |
-|---|---|---|
-| Đăng nhập / tài khoản | Không có backend; thêm auth lúc này là xây UI cho thứ chưa dùng được | Khi Spring Boot backend sẵn sàng |
-| Đồng bộ đa thiết bị | Cần backend và conflict resolution | Cùng lúc với auth |
-| iOS | Ổn định Android trước để tránh sửa lỗi trên hai nền tảng cùng lúc | Sau khi Android ổn định về UX + migration + test |
-| Phân quyền theo role | Chỉ có một loại user, kể cả sau khi có auth | Chưa có kế hoạch |
-| Chia sẻ deck giữa người dùng | Cần backend | Sau đồng bộ |
-| Audio / hình ảnh trong card | Kéo theo lưu trữ file, đồng bộ file, nén ảnh — một khối lượng riêng | Sau MVP |
+Định nghĩa sản phẩm: [`/PRODUCT.md`](../PRODUCT.md).
 
 ## Bản đồ
 
@@ -97,13 +29,10 @@ docs/
 │   ├── rules/                   # BR-CORE-NNN-<slug>.md
 │   ├── decisions/               # ADR-NNN-<slug>.md
 │   ├── data/                    # schema.md
-│   ├── ui/                      # CŨ — screen-handoff/, navigation.md; bỏ sau khi migration được kiểm chứng
 │   └── testing/
 ├── features/<feature>/
 │   ├── README.md                # phạm vi, thuật ngữ, depends_on
 │   ├── rules/                   # BR-<DOMAIN>-NNN-<slug>.md
-│   ├── usecases/                # CŨ — UC chưa chuyển vào USE_CASES.md
-│   ├── ui.md                    # CŨ — bỏ sau khi migration được kiểm chứng
 │   ├── data.md                  # TÙY CHỌN
 │   └── it-scenarios.md          # TÙY CHỌN
 ├── superpowers/                 # spec + plan (giữ ID lịch sử)
@@ -116,8 +45,7 @@ dung thật. Không tạo file rỗng.
 Mỗi màn có một spec trong `screens/spec/` và một hàng trong `screens/SCREEN_CATALOG.md`.
 Hệ thống hình ảnh ở [`DESIGN.md`](../DESIGN.md); thứ tự ưu tiên theo
 [ADR-021](shared/decisions/ADR-021-tai-lieu-dan-dat-ui-khi-xay-lai.md). Định nghĩa sản phẩm
-thuộc `/PRODUCT.md`; không chép phạm vi sản phẩm vào cây `docs/` (mục "Sản phẩm" ở trên chuyển
-sang `/PRODUCT.md` và bị xoá khi migration được kiểm chứng).
+thuộc `/PRODUCT.md`; không chép phạm vi sản phẩm vào cây `docs/`.
 
 ## Thứ tự đọc
 
@@ -176,7 +104,7 @@ chỗ có thể mâu thuẫn.
 - Kịch bản kiểm thử tích hợp: `features/<f>/it-scenarios.md` theo UC/BR mà kịch
   bản truy vết; hướng dẫn thực thi, danh mục và kịch bản không thuộc feature nào
   ở `shared/testing/`.
-- Điều hướng toàn app: `shared/ui/navigation.md`.
+- Điều hướng toàn app: `NAVIGATION.md`.
 
 ## Convention
 
@@ -261,25 +189,6 @@ Rule cần nhiều hơn một câu (ví dụ có bảng tra) MUST dùng dạng s
 `### BR-<CODE>-nnn · <tiêu đề>` và vẫn phải xuất hiện Status/Enforced by/Related
 ngay dưới tiêu đề.
 
-Use case — `features/<f>/usecases/` (định dạng cũ, chỉ còn cho UC chưa chuyển vào `USE_CASES.md`):
-
-```yaml
----
-id: UC-STUDY-001
-title: <tên>
-status: ready             # draft | ready | deprecated — trạng thái SPEC, không phải tiến độ code
-rules: [BR-STUDY-001, BR-STUDY-002]
-code: []                  # path thật trong repo; không chắc → [] và ghi OPEN QUESTION
----
-## Mục tiêu / Actor / Precondition
-## Main flow
-## Alternative / Error flow
-## UI
-## Local
-## API
-## Acceptance criteria
-```
-
 Feature README — `features/<f>/README.md`:
 
 ```yaml
@@ -289,7 +198,6 @@ code: []
 depends_on: []
 ---
 ## Phạm vi
-## Màn hình → Use case
 ## Không thuộc phạm vi
 ```
 
@@ -309,7 +217,7 @@ deprecated, `supersedes: [ADR-…]` ở ADR thay thế. Link trong ADR supersede
 không được kiểm (bản ghi, không sửa).
 
 Section không áp dụng: ghi "Không áp dụng", không xoá heading. Quan hệ chỉ khai
-báo một chiều: UC khai báo `rules`; không viết reverse link hay index bằng tay.
+báo một chiều (UC → FN, FN → BR, màn → FN/UC/màn); không viết reverse link hay index bằng tay.
 
 ### UC, FN và screen spec
 
@@ -412,11 +320,13 @@ hình sẽ đổi; luồng thì không.
 
 `Error flows` và `UI states` là hai mục hay bị bỏ và là nguồn của phần lớn màn
 hình thiếu trạng thái. MUST liệt kê đủ; trạng thái không xảy ra thì MUST nói rõ
-vì sao thay vì im lặng bỏ. Trong cấu trúc mới, hai mục đó nằm ở `## Alternative / Error flow` và `## UI`.
+vì sao thay vì im lặng bỏ. Trong cấu trúc mới, error flow nằm ở `#### Alternative / Error flow` của UC,
+còn trạng thái giao diện ở `## States` của screen spec.
 
 Mỗi UC mô tả mình và im lặng về những UC bên cạnh. Các UC nối vào nhau thế nào
-thì xem [`shared/ui/navigation.md`](shared/ui/navigation.md) và `ui.md` của từng
-feature; các sơ đồ đó tham chiếu ngược về UC bằng ID và không phát biểu lại luồng nào.
+thì xem [`NAVIGATION.md`](NAVIGATION.md) và các dòng `Navigate to:` của screen spec (đồ thị sinh ở
+[`_generated/navigation-graph.md`](_generated/navigation-graph.md)); chúng tham chiếu ngược về UC
+bằng ID và không phát biểu lại luồng nào.
 
 ### Data model
 
@@ -481,6 +391,7 @@ python -m unittest discover -s tools/docs -p 'test_*.py'
 `check.py` kiểm frontmatter, ID (format, trùng, khớp tên file và DOMAIN của thư
 mục), `rules`/`superseded_by`, path trong `code`, link tương đối, ID và
 `invariant Qn` được trích, section bắt buộc, `_generated/` có lỗi thời không. Link trong
-`docs/superpowers/` không được kiểm (tài liệu lịch sử, [ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md)). WARNING (không fail):
-BR active không UC nào dùng, UC ready có `code: []` hoặc chưa có test chứa ID. Chi tiết
-ở docstring của hai script.
+`docs/superpowers/` không được kiểm (tài liệu lịch sử, [ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md),
+[ADR-021](shared/decisions/ADR-021-tai-lieu-dan-dat-ui-khi-xay-lai.md)). WARNING (không fail):
+BR active không FN nào trích, FN active không UC hay màn nào gọi, UC ready chưa có code hay test,
+INV-UI chưa có gì enforce. Chi tiết ở docstring của hai script.

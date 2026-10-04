@@ -50,12 +50,6 @@ thế nào (BR-STUDY-023, BR-STUDY-053). Màn chọn mode ôn tập chỉ xuất
 từ hai mode ôn tập: `eight_box` có bốn, `sm2` chỉ có `self_assess` nên vào
 thẳng (BR-STUDY-055).
 
-## Màn hình → Use case
-
-| Màn hình | UC |
-|---|---|
-| Không có màn hình riêng — mode chạy trong phiên học | UC-STUDY-001, UC-STUDY-003 (feature `study`) |
-
 ## Không thuộc phạm vi
 
 | Thứ | Vì sao |

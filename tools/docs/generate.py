@@ -116,8 +116,6 @@ def classify(path: Path) -> tuple[str, str] | None:
         return "FEATURE", parts[1]
     if len(parts) == 4 and parts[0] == "features" and parts[2] == "rules":
         return "BR", parts[1]
-    if len(parts) == 4 and parts[0] == "features" and parts[2] == "usecases":
-        return "UC", parts[1]
     if len(parts) == 3 and parts[0] == "screens" and parts[1] == "spec":
         return "SCR", ""
     return None
@@ -200,19 +198,8 @@ def load_section_docs() -> list[Doc]:
     return docs
 
 
-def load_all() -> tuple[list[Doc], list[Doc]]:
-    """(documents, migrated): a legacy UC file whose id USE_CASES.md now defines
-    is returned apart; the section is the definition (plan PT6, until Task 44)."""
-    files = load_file_docs()
-    sections = load_section_docs()
-    moved = {doc.id for doc in sections if doc.kind == "UC"}
-    migrated = [doc for doc in files if doc.kind == "UC" and doc.id in moved]
-    migrated_paths = {doc.path for doc in migrated}
-    return [doc for doc in files if doc.path not in migrated_paths] + sections, migrated
-
-
 def load_docs() -> list[Doc]:
-    return load_all()[0]
+    return load_file_docs() + load_section_docs()
 
 
 def domain_of(feature: str) -> str:
@@ -240,10 +227,10 @@ def cell(text: str) -> str:
 
 
 def used_by(docs: list[Doc]) -> dict[str, list[str]]:
-    """BR id → ids of the FNs (and legacy UC files) whose `rules` cite it."""
+    """BR id → ids of the FNs whose `### Business rules` cite it."""
     usage: dict[str, set[str]] = {}
     for doc in docs:
-        if doc.kind == "FN" or (doc.kind == "UC" and not doc.is_section):
+        if doc.kind == "FN":
             for rule_id in doc.as_list("rules"):
                 usage.setdefault(rule_id, set()).add(doc.id)
     return {rule_id: sorted(users) for rule_id, users in usage.items()}
@@ -253,7 +240,7 @@ def invoked_by(docs: list[Doc]) -> dict[str, list[str]]:
     """FN id → ids of the UC sections and screens that invoke it."""
     usage: dict[str, set[str]] = {}
     for doc in docs:
-        if doc.kind == "UC" and doc.is_section:
+        if doc.kind == "UC":
             targets = doc.as_list("invokes")
         elif doc.kind == "SCR" and doc.screen is not None:
             targets = doc.screen.invokes
@@ -375,7 +362,7 @@ def render_traceability(docs: list[Doc]) -> str:
     ]
     for d in cases:
         invoked = [functions[f] for f in d.as_list("invokes") if f in functions]
-        rules = d.as_list("rules") if not d.is_section else sorted({r for f in invoked for r in f.as_list("rules")})
+        rules = sorted({r for f in invoked for r in f.as_list("rules")})
         code = list(dict.fromkeys(d.as_list("code") + [c for f in invoked for c in f.as_list("code")]))
         lines.append(
             f"| [{d.id}]({rel_link(d.path, GENERATED)}) | {cell(d.status)} "

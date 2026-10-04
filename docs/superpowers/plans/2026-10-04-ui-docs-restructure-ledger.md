@@ -4458,3 +4458,14 @@ IMPLEMENTATION GAPs of SCR-DECK-001 and SCR-STUDY-002 stay; no code changes in t
 - Ruling: `ledger.py seed` regenerates the header, so the sign-off above the first section is
   repeated here, below the notes mark, where a re-seed keeps it — cost if wrong: one duplicated
   paragraph.
+
+## Task 44 notes — retire the old homes
+
+- Deleted (every file has a ledger section, every row an approved outcome): `docs/shared/ui/screen-handoff/` (index + 34 records), `docs/shared/ui/navigation.md`, `docs/features/*/usecases/` (22 UC files), `docs/features/*/ui.md`; the "Sản phẩm" section of `docs/README.md` is one line to `/PRODUCT.md`; `## Màn hình → Use case` left all 15 feature READMEs.
+- Tooling: `generate.py` drops the `usecases` branch of `classify` and folds `load_all` into `load_docs`; `used_by` counts FNs only; traceability rules come from the FNs. `check.py` drops the legacy `"UC"` schema entries, the legacy warning branch and `migrated`; FEATURE no longer requires `Màn hình → Use case`. Tests: `LEGACY_UC` and its two tests removed; the "active BR cited by no FN" warning keeps a test without a legacy file (`test_an_active_rule_no_function_cites_is_a_warning`); the acceptance-criteria fixture is a USE_CASES.md section. 105/105.
+- References (spec §6.4): CLAUDE.md (screen workflow step 1, "Where knowledge lives", the migration sentence), PRODUCT.md, docs/README.md, docs/agent/session-handoff.md, flutter-workflow SKILL.md and its DoD reference, the feature READMEs of deck/starter-decks/tags/transfer, wbs_BE/FE/supabase (34 links retargeted by the Phase D table; `ui.md` → the feature's main screen spec), ADR-009's link to NAVIGATION.md.
+- Ruling: `flutter-product-spec` and `flutter-feature-slice` skills also named the retired homes (README "Sản phẩm", `usecases/`, `ui.md`, `shared/ui/`, the handoff index); their rows now name PRODUCT.md, USE_CASES.md, functional-spec/, screens/ + NAVIGATION.md — outside the plan's §6.4 file list, same mapping — cost if wrong: two skill tables.
+- Left as records: ADR-019 (superseded; links not checked), the sentence in ADR-021 §31, SCR-CARD-002's migration ruling that names the legacy `features/card/ui.md` as history.
+- Minor (deferred): `.claude/skills/flutter-product-spec/assets/use_case_template.md` describes the legacy UC file format and is no longer referenced.
+- Warnings 31 → 9: the 22 "now lives in USE_CASES.md" warnings are gone; left: 7 INV-UI enforced by nothing, BR-CORE-003 cited by no FN, FN-ACCOUNT-014 invoked by nothing.
+- `check.py --ledger` → PASS. Gate: dod_check.sh → ✓ mechanical gates passed (scratchpad gate44.log).

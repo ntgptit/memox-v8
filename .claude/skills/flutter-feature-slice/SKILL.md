@@ -215,8 +215,8 @@ level, and their size is a reference for a slice of that weight.
 - [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
       (`flutter analyze` does not cover the Riverpod and layering rules).
 - [ ] `docs/wbs_BE.md` or `docs/wbs_FE.md` updated in this commit — status, and
-      anything descoped with the reason; for a screen, its row in the screen
-      handoff index.
+      anything descoped with the reason; for a screen, its spec and its row in
+      `docs/screens/SCREEN_CATALOG.md`.
 - [ ] Docs the feature changed (data model, API spec, architecture decisions)
       updated in the same commit.
 - [ ] Full Definition of Done reviewed:

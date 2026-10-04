@@ -42,29 +42,6 @@ x
 x
 """
 
-LEGACY_UC = """---
-id: UC-DECK-001
-title: Tạo deck
-status: ready
-rules: [BR-DECK-001]
-code: []
----
-## Mục tiêu / Actor / Precondition
-x
-## Main flow
-x
-## Alternative / Error flow
-x
-## UI
-x
-## Local
-x
-## API
-x
-## Acceptance criteria
-- [ ] **Given** x, **when** y, **then** z.
-"""
-
 USE_CASES = """# Use cases
 
 ## Deck
@@ -219,10 +196,6 @@ def has(found: list[str], *parts: str) -> bool:
 class LayoutLoadTest(unittest.TestCase):
     def test_the_base_layout_has_no_error(self):
         self.assertEqual(errors(base()), [])
-
-    def test_a_migrated_legacy_uc_file_is_not_a_duplicate(self):
-        files = base(**{"docs/features/deck/usecases/UC-DECK-001-tao-deck.md": LEGACY_UC})
-        self.assertEqual(errors(files), [])
 
     def test_a_malformed_heading_is_an_error_with_its_line(self):
         text = USE_CASES + "\n### UC-DECK-002 - Sửa deck\nStatus: draft · Code: [] · Invokes: []\n"
@@ -420,12 +393,9 @@ class WarningTest(unittest.TestCase):
     def test_a_ready_use_case_whose_functions_have_no_code(self):
         self.assertTrue(has(self.warnings(base()), "ready UC: it and every FN it invokes have `Code: []`"))
 
-    def test_a_migrated_legacy_file_is_a_warning_and_its_rules_do_not_count(self):
-        legacy = {"docs/features/deck/usecases/UC-DECK-001-tao-deck.md": LEGACY_UC}
-        files = base(**{"docs/functional-spec/deck.md": FUNCTIONS.replace("- BR-DECK-001", "Không áp dụng."), **legacy})
-        found = self.warnings(files)
-        self.assertTrue(has(found, "now lives in USE_CASES.md; retire this file"))
-        self.assertTrue(has(found, "BR-DECK-001", "active BR is cited by no FN"))
+    def test_an_active_rule_no_function_cites_is_a_warning(self):
+        files = base(**{"docs/functional-spec/deck.md": FUNCTIONS.replace("- BR-DECK-001", "Không áp dụng.")})
+        self.assertTrue(has(self.warnings(files), "BR-DECK-001", "active BR is cited by no FN"))
 
 
 class GeneratedTest(unittest.TestCase):

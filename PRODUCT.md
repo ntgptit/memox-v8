@@ -42,7 +42,7 @@ This is not a market product. It is a personal app its owner builds so they can 
   - `eight_box`: Leitner-style boxes 1–8, answered remembered or forgotten.
   - `sm2`: SM-2, answered again, hard, good or easy.
 - How a card is asked is a separate axis, the StudyMode: `browse`, `self_assess`, `match`, `guess`, `recall`, `fill`. New cards go through a fixed stage sequence before scheduled review (`docs/features/study-mode/README.md`).
-- The app has four top-level destinations: Library (`/decks`), Study, Progress, Settings (`docs/shared/ui/navigation.md`).
+- The app has four top-level destinations: Library (`/decks`), Study, Progress, Settings (`docs/NAVIGATION.md`).
 
 ## Capabilities and Constraints
 
@@ -116,13 +116,13 @@ Two independent axes (the SRS algorithm and the StudyMode) and two session kinds
 - **Copy voice for failures is local-first:** say first that nothing was lost, then offer the retry (`DESIGN.md`, Do's and Don'ts).
 - **Copy is caller-supplied and localized.** Components hold no copy.
 - No brand guide, logo system or tone document exists beyond these points. The only identity asset is the Android launcher icon (`android/app/src/main/res/mipmap-*/ic_launcher.png`).
-- The visual system is recorded in `DESIGN.md`, generated from the Flutter UI base (ADR-019). It is recorded there, not here.
+- The visual system is recorded in `DESIGN.md`, generated from the Flutter UI base (ADR-021). It is recorded there, not here.
 
 ## Evidence on Hand
 
 - `DESIGN.md`: foundations, theme binding, the shared widgets and the copy voice, generated from the code.
 - Goldens for the implemented UI, light and dark, at 3x: components (`test/shared/widgets/goldens/`, `test/app/goldens/`) and every screen (`test/features/*/presentation/goldens/`), written on Linux.
-- Each screen's detail file with its states, goldens and rulings (`docs/shared/ui/screen-handoff/`).
+- Each screen's spec with its states, controls and rulings (`docs/screens/spec/`; the catalog is `docs/screens/SCREEN_CATALOG.md`).
 - The phase 6 native audit: score 13/20, findings in spec §9 rows 56–66 (`docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`).
 - There are no testimonials, users, pricing, monetization, marketing screenshots, press, or production starter-deck content. Future work must not fabricate any of them.
 

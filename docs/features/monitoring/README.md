@@ -9,13 +9,6 @@ Cửa sổ của admin trên log của app (FE-B8, [ADR-018](../../shared/decisi
 
 Đường ống ghi log (`AppLogger`, `LogShipper`, `log_push`) nằm ở `lib/core/logging/`, không thuộc feature này.
 
-## Màn hình → Use case
-
-| Màn hình | UC |
-|---|---|
-| Monitoring, danh sách và chi tiết (màn 28) | Chưa có UC; hành vi theo ADR-018 §6 đến §8 và spec §3 |
-| Mục Admin trong tab Settings (màn 23) | Lối vào; widget `MonitoringEntrySectionWidget` do router chèn vào màn 23 |
-
 ## Không thuộc phạm vi
 
 | Thứ | Vì sao |
