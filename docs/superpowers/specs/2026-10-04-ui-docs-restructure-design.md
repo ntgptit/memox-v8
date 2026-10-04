@@ -1,8 +1,9 @@
 # MemoX V8 — Documentation restructure for the UI rebuild — design
 
-Status: design approved 2026-10-04 (in conversation, sections 1–4); this spec awaits owner review ·
+Status: design approved 2026-10-04 (in conversation, sections 1–4); first review 2026-10-04
+asked for six changes (R13–R18), applied; awaits owner review ·
 Path: architectural (changes the UI source of truth, supersedes ADR-019, changes `tools/docs/`) ·
-Owner rulings 2026-10-04 (§2): R1–R12
+Owner rulings 2026-10-04 (§2): R1–R18
 
 ## 1. Intent
 
@@ -93,13 +94,29 @@ verifies it.
   document. Product semantics move there from `docs/README.md`; documentation semantics stay
   in `docs/README.md`.
 
+Rulings from the first spec review:
+
+- **R13 — No `UC → BR` path.** The only way from a UC to a BR is `UC → FN → BR`. A UC and a
+  screen spec never cite a BR.
+- **R14 — ADR-019 is kept, marked superseded.** It is not deleted or rewritten. ADR-021 is
+  accepted and names it in `supersedes`.
+- **R15 — `INV-UI-NNN` is for global UI invariants only.** It never restates `DESIGN.md` and never
+  holds a rule that belongs to one screen.
+- **R16 — State ↔ golden traceability** by a stable state key and a golden file name derived
+  from it (§4.4.1).
+- **R17 — `check.py`** separates ERROR from WARNING, checks every canonical reference, and
+  rejects any authored reverse relation.
+- **R18 — Nothing old is deleted before migration verification** proves that no information
+  was lost (§7.1). This holds for the old documents and for the old UI code and goldens.
+
 ## 3. Scope and decomposition
 
 The rebuild is three sub-projects, each with its own spec, plan and execution:
 
 1. **This spec — documentation for the rebuild.**
 2. **Delete the old UI.** Its spec fixes the scope (presentation only, or theme and shared
-   widgets too). It cannot start before step 3 of §7 is done.
+   widgets too). It cannot start before the migration verification of §7.1 has passed and the
+   owner has signed it off (R18).
 3. **Rebuild the UI**, screen by screen, through the screen workflow in `CLAUDE.md`.
 
 Assumption carried into sub-project 2: only `presentation/` (and whatever sub-project 2 rules
@@ -177,6 +194,11 @@ Status: ready · Code: [paths] · Invokes: FN-DECK-001
   moves into the FNs.
 - The `UC → FN` relation is the `Invokes:` line; FN IDs cited in the flow must also be listed
   there (`check.py`).
+- A UC never cites a BR (R13). Today's UC text cites BRs often ("scheduler thuộc root deck
+  (BR-DECK-005)"); during migration each such citation is moved to the FN that the step
+  invokes. A BR that governs no system action, so that no FN can carry it, is not linked to the
+  UC: it is written as `> ⚠️ OPEN QUESTION:` for an owner ruling (the BR may be misplaced, or an
+  FN is missing).
 
 **FN section** (in `functional-spec/<domain>.md`, Vietnamese):
 
@@ -218,7 +240,7 @@ route: [/decks, /decks/deck/:deckId]
 ## Purpose
 ## Related Use Cases          — hand-written (SCREEN → UC)
 ## Layout                     — regions by role, top to bottom; no widget class names
-## States                     — one ### per state: when it occurs, what it shows; Golden: <file> once built
+## States                     — one ### per state (§4.4.1): when it occurs, what it shows, Golden: line
 ## Controls                   — one ### per control:
                                  Type, Purpose, Enabled when (UI-only condition),
                                  Invokes: FN-…        (SCREEN → FN)
@@ -232,16 +254,34 @@ route: [/decks, /decks/deck/:deckId]
 ```
 
 - No `## Navigation` section: an edge lives at its control (R9).
-- No FN preconditions, inputs, rules, algorithms or persistence behaviour. A screen may say how
-  a validation failure is *shown* ("error below the field after Save"); the rule itself is a
-  BR.
-- Each state says whether it is golden-covered. `status: built` requires code and, for every
-  golden-covered state, a golden the owner reviewed (`golden-compare`).
+- No FN preconditions, inputs, rules, algorithms or persistence behaviour, and no BR ID
+  anywhere in the file (R13). A screen may say how a validation failure is *shown* ("error
+  below the field after Save"); the rule itself is a BR reached through the FN.
+- `## UI Invariants` holds only invariants that belong to this screen. A global one is cited by
+  its `INV-UI-NNN` ID, never restated (R15).
+- `status: built` requires code and, for every golden-covered state, the goldens the owner
+  reviewed (`golden-compare`).
 - A section with nothing to say keeps its heading and says so (existing convention).
 - Screens are the current 34 records (01–33 and 16a), not a new list: the UX is kept (R1).
   Where today one route serves two levels (the Library root and an open deck are one recursive
   screen) it stays one SCR. A dialog or sheet is part of its screen, not an SCR of its own,
   unless it has its own route.
+
+#### 4.4.1 State keys and golden names (R16)
+
+- Each state heading carries a stable **state key**: `` ### `root_loaded` · Root loaded ``.
+  The key is `snake_case`, unique within the screen, and permanent like an ID: it is never
+  renamed or reused. A state that is removed keeps its heading with `Status: removed`.
+- Under the heading, one line declares its goldens:
+  `Golden: light, dark` (the variants rendered) or `Golden: none — <reason>`.
+- A golden file is named from the screen ID, the state key and the variant:
+  `<scr_id>__<state_key>__<variant>.png`, the screen ID in lower `snake_case`. Example:
+  `scr_deck_001__root_loaded__light.png`. Variants are `light`, `dark`, and any other the
+  state declares (for example `light_text200` for a 200 % text-scale render).
+- The golden lives under `test/**/goldens/`; its folder does not carry meaning. The name alone
+  traces it to `SCR-DECK-001` state `root_loaded`.
+- The test that renders a golden names the same key, so a failing golden points back to its
+  spec state.
 
 ### 4.5 SCREEN_CATALOG.md
 
@@ -253,8 +293,10 @@ route: [/decks, /decks/deck/:deckId]
   keyboard never covers the focused field, no data lost when a save fails, the FAB never hides
   the last item, read-only differs from disabled). `Enforced by` is `—` until a test, golden or
   lint enforces it, so the gap stays visible.
-- Visual floor (touch targets, contrast, spacing) stays in `DESIGN.md`; the catalog links to it
-  and does not restate it.
+- Scope (R15): an `INV-UI` is a **behaviour** that every screen must hold. It is not a visual
+  value: touch targets, contrast, spacing and type stay in `DESIGN.md`, which the catalog links
+  to and does not restate. It is not a screen's own rule: that stays in the screen's
+  `## UI Invariants`. Each invariant is written in exactly one of these three places.
 
 ### 4.6 NAVIGATION.md
 
@@ -272,36 +314,66 @@ no flow.
 - `DESIGN.md` becomes a hand-written authority. It is no longer derived from code; code follows
   it. A PR that changes the visual system updates it first.
 - A PR that changes a screen updates its spec and its catalog row.
-- Kit v3 stays retired. ADR-019 gets `status: deprecated`, `superseded_by: ADR-021`, and keeps
-  its text.
+- Kit v3 stays retired.
+- ADR-019 is kept (R14): its frontmatter becomes `status: superseded`, `superseded_by: ADR-021`;
+  its body is not changed. ADR-021 has `status: accepted`, `supersedes: [ADR-019]`.
+- This extends the ADR status vocabulary in `docs/README.md` from `draft | active | deprecated`
+  to `draft | accepted | superseded | deprecated`, and adds the `supersedes` field. The other 18
+  ADRs that are `active` today become `accepted` in the same change (frontmatter only), so the two
+  words never mean the same thing side by side. `check.py` requires `superseded_by` on a
+  superseded ADR and checks that it and `supersedes` point at each other.
 
 ### 4.8 Tooling (`tools/docs/check.py`, `generate.py`)
 
-`check.py` gains:
+`check.py` parses UC sections in `USE_CASES.md`, FN sections in `functional-spec/*.md`, and
+screen spec frontmatter, state headings, `Golden:`, `Invokes:` and `Navigate to:` lines. It
+keeps today's exit rule: any ERROR exits 1; WARNINGs are printed and do not fail (R17).
 
-- Parsing of UC sections in `USE_CASES.md`, FN sections in `functional-spec/*.md`, and screen
-  spec frontmatter plus `Invokes:` and `Navigate to:` lines.
-- ID checks for `FN-` and `SCR-` (format, duplicates, DOMAIN, file name matches `id`,
-  `superseded_by`) and `INV-UI-`.
-- Errors: a cited UC/FN/BR/SCR/INV ID that does not exist; an FN cited in a UC flow but missing
-  from its `Invokes:` line; a `Related BR` section in a screen spec; a `built` screen without a
-  golden on a state that declares one; a `PRODUCT.md` under `docs/`.
-- Warnings: an active BR no FN cites; an active FN no UC or screen invokes; a `ready` UC whose
-  FNs all have empty `Code`.
-- The existing checks on `features/<f>/rules/`, `depends_on`, links and `invariant Qn` stay.
+**Canonical references.** Each document kind may cite only these ID kinds; any other ID kind
+in it is an ERROR.
+
+| Document | May cite | Canonical relation it declares |
+|---|---|---|
+| `USE_CASES.md` | FN | `UC → FN` (`Invokes:`) |
+| `functional-spec/*.md` | BR | `FN → BR` (`### Business rules`) |
+| `screens/spec/*` | FN, UC, SCR, INV-UI | `SCREEN → FN`, `SCREEN → UC`, `SCREEN → SCREEN` |
+| `SCREEN_CATALOG.md` | SCR | catalog rows |
+| `NAVIGATION.md` | SCR, UC | router edges |
+| `features/<f>/rules/*`, `README.md` | as today | as today |
+
+**Authored reverse relations are rejected.** A section or field that states a generated
+relation (`Used by`, `Related Screens` in an FN, `Related BR` in a screen, `Entry points`, a
+feature's FN list, `Invoked by`) is an ERROR in a source file. Reverse relations exist only in
+`_generated/`.
+
+| ERROR (exit 1) | WARNING |
+|---|---|
+| ID kind not allowed in the document (table above) | active BR that no FN cites |
+| cited UC/FN/BR/SCR/INV-UI ID that does not exist, or is deprecated without `superseded_by` | active FN that no UC and no screen invokes |
+| FN, SCR or INV-UI ID malformed, duplicated, wrong DOMAIN, or file name ≠ `id` | `ready` UC whose FNs all have empty `Code` |
+| FN cited in a UC flow but missing from its `Invokes:` line | screen state `Golden: none` on a `built` screen |
+| authored reverse relation | `INV-UI` whose `Enforced by` is `—` |
+| state key malformed, duplicated in its screen, or renamed (compared with git `HEAD`) | |
+| `built` screen with a golden-covered state that has no matching golden file | |
+| golden file under `test/**/goldens/` that matches no screen state (orphan), once the first `SCR` golden exists | |
+| ADR `superseded` without `superseded_by`, or `supersedes`/`superseded_by` that do not point at each other | |
+| a `PRODUCT.md` anywhere under `docs/` | |
+
+The existing checks on `features/<f>/rules/`, `depends_on`, links and `invariant Qn` stay.
+The orphan-golden check starts only when the first rebuilt golden lands, so the old goldens
+do not fail it while they still exist.
 
 `generate.py` adds to `_generated/`: `FN → UC`, `FN → SCREEN`, `BR → FN`, `SCREEN → BR` (via
-FN), each screen's entry points, a feature's FN list, and the full navigation graph (screen
-edges plus `NAVIGATION.md` routes). `verification_impact_map.json` is unchanged.
+FN), each screen's entry points, a feature's FN list, golden ↔ state, and the full navigation
+graph (screen edges plus `NAVIGATION.md` routes). `verification_impact_map.json` is unchanged.
 
-`test_check.py` gets a case for each new error and warning.
+`test_check.py` gets a fixture for each new ERROR and WARNING.
 
 ## 5. Error handling and edge cases
 
-- **A UC needs a BR no FN owns** (a rule about the flow itself, not a system action): the UC
-  cites the BR in its flow text and `check.py` accepts `UC → BR` as a cited reference, not a
-  canonical relation. The plan lists every such case found during migration for an owner
-  ruling rather than inventing FNs to carry them.
+- **A UC needs a BR no FN owns** (a rule about the flow itself, not a system action): no
+  `UC → BR` link is made (R13). The case becomes an `OPEN QUESTION` for an owner ruling, and
+  the migration ledger (§7.1) lists it as unresolved, which blocks verification until ruled.
 - **A BR is enforced only in the UI** (`Enforced by: UI`): it still belongs to an FN (the FN the
   control invokes). The screen spec shows the failure; it does not restate the rule.
 - **A contradiction found while migrating** (UC, BR, code and screen record disagree): not
@@ -323,7 +395,7 @@ None. Every moved piece changes form (UC files → sections; screen records → 
 
 ### 6.3 Kept unchanged
 
-BR files and IDs, ADR-001…020 (019 becomes deprecated), `shared/data/schema.md`,
+BR files and IDs, the text of ADR-001…020 (only frontmatter changes, §4.7), `shared/data/schema.md`,
 `shared/testing/`, `features/<f>/data.md` and `it-scenarios.md`, `depends_on`, `glossary.md`,
 `wbs_*.md`, `docs/superpowers/` (history; its links are not checked), `.impeccable/critique/`
 (history).
@@ -334,7 +406,8 @@ BR files and IDs, ADR-001…020 (019 becomes deprecated), `shared/data/schema.md
 spec, its FNs, `SCREEN_CATALOG.md` and `DESIGN.md`), `PRODUCT.md`, `docs/README.md`,
 `docs/agent/session-handoff.md`, `.claude/skills/flutter-workflow/SKILL.md`,
 `docs/features/{starter-decks,transfer}/README.md`, `docs/wbs_BE.md`, `docs/wbs_FE.md`,
-`docs/wbs_supabase.md`, `tools/docs/check.py` (its ADR-019 comment).
+`docs/wbs_supabase.md`, `tools/docs/check.py` (its ADR-019 comment), the frontmatter of
+`docs/shared/decisions/ADR-*.md` (§4.7).
 
 ## 7. Order of work
 
@@ -344,14 +417,42 @@ spec, its FNs, `SCREEN_CATALOG.md` and `DESIGN.md`), `PRODUCT.md`, `docs/README.
 2. **Remaining domains**, one at a time: FNs from the domain use cases, UCs moved into
    `USE_CASES.md` and pointed at FNs.
 3. **All 34 screen specs, written from the current app** (code, goldens, today's screen
-   records) **before any UI is deleted**. They end `ready`. This is the only full record of the
-   UX the owner keeps (R1); sub-project 2 cannot start until this step is merged.
-4. **Retire the old homes** (§6.1) and update references (§6.4). Before sub-project 2 deletes
-   goldens, a git tag marks the last commit that has them.
-5. `PRODUCT.md` and `docs/README.md` split (§4.2) can run in parallel with step 2.
+   records) **while the old UI still exists**. They end `ready`. This is the only full record
+   of the UX the owner keeps (R1).
+4. **Migration verification** (§7.1). The owner signs off the ledger.
+5. **Retire the old homes** (§6.1) and update references (§6.4), only after step 4.
+6. `PRODUCT.md` and `docs/README.md` split (§4.2) can run in parallel with step 2.
 
 Each step ends with `python tools/docs/generate.py`, `python tools/docs/check.py` and the gate
-(`dod_check.sh`). Steps may ship as separate PRs.
+(`dod_check.sh`). Steps may ship as separate PRs. Sub-project 2 (deleting the old UI) starts
+only after step 5 is merged; before it deletes any golden, a git tag marks the last commit that
+has them.
+
+### 7.1 Migration verification (R18)
+
+Nothing old is deleted until a **migration ledger** shows that every piece of information has a
+new home or an owner-approved drop. The ledger is a table in the plan's execution ledger, one
+row per source item:
+
+| Source item | Granularity |
+|---|---|
+| UC file | each section (goal, precondition, each flow step, each alternative/error flow, each acceptance criterion, `## UI`, `## Local`, `## API`) |
+| Screen record (`screen-handoff/NN`) | each layout region, each state row, each ruling, each copy string, each pending item |
+| `features/<f>/ui.md` and `shared/ui/navigation.md` | each diagram node and edge |
+| Golden PNG | each file → a screen state key and variant |
+| "Sản phẩm" in `docs/README.md` | each paragraph and table row |
+
+Each row ends in exactly one of: `moved → <new location>`, `superseded → <ID or ruling>`, or
+`dropped — <reason>, approved <date>`. Verification passes when:
+
+1. every row has an outcome and no outcome is blank or "TBD";
+2. every `dropped` row carries the owner's approval;
+3. no `OPEN QUESTION` raised during migration is unresolved;
+4. `check.py` exits 0, `_generated/` is fresh, and the gate passes;
+5. for each screen, every state of today's record and every golden of today maps to a state key
+   in its spec.
+
+The owner then signs off the ledger. Only then may step 5 and sub-project 2 delete anything.
 
 ## 8. Testing
 
@@ -359,5 +460,4 @@ Each step ends with `python tools/docs/generate.py`, `python tools/docs/check.py
 - After each step: `generate.py` leaves `_generated/` fresh and `check.py` exits 0.
 - Spot check per domain: for three FNs, the `Code` paths exist and the listed failure types
   exist in the domain layer.
-- Screen specs: for each screen, every state of today's record and every golden of today maps
-  to a state in the spec (a checklist in the plan's execution ledger).
+- Migration completeness: the ledger and its five conditions in §7.1.
