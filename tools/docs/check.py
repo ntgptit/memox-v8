@@ -45,7 +45,9 @@ ERROR
   table is one whose first header cell starts with "Nguồn"; destinations are
   backticked paths relative to docs/, `<slug>` and `*` are wildcards)
 WARNING
-- active BR used by no UC; ready UC with `code: []`; ready UC with no test
+- active BR cited by no FN (nor by a legacy UC file); active FN invoked by no
+  UC and no screen; ready UC with no code (legacy: `code: []`; section: it
+  and its FNs) or with no test; a legacy UC file already moved to USE_CASES.md
 - an INV-UI enforced by nothing; a built screen's state with no golden
 
 Id, invariant and link checks ignore ``` fences and `inline code`. Id checks
@@ -471,18 +473,28 @@ def check_dependency_cycles(docs: list[g.Doc], report: Report) -> None:
         visit(feature, [])
 
 
-def check_warnings(docs: list[g.Doc], report: Report) -> None:
+def check_warnings(docs: list[g.Doc], migrated: list[g.Doc], report: Report) -> None:
     usage = g.used_by(docs)
+    invoked = g.invoked_by(docs)
+    functions = {d.id: d for d in docs if d.kind == "FN"}
     ready = [d for d in docs if d.kind == "UC" and d.status == "ready"]
     tests = g.tests_by_id([d.id for d in ready])
     for doc in docs:
         if doc.kind == "BR" and doc.status == "active" and doc.id not in usage:
-            report.warning(where(doc), "active BR is used by no UC")
+            report.warning(doc.path, "active BR is cited by no FN (nor by a UC file not yet migrated)")
+        if doc.kind == "FN" and doc.status == "active" and doc.id not in invoked:
+            report.warning(where(doc), "active FN is invoked by no UC and no screen")
     for doc in ready:
-        if not doc.as_list("code"):
-            report.warning(where(doc), "ready UC has `code: []`")
+        if doc.is_section:
+            invoked_fns = [functions[f] for f in doc.as_list("invokes") if f in functions]
+            if not doc.as_list("code") and not any(f.as_list("code") for f in invoked_fns):
+                report.warning(where(doc), "ready UC: it and every FN it invokes have `Code: []`")
+        elif not doc.as_list("code"):
+            report.warning(doc.path, "ready UC has `code: []`")
         if not tests[doc.id]:
             report.warning(where(doc), "ready UC has no test that contains its id")
+    for doc in migrated:
+        report.warning(doc.path, f"`{doc.id}` now lives in USE_CASES.md; retire this file in Task 44 (spec §7)")
 
 
 def defined_ids(docs: list[g.Doc]) -> set[str]:
@@ -754,7 +766,7 @@ def run(plan: Path | None, base_keys=base_state_keys) -> Report:
     check_v7_residue(report)
     if plan is not None:
         check_plan(plan, report)
-    check_warnings(docs, report)
+    check_warnings(docs, migrated, report)
     return report
 
 

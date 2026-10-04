@@ -237,13 +237,28 @@ def cell(text: str) -> str:
 
 
 def used_by(docs: list[Doc]) -> dict[str, list[str]]:
+    """BR id → ids of the FNs (and legacy UC files) whose `rules` cite it."""
     usage: dict[str, set[str]] = {}
     for doc in docs:
-        if doc.kind != "UC":
+        if doc.kind == "FN" or (doc.kind == "UC" and not doc.is_section):
+            for rule_id in doc.as_list("rules"):
+                usage.setdefault(rule_id, set()).add(doc.id)
+    return {rule_id: sorted(users) for rule_id, users in usage.items()}
+
+
+def invoked_by(docs: list[Doc]) -> dict[str, list[str]]:
+    """FN id → ids of the UC sections and screens that invoke it."""
+    usage: dict[str, set[str]] = {}
+    for doc in docs:
+        if doc.kind == "UC" and doc.is_section:
+            targets = doc.as_list("invokes")
+        elif doc.kind == "SCR" and doc.screen is not None:
+            targets = doc.screen.invokes
+        else:
             continue
-        for rule_id in doc.as_list("rules"):
-            usage.setdefault(rule_id, set()).add(doc.id)
-    return {rule_id: sorted(ucs) for rule_id, ucs in usage.items()}
+        for fn_id in targets:
+            usage.setdefault(fn_id, set()).add(doc.id)
+    return {fn_id: sorted(users) for fn_id, users in usage.items()}
 
 
 def test_files() -> list[Path]:

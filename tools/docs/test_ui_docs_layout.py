@@ -403,5 +403,29 @@ class ScreenStateTest(unittest.TestCase):
         self.assertIn("WARNING built screen: state `root_loaded` has no golden", self.found(files))
 
 
+class WarningTest(unittest.TestCase):
+    def warnings(self, files) -> list[str]:
+        return [m for m in messages(files) if m.startswith("WARNING")]
+
+    def test_a_rule_no_function_cites(self):
+        files = base(**{"docs/functional-spec/deck.md": FUNCTIONS.replace("- BR-DECK-001", "Không áp dụng.")})
+        self.assertTrue(has(self.warnings(files), "BR-DECK-001", "active BR is cited by no FN"))
+
+    def test_a_function_nobody_invokes(self):
+        extra = FUNCTIONS.split("## FN-DECK-001")[1].replace(" — Tạo deck", " — Đổi tên", 1)
+        files = base(**{"docs/functional-spec/deck.md": FUNCTIONS + "\n## FN-DECK-002" + extra})
+        self.assertTrue(has(self.warnings(files), "active FN is invoked by no UC and no screen"))
+
+    def test_a_ready_use_case_whose_functions_have_no_code(self):
+        self.assertTrue(has(self.warnings(base()), "ready UC: it and every FN it invokes have `Code: []`"))
+
+    def test_a_migrated_legacy_file_is_a_warning_and_its_rules_do_not_count(self):
+        legacy = {"docs/features/deck/usecases/UC-DECK-001-tao-deck.md": LEGACY_UC}
+        files = base(**{"docs/functional-spec/deck.md": FUNCTIONS.replace("- BR-DECK-001", "Không áp dụng."), **legacy})
+        found = self.warnings(files)
+        self.assertTrue(has(found, "now lives in USE_CASES.md; retire this file"))
+        self.assertTrue(has(found, "BR-DECK-001", "active BR is cited by no FN"))
+
+
 if __name__ == "__main__":
     unittest.main()
