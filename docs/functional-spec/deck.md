@@ -152,7 +152,7 @@ Trong một transaction:
 
 Không bề mặt active nào còn hiện các hàng của batch. Nội dung, study state, study answers, id
 và chỗ cũ của từng hàng giữ nguyên tới khi purge; chỉ purge mới xoá hẳn, theo cascade. Kết quả
-trả về id của batch, thứ mà hoàn tác cần.
+trả về id của batch, thứ mà FN-DECK-006 nhận.
 
 ### Lỗi
 
@@ -176,7 +176,7 @@ Status: active · Code: [lib/features/deck/domain/usecases/undo_deck_deletion_us
 
 ### Precondition
 
-Batch vừa tạo khi xoá deck còn trong Trash.
+Batch do FN-DECK-005 tạo còn trong Trash.
 
 ### Input
 
@@ -194,7 +194,7 @@ trở lại cấp gốc.
 - `targetNotFound` — deck cha cũ không còn.
 - `targetInTrash` — deck cha cũ đang ở Trash.
 - `movingIntoOwnSubtree`, `notADeckContainer`, `depthExceeded`, `subtreeSchedulerMismatch` — deck
-  cha cũ không còn nhận được deck này, theo cùng các phép kiểm như khi di chuyển deck.
+  cha cũ không còn nhận được deck này, theo cùng các phép kiểm của FN-DECK-011.
 
 ### Business rules
 
@@ -398,8 +398,6 @@ Hệ thống kiểm, theo thứ tự: đích không phải chính deck nguồn h
 Sau đó cây không có cycle, mọi deck của cây con trỏ đúng root, không deck nào vừa chứa card vừa
 chứa deck con, và không study state nào lệch scheduler hay generation của root. Không có chuyển
 đổi study state ngầm giữa hai chế độ ôn tập.
-
-> ⚠️ OPEN QUESTION: thứ tự kiểm khác nhau giữa hai nguồn — UC-DECK-005 bước 2 kiểm scheduler và generation trước độ sâu; code (`DeckEntity.checkMove`) kiểm độ sâu trước scheduler. Chỉ ảnh hưởng lỗi nào được báo khi cả hai cùng sai. Ở đây theo code; chủ dự án chốt.
 
 ### Lỗi
 

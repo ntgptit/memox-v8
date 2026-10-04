@@ -364,6 +364,13 @@ route: [/path, …]
 ## Rulings
 ```
 
+UC chỉ giữ ý định của người dùng, luồng ở mức ngữ nghĩa và FN-ID. Control, layout, dialog, FAB,
+nút, lỗi hiện inline hay snackbar và cách trình bày state nằm ở screen spec của màn đó.
+
+Một màn chưa có spec là một hàng `pending` trong `screens/SCREEN_CATALOG.md` (Route và Spec ghi
+`—`). ID của nó trích được ở mọi nơi; `Navigate to:` tới nó là WARNING cho tới khi spec được
+viết, lúc đó hàng `pending` được thay bằng hàng thật.
+
 Golden của state tên `<scr_id>__<state_key>__<variant>.png`, ví dụ
 `scr_deck_001__root_loaded__light.png`, nằm dưới `test/**/goldens/`.
 
@@ -386,7 +393,7 @@ trong `inline code` vẫn tính):
 | Tài liệu | Được trích |
 |---|---|
 | `USE_CASES.md` | FN |
-| `functional-spec/` | BR |
+| `functional-spec/` | BR; FN khi là tiền điều kiện hay năng lực của domain khác ở mức contract — không mô tả call graph |
 | `screens/spec/` | FN, UC, SCR, INV-UI |
 | `screens/SCREEN_CATALOG.md` | SCR, INV-UI |
 | `NAVIGATION.md` | SCR, UC |

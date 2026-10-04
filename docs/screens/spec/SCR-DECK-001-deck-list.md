@@ -13,7 +13,7 @@ route: [/decks, /decks/deck/:deckId]
 One recursive screen for the Library root (`/decks`) and for any open deck
 (`/decks/deck/:deckId`). It shows a level of the deck tree with each deck's due work and
 mastery, and is where decks are created, renamed, reordered, moved and moved to the Trash. A
-deck that holds cards shows the card list (screen 07) instead of sub-decks.
+deck that holds cards shows the card list (SCR-CARD-001) instead of sub-decks.
 
 ## Related Use Cases
 
@@ -28,13 +28,13 @@ deck that holds cards shows the card list (screen 07) instead of sub-decks.
 
 ### Root
 
-- **App bar** (large) — title "Library"; actions Starter decks (sparkles icon, screen 03), Tags
-  (tag icon, screen 05) and Trash (screen 06).
-- **Search field** (trigger mode) — hint "Search decks"; a tap opens screen 04 instead of typing
+- **App bar** (large) — title "Library"; actions Starter decks (sparkles icon, SCR-STARTER-001), Tags
+  (tag icon, SCR-TAG-001) and Trash (SCR-TRASH-001).
+- **Search field** (trigger mode) — hint "Search decks"; a tap opens SCR-SEARCH-001 instead of typing
   here.
 - **Due strip** (hero card with an icon tile and a workload breakdown line) — bolt tile on
   primary, "{n} cards due", then overdue · today (New is not due). A tap opens Study home
-  (screen 13); a trailing chevron says so. Hidden when the library holds no card.
+  (SCR-STUDY-001); a trailing chevron says so. Hidden when the library holds no card.
 - **Section header** with a chip trigger — "{n} DECKS"; pill "Manual ⌄", or "Manual · Due only"
   tinted primary while the due filter is on.
 - **Rows** — one card per deck, 8 apart: a 44 icon tile (layers = holds decks, copy = holds
@@ -51,25 +51,25 @@ deck that holds cards shows the card list (screen 07) instead of sub-decks.
 - **Summary card** (hero), for a deck holding sub-decks — the level's mastery donut beside
   "MASTERED · {algorithm}", "{n} sub-decks · {n} cards", then overdue · today · new ·
   {n} scheduled. "Study this deck · {n} due" (primary block button; "Study this deck" when only
-  new cards wait) opens the Study entry, screen 14; hidden when the subtree holds no card to
+  new cards wait) opens the Study entry, SCR-STUDY-002; hidden when the subtree holds no card to
   study.
 - **List** — as at the root. Header "Sub-decks" with the sort pill; the summary card states the
   count.
 - **Floating action button** — "New sub-deck"; none at level 10, and none on an `unset` deck,
   whose empty state offers both choices.
 - **By content type** — `unset`: an empty state with the two create choices and "Import cards
-  from a file" (screen 11), all text-only block actions, Import as the outline third. `card`:
-  the card list, screen 07.
+  from a file" (SCR-TRANSFER-001), all text-only block actions, Import as the outline third. `card`:
+  the card list, SCR-CARD-001.
 
 ### Action sheet
 
 A bottom sheet headed by the deck's name alone, with command rows and no count subtitles:
 
-- **Root deck:** Open deck · Study this deck (screen 14) · Rename · Study options ("Cards per
-  session · new-card order", screen 15) · Review algorithm ("{algorithm} · locked · reset to
-  start over" when locked, screen 02) · Reorder · Move to Trash ("Recoverable for 30 days").
-- **Sub-deck:** Open · Study this deck (screen 14) · Rename · Study options (its root's options,
-  screen 15) · Move to another deck · Reorder ("Move before or after a sibling") · Move to Trash
+- **Root deck:** Open deck · Study this deck (SCR-STUDY-002) · Rename · Study options ("Cards per
+  session · new-card order", SCR-SETTINGS-001) · Review algorithm ("{algorithm} · locked · reset to
+  start over" when locked, SCR-SRS-001) · Reorder · Move to Trash ("Recoverable for 30 days").
+- **Sub-deck:** Open · Study this deck (SCR-STUDY-002) · Rename · Study options (its root's options,
+  SCR-SETTINGS-001) · Move to another deck · Reorder ("Move before or after a sibling") · Move to Trash
   ("Recoverable for 30 days").
 
 ### Sort & filter sheet
@@ -99,7 +99,7 @@ Golden: none — no golden in V8 (record 01)
 
 ### `root_empty` · Root empty
 
-"Create deck", then "Browse starter decks" (screen 03), and the footnote.
+"Create deck", then "Browse starter decks" (SCR-STARTER-001), and the footnote.
 
 Golden: light, dark
 
@@ -111,7 +111,7 @@ Golden: none — no golden in V8 (record 01)
 
 ### `root_search` · Root search
 
-The field is a trigger: a tap opens screen 04 instead of typing here.
+The field is a trigger: a tap opens SCR-SEARCH-001 instead of typing here.
 
 Golden: none — no golden in V8 (record 01)
 
@@ -175,7 +175,7 @@ Golden: light, dark
 
 ### `deck_empty` · Open deck, unset
 
-An `unset` deck: both create choices and "Import cards from a file" (screen 11); no FAB.
+An `unset` deck: both create choices and "Import cards from a file" (SCR-TRANSFER-001); no FAB.
 
 Golden: light, dark
 
@@ -253,8 +253,8 @@ Golden: none — no golden in V8 (record 01)
 
 #### On success
 
-- `deck_loaded`, `deck_empty` or `deck_max_depth`; a deck holding cards shows the card list,
-  screen 07.
+- `deck_loaded`, `deck_empty` or `deck_max_depth`.
+- A deck holding cards shows the card list — Navigate to: SCR-CARD-001
 
 #### On failure
 
@@ -291,7 +291,7 @@ Golden: none — no golden in V8 (record 01)
 
 #### On success
 
-- Opens screen 04.
+- Navigate to: SCR-SEARCH-001
 
 ### Due strip
 
@@ -300,7 +300,7 @@ Golden: none — no golden in V8 (record 01)
 
 #### On success
 
-- Opens Study home, screen 13.
+- Navigate to: SCR-STUDY-001
 
 ### Sort pill
 
@@ -383,7 +383,7 @@ Golden: none — no golden in V8 (record 01)
 
 #### On success
 
-- Opens Card create, screen 08.
+- Navigate to: SCR-CARD-002
 
 ### Import cards from a file (`unset` empty state)
 
@@ -391,7 +391,7 @@ Golden: none — no golden in V8 (record 01)
 
 #### On success
 
-- Opens Card import, screen 11.
+- Navigate to: SCR-TRANSFER-001
 
 ### Browse starter decks (`root_empty`)
 
@@ -399,7 +399,7 @@ Golden: none — no golden in V8 (record 01)
 
 #### On success
 
-- Opens Starter decks, screen 03.
+- Navigate to: SCR-STARTER-001
 
 ### App-bar actions: Starter decks, Tags, Trash
 
@@ -407,7 +407,9 @@ Golden: none — no golden in V8 (record 01)
 
 #### On success
 
-- Open screen 03, screen 05 and screen 06.
+- Starter decks — Navigate to: SCR-STARTER-001
+- Tags — Navigate to: SCR-TAG-001
+- Trash — Navigate to: SCR-TRASH-001
 
 ### Action sheet: Open deck
 
@@ -424,7 +426,7 @@ Golden: none — no golden in V8 (record 01)
 
 #### On success
 
-- Opens the Study entry, screen 14.
+- Navigate to: SCR-STUDY-002
 
 ### Action sheet: Study options
 
@@ -432,7 +434,7 @@ Golden: none — no golden in V8 (record 01)
 
 #### On success
 
-- Opens Study options, screen 15 (a sub-deck opens its root's options).
+- Navigate to: SCR-SETTINGS-001 (a sub-deck opens its root's options)
 
 ### Action sheet: Review algorithm (root only)
 
@@ -440,7 +442,7 @@ Golden: none — no golden in V8 (record 01)
 
 #### On success
 
-- Opens Review algorithm & reset, screen 02.
+- Navigate to: SCR-SRS-001
 
 ### Action sheet: Rename
 
@@ -547,7 +549,7 @@ Golden: none — no golden in V8 (record 01)
 #### On success
 
 - Back to Library — Navigate to: SCR-DECK-001
-- Open Trash — opens screen 06.
+- Open Trash — Navigate to: SCR-TRASH-001
 
 ## Responsive Behavior
 
@@ -570,6 +572,8 @@ Otherwise follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 | A deck at level 10 has no "New sub-deck" anywhere. | — |
 | Reorder is offered only under Manual order with at least two decks. | — |
 | A refused Undo names the reason, never the deck. | — |
+| A name error shows under the Name field, never as a snackbar. | — |
+| A deck with due cards is marked by text ("{n} due"), not by colour alone. | — |
 | An Undo happens where the item was deleted. | — |
 
 ## Copy
@@ -648,6 +652,22 @@ Otherwise follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 - **FE-B1 D11:** `deck_not_found` replaces ruling P2-L7.
 - **FE-B1 D15:** the delete confirm spins while the deck moves.
 - **C-L5:** moving the open deck to the Trash steps back to its parent first.
+- **From UC-DECK-001 (moved here 2026-10-04, spec R20):** a name error is inline under the field,
+  not a snackbar; a missing algorithm is inline under the algorithm choice; a failed save keeps
+  the dialog and what was typed.
+- **From UC-DECK-003 (moved here 2026-10-04, spec R20):** a deck with due cards is marked by an
+  icon and text, never colour alone; the mastery bar has no text, so the row reads
+  "{n}% mastered" to TalkBack; an open deck holding sub-decks shows the level's mastery donut
+  beside "Mastered · {algorithm}".
+- **From UC-DECK-006 (moved here 2026-10-04, spec R20):** Reorder is a command of the action
+  sheet under Manual order; reorder mode allows drag and, under TalkBack, Move up / Move down
+  (no Move up on the first deck, no Move down on the last); a level with one deck offers no
+  Reorder; any view-only sort hides it; an error keeps the list as it was.
+
+> ⚠️ OPEN QUESTION: UC-DECK-001 E2 asked the Name field to stop input at 200 characters instead of truncating silently; the V8 app accepts the input and shows "Keep the name to 200 characters." when Create is pressed. Which does the rebuild do?
+
+> ⚠️ OPEN QUESTION: UC-DECK-003 step 3 described a deck tile showing total Due + New, a large icon in three schedule states (not due: outlined, neutral; due today: filled, the time-pressure amber; overdue: missed with a days badge on the error container) and a hero summary as a 2×2 grid of Overdue / Due today / New / Scheduled on one baseline. The V8 app shows a "{n} due" badge per row, a due strip "overdue · today", and the open deck's breakdown as one wrapping line; the schedule status exists in the domain (`DeckScheduleStatus`) but no screen draws it. Which does the rebuild follow?
+
 - Pending — a level-10 banner "This is level 10, the deepest a deck can go…" over sub-decks at
   level 10; absent today, the header says "· level 10"; waits for a later phase (owner decision
   C-O6).

@@ -3011,12 +3011,19 @@ types `lib/features/<d>/domain/failures/*.dart`; its UC files
      Drift calls do not.
    - `Lỗi`: each failure variant the use case can return, by its name in `*_failure.dart`, with
      one line on when. None: `Không áp dụng — <why>`.
+   - An FN may cite another FN only as a contract prerequisite or another domain's capability
+     (spec R21), never as an implementation call graph.
    - `Business rules`: every BR the behaviour enforces: the `rules:` of the UCs whose steps it
      serves, plus each BR those UCs cite in prose for that step. One BR per line, plain text.
    - Add the row `| <Feature> | [<f>.md](<f>.md) |` to `functional-spec/README.md`.
 4. **Move each UC into `docs/USE_CASES.md`** under `## <Feature>`: heading
    `### <UC id> — <frontmatter title>`; meta line with the same `Status` and `Code`, and
-   `Invokes:` listing its FNs. Copy the four sub-sections, demoted to `####`, verbatim except:
+   `Invokes:` listing its FNs. Copy the four sub-sections, demoted to `####`, at the level of user
+   intent (spec R20): keep the goal, the semantic flow and the FN ids; take out every control,
+   layout, dialog, FAB, button, inline-vs-snackbar and state-presentation detail. That detail goes
+   to the screen spec of its screen; when that spec is not written yet, its ledger row is
+   `pending → <SCR id> (<what>)`, with the SCR id of the Phase D table. Otherwise copy verbatim
+   except:
    - a system step that performs a behaviour becomes "Hệ thống thực hiện FN-…." (keep the
      user-facing outcome sentence if it says more);
    - every BR citation is removed from the UC (R13); its rule must be on the FN that step
@@ -3066,7 +3073,8 @@ routes); the FNs of Phase B; the feature's `ui.md`; `DESIGN.md`.
    Read the screen's controller to find which use case each control calls; write
    `- Invokes: <FN id>` for the FN whose `Code` holds that use case. `Enabled when` only for UI
    conditions. `#### On success`: `- Navigate to: <SCR id>` for a push to another screen of the
-   app, or the UI response. `#### On failure`: each failure type the controller maps → its
+   app (a screen without a spec yet uses its Phase D id, listed `pending` in the catalog — spec
+   R19), or the UI response. `#### On failure`: each failure type the controller maps → its
    presentation (read the error mapping in the controller or its state class).
 7. `## Responsive Behavior`, `## Accessibility`: what the record or code does specially;
    otherwise "Follows the shared floor (DESIGN.md, SCREEN_CATALOG.md)".
@@ -3076,8 +3084,10 @@ routes); the FNs of Phase B; the feature's `ui.md`; `DESIGN.md`.
 9. `## Copy`: the record's copy table, verbatim.
 10. `## Rulings`: the record's rulings, verbatim and dated, BR citations removed (R13: name the
     FN instead, or drop the parenthetical); `## Pending` items appended as `Pending — <item>`.
-11. Add the screen's row to `docs/screens/SCREEN_CATALOG.md` (same name, domain, routes in
-    backticks, status, and the spec path in backticks).
+11. Replace the screen's `pending` row in `docs/screens/SCREEN_CATALOG.md` by its real row (same
+    name, domain, routes in backticks, status, and the spec path in backticks).
+11a. Move into the spec every UC presentation detail ledgered `pending → <this SCR id>`, then set
+    those ledger rows to `moved → \`screens/spec/<file>\``.
 12. Fill the ledger: every row of the record (`moved → \`screens/spec/<file>\``, or
     `superseded → <SCR id>` for rows the spec restates in another form), each of its goldens
     (`superseded → <SCR id> \`<state_key>\` <variant>`), and the `## UI` rows of the UC files

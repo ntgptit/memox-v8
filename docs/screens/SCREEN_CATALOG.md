@@ -9,6 +9,39 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 | ID | Screen | Domain | Route | Status | Spec |
 |---|---|---|---|---|---|
 | SCR-DECK-001 | Deck list | deck | `/decks`, `/decks/deck/:deckId` | ready | `spec/SCR-DECK-001-deck-list.md` |
+| SCR-SRS-001 | Review algorithm & reset | srs | — | pending | — |
+| SCR-STARTER-001 | Starter decks | starter-decks | — | pending | — |
+| SCR-SEARCH-001 | Library search | search | — | pending | — |
+| SCR-TAG-001 | Tags | tags | — | pending | — |
+| SCR-TRASH-001 | Trash | trash | — | pending | — |
+| SCR-CARD-001 | Card list | card | — | pending | — |
+| SCR-CARD-002 | Card create | card | — | pending | — |
+| SCR-CARD-003 | Card edit | card | — | pending | — |
+| SCR-CARD-004 | Card detail | card | — | pending | — |
+| SCR-TRANSFER-001 | Card import | transfer | — | pending | — |
+| SCR-TRANSFER-002 | Card export | transfer | — | pending | — |
+| SCR-STUDY-001 | Study home | study | — | pending | — |
+| SCR-STUDY-002 | Study entry | study | — | pending | — |
+| SCR-STUDY-003 | Study · Browse | study | — | pending | — |
+| SCR-STUDY-004 | Study · Self-assess | study | — | pending | — |
+| SCR-STUDY-005 | Study · Match | study | — | pending | — |
+| SCR-STUDY-006 | Study · Guess | study | — | pending | — |
+| SCR-STUDY-007 | Study · Recall | study | — | pending | — |
+| SCR-STUDY-008 | Study · Fill | study | — | pending | — |
+| SCR-STUDY-009 | Session summary | study | — | pending | — |
+| SCR-SETTINGS-001 | Study options | settings | — | pending | — |
+| SCR-SETTINGS-002 | Settings | settings | — | pending | — |
+| SCR-SETTINGS-003 | Theme | settings | — | pending | — |
+| SCR-SETTINGS-004 | Language | settings | — | pending | — |
+| SCR-PROGRESS-001 | Progress | progress | — | pending | — |
+| SCR-REMINDER-001 | Daily reminder | reminders | — | pending | — |
+| SCR-ACCOUNT-001 | Sync | account | — | pending | — |
+| SCR-ACCOUNT-002 | Welcome | account | — | pending | — |
+| SCR-ACCOUNT-003 | Sign-in, the merge sheet and the transition layer | account | — | pending | — |
+| SCR-ACCOUNT-004 | Code | account | — | pending | — |
+| SCR-ACCOUNT-005 | Account | account | — | pending | — |
+| SCR-ACCOUNT-006 | Users (admin) | account | — | pending | — |
+| SCR-MONITORING-001 | Monitoring | monitoring | — | pending | — |
 
 ## Invariants for every screen
 

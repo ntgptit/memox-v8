@@ -109,6 +109,20 @@ Rulings from the first spec review:
 - **R18 — Nothing old is deleted before migration verification** proves that no information
   was lost (§7.1). This holds for the old documents and for the old UI code and goldens.
 
+Rulings from the deck pilot checkpoint (2026-10-04):
+
+- **R19 — A screen without a spec has a machine-readable id.** It is a row of
+  `SCREEN_CATALOG.md` with status `pending` (Route and Spec `—`). Its SCR id is defined; a
+  `Navigate to:` it is a WARNING until its spec exists. No "screen NN" placeholder is canonical.
+- **R20 — A UC holds user intent, the semantic flow and FN ids only.** Controls, layout, dialogs,
+  FAB, buttons, inline-vs-snackbar errors and state presentation live in the screen spec. When
+  that spec is not written yet, the ledger row says `pending → <SCR id> (…)`; a UC is never
+  their long-term home.
+- **R21 — An FN may cite another FN** as a contract prerequisite or a capability of another
+  domain, never to describe an implementation call graph.
+- **R22 — The order of the move checks follows the code** (`DeckEntity.checkMove`): depth before
+  scheduler and generation.
+
 ## 3. Scope and decomposition
 
 The rebuild is three sub-projects, each with its own spec, plan and execution:
@@ -335,7 +349,7 @@ in it is an ERROR.
 | Document | May cite | Canonical relation it declares |
 |---|---|---|
 | `USE_CASES.md` | FN | `UC → FN` (`Invokes:`) |
-| `functional-spec/*.md` | BR | `FN → BR` (`### Business rules`) |
+| `functional-spec/*.md` | BR, FN (contract prerequisite, R21) | `FN → BR` (`### Business rules`) |
 | `screens/spec/*` | FN, UC, SCR, INV-UI | `SCREEN → FN`, `SCREEN → UC`, `SCREEN → SCREEN` |
 | `SCREEN_CATALOG.md` | SCR | catalog rows |
 | `NAVIGATION.md` | SCR, UC | router edges |
