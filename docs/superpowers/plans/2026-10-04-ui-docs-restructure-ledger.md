@@ -2583,53 +2583,53 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:2` id: UC-STARTER-001 |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:3` title: Khởi động lần đầu và chọn starter deck |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:4` status: ready |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:5` rules: [BR-CARD-004, BR-DECK-002, BR-STARTER-001, BR-STARTER-002, BR-STARTER-003 |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:6` code: [lib/features/starter_decks/domain/usecases/watch_starter_library_use_case |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:10` **Phạm vi:** Starter library, phần store (BE-B4, [spec](../../../superpowers/spe |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:13` **Actor:** Người dùng mới cài app |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:17` ## Main flow |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:19` **Main flow:** |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:20` 1. Người dùng mở app. |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:21` 2. Hệ thống khởi tạo database. |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:22` 3. Người dùng thấy màn hình chưa có deck, kèm hai lối đi: **chọn từ thư viện |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:24` 4. Người dùng mở thư viện starter deck. |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:25` 5. Hệ thống đọc manifest template và hiện danh sách: tên, số card, ngôn ngữ, |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:28` 6. Người dùng chọn một starter deck. |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:29` 7. Hệ thống hỏi **chế độ ôn tập** cho bản sao, gợi ý sẵn `default_scheduler_type |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:31` 8. Hệ thống **tạo bản sao** trong một transaction (BR-STARTER-009): root deck mớ |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:35` 9. Bản sao xuất hiện trong danh sách deck. Toàn bộ card là thẻ **chưa học** |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:38` 10. Người dùng bấm Study và bắt đầu phiên **học mới** ngay. |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:40` ## Alternative / Error flow |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:42` **Alternative flows:** |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:43` - **A1 — Bỏ qua thư viện, tự tạo deck:** đi thẳng UC-DECK-001. |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:44` - **A2 — Đã có bản sao từ đúng template và version đó:** hỏi xác nhận, nêu rõ đã |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:47` - **A3 — Cập nhật app có template mới hoặc version mới:** template mới xuất hiện |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:49` - **A4 — Người dùng đã xoá bản sao:** template vẫn còn trong thư viện, lấy lại |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:52` **Error flows:** |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:53` - **E1 — Không mở được database:** màn hình lỗi rõ ràng với hành động thử lại. |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:55` - **E2 — Manifest hỏng hoặc thiếu:** thư viện hiện empty state; app vẫn dùng bìn |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:57` - **E3 — Một file template hỏng:** bỏ qua đúng template đó, các template khác vẫ |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:59` - **E4 — Sao chép thất bại giữa chừng:** transaction rollback (BR-STARTER-009). |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:62` ## UI |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:64` **UI states:** initial · loading · loaded · empty · submitting · error |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:66` ## Local |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:68` **Postconditions:** |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:69` - Bản sao có `source_template_id`, `source_template_version`, `scheduler_type` đ |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:71` - Mọi deck trong bản sao có `root_id` trỏ đúng root mới (BR-DECK-002). |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:72` - Mỗi card có đúng một study state khởi tạo theo scheduler đó. |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:74` ## API |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:76` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:78` ## Acceptance criteria |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:80` - [ ] **Given** thư viện starter có template "English → Vietnamese · Everyday" v |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:81` - [ ] **Given** đã có một bản sao của đúng template và version đó nằm ngoài Tras |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:82` - [ ] **Given** bản sao duy nhất của một template nằm trong Trash, **when** ngườ |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:83` - [ ] **Given** bản app mới nâng version của một template đã có bản sao, **when* |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:84` - [ ] **Given** manifest thiếu hoặc hỏng, **when** mở thư viện, **then** thư việ |  |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:85` - [ ] **Given** một lần ghi thất bại giữa chừng khi sao chép, **when** thêm temp |  |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:2` id: UC-STARTER-001 | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:3` title: Khởi động lần đầu và chọn starter deck | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:5` rules: [BR-CARD-004, BR-DECK-002, BR-STARTER-001, BR-STARTER-002, BR-STARTER-003 | superseded → FN-STARTER-001 + FN-STARTER-002 (Business rules) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:6` code: [lib/features/starter_decks/domain/usecases/watch_starter_library_use_case | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:10` **Phạm vi:** Starter library, phần store (BE-B4, [spec](../../../superpowers/spe | dropped — history of how the work was split (BE-B4, FE-B4); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:13` **Actor:** Người dùng mới cài app | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:17` ## Main flow | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:19` **Main flow:** | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:20` 1. Người dùng mở app. | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:21` 2. Hệ thống khởi tạo database. | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:22` 3. Người dùng thấy màn hình chưa có deck, kèm hai lối đi: **chọn từ thư viện | superseded → UC-STARTER-001 step 3 (intent) + SCR-DECK-001 (root_empty: Create deck, Browse starter decks) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:24` 4. Người dùng mở thư viện starter deck. | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:25` 5. Hệ thống đọc manifest template và hiện danh sách: tên, số card, ngôn ngữ, | pending → SCR-STARTER-001 (each template card: name, card count, languages, content source; the fixture note); intent kept in UC-STARTER-001 step 5 + FN-STARTER-001 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:28` 6. Người dùng chọn một starter deck. | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:29` 7. Hệ thống hỏi **chế độ ôn tập** cho bản sao, gợi ý sẵn `default_scheduler_type | pending → SCR-STARTER-001 (the add sheet with the template's scheduler preselected); intent kept in UC-STARTER-001 step 7 + FN-STARTER-002 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:31` 8. Hệ thống **tạo bản sao** trong một transaction (BR-STARTER-009): root deck mớ | superseded → FN-STARTER-002 (one transaction: root, sub-decks in template order, cards, study states) + UC-STARTER-001 step 8 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:35` 9. Bản sao xuất hiện trong danh sách deck. Toàn bộ card là thẻ **chưa học** | superseded → UC-STARTER-001 step 9 (intent) + SCR-DECK-001 (the deck row workload; the presentation gap is recorded there) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:38` 10. Người dùng bấm Study và bắt đầu phiên **học mới** ngay. | superseded → UC-STARTER-001 step 10 (intent); Study on a deck → SCR-DECK-001 Navigate to SCR-STUDY-002 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:40` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:42` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:43` - **A1 — Bỏ qua thư viện, tự tạo deck:** đi thẳng UC-DECK-001. | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:44` - **A2 — Đã có bản sao từ đúng template và version đó:** hỏi xác nhận, nêu rõ đã | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:47` - **A3 — Cập nhật app có template mới hoặc version mới:** template mới xuất hiện | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:49` - **A4 — Người dùng đã xoá bản sao:** template vẫn còn trong thư viện, lấy lại | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:52` **Error flows:** | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:53` - **E1 — Không mở được database:** màn hình lỗi rõ ràng với hành động thử lại. | superseded → UC-STARTER-001 E1 (intent); the startup failure face goes to NAVIGATION.md (app shell) in Task 42 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:55` - **E2 — Manifest hỏng hoặc thiếu:** thư viện hiện empty state; app vẫn dùng bìn | pending → SCR-STARTER-001 (the empty library state; manual deck creation still works); intent kept in UC-STARTER-001 E2 + FN-STARTER-001 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:57` - **E3 — Một file template hỏng:** bỏ qua đúng template đó, các template khác vẫ | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:59` - **E4 — Sao chép thất bại giữa chừng:** transaction rollback (BR-STARTER-009). | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:62` ## UI | pending → SCR-STARTER-001 (states initial · loading · loaded · empty · submitting · error) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:64` **UI states:** initial · loading · loaded · empty · submitting · error | pending → SCR-STARTER-001 (states initial · loading · loaded · empty · submitting · error) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:66` ## Local | superseded → FN-STARTER-002 (Kết quả) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:68` **Postconditions:** | superseded → FN-STARTER-002 (Kết quả) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:69` - Bản sao có `source_template_id`, `source_template_version`, `scheduler_type` đ | superseded → FN-STARTER-002 (Kết quả) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:71` - Mọi deck trong bản sao có `root_id` trỏ đúng root mới (BR-DECK-002). | superseded → FN-STARTER-002 (Kết quả) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:72` - Mỗi card có đúng một study state khởi tạo theo scheduler đó. | superseded → FN-STARTER-002 (Kết quả) |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:74` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:76` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:78` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:80` - [ ] **Given** thư viện starter có template "English → Vietnamese · Everyday" v | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:81` - [ ] **Given** đã có một bản sao của đúng template và version đó nằm ngoài Tras | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:82` - [ ] **Given** bản sao duy nhất của một template nằm trong Trash, **when** ngườ | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:83` - [ ] **Given** bản app mới nâng version của một template đã có bản sao, **when* | moved → `USE_CASES.md` |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:84` - [ ] **Given** manifest thiếu hoặc hỏng, **when** mở thư viện, **then** thư việ | pending → SCR-STARTER-001 (presentation of the criterion); intent kept in UC-STARTER-001 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:85` - [ ] **Given** một lần ghi thất bại giữa chừng khi sao chép, **when** thêm temp | moved → `USE_CASES.md` |
 
 ## features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md
 
@@ -3191,15 +3191,15 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/starter-decks/ui.md:1` # Starter decks — UI |  |
-| `features/starter-decks/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên |  |
-| `features/starter-decks/ui.md:5` ## Màn hình và điều hướng |  |
-| `features/starter-decks/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| |  |
-| `features/starter-decks/ui.md:9` \| 03 · Starter decks \| `/decks/starter`, toàn màn hình trên root navigator, khôn |  |
-| `features/starter-decks/ui.md:11` Open trên toast "Added" đi tới deck gốc mới trong Thư viện; "Create a deck" (bản |  |
-| `features/starter-decks/ui.md:16` ## Edge case |  |
-| `features/starter-decks/ui.md:18` \| Case \| Expected behaviour \| |  |
-| `features/starter-decks/ui.md:20` \| Mở app lần đầu \| Hiện thư viện starter deck để chọn (UC-STARTER-001). Không tự |  |
+| `features/starter-decks/ui.md:1` # Starter decks — UI | superseded → UC-STARTER-001 + FN-STARTER-001 + FN-STARTER-002; per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/starter-decks/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên | superseded → UC-STARTER-001 + FN-STARTER-001 + FN-STARTER-002; per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/starter-decks/ui.md:5` ## Màn hình và điều hướng | pending → SCR-STARTER-001 (route and where it opens from, with NAVIGATION.md) |
+| `features/starter-decks/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | pending → SCR-STARTER-001 (route and where it opens from, with NAVIGATION.md) |
+| `features/starter-decks/ui.md:9` \| 03 · Starter decks \| `/decks/starter`, toàn màn hình trên root navigator, khôn | pending → SCR-STARTER-001 (route /decks/starter, full screen on the root navigator, no bottom bar; opened from Starter decks on the Library app bar and from Browse starter decks on the empty Library) |
+| `features/starter-decks/ui.md:11` Open trên toast "Added" đi tới deck gốc mới trong Thư viện; "Create a deck" (bản | pending → SCR-STARTER-001 (Open on the "Added" toast navigates to the new root in SCR-DECK-001; "Create a deck" in a build without templates returns to SCR-DECK-001 and opens its create dialog) |
+| `features/starter-decks/ui.md:16` ## Edge case | superseded → UC-STARTER-001 (first launch) + FN-STARTER-001 (nothing is inserted on its own) |
+| `features/starter-decks/ui.md:18` \| Case \| Expected behaviour \| | superseded → UC-STARTER-001 (first launch) + FN-STARTER-001 (nothing is inserted on its own) |
+| `features/starter-decks/ui.md:20` \| Mở app lần đầu \| Hiện thư viện starter deck để chọn (UC-STARTER-001). Không tự | superseded → UC-STARTER-001 steps 1–5 (the empty library offers the starter library; nothing is inserted into the person's data) + FN-STARTER-001 |
 
 ## features/study/ui.md
 
@@ -4247,3 +4247,15 @@ build_export 005, share_export 006.
   added", deck unchanged) is a result, not an error.
 - Transfer has no ui.md; the import screen is SCR-TRANSFER-001 and the export sheet SCR-TRANSFER-002.
 - Warning delta: 39 → 41 = +2 migrated legacy UC files. Every BR-TRANSFER is cited by an FN.
+
+## Task 24 notes — starter-decks
+
+watch_starter_library FN-STARTER-001, add_starter_deck FN-STARTER-002. UC-STARTER-001 A1 invokes
+FN-DECK-001.
+
+- The empty Library's two ways (create, browse starters) already live in SCR-DECK-001 `root_empty`,
+  so those ledger rows are superseded by it, not pending.
+- UC-STARTER-001 E1 (the database cannot open at start) is an app-shell face: it goes to
+  NAVIGATION.md in Task 42. The Welcome screen that account builds show first is SCR-ACCOUNT-002
+  (Task 25).
+- Warning delta: 41 → 42 = +1 migrated legacy UC file. Every BR-STARTER is cited by an FN.

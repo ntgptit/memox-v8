@@ -1377,3 +1377,60 @@ tập chọn không rỗng.
 - [ ] **Given** một tập chọn có một card đã bị xoá hoặc đã chuyển deck, **when** export, **then** cả yêu cầu thất bại và không có file (E6).
 - [ ] **Given** bất kỳ lần export nào, **when** export xong hoặc thất bại, **then** database không đổi.
 - [ ] **Given** người dùng thoát bảng chia sẻ, **when** việc chia sẻ trả về, **then** đó là huỷ, không phải lỗi, và app không nói file đã được lưu (A3).
+
+## Starter decks
+
+### UC-STARTER-001 — Khởi động lần đầu và chọn starter deck
+Status: ready · Code: [lib/features/starter_decks/domain/usecases/watch_starter_library_use_case.dart, lib/features/starter_decks/domain/usecases/add_starter_deck_use_case.dart] · Invokes: [FN-STARTER-001, FN-STARTER-002, FN-DECK-001]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng mới cài app
+**Mục tiêu:** Có thứ để học ngay ở lần đầu mở app, bằng cách lấy một bộ thẻ có sẵn làm deck của
+riêng mình — hoặc tự tạo deck đầu tiên.
+**Preconditions:** Chưa có deck nào.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng mở app lần đầu.
+2. Dữ liệu của app được khởi tạo.
+3. Người dùng biết thư viện còn trống, và có hai lối: chọn một starter deck, hoặc tự tạo deck mới.
+4. Người dùng muốn xem các starter deck.
+5. Hệ thống thực hiện FN-STARTER-001: người dùng biết mỗi template — tên, số card, ngôn ngữ, nguồn
+   nội dung — và biết nội dung starter là fixture cho development và test.
+6. Người dùng chọn một starter deck.
+7. Người dùng chọn chế độ ôn tập cho bản sao; chế độ của template được gợi ý sẵn.
+8. Hệ thống thực hiện FN-STARTER-002: bản sao được tạo trọn vẹn, cùng lúc.
+9. Bản sao có mặt trong thư viện. Mọi card của nó đều chưa học, nên deck có thẻ mới để học chứ chưa
+   có thẻ đến hạn.
+10. Người dùng bắt đầu một phiên học mới ngay.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Bỏ qua thư viện, tự tạo deck:** hệ thống thực hiện FN-DECK-001.
+- **A2 — Đã có bản sao từ đúng template và version đó:** người dùng biết nó đã có và xác nhận nếu
+  vẫn muốn thêm. Đồng ý thì một bản sao thứ hai được tạo — một lựa chọn có ý thức, khác hẳn việc app
+  tự tạo trùng.
+- **A3 — Cập nhật app có template mới hoặc version mới:** template mới có mặt trong thư viện starter.
+  Bản sao đã có **không** bị đụng tới.
+- **A4 — Người dùng đã xoá bản sao:** template vẫn còn trong thư viện starter và lấy lại được, không
+  cần xác nhận.
+
+**Error flows:**
+- **E1 — Không mở được dữ liệu của app:** người dùng được báo lỗi rõ ràng và thử lại được — không bao
+  giờ là một màn trắng, vì màn trắng không phân biệt được với treo.
+- **E2 — Danh mục template hỏng hoặc thiếu:** thư viện starter rỗng; app vẫn dùng bình thường với việc
+  tự tạo deck.
+- **E3 — Một template hỏng:** chỉ template đó vắng mặt, các template khác vẫn có.
+- **E4 — Sao chép thất bại giữa chừng:** không gì được ghi; không có cây deck nửa vời.
+
+#### Acceptance criteria
+
+- [ ] **Given** thư viện starter có template "English → Vietnamese · Everyday" và chưa có bản sao nào của nó, **when** người dùng thêm nó với SM-2, **then** có một root deck mới mang tên template, `source_template_id` và `source_template_version` của nó, `generation = 1`, `first_answered_at` NULL; bốn sub-deck theo đúng thứ tự; 40 card chưa học, mỗi card đúng một trạng thái học khởi tạo theo SM-2.
+- [ ] **Given** đã có một bản sao của đúng template và version đó nằm ngoài Trash, **when** người dùng thêm lại mà không xác nhận, **then** không gì được ghi và lý do là `alreadyInLibrary`; khi người dùng xác nhận thêm bản sao thứ hai, có một cây deck thứ hai độc lập (A2).
+- [ ] **Given** bản sao duy nhất của một template nằm trong Trash, **when** người dùng thêm template đó, **then** một bản sao mới được tạo mà không hỏi (A4).
+- [ ] **Given** bản app mới nâng version của một template đã có bản sao, **when** người dùng xem thư viện starter, **then** template được coi là chưa có, và thêm nó không đụng bản sao của version cũ (A3).
+- [ ] **Given** danh mục template thiếu hoặc hỏng, **when** người dùng xem thư viện starter, **then** nó rỗng; **given** một file template hỏng, **then** chỉ template đó vắng mặt (E2, E3).
+- [ ] **Given** một lần ghi thất bại giữa chừng khi sao chép, **when** thêm template, **then** không root, deck, card hay trạng thái học nào được ghi (E4).

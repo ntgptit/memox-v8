@@ -53,7 +53,7 @@ Chưa có tài liệu.
 | [BR-CARD-001](../features/card/rules/BR-CARD-001-hai-mat-khong-rong.md) | Card có hai mặt không rỗng | active | Card có mặt trước và mặt sau, đều không rỗng sau trim. | FN-CARD-002, FN-CARD-003, FN-TRANSFER-002 |
 | [BR-CARD-002](../features/card/rules/BR-CARD-002-gioi-han-do-dai-hai-mat.md) | Giới hạn độ dài hai mặt | active | Mặt trước tối đa 60 ký tự, mặt sau tối đa 240 ký tự, đo sau trim. | FN-CARD-002, FN-CARD-003, FN-TRANSFER-002 |
 | [BR-CARD-003](../features/card/rules/BR-CARD-003-ba-truong-phu-tuy-chon.md) | Ba trường phụ tuỳ chọn | active | Card có thể có ví dụ, gợi ý và phiên âm, mỗi trường tối đa 240 ký tự sau trim. | FN-CARD-002, FN-CARD-003, FN-CARD-013, FN-TRANSFER-002 |
-| [BR-CARD-004](../features/card/rules/BR-CARD-004-tao-card-tao-study-state.md) | Tạo card tạo study state | active | Tạo card đồng thời tạo study state theo scheduler và `generation` của root, `due_at = NULL`. | FN-CARD-002, FN-SRS-002, FN-TRANSFER-002, UC-STARTER-001 |
+| [BR-CARD-004](../features/card/rules/BR-CARD-004-tao-card-tao-study-state.md) | Tạo card tạo study state | active | Tạo card đồng thời tạo study state theo scheduler và `generation` của root, `due_at = NULL`. | FN-CARD-002, FN-SRS-002, FN-STARTER-002, FN-TRANSFER-002 |
 | [BR-CARD-005](../features/card/rules/BR-CARD-005-sua-noi-dung-khong-dung-study-state.md) | Sửa nội dung không đụng study state | active | Sửa nội dung card không đụng study state hay study answers. | FN-CARD-003 |
 | [BR-CARD-006](../features/card/rules/BR-CARD-006-bon-trang-thai-hien-thi.md) | Bốn trạng thái hiển thị của thẻ | active | Trạng thái hiển thị là `new`, `beginning`, `reviewing` hoặc `mastered`, suy ra khi đọc, không lưu cột. | FN-CARD-001, FN-CARD-013 |
 | [BR-CARD-007](../features/card/rules/BR-CARD-007-the-chua-hoc-xong-la-new.md) | Thẻ chưa học xong lần đầu là new | active | Thẻ `learned_at IS NULL` là `new` ở cả hai thuật toán, không suy từ `answer_count`. | FN-CARD-001, FN-CARD-013 |
@@ -104,7 +104,7 @@ Chưa có tài liệu.
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
 | [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | FN-DECK-006, FN-DECK-008, FN-DECK-009, FN-DECK-010, FN-DECK-011, FN-TRASH-003, FN-TRASH-005 |
-| [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | FN-DECK-001, FN-DECK-007, FN-DECK-009, FN-DECK-011, FN-DECK-012, UC-STARTER-001 |
+| [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | FN-DECK-001, FN-DECK-007, FN-DECK-009, FN-DECK-011, FN-DECK-012, FN-STARTER-002 |
 | [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | FN-DECK-007, FN-PROGRESS-002, FN-SEARCH-001 |
 | [BR-DECK-004](../features/deck/rules/BR-DECK-004-root-deck-chi-chua-deck-con.md) | Root deck chỉ chứa deck con | active | Root deck chỉ chứa deck con, không chứa card trực tiếp. | FN-CARD-002, FN-DECK-001, FN-DECK-005, FN-DECK-008, FN-TRANSFER-003 |
 | [BR-DECK-005](../features/deck/rules/BR-DECK-005-create-o-root-chi-co-create-deck.md) | Create ở root deck chỉ có Create deck | active | Nút Create tại root deck chỉ có một lựa chọn: Create deck. | FN-DECK-008 |
@@ -135,7 +135,7 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-DECK-001](../functional-spec/deck.md) | Tạo root deck | active | SCR-DECK-001, UC-DECK-001 |
+| [FN-DECK-001](../functional-spec/deck.md) | Tạo root deck | active | SCR-DECK-001, UC-DECK-001, UC-STARTER-001 |
 | [FN-DECK-002](../functional-spec/deck.md) | Đổi tên deck | active | SCR-DECK-001, UC-DECK-002 |
 | [FN-DECK-003](../functional-spec/deck.md) | Đổi chế độ ôn tập của root deck | active | UC-DECK-002 |
 | [FN-DECK-004](../functional-spec/deck.md) | Xem số deck con và card sẽ vào Trash cùng deck | active | SCR-DECK-001, UC-DECK-002 |
@@ -363,22 +363,29 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-STARTER-001](../features/starter-decks/rules/BR-STARTER-001-starter-deck-la-template.md) | Starter deck là template | active | Starter deck là template, không xuất hiện trong danh sách deck và không ôn trực tiếp được. | UC-STARTER-001 |
-| [BR-STARTER-002](../features/starter-decks/rules/BR-STARTER-002-template-id-on-dinh.md) | template_id ổn định | active | Template có `template_id` ổn định giữa các phiên bản app, kèm `version`, `locale`, `title`, `content_source`. | UC-STARTER-001 |
-| [BR-STARTER-003](../features/starter-decks/rules/BR-STARTER-003-dung-starter-deck-tao-ban-sao.md) | Dùng starter deck tạo bản sao | active | Dùng một starter deck tạo bản sao: root deck mới, cây con, card và study state theo scheduler đã chọn. | UC-STARTER-001 |
-| [BR-STARTER-004](../features/starter-decks/rules/BR-STARTER-004-ban-sao-ghi-nguon-template.md) | Bản sao ghi nguồn template | active | Bản sao ghi `source_template_id` và `source_template_version`; template chỉ gợi ý scheduler. | UC-STARTER-001 |
-| [BR-STARTER-005](../features/starter-decks/rules/BR-STARTER-005-ban-sao-la-deck-binh-thuong.md) | Bản sao là deck bình thường | active | Sau khi sao chép, bản sao là deck bình thường, không liên kết ghi ngược về template. | UC-STARTER-001 |
-| [BR-STARTER-006](../features/starter-decks/rules/BR-STARTER-006-nang-version-khong-ghi-de-ban-sao.md) | Nâng version không ghi đè bản sao | active | Nâng version template ở bản app mới không ghi đè, sửa hay xoá bản sao đã có. | UC-STARTER-001 |
-| [BR-STARTER-007](../features/starter-decks/rules/BR-STARTER-007-tao-ban-sao-idempotent.md) | Tạo bản sao idempotent | active | Tạo bản sao idempotent theo `(source_template_id, source_template_version)`. | UC-STARTER-001 |
-| [BR-STARTER-008](../features/starter-decks/rules/BR-STARTER-008-them-lai-can-xac-nhan.md) | Thêm lại cần xác nhận | active | Cố ý thêm lại cùng starter deck được phép nhưng cần xác nhận nêu rõ đã tồn tại. | UC-STARTER-001 |
-| [BR-STARTER-009](../features/starter-decks/rules/BR-STARTER-009-sao-chep-mot-transaction.md) | Sao chép trong một transaction | active | Toàn bộ việc sao chép nằm trong một transaction. | UC-STARTER-001 |
-| [BR-STARTER-010](../features/starter-decks/rules/BR-STARTER-010-noi-dung-starter-la-fixture.md) | Nội dung starter là fixture | active | Nội dung starter hiện tại được mô tả là fixture cho development và test, không phải nội dung production. | UC-STARTER-001 |
+| [BR-STARTER-001](../features/starter-decks/rules/BR-STARTER-001-starter-deck-la-template.md) | Starter deck là template | active | Starter deck là template, không xuất hiện trong danh sách deck và không ôn trực tiếp được. | FN-STARTER-001 |
+| [BR-STARTER-002](../features/starter-decks/rules/BR-STARTER-002-template-id-on-dinh.md) | template_id ổn định | active | Template có `template_id` ổn định giữa các phiên bản app, kèm `version`, `locale`, `title`, `content_source`. | FN-STARTER-001 |
+| [BR-STARTER-003](../features/starter-decks/rules/BR-STARTER-003-dung-starter-deck-tao-ban-sao.md) | Dùng starter deck tạo bản sao | active | Dùng một starter deck tạo bản sao: root deck mới, cây con, card và study state theo scheduler đã chọn. | FN-STARTER-002 |
+| [BR-STARTER-004](../features/starter-decks/rules/BR-STARTER-004-ban-sao-ghi-nguon-template.md) | Bản sao ghi nguồn template | active | Bản sao ghi `source_template_id` và `source_template_version`; template chỉ gợi ý scheduler. | FN-STARTER-002 |
+| [BR-STARTER-005](../features/starter-decks/rules/BR-STARTER-005-ban-sao-la-deck-binh-thuong.md) | Bản sao là deck bình thường | active | Sau khi sao chép, bản sao là deck bình thường, không liên kết ghi ngược về template. | FN-STARTER-002 |
+| [BR-STARTER-006](../features/starter-decks/rules/BR-STARTER-006-nang-version-khong-ghi-de-ban-sao.md) | Nâng version không ghi đè bản sao | active | Nâng version template ở bản app mới không ghi đè, sửa hay xoá bản sao đã có. | FN-STARTER-001, FN-STARTER-002 |
+| [BR-STARTER-007](../features/starter-decks/rules/BR-STARTER-007-tao-ban-sao-idempotent.md) | Tạo bản sao idempotent | active | Tạo bản sao idempotent theo `(source_template_id, source_template_version)`. | FN-STARTER-002 |
+| [BR-STARTER-008](../features/starter-decks/rules/BR-STARTER-008-them-lai-can-xac-nhan.md) | Thêm lại cần xác nhận | active | Cố ý thêm lại cùng starter deck được phép nhưng cần xác nhận nêu rõ đã tồn tại. | FN-STARTER-002 |
+| [BR-STARTER-009](../features/starter-decks/rules/BR-STARTER-009-sao-chep-mot-transaction.md) | Sao chép trong một transaction | active | Toàn bộ việc sao chép nằm trong một transaction. | FN-STARTER-002 |
+| [BR-STARTER-010](../features/starter-decks/rules/BR-STARTER-010-noi-dung-starter-la-fixture.md) | Nội dung starter là fixture | active | Nội dung starter hiện tại được mô tả là fixture cho development và test, không phải nội dung production. | FN-STARTER-001 |
+
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-STARTER-001](../functional-spec/starter-decks.md) | Xem thư viện starter | active | UC-STARTER-001 |
+| [FN-STARTER-002](../functional-spec/starter-decks.md) | Thêm một starter deck vào thư viện | active | UC-STARTER-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [UC-STARTER-001](../features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md) | Khởi động lần đầu và chọn starter deck | ready | — |
+| [UC-STARTER-001](../USE_CASES.md) | Khởi động lần đầu và chọn starter deck | ready | — |
 
 ## [study](../features/study/README.md)
 
@@ -462,7 +469,7 @@ Chưa có tài liệu.
 | [BR-STUDY-074](../features/study/rules/BR-STUDY-074-next-due-at-neo-00-00-dia-phuong.md) | next_due_at neo 00:00 địa phương | active | `next_due_at` rơi vào 00:00 giờ địa phương của ngày thứ N; lưu bằng UTC. | FN-PROGRESS-001, FN-PROGRESS-002, FN-REMINDER-004, FN-STUDY-001, FN-STUDY-005, FN-STUDY-012 |
 | [BR-STUDY-075](../features/study/rules/BR-STUDY-075-tab-study-doc-thu-vien-that.md) | Tab Study đọc thư viện thật | active | Tab Study đọc thư viện thật, không phụ thuộc deck id cố định, và không ghi database. | FN-STUDY-012 |
 | [BR-STUDY-076](../features/study/rules/BR-STUDY-076-study-home-liet-ke-root-deck.md) | Study Home liệt kê root deck | active | Study Home liệt kê root deck với workload toàn subtree, xếp theo ba khoá. | FN-STUDY-012 |
-| [BR-STUDY-077](../features/study/rules/BR-STUDY-077-study-home-ba-trang-thai.md) | Study Home ba trạng thái | active | Study Home phân biệt ba trạng thái đã tải, mỗi trạng thái một bước tiếp theo. | FN-STUDY-012, UC-STARTER-001 |
+| [BR-STUDY-077](../features/study/rules/BR-STUDY-077-study-home-ba-trang-thai.md) | Study Home ba trạng thái | active | Study Home phân biệt ba trạng thái đã tải, mỗi trạng thái một bước tiếp theo. | FN-STUDY-012 |
 
 ### Functions
 
