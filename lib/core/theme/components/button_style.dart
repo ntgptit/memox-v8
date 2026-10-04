@@ -30,6 +30,10 @@ enum MxButtonTone {
 
   /// A refusal or limit where nothing is lost: `warning` under `on-warning`.
   warning,
+
+  /// The action on an inverse surface (a snackbar's Undo): no fill, an
+  /// `inverse-primary` label.
+  inverse,
 }
 
 /// A button's geometry; the caller never passes a size or a padding.
@@ -73,6 +77,7 @@ ButtonStyle mxButtonStyle({
     MxButtonTone.destructive => (colors.error, colors.onError),
     MxButtonTone.dangerSoft => (colors.errorContainer, colors.onErrorContainer),
     MxButtonTone.warning => (semantic.warning, semantic.onWarning),
+    MxButtonTone.inverse => (Colors.transparent, colors.inversePrimary),
   };
   final BorderSide edge = tone == MxButtonTone.outline
       ? BorderSide(color: colors.outline, width: AppStroke.hairline)
@@ -111,4 +116,24 @@ ButtonStyle mxButtonStyle({
     splashFactory: InkRipple.splashFactory,
     alignment: Alignment.center,
   );
+}
+
+/// Whether [label] fits one line of a regular button [width] wide at the
+/// reader's text scale; footers that share a row stack when it does not.
+bool mxCanButtonLabelFit({
+  required TextTheme texts,
+  required String label,
+  required double width,
+  required TextScaler textScaler,
+}) {
+  final TextPainter painter = TextPainter(
+    text: TextSpan(text: label, style: texts.labelLarge),
+    textDirection: TextDirection.ltr,
+    textScaler: textScaler,
+    maxLines: 1,
+  )..layout();
+  final bool canFit =
+      painter.width <= width - 2 * MxButtonSize.regular.horizontalPadding;
+  painter.dispose();
+  return canFit;
 }

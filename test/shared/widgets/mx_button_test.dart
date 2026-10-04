@@ -39,6 +39,7 @@ void main() {
       MxButtonTone.destructive: (s.error, s.onError),
       MxButtonTone.dangerSoft: (s.errorContainer, s.onErrorContainer),
       MxButtonTone.warning: (x.warning, x.onWarning),
+      MxButtonTone.inverse: (Colors.transparent, s.inversePrimary),
     };
     for (final MapEntry(key: tone, value: (fill, content)) in pairs.entries) {
       testWidgets('$name: ${tone.name} paints its role pair', (tester) async {
@@ -227,5 +228,26 @@ void main() {
       (w) => w is CustomPaint && w.foregroundPainter != null,
     );
     expect(ring, findsOneWidget);
+  });
+
+  testWidgets('on an inverse surface the ring is inverse-primary', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxButton(label: 'Undo', tone: MxButtonTone.inverse, onPressed: () {}),
+    );
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(
+      find.byType(MxButton),
+      paints..rrect(color: mxThemes['light']!.colorScheme.inversePrimary),
+    );
   });
 }

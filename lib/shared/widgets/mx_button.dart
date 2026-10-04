@@ -86,6 +86,7 @@ class MxButton extends StatelessWidget {
     final Widget button = MxTapTarget(
       child: MxFocusRing(
         borderRadius: BorderRadius.circular(size.radius),
+        isOnInverse: tone == MxButtonTone.inverse,
         child: TextButton(
           style: style.copyWith(
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,

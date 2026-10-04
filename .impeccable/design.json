@@ -632,6 +632,30 @@
         "bg": "surface-container-highest",
         "min": 3.0,
         "use": "control edge"
+      },
+      {
+        "fg": "secondary",
+        "bg": "surface-container-low",
+        "min": 3.0,
+        "use": "the generic progress fill on its track"
+      },
+      {
+        "fg": "secondary",
+        "bg": "surface-container",
+        "min": 3.0,
+        "use": "the generic progress fill on its track"
+      },
+      {
+        "fg": "on-primary-container",
+        "bg": "warning-container",
+        "min": 4.5,
+        "use": "a banner's text action"
+      },
+      {
+        "fg": "on-primary-container",
+        "bg": "error-container",
+        "min": 4.5,
+        "use": "a banner's text action"
       }
     ],
     "opacity": {
@@ -746,7 +770,25 @@
       "spinner-medium": 20,
       "spinner-large": 32,
       "spinner-xlarge": 48,
-      "segment": 36
+      "segment": 36,
+      "icon-tile-small": 32,
+      "icon-tile-medium": 40,
+      "icon-tile-large": 48,
+      "badge": 24,
+      "tag-chip": 24,
+      "tag-chip-dense": 20,
+      "status-dot": 8,
+      "progress": 4,
+      "progress-thick": 8,
+      "empty-tile": 64,
+      "empty-tile-compact": 48,
+      "dialog-small": 300,
+      "dialog-medium": 320,
+      "dialog-large": 340,
+      "grabber-width": 32,
+      "grabber-height": 4,
+      "sheet-top-clearance": 72,
+      "sheet-max-width": 640
     }
   },
   "components": [

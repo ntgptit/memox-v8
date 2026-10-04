@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/components/button_style.dart';
 import 'package:memox/core/theme/components/field_style.dart';
 import 'package:memox/core/theme/components/icon_button_style.dart';
+import 'package:memox/core/theme/components/overlay_style.dart';
 import 'package:memox/core/theme/foundations/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
@@ -96,6 +97,10 @@ abstract final class AppTheme {
         selectionColor: scheme.primaryContainer,
         selectionHandleColor: scheme.onPrimaryContainer,
       ),
+      dialogTheme: mxDialogTheme(scheme, textTheme),
+      bottomSheetTheme: mxBottomSheetTheme(scheme),
+      snackBarTheme: mxSnackBarTheme(scheme, textTheme),
+      cardTheme: mxCardTheme(scheme),
     );
   }
 }

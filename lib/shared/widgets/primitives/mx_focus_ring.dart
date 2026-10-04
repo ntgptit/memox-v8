@@ -12,6 +12,7 @@ class MxFocusRing extends StatefulWidget {
     required this.borderRadius,
     required this.child,
     this.isShown,
+    this.isOnInverse = false,
     super.key,
   });
 
@@ -21,6 +22,10 @@ class MxFocusRing extends StatefulWidget {
   /// Set by a control that tracks its own focus highlight (one built on
   /// `FocusableActionDetector`); `null` lets the ring listen for itself.
   final bool? isShown;
+
+  /// On an inverse surface (a snackbar) the ring is `inverse-primary`, the
+  /// role that holds there; elsewhere it is the Indigo Accent.
+  final bool isOnInverse;
   final Widget child;
 
   @override
@@ -58,7 +63,9 @@ class _MxFocusRingState extends State<MxFocusRing> {
       child: CustomPaint(
         foregroundPainter: isVisible
             ? _RingPainter(
-                color: context.colors.onPrimaryContainer,
+                color: widget.isOnInverse
+                    ? context.colors.inversePrimary
+                    : context.colors.onPrimaryContainer,
                 borderRadius: widget.borderRadius,
               )
             : null,

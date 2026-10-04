@@ -25,4 +25,22 @@ abstract final class AppSize {
   static const double spinnerLarge = 32;
   static const double spinnerXlarge = 48;
   static const double segment = 36;
+  static const double iconTileSmall = 32;
+  static const double iconTileMedium = 40;
+  static const double iconTileLarge = 48;
+  static const double badge = 24;
+  static const double tagChip = 24;
+  static const double tagChipDense = 20;
+  static const double statusDot = 8;
+  static const double progress = 4;
+  static const double progressThick = 8;
+  static const double emptyTile = 64;
+  static const double emptyTileCompact = 48;
+  static const double dialogSmall = 300;
+  static const double dialogMedium = 320;
+  static const double dialogLarge = 340;
+  static const double grabberWidth = 32;
+  static const double grabberHeight = 4;
+  static const double sheetTopClearance = 72;
+  static const double sheetMaxWidth = 640;
 }

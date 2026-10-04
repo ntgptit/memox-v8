@@ -96,6 +96,25 @@ void main() {
         );
       });
 
+      test('the overlay and card slots match the Mx surfaces', () {
+        expect(theme.dialogTheme.backgroundColor, scheme.surfaceContainerHigh);
+        expect(theme.dialogTheme.elevation, 0);
+        expect(
+          theme.dialogTheme.barrierColor,
+          scheme.scrim.withValues(alpha: AppOpacity.scrim),
+        );
+        expect(
+          theme.bottomSheetTheme.modalBackgroundColor,
+          scheme.surfaceContainerHigh,
+        );
+        expect(theme.bottomSheetTheme.showDragHandle, isFalse);
+        expect(theme.snackBarTheme.backgroundColor, scheme.inverseSurface);
+        expect(theme.snackBarTheme.actionTextColor, scheme.inversePrimary);
+        expect(theme.snackBarTheme.behavior, SnackBarBehavior.floating);
+        expect(theme.cardTheme.color, scheme.surfaceContainerLowest);
+        expect(theme.cardTheme.elevation, 0);
+      });
+
       test('the FAB slot has no elevation in any state', () {
         final FloatingActionButtonThemeData fab =
             theme.floatingActionButtonTheme;
