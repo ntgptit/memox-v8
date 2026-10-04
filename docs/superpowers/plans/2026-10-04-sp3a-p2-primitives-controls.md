@@ -22,6 +22,7 @@
 - **No literal sizes or durations in `lib/shared/`.** No numeric spacing, radius, stroke or duration appears in `lib/shared/`; every value comes from the generated scales.
 - **Code style.** Booleans read as predicates (`isX`, `hasX`, `shouldX`), as the guard's `boolean_reads_as_predicate` requires. Code uses no `else` and returns early (owner's code style).
 - **Placement.** A public `Mx*` type lives at its catalog path, or carries a catalogued component's name as its prefix (`MxButtonTone`, `MxSegmentedTrayItem`).
+- **Goldens are full-HD** (decision 6): `mxGoldenPixelRatio = 2.625` on a 1080 × 2400 view; no test changes it.
 - **Goldens are generated in the Linux container only**, with `flutter test --update-goldens <file>` (CLAUDE.md, "The gate").
 - **Commit attribution.** Every commit ends with the two attribution lines of this session (as in Phase 1).
 
@@ -38,6 +39,8 @@
 3. **`MxStepper` has no typed entry yet.** It is recorded as `- Debt:` in its contract. SCR-SETTINGS-001, its first consumer, adds it in SP3c.
 4. **New primitives.** `MxFocusRing`, `MxTapTarget` and `MxChipShell` join `MxRowInk` as catalogued primitives. Each exists because two or more components share it.
 5. **Guard housekeeping.** The `targets_pending` entries of `widget_no_database_access`, `widget_no_repository_access` and `no_flat_style_from` are removed, because `lib/shared/widgets/` gives them targets. The guard reports them as stale otherwise.
+6. **Full-HD goldens** (owner, 2026-10-04: the DPR-1 pictures were blurred). The harness renders on a 1080 × 2400 physical screen at a device pixel ratio of 2.625, the density of a common 1080p Android phone, and captures the sheet with `RenderRepaintBoundary.toImage(pixelRatio: 2.625)`. The layout stays at 411 × 914 logical pixels, so geometry tests are unchanged.
+7. **A gallery of the shared widgets** (owner, 2026-10-04). `tools/design/gallery.py` reads the DESIGN.md catalog and contracts and writes one self-contained HTML page: each built component with its contract and its light and dark goldens side by side. It is published as an Artifact for the owner beside the `golden-compare` page, which stays the review of record.
 
 ## Review Focus
 
@@ -199,7 +202,10 @@ git commit -m "feat(sp3a-p2): icon sizes, component sizes and the theme accessor
 Create `test/shared/widgets/support/mx_harness.dart`:
 
 ```dart
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
 
@@ -228,6 +234,9 @@ Future<void> pumpMx(
   );
 }
 
+/// A full-HD phone's density: 1080 px across a 412 dp screen.
+const double mxGoldenPixelRatio = 2.625;
+
 /// The key of the picture a component golden captures.
 const Key mxGoldenKey = ValueKey<String>('mx-golden');
 
@@ -240,8 +249,10 @@ Future<void> expectMxGolden(
   required String variant,
   required Widget sheet,
 }) async {
-  tester.view.physicalSize = const Size(412, 900);
-  tester.view.devicePixelRatio = 1;
+  // A full-HD phone, 412 dp wide; the picture is rasterized at its density
+  // (below), so a golden is as sharp as the device it stands for.
+  tester.view.physicalSize = const Size(1080, 2400);
+  tester.view.devicePixelRatio = mxGoldenPixelRatio;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     MaterialApp(
@@ -262,8 +273,17 @@ Future<void> expectMxGolden(
     ),
   );
   await tester.pump();
-  await expectLater(
+  // `matchesGoldenFile` on a finder captures at 1 px per dp; rasterize the
+  // boundary at the device density instead and compare that picture.
+  final RenderRepaintBoundary boundary = tester.renderObject(
     find.byKey(mxGoldenKey),
+  );
+  final ui.Image picture = (await tester.runAsync(
+    () => boundary.toImage(pixelRatio: mxGoldenPixelRatio),
+  ))!;
+  addTearDown(picture.dispose);
+  await expectLater(
+    picture,
     matchesGoldenFile('goldens/mx_${component}__${state}__$variant.png'),
   );
 }
@@ -5105,6 +5125,7 @@ git commit -m "feat(sp3a-p2): MxFilterChip and MxChipTrigger on one chip shell"
 ### Task 10: Review, Impeccable, gate and sign-off
 
 **Files:**
+- Create: `tools/design/gallery.py`, `tools/design/test_gallery.py`
 - Modify (only if findings): the component, style or `DESIGN.md`, with the goldens it changes
 - Modify: `docs/wbs_FE.md`
 
@@ -5126,7 +5147,264 @@ Apply A10 to each finding. A token finding changes `DESIGN.md` first, then the v
 
 Build the before · after · diff page with the `golden-compare` skill for every added `mx_*` golden. All 32 are new, so the page shows "after" only. Give it to the owner before any approval (CLAUDE.md, "Golden review").
 
-- [ ] **Step 4: WBS, push and sign-off**
+- [ ] **Step 4: The shared-widget gallery**
+
+Write the failing test `tools/design/test_gallery.py`:
+
+```python
+"""Tests for tools/design/gallery.py:  python3 tools/design/test_gallery.py"""
+from __future__ import annotations
+
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import gallery  # noqa: E402
+
+DESIGN = """---
+name: X
+---
+
+## Components
+
+### Catalog
+
+| Component | Purpose | Layer | Consumers | Owner phase | Status |
+|---|---|---|---|---|---|
+| MxButton | An action | shared | DECK | SP3a | built |
+| MxCard | A surface | shared | DECK | SP3a | planned |
+| MxRowInk | A ripple | primitive | MxButton | SP3a | built |
+
+### Contracts
+
+#### MxButton
+- Variants: primary
+- States: enabled
+- Accessibility: 48 target
+- Tokens: primary
+- Golden: tones__light, tones__dark
+
+#### MxRowInk
+- Variants: one
+- States: one
+- Accessibility: none of its own
+- Tokens: splash
+- Golden: none — paints only the press
+
+## Do's and Don'ts
+"""
+
+PNG = bytes.fromhex("89504e470d0a1a0a0000000d4948445200000001000000010806000000")
+
+
+def tree(goldens: tuple[str, ...]) -> Path:
+    root = Path(tempfile.mkdtemp())
+    (root / "DESIGN.md").write_text(DESIGN, encoding="utf-8")
+    folder = root / gallery.GOLDENS
+    folder.mkdir(parents=True)
+    for name in goldens:
+        (folder / name).write_bytes(PNG)
+    return root
+
+
+class GalleryTest(unittest.TestCase):
+    def test_built_components_show_their_goldens_side_by_side(self):
+        page, problems = gallery.build(tree(("mx_button__tones__light.png", "mx_button__tones__dark.png")))
+        self.assertEqual(problems, [])
+        self.assertIn('<section id="mx_button">', page)
+        self.assertEqual(page.count("data:image/png;base64,"), 2)
+        self.assertIn("mx_button__tones__dark.png", page)
+        self.assertIn("<title>MemoX Mx Gallery</title>", page)
+
+    def test_planned_components_are_left_out(self):
+        page, _ = gallery.build(tree(("mx_button__tones__light.png", "mx_button__tones__dark.png")))
+        self.assertNotIn("MxCard", page)
+
+    def test_a_component_without_goldens_says_why(self):
+        page, _ = gallery.build(tree(("mx_button__tones__light.png", "mx_button__tones__dark.png")))
+        self.assertIn("none — paints only the press", page)
+
+    def test_a_missing_golden_is_reported(self):
+        _, problems = gallery.build(tree(("mx_button__tones__light.png",)))
+        self.assertEqual(problems, ["MxButton: mx_button__tones__dark.png is missing"])
+
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+Run: `python3 tools/design/test_gallery.py` → FAIL (`No module named 'gallery'`).
+
+Write `tools/design/gallery.py`:
+
+```python
+#!/usr/bin/env python3
+"""Build the shared-widget gallery: one HTML page of every catalogued component's
+`mx_*` goldens, light and dark side by side, with its catalog contract.
+
+    python3 tools/design/gallery.py --out <path.html>
+
+Run from the repository root. The page is self-contained (images inlined as
+data URIs) so it can be published as an Artifact for the owner's review
+(SP3a Phase 2, owner 2026-10-04). Exit code 1 when a `built` component lists a
+golden that does not exist.
+"""
+from __future__ import annotations
+
+import argparse
+import base64
+import html
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "docs"))
+import design_catalog as dc  # noqa: E402
+
+ROOT = Path.cwd()
+GOLDENS = Path("test/shared/widgets/goldens")
+VARIANTS = ("light", "dark")
+
+STYLE = """
+/* A review sheet, not a showcase: components down one column, each a header
+   row (name, layer, status) over its contract and its light/dark pictures. */
+:root {
+  --page: #F7F9FE; --raised: #FFFFFF; --muted: #F1F4FB; --ink: #0F1638;
+  --ink-2: #4A5278; --edge: #C5CBE3; --accent: #4151C6; --built: #1A6B48;
+  --font: "Plus Jakarta Sans", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --page: #0A0E27; --raised: #131A3A; --muted: #1B2249; --ink: #E4E8FA;
+  --ink-2: #ADB5D8; --edge: #2A3267; --accent: #AAB4FF; --built: #6FE0BD; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --page: #0A0E27; --raised: #131A3A; --muted: #1B2249; --ink: #E4E8FA;
+  --ink-2: #ADB5D8; --edge: #2A3267; --accent: #AAB4FF; --built: #6FE0BD; color-scheme: dark }
+body { background: var(--page); color: var(--ink); font: 15px/1.5 var(--font);
+  margin: 0; padding-inline: 16px; padding-block: 24px 48px; }
+main { max-width: 1120px; margin-inline: auto; display: grid; gap: 32px; }
+h1 { font-size: 28px; line-height: 1.2; letter-spacing: -0.5px; margin: 0; text-wrap: balance; }
+.lede { color: var(--ink-2); margin: 4px 0 0; max-width: 65ch; }
+nav { display: flex; flex-wrap: wrap; gap: 8px; }
+nav a { color: var(--ink); text-decoration: none; border: 1px solid var(--edge);
+  border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: 600; }
+nav a:hover, nav a:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+section { background: var(--raised); border: 1px solid var(--edge); border-radius: 12px;
+  padding: 20px; display: grid; gap: 16px; scroll-margin-top: 16px; min-width: 0; }
+.head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; }
+h2 { font-size: 20px; margin: 0; letter-spacing: -0.3px; }
+.tag { font-size: 12px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
+  color: var(--ink-2); }
+.tag.built { color: var(--built); }
+.purpose { color: var(--ink-2); margin: 0; }
+dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 16px; margin: 0; font-size: 14px; }
+dt { color: var(--ink-2); font-weight: 600; }
+dd { margin: 0; min-width: 0; }
+.state { display: grid; gap: 8px; }
+.state h3 { font-size: 13px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; margin: 0; color: var(--ink-2); }
+.pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+figure { margin: 0; display: grid; gap: 4px; min-width: 0; }
+figure img { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--edge); background: var(--muted); }
+figcaption { font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.none { color: var(--ink-2); font-size: 14px; margin: 0; }
+"""
+
+
+def data_uri(path: Path) -> str:
+    return "data:image/png;base64," + base64.b64encode(path.read_bytes()).decode("ascii")
+
+
+def states_of(goldens: list[str]) -> list[str]:
+    """`tones__light`, `tones__dark` → `tones`, in the contract's order."""
+    seen: list[str] = []
+    for golden in goldens:
+        state = golden.rsplit("__", 1)[0]
+        if state not in seen:
+            seen.append(state)
+    return seen
+
+
+def build(root: Path) -> tuple[str, list[str]]:
+    text = (root / dc.DESIGN_MD).read_text(encoding="utf-8")
+    entries, contracts = dc.parse(text)
+    shown = [e for e in entries if e.status in ("implementing", "built") and e.layer in ("primitive", "shared")]
+    problems: list[str] = []
+    sections: list[str] = []
+    for entry in shown:
+        contract = contracts.get(entry.name)
+        fields = contract.fields if contract else {}
+        rows = "".join(
+            f"<dt>{html.escape(key)}</dt><dd>{html.escape(fields[key])}</dd>"
+            for key in ("Variants", "States", "Accessibility", "Tokens", "Debt")
+            if key in fields
+        )
+        goldens = contract.goldens() if contract else []
+        pictures: list[str] = []
+        for state in states_of(goldens):
+            figures = []
+            for variant in VARIANTS:
+                name = f"{dc.snake(entry.name)}__{state}__{variant}.png"
+                path = root / GOLDENS / name
+                if not path.exists():
+                    problems.append(f"{entry.name}: {name} is missing")
+                    continue
+                figures.append(
+                    f'<figure><img src="{data_uri(path)}" alt="{html.escape(entry.name)}, {html.escape(state)}, {variant} theme" loading="lazy">'
+                    f"<figcaption>{html.escape(name)}</figcaption></figure>"
+                )
+            pictures.append(f'<div class="state"><h3>{html.escape(state.replace("_", " "))}</h3><div class="pair">{"".join(figures)}</div></div>')
+        if not pictures:
+            reason = fields.get("Golden", "none")
+            pictures.append(f'<p class="none">{html.escape(reason)}</p>')
+        anchor = dc.snake(entry.name)
+        sections.append(
+            f'<section id="{anchor}"><div class="head"><h2>{html.escape(entry.name)}</h2>'
+            f'<span class="tag">{html.escape(entry.layer)}</span>'
+            f'<span class="tag {html.escape(entry.status)}">{html.escape(entry.status)}</span></div>'
+            f'<p class="purpose">{html.escape(entry.purpose)}</p><dl>{rows}</dl>{"".join(pictures)}</section>'
+        )
+    nav = "".join(f'<a href="#{dc.snake(e.name)}">{html.escape(e.name)}</a>' for e in shown)
+    count = sum(1 for e in shown if e.status == "built")
+    page = f"""<title>MemoX Mx Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
+<style>{STYLE}</style>
+<main>
+<header><h1>MemoX Mx Gallery</h1>
+<p class="lede">{count} built components from the DESIGN.md catalog, each with its contract and its goldens in the light and dark themes. Pictures are the committed <code>mx_*</code> goldens at full-HD density.</p></header>
+<nav aria-label="Components">{nav}</nav>
+{"".join(sections)}
+</main>
+"""
+    return page, problems
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--out", type=Path, required=True)
+    args = parser.parse_args(argv)
+    page, problems = build(ROOT)
+    for problem in problems:
+        print(f"ERROR {problem}")
+    args.out.write_text(page, encoding="utf-8", newline="\n")
+    print(f"wrote {args.out}")
+    return 1 if problems else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+```
+
+Run: `python3 tools/design/test_gallery.py` → `OK` (4 tests).
+
+Run: `python3 tools/design/gallery.py --out <scratchpad>/mx-gallery.html` → `wrote …`, exit 0. Publish the page with the Artifact tool (icon `gallery`); republishing the same file keeps its link.
+
+```bash
+git add tools/design
+git commit -m "feat(sp3a-p2): shared-widget gallery from the goldens"
+```
+
+- [ ] **Step 5: WBS, push and sign-off**
 
 In `docs/wbs_FE.md`, set SP3a-P2 to `đang làm` with this plan's link and the evidence (tests, 32 goldens, gate). Then run `python3 tools/docs/generate.py` and `python3 tools/docs/check.py | tail -1` → `PASS`.
 
@@ -5137,4 +5415,4 @@ git commit -m "docs(wbs): SP3a Phase 2 ready for sign-off"
 
 Push: `git push -u origin claude/wonderful-ride-dnypk9`.
 
-Ask the owner for the Phase 2 sign-off through `AskUserQuestion`. Include the gate result, the golden review page link, the Impeccable findings and what was done with each, and the plan's decisions 1–5.
+Ask the owner for the Phase 2 sign-off through `AskUserQuestion`. Include the gate result, the golden review page link, the gallery link, the Impeccable findings and what was done with each, and the plan's decisions 1–7.
