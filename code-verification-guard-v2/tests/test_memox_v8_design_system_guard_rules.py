@@ -197,3 +197,25 @@ def test_no_text_restyle_leaves_the_hint_style_alone(tmp_path: Path) -> None:
     style: context.textStyles.inputHint,
     """
     assert not _violations(RESTYLE, tmp_path, good)
+
+
+COLOUR_LITERAL = "memox_v8.design_system.no_colour_literal_outside_generated"
+
+
+def test_no_colour_literal_outside_generated_goes_red_on_each_form(tmp_path: Path) -> None:
+    for bad in (
+        "final ink = Color(0xFF0F1638);",
+        "color: Colors.white,",
+        "final ink = Color.fromARGB(255, 15, 22, 56);",
+        "final ink = Color.fromRGBO(15, 22, 56, 1);",
+    ):
+        assert _violations(COLOUR_LITERAL, tmp_path, bad), bad
+
+
+def test_no_colour_literal_outside_generated_accepts_roles_and_prose(tmp_path: Path) -> None:
+    good = """
+    // Color(0xFF0F1638) was the ink; the role reads it now.
+    final ink = context.colors.onSurface;
+    final mixed = Color.lerp(ink, other, t);
+    """
+    assert not _violations(COLOUR_LITERAL, tmp_path, good)

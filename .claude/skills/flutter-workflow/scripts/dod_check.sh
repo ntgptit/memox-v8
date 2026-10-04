@@ -272,6 +272,17 @@ else
   FAILED+=("document gate unavailable: $DOCS_PY")
 fi
 
+# The DESIGN.md frontmatter is compiled into lib/core/theme/generated/ and
+# .impeccable/design.json (spec 2026-10-04-sp3a D13): a stale output, an
+# invalid source or a missed contrast floor fails here, before the commit.
+DESIGN_PY="$REPO_ROOT/tools/design/generate.py"
+if [[ -n "$PY" && -f "$DESIGN_PY" ]]; then
+  plan design "design values" \
+    "$PY '$DESIGN_PY' --check && $PY -m unittest discover -s '$REPO_ROOT/tools/design' -p 'test_*.py'"
+else
+  FAILED+=("design gate unavailable: $DESIGN_PY")
+fi
+
 # **The SDK on PATH is the SDK `.fvmrc` names.** Planned rather than run before
 # the stamp check, for the reason the stamp's own header gives: paying
 # `flutter --version` on every invocation costs most of what the stamp saves.

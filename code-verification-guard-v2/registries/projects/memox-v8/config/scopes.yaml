@@ -285,6 +285,17 @@ scopes:
   # The theme alone — where `ColorScheme` is constructed and the one place a
   # retired role could be handed a value. Product UI never builds a scheme, so
   # a rule about the scheme's argument list has nothing to say outside here.
+  # Where a colour literal is otherwise legal to the token rules: the
+  # composition root and core. lib/core/theme/generated/ is the one file
+  # allowed to hold one (spec 2026-10-04-sp3a D4, D13).
+  colour_literal_surfaces:
+    include:
+      - lib/main.dart
+      - lib/app/**/*.dart
+      - lib/core/**/*.dart
+    exclude:
+      - '**/*.g.dart'
+      - lib/core/theme/generated/**
   theme_files:
     include:
       - lib/core/theme/**/*.dart

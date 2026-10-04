@@ -380,3 +380,29 @@ rules:
     tags:
       - memox-v8
       - design-system
+
+  # SP3a (spec 2026-10-04-sp3a D4, D13): a colour exists as a literal in one
+  # file only, the one the generator writes from the DESIGN.md frontmatter.
+  # Feature and shared UI are already covered by
+  # memox.design_token.no_raw_color; this rule covers what that one leaves
+  # out on purpose, the composition root and core.
+  - id: memox_v8.design_system.no_colour_literal_outside_generated
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      A colour literal lives only in lib/core/theme/generated/design_values.dart,
+      which `python3 tools/design/generate.py` writes from the DESIGN.md
+      frontmatter. Read a colour role (`context.colors`) or a MemoX colour
+      (`context.semanticColors`, `context.derivedColors`) instead; a new colour
+      is added to DESIGN.md first.
+    scopes:
+      - colour_literal_surfaces
+    patterns:
+      - '^(?!\s*(?://|\*)).*\bColor\s*\(\s*0x[0-9a-fA-F]{6,8}\s*\)'
+      - '^(?!\s*(?://|\*)).*\bColors\s*\.\s*[a-z][A-Za-z0-9]*'
+      - '^(?!\s*(?://|\*)).*\bColor\s*\.\s*fromARGB\s*\('
+      - '^(?!\s*(?://|\*)).*\bColor\s*\.\s*fromRGBO\s*\('
+    tags:
+      - memox-v8
+      - design-system

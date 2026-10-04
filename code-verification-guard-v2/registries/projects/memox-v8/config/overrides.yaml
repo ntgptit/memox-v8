@@ -48,6 +48,8 @@ overrides:
         # drift's migration helpers. Committed because a released schema cannot
         # be regenerated once the source moves on, but nobody writes them.
         - test/drift/generated/**
+        # Written by tools/design/generate.py from DESIGN.md (spec 2026-10-04-sp3a P9).
+        - lib/core/theme/generated/**
         - lib/core/database/schema_versions.dart
       max_lines: 500
       count_mode: logical
@@ -65,6 +67,8 @@ overrides:
       count_mode: logical
       exclude:
         - test/drift/generated/**
+        # Written by tools/design/generate.py from DESIGN.md (spec 2026-10-04-sp3a P9).
+        - lib/core/theme/generated/**
         - lib/core/database/schema_versions.dart
     flutter.max_build_lines:
       count_mode: logical

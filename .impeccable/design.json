@@ -253,8 +253,8 @@
       "outline": {
         "role": "neutral",
         "displayName": "Outline",
-        "canonical": "#7C85AB",
-        "light": "#7C85AB",
+        "canonical": "#6F79A3",
+        "light": "#6F79A3",
         "dark": "#5A6BAE",
         "tonalRamp": [
           "#5A6BAE",
@@ -316,8 +316,8 @@
       "mastery": {
         "role": "semantic",
         "displayName": "Mastery Green",
-        "canonical": "#1F8A5B",
-        "light": "#1F8A5B",
+        "canonical": "#1D8758",
+        "light": "#1D8758",
         "dark": "#6FE0BD",
         "tonalRamp": [
           "#6FE0BD",
@@ -443,6 +443,132 @@
           "#FFAE6E",
           "#F97316"
         ]
+      },
+      "on-secondary": {
+        "role": "on-secondary",
+        "displayName": "On Secondary",
+        "canonical": "#0F1638",
+        "light": "#0F1638",
+        "dark": "#0F1638"
+      },
+      "on-tertiary": {
+        "role": "on-tertiary",
+        "displayName": "On Tertiary",
+        "canonical": "#0F1638",
+        "light": "#0F1638",
+        "dark": "#0F1638"
+      },
+      "on-error": {
+        "role": "on-error",
+        "displayName": "On Error",
+        "canonical": "#FFFFFF",
+        "light": "#FFFFFF",
+        "dark": "#0F1638"
+      },
+      "shadow": {
+        "role": "shadow",
+        "displayName": "Shadow",
+        "canonical": "#0F1638",
+        "light": "#0F1638",
+        "dark": "#000000"
+      },
+      "primary-fixed": {
+        "role": "primary-fixed",
+        "displayName": "Primary Fixed",
+        "canonical": "#E0E5FE",
+        "light": "#E0E5FE",
+        "dark": "#E0E5FE"
+      },
+      "primary-fixed-dim": {
+        "role": "primary-fixed-dim",
+        "displayName": "Primary Fixed Dim",
+        "canonical": "#B5BFFB",
+        "light": "#B5BFFB",
+        "dark": "#B5BFFB"
+      },
+      "on-primary-fixed": {
+        "role": "on-primary-fixed",
+        "displayName": "On Primary Fixed",
+        "canonical": "#1A2580",
+        "light": "#1A2580",
+        "dark": "#1A2580"
+      },
+      "on-primary-fixed-variant": {
+        "role": "on-primary-fixed-variant",
+        "displayName": "On Primary Fixed Variant",
+        "canonical": "#2B38A3",
+        "light": "#2B38A3",
+        "dark": "#2B38A3"
+      },
+      "secondary-fixed": {
+        "role": "secondary-fixed",
+        "displayName": "Secondary Fixed",
+        "canonical": "#E3E6F7",
+        "light": "#E3E6F7",
+        "dark": "#E3E6F7"
+      },
+      "secondary-fixed-dim": {
+        "role": "secondary-fixed-dim",
+        "displayName": "Secondary Fixed Dim",
+        "canonical": "#C0C6EE",
+        "light": "#C0C6EE",
+        "dark": "#C0C6EE"
+      },
+      "on-secondary-fixed": {
+        "role": "on-secondary-fixed",
+        "displayName": "On Secondary Fixed",
+        "canonical": "#262E6E",
+        "light": "#262E6E",
+        "dark": "#262E6E"
+      },
+      "on-secondary-fixed-variant": {
+        "role": "on-secondary-fixed-variant",
+        "displayName": "On Secondary Fixed Variant",
+        "canonical": "#3C458E",
+        "light": "#3C458E",
+        "dark": "#3C458E"
+      },
+      "tertiary-fixed": {
+        "role": "tertiary-fixed",
+        "displayName": "Tertiary Fixed",
+        "canonical": "#EBE3FE",
+        "light": "#EBE3FE",
+        "dark": "#EBE3FE"
+      },
+      "tertiary-fixed-dim": {
+        "role": "tertiary-fixed-dim",
+        "displayName": "Tertiary Fixed Dim",
+        "canonical": "#CEC0FB",
+        "light": "#CEC0FB",
+        "dark": "#CEC0FB"
+      },
+      "on-tertiary-fixed": {
+        "role": "on-tertiary-fixed",
+        "displayName": "On Tertiary Fixed",
+        "canonical": "#33177E",
+        "light": "#33177E",
+        "dark": "#33177E"
+      },
+      "on-tertiary-fixed-variant": {
+        "role": "on-tertiary-fixed-variant",
+        "displayName": "On Tertiary Fixed Variant",
+        "canonical": "#4D31A2",
+        "light": "#4D31A2",
+        "dark": "#4D31A2"
+      },
+      "surface-dim": {
+        "role": "surface-dim",
+        "displayName": "Surface Dim",
+        "canonical": "#D2D9EB",
+        "light": "#D2D9EB",
+        "dark": "#0A0E27"
+      },
+      "warning-ink": {
+        "role": "warning-ink",
+        "displayName": "Warning Ink",
+        "canonical": "#895806",
+        "light": "#895806",
+        "dark": "#FFC658"
       }
     },
     "typographyMeta": {
@@ -486,7 +612,7 @@
     "shadows": [
       {
         "name": "whisper",
-        "value": "light: 0 1px 2px rgba(15,22,56,0.04); dark: none (ghost border)",
+        "value": "light: 0 1px 2px rgba(15,22,56,0.04); dark: none",
         "purpose": "Card, toggle thumb."
       },
       {
@@ -496,7 +622,7 @@
       },
       {
         "name": "overlay",
-        "value": "light: 0 12px 32px rgba(15,22,56,0.10); dark: 0 16px 40px rgba(0,0,0,0.42)",
+        "value": "light: 0 12px 32px rgba(15,22,56,0.1); dark: 0 16px 40px rgba(0,0,0,0.42)",
         "purpose": "Dialog."
       },
       {
@@ -533,23 +659,33 @@
       },
       {
         "name": "skeleton-pulse",
-        "value": "1400ms, opacity 0.45 to 0.75",
+        "value": "1400ms",
         "purpose": "Loading placeholder."
       },
       {
-        "name": "toast",
-        "value": "4000ms (8000ms with Undo)",
-        "purpose": "Snackbar dwell."
+        "name": "snackbar",
+        "value": "4000ms",
+        "purpose": ""
+      },
+      {
+        "name": "snackbar-with-undo",
+        "value": "8000ms",
+        "purpose": ""
+      },
+      {
+        "name": "answer-settle",
+        "value": "400ms",
+        "purpose": ""
       }
     ],
     "breakpoints": [
       {
-        "name": "nav-rail",
-        "value": "600dp window width: bottom bar becomes an 80dp rail"
+        "name": "rail",
+        "value": "600dp"
       },
       {
         "name": "content-max",
-        "value": "720dp centred column"
+        "value": "720dp"
       }
     ]
   },

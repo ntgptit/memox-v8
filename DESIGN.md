@@ -693,6 +693,84 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 Every colour the app draws, light and dark, with its rule and its lowest measured contrast against the grounds the frontmatter's `contrast` list names. Generated from the frontmatter.
 
 <!-- generated:design-values:start -->
+<!-- Written by `python3 tools/design/generate.py` from the frontmatter. Do not edit. -->
+
+| Colour | Light | Dark | Rule | Lowest contrast (light / dark) |
+|---|---|---|---|---|
+| `primary` | #5265F5 | #5265F5 | stated | 4.20 / 3.31 |
+| `on-primary` | #FFFFFF | #FFFFFF | stated | 4.63 / 4.63 |
+| `primary-container` | #E0E5FE | #2D346A | stated | — / — |
+| `on-primary-container` | #1A2580 | #D9DFFF | stated | 10.37 / 8.81 |
+| `secondary` | #6E7CD9 | #9DA8E8 | stated | — / — |
+| `on-secondary` | #0F1638 | #0F1638 | stated | 4.65 / 7.72 |
+| `secondary-container` | #E3E6F7 | #343C78 | stated | — / — |
+| `on-secondary-container` | #262E6E | #DDE2FB | stated | 9.97 / 7.92 |
+| `tertiary` | #8B6FF5 | #B5A0FF | stated | — / — |
+| `on-tertiary` | #0F1638 | #0F1638 | stated | 4.77 / 7.92 |
+| `tertiary-container` | #EBE3FE | #443078 | stated | — / — |
+| `on-tertiary-container` | #33177E | #E6DCFF | stated | 10.83 / 8.27 |
+| `error` | #C02447 | #FF8FA3 | stated | 4.73 / 5.27 |
+| `on-error` | #FFFFFF | #0F1638 | stated | 5.86 / 8.14 |
+| `error-container` | #FBDDE3 | #7A2036 | stated | — / — |
+| `on-error-container` | #7A0A23 | #FFD9DF | stated | 8.73 / 7.78 |
+| `surface` | #F7F9FE | #0A0E27 | stated | — / — |
+| `on-surface` | #0F1638 | #E4E8FA | stated | 14.22 / 9.35 |
+| `on-surface-variant` | #4A5278 | #A4ACD0 | stated | 6.12 / 5.10 |
+| `outline` | #6F79A3 | #5A6BAE | stated | 3.86 / 3.02 |
+| `outline-variant` | #C5CBE3 | #2A3267 | stated | — / — |
+| `shadow` | #0F1638 | #000000 | stated | — / — |
+| `scrim` | #0A0E27 | #000000 | stated | — / — |
+| `inverse-surface` | #34395D | #34395D | stated | — / — |
+| `on-inverse-surface` | #E8EAFC | #E8EAFC | stated | 9.32 / 9.32 |
+| `inverse-primary` | #A0ACFF | #A0ACFF | stated | 5.21 / 5.21 |
+| `primary-fixed` | #E0E5FE | #E0E5FE | stated | — / — |
+| `primary-fixed-dim` | #B5BFFB | #B5BFFB | stated | — / — |
+| `on-primary-fixed` | #1A2580 | #1A2580 | stated | 7.29 / 7.29 |
+| `on-primary-fixed-variant` | #2B38A3 | #2B38A3 | stated | 5.37 / 5.37 |
+| `secondary-fixed` | #E3E6F7 | #E3E6F7 | stated | — / — |
+| `secondary-fixed-dim` | #C0C6EE | #C0C6EE | stated | — / — |
+| `on-secondary-fixed` | #262E6E | #262E6E | stated | 7.39 / 7.39 |
+| `on-secondary-fixed-variant` | #3C458E | #3C458E | stated | 5.16 / 5.16 |
+| `tertiary-fixed` | #EBE3FE | #EBE3FE | stated | — / — |
+| `tertiary-fixed-dim` | #CEC0FB | #CEC0FB | stated | — / — |
+| `on-tertiary-fixed` | #33177E | #33177E | stated | 8.03 / 8.03 |
+| `on-tertiary-fixed-variant` | #4D31A2 | #4D31A2 | stated | 5.52 / 5.52 |
+| `surface-dim` | #D2D9EB | #0A0E27 | stated | — / — |
+| `surface-bright` | #FFFFFF | #232B5A | stated | — / — |
+| `surface-container-lowest` | #FFFFFF | #131A3A | stated | — / — |
+| `surface-container-low` | #F1F4FB | #1B2249 | stated | — / — |
+| `surface-container` | #E9EDF7 | #232B5A | stated | — / — |
+| `surface-container-high` | #E2E7F3 | #2C356E | stated | — / — |
+| `surface-container-highest` | #DAE0EF | #353D7E | stated | — / — |
+| `mastery` | #1D8758 | #6FE0BD | stated | — / — |
+| `on-mastery` | #FFFFFF | #11173A | stated | 4.51 / 10.83 |
+| `success` | #2BA88B | #6FE0BD | stated | — / — |
+| `warning` | #F59E0B | #FFC658 | stated | — / — |
+| `on-warning` | #3A2A00 | #2A1E00 | stated | 6.47 / 10.49 |
+| `warning-ink` | #895806 | #FFC658 | stated | 4.90 / 7.32 |
+| `error-fill` | #DC2D4E | #B0485C | stated | — / — |
+| `on-error-fill` | #FFFFFF | #FFFFFF | stated | 4.64 / 5.35 |
+| `status-new` | #8C95B8 | #6B75A3 | stated | — / — |
+| `status-learning` | #F59E0B | #FFC658 | stated | — / — |
+| `status-reviewing` | #5265F5 | #8B9AFF | stated | — / — |
+| `status-mastered` | #1F8A5B | #6FE0BD | stated | — / — |
+| `streak` | #F97316 | #FFAE6E | stated | — / — |
+| `primary-ink` | #4151C6 | #94A0F7 | primary → on-surface 25% / primary → on-surface 45% | 5.27 / 4.69 |
+| `ghost-border` | #5265F5 @ 14% | #5265F5 @ 16% | primary at 14% / primary at 16% | — / — |
+| `outline-edge` | #6F79A3 | #7D8AC1 | outline → on-surface 0% / outline → on-surface 25% | 3.43 / 3.41 |
+| `status-new-ink` | #5A6285 | #9BA3C6 | status-new → on-surface 40% / status-new → on-surface 40% | 4.82 / 4.59 |
+| `status-learning-ink` | #825A22 | #FFC658 | status-learning → on-surface 50% / status-learning → on-surface 0% | 4.94 / 7.32 |
+| `status-reviewing-ink` | #4151C6 | #94A2FF | status-reviewing → on-surface 25% / status-reviewing → on-surface 10% | 5.27 / 4.82 |
+| `status-mastered-ink` | #1B6D52 | #6FE0BD | status-mastered → on-surface 25% / status-mastered → on-surface 0% | 5.05 / 7.10 |
+| `success-ink` | #206E6A | #6FE0BD | success → on-surface 40% / success → on-surface 0% | 4.85 / 7.10 |
+| `danger-ink` | #AE2346 | #F7AABD | error → on-surface 10% / error → on-surface 30% | 5.42 / 6.21 |
+| `danger-tint` | #C02447 @ 8% | #FF8FA3 @ 16% | error at 8% / error at 16% | — / — |
+| `danger-tint-border` | #C02447 @ 22% | #FF8FA3 @ 32% | error at 22% / error at 32% | — / — |
+| `warning-tint` | #F59E0B @ 12% | #FFC658 @ 18% | warning at 12% / warning at 18% | — / — |
+| `warning-tint-border` | #F59E0B @ 22% | #FFC658 @ 32% | warning at 22% / warning at 32% | — / — |
+| `success-tint` | #2BA88B @ 10% | #6FE0BD @ 18% | success at 10% / success at 18% | — / — |
+| `success-tint-border` | #2BA88B @ 22% | #6FE0BD @ 32% | success at 22% / success at 32% | — / — |
+
 <!-- generated:design-values:end -->
 
 ## Typography
