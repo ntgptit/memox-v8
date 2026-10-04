@@ -43,4 +43,5 @@ abstract final class AppSize {
   static const double grabberHeight = 4;
   static const double sheetTopClearance = 72;
   static const double sheetMaxWidth = 640;
+  static const double appBar = 56;
 }

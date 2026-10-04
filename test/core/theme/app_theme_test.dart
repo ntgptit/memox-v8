@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/foundations/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
@@ -94,6 +95,24 @@ void main() {
           theme.filledButtonTheme.style!.backgroundColor!.resolve({}),
           scheme.primary,
         );
+      });
+
+      test('the app bar slot matches MxAppBar', () {
+        final AppBarThemeData bar = theme.appBarTheme;
+        expect(bar.backgroundColor, isA<WidgetStateColor>());
+        final WidgetStateColor ground =
+            bar.backgroundColor! as WidgetStateColor;
+        expect(ground.resolve(<WidgetState>{}), scheme.surface);
+        expect(
+          ground.resolve(<WidgetState>{WidgetState.scrolledUnder}),
+          scheme.surfaceContainer,
+        );
+        expect(bar.elevation, 0);
+        expect(bar.scrolledUnderElevation, 0);
+        expect(bar.surfaceTintColor, Colors.transparent);
+        expect(bar.toolbarHeight, AppSize.appBar);
+        expect(bar.centerTitle, isFalse);
+        expect(bar.foregroundColor, scheme.onSurface);
       });
 
       test('the overlay and card slots match the Mx surfaces', () {

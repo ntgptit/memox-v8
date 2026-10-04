@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/components/button_style.dart';
+import 'package:memox/core/theme/components/chrome_style.dart';
 import 'package:memox/core/theme/components/field_style.dart';
 import 'package:memox/core/theme/components/icon_button_style.dart';
 import 'package:memox/core/theme/components/overlay_style.dart';
@@ -97,6 +98,7 @@ abstract final class AppTheme {
         selectionColor: scheme.primaryContainer,
         selectionHandleColor: scheme.onPrimaryContainer,
       ),
+      appBarTheme: mxAppBarTheme(scheme, textTheme),
       dialogTheme: mxDialogTheme(scheme, textTheme),
       bottomSheetTheme: mxBottomSheetTheme(scheme),
       snackBarTheme: mxSnackBarTheme(scheme, textTheme),
