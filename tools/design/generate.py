@@ -51,7 +51,12 @@ TEXT_THEME_SLOTS = [
 ]
 DARK = "-dark"
 INK = re.compile(r"(?:^|-)ink(?:-|$)|[a-z0-9]Ink(?:[A-Z]|$)")
-COLOUR_LITERAL = re.compile(r"#[0-9A-Fa-f]{3,8}\b|\brgba?\(", re.IGNORECASE)
+# Every way to write a colour value: hex, CSS colour functions, Dart's 0xAARRGGBB.
+# `var(--color-…)` and `color-mix(` are references, not values, and stay allowed.
+COLOUR_LITERAL = re.compile(
+    r"#[0-9A-Fa-f]{3,8}\b|\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\(|\b0x[0-9A-Fa-f]{6,8}\b",
+    re.IGNORECASE,
+)
 HEX = re.compile(r"^#[0-9A-Fa-f]{6}$")
 TOKEN_REF = re.compile(r"^\{(colors|typography|rounded|spacing)\.([a-z0-9-]+)\}$")
 
@@ -118,6 +123,8 @@ def frontmatter(text: str) -> dict:
         while indent <= stack[-1][0]:
             stack.pop()
         parent = stack[-1][1]
+        if key.strip() in parent:
+            raise ValueError(f"DESIGN.md:{number}: `{key.strip()}` is defined twice")
         if value.strip():
             parent[key.strip()] = scalar(value)
             continue
@@ -180,6 +187,26 @@ def contrast(a: str, b: str) -> float:
     return (high + 0.05) / (low + 0.05)
 
 
+def lab(hex_colour: str) -> tuple[float, float, float]:
+    """CIE L*a*b* (D65) of an sRGB colour."""
+    channels = [int(hex_colour[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+    r, g, b = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in channels]
+    x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047
+    y = r * 0.2126 + g * 0.7152 + b * 0.0722
+    z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883
+
+    def f(t: float) -> float:
+        return t ** (1 / 3) if t > 0.008856 else 7.787 * t + 16 / 116
+
+    fx, fy, fz = f(x), f(y), f(z)
+    return 116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)
+
+
+def delta_e(a: str, b: str) -> float:
+    """CIE76 colour difference: about 2.3 is just noticeable, 15 reads as another colour."""
+    return sum((p - q) ** 2 for p, q in zip(lab(a), lab(b))) ** 0.5
+
+
 def base_keys(design: Design) -> list[str]:
     return [key for key in design.colors if not key.endswith(DARK)]
 
@@ -232,6 +259,17 @@ def validate(design: Design) -> list[str]:
             ratio = contrast(a, b)
             if ratio < minimum:
                 errors.append(f"contrast: `{fg}` on `{bg}` is {ratio:.2f}:1 in {theme}, below {minimum}:1")
+
+    for pair in design.extensions.get("distinctPairs") or []:
+        a, b, minimum = pair["a"], pair["b"], float(pair["minDeltaE"])
+        for theme, suffix in (("light", ""), ("dark", DARK)):
+            x, y = colors.get(a + suffix), colors.get(b + suffix)
+            if x is None or y is None or not HEX.match(x) or not HEX.match(y):
+                errors.append(f"distinct pair `{a}` / `{b}` names an unknown colour")
+                break
+            difference = delta_e(x, y)
+            if difference < minimum:
+                errors.append(f"`{a}` and `{b}` differ by ΔE {difference:.1f} in {theme}, below ΔE {minimum:g}; they must read as two colours")
 
     for slot in TEXT_THEME_SLOTS:
         role = design.text_theme.get(slot)

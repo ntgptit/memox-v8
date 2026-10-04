@@ -109,6 +109,16 @@ class ValidateTest(unittest.TestCase):
         for literal in ('{"css": "color:#5265F5"}', '{"css": "color:#fff"}', '{"v": "rgba(15,22,56,0.04)"}'):
             self.assertTrue(has(g.validate(design(sidecar_text=literal)), "holds a colour literal"), literal)
 
+    def test_every_colour_syntax_in_the_sidecar_fails(self):
+        for literal in ("hsl(230 50% 50%)", "hsla(230,50%,50%,1)", "hwb(230 10% 20%)", "lab(50% 40 59)",
+                        "lch(52 72 50)", "oklch(0.5 0.2 270)", "oklab(0.5 0.1 0.1)", "color(srgb 1 0 0)",
+                        "0xFF4151C6", "Color(0x4151C6FF)"):
+            self.assertTrue(has(g.validate(design(sidecar_text=f'{{"css": "{literal}"}}')), "holds a colour literal"), literal)
+
+    def test_css_variables_and_color_mix_are_not_literals(self):
+        text = '{"css": "background:var(--color-primary);box-shadow:0 1px 2px color-mix(in srgb, var(--color-shadow) 4%, transparent)"}'
+        self.assertEqual(g.validate(design(sidecar_text=text)), [])
+
     def test_a_value_that_is_not_hex_fails(self):
         values = colors()
         values["primary"] = "indigo"
@@ -132,6 +142,28 @@ class ValidateTest(unittest.TestCase):
         ext = extensions()
         ext["contrastPairs"] = [{"fg": "nope", "bg": "primary", "min": 4.5}]
         self.assertTrue(has(g.validate(design(extensions=ext)), "names an unknown colour"))
+
+    def test_two_roles_declared_distinct_must_differ_in_both_themes(self):
+        values = colors()
+        values["success"], values["success-dark"] = "#1A6B48", "#6FE0BD"
+        values["on-success"], values["on-success-dark"] = "#1C6D4A", "#70E1BE"
+        ext = extensions()
+        ext["distinctPairs"] = [{"a": "success", "b": "on-success", "minDeltaE": 15}]
+        errors = g.validate(design(colors=values, extensions=ext))
+        self.assertTrue(has(errors, "`success` and `on-success` differ by", "in light, below ΔE 15"))
+        self.assertTrue(has(errors, "in dark"))
+
+    def test_roles_far_apart_pass_the_distinct_check(self):
+        values = colors()
+        values["success"], values["success-dark"] = "#1A6B48", "#6FE0BD"
+        values["on-success"], values["on-success-dark"] = "#895806", "#F5B13D"
+        ext = extensions()
+        ext["distinctPairs"] = [{"a": "success", "b": "on-success", "minDeltaE": 15}]
+        self.assertEqual(g.validate(design(colors=values, extensions=ext)), [])
+
+    def test_delta_e_of_identical_colours_is_zero(self):
+        self.assertEqual(g.delta_e("#4151C6", "#4151C6"), 0)
+        self.assertGreater(g.delta_e("#FFFFFF", "#000000"), 99)
 
     def test_an_unmapped_text_theme_slot_fails(self):
         mapping = {slot: "body" for slot in g.TEXT_THEME_SLOTS}
@@ -160,6 +192,14 @@ class FrontmatterTest(unittest.TestCase):
             "colors": {"primary": "#4151C6"},
             "typography": {"body": {"fontSize": "14px", "fontWeight": 400, "lineHeight": 1.5}},
         })
+
+    def test_a_duplicate_key_is_an_error_not_a_silent_override(self):
+        with self.assertRaisesRegex(ValueError, "DESIGN.md:4: `primary` is defined twice"):
+            g.frontmatter('---\ncolors:\n  primary: "#4151C6"\n  primary: "#5265F5"\n---\n')
+
+    def test_the_same_key_under_two_parents_is_fine(self):
+        text = '---\na:\n  x: 1\nb:\n  x: 2\n---\n'
+        self.assertEqual(g.frontmatter(text), {"a": {"x": 1}, "b": {"x": 2}})
 
     def test_a_line_without_a_colon_is_an_error(self):
         with self.assertRaises(ValueError):

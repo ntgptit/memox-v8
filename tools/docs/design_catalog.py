@@ -19,11 +19,13 @@ STATUSES = {"planned", "implementing", "built", "deprecated"}
 CONTRACT_FIELDS = ("Variants", "States", "Accessibility", "Tokens", "Golden")
 NAME = re.compile(r"^[A-Z][A-Za-z0-9]*$")
 MX_NAME = re.compile(r"\bMx[A-Z][A-Za-z0-9]*\b")
-MX_WIDGET = re.compile(r"^(?:final\s+|base\s+|sealed\s+)?class\s+(Mx[A-Z]\w*)\b[^{]*?\bextends\s+\w*Widget\b", re.M)
+# Every public top-level `Mx*` type, whatever it extends: a component is known by
+# the catalog, not by its superclass's name (final review #7).
+MX_TYPE = re.compile(r"^(?:(?:abstract|base|final|sealed|interface|mixin)\s+)*(?:class|enum|mixin|typedef|extension\s+type)\s+(Mx[A-Z]\w*)\b", re.M)
 MX_GOLDEN = re.compile(r"^(mx_[a-z0-9_]+?)__([a-z0-9_]+)__([a-z0-9_]+)\.png$")
 PROSE_INK = re.compile(
     r"\b(?i:(?:primary|secondary|tertiary|status|success|warning|danger|error|learning|reviewing"
-    r"|mastered|new|indigo|variant|its|their|plain|the)[- ]ink)\b"
+    r"|mastered|new|indigo|variant|its|their|plain|the|dark|light|white|black)[- ]ink)\b"
 )
 # camelCase (also `_private`), snake_case and PascalCase spellings of an ink role.
 # Flutter's own `Ink`, `InkWell`, `InkRipple`… never end in `Ink` after a prefix.
@@ -188,13 +190,16 @@ def check_catalog(root: Path, domains: set[str], screens: set[str], goldens: dic
 
     for path in sorted((root / "lib").rglob("*.dart")) if (root / "lib").is_dir() else []:
         relative = path.relative_to(root).as_posix()
-        for match in MX_WIDGET.finditer(path.read_text(encoding="utf-8")):
+        for match in MX_TYPE.finditer(path.read_text(encoding="utf-8")):
             name = match.group(1)
             entry = next((e for e in entries if e.name == name), None)
-            if entry is None:
-                findings.append(("ERROR", relative, f"public widget `{name}` has no row in the DESIGN.md catalog"))
-            elif source_path(entry) != relative:
-                findings.append(("ERROR", relative, f"`{name}` is {entry.layer}; it belongs at `{source_path(entry) or 'a path the SP3b spec sets'}`"))
+            if entry is not None:
+                if source_path(entry) != relative:
+                    findings.append(("ERROR", relative, f"`{name}` is {entry.layer}; it belongs at `{source_path(entry) or 'a path the SP3b spec sets'}`"))
+                continue
+            # An API type of a catalogued component (`MxButtonTone`) carries its name.
+            if not any(name.startswith(e.name) for e in entries):
+                findings.append(("ERROR", relative, f"public `{name}` has no row in the DESIGN.md catalog"))
 
     body, offset = body_of(text)
     references = [(DESIGN_MD, body, offset)]

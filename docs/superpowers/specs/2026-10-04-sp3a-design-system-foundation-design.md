@@ -177,7 +177,7 @@ names components only to assign them; their contracts are in the catalog.
   `unittest` and written test-first.
 - **Inputs.** The `DESIGN.md` frontmatter (colours, typography, radii, spacing, component props)
   and the sidecar `extensions` (shadows, motion, breakpoints, opacity, contrast pairs).
-- **Outputs.** `lib/core/theme/generated/*.g.dart`: the light and dark `ColorScheme`, the
+- **Outputs.** `lib/core/theme/foundations/*.dart` (committed, never `*.g.dart`, which build_runner owns and git ignores): the light and dark `ColorScheme`, the
   extension `ThemeExtension` class with its light and dark instances, typography, radii,
   spacing, shadows, motion, opacity and breakpoints. Each file carries a do-not-edit header.
 - **`--check` fails when:**

@@ -133,11 +133,21 @@ class CatalogTest(unittest.TestCase):
 
     def test_a_public_mx_widget_outside_the_catalog_is_an_error(self):
         files = {"DESIGN.md": design(row()), "lib/shared/widgets/mx_chip.dart": "class MxChip extends StatelessWidget {}\n"}
-        self.assertTrue(has(found(files), "public widget `MxChip` has no row"))
+        self.assertTrue(has(found(files), "public `MxChip` has no row"))
 
     def test_an_mx_widget_in_the_wrong_place_is_an_error(self):
         files = {"DESIGN.md": design(row()), "lib/features/deck/presentation/widgets/mx_button.dart": BUTTON}
         self.assertTrue(has(found(files), "it belongs at `lib/shared/widgets/mx_button.dart`"))
+
+    def test_an_mx_component_on_any_base_class_is_seen(self):
+        files = {"DESIGN.md": design(row()), "lib/shared/widgets/mx_chip.dart": "class MxChip extends ButtonStyleButton {}\n"}
+        self.assertTrue(has(found(files), "public `MxChip` has no row"))
+        files = {"DESIGN.md": design(row()), "lib/features/deck/x.dart": "final class MxButton extends ButtonStyleButton {}\n"}
+        self.assertTrue(has(found(files), "it belongs at `lib/shared/widgets/mx_button.dart`"))
+
+    def test_an_mx_type_that_belongs_to_no_component_is_an_error(self):
+        files = {"DESIGN.md": design(row()), "lib/shared/widgets/mx_ghost.dart": "enum MxGhostTone { a }\n"}
+        self.assertTrue(has(found(files), "public `MxGhostTone` has no row"))
 
     def test_a_non_widget_mx_type_is_not_a_component(self):
         files = {"DESIGN.md": design(row()), "lib/shared/widgets/mx_button.dart": "enum MxButtonTone { primary }\nclass MxButtonStyle {}\n"}
@@ -193,6 +203,10 @@ class InkVocabularyTest(unittest.TestCase):
     def test_private_snake_and_pascal_ink_names_are_errors(self):
         root = tree({"lib/x.dart": "Color get _primaryInk => c;\nfinal primary_ink = c;\nclass StatusInk {}\n"})
         self.assertEqual(len(dc.check_ink_vocabulary(root)), 3)
+
+    def test_a_tone_named_ink_is_an_error(self):
+        root = tree({"docs/screens/spec/SCR-X.md": "amber with dark ink; white ink on it\n"})
+        self.assertEqual(len(dc.check_ink_vocabulary(root)), 2)
 
     def test_a_catalogued_component_named_ink_is_allowed(self):
         root = tree({"lib/x.dart": "class MxRowInk extends StatelessWidget {}\n"})

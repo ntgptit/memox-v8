@@ -601,6 +601,42 @@
         "bg": "surface-container-low",
         "min": 3.0,
         "use": "streak flame on a card"
+      },
+      {
+        "fg": "on-surface",
+        "bg": "surface-container",
+        "min": 4.5,
+        "use": "body text"
+      },
+      {
+        "fg": "on-surface-variant",
+        "bg": "surface-container",
+        "min": 4.5,
+        "use": "secondary text"
+      },
+      {
+        "fg": "outline",
+        "bg": "surface-container",
+        "min": 3.0,
+        "use": "control edge"
+      },
+      {
+        "fg": "on-surface",
+        "bg": "surface-container-highest",
+        "min": 4.5,
+        "use": "body text"
+      },
+      {
+        "fg": "on-surface-variant",
+        "bg": "surface-container-highest",
+        "min": 4.5,
+        "use": "secondary text"
+      },
+      {
+        "fg": "outline",
+        "bg": "surface-container-highest",
+        "min": 3.0,
+        "use": "control edge"
       }
     ],
     "opacity": {
@@ -618,7 +654,45 @@
       "control": 2,
       "focus": 2,
       "indicator": 6
-    }
+    },
+    "distinctPairs": [
+      {
+        "a": "status-learning",
+        "b": "warning",
+        "minDeltaE": 15,
+        "why": "learning progress must not read as a caution"
+      },
+      {
+        "a": "status-learning-container",
+        "b": "warning-container",
+        "minDeltaE": 8,
+        "why": "a learning badge must not read as a warning ground"
+      },
+      {
+        "a": "status-reviewing",
+        "b": "primary",
+        "minDeltaE": 15,
+        "why": "a review state must not read as the action indigo"
+      },
+      {
+        "a": "status-reviewing-container",
+        "b": "primary-container",
+        "minDeltaE": 8,
+        "why": "a reviewing badge must not read as a selected ground"
+      },
+      {
+        "a": "status-new",
+        "b": "status-reviewing",
+        "minDeltaE": 10,
+        "why": "the four statuses keep their own colour"
+      },
+      {
+        "a": "status-learning",
+        "b": "status-mastered",
+        "minDeltaE": 15,
+        "why": "the four statuses keep their own colour"
+      }
+    ]
   },
   "components": [
     {

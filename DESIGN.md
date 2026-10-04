@@ -63,7 +63,7 @@ colors:
   on-surface: "#0F1638"
   on-surface-dark: "#E4E8FA"
   on-surface-variant: "#4A5278"
-  on-surface-variant-dark: "#A4ACD0"
+  on-surface-variant-dark: "#ADB5D8"
   surface-dim: "#D5DBEA"
   surface-dim-dark: "#070A1F"
   surface-bright: "#FFFFFF"
@@ -79,7 +79,7 @@ colors:
   surface-container-highest: "#DAE0EF"
   surface-container-highest-dark: "#353D7E"
   outline: "#717AA0"
-  outline-dark: "#7D8AC1"
+  outline-dark: "#8390C6"
   outline-variant: "#C5CBE3"
   outline-variant-dark: "#2A3267"
   shadow: "#0F1638"
@@ -114,18 +114,18 @@ colors:
   status-new-container-dark: "#2B3256"
   on-status-new-container: "#2B3150"
   on-status-new-container-dark: "#DDE1F2"
-  status-learning: "#895806"
-  status-learning-dark: "#F5B13D"
-  status-learning-container: "#FCEFC7"
-  status-learning-container-dark: "#4A3610"
-  on-status-learning-container: "#3A2A00"
-  on-status-learning-container-dark: "#FCE6B8"
-  status-reviewing: "#4151C6"
-  status-reviewing-dark: "#AAB4FF"
-  status-reviewing-container: "#E0E5FE"
-  status-reviewing-container-dark: "#2D346A"
-  on-status-reviewing-container: "#1A2580"
-  on-status-reviewing-container-dark: "#D9DFFF"
+  status-learning: "#6A5A12"
+  status-learning-dark: "#D9C35A"
+  status-learning-container: "#DFE5BE"
+  status-learning-container-dark: "#38361A"
+  on-status-learning-container: "#352C00"
+  on-status-learning-container-dark: "#F2E7B5"
+  status-reviewing: "#33658F"
+  status-reviewing-dark: "#93BCE0"
+  status-reviewing-container: "#D5E9F0"
+  status-reviewing-container-dark: "#1D3A52"
+  on-status-reviewing-container: "#12324E"
+  on-status-reviewing-container-dark: "#D2E5F4"
   status-mastered: "#1A6B48"
   status-mastered-dark: "#6FE0BD"
   status-mastered-container: "#D3F0E2"
@@ -308,7 +308,7 @@ MemoX should feel like a quiet, focused study space. The system ships two themes
 
 **Key Characteristics:**
 - One sans family (Plus Jakarta Sans), seven roles, tight-tracked for headings and figures.
-- Tonal surfaces plus a 1px ghost hairline; shadows are neutral and whisper-quiet.
+- Tonal surfaces plus a 1px `outline-variant` hairline; shadows are neutral and whisper-quiet.
 - One radius (12) for every in-flow surface; larger radii only for surfaces that float.
 - Phone-first, 16dp gutter, single content column, 48dp touch targets everywhere.
 - Every text and edge colour is contrast-tested (AA) in both themes.
@@ -347,11 +347,12 @@ A cool indigo-tinted neutral field with one brand indigo, one reserved violet, a
 - **Error** (`error`, `on-error`, `error-container`, `on-error-container`): danger is Material's error. `error` is error text and glyphs, and the destructive button's fill under `on-error`; the danger ground is `error-container` under `on-error-container`.
 - **Success** (`success`, `on-success`, `success-container`, `on-success-container`): a right answer and a finished, fine state. Never mastery.
 - **Warning** (`warning`, `on-warning`, `warning-container`, `on-warning-container`): a refusal or a limit where nothing was lost. The warning button's fill under `on-warning`, warning text and glyphs, and the warning ground.
-- **Status** (`status-new`, `status-learning`, `status-reviewing`, `status-mastered`, each with `-container` and `on-…-container`): a card's learning status as a label, a dot or a progress fill, and as a badge on its container. Mastery is `status-mastered`. A status is never told by colour alone: new and reviewing differ mostly in saturation, so its label or an accessible name always names it.
+- **Status** (`status-new`, `status-learning`, `status-reviewing`, `status-mastered`, each with `-container` and `on-…-container`): a card's learning status as a label, a dot or a progress fill, and as a badge on its container. Each status is its own colour family: new a quiet slate, learning a warm ochre, reviewing a cool blue that is quieter than `primary`, mastered green. Mastery is `status-mastered`. A status is never told by colour alone: its label or an accessible name always names it.
+- **Distinct roles** (`.impeccable/design.json` `distinctPairs`): `status-learning` MUST stay visibly apart from `warning`, and `status-reviewing` from `primary`, by colour and not only by label; the generator fails when a declared pair comes closer than its ΔE floor in either theme. Learning progress never reads as a caution, and a review state never reads as the action indigo.
 - **Streak** (`streak`): the Progress flame only; a fill, with no text counterpart.
 
 ### Named Rules
-**The One Indigo Rule.** Indigo means "act". A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8).
+**The One Indigo Rule.** Indigo means "act". `primary` is the one action indigo; every other indigo-family role (`primary-container`, `status-reviewing`) is a deliberate, quieter tone of the same family, never the same value. A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8).
 
 **The Green Means Progress Rule.** Green is `status-mastered` or `success` and nothing else. Violet is never a status; green is never decoration.
 
@@ -428,17 +429,17 @@ Touch targets are 48dp minimum for every interactive control, whatever the paint
 
 ## Elevation & Depth
 
-Hybrid, tonal first. Depth is conveyed by stepping through the surface-container ramp and a 1px ghost hairline; shadows are neutral (built on the scheme's `shadow` role, never brand-tinted) and appear only on cards, dialogs, sheets and the FAB. Dark has almost no shadow on cards and draws the hairline instead.
+Hybrid, tonal first. Depth is conveyed by stepping through the surface-container ramp and a 1px `outline-variant` hairline; shadows are neutral (built on the scheme's `shadow` role, never brand-tinted) and appear only on cards, dialogs, sheets and the FAB. Dark has almost no shadow on cards and draws the hairline instead.
 
 ### Shadow Vocabulary
-- **Whisper** (`0 1px 2px` at 4%, light only): Card and toggle thumb. Dark: none, ghost border instead.
+- **Whisper** (`0 1px 2px` at 4%, light only): Card and toggle thumb. Dark: none, the `outline-variant` hairline instead.
 - **Chrome** (`0 -2px 12px` at 5% light, `0 -2px 14px` at 36% dark): bottom sheet and bottom chrome, cast upward.
 - **Overlay** (`0 12px 32px` at 10% light, `0 16px 40px` at 42% dark): dialogs.
 - **FAB** (`0 8px 24px` at 12% light, `0 10px 28px` at 50% dark): the floating action.
 - **Scrim** (scheme `scrim` at 45%): behind every dialog and sheet. The bottom bar is translucent glass (surface at 84% with an 18 blur).
 
 ### Named Rules
-**The Hairline Before Shadow Rule.** Group with tone and a 1px ghost edge first; reach for a shadow only for a surface that floats above content.
+**The Hairline Before Shadow Rule.** Group with tone and a 1px `outline-variant` edge first; reach for a shadow only for a surface that floats above content.
 
 ## Shapes
 
@@ -454,7 +455,7 @@ Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` b
 - **MxActionPair** (two footer actions, side by side or stacked when labels do not fit) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
 
 ### Containers
-- **MxCard**: raised (surface-container-lowest, r12, whisper shadow or dark ghost edge), plus hero, warning, success, danger and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
+- **MxCard**: raised (surface-container-lowest, r12, whisper shadow, or the `outline-variant` edge in dark), plus hero, warning, success, danger and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
 - **MxDialog** (widths 340, 320, 300; scale-in), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **DeckPickerSheet**, **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption at `AppOpacity.muted`).
 
 ### Inputs
@@ -568,7 +569,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
   - A row states a status once: a coloured label, not a dot beside it.
   - Kept because a rule asks for them: the card list's filter chip counts (IT-ORG-005), Study entry's NEW and DUE tiles and each mode's count (UC-STUDY-001, BR-STUDY-044), the selected count (UC-CARD-001), Import's preview counts (UC-TRANSFER-001), Progress's two ranges (BR-PROGRESS-003).
 - **Do** make a hero card that leads somewhere tappable, with a trailing chevron (the Library's due strip opens Study).
-- **Do** separate groups with tone and a 1px ghost hairline first; use the named shadows only for floating surfaces.
+- **Do** separate groups with tone and a 1px `outline-variant` hairline first; use the named shadows only for floating surfaces.
 - **Do** use 12 for every in-flow surface and the spacing steps (4, 8, 12, 16, 20, 24, 32, 48) rather than ad-hoc values.
 - **Do** centre content at a 720dp maximum column and switch to the navigation rail from 600dp.
 

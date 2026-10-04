@@ -84,7 +84,7 @@ Golden: light, dark
 ### `rename_merge` · Rename that merges
 
 "{len} / 50 · names are unique regardless of letter case.", the warning panel, the chips, and
-"Merge tags" in the warning tone, amber with dark ink.
+"Merge tags" in the warning tone: the `warning` fill under `on-warning`.
 
 Golden: light, dark
 
