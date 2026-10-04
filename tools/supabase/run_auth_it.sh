@@ -16,6 +16,9 @@ cd "$REPO"
 # rest is slower to start and has nothing the suite reads.
 EXCLUDED=realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
 echo "run_auth_it: starting the local stack (Docker; the first start pulls images)"
+# A running stack keeps the config it started with: stop first, so the run
+# always tests supabase/config.toml as committed (the data volume stays).
+npx --yes supabase stop >/dev/null 2>&1 || true
 npx --yes supabase start -x "$EXCLUDED" >/dev/null
 
 status=$(npx --yes supabase status -o env 2>/dev/null)
