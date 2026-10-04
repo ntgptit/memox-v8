@@ -7,3 +7,4 @@ section. Định dạng: [docs/README.md](../README.md), mục "UC, FN và scree
 |---|---|
 | Deck | [deck.md](deck.md) |
 | Card | [card.md](card.md) |
+| SRS | [srs.md](srs.md) |

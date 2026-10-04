@@ -500,3 +500,56 @@ sao.
 - [ ] **Given** đọc nội dung hoặc trạng thái thất bại, **when** lỗi xảy ra, **then** người dùng được báo lỗi kèm thử lại, không lộ nguyên nhân kỹ thuật, và thử lại chạy lại đúng lần đọc đó (E3).
 - [ ] **Given** tải một trang lịch sử thất bại, **when** lỗi xảy ra, **then** các event đã có giữ nguyên, người dùng thử lại được, và thử lại tiếp tục từ đúng con trỏ trước đó (E4).
 - [ ] **Given** một trang lịch sử đang tải, **when** người dùng rời đi hoặc xin thêm lần nữa trước khi nó về, **then** kết quả tới muộn bị bỏ qua và lịch sử không bao giờ nối cùng một tập event hai lần (E5).
+
+## SRS
+
+### UC-SRS-001 — Reset learning progress
+Status: ready · Code: [lib/features/srs/domain/usecases/get_reset_learning_summary_use_case.dart, lib/features/srs/domain/usecases/reset_learning_progress_use_case.dart] · Invokes: [FN-SRS-001, FN-SRS-002]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Học lại cả một cây deck từ đầu, thường để đổi chế độ ôn tập khi chế độ đã khoá.
+**Preconditions:** Root deck tồn tại
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng muốn đặt lại tiến độ học của một root deck.
+2. Hệ thống thực hiện FN-SRS-001 và cho người dùng biết rõ hai danh sách trước khi xác nhận: những
+   gì **giữ nguyên** và những gì **mất** — mọi thẻ trở lại tập Học mới và đi lại chuỗi stage.
+3. Người dùng có thể chọn **chế độ ôn tập mới** ngay trong bước này — đây là mục đích chính của
+   thao tác.
+4. Người dùng xác nhận.
+5. Hệ thống thực hiện FN-SRS-002.
+6. Người dùng quay về deck; toàn bộ card đã trở lại trạng thái Học mới và chưa thuộc tập Due;
+   chế độ ôn tập mở khoá lại; lịch sử trả lời cũ vẫn còn.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Đặt lại mà không đổi chế độ:** hợp lệ. Dùng khi người dùng chỉ muốn học lại từ đầu.
+- **A2 — Đặt lại trên deck chưa có lượt học:** vẫn được, và người dùng biết là không có gì để mất.
+- **A3 — Người dùng không xác nhận:** không xảy ra gì.
+- **A4 — Đặt lại trên deck con:** không có thao tác này. Đặt lại chỉ tồn tại ở root vì scheduler
+  và generation thuộc root.
+
+**Error flows:**
+- **E1 — Thất bại giữa chừng:** transaction rollback. Root giữ nguyên generation cũ, scheduler cũ
+  và toàn bộ state cũ. **Không** có trạng thái nửa vời với card thuộc hai generation.
+- **E2 — Người dùng có phiên đang mở ở nơi khác:** phiên đó đã bị chuyển `invalidated` ở bước 5;
+  lần đánh giá tiếp theo trong phiên đó bị từ chối.
+
+#### Acceptance criteria
+
+- [ ] **Given** một root đã khoá scheduler và đã học, **when** người dùng xác nhận đặt lại với một chế độ, **then** trong một transaction `generation` tăng đúng 1, `first_answered_at = NULL`, và mọi study state trong cây khởi tạo lại ở giá trị đầu của chế độ đó, cùng generation mới.
+- [ ] **Given** một lần đặt lại vừa xong, **when** kiểm tra dữ liệu, **then** cây deck, card, tag và `content_type` không đổi.
+- [ ] **Given** một lần đặt lại vừa xong, **when** kiểm tra `review_log`, **then** các dòng cũ còn nguyên và vẫn mang generation cũ.
+- [ ] **Given** nhiều cây deck độc lập, **when** một cây được đặt lại, **then** các cây khác không đổi gì.
+- [ ] **Given** đặt lại giữ nguyên chế độ đang chạy, **when** người dùng xác nhận, **then** chế độ giữ nguyên nhưng `generation` vẫn tăng và study state vẫn khởi tạo lại (A1).
+- [ ] **Given** một root chưa từng học hoặc không có card, **when** người dùng được cho biết những gì sẽ mất, **then** người dùng biết là không có gì để mất, và vẫn đặt lại được (A2).
+- [ ] **Given** hệ thống đang chờ xác nhận đặt lại, **when** người dùng không xác nhận, **then** không có gì thay đổi (A3).
+- [ ] **Given** một deck con, **when** người dùng muốn đặt lại tiến độ học, **then** không có thao tác đó; chỉ root mới đặt lại được (A4).
+- [ ] **Given** một ghi lỗi giữa transaction đặt lại, **when** hệ thống xử lý, **then** toàn bộ rollback: root giữ `generation`, chế độ, study state và trạng thái phiên cũ (E1).
+- [ ] **Given** cây có một phiên `in_progress`, **when** đặt lại được thực hiện, **then** phiên đó thành `invalidated` với `end_reason = scheduler_reset`, lượt trả lời kế tiếp của nó bị từ chối, và các lượt đã ghi trước khi đặt lại vẫn giữ (E2).
+- [ ] **Given** một root không tồn tại hoặc đang ở Trash, **when** yêu cầu đặt lại hoặc xem những gì sẽ mất, **then** thao tác bị từ chối và không ghi gì.

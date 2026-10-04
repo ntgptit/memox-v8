@@ -53,7 +53,7 @@ Chưa có tài liệu.
 | [BR-CARD-001](../features/card/rules/BR-CARD-001-hai-mat-khong-rong.md) | Card có hai mặt không rỗng | active | Card có mặt trước và mặt sau, đều không rỗng sau trim. | FN-CARD-002, FN-CARD-003, UC-TRANSFER-001 |
 | [BR-CARD-002](../features/card/rules/BR-CARD-002-gioi-han-do-dai-hai-mat.md) | Giới hạn độ dài hai mặt | active | Mặt trước tối đa 60 ký tự, mặt sau tối đa 240 ký tự, đo sau trim. | FN-CARD-002, FN-CARD-003, UC-TRANSFER-001 |
 | [BR-CARD-003](../features/card/rules/BR-CARD-003-ba-truong-phu-tuy-chon.md) | Ba trường phụ tuỳ chọn | active | Card có thể có ví dụ, gợi ý và phiên âm, mỗi trường tối đa 240 ký tự sau trim. | FN-CARD-002, FN-CARD-003, FN-CARD-013, UC-TRANSFER-001 |
-| [BR-CARD-004](../features/card/rules/BR-CARD-004-tao-card-tao-study-state.md) | Tạo card tạo study state | active | Tạo card đồng thời tạo study state theo scheduler và `generation` của root, `due_at = NULL`. | FN-CARD-002, UC-STARTER-001, UC-TRANSFER-001 |
+| [BR-CARD-004](../features/card/rules/BR-CARD-004-tao-card-tao-study-state.md) | Tạo card tạo study state | active | Tạo card đồng thời tạo study state theo scheduler và `generation` của root, `due_at = NULL`. | FN-CARD-002, FN-SRS-002, UC-STARTER-001, UC-TRANSFER-001 |
 | [BR-CARD-005](../features/card/rules/BR-CARD-005-sua-noi-dung-khong-dung-study-state.md) | Sửa nội dung không đụng study state | active | Sửa nội dung card không đụng study state hay study answers. | FN-CARD-003 |
 | [BR-CARD-006](../features/card/rules/BR-CARD-006-bon-trang-thai-hien-thi.md) | Bốn trạng thái hiển thị của thẻ | active | Trạng thái hiển thị là `new`, `beginning`, `reviewing` hoặc `mastered`, suy ra khi đọc, không lưu cột. | FN-CARD-001, FN-CARD-013 |
 | [BR-CARD-007](../features/card/rules/BR-CARD-007-the-chua-hoc-xong-la-new.md) | Thẻ chưa học xong lần đầu là new | active | Thẻ `learned_at IS NULL` là `new` ở cả hai thuật toán, không suy từ `answer_count`. | FN-CARD-001, FN-CARD-013 |
@@ -126,7 +126,7 @@ Chưa có tài liệu.
 | [BR-DECK-021](../features/deck/rules/BR-DECK-021-ten-deck-duoc-phep-trung.md) | Tên deck được phép trùng | active | Tên deck được phép trùng nhau. | FN-DECK-001, FN-DECK-002 |
 | [BR-DECK-022](../features/deck/rules/BR-DECK-022-xoa-deck-dua-ca-cay-vao-trash.md) | Xoá deck đưa cả cây vào Trash | active | Xoá deck chuyển deck cùng mọi deck con và card còn active bên dưới vào Trash thành một batch; chỉ purge mới xoá hẳn, theo cascade. | FN-DECK-005 |
 | [BR-DECK-023](../features/deck/rules/BR-DECK-023-xoa-deck-can-xac-nhan-kem-so-luong.md) | Xoá deck cần xác nhận kèm số lượng | active | Xoá deck cần xác nhận, kèm số deck con và số card sẽ vào Trash cùng nó. | FN-DECK-004 |
-| [BR-DECK-024](../features/deck/rules/BR-DECK-024-descendant-ke-thua-scheduler-tu-root.md) | Descendant kế thừa scheduler từ root | active | Scheduler thuộc root deck; mọi descendant kế thừa `scheduler_type`, `scheduler_version`, `generation` và không chọn riêng. | FN-DECK-009, FN-DECK-010, UC-STUDY-001 |
+| [BR-DECK-024](../features/deck/rules/BR-DECK-024-descendant-ke-thua-scheduler-tu-root.md) | Descendant kế thừa scheduler từ root | active | Scheduler thuộc root deck; mọi descendant kế thừa `scheduler_type`, `scheduler_version`, `generation` và không chọn riêng. | FN-DECK-009, FN-DECK-010, FN-SRS-001, FN-SRS-002, UC-STUDY-001 |
 | [BR-DECK-025](../features/deck/rules/BR-DECK-025-cot-scheduler-chi-co-gia-tri-tren-root.md) | Cột scheduler chỉ có giá trị trên root | active | Cột scheduler chỉ có giá trị trên root deck; deck khác để NULL và tra qua `root_id`. | FN-DECK-003, FN-DECK-009 |
 | [BR-DECK-026](../features/deck/rules/BR-DECK-026-mastery-cua-deck.md) | Mastery của deck | active | Mastery của một deck là số thẻ `mastered` chia cho mọi thẻ active trong cả cây, kể cả thẻ mới; suy ra khi đọc, không lưu cột. | FN-DECK-007 |
 | [BR-DECK-027](../features/deck/rules/BR-DECK-027-sap-theo-tien-do.md) | Sắp theo tiến độ | active | Sort Progress xếp deck theo mastery tăng dần; deck không có thẻ xếp cuối; bằng nhau thì theo thứ tự thủ công. | FN-DECK-007 |
@@ -277,7 +277,7 @@ Chưa có tài liệu.
 |---|---|---|---|---|
 | [BR-SRS-001](../features/srs/rules/BR-SRS-001-root-deck-chon-scheduler-khi-tao.md) | Root deck chọn scheduler khi tạo | active | Root deck chọn `eight_box` hoặc `sm2` khi tạo; không có mặc định ngầm. | FN-DECK-001 |
 | [BR-SRS-002](../features/srs/rules/BR-SRS-002-doi-scheduler-khi-chua-khoa.md) | Đổi scheduler khi chưa khoá | active | Scheduler, version và config đổi trực tiếp được khi `first_answered_at IS NULL`, không đi qua Reset. | FN-DECK-003 |
-| [BR-SRS-003](../features/srs/rules/BR-SRS-003-khoa-scheduler-sau-chuoi-hoc-moi-dau-tien.md) | Khoá scheduler sau chuỗi học mới đầu tiên | active | Scheduler bị khoá khi thẻ đầu tiên hoàn tất chuỗi học mới, trong cùng transaction với lần hoàn tất đó. | FN-DECK-003, FN-DECK-008, UC-STUDY-001 |
+| [BR-SRS-003](../features/srs/rules/BR-SRS-003-khoa-scheduler-sau-chuoi-hoc-moi-dau-tien.md) | Khoá scheduler sau chuỗi học mới đầu tiên | active | Scheduler bị khoá khi thẻ đầu tiên hoàn tất chuỗi học mới, trong cùng transaction với lần hoàn tất đó. | FN-DECK-003, FN-DECK-008, FN-SRS-001, UC-STUDY-001 |
 | [BR-SRS-004](../features/srs/rules/BR-SRS-004-doi-scheduler-khoi-tao-lai-study-state.md) | Đổi scheduler khởi tạo lại study state | active | Đổi scheduler khi chưa khoá khởi tạo lại study state toàn cây trong một transaction. | FN-DECK-003 |
 | [BR-SRS-005](../features/srs/rules/BR-SRS-005-khong-chuyen-doi-study-state-giua-scheduler.md) | Không chuyển đổi study state giữa hai scheduler | active | Không tự động chuyển đổi study state giữa hai scheduler. | FN-DECK-011 |
 | [BR-SRS-006](../features/srs/rules/BR-SRS-006-chan-di-chuyen-sang-root-khong-tuong-thich.md) | Chặn di chuyển sang root không tương thích | active | Di chuyển subtree sang root khác scheduler hoặc generation bị chặn hoặc yêu cầu reset tường minh. | FN-DECK-006, FN-DECK-011, UC-TRASH-001 |
@@ -294,23 +294,30 @@ Chưa có tài liệu.
 | [BR-SRS-017](../features/srs/rules/BR-SRS-017-luot-relearning-khong-doi-lich.md) | Lượt relearning không đổi lịch | active | Thẻ quay lại sau `forgotten`/`again` là `relearning`: ghi study answers, không đổi lịch. | UC-STUDY-001 |
 | [BR-SRS-018](../features/srs/rules/BR-SRS-018-bo-dem.md) | Bộ đếm | active | Quy tắc cập nhật `answer_count`, `lapse_count`, `last_answered_at` theo loại lượt. | UC-STUDY-001 |
 | [BR-SRS-019](../features/srs/rules/BR-SRS-019-ghi-study-answers.md) | Ghi study answers | active | Mỗi lượt `scheduled` và `relearning` ghi một dòng `review_log` với các cột đã định. | UC-STUDY-001 |
-| [BR-SRS-020](../features/srs/rules/BR-SRS-020-generation-cua-root-deck.md) | Generation của root deck | active | Mỗi root deck có `generation`, bắt đầu từ 1, +1 sau mỗi lần reset. | UC-SRS-001 |
-| [BR-SRS-021](../features/srs/rules/BR-SRS-021-reset-giu-nguyen-noi-dung.md) | Reset giữ nguyên nội dung | active | Reset giữ nguyên deck, cây con, flashcard, media, tag và mọi nội dung. | UC-SRS-001 |
-| [BR-SRS-022](../features/srs/rules/BR-SRS-022-reset-dat-lai-trang-thai-hoc.md) | Reset đặt lại trạng thái học | active | Reset đặt lại scheduler state của mọi card, kể cả `learned_at`, và mọi session đang dở. | UC-SETTINGS-001, UC-SRS-001 |
-| [BR-SRS-023](../features/srs/rules/BR-SRS-023-study-answers-cu-duoc-giu.md) | Study answers cũ được giữ | active | Study answers cũ được giữ với generation cũ và không dùng cho chu kỳ mới. | UC-PROGRESS-002, UC-SRS-001 |
-| [BR-SRS-024](../features/srs/rules/BR-SRS-024-reset-mo-khoa-scheduler.md) | Reset mở khoá scheduler | active | Sau reset `first_answered_at` về NULL, mở khoá scheduler. | UC-SRS-001 |
-| [BR-SRS-025](../features/srs/rules/BR-SRS-025-trang-thai-hoc-mang-generation.md) | Trạng thái học mang generation | active | Study state, study session và study answers đều mang `generation`. | UC-SRS-001, UC-STUDY-001 |
-| [BR-SRS-026](../features/srs/rules/BR-SRS-026-tu-choi-ket-qua-generation-cu.md) | Từ chối kết quả của generation cũ | active | Mọi thao tác ghi so generation và từ chối kết quả từ session thuộc generation cũ. | UC-SRS-001, UC-STUDY-001 |
-| [BR-SRS-027](../features/srs/rules/BR-SRS-027-reset-va-doi-scheduler-mot-transaction.md) | Reset và đổi scheduler trong một transaction | active | Reset và đổi scheduler chạy trong một Drift transaction duy nhất. | UC-SRS-001 |
-| [BR-SRS-028](../features/srs/rules/BR-SRS-028-mot-active-scheduler-moi-cay.md) | Một active scheduler mỗi cây | active | Bất biến: một cây deck có đúng một active scheduler tại một thời điểm. | FN-DECK-011, UC-SRS-001 |
-| [BR-SRS-029](../features/srs/rules/BR-SRS-029-mot-generation-moi-cay.md) | Một generation cho toàn cây | active | Bất biến: mọi card state trong một cây thuộc cùng một generation. | FN-DECK-011, UC-SRS-001 |
-| [BR-SRS-030](../features/srs/rules/BR-SRS-030-reset-can-xac-nhan.md) | Reset cần xác nhận | active | Reset cần xác nhận, nêu rõ những gì mất và những gì giữ. | UC-SRS-001 |
+| [BR-SRS-020](../features/srs/rules/BR-SRS-020-generation-cua-root-deck.md) | Generation của root deck | active | Mỗi root deck có `generation`, bắt đầu từ 1, +1 sau mỗi lần reset. | FN-SRS-002 |
+| [BR-SRS-021](../features/srs/rules/BR-SRS-021-reset-giu-nguyen-noi-dung.md) | Reset giữ nguyên nội dung | active | Reset giữ nguyên deck, cây con, flashcard, media, tag và mọi nội dung. | FN-SRS-002 |
+| [BR-SRS-022](../features/srs/rules/BR-SRS-022-reset-dat-lai-trang-thai-hoc.md) | Reset đặt lại trạng thái học | active | Reset đặt lại scheduler state của mọi card, kể cả `learned_at`, và mọi session đang dở. | FN-SRS-002, UC-SETTINGS-001 |
+| [BR-SRS-023](../features/srs/rules/BR-SRS-023-study-answers-cu-duoc-giu.md) | Study answers cũ được giữ | active | Study answers cũ được giữ với generation cũ và không dùng cho chu kỳ mới. | FN-SRS-002, UC-PROGRESS-002 |
+| [BR-SRS-024](../features/srs/rules/BR-SRS-024-reset-mo-khoa-scheduler.md) | Reset mở khoá scheduler | active | Sau reset `first_answered_at` về NULL, mở khoá scheduler. | FN-SRS-002 |
+| [BR-SRS-025](../features/srs/rules/BR-SRS-025-trang-thai-hoc-mang-generation.md) | Trạng thái học mang generation | active | Study state, study session và study answers đều mang `generation`. | FN-SRS-002, UC-STUDY-001 |
+| [BR-SRS-026](../features/srs/rules/BR-SRS-026-tu-choi-ket-qua-generation-cu.md) | Từ chối kết quả của generation cũ | active | Mọi thao tác ghi so generation và từ chối kết quả từ session thuộc generation cũ. | FN-SRS-002, UC-STUDY-001 |
+| [BR-SRS-027](../features/srs/rules/BR-SRS-027-reset-va-doi-scheduler-mot-transaction.md) | Reset và đổi scheduler trong một transaction | active | Reset và đổi scheduler chạy trong một Drift transaction duy nhất. | FN-SRS-002 |
+| [BR-SRS-028](../features/srs/rules/BR-SRS-028-mot-active-scheduler-moi-cay.md) | Một active scheduler mỗi cây | active | Bất biến: một cây deck có đúng một active scheduler tại một thời điểm. | FN-DECK-011, FN-SRS-002 |
+| [BR-SRS-029](../features/srs/rules/BR-SRS-029-mot-generation-moi-cay.md) | Một generation cho toàn cây | active | Bất biến: mọi card state trong một cây thuộc cùng một generation. | FN-DECK-011, FN-SRS-002 |
+| [BR-SRS-030](../features/srs/rules/BR-SRS-030-reset-can-xac-nhan.md) | Reset cần xác nhận | active | Reset cần xác nhận, nêu rõ những gì mất và những gì giữ. | FN-SRS-001 |
+
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-SRS-001](../functional-spec/srs.md) | Xem những gì đặt lại tiến độ học sẽ xoá | active | UC-SRS-001 |
+| [FN-SRS-002](../functional-spec/srs.md) | Đặt lại tiến độ học của một cây | active | UC-SRS-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [UC-SRS-001](../features/srs/usecases/UC-SRS-001-reset-learning-progress.md) | Reset learning progress | ready | — |
+| [UC-SRS-001](../USE_CASES.md) | Reset learning progress | ready | — |
 
 ## [starter-decks](../features/starter-decks/README.md)
 
@@ -355,9 +362,9 @@ Chưa có tài liệu.
 | [BR-STUDY-012](../features/study/rules/BR-STUDY-012-bay-gia-tri-end-reason.md) | Bảy giá trị end_reason | active | `study_session.end_reason` có đúng bảy giá trị; NULL khi chưa hoặc kết thúc bình thường. | UC-STUDY-001 |
 | [BR-STUDY-013](../features/study/rules/BR-STUDY-013-het-queue-la-completed.md) | Hết queue là completed | active | Hoàn thành toàn bộ queue cho `completed`, `end_reason` NULL. | UC-STUDY-001 |
 | [BR-STUDY-014](../features/study/rules/BR-STUDY-014-thoat-chu-dong-la-abandoned.md) | Thoát chủ động là abandoned | active | Người dùng chủ động thoát cho `abandoned`, `end_reason = user_exit`. | UC-STUDY-001 |
-| [BR-STUDY-015](../features/study/rules/BR-STUDY-015-reset-khi-dang-mo-la-invalidated.md) | Reset khi phiên đang mở là invalidated | active | Reset khi session đang mở cho `invalidated`, `end_reason = scheduler_reset`. | UC-SRS-001, UC-STUDY-001 |
+| [BR-STUDY-015](../features/study/rules/BR-STUDY-015-reset-khi-dang-mo-la-invalidated.md) | Reset khi phiên đang mở là invalidated | active | Reset khi session đang mở cho `invalidated`, `end_reason = scheduler_reset`. | FN-SRS-002, UC-STUDY-001 |
 | [BR-STUDY-016](../features/study/rules/BR-STUDY-016-doi-scheduler-khi-dang-mo-la-invalidated.md) | Đổi scheduler khi phiên đang mở là invalidated | active | Đổi scheduler khi chưa khoá làm phiên đang mở `invalidated` trong cùng transaction. | FN-DECK-003 |
-| [BR-STUDY-017](../features/study/rules/BR-STUDY-017-tu-choi-ghi-generation-cu.md) | Từ chối ghi của generation cũ | active | Session thuộc generation cũ bị từ chối ghi và chuyển `invalidated`/`stale_generation`. | UC-STUDY-001, UC-STUDY-002 |
+| [BR-STUDY-017](../features/study/rules/BR-STUDY-017-tu-choi-ghi-generation-cu.md) | Từ chối ghi của generation cũ | active | Session thuộc generation cũ bị từ chối ghi và chuyển `invalidated`/`stale_generation`. | FN-SRS-002, UC-STUDY-001, UC-STUDY-002 |
 | [BR-STUDY-018](../features/study/rules/BR-STUDY-018-loi-khong-the-tiep-tuc-la-failed.md) | Lỗi không thể tiếp tục là failed | active | Lỗi không thể tiếp tục cho `failed`, `end_reason = persistence_error`. | UC-STUDY-001 |
 | [BR-STUDY-019](../features/study/rules/BR-STUDY-019-giu-luot-da-ghi.md) | Giữ các lượt đã ghi | active | Lượt đã ghi trước khi session kết thúc bất thường được giữ ở mọi trạng thái kết thúc. | UC-STUDY-001 |
 | [BR-STUDY-020](../features/study/rules/BR-STUDY-020-session-chi-tao-boi-hanh-dong-study.md) | Session chỉ tạo bởi hành động Study | active | Session chỉ được tạo bởi hành động Study tường minh; hiển thị số đến hạn không tạo session. | UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
@@ -390,8 +397,8 @@ Chưa có tài liệu.
 | [BR-STUDY-047](../features/study/rules/BR-STUDY-047-pill-new-due-dung-cung-dinh-nghia.md) | Pill New/Due dùng cùng định nghĩa | active | Pill New và Due trên danh sách thẻ dùng cùng định nghĩa của BR-STUDY-051, hai tập rời nhau. | FN-CARD-001 |
 | [BR-STUDY-048](../features/study/rules/BR-STUDY-048-browse-xem-lai-the-da-qua.md) | browse: xem lại thẻ đã qua | active | Chỉ `browse` cho xem lại thẻ đã qua trong round; xem lại không ghi lượt, không lùi `cursor`. | — |
 | [BR-STUDY-049](../features/study/rules/BR-STUDY-049-match-toi-da-nam-cap-moi-ban.md) | match: tối đa năm cặp mỗi bàn | active | `match` bày tối đa năm cặp một lúc, chia round thành các bàn liên tiếp theo `position`. | — |
-| [BR-STUDY-050](../features/study/rules/BR-STUDY-050-reset-dua-learned-at-va-due-at-ve-null.md) | Reset đưa learned_at và due_at về NULL | active | Reset đặt `learned_at` và `due_at` cùng về NULL. | — |
-| [BR-STUDY-051](../features/study/rules/BR-STUDY-051-hai-loai-phien-learning-reviewing.md) | Hai loại phiên learning và reviewing | active | Có đúng hai loại phiên: `learning` lấy thẻ chưa học xong, `reviewing` lấy thẻ đã học và đến hạn. | FN-DECK-007, UC-REMINDER-001, UC-STUDY-002, UC-STUDY-003 |
+| [BR-STUDY-050](../features/study/rules/BR-STUDY-050-reset-dua-learned-at-va-due-at-ve-null.md) | Reset đưa learned_at và due_at về NULL | active | Reset đặt `learned_at` và `due_at` cùng về NULL. | FN-SRS-002 |
+| [BR-STUDY-051](../features/study/rules/BR-STUDY-051-hai-loai-phien-learning-reviewing.md) | Hai loại phiên learning và reviewing | active | Có đúng hai loại phiên: `learning` lấy thẻ chưa học xong, `reviewing` lấy thẻ đã học và đến hạn. | FN-DECK-007, FN-SRS-002, UC-REMINDER-001, UC-STUDY-002, UC-STUDY-003 |
 | [BR-STUDY-052](../features/study/rules/BR-STUDY-052-kind-learning-cho-chuoi-hoc-moi.md) | kind learning cho chuỗi học mới | active | `kind = learning` dành cho lượt trong chuỗi học mới; không xuất hiện trong phiên `reviewing`. | — |
 | [BR-STUDY-053](../features/study/rules/BR-STUDY-053-hoan-tat-chuoi-hoc-moi-la-su-kien.md) | Hoàn tất chuỗi học mới là sự kiện | active | Chuỗi học mới không đổi lịch tới khi thẻ đi hết stage của nó; hoàn tất là sự kiện đặt `learned_at` và lịch đầu. | FN-CARD-014 |
 | [BR-STUDY-054](../features/study/rules/BR-STUDY-054-khong-mo-reviewing-khi-khong-co-the-den-han.md) | Không mở reviewing khi không có thẻ đến hạn | active | Phiên `reviewing` không mở khi không có thẻ đến hạn; không có ôn sớm hơn hạn. | UC-STUDY-003 |

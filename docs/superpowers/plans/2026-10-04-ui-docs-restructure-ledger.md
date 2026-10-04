@@ -2521,63 +2521,63 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:2` id: UC-SRS-001 |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:3` title: Reset learning progress |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:4` status: ready |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:5` rules: [BR-SRS-020, BR-SRS-021, BR-SRS-022, BR-SRS-023, BR-SRS-024, BR-SRS-025, |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:6` code: [lib/features/srs/domain/usecases/get_reset_learning_summary_use_case.dart |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:10` **Actor:** Người dùng |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:15` ## Main flow |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:17` **Main flow:** |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:18` 1. Người dùng chọn đặt lại tiến độ học. |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:19` 2. Hệ thống hiện xác nhận nêu rõ hai danh sách (BR-SRS-030): |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:20` - **Giữ nguyên:** deck, toàn bộ cây deck con, flashcard, media, tag, mọi nội |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:22` - **Mất:** lịch ôn hiện tại, ngày đến hạn, box / ease factor / interval, trạng |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:25` 3. Người dùng có thể chọn **chế độ ôn tập mới** ngay trong bước này — đây là mục |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:27` 4. Người dùng xác nhận. |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:28` 5. Hệ thống thực hiện, **trong một transaction duy nhất** (BR-SRS-027): |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:29` - tăng `generation` của root deck (BR-SRS-020); |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:30` - đặt `scheduler_type` / `version` / `config` mới nếu người dùng đã chọn; |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:31` - đặt `first_answered_at = NULL` → scheduler mở khoá (BR-SRS-024); |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:32` - khởi tạo lại study state của **toàn bộ** card trong cây (mọi cấp), theo |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:34` - mọi study session `in_progress` của cây → `invalidated`, |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:36` - **không** đụng tới `review_log` (BR-SRS-023), và **không** đụng tới |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:38` 6. Người dùng quay về deck; toàn bộ card đã trở lại trạng thái Học mới |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:42` ## Alternative / Error flow |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:44` **Alternative flows:** |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:45` - **A1 — Reset mà không đổi chế độ:** hợp lệ. Dùng khi người dùng chỉ muốn học l |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:47` - **A2 — Reset trên deck chưa có lượt học:** vẫn cho phép, nhưng nêu rõ là không |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:49` - **A3 — Huỷ ở bước xác nhận:** không xảy ra gì. |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:50` - **A4 — Reset trên deck con:** không có thao tác này. Reset chỉ tồn tại ở root |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:53` **Error flows:** |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:54` - **E1 — Thất bại giữa chừng:** transaction rollback (BR-SRS-027). Root giữ nguy |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:57` - **E2 — Người dùng có phiên đang mở ở màn khác:** phiên đó đã bị chuyển |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:61` ## UI |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:63` **UI states:** loaded · submitting · error |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:65` ## Local |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:67` **Postconditions:** |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:68` - `generation` tăng đúng 1. |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:69` - Mọi study state trong cây có generation mới, scheduler mới, `due_at = NULL`. |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:70` - `first_answered_at IS NULL`. |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:71` - Không còn session `in_progress` nào của cây. |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:72` - `review_log` cũ còn nguyên, mang generation cũ (BR-SRS-023). |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:73` - Cấu trúc cây và `content_type` không đổi (BR-SRS-021). |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:74` - Bất biến BR-SRS-028 và BR-SRS-029 giữ nguyên. |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:76` ## API |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:78` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:80` ## Acceptance criteria |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:82` - [ ] **Given** một root đã khoá scheduler và đã học, **when** người dùng xác nh |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:83` - [ ] **Given** một reset vừa xong, **when** kiểm tra dữ liệu, **then** cây deck |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:84` - [ ] **Given** một reset vừa xong, **when** kiểm tra `review_log`, **then** các |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:85` - [ ] **Given** nhiều cây deck độc lập, **when** một cây được reset, **then** cá |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:86` - [ ] **Given** reset giữ nguyên chế độ đang chạy, **when** người dùng xác nhận, |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:87` - [ ] **Given** một root chưa từng học hoặc không có card, **when** hộp xác nhận |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:88` - [ ] **Given** hộp xác nhận reset đang mở, **when** người dùng bấm Huỷ, **then* |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:89` - [ ] **Given** một deck con, **when** người dùng tìm thao tác đặt lại tiến độ h |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:90` - [ ] **Given** một ghi lỗi giữa transaction reset, **when** hệ thống xử lý, **t |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:91` - [ ] **Given** cây có một phiên `in_progress`, **when** reset được thực hiện, * |  |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:92` - [ ] **Given** một root không tồn tại hoặc đang ở Trash, **when** yêu cầu reset |  |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:2` id: UC-SRS-001 | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:3` title: Reset learning progress | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:5` rules: [BR-SRS-020, BR-SRS-021, BR-SRS-022, BR-SRS-023, BR-SRS-024, BR-SRS-025, | superseded → FN-SRS-001, FN-SRS-002 (Business rules) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:6` code: [lib/features/srs/domain/usecases/get_reset_learning_summary_use_case.dart | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:10` **Actor:** Người dùng | pending → SCR-SRS-001 (the "Reset learning progress" command, reached from the locked algorithm's explanation); intent kept in UC-SRS-001 (Mục tiêu) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:15` ## Main flow | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:17` **Main flow:** | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:18` 1. Người dùng chọn đặt lại tiến độ học. | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:19` 2. Hệ thống hiện xác nhận nêu rõ hai danh sách (BR-SRS-030): | superseded → FN-SRS-001 (the kept / lost lists) + UC-SRS-001 step 2; the confirmation's layout pending → SCR-SRS-001 |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:20` - **Giữ nguyên:** deck, toàn bộ cây deck con, flashcard, media, tag, mọi nội | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:22` - **Mất:** lịch ôn hiện tại, ngày đến hạn, box / ease factor / interval, trạng | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:25` 3. Người dùng có thể chọn **chế độ ôn tập mới** ngay trong bước này — đây là mục | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:27` 4. Người dùng xác nhận. | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:28` 5. Hệ thống thực hiện, **trong một transaction duy nhất** (BR-SRS-027): | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:29` - tăng `generation` của root deck (BR-SRS-020); | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:30` - đặt `scheduler_type` / `version` / `config` mới nếu người dùng đã chọn; | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:31` - đặt `first_answered_at = NULL` → scheduler mở khoá (BR-SRS-024); | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:32` - khởi tạo lại study state của **toàn bộ** card trong cây (mọi cấp), theo | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:34` - mọi study session `in_progress` của cây → `invalidated`, | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:36` - **không** đụng tới `review_log` (BR-SRS-023), và **không** đụng tới | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:38` 6. Người dùng quay về deck; toàn bộ card đã trở lại trạng thái Học mới | superseded → UC-SRS-001 step 6 + FN-SRS-002 (Kết quả) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:42` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:44` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:45` - **A1 — Reset mà không đổi chế độ:** hợp lệ. Dùng khi người dùng chỉ muốn học l | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:47` - **A2 — Reset trên deck chưa có lượt học:** vẫn cho phép, nhưng nêu rõ là không | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:49` - **A3 — Huỷ ở bước xác nhận:** không xảy ra gì. | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:50` - **A4 — Reset trên deck con:** không có thao tác này. Reset chỉ tồn tại ở root | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:53` **Error flows:** | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:54` - **E1 — Thất bại giữa chừng:** transaction rollback (BR-SRS-027). Root giữ nguy | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:57` - **E2 — Người dùng có phiên đang mở ở màn khác:** phiên đó đã bị chuyển | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:61` ## UI | pending → SCR-SRS-001 (states loaded · submitting · error) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:63` **UI states:** loaded · submitting · error | pending → SCR-SRS-001 (states loaded · submitting · error) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:65` ## Local | superseded → FN-SRS-002 (Kết quả) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:67` **Postconditions:** | superseded → FN-SRS-002 (Kết quả) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:68` - `generation` tăng đúng 1. | superseded → FN-SRS-002 (Kết quả) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:69` - Mọi study state trong cây có generation mới, scheduler mới, `due_at = NULL`. | superseded → FN-SRS-002 (Kết quả) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:70` - `first_answered_at IS NULL`. | superseded → FN-SRS-002 (Kết quả) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:71` - Không còn session `in_progress` nào của cây. | superseded → FN-SRS-002 (Kết quả) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:72` - `review_log` cũ còn nguyên, mang generation cũ (BR-SRS-023). | superseded → FN-SRS-002 (Kết quả) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:73` - Cấu trúc cây và `content_type` không đổi (BR-SRS-021). | superseded → FN-SRS-002 (Kết quả) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:74` - Bất biến BR-SRS-028 và BR-SRS-029 giữ nguyên. | superseded → FN-SRS-002 (Kết quả) |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:76` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:78` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:80` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:82` - [ ] **Given** một root đã khoá scheduler và đã học, **when** người dùng xác nh | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:83` - [ ] **Given** một reset vừa xong, **when** kiểm tra dữ liệu, **then** cây deck | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:84` - [ ] **Given** một reset vừa xong, **when** kiểm tra `review_log`, **then** các | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:85` - [ ] **Given** nhiều cây deck độc lập, **when** một cây được reset, **then** cá | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:86` - [ ] **Given** reset giữ nguyên chế độ đang chạy, **when** người dùng xác nhận, | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:87` - [ ] **Given** một root chưa từng học hoặc không có card, **when** hộp xác nhận | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:88` - [ ] **Given** hộp xác nhận reset đang mở, **when** người dùng bấm Huỷ, **then* | pending → SCR-SRS-001 (the confirmation's Cancel); intent kept in UC-SRS-001 A3 |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:89` - [ ] **Given** một deck con, **when** người dùng tìm thao tác đặt lại tiến độ h | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:90` - [ ] **Given** một ghi lỗi giữa transaction reset, **when** hệ thống xử lý, **t | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:91` - [ ] **Given** cây có một phiên `in_progress`, **when** reset được thực hiện, * | moved → `USE_CASES.md` |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:92` - [ ] **Given** một root không tồn tại hoặc đang ở Trash, **when** yêu cầu reset | moved → `USE_CASES.md` |
 
 ## features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md
 
@@ -3176,16 +3176,16 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/srs/ui.md:1` # SRS scheduler — UI |  |
-| `features/srs/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên |  |
-| `features/srs/ui.md:5` ## Validation |  |
-| `features/srs/ui.md:7` \| Trường \| Rule \| Message hiển thị \| Enforced by \| |  |
-| `features/srs/ui.md:9` \| Deck.schedulerType \| bắt buộc chọn khi tạo root deck (BR-SRS-001) \| "Hãy chọn |  |
-| `features/srs/ui.md:10` \| Deck.move \| đích cùng root scheduler và generation (BR-SRS-006) \| "Deck đích d |  |
-| `features/srs/ui.md:12` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid |  |
-| `features/srs/ui.md:14` ## Edge case |  |
-| `features/srs/ui.md:16` \| Case \| Expected behaviour \| |  |
-| `features/srs/ui.md:18` \| Đổi giờ hệ thống / lệch múi giờ \| Lưu và so sánh `due_at` bằng UTC ([ADR-008]( |  |
+| `features/srs/ui.md:1` # SRS scheduler — UI | superseded → FN-DECK-001, FN-DECK-011 (the rules of its validation table) |
+| `features/srs/ui.md:3` Màn hình, điều hướng và validation dùng chung nhiều UC của feature. Hành vi riên | superseded → FN-DECK-001 |
+| `features/srs/ui.md:5` ## Validation | superseded → FN-DECK-001 |
+| `features/srs/ui.md:7` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | superseded → FN-DECK-001 (Input: algorithm required) + SCR-DECK-001 (Create deck On failure: "Choose how the cards are reviewed.") |
+| `features/srs/ui.md:9` \| Deck.schedulerType \| bắt buộc chọn khi tạo root deck (BR-SRS-001) \| "Hãy chọn | superseded → FN-DECK-001 (algorithm required) + SCR-DECK-001 (Copy) — the app's English copy replaces this Vietnamese message |
+| `features/srs/ui.md:10` \| Deck.move \| đích cùng root scheduler và generation (BR-SRS-006) \| "Deck đích d | superseded → FN-DECK-011 (Lỗi: subtreeSchedulerMismatch) + SCR-DECK-001 (Copy: "That deck uses a different scheduler.") |
+| `features/srs/ui.md:12` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | superseded → ADR-015 (the server checks integrity only) |
+| `features/srs/ui.md:14` ## Edge case | superseded → ADR-008 |
+| `features/srs/ui.md:16` \| Case \| Expected behaviour \| | superseded → ADR-008 |
+| `features/srs/ui.md:18` \| Đổi giờ hệ thống / lệch múi giờ \| Lưu và so sánh `due_at` bằng UTC ([ADR-008]( | superseded → ADR-008 (due_at stored and compared in UTC) |
 
 ## features/starter-decks/ui.md
 
@@ -4106,3 +4106,8 @@ Task 21), watch_card_detail 013, load_card_history_page 014.
 - UC-DECK-004 now invokes FN-CARD-002 for its card branch (Task 12 note closed).
 - Presentation taken out of UC-CARD-001/002 waits for SCR-CARD-001…004 (`pending` rows).
 - Warning delta: 68 → 69 = +2 migrated legacy UC files, −1 BR-STUDY-047 now cited by FN-CARD-001.
+
+## Task 15 notes — srs
+
+get_reset_learning_summary → FN-SRS-001, reset_learning_progress → FN-SRS-002. Warning delta
+69 → 69: +1 migrated UC-SRS-001, −1 BR-STUDY-050 now cited by FN-SRS-002.
