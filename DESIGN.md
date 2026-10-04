@@ -540,9 +540,9 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxTagChip | A tag name | shared | CARD, SEARCH | SP3a | built |
 | MxIconTile | Icon on a toned tile in three sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | built |
 | MxLinearProgress | Determinate bar: value, tone, size; knows no mastery | shared | DECK, STUDY | SP3a | built |
-| MxDialog | Modal decision | shared | ACCOUNT, CARD, DECK, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
-| MxBottomSheet | Modal sheet with a grabber, a pinned header and footer | shared | ACCOUNT, CARD, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
-| MxSheetActions | Dialog and sheet footer actions | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxDialog | Modal decision | shared | ACCOUNT, CARD, DECK, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | built |
+| MxBottomSheet | Modal sheet with a grabber, a pinned header and footer | shared | ACCOUNT, CARD, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
+| MxSheetActions | Dialog and sheet footer actions | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, TAG, TRANSFER, TRASH | SP3a | built |
 | MxSnackbar | Transient message with one optional action | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
 | MxInlineBanner | Warning or danger banner owned by its screen | shared | ACCOUNT, CARD, DECK, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TRANSFER, TRASH | SP3a | planned |
 | MxEmptyState | Nothing here yet, and what to do | shared | ACCOUNT, CARD, DECK, SEARCH, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
@@ -778,6 +778,29 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: one live region names what is loading; the shapes are silent
 - Tokens: `surface-container-highest`; `AppOpacity.skeleton*`; `AppDurations.skeletonPulse`; a line as tall as the text it stands for (title `bodyLarge`, meta `bodySmall`), the title line at 60% and the meta at 40% of the text column (component contract); the row tile is the medium icon tile (40, r12)
 - Golden: list__light, list__dark
+
+#### MxSheetActions
+- Variants: confirm tones primary, destructive, warning; with or without Cancel (outline tone: one primary per decision); in a dialog or in a sheet (under a hairline, on the gutter)
+- States: enabled, confirm disabled, confirm loading
+- Accessibility: buttons named by their labels; Cancel and the confirm share the row equally, the confirm trailing, while both labels fit one line at the reader's text scale (measured); otherwise they stack full width, the confirm on top; a label is never cut; a lone confirm spans the row
+- Tokens: through `MxButton`; `outline-variant` hairline in a sheet
+- Golden: none — seen in `mx_dialog__decision` and `mx_bottom_sheet__picker`
+
+
+#### MxDialog
+- Variants: widths small (300), medium (320), large (340), never wider than the window less its gutters; optional message and content
+- States: opening (fade and scale from 0.92 over 200ms, a component contract; at once under reduced motion), open
+- Accessibility: a named route scope; the 45% scrim dismisses unless told not to; its footer is `MxSheetActions`
+- Tokens: `surface-container-high`; `AppRadius.xl`; overlay shadow; `scrim` at `AppOpacity.scrim`; `titleLarge`, `bodyMedium` in `on-surface-variant`; `AppSpacing.card`
+- Golden: decision__light, decision__dark
+
+
+#### MxBottomSheet
+- Variants: with or without a title and a pinned footer
+- States: opening (slides up over 260ms; at once under reduced motion), open, above the keyboard
+- Accessibility: the title is a header; the sheet stops 72 below the top safe area (Material 3) and the body scrolls; it rides above the keyboard; the grabber sits in a 48 band
+- Tokens: `surface-container-high`; top corners `AppRadius.xl`; chrome shadow; grabber 32 × 4 in `outline` (3:1; Material 3's handle); `AppSize.sheetTopClearance` (72), `AppSize.sheetMaxWidth` (640)
+- Golden: picker__light, picker__dark
 
 ## Do's and Don'ts
 
