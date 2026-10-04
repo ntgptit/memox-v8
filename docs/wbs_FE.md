@@ -151,7 +151,7 @@ sign-off riêng.
 
 | ID | Kết quả | Trạng thái | Phụ thuộc | Cỡ | Bằng chứng | Việc tiếp theo |
 |---|---|---|---|---|---|---|
-| SP2 | Gỡ UI cũ: presentation của 13 feature, `Mx*`, theme, gallery, test UI, `integration_test/` và 526 golden; shell placeholder 4 tab giữ route contract | đang làm | sub-project 1 (PR #196) | L | [spec](superpowers/specs/2026-10-04-sp2-remove-legacy-ui-design.md), [plan](superpowers/plans/2026-10-04-sp2-remove-legacy-ui.md), [ma trận](superpowers/plans/2026-10-04-sp2-remove-legacy-ui-matrix.md); branch `ccr-841d461f-jofe0s`; tag `legacy-ui-v8-goldens` | Review cuối, sign-off của chủ dự án |
+| SP2 | Gỡ UI cũ: presentation của 13 feature, `Mx*`, theme, gallery, test UI, `integration_test/` và 526 golden; shell placeholder 4 tab giữ route contract | xong | sub-project 1 (PR #196) | L | [spec](superpowers/specs/2026-10-04-sp2-remove-legacy-ui-design.md), [plan](superpowers/plans/2026-10-04-sp2-remove-legacy-ui.md), [ma trận](superpowers/plans/2026-10-04-sp2-remove-legacy-ui-matrix.md); branch `ccr-841d461f-jofe0s`; tag `legacy-ui-v8-goldens`; gate 1634/1634, review cuối (Opus), APK build pass, chủ dự án sign-off 2026-10-04 | Spec SP3a |
 | SP3a | Design-system foundation: DESIGN.md (45 role M3, bảng ánh xạ) → token → theme sáng/tối → primitive → `Mx*` | chưa bắt đầu | SP2 | L | — | Spec SP3a |
 | SP3b | App shell theo NAVIGATION.md + lát dọc SCR-DECK-001, audit Impeccable, golden `scr_*` đầu tiên | chưa bắt đầu | SP3a | L | — | Spec SP3b |
 | SP3c | 33 màn còn lại, theo nhóm domain | chưa bắt đầu | SP3b | XL | — | Spec SP3c |
