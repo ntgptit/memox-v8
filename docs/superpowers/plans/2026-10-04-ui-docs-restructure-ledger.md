@@ -5,6 +5,15 @@ An outcome is one of: moved → `<path relative to docs/>`; superseded → <ID o
 dropped — <reason>, approved <YYYY-MM-DD>; pending → <SCR id> (…) while the target
 spec is not written. `check.py --ledger` verifies them and fails on pending.
 
+**Owner sign-off 2026-10-04 (Task 43).** 3625 rows: 2545 moved · 1027 superseded · 53 dropped
+(approved 2026-10-04: 44 "API — not applicable, local-only" sections, ADR-001; 6 "Phạm vi" lines of
+work-split history; 2 restatements of ADR-015; 1 V8.0 build-order note) · 0 pending. Goldens: 526,
+of which 452 map to a screen state key and 74 follow the Task 41/42 rulings (68 component goldens →
+DESIGN.md, 4 tablet-rail goldens → NAVIGATION.md, 2 `app_library` → SCR-DECK-001 `root_empty`).
+Re-seed adds no row. Migration OPEN QUESTION: 0. Unresolved current-spec ruling: SCR-STUDY-007 —
+20-second turn with TalkBack (its context is in the spec; it does not block Task 44). The
+IMPLEMENTATION GAPs of SCR-DECK-001 and SCR-STUDY-002 stay; no code changes in this migration.
+
 ## shared/ui/screen-handoff/00-index.md
 
 | Source item | Outcome |
@@ -1876,8 +1885,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:78` **UI states:** loading · loaded · empty · submitting · error | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:80` ## Local | superseded → FN-CARD-002 (Kết quả) |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:82` **Postconditions:** Card tồn tại kèm đúng một study state, đúng scheduler và | superseded → FN-CARD-002 (Kết quả) |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:85` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:87` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:85` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:87` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:89` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:91` - [ ] **Given** một deck `unset` và một draft hợp lệ, **when** người dùng thêm c | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:92` - [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa n | moved → `USE_CASES.md` |
@@ -1933,8 +1942,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:78` **UI states:** loading (đọc nội dung + trạng thái) · loaded không có lịch sử · | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:83` ## Local | superseded → FN-CARD-013 (Kết quả: không ghi gì) |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:85` **Postconditions:** Database không đổi — nội dung, `updated_at`, study state, | superseded → FN-CARD-013 (Kết quả: không ghi gì) |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:89` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:91` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:89` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:91` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:93` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:95` - [ ] **Given** chạm một hàng card ở chế độ thường, **when** chi tiết mở, **then | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:96` - [ ] **Given** chi tiết đang mở, **when** tag, study state hoặc nội dung đổi, * | moved → `USE_CASES.md` |
@@ -1985,8 +1994,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:45` **UI states:** initial · submitting · error | superseded → SCR-DECK-001 (## States) |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:47` ## Local | superseded → FN-DECK-001 (Kết quả) |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:49` **Postconditions:** Root deck tồn tại với scheduler đã chọn, `content_type = | superseded → FN-DECK-001 (Kết quả) |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:52` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:54` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:52` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:54` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:56` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:58` - [ ] **Given** một tên hợp lệ và một chế độ ôn tập (`eight_box` hoặc `sm2`), ** | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:59` - [ ] **Given** một root deck vừa tạo, **when** người dùng bấm Create bên trong | superseded → UC-DECK-001 (intent) + SCR-DECK-001 (presentation of the criterion) |
@@ -2041,8 +2050,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:77` - Sau đổi chế độ: `scheduler_type` mới, mọi study state trong cây khởi tạo lại, | superseded → FN-DECK-003 (Kết quả) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:80` - Sau xoá: deck và mọi descendant active của nó nằm trong Trash, cùng một batch | superseded → FN-DECK-005 (Kết quả) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:85` - Sau xoá một deck con: nếu deck cha là **sub-deck** và vừa mất phần tử con | superseded → FN-DECK-005 (Kết quả) |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:89` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:91` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:89` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:91` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:93` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:95` - [ ] **Given** một tên mới hợp lệ, **when** người dùng đổi tên deck, **then** t | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:96` - [ ] **Given** một root chưa có `first_answered_at`, **when** người dùng chọn c | moved → `USE_CASES.md` |
@@ -2094,8 +2103,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:61` **Postconditions:** Không đổi gì — use case chỉ đọc. | superseded → FN-DECK-007 (Kết quả, Business rules) |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:63` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-DECK-007 (Kết quả, Business rules) |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:65` BR-STUDY-051 — hai tập "chưa học" và "đến hạn" phải khớp **hệt** UC-STUDY-001, n | superseded → FN-DECK-007 (Kết quả, Business rules) |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:69` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:71` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:69` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:71` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:73` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:75` - [ ] **Given** nhiều root deck với card ở nhiều cấp, **when** danh sách deck tả | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:76` - [ ] **Given** deck có card mới, card đến hạn hôm nay và card quá hạn, **when** | moved → `USE_CASES.md` |
@@ -2153,8 +2162,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:71` - Deck có `content_type` khác `unset`, khớp với loại phần tử con vừa tạo. | superseded → FN-DECK-009 (Kết quả) |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:72` - Deck không đồng thời chứa card và deck con (BR-DECK-011). | superseded → FN-DECK-009 (Kết quả) |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:73` - Deck con mới có `root_id` đúng bằng root của cha (BR-DECK-002, BR-DECK-019). | superseded → FN-DECK-009 (Kết quả) |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:75` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:77` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:75` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:77` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:79` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:81` - [ ] **Given** một root deck, **when** bấm Create, **then** chỉ có Create deck | superseded → UC-DECK-004 (intent) + SCR-DECK-001 (presentation of the criterion) |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:82` - [ ] **Given** một deck con `content_type = 'unset'`, **when** bấm Create, **th | superseded → UC-DECK-004 (intent) + SCR-DECK-001 (presentation of the criterion) |
@@ -2213,8 +2222,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:69` - Không deck nào đồng thời chứa card và deck con (BR-DECK-011). | superseded → FN-DECK-011 (Kết quả) |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:70` - Deck đích `unset` nhận phần tử con đầu tiên thành `deck`; cha cũ là sub-deck | superseded → FN-DECK-011 (Kết quả) |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:72` - Không có card study state nào lệch scheduler hoặc generation so với root | superseded → FN-DECK-011 (Kết quả) |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:75` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:77` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:75` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:77` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:79` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:81` - [ ] **Given** deck nguồn và đích hợp lệ (đích không phải chính nó hay descenda | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:82` - [ ] **Given** đích đang `unset` và deck cha cũ (không phải root) vừa mất phần | moved → `USE_CASES.md` |
@@ -2249,8 +2258,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:41` **UI states:** Ở Manual order, action sheet hiện mục Reorder khi level có từ hai | superseded → SCR-DECK-001 (## States) |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:46` ## Local | superseded → FN-DECK-012 (Kết quả) |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:48` **Postconditions:** Chỉ `sibling_position` (và timestamp audit của các sibling | superseded → FN-DECK-012 (Kết quả) |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:52` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:54` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:52` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:54` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:56` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:58` - [ ] **Given** hai deck cùng `parent_id` ở Manual order, **when** hệ thống gửi | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:59` - [ ] **Given** nhiều root deck, **when** sắp xếp lại, **then** chúng đổi chỗ tr | moved → `USE_CASES.md` |
@@ -2295,8 +2304,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:69` **UI states:** loading · loaded-normal (có hoạt động trong cửa sổ) · | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:75` ## Local | superseded → FN-PROGRESS-001 (read-only, stated at the top of functional-spec/progress.md) |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:77` **Postconditions:** Database không đổi ở mọi nhánh, kể cả nhánh lỗi và nhánh | superseded → FN-PROGRESS-001 (read-only, stated at the top of functional-spec/progress.md) |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:80` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:82` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:80` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:82` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:84` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:86` - [ ] **Given** người dùng mở tab Progress, **when** hệ thống đọc xong, **then** | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-001-xem-tien-do-hoc.md:87` - [ ] **Given** màn Progress đang mở, **when** người dùng chỉ đọc rồi rời tab ho | moved → `USE_CASES.md` |
@@ -2342,8 +2351,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:68` **UI states:** loading · mixed activity (một số deck có, một số không) · | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:73` ## Local | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (read-only, stated at the top of functional-spec/progress.md) |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:75` **Postconditions:** Database không đổi — nội dung, timestamp, `content_type`, | superseded → FN-PROGRESS-001 + FN-PROGRESS-002 (read-only, stated at the top of functional-spec/progress.md) |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:79` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:81` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:79` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:81` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:83` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:85` - [ ] **Given** thư viện có ít nhất một root deck, **when** mở tab Progress, **t | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
 | `features/progress/usecases/UC-PROGRESS-002-xem-tien-do-theo-deck.md:86` - [ ] **Given** cấp thư viện hoặc cấp một deck đang mở ở khoảng 7 ngày, **when** | moved → `screens/spec/SCR-PROGRESS-001-progress.md` |
@@ -2367,7 +2376,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:5` rules: [BR-DECK-003, BR-CORE-001, BR-CORE-004, BR-REMINDER-001, BR-REMINDER-002, | superseded → FN-REMINDER-001…FN-REMINDER-007 (Business rules) |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:6` code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/ | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:10` **Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2). Phần logic xong ở B | dropped — history of how the work was split (BE-B5a, BE-B5b, FE-B5); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:10` **Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2). Phần logic xong ở B | dropped — history of how the work was split (BE-B5a, BE-B5b, FE-B5); those specs stay under docs/superpowers/specs, approved 2026-10-04 |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:15` **Actor:** Người dùng | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:20` ## Main flow | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:22` **Main flow:** | moved → `USE_CASES.md` |
@@ -2396,8 +2405,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:82` **UI states:** loading (đọc settings) · off · enabling (đang xin quyền/đặt lịch, | moved → `screens/spec/SCR-REMINDER-001-daily-reminder.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:89` ## Local | superseded → FN-REMINDER-003 + FN-REMINDER-007 (Kết quả) + the reconcile note at the top of functional-spec/reminders.md (one pending reminder when on, none when off) |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:91` **Postconditions:** `app_settings` mang đúng trạng thái bật/tắt và giờ nhắc mà | superseded → FN-REMINDER-003 + FN-REMINDER-007 (Kết quả) + the reconcile note at the top of functional-spec/reminders.md (one pending reminder when on, none when off) |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:95` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:97` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:95` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:97` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:99` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:101` - [ ] **Given** nhắc học đang tắt, **when** người dùng bật lúc 20:00 và cấp quyề | moved → `USE_CASES.md` |
 | `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:102` - [ ] **Given** người dùng từ chối quyền, **when** bật, **then** settings vẫn tắ | moved → `USE_CASES.md` |
@@ -2448,8 +2457,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:58` **Postconditions:** Không đổi gì — use case chỉ đọc, và không mở phiên học nào | superseded → FN-SEARCH-001 (Kết quả: nothing written, no session opened) |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:61` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-SEARCH-001 (Business rules) |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:63` BR-SEARCH-001, BR-SEARCH-002, BR-SEARCH-003, BR-SEARCH-004, BR-SEARCH-005, BR-SE | superseded → FN-SEARCH-001 (Business rules) |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:68` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:70` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:68` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:70` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:72` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:74` - [ ] **Given** màn tìm kiếm chưa có từ nào, **when** hiển thị, **then** hệ thốn | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:75` - [ ] **Given** người dùng gõ, **when** 250 ms im lặng trôi qua, **then** từ tìm | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
@@ -2498,8 +2507,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:71` **UI states:** loading (đọc lần đầu) · loaded ở mặc định · loaded ở giá trị | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:77` ## Local | superseded → FN-SETTINGS-001 + FN-SETTINGS-005 + FN-SETTINGS-007 + FN-SETTINGS-008 (Kết quả) |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:79` **Postconditions:** `app_settings` giữ đúng một dòng với giá trị người dùng đã | superseded → FN-SETTINGS-001 + FN-SETTINGS-005 + FN-SETTINGS-007 + FN-SETTINGS-008 (Kết quả) |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:85` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:87` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:85` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:87` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:89` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:91` - [ ] **Given** app vừa cài hoặc mở tab Settings, **when** đọc xong dòng `app_se | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md:92` - [ ] **Given** người dùng bấm nút −/+ hoặc giữ trên trần thẻ mỗi phiên, **when* | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
@@ -2564,8 +2573,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:72` - `review_log` cũ còn nguyên, mang generation cũ (BR-SRS-023). | superseded → FN-SRS-002 (Kết quả) |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:73` - Cấu trúc cây và `content_type` không đổi (BR-SRS-021). | superseded → FN-SRS-002 (Kết quả) |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:74` - Bất biến BR-SRS-028 và BR-SRS-029 giữ nguyên. | superseded → FN-SRS-002 (Kết quả) |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:76` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:78` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:76` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:78` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:80` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:82` - [ ] **Given** một root đã khoá scheduler và đã học, **when** người dùng xác nh | moved → `USE_CASES.md` |
 | `features/srs/usecases/UC-SRS-001-reset-learning-progress.md:83` - [ ] **Given** một reset vừa xong, **when** kiểm tra dữ liệu, **then** cây deck | moved → `USE_CASES.md` |
@@ -2589,7 +2598,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:5` rules: [BR-CARD-004, BR-DECK-002, BR-STARTER-001, BR-STARTER-002, BR-STARTER-003 | superseded → FN-STARTER-001 + FN-STARTER-002 (Business rules) |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:6` code: [lib/features/starter_decks/domain/usecases/watch_starter_library_use_case | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:10` **Phạm vi:** Starter library, phần store (BE-B4, [spec](../../../superpowers/spe | dropped — history of how the work was split (BE-B4, FE-B4); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:10` **Phạm vi:** Starter library, phần store (BE-B4, [spec](../../../superpowers/spe | dropped — history of how the work was split (BE-B4, FE-B4); those specs stay under docs/superpowers/specs, approved 2026-10-04 |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:13` **Actor:** Người dùng mới cài app | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:17` ## Main flow | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:19` **Main flow:** | moved → `USE_CASES.md` |
@@ -2621,8 +2630,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:69` - Bản sao có `source_template_id`, `source_template_version`, `scheduler_type` đ | superseded → FN-STARTER-002 (Kết quả) |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:71` - Mọi deck trong bản sao có `root_id` trỏ đúng root mới (BR-DECK-002). | superseded → FN-STARTER-002 (Kết quả) |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:72` - Mỗi card có đúng một study state khởi tạo theo scheduler đó. | superseded → FN-STARTER-002 (Kết quả) |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:74` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:76` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:74` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:76` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:78` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:80` - [ ] **Given** thư viện starter có template "English → Vietnamese · Everyday" v | moved → `USE_CASES.md` |
 | `features/starter-decks/usecases/UC-STARTER-001-khoi-dong-lan-dau-va-chon-starter-deck.md:81` - [ ] **Given** đã có một bản sao của đúng template và version đó nằm ngoài Tras | moved → `USE_CASES.md` |
@@ -2689,8 +2698,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:144` - `first_answered_at` của root khác NULL sau khi **thẻ đầu tiên hoàn tất chuỗi | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:148` - `study_session.status` và `end_reason` phản ánh đúng cách phiên kết thúc, theo | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:150` - Nếu E4 xảy ra, **không** có dòng history nào được ghi cho lượt đó. | superseded → FN-STUDY-005 (Kết quả) + FN-STUDY-009 + FN-STUDY-011 (how a session ends) |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:152` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:154` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:152` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:154` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:156` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:158` - [ ] **Given** một deck có cả thẻ `learned_at IS NULL` và thẻ đến hạn, **when** | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:159` - [ ] **Given** một root có nhiều thẻ chưa học hơn `card_limit`, **when** người | moved → `USE_CASES.md` |
@@ -2749,8 +2758,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:59` **Postconditions:** Không đổi gì — use case chỉ đọc. Mọi write phát sinh sau đó | superseded → FN-STUDY-012 (Kết quả: reading writes nothing) |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:62` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-STUDY-012 (Business rules) |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:64` BR-STUDY-075, BR-STUDY-076, BR-STUDY-077. Ngoài ra BR-STUDY-008, BR-STUDY-017, B | superseded → FN-STUDY-012 (Business rules) |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:67` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:69` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:67` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:69` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:71` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:73` - [ ] **Given** tab Study được mở, **when** hệ thống đọc dữ liệu, **then** phiên | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:74` - [ ] **Given** đúng một phiên hợp lệ đang mở, **when** màn hình tải, **then** t | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
@@ -2795,8 +2804,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:65` **UI states:** initial (ba lựa chọn, Term first đã chọn sẵn) · submitting | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:71` ## Local | superseded → FN-STUDY-003 (Kết quả: direction on the session, the queue rows and each review_log row; schedule unchanged) |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:73` **Postconditions:** `study_session.direction` giữ lựa chọn của phiên, | superseded → FN-STUDY-003 (Kết quả: direction on the session, the queue rows and each review_log row; schedule unchanged) |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:78` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:80` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:78` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:80` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:82` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:84` - [ ] **Given** một root dùng `sm2` có thẻ đến hạn, **when** người dùng bấm Revi | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:85` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng chọn `Meaning firs | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
@@ -2821,7 +2830,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:5` rules: [BR-CARD-012, BR-DECK-015, BR-TAG-001, BR-TAG-002, BR-TAG-003, BR-TAG-004 | superseded → FN-TAG-001…FN-TAG-004 + FN-CARD-001 + FN-CARD-012 (Business rules) |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:6` code: [lib/features/tags/domain/usecases/watch_tag_catalog_use_case.dart, lib/fe | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:10` **Phạm vi:** Tag Management, phần store (BE-B2, gồm BE-C4). Màn catalog và overl | dropped — history of how the work was split (BE-B2, BE-C4, FE-B2); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:10` **Phạm vi:** Tag Management, phần store (BE-B2, gồm BE-C4). Màn catalog và overl | dropped — history of how the work was split (BE-B2, BE-C4, FE-B2); those specs stay under docs/superpowers/specs, approved 2026-10-04 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:13` **Actor:** Người dùng | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:20` ## Main flow | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:22` **Main flow:** | moved → `USE_CASES.md` |
@@ -2852,8 +2861,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:85` **UI states:** catalog loading · catalog populated · catalog empty (chưa có tag | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:91` ## Local | superseded → FN-TAG-003 + FN-TAG-004 (Kết quả) + FN-TAG-001 + FN-CARD-001 (counts and filter read the same links) |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:93` **Postconditions:** Chỉ hàng `tags` và hàng `card_tags` thay đổi. Nội dung thẻ, | superseded → FN-TAG-003 + FN-TAG-004 (Kết quả) + FN-TAG-001 + FN-CARD-001 (counts and filter read the same links) |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:98` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:100` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:98` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:100` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:102` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:104` - [ ] **Given** người dùng mở catalog tag, **when** đọc xong, **then** mọi tag c | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:105` - [ ] **Given** người dùng gõ vào ô tìm của catalog, **when** lọc, **then** hệ t | moved → `USE_CASES.md` |
@@ -2882,7 +2891,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:5` rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-DECK-004, BR-DECK | superseded → FN-TRANSFER-001…FN-TRANSFER-003 (Business rules) |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:6` code: [lib/features/transfer/domain/usecases/read_import_source_use_case.dart, l | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:10` **Phạm vi:** backend BE-B3 và màn import FE-B3 đã xong ([spec card transfer](../ | dropped — history of how the work was split (BE-B3, FE-B3); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:10` **Phạm vi:** backend BE-B3 và màn import FE-B3 đã xong ([spec card transfer](../ | dropped — history of how the work was split (BE-B3, FE-B3); those specs stay under docs/superpowers/specs, approved 2026-10-04 |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:12` **Actor:** Người dùng | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:17` ## Main flow | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:19` **Main flow:** | moved → `USE_CASES.md` |
@@ -2912,8 +2921,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:83` **UI states:** initial (Source trống) · source đã chọn · parsing · parse error · | moved → `screens/spec/SCR-TRANSFER-001-card-import.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:89` ## Local | superseded → FN-TRANSFER-003 (Kết quả) |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:91` **Postconditions:** Mọi card được ghi có đúng một study state mới theo scheduler | superseded → FN-TRANSFER-003 (Kết quả) |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:95` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:97` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:95` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:97` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:99` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:101` - [ ] **Given** một sub-deck `unset` và một file CSV có header `front,back,tags` | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:102` - [ ] **Given** một hàng trùng `front`+`back` (sau fold) với card đã có trong de | moved → `USE_CASES.md` |
@@ -2931,7 +2940,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:5` rules: [BR-CARD-012, BR-DECK-015, BR-CORE-001, BR-CORE-004, BR-TAG-001, BR-TAG-0 | superseded → FN-TRANSFER-004…FN-TRANSFER-006 (Business rules) |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:6` code: [lib/features/transfer/domain/usecases/build_export_use_case.dart, lib/fea | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:10` **Phạm vi:** backend BE-B3 và sheet export FE-B3 đã xong ([spec card transfer](. | dropped — history of how the work was split (BE-B3, FE-B3); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:10` **Phạm vi:** backend BE-B3 và sheet export FE-B3 đã xong ([spec card transfer](. | dropped — history of how the work was split (BE-B3, FE-B3); those specs stay under docs/superpowers/specs, approved 2026-10-04 |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:12` **Actor:** Người dùng | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:18` ## Main flow | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:20` **Main flow:** | moved → `USE_CASES.md` |
@@ -2960,8 +2969,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:77` **UI states:** initial (scope + format, primary bật) · generating (primary khoá, | moved → `screens/spec/SCR-TRANSFER-002-card-export.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:84` ## Local | superseded → FN-TRANSFER-005 + FN-TRANSFER-006 (Kết quả: database unchanged; six content fields; the file stays in the private temporary area) |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:86` **Postconditions:** Database không đổi — nội dung, timestamp, `content_type`, | superseded → FN-TRANSFER-005 + FN-TRANSFER-006 (Kết quả: database unchanged; six content fields; the file stays in the private temporary area) |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:91` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:93` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:91` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:93` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:95` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:97` - [ ] **Given** một deck loại card, **when** export CSV, TSV hoặc XLSX, **then** | moved → `USE_CASES.md` |
 | `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:98` - [ ] **Given** một ô bắt đầu bằng `=` hoặc một chuỗi như `001`, **when** export | moved → `USE_CASES.md` |
@@ -2979,7 +2988,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:5` rules: [BR-CARD-010, BR-CARD-012, BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK | superseded → FN-TRASH-001…FN-TRASH-007 + FN-DECK-005 + FN-CARD-004 (Business rules) |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:6` code: [lib/features/trash/domain/usecases/watch_trash_use_case.dart, lib/feature | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:10` **Phạm vi:** Trash, từ schema v3 (BE-B1). Màn Trash và snackbar Undo thuộc FE-B1 | dropped — history of how the work was split (BE-B1, FE-B1, schema v3); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:10` **Phạm vi:** Trash, từ schema v3 (BE-B1). Màn Trash và snackbar Undo thuộc FE-B1 | dropped — history of how the work was split (BE-B1, FE-B1, schema v3); those specs stay under docs/superpowers/specs, approved 2026-10-04 |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:12` **Actor:** Người dùng | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:18` ## Main flow | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:20` **Main flow:** | moved → `USE_CASES.md` |
@@ -3011,8 +3020,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:93` **Postconditions:** Sau bước 7, item nằm dưới target đã chọn với đúng id cũ, và | superseded → FN-TRASH-005 + FN-TRASH-006 + FN-TRASH-007 (Kết quả) |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:97` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-TRASH-001…FN-TRASH-007 (Business rules) |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:99` BR-TRASH-001…BR-TRASH-012, và BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK-017 | superseded → FN-TRASH-001…FN-TRASH-007 (Business rules) |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:103` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:105` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:103` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:105` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved 2026-10-04 |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:107` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:109` - [ ] **Given** người dùng xoá một card hoặc một deck, **when** thao tác chạy, * | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:110` - [ ] **Given** một item vừa xoá xong, **when** người dùng nhìn Library hoặc Car | superseded → SCR-DECK-001 + SCR-CARD-001 (presentation of the criterion: the Undo snackbar; SCR-CARD-001 for cards; both specs draw it) |
@@ -3170,7 +3179,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/settings/ui.md:26` \| app_settings.cardLimit \| cùng bound với tùy chọn của deck (BR-STUDY-003, BR-SE | moved → `screens/spec/SCR-SETTINGS-002-settings.md` |
 | `features/settings/ui.md:27` \| app_settings.themeMode \| thuộc `system` \\| `light` \\| `dark` (BR-SETTINGS-005) | superseded → FN-SETTINGS-003 (Input: system, light or dark; the control offers only these) |
 | `features/settings/ui.md:28` \| app_settings.language \| thuộc `system` \\| `en` \\| `vi` (BR-SETTINGS-006) \| khô | superseded → FN-SETTINGS-004 (Input: system, en or vi; the control offers only these) |
-| `features/settings/ui.md:30` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | dropped — restates ADR-015 (the server checks integrity, business rules live in the app), approved PENDING |
+| `features/settings/ui.md:30` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | dropped — restates ADR-015 (the server checks integrity, business rules live in the app), approved 2026-10-04 |
 
 ## features/srs/ui.md
 
@@ -3254,154 +3263,154 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/tags/ui.md:23` \| Tag.name \| ≤ 50 ký tự (BR-TAG-001) \| "Tên tag tối đa 50 ký tự" \| rule \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/ui.md:24` \| Tag.name \| không trùng, không phân biệt hoa thường (BR-TAG-001) \| "Tag này đã | superseded → FN-TAG-002 + FN-TAG-003 (a folded-name clash merges, BR-TAG-007) + FN-CARD-010 (attaching by name reuses the existing tag); no "already exists" error remains |
 | `features/tags/ui.md:25` \| Card.tags \| ≤ 10 tag mỗi thẻ (BR-TAG-002) \| "Mỗi thẻ tối đa 10 tag" \| rule \| | superseded → FN-CARD-010 (Lỗi: tooManyTags); its copy goes to SCR-CARD-002 |
-| `features/tags/ui.md:27` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | dropped — restates ADR-015 (the server checks integrity, business rules live in the app), approved PENDING |
+| `features/tags/ui.md:27` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | dropped — restates ADR-015 (the server checks integrity, business rules live in the app), approved 2026-10-04 |
 
 ## features/account/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/account/README.md:12` ## Màn hình → Use case || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/account/README.md:14` \| Màn hình \| UC \| || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/account/README.md:16` \| Welcome, lần mở đầu tiên (màn 29) \| Chưa có UC; hành vi theo account UI spec § || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/account/README.md:17` \| Đăng nhập, sheet gộp thư viện, lớp chuyển tiếp (màn 30) \| Chưa có UC; hành vi || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/account/README.md:18` \| Nhập mã (màn 31) \| Chưa có UC; hành vi theo account UI spec §5 \| || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/account/README.md:19` \| Tài khoản: đăng nhập lại, đổi tài khoản, đăng xuất, xoá (màn 32) \| Chưa có UC; || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/account/README.md:20` \| Mục tài khoản trong tab Settings (màn 23) \| Lối vào \| || superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:12` ## Màn hình → Use case | superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:14` \| Màn hình \| UC \| | superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:16` \| Welcome, lần mở đầu tiên (màn 29) \| Chưa có UC; hành vi theo account UI spec § | superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:17` \| Đăng nhập, sheet gộp thư viện, lớp chuyển tiếp (màn 30) \| Chưa có UC; hành vi | superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:18` \| Nhập mã (màn 31) \| Chưa có UC; hành vi theo account UI spec §5 \| | superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:19` \| Tài khoản: đăng nhập lại, đổi tài khoản, đăng xuất, xoá (màn 32) \| Chưa có UC; | superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/account/README.md:20` \| Mục tài khoản trong tab Settings (màn 23) \| Lối vào \| | superseded → SCR-ACCOUNT-002, SCR-ACCOUNT-003, SCR-ACCOUNT-004, SCR-ACCOUNT-005, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/card/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/card/README.md:10` ## Màn hình → Use case || superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/card/README.md:12` \| Màn hình \| UC \| || superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/card/README.md:14` \| Danh sách card (deck có `content_type = card`) \| UC-CARD-001 \| || superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/card/README.md:15` \| Chi tiết card, chỉ đọc \| UC-CARD-002 \| || superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/card/README.md:17` Nguồn: trigger của UC-CARD-001 ("Mở một deck có `content_type = 'card'`") và UC- || superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/card/README.md:10` ## Màn hình → Use case | superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/card/README.md:12` \| Màn hình \| UC \| | superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/card/README.md:14` \| Danh sách card (deck có `content_type = card`) \| UC-CARD-001 \| | superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/card/README.md:15` \| Chi tiết card, chỉ đọc \| UC-CARD-002 \| | superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/card/README.md:17` Nguồn: trigger của UC-CARD-001 ("Mở một deck có `content_type = 'card'`") và UC- | superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/deck/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/deck/README.md:13` ## Màn hình → Use case || superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/deck/README.md:15` \| Màn hình \| UC \| || superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/deck/README.md:17` \| Danh sách deck (màn gốc của tab Thư viện) \| UC-DECK-003, UC-DECK-001, UC-DECK- || superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/deck/README.md:18` \| Một deck đang mở \| UC-DECK-003 A3, UC-DECK-004, UC-DECK-002, UC-DECK-005 \| || superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/deck/README.md:20` Nguồn: trigger của UC-DECK-001 ("màn hình danh sách deck"), UC-DECK-006 || superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/deck/README.md:13` ## Màn hình → Use case | superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/deck/README.md:15` \| Màn hình \| UC \| | superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/deck/README.md:17` \| Danh sách deck (màn gốc của tab Thư viện) \| UC-DECK-003, UC-DECK-001, UC-DECK- | superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/deck/README.md:18` \| Một deck đang mở \| UC-DECK-003 A3, UC-DECK-004, UC-DECK-002, UC-DECK-005 \| | superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/deck/README.md:20` Nguồn: trigger của UC-DECK-001 ("màn hình danh sách deck"), UC-DECK-006 | superseded → SCR-DECK-001, SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/monitoring/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/monitoring/README.md:12` ## Màn hình → Use case || superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/monitoring/README.md:14` \| Màn hình \| UC \| || superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/monitoring/README.md:16` \| Monitoring, danh sách và chi tiết (màn 28) \| Chưa có UC; hành vi theo ADR-018 || superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/monitoring/README.md:17` \| Mục Admin trong tab Settings (màn 23) \| Lối vào; widget `MonitoringEntrySectio || superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/monitoring/README.md:12` ## Màn hình → Use case | superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/monitoring/README.md:14` \| Màn hình \| UC \| | superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/monitoring/README.md:16` \| Monitoring, danh sách và chi tiết (màn 28) \| Chưa có UC; hành vi theo ADR-018 | superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/monitoring/README.md:17` \| Mục Admin trong tab Settings (màn 23) \| Lối vào; widget `MonitoringEntrySectio | superseded → SCR-MONITORING-001, SCR-SETTINGS-002 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/progress/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/progress/README.md:10` ## Màn hình → Use case || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/progress/README.md:12` \| Màn hình \| UC \| || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/progress/README.md:14` \| Tab Tiến độ / Progress \| UC-PROGRESS-001, UC-PROGRESS-002 \| || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/progress/README.md:15` \| Hàng deck trên màn tiến độ (drill-down) \| UC-PROGRESS-002 \| || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/progress/README.md:17` Màn 22 và điều hướng giữa các cấp: [ui.md](ui.md). || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/progress/README.md:19` Nguồn: trigger của UC-PROGRESS-001 ("Chạm tab **Tiến độ / Progress** ở bottom na || superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:10` ## Màn hình → Use case | superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:12` \| Màn hình \| UC \| | superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:14` \| Tab Tiến độ / Progress \| UC-PROGRESS-001, UC-PROGRESS-002 \| | superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:15` \| Hàng deck trên màn tiến độ (drill-down) \| UC-PROGRESS-002 \| | superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:17` Màn 22 và điều hướng giữa các cấp: [ui.md](ui.md). | superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/progress/README.md:19` Nguồn: trigger của UC-PROGRESS-001 ("Chạm tab **Tiến độ / Progress** ở bottom na | superseded → SCR-PROGRESS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/reminders/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/reminders/README.md:63` ## Màn hình → Use case || superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/reminders/README.md:65` \| Màn hình \| UC \| || superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/reminders/README.md:67` \| `Settings → Daily reminder` \| UC-REMINDER-001 \| || superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/reminders/README.md:69` Nguồn: trigger của UC-REMINDER-001. || superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/reminders/README.md:63` ## Màn hình → Use case | superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/reminders/README.md:65` \| Màn hình \| UC \| | superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/reminders/README.md:67` \| `Settings → Daily reminder` \| UC-REMINDER-001 \| | superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/reminders/README.md:69` Nguồn: trigger của UC-REMINDER-001. | superseded → SCR-REMINDER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/search/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/search/README.md:10` ## Màn hình → Use case || superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/search/README.md:12` \| Màn hình \| UC \| || superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/search/README.md:14` \| Tìm kiếm từ header của Library, ở mọi cấp \| UC-SEARCH-001 \| || superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/search/README.md:16` Nguồn: trigger của UC-SEARCH-001 ("Bấm biểu tượng tìm kiếm ở header của Library, || superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/search/README.md:10` ## Màn hình → Use case | superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/search/README.md:12` \| Màn hình \| UC \| | superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/search/README.md:14` \| Tìm kiếm từ header của Library, ở mọi cấp \| UC-SEARCH-001 \| | superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/search/README.md:16` Nguồn: trigger của UC-SEARCH-001 ("Bấm biểu tượng tìm kiếm ở header của Library, | superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/settings/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/settings/README.md:10` ## Màn hình → Use case || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/settings/README.md:12` \| Màn hình \| UC \| || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/settings/README.md:14` \| Tab Settings (màn 23) \| UC-SETTINGS-001 \| || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/settings/README.md:15` \| Theme (màn 25) \| UC-SETTINGS-001 \| || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/settings/README.md:16` \| Language (màn 26) \| UC-SETTINGS-001 \| || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/settings/README.md:17` \| Study options của bộ thẻ (màn 15) \| UC-SETTINGS-001 (A1, E4) \| || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/settings/README.md:19` Nguồn: trigger của UC-SETTINGS-001 ("Mở tab `Settings` của navigation shell, hoặ || superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:10` ## Màn hình → Use case | superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:12` \| Màn hình \| UC \| | superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:14` \| Tab Settings (màn 23) \| UC-SETTINGS-001 \| | superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:15` \| Theme (màn 25) \| UC-SETTINGS-001 \| | superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:16` \| Language (màn 26) \| UC-SETTINGS-001 \| | superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:17` \| Study options của bộ thẻ (màn 15) \| UC-SETTINGS-001 (A1, E4) \| | superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/settings/README.md:19` Nguồn: trigger của UC-SETTINGS-001 ("Mở tab `Settings` của navigation shell, hoặ | superseded → SCR-SETTINGS-001, SCR-SETTINGS-002, SCR-SETTINGS-003, SCR-SETTINGS-004 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/srs/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/srs/README.md:10` ## Màn hình → Use case || superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/srs/README.md:12` \| Màn hình \| UC \| || superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/srs/README.md:14` \| Xác nhận "Đặt lại tiến độ học" trên một root deck \| UC-SRS-001 \| || superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/srs/README.md:16` Nguồn: trigger của UC-SRS-001 ("thường từ chỗ giải thích vì sao chế độ ôn tập đa || superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/srs/README.md:10` ## Màn hình → Use case | superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/srs/README.md:12` \| Màn hình \| UC \| | superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/srs/README.md:14` \| Xác nhận "Đặt lại tiến độ học" trên một root deck \| UC-SRS-001 \| | superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/srs/README.md:16` Nguồn: trigger của UC-SRS-001 ("thường từ chỗ giải thích vì sao chế độ ôn tập đa | superseded → SCR-SRS-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/starter-decks/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/starter-decks/README.md:15` ## Màn hình → Use case || superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/starter-decks/README.md:17` \| Màn hình \| UC \| || superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/starter-decks/README.md:19` \| Thư viện starter (child flow trong tab Thư viện; empty state khi chưa có deck) || superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/starter-decks/README.md:21` Nguồn: trigger của UC-STARTER-001 ("Mở app lần đầu sau khi cài"); [`shared/ui/na || superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/starter-decks/README.md:15` ## Màn hình → Use case | superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/starter-decks/README.md:17` \| Màn hình \| UC \| | superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/starter-decks/README.md:19` \| Thư viện starter (child flow trong tab Thư viện; empty state khi chưa có deck) | superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/starter-decks/README.md:21` Nguồn: trigger của UC-STARTER-001 ("Mở app lần đầu sau khi cài"); [`shared/ui/na | superseded → SCR-STARTER-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/study/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/study/README.md:10` ## Màn hình → Use case || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/study/README.md:12` \| Màn hình \| UC \| || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/study/README.md:14` \| Tab Study (Study Home) \| UC-STUDY-002 \| || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/study/README.md:15` \| Study Entry của một deck \| UC-STUDY-001, UC-STUDY-003 \| || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/study/README.md:16` \| Phiên học / phiên ôn tập \| UC-STUDY-001 \| || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/study/README.md:18` Nguồn: trigger của UC-STUDY-001 ("bấm Study trên một deck"), UC-STUDY-002 ("Chạm || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:10` ## Màn hình → Use case | superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:12` \| Màn hình \| UC \| | superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:14` \| Tab Study (Study Home) \| UC-STUDY-002 \| | superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:15` \| Study Entry của một deck \| UC-STUDY-001, UC-STUDY-003 \| | superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:16` \| Phiên học / phiên ôn tập \| UC-STUDY-001 \| | superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:18` Nguồn: trigger của UC-STUDY-001 ("bấm Study trên một deck"), UC-STUDY-002 ("Chạm | superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/study-mode/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/study-mode/README.md:53` ## Màn hình → Use case || superseded → SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/study-mode/README.md:55` \| Màn hình \| UC \| || superseded → SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/study-mode/README.md:57` \| Không có màn hình riêng — mode chạy trong phiên học \| UC-STUDY-001, UC-STUDY-0 || superseded → SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study-mode/README.md:53` ## Màn hình → Use case | superseded → SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study-mode/README.md:55` \| Màn hình \| UC \| | superseded → SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study-mode/README.md:57` \| Không có màn hình riêng — mode chạy trong phiên học \| UC-STUDY-001, UC-STUDY-0 | superseded → SCR-STUDY-003, SCR-STUDY-004, SCR-STUDY-005, SCR-STUDY-006, SCR-STUDY-007, SCR-STUDY-008 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/tags/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/tags/README.md:21` ## Màn hình → Use case || superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/tags/README.md:23` \| Màn hình \| UC \| || superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/tags/README.md:25` \| Tag catalog (hành động `Tags` trên app bar của Library, hoặc `Manage tags`) \| || superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/tags/README.md:27` Nguồn: trigger của UC-TAG-001. || superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/tags/README.md:21` ## Màn hình → Use case | superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/tags/README.md:23` \| Màn hình \| UC \| | superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/tags/README.md:25` \| Tag catalog (hành động `Tags` trên app bar của Library, hoặc `Manage tags`) \| | superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/tags/README.md:27` Nguồn: trigger của UC-TAG-001. | superseded → SCR-TAG-001, SCR-CARD-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/transfer/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/transfer/README.md:19` ## Màn hình → Use case || superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/transfer/README.md:21` \| Màn hình \| UC \| || superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/transfer/README.md:23` \| Card list của deck loại card — "Import cards" \| UC-TRANSFER-001 \| || superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/transfer/README.md:24` \| Card list — `Export cards` trong overflow menu \| UC-TRANSFER-002 \| || superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/transfer/README.md:26` Nguồn: trigger của UC-TRANSFER-001 và UC-TRANSFER-002. || superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/transfer/README.md:19` ## Màn hình → Use case | superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/transfer/README.md:21` \| Màn hình \| UC \| | superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/transfer/README.md:23` \| Card list của deck loại card — "Import cards" \| UC-TRANSFER-001 \| | superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/transfer/README.md:24` \| Card list — `Export cards` trong overflow menu \| UC-TRANSFER-002 \| | superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/transfer/README.md:26` Nguồn: trigger của UC-TRANSFER-001 và UC-TRANSFER-002. | superseded → SCR-TRANSFER-001, SCR-TRANSFER-002 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/trash/README.md
 
 | Source item | Outcome |
 |---|---|
-| `features/trash/README.md:24` ## Màn hình → Use case || superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/trash/README.md:26` \| Màn hình \| UC \| || superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/trash/README.md:28` \| `Trash` từ app bar (và thao tác xoá card/deck vào Trash) \| UC-TRASH-001 \| || superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
-| `features/trash/README.md:30` Nguồn: trigger của UC-TRASH-001. || superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/trash/README.md:24` ## Màn hình → Use case | superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/trash/README.md:26` \| Màn hình \| UC \| | superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/trash/README.md:28` \| `Trash` từ app bar (và thao tác xoá card/deck vào Trash) \| UC-TRASH-001 \| | superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/trash/README.md:30` Nguồn: trigger của UC-TRASH-001. | superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## shared/ui/navigation.md
 
@@ -3418,7 +3427,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `shared/ui/navigation.md:25` ## Primary business flows | superseded → NAVIGATION.md `## Master flows` |
 | `shared/ui/navigation.md:27` 1. **Tạo nội dung**: mở app → tạo deck → thêm card → deck xuất hiện trong danh | superseded → UC-DECK-001, UC-CARD-001, UC-DECK-003 (create content, then see the deck in the list) |
 | `shared/ui/navigation.md:29` 2. **Ôn tập** (luồng chính, chạy hằng ngày): mở app → thấy deck có card đến hạn | superseded → UC-STUDY-001 (the daily review flow) |
-| `shared/ui/navigation.md:33` Luồng 2 là vertical slice đầu tiên nên xây, vì nó chạm vào toàn bộ chiều sâu | dropped — V8.0 build-order advice (which slice to build first); the rebuild plan sets its own order, approved PENDING |
+| `shared/ui/navigation.md:33` Luồng 2 là vertical slice đầu tiên nên xây, vì nó chạm vào toàn bộ chiều sâu | dropped — V8.0 build-order advice (which slice to build first); the rebuild plan sets its own order, approved 2026-10-04 |
 | `shared/ui/navigation.md:38` ## Sơ đồ là gì, và không là gì | moved → `NAVIGATION.md` |
 | `shared/ui/navigation.md:40` `features/*/usecases/` đặc tả **từng** UC. Nó cố ý không vẽ đồ thị nối | moved → `NAVIGATION.md` |
 | `shared/ui/navigation.md:44` Tài liệu này chỉ giữ **các cạnh của đồ thị đó**. Mọi đỉnh đều trỏ về một UC hoặc | moved → `NAVIGATION.md` |
@@ -4431,3 +4440,21 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - `test/app/goldens`: `app_library` → SCR-DECK-001 `root_empty`; the tablet rail goldens → NAVIGATION.md `## Shell and tabs`; `app_gallery` → DESIGN.md `## Components`.
 - Ledger: every row now has an outcome; `check.py --ledger` fails only on the 53 `dropped — …, approved PENDING` rows awaiting the owner (Task 43).
 - Gate: dod_check.sh → ✓ mechanical gates passed (scratchpad gate42.log).
+
+## Task 43 notes — owner sign-off
+
+**Owner sign-off 2026-10-04 (Task 43).** 3625 rows: 2545 moved · 1027 superseded · 53 dropped
+(approved 2026-10-04: 44 "API — not applicable, local-only" sections, ADR-001; 6 "Phạm vi" lines of
+work-split history; 2 restatements of ADR-015; 1 V8.0 build-order note) · 0 pending. Goldens: 526,
+of which 452 map to a screen state key and 74 follow the Task 41/42 rulings (68 component goldens →
+DESIGN.md, 4 tablet-rail goldens → NAVIGATION.md, 2 `app_library` → SCR-DECK-001 `root_empty`).
+Re-seed adds no row. Migration OPEN QUESTION: 0. Unresolved current-spec ruling: SCR-STUDY-007 —
+20-second turn with TalkBack (its context is in the spec; it does not block Task 44). The
+IMPLEMENTATION GAPs of SCR-DECK-001 and SCR-STUDY-002 stay; no code changes in this migration.
+
+- Fixed before sign-off: 72 README rows written as `…|| outcome |` by the workspace helper
+  `fill_readme_ledger.py` lost their outcome on re-seed; the cells are now `| outcome |`, and
+  re-seed is idempotent (byte-identical).
+- Ruling: `ledger.py seed` regenerates the header, so the sign-off above the first section is
+  repeated here, below the notes mark, where a re-seed keeps it — cost if wrong: one duplicated
+  paragraph.

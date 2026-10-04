@@ -8,8 +8,10 @@
 
 ## [superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md](../superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md)
 
-- L4079: - The OPEN QUESTION on the order of the move checks (FN-DECK-011) was ruled by the owner on
-- L4090: - Two OPEN QUESTIONs raised in SCR-DECK-001, where UC-DECK-001 E2 and UC-DECK-003 step 3 described
+- L13: Re-seed adds no row. Migration OPEN QUESTION: 0. Unresolved current-spec ruling: SCR-STUDY-007 —
+- L4088: - The OPEN QUESTION on the order of the move checks (FN-DECK-011) was ruled by the owner on
+- L4099: - Two OPEN QUESTIONs raised in SCR-DECK-001, where UC-DECK-001 E2 and UC-DECK-003 step 3 described
+- L4451: Re-seed adds no row. Migration OPEN QUESTION: 0. Unresolved current-spec ruling: SCR-STUDY-007 —
 
 ## [wbs_FE.md](../wbs_FE.md)
 
