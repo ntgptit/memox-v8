@@ -1,6 +1,6 @@
 # SP3a — Design-system foundation
 
-Status: draft for owner review · Date: 2026-10-04 · Branch: `claude/wonderful-ride-dnypk9` (from
+Status: approved by the owner 2026-10-04 (rulings A1–A11) · Date: 2026-10-04 · Branch: `claude/wonderful-ride-dnypk9` (from
 `master` at `37919b8`, PR #197 merged)
 
 Sub-project 3a of the UI rebuild ([SP2 spec](2026-10-04-sp2-remove-legacy-ui-design.md) §1, §10).
@@ -98,6 +98,22 @@ names components only to assign them; their contracts are in the catalog.
   finding that changes a semantic or a token updates `DESIGN.md` first, gets reviewed, is
   regenerated, and is then implemented.
 
+- **A11 — Approval rulings (2026-10-04).**
+  - The repository holds no canonical dark palette, so Phase 1 establishes the dark set from
+    the A2 model. `#AAB4FF` and `#141C66` are accepted as Phase 1 inputs once the generator
+    proves their role, their contrast, full light and dark parity, and no `*Ink`. Phase 1 may
+    adjust them to make the 45 roles consistent, updating `DESIGN.md` first.
+  - The rename `MxAppShell` → `MxScreenScaffold` is approved, with no alias.
+  - SP3a sets and builds only the `primitive` and `shared` layers. It designs no folder for a
+    layer it does not build, but the catalog records every component's layer, consumers, owner
+    phase and status.
+  - CLAUDE.md drops the pointer to the legacy register. It only says where debt lives: in the
+    screen spec's Rulings, or in the component's catalog entry.
+  - Phase 1 removes the whole ink vocabulary, by meaning and not by renaming strings. That
+    covers `DESIGN.md`, the 17 screen specs, both design skills, and the generator's schema and
+    tests. A new `*Ink` or `*-ink` role or name makes the gate fail.
+  - Phase 1 builds no `Mx*` component.
+
 ## 2. Scope
 
 **In:**
@@ -170,6 +186,7 @@ names components only to assign them; their contracts are in the catalog.
   - an extension lacks a member that its consumer needs;
   - the generated Dart is stale;
   - the sidecar duplicates a colour value from `DESIGN.md`;
+  - a colour key or extension member is named `*ink` or `*-ink` (A11);
   - a declared contrast pair falls below its threshold in either theme. The thresholds are 4.5:1
     for normal text, 3:1 for large text, and 3:1 for meaningful icons, control edges and
     progress fills against their track.
