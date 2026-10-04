@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/components/button_style.dart';
 import 'package:memox/core/theme/foundations/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_semantic_colors.dart';
@@ -34,6 +35,30 @@ abstract final class AppTheme {
       hoverColor: Colors.transparent,
       iconTheme: IconThemeData(color: scheme.onSurfaceVariant),
       extensions: <AppSemanticColors>[semantic],
+      filledButtonTheme: FilledButtonThemeData(
+        style: mxButtonStyle(
+          colors: scheme,
+          semantic: semantic,
+          texts: textTheme,
+          tone: MxButtonTone.primary,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: mxButtonStyle(
+          colors: scheme,
+          semantic: semantic,
+          texts: textTheme,
+          tone: MxButtonTone.outline,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: mxButtonStyle(
+          colors: scheme,
+          semantic: semantic,
+          texts: textTheme,
+          tone: MxButtonTone.text,
+        ),
+      ),
     );
   }
 }

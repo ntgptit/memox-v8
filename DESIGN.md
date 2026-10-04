@@ -490,10 +490,10 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxRowInk | Shared row ripple and press | primitive | MxListRow, MxSettingsRow, MxOptionRow, MxActionSheetCommandRow | SP3a | built |
 | MxFocusRing | The 2dp keyboard focus ring at a 2dp offset | primitive | MxButton, MxIconButton, MxFab, MxToggle | SP3a | built |
 | MxTapTarget | Grows a small control's hit area to 48 | primitive | MxToggle, MxFilterChip, MxChipTrigger | SP3a | built |
-| MxButton | Text-labelled action in seven tones and five sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxButton | Text-labelled action in seven tones and five sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
 | MxIconButton | Icon-only action with a 48 target | shared | CARD, DECK, MONITORING, STARTER, STUDY, TAG, TRASH | SP3a | planned |
 | MxFab | Floating primary action, icon only | shared | CARD, DECK | SP3a | planned |
-| MxSpinner | Indeterminate wait in four sizes | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER | SP3a | planned |
+| MxSpinner | Indeterminate wait in four sizes | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER | SP3a | built |
 | MxTextField | Text input in six variants | shared | ACCOUNT, CARD, DECK, MONITORING, SEARCH, STARTER, STUDY, TAG, TRANSFER | SP3a | planned |
 | MxFieldMessage | Error or warning line under a field | shared | ACCOUNT, CARD, DECK, TAG | SP3a | planned |
 | MxSearchField | Search input, or a trigger that opens search | shared | ACCOUNT, CARD, DECK, SEARCH, TAG | SP3a | planned |
@@ -575,6 +575,20 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: guarantees the 48 × 48 hit area ("The 48 Floor Rule")
 - Tokens: `AppSize.tapTarget`
 - Golden: none — paints nothing
+
+#### MxSpinner
+- Variants: sizes small, medium, large, xlarge; tones primary, inherit
+- States: turning, still (reduced motion)
+- Accessibility: a live region named by `semanticLabel`; silent inside a control that already names the wait
+- Tokens: `primary`; `AppStroke.control`; `AppDurations.spinnerCycle`; `AppSize.spinner*`
+- Golden: sizes__light, sizes__dark
+
+#### MxButton
+- Variants: tones primary, secondary, outline, text, destructive, dangerSoft, warning; sizes regular, small, compact, chip, study; optional icon, brand mark, detail line
+- States: enabled, pressed, focused, disabled (`AppOpacity.disabled`), loading
+- Accessibility: a button named by its label; disabled announced; loading keeps the label and blocks taps; 48 hit at every size; the brand mark is never read
+- Tokens: `primary`, `on-primary`, `surface-container`, `on-surface`, `outline`, `error`, `on-error`, `error-container`, `on-error-container`, `warning`, `on-warning`; `labelLarge` (`labelSmall` for compact and chip); `AppRadius.md` / `sm` / `full`; `AppSize.button*`
+- Golden: tones__light, tones__dark, sizes__light, sizes__dark, states__light, states__dark
 
 ## Do's and Don'ts
 
