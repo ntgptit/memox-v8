@@ -1,6 +1,6 @@
 # SP3a — Design-system foundation
 
-Status: draft for the owner's review · Date: 2026-10-04 · Branch: `ccr-841d461f-jofe0s` (from
+Status: draft, revision 2 after the owner's review of 2026-10-04 · Date: 2026-10-04 · Branch: `ccr-841d461f-jofe0s` (from
 `master` at `37919b8`, PR #197 merged)
 
 Sub-project 3a of the UI rebuild. SP2 removed the old UI; DESIGN.md is the only visual source.
@@ -68,55 +68,88 @@ guard's design-system and token rules wait for the new code, three of them under
   this spec; CLAUDE.md points at it. The UI-base register (§9 of the 2026-09-23 spec) stays as
   history of the removed UI.
 
-### 2.1 Decisions this spec proposes (confirm at review)
+### 2.1 Rulings on the proposals (owner review, 2026-10-04)
 
-- **D10 — Where a value lives.**
+- **D10 — Where a value lives** (approved).
   - A value that is the same in both themes and has no Material slot (spacing, radius, stroke,
     opacity, durations, sizes, icon sizes, breakpoints) is a `static const` on an
     `abstract final class` (`AppSpacing`, `AppRadius`, …).
-  - A value that differs between themes and has no Material role (MemoX semantic colours,
-    derived inks and tints, shadows, scrim and glass effects) is a `ThemeExtension`.
-  - Reason: the guard's messages and the `flutter-design-system` skill already name
-    `AppSpacing`, `AppRadius`, `AppDurations`, `AppStroke` and `AppOpacity`. A
-    theme-invariant value in a `ThemeExtension` would need a `BuildContext` and a `lerp` for
-    nothing.
-  - D4's ban on brightness branches is what the `ThemeExtension` serves: a component never
-    asks which theme it is in.
-- **D13 — DESIGN.md is compiled into code, not copied** (§5).
-  - A generator in `tools/design/` reads DESIGN.md and writes one committed Dart file of
-    values. It is the only place a colour literal exists in `lib/`.
-  - The gate fails when that file is stale.
-  - This is how D4 (no hand-written hex) and D6 (drift fails) hold together.
-- **D14 — Navigation components move to SP3b with the shell.**
-  - `MxAppShell`, `MxBottomNav` and `MxNavRail` have one consumer, the app shell, which D8
-    leaves to SP3b. They are built there.
-  - `MxAppBar` and `MxScreenScroll` serve every screen and stay here.
-- **D15 — `MasteryRamp` moves to SP3b** with the mastery donut and progress bar, its only
-  consumers.
-- **D16 — A primitive layer folder.**
-  - Primitives live in `lib/shared/primitives/`. They are not part of the public API: an
-    architecture test forbids `lib/features/**` and `lib/app/**` from importing them.
-  - ADR-011, which lists the contents of `shared/`, gets a one-line amendment naming the
-    folder.
-- **D17 — Text scale and direction.**
-  - Text is never clamped. Components are tested at text scale 1.0 and 1.3, the large
-    setting Android offers. PRODUCT.md (2026-09-30) makes larger scales a non-goal, so no
-    work goes into them.
-  - Both locales (en, vi) are LTR. Components use directional insets and alignment, but no
-    RTL test or golden is written.
+  - Only a value that depends on the theme and has no fitting Material 3 role is a
+    `ThemeExtension`: MemoX semantic colours beyond the 45 roles, derived colours,
+    theme-dependent shadows and effects, and any value that really differs between light and
+    dark.
+  - Spacing, radius and motion never go into a `ThemeExtension` just to be read through the
+    context.
+  - **No duplicate source.** A token exists in exactly one place. A value in `AppSpacing`,
+    `AppRadius` or another constant class has no copy in a `ThemeExtension`, and the reverse
+    holds too.
+- **D13 — A generator over a structured source** (approved with change). It is the
+  implementation chosen here, not the only possible one.
+  - The flow: DESIGN.md's structured data → `tools/design/` generator → generated Dart, which
+    is committed.
+  - The generator reads only the structured schema §4.1 defines: the DESIGN.md frontmatter. It
+    never derives a value from Markdown prose.
+  - **One canonical source for every value:** the DESIGN.md frontmatter.
+    - `.impeccable/design.json`'s value sections (`colorMeta` light and dark values,
+      `typographyMeta`, `shadows`, `motion`, `breakpoints`) become a generated artifact of
+      the frontmatter. Its prose sections (`narrative`, `components`) stay Impeccable's.
+    - No value is edited by hand in both places.
+  - The gate fails when:
+    - the generated Dart or `design.json` is stale;
+    - the structured source is invalid;
+    - one of the 45 role mappings is missing;
+    - production code holds a forbidden raw visual value (§7).
+- **D14 — Navigation components move to SP3b with the shell** (approved).
+  - `MxAppShell`, `MxBottomNav` and `MxNavRail` are app-shell semantics with one consumer.
+  - `MxAppBar` and `MxScreenScroll` are generic and cross-screen, so they stay here.
+  - The rule: generic design-system API → SP3a; app-shell specific → SP3b.
+- **D15 — `MasteryRamp` moves to SP3b** (approved) with the donut and the progress
+  visualization. It is not promoted to a shared `Mx` before reuse across features is shown.
+- **D16 — Primitive layer** (approved with change).
+  - Internal primitives live in `lib/shared/primitives/`.
+  - Only the design-system implementation (`Mx*` in `lib/shared/widgets/`, and
+    `lib/core/theme/`) may import them. Features, app and screens may not, and an
+    import-boundary test enforces it.
+  - ADR-011 (accepted) is not edited. Its tree names `shared/widgets/` only, and a new folder
+    with its own import boundary is a decision, not a clarification. A new **ADR-022** records
+    it and states that it augments ADR-011 (it does not supersede it).
+- **D17 — Text scale and direction** (changed by the owner). SP3a is the accessibility
+  foundation.
+  - Widget and layout tests cover text scale **1.0, 1.3, 1.5 and 2.0**. Goldens may cover
+    fewer scales.
+  - At every tested scale:
+    - text is never clamped;
+    - nothing overflows;
+    - no meaningful text is clipped. A component truncates only where DESIGN.md's contract
+      says one line (an app bar title, a row title past two lines), and then the full text
+      stays in the semantics label;
+    - the component grows or wraps by its contract;
+    - the touch target stays at least 48×48;
+    - an icon-only control keeps its `semanticLabel`.
+  - This changes PRODUCT.md:143, which today limits tests to the default scale, and DESIGN.md's
+    Wrap Rule. Task 1 amends both with this ruling's date, for the design-system layer; the
+    target for screens is unchanged.
+  - Both locales (en, vi) are LTR. No RTL golden. Components still use `EdgeInsetsDirectional`
+    and `AlignmentDirectional`, and never hard-code left or right where a direction exists.
+  - One lightweight RTL structural test of the pressable primitive (leading and trailing
+    swap, no overflow) is added because it is cheap.
 
 ## 3. Scope
 
 **In scope**
-- DESIGN.md: the Material 3 role mapping (45 roles, light and dark), the MemoX semantic and
-  derived colour tables, the type-slot mapping and the machine-readable token tables (§4).
-- `tools/design/`: the generator, its `--check` mode and its tests (§5).
+- DESIGN.md: the structured frontmatter for the 45 Material 3 roles (light and dark), the
+  MemoX semantic colours, the derivation rules, the type-slot mapping and the tokens; a
+  generated reference block in the body; the D17 amendment to PRODUCT.md and the Wrap Rule
+  (§4).
+- `tools/design/`: the generator, its `--check` mode and its tests (§5); the generated value
+  sections of `.impeccable/design.json`.
 - `lib/core/theme/`: tokens, colour schemes, `ThemeExtension`s, typography, the two themes,
   the button-style helper and the `BuildContext` accessors (§5).
 - `lib/shared/primitives/` and the generic `Mx*` in `lib/shared/widgets/` (§6).
 - `MemoxApp` uses the new themes. The placeholder shell is otherwise untouched.
-- Tests, component goldens, the `check.py` golden rule, guard and architecture updates, the
-  Impeccable review, and the repo rules and skills that name the old layout (§7–§9).
+- Tests, component goldens, the `check.py` golden rule, guard and architecture updates,
+  ADR-022, the Impeccable review, and the repo rules and skills that name the old layout
+  (§7–§9).
 
 **Out of scope**
 - The app shell, `MxAppShell`, `MxBottomNav`, `MxNavRail` and the placeholder's replacement
@@ -128,88 +161,108 @@ guard's design-system and token rules wait for the new code, three of them under
 
 ## 4. DESIGN.md first (hard gate)
 
-Task 1 changes DESIGN.md and nothing else. Impeccable critiques the result against the rest of
-DESIGN.md. The owner approves the tables before any code is written, the same way the SP2
-migration matrix was approved.
+Task 1 changes DESIGN.md (plus the D17 lines in PRODUCT.md) and nothing else. Impeccable
+critiques the result against the rest of DESIGN.md. The owner approves the values before any
+code is written, the same way the SP2 migration matrix was approved.
 
-### 4.1 Tables added to DESIGN.md
+### 4.1 The structured source: DESIGN.md frontmatter
 
-All tables are Markdown tables in the body under fixed headings, so the generator can read
-them.
-- **Material 3 colour roles.** One row per role: `role` (Flutter name), light hex, dark hex,
-  source (`stated` or `derived: <rule>`), and the grounds it must contrast with.
-  - All 45 roles appear: the 26 standard roles and the 19 add-on roles of the guard's
-    allowlist.
-  - `surfaceTint` and the deprecated roles do not appear.
-- **MemoX semantic colours.** mastery, on-mastery, success, warning, on-warning, warning-ink,
-  error-fill, on-error-fill, status-new, status-learning, status-reviewing, status-mastered,
-  streak; light and dark.
-- **Derived colours.** Primary ink, ghost border, outline edge, status inks, danger ink and
-  the soft tints. Each row has its rule (for example "primary lerped toward on-surface 25 %
-  light / 45 % dark") and the resulting hex. The generator recomputes the hex and fails if the
-  stated value differs.
-- **Type slots.** Each of the 15 Material 3 `TextTheme` slots maps to one DESIGN.md role
-  (stat, display, headline, title, body-large, body, caption, button-label, section-label).
+Every value the code uses lives in the frontmatter, as YAML mappings of scalars. Prose never
+holds a value the code reads. The keys already present stay: `colors`, `typography`,
+`rounded`, `spacing` and `components`.
+- **`colors`** (light) and a new **`colors-dark`**, with the same keys in both:
+  - all 45 Material 3 roles, keyed by the kebab-case form of the Flutter name
+    (`on-primary-fixed-variant`, `surface-container-highest`, …): the 26 standard roles and
+    the 19 add-on roles of the guard's allowlist. `surface-tint` and the deprecated roles do
+    not appear;
+  - the MemoX semantic colours: mastery, on-mastery, success, warning, on-warning,
+    warning-ink, error-fill, on-error-fill, status-new, status-learning, status-reviewing,
+    status-mastered, streak.
+- **`derived`**: one entry per derived colour, holding its rule, not its value.
+  - Covers primary ink, ghost border, outline edge, the status inks, danger ink, and the soft
+    tints and their borders.
+  - Each rule names its base, the colour it moves toward, and an amount per theme (or an
+    alpha).
+  - The generator computes the values. No derived hex is written anywhere by hand.
+- **`contrast`**: the pairs the Contrast Floor Rule requires, each as a foreground, a list of
+  grounds, and a floor (4.5 or 3).
+- **`type-slots`**: each of the 15 Material 3 `TextTheme` slots maps to one `typography` role.
   Every slot is set, so no Material widget falls back to default metrics.
-- **Tokens.** Spacing and radius already sit in the frontmatter. New tables hold the values
-  DESIGN.md now states only in prose:
-  - opacity: disabled 0.38, pressed 0.12, muted 0.7;
-  - stroke: hairline 1, focus 2, focus offset 2, control 2, selected ring 6;
-  - durations: toggle 160, standard 200, scrim fade 220, sheet 260, spinner cycle 800,
-    skeleton pulse 1400, snackbar 4000 and 8000 with Undo, answer settle 400;
-  - sizes: touch target 48, button 48/36/32/28, field 52, app bar 56, bottom bar 64 in an 80
-    block, rail 80, FAB 52, icon button ink 36, icon 16/20/24;
-  - breakpoints: rail at 600, content max 720;
-  - shadows: whisper, chrome, overlay and FAB, light and dark;
-  - effects: scrim 45 %, glass 84 % with blur 18.
-- The frontmatter `colors` block stays the light theme. The generator fails if it differs from
-  the light column of the role or semantic tables. `.impeccable/design.json` `colorMeta` must
-  match both columns too.
+- **`opacity`**: disabled 0.38, pressed 0.12, muted 0.7.
+- **`stroke`**: hairline 1, focus 2, focus offset 2, control 2, selected ring 6.
+- **`motion`**: toggle 160, standard 200, scrim fade 220, sheet 260, spinner cycle 800,
+  skeleton pulse 1400, snackbar 4000 and 8000 with Undo, answer settle 400 (ms).
+- **`size`**: touch target 48; buttons 48, 36, 32 and 28; field 52; app bar 56; bottom bar 64
+  in an 80 block; rail 80; FAB 52; icon-button ink 36; icons 16, 20 and 24.
+- **`breakpoints`**: rail at 600, content max 720.
+- **`shadows`** and **`shadows-dark`**: whisper, chrome, overlay, FAB (offset, blur, alpha;
+  the colour is the `shadow` role).
+- **`effects`**: scrim 45 %, glass 84 % with blur 18.
+
+The values in these lists are what DESIGN.md's prose states today. Task 1 moves them into the
+frontmatter.
+
+**Generated reference block.** The generator renders the 45-role table into the DESIGN.md
+body between `<!-- generated:design-values -->` markers. For each role it shows: light,
+dark, source (stated or rule), and the measured contrast. The owner reviews that table.
+Nobody edits it by hand.
+
+**Prose check.** Any hex code the prose mentions must equal a frontmatter value or a
+generated derived value. This checks the prose for drift. It never reads a value from prose.
 
 ### 4.2 Derivation rules for the 17 missing roles
 
-The rules work from values DESIGN.md already states. Every result is listed in the table with
-its contrast ratio.
+The rules work from values DESIGN.md already states. Their results appear in the generated
+table with their contrast ratios.
 - `onSecondary`, `onTertiary`, `onError`: white when it holds 4.5:1 on the fill, otherwise the
   light theme's `on-surface` (#0F1638). Measured on 2026-10-04:
   - light: secondary gets #0F1638 (4.65:1), tertiary gets #0F1638 (4.77:1), error gets white
     (5.86:1);
   - dark: all three get #0F1638 (7.72, 7.92 and 8.14:1). White fails on every dark fill.
-- `primaryFixed`, `primaryFixedDim`, `onPrimaryFixed`, `onPrimaryFixedVariant`, and the same
-  four for secondary and tertiary:
+- `primaryFixed`, `primaryFixedDim`, `onPrimaryFixed` and `onPrimaryFixedVariant`, and the
+  same four roles for secondary and tertiary:
   - Material 3 defines the fixed roles as identical in both themes.
   - `xFixed` = the light `xContainer`; `onXFixed` = the light `onXContainer`.
-  - `xFixedDim` = `xFixed` lerped toward `x` by 30 %; `onXFixedVariant` = `onXFixed` lerped
-    toward `x` by 30 %, held at 4.5:1 on `xFixed` and `xFixedDim`.
-- `surfaceDim`: in light, `surface` stepped one surface-container step darker (the distance
-  between `surface-container-low` and `surface-container`); in dark, `surface` itself (the
-  Nebula Night page is already the dimmest ground).
-- `shadow`: light `#0F1638` (on-surface, the base of every light shadow in `design.json`),
-  dark `#000000`. The shadow table carries the alpha.
+  - `xFixedDim` = `xFixed` lerped 30 % toward `x`.
+  - `onXFixedVariant` = `onXFixed` lerped 30 % toward `x`, held at 4.5:1 on both `xFixed` and
+    `xFixedDim`.
+- `surfaceDim`:
+  - light: `surface` one surface-container step darker (the distance between
+    `surface-container-low` and `surface-container`);
+  - dark: `surface` itself, since the Nebula Night page is already the dimmest ground.
+- `shadow`: light #0F1638 (`on-surface`, the base of every light shadow), dark #000000. The
+  shadow tables carry the alpha.
 
-Task 1 may change a rule's parameter (not its intent) to clear a contrast floor, recording the
-change in the table. A new rule, or a role whose value Impeccable wants to restyle, goes to the
-owner (D7).
+These rules are recorded in Task 1's notes. Their results are written as plain values in
+`colors`/`colors-dark`, so a later reader does not rerun them. If a contrast floor needs it,
+Task 1 may change a rule's parameter but not its intent. A new rule, or a value Impeccable
+wants restyled, goes to the owner (D7).
 
 ## 5. Foundation layers
 
 ### 5.1 Generator (`tools/design/`)
 
-`generate.py` uses the Python standard library only, like `tools/docs/`.
-- It reads DESIGN.md (frontmatter and the §4.1 tables) and `.impeccable/design.json`.
-- It validates them:
-  - every one of the 45 roles is present;
-  - frontmatter, tables and `colorMeta` agree;
-  - each derived hex equals its rule's result;
-  - every stated contrast pair holds.
-- It writes `lib/core/theme/generated/design_values.dart`:
-  - the light and dark colour values per role and per MemoX colour;
-  - the token constants;
-  - the type-slot metrics;
-  - the contrast pairs, as data for the Dart tests.
-- `--check` regenerates in memory and fails on any difference. The gate's docs step runs it.
-- Its messages are English, like every script in `tools/`.
-- The output is committed. Its name avoids `.g.dart`, which `.gitignore` reserves for
+`generate.py` uses the Python standard library only, like `tools/docs/`. It has a strict
+reader for the frontmatter's YAML subset: nested mappings of scalars, with no anchors and no
+flow collections.
+- **It validates the source:**
+  - the schema of §4.1;
+  - all 45 roles present in both themes;
+  - every derivation rule resolves;
+  - every `contrast` pair holds;
+  - the prose check.
+- **It writes:**
+  - `lib/core/theme/generated/design_values.dart`:
+    - per-role colour values for both themes;
+    - the MemoX semantic and derived colours;
+    - the token constants and the type-slot metrics;
+    - the contrast pairs, as data for the Dart tests;
+  - the value sections of `.impeccable/design.json`;
+  - the DESIGN.md reference block.
+- **`--check`** regenerates all three outputs in memory and fails on any difference. The
+  gate's docs step runs it.
+- Messages are English, like every script in `tools/`.
+- The Dart output is committed. Its name avoids `.g.dart`, which `.gitignore` reserves for
   build_runner, and it opens with a "generated, do not edit" header that names the command.
 
 ### 5.2 `lib/core/theme/`
@@ -218,8 +271,8 @@ owner (D7).
 
 | File | Holds |
 |---|---|
-| `generated/design_values.dart` | The generator's output (§5.1). Nothing else in `lib/` holds a colour literal. |
-| `foundations/app_spacing.dart`, `app_radius.dart`, `app_stroke.dart`, `app_opacity.dart`, `app_durations.dart`, `app_size.dart`, `app_icon_size.dart`, `app_breakpoints.dart` | Theme-invariant tokens (D10) with DESIGN.md's names, as `abstract final class` constants read from the generated values. |
+| `generated/design_values.dart` | The generator's output (§5.1). Nothing else in `lib/` holds a colour literal or a visual value (§7). |
+| `foundations/app_spacing.dart`, `app_radius.dart`, `app_stroke.dart`, `app_opacity.dart`, `app_durations.dart`, `app_size.dart`, `app_icon_size.dart`, `app_breakpoints.dart` | Theme-invariant tokens (D10) under DESIGN.md's names: `abstract final class` constants, each equal to a generated value and never a second literal. |
 | `app_color_schemes.dart` | `lightColorScheme` and `darkColorScheme`: `ColorScheme(...)` with all 45 roles set explicitly, never `fromSeed`. |
 | `mx_semantic_colors.dart` | `MxSemanticColors extends ThemeExtension`: the MemoX semantic colours, light and dark instances. |
 | `mx_derived_colors.dart` | `MxDerivedColors extends ThemeExtension`: primary ink, ghost border, outline edge, status, warning and danger inks, and the soft tints with their borders. Values come from the generator; nothing is computed at runtime. |
@@ -250,8 +303,8 @@ Every `Mx*`:
   localized strings;
 - requires a `semanticLabel` on an icon-only control;
 - keeps a 48×48 touch target whatever its painted size;
-- never clamps text, never fixes a height around text (heights are minimums) and lets text
-  grow with the system scale;
+- never clamps text, never fixes a height around text (heights are minimums), and grows or
+  wraps by its contract at every scale D17 names;
 - has a `const` constructor where Flutter allows one;
 - is one public class per file, `lib/shared/widgets/mx_<name>.dart`, flat. A `show…` function
   sits beside its widget.
@@ -308,9 +361,17 @@ components already require it.
   exact set by running the guard.
   - `widgets_grouped_into_buckets` and `production_screen_audit_not_skipped` stay pending for
     SP3b.
+- **Raw visual values.** A new guard rule forbids a colour literal (`Color(0x…)`,
+  `Color.fromARGB`, `Color.fromRGBO`, `Colors.*`) anywhere in `lib/` outside
+  `lib/core/theme/generated/`. Today's `no_raw_color` rule covers feature and shared UI only,
+  not `core/theme` or `app`. The existing token rules keep guarding spacing, radius, stroke,
+  durations and text styles.
+- **One source per token (D10).** A second new rule forbids a numeric or colour literal on a
+  `static const` in `lib/core/theme/foundations/`: every token there references
+  `design_values.dart`. Together with the parity test, this keeps each value in one place.
 - **Architecture.**
-  - `test/architecture/boundary_rules.dart` adds the D16 rule: features and app never
-    import `shared/primitives/`.
+  - `test/architecture/boundary_rules.dart` adds the D16 rule: only `lib/shared/widgets/`
+    and `lib/core/theme/` import `lib/shared/primitives/`.
   - `core/theme` imports nothing from `shared/`, `app/` or `features/`.
   - `shared/` imports only `core/`.
 - **Docs tooling.** `check.py` accepts `mx_*` goldens (§8.3), and the gate runs the design
@@ -321,7 +382,8 @@ components already require it.
   - `flutter-theme-design`: `references/legacy-and-guards.md` says `showModalBottomSheet`
     is not banned; the construction template says text scale 2.0.
   - Where a skill and the guard or DESIGN.md disagree, the skill is corrected.
-- **ADR-011** gets the D16 amendment.
+- **ADR-022** records the primitive layer and states that it augments ADR-011 (D16).
+  ADR-011 is not edited.
 - **CLAUDE.md**: "Known UI debt" and the "Where knowledge lives" row point at §11.
 
 ## 8. Verification (D6)
@@ -334,14 +396,15 @@ container (`run_goldens.sh`).
 - **DESIGN.md parity.**
   - The generator's tests check the parser, the validations and the derivation rules, with
     fixtures for each failure.
-  - `--check` in the gate fails when DESIGN.md changes and the code does not.
+  - `--check` in the gate fails when the frontmatter changes and the Dart, `design.json` or
+    the reference block does not.
   - A Dart test asserts that each `ColorScheme` role, extension field and token equals the
     generated value. So a hand edit in `lib/core/theme` that bypasses the generator fails too.
 - **The 45-role scheme.** Both schemes set every role of the guard's allowlist; none is left
   to a Flutter default (the test compares against a scheme built with sentinel defaults).
 - **Light and dark.** `buildLightTheme` and `buildDarkTheme` carry their own scheme, the text
   theme and every extension. `MemoxApp` switches with the stored mode.
-- **Contrast floor.** Every pair the role table declares holds 4.5:1 for text and glyphs and
+- **Contrast floor.** Every pair in the frontmatter's `contrast` list holds 4.5:1 for text and glyphs and
   3:1 for non-text, in both themes, computed from the theme's actual values.
 - **Tokens.** Values match DESIGN.md, through the parity test.
 - **Typography.** Every `TextTheme` slot uses Plus Jakarta Sans and its mapped role's metrics.
@@ -358,8 +421,12 @@ For each component in §6.3:
 - the touch target is at least 48×48 (Flutter's `androidTapTargetGuideline`);
 - semantics: role, label, enabled state; an icon-only control's label is required; read-only
   and disabled announce differently (INV-UI-007);
-- no overflow at 320 dp width, at text scale 1.0 and 1.3, with an English and a Vietnamese
-  label (diacritics, longer words);
+- at 320 dp width and at text scale 1.0, 1.3, 1.5 and 2.0, with an English and a Vietnamese
+  label (diacritics, longer words), every D17 rule holds:
+  - no overflow and no clipped meaningful text;
+  - growth and wrapping by contract;
+  - a 48×48 target;
+  - the semantics label is kept;
 - light and dark render without exceptions.
 
 One helper in `test/support/` wraps a widget in the app themes and localization delegates.
@@ -371,8 +438,9 @@ Every component test and golden uses it.
   - `<component>` is the class name without `Mx`, in snake case.
   - `<state>` is snake case.
   - `<variant>` is `light` or `dark`.
-- One golden per row state of §6.3, in both themes, at a 360 dp frame. Files carry
-  `@Tags(['golden'])` and use the shared helper.
+- One golden per row state of §6.3, in both themes, at a 360 dp frame and text scale 1.0,
+  plus one at 2.0 for each component that wraps or stacks. Files carry `@Tags(['golden'])`
+  and use the shared helper.
 - `check.py` accepts an `mx_` golden whose component DESIGN.md "Components" names. It reports
   any other non-`scr_` golden as before.
 - An `mx_` golden is never an orphan screen golden.
@@ -395,32 +463,35 @@ Each task leaves the gate green and is its own commit or commits.
 
 | # | Task | Gate |
 |---|---|---|
-| 1 | DESIGN.md tables (§4), Impeccable critique of them | **Owner approves the tables.** No code before. |
-| 2 | Generator and its tests; `design_values.dart`; gate step | `--check` passes; generator tests pass |
+| 1 | DESIGN.md frontmatter (§4.1) and the derivation results (§4.2); the D17 lines in PRODUCT.md and the Wrap Rule; Impeccable critique | **Owner approves the values.** No code before. |
+| 2 | Generator and its tests; `design_values.dart`, `design.json` value sections, DESIGN.md reference block; gate step; the raw-colour guard rule | `--check` passes; generator tests pass |
 | 3 | Tokens, colour schemes, semantic and derived colours, elevation; parity, 45-role and contrast tests | Foundation tests pass |
 | 4 | Typography, text styles, component themes, button style, the two themes, `theme_context`; `MemoxApp` uses them | Theme tests pass; the placeholder app runs both themes |
-| 5 | Primitives; the architecture rule; guard `targets_pending` removal | Guard 0 warnings |
+| 5 | Primitives; ADR-022 and the import-boundary test; guard `targets_pending` removal | Guard 0 warnings |
 | 6 | Actions: `MxButton`, `MxIconButton`, `MxFab`, `MxSheetActions` | Component tests |
 | 7 | Containers and overlays: `MxCard`, `MxDialog`, `MxBottomSheet`, `MxSnackbar` | Component tests |
 | 8 | Inputs: `MxTextField`, `MxFieldMessage`, `MxSearchField` | Component tests |
 | 9 | Lists, status and structure: `MxListRow`, `MxEmptyState`, `MxErrorState`, `MxSpinner`, `MxSkeleton`, `MxAppBar`, `MxScreenScroll` | Component tests |
 | 10 | `check.py` `mx_` goldens; component goldens; golden-compare page | Goldens pass in the container |
 | 11 | Impeccable critique and audit; one fix batch; one audit | Gate and goldens green |
-| 12 | Skills, ADR-011, CLAUDE.md pointer, WBS, §11 register | Docs check passes |
+| 12 | Skills, CLAUDE.md pointer, WBS, §11 register | Docs check passes |
 
 Then the final whole-branch review (Opus), one fix pass for Critical and Important findings,
 the final gate, and the owner's sign-off.
 
 ## 10. Definition of done
 
-- DESIGN.md holds the approved tables, and the generator reproduces `design_values.dart` from
-  it exactly.
-- The themes implement all 45 roles, light and dark. There is no hand-written colour literal
-  in `lib/`, no deprecated role and no brightness branch in a component.
+- The DESIGN.md frontmatter holds the approved values. The generator reproduces
+  `design_values.dart`, the `design.json` value sections and the reference block from it
+  exactly.
+- The themes implement all 45 roles, light and dark. There is no colour literal in `lib/`
+  outside the generated file, no token with two sources, no deprecated role and no brightness
+  branch in a component.
 - Every §6.3 component meets §6.1 and has its tests and goldens. Impeccable's batch is fixed
   and audited.
 - The guard passes with 0 errors and 0 warnings. The docs check, the gate and the goldens pass.
-- Skills, ADR-011, CLAUDE.md and WBS match the new layout.
+- ADR-022 is accepted. Skills, CLAUDE.md and WBS match the new layout. PRODUCT.md and the
+  Wrap Rule carry the D17 ruling.
 - The final review is done and its Critical and Important findings are fixed.
 - The owner has seen the golden-compare page and signed off.
 - The APK build runs on the owner's side (no Android SDK in the container).
@@ -442,7 +513,8 @@ spec §9, as history.
 | Risk | Mitigation |
 |---|---|
 | A derivation rule yields a colour that clears contrast but reads off-palette | Impeccable critiques the table in Task 1, and the owner approves it before code |
-| The generator becomes a second source | It reads DESIGN.md only and writes nothing back. Its output is checked and committed, never edited |
+| The generator or `design.json` becomes a second source | The frontmatter is the only source. `design.json`'s value sections and the reference block are generated outputs, and `--check` fails on a hand edit |
+| The frontmatter subset grows beyond the strict reader | The reader rejects anything outside §5.1's subset with a message; the schema changes only through a reviewed DESIGN.md change |
 | A component grows a feature meaning | D2: it moves to SP3b and the move is ledgered as a ruling |
 | The guard's stale-`targets_pending` check fires mid-branch | §7: the entries go in the commit that adds the first shared widget |
 | Component goldens collide with the screen-golden rules | §8.3: `mx_` goldens have their own accepted name and are never orphans |
