@@ -294,13 +294,19 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-SEARCH-001](../functional-spec/search.md) | Tìm trong toàn thư viện | active | UC-SEARCH-001 |
+| [FN-SEARCH-001](../functional-spec/search.md) | Tìm trong toàn thư viện | active | SCR-SEARCH-001, UC-SEARCH-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
 | [UC-SEARCH-001](../USE_CASES.md) | Tìm kiếm toàn thư viện | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-SEARCH-001](../screens/spec/SCR-SEARCH-001-library-search.md) | Library search | ready | `/decks/search` |
 
 ## [settings](../features/settings/README.md)
 

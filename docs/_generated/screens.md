@@ -7,7 +7,7 @@
 - Invokes: FN-DECK-007, FN-DECK-008, FN-DECK-001, FN-DECK-009, FN-DECK-002, FN-DECK-012, FN-DECK-010, FN-DECK-011, FN-DECK-004, FN-DECK-005, FN-DECK-006
 - Rules via FN: BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-DECK-005, BR-DECK-006, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-DECK-020, BR-DECK-021, BR-DECK-022, BR-DECK-023, BR-DECK-024, BR-DECK-025, BR-DECK-026, BR-DECK-027, BR-SRS-001, BR-SRS-003, BR-SRS-005, BR-SRS-006, BR-SRS-007, BR-SRS-013, BR-SRS-028, BR-SRS-029, BR-STUDY-008, BR-STUDY-046, BR-STUDY-051, BR-STUDY-067, BR-STUDY-068, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-006, BR-TRASH-008, BR-TRASH-010
 - Use cases: UC-DECK-001, UC-DECK-002, UC-DECK-003, UC-DECK-004, UC-DECK-005, UC-DECK-006
-- Entry points: SCR-DECK-001, SCR-SRS-001, SCR-STARTER-001
+- Entry points: SCR-DECK-001, SCR-SEARCH-001, SCR-SRS-001, SCR-STARTER-001
 
 | State | Golden | Present |
 |---|---|---|
@@ -34,6 +34,22 @@
 | `deck_move` | none | — |
 | `deck_delete` | none | — |
 | `deck_trashed` | none | — |
+
+## [SCR-SEARCH-001](../screens/spec/SCR-SEARCH-001-library-search.md) · Library search
+
+- Invokes: FN-SEARCH-001
+- Rules via FN: BR-DECK-003, BR-SEARCH-001, BR-SEARCH-002, BR-SEARCH-003, BR-SEARCH-004, BR-SEARCH-005, BR-SEARCH-006, BR-SEARCH-007, BR-SEARCH-008, BR-SEARCH-009, BR-TAG-001
+- Use cases: UC-SEARCH-001
+- Entry points: SCR-DECK-001
+
+| State | Golden | Present |
+|---|---|---|
+| `empty_query` | light, dark | — |
+| `loading` | light, dark | — |
+| `results` | light, dark | — |
+| `no_results` | light, dark | — |
+| `error` | light, dark | — |
+| `load_more_failed` | light, dark | — |
 
 ## [SCR-SRS-001](../screens/spec/SCR-SRS-001-review-algorithm.md) · Review algorithm & reset
 

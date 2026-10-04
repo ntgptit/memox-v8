@@ -242,38 +242,38 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/04-library-search.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/04-library-search.md:3` # 04 · Library search |  |
-| `shared/ui/screen-handoff/04-library-search.md:5` `/decks/search`. UC-SEARCH-001 on `SearchLibraryUseCase`: deck names, both card |  |
-| `shared/ui/screen-handoff/04-library-search.md:8` ## Layout |  |
-| `shared/ui/screen-handoff/04-library-search.md:10` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/04-library-search.md:12` \| App bar \| `MxAppBar` with its title-widget slot \| Back, then `MxSearchField` ( |  |
-| `shared/ui/screen-handoff/04-library-search.md:13` \| Empty query \| label, `MxCard` of `MxListRow`s, `MxNote` \| No query runs (BR-SE |  |
-| `shared/ui/screen-handoff/04-library-search.md:14` \| Searching \| label, skeleton groups \| "Searching…" (no query: the field shows i |  |
-| `shared/ui/screen-handoff/04-library-search.md:15` \| Results \| group headers, `MxCard`s of `MxListRow`s \| No header repeats the que |  |
-| `shared/ui/screen-handoff/04-library-search.md:16` \| More \| `MxButton` (secondary, block) \| "Load more results" while another page |  |
-| `shared/ui/screen-handoff/04-library-search.md:17` \| Footer \| caption \| "Decks first, then cards · case-insensitive, accents matter |  |
-| `shared/ui/screen-handoff/04-library-search.md:18` \| No results \| `MxEmptyState` (neutral, compact) \| Search-off glyph; "No matches |  |
-| `shared/ui/screen-handoff/04-library-search.md:19` \| Error \| `MxErrorState` \| "Search didn't run" / "Your library is safe on this d |  |
-| `shared/ui/screen-handoff/04-library-search.md:20` \| Load more failed \| `MxInlineBanner` (danger) + Retry \| The rows stay; the end |  |
-| `shared/ui/screen-handoff/04-library-search.md:22` ## States |  |
-| `shared/ui/screen-handoff/04-library-search.md:24` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/04-library-search.md:26` \| emptyQuery \| `search_empty_query_light.png` \| `search_empty_query_dark.png` \| |  |
-| `shared/ui/screen-handoff/04-library-search.md:27` \| loading \| `search_loading_light.png` \| `search_loading_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/04-library-search.md:28` \| results \| `search_results_light.png` \| `search_results_dark.png` \| Colours per |  |
-| `shared/ui/screen-handoff/04-library-search.md:29` \| noResults \| `search_no_results_light.png` \| `search_no_results_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/04-library-search.md:30` \| error \| `search_error_light.png` \| `search_error_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/04-library-search.md:31` \| loadMoreFailed \| `search_load_more_failed_light.png` \| `search_load_more_faile |  |
-| `shared/ui/screen-handoff/04-library-search.md:33` ## Pending |  |
-| `shared/ui/screen-handoff/04-library-search.md:35` Nothing pending since FE-A10. |  |
-| `shared/ui/screen-handoff/04-library-search.md:37` ## Rulings |  |
-| `shared/ui/screen-handoff/04-library-search.md:39` - **Spec D9 (owner 2026-09-26):** hint rows are read-only with no fill arrow; a |  |
-| `shared/ui/screen-handoff/04-library-search.md:40` - **Spec D19:** every result tile is tinted primary and a matched tag is the neu |  |
-| `shared/ui/screen-handoff/04-library-search.md:41` - **Spec D22:** every row is one height (`MxListRow`); a card's title is one lin |  |
-| `shared/ui/screen-handoff/04-library-search.md:42` - **Spec D26:** group labels are `MxListSectionHeader` without a glyph, with the |  |
-| `shared/ui/screen-handoff/04-library-search.md:43` - The match is emphasised with `rowTitleMatch` (primary, 700) and no background |  |
-| `shared/ui/screen-handoff/04-library-search.md:44` - The field in the app bar is `MxSearchField` at its 52 input floor inside the 5 |  |
-| `shared/ui/screen-handoff/04-library-search.md:45` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
+| `shared/ui/screen-handoff/04-library-search.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:3` # 04 · Library search | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:5` `/decks/search`. UC-SEARCH-001 on `SearchLibraryUseCase`: deck names, both card | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:8` ## Layout | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:10` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:12` \| App bar \| `MxAppBar` with its title-widget slot \| Back, then `MxSearchField` ( | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:13` \| Empty query \| label, `MxCard` of `MxListRow`s, `MxNote` \| No query runs (BR-SE | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:14` \| Searching \| label, skeleton groups \| "Searching…" (no query: the field shows i | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:15` \| Results \| group headers, `MxCard`s of `MxListRow`s \| No header repeats the que | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:16` \| More \| `MxButton` (secondary, block) \| "Load more results" while another page | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:17` \| Footer \| caption \| "Decks first, then cards · case-insensitive, accents matter | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:18` \| No results \| `MxEmptyState` (neutral, compact) \| Search-off glyph; "No matches | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:19` \| Error \| `MxErrorState` \| "Search didn't run" / "Your library is safe on this d | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:20` \| Load more failed \| `MxInlineBanner` (danger) + Retry \| The rows stay; the end | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:22` ## States | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:24` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:26` \| emptyQuery \| `search_empty_query_light.png` \| `search_empty_query_dark.png` \| | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:27` \| loading \| `search_loading_light.png` \| `search_loading_dark.png` \| — \| | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:28` \| results \| `search_results_light.png` \| `search_results_dark.png` \| Colours per | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:29` \| noResults \| `search_no_results_light.png` \| `search_no_results_dark.png` \| — \| | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:30` \| error \| `search_error_light.png` \| `search_error_dark.png` \| — \| | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:31` \| loadMoreFailed \| `search_load_more_failed_light.png` \| `search_load_more_faile | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:33` ## Pending | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:35` Nothing pending since FE-A10. | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:37` ## Rulings | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:39` - **Spec D9 (owner 2026-09-26):** hint rows are read-only with no fill arrow; a | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:40` - **Spec D19:** every result tile is tinted primary and a matched tag is the neu | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:41` - **Spec D22:** every row is one height (`MxListRow`); a card's title is one lin | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:42` - **Spec D26:** group labels are `MxListSectionHeader` without a glyph, with the | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:43` - The match is emphasised with `rowTitleMatch` (primary, 700) and no background | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:44` - The field in the app bar is `MxSearchField` at its 52 input floor inside the 5 | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `shared/ui/screen-handoff/04-library-search.md:45` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
 
 ## shared/ui/screen-handoff/05-tags.md
 
@@ -2424,26 +2424,26 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:5` rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-009, BR-SEARCH-001, BR-SE | superseded → FN-SEARCH-001 (Business rules) |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:6` code: [lib/features/search/domain/usecases/search_library_use_case.dart, lib/fea | moved → `USE_CASES.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:10` **Actor:** Người dùng | pending → SCR-SEARCH-001 (entry point: the search icon in the Library header, at any level); intent kept in UC-SEARCH-001 (Mục tiêu, Preconditions) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:10` **Actor:** Người dùng | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:14` ## Main flow | moved → `USE_CASES.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:16` **Main flow:** | moved → `USE_CASES.md` |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:17` 1. Hệ thống mở màn tìm kiếm như một route con của nhánh Library — thanh dưới còn | pending → SCR-SEARCH-001 (a child route of the Library branch: bottom bar kept, Back returns to the level left, focus in the field at once); intent kept in UC-SEARCH-001 step 1 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:19` 2. Trước khi gõ, màn hình nói rõ tìm được những gì: tên deck, mặt trước và mặt | pending → SCR-SEARCH-001 (the initial face naming what can be found); intent kept in UC-SEARCH-001 step 2 + FN-SEARCH-001 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:21` 3. Người dùng gõ. Sau 250ms im lặng, hệ thống chuẩn hoá câu truy vấn bằng đúng | pending → SCR-SEARCH-001 (the 250 ms debounce); intent kept in UC-SEARCH-001 step 3 + FN-SEARCH-001 (folding, one page) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:17` 1. Hệ thống mở màn tìm kiếm như một route con của nhánh Library — thanh dưới còn | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:19` 2. Trước khi gõ, màn hình nói rõ tìm được những gì: tên deck, mặt trước và mặt | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:21` 3. Người dùng gõ. Sau 250ms im lặng, hệ thống chuẩn hoá câu truy vấn bằng đúng | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:23` 4. Kết quả hiện thành hai mục — Deck trước, Card sau (BR-SEARCH-005). Mỗi mục xế | superseded → FN-SEARCH-001 (decks first; tier order and tie-breaks) + UC-SEARCH-001 step 4 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:26` 5. Một dòng deck hiển thị đường dẫn tổ tiên phía trên tên. Một dòng card hiển th | pending → SCR-SEARCH-001 (deck row: ancestor path above the name; card row: deck path, front, a one-line back, the matched tag when only a tag matched); intent kept in UC-SEARCH-001 step 5 + FN-SEARCH-001 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:29` 6. Mở một kết quả deck đi tới deck đó. Mở một kết quả card đi tới chi tiết card | pending → SCR-SEARCH-001 (Navigate to: the deck, or SCR-CARD-004 read-only); intent kept in UC-SEARCH-001 step 6 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:26` 5. Một dòng deck hiển thị đường dẫn tổ tiên phía trên tên. Một dòng card hiển th | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:29` 6. Mở một kết quả deck đi tới deck đó. Mở một kết quả card đi tới chi tiết card | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:32` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:34` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:35` - **A1 — Còn kết quả phía sau:** cuối danh sách có hành động tải thêm; trang kế | pending → SCR-SEARCH-001 (the Load more action at the end of the list); intent kept in UC-SEARCH-001 A1 + FN-SEARCH-001 (keyset cursor) |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:37` - **A2 — Chỉ có deck, hoặc chỉ có card:** mục không có kết quả không được vẽ tiê | pending → SCR-SEARCH-001 (no empty section header); intent kept in UC-SEARCH-001 A2 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:35` - **A1 — Còn kết quả phía sau:** cuối danh sách có hành động tải thêm; trang kế | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:37` - **A2 — Chỉ có deck, hoặc chỉ có card:** mục không có kết quả không được vẽ tiê | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:39` - **A3 — Dữ liệu đổi ở màn khác:** đổi tên, di chuyển, xoá hoặc đổi tên tag cập | moved → `USE_CASES.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:41` - **A4 — Xoá trắng ô nhập:** về trạng thái ban đầu ngay lập tức, không chờ | moved → `USE_CASES.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:44` **Error flows:** | moved → `USE_CASES.md` |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:45` - **E1 — Trang đầu đọc lỗi:** màn hình lỗi có nút thử lại; danh sách để trống, v | pending → SCR-SEARCH-001 (the error face with Retry, the list empty); intent kept in UC-SEARCH-001 E1 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:47` - **E2 — Trang sau đọc lỗi:** giữ nguyên những gì đã tìm được, chỉ dải cuối danh | pending → SCR-SEARCH-001 (the end-of-list strip turns into the message with Retry); intent kept in UC-SEARCH-001 E2 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:50` ## UI | pending → SCR-SEARCH-001 (states initial · debouncing · loading first page · mixed · decks only · cards only · no results · loading next page · next page error · first page error) |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:52` **UI states:** initial (chưa gõ) · debouncing · loading trang đầu · mixed · | pending → SCR-SEARCH-001 (states initial · debouncing · loading first page · mixed · decks only · cards only · no results · loading next page · next page error · first page error) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:45` - **E1 — Trang đầu đọc lỗi:** màn hình lỗi có nút thử lại; danh sách để trống, v | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:47` - **E2 — Trang sau đọc lỗi:** giữ nguyên những gì đã tìm được, chỉ dải cuối danh | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:50` ## UI | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:52` **UI states:** initial (chưa gõ) · debouncing · loading trang đầu · mixed · | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:56` ## Local | superseded → FN-SEARCH-001 (Kết quả: nothing written, no session opened) |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:58` **Postconditions:** Không đổi gì — use case chỉ đọc, và không mở phiên học nào | superseded → FN-SEARCH-001 (Kết quả: nothing written, no session opened) |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:61` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-SEARCH-001 (Business rules) |
@@ -2451,18 +2451,18 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:68` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:70` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:72` ## Acceptance criteria | moved → `USE_CASES.md` |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:74` - [ ] **Given** màn tìm kiếm chưa có từ nào, **when** hiển thị, **then** hệ thốn | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:75` - [ ] **Given** người dùng gõ, **when** 250 ms im lặng trôi qua, **then** từ tìm | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:74` - [ ] **Given** màn tìm kiếm chưa có từ nào, **when** hiển thị, **then** hệ thốn | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:75` - [ ] **Given** người dùng gõ, **when** 250 ms im lặng trôi qua, **then** từ tìm | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:76` - [ ] **Given** có kết quả, **when** hiển thị, **then** deck đứng trước card, mỗ | moved → `USE_CASES.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:77` - [ ] **Given** nhiều kết quả khớp, **when** xếp hạng, **then** mỗi nhóm xếp khớ | moved → `USE_CASES.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:78` - [ ] **Given** một card khớp qua nhiều trường, **when** hiển thị, **then** nó x | moved → `USE_CASES.md` |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:79` - [ ] **Given** một kết quả, **when** chạm, **then** kết quả deck mở deck đó, kế | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:80` - [ ] **Given** hơn 50 kết quả, **when** hiển thị, **then** số đếm báo còn nhiều | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:81` - [ ] **Given** chỉ một nhóm có kết quả, **when** hiển thị, **then** nhóm còn lạ | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:79` - [ ] **Given** một kết quả, **when** chạm, **then** kết quả deck mở deck đó, kế | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:80` - [ ] **Given** hơn 50 kết quả, **when** hiển thị, **then** số đếm báo còn nhiều | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:81` - [ ] **Given** chỉ một nhóm có kết quả, **when** hiển thị, **then** nhóm còn lạ | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
 | `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:82` - [ ] **Given** deck hoặc tag của một kết quả đang hiện bị đổi tên, di chuyển ho | moved → `USE_CASES.md` |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:83` - [ ] **Given** ô nhập đang có chữ, **when** người dùng xoá trắng, **then** màn | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:84` - [ ] **Given** đọc trang đầu thất bại, **when** lỗi xảy ra, **then** màn hiện l | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:85` - [ ] **Given** đọc một trang sau thất bại, **when** lỗi xảy ra, **then** kết qu | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:83` - [ ] **Given** ô nhập đang có chữ, **when** người dùng xoá trắng, **then** màn | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:84` - [ ] **Given** đọc trang đầu thất bại, **when** lỗi xảy ra, **then** màn hiện l | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:85` - [ ] **Given** đọc một trang sau thất bại, **when** lỗi xảy ra, **then** kết qu | moved → `screens/spec/SCR-SEARCH-001-library-search.md` |
 
 ## features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md
 
@@ -3321,10 +3321,10 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/search/README.md:10` ## Màn hình → Use case |  |
-| `features/search/README.md:12` \| Màn hình \| UC \| |  |
-| `features/search/README.md:14` \| Tìm kiếm từ header của Library, ở mọi cấp \| UC-SEARCH-001 \| |  |
-| `features/search/README.md:16` Nguồn: trigger của UC-SEARCH-001 ("Bấm biểu tượng tìm kiếm ở header của Library, |  |
+| `features/search/README.md:10` ## Màn hình → Use case || superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/search/README.md:12` \| Màn hình \| UC \| || superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/search/README.md:14` \| Tìm kiếm từ header của Library, ở mọi cấp \| UC-SEARCH-001 \| || superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/search/README.md:16` Nguồn: trigger của UC-SEARCH-001 ("Bấm biểu tượng tìm kiếm ở header của Library, || superseded → SCR-SEARCH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/settings/README.md
 
@@ -3735,18 +3735,18 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/reminders/presentation/goldens/reminder_turning_on_light.png` |  |
 | `test/features/reminders/presentation/goldens/reminder_unavailable_dark.png` |  |
 | `test/features/reminders/presentation/goldens/reminder_unavailable_light.png` |  |
-| `test/features/search/presentation/goldens/search_empty_query_dark.png` |  |
-| `test/features/search/presentation/goldens/search_empty_query_light.png` |  |
-| `test/features/search/presentation/goldens/search_error_dark.png` |  |
-| `test/features/search/presentation/goldens/search_error_light.png` |  |
-| `test/features/search/presentation/goldens/search_load_more_failed_dark.png` |  |
-| `test/features/search/presentation/goldens/search_load_more_failed_light.png` |  |
-| `test/features/search/presentation/goldens/search_loading_dark.png` |  |
-| `test/features/search/presentation/goldens/search_loading_light.png` |  |
-| `test/features/search/presentation/goldens/search_no_results_dark.png` |  |
-| `test/features/search/presentation/goldens/search_no_results_light.png` |  |
-| `test/features/search/presentation/goldens/search_results_dark.png` |  |
-| `test/features/search/presentation/goldens/search_results_light.png` |  |
+| `test/features/search/presentation/goldens/search_empty_query_dark.png` | superseded → SCR-SEARCH-001 `empty_query` dark |
+| `test/features/search/presentation/goldens/search_empty_query_light.png` | superseded → SCR-SEARCH-001 `empty_query` light |
+| `test/features/search/presentation/goldens/search_error_dark.png` | superseded → SCR-SEARCH-001 `error` dark |
+| `test/features/search/presentation/goldens/search_error_light.png` | superseded → SCR-SEARCH-001 `error` light |
+| `test/features/search/presentation/goldens/search_load_more_failed_dark.png` | superseded → SCR-SEARCH-001 `load_more_failed` dark |
+| `test/features/search/presentation/goldens/search_load_more_failed_light.png` | superseded → SCR-SEARCH-001 `load_more_failed` light |
+| `test/features/search/presentation/goldens/search_loading_dark.png` | superseded → SCR-SEARCH-001 `loading` dark |
+| `test/features/search/presentation/goldens/search_loading_light.png` | superseded → SCR-SEARCH-001 `loading` light |
+| `test/features/search/presentation/goldens/search_no_results_dark.png` | superseded → SCR-SEARCH-001 `no_results` dark |
+| `test/features/search/presentation/goldens/search_no_results_light.png` | superseded → SCR-SEARCH-001 `no_results` light |
+| `test/features/search/presentation/goldens/search_results_dark.png` | superseded → SCR-SEARCH-001 `results` dark |
+| `test/features/search/presentation/goldens/search_results_light.png` | superseded → SCR-SEARCH-001 `results` light |
 | `test/features/settings/presentation/goldens/settings_invalid_limit_dark.png` |  |
 | `test/features/settings/presentation/goldens/settings_invalid_limit_light.png` |  |
 | `test/features/settings/presentation/goldens/settings_language_english_dark.png` |  |
@@ -4331,3 +4331,9 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - 10 rows `pending → SCR-STARTER-001` moved into the spec; starter-decks README rows superseded.
 - The second-copy dialog and the `already_present` snackbar follow `starter_add_controller.dart`.
 - Warning delta: 64 → 63 = −1 SCR-DECK-001 navigating to a pending SCR-STARTER-001.
+
+## Task 30 notes — SCR-SEARCH-001
+
+- Record 04 → `screens/spec/SCR-SEARCH-001-library-search.md`; 12 goldens superseded by its states.
+- 20 rows `pending → SCR-SEARCH-001` moved into the spec; search README rows superseded. The `q` parameter (FE-B2 D11) is in Purpose.
+- Warning delta: 63 → 63 = −1 SCR-DECK-001 → pending SCR-SEARCH-001, +1 SCR-SEARCH-001 → pending SCR-CARD-004 (Task 33).
