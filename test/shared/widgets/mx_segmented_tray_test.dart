@@ -6,6 +6,11 @@ import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 
 import 'support/mx_harness.dart';
 
+Widget _twice(Widget child) => MediaQuery(
+  data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+  child: child,
+);
+
 void main() {
   const segments = [
     MxSegmentedTrayItem(value: 7, label: 'Last 7 days'),
@@ -126,5 +131,32 @@ void main() {
         tester.widget<Text>(find.text(label)).style!.fontWeight;
     expect(weight('Day'), FontWeight.w700);
     expect(weight('Week'), FontWeight.w500);
+  });
+
+  testWidgets('at twice the text a segment grows around its label', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _twice(
+        MxSegmentedTray<int>(
+          segments: segments,
+          selected: 7,
+          onChanged: (_) {},
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    final Rect label = tester.getRect(find.text('Last 7 days'));
+    final Rect segment = tester.getRect(
+      find
+          .ancestor(
+            of: find.text('Last 7 days'),
+            matching: find.byType(AnimatedContainer),
+          )
+          .first,
+    );
+    expect(segment.height, greaterThan(AppSize.segment));
+    expect(label.bottom, lessThanOrEqualTo(segment.bottom));
   });
 }

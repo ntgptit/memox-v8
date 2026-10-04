@@ -40,6 +40,7 @@ class MxOptionRow extends StatelessWidget {
       enabled: select != null,
       child: MxFocusRing(
         borderRadius: BorderRadius.zero,
+        isInset: true,
         child: MxRowInk(
           onTap: select,
           child: ConstrainedBox(

@@ -91,6 +91,7 @@ void main() {
       tester,
       row,
       painted: tester.getSize(find.byType(MxListRow)),
+      isInset: true,
     );
   });
 

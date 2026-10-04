@@ -25,10 +25,11 @@ Future<void> pumpMx(
     MaterialApp(
       theme: theme ?? mxThemes['light'],
       debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: textDirection,
-        child: Scaffold(body: Center(child: child)),
-      ),
+      // Above the Navigator, so a dialog, a sheet or a snackbar opened from
+      // [child] reads the same direction.
+      builder: (context, app) =>
+          Directionality(textDirection: textDirection, child: app!),
+      home: Scaffold(body: Center(child: child)),
     ),
   );
 }
@@ -138,6 +139,7 @@ Future<void> expectMxKeyboardRingOnly(
   Widget control, {
   required Size painted,
   ThemeData? theme,
+  bool isInset = false,
 }) async {
   await pumpMx(tester, control, theme: theme);
   final Finder root = find.byWidget(control);
@@ -147,7 +149,11 @@ Future<void> expectMxKeyboardRingOnly(
   await tester.pump();
   final RRect? ring = mxFocusRingOf(tester, root);
   expect(ring, isNotNull, reason: 'Tab focus shows the ring');
-  const double grow = 2 * (AppSize.focusOffset + AppStroke.focus / 2);
+  // Outside the paint by the offset, or (a row in a clipping card) inside
+  // its edge by half the stroke.
+  final double grow = isInset
+      ? -AppStroke.focus
+      : 2 * (AppSize.focusOffset + AppStroke.focus / 2);
   expect(ring!.width, moreOrLessEquals(painted.width + grow, epsilon: 0.5));
   expect(ring.height, moreOrLessEquals(painted.height + grow, epsilon: 0.5));
   FocusManager.instance.highlightStrategy = FocusHighlightStrategy.automatic;

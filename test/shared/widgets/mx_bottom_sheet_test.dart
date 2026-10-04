@@ -168,4 +168,30 @@ void main() {
     );
     expect(tester.getBottomLeft(find.byType(MxBottomSheet)).dy, 800);
   });
+
+  testWidgets('its footer is framed for the sheet without being told', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _opener(
+        (_) => MxBottomSheet(
+          title: 'Sort & filter',
+          actions: MxSheetActions(confirmLabel: 'Done', onConfirm: () {}),
+          child: const SizedBox(height: 80),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getRect(find.text('Done')).left -
+          tester.getRect(find.byType(MxBottomSheet)).left,
+      greaterThan(16),
+    );
+    expect(
+      tester.widget<MxSheetActions>(find.byType(MxSheetActions)).isInSheet,
+      isTrue,
+    );
+  });
 }

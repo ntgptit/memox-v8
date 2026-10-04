@@ -122,4 +122,24 @@ void main() {
     );
     expect(tester.widget<Text>(find.textContaining('Cards per')).maxLines, 2);
   });
+
+  testWidgets('the keyboard ring sits inside the row, clear of a sheet edge', (
+    tester,
+  ) async {
+    final Widget row = SizedBox(
+      width: 380,
+      child: MxActionSheetCommandRow(
+        icon: Icons.edit,
+        label: 'Rename',
+        onTap: () {},
+      ),
+    );
+    await pumpMx(tester, row);
+    await expectMxKeyboardRingOnly(
+      tester,
+      row,
+      painted: tester.getSize(find.byType(MxActionSheetCommandRow)),
+      isInset: true,
+    );
+  });
 }

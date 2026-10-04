@@ -26,8 +26,8 @@ enum MxSettingsRowKind {
 }
 
 /// One setting (DESIGN.md, MxSettingsRow): a lead `MxIconTile` (40) in
-/// [iconTone], the label, an optional subtitle that says why, and its end
-/// mark. The label wraps beside the end mark at any text scale. A disabled
+/// [iconTone], the label (one line, read whole), an optional subtitle of up
+/// to two lines that says why, and its end mark. A disabled
 /// row dims its tile, label and chevron, never the subtitle; the toggle draws
 /// its own disabled state and is not dimmed again. 48 minimum, 16 across and
 /// 12 down; one TalkBack node.
@@ -160,6 +160,7 @@ class MxSettingsRow extends StatelessWidget {
         ? body
         : MxFocusRing(
             borderRadius: BorderRadius.zero,
+            isInset: true,
             child: MxRowInk(onTap: tap, child: body),
           );
     // One TalkBack node: a button, or the switch itself for a toggle row.

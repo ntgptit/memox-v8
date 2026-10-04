@@ -124,7 +124,12 @@ void main() {
     );
     await pumpMx(tester, control);
     final Size row = tester.getSize(find.byType(MxOptionRow));
-    await expectMxKeyboardRingOnly(tester, control, painted: row);
+    await expectMxKeyboardRingOnly(
+      tester,
+      control,
+      painted: row,
+      isInset: true,
+    );
   });
 
   testWidgets('MxSearchField trigger', (tester) async {

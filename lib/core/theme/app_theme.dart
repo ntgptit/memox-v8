@@ -13,8 +13,8 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_text_styles.dart';
 
 /// The light and dark themes, built only from the generated foundations
-/// (spec 2026-10-04-sp3a §3.3). Component themes join in the phase that
-/// builds their `Mx*`.
+/// (spec 2026-10-04-sp3a §3.3), with each component slot taken from the
+/// same style function its `Mx*` widget reads.
 abstract final class AppTheme {
   static ThemeData light() =>
       _build(AppColorSchemes.light, AppSemanticColors.light);

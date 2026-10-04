@@ -13,6 +13,7 @@ class MxFocusRing extends StatefulWidget {
     required this.child,
     this.isShown,
     this.isOnInverse = false,
+    this.isInset = false,
     super.key,
   });
 
@@ -26,6 +27,10 @@ class MxFocusRing extends StatefulWidget {
   /// On an inverse surface (a snackbar) the ring is `inverse-primary`, the
   /// role that holds there; elsewhere it is the Indigo Accent.
   final bool isOnInverse;
+
+  /// A full-bleed row inside a clipping card or sheet draws the ring just
+  /// inside its own edge, where the clip and the next row cannot hide it.
+  final bool isInset;
   final Widget child;
 
   @override
@@ -67,6 +72,7 @@ class _MxFocusRingState extends State<MxFocusRing> {
                     ? context.colors.inversePrimary
                     : context.colors.onPrimaryContainer,
                 borderRadius: widget.borderRadius,
+                isInset: widget.isInset,
               )
             : null,
         child: widget.child,
@@ -76,14 +82,21 @@ class _MxFocusRingState extends State<MxFocusRing> {
 }
 
 class _RingPainter extends CustomPainter {
-  const _RingPainter({required this.color, required this.borderRadius});
+  const _RingPainter({
+    required this.color,
+    required this.borderRadius,
+    required this.isInset,
+  });
 
   final Color color;
   final BorderRadius borderRadius;
+  final bool isInset;
 
   @override
   void paint(Canvas canvas, Size size) {
-    const double grow = AppSize.focusOffset + AppStroke.focus / 2;
+    final double grow = isInset
+        ? -AppStroke.focus / 2
+        : AppSize.focusOffset + AppStroke.focus / 2;
     // The ring wraps exactly what it is given; a control padded to the 48
     // target puts the ring inside its `MxTapTarget`, around the paint.
     final RRect ring = borderRadius
@@ -101,5 +114,7 @@ class _RingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RingPainter old) =>
-      old.color != color || old.borderRadius != borderRadius;
+      old.color != color ||
+      old.borderRadius != borderRadius ||
+      old.isInset != isInset;
 }

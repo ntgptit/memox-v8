@@ -7,10 +7,17 @@ import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_screen_scaffold.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 import 'support/mx_harness.dart';
 
 const Key _body = ValueKey<String>('body');
+
+/// The snackbar's painted surface (the widget itself spans its margin).
+final Finder _snackbarSurface = find
+    .descendant(of: find.byType(SnackBar), matching: find.byType(Material))
+    .first;
 
 MxScreenScaffold _screen({bool hasFooter = false, bool hasFab = false}) =>
     MxScreenScaffold(
@@ -250,5 +257,56 @@ void main() {
       ),
     );
     expect(tester.takeException(), isAssertionError);
+  });
+
+  testWidgets('a snackbar floats above the footer, even one its Save opened', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      MxScreenScaffold(
+        appBar: const MxAppBar(title: 'New card'),
+        body: const SizedBox.expand(),
+        footer: MxFooterBar(
+          caption: 'Saved on this phone',
+          actions: Builder(
+            builder: (context) => MxSheetActions(
+              confirmLabel: 'Save card',
+              onConfirm: () => showMxSnackbar(context, message: 'Card saved'),
+            ),
+          ),
+        ),
+      ),
+    );
+    // The footer's height reaches the scaffold on the frame after layout.
+    await tester.pump();
+    await tester.tap(find.text('Save card'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getRect(_snackbarSurface).bottom,
+      lessThanOrEqualTo(tester.getRect(find.byType(MxFooterBar)).top - 16),
+    );
+  });
+
+  testWidgets('a snackbar floats above the FAB', (tester) async {
+    await _pump(
+      tester,
+      MxScreenScaffold(
+        appBar: const MxAppBar(title: 'Library'),
+        body: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showMxSnackbar(context, message: 'Deck added'),
+            child: const Text('Go'),
+          ),
+        ),
+        fab: MxFab(icon: Icons.add, semanticLabel: 'New', onPressed: () {}),
+      ),
+    );
+    await tester.tap(find.text('Go'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getRect(_snackbarSurface).bottom,
+      lessThanOrEqualTo(tester.getRect(find.byType(MxFab)).top - 16),
+    );
   });
 }

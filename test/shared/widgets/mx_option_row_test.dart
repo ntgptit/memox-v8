@@ -83,4 +83,24 @@ void main() {
     );
     expect(dims.map((o) => o.opacity), everyElement(1));
   });
+
+  testWidgets('the keyboard ring sits inside the row, clear of a card clip', (
+    tester,
+  ) async {
+    final Widget row = SizedBox(
+      width: 380,
+      child: MxOptionRow(
+        title: 'Manual order',
+        isSelected: false,
+        onSelected: () {},
+      ),
+    );
+    await pumpMx(tester, row);
+    await expectMxKeyboardRingOnly(
+      tester,
+      row,
+      painted: tester.getSize(find.byType(MxOptionRow)),
+      isInset: true,
+    );
+  });
 }

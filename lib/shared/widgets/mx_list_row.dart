@@ -167,6 +167,7 @@ class MxListRow extends StatelessWidget {
         ? body
         : MxFocusRing(
             borderRadius: BorderRadius.zero,
+            isInset: true,
             child: MxRowInk(onTap: tap, child: body),
           );
     // One TalkBack node carrying every fact, the ripple's tap and focus included.

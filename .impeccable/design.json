@@ -813,9 +813,9 @@
       "name": "Outline Button",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "Ghost action in primary ink with a 1px outlineEdge: outline-variant in light, outline pulled 25% toward on-surface in dark (critique 2026-09-30 part 1).",
+      "description": "Ghost action: the Indigo Accent (`on-primary-container`) label on no fill, with a 1px `outline` edge (3:1 on every ground, both themes).",
       "html": "<button class=\"ds-btn-outline\">Edit deck</button>",
-      "css": ".ds-btn-outline{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:transparent;color:var(--color-on-primary-container);box-shadow:inset 0 0 0 1px var(--color-outline-variant);} .ds-btn-outline:active{filter:brightness(0.88)} .ds-btn-outline:focus-visible{outline:2px solid var(--color-on-primary-container);outline-offset:2px}"
+      "css": ".ds-btn-outline{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:transparent;color:var(--color-on-primary-container);box-shadow:inset 0 0 0 1px var(--color-outline);} .ds-btn-outline:active{filter:brightness(0.88)} .ds-btn-outline:focus-visible{outline:2px solid var(--color-on-primary-container);outline-offset:2px}"
     },
     {
       "name": "Destructive Button",
@@ -829,7 +829,7 @@
       "name": "Text Field",
       "kind": "input",
       "refersTo": "text-field",
-      "description": "52 tall, muted fill that lightens on focus, ghost edge, primary-ink edge on focus, error edge with a message below.",
+      "description": "52 tall, a muted fill that lightens on focus, an edge that turns the Indigo Accent (`on-primary-container`) on focus, an error edge with a message below.",
       "html": "<input class=\"ds-input\" placeholder=\"Term\">",
       "css": ".ds-input{box-sizing:border-box;height:52px;padding:0 12px;width:260px;font:400 14px \"Plus Jakarta Sans\",sans-serif;color:var(--color-on-surface);background:var(--color-surface-container-low);border:1px solid var(--color-outline);border-radius:12px;outline:none} .ds-input::placeholder{color:var(--color-on-surface-variant)} .ds-input:focus-visible{background:var(--color-surface-container-lowest);border-color:var(--color-on-primary-container)}"
     },
@@ -837,9 +837,9 @@
       "name": "Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "Raised surface, r12, whisper shadow in light (dark: 1px ghost edge, no shadow). Interior 20.",
+      "description": "Raised surface on `surface-container-lowest`, r12, whisper shadow in light (dark: the `outline-variant` hairline, no shadow). Interior 20.",
       "html": "<div class=\"ds-card\"><strong>Spanish basics</strong><p>42 cards</p></div>",
-      "css": ".ds-card{padding:20px;width:240px;background:var(--color-on-primary);border-radius:12px;box-shadow:0 1px 2px color-mix(in srgb, var(--color-shadow) 4%, transparent);font:400 14px/1.5 \"Plus Jakarta Sans\",sans-serif;color:var(--color-on-surface)} .ds-card strong{font:500 16px/1.5 \"Plus Jakarta Sans\",sans-serif} .ds-card p{margin:0;color:var(--color-on-surface-variant)}"
+      "css": ".ds-card{padding:20px;width:240px;background:var(--color-surface-container-lowest);border-radius:12px;box-shadow:0 1px 2px color-mix(in srgb, var(--color-shadow) 4%, transparent);font:400 14px/1.5 \"Plus Jakarta Sans\",sans-serif;color:var(--color-on-surface)} .ds-card strong{font:500 16px/1.5 \"Plus Jakarta Sans\",sans-serif} .ds-card p{margin:0;color:var(--color-on-surface-variant)}"
     },
     {
       "name": "Filter Chip",
@@ -871,62 +871,69 @@
     "rules": [
       {
         "name": "The One Indigo Rule",
-        "body": "Indigo means \"act\". A primary fill appears once per decision; the rest of the screen is neutral.",
-        "section": "colors"
+        "body": "Indigo means \"act\"."
+      },
+      {
+        "name": "The Selection Ladder Rule",
+        "body": "Strength follows meaning, so a selection never competes with the screen's one action:"
       },
       {
         "name": "The Green Means Progress Rule",
-        "body": "Green is mastery or success and nothing else. Violet is never a status; green is never decoration.",
-        "section": "colors"
+        "body": "Green is `status-mastered` or `success` and nothing else."
       },
       {
-        "name": "The Ink Is Not The Fill Rule",
-        "body": "Text, icons and focus rings use the derived ink, never the fill colour.",
-        "section": "colors"
+        "name": "The Role On Its Ground Rule",
+        "body": "A colour is a semantic role used on a ground it was checked against."
       },
       {
         "name": "The Contrast Floor Rule",
-        "body": "Text and glyphs hold 4.5:1 and non-text hold 3:1 on page, row, low and sheet grounds, in both themes.",
-        "section": "colors"
+        "body": "Text and glyphs hold 4.5:1 and non-text (edges, thumbs, progress fill on its track, grabber) hold 3:1, on page, row, low and sheet grounds, in both themes."
       },
       {
         "name": "The Seven Roles Rule",
-        "body": "Screens use the seven type roles; a new size is a component-level override, never a new global style.",
-        "section": "typography"
+        "body": "Screens use the seven roles above; a new size is a component-level override of the nearest role, never a new global style."
       },
       {
         "name": "The Text Grows Rule",
-        "body": "Text scale is never clamped and no fixed height wraps text.",
-        "section": "typography"
+        "body": "Text scale is never clamped and no fixed height wraps text."
       },
       {
         "name": "The 48 Floor Rule",
-        "body": "Painted size never sets the touch area; every control keeps a 48x48dp hit area.",
-        "section": "layout"
+        "body": "Painted size never sets the touch area."
       },
       {
         "name": "The Column Rule",
-        "body": "Content never grows wider than 720dp; wide windows gain empty ground.",
-        "section": "layout"
+        "body": "Content never grows wider than 720dp; wide windows gain empty ground, not longer lines."
+      },
+      {
+        "name": "The Wrap Rule",
+        "body": "A meta line, a breakdown line, a session context line or a hint that already wraps (the study session, Study home, the Library row meta) keeps doing so between whole terms."
+      },
+      {
+        "name": "The Clear Tail Rule",
+        "body": "A list under a FAB ends clear of it (`MxScreenScroll`'s FAB clearance, above the bar when there is one); when the FAB hides (selection), the clearance goes with it."
       },
       {
         "name": "The Hairline Before Shadow Rule",
-        "body": "Group with tone and a 1px ghost edge first; shadows only for floating surfaces.",
-        "section": "elevation"
+        "body": "Group with tone and a 1px `outline-variant` edge first; reach for a shadow only for a surface that floats above content."
+      },
+      {
+        "name": "The One Field Rule",
+        "body": "Every text input in the app is an `MxTextField`, or a component that composes one (`MxSearchField`; a feature field such as a deck-name field may add behaviour, never its own look)."
       }
     ],
     "dos": [
-      "Do use primary for exactly one primary action per decision and the derived primary ink for any indigo text, icon or focus ring.",
+      "Do use primary for exactly one primary action per decision, and the Indigo Accent (`on-primary-container`) for any indigo text, icon or focus ring.",
       "Do keep text at 4.5:1 and non-text edges, thumbs and fills at 3:1 on every surface, in both themes.",
       "Do guarantee a 48x48dp touch area on every interactive element, and let text containers grow.",
       "Do write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.",
       "Do use mastery and success green only for mastery and success, and route mastery fills through MasteryRamp.",
-      "Do separate groups with tone and a 1px ghost hairline first.",
+      "Do separate groups with tone and a 1px `outline-variant` hairline first (The Hairline Before Shadow Rule).",
       "Do use 12 for every in-flow surface and the defined spacing steps.",
       "Do centre content at a 720dp maximum column and switch to the navigation rail from 600dp."
     ],
     "donts": [
-      "Don't use a fill colour as text; use its ink.",
+      "Don't put a role on a ground its contrast pair does not cover, or use a fill colour as text (The Role On Its Ground Rule).",
       "Don't use violet or green as decoration, or green for anything but progress and success.",
       "Don't tint shadows with the brand colour, or add elevation where a hairline groups content.",
       "Don't add hover states or a global text style for one component.",

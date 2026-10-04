@@ -226,3 +226,33 @@ def test_no_raw_text_field_exempts_only_the_mx_text_field_file() -> None:
     rule = _rule_config(TEXT_FIELD)
     assert rule["exclude"] == ["lib/shared/widgets/mx_text_field.dart"]
     assert rule["severity"] == "error"
+
+
+RAW_WIDGET = "memox_v8.design_system.no_raw_widget"
+
+
+def test_no_raw_widget_goes_red_on_named_constructors_and_chips(tmp_path: Path) -> None:
+    for bad in (
+        "child: IconButton.filled(icon: icon, onPressed: go),",
+        "child: FloatingActionButton.extended(label: label, onPressed: go),",
+        "child: Card.outlined(child: child),",
+        "child: Switch.adaptive(value: on, onChanged: set),",
+        "child: Checkbox.adaptive(value: on, onChanged: set),",
+        "child: Badge.count(count: 3),",
+        "child: FilterChip(label: label, onSelected: pick),",
+        "child: ActionChip(label: label, onPressed: go),",
+        "child: InputChip(label: label),",
+        "child: Chip(label: label),",
+        "child: RawChip(label: label),",
+    ):
+        assert _violations(RAW_WIDGET, tmp_path, bad), bad
+
+
+def test_no_raw_widget_leaves_the_mx_chips_and_prose_alone(tmp_path: Path) -> None:
+    good = """
+    // A raw FilterChip( here would bypass MxFilterChip.
+    child: MxFilterChip(label: label, isSelected: on, onSelected: pick),
+    child: MxChipTrigger(label: label, onOpen: open),
+    child: MxIconButton(icon: icon, semanticLabel: label, onPressed: go),
+    """
+    assert not _violations(RAW_WIDGET, tmp_path, good)

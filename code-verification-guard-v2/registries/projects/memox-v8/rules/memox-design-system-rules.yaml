@@ -62,14 +62,17 @@ rules:
     scopes:
       - presentation_files
     patterns:
-      - '^(?!\s*(?://|\*)).*\b(?:Card|ListTile|IconButton|FloatingActionButton|InkResponse|ExpansionTile|Badge)\s*\('
-      - '^(?!\s*(?://|\*)).*\b(?:Checkbox|Radio|TextFormField|Slider|RangeSlider|SegmentedButton|ToggleButtons)\s*[<(]'
+      - '^(?!\s*(?://|\*)).*\b(?:Card|ListTile|IconButton|FloatingActionButton|InkResponse|ExpansionTile|Badge)(?:\.[A-Za-z_][A-Za-z0-9_]*)?\s*\('
+      - '^(?!\s*(?://|\*)).*\b(?:Checkbox|Radio|TextFormField|Slider|RangeSlider|SegmentedButton|ToggleButtons)(?:\.[A-Za-z_][A-Za-z0-9_]*)?\s*[<(]'
       - '^(?!\s*(?://|\*)).*\b(?:NavigationBar|NavigationDrawer|NavigationRail|BottomNavigationBar|BottomAppBar|TabBar)\s*\('
       - '^(?!\s*(?://|\*)).*\b(?:Dialog|AlertDialog|SimpleDialog|MaterialBanner|SearchBar|SearchAnchor|DropdownMenu)\s*[<(]'
       - '^(?!\s*(?://|\*)).*\bshowDialog\s*[<(]'
       - '^(?!\s*(?://|\*)).*\b(?:SnackBar|SnackBarAction|InkWell)\s*\('
       - '^(?!\s*(?://|\*)).*\.showSnackBar\s*\('
-      - '^(?!\s*(?://|\*)).*\b(?:Switch|SwitchListTile|CheckboxListTile|RadioListTile|RadioGroup)\s*[<(]'
+      - '^(?!\s*(?://|\*)).*\b(?:Switch|SwitchListTile|CheckboxListTile|RadioListTile|RadioGroup)(?:\.[A-Za-z_][A-Za-z0-9_]*)?\s*[<(]'
+      # Named constructors (`IconButton.filled(`) are the same raw widget, and
+      # the chip family has its Mx owners (`MxFilterChip`, `MxChipTrigger`).
+      - '^(?!\s*(?://|\*)).*\b(?:Chip|FilterChip|ActionChip|InputChip|RawChip)(?:\.[A-Za-z_][A-Za-z0-9_]*)?\s*\('
       - '^(?!\s*(?://|\*)).*\b(?:PopupMenuButton|PopupMenuItem|DropdownButton|DropdownButtonHideUnderline)\s*[<(]'
     tags:
       - memox-v8
@@ -267,11 +270,11 @@ rules:
     severity: error
     enabled: true
     message: >-
-      No per-site text styling in UI code. Use a named style on
-      `context.textStyles` (`MxTextStyles`), or re-weight a rung with
-      `AppTypography.withWeight`. A combination neither can express is a
-      missing style — add it to `MxTextStyles` in lib/core/theme, do not
-      assemble it here.
+      No per-site text styling in UI code. Use a role from `context.texts`
+      as it is (`.apply(color:)` only sets its colour role). A restyle — a
+      weight, a tracking, a decoration — is a style function in
+      lib/core/theme/components (re-weighting a rung with
+      `AppTypography.withWeight`); do not assemble it here.
     scopes:
       - ui_surfaces
     patterns:

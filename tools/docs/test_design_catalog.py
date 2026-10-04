@@ -200,6 +200,10 @@ class InkVocabularyTest(unittest.TestCase):
         lines = [f"{where}: {message}" for _, where, message in dc.check_ink_vocabulary(root)]
         self.assertEqual(len(lines), 6, lines)
 
+    def test_the_impeccable_sidecar_is_in_scope(self):
+        root = tree({".impeccable/design.json": '"body": "use the derived primary ink"\n'})
+        self.assertEqual(len(dc.check_ink_vocabulary(root)), 1)
+
     def test_private_snake_and_pascal_ink_names_are_errors(self):
         root = tree({"lib/x.dart": "Color get _primaryInk => c;\nfinal primary_ink = c;\nclass StatusInk {}\n"})
         self.assertEqual(len(dc.check_ink_vocabulary(root)), 3)

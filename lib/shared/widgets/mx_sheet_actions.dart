@@ -38,6 +38,19 @@ class MxSheetActions extends StatelessWidget {
   final bool isConfirmLoading;
   final bool isInSheet;
 
+  /// The same actions framed for a sheet's footer (a hairline, the gutter);
+  /// `MxBottomSheet` applies it, so a caller never has to.
+  MxSheetActions framedForSheet() => MxSheetActions(
+    confirmLabel: confirmLabel,
+    onConfirm: onConfirm,
+    cancelLabel: cancelLabel,
+    onCancel: onCancel,
+    tone: tone,
+    isConfirmLoading: isConfirmLoading,
+    isInSheet: true,
+    key: key,
+  );
+
   @override
   Widget build(BuildContext context) {
     final Widget confirm = MxButton(

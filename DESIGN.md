@@ -670,7 +670,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxOptionRow
 - Variants: with or without a description
 - States: selected, idle, locked (dims the radio and title only), locked and selected (never dimmed)
-- Accessibility: a checked or unchecked member of a mutually exclusive group; 48 minimum height
+- Accessibility: a checked or unchecked member of a mutually exclusive group; 48 minimum height; the keyboard ring sits inside the row, where a card's clip cannot hide it
 - Tokens: `on-primary-container` (selected radio), `outline`, `on-surface`, `on-surface-variant`; `bodyLarge`, `bodyMedium`; `AppStroke.control` / `indicator`; `AppSize.radio`
 - Golden: states__light, states__dark
 
@@ -685,7 +685,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxSegmentedTray
 - Variants: hugging its segments, or `isExpanded` sharing the width equally
 - States: selected segment raised with a 700 label, idle segments at 500
-- Accessibility: each segment is a selected or unselected member of a mutually exclusive group; 48 to the touch, 36 painted
+- Accessibility: each segment is a selected or unselected member of a mutually exclusive group; 48 to the touch, 36 painted at rest and taller with large text
 - Tokens: `surface-container-low`, `surface-container-lowest` (dark: `surface-container-highest`), `on-surface`, `on-surface-variant`, `shadow`; `labelLarge`; `AppSize.segment`
 - Golden: states__light, states__dark
 
@@ -699,14 +699,14 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxFilterChip
 - Variants: one
 - States: selected, unselected
-- Accessibility: a selected or unselected button named by its label; 28 painted inside a 48 hit
+- Accessibility: a selected or unselected button named by its label; 28 painted inside a 48 hit at rest, the pill taller with large text
 - Tokens: through `MxChipShell`
 - Golden: states__light, states__dark
 
 #### MxChipTrigger
 - Variants: one; a trailing chevron
 - States: idle, active (what it opened is in force)
-- Accessibility: a button named by its label; 28 painted inside a 48 hit
+- Accessibility: a button named by its label; 28 painted inside a 48 hit at rest, the pill taller with large text
 - Tokens: through `MxChipShell`
 - Golden: states__light, states__dark
 
@@ -783,7 +783,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Golden: list__light, list__dark
 
 #### MxSheetActions
-- Variants: confirm tones primary, destructive, warning; with or without Cancel (outline tone: one primary per decision); in a dialog or in a sheet (under a hairline, on the gutter)
+- Variants: confirm tones primary, destructive, warning; with or without Cancel (outline tone: one primary per decision); in a dialog or in a sheet (under a hairline, on the gutter; `MxBottomSheet` frames it, the caller does not)
 - States: enabled, confirm disabled, confirm loading
 - Accessibility: buttons named by their labels; Cancel and the confirm share the row equally, the confirm trailing, while both labels fit one line at the reader's text scale (measured); otherwise they stack full width, the confirm on top; a label is never cut; a lone confirm spans the row
 - Tokens: through `MxButton`; `outline-variant` hairline in a sheet
@@ -809,7 +809,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxSnackbar
 - Variants: message only (it grows, never cut); one action (`isUndo` keeps it 8s)
 - States: shown 4s or 8s; held while TalkBack is on and it carries an action
-- Accessibility: the action is reachable for TalkBack; it replaces any snackbar already shown
+- Accessibility: the action is reachable for TalkBack; it replaces any snackbar already shown; on a screen it floats above the footer and the FAB, never over them
 - Tokens: `inverse-surface`, `on-inverse-surface`, `inverse-primary` (the action: `MxButton`'s inverse tone, for any action on an inverse surface, with its pressed overlay and an `inverse-primary` focus ring); `AppRadius.md`; `AppDurations.toast`, `AppDurations.toastWithUndo`
 - Golden: forms__light, forms__dark
 
@@ -840,7 +840,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxListRow
 - Variants: leading none, an `MxIconTile` (medium, 40, in `iconTone`) or an `MxSelectionCheckbox`; a title and an optional subtitle; trailing exactly one of none, chevron, `MxBadge`, a value, or one `MxIconButton`
 - States: tappable or inert; disabled; checked while selecting
-- Accessibility: 48 minimum, 16 across and 12 down, the leading mark 12 from the text; the title keeps one line with an ellipsis and is read whole; the subtitle wraps to two lines; a value or a badge keeps up to half the line and wraps there; a tappable row is one button (a selecting row is one checkbox) with the shared ripple and the keyboard ring; an inert row stays at full contrast; disabled dims the leading mark, title and chevron (`AppOpacity.disabled`), never the subtitle that says why; one TalkBack node carrying every fact; a trailing icon button is its own node and focus stop; the chevron mirrors in right-to-left text
+- Accessibility: 48 minimum, 16 across and 12 down, the leading mark 12 from the text; the title keeps one line with an ellipsis and is read whole; the subtitle wraps to two lines; a value or a badge keeps up to half the line and wraps there; a tappable row is one button (a selecting row is one checkbox) with the shared ripple and the keyboard ring, drawn inside the row; an inert row stays at full contrast; disabled dims the leading mark, title and chevron (`AppOpacity.disabled`), never the subtitle that says why; one TalkBack node carrying every fact; a trailing icon button is its own node and focus stop; the chevron mirrors in right-to-left text
 - Tokens: `on-surface` (title, row tracking), `on-surface-variant` (subtitle, value, chevron); `bodyLarge`, `bodyMedium`; `AppSize.tapTarget`; `AppSpacing.gutter`, `AppSpacing.grouped`
 - Golden: forms__light, forms__dark
 
@@ -856,7 +856,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxSettingsRow
 - Variants: navigation (chevron), action (no chevron), value (plain text that follows another setting), toggle (the whole row is the switch); a lead `MxIconTile` in `iconTone` (tinted by default) and an optional subtitle
 - States: enabled, disabled; toggle on and off
-- Accessibility: 48 minimum, 16 across and 12 down; the label keeps one line (read whole), the subtitle two, and a value up to half the line and two lines, at any text scale; disabled dims the tile, label and chevron, never the subtitle that says why, and the toggle draws its own disabled state, not dimmed again; one TalkBack node: a button, or the switch for a toggle row
+- Accessibility: 48 minimum, 16 across and 12 down; the label keeps one line (read whole), the subtitle two, and a value up to half the line and two lines, at any text scale; the keyboard ring is drawn inside the row; disabled dims the tile, label and chevron, never the subtitle that says why, and the toggle draws its own disabled state, not dimmed again; one TalkBack node: a button, or the switch for a toggle row
 - Tokens: `on-surface`, `on-surface-variant`; `bodyLarge`, `bodyMedium`; `AppOpacity.disabled`; through `MxIconTile` and `MxToggle`
 - Golden: kinds__light, kinds__dark
 
@@ -864,7 +864,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 #### MxActionSheetCommandRow
 - Variants: a glyph, a label and an optional subtitle; `isDestructive`
 - States: one
-- Accessibility: a 24 glyph in `on-surface-variant` (Material 3's menu leading icon, not a tile), 12 from the label; the label keeps one line, the subtitle two; a destructive command paints its glyph and label in `error` (4.5:1 on the sheet ground, declared) and its words say so; 48 minimum, 16 across and 12 down; one TalkBack node, a button
+- Accessibility: a 24 glyph in `on-surface-variant` (Material 3's menu leading icon, not a tile), 12 from the label; the label keeps one line, the subtitle two; the keyboard ring is drawn inside the row; a destructive command paints its glyph and label in `error` (4.5:1 on the sheet ground, declared) and its words say so; 48 minimum, 16 across and 12 down; one TalkBack node, a button
 - Tokens: `on-surface`, `on-surface-variant`, `error`; `bodyLarge`, `bodyMedium`; `AppIconSize.large`
 - Golden: forms__light, forms__dark
 

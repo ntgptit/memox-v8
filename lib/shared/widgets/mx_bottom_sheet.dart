@@ -92,7 +92,7 @@ class MxBottomSheet extends StatelessWidget {
                     ),
                   ),
                 Flexible(child: SingleChildScrollView(child: child)),
-                ?footer,
+                if (footer != null) footer.framedForSheet(),
                 SizedBox(height: systemBar),
               ],
             ),

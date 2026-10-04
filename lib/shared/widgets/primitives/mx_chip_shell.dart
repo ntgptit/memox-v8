@@ -48,8 +48,9 @@ class MxChipShell extends StatelessWidget {
           child: MxRowInk(
             onTap: onTap,
             borderRadius: pill,
-            child: SizedBox(
-              height: AppSize.chip,
+            // 28 at rest; the pill grows with its label (The Text Grows Rule).
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: AppSize.chip),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.control,

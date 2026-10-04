@@ -235,4 +235,23 @@ void main() {
     );
     semantics.dispose();
   });
+
+  testWidgets('the keyboard ring sits inside the row, clear of a card clip', (
+    tester,
+  ) async {
+    final Widget row = _in(
+      MxSettingsRow.navigation(
+        title: 'Account',
+        icon: Icons.person,
+        onTap: () {},
+      ),
+    );
+    await pumpMx(tester, row);
+    await expectMxKeyboardRingOnly(
+      tester,
+      row,
+      painted: tester.getSize(find.byType(MxSettingsRow)),
+      isInset: true,
+    );
+  });
 }

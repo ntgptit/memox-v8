@@ -4,6 +4,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_screen_scaffold.dart';
 
 /// Shows one transient message (DESIGN.md, MxSnackbar), replacing any that
 /// shows: 4s, or 8s when it offers Undo ([isUndo]). While TalkBack is on, a
@@ -26,6 +27,13 @@ void showMxSnackbar(
       padding: const EdgeInsetsDirectional.only(
         start: AppSpacing.gutter,
         end: AppSpacing.micro,
+      ),
+      // Above a screen's footer and FAB, never over them.
+      margin: EdgeInsets.fromLTRB(
+        AppSpacing.gutter,
+        AppSpacing.gutter,
+        AppSpacing.gutter,
+        AppSpacing.gutter + MxScreenScaffoldScope.bottomChromeOf(context),
       ),
       content: MxSnackbar(
         message: message,

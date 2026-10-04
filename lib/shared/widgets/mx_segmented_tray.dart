@@ -100,24 +100,28 @@ class _Segment<T> extends StatelessWidget {
             borderRadius: radius,
             child: AnimatedContainer(
               duration: AppDurations.standard,
-              height: AppSize.segment,
+              // 36 at rest; the segment grows with its label.
+              constraints: const BoxConstraints(minHeight: AppSize.segment),
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.grouped,
               ),
-              alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: isSelected ? mxRaisedInTray(colors) : null,
                 borderRadius: radius,
                 boxShadow: isSelected ? [?whisper?.on(colors.shadow)] : null,
               ),
-              child: Text(
-                segment.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: mxSegmentLabelStyle(
-                  context.texts,
-                  colors,
-                  isSelected: isSelected,
+              child: Center(
+                widthFactor: 1,
+                heightFactor: 1,
+                child: Text(
+                  segment.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: mxSegmentLabelStyle(
+                    context.texts,
+                    colors,
+                    isSelected: isSelected,
+                  ),
                 ),
               ),
             ),

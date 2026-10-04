@@ -6,6 +6,11 @@ import 'package:memox/shared/widgets/mx_filter_chip.dart';
 
 import 'support/mx_harness.dart';
 
+Widget _twice(Widget child) => MediaQuery(
+  data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+  child: child,
+);
+
 void main() {
   testWidgets('a filter chip toggles and reads selected', (tester) async {
     bool? next;
@@ -48,11 +53,37 @@ void main() {
       expect(
         tester
             .getSize(
-              find.descendant(of: chip, matching: find.byType(SizedBox)).first,
+              find
+                  .descendant(of: chip, matching: find.byType(DecoratedBox))
+                  .first,
             )
             .height,
         AppSize.chip,
       );
     }
+  });
+
+  testWidgets('at twice the text the pill grows around its label', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _twice(
+        MxFilterChip(label: 'Flagged', isSelected: true, onSelected: (_) {}),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    final Rect label = tester.getRect(find.text('Flagged'));
+    final Rect pill = tester.getRect(
+      find
+          .descendant(
+            of: find.byType(MxFilterChip),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    expect(pill.height, greaterThan(AppSize.chip));
+    expect(label.top, greaterThanOrEqualTo(pill.top));
+    expect(label.bottom, lessThanOrEqualTo(pill.bottom));
   });
 }

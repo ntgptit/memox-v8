@@ -39,6 +39,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
         button: true,
         child: MxFocusRing(
           borderRadius: BorderRadius.zero,
+          isInset: true,
           child: MxRowInk(
             onTap: onTap,
             child: ConstrainedBox(

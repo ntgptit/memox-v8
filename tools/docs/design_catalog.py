@@ -39,6 +39,8 @@ INK_SCOPES = (
     ".claude/skills/flutter-theme-design/**/*.md",
     "lib/**/*.dart",
     "lib/l10n/*.arb",
+    # Impeccable reads the sidecar's narrative and previews as the design.
+    ".impeccable/design.json",
 )
 
 Finding = tuple[str, str, str]
