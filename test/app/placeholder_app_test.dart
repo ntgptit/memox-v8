@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
@@ -131,5 +132,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(container.read(welcomeDueProvider), isFalse);
     expect(find.text('SCR-PROGRESS-001'), findsOneWidget);
+  });
+
+  libraryTest('welcome goes on to the Library when `from` leaves the app', (
+    tester,
+    env,
+  ) async {
+    await pumpMemoxApp(tester, env);
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(Scaffold).first),
+    );
+
+    container.read(welcomeDueProvider.notifier).show();
+    _router(tester).go(AppRoutes.welcomeFrom('https://evil.example/study'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.accountContinue));
+    await tester.pumpAndSettle();
+
+    expect(
+      _router(tester).routerDelegate.currentConfiguration.uri.toString(),
+      AppRoutes.decks,
+    );
   });
 }
