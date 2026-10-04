@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/components/button_style.dart';
+import 'package:memox/core/theme/components/icon_button_style.dart';
 import 'package:memox/core/theme/foundations/app_color_schemes.dart';
+import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_semantic_colors.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_text_styles.dart';
 
 /// The light and dark themes, built only from the generated foundations
@@ -57,6 +61,29 @@ abstract final class AppTheme {
           semantic: semantic,
           texts: textTheme,
           tone: MxButtonTone.text,
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: mxIconButtonStyle(colors: scheme),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
+        splashColor: scheme.onPrimary.withValues(alpha: AppOpacity.pressed),
+        focusColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        elevation: 0,
+        focusElevation: 0,
+        hoverElevation: 0,
+        highlightElevation: 0,
+        disabledElevation: 0,
+        iconSize: AppIconSize.large,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(AppRadius.lg)),
+        ),
+        sizeConstraints: const BoxConstraints.tightFor(
+          width: AppSize.fab,
+          height: AppSize.fab,
         ),
       ),
     );

@@ -491,8 +491,8 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxFocusRing | The 2dp keyboard focus ring at a 2dp offset | primitive | MxButton, MxIconButton, MxFab, MxToggle | SP3a | built |
 | MxTapTarget | Grows a small control's hit area to 48 | primitive | MxToggle, MxFilterChip, MxChipTrigger | SP3a | built |
 | MxButton | Text-labelled action in seven tones and five sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
-| MxIconButton | Icon-only action with a 48 target | shared | CARD, DECK, MONITORING, STARTER, STUDY, TAG, TRASH | SP3a | planned |
-| MxFab | Floating primary action, icon only | shared | CARD, DECK | SP3a | planned |
+| MxIconButton | Icon-only action with a 48 target | shared | CARD, DECK, MONITORING, STARTER, STUDY, TAG, TRASH | SP3a | built |
+| MxFab | Floating primary action, icon only | shared | CARD, DECK | SP3a | built |
 | MxSpinner | Indeterminate wait in four sizes | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER | SP3a | built |
 | MxTextField | Text input in six variants | shared | ACCOUNT, CARD, DECK, MONITORING, SEARCH, STARTER, STUDY, TAG, TRANSFER | SP3a | planned |
 | MxFieldMessage | Error or warning line under a field | shared | ACCOUNT, CARD, DECK, TAG | SP3a | planned |
@@ -589,6 +589,20 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: a button named by its label; disabled announced; loading keeps the label and blocks taps; 48 hit at every size; the brand mark is never read
 - Tokens: `primary`, `on-primary`, `surface-container`, `on-surface`, `outline`, `error`, `on-error`, `error-container`, `on-error-container`, `warning`, `on-warning`; `labelLarge` (`labelSmall` for compact and chip); `AppRadius.md` / `sm` / `full`; `AppSize.button*`
 - Golden: tones__light, tones__dark, sizes__light, sizes__dark, states__light, states__dark
+
+#### MxIconButton
+- Variants: standard, accent, destructive
+- States: enabled, pressed, focused, disabled
+- Accessibility: `semanticLabel` is required, read aloud and shown as the tooltip; 36 painted, 48 hit
+- Tokens: `on-surface-variant`, `primary`, `error`; `AppIconSize.medium`; `AppSize.iconButton`
+- Golden: tones__light, tones__dark
+
+#### MxFab
+- Variants: one; icon only, no extended form
+- States: resting, pressed, focused
+- Accessibility: `semanticLabel` is required; 52 square
+- Tokens: `primary`, `on-primary`, `shadow`; `AppShadows.fab*`; `AppRadius.lg`; `AppSize.fab`
+- Golden: resting__light, resting__dark
 
 ## Do's and Don'ts
 
