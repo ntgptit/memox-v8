@@ -1041,3 +1041,61 @@ deck.
 - [ ] **Given** cấp thư viện hoặc cấp một deck đang xem gần nửa đêm, **when** nửa đêm địa phương trôi qua, **then** khoảng đang chọn trượt một ngày và các con số tự đọc lại mà không có ghi nào trong database (A4).
 - [ ] **Given** lần đọc tiến độ theo deck thất bại, **when** người dùng xem, **then** người dùng được báo lỗi theo đúng loại lỗi, không nêu nguyên nhân kỹ thuật, và thử lại thì đọc lại (E1).
 - [ ] **Given** deck được yêu cầu đã bị xoá, ở trong Trash hoặc không tồn tại, **when** người dùng mở tiến độ của nó, **then** người dùng biết deck không còn và chỉ được đưa về cấp thư viện, không có thử lại (E2).
+
+## Search
+
+### UC-SEARCH-001 — Tìm kiếm toàn thư viện
+Status: ready · Code: [lib/features/search/domain/usecases/search_library_use_case.dart] · Invokes: [FN-SEARCH-001]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Tìm nhanh một deck hay một card trong cả thư viện theo tên, mặt thẻ hoặc tag, rồi đi
+tới nó — từ bất kỳ đâu trong Library.
+**Preconditions:** Không có. Thư viện rỗng vẫn tìm được.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng muốn tìm. Người dùng có thể gõ ngay, và quay lại đúng chỗ vừa rời khi thôi tìm.
+2. Trước khi gõ, người dùng biết tìm được những gì: tên deck, mặt trước và mặt sau của card, tên
+   tag. Chưa có gì được đọc.
+3. Người dùng gõ. Khi người dùng ngừng gõ, hệ thống thực hiện FN-SEARCH-001 cho từ đó và đọc **một
+   trang** kết quả; từ gõ dở trước đó không bao giờ được tìm.
+4. Người dùng biết kết quả theo hai nhóm — deck trước, card sau — mỗi nhóm với số đếm riêng, khớp
+   tốt nhất trước.
+5. Với mỗi deck, người dùng biết nó nằm ở đâu trong cây. Với mỗi card, người dùng biết deck chứa nó,
+   mặt trước, tóm tắt mặt sau, và tag đã làm nó khớp khi nó khớp **chỉ** qua tag.
+6. Người dùng chọn một kết quả: deck thì tới deck đó, card thì xem chi tiết card ở chế độ chỉ đọc.
+   Không phiên học nào được mở.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Còn kết quả phía sau:** người dùng biết còn nhiều hơn và đọc thêm được; trang kế tiếp không
+  lặp và không sót dòng.
+- **A2 — Chỉ có deck, hoặc chỉ có card:** nhóm không có kết quả không xuất hiện.
+- **A3 — Dữ liệu đổi ở nơi khác:** đổi tên, di chuyển, xoá hoặc đổi tên tag cập nhật ngay các kết quả
+  và đường dẫn người dùng đang thấy, không cần tìm lại.
+- **A4 — Xoá hết từ đang tìm:** về trạng thái ban đầu ngay, không chờ và không đọc gì.
+
+**Error flows:**
+- **E1 — Trang đầu đọc lỗi:** người dùng được báo lỗi và thử lại được; không kết quả cũ nào còn lại,
+  vì kết quả của từ cũ dưới một thông báo lỗi là sai.
+- **E2 — Trang sau đọc lỗi:** những gì đã tìm được giữ nguyên; người dùng được báo lỗi ở phần đọc
+  thêm và thử lại được đúng phần đó.
+
+#### Acceptance criteria
+
+- [ ] **Given** chưa có từ nào để tìm, **when** người dùng muốn tìm, **then** người dùng biết tìm được tên deck, mặt trước và mặt sau card, và tên tag, và chưa gì được đọc.
+- [ ] **Given** người dùng gõ, **when** người dùng ngừng gõ, **then** từ cần tìm được gập bằng đúng hàm của các cột đã lưu và đúng một lần đọc trang đầu chạy; từ gõ trước đó không bao giờ được đọc.
+- [ ] **Given** có kết quả, **when** người dùng xem, **then** deck đứng trước card, mỗi nhóm có số đếm riêng, và một card chỉ khớp qua mặt trước, mặt sau hoặc tên tag, không bao giờ qua example, hint hay phiên âm.
+- [ ] **Given** nhiều kết quả khớp, **when** xếp hạng, **then** mỗi nhóm xếp khớp đúng trước khớp tiền tố trước khớp chứa, bậc của một card là bậc tốt nhất trong các trường nó khớp, và hoà thì xét văn bản đã gập, rồi `created_at`, rồi `id`.
+- [ ] **Given** một card khớp qua nhiều trường, **when** người dùng xem, **then** nó xuất hiện đúng một lần; card chỉ khớp qua tag thì nêu tag khớp tốt nhất; deck có đường dẫn tổ tiên, card có đường dẫn deck chứa nó.
+- [ ] **Given** một kết quả, **when** người dùng chọn nó, **then** kết quả deck đưa tới deck đó, kết quả card đưa tới chi tiết chỉ đọc của card đó.
+- [ ] **Given** hơn 50 kết quả, **when** người dùng xem, **then** người dùng biết còn nhiều hơn, và đọc thêm nối trang kế tiếp theo con trỏ, không lặp và không sót (A1).
+- [ ] **Given** chỉ một nhóm có kết quả, **when** người dùng xem, **then** nhóm còn lại không xuất hiện (A2).
+- [ ] **Given** deck hoặc tag của một kết quả đang thấy bị đổi tên, di chuyển hoặc xoá ở nơi khác, **when** thay đổi xảy ra, **then** kết quả cập nhật tại chỗ mà không cần tìm lại (A3).
+- [ ] **Given** đang có từ để tìm, **when** người dùng xoá hết, **then** về trạng thái ban đầu ngay, không chờ và không đọc gì (A4).
+- [ ] **Given** đọc trang đầu thất bại, **when** lỗi xảy ra, **then** người dùng được báo lỗi, không còn kết quả cũ, và thử lại đọc lại từ trang đầu (E1).
+- [ ] **Given** đọc một trang sau thất bại, **when** lỗi xảy ra, **then** kết quả đã có giữ nguyên, người dùng được báo lỗi ở phần đọc thêm, và thử lại đọc lại đúng con trỏ đó (E2).

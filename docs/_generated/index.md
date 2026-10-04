@@ -103,15 +103,15 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | FN-DECK-006, FN-DECK-008, FN-DECK-009, FN-DECK-010, FN-DECK-011, UC-SEARCH-001, UC-TRASH-001 |
-| [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | FN-DECK-001, FN-DECK-007, FN-DECK-009, FN-DECK-011, FN-DECK-012, UC-SEARCH-001, UC-STARTER-001 |
-| [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | FN-DECK-007, FN-PROGRESS-002, UC-SEARCH-001 |
+| [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | FN-DECK-006, FN-DECK-008, FN-DECK-009, FN-DECK-010, FN-DECK-011, UC-TRASH-001 |
+| [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | FN-DECK-001, FN-DECK-007, FN-DECK-009, FN-DECK-011, FN-DECK-012, UC-STARTER-001 |
+| [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | FN-DECK-007, FN-PROGRESS-002, FN-SEARCH-001 |
 | [BR-DECK-004](../features/deck/rules/BR-DECK-004-root-deck-chi-chua-deck-con.md) | Root deck chỉ chứa deck con | active | Root deck chỉ chứa deck con, không chứa card trực tiếp. | FN-CARD-002, FN-DECK-001, FN-DECK-005, FN-DECK-008, UC-TRANSFER-001 |
 | [BR-DECK-005](../features/deck/rules/BR-DECK-005-create-o-root-chi-co-create-deck.md) | Create ở root deck chỉ có Create deck | active | Nút Create tại root deck chỉ có một lựa chọn: Create deck. | FN-DECK-008 |
 | [BR-DECK-006](../features/deck/rules/BR-DECK-006-sub-deck-moi-co-content-type-unset.md) | Sub-deck mới có content_type unset | active | Sub-deck mới tạo có `content_type = unset`; người dùng không chọn `content_type` khi tạo. | FN-DECK-009 |
 | [BR-DECK-007](../features/deck/rules/BR-DECK-007-create-o-sub-deck-unset-co-hai-lua-chon.md) | Create ở sub-deck unset có hai lựa chọn | active | Bấm Create trong sub-deck `unset` hiển thị Create card và Create deck. | FN-DECK-008 |
 | [BR-DECK-008](../features/deck/rules/BR-DECK-008-phan-tu-con-dau-tien-xac-lap-content-type.md) | Phần tử con đầu tiên xác lập content_type | active | Lần tạo phần tử con đầu tiên xác lập `content_type`, trong cùng transaction với việc tạo phần tử đó. | FN-CARD-002, FN-DECK-009, FN-DECK-011, UC-TRANSFER-001 |
-| [BR-DECK-009](../features/deck/rules/BR-DECK-009-deck-loai-card-chi-chua-card.md) | Deck loại card chỉ chứa card | active | Deck `content_type = card` chỉ chứa card, không chứa deck con. | FN-CARD-002, FN-DECK-006, FN-DECK-008, FN-DECK-009, FN-DECK-010, UC-SEARCH-001, UC-TRASH-001 |
+| [BR-DECK-009](../features/deck/rules/BR-DECK-009-deck-loai-card-chi-chua-card.md) | Deck loại card chỉ chứa card | active | Deck `content_type = card` chỉ chứa card, không chứa deck con. | FN-CARD-002, FN-DECK-006, FN-DECK-008, FN-DECK-009, FN-DECK-010, UC-TRASH-001 |
 | [BR-DECK-010](../features/deck/rules/BR-DECK-010-deck-loai-deck-chi-chua-deck-con.md) | Deck loại deck chỉ chứa deck con | active | Deck `content_type = deck` chỉ chứa deck con, không chứa card trực tiếp. | FN-CARD-002, FN-DECK-008, FN-DECK-011, UC-TRANSFER-001, UC-TRASH-001 |
 | [BR-DECK-011](../features/deck/rules/BR-DECK-011-khong-tron-card-va-deck-con.md) | Không trộn card và deck con | active | Một deck không đồng thời chứa card và deck con. | FN-DECK-008, FN-DECK-009, FN-DECK-011 |
 | [BR-DECK-012](../features/deck/rules/BR-DECK-012-create-chi-hien-hanh-dong-theo-content-type.md) | Create chỉ hiện hành động theo content_type | active | Sau khi `content_type` được xác lập, nút Create chỉ hiển thị hành động tương ứng. | FN-DECK-008 |
@@ -251,21 +251,27 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-SEARCH-001](../features/search/rules/BR-SEARCH-001-bon-truong-duoc-tim.md) | Bốn trường được tìm | active | Tìm kiếm bao phủ đúng bốn trường: tên deck, mặt trước, mặt sau và tên tag; không tìm dữ liệu đã xoá. | UC-SEARCH-001 |
-| [BR-SEARCH-002](../features/search/rules/BR-SEARCH-002-mot-ham-chuan-hoa-dung-chung.md) | Một hàm chuẩn hoá dùng chung | active | Truy vấn và dữ liệu đi qua một hàm chuẩn hoá dùng chung: trim rồi hạ chữ theo Unicode của Dart. | UC-SEARCH-001 |
-| [BR-SEARCH-003](../features/search/rules/BR-SEARCH-003-truy-van-rong-va-debounce.md) | Truy vấn rỗng và debounce | active | Truy vấn rỗng trả trạng thái ban đầu không chạm DB; truy vấn có nội dung debounce 250ms ở seam provider. | UC-SEARCH-001 |
-| [BR-SEARCH-004](../features/search/rules/BR-SEARCH-004-ba-bac-khop.md) | Ba bậc khớp | active | Trong mỗi nhóm, xếp theo khớp toàn bộ, tiền tố, rồi chứa; bậc của card là bậc tốt nhất. | UC-SEARCH-001 |
-| [BR-SEARCH-005](../features/search/rules/BR-SEARCH-005-deck-truoc-card-sau.md) | Deck trước, card sau | active | Kết quả chia hai nhóm Deck trước, Card sau, không đan xen trên một trang. | UC-SEARCH-001 |
-| [BR-SEARCH-006](../features/search/rules/BR-SEARCH-006-mot-ket-qua-moi-card.md) | Một kết quả mỗi card | active | Card khớp nhiều trường hoặc tag chỉ sinh một kết quả, gộp ở tầng truy vấn. | UC-SEARCH-001 |
-| [BR-SEARCH-007](../features/search/rules/BR-SEARCH-007-phan-trang-keyset.md) | Phân trang keyset | active | Phân trang keyset với khoá bốn thành phần theo thứ tự sắp xếp. | UC-SEARCH-001 |
-| [BR-SEARCH-008](../features/search/rules/BR-SEARCH-008-ket-qua-chi-doc-va-tu-cap-nhat.md) | Kết quả chỉ đọc và tự cập nhật | active | Kết quả chỉ đọc, không mở phiên học; đổi tên, di chuyển, xoá tự cập nhật kết quả. | UC-SEARCH-001 |
-| [BR-SEARCH-009](../features/search/rules/BR-SEARCH-009-khong-them-fts-khi-chua-do.md) | Không thêm FTS khi chưa đo | active | Không thêm FTS hay index mới khi chưa có số đo chứng minh; không đọc N+1. | UC-SEARCH-001 |
+| [BR-SEARCH-001](../features/search/rules/BR-SEARCH-001-bon-truong-duoc-tim.md) | Bốn trường được tìm | active | Tìm kiếm bao phủ đúng bốn trường: tên deck, mặt trước, mặt sau và tên tag; không tìm dữ liệu đã xoá. | FN-SEARCH-001 |
+| [BR-SEARCH-002](../features/search/rules/BR-SEARCH-002-mot-ham-chuan-hoa-dung-chung.md) | Một hàm chuẩn hoá dùng chung | active | Truy vấn và dữ liệu đi qua một hàm chuẩn hoá dùng chung: trim rồi hạ chữ theo Unicode của Dart. | FN-SEARCH-001 |
+| [BR-SEARCH-003](../features/search/rules/BR-SEARCH-003-truy-van-rong-va-debounce.md) | Truy vấn rỗng và debounce | active | Truy vấn rỗng trả trạng thái ban đầu không chạm DB; truy vấn có nội dung debounce 250ms ở seam provider. | FN-SEARCH-001 |
+| [BR-SEARCH-004](../features/search/rules/BR-SEARCH-004-ba-bac-khop.md) | Ba bậc khớp | active | Trong mỗi nhóm, xếp theo khớp toàn bộ, tiền tố, rồi chứa; bậc của card là bậc tốt nhất. | FN-SEARCH-001 |
+| [BR-SEARCH-005](../features/search/rules/BR-SEARCH-005-deck-truoc-card-sau.md) | Deck trước, card sau | active | Kết quả chia hai nhóm Deck trước, Card sau, không đan xen trên một trang. | FN-SEARCH-001 |
+| [BR-SEARCH-006](../features/search/rules/BR-SEARCH-006-mot-ket-qua-moi-card.md) | Một kết quả mỗi card | active | Card khớp nhiều trường hoặc tag chỉ sinh một kết quả, gộp ở tầng truy vấn. | FN-SEARCH-001 |
+| [BR-SEARCH-007](../features/search/rules/BR-SEARCH-007-phan-trang-keyset.md) | Phân trang keyset | active | Phân trang keyset với khoá bốn thành phần theo thứ tự sắp xếp. | FN-SEARCH-001 |
+| [BR-SEARCH-008](../features/search/rules/BR-SEARCH-008-ket-qua-chi-doc-va-tu-cap-nhat.md) | Kết quả chỉ đọc và tự cập nhật | active | Kết quả chỉ đọc, không mở phiên học; đổi tên, di chuyển, xoá tự cập nhật kết quả. | FN-SEARCH-001 |
+| [BR-SEARCH-009](../features/search/rules/BR-SEARCH-009-khong-them-fts-khi-chua-do.md) | Không thêm FTS khi chưa đo | active | Không thêm FTS hay index mới khi chưa có số đo chứng minh; không đọc N+1. | FN-SEARCH-001 |
+
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-SEARCH-001](../functional-spec/search.md) | Tìm trong toàn thư viện | active | UC-SEARCH-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [UC-SEARCH-001](../features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md) | Tìm kiếm toàn thư viện | ready | — |
+| [UC-SEARCH-001](../USE_CASES.md) | Tìm kiếm toàn thư viện | ready | — |
 
 ## [settings](../features/settings/README.md)
 
@@ -516,7 +522,7 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-TAG-001](../features/tags/rules/BR-TAG-001-tag-la-noi-dung-ten-duy-nhat.md) | Tag là nội dung, tên duy nhất | active | Tag là nội dung, nhiều-nhiều với thẻ; tên không rỗng, tối đa 50 ký tự, không ký tự điều khiển, duy nhất không phân biệt hoa thường. | FN-CARD-001, FN-CARD-002, FN-CARD-003, FN-CARD-010, FN-CARD-011, FN-CARD-012, FN-CARD-013, UC-SEARCH-001, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002 |
+| [BR-TAG-001](../features/tags/rules/BR-TAG-001-tag-la-noi-dung-ten-duy-nhat.md) | Tag là nội dung, tên duy nhất | active | Tag là nội dung, nhiều-nhiều với thẻ; tên không rỗng, tối đa 50 ký tự, không ký tự điều khiển, duy nhất không phân biệt hoa thường. | FN-CARD-001, FN-CARD-002, FN-CARD-003, FN-CARD-010, FN-CARD-011, FN-CARD-012, FN-CARD-013, FN-SEARCH-001, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002 |
 | [BR-TAG-002](../features/tags/rules/BR-TAG-002-toi-da-10-tag-moi-the.md) | Tối đa 10 tag mỗi thẻ | active | Một thẻ mang tối đa 10 tag. | FN-CARD-002, FN-CARD-003, FN-CARD-010, UC-TAG-001, UC-TRANSFER-001, UC-TRANSFER-002 |
 | [BR-TAG-003](../features/tags/rules/BR-TAG-003-tag-catalog-pham-vi-library.md) | Tag catalog phạm vi library | active | Tag catalog ở phạm vi library, mỗi hàng hiện tên canonical và số thẻ đang hoạt động. | UC-TAG-001 |
 | [BR-TAG-004](../features/tags/rules/BR-TAG-004-loc-theo-nhieu-tag-la-or.md) | Lọc theo nhiều tag là OR | active | Lọc nhiều tag là OR giữa các tag, AND với filter trạng thái và search term. | FN-CARD-001, FN-CARD-012, UC-TAG-001 |

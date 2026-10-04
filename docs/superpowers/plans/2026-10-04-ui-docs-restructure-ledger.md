@@ -2418,51 +2418,51 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:2` id: UC-SEARCH-001 |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:3` title: Tìm kiếm toàn thư viện |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:4` status: ready |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:5` rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-009, BR-SEARCH-001, BR-SE |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:6` code: [lib/features/search/domain/usecases/search_library_use_case.dart, lib/fea |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:10` **Actor:** Người dùng |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:14` ## Main flow |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:16` **Main flow:** |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:17` 1. Hệ thống mở màn tìm kiếm như một route con của nhánh Library — thanh dưới còn |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:19` 2. Trước khi gõ, màn hình nói rõ tìm được những gì: tên deck, mặt trước và mặt |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:21` 3. Người dùng gõ. Sau 250ms im lặng, hệ thống chuẩn hoá câu truy vấn bằng đúng |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:23` 4. Kết quả hiện thành hai mục — Deck trước, Card sau (BR-SEARCH-005). Mỗi mục xế |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:26` 5. Một dòng deck hiển thị đường dẫn tổ tiên phía trên tên. Một dòng card hiển th |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:29` 6. Mở một kết quả deck đi tới deck đó. Mở một kết quả card đi tới chi tiết card |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:32` ## Alternative / Error flow |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:34` **Alternative flows:** |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:35` - **A1 — Còn kết quả phía sau:** cuối danh sách có hành động tải thêm; trang kế |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:37` - **A2 — Chỉ có deck, hoặc chỉ có card:** mục không có kết quả không được vẽ tiê |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:39` - **A3 — Dữ liệu đổi ở màn khác:** đổi tên, di chuyển, xoá hoặc đổi tên tag cập |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:41` - **A4 — Xoá trắng ô nhập:** về trạng thái ban đầu ngay lập tức, không chờ |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:44` **Error flows:** |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:45` - **E1 — Trang đầu đọc lỗi:** màn hình lỗi có nút thử lại; danh sách để trống, v |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:47` - **E2 — Trang sau đọc lỗi:** giữ nguyên những gì đã tìm được, chỉ dải cuối danh |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:50` ## UI |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:52` **UI states:** initial (chưa gõ) · debouncing · loading trang đầu · mixed · |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:56` ## Local |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:58` **Postconditions:** Không đổi gì — use case chỉ đọc, và không mở phiên học nào |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:61` Ghi chú từ mục "Business rules" của nguồn: |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:63` BR-SEARCH-001, BR-SEARCH-002, BR-SEARCH-003, BR-SEARCH-004, BR-SEARCH-005, BR-SE |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:68` ## API |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:70` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:72` ## Acceptance criteria |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:74` - [ ] **Given** màn tìm kiếm chưa có từ nào, **when** hiển thị, **then** hệ thốn |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:75` - [ ] **Given** người dùng gõ, **when** 250 ms im lặng trôi qua, **then** từ tìm |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:76` - [ ] **Given** có kết quả, **when** hiển thị, **then** deck đứng trước card, mỗ |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:77` - [ ] **Given** nhiều kết quả khớp, **when** xếp hạng, **then** mỗi nhóm xếp khớ |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:78` - [ ] **Given** một card khớp qua nhiều trường, **when** hiển thị, **then** nó x |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:79` - [ ] **Given** một kết quả, **when** chạm, **then** kết quả deck mở deck đó, kế |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:80` - [ ] **Given** hơn 50 kết quả, **when** hiển thị, **then** số đếm báo còn nhiều |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:81` - [ ] **Given** chỉ một nhóm có kết quả, **when** hiển thị, **then** nhóm còn lạ |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:82` - [ ] **Given** deck hoặc tag của một kết quả đang hiện bị đổi tên, di chuyển ho |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:83` - [ ] **Given** ô nhập đang có chữ, **when** người dùng xoá trắng, **then** màn |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:84` - [ ] **Given** đọc trang đầu thất bại, **when** lỗi xảy ra, **then** màn hiện l |  |
-| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:85` - [ ] **Given** đọc một trang sau thất bại, **when** lỗi xảy ra, **then** kết qu |  |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:2` id: UC-SEARCH-001 | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:3` title: Tìm kiếm toàn thư viện | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:5` rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-009, BR-SEARCH-001, BR-SE | superseded → FN-SEARCH-001 (Business rules) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:6` code: [lib/features/search/domain/usecases/search_library_use_case.dart, lib/fea | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:10` **Actor:** Người dùng | pending → SCR-SEARCH-001 (entry point: the search icon in the Library header, at any level); intent kept in UC-SEARCH-001 (Mục tiêu, Preconditions) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:14` ## Main flow | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:16` **Main flow:** | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:17` 1. Hệ thống mở màn tìm kiếm như một route con của nhánh Library — thanh dưới còn | pending → SCR-SEARCH-001 (a child route of the Library branch: bottom bar kept, Back returns to the level left, focus in the field at once); intent kept in UC-SEARCH-001 step 1 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:19` 2. Trước khi gõ, màn hình nói rõ tìm được những gì: tên deck, mặt trước và mặt | pending → SCR-SEARCH-001 (the initial face naming what can be found); intent kept in UC-SEARCH-001 step 2 + FN-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:21` 3. Người dùng gõ. Sau 250ms im lặng, hệ thống chuẩn hoá câu truy vấn bằng đúng | pending → SCR-SEARCH-001 (the 250 ms debounce); intent kept in UC-SEARCH-001 step 3 + FN-SEARCH-001 (folding, one page) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:23` 4. Kết quả hiện thành hai mục — Deck trước, Card sau (BR-SEARCH-005). Mỗi mục xế | superseded → FN-SEARCH-001 (decks first; tier order and tie-breaks) + UC-SEARCH-001 step 4 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:26` 5. Một dòng deck hiển thị đường dẫn tổ tiên phía trên tên. Một dòng card hiển th | pending → SCR-SEARCH-001 (deck row: ancestor path above the name; card row: deck path, front, a one-line back, the matched tag when only a tag matched); intent kept in UC-SEARCH-001 step 5 + FN-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:29` 6. Mở một kết quả deck đi tới deck đó. Mở một kết quả card đi tới chi tiết card | pending → SCR-SEARCH-001 (Navigate to: the deck, or SCR-CARD-004 read-only); intent kept in UC-SEARCH-001 step 6 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:32` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:34` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:35` - **A1 — Còn kết quả phía sau:** cuối danh sách có hành động tải thêm; trang kế | pending → SCR-SEARCH-001 (the Load more action at the end of the list); intent kept in UC-SEARCH-001 A1 + FN-SEARCH-001 (keyset cursor) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:37` - **A2 — Chỉ có deck, hoặc chỉ có card:** mục không có kết quả không được vẽ tiê | pending → SCR-SEARCH-001 (no empty section header); intent kept in UC-SEARCH-001 A2 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:39` - **A3 — Dữ liệu đổi ở màn khác:** đổi tên, di chuyển, xoá hoặc đổi tên tag cập | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:41` - **A4 — Xoá trắng ô nhập:** về trạng thái ban đầu ngay lập tức, không chờ | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:44` **Error flows:** | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:45` - **E1 — Trang đầu đọc lỗi:** màn hình lỗi có nút thử lại; danh sách để trống, v | pending → SCR-SEARCH-001 (the error face with Retry, the list empty); intent kept in UC-SEARCH-001 E1 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:47` - **E2 — Trang sau đọc lỗi:** giữ nguyên những gì đã tìm được, chỉ dải cuối danh | pending → SCR-SEARCH-001 (the end-of-list strip turns into the message with Retry); intent kept in UC-SEARCH-001 E2 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:50` ## UI | pending → SCR-SEARCH-001 (states initial · debouncing · loading first page · mixed · decks only · cards only · no results · loading next page · next page error · first page error) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:52` **UI states:** initial (chưa gõ) · debouncing · loading trang đầu · mixed · | pending → SCR-SEARCH-001 (states initial · debouncing · loading first page · mixed · decks only · cards only · no results · loading next page · next page error · first page error) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:56` ## Local | superseded → FN-SEARCH-001 (Kết quả: nothing written, no session opened) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:58` **Postconditions:** Không đổi gì — use case chỉ đọc, và không mở phiên học nào | superseded → FN-SEARCH-001 (Kết quả: nothing written, no session opened) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:61` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-SEARCH-001 (Business rules) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:63` BR-SEARCH-001, BR-SEARCH-002, BR-SEARCH-003, BR-SEARCH-004, BR-SEARCH-005, BR-SE | superseded → FN-SEARCH-001 (Business rules) |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:68` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:70` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:72` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:74` - [ ] **Given** màn tìm kiếm chưa có từ nào, **when** hiển thị, **then** hệ thốn | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:75` - [ ] **Given** người dùng gõ, **when** 250 ms im lặng trôi qua, **then** từ tìm | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:76` - [ ] **Given** có kết quả, **when** hiển thị, **then** deck đứng trước card, mỗ | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:77` - [ ] **Given** nhiều kết quả khớp, **when** xếp hạng, **then** mỗi nhóm xếp khớ | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:78` - [ ] **Given** một card khớp qua nhiều trường, **when** hiển thị, **then** nó x | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:79` - [ ] **Given** một kết quả, **when** chạm, **then** kết quả deck mở deck đó, kế | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:80` - [ ] **Given** hơn 50 kết quả, **when** hiển thị, **then** số đếm báo còn nhiều | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:81` - [ ] **Given** chỉ một nhóm có kết quả, **when** hiển thị, **then** nhóm còn lạ | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:82` - [ ] **Given** deck hoặc tag của một kết quả đang hiện bị đổi tên, di chuyển ho | moved → `USE_CASES.md` |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:83` - [ ] **Given** ô nhập đang có chữ, **when** người dùng xoá trắng, **then** màn | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:84` - [ ] **Given** đọc trang đầu thất bại, **when** lỗi xảy ra, **then** màn hiện l | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
+| `features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md:85` - [ ] **Given** đọc một trang sau thất bại, **when** lỗi xảy ra, **then** kết qu | pending → SCR-SEARCH-001 (presentation of the criterion); intent kept in UC-SEARCH-001 |
 
 ## features/settings/usecases/UC-SETTINGS-001-dat-tuy-chon-ung-dung.md
 
@@ -4188,3 +4188,12 @@ FN-PROGRESS-002 (a deck's level, or "deck missing" as a result, not an error).
 - UC-PROGRESS-001/002 share one screen (SCR-PROGRESS-001); each UC says so at intent level and no
   longer cites the other (USE_CASES cites FN only).
 - Warning delta: 34 → 36 = +2 migrated legacy UC files. Every BR-PROGRESS is cited by an FN.
+
+## Task 20 notes — search
+
+search_library FN-SEARCH-001. Search has no ui.md; its screen is SCR-SEARCH-001 (pending).
+
+- Opening a result (deck, or the read-only card detail) is navigation, written as the intent in
+  UC-SEARCH-001 step 6 and pending for SCR-SEARCH-001's `Navigate to:`; FN-SEARCH-001 states only
+  that nothing is written and no session opens.
+- Warning delta: 36 → 37 = +1 migrated legacy UC file. Every BR-SEARCH is cited by FN-SEARCH-001.
