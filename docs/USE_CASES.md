@@ -1252,3 +1252,128 @@ mình chọn — và xoá hẳn khi thật sự muốn.
 - [ ] **Given** một deck được chọn để xoá vĩnh viễn còn giữ một batch khác không được chọn, **when** xoá vĩnh viễn chạy, **then** deck đó được bỏ qua nguyên vẹn và người dùng biết lý do (E4).
 - [ ] **Given** một bước ghi giữa chừng của việc xoá vĩnh viễn lỗi, **when** transaction chạy, **then** toàn bộ rollback và dữ liệu giữ nguyên như trước (E5).
 - [ ] **Given** một batch được chọn để khôi phục hoặc xoá vĩnh viễn đã bị xoá vĩnh viễn trước đó, **when** thao tác chạy, **then** người dùng biết đúng batch đó không còn (E6).
+
+## Transfer
+
+### UC-TRANSFER-001 — Import card hàng loạt vào một deck
+Status: ready · Code: [lib/features/transfer/domain/usecases/read_import_source_use_case.dart, lib/features/transfer/domain/usecases/preview_import_use_case.dart, lib/features/transfer/domain/usecases/commit_import_use_case.dart] · Invokes: [FN-TRANSFER-001, FN-TRANSFER-002, FN-TRANSFER-003]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Đưa nhiều card vào một deck cùng lúc từ một bảng tính hay văn bản có sẵn, biết trước
+điều gì sẽ được ghi, và không bao giờ ghi nửa chừng.
+**Preconditions:** Deck đích tồn tại, không phải root, và đang chứa card hoặc chưa chứa gì.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng muốn import vào một deck. Người dùng biết deck đích, số card nó đang có, và các bước:
+   chọn nguồn, ghép cột, xem trước, import.
+2. Người dùng chọn nguồn: một file CSV, TSV hoặc XLSX, hoặc dán văn bản CSV/TSV.
+3. Người dùng muốn xem trước. Hệ thống thực hiện FN-TRANSFER-001; không gì được ghi.
+4. Hàng đầu được coi là header và các cột trùng tên được ghép sẵn; người dùng chỉnh cách ghép nếu
+   cần. Mặt trước và mặt sau phải được ghép, và một cột nguồn không ghép vào hai nơi.
+5. Hệ thống thực hiện FN-TRANSFER-002: người dùng biết tổng số hàng, số sẵn sàng, số trùng, số không
+   hợp lệ kèm lý do, số hàng trống bị bỏ qua, và các hàng đầu tiên.
+6. Người dùng xác nhận, biết deck đích, số card sẽ ghi, và số hàng trùng hay không hợp lệ bị bỏ.
+7. Hệ thống thực hiện FN-TRANSFER-003: mọi card được ghi cùng lúc, hoặc không card nào.
+8. Người dùng biết kết quả — số đã ghi, số trùng bỏ qua, số không hợp lệ, và từng hàng bị bỏ qua với
+   số dòng và lý do — rồi xem các card của deck, hoặc import một nguồn khác vào cùng deck.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Dán văn bản:** người dùng dán các hàng CSV/TSV; nó chỉ được đọc khi người dùng muốn xem
+  trước, và văn bản giữ nguyên nếu đọc lỗi.
+- **A2 — XLSX nhiều sheet:** sheet không rỗng đầu tiên được chọn sẵn; người dùng đổi sheet được, và
+  việc ghép cột cùng xem trước chạy lại.
+- **A3 — Không có header:** người dùng cho biết hàng đầu không phải header; các cột mang tên theo vị
+  trí, và hàng đầu là dữ liệu.
+- **A4 — Ghi cả hàng trùng:** người dùng chọn ghi cả hàng trùng; chúng được tính là sẵn sàng và
+  được ghi thành card mới.
+- **A5 — Đổi nguồn:** người dùng thay nguồn đã chọn; thôi chọn file không phải lỗi và không bỏ lựa
+  chọn trước đó.
+
+**Error flows:**
+- **E1 — Không đọc được nguồn:** file hỏng, có mật khẩu, định dạng không hỗ trợ hoặc không phải
+  UTF-8 — người dùng biết lý do và cách sửa (lưu lại dạng UTF-8); nguồn đã chọn trước đó giữ nguyên.
+- **E2 — Nguồn rỗng:** không có hàng dữ liệu nào — người dùng biết ngay khi xem trước, và không đi
+  tiếp được.
+- **E3 — Không còn hàng nào để ghi:** sau kiểm tra và cách xử lý trùng, số sẽ ghi là 0 — không đi
+  tiếp được, và không gì được ghi.
+- **E4 — Deck đích không còn nhận được lúc ghi:** deck biến mất, thành root, hoặc đã chứa deck con —
+  việc ghi bị từ chối, người dùng biết lý do, không gì được ghi, và bản xem trước cùng cách ghép cột
+  giữ nguyên.
+- **E5 — Ghi thất bại giữa chừng:** không gì thay đổi; nguồn, cách ghép cột và bản xem trước giữ
+  nguyên, và người dùng thử lại được.
+- **E6 — Mọi hàng đã thành trùng lúc ghi:** giữa lúc xem trước và lúc ghi, deck đã nhận các card trùng
+  với mọi hàng sẽ ghi — không card nào được ghi, deck không đổi gì, và người dùng biết không có gì
+  được thêm.
+
+#### Acceptance criteria
+
+- [ ] **Given** một deck con chưa chứa gì và một file CSV có header `front,back,tags`, **when** người dùng import, **then** mỗi hàng hợp lệ thành một card mới có đúng một trạng thái học mới và tag của nó, deck thành deck chứa card, và không có lịch sử ôn tập nào.
+- [ ] **Given** một hàng trùng mặt trước và mặt sau (sau khi gập) với card đã có trong deck và một hàng lặp lại trong file, **when** xem trước, **then** hai hàng đó được đánh dấu trùng và mặc định bị bỏ; chọn ghi cả hàng trùng thì cả hai được ghi thành card mới.
+- [ ] **Given** một file UTF-16 hoặc Latin-1, **when** người dùng chọn file, **then** hệ thống từ chối với lý do encoding kèm cách sửa, và không gì được ghi.
+- [ ] **Given** đã xem trước xong và deck vừa nhận deck con, **when** ghi, **then** việc ghi bị từ chối với lý do và không gì được ghi (E4).
+- [ ] **Given** một lần ghi lỗi giữa chừng, **when** import, **then** không card, trạng thái học, tag hay loại nội dung nào đổi (E5).
+
+### UC-TRANSFER-002 — Export card của một deck ra file
+Status: ready · Code: [lib/features/transfer/domain/usecases/count_export_cards_use_case.dart, lib/features/transfer/domain/usecases/build_export_use_case.dart, lib/features/transfer/domain/usecases/share_export_use_case.dart] · Invokes: [FN-TRANSFER-004, FN-TRANSFER-005, FN-TRANSFER-006]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Lấy card của một deck — cả deck hoặc những card đã chọn — ra một file để giữ hay dùng ở
+nơi khác, mà không làm thay đổi gì trong app.
+**Preconditions:** Deck là deck con chứa card và có ít nhất một card; khi export các card đã chọn thì
+tập chọn không rỗng.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng muốn export cả deck, hoặc các card đang chọn. Người dùng biết phạm vi — "toàn bộ N card
+   của deck" (FN-TRANSFER-004) hoặc "N card đã chọn" — và không đổi được nó: phạm vi là hệ quả của
+   nơi người dùng bắt đầu.
+2. Người dùng biết ba định dạng — CSV (khuyến nghị, mặc định), TSV, XLSX — rằng file chứa nội dung và
+   tag, và rằng tiến độ học cùng lịch sử **không** có trong file.
+3. Người dùng chọn định dạng nếu muốn khác, rồi export.
+4. Hệ thống thực hiện FN-TRANSFER-005: một file từ một lần đọc nhất quán, không ghi gì.
+5. Hệ thống thực hiện FN-TRANSFER-006: file được giao cho bảng chia sẻ của hệ điều hành.
+6. Người dùng chọn đích. Người dùng biết file đã được giao cho hệ thống — **không** phải đã được lưu ở
+   một nơi nào đó.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Phạm vi là các card đã chọn:** file chứa đúng tập đã chọn, mỗi card một lần, theo thứ tự tạo
+  chứ không theo thứ tự chọn. Lựa chọn giữ nguyên sau khi export.
+- **A2 — Đổi định dạng:** sáu cột, thứ tự card và ô tag không đổi; chỉ cách mã hoá đổi.
+- **A3 — Thoát bảng chia sẻ:** người dùng thoát mà không chọn đích. Đây là **huỷ**: không có lỗi,
+  người dùng trở lại với phạm vi và định dạng đang chọn, và không có câu nào nói file đã được lưu.
+- **A4 — Yêu cầu export lần thứ hai khi đang tạo file:** lần sau bị bỏ qua; một lần mở chỉ tạo một
+  file.
+- **A5 — Thôi trước khi export:** không file nào được tạo, lựa chọn không đổi.
+
+**Error flows:**
+- **E1 — Thiết bị không có bảng chia sẻ:** người dùng biết chia sẻ không khả dụng; phạm vi và định
+  dạng giữ nguyên, và không file nào còn lại.
+- **E2 — Lỗi từ nền tảng khi chia sẻ:** người dùng biết lý do, không kèm đường dẫn, tên file hay nội
+  dung card, và thử lại được với cùng phạm vi và định dạng.
+- **E3 — Đọc dữ liệu thất bại:** không có file và không gì thay đổi; người dùng biết lý do và thử lại
+  được.
+- **E4 — Không tạo được file:** người dùng biết lý do, phân biệt được với lỗi đọc; không có file một
+  phần nào được giao đi.
+- **E5 — Không có gì để export:** deck rỗng hoặc tập chọn rỗng — bị từ chối. Bình thường người dùng
+  không tới được đây; đây là chặn cho trường hợp cây đã đổi.
+- **E6 — Card đã chọn không còn hợp lệ:** một card đã bị xoá hoặc đã chuyển deck — cả yêu cầu thất
+  bại, không có file một phần, và người dùng được mời chọn lại.
+
+#### Acceptance criteria
+
+- [ ] **Given** một deck chứa card, **when** export CSV, TSV hoặc XLSX, **then** file có sáu header chuẩn, card theo `created_at` rồi `id`, tag theo tên đã gập, và import lại file vào một deck trống cho đúng nội dung đó.
+- [ ] **Given** một ô bắt đầu bằng `=` hoặc một chuỗi như `001`, **when** export XLSX, **then** ô được ghi là text, không thành công thức hay số.
+- [ ] **Given** một tập chọn có một card đã bị xoá hoặc đã chuyển deck, **when** export, **then** cả yêu cầu thất bại và không có file (E6).
+- [ ] **Given** bất kỳ lần export nào, **when** export xong hoặc thất bại, **then** database không đổi.
+- [ ] **Given** người dùng thoát bảng chia sẻ, **when** việc chia sẻ trả về, **then** đó là huỷ, không phải lỗi, và app không nói file đã được lưu (A3).

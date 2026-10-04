@@ -2876,98 +2876,98 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:2` id: UC-TRANSFER-001 |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:3` title: Import card hàng loạt vào một deck |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:4` status: ready |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:5` rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-DECK-004, BR-DECK |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:6` code: [lib/features/transfer/domain/usecases/read_import_source_use_case.dart, l |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:10` **Phạm vi:** backend BE-B3 và màn import FE-B3 đã xong ([spec card transfer](../ |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:12` **Actor:** Người dùng |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:17` ## Main flow |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:19` **Main flow:** |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:20` 1. Người dùng mở màn import; hệ thống hiển thị deck đích, số card hiện có và |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:22` 2. Người dùng chọn nguồn: một file CSV/TSV/XLSX, hoặc dán văn bản CSV/TSV. |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:23` 3. Người dùng bấm Preview; hệ thống parse nguồn trong bộ nhớ (BR-TRANSFER-006) — |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:30` 4. Hệ thống mặc định coi hàng đầu là header và tự map các cột trùng tên |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:34` 5. Hệ thống validate toàn bộ hàng bằng đúng các rule của card (BR-TRANSFER-002), |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:37` 6. Người dùng bấm Continue rồi xác nhận ở bước Import — màn xác nhận nêu deck |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:39` 7. Hệ thống ghi toàn bộ trong một transaction (BR-TRANSFER-004): card, study sta |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:41` 8. Hệ thống hiện kết quả — số đã ghi, số trùng bỏ qua, số invalid bị loại, và |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:46` ## Alternative / Error flow |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:48` **Alternative flows:** |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:49` - **A1 — Dán văn bản:** ở bước Source người dùng dán các hàng CSV/TSV vào ô |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:53` - **A2 — XLSX nhiều sheet:** hệ thống mặc định chọn sheet không rỗng đầu tiên |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:55` - **A3 — Không có header:** người dùng tắt "First row contains headers"; các |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:58` - **A4 — Bao gồm trùng lặp:** người dùng bật "Include duplicates"; số sẵn sàng |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:60` - **A5 — Đổi file:** người dùng thay file đã chọn; hủy hộp chọn file không |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:63` **Error flows:** |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:64` - **E1 — File không đọc được:** file hỏng, có mật khẩu, đuôi không hỗ trợ hoặc |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:67` - **E2 — Nguồn rỗng:** file/sheet/văn bản không có hàng dữ liệu nào → thông báo |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:69` - **E3 — Không còn hàng hợp lệ:** sau validate và policy trùng lặp, số sẽ ghi |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:71` - **E4 — Deck đích không còn hợp lệ lúc ghi:** deck biến mất, thành root-level |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:74` - **E5 — Commit thất bại giữa chừng:** một write lỗi → rollback toàn bộ |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:76` - **E6 — Mọi hàng đã thành trùng lúc ghi:** giữa Preview và Import, deck nhận |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:81` ## UI |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:83` **UI states:** initial (Source trống) · source đã chọn · parsing · parse error · |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:89` ## Local |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:91` **Postconditions:** Mọi card được ghi có đúng một study state mới theo scheduler |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:95` ## API |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:97` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:99` ## Acceptance criteria |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:101` - [ ] **Given** một sub-deck `unset` và một file CSV có header `front,back,tags` |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:102` - [ ] **Given** một hàng trùng `front`+`back` (sau fold) với card đã có trong de |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:103` - [ ] **Given** một file UTF-16 hoặc Latin-1, **when** chọn file, **then** hệ th |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:104` - [ ] **Given** preview đã xong và deck vừa nhận deck con, **when** commit, **th |  |
-| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:105` - [ ] **Given** một write lỗi giữa batch, **when** commit, **then** không card, |  |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:2` id: UC-TRANSFER-001 | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:3` title: Import card hàng loạt vào một deck | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:5` rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-DECK-004, BR-DECK | superseded → FN-TRANSFER-001…FN-TRANSFER-003 (Business rules) |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:6` code: [lib/features/transfer/domain/usecases/read_import_source_use_case.dart, l | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:10` **Phạm vi:** backend BE-B3 và màn import FE-B3 đã xong ([spec card transfer](../ | dropped — history of how the work was split (BE-B3, FE-B3); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:12` **Actor:** Người dùng | pending → SCR-TRANSFER-001 (entry points: Import cards on the card list, its empty state, and the create-child choice of an unset deck); intent kept in UC-TRANSFER-001 (Mục tiêu, Preconditions) |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:17` ## Main flow | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:19` **Main flow:** | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:20` 1. Người dùng mở màn import; hệ thống hiển thị deck đích, số card hiện có và | pending → SCR-TRANSFER-001 (the target deck, its card count, the four steps Source → Columns → Preview → Import); intent kept in UC-TRANSFER-001 step 1 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:22` 2. Người dùng chọn nguồn: một file CSV/TSV/XLSX, hoặc dán văn bản CSV/TSV. | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:23` 3. Người dùng bấm Preview; hệ thống parse nguồn trong bộ nhớ (BR-TRANSFER-006) — | superseded → FN-TRANSFER-001 (in memory, nothing written; the TSV and CSV delimiter rules) + UC-TRANSFER-001 step 3 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:30` 4. Hệ thống mặc định coi hàng đầu là header và tự map các cột trùng tên | pending → SCR-TRANSFER-001 (the header switch and the column mapping controls); intent kept in UC-TRANSFER-001 step 4 + FN-TRANSFER-002 (mapping rules) |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:34` 5. Hệ thống validate toàn bộ hàng bằng đúng các rule của card (BR-TRANSFER-002), | pending → SCR-TRANSFER-001 (the preview counts and the first rows); intent kept in UC-TRANSFER-001 step 5 + FN-TRANSFER-002 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:37` 6. Người dùng bấm Continue rồi xác nhận ở bước Import — màn xác nhận nêu deck | pending → SCR-TRANSFER-001 (Continue then the confirm step naming the deck and the counts); intent kept in UC-TRANSFER-001 step 6 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:39` 7. Hệ thống ghi toàn bộ trong một transaction (BR-TRANSFER-004): card, study sta | superseded → FN-TRANSFER-003 (one transaction: cards, a fresh study state each, tags, content type) + UC-TRANSFER-001 step 7 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:41` 8. Hệ thống hiện kết quả — số đã ghi, số trùng bỏ qua, số invalid bị loại, và | pending → SCR-TRANSFER-001 (the result with the skipped rows; View cards and Import another file); intent kept in UC-TRANSFER-001 step 8 + FN-TRANSFER-003 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:46` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:48` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:49` - **A1 — Dán văn bản:** ở bước Source người dùng dán các hàng CSV/TSV vào ô | pending → SCR-TRANSFER-001 (the paste field; parse only on Preview; text kept on a parse error); intent kept in UC-TRANSFER-001 A1 + FN-TRANSFER-001 (paste detection) |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:53` - **A2 — XLSX nhiều sheet:** hệ thống mặc định chọn sheet không rỗng đầu tiên | pending → SCR-TRANSFER-001 (the sheet picker; a change reruns mapping and preview); intent kept in UC-TRANSFER-001 A2 + FN-TRANSFER-001 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:55` - **A3 — Không có header:** người dùng tắt "First row contains headers"; các | pending → SCR-TRANSFER-001 (the "First row contains headers" switch; Column A, Column B, …); intent kept in UC-TRANSFER-001 A3 + FN-TRANSFER-002 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:58` - **A4 — Bao gồm trùng lặp:** người dùng bật "Include duplicates"; số sẵn sàng | pending → SCR-TRANSFER-001 (the "Include duplicates" switch); intent kept in UC-TRANSFER-001 A4 + FN-TRANSFER-003 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:60` - **A5 — Đổi file:** người dùng thay file đã chọn; hủy hộp chọn file không | pending → SCR-TRANSFER-001 (replacing the file; cancelling the picker keeps the choice); intent kept in UC-TRANSFER-001 A5 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:63` **Error flows:** | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:64` - **E1 — File không đọc được:** file hỏng, có mật khẩu, đuôi không hỗ trợ hoặc | pending → SCR-TRANSFER-001 (the typed error with the re-export-as-UTF-8 guidance); intent kept in UC-TRANSFER-001 E1 + FN-TRANSFER-001 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:67` - **E2 — Nguồn rỗng:** file/sheet/văn bản không có hàng dữ liệu nào → thông báo | pending → SCR-TRANSFER-001 (the message at the Preview step); intent kept in UC-TRANSFER-001 E2 + FN-TRANSFER-002 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:69` - **E3 — Không còn hàng hợp lệ:** sau validate và policy trùng lặp, số sẽ ghi | pending → SCR-TRANSFER-001 (Continue locked); intent kept in UC-TRANSFER-001 E3 + FN-TRANSFER-003 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:71` - **E4 — Deck đích không còn hợp lệ lúc ghi:** deck biến mất, thành root-level | pending → SCR-TRANSFER-001 (the typed reason; preview and mapping kept); intent kept in UC-TRANSFER-001 E4 + FN-TRANSFER-003 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:74` - **E5 — Commit thất bại giữa chừng:** một write lỗi → rollback toàn bộ | pending → SCR-TRANSFER-001 (source, mapping and preview kept; Try again); intent kept in UC-TRANSFER-001 E5 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:76` - **E6 — Mọi hàng đã thành trùng lúc ghi:** giữa Preview và Import, deck nhận | pending → SCR-TRANSFER-001 (the "Nothing added" result with one way back to the deck); intent kept in UC-TRANSFER-001 E6 + FN-TRANSFER-003 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:81` ## UI | pending → SCR-TRANSFER-001 (states initial · source chosen · parsing · parse error · preview loaded · preview empty · confirm · submitting · commit error · result; no refreshing) |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:83` **UI states:** initial (Source trống) · source đã chọn · parsing · parse error · | pending → SCR-TRANSFER-001 (states initial · source chosen · parsing · parse error · preview loaded · preview empty · confirm · submitting · commit error · result; no refreshing) |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:89` ## Local | superseded → FN-TRANSFER-003 (Kết quả) |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:91` **Postconditions:** Mọi card được ghi có đúng một study state mới theo scheduler | superseded → FN-TRANSFER-003 (Kết quả) |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:95` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:97` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:99` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:101` - [ ] **Given** một sub-deck `unset` và một file CSV có header `front,back,tags` | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:102` - [ ] **Given** một hàng trùng `front`+`back` (sau fold) với card đã có trong de | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:103` - [ ] **Given** một file UTF-16 hoặc Latin-1, **when** chọn file, **then** hệ th | pending → SCR-TRANSFER-001 (presentation of the criterion); intent kept in UC-TRANSFER-001 |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:104` - [ ] **Given** preview đã xong và deck vừa nhận deck con, **when** commit, **th | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md:105` - [ ] **Given** một write lỗi giữa batch, **when** commit, **then** không card, | moved → `USE_CASES.md` |
 
 ## features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md
 
 | Source item | Outcome |
 |---|---|
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:2` id: UC-TRANSFER-002 |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:3` title: Export card của một deck ra file |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:4` status: ready |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:5` rules: [BR-CARD-012, BR-DECK-015, BR-CORE-001, BR-CORE-004, BR-TAG-001, BR-TAG-0 |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:6` code: [lib/features/transfer/domain/usecases/build_export_use_case.dart, lib/fea |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:10` **Phạm vi:** backend BE-B3 và sheet export FE-B3 đã xong ([spec card transfer](. |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:12` **Actor:** Người dùng |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:18` ## Main flow |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:20` **Main flow:** |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:21` 1. Người dùng mở export từ một trong hai entry point; hệ thống mở một sheet và |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:25` 2. Hệ thống hiển thị ba format — CSV (mặc định, gắn nhãn Recommended), TSV, |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:28` 3. Người dùng chọn format nếu muốn khác mặc định, rồi bấm `Export N cards`. |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:29` 4. Hệ thống đọc một snapshot nhất quán gồm tên deck, nội dung sáu field và tag |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:31` 5. Hệ thống encode snapshot thành artifact theo format đã chọn — sáu header |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:34` 6. Hệ thống ghi artifact vào vùng riêng tạm thời của ứng dụng rồi bàn giao cho |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:36` 7. Người dùng chọn đích ở share sheet. Hệ thống đóng sheet export và báo đã bàn |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:39` ## Alternative / Error flow |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:41` **Alternative flows:** |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:42` - **A1 — Scope là tập đã chọn:** vào từ thanh hành động chọn nhiều; file chứa |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:46` - **A2 — Đổi format:** chọn TSV hoặc XLSX; canonical schema, thứ tự card và ô |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:48` - **A3 — Đóng share sheet:** người dùng thoát share sheet mà không chọn đích. |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:51` - **A4 — Bấm export lần thứ hai khi đang tạo file:** hệ thống MUST bỏ qua lần |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:54` - **A5 — Huỷ trước khi submit:** `Cancel`, chạm ra ngoài sheet hoặc Android Back |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:57` **Error flows:** |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:58` - **E1 — Nền tảng không có share sheet:** hệ thống báo rằng chia sẻ không khả |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:61` - **E2 — Lỗi từ nền tảng khi chia sẻ:** exception của platform channel map |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:64` - **E3 — Đọc dữ liệu thất bại:** đọc dữ liệu lỗi khi lấy snapshot → lý do có |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:66` - **E4 — Encode thất bại:** encoder lỗi → lý do có kiểu phân biệt được với lỗi |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:68` - **E5 — Không có gì để export:** deck rỗng hoặc tập chọn rỗng → domain từ chối |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:71` - **E6 — Id đã chọn không còn hợp lệ:** một id trong tập chọn đã bị xoá hoặc đã |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:75` ## UI |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:77` **UI states:** initial (scope + format, primary bật) · generating (primary khoá, |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:84` ## Local |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:86` **Postconditions:** Database không đổi — nội dung, timestamp, `content_type`, |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:91` ## API |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:93` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:95` ## Acceptance criteria |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:97` - [ ] **Given** một deck loại card, **when** export CSV, TSV hoặc XLSX, **then** |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:98` - [ ] **Given** một ô bắt đầu bằng `=` hoặc một chuỗi như `001`, **when** export |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:99` - [ ] **Given** một tập chọn có một id đã bị xoá hoặc đã chuyển deck, **when** e |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:100` - [ ] **Given** bất kỳ export nào, **when** export xong hoặc thất bại, **then** |  |
-| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:101` - [ ] **Given** người dùng đóng share sheet, **when** share trả về, **then** đó |  |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:2` id: UC-TRANSFER-002 | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:3` title: Export card của một deck ra file | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:5` rules: [BR-CARD-012, BR-DECK-015, BR-CORE-001, BR-CORE-004, BR-TAG-001, BR-TAG-0 | superseded → FN-TRANSFER-004…FN-TRANSFER-006 (Business rules) |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:6` code: [lib/features/transfer/domain/usecases/build_export_use_case.dart, lib/fea | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:10` **Phạm vi:** backend BE-B3 và sheet export FE-B3 đã xong ([spec card transfer](. | dropped — history of how the work was split (BE-B3, FE-B3); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:12` **Actor:** Người dùng | pending → SCR-TRANSFER-002 (entry points: Export cards in the card list overflow, Export selected on the selection action bar); intent kept in UC-TRANSFER-002 (Mục tiêu, Preconditions) |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:18` ## Main flow | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:20` **Main flow:** | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:21` 1. Người dùng mở export từ một trong hai entry point; hệ thống mở một sheet và | pending → SCR-TRANSFER-002 (the sheet with the fixed read-only scope "All N cards in this deck" or "N selected cards"); intent kept in UC-TRANSFER-002 step 1 + FN-TRANSFER-004 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:25` 2. Hệ thống hiển thị ba format — CSV (mặc định, gắn nhãn Recommended), TSV, | pending → SCR-TRANSFER-002 (CSV with Recommended, TSV, XLSX; the two explaining lines); intent kept in UC-TRANSFER-002 step 2 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:28` 3. Người dùng chọn format nếu muốn khác mặc định, rồi bấm `Export N cards`. | pending → SCR-TRANSFER-002 (Export N cards); intent kept in UC-TRANSFER-002 step 3 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:29` 4. Hệ thống đọc một snapshot nhất quán gồm tên deck, nội dung sáu field và tag | superseded → FN-TRANSFER-005 (one consistent read; nothing written) + UC-TRANSFER-002 step 4 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:31` 5. Hệ thống encode snapshot thành artifact theo format đã chọn — sáu header | superseded → FN-TRANSFER-005 (six headers, empty cells, BOM, text cells, the file name) |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:34` 6. Hệ thống ghi artifact vào vùng riêng tạm thời của ứng dụng rồi bàn giao cho | superseded → FN-TRANSFER-006 (the private temporary area, then the system share sheet) + UC-TRANSFER-002 step 5 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:36` 7. Người dùng chọn đích ở share sheet. Hệ thống đóng sheet export và báo đã bàn | pending → SCR-TRANSFER-002 (the sheet closes and says the file was handed to the system, never where it was saved); intent kept in UC-TRANSFER-002 step 6 + FN-TRANSFER-006 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:39` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:41` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:42` - **A1 — Scope là tập đã chọn:** vào từ thanh hành động chọn nhiều; file chứa | superseded → FN-TRANSFER-005 (the chosen set, each card once, created_at order) + UC-TRANSFER-002 A1 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:46` - **A2 — Đổi format:** chọn TSV hoặc XLSX; canonical schema, thứ tự card và ô | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:48` - **A3 — Đóng share sheet:** người dùng thoát share sheet mà không chọn đích. | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:51` - **A4 — Bấm export lần thứ hai khi đang tạo file:** hệ thống MUST bỏ qua lần | pending → SCR-TRANSFER-002 (the primary action locked until the first ends); intent kept in UC-TRANSFER-002 A4 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:54` - **A5 — Huỷ trước khi submit:** `Cancel`, chạm ra ngoài sheet hoặc Android Back | pending → SCR-TRANSFER-002 (Cancel, tap outside or Android Back closes the sheet); intent kept in UC-TRANSFER-002 A5 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:57` **Error flows:** | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:58` - **E1 — Nền tảng không có share sheet:** hệ thống báo rằng chia sẻ không khả | pending → SCR-TRANSFER-002 (the message; the sheet stays open); intent kept in UC-TRANSFER-002 E1 + FN-TRANSFER-006 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:61` - **E2 — Lỗi từ nền tảng khi chia sẻ:** exception của platform channel map | pending → SCR-TRANSFER-002 (the typed reason without path, file name or card content; Retry); intent kept in UC-TRANSFER-002 E2 + FN-TRANSFER-006 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:64` - **E3 — Đọc dữ liệu thất bại:** đọc dữ liệu lỗi khi lấy snapshot → lý do có | pending → SCR-TRANSFER-002 (the typed reason; Retry from the read); intent kept in UC-TRANSFER-002 E3 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:66` - **E4 — Encode thất bại:** encoder lỗi → lý do có kiểu phân biệt được với lỗi | pending → SCR-TRANSFER-002 (a reason distinct from the read error); intent kept in UC-TRANSFER-002 E4 + FN-TRANSFER-005 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:68` - **E5 — Không có gì để export:** deck rỗng hoặc tập chọn rỗng → domain từ chối | superseded → FN-TRANSFER-005 (Lỗi: emptyScope) + UC-TRANSFER-002 E5; the entry point hidden on an empty deck → SCR-CARD-001 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:71` - **E6 — Id đã chọn không còn hợp lệ:** một id trong tập chọn đã bị xoá hoặc đã | pending → SCR-TRANSFER-002 (the message inviting a new selection); intent kept in UC-TRANSFER-002 E6 + FN-TRANSFER-005 |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:75` ## UI | pending → SCR-TRANSFER-002 (states initial · generating · share requested · dismissed · unavailable or platform error · read error · encoder error · invalid scope; no loading, no empty) |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:77` **UI states:** initial (scope + format, primary bật) · generating (primary khoá, | pending → SCR-TRANSFER-002 (states initial · generating · share requested · dismissed · unavailable or platform error · read error · encoder error · invalid scope; no loading, no empty) |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:84` ## Local | superseded → FN-TRANSFER-005 + FN-TRANSFER-006 (Kết quả: database unchanged; six content fields; the file stays in the private temporary area) |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:86` **Postconditions:** Database không đổi — nội dung, timestamp, `content_type`, | superseded → FN-TRANSFER-005 + FN-TRANSFER-006 (Kết quả: database unchanged; six content fields; the file stays in the private temporary area) |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:91` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:93` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:95` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:97` - [ ] **Given** một deck loại card, **when** export CSV, TSV hoặc XLSX, **then** | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:98` - [ ] **Given** một ô bắt đầu bằng `=` hoặc một chuỗi như `001`, **when** export | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:99` - [ ] **Given** một tập chọn có một id đã bị xoá hoặc đã chuyển deck, **when** e | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:100` - [ ] **Given** bất kỳ export nào, **when** export xong hoặc thất bại, **then** | moved → `USE_CASES.md` |
+| `features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md:101` - [ ] **Given** người dùng đóng share sheet, **when** share trả về, **then** đó | pending → SCR-TRANSFER-002 (presentation of the criterion); intent kept in UC-TRANSFER-002 |
 
 ## features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md
 
@@ -4235,3 +4235,15 @@ invokes them.
   code and BR-TRASH-006 say; the legacy UC did not mention it.
 - Trash has no ui.md. The Undo snackbar's presentation goes to SCR-DECK-001 and SCR-CARD-001.
 - Warning delta: 38 → 39 = +1 migrated legacy UC file. Every BR-TRASH is cited by an FN.
+
+## Task 23 notes — transfer
+
+read_import_source FN-TRANSFER-001, preview_import 002, commit_import 003, count_export_cards 004,
+build_export 005, share_export 006.
+
+- The CSV/TSV delimiter rule (UC-TRANSFER-001 step 3 and A1, spec card transfer D9) is a contract of
+  reading the source and moved into FN-TRANSFER-001.
+- FN-TRANSFER-003 states that the duplicate check runs again inside the write, so E6 ("Nothing
+  added", deck unchanged) is a result, not an error.
+- Transfer has no ui.md; the import screen is SCR-TRANSFER-001 and the export sheet SCR-TRANSFER-002.
+- Warning delta: 39 → 41 = +2 migrated legacy UC files. Every BR-TRANSFER is cited by an FN.

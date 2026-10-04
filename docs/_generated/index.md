@@ -8,10 +8,10 @@
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-CORE-001](../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) | Nội dung người dùng là dữ liệu riêng tư | active | Nội dung deck/card, ghi chú, lịch sử học, file import, hình ảnh, audio và backup là dữ liệu riêng tư. | FN-REMINDER-004, FN-TRASH-002, UC-TRANSFER-002 |
+| [BR-CORE-001](../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) | Nội dung người dùng là dữ liệu riêng tư | active | Nội dung deck/card, ghi chú, lịch sử học, file import, hình ảnh, audio và backup là dữ liệu riêng tư. | FN-REMINDER-004, FN-TRANSFER-006, FN-TRASH-002 |
 | [BR-CORE-002](../shared/rules/BR-CORE-002-khong-log-noi-dung.md) | Không log nội dung | deprecated | Không log nội dung flashcard hoặc ghi chú ở bất kỳ log level nào; log ID thì được. | — |
 | [BR-CORE-003](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md) | Media trong thư mục riêng của ứng dụng | active | Media lưu trong thư mục riêng của ứng dụng. | — |
-| [BR-CORE-004](../shared/rules/BR-CORE-004-export-backup-chi-khi-nguoi-dung-yeu-cau.md) | Export và backup chỉ khi người dùng yêu cầu | active | Export và backup chỉ chạy khi người dùng chủ động yêu cầu. | UC-TRANSFER-002 |
+| [BR-CORE-004](../shared/rules/BR-CORE-004-export-backup-chi-khi-nguoi-dung-yeu-cau.md) | Export và backup chỉ khi người dùng yêu cầu | active | Export và backup chỉ chạy khi người dùng chủ động yêu cầu. | FN-TRANSFER-005 |
 | [BR-CORE-005](../shared/rules/BR-CORE-005-thong-bao-loi-khong-lo-chi-tiet-ky-thuat.md) | Thông báo lỗi không lộ chi tiết kỹ thuật | active | Thông báo lỗi hiển thị cho người dùng không là thông báo kỹ thuật và không lộ id, đường dẫn hay SQL. | FN-CARD-013, FN-CARD-014 |
 
 ### Decisions
@@ -50,10 +50,10 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-CARD-001](../features/card/rules/BR-CARD-001-hai-mat-khong-rong.md) | Card có hai mặt không rỗng | active | Card có mặt trước và mặt sau, đều không rỗng sau trim. | FN-CARD-002, FN-CARD-003, UC-TRANSFER-001 |
-| [BR-CARD-002](../features/card/rules/BR-CARD-002-gioi-han-do-dai-hai-mat.md) | Giới hạn độ dài hai mặt | active | Mặt trước tối đa 60 ký tự, mặt sau tối đa 240 ký tự, đo sau trim. | FN-CARD-002, FN-CARD-003, UC-TRANSFER-001 |
-| [BR-CARD-003](../features/card/rules/BR-CARD-003-ba-truong-phu-tuy-chon.md) | Ba trường phụ tuỳ chọn | active | Card có thể có ví dụ, gợi ý và phiên âm, mỗi trường tối đa 240 ký tự sau trim. | FN-CARD-002, FN-CARD-003, FN-CARD-013, UC-TRANSFER-001 |
-| [BR-CARD-004](../features/card/rules/BR-CARD-004-tao-card-tao-study-state.md) | Tạo card tạo study state | active | Tạo card đồng thời tạo study state theo scheduler và `generation` của root, `due_at = NULL`. | FN-CARD-002, FN-SRS-002, UC-STARTER-001, UC-TRANSFER-001 |
+| [BR-CARD-001](../features/card/rules/BR-CARD-001-hai-mat-khong-rong.md) | Card có hai mặt không rỗng | active | Card có mặt trước và mặt sau, đều không rỗng sau trim. | FN-CARD-002, FN-CARD-003, FN-TRANSFER-002 |
+| [BR-CARD-002](../features/card/rules/BR-CARD-002-gioi-han-do-dai-hai-mat.md) | Giới hạn độ dài hai mặt | active | Mặt trước tối đa 60 ký tự, mặt sau tối đa 240 ký tự, đo sau trim. | FN-CARD-002, FN-CARD-003, FN-TRANSFER-002 |
+| [BR-CARD-003](../features/card/rules/BR-CARD-003-ba-truong-phu-tuy-chon.md) | Ba trường phụ tuỳ chọn | active | Card có thể có ví dụ, gợi ý và phiên âm, mỗi trường tối đa 240 ký tự sau trim. | FN-CARD-002, FN-CARD-003, FN-CARD-013, FN-TRANSFER-002 |
+| [BR-CARD-004](../features/card/rules/BR-CARD-004-tao-card-tao-study-state.md) | Tạo card tạo study state | active | Tạo card đồng thời tạo study state theo scheduler và `generation` của root, `due_at = NULL`. | FN-CARD-002, FN-SRS-002, FN-TRANSFER-002, UC-STARTER-001 |
 | [BR-CARD-005](../features/card/rules/BR-CARD-005-sua-noi-dung-khong-dung-study-state.md) | Sửa nội dung không đụng study state | active | Sửa nội dung card không đụng study state hay study answers. | FN-CARD-003 |
 | [BR-CARD-006](../features/card/rules/BR-CARD-006-bon-trang-thai-hien-thi.md) | Bốn trạng thái hiển thị của thẻ | active | Trạng thái hiển thị là `new`, `beginning`, `reviewing` hoặc `mastered`, suy ra khi đọc, không lưu cột. | FN-CARD-001, FN-CARD-013 |
 | [BR-CARD-007](../features/card/rules/BR-CARD-007-the-chua-hoc-xong-la-new.md) | Thẻ chưa học xong lần đầu là new | active | Thẻ `learned_at IS NULL` là `new` ở cả hai thuật toán, không suy từ `answer_count`. | FN-CARD-001, FN-CARD-013 |
@@ -61,7 +61,7 @@ Chưa có tài liệu.
 | [BR-CARD-009](../features/card/rules/BR-CARD-009-co-la-noi-dung.md) | Cờ là nội dung | active | Cờ là nội dung: sửa thẻ và reset không đụng tới, xoá thẻ thì xoá cờ theo cascade; hệ thống có thể bật nhưng không tự tắt. | FN-CARD-001, FN-CARD-002, FN-CARD-003, FN-CARD-009, FN-CARD-013, FN-STUDY-005 |
 | [BR-CARD-010](../features/card/rules/BR-CARD-010-di-chuyen-the-cung-root.md) | Di chuyển thẻ chỉ trong cùng root | active | Di chuyển thẻ chỉ giữa hai sub-deck cùng root, giữ nguyên thẻ và lịch sử, cập nhật `content_type` hai phía trong một transaction. | FN-CARD-005, FN-CARD-006, FN-CARD-007, FN-TRASH-004, FN-TRASH-006 |
 | [BR-CARD-011](../features/card/rules/BR-CARD-011-mutation-hang-loat-all-or-nothing.md) | Mutation hàng loạt all-or-nothing | active | Mọi mutation hàng loạt trên thẻ là all-or-nothing trong một transaction, giữ quy tắc của thao tác đơn lẻ. | FN-CARD-004, FN-CARD-007, FN-CARD-009, FN-CARD-010, FN-CARD-011 |
-| [BR-CARD-012](../features/card/rules/BR-CARD-012-chon-nhieu-tren-toan-tap-ket-qua.md) | Chọn nhiều trên toàn tập kết quả | active | Chọn nhiều áp lên toàn bộ tập kết quả theo filter/search đang bật; đổi ngữ cảnh thì xoá selection. | FN-CARD-008, UC-TRANSFER-002 |
+| [BR-CARD-012](../features/card/rules/BR-CARD-012-chon-nhieu-tren-toan-tap-ket-qua.md) | Chọn nhiều trên toàn tập kết quả | active | Chọn nhiều áp lên toàn bộ tập kết quả theo filter/search đang bật; đổi ngữ cảnh thì xoá selection. | FN-CARD-008 |
 | [BR-CARD-013](../features/card/rules/BR-CARD-013-chi-tiet-card-chi-doc.md) | Chi tiết card là chỉ đọc | active | Mở, cuộn chi tiết và tải lịch sử là chỉ đọc; xem một thẻ không phải là học nó. | FN-CARD-013 |
 | [BR-CARD-014](../features/card/rules/BR-CARD-014-noi-dung-man-chi-tiet.md) | Nội dung màn chi tiết | active | Màn chi tiết hiện đầy đủ nội dung, tag, cờ và trạng thái lịch hiện tại theo scheduler đang gắn. | FN-CARD-013 |
 | [BR-CARD-015](../features/card/rules/BR-CARD-015-lich-su-phan-trang-keyset.md) | Lịch sử học phân trang keyset | active | Lịch sử đọc từ `review_log` của đúng thẻ, mới nhất trước, phân trang keyset 50 hàng. | FN-CARD-014 |
@@ -106,18 +106,18 @@ Chưa có tài liệu.
 | [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | FN-DECK-006, FN-DECK-008, FN-DECK-009, FN-DECK-010, FN-DECK-011, FN-TRASH-003, FN-TRASH-005 |
 | [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | FN-DECK-001, FN-DECK-007, FN-DECK-009, FN-DECK-011, FN-DECK-012, UC-STARTER-001 |
 | [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | FN-DECK-007, FN-PROGRESS-002, FN-SEARCH-001 |
-| [BR-DECK-004](../features/deck/rules/BR-DECK-004-root-deck-chi-chua-deck-con.md) | Root deck chỉ chứa deck con | active | Root deck chỉ chứa deck con, không chứa card trực tiếp. | FN-CARD-002, FN-DECK-001, FN-DECK-005, FN-DECK-008, UC-TRANSFER-001 |
+| [BR-DECK-004](../features/deck/rules/BR-DECK-004-root-deck-chi-chua-deck-con.md) | Root deck chỉ chứa deck con | active | Root deck chỉ chứa deck con, không chứa card trực tiếp. | FN-CARD-002, FN-DECK-001, FN-DECK-005, FN-DECK-008, FN-TRANSFER-003 |
 | [BR-DECK-005](../features/deck/rules/BR-DECK-005-create-o-root-chi-co-create-deck.md) | Create ở root deck chỉ có Create deck | active | Nút Create tại root deck chỉ có một lựa chọn: Create deck. | FN-DECK-008 |
 | [BR-DECK-006](../features/deck/rules/BR-DECK-006-sub-deck-moi-co-content-type-unset.md) | Sub-deck mới có content_type unset | active | Sub-deck mới tạo có `content_type = unset`; người dùng không chọn `content_type` khi tạo. | FN-DECK-009 |
 | [BR-DECK-007](../features/deck/rules/BR-DECK-007-create-o-sub-deck-unset-co-hai-lua-chon.md) | Create ở sub-deck unset có hai lựa chọn | active | Bấm Create trong sub-deck `unset` hiển thị Create card và Create deck. | FN-DECK-008 |
-| [BR-DECK-008](../features/deck/rules/BR-DECK-008-phan-tu-con-dau-tien-xac-lap-content-type.md) | Phần tử con đầu tiên xác lập content_type | active | Lần tạo phần tử con đầu tiên xác lập `content_type`, trong cùng transaction với việc tạo phần tử đó. | FN-CARD-002, FN-DECK-009, FN-DECK-011, UC-TRANSFER-001 |
+| [BR-DECK-008](../features/deck/rules/BR-DECK-008-phan-tu-con-dau-tien-xac-lap-content-type.md) | Phần tử con đầu tiên xác lập content_type | active | Lần tạo phần tử con đầu tiên xác lập `content_type`, trong cùng transaction với việc tạo phần tử đó. | FN-CARD-002, FN-DECK-009, FN-DECK-011, FN-TRANSFER-003 |
 | [BR-DECK-009](../features/deck/rules/BR-DECK-009-deck-loai-card-chi-chua-card.md) | Deck loại card chỉ chứa card | active | Deck `content_type = card` chỉ chứa card, không chứa deck con. | FN-CARD-002, FN-DECK-006, FN-DECK-008, FN-DECK-009, FN-DECK-010, FN-TRASH-003, FN-TRASH-005 |
-| [BR-DECK-010](../features/deck/rules/BR-DECK-010-deck-loai-deck-chi-chua-deck-con.md) | Deck loại deck chỉ chứa deck con | active | Deck `content_type = deck` chỉ chứa deck con, không chứa card trực tiếp. | FN-CARD-002, FN-DECK-008, FN-DECK-011, FN-TRASH-003, FN-TRASH-005, UC-TRANSFER-001 |
+| [BR-DECK-010](../features/deck/rules/BR-DECK-010-deck-loai-deck-chi-chua-deck-con.md) | Deck loại deck chỉ chứa deck con | active | Deck `content_type = deck` chỉ chứa deck con, không chứa card trực tiếp. | FN-CARD-002, FN-DECK-008, FN-DECK-011, FN-TRANSFER-003, FN-TRASH-003, FN-TRASH-005 |
 | [BR-DECK-011](../features/deck/rules/BR-DECK-011-khong-tron-card-va-deck-con.md) | Không trộn card và deck con | active | Một deck không đồng thời chứa card và deck con. | FN-DECK-008, FN-DECK-009, FN-DECK-011 |
 | [BR-DECK-012](../features/deck/rules/BR-DECK-012-create-chi-hien-hanh-dong-theo-content-type.md) | Create chỉ hiện hành động theo content_type | active | Sau khi `content_type` được xác lập, nút Create chỉ hiển thị hành động tương ứng. | FN-DECK-008 |
 | [BR-DECK-013](../features/deck/rules/BR-DECK-013-xoa-het-noi-dung-khong-tu-ve-unset.md) | Xoá hết nội dung không tự về unset | deprecated | Đã thay bằng BR-DECK-015. Xoá hết nội dung không tự động đưa `content_type` về `unset`. | — |
 | [BR-DECK-014](../features/deck/rules/BR-DECK-014-reset-content-type-thu-cong-khi-deck-rong.md) | Reset content_type thủ công khi deck rỗng | deprecated | Đã thay bằng BR-DECK-015. Đưa `content_type` về `unset` là thao tác riêng, có xác nhận, chỉ khi deck rỗng. | — |
-| [BR-DECK-015](../features/deck/rules/BR-DECK-015-content-type-tu-cap-nhat-theo-direct-children.md) | content_type tự cập nhật theo direct children | active | Hệ thống cập nhật `content_type` của sub-deck atomically cùng mutation direct children; không có reset thủ công. | FN-CARD-004, FN-CARD-005, FN-CARD-007, FN-DECK-005, FN-DECK-011, FN-TRASH-005, FN-TRASH-006, UC-TRANSFER-002 |
+| [BR-DECK-015](../features/deck/rules/BR-DECK-015-content-type-tu-cap-nhat-theo-direct-children.md) | content_type tự cập nhật theo direct children | active | Hệ thống cập nhật `content_type` của sub-deck atomically cùng mutation direct children; không có reset thủ công. | FN-CARD-004, FN-CARD-005, FN-CARD-007, FN-DECK-005, FN-DECK-011, FN-TRASH-005, FN-TRASH-006 |
 | [BR-DECK-016](../features/deck/rules/BR-DECK-016-cay-deck-khong-co-cycle.md) | Cây deck không có cycle | active | Cây deck không có cycle. | FN-DECK-011 |
 | [BR-DECK-017](../features/deck/rules/BR-DECK-017-khong-di-chuyen-deck-vao-chinh-no-hoac-descendant.md) | Không di chuyển deck vào chính nó hoặc descendant | active | Không di chuyển một deck vào chính nó hoặc vào descendant của nó. | FN-DECK-006, FN-DECK-010, FN-DECK-011, FN-TRASH-003, FN-TRASH-005 |
 | [BR-DECK-018](../features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md) | Di chuyển subtree cập nhật root_id và depth | active | Di chuyển subtree cập nhật `root_id` và `depth` cho toàn bộ subtree trong một transaction. | FN-DECK-011, FN-TRASH-003, FN-TRASH-005 |
@@ -522,8 +522,8 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-TAG-001](../features/tags/rules/BR-TAG-001-tag-la-noi-dung-ten-duy-nhat.md) | Tag là nội dung, tên duy nhất | active | Tag là nội dung, nhiều-nhiều với thẻ; tên không rỗng, tối đa 50 ký tự, không ký tự điều khiển, duy nhất không phân biệt hoa thường. | FN-CARD-001, FN-CARD-002, FN-CARD-003, FN-CARD-010, FN-CARD-011, FN-CARD-012, FN-CARD-013, FN-SEARCH-001, FN-TAG-001, FN-TAG-002, FN-TAG-003, UC-TRANSFER-001, UC-TRANSFER-002 |
-| [BR-TAG-002](../features/tags/rules/BR-TAG-002-toi-da-10-tag-moi-the.md) | Tối đa 10 tag mỗi thẻ | active | Một thẻ mang tối đa 10 tag. | FN-CARD-002, FN-CARD-003, FN-CARD-010, FN-TAG-003, UC-TRANSFER-001, UC-TRANSFER-002 |
+| [BR-TAG-001](../features/tags/rules/BR-TAG-001-tag-la-noi-dung-ten-duy-nhat.md) | Tag là nội dung, tên duy nhất | active | Tag là nội dung, nhiều-nhiều với thẻ; tên không rỗng, tối đa 50 ký tự, không ký tự điều khiển, duy nhất không phân biệt hoa thường. | FN-CARD-001, FN-CARD-002, FN-CARD-003, FN-CARD-010, FN-CARD-011, FN-CARD-012, FN-CARD-013, FN-SEARCH-001, FN-TAG-001, FN-TAG-002, FN-TAG-003, FN-TRANSFER-002 |
+| [BR-TAG-002](../features/tags/rules/BR-TAG-002-toi-da-10-tag-moi-the.md) | Tối đa 10 tag mỗi thẻ | active | Một thẻ mang tối đa 10 tag. | FN-CARD-002, FN-CARD-003, FN-CARD-010, FN-TAG-003, FN-TRANSFER-002 |
 | [BR-TAG-003](../features/tags/rules/BR-TAG-003-tag-catalog-pham-vi-library.md) | Tag catalog phạm vi library | active | Tag catalog ở phạm vi library, mỗi hàng hiện tên canonical và số thẻ đang hoạt động. | FN-TAG-001 |
 | [BR-TAG-004](../features/tags/rules/BR-TAG-004-loc-theo-nhieu-tag-la-or.md) | Lọc theo nhiều tag là OR | active | Lọc nhiều tag là OR giữa các tag, AND với filter trạng thái và search term. | FN-CARD-001, FN-CARD-012 |
 | [BR-TAG-005](../features/tags/rules/BR-TAG-005-doi-tap-tag-loc-reset-phan-trang.md) | Đổi tập tag lọc reset phân trang | active | Đổi tập tag đang lọc reset cửa sổ phân trang và xoá selection. | FN-CARD-001 |
@@ -555,27 +555,38 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-TRANSFER-001](../features/transfer/rules/BR-TRANSFER-001-dieu-kien-deck-dich-import.md) | Điều kiện deck đích của import | active | Deck đích import thoả cùng điều kiện tạo card: sub-deck `unset` hoặc `card`. | UC-TRANSFER-001 |
-| [BR-TRANSFER-002](../features/transfer/rules/BR-TRANSFER-002-hang-import-can-ca-hai-mat.md) | Hàng import cần cả hai mặt | active | Mỗi hàng import cần `front` và `back` sau trim; hàng trống toàn bộ được bỏ qua. | UC-TRANSFER-001 |
-| [BR-TRANSFER-003](../features/transfer/rules/BR-TRANSFER-003-khoa-trung-lap-khi-import.md) | Khoá trùng lặp khi import | active | Trùng lặp đo bằng `front_folded + back_folded` trong deck đích và trong cùng nguồn import. | UC-TRANSFER-001 |
-| [BR-TRANSFER-004](../features/transfer/rules/BR-TRANSFER-004-import-mot-transaction.md) | Import trong một transaction | active | Một lần import ghi toàn bộ card, study state và tag trong đúng một transaction. | UC-TRANSFER-001 |
-| [BR-TRANSFER-005](../features/transfer/rules/BR-TRANSFER-005-deck-unset-thanh-card-khi-import.md) | Deck unset thành card khi import | active | Deck đích `unset` thành `card` cùng transaction nếu ghi được ít nhất một card. | UC-TRANSFER-001 |
-| [BR-TRANSFER-006](../features/transfer/rules/BR-TRANSFER-006-noi-dung-import-la-du-lieu-rieng-tu.md) | Nội dung import là dữ liệu riêng tư | active | File import xử lý trong bộ nhớ ứng dụng, chỉ nhận UTF-8, không đoán encoding. | UC-TRANSFER-001 |
-| [BR-TRANSFER-007](../features/transfer/rules/BR-TRANSFER-007-hai-scope-export.md) | Hai scope export | active | Export có đúng hai scope `all` và `selected`. | UC-TRANSFER-002 |
-| [BR-TRANSFER-008](../features/transfer/rules/BR-TRANSFER-008-sau-field-noi-dung-canonical.md) | Sáu field nội dung canonical | active | Artifact export chỉ mang sáu field: front, back, example, hint, pronunciation, tags. | UC-TRANSFER-002 |
-| [BR-TRANSFER-009](../features/transfer/rules/BR-TRANSFER-009-mot-codec-cho-o-tags.md) | Một codec cho ô tags | active | Ô `tags` đi qua đúng một codec dùng chung cho Import và Export. | UC-TRANSFER-001, UC-TRANSFER-002 |
-| [BR-TRANSFER-010](../features/transfer/rules/BR-TRANSFER-010-export-deterministic-ve-noi-dung.md) | Export deterministic về nội dung | active | Cùng dữ liệu cho cùng artifact về nội dung logic. | UC-TRANSFER-002 |
-| [BR-TRANSFER-011](../features/transfer/rules/BR-TRANSFER-011-export-chi-doc.md) | Export là chỉ đọc | active | Export không ghi hay chạm tới dữ liệu nào. | UC-TRANSFER-002 |
-| [BR-TRANSFER-012](../features/transfer/rules/BR-TRANSFER-012-sau-header-canonical.md) | Sáu header canonical | active | File export mở đầu bằng sáu header canonical, chữ thường tiếng Anh, không localize. | UC-TRANSFER-002 |
-| [BR-TRANSFER-013](../features/transfer/rules/BR-TRANSFER-013-ten-file-export.md) | Tên file export | active | Tên file export dẫn xuất từ tên deck đã sanitize. | UC-TRANSFER-002 |
-| [BR-TRANSFER-014](../features/transfer/rules/BR-TRANSFER-014-file-export-la-du-lieu-rieng-tu.md) | File export là dữ liệu riêng tư | active | File export là dữ liệu riêng tư, chỉ tạo khi người dùng chủ động yêu cầu. | UC-TRANSFER-002 |
+| [BR-TRANSFER-001](../features/transfer/rules/BR-TRANSFER-001-dieu-kien-deck-dich-import.md) | Điều kiện deck đích của import | active | Deck đích import thoả cùng điều kiện tạo card: sub-deck `unset` hoặc `card`. | FN-TRANSFER-003 |
+| [BR-TRANSFER-002](../features/transfer/rules/BR-TRANSFER-002-hang-import-can-ca-hai-mat.md) | Hàng import cần cả hai mặt | active | Mỗi hàng import cần `front` và `back` sau trim; hàng trống toàn bộ được bỏ qua. | FN-TRANSFER-002 |
+| [BR-TRANSFER-003](../features/transfer/rules/BR-TRANSFER-003-khoa-trung-lap-khi-import.md) | Khoá trùng lặp khi import | active | Trùng lặp đo bằng `front_folded + back_folded` trong deck đích và trong cùng nguồn import. | FN-TRANSFER-002, FN-TRANSFER-003 |
+| [BR-TRANSFER-004](../features/transfer/rules/BR-TRANSFER-004-import-mot-transaction.md) | Import trong một transaction | active | Một lần import ghi toàn bộ card, study state và tag trong đúng một transaction. | FN-TRANSFER-003 |
+| [BR-TRANSFER-005](../features/transfer/rules/BR-TRANSFER-005-deck-unset-thanh-card-khi-import.md) | Deck unset thành card khi import | active | Deck đích `unset` thành `card` cùng transaction nếu ghi được ít nhất một card. | FN-TRANSFER-003 |
+| [BR-TRANSFER-006](../features/transfer/rules/BR-TRANSFER-006-noi-dung-import-la-du-lieu-rieng-tu.md) | Nội dung import là dữ liệu riêng tư | active | File import xử lý trong bộ nhớ ứng dụng, chỉ nhận UTF-8, không đoán encoding. | FN-TRANSFER-001, FN-TRANSFER-002 |
+| [BR-TRANSFER-007](../features/transfer/rules/BR-TRANSFER-007-hai-scope-export.md) | Hai scope export | active | Export có đúng hai scope `all` và `selected`. | FN-TRANSFER-004, FN-TRANSFER-005 |
+| [BR-TRANSFER-008](../features/transfer/rules/BR-TRANSFER-008-sau-field-noi-dung-canonical.md) | Sáu field nội dung canonical | active | Artifact export chỉ mang sáu field: front, back, example, hint, pronunciation, tags. | FN-TRANSFER-005 |
+| [BR-TRANSFER-009](../features/transfer/rules/BR-TRANSFER-009-mot-codec-cho-o-tags.md) | Một codec cho ô tags | active | Ô `tags` đi qua đúng một codec dùng chung cho Import và Export. | FN-TRANSFER-002, FN-TRANSFER-005 |
+| [BR-TRANSFER-010](../features/transfer/rules/BR-TRANSFER-010-export-deterministic-ve-noi-dung.md) | Export deterministic về nội dung | active | Cùng dữ liệu cho cùng artifact về nội dung logic. | FN-TRANSFER-005 |
+| [BR-TRANSFER-011](../features/transfer/rules/BR-TRANSFER-011-export-chi-doc.md) | Export là chỉ đọc | active | Export không ghi hay chạm tới dữ liệu nào. | FN-TRANSFER-005 |
+| [BR-TRANSFER-012](../features/transfer/rules/BR-TRANSFER-012-sau-header-canonical.md) | Sáu header canonical | active | File export mở đầu bằng sáu header canonical, chữ thường tiếng Anh, không localize. | FN-TRANSFER-005 |
+| [BR-TRANSFER-013](../features/transfer/rules/BR-TRANSFER-013-ten-file-export.md) | Tên file export | active | Tên file export dẫn xuất từ tên deck đã sanitize. | FN-TRANSFER-005, FN-TRANSFER-006 |
+| [BR-TRANSFER-014](../features/transfer/rules/BR-TRANSFER-014-file-export-la-du-lieu-rieng-tu.md) | File export là dữ liệu riêng tư | active | File export là dữ liệu riêng tư, chỉ tạo khi người dùng chủ động yêu cầu. | FN-TRANSFER-006 |
+
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-TRANSFER-001](../functional-spec/transfer.md) | Đọc nguồn import | active | UC-TRANSFER-001 |
+| [FN-TRANSFER-002](../functional-spec/transfer.md) | Xem trước một lần import | active | UC-TRANSFER-001 |
+| [FN-TRANSFER-003](../functional-spec/transfer.md) | Import card vào deck | active | UC-TRANSFER-001 |
+| [FN-TRANSFER-004](../functional-spec/transfer.md) | Đếm card một lần export sẽ có | active | UC-TRANSFER-002 |
+| [FN-TRANSFER-005](../functional-spec/transfer.md) | Tạo file export | active | UC-TRANSFER-002 |
+| [FN-TRANSFER-006](../functional-spec/transfer.md) | Chia sẻ file export | active | UC-TRANSFER-002 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [UC-TRANSFER-001](../features/transfer/usecases/UC-TRANSFER-001-import-card-hang-loat-vao-deck.md) | Import card hàng loạt vào một deck | ready | — |
-| [UC-TRANSFER-002](../features/transfer/usecases/UC-TRANSFER-002-export-card-cua-deck-ra-file.md) | Export card của một deck ra file | ready | — |
+| [UC-TRANSFER-001](../USE_CASES.md) | Import card hàng loạt vào một deck | ready | — |
+| [UC-TRANSFER-002](../USE_CASES.md) | Export card của một deck ra file | ready | — |
 
 ## [trash](../features/trash/README.md)
 

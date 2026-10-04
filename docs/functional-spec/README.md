@@ -15,3 +15,4 @@ section. Định dạng: [docs/README.md](../README.md), mục "UC, FN và scree
 | Search | [search.md](search.md) |
 | Tags | [tags.md](tags.md) |
 | Trash | [trash.md](trash.md) |
+| Transfer | [transfer.md](transfer.md) |
