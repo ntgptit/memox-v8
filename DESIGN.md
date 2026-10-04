@@ -535,10 +535,10 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxCard | Raised surface in six tones | shared | CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
 | MxSection | Section label over a card | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, STUDY, TAG, TRANSFER | SP3a | built |
 | MxNote | One calm information line, or its footnote form | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
-| MxBadge | Short label in a semantic tone | shared | ACCOUNT, CARD, DECK, MONITORING, SEARCH, STARTER, STUDY, TRANSFER, TRASH | SP3a | planned |
-| MxStatusBadge | A card's learning status | shared | CARD, MONITORING | SP3a | planned |
-| MxTagChip | A tag name | shared | CARD, SEARCH | SP3a | planned |
-| MxIconTile | Icon on a toned tile in three sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
+| MxBadge | Short label in a semantic tone | shared | ACCOUNT, CARD, DECK, MONITORING, SEARCH, STARTER, STUDY, TRANSFER, TRASH | SP3a | built |
+| MxStatusBadge | A card's learning status | shared | CARD, MONITORING | SP3a | built |
+| MxTagChip | A tag name | shared | CARD, SEARCH | SP3a | built |
+| MxIconTile | Icon on a toned tile in three sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | built |
 | MxLinearProgress | Determinate bar: value, tone, size; knows no mastery | shared | DECK, STUDY | SP3a | planned |
 | MxDialog | Modal decision | shared | ACCOUNT, CARD, DECK, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
 | MxBottomSheet | Modal sheet with a grabber, a pinned header and footer | shared | ACCOUNT, CARD, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
@@ -732,6 +732,37 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: the close button is named by `dismissLabel` and keeps its 48 hit; the glyph is decorative
 - Tokens: `surface-container-low`, `outline-variant`, `on-surface-variant`; `bodyMedium` (note), `bodySmall` (hint); `AppIconSize.small`; `AppRadius.md`
 - Golden: forms__light, forms__dark
+
+#### MxBadge
+- Variants: tones primary, mastery, success, warning, danger, neutral; optional glyph
+- States: one
+- Accessibility: read as its label; 24 is a minimum, the label centred, and it grows with text
+- Tokens: each tone's container under its `on-…-container` (`surface-container-high` / `on-surface-variant` for neutral); `labelSmall`; `AppSize.badge`; `AppRadius.full`
+- Golden: tones__light, tones__dark
+
+
+#### MxStatusBadge
+- Variants: kinds new, learning, reviewing, mastered; pill or bare dot (`isDot`)
+- States: one
+- Accessibility: a status is never colour alone: the pill shows its label, the dot is named by it for TalkBack
+- Tokens: `status-*` (dot), `status-*-container` / `on-status-*-container` (pill); one 8 dot (`AppSize.statusDot`), 4 from its label; `AppSize.badge`
+- Golden: kinds__light, kinds__dark
+
+
+#### MxTagChip
+- Variants: 24 on its own line, 20 dense (both minimums); hugs its name up to half the width it is given
+- States: one
+- Accessibility: read whole even when the chip ends in an ellipsis
+- Tokens: `surface-container-high`, `on-surface-variant`; `labelSmall`; `AppSize.tagChip`, `AppSize.tagChipDense`
+- Golden: sizes__light, sizes__dark
+
+
+#### MxIconTile
+- Variants: sizes small (32, r8, 16 glyph), medium (40, r12, 20; Material 3's list leading container), large (48, r12, 24); tones tinted, primary, warning (solid), success, caution (warning container), danger — a closed set; no raw colour
+- States: one
+- Accessibility: decorative; the row or heading beside it names it
+- Tokens: `surface-container-high` / `on-surface-variant`, `primary-container`, `warning` / `on-warning`, `success-container`, `warning-container`, `error-container` and their `on-` roles; `AppSize.iconTile*`
+- Golden: tones__light, tones__dark
 
 ## Do's and Don'ts
 
