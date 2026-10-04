@@ -1,7 +1,7 @@
 ---
 id: ADR-013
 title: Server là dữ liệu chính thức, app offline-first và tự đồng bộ
-status: active
+status: accepted
 superseded_by:
 ---
 ## Bối cảnh

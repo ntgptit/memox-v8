@@ -304,5 +304,46 @@ class CitationTest(unittest.TestCase):
                 self.assertTrue(has(errors(base(**{path: text})), "states a reverse relation"))
 
 
+def adr(doc_id: str, status: str, extra: str = "", body: str = "x") -> str:
+    return f"---\nid: {doc_id}\ntitle: t\nstatus: {status}\n{extra}---\n## Bối cảnh\n{body}\n"
+
+
+ADR1 = "docs/shared/decisions/ADR-001-a.md"
+ADR2 = "docs/shared/decisions/ADR-002-b.md"
+
+
+class AdrTest(unittest.TestCase):
+    def test_a_reciprocal_pair_passes(self):
+        files = base(**{
+            ADR1: adr("ADR-001", "superseded", "superseded_by: ADR-002\n"),
+            ADR2: adr("ADR-002", "accepted", "supersedes: [ADR-001]\n"),
+        })
+        self.assertEqual(errors(files), [])
+
+    def test_superseded_needs_superseded_by(self):
+        self.assertTrue(has(errors(base(**{ADR1: adr("ADR-001", "superseded")})), "needs `superseded_by`"))
+
+    def test_the_successor_must_name_what_it_supersedes(self):
+        files = base(**{
+            ADR1: adr("ADR-001", "superseded", "superseded_by: ADR-002\n"),
+            ADR2: adr("ADR-002", "accepted"),
+        })
+        self.assertTrue(has(errors(files), "ADR-002 has no `supersedes: [ADR-001]`"))
+
+    def test_active_is_no_longer_an_adr_status(self):
+        self.assertTrue(has(errors(base(**{ADR1: adr("ADR-001", "active")})), "`status: active` is not one of"))
+
+    def test_a_product_file_under_docs_is_an_error(self):
+        found = errors(base(**{"docs/features/deck/PRODUCT.md": "# Product\n"}))
+        self.assertTrue(has(found, "product definition lives only in /PRODUCT.md"))
+
+    def test_links_of_a_superseded_adr_are_not_checked(self):
+        files = base(**{
+            ADR1: adr("ADR-001", "superseded", "superseded_by: ADR-002\n", "[gone](gone.md)"),
+            ADR2: adr("ADR-002", "accepted", "supersedes: [ADR-001]\n"),
+        })
+        self.assertFalse(has(errors(files), "broken link"))
+
+
 if __name__ == "__main__":
     unittest.main()

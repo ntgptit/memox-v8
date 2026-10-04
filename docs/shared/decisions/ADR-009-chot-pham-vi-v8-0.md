@@ -1,7 +1,7 @@
 ---
 id: ADR-009
 title: Chốt phạm vi V8.0
-status: active
+status: accepted
 superseded_by:
 ---
 ## Bối cảnh

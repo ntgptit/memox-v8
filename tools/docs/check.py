@@ -12,6 +12,10 @@ ERROR
 - `rules` pointing to an unknown or deprecated BR; `superseded_by` unknown
 - a `code` path or a feature README `depends_on` that does not exist
 - a cycle in the feature `depends_on` graph (it must stay a DAG)
+- an ADR `superseded` without `superseded_by`, or `supersedes`/`superseded_by`
+  that do not point at each other; ADR status is draft | accepted | superseded |
+  deprecated. Links in a superseded or deprecated ADR are not checked
+- a PRODUCT.md anywhere under docs/ (the product lives in /PRODUCT.md)
 - a broken relative link; a BR/UC id or `invariant Qn` cited but not defined
 - a UC / BR / feature README missing a required `##` section
 - a hand-written reverse relation (`Used by`, `Invoked by`, `Related Screens`,
@@ -75,7 +79,7 @@ STATUS = {
     "UCS": {"draft", "ready", "deprecated"},
     "FN": {"draft", "active", "deprecated"},
     "SCR": {"draft", "ready", "built"},
-    "ADR": {"draft", "active", "deprecated"},
+    "ADR": {"draft", "accepted", "superseded", "deprecated"},
 }
 REQUIRED_FIELDS = {
     "BR": ("id", "title", "status", "summary"),
@@ -207,6 +211,8 @@ def check_frontmatter(doc: g.Doc, report: Report) -> bool:
     allowed = STATUS.get(schema(doc))
     if allowed and doc.status and doc.status not in allowed:
         report.error(where(doc), f"`status: {doc.status}` is not one of {sorted(allowed)}")
+    if "supersedes" in doc.meta and not isinstance(doc.meta["supersedes"], list):
+        report.error(where(doc), "`supersedes` must be an inline list `[...]`")
     return True
 
 
@@ -290,8 +296,8 @@ def check_references(docs: list[g.Doc], by_id: dict[str, g.Doc], report: Report)
             continue
         if superseded_by not in by_id:
             report.error(where(doc), f"`superseded_by` names an id that does not exist: `{superseded_by}`")
-        if doc.status != "deprecated":
-            report.error(where(doc), "`superseded_by` is only allowed with `status: deprecated`")
+        if doc.status not in ("deprecated", "superseded"):
+            report.error(where(doc), "`superseded_by` is only allowed with `status: deprecated` or `superseded`")
 
 
 def check_invokes_complete(doc: g.Doc, report: Report) -> None:
@@ -301,6 +307,29 @@ def check_invokes_complete(doc: g.Doc, report: Report) -> None:
     for fn_id in specdocs.ids_in(doc.body, "FN"):
         if fn_id not in doc.as_list("invokes"):
             report.error(where(doc), f"`{fn_id}` is cited in the flow but missing from `Invokes:`")
+
+
+def check_supersession(docs: list[g.Doc], by_id: dict[str, g.Doc], report: Report) -> None:
+    """`supersedes` and `superseded_by` point at each other (spec R14)."""
+    for doc in docs:
+        if doc.kind != "ADR":
+            continue
+        successor = str(doc.meta.get("superseded_by") or "")
+        if doc.status == "superseded" and not successor:
+            report.error(doc.path, "`status: superseded` needs `superseded_by`")
+        if doc.status == "superseded" and successor in by_id and doc.id not in by_id[successor].as_list("supersedes"):
+            report.error(doc.path, f"`superseded_by: {successor}` but {successor} has no `supersedes: [{doc.id}]`")
+        for old in doc.as_list("supersedes"):
+            target = by_id.get(old)
+            if target is None or target.kind != "ADR":
+                report.error(doc.path, f"`supersedes` names an ADR that does not exist: `{old}`")
+            elif target.status != "superseded" or str(target.meta.get("superseded_by")) != doc.id:
+                report.error(doc.path, f"`supersedes: [{old}]` but {old} is not `superseded` by {doc.id}")
+
+
+def check_single_product(report: Report) -> None:
+    for path in sorted(g.DOCS.rglob("PRODUCT.md")):
+        report.error(path, "product definition lives only in /PRODUCT.md (spec R12)")
 
 
 def check_feature_readme(doc: g.Doc, features: list[str], report: Report) -> None:
@@ -378,10 +407,12 @@ def is_skipped_for_links(path: Path) -> bool:
 
 def check_text(docs: list[g.Doc], report: Report) -> None:
     ids = defined_ids(docs)
+    # A superseded or deprecated ADR is a record; its body is never edited (plan PT11).
+    records = {d.path for d in docs if d.kind == "ADR" and d.status in ("superseded", "deprecated")}
     invariants = defined_invariants()
     for path in markdown_files():
         check_ids = not is_skipped_for_ids(path)
-        skip_links = is_skipped_for_links(path)
+        skip_links = is_skipped_for_links(path) or path in records
         kinds = allowed_kinds(path)
         rel = path.relative_to(g.DOCS).as_posix()
         text = path.read_text(encoding="utf-8")
@@ -609,6 +640,8 @@ def run(plan: Path | None) -> Report:
     check_dependency_cycles(docs, report)
     by_id = check_duplicates(docs, report)
     check_references(docs, by_id, report)
+    check_supersession(docs, by_id, report)
+    check_single_product(report)
     check_text(docs, report)
     check_generated(report)
     check_v7_residue(report)

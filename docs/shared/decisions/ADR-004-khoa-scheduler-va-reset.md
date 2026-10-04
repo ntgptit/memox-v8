@@ -1,7 +1,7 @@
 ---
 id: ADR-004
 title: Khoá scheduler và reset learning progress
-status: active
+status: accepted
 superseded_by:
 ---
 Quyết định đã chốt ngày 2026-07-28 (trước migrate nằm ở `product/product.md`, mục "Quyết định đã chốt").

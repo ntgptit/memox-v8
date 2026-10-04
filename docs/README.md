@@ -285,7 +285,9 @@ Chiều import Dart giữa các feature trong `lib/features/` do
 đồ thị này.
 
 ADR — `shared/decisions/`: frontmatter `id`, `title`, `status`
-(`draft | active | deprecated`), `superseded_by` khi deprecated.
+(`draft | accepted | superseded | deprecated`), `superseded_by` khi superseded hoặc
+deprecated, `supersedes: [ADR-…]` ở ADR thay thế. Link trong ADR superseded hoặc deprecated
+không được kiểm (bản ghi, không sửa).
 
 Section không áp dụng: ghi "Không áp dụng", không xoá heading. Quan hệ chỉ khai
 báo một chiều: UC khai báo `rules`; không viết reverse link hay index bằng tay.

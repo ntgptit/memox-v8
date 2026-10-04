@@ -1,8 +1,8 @@
 ---
 id: ADR-019
 title: App là chuẩn UI; retire kit v3 và design handoff
-status: active
-superseded_by:
+status: superseded
+superseded_by: ADR-021
 ---
 ## Bối cảnh
 

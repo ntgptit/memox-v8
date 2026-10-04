@@ -18,26 +18,27 @@
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [ADR-001](../shared/decisions/ADR-001-quyet-dinh-nen-tang.md) | Quyết định nền tảng | active | — |
-| [ADR-002](../shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md) | Dữ liệu nhạy cảm và chưa mã hoá database | active | — |
-| [ADR-003](../shared/decisions/ADR-003-hai-scheduler-chon-theo-deck.md) | Hai scheduler, chọn theo deck | active | — |
-| [ADR-004](../shared/decisions/ADR-004-khoa-scheduler-va-reset.md) | Khoá scheduler và reset learning progress | active | — |
-| [ADR-005](../shared/decisions/ADR-005-starter-deck-la-template-sao-chep.md) | Starter deck là template được sao chép | active | — |
-| [ADR-006](../shared/decisions/ADR-006-cay-deck-moi-deck-mot-loai-noi-dung.md) | Cây deck nhiều cấp, mỗi deck một loại nội dung | active | — |
-| [ADR-007](../shared/decisions/ADR-007-khoa-chinh-uuid-sinh-phia-client.md) | Khoá chính UUID sinh phía client | active | — |
-| [ADR-008](../shared/decisions/ADR-008-datetime-luu-utc.md) | DATETIME lưu UTC | active | — |
-| [ADR-009](../shared/decisions/ADR-009-chot-pham-vi-v8-0.md) | Chốt phạm vi V8.0 | active | — |
-| [ADR-010](../shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md) | Kiến trúc lớp V8, tên thư mục feature và phiên bản Flutter | active | — |
-| [ADR-011](../shared/decisions/ADR-011-cau-truc-thu-muc-v8.md) | Cấu trúc thư mục V8 | active | — |
-| [ADR-012](../shared/decisions/ADR-012-goi-api-bang-retrofit.md) | App gọi API bằng Retrofit trên một Dio client dùng chung | active | — |
-| [ADR-013](../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md) | Server là dữ liệu chính thức, app offline-first và tự đồng bộ | active | — |
+| [ADR-001](../shared/decisions/ADR-001-quyet-dinh-nen-tang.md) | Quyết định nền tảng | accepted | — |
+| [ADR-002](../shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md) | Dữ liệu nhạy cảm và chưa mã hoá database | accepted | — |
+| [ADR-003](../shared/decisions/ADR-003-hai-scheduler-chon-theo-deck.md) | Hai scheduler, chọn theo deck | accepted | — |
+| [ADR-004](../shared/decisions/ADR-004-khoa-scheduler-va-reset.md) | Khoá scheduler và reset learning progress | accepted | — |
+| [ADR-005](../shared/decisions/ADR-005-starter-deck-la-template-sao-chep.md) | Starter deck là template được sao chép | accepted | — |
+| [ADR-006](../shared/decisions/ADR-006-cay-deck-moi-deck-mot-loai-noi-dung.md) | Cây deck nhiều cấp, mỗi deck một loại nội dung | accepted | — |
+| [ADR-007](../shared/decisions/ADR-007-khoa-chinh-uuid-sinh-phia-client.md) | Khoá chính UUID sinh phía client | accepted | — |
+| [ADR-008](../shared/decisions/ADR-008-datetime-luu-utc.md) | DATETIME lưu UTC | accepted | — |
+| [ADR-009](../shared/decisions/ADR-009-chot-pham-vi-v8-0.md) | Chốt phạm vi V8.0 | accepted | — |
+| [ADR-010](../shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md) | Kiến trúc lớp V8, tên thư mục feature và phiên bản Flutter | accepted | — |
+| [ADR-011](../shared/decisions/ADR-011-cau-truc-thu-muc-v8.md) | Cấu trúc thư mục V8 | accepted | — |
+| [ADR-012](../shared/decisions/ADR-012-goi-api-bang-retrofit.md) | App gọi API bằng Retrofit trên một Dio client dùng chung | accepted | — |
+| [ADR-013](../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md) | Server là dữ liệu chính thức, app offline-first và tự đồng bộ | accepted | — |
 | [ADR-014](../shared/decisions/ADR-014-api-la-backend-nghiep-vu-chinh-thuc.md) | API là backend nghiệp vụ chính thức, sync đẩy lệnh và kéo trạng thái | deprecated | — |
-| [ADR-015](../shared/decisions/ADR-015-supabase-lam-backend.md) | Supabase làm backend, nghiệp vụ ở app | active | — |
-| [ADR-016](../shared/decisions/ADR-016-mo-hinh-xu-ly-loi.md) | Mô hình xử lý lỗi — không có handler lỗi toàn cục | active | — |
-| [ADR-017](../shared/decisions/ADR-017-lich-srs-dong-bo-nhu-mot-dong.md) | Lịch SRS đồng bộ như một dòng, lịch tiến xa hơn thắng | active | — |
-| [ADR-018](../shared/decisions/ADR-018-log-tap-trung-va-monitoring.md) | Log tập trung và monitoring cho admin | active | — |
-| [ADR-019](../shared/decisions/ADR-019-app-la-chuan-ui.md) | App là chuẩn UI; retire kit v3 và design handoff | active | — |
-| [ADR-020](../shared/decisions/ADR-020-moi-truy-van-nam-trong-drift.md) | Mọi truy vấn SQLite nằm trong file .drift; DAO là @DriftAccessor | active | — |
+| [ADR-015](../shared/decisions/ADR-015-supabase-lam-backend.md) | Supabase làm backend, nghiệp vụ ở app | accepted | — |
+| [ADR-016](../shared/decisions/ADR-016-mo-hinh-xu-ly-loi.md) | Mô hình xử lý lỗi — không có handler lỗi toàn cục | accepted | — |
+| [ADR-017](../shared/decisions/ADR-017-lich-srs-dong-bo-nhu-mot-dong.md) | Lịch SRS đồng bộ như một dòng, lịch tiến xa hơn thắng | accepted | — |
+| [ADR-018](../shared/decisions/ADR-018-log-tap-trung-va-monitoring.md) | Log tập trung và monitoring cho admin | accepted | — |
+| [ADR-019](../shared/decisions/ADR-019-app-la-chuan-ui.md) | App là chuẩn UI; retire kit v3 và design handoff | superseded | — |
+| [ADR-020](../shared/decisions/ADR-020-moi-truy-van-nam-trong-drift.md) | Mọi truy vấn SQLite nằm trong file .drift; DAO là @DriftAccessor | accepted | — |
+| [ADR-021](../shared/decisions/ADR-021-tai-lieu-dan-dat-ui-khi-xay-lai.md) | Tài liệu dẫn UI khi xây lại; DESIGN.md và screen spec là chuẩn | accepted | — |
 
 ## [account](../features/account/README.md)
 

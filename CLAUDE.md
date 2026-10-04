@@ -91,12 +91,15 @@ project goes into the repo through a PR.
   tables have RLS on, no policy and no client privilege. Its gate is
   `npx supabase db start` then `npx supabase test db`.
   `memox-api-services/` is frozen: a reference only, out of CI, not developed.
-- **The app is the UI authority** ([ADR-019](docs/shared/decisions/ADR-019-app-la-chuan-ui.md)):
-  `DESIGN.md` and the reviewed goldens. The "Mobile UI Kit v3" artifact is
-  retired and never read. A BR or UC beats `DESIGN.md`; `DESIGN.md` and the
-  goldens beat a screen's detail file. A PR that changes the visual system
-  updates `DESIGN.md`; one that changes a screen updates its detail file and
-  its row in the screen index.
+- **Documents are the UI authority** ([ADR-021](docs/shared/decisions/ADR-021-tai-lieu-dan-dat-ui-khi-xay-lai.md),
+  superseding ADR-019): BR, FN and UC beat `DESIGN.md`; `DESIGN.md` beats a
+  screen spec (`docs/screens/spec/`); a screen spec beats its goldens, which
+  the owner reviews. The "Mobile UI Kit v3" artifact is retired and never read.
+  A PR that changes the visual system updates `DESIGN.md` first; one that
+  changes a screen updates its spec and its row in
+  `docs/screens/SCREEN_CATALOG.md`. Until the migration is verified (spec
+  2026-10-04 §7.1) the old screen records in `docs/shared/ui/screen-handoff/`
+  stay readable.
 - **Stack and layers:** the layer architecture and folder names follow
   [ADR-010](docs/shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md);
   Riverpod and Drift, not BLoC or Freezed, whatever an ECC skill shows.

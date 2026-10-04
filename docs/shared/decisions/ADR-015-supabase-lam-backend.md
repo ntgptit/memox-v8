@@ -1,7 +1,7 @@
 ---
 id: ADR-015
 title: Supabase làm backend, nghiệp vụ ở app
-status: active
+status: accepted
 superseded_by:
 ---
 ## Bối cảnh
