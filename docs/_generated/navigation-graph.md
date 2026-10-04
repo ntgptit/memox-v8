@@ -6,7 +6,7 @@ Screen → screen edges from each spec's `Navigate to:` lines (spec R9).
 
 | From | To |
 |---|---|
-| — | — |
+| SCR-DECK-001 | SCR-DECK-001 |
 
 ## Router entries
 

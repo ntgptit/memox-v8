@@ -8,6 +8,7 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 
 | ID | Screen | Domain | Route | Status | Spec |
 |---|---|---|---|---|---|
+| SCR-DECK-001 | Deck list | deck | `/decks`, `/decks/deck/:deckId` | ready | `spec/SCR-DECK-001-deck-list.md` |
 
 ## Invariants for every screen
 

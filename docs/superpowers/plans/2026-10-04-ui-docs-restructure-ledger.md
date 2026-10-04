@@ -60,89 +60,89 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/01-deck-list.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/01-deck-list.md:3` # 01 · Deck list |  |
-| `shared/ui/screen-handoff/01-deck-list.md:5` One recursive screen for the Library root (`/decks`) and any open deck |  |
-| `shared/ui/screen-handoff/01-deck-list.md:8` ## Layout — root |  |
-| `shared/ui/screen-handoff/01-deck-list.md:10` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:12` \| App bar \| `MxAppBar` (large) \| "Library", then Starter decks (sparkles, screen |  |
-| `shared/ui/screen-handoff/01-deck-list.md:13` \| Search \| `MxSearchField`, trigger mode \| Hint "Search decks". A tap pushes `/d |  |
-| `shared/ui/screen-handoff/01-deck-list.md:14` \| Due strip \| `MxCard` (hero) + `MxIconTile` + `MxWorkloadBreakdownLine` \| Bolt |  |
-| `shared/ui/screen-handoff/01-deck-list.md:15` \| Section header \| `MxListSectionHeader` + `MxChipTrigger` \| "N DECKS"; pill "Ma |  |
-| `shared/ui/screen-handoff/01-deck-list.md:16` \| Rows \| `MxCard` per deck, 8 apart \| 44 px `MxIconTile` (layers = holds decks, |  |
-| `shared/ui/screen-handoff/01-deck-list.md:17` \| FAB \| `MxFab` \| "New deck". \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:19` ## Layout — open deck |  |
-| `shared/ui/screen-handoff/01-deck-list.md:21` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:23` \| App bar \| `MxAppBar` \| Back, deck name, `⋮` (the deck's action sheet). \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:24` \| Breadcrumb \| `MxBreadcrumb` \| Library › ancestors › deck. \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:25` \| Summary card \| `MxCard` (hero) \| For a deck holding sub-decks: `MxMasteryDonut |  |
-| `shared/ui/screen-handoff/01-deck-list.md:26` \| List \| as root \| Header "Sub-decks" with the sort pill: the summary card state |  |
-| `shared/ui/screen-handoff/01-deck-list.md:27` \| FAB \| `MxFab` \| "New sub-deck"; none at level 10 (BR-DECK-001), and none on an |  |
-| `shared/ui/screen-handoff/01-deck-list.md:28` \| By content type \| — \| `unset`: empty state with the two create choices (BR-DEC |  |
-| `shared/ui/screen-handoff/01-deck-list.md:30` ## Action sheet |  |
-| `shared/ui/screen-handoff/01-deck-list.md:32` `MxBottomSheet` headed by the deck's name, and `MxActionSheetCommandRow`s withou |  |
-| `shared/ui/screen-handoff/01-deck-list.md:35` - **Root deck:** Open deck · Study this deck → screen 14 · Rename · Study option |  |
-| `shared/ui/screen-handoff/01-deck-list.md:39` - **Sub-deck:** Open · Study this deck → screen 14 · Rename · |  |
-| `shared/ui/screen-handoff/01-deck-list.md:44` ## Sort & filter sheet |  |
-| `shared/ui/screen-handoff/01-deck-list.md:46` One `MxBottomSheet`, "Sort & filter": |  |
-| `shared/ui/screen-handoff/01-deck-list.md:48` - Sort by (`MxOptionRow`): Manual order "Drag decks to arrange them" · Date adde |  |
-| `shared/ui/screen-handoff/01-deck-list.md:51` - Toggle row (`MxSettingsRow` + `MxToggle`): "Only decks with due cards" / "Hide |  |
-| `shared/ui/screen-handoff/01-deck-list.md:53` - "Sort by" is an `MxListSectionHeader`; Done is the sheet's `MxSheetActions` fo |  |
-| `shared/ui/screen-handoff/01-deck-list.md:54` - Button "Done". |  |
-| `shared/ui/screen-handoff/01-deck-list.md:56` ## States |  |
-| `shared/ui/screen-handoff/01-deck-list.md:58` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:60` \| rootLoaded \| `library_decks_light.png` \| `library_decks_dark.png` \| Every row |  |
-| `shared/ui/screen-handoff/01-deck-list.md:61` \| rootLoading \| no golden \| no golden \| Skeletons in the row's shape; header kep |  |
-| `shared/ui/screen-handoff/01-deck-list.md:62` \| rootEmpty \| `library_empty_light.png` \| `library_empty_dark.png` \| "Create dec |  |
-| `shared/ui/screen-handoff/01-deck-list.md:63` \| rootError \| no golden \| no golden \| "Couldn't load your library" with Retry. \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:64` \| rootSearch \| no golden \| no golden \| The field is a trigger: a tap opens scree |  |
-| `shared/ui/screen-handoff/01-deck-list.md:65` \| rootSortFilter \| `library_sort_light.png` \| `library_sort_dark.png` \| Progress |  |
-| `shared/ui/screen-handoff/01-deck-list.md:66` \| rootDueEmpty \| no golden \| no golden \| "Nothing due right now" with "Show all |  |
-| `shared/ui/screen-handoff/01-deck-list.md:67` \| rootOverflow \| `library_deck_actions_light.png` \| `library_deck_actions_dark.p |  |
-| `shared/ui/screen-handoff/01-deck-list.md:68` \| rootCreate \| no golden \| no golden \| The create dialog; no algorithm chosen up |  |
-| `shared/ui/screen-handoff/01-deck-list.md:69` \| rootRename \| no golden \| no golden \| The rename dialog. \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:70` \| rootDelete \| `library_deck_delete_light.png` \| `library_deck_delete_dark.png` |  |
-| `shared/ui/screen-handoff/01-deck-list.md:71` \| rootTrashed \| `library_deck_trashed_light.png` \| `library_deck_trashed_dark.pn |  |
-| `shared/ui/screen-handoff/01-deck-list.md:72` \| deckLoaded \| `library_deck_open_light.png` \| `library_deck_open_dark.png` \| Th |  |
-| `shared/ui/screen-handoff/01-deck-list.md:73` \| deckEmpty \| `library_deck_unset_light.png` \| `library_deck_unset_dark.png` \| ` |  |
-| `shared/ui/screen-handoff/01-deck-list.md:74` \| deckMaxDepth \| no golden \| no golden \| No FAB. \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:75` \| deckLoading \| no golden \| no golden \| Skeletons under the summary card. \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:76` \| deckError \| no golden \| no golden \| Error state with Retry. \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:77` \| deckNotFound \| no golden \| no golden \| "This deck is no longer here", Back to |  |
-| `shared/ui/screen-handoff/01-deck-list.md:78` \| deckOverflow \| no golden \| no golden \| The sub-deck action sheet. \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:79` \| deckMove \| no golden \| no golden \| The deck picker; only decks with the same r |  |
-| `shared/ui/screen-handoff/01-deck-list.md:80` \| deckDelete \| no golden \| no golden \| As rootDelete. \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:81` \| deckTrashed \| no golden \| no golden \| As rootTrashed. Moving the open deck ste |  |
-| `shared/ui/screen-handoff/01-deck-list.md:82` Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder |  |
-| `shared/ui/screen-handoff/01-deck-list.md:84` ## Rulings |  |
-| `shared/ui/screen-handoff/01-deck-list.md:86` - **Critique 2026-09-30 part 1, R9 (amends P4a-L9):** an `unset` deck has no FAB |  |
-| `shared/ui/screen-handoff/01-deck-list.md:87` - **FE-B1 D7:** an Undo happens where the item was deleted. A refused Undo says |  |
-| `shared/ui/screen-handoff/01-deck-list.md:89` - **Owner ruling R4** (deck mastery spec, §9 row 141): the < 34% mastery band us |  |
-| `shared/ui/screen-handoff/01-deck-list.md:91` - **§9 rows 142, 145 (FE-C1):** the mastery bar's track is `surfaceContainerLow` |  |
-| `shared/ui/screen-handoff/01-deck-list.md:92` - **Library spec D7:** Reorder is in the root deck's action sheet too. |  |
-| `shared/ui/screen-handoff/01-deck-list.md:93` - **C-L6:** the action sheet reads only `DeckView`, which carries no counts, so |  |
-| `shared/ui/screen-handoff/01-deck-list.md:95` - **M3 review 2026-09-28 D2:** reorder mode keeps one `MxCard` per deck, 8 apart |  |
-| `shared/ui/screen-handoff/01-deck-list.md:97` - **Critique 2026-09-30:** a row's meta and the due strip's breakdown wrap at la |  |
-| `shared/ui/screen-handoff/01-deck-list.md:98` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/01-deck-list.md:99` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/01-deck-list.md:100` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the due |  |
-| `shared/ui/screen-handoff/01-deck-list.md:102` ## Pending |  |
-| `shared/ui/screen-handoff/01-deck-list.md:104` \| Element \| Shown as \| Waits for \| |  |
-| `shared/ui/screen-handoff/01-deck-list.md:106` \| Level-10 banner "This is level 10, the deepest a deck can go…" over sub-decks |  |
-| `shared/ui/screen-handoff/01-deck-list.md:108` ## Copy |  |
-| `shared/ui/screen-handoff/01-deck-list.md:110` - Root: "Library" · "Search decks" · "{n} cards due" · "{n} decks" · "Manual" · |  |
-| `shared/ui/screen-handoff/01-deck-list.md:111` - Row: "{n} due" · "{n} sub-deck(s)" · "{n} cards" · "Empty · add cards or a sub |  |
-| `shared/ui/screen-handoff/01-deck-list.md:112` - Summary: "Mastered · {algorithm}". |  |
-| `shared/ui/screen-handoff/01-deck-list.md:113` - Sort: "Progress" · "Least mastered first". |  |
-| `shared/ui/screen-handoff/01-deck-list.md:114` - First launch: "Start your library" · "A deck groups the sub-decks that hold yo |  |
-| `shared/ui/screen-handoff/01-deck-list.md:115` - Error: "Couldn't load your library" · "Your data is safe on this device. Try a |  |
-| `shared/ui/screen-handoff/01-deck-list.md:116` - Due filter, none: "Nothing due right now" · "No deck has cards waiting. The ne |  |
-| `shared/ui/screen-handoff/01-deck-list.md:117` - Create: "New deck" · "Holds sub-decks; sub-decks hold cards." · "Name" · "Revi |  |
-| `shared/ui/screen-handoff/01-deck-list.md:118` - Rename: "Rename deck" · "Only the name changes — sub-decks, cards and schedule |  |
-| `shared/ui/screen-handoff/01-deck-list.md:119` - Not found: "This deck is no longer here" · "It was moved to Trash or deleted w |  |
-| `shared/ui/screen-handoff/01-deck-list.md:120` - Move to Trash: "Move to Trash" · "Recoverable for 30 days" · "Move this deck t |  |
-| `shared/ui/screen-handoff/01-deck-list.md:121` - Move: "Move “{name}” to…" · "Its {n} sub-decks and {n} cards come along, sched |  |
-| `shared/ui/screen-handoff/01-deck-list.md:122` - Sort & filter: as in "Sort & filter sheet". |  |
+| `shared/ui/screen-handoff/01-deck-list.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:3` # 01 · Deck list | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:5` One recursive screen for the Library root (`/decks`) and any open deck | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:8` ## Layout — root | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:10` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:12` \| App bar \| `MxAppBar` (large) \| "Library", then Starter decks (sparkles, screen | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:13` \| Search \| `MxSearchField`, trigger mode \| Hint "Search decks". A tap pushes `/d | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:14` \| Due strip \| `MxCard` (hero) + `MxIconTile` + `MxWorkloadBreakdownLine` \| Bolt | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:15` \| Section header \| `MxListSectionHeader` + `MxChipTrigger` \| "N DECKS"; pill "Ma | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:16` \| Rows \| `MxCard` per deck, 8 apart \| 44 px `MxIconTile` (layers = holds decks, | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:17` \| FAB \| `MxFab` \| "New deck". \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:19` ## Layout — open deck | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:21` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:23` \| App bar \| `MxAppBar` \| Back, deck name, `⋮` (the deck's action sheet). \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:24` \| Breadcrumb \| `MxBreadcrumb` \| Library › ancestors › deck. \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:25` \| Summary card \| `MxCard` (hero) \| For a deck holding sub-decks: `MxMasteryDonut | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:26` \| List \| as root \| Header "Sub-decks" with the sort pill: the summary card state | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:27` \| FAB \| `MxFab` \| "New sub-deck"; none at level 10 (BR-DECK-001), and none on an | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:28` \| By content type \| — \| `unset`: empty state with the two create choices (BR-DEC | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:30` ## Action sheet | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:32` `MxBottomSheet` headed by the deck's name, and `MxActionSheetCommandRow`s withou | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:35` - **Root deck:** Open deck · Study this deck → screen 14 · Rename · Study option | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:39` - **Sub-deck:** Open · Study this deck → screen 14 · Rename · | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:44` ## Sort & filter sheet | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:46` One `MxBottomSheet`, "Sort & filter": | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:48` - Sort by (`MxOptionRow`): Manual order "Drag decks to arrange them" · Date adde | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:51` - Toggle row (`MxSettingsRow` + `MxToggle`): "Only decks with due cards" / "Hide | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:53` - "Sort by" is an `MxListSectionHeader`; Done is the sheet's `MxSheetActions` fo | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:54` - Button "Done". | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:56` ## States | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:58` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:60` \| rootLoaded \| `library_decks_light.png` \| `library_decks_dark.png` \| Every row | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:61` \| rootLoading \| no golden \| no golden \| Skeletons in the row's shape; header kep | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:62` \| rootEmpty \| `library_empty_light.png` \| `library_empty_dark.png` \| "Create dec | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:63` \| rootError \| no golden \| no golden \| "Couldn't load your library" with Retry. \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:64` \| rootSearch \| no golden \| no golden \| The field is a trigger: a tap opens scree | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:65` \| rootSortFilter \| `library_sort_light.png` \| `library_sort_dark.png` \| Progress | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:66` \| rootDueEmpty \| no golden \| no golden \| "Nothing due right now" with "Show all | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:67` \| rootOverflow \| `library_deck_actions_light.png` \| `library_deck_actions_dark.p | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:68` \| rootCreate \| no golden \| no golden \| The create dialog; no algorithm chosen up | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:69` \| rootRename \| no golden \| no golden \| The rename dialog. \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:70` \| rootDelete \| `library_deck_delete_light.png` \| `library_deck_delete_dark.png` | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:71` \| rootTrashed \| `library_deck_trashed_light.png` \| `library_deck_trashed_dark.pn | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:72` \| deckLoaded \| `library_deck_open_light.png` \| `library_deck_open_dark.png` \| Th | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:73` \| deckEmpty \| `library_deck_unset_light.png` \| `library_deck_unset_dark.png` \| ` | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:74` \| deckMaxDepth \| no golden \| no golden \| No FAB. \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:75` \| deckLoading \| no golden \| no golden \| Skeletons under the summary card. \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:76` \| deckError \| no golden \| no golden \| Error state with Retry. \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:77` \| deckNotFound \| no golden \| no golden \| "This deck is no longer here", Back to | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:78` \| deckOverflow \| no golden \| no golden \| The sub-deck action sheet. \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:79` \| deckMove \| no golden \| no golden \| The deck picker; only decks with the same r | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:80` \| deckDelete \| no golden \| no golden \| As rootDelete. \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:81` \| deckTrashed \| no golden \| no golden \| As rootTrashed. Moving the open deck ste | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:82` Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:84` ## Rulings | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:86` - **Critique 2026-09-30 part 1, R9 (amends P4a-L9):** an `unset` deck has no FAB | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:87` - **FE-B1 D7:** an Undo happens where the item was deleted. A refused Undo says | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:89` - **Owner ruling R4** (deck mastery spec, §9 row 141): the < 34% mastery band us | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:91` - **§9 rows 142, 145 (FE-C1):** the mastery bar's track is `surfaceContainerLow` | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:92` - **Library spec D7:** Reorder is in the root deck's action sheet too. | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:93` - **C-L6:** the action sheet reads only `DeckView`, which carries no counts, so | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:95` - **M3 review 2026-09-28 D2:** reorder mode keeps one `MxCard` per deck, 8 apart | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:97` - **Critique 2026-09-30:** a row's meta and the due strip's breakdown wrap at la | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:98` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:99` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:100` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the due | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:102` ## Pending | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:104` \| Element \| Shown as \| Waits for \| | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:106` \| Level-10 banner "This is level 10, the deepest a deck can go…" over sub-decks | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:108` ## Copy | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:110` - Root: "Library" · "Search decks" · "{n} cards due" · "{n} decks" · "Manual" · | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:111` - Row: "{n} due" · "{n} sub-deck(s)" · "{n} cards" · "Empty · add cards or a sub | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:112` - Summary: "Mastered · {algorithm}". | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:113` - Sort: "Progress" · "Least mastered first". | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:114` - First launch: "Start your library" · "A deck groups the sub-decks that hold yo | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:115` - Error: "Couldn't load your library" · "Your data is safe on this device. Try a | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:116` - Due filter, none: "Nothing due right now" · "No deck has cards waiting. The ne | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:117` - Create: "New deck" · "Holds sub-decks; sub-decks hold cards." · "Name" · "Revi | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:118` - Rename: "Rename deck" · "Only the name changes — sub-decks, cards and schedule | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:119` - Not found: "This deck is no longer here" · "It was moved to Trash or deleted w | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:120` - Move to Trash: "Move to Trash" · "Recoverable for 30 days" · "Move this deck t | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:121` - Move: "Move “{name}” to…" · "Its {n} sub-decks and {n} cards come along, sched | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
+| `shared/ui/screen-handoff/01-deck-list.md:122` - Sort & filter: as in "Sort & filter sheet". | moved → `screens/spec/SCR-DECK-001-deck-list.md` |
 
 ## shared/ui/screen-handoff/02-review-algorithm.md
 
@@ -1980,8 +1980,8 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:39` - **E2 — Tên quá 200 ký tự:** lỗi inline; chặn nhập thêm thay vì cắt âm thầm. | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:40` - **E3 — Chưa chọn chế độ:** lỗi inline ở phần chọn chế độ; không tạo. | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:41` - **E4 — Ghi database thất bại:** hiện lỗi, giữ nguyên form và dữ liệu đã nhập. | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:43` ## UI |  |
-| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:45` **UI states:** initial · submitting · error |  |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:43` ## UI | superseded → SCR-DECK-001 (## States) |
+| `features/deck/usecases/UC-DECK-001-tao-root-deck.md:45` **UI states:** initial · submitting · error | superseded → SCR-DECK-001 (## States) |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:47` ## Local | superseded → FN-DECK-001 (Kết quả) |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:49` **Postconditions:** Root deck tồn tại với scheduler đã chọn, `content_type = | superseded → FN-DECK-001 (Kết quả) |
 | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:52` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
@@ -2033,8 +2033,8 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:60` - **E2 — Đổi chế độ thất bại giữa chừng:** transaction rollback; deck giữ nguyên | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:62` - **E3 — Xoá thất bại:** hiện lỗi; deck còn nguyên vẹn, và `content_type` của | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:64` - **E4 — Scheduler bị khoá trong lúc bảng chọn đang mở:** người dùng học xong mộ | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:70` ## UI |  |
-| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:72` **UI states:** loaded · submitting · error |  |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:70` ## UI | superseded → SCR-DECK-001 (## States) (đổi chế độ ôn tập: screen 02) |
+| `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:72` **UI states:** loaded · submitting · error | superseded → SCR-DECK-001 (## States) (đổi chế độ ôn tập: screen 02) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:74` ## Local | superseded → FN-DECK-005 (Kết quả) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:76` **Postconditions:** | superseded → FN-DECK-005 (Kết quả) |
 | `features/deck/usecases/UC-DECK-002-sua-va-xoa-deck.md:77` - Sau đổi chế độ: `scheduler_type` mới, mọi study state trong cây khởi tạo lại, | superseded → FN-DECK-003 (Kết quả) |
@@ -2087,8 +2087,8 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:48` - **A4 — Sắp xếp và lọc:** Manual, Newest, Name, Most due hoặc Progress | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:52` **Error flows:** | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:53` - **E1 — Đọc thất bại:** màn hình lỗi có nút thử lại. | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:55` ## UI |  |
-| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:57` **UI states:** loading · loaded · empty · error |  |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:55` ## UI | superseded → SCR-DECK-001 (## States) |
+| `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:57` **UI states:** loading · loaded · empty · error | superseded → SCR-DECK-001 (## States) |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:59` ## Local | superseded → FN-DECK-007 (Kết quả, Business rules) |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:61` **Postconditions:** Không đổi gì — use case chỉ đọc. | superseded → FN-DECK-007 (Kết quả, Business rules) |
 | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:63` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-DECK-007 (Kết quả, Business rules) |
@@ -2145,8 +2145,8 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:54` - **E2 — Ghi thất bại giữa chừng:** transaction rollback. Deck giữ nguyên | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:57` - **E3 — Cố tạo card trong root deck:** không có đường nào tới được trạng thái | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:60` - **E4 — Deck cha đã ở cấp 10:** tạo deck con bị chặn trước khi ghi (BR-DECK-001 | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:64` ## UI |  |
-| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:66` **UI states:** initial · submitting · error |  |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:64` ## UI | superseded → SCR-DECK-001 (## States) |
+| `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:66` **UI states:** initial · submitting · error | superseded → SCR-DECK-001 (## States) |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:68` ## Local | superseded → FN-DECK-009 (Kết quả) |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:70` **Postconditions:** | superseded → FN-DECK-009 (Kết quả) |
 | `features/deck/usecases/UC-DECK-004-tao-phan-tu-con-va-xac-lap-content-type.md:71` - Deck có `content_type` khác `unset`, khớp với loại phần tử con vừa tạo. | superseded → FN-DECK-009 (Kết quả) |
@@ -2203,8 +2203,8 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:48` - **E3 — Root đích khác scheduler hoặc generation:** **chặn**, và đề nghị đặt lạ | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:51` - **E4 — Thất bại giữa chừng:** transaction rollback (BR-DECK-018) — con trỏ cha | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:55` - **E5 — Vượt độ sâu tối đa:** `targetDepth + subtreeHeight > 10` → chặn trước | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:59` ## UI |  |
-| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:61` **UI states:** loaded · submitting · error |  |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:59` ## UI | superseded → SCR-DECK-001 (## States) |
+| `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:61` **UI states:** loaded · submitting · error | superseded → SCR-DECK-001 (## States) |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:63` ## Local | superseded → FN-DECK-011 (Kết quả) |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:65` **Postconditions:** | superseded → FN-DECK-011 (Kết quả) |
 | `features/deck/usecases/UC-DECK-005-di-chuyen-deck-trong-cay.md:66` - Cây không có cycle (BR-DECK-016). | superseded → FN-DECK-011 (Kết quả) |
@@ -2244,8 +2244,8 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:27` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:29` **Alternative flows:** Ở chế độ Reorder, deck đầu không có action Move up của | moved → `USE_CASES.md` |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:35` **Error flows:** Source hoặc target đã stale, hoặc không còn sibling → transacti | moved → `USE_CASES.md` |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:39` ## UI |  |
-| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:41` **UI states:** Ở Manual order, action sheet hiện mục Reorder khi level có từ hai |  |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:39` ## UI | superseded → SCR-DECK-001 (## States) |
+| `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:41` **UI states:** Ở Manual order, action sheet hiện mục Reorder khi level có từ hai | superseded → SCR-DECK-001 (## States) |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:46` ## Local | superseded → FN-DECK-012 (Kết quả) |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:48` **Postconditions:** Chỉ `sibling_position` (và timestamp audit của các sibling | superseded → FN-DECK-012 (Kết quả) |
 | `features/deck/usecases/UC-DECK-006-sap-xep-lai-deck-cung-cap.md:52` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
@@ -3107,17 +3107,17 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `features/deck/ui.md:47` **Nhánh `I` là chỗ hai đối tượng gặp nhau.** Chế độ ôn tập là thuộc tính của dec | superseded → FN-DECK-008 (trạng thái khoá hiện, không ẩn) |
 | `features/deck/ui.md:51` **`I1` và `I3` là hai thao tác, không phải một thao tác với hai cách gọi.** Cả h | superseded → FN-DECK-003 (Kết quả: không phải Reset learning progress) |
 | `features/deck/ui.md:57` **Ai đặt khoá ở `I`:** chính lần một thẻ hoàn tất chuỗi học mới, trong cùng |  |
-| `features/deck/ui.md:61` ## Validation |  |
-| `features/deck/ui.md:63` \| Trường \| Rule \| Message hiển thị \| Enforced by \| |  |
-| `features/deck/ui.md:65` \| Deck.name \| không rỗng sau trim (BR-DECK-020) \| "Tên deck không được để trống" |  |
-| `features/deck/ui.md:66` \| Deck.name \| ≤ 200 ký tự (BR-DECK-020) \| "Tên deck tối đa 200 ký tự" \| rule \| |  |
-| `features/deck/ui.md:67` \| Deck.move \| đích không phải chính nó hoặc descendant (BR-DECK-017) \| "Không th |  |
-| `features/deck/ui.md:68` \| Deck.create (sub-deck) \| cấp của deck mới ≤ 10 (BR-DECK-001) \| "Deck đã ở độ s |  |
-| `features/deck/ui.md:69` \| Deck.move \| cấp đích + chiều cao subtree nguồn ≤ 10 (BR-DECK-001) \| "Di chuyển |  |
+| `features/deck/ui.md:61` ## Validation | superseded → SCR-DECK-001 (Copy: rejections — the app's English copy; these Vietnamese messages are not the app's) |
+| `features/deck/ui.md:63` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | superseded → SCR-DECK-001 (Copy: rejections — the app's English copy; these Vietnamese messages are not the app's) |
+| `features/deck/ui.md:65` \| Deck.name \| không rỗng sau trim (BR-DECK-020) \| "Tên deck không được để trống" | superseded → SCR-DECK-001 (Copy: rejections — the app's English copy; these Vietnamese messages are not the app's) |
+| `features/deck/ui.md:66` \| Deck.name \| ≤ 200 ký tự (BR-DECK-020) \| "Tên deck tối đa 200 ký tự" \| rule \| | superseded → SCR-DECK-001 (Copy: rejections — the app's English copy; these Vietnamese messages are not the app's) |
+| `features/deck/ui.md:67` \| Deck.move \| đích không phải chính nó hoặc descendant (BR-DECK-017) \| "Không th | superseded → SCR-DECK-001 (Copy: rejections — the app's English copy; these Vietnamese messages are not the app's) |
+| `features/deck/ui.md:68` \| Deck.create (sub-deck) \| cấp của deck mới ≤ 10 (BR-DECK-001) \| "Deck đã ở độ s | superseded → SCR-DECK-001 (Copy: rejections — the app's English copy; these Vietnamese messages are not the app's) |
+| `features/deck/ui.md:69` \| Deck.move \| cấp đích + chiều cao subtree nguồn ≤ 10 (BR-DECK-001) \| "Di chuyển | superseded → SCR-DECK-001 (Copy: rejections — the app's English copy; these Vietnamese messages are not the app's) |
 | `features/deck/ui.md:71` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | superseded → ADR-015 (server chỉ kiểm tính toàn vẹn; quy tắc nghiệp vụ nằm ở app) |
 | `features/deck/ui.md:73` ## Edge case | superseded → FN-DECK-008 |
 | `features/deck/ui.md:75` \| Case \| Expected behaviour \| | superseded → FN-DECK-008 |
-| `features/deck/ui.md:77` \| Deck rỗng (0 card) \| Empty state với hành động phù hợp `content_type` (BR-DECK |  |
+| `features/deck/ui.md:77` \| Deck rỗng (0 card) \| Empty state với hành động phù hợp `content_type` (BR-DECK | superseded → SCR-DECK-001 `deck_empty`; no study session on an empty deck → the study FNs (Task 16) |
 
 ## features/progress/ui.md
 
@@ -3650,24 +3650,24 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `test/features/deck/presentation/goldens/library_algorithm_reset_light.png` |  |
 | `test/features/deck/presentation/goldens/library_algorithm_unlocked_dark.png` |  |
 | `test/features/deck/presentation/goldens/library_algorithm_unlocked_light.png` |  |
-| `test/features/deck/presentation/goldens/library_deck_actions_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_deck_actions_light.png` |  |
-| `test/features/deck/presentation/goldens/library_deck_delete_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_deck_delete_light.png` |  |
-| `test/features/deck/presentation/goldens/library_deck_open_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_deck_open_light.png` |  |
-| `test/features/deck/presentation/goldens/library_deck_trashed_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_deck_trashed_light.png` |  |
-| `test/features/deck/presentation/goldens/library_deck_unset_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_deck_unset_light.png` |  |
-| `test/features/deck/presentation/goldens/library_decks_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_decks_light.png` |  |
-| `test/features/deck/presentation/goldens/library_empty_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_empty_light.png` |  |
-| `test/features/deck/presentation/goldens/library_reorder_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_reorder_light.png` |  |
-| `test/features/deck/presentation/goldens/library_sort_dark.png` |  |
-| `test/features/deck/presentation/goldens/library_sort_light.png` |  |
+| `test/features/deck/presentation/goldens/library_deck_actions_dark.png` | superseded → SCR-DECK-001 `root_overflow` dark |
+| `test/features/deck/presentation/goldens/library_deck_actions_light.png` | superseded → SCR-DECK-001 `root_overflow` light |
+| `test/features/deck/presentation/goldens/library_deck_delete_dark.png` | superseded → SCR-DECK-001 `root_delete` dark |
+| `test/features/deck/presentation/goldens/library_deck_delete_light.png` | superseded → SCR-DECK-001 `root_delete` light |
+| `test/features/deck/presentation/goldens/library_deck_open_dark.png` | superseded → SCR-DECK-001 `deck_loaded` dark |
+| `test/features/deck/presentation/goldens/library_deck_open_light.png` | superseded → SCR-DECK-001 `deck_loaded` light |
+| `test/features/deck/presentation/goldens/library_deck_trashed_dark.png` | superseded → SCR-DECK-001 `root_trashed` dark |
+| `test/features/deck/presentation/goldens/library_deck_trashed_light.png` | superseded → SCR-DECK-001 `root_trashed` light |
+| `test/features/deck/presentation/goldens/library_deck_unset_dark.png` | superseded → SCR-DECK-001 `deck_empty` dark |
+| `test/features/deck/presentation/goldens/library_deck_unset_light.png` | superseded → SCR-DECK-001 `deck_empty` light |
+| `test/features/deck/presentation/goldens/library_decks_dark.png` | superseded → SCR-DECK-001 `root_loaded` dark |
+| `test/features/deck/presentation/goldens/library_decks_light.png` | superseded → SCR-DECK-001 `root_loaded` light |
+| `test/features/deck/presentation/goldens/library_empty_dark.png` | superseded → SCR-DECK-001 `root_empty` dark |
+| `test/features/deck/presentation/goldens/library_empty_light.png` | superseded → SCR-DECK-001 `root_empty` light |
+| `test/features/deck/presentation/goldens/library_reorder_dark.png` | superseded → SCR-DECK-001 `root_reorder` dark |
+| `test/features/deck/presentation/goldens/library_reorder_light.png` | superseded → SCR-DECK-001 `root_reorder` light |
+| `test/features/deck/presentation/goldens/library_sort_dark.png` | superseded → SCR-DECK-001 `root_sort_filter` dark |
+| `test/features/deck/presentation/goldens/library_sort_light.png` | superseded → SCR-DECK-001 `root_sort_filter` light |
 | `test/features/monitoring/presentation/goldens/monitoring_detail_fixed_dark.png` |  |
 | `test/features/monitoring/presentation/goldens/monitoring_detail_fixed_light.png` |  |
 | `test/features/monitoring/presentation/goldens/monitoring_detail_local_dark.png` |  |

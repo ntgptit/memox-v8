@@ -116,18 +116,18 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-DECK-001](../functional-spec/deck.md) | Tạo root deck | active | UC-DECK-001 |
-| [FN-DECK-002](../functional-spec/deck.md) | Đổi tên deck | active | UC-DECK-002 |
+| [FN-DECK-001](../functional-spec/deck.md) | Tạo root deck | active | SCR-DECK-001, UC-DECK-001 |
+| [FN-DECK-002](../functional-spec/deck.md) | Đổi tên deck | active | SCR-DECK-001, UC-DECK-002 |
 | [FN-DECK-003](../functional-spec/deck.md) | Đổi chế độ ôn tập của root deck | active | UC-DECK-002 |
-| [FN-DECK-004](../functional-spec/deck.md) | Xem số deck con và card sẽ vào Trash cùng deck | active | UC-DECK-002 |
-| [FN-DECK-005](../functional-spec/deck.md) | Chuyển deck và cây con vào Trash | active | UC-DECK-002 |
-| [FN-DECK-006](../functional-spec/deck.md) | Hoàn tác xoá deck | active | UC-DECK-002 |
-| [FN-DECK-007](../functional-spec/deck.md) | Xem một cấp của thư viện kèm tiến độ | active | UC-DECK-003 |
-| [FN-DECK-008](../functional-spec/deck.md) | Xem một deck đang mở | active | UC-DECK-003, UC-DECK-004 |
-| [FN-DECK-009](../functional-spec/deck.md) | Tạo deck con | active | UC-DECK-004 |
-| [FN-DECK-010](../functional-spec/deck.md) | Xem các đích di chuyển hợp lệ | active | UC-DECK-005 |
-| [FN-DECK-011](../functional-spec/deck.md) | Di chuyển deck trong cây | active | UC-DECK-005 |
-| [FN-DECK-012](../functional-spec/deck.md) | Sắp xếp lại deck cùng cấp | active | UC-DECK-006 |
+| [FN-DECK-004](../functional-spec/deck.md) | Xem số deck con và card sẽ vào Trash cùng deck | active | SCR-DECK-001, UC-DECK-002 |
+| [FN-DECK-005](../functional-spec/deck.md) | Chuyển deck và cây con vào Trash | active | SCR-DECK-001, UC-DECK-002 |
+| [FN-DECK-006](../functional-spec/deck.md) | Hoàn tác xoá deck | active | SCR-DECK-001, UC-DECK-002 |
+| [FN-DECK-007](../functional-spec/deck.md) | Xem một cấp của thư viện kèm tiến độ | active | SCR-DECK-001, UC-DECK-003 |
+| [FN-DECK-008](../functional-spec/deck.md) | Xem một deck đang mở | active | SCR-DECK-001, UC-DECK-003, UC-DECK-004 |
+| [FN-DECK-009](../functional-spec/deck.md) | Tạo deck con | active | SCR-DECK-001, UC-DECK-004 |
+| [FN-DECK-010](../functional-spec/deck.md) | Xem các đích di chuyển hợp lệ | active | SCR-DECK-001, UC-DECK-005 |
+| [FN-DECK-011](../functional-spec/deck.md) | Di chuyển deck trong cây | active | SCR-DECK-001, UC-DECK-005 |
+| [FN-DECK-012](../functional-spec/deck.md) | Sắp xếp lại deck cùng cấp | active | SCR-DECK-001, UC-DECK-006 |
 
 ### Use cases
 
@@ -139,6 +139,12 @@ Chưa có tài liệu.
 | [UC-DECK-004](../USE_CASES.md) | Tạo phần tử con và xác lập `content_type` | ready | — |
 | [UC-DECK-005](../USE_CASES.md) | Di chuyển deck trong cây | ready | — |
 | [UC-DECK-006](../USE_CASES.md) | Sắp xếp lại Deck cùng cấp | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-DECK-001](../screens/spec/SCR-DECK-001-deck-list.md) | Deck list | ready | `/decks`, `/decks/deck/:deckId` |
 
 ## [monitoring](../features/monitoring/README.md)
 
