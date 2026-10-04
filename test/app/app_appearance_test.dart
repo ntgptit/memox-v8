@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memox/core/theme/generated/design_values.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
@@ -31,6 +33,32 @@ Finder _tab(String label) =>
 Finder _openDeck() => find.text('SCR-DECK-001 · SCR-CARD-001');
 
 void main() {
+  libraryTest('the app paints DESIGN.md\'s light and dark themes (SP3a)', (
+    tester,
+    env,
+  ) async {
+    ThemeData theme() => Theme.of(tester.element(find.byType(NavigationBar)));
+    await pumpMemoxApp(tester, env);
+
+    expect(theme().colorScheme.primary, DesignPalette.light.primary);
+    expect(
+      theme().extension<MxSemanticColors>()!.success,
+      DesignPalette.light.success,
+    );
+
+    await SettingsRepositoryImpl(env.db).setTheme(theme: ThemeChoice.dark);
+    await tester.pumpAndSettle();
+
+    expect(
+      theme().colorScheme.primary,
+      isSameColorAs(DesignPalette.dark.primary),
+    );
+    expect(
+      theme().extension<MxSemanticColors>()!.success,
+      isSameColorAs(DesignPalette.dark.success),
+    );
+  });
+
   libraryTest('the first frame already paints the stored theme (FE-A3 D5)', (
     tester,
     env,

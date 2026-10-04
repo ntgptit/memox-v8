@@ -13,6 +13,7 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
+import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/account/presentation/providers/welcome_due_provider.dart';
 import 'package:memox/features/reminders/data/datasources/reminder_plugins_data_source.dart';
 import 'package:memox/features/reminders/di/reminder_plugins_data_source_provider.dart';
@@ -33,8 +34,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 /// BR-SETTINGS-006).
 ///
 /// SP2: the account transition layer has no UI until SP3 rebuilds it;
-/// transitions still run through the coordinator. The themes are Flutter's
-/// Material 3 defaults until SP3a rebuilds them from DESIGN.md.
+/// transitions still run through the coordinator. The themes are
+/// DESIGN.md's, built in lib/core/theme (SP3a).
 class MemoxApp extends ConsumerStatefulWidget {
   const MemoxApp({super.key, this.initialSettings});
 
@@ -182,8 +183,8 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      theme: ThemeData(useMaterial3: true),
-      darkTheme: ThemeData(useMaterial3: true, brightness: Brightness.dark),
+      theme: _lightTheme,
+      darkTheme: _darkTheme,
       themeMode: _themeMode(settings?.theme),
       locale: _locale(settings?.language),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -192,6 +193,11 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     );
   }
 }
+
+/// DESIGN.md's two themes, built once: a new ThemeData each build would
+/// hand MaterialApp a new object on every settings change.
+final ThemeData _lightTheme = buildLightTheme();
+final ThemeData _darkTheme = buildDarkTheme();
 
 /// `system` follows the platform's brightness as it changes.
 ThemeMode _themeMode(ThemeChoice? theme) => switch (theme) {

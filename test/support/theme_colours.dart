@@ -76,6 +76,12 @@ Map<String, Color> coloursOf({
   'ghost-border': semantic.ghostBorder,
 };
 
+/// Every colour [theme] holds, keyed by its DESIGN.md name.
+Map<String, Color> themeColours(ThemeData theme) => coloursOf(
+  scheme: theme.colorScheme,
+  semantic: theme.extension<MxSemanticColors>()!,
+);
+
 /// The WCAG 2 contrast ratio of two opaque colours.
 double contrastRatio(Color a, Color b) {
   final la = a.computeLuminance();
