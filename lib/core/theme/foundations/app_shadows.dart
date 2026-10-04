@@ -25,6 +25,4 @@ abstract final class AppShadows {
   static const AppShadow chromeDark = AppShadow(dy: -2, blur: 14, alpha: 0.36);
   static const AppShadow overlayLight = AppShadow(dy: 12, blur: 32, alpha: 0.1);
   static const AppShadow overlayDark = AppShadow(dy: 16, blur: 40, alpha: 0.42);
-  static const AppShadow fabLight = AppShadow(dy: 8, blur: 24, alpha: 0.12);
-  static const AppShadow fabDark = AppShadow(dy: 10, blur: 28, alpha: 0.5);
 }

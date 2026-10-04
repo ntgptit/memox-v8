@@ -33,5 +33,65 @@ void main() {
       await tester.tap(find.byType(FloatingActionButton));
       expect(taps, 1);
     });
+
+    testWidgets('$name: no shadow and no elevation, resting or focused', (
+      tester,
+    ) async {
+      final FocusNode focus = FocusNode();
+      addTearDown(focus.dispose);
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+      addTearDown(
+        () => FocusManager.instance.highlightStrategy =
+            FocusHighlightStrategy.automatic,
+      );
+      await pumpMx(
+        tester,
+        MxFab(
+          icon: Icons.add,
+          semanticLabel: 'New deck',
+          onPressed: () {},
+          focusNode: focus,
+        ),
+        theme: theme,
+      );
+      void expectFlat() {
+        final Iterable<Material> materials = tester.widgetList(
+          find.descendant(
+            of: find.byType(MxFab),
+            matching: find.byType(Material),
+          ),
+        );
+        for (final Material material in materials) {
+          expect(material.elevation, 0);
+        }
+        final Iterable<DecoratedBox> boxes = tester.widgetList(
+          find.descendant(
+            of: find.byType(MxFab),
+            matching: find.byType(DecoratedBox),
+          ),
+        );
+        for (final DecoratedBox box in boxes) {
+          final Decoration decoration = box.decoration;
+          if (decoration is BoxDecoration) {
+            expect(decoration.boxShadow, anyOf(isNull, isEmpty));
+          }
+        }
+      }
+
+      expectFlat();
+      focus.requestFocus();
+      await tester.pumpAndSettle();
+      expectFlat();
+      expect(
+        find.byType(MxFab),
+        paints..rrect(color: theme.colorScheme.onPrimaryContainer),
+      );
+      await tester.startGesture(
+        tester.getCenter(find.byType(FloatingActionButton)),
+      );
+      await tester.pump(const Duration(milliseconds: 200));
+      expectFlat();
+    });
   }
 }

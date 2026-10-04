@@ -18,9 +18,10 @@ enum MxSpinnerSize {
   final double extent;
 }
 
-/// Who colours the spinner: `primary` on its own, or the content colour of
+/// Who colours the spinner: the Indigo Accent (`on-primary-container`) on its
+/// own, or the content colour of
 /// the control it sits in (a button's label colour while it loads).
-enum MxSpinnerTone { primary, inherit }
+enum MxSpinnerTone { accent, inherit }
 
 /// An indeterminate wait: a three-quarter arc turning once every 800 ms. Still
 /// when the platform asks for reduced motion.
@@ -28,7 +29,7 @@ class MxSpinner extends StatefulWidget {
   const MxSpinner({
     this.semanticLabel,
     this.size = MxSpinnerSize.medium,
-    this.tone = MxSpinnerTone.primary,
+    this.tone = MxSpinnerTone.accent,
     super.key,
   });
 
@@ -70,9 +71,9 @@ class _MxSpinnerState extends State<MxSpinner>
   @override
   Widget build(BuildContext context) {
     final Color color = switch (widget.tone) {
-      MxSpinnerTone.primary => context.colors.primary,
+      MxSpinnerTone.accent => context.colors.onPrimaryContainer,
       MxSpinnerTone.inherit =>
-        IconTheme.of(context).color ?? context.colors.primary,
+        IconTheme.of(context).color ?? context.colors.onPrimaryContainer,
     };
     final Widget arc = SizedBox.square(
       dimension: widget.size.extent,

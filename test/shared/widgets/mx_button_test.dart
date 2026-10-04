@@ -33,8 +33,8 @@ void main() {
     final Map<MxButtonTone, (Color, Color)> pairs = {
       MxButtonTone.primary: (s.primary, s.onPrimary),
       MxButtonTone.secondary: (s.surfaceContainer, s.onSurface),
-      MxButtonTone.outline: (Colors.transparent, s.primary),
-      MxButtonTone.text: (Colors.transparent, s.primary),
+      MxButtonTone.outline: (Colors.transparent, s.onPrimaryContainer),
+      MxButtonTone.text: (Colors.transparent, s.onPrimaryContainer),
       MxButtonTone.destructive: (s.error, s.onError),
       MxButtonTone.dangerSoft: (s.errorContainer, s.onErrorContainer),
       MxButtonTone.warning: (x.warning, x.onWarning),

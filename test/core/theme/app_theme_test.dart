@@ -12,6 +12,19 @@ void main() {
     'dark': (AppTheme.dark(), AppColorSchemes.dark, AppSemanticColors.dark),
   };
 
+  test(
+    'primary is #4151C6 in both themes (DESIGN.md, The One Indigo Rule)',
+    () {
+      const Color canonical = Color(0xFF4151C6);
+      expect(AppTheme.light().colorScheme.primary, canonical);
+      expect(AppTheme.dark().colorScheme.primary, canonical);
+      expect(
+        AppTheme.light().colorScheme.primary,
+        AppTheme.dark().colorScheme.primary,
+      );
+    },
+  );
+
   for (final MapEntry(key: name, value: (theme, scheme, semantic))
       in themes.entries) {
     group('$name theme', () {
@@ -76,11 +89,23 @@ void main() {
           theme.floatingActionButtonTheme.foregroundColor,
           scheme.onPrimary,
         );
-        expect(theme.textSelectionTheme.cursorColor, scheme.primary);
+        expect(theme.textSelectionTheme.cursorColor, scheme.onPrimaryContainer);
         expect(
           theme.filledButtonTheme.style!.backgroundColor!.resolve({}),
           scheme.primary,
         );
+      });
+
+      test('the FAB slot has no elevation in any state', () {
+        final FloatingActionButtonThemeData fab =
+            theme.floatingActionButtonTheme;
+        expect([
+          fab.elevation,
+          fab.focusElevation,
+          fab.hoverElevation,
+          fab.highlightElevation,
+          fab.disabledElevation,
+        ], everyElement(0));
       });
 
       test('pads every tap target to 48', () {

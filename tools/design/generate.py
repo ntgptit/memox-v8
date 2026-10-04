@@ -73,6 +73,9 @@ class Design:
     extensions: dict
 
 
+THEME_INVARIANT = ("primary",)
+
+
 def camel(kebab: str) -> str:
     head, *rest = kebab.split("-")
     return head + "".join(part[:1].upper() + part[1:] for part in rest)
@@ -233,6 +236,11 @@ def validate(design: Design) -> list[str]:
     for role in M3_ROLES:
         if role not in colors:
             errors.append(f"Material 3 role `{role}` is missing")
+    # The brand action colour does not shift with the theme (owner, 2026-10-04).
+    for role in THEME_INVARIANT:
+        light, dark = colors.get(role), colors.get(role + DARK)
+        if light and dark and light.upper() != dark.upper():
+            errors.append(f"`{role}` is {light} in light but {dark} in dark; it is one colour in both themes")
 
     families: dict[str, list[str]] = design.extensions.get("semanticExtensions") or {}
     members = {member for family in families.values() for member in family}

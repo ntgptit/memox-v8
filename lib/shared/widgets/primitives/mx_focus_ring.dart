@@ -63,7 +63,7 @@ class _MxFocusRingState extends State<MxFocusRing> {
       child: CustomPaint(
         foregroundPainter: isVisible
             ? _RingPainter(
-                color: context.colors.primary,
+                color: context.colors.onPrimaryContainer,
                 borderRadius: widget.borderRadius,
                 paintedHeight: widget.paintedHeight,
               )

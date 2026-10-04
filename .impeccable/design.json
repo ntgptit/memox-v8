@@ -73,18 +73,6 @@
           "blur": 40,
           "alpha": 0.42
         }
-      },
-      "fab": {
-        "light": {
-          "dy": 8,
-          "blur": 24,
-          "alpha": 0.12
-        },
-        "dark": {
-          "dy": 10,
-          "blur": 28,
-          "alpha": 0.5
-        }
       }
     },
     "motion": {
@@ -190,30 +178,6 @@
         "use": "secondary text"
       },
       {
-        "fg": "primary",
-        "bg": "surface",
-        "min": 4.5,
-        "use": "primary text, icon, link and focus ring"
-      },
-      {
-        "fg": "primary",
-        "bg": "surface-container-lowest",
-        "min": 4.5,
-        "use": "primary text, icon, link and focus ring"
-      },
-      {
-        "fg": "primary",
-        "bg": "surface-container-low",
-        "min": 4.5,
-        "use": "primary text, icon, link and focus ring"
-      },
-      {
-        "fg": "primary",
-        "bg": "surface-container-high",
-        "min": 4.5,
-        "use": "primary text, icon, link and focus ring"
-      },
-      {
         "fg": "error",
         "bg": "surface",
         "min": 4.5,
@@ -380,6 +344,36 @@
         "bg": "surface-container-high",
         "min": 4.5,
         "use": "status label"
+      },
+      {
+        "fg": "on-primary-container",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "the indigo foreground: accent text, links, icons, the focus ring, the focused field edge, the radio and the cursor"
+      },
+      {
+        "fg": "on-primary-container",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "the indigo foreground: accent text, links, icons, the focus ring, the focused field edge, the radio and the cursor"
+      },
+      {
+        "fg": "on-primary-container",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "the indigo foreground: accent text, links, icons, the focus ring, the focused field edge, the radio and the cursor"
+      },
+      {
+        "fg": "on-primary-container",
+        "bg": "surface-container",
+        "min": 4.5,
+        "use": "the indigo foreground: accent text, links, icons, the focus ring, the focused field edge, the radio and the cursor"
+      },
+      {
+        "fg": "on-primary-container",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "the indigo foreground: accent text, links, icons, the focus ring, the focused field edge, the radio and the cursor"
       },
       {
         "fg": "on-primary",
@@ -733,7 +727,7 @@
       "refersTo": "button-primary",
       "description": "The one indigo action per decision. 48 tall, r12; pressed overlay 12%; disabled 0.38 opacity.",
       "html": "<button class=\"ds-btn-primary\">Start session</button>",
-      "css": ".ds-btn-primary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:var(--color-primary);color:var(--color-on-primary);} .ds-btn-primary:active{filter:brightness(0.88)} .ds-btn-primary:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}"
+      "css": ".ds-btn-primary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:var(--color-primary);color:var(--color-on-primary);} .ds-btn-primary:active{filter:brightness(0.88)} .ds-btn-primary:focus-visible{outline:2px solid var(--color-on-primary-container);outline-offset:2px}"
     },
     {
       "name": "Secondary Button",
@@ -741,7 +735,7 @@
       "refersTo": "button-secondary",
       "description": "Quiet alternative on a container fill.",
       "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
-      "css": ".ds-btn-secondary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:var(--color-surface-container);color:var(--color-on-surface);} .ds-btn-secondary:active{filter:brightness(0.88)} .ds-btn-secondary:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}"
+      "css": ".ds-btn-secondary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:var(--color-surface-container);color:var(--color-on-surface);} .ds-btn-secondary:active{filter:brightness(0.88)} .ds-btn-secondary:focus-visible{outline:2px solid var(--color-on-primary-container);outline-offset:2px}"
     },
     {
       "name": "Outline Button",
@@ -749,7 +743,7 @@
       "refersTo": "button-outline",
       "description": "Ghost action in primary ink with a 1px outlineEdge: outline-variant in light, outline pulled 25% toward on-surface in dark (critique 2026-09-30 part 1).",
       "html": "<button class=\"ds-btn-outline\">Edit deck</button>",
-      "css": ".ds-btn-outline{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:transparent;color:var(--color-primary);box-shadow:inset 0 0 0 1px var(--color-outline-variant);} .ds-btn-outline:active{filter:brightness(0.88)} .ds-btn-outline:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}"
+      "css": ".ds-btn-outline{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:transparent;color:var(--color-on-primary-container);box-shadow:inset 0 0 0 1px var(--color-outline-variant);} .ds-btn-outline:active{filter:brightness(0.88)} .ds-btn-outline:focus-visible{outline:2px solid var(--color-on-primary-container);outline-offset:2px}"
     },
     {
       "name": "Destructive Button",
@@ -757,7 +751,7 @@
       "refersTo": "button-destructive",
       "description": "Solid destructive fill, used only to confirm a destructive dialog.",
       "html": "<button class=\"ds-btn-danger\">Delete</button>",
-      "css": ".ds-btn-danger{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:var(--color-error);color:var(--color-on-primary);} .ds-btn-danger:active{filter:brightness(0.88)} .ds-btn-danger:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}"
+      "css": ".ds-btn-danger{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:var(--color-error);color:var(--color-on-primary);} .ds-btn-danger:active{filter:brightness(0.88)} .ds-btn-danger:focus-visible{outline:2px solid var(--color-on-primary-container);outline-offset:2px}"
     },
     {
       "name": "Text Field",
@@ -765,7 +759,7 @@
       "refersTo": "text-field",
       "description": "52 tall, muted fill that lightens on focus, ghost edge, primary-ink edge on focus, error edge with a message below.",
       "html": "<input class=\"ds-input\" placeholder=\"Term\">",
-      "css": ".ds-input{box-sizing:border-box;height:52px;padding:0 12px;width:260px;font:400 14px \"Plus Jakarta Sans\",sans-serif;color:var(--color-on-surface);background:var(--color-surface-container-low);border:1px solid var(--color-outline-variant);border-radius:12px;outline:none} .ds-input::placeholder{color:var(--color-on-surface-variant)} .ds-input:focus-visible{background:var(--color-on-primary);border-color:var(--color-primary)}"
+      "css": ".ds-input{box-sizing:border-box;height:52px;padding:0 12px;width:260px;font:400 14px \"Plus Jakarta Sans\",sans-serif;color:var(--color-on-surface);background:var(--color-surface-container-low);border:1px solid var(--color-outline);border-radius:12px;outline:none} .ds-input::placeholder{color:var(--color-on-surface-variant)} .ds-input:focus-visible{background:var(--color-surface-container-lowest);border-color:var(--color-on-primary-container)}"
     },
     {
       "name": "Card",
@@ -787,9 +781,9 @@
       "name": "Floating Action Button",
       "kind": "custom",
       "refersTo": "fab",
-      "description": "Square 52, r16, icon only, fab shadow.",
+      "description": "Square 52, r16, icon only, no shadow in any state.",
       "html": "<button class=\"ds-fab\" aria-label=\"Add\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-on-primary)\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></button>",
-      "css": ".ds-fab{width:52px;height:52px;border:0;border-radius:16px;background:var(--color-primary);box-shadow:0 8px 24px color-mix(in srgb, var(--color-shadow) 12%, transparent);display:grid;place-items:center} .ds-fab:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}"
+      "css": ".ds-fab{width:52px;height:52px;border:0;border-radius:16px;background:var(--color-primary);box-shadow:none;display:grid;place-items:center} .ds-fab:focus-visible{outline:2px solid var(--color-on-primary-container);outline-offset:2px}"
     }
   ],
   "narrative": {

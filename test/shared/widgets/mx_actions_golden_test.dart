@@ -36,18 +36,34 @@ void main() {
         ),
       );
     });
-    testWidgets('mx_fab resting $variant', (tester) async {
+    testWidgets('mx_fab states $variant', (tester) async {
+      final FocusNode focus = FocusNode();
+      addTearDown(focus.dispose);
       await expectMxGolden(
         tester,
         component: 'fab',
-        state: 'resting',
+        state: 'states',
         variant: variant,
+        focus: focus,
+        // Resting, then focused: flat in both, the ring tells focus.
         sheet: Padding(
           padding: const EdgeInsets.all(16),
-          child: MxFab(
-            icon: Icons.add,
-            semanticLabel: 'New deck',
-            onPressed: () {},
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 32,
+            children: [
+              MxFab(
+                icon: Icons.add,
+                semanticLabel: 'New deck',
+                onPressed: () {},
+              ),
+              MxFab(
+                icon: Icons.add,
+                semanticLabel: 'New deck',
+                onPressed: () {},
+                focusNode: focus,
+              ),
+            ],
           ),
         ),
       );

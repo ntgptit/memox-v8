@@ -53,4 +53,16 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
     expect(still.turns.value, at);
   });
+
+  for (final MapEntry(key: name, value: theme) in mxThemes.entries) {
+    testWidgets('$name: on its own it turns in the Indigo Accent', (
+      tester,
+    ) async {
+      await pumpMx(tester, const MxSpinner(), theme: theme);
+      expect(
+        find.byType(MxSpinner),
+        paints..arc(color: theme.colorScheme.onPrimaryContainer),
+      );
+    });
+  }
 }

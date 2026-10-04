@@ -20,6 +20,7 @@ def colors() -> dict[str, str]:
     for role in [*g.M3_ROLES, "success", "on-success"]:
         values[role] = "#FFFFFF"
         values[role + "-dark"] = "#000000"
+    values["primary-dark"] = values["primary"]
     return values
 
 
@@ -103,6 +104,12 @@ class ValidateTest(unittest.TestCase):
         self.assertTrue(has(errors, "`primary-ink` is an ink role"))
         self.assertTrue(has(errors, "member `warningInk` is an ink role"))
 
+    def test_primary_is_one_colour_in_both_themes(self):
+        values = colors()
+        values["primary-dark"] = "#AAB4FF"
+        errors = g.validate(design(colors=values))
+        self.assertTrue(has(errors, "`primary` is #FFFFFF in light but #AAB4FF in dark"))
+
     def test_link_is_not_an_ink_role(self):
         self.assertIsNone(g.INK.search("link"))
         self.assertIsNone(g.INK.search("inkwell"))
@@ -128,16 +135,16 @@ class ValidateTest(unittest.TestCase):
 
     def test_a_contrast_pair_below_its_floor_fails_naming_the_theme(self):
         ext = extensions()
-        ext["contrastPairs"] = [{"fg": "on-primary", "bg": "primary", "min": 4.5}]
+        ext["contrastPairs"] = [{"fg": "on-secondary", "bg": "secondary", "min": 4.5}]
         errors = g.validate(design(extensions=ext))
-        self.assertTrue(has(errors, "`on-primary` on `primary` is 1.00:1 in light"))
+        self.assertTrue(has(errors, "`on-secondary` on `secondary` is 1.00:1 in light"))
         self.assertTrue(has(errors, "in dark"))
 
     def test_a_contrast_pair_that_passes_in_both_themes(self):
         values = colors()
-        values["on-primary"], values["on-primary-dark"] = "#000000", "#FFFFFF"
+        values["on-secondary"], values["on-secondary-dark"] = "#000000", "#FFFFFF"
         ext = extensions()
-        ext["contrastPairs"] = [{"fg": "on-primary", "bg": "primary", "min": 4.5}]
+        ext["contrastPairs"] = [{"fg": "on-secondary", "bg": "secondary", "min": 4.5}]
         self.assertEqual(g.validate(design(colors=values, extensions=ext)), [])
 
     def test_a_contrast_pair_naming_an_unknown_colour_fails(self):

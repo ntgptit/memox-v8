@@ -12,7 +12,7 @@ void main() {
     final ColorScheme s = theme.colorScheme;
     final Map<MxIconButtonTone, Color> inks = {
       MxIconButtonTone.standard: s.onSurfaceVariant,
-      MxIconButtonTone.accent: s.primary,
+      MxIconButtonTone.accent: s.onPrimaryContainer,
       MxIconButtonTone.destructive: s.error,
     };
     for (final MapEntry(key: tone, value: ink) in inks.entries) {

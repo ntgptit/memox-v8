@@ -32,8 +32,7 @@ Color mxFieldFill(ColorScheme colors, Set<WidgetState> states) =>
     ? colors.surfaceContainerLowest
     : colors.surfaceContainerLow;
 
-/// The field's edge, by state: `outline-variant`, `primary` on focus,
-/// `error` while the field holds an error.
+/// One edge of a field (DESIGN.md, The One Field Rule).
 InputBorder mxFieldBorder({
   required Color color,
   required double radius,
@@ -45,7 +44,23 @@ InputBorder mxFieldBorder({
   );
 }
 
-/// The decoration `AppTheme` installs and every variant starts from.
+/// No edge, at the field's radius, so a read-only field keeps its shape.
+InputBorder _noEdge(double radius) => OutlineInputBorder(
+  borderRadius: BorderRadius.circular(radius),
+  borderSide: BorderSide.none,
+);
+
+/// The 2dp focus edge: the Indigo Accent, or `error` while the field holds
+/// an error. `primary` is a fill and never draws an edge on a surface.
+InputBorder _focusEdge(ColorScheme colors, double radius, bool hasError) =>
+    mxFieldBorder(
+      color: hasError ? colors.error : colors.onPrimaryContainer,
+      radius: radius,
+      width: AppStroke.control,
+    );
+
+/// The decoration `AppTheme` installs, so a raw field cannot drift from the
+/// form variant of `MxTextField`.
 InputDecorationThemeData mxInputDecorationTheme({
   required ColorScheme colors,
   required TextTheme texts,
@@ -57,26 +72,71 @@ InputDecorationThemeData mxInputDecorationTheme({
     ),
     hintStyle: texts.bodyMedium?.apply(color: colors.onSurfaceVariant),
     contentPadding: mxFieldPadding(texts.bodyMedium, AppSize.field),
-    enabledBorder: mxFieldBorder(
-      color: colors.outlineVariant,
-      radius: AppRadius.md,
-    ),
-    focusedBorder: mxFieldBorder(
-      color: colors.primary,
-      radius: AppRadius.md,
-      width: AppStroke.control,
-    ),
+    enabledBorder: mxFieldBorder(color: colors.outline, radius: AppRadius.md),
+    focusedBorder: _focusEdge(colors, AppRadius.md, false),
     errorBorder: mxFieldBorder(color: colors.error, radius: AppRadius.md),
-    focusedErrorBorder: mxFieldBorder(
-      color: colors.error,
-      radius: AppRadius.md,
-      width: AppStroke.control,
-    ),
+    focusedErrorBorder: _focusEdge(colors, AppRadius.md, true),
     disabledBorder: mxFieldBorder(
       color: colors.outlineVariant,
       radius: AppRadius.md,
     ),
-    border: mxFieldBorder(color: colors.outlineVariant, radius: AppRadius.md),
+    border: mxFieldBorder(color: colors.outline, radius: AppRadius.md),
+  );
+}
+
+/// Everything a field paints, for every variant and state (DESIGN.md, The
+/// One Field Rule): fill, edges, padding and the glyph slots. `MxTextField`
+/// and the search trigger both draw with it.
+InputDecoration mxFieldDecoration({
+  required ColorScheme colors,
+  required TextTheme texts,
+  required MxTextFieldVariant variant,
+  String? hint,
+  bool hasError = false,
+  bool isReadOnly = false,
+  Widget? prefixIcon,
+  Widget? suffixIcon,
+}) {
+  if (variant == MxTextFieldVariant.study) {
+    return InputDecoration(
+      hintText: hint,
+      filled: false,
+      border: InputBorder.none,
+      enabledBorder: InputBorder.none,
+      focusedBorder: InputBorder.none,
+      disabledBorder: InputBorder.none,
+      isCollapsed: true,
+    );
+  }
+  final double radius = mxFieldRadius(variant);
+  final InputBorder resting = isReadOnly
+      ? _noEdge(radius)
+      : mxFieldBorder(
+          color: hasError ? colors.error : colors.outline,
+          radius: radius,
+        );
+  final BoxConstraints glyphBox = const BoxConstraints(
+    minWidth: AppSize.tapTarget,
+    minHeight: AppSize.tapTarget,
+  );
+  return InputDecoration(
+    hintText: hint,
+    filled: true,
+    fillColor: isReadOnly
+        ? colors.surfaceContainer
+        : WidgetStateColor.resolveWith((states) => mxFieldFill(colors, states)),
+    contentPadding: mxFieldPadding(
+      mxFieldTextStyle(texts, variant),
+      mxFieldMinHeight(variant),
+    ),
+    prefixIcon: prefixIcon,
+    prefixIconConstraints: glyphBox,
+    suffixIcon: suffixIcon,
+    suffixIconConstraints: glyphBox,
+    border: resting,
+    enabledBorder: resting,
+    focusedBorder: _focusEdge(colors, radius, hasError),
+    disabledBorder: mxFieldBorder(color: colors.outlineVariant, radius: radius),
   );
 }
 
@@ -121,9 +181,9 @@ double mxFieldMinHeight(MxTextFieldVariant variant) => switch (variant) {
 /// Typography › Field Label).
 TextStyle? mxFieldLabelStyle(TextTheme texts) => texts.titleSmall;
 
-/// The weight a "Required" mark keeps, smaller and in `primary`.
+/// The "Required" mark: the caption's size, 600, in the Indigo Accent.
 TextStyle? mxRequiredStyle(TextTheme texts, ColorScheme colors) =>
     AppTypography.withWeight(
-      texts.bodySmall!.apply(color: colors.primary),
+      texts.bodySmall!.apply(color: colors.onPrimaryContainer),
       FontWeight.w600,
     );

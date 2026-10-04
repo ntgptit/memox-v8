@@ -3,21 +3,21 @@ name: MemoX V8
 description: A quiet, focused study space for spaced-repetition flashcards, in two themes, Tokyo Pure Light and Tokyo Nebula.
 colors:
   primary: "#4151C6"
-  primary-dark: "#AAB4FF"
+  primary-dark: "#4151C6"
   on-primary: "#FFFFFF"
-  on-primary-dark: "#141C66"
-  primary-container: "#E0E5FE"
-  primary-container-dark: "#2D346A"
-  on-primary-container: "#1A2580"
-  on-primary-container-dark: "#D9DFFF"
-  primary-fixed: "#E0E5FE"
-  primary-fixed-dark: "#E0E5FE"
-  primary-fixed-dim: "#BAC3FF"
-  primary-fixed-dim-dark: "#BAC3FF"
-  on-primary-fixed: "#0B1366"
-  on-primary-fixed-dark: "#0B1366"
-  on-primary-fixed-variant: "#2D3A9E"
-  on-primary-fixed-variant-dark: "#2D3A9E"
+  on-primary-dark: "#FFFFFF"
+  primary-container: "#E2E5F6"
+  primary-container-dark: "#242D6D"
+  on-primary-container: "#2A3581"
+  on-primary-container-dark: "#E2E5F6"
+  primary-fixed: "#D0D4F1"
+  primary-fixed-dark: "#D0D4F1"
+  primary-fixed-dim: "#AAB1E5"
+  primary-fixed-dim-dark: "#AAB1E5"
+  on-primary-fixed: "#101432"
+  on-primary-fixed-dark: "#101432"
+  on-primary-fixed-variant: "#2A3581"
+  on-primary-fixed-variant-dark: "#2A3581"
   secondary: "#5560B8"
   secondary-dark: "#9DA8E8"
   on-secondary: "#FFFFFF"
@@ -90,8 +90,8 @@ colors:
   inverse-surface-dark: "#34395D"
   on-inverse-surface: "#E8EAFC"
   on-inverse-surface-dark: "#E8EAFC"
-  inverse-primary: "#AAB4FF"
-  inverse-primary-dark: "#AAB4FF"
+  inverse-primary: "#AAB1E5"
+  inverse-primary-dark: "#AAB1E5"
   success: "#176B57"
   success-dark: "#5FD3B4"
   on-success: "#FFFFFF"
@@ -122,7 +122,7 @@ colors:
   on-status-learning-container-dark: "#F2E7B5"
   status-reviewing: "#33658F"
   status-reviewing-dark: "#93BCE0"
-  status-reviewing-container: "#D5E9F0"
+  status-reviewing-container: "#D3EAF0"
   status-reviewing-container-dark: "#1D3A52"
   on-status-reviewing-container: "#12324E"
   on-status-reviewing-container-dark: "#D2E5F4"
@@ -220,13 +220,13 @@ components:
     height: "48px"
     padding: "0 16px"
   button-outline:
-    textColor: "{colors.primary}"
+    textColor: "{colors.on-primary-container}"
     typography: "{typography.button-label}"
     rounded: "{rounded.md}"
     height: "48px"
     padding: "0 16px"
   button-text:
-    textColor: "{colors.primary}"
+    textColor: "{colors.on-primary-container}"
     typography: "{typography.button-label}"
     rounded: "{rounded.md}"
     height: "48px"
@@ -319,13 +319,14 @@ A cool indigo-tinted neutral field with one brand indigo, one reserved violet, a
 
 ### The model
 - Material 3 roles keep their meaning. A role is text or a glyph on a surface wherever it holds its floor on that surface; the generator proves each declared pair.
-- Content on a coloured surface uses the role's pair: `X` → `on-X`, `X-container` → `on-X-container`. `on-X` is never a text colour on a plain surface.
+- Content on a coloured surface uses the role's pair: `X` → `on-X`, `X-container` → `on-X-container`. `on-X` is never a text colour on a plain surface, with one declared exception: `on-primary-container` is the Indigo Accent (below).
 - MemoX adds semantic extensions on the same model, with only the members a consumer uses. There is no separate ink palette and no colour derived at paint time.
 
 ### Primary
-- **Brand Indigo** (`primary`, #4151C6; dark #AAB4FF): the fill of primary buttons, the FAB, the selected filter chip and progress fills, under `on-primary`; and indigo text, links, icons and the 2dp focus ring on any surface.
-- **Indigo Wash** (`primary-container`, `on-primary-container`): quiet selected and informational grounds.
-- **Fixed tones** (`primary-fixed`, `primary-fixed-dim`, `on-primary-fixed`, `on-primary-fixed-variant`, and the same for secondary and tertiary): identical in both themes, for a surface that must not follow the theme.
+- **Brand Indigo** (`primary`, #4151C6 in **both** themes): the brand action fill. Primary buttons, the FAB, the toggle's on track, a checked checkbox, the selected filter chip and progress fills, always under `on-primary` (#FFFFFF, 6.53:1). `primary` is a fill, not a foreground: it is never small text, and never an icon, edge or ring on a surface (on the dark page it holds only 2.91:1). A fill is named by its `on-primary` content, so the fill's own edge against the page is not a contrast pair.
+- **Indigo Accent** (`on-primary-container`: light #2A3581, dark #E2E5F6): the indigo foreground on a surface. Accent text and links, the text and outline buttons' labels, the "Required" mark, accent icons, the spinner, the selected radio, the focused field edge, the text cursor and the 2dp focus ring. It holds 4.5:1 on `surface` and every container up to `surface-container-high` in both themes (light 8.81–10.91:1, dark 9.11–15.18:1), and it is also the content on `primary-container`.
+- **Indigo Wash** (`primary-container`: light #E2E5F6, dark #242D6D): quiet selected and informational grounds, under `on-primary-container` (light 8.71:1, dark 10.04:1), and the text selection.
+- **Fixed tones** (`primary-fixed` #D0D4F1, `primary-fixed-dim` #AAB1E5, `on-primary-fixed` #101432, `on-primary-fixed-variant` #2A3581, and the same for secondary and tertiary): identical in both themes, for a surface that must not follow the theme. They are never a stand-in for a theme-specific primary.
 
 ### Secondary
 - **Soft Periwinkle** (`secondary`, `secondary-container`): supporting tonal role; rarely painted directly.
@@ -352,7 +353,7 @@ A cool indigo-tinted neutral field with one brand indigo, one reserved violet, a
 - **Streak** (`streak`): the Progress flame only; a fill, with no text counterpart.
 
 ### Named Rules
-**The One Indigo Rule.** Indigo means "act". `primary` is the one action indigo; every other indigo-family role (`primary-container`, `status-reviewing`) is a deliberate, quieter tone of the same family, never the same value. A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8).
+**The One Indigo Rule.** Indigo means "act". `primary` is the one action indigo, and it is one colour: `primary` and `primary-dark` are both #4151C6. The theme never tonal-shifts it; the generator fails when the two values differ, and a test pins both schemes to #4151C6. No component, extension or `*-ink` role overrides it for dark; where a foreground needs indigo it uses the Indigo Accent; every other indigo-family role (`primary-container`, `status-reviewing`) is a deliberate, quieter tone of the same family, never the same value. A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8).
 
 **The Green Means Progress Rule.** Green is `status-mastered` or `success` and nothing else. Violet is never a status; green is never decoration.
 
@@ -377,7 +378,7 @@ A cool indigo-tinted neutral field with one brand indigo, one reserved violet, a
 - **Button Label** (600, 14px, 1.5, 0.1px): component override of Body; compact and chip buttons use the small label.
 - **Section Label** (700, 13px, 0.6px, tabular, upper-cased by the widget): the overline that introduces a list or settings group, and nothing else.
 - **Eyebrow** (600, 12px, 0.8px, tabular, `on-surface-variant`): the context line above a big title or number; the app's own words upper-cased, user data as typed (critique 2026-09-30 part 2).
-- **Field Label** (600, 14px, `on-surface`, sentence case): names an input or a read-only field; "Required" is the optional caption's size in `primary`.
+- **Field Label** (600, 14px, `on-surface`, sentence case): names an input or a read-only field; "Required" is the optional caption's size in `on-primary-container`.
 
 Component styles (row title, field term, study term, banner title) override the nearest role inside that component; they never add a global style.
 
@@ -429,13 +430,12 @@ Touch targets are 48dp minimum for every interactive control, whatever the paint
 
 ## Elevation & Depth
 
-Hybrid, tonal first. Depth is conveyed by stepping through the surface-container ramp and a 1px `outline-variant` hairline; shadows are neutral (built on the scheme's `shadow` role, never brand-tinted) and appear only on cards, dialogs, sheets and the FAB. Dark has almost no shadow on cards and draws the hairline instead.
+Hybrid, tonal first. Depth is conveyed by stepping through the surface-container ramp and a 1px `outline-variant` hairline; shadows are neutral (built on the scheme's `shadow` role, never brand-tinted) and appear only on cards, dialogs and sheets. The FAB casts none. Dark has almost no shadow on cards and draws the hairline instead.
 
 ### Shadow Vocabulary
 - **Whisper** (`0 1px 2px` at 4%, light only): Card and toggle thumb. Dark: none, the `outline-variant` hairline instead.
 - **Chrome** (`0 -2px 12px` at 5% light, `0 -2px 14px` at 36% dark): bottom sheet and bottom chrome, cast upward.
 - **Overlay** (`0 12px 32px` at 10% light, `0 16px 40px` at 42% dark): dialogs.
-- **FAB** (`0 8px 24px` at 12% light, `0 10px 28px` at 50% dark): the floating action.
 - **Scrim** (scheme `scrim` at 45%): behind every dialog and sheet. The bottom bar is translucent glass (surface at 84% with an 18 blur).
 
 ### Named Rules
@@ -450,8 +450,8 @@ One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, not
 Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` by SP3a); they hold no copy (callers pass localized strings) and read colour only from the theme.
 
 ### Actions
-- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, `primary` text: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in `primary`. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outline`.
-- **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area. **MxFab**: square 52, r16, icon only, no extended form.
+- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, `on-primary-container` label: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in `on-primary-container`. The outline tone's label is `on-primary-container` too. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outline`.
+- **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area. **MxFab**: square 52, r16, icon only, no extended form, `primary` under `on-primary` in both themes, and **no shadow and no elevation in any state** (resting, pressed, focused, disabled); it stands out by its fill, its shape, its size and its place, and pressed and focused show as the state layer and the focus ring.
 - **MxActionPair** (two footer actions, side by side or stacked when labels do not fit) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
 
 ### Containers
@@ -459,8 +459,26 @@ Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` b
 - **MxDialog** (widths 340, 320, 300; scale-in), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **DeckPickerSheet**, **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption at `AppOpacity.muted`).
 
 ### Inputs
-- **MxTextField**: variants form (52, muted fill that lightens on focus), detail (grows from 48), meaning (16/500, grows from 76, r20), term (24/700, r20), code (one centred line of six digits on the form fill, headline role with tabular figures and wide tracking, numeric keyboard and one-time-code autofill) and study (bare). `outline-variant` edge, `primary` edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
+- **MxTextField**: the one text input; its contract is under **The One Field Rule** below. Variants form (52, muted fill that lightens on focus), detail (grows from 48), meaning (16/500, grows from 76, r20), term (24/700, r20), code (one centred line of six digits on the form fill, headline role with tabular figures and wide tracking, numeric keyboard and one-time-code autofill) and study (bare). A 1dp `outline` edge at rest (3:1), a 2dp `on-primary-container` edge on focus, the `error` edge plus **MxFieldMessage** (error or warning) below.
 - **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills `primary` under `on-primary`), **MxChipTrigger** (ghost chip that opens a menu).
+
+**The One Field Rule.** Every text input in the app is an `MxTextField`, or a component that composes one (`MxSearchField`; a feature field such as a deck-name field may add behaviour, never its own look). `TextField` and `TextFormField` are built only inside `lib/shared/widgets/mx_text_field.dart`, and the guard (`memox_v8.design_system.no_raw_text_field`) fails on any other instance. A feature never passes a colour, text style, padding, radius, border or focus colour: `MxTextField`'s constructor takes only meaning (variant, copy, the message and its tone, enabled, read-only, a leading icon, one trailing action) and input behaviour (controller, focus, keyboard, input action, obscured, callbacks). A new need extends this contract after review, never a local style. The contract, for every variant but the bare study field:
+
+| Aspect | Rule |
+|---|---|
+| Height | form and code 52, detail 48, meaning 76; each is a minimum, the field grows with its text and the text scale, and a growing field keeps its text at the top |
+| Padding | 16 across (`AppSpacing.grouped`); vertical padding sets one line to the minimum height |
+| Radius | 12; meaning and term 20 |
+| Fill | `surface-container-low` at rest, `surface-container-lowest` with focus, `surface-container` when read-only |
+| Edge | 1dp `outline` at rest; 2dp `on-primary-container` with focus; 1dp `error` holding an error, 2dp with focus; `outline-variant` when disabled; none when read-only, 2dp `on-primary-container` with focus |
+| Type | typed text `bodyMedium` (meaning `bodyLarge`, term and code `headlineLarge`) in `on-surface`; hint in `on-surface-variant`; label above in Field Label; "Required" in `on-primary-container` |
+| Message | one `MxFieldMessage` line under the field: error or warning, glyph plus words |
+| Leading icon | 20 glyph in `on-surface-variant`, centred in a 48 box |
+| Trailing action | one `MxIconButton` (36 painted, 48 hit), named by its label |
+| Disabled | the whole field (label, field, message) at `AppOpacity.disabled`; not focusable, the text cannot be selected; announced as disabled |
+| Read-only | full-contrast text on `surface-container`, no edge and no cursor; focusable, the text can be selected and copied; announced as read-only; shows the focus edge |
+| Touch | the field is at least 48 tall; the trailing action keeps its 48 hit |
+| Hover | none (Android only) |
 
 ### Navigation
 - **MxAppBar** (56, content or screen density; a bar without a leading control starts its title on the gutter, in line with the body, critique 2026-09-30 part 3c-1; a form's single save lives in its footer, never also in the bar), **StudyTopBar** (close, mode badge, thin progress, Indigo in every mode; the session context line under it names deck, kind, stage and round in two lines at most, never the mode again; critique 2026-09-30 part 3c-2), **MxBottomNav** (glass bar, outlined resting glyph, filled selected glyph, tinted pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation), **MxScreenScaffold** and **MxScreenScroll** (tail clearance for FAB and nav).
@@ -567,7 +585,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Variants: listens to the focus inside it, or is driven by `isShown`
 - States: hidden, shown (keyboard highlight only)
 - Accessibility: the visible focus of every Mx control; never shown after a tap
-- Tokens: `primary`, `AppStroke.focus`, `AppSize.focusOffset`
+- Tokens: `on-primary-container` (the Indigo Accent), `AppStroke.focus`, `AppSize.focusOffset`
 - Golden: none — a ring around another component, covered by that component's tests
 
 #### MxTapTarget
@@ -578,32 +596,32 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Golden: none — paints nothing
 
 #### MxSpinner
-- Variants: sizes small, medium, large, xlarge; tones primary, inherit
+- Variants: sizes small, medium, large, xlarge; tones accent (`on-primary-container`), inherit (the content colour of the control it sits in)
 - States: turning, still (reduced motion)
 - Accessibility: a live region named by `semanticLabel`; silent inside a control that already names the wait
-- Tokens: `primary`; `AppStroke.control`; `AppDurations.spinnerCycle`; `AppSize.spinner*`
+- Tokens: `on-primary-container`; `AppStroke.control`; `AppDurations.spinnerCycle`; `AppSize.spinner*`
 - Golden: sizes__light, sizes__dark
 
 #### MxButton
 - Variants: tones primary, secondary, outline, text, destructive, dangerSoft, warning; sizes regular, small, compact, chip, study; optional icon, brand mark, detail line
 - States: enabled, pressed, focused, disabled (`AppOpacity.disabled`), loading
 - Accessibility: a button named by its label; disabled announced; loading keeps the label and blocks taps; 48 hit at every size; the brand mark is never read
-- Tokens: `primary`, `on-primary`, `surface-container`, `on-surface`, `outline`, `error`, `on-error`, `error-container`, `on-error-container`, `warning`, `on-warning`; `labelLarge` (`labelSmall` for compact and chip); `AppRadius.md` / `sm` / `full`; `AppSize.button*`
+- Tokens: `primary`, `on-primary` (primary fill), `on-primary-container` (outline and text labels, focus ring), `surface-container`, `on-surface`, `outline`, `error`, `on-error`, `error-container`, `on-error-container`, `warning`, `on-warning`; `labelLarge` (`labelSmall` for compact and chip); `AppRadius.md` / `sm` / `full`; `AppSize.button*`
 - Golden: tones__light, tones__dark, sizes__light, sizes__dark, states__light, states__dark
 
 #### MxIconButton
 - Variants: standard, accent, destructive
 - States: enabled, pressed, focused, disabled
 - Accessibility: `semanticLabel` is required, read aloud and shown as the tooltip; 36 painted, 48 hit
-- Tokens: `on-surface-variant`, `primary`, `error`; `AppIconSize.medium`; `AppSize.iconButton`
+- Tokens: `on-surface-variant`, `on-primary-container` (accent), `error`; `AppIconSize.medium`; `AppSize.iconButton`
 - Golden: tones__light, tones__dark
 
 #### MxFab
 - Variants: one; icon only, no extended form
-- States: resting, pressed, focused
+- States: resting, pressed (state layer), focused (focus ring); elevation 0 and no shadow in every state, including the theme slot's focus, hover, highlight and disabled elevations
 - Accessibility: `semanticLabel` is required; 52 square
-- Tokens: `primary`, `on-primary`, `shadow`; `AppShadows.fab*`; `AppRadius.lg`; `AppSize.fab`
-- Golden: resting__light, resting__dark
+- Tokens: `primary`, `on-primary` (both themes); `on-primary-container` (focus ring); `AppRadius.lg`; `AppSize.fab`
+- Golden: states__light, states__dark
 
 #### MxFieldMessage
 - Variants: error, warning
@@ -614,44 +632,44 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 
 #### MxTextField
 - Variants: form, detail, meaning, term, code, study
-- States: resting, focused, error, warning, disabled; with a label and a "Required" mark
-- Accessibility: the field label sits above the field; the message is announced; code takes digits only and offers one-time-code autofill; a painted height of 52 (form), 48 (detail) or 76 (meaning) that grows with text
-- Tokens: `surface-container-low` (focused `surface-container-lowest`), `outline-variant`, `primary`, `error`; `bodyMedium`, `bodyLarge`, `headlineLarge`, `titleSmall`; `AppRadius.md` / `xl`; `AppSize.field*`
+- States: resting, focused, error, warning, disabled, read-only; with a label and a "Required" mark; optional leading icon and one trailing action (The One Field Rule)
+- Accessibility: the field label sits above the field; the message is announced; disabled and read-only are announced as such and are two states (disabled dims and cannot be focused; read-only keeps full contrast and can be focused and copied); code takes digits only and offers one-time-code autofill; a painted height of 52 (form), 48 (detail) or 76 (meaning) that grows with text and the text scale, its text at the top
+- Tokens: `surface-container-low` (focused `surface-container-lowest`, read-only `surface-container`), `outline` (disabled `outline-variant`), `on-primary-container` (focus edge, "Required", cursor), `error`, `on-surface`, `on-surface-variant`; `bodyMedium`, `bodyLarge`, `headlineLarge`, `titleSmall`; `AppRadius.md` / `xl`; `AppSize.field*`; `AppOpacity.disabled`
 - Golden: variants__light, variants__dark, states__light, states__dark
 
 #### MxSearchField
-- Variants: input (with a clear button), trigger (opens the search screen)
+- Variants: input (an `MxTextField` with the search glyph and a clear action), trigger (opens the search screen; drawn by the same field decoration, so it never drifts from the input)
 - States: empty, typed, trigger
 - Accessibility: the clear button is named by `clearLabel`; the trigger is a button named by its hint; the trigger's hint starts where typed text starts
-- Tokens: `surface-container-low`, `outline-variant`, `on-surface-variant`; `bodyMedium`; `AppIconSize.medium`; `AppSize.field`
+- Tokens: through `MxTextField`; `AppIconSize.medium`
 - Golden: modes__light, modes__dark
 
 #### MxToggle
 - Variants: one
 - States: on, off, disabled on, disabled off, focused
 - Accessibility: announced as toggled; Space and Enter switch it; 44 × 26 painted inside a 48 hit
-- Tokens: `primary`, `on-primary`, `surface-container-highest`, `outline`, `shadow`; `AppShadows.whisper*`; `AppSize.toggle*`; `AppDurations.toggle`
+- Tokens: `primary` (on track, a fill), `on-primary` (thumb when on), `surface-container-highest`, `outline`, `on-primary-container` (focus ring), `shadow`; `AppShadows.whisper*`; `AppSize.toggle*`; `AppDurations.toggle`
 - Golden: states__light, states__dark
 
 #### MxSelectionCheckbox
 - Variants: one
 - States: checked, unchecked
 - Accessibility: carries its checked state into the row that holds it; the row owns the tap, the name and the 48 area
-- Tokens: `primary`, `on-primary`, `outline`; `AppRadius.xs`; `AppStroke.control`; `AppSize.checkbox`
+- Tokens: `primary` (checked fill), `on-primary` (check), `outline`; `AppRadius.xs`; `AppStroke.control`; `AppSize.checkbox`
 - Golden: states__light, states__dark
 
 #### MxOptionRow
 - Variants: with or without a description
 - States: selected, idle, locked (dims the radio and title only), locked and selected (never dimmed)
 - Accessibility: a checked or unchecked member of a mutually exclusive group; 48 minimum height
-- Tokens: `primary`, `outline`, `on-surface`, `on-surface-variant`; `bodyLarge`, `bodyMedium`; `AppStroke.control` / `indicator`; `AppSize.radio`
+- Tokens: `on-primary-container` (selected radio), `outline`, `on-surface`, `on-surface-variant`; `bodyLarge`, `bodyMedium`; `AppStroke.control` / `indicator`; `AppSize.radio`
 - Golden: states__light, states__dark
 
 #### MxStepper
 - Variants: `minDigits` zero-padding
 - States: inside its bounds, at a bound (that button disabled), held (repeating)
 - Accessibility: reads its value with increase and decrease actions; its buttons are named by the caller; the value keeps a fixed, tabular width so the buttons never move
-- Tokens: `primary`, `on-surface`; `titleLarge` with tabular figures; `AppDurations.repeat`
+- Tokens: `on-primary-container` (its accent icon buttons), `on-surface`; `titleLarge` with tabular figures; `AppDurations.repeat`
 - Golden: states__light, states__dark
 - Debt: a typed entry (SCR-SETTINGS-001, "a typed entry") is not built; its first consumer in SP3c adds it
 
@@ -666,7 +684,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Variants: filled (filter), ghost (trigger); optional trailing glyph
 - States: resting, selected or active, pressed
 - Accessibility: 28 painted inside a 48 hit; the chip that uses it owns the semantics
-- Tokens: `surface-container-lowest`, `outline-variant`, `primary` / `on-primary`, `primary-container` / `on-primary-container`, `labelSmall`, `AppSize.chip`
+- Tokens: `surface-container-lowest`, `outline` (the resting edge, 3:1), `primary` / `on-primary` (selected fill), `primary-container` / `on-primary-container`, `labelSmall`, `AppSize.chip`
 - Golden: none — seen in `MxFilterChip` and `MxChipTrigger`
 
 #### MxFilterChip
@@ -686,7 +704,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use `primary` for exactly one primary action per decision and `primary` for indigo text, icons and the focus ring on any ground its contrast pair covers.
+- **Do** use `primary` (#4151C6, both themes) as the fill of exactly one primary action per decision, and `on-primary-container` for indigo text, icons, edges and the focus ring.
 - **Do** keep text at 4.5:1 and non-text edges, thumbs and fills at 3:1 on every surface, in both themes; fix a failing role in DESIGN.md, and keep `tools/design/generate.py --check` green.
 - **Do** guarantee a 48x48dp touch area on every interactive element, and let text containers grow instead of clamping scale or fixing heights.
 - **Do** write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.
@@ -704,7 +722,10 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - **Do** centre content at a 720dp maximum column and switch to the navigation rail from 600dp.
 
 ### Don't:
-- **Don't** put a role on a ground its contrast pair does not cover, or use `on-X` as text on a plain surface; declare and prove the pair first.
+- **Don't** put a role on a ground its contrast pair does not cover, or use `on-X` as text on a plain surface (the Indigo Accent, `on-primary-container`, is the one declared exception); declare and prove the pair first.
+- **Don't** give dark mode its own primary: no `primary-dark` value other than #4151C6, no `*-ink` or dark-primary role, and no component that swaps `primary` by brightness. Don't paint `primary` as small text, an icon, an edge or a ring on a surface; use the Indigo Accent.
+- **Don't** build a `TextField` or `TextFormField` outside `MxTextField`, or style an input locally (The One Field Rule).
+- **Don't** give the FAB a shadow or elevation in any state.
 - **Don't** use violet or green as decoration, or green for anything but progress and success.
 - **Don't** tint shadows with the brand colour, and don't add elevation where a hairline groups the content.
 - **Don't** add hover states (Android only) or a global text style for one component.

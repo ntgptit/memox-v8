@@ -92,9 +92,9 @@ abstract final class AppTheme {
         texts: textTheme,
       ),
       textSelectionTheme: TextSelectionThemeData(
-        cursorColor: scheme.primary,
+        cursorColor: scheme.onPrimaryContainer,
         selectionColor: scheme.primaryContainer,
-        selectionHandleColor: scheme.primary,
+        selectionHandleColor: scheme.onPrimaryContainer,
       ),
     );
   }

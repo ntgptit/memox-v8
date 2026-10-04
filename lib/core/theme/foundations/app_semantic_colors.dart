@@ -44,7 +44,7 @@ final class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     statusLearningContainer: Color(0xFFDFE5BE),
     onStatusLearningContainer: Color(0xFF352C00),
     statusReviewing: Color(0xFF33658F),
-    statusReviewingContainer: Color(0xFFD5E9F0),
+    statusReviewingContainer: Color(0xFFD3EAF0),
     onStatusReviewingContainer: Color(0xFF12324E),
     statusMastered: Color(0xFF1A6B48),
     statusMasteredContainer: Color(0xFFD3F0E2),

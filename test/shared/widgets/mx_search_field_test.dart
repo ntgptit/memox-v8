@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
+import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import 'support/mx_harness.dart';
 
@@ -85,6 +86,30 @@ void main() {
         tester.getTopLeft(find.text('Typed').last).dx,
         epsilon: 0.5,
       ),
+    );
+  });
+
+  testWidgets('the input is an MxTextField; the trigger has its height', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            MxSearchField(hint: 'Typed', controller: TextEditingController()),
+            MxSearchField(hint: 'Trigger', onOpen: () {}),
+          ],
+        ),
+      ),
+    );
+    expect(find.byType(MxTextField), findsOneWidget);
+    expect(find.byType(TextField), findsOneWidget);
+    expect(
+      tester.getSize(find.byType(MxSearchField).last).height,
+      tester.getSize(find.byType(TextField)).height,
     );
   });
 }

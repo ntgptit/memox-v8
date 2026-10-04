@@ -19,6 +19,9 @@ Widget _column(List<Widget> children) => SizedBox(
 
 TextEditingController _text(String value) => TextEditingController(text: value);
 
+/// The field the states sheet shows with keyboard focus.
+final FocusNode _focus = FocusNode();
+
 void main() {
   final Map<(String, String), Widget Function()> sheets = {
     ('text_field', 'variants'): () => _column([
@@ -64,7 +67,27 @@ void main() {
         message: 'Close to the 60 character limit',
         messageTone: MxFieldMessageTone.warning,
       ),
-      MxTextField(controller: _text('Locked'), isEnabled: false),
+      MxTextField(controller: _text('Typing here'), focusNode: _focus),
+      MxTextField(
+        controller: _text('Spanish'),
+        label: 'Deck (read-only)',
+        isReadOnly: true,
+      ),
+      MxTextField(
+        controller: _text('Locked'),
+        label: 'Deck (disabled)',
+        isEnabled: false,
+      ),
+      MxTextField(
+        controller: _text(''),
+        hint: 'Search decks',
+        leadingIcon: Icons.search,
+        trailingAction: MxTextFieldAction(
+          icon: Icons.close,
+          semanticLabel: 'Clear',
+          onPressed: () {},
+        ),
+      ),
     ]),
   };
   for (final MapEntry(key: (component, state), value: sheet)
@@ -77,6 +100,7 @@ void main() {
           state: state,
           variant: variant,
           sheet: sheet(),
+          focus: state == 'states' ? _focus : null,
         );
       });
     }

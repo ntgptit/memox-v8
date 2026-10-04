@@ -8,7 +8,7 @@ enum MxIconButtonTone {
   /// A quiet tool: `on-surface-variant`.
   standard,
 
-  /// An indigo action: `primary`.
+  /// An indigo action: the Indigo Accent, `on-primary-container`.
   accent,
 
   /// An action that destroys: `error`.
@@ -23,7 +23,7 @@ ButtonStyle mxIconButtonStyle({
 }) {
   final Color content = switch (tone) {
     MxIconButtonTone.standard => colors.onSurfaceVariant,
-    MxIconButtonTone.accent => colors.primary,
+    MxIconButtonTone.accent => colors.onPrimaryContainer,
     MxIconButtonTone.destructive => colors.error,
   };
   return ButtonStyle(

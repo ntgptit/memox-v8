@@ -160,6 +160,28 @@ rules:
       - memox-v8
       - design-system
 
+  # The One Field Rule (DESIGN.md, owner 2026-10-04): every text input is an
+  # `MxTextField` or composes one. Scoped to all of lib/, not only feature
+  # presentation, so a shared widget cannot rebuild an input either; the one
+  # exemption is the file that owns the input.
+  - id: memox_v8.design_system.no_raw_text_field
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No raw `TextField` or `TextFormField`. `MxTextField` is the app's one
+      text input (DESIGN.md, The One Field Rule); compose it, and extend its
+      semantic contract after review when a feature needs new behaviour.
+    scopes:
+      - dart_lib
+    exclude:
+      - lib/shared/widgets/mx_text_field.dart
+    patterns:
+      - '^(?!\s*(?://|\*)).*\b(?:TextField|TextFormField)(?:\s*\(|\.(?:new\b|[A-Za-z_][A-Za-z0-9_]*\s*\())'
+    tags:
+      - memox-v8
+      - design-system
+
   - id: memox_v8.design_system.no_raw_style_escape
     type: regex
     severity: error

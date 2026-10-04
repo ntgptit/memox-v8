@@ -82,7 +82,7 @@ class MxOptionRow extends StatelessWidget {
 }
 
 /// A 20 ring, 2dp `outline` when idle; selected, the ring thickens to 6 in
-/// `primary` without moving (DESIGN.md, Shapes).
+/// `on-primary-container` without moving (DESIGN.md, Shapes).
 class _Radio extends StatelessWidget {
   const _Radio({required this.isSelected});
 
@@ -97,7 +97,9 @@ class _Radio extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: isSelected ? context.colors.primary : context.colors.outline,
+          color: isSelected
+              ? context.colors.onPrimaryContainer
+              : context.colors.outline,
           width: isSelected ? AppStroke.indicator : AppStroke.control,
         ),
       ),

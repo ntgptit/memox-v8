@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:memox/core/theme/components/field_style.dart';
+import 'package:memox/core/theme/foundations/app_icon_size.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 export 'package:memox/core/theme/components/field_style.dart'
     show MxTextFieldVariant;
@@ -14,9 +16,25 @@ export 'package:memox/shared/widgets/mx_field_message.dart'
 /// The digits a one-time code holds.
 const int _codeLength = 6;
 
-/// A text input (DESIGN.md, Components › Inputs). The caller names the
-/// variant and supplies localized copy; fill, edges, padding and type are
-/// the variant's.
+/// The one trailing action a field may carry, drawn as an `MxIconButton`.
+class MxTextFieldAction {
+  const MxTextFieldAction({
+    required this.icon,
+    required this.semanticLabel,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+
+  /// Read aloud and shown as the tooltip.
+  final String semanticLabel;
+  final VoidCallback onPressed;
+}
+
+/// The app's one text input (DESIGN.md, The One Field Rule). The caller names
+/// the variant and supplies localized copy and input behaviour; fill, edges,
+/// padding, type and every state's look are the contract's, never the
+/// caller's.
 class MxTextField extends StatelessWidget {
   const MxTextField({
     required this.controller,
@@ -30,6 +48,9 @@ class MxTextField extends StatelessWidget {
     this.onSubmitted,
     this.focusNode,
     this.isEnabled = true,
+    this.isReadOnly = false,
+    this.leadingIcon,
+    this.trailingAction,
     this.shouldAutofocus = false,
     this.isObscured = false,
     this.keyboardType,
@@ -53,7 +74,17 @@ class MxTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final FocusNode? focusNode;
+
+  /// Disabled: the whole field dims and cannot be focused or selected.
   final bool isEnabled;
+
+  /// Read-only: full contrast on `surface-container`, no edge and no cursor;
+  /// it can still be focused, selected and copied.
+  final bool isReadOnly;
+
+  /// A glyph before the text, in `on-surface-variant`.
+  final IconData? leadingIcon;
+  final MxTextFieldAction? trailingAction;
   final bool shouldAutofocus;
   final bool isObscured;
   final TextInputType? keyboardType;
@@ -74,12 +105,16 @@ class MxTextField extends StatelessWidget {
       controller: controller,
       focusNode: focusNode,
       enabled: isEnabled,
+      readOnly: isReadOnly,
+      showCursor: isReadOnly ? false : null,
       autofocus: shouldAutofocus,
       obscureText: isObscured,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       style: mxFieldTextStyle(context.texts, variant),
       textAlign: _isCode ? TextAlign.center : TextAlign.start,
+      // A growing field keeps its first line where it starts.
+      textAlignVertical: _grows ? TextAlignVertical.top : null,
       keyboardType: _isCode ? TextInputType.number : keyboardType,
       textInputAction: textInputAction,
       autofillHints: _isCode ? const [AutofillHints.oneTimeCode] : null,
@@ -93,6 +128,17 @@ class MxTextField extends StatelessWidget {
       maxLines: _grows ? null : 1,
       decoration: _decoration(context, hasError),
     );
+    return _dimmedUnlessEnabled(_withLabelAndMessage(field, line));
+  }
+
+  Widget _dimmedUnlessEnabled(Widget child) {
+    if (isEnabled) {
+      return child;
+    }
+    return Opacity(opacity: AppOpacity.disabled, child: child);
+  }
+
+  Widget _withLabelAndMessage(Widget field, String? line) {
     final String? title = label;
     if (title == null && line == null) {
       return field;
@@ -115,37 +161,29 @@ class MxTextField extends StatelessWidget {
   }
 
   InputDecoration _decoration(BuildContext context, bool hasError) {
-    final ColorScheme colors = context.colors;
-    final double radius = mxFieldRadius(variant);
-    if (variant == MxTextFieldVariant.study) {
-      return InputDecoration(
-        hintText: hint,
-        filled: false,
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        isCollapsed: true,
-      );
-    }
-    return InputDecoration(
-      hintText: hint,
-      contentPadding: mxFieldPadding(
-        mxFieldTextStyle(context.texts, variant),
-        mxFieldMinHeight(variant),
-      ),
-      enabledBorder: mxFieldBorder(
-        color: hasError ? colors.error : colors.outlineVariant,
-        radius: radius,
-      ),
-      focusedBorder: mxFieldBorder(
-        color: hasError ? colors.error : colors.primary,
-        radius: radius,
-        width: AppStroke.control,
-      ),
-      disabledBorder: mxFieldBorder(
-        color: colors.outlineVariant,
-        radius: radius,
-      ),
+    final IconData? glyph = leadingIcon;
+    final MxTextFieldAction? action = trailingAction;
+    return mxFieldDecoration(
+      colors: context.colors,
+      texts: context.texts,
+      variant: variant,
+      hint: hint,
+      hasError: hasError,
+      isReadOnly: isReadOnly,
+      prefixIcon: glyph == null
+          ? null
+          : Icon(
+              glyph,
+              size: AppIconSize.medium,
+              color: context.colors.onSurfaceVariant,
+            ),
+      suffixIcon: action == null
+          ? null
+          : MxIconButton(
+              icon: action.icon,
+              semanticLabel: action.semanticLabel,
+              onPressed: action.onPressed,
+            ),
     );
   }
 }

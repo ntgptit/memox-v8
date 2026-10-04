@@ -34,6 +34,7 @@ void main() {
       ),
     );
     expect(_ground(tester).color, s.surfaceContainerLowest);
+    expect(_ground(tester).border!.top.color, s.outline);
     await pumpMx(
       tester,
       MxChipShell(label: 'All', isSelected: true, isGhost: false, onTap: () {}),

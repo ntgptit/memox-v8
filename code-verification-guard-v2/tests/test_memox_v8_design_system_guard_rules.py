@@ -197,3 +197,32 @@ def test_no_text_restyle_leaves_the_hint_style_alone(tmp_path: Path) -> None:
     style: context.textStyles.inputHint,
     """
     assert not _violations(RESTYLE, tmp_path, good)
+
+
+TEXT_FIELD = "memox_v8.design_system.no_raw_text_field"
+
+
+def test_no_raw_text_field_goes_red_on_a_raw_input(tmp_path: Path) -> None:
+    for bad in (
+        "child: TextField(controller: name),",
+        "child: TextFormField(controller: name, validator: check),",
+        "final field = TextField.new;",
+    ):
+        assert _violations(TEXT_FIELD, tmp_path, bad), bad
+
+
+def test_no_raw_text_field_leaves_the_owner_and_prose_alone(tmp_path: Path) -> None:
+    good = """
+    // MxTextField owns the input; a raw TextField( here would drift from it.
+    /// A doc comment that names TextFormField( is still prose.
+    child: MxTextField(controller: name, label: label),
+    final TextFieldTapRegion region = TextFieldTapRegion(child: child);
+    final TextEditingController name = TextEditingController();
+    """
+    assert not _violations(TEXT_FIELD, tmp_path, good)
+
+
+def test_no_raw_text_field_exempts_only_the_mx_text_field_file() -> None:
+    rule = _rule_config(TEXT_FIELD)
+    assert rule["exclude"] == ["lib/shared/widgets/mx_text_field.dart"]
+    assert rule["severity"] == "error"

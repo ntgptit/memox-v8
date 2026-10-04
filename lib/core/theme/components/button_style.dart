@@ -15,7 +15,8 @@ enum MxButtonTone {
   /// A neutral alternative: `surface-container` under `on-surface`.
   secondary,
 
-  /// A lesser alternative with an `outline` edge and `primary` text.
+  /// A lesser alternative with an `outline` edge and an
+  /// `on-primary-container` label.
   outline,
 
   /// The quiet action beside a decision's fill: no fill, no edge.
@@ -67,8 +68,8 @@ ButtonStyle mxButtonStyle({
   final (Color fill, Color content) = switch (tone) {
     MxButtonTone.primary => (colors.primary, colors.onPrimary),
     MxButtonTone.secondary => (colors.surfaceContainer, colors.onSurface),
-    MxButtonTone.outline => (Colors.transparent, colors.primary),
-    MxButtonTone.text => (Colors.transparent, colors.primary),
+    MxButtonTone.outline => (Colors.transparent, colors.onPrimaryContainer),
+    MxButtonTone.text => (Colors.transparent, colors.onPrimaryContainer),
     MxButtonTone.destructive => (colors.error, colors.onError),
     MxButtonTone.dangerSoft => (colors.errorContainer, colors.onErrorContainer),
     MxButtonTone.warning => (semantic.warning, semantic.onWarning),

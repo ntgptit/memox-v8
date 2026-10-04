@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
@@ -24,7 +27,7 @@ double _paintedHeight(WidgetTester tester) {
 }
 
 void main() {
-  testWidgets('form: 52 tall on the muted fill with an outline-variant edge', (
+  testWidgets('form: 52 tall on the muted fill with a 3:1 outline edge', (
     tester,
   ) async {
     final ColorScheme s = mxThemes['light']!.colorScheme;
@@ -37,7 +40,7 @@ void main() {
     );
     expect(tester.getSize(find.byType(TextField)).height, AppSize.field);
     expect(_paintedHeight(tester), AppSize.field);
-    expect(_enabledEdge(tester).borderSide.color, s.outlineVariant);
+    expect(_enabledEdge(tester).borderSide.color, s.outline);
   });
 
   testWidgets('an error turns the edge to error and shows its message', (
@@ -73,7 +76,7 @@ void main() {
         ),
       ),
     );
-    expect(_enabledEdge(tester).borderSide.color, s.outlineVariant);
+    expect(_enabledEdge(tester).borderSide.color, s.outline);
   });
 
   testWidgets('the label and the Required mark sit above the field', (
@@ -154,5 +157,167 @@ void main() {
         .decoration!;
     expect(decoration.filled, isFalse);
     expect(decoration.enabledBorder, InputBorder.none);
+  });
+  for (final MapEntry(key: name, value: theme) in mxThemes.entries) {
+    testWidgets('$name: focus draws a 2dp Indigo Accent edge, not primary', (
+      tester,
+    ) async {
+      await pumpMx(
+        tester,
+        SizedBox(
+          width: 300,
+          child: MxTextField(controller: TextEditingController()),
+        ),
+        theme: theme,
+      );
+      final OutlineInputBorder focused =
+          tester
+                  .widget<TextField>(find.byType(TextField))
+                  .decoration!
+                  .focusedBorder!
+              as OutlineInputBorder;
+      expect(focused.borderSide.color, theme.colorScheme.onPrimaryContainer);
+      expect(focused.borderSide.width, AppStroke.control);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).cursorColor,
+        anyOf(isNull, theme.colorScheme.onPrimaryContainer),
+      );
+    });
+  }
+
+  testWidgets('read-only keeps full contrast, can be focused and copied', (
+    tester,
+  ) async {
+    final ColorScheme s = mxThemes['light']!.colorScheme;
+    final SemanticsHandle semantics = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: MxTextField(
+          controller: TextEditingController(text: 'Spanish'),
+          label: 'Deck',
+          isReadOnly: true,
+        ),
+      ),
+    );
+    final TextField field = tester.widget(find.byType(TextField));
+    expect(field.readOnly, isTrue);
+    expect(field.enabled, isNot(false));
+    expect(field.showCursor, isFalse);
+    expect(field.decoration!.fillColor, s.surfaceContainer);
+    expect(field.decoration!.enabledBorder!.borderSide.style, BorderStyle.none);
+    expect(find.byType(Opacity), findsNothing);
+    expect(
+      tester.getSemantics(find.byType(EditableText)),
+      isSemantics(
+        isTextField: true,
+        isReadOnly: true,
+        isEnabled: true,
+        isFocusable: true,
+      ),
+    );
+    semantics.dispose();
+  });
+
+  testWidgets('disabled dims the whole field and cannot be focused', (
+    tester,
+  ) async {
+    final ColorScheme s = mxThemes['light']!.colorScheme;
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: MxTextField(
+          controller: TextEditingController(text: 'Spanish'),
+          label: 'Deck',
+          isEnabled: false,
+        ),
+      ),
+    );
+    final TextField field = tester.widget(find.byType(TextField));
+    expect(field.enabled, isFalse);
+    expect(field.readOnly, isFalse);
+    final Opacity dim = tester.widget(
+      find.ancestor(of: find.text('Deck'), matching: find.byType(Opacity)),
+    );
+    expect(dim.opacity, AppOpacity.disabled);
+    expect(
+      find.ancestor(of: find.byType(TextField), matching: find.byWidget(dim)),
+      findsOneWidget,
+    );
+    expect(
+      field.decoration!.disabledBorder!.borderSide.color,
+      s.outlineVariant,
+    );
+  });
+
+  testWidgets('a leading icon and one named trailing action', (tester) async {
+    var cleared = 0;
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: MxTextField(
+          controller: TextEditingController(),
+          leadingIcon: Icons.search,
+          trailingAction: MxTextFieldAction(
+            icon: Icons.close,
+            semanticLabel: 'Clear',
+            onPressed: () => cleared++,
+          ),
+        ),
+      ),
+    );
+    expect(find.byIcon(Icons.search), findsOneWidget);
+    expect(find.byType(MxIconButton), findsOneWidget);
+    await tester.tap(find.byTooltip('Clear'));
+    expect(cleared, 1);
+    expect(tester.getSize(find.byType(TextField)).height, AppSize.field);
+  });
+
+  testWidgets('grows with the text scale and never clips', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: mxThemes['light'],
+        home: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 300,
+                child: MxTextField(
+                  controller: TextEditingController(text: 'Spanish'),
+                  label: 'Deck',
+                  message: 'Enter a name',
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getSize(find.byType(TextField)).height,
+      greaterThan(AppSize.field),
+    );
+  });
+
+  testWidgets('a growing field keeps its text at the top', (tester) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 300,
+        child: MxTextField(
+          controller: TextEditingController(),
+          variant: MxTextFieldVariant.meaning,
+        ),
+      ),
+    );
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).textAlignVertical,
+      TextAlignVertical.top,
+    );
   });
 }

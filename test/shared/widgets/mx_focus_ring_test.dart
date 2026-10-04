@@ -28,4 +28,24 @@ void main() {
     );
     expect(ring(), findsNothing);
   });
+
+  for (final MapEntry(key: name, value: theme) in mxThemes.entries) {
+    testWidgets('$name: the ring is the Indigo Accent, never primary', (
+      tester,
+    ) async {
+      await pumpMx(
+        tester,
+        const MxFocusRing(
+          borderRadius: BorderRadius.zero,
+          isShown: true,
+          child: SizedBox.square(dimension: 20),
+        ),
+        theme: theme,
+      );
+      expect(
+        find.byType(MxFocusRing),
+        paints..rrect(color: theme.colorScheme.onPrimaryContainer),
+      );
+    });
+  }
 }
