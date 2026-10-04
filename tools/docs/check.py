@@ -16,6 +16,14 @@ ERROR
 - a UC / BR / feature README missing a required `##` section
 - a BR carrying a hand-written "used by" section (it is generated)
 - docs/_generated/ stale compared with a fresh `generate.py` run
+- a UC section of docs/USE_CASES.md or an FN section of docs/functional-spec/
+  with a malformed heading or meta line, a bad field, or a missing `####`/`###`
+  sub-section; an FN in a file whose name is not its feature
+- a screen spec with a bad frontmatter, a missing `##` section, or a domain
+  that is not a feature folder
+- `invokes`, an FN's `### Business rules`, or a screen's `Invokes:`,
+  `Navigate to:` or `## Related Use Cases` naming an id that does not exist
+  or is deprecated; an FN cited in a UC flow but missing from its `Invokes:`
 - with --plan: a mapping row whose destination does not exist (a mapping
   table is one whose first header cell starts with "Nguồn"; destinations are
   backticked paths relative to docs/, `<slug>` and `*` are wildcards)
@@ -38,6 +46,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import generate as g  # noqa: E402
+import specdocs  # noqa: E402
 
 BR_ID = re.compile(r"^BR-[A-Z]+-\d{3}$")
 UC_ID = re.compile(r"^UC-[A-Z]+-\d{3}$")
@@ -51,18 +60,29 @@ INVARIANT_FILE = "shared/data/schema.md"
 LINK = re.compile(r"(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 USED_BY_SECTION = re.compile(r"^##+\s*(được dùng bởi|used by)\b", re.I | re.M)
 
+FN_ID = re.compile(r"^FN-[A-Z]+-\d{3}$")
+SCR_ID = re.compile(r"^SCR-[A-Z]+-\d{3}$")
+ID_PATTERNS = {"BR": BR_ID, "UC": UC_ID, "ADR": ADR_ID, "FN": FN_ID, "SCR": SCR_ID}
+
+# Keyed by schema(doc): "UCS" is a UC section of docs/USE_CASES.md, "UC" a legacy UC file.
 STATUS = {
     "BR": {"draft", "active", "deprecated"},
     "UC": {"draft", "ready", "deprecated"},
+    "UCS": {"draft", "ready", "deprecated"},
+    "FN": {"draft", "active", "deprecated"},
+    "SCR": {"draft", "ready", "built"},
     "ADR": {"draft", "active", "deprecated"},
 }
 REQUIRED_FIELDS = {
     "BR": ("id", "title", "status", "summary"),
     "UC": ("id", "title", "status", "rules", "code"),
+    "UCS": ("id", "title", "status", "code", "invokes"),
+    "FN": ("id", "title", "status", "code"),
+    "SCR": ("id", "name", "status", "domain", "route"),
     "ADR": ("id", "title", "status"),
     "FEATURE": ("feature", "code", "depends_on"),
 }
-LIST_FIELDS = {"rules", "code", "depends_on"}
+LIST_FIELDS = {"rules", "code", "depends_on", "invokes", "route", "supersedes"}
 REQUIRED_SECTIONS = {
     "BR": ("Rule", "Lý do", "Ví dụ", "Edge case"),
     "UC": (
@@ -74,8 +94,25 @@ REQUIRED_SECTIONS = {
         "API",
         "Acceptance criteria",
     ),
+    "UCS": ("Mục tiêu / Actor / Precondition", "Main flow", "Alternative / Error flow", "Acceptance criteria"),
+    "FN": ("Precondition", "Input", "Kết quả", "Lỗi", "Business rules"),
+    "SCR": (
+        "Purpose",
+        "Related Use Cases",
+        "Layout",
+        "States",
+        "Controls",
+        "Responsive Behavior",
+        "Accessibility",
+        "UI Invariants",
+        "Copy",
+        "Rulings",
+    ),
     "FEATURE": ("Phạm vi", "Màn hình → Use case", "Không thuộc phạm vi"),
 }
+SECTION_MARK = {"UCS": "####", "FN": "###"}
+# (field, kind of the ID it must name) per schema.
+REFERENCE_FIELDS = {"UC": (("rules", "BR"),), "UCS": (("invokes", "FN"),), "FN": (("rules", "BR"),)}
 SKIP_ID_CHECK = ("superpowers", "_generated")
 # Historical plans and specs keep links to files later retired (ADR-019); they are
 # records, not maintained docs, so their links are not checked.
@@ -109,47 +146,61 @@ def show(path: Path | str) -> str:
     return path.relative_to(g.ROOT).as_posix() if path.is_relative_to(g.ROOT) else str(path)
 
 
+def schema(doc: g.Doc) -> str:
+    return "UCS" if doc.kind == "UC" and doc.is_section else doc.kind
+
+
+def where(doc: g.Doc) -> Path | str:
+    return f"{show(doc.path)}:{doc.line}" if doc.is_section else doc.path
+
+
 # ------------------------------------------------------------ per document
 
 
 def check_frontmatter(doc: g.Doc, report: Report) -> bool:
     """Report field problems; False only when the block itself is unusable."""
     if doc.frontmatter_error:
-        report.error(doc.path, doc.frontmatter_error)
+        report.error(where(doc), doc.frontmatter_error)
         return False
-    for key in REQUIRED_FIELDS[doc.kind]:
+    for key in REQUIRED_FIELDS[schema(doc)]:
         value = doc.meta.get(key)
         if key in LIST_FIELDS and not isinstance(value, list):
-            report.error(doc.path, f"`{key}` must be an inline list `[...]`")
+            report.error(where(doc), f"`{key}` must be an inline list `[...]`")
         elif key not in LIST_FIELDS and not value:
-            report.error(doc.path, f"missing required field `{key}`")
-    allowed = STATUS.get(doc.kind)
+            report.error(where(doc), f"missing required field `{key}`")
+    allowed = STATUS.get(schema(doc))
     if allowed and doc.status and doc.status not in allowed:
-        report.error(doc.path, f"`status: {doc.status}` is not one of {sorted(allowed)}")
+        report.error(where(doc), f"`status: {doc.status}` is not one of {sorted(allowed)}")
     return True
 
 
 def check_identity(doc: g.Doc, report: Report) -> None:
-    pattern = {"BR": BR_ID, "UC": UC_ID, "ADR": ADR_ID}[doc.kind]
     if not doc.id:
         return
-    if not pattern.match(doc.id):
-        report.error(doc.path, f"id `{doc.id}` is malformed")
+    if not ID_PATTERNS[doc.kind].match(doc.id):
+        report.error(where(doc), f"id `{doc.id}` is malformed")
         return
-    if not re.fullmatch(re.escape(doc.id) + "-" + SLUG + r"\.md", doc.path.name):
+    if not doc.is_section and not re.fullmatch(re.escape(doc.id) + "-" + SLUG + r"\.md", doc.path.name):
         report.error(doc.path, f"file name must be `{doc.id}-<slug-kebab-case>.md`")
     if doc.kind == "ADR":
+        return
+    if doc.kind == "SCR" and doc.feature not in g.feature_names():
+        report.error(doc.path, f"`domain: {doc.feature}` is not a feature folder")
+        return
+    if not doc.feature:
+        report.error(where(doc), f"id `{doc.id}` has a DOMAIN that no feature folder maps to")
         return
     expected = g.domain_of(doc.feature)
     actual = doc.id.split("-")[1]
     if actual != expected:
-        report.error(doc.path, f"id `{doc.id}` has DOMAIN `{actual}`; this folder requires `{expected}`")
+        report.error(where(doc), f"id `{doc.id}` has DOMAIN `{actual}`; this folder requires `{expected}`")
 
 
 def check_sections(doc: g.Doc, report: Report) -> None:
-    for name in REQUIRED_SECTIONS.get(doc.kind, ()):
+    mark = SECTION_MARK.get(schema(doc), "##")
+    for name in REQUIRED_SECTIONS.get(schema(doc), ()):
         if name not in doc.sections:
-            report.error(doc.path, f"missing section `## {name}`")
+            report.error(where(doc), f"missing section `{mark} {name}`")
     if doc.kind == "BR" and USED_BY_SECTION.search(doc.body):
         report.error(doc.path, "a BR must not carry a \"Được dùng bởi\" section — generate.py produces it")
 
@@ -157,7 +208,58 @@ def check_sections(doc: g.Doc, report: Report) -> None:
 def check_paths(doc: g.Doc, report: Report) -> None:
     for code_path in doc.as_list("code"):
         if not (g.ROOT / code_path).exists():
-            report.error(doc.path, f"path in `code` does not exist: `{code_path}`")
+            report.error(where(doc), f"path in `code` does not exist: `{code_path}`")
+
+
+def check_duplicates(docs: list[g.Doc], report: Report) -> dict[str, g.Doc]:
+    by_id: dict[str, g.Doc] = {}
+    for doc in docs:
+        if doc.kind == "FEATURE" or not doc.id:
+            continue
+        if doc.id in by_id:
+            report.error(where(doc), f"id `{doc.id}` duplicates {show(where(by_id[doc.id]))}")
+            continue
+        by_id[doc.id] = doc
+    return by_id
+
+
+def check_reference(doc: g.Doc, label: str, ref: str, kind: str, by_id: dict[str, g.Doc], report: Report) -> None:
+    target = by_id.get(ref)
+    if target is None or target.kind != kind:
+        report.error(where(doc), f"`{label}` names a {kind} that does not exist: `{ref}`")
+    elif target.status == "deprecated":
+        report.error(where(doc), f"`{label}` names a deprecated {kind}: `{ref}`")
+
+
+def check_references(docs: list[g.Doc], by_id: dict[str, g.Doc], report: Report) -> None:
+    for doc in docs:
+        for label, kind in REFERENCE_FIELDS.get(schema(doc), ()):
+            for ref in doc.as_list(label):
+                check_reference(doc, label, ref, kind, by_id, report)
+        if doc.kind == "SCR" and doc.screen is not None:
+            for label, refs, kind in (
+                ("Invokes", doc.screen.invokes, "FN"),
+                ("Navigate to", doc.screen.navigates, "SCR"),
+                ("Related Use Cases", doc.screen.related_ucs, "UC"),
+            ):
+                for ref in refs:
+                    check_reference(doc, label, ref, kind, by_id, report)
+        superseded_by = str(doc.meta.get("superseded_by") or "")
+        if not superseded_by:
+            continue
+        if superseded_by not in by_id:
+            report.error(where(doc), f"`superseded_by` names an id that does not exist: `{superseded_by}`")
+        if doc.status != "deprecated":
+            report.error(where(doc), "`superseded_by` is only allowed with `status: deprecated`")
+
+
+def check_invokes_complete(doc: g.Doc, report: Report) -> None:
+    """Every FN a UC section's flow cites is on its `Invokes:` line."""
+    if schema(doc) != "UCS":
+        return
+    for fn_id in specdocs.ids_in(doc.body, "FN"):
+        if fn_id not in doc.as_list("invokes"):
+            report.error(where(doc), f"`{fn_id}` is cited in the flow but missing from `Invokes:`")
 
 
 def check_feature_readme(doc: g.Doc, features: list[str], report: Report) -> None:
@@ -194,47 +296,18 @@ def check_dependency_cycles(docs: list[g.Doc], report: Report) -> None:
         visit(feature, [])
 
 
-def check_duplicates(docs: list[g.Doc], report: Report) -> dict[str, g.Doc]:
-    by_id: dict[str, g.Doc] = {}
-    for doc in docs:
-        if doc.kind == "FEATURE" or not doc.id:
-            continue
-        if doc.id in by_id:
-            report.error(doc.path, f"id `{doc.id}` duplicates {show(by_id[doc.id].path)}")
-            continue
-        by_id[doc.id] = doc
-    return by_id
-
-
-def check_references(docs: list[g.Doc], by_id: dict[str, g.Doc], report: Report) -> None:
-    for doc in docs:
-        for rule_id in doc.as_list("rules") if doc.kind == "UC" else []:
-            target = by_id.get(rule_id)
-            if target is None or target.kind != "BR":
-                report.error(doc.path, f"`rules` names a BR that does not exist: `{rule_id}`")
-            elif target.status == "deprecated":
-                report.error(doc.path, f"`rules` names a deprecated BR: `{rule_id}`")
-        superseded_by = str(doc.meta.get("superseded_by") or "")
-        if not superseded_by:
-            continue
-        if superseded_by not in by_id:
-            report.error(doc.path, f"`superseded_by` names an id that does not exist: `{superseded_by}`")
-        if doc.status != "deprecated":
-            report.error(doc.path, "`superseded_by` is only allowed with `status: deprecated`")
-
-
 def check_warnings(docs: list[g.Doc], report: Report) -> None:
     usage = g.used_by(docs)
     ready = [d for d in docs if d.kind == "UC" and d.status == "ready"]
     tests = g.tests_by_id([d.id for d in ready])
     for doc in docs:
         if doc.kind == "BR" and doc.status == "active" and doc.id not in usage:
-            report.warning(doc.path, "active BR is used by no UC")
+            report.warning(where(doc), "active BR is used by no UC")
     for doc in ready:
         if not doc.as_list("code"):
-            report.warning(doc.path, "ready UC has `code: []`")
+            report.warning(where(doc), "ready UC has `code: []`")
         if not tests[doc.id]:
-            report.warning(doc.path, "ready UC has no test that contains its id")
+            report.warning(where(doc), "ready UC has no test that contains its id")
 
 
 def defined_ids(docs: list[g.Doc]) -> set[str]:
@@ -369,30 +442,15 @@ ACCEPTANCE_SECTION = "Acceptance criteria"
 ACCEPTANCE_LINE = re.compile(r"\*\*given\*\*.*\*\*when\*\*.*\*\*then\*\*", re.IGNORECASE)
 
 
-def section_text(body: str, name: str) -> str:
-    """The unfenced lines under `## name`, up to the next `## ` heading."""
-    lines: list[str] = []
-    inside = False
-    for _, line in g.iter_unfenced(body):
-        if line.startswith("## "):
-            inside = line[3:].strip() == name
-            continue
-        if inside:
-            lines.append(line)
-    return "\n".join(lines)
-
-
 def check_acceptance_criteria(doc: g.Doc, report: Report) -> None:
     """A `ready` UC is a contract; its criteria are the checkable half (BE-D4)."""
     if doc.kind != "UC" or doc.status != "ready":
         return
-    criteria = [
-        line
-        for line in section_text(doc.body, ACCEPTANCE_SECTION).splitlines()
-        if g.OPEN_QUESTION not in line
-    ]
+    level = 4 if doc.is_section else 2
+    text = specdocs.subsection_text(doc.body, ACCEPTANCE_SECTION, level)
+    criteria = [line for _, line in g.iter_unfenced(text) if g.OPEN_QUESTION not in line]
     if not any(ACCEPTANCE_LINE.search(line) for line in criteria):
-        report.error(doc.path, "ready UC has no Given/When/Then line under `## Acceptance criteria`")
+        report.error(where(doc), "ready UC has no Given/When/Then line under `## Acceptance criteria`")
 
 
 # ------------------------------------------------------------ V7 residue
@@ -479,7 +537,7 @@ def check_v7_residue(report: Report) -> None:
 
 def run(plan: Path | None) -> Report:
     report = Report()
-    docs = g.load_docs()
+    docs, migrated = g.load_all()
     features = g.feature_names()
     for feature in features:
         if not (g.DOCS / "features" / feature / "README.md").exists():
@@ -494,6 +552,7 @@ def run(plan: Path | None) -> Report:
         check_sections(doc, report)
         check_paths(doc, report)
         check_acceptance_criteria(doc, report)
+        check_invokes_complete(doc, report)
     check_dependency_cycles(docs, report)
     by_id = check_duplicates(docs, report)
     check_references(docs, by_id, report)

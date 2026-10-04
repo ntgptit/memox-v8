@@ -37,6 +37,7 @@ from mdparse import (  # noqa: F401 — re-exported: check.py and the tests use 
     parse_value,
     split_frontmatter,
 )
+import specdocs
 
 ROOT = Path.cwd()
 DOCS = ROOT / "docs"
@@ -66,12 +67,18 @@ INLINE_CODE = re.compile(r"`[^`]*`")
 @dataclass
 class Doc:
     path: Path
-    kind: str  # "BR" | "UC" | "ADR" | "FEATURE"
+    kind: str  # "BR" | "UC" | "ADR" | "FEATURE" | "FN" | "SCR"
     feature: str  # feature folder name, or SHARED
     meta: dict[str, object]
     body: str
     frontmatter_error: str | None = None
     sections: list[str] = field(default_factory=list)
+    line: int = 0  # heading line of a section document; 0 for a file document
+    screen: object = None  # specdocs.Screen for kind "SCR"
+
+    @property
+    def is_section(self) -> bool:
+        return self.line > 0
 
     @property
     def id(self) -> str:
@@ -108,29 +115,101 @@ def classify(path: Path) -> tuple[str, str] | None:
         return "BR", parts[1]
     if len(parts) == 4 and parts[0] == "features" and parts[2] == "usecases":
         return "UC", parts[1]
+    if len(parts) == 3 and parts[0] == "screens" and parts[1] == "spec":
+        return "SCR", ""
     return None
 
 
-def load_docs() -> list[Doc]:
+def load_file_docs() -> list[Doc]:
     docs: list[Doc] = []
     for path in sorted(DOCS.rglob("*.md")):
         kind_feature = classify(path)
         if kind_feature is None:
             continue
         kind, feature = kind_feature
-        meta, body, error = split_frontmatter(path.read_text(encoding="utf-8"))
-        docs.append(
-            Doc(
-                path=path,
-                kind=kind,
-                feature=feature,
-                meta=meta or {},
-                body=body,
-                frontmatter_error=error if meta is not None else (error or "missing frontmatter"),
-                sections=h2_sections(body),
-            )
+        text = path.read_text(encoding="utf-8")
+        meta, body, error = split_frontmatter(text)
+        doc = Doc(
+            path=path,
+            kind=kind,
+            feature=feature,
+            meta=meta or {},
+            body=body,
+            frontmatter_error=error if meta is not None else (error or "missing frontmatter"),
+            sections=h2_sections(body),
         )
+        if kind == "SCR":
+            doc.feature = str(doc.meta.get("domain", ""))
+            offset = len(text.splitlines()) - len(body.splitlines())
+            doc.screen = specdocs.parse_screen(body, offset)
+        docs.append(doc)
     return docs
+
+
+def use_cases_file() -> Path:
+    return DOCS / "USE_CASES.md"
+
+
+def functional_spec_dir() -> Path:
+    return DOCS / "functional-spec"
+
+
+def screen_catalog_file() -> Path:
+    return DOCS / "screens" / "SCREEN_CATALOG.md"
+
+
+def navigation_file() -> Path:
+    return DOCS / "NAVIGATION.md"
+
+
+def feature_of_domain(doc_id: str) -> str:
+    """`UC-DECK-001` → `deck`; "" when no feature folder has that DOMAIN."""
+    parts = doc_id.split("-")
+    domain = parts[1] if len(parts) == 3 else ""
+    return {domain_of(name): name for name in feature_names()}.get(domain, "")
+
+
+def section_doc(path: Path, kind: str, feature: str, section: specdocs.Section) -> Doc:
+    return Doc(
+        path=path,
+        kind=kind,
+        feature=feature,
+        meta=section.meta,
+        body=section.body,
+        frontmatter_error=section.error,
+        sections=section.subsections,
+        line=section.line,
+    )
+
+
+def load_section_docs() -> list[Doc]:
+    docs: list[Doc] = []
+    if use_cases_file().exists():
+        text = use_cases_file().read_text(encoding="utf-8")
+        for section in specdocs.use_case_sections(text):
+            docs.append(section_doc(use_cases_file(), "UC", feature_of_domain(section.id), section))
+    if functional_spec_dir().is_dir():
+        for path in sorted(functional_spec_dir().glob("*.md")):
+            if path.name == "README.md":
+                continue
+            for section in specdocs.function_sections(path.read_text(encoding="utf-8")):
+                docs.append(section_doc(path, "FN", path.stem, section))
+    return docs
+
+
+def load_all() -> tuple[list[Doc], list[Doc]]:
+    """(documents, migrated): a legacy UC file whose id USE_CASES.md now defines
+    is returned apart; the section is the definition (plan PT6, until Task 44)."""
+    files = load_file_docs()
+    sections = load_section_docs()
+    moved = {doc.id for doc in sections if doc.kind == "UC"}
+    migrated = [doc for doc in files if doc.kind == "UC" and doc.id in moved]
+    migrated_paths = {doc.path for doc in migrated}
+    return [doc for doc in files if doc.path not in migrated_paths] + sections, migrated
+
+
+def load_docs() -> list[Doc]:
+    return load_all()[0]
 
 
 def domain_of(feature: str) -> str:
