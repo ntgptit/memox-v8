@@ -202,7 +202,7 @@ def base(**overrides: str | None) -> dict[str, str]:
 
 def messages(files: dict[str, str]) -> list[str]:
     with DocsTree(files):
-        report = check.run(None)
+        report = check.run(None, base_keys=lambda path: None)
     return [f"{level} {path}: {message}" for level, path, message in report.lines]
 
 
@@ -343,6 +343,64 @@ class AdrTest(unittest.TestCase):
             ADR2: adr("ADR-002", "accepted", "supersedes: [ADR-001]\n"),
         })
         self.assertFalse(has(errors(files), "broken link"))
+
+
+class ScreenStateTest(unittest.TestCase):
+    def found(self, files, goldens=(), base_keys=None) -> list[str]:
+        with DocsTree(files) as root:
+            docs = check.g.load_docs()
+            report = check.Report()
+            check.check_catalog(docs, report)
+            golden_paths = {name: root / "test" / "goldens" / name for name in goldens}
+            check.check_screen_states(docs, report, golden_paths, lambda path: base_keys)
+        return [f"{level} {message}" for level, _, message in report.lines]
+
+    def test_the_base_screen_and_catalog_agree(self):
+        self.assertEqual([m for m in self.found(base()) if m.startswith("ERROR")], [])
+
+    def test_an_invariant_enforced_by_nothing_is_a_warning(self):
+        self.assertIn("WARNING `INV-UI-001` is enforced by nothing yet", self.found(base()))
+
+    def test_a_catalog_status_that_differs_from_the_spec(self):
+        found = self.found(base(**{CATALOG_PATH: catalog("built")}))
+        self.assertTrue(has(found, "`Status` is `built` but SCR-DECK-001's spec says `ready`"))
+
+    def test_a_screen_without_a_catalog_row(self):
+        found = self.found(base(**{CATALOG_PATH: catalog().split("| SCR-DECK-001")[0]}))
+        self.assertTrue(has(found, "screen has no row in screens/SCREEN_CATALOG.md"))
+
+    def test_a_built_screen_needs_its_goldens(self):
+        files = base(**{SCREEN_PATH: screen("built"), CATALOG_PATH: catalog("built")})
+        found = self.found(files)
+        self.assertTrue(has(found, "golden `scr_deck_001__root_loaded__light.png` is missing"))
+        self.assertTrue(has(found, "golden `scr_deck_001__root_loaded__dark.png` is missing"))
+        present = ("scr_deck_001__root_loaded__light.png", "scr_deck_001__root_loaded__dark.png")
+        self.assertFalse(has(self.found(files, present), "ERROR"))
+
+    def test_an_undeclared_scr_golden_is_an_orphan(self):
+        found = self.found(base(), ("scr_deck_001__root_loaded__light.png", "scr_deck_001__gone__light.png"))
+        self.assertTrue(has(found, "golden matches no screen state"))
+
+    def test_old_goldens_are_not_orphans_before_the_first_scr_golden(self):
+        self.assertFalse(has(self.found(base(), ("library_decks_light.png",)), "orphan"))
+
+    def test_a_renamed_state_key_is_an_error(self):
+        found = self.found(base(), base_keys={"root_loaded", "old_key"})
+        self.assertTrue(has(found, "state key `old_key` was renamed or deleted"))
+
+    def test_a_removed_state_kept_as_a_heading_passes(self):
+        states = STATES + "### `old_key` · Old\nStatus: removed\n"
+        found = self.found(base(**{SCREEN_PATH: screen(states=states)}), base_keys={"root_loaded", "old_key"})
+        self.assertFalse(has(found, "ERROR"))
+
+    def test_a_duplicate_state_key(self):
+        found = self.found(base(**{SCREEN_PATH: screen(states=STATES + STATES)}))
+        self.assertTrue(has(found, "state key `root_loaded` is used twice"))
+
+    def test_a_built_state_without_goldens_is_a_warning(self):
+        states = "### `root_loaded` · Root loaded\nGolden: none — static text only\n"
+        files = base(**{SCREEN_PATH: screen("built", states), CATALOG_PATH: catalog("built")})
+        self.assertIn("WARNING built screen: state `root_loaded` has no golden", self.found(files))
 
 
 if __name__ == "__main__":

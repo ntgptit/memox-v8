@@ -256,6 +256,14 @@ def test_files() -> list[Path]:
     return sorted(files)
 
 
+def golden_files() -> dict[str, Path]:
+    """Golden PNG name → path, for every PNG under test/**/goldens/."""
+    root = ROOT / "test"
+    if not root.is_dir():
+        return {}
+    return {path.name: path for path in sorted(root.rglob("*.png")) if "goldens" in path.parts}
+
+
 def tests_by_id(ids: list[str]) -> dict[str, list[str]]:
     found: dict[str, list[str]] = {doc_id: [] for doc_id in ids}
     for path in test_files():

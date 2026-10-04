@@ -16,6 +16,13 @@ ERROR
   that do not point at each other; ADR status is draft | accepted | superseded |
   deprecated. Links in a superseded or deprecated ADR are not checked
 - a PRODUCT.md anywhere under docs/ (the product lives in /PRODUCT.md)
+- a screen without a catalog row, or a catalog row that disagrees with the
+  screen's frontmatter (name, domain, route, status)
+- a state heading or `Golden:` line that is malformed; a state key used twice
+  or renamed since the merge base (keys are permanent; a removed state keeps
+  its heading with `Status: removed`)
+- a `built` screen missing a golden its states declare; once any
+  `scr_*` golden exists, a golden that matches no declared state
 - a broken relative link; a BR/UC id or `invariant Qn` cited but not defined
 - a UC / BR / feature README missing a required `##` section
 - a hand-written reverse relation (`Used by`, `Invoked by`, `Related Screens`,
@@ -39,6 +46,7 @@ ERROR
   backticked paths relative to docs/, `<slug>` and `*` are wildcards)
 WARNING
 - active BR used by no UC; ready UC with `code: []`; ready UC with no test
+- an INV-UI enforced by nothing; a built screen's state with no golden
 
 Id, invariant and link checks ignore ``` fences and `inline code`. Id checks
 skip docs/superpowers/ (historical documents keep old ids) and _generated/;
@@ -48,7 +56,9 @@ limits.
 from __future__ import annotations
 
 import argparse
+import functools
 import re
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -330,6 +340,101 @@ def check_supersession(docs: list[g.Doc], by_id: dict[str, g.Doc], report: Repor
 def check_single_product(report: Report) -> None:
     for path in sorted(g.DOCS.rglob("PRODUCT.md")):
         report.error(path, "product definition lives only in /PRODUCT.md (spec R12)")
+
+
+def check_catalog(docs: list[g.Doc], report: Report) -> None:
+    """Each screen has one catalog row that agrees with its frontmatter (plan PT5)."""
+    rows, invariants = screen_catalog()
+    path = g.screen_catalog_file()
+    screens = {d.id: d for d in docs if d.kind == "SCR" and d.id}
+    seen: set[str] = set()
+    for row in rows:
+        at = f"{show(path)}:{row.line}"
+        if row.id in seen:
+            report.error(at, f"`{row.id}` has two catalog rows")
+            continue
+        seen.add(row.id)
+        doc = screens.get(row.id)
+        if doc is None:
+            report.error(at, f"catalog row `{row.id}` has no screen spec")
+            continue
+        expected = (str(doc.meta.get("name", "")), doc.feature, doc.as_list("route"), doc.status)
+        actual = (row.name, row.domain, row.routes, row.status)
+        for label, want, got in zip(("Screen", "Domain", "Route", "Status"), expected, actual):
+            if want != got:
+                report.error(at, f"`{label}` is `{got}` but {row.id}'s spec says `{want}`")
+    for doc_id, doc in sorted(screens.items()):
+        if doc_id not in seen:
+            report.error(doc.path, "screen has no row in screens/SCREEN_CATALOG.md")
+    defined: set[str] = set()
+    for inv in invariants:
+        at = f"{show(path)}:{inv.line}"
+        if inv.id in defined:
+            report.error(at, f"`{inv.id}` is defined twice")
+        defined.add(inv.id)
+        if inv.enforced_by in ("", "—"):
+            report.warning(at, f"`{inv.id}` is enforced by nothing yet")
+
+
+def check_screen_states(docs, report, goldens: dict[str, Path], base_keys) -> None:
+    """State keys are unique and permanent; a built screen has its goldens;
+    once a `scr_*` golden exists, every golden maps to a declared state (R16)."""
+    declared: set[str] = set()
+    for doc in [d for d in docs if d.kind == "SCR" and d.id and d.screen is not None]:
+        keys: list[str] = []
+        for state in doc.screen.states:
+            at = f"{show(doc.path)}:{state.line}"
+            if state.error:
+                report.error(at, state.error)
+                continue
+            if state.key in keys:
+                report.error(at, f"state key `{state.key}` is used twice in this screen")
+                continue
+            keys.append(state.key)
+            if state.removed:
+                continue
+            names = [specdocs.golden_name(doc.id, state.key, variant) for variant in state.variants]
+            declared.update(names)
+            if doc.status != "built":
+                continue
+            if state.golden_none:
+                report.warning(at, f"built screen: state `{state.key}` has no golden")
+            for name in names:
+                if name not in goldens:
+                    report.error(at, f"built screen: golden `{name}` is missing")
+        for missing in sorted((base_keys(doc.path) or set()) - set(keys)):
+            report.error(
+                doc.path,
+                f"state key `{missing}` was renamed or deleted; keys are permanent — "
+                "keep its heading with `Status: removed`",
+            )
+    if any(name.startswith("scr_") for name in goldens):
+        for name in sorted(set(goldens) - declared):
+            report.error(goldens[name], "golden matches no screen state (orphan)")
+
+
+@functools.lru_cache(maxsize=1)
+def base_commit() -> str | None:
+    """Merge base with the first of origin/main, main, HEAD that resolves (plan PT9)."""
+    for ref in ("origin/main", "main", "HEAD"):
+        result = subprocess.run(["git", "merge-base", "HEAD", ref], cwd=g.ROOT, capture_output=True, text=True)
+        if result.returncode == 0:
+            return result.stdout.strip()
+    return None
+
+
+def base_state_keys(path: Path) -> set[str] | None:
+    commit = base_commit()
+    if commit is None:
+        return None
+    shown = subprocess.run(
+        ["git", "show", f"{commit}:{path.relative_to(g.ROOT).as_posix()}"],
+        cwd=g.ROOT, capture_output=True, encoding="utf-8",
+    )
+    if shown.returncode != 0:
+        return None
+    _, body, _ = g.split_frontmatter(shown.stdout)
+    return {state.key for state in specdocs.parse_screen(body).states if state.key}
 
 
 def check_feature_readme(doc: g.Doc, features: list[str], report: Report) -> None:
@@ -619,7 +724,7 @@ def check_v7_residue(report: Report) -> None:
 # ------------------------------------------------------------------- main
 
 
-def run(plan: Path | None) -> Report:
+def run(plan: Path | None, base_keys=base_state_keys) -> Report:
     report = Report()
     docs, migrated = g.load_all()
     features = g.feature_names()
@@ -642,6 +747,8 @@ def run(plan: Path | None) -> Report:
     check_references(docs, by_id, report)
     check_supersession(docs, by_id, report)
     check_single_product(report)
+    check_catalog(docs, report)
+    check_screen_states(docs, report, g.golden_files(), base_keys)
     check_text(docs, report)
     check_generated(report)
     check_v7_residue(report)
