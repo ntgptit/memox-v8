@@ -79,6 +79,7 @@ void main() {
       'B2',
     }, store: _StopAfterMerged.new);
     devices.add(b);
+    final anon = b.userId!;
 
     await expectLater(
       moveTo(b, mail, account.email, TransitionChoice.merge),
@@ -92,5 +93,6 @@ void main() {
     final names = await probe.deckNameList(account.id);
     expect(names.toSet(), {'A1', 'B1', 'B2'});
     expect(names, hasLength(3), reason: 'no deck duplicated');
+    expect(await probe.userExists(anon), isFalse, reason: 'the ack ran');
   });
 }

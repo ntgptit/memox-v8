@@ -78,6 +78,8 @@ void main() {
     expect(await SyncStore(a.device.db).pendingCount(), 1);
     expect(a.device.userId, a.id);
     expect(await a.device.deckNames(), {'A1', 'A2'});
+    expect(await probe.userExists(a.id), isTrue);
+    expect(await probe.deckNames(a.id), {'A1'}, reason: 'A2 was never sent');
 
     await a.device.coordinator.cancelSignOut();
     a.device.network.setOnline(true);
@@ -114,6 +116,7 @@ void main() {
     );
     expect(a.userId, anon);
     expect(a.state, isA<Ready>());
+    expect(await probe.emailOf(anon!), anyOf(isNull, isEmpty));
 
     a.network.setOnline(true);
     await a.signInByEmail(mail, email);

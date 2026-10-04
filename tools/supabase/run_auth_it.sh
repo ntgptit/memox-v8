@@ -23,7 +23,8 @@ npx --yes supabase start -x "$EXCLUDED" >/dev/null
 
 status=$(npx --yes supabase status -o env 2>/dev/null)
 value() { printf '%s\n' "$status" | sed -n "s/^$1=\"\{0,1\}\([^\"]*\)\"\{0,1\}\r\{0,1\}$/\1/p" | head -n 1; }
-first() { for name in "$@"; do v=$(value "$name"); [ -n "$v" ] && { printf '%s' "$v"; return; }; done; }
+# Always succeeds, so an empty value reaches the check below that names it.
+first() { for name in "$@"; do v=$(value "$name"); [ -n "$v" ] && { printf '%s' "$v"; return 0; }; done; return 0; }
 
 export MEMOX_IT_API_URL MEMOX_IT_PUBLISHABLE_KEY MEMOX_IT_SERVICE_ROLE_KEY MEMOX_IT_MAILPIT_URL
 MEMOX_IT_API_URL=$(first API_URL)
