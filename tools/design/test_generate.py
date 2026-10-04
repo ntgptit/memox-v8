@@ -5,6 +5,7 @@ import json
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -258,6 +259,29 @@ class FreshnessTest(unittest.TestCase):
         problems = g.stale(root, design(), identity)
         self.assertTrue(has(problems, "app_radius.dart is missing"))
         self.assertTrue(has(problems, "app_colors.dart is in the generated folder but not generated"))
+
+
+class DartFormatTest(unittest.TestCase):
+    def test_dart_format_speaks_utf8_whatever_the_code_page(self):
+        """On Windows the default text encoding is the ANSI code page, which turns
+        the header's em dash into a byte `dart format` rejects (final review #1)."""
+        calls = []
+
+        class Result:
+            returncode, stdout, stderr = 0, "formatted", ""
+
+        def fake_run(*args, **kwargs):
+            calls.append(kwargs)
+            return Result()
+
+        with mock.patch.object(g.subprocess, "run", fake_run), mock.patch.object(g.shutil, "which", lambda _: "dart"):
+            self.assertEqual(g.dart_format(Path("x.dart"), g.HEADER), "formatted")
+        self.assertEqual(calls[0].get("encoding"), "utf-8")
+
+    @unittest.skipIf(g.shutil.which("dart") is None, "dart is not on PATH")
+    def test_dart_format_round_trips_non_ascii(self):
+        source = g.HEADER + "const String a = 'Học — 한국어';\n"
+        self.assertIn("Học — 한국어", g.dart_format(Path("x.dart"), source))
 
 
 if __name__ == "__main__":

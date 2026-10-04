@@ -26,7 +26,7 @@ this deck" on an open deck (SCR-DECK-001, SCR-CARD-001) and on the session summa
 - **Breadcrumb** — Library › ancestors › deck.
 - **Hero** — a plain card (a summary, not a door): the eyebrow names the algorithm alone ("EIGHT
   BOXES", "SM-2"); a plain line "Up to {n} cards per session"; two stat tiles, New and Due — Due
-  above zero in primary, New above zero muted, a zero in `on-surface-variant`; the two sets never merge. "{n}
+  above zero in primary, New above zero muted, a zero in `on-surface` (the tile's plain emphasis); the two sets never merge. "{n}
   of the due cards are overdue" in `warning` when any are overdue.
 - **Resume banner** — a card: the eyebrow "Session from today" with a static primary dot, "{kind} ·
   {mode} · {done} of {total} cards", a 4-tall progress track, a line explaining Continue against

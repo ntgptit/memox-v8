@@ -397,7 +397,9 @@ def check_design(docs: list[g.Doc], report: Report) -> None:
     screens = {d.id for d in docs if d.kind == "SCR" and d.id}
     domains = {screen.split("-")[1] for screen in screens}
     findings = design_catalog.check_catalog(g.ROOT, domains, screens, g.golden_files())
-    findings += design_catalog.check_ink_vocabulary(g.ROOT)
+    design = g.ROOT / design_catalog.DESIGN_MD
+    catalog = design_catalog.parse(design.read_text(encoding="utf-8"))[0] if design.exists() else []
+    findings += design_catalog.check_ink_vocabulary(g.ROOT, frozenset(e.name for e in catalog))
     for level, where, message in findings:
         if level == "ERROR":
             report.error(where, message)

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/foundations/app_color_schemes.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_semantic_colors.dart';
 import 'package:memox/core/theme/foundations/app_text_styles.dart';
 
@@ -54,6 +55,13 @@ void main() {
           expect(built.letterSpacing, source.letterSpacing);
           expect(built.color, scheme.onSurface);
         }
+      });
+
+      test('focus falls back to the primary role, not a Flutter default', () {
+        expect(
+          theme.focusColor,
+          scheme.primary.withValues(alpha: AppOpacity.focus),
+        );
       });
 
       test('pads every tap target to 48', () {

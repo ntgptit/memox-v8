@@ -25,7 +25,11 @@ PROSE_INK = re.compile(
     r"\b(?i:(?:primary|secondary|tertiary|status|success|warning|danger|error|learning|reviewing"
     r"|mastered|new|indigo|variant|its|their|plain|the)[- ]ink)\b"
 )
-CAMEL_INK = re.compile(r"\b[a-z][A-Za-z0-9]*Ink\b")
+# camelCase (also `_private`), snake_case and PascalCase spellings of an ink role.
+# Flutter's own `Ink`, `InkWell`, `InkRipple`… never end in `Ink` after a prefix.
+CAMEL_INK = re.compile(r"(?<![A-Za-z0-9])_?[a-z][A-Za-z0-9]*Ink\b")
+SNAKE_INK = re.compile(r"(?<![A-Za-z0-9])_?[a-z][a-z0-9]*_ink\b")
+PASCAL_INK = re.compile(r"\b[A-Z][A-Za-z0-9]*Ink\b")
 INK_SCOPES = (
     "DESIGN.md",
     "docs/screens/**/*.md",
@@ -87,7 +91,14 @@ def body_of(text: str) -> tuple[str, int]:
 
 
 def parse(text: str) -> tuple[list[Entry], dict[str, Contract]]:
+    entries, contracts, _ = parse_with_errors(text)
+    return entries, contracts
+
+
+def parse_with_errors(text: str) -> tuple[list[Entry], dict[str, Contract], list[tuple[int, int]]]:
+    """The catalog rows, the contracts, and each malformed row as (line, cells)."""
     lines = text.splitlines()
+    malformed: list[tuple[int, int]] = []
     entries: list[Entry] = []
     contracts: dict[str, Contract] = {}
     section = None
@@ -99,7 +110,10 @@ def parse(text: str) -> tuple[list[Entry], dict[str, Contract]]:
             continue
         if section == CATALOG_HEADING and line.startswith("|"):
             cells = [c.strip().strip("`") for c in line.strip().strip("|").split("|")]
-            if len(cells) != 6 or cells[0] == "Component" or set("".join(cells)) <= set("-: "):
+            if cells[0] == "Component" or set("".join(cells)) <= set("-: "):
+                continue
+            if len(cells) != 6:
+                malformed.append((number, len(cells)))
                 continue
             name, purpose, layer, consumers, phase, status = cells
             entries.append(Entry(name, purpose, layer, [c.strip() for c in consumers.split(",") if c.strip()], phase, status, number))
@@ -110,7 +124,7 @@ def parse(text: str) -> tuple[list[Entry], dict[str, Contract]]:
             elif current is not None and line.startswith("- ") and ":" in line:
                 key, value = line[2:].split(":", 1)
                 current.fields[key.strip()] = value.strip()
-    return entries, contracts
+    return entries, contracts, malformed
 
 
 def check_catalog(root: Path, domains: set[str], screens: set[str], goldens: dict[str, Path]) -> list[Finding]:
@@ -120,7 +134,9 @@ def check_catalog(root: Path, domains: set[str], screens: set[str], goldens: dic
     if not design.exists():
         return [("ERROR", str(path), "component golden but DESIGN.md has no catalog") for path in mx_goldens.values()]
     text = design.read_text(encoding="utf-8")
-    entries, contracts = parse(text)
+    entries, contracts, malformed = parse_with_errors(text)
+    for number, cells in malformed:
+        findings.append(("ERROR", f"{DESIGN_MD}:{number}", f"catalog row has {cells} cells; a row has 6"))
     names = {e.name for e in entries}
     by_snake = {snake(e.name): e for e in entries}
     where = lambda e: f"{DESIGN_MD}:{e.line}"  # noqa: E731
@@ -205,7 +221,9 @@ def check_catalog(root: Path, domains: set[str], screens: set[str], goldens: dic
     return findings
 
 
-def check_ink_vocabulary(root: Path) -> list[Finding]:
+def check_ink_vocabulary(root: Path, allowed: frozenset[str] = frozenset()) -> list[Finding]:
+    """Ink-role terms; `allowed` holds catalog names such as `MxRowInk`, whose
+    "ink" is Flutter's ripple, not a colour."""
     findings: list[Finding] = []
     for pattern in INK_SCOPES:
         for path in sorted(root.glob(pattern)):
@@ -213,6 +231,8 @@ def check_ink_vocabulary(root: Path) -> list[Finding]:
             if not path.is_file() or relative.startswith("lib/l10n/generated/"):
                 continue
             for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
-                for match in (*PROSE_INK.finditer(line), *CAMEL_INK.finditer(line)):
+                matches = [*PROSE_INK.finditer(line), *CAMEL_INK.finditer(line), *SNAKE_INK.finditer(line)]
+                matches += [m for m in PASCAL_INK.finditer(line) if m.group(0) not in allowed]
+                for match in matches:
                     findings.append(("ERROR", f"{relative}:{number}", f"`{match.group(0)}`: the ink model is retired; name the role (A2, A11)"))
     return findings

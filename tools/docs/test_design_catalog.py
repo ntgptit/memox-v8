@@ -82,6 +82,11 @@ class CatalogTest(unittest.TestCase):
         self.assertTrue(has(lines, "consumer `BOGUS`"))
         self.assertFalse(has(lines, "consumer `MxButton`"))
 
+    def test_a_row_with_the_wrong_number_of_cells_is_an_error(self):
+        bad = "| MxChip | a chip | with a stray pipe | shared | DECK, CARD | SP3a | planned |\n"
+        lines = found({"DESIGN.md": design(row() + bad)})
+        self.assertTrue(has(lines, "catalog row has 7 cells; a row has 6"))
+
     def test_a_duplicate_row_is_an_error(self):
         self.assertTrue(has(found({"DESIGN.md": design(row() + row())}), "two catalog rows"))
 
@@ -185,12 +190,20 @@ class InkVocabularyTest(unittest.TestCase):
         lines = [f"{where}: {message}" for _, where, message in dc.check_ink_vocabulary(root)]
         self.assertEqual(len(lines), 6, lines)
 
+    def test_private_snake_and_pascal_ink_names_are_errors(self):
+        root = tree({"lib/x.dart": "Color get _primaryInk => c;\nfinal primary_ink = c;\nclass StatusInk {}\n"})
+        self.assertEqual(len(dc.check_ink_vocabulary(root)), 3)
+
+    def test_a_catalogued_component_named_ink_is_allowed(self):
+        root = tree({"lib/x.dart": "class MxRowInk extends StatelessWidget {}\n"})
+        self.assertEqual(dc.check_ink_vocabulary(root, frozenset({"MxRowInk"})), [])
+
     def test_ripples_links_and_rows_are_not_ink_roles(self):
         root = tree({
             "DESIGN.md": "a link; InkWell; MxRowInk is the row ripple; Ink.image\n",
             "lib/x.dart": "return InkWell(child: Ink(child: c));\n",
         })
-        self.assertEqual(dc.check_ink_vocabulary(root), [])
+        self.assertEqual(dc.check_ink_vocabulary(root, frozenset({"MxRowInk"})), [])
 
 
 if __name__ == "__main__":
