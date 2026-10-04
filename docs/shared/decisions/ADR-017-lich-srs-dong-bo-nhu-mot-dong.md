@@ -1,7 +1,7 @@
 ---
 id: ADR-017
 title: Lịch SRS đồng bộ như một dòng, lịch tiến xa hơn thắng
-status: active
+status: accepted
 superseded_by:
 ---
 ## Bối cảnh

@@ -1,7 +1,7 @@
 ---
 id: ADR-007
 title: Khoá chính UUID sinh phía client
-status: active
+status: accepted
 superseded_by:
 ---
 ## Quyết định

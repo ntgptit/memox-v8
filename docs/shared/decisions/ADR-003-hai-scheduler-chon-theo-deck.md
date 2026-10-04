@@ -1,7 +1,7 @@
 ---
 id: ADR-003
 title: Hai scheduler, chọn theo deck
-status: active
+status: accepted
 superseded_by:
 ---
 Quyết định đã chốt ngày 2026-07-28 (trước migrate nằm ở `product/product.md`, mục "Quyết định đã chốt").

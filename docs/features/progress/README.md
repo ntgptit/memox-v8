@@ -7,17 +7,6 @@ depends_on: [deck, srs, study]
 
 Tiến độ theo deck và Progress overview (V8.0): đọc lại lịch sử học, không ghi gì.
 
-## Màn hình → Use case
-
-| Màn hình | UC |
-|---|---|
-| Tab Tiến độ / Progress | UC-PROGRESS-001, UC-PROGRESS-002 |
-| Hàng deck trên màn tiến độ (drill-down) | UC-PROGRESS-002 |
-
-Màn 22 và điều hướng giữa các cấp: [ui.md](ui.md).
-
-Nguồn: trigger của UC-PROGRESS-001 ("Chạm tab **Tiến độ / Progress** ở bottom navigation") và UC-PROGRESS-002 ("Mở tab Progress, hoặc chạm một hàng deck trên màn hình tiến độ").
-
 ## Không thuộc phạm vi
 
 | Thứ | Vì sao |

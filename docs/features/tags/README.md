@@ -7,7 +7,7 @@ depends_on: [card]
 
 **Phạm vi:** Tag Management, phần store (BE-B2,
 [spec](../../superpowers/specs/2026-09-26-tag-management-backend-design.md)) và màn 05 cùng
-bộ lọc tag của card list (FE-B2): [ui.md](ui.md).
+bộ lọc tag của card list (FE-B2): SCR-TAG-001, SCR-CARD-001.
 
 Mô hình dữ liệu tag (BR-TAG-001, BR-TAG-002) và Tag Management v1: catalog, lọc theo tag, đổi tên/gộp, xoá.
 
@@ -17,14 +17,6 @@ Gắn/gỡ tag trên thẻ (BR-TAG-001, BR-TAG-002, UC-CARD-001 A8) thuộc V8.0
 giữ nguyên, đổi tên hay gộp vào tag nào, kèm số thẻ; `RenameTagUseCase` chỉ gộp vào
 đúng tag người dùng đã xác nhận, còn lại từ chối `mergeNotConfirmed` và không ghi gì
 (spec D5). Lọc card list theo tag là `CardListQuery.tagIds` của feature `card` (BE-C4).
-
-## Màn hình → Use case
-
-| Màn hình | UC |
-|---|---|
-| Tag catalog (hành động `Tags` trên app bar của Library, hoặc `Manage tags`) | UC-TAG-001 |
-
-Nguồn: trigger của UC-TAG-001.
 
 ## Không thuộc phạm vi
 

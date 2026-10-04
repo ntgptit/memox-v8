@@ -1,7 +1,7 @@
 ---
 id: ADR-012
 title: App gọi API bằng Retrofit trên một Dio client dùng chung
-status: active
+status: accepted
 superseded_by:
 ---
 ## Bối cảnh

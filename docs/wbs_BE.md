@@ -30,8 +30,8 @@
   và [ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md) đưa
   sync và login vào V8, với server là Supabase (`supabase/`). Cả phần app lẫn phần
   server ở nhóm "Đồng bộ với server"; [`wbs_API.md`](wbs_API.md) đóng băng.
-- **Thứ tự nghiệp vụ:** [`navigation.md`](shared/ui/navigation.md) chọn luồng ôn tập
-  làm vertical slice nên xây đầu tiên; foundation spec xếp lõi V8.0 theo thứ tự
+- **Thứ tự nghiệp vụ:** luồng ôn tập (UC-STUDY-001) được chọn làm vertical slice
+  xây đầu tiên (ghi chú của `navigation.md` cũ, gỡ ngày 2026-10-04); foundation spec xếp lõi V8.0 theo thứ tự
   deck/card → study/review → progress.
 - **Quy trình:** mỗi nhóm hạng mục đi qua brainstorm → spec → plan → thực thi → review
   của Superpowers (`CLAUDE.md`), như backend deck/card

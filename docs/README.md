@@ -6,122 +6,58 @@ kiểm chứng bằng lệnh nào. Danh mục chi tiết từng rule/use case **
 
 ## Sản phẩm
 
-### Problem
-
-Người học từ vựng quên phần lớn những gì vừa học nếu ôn tập không đúng thời
-điểm. Ôn thủ công bằng sổ tay hoặc file không cho biết *khi nào* cần ôn lại từ
-nào, nên người học hoặc ôn quá sớm (lãng phí) hoặc quá muộn (đã quên).
-
-### Target users
-
-| Group | Context | What they need | Not the target |
-|---|---|---|---|
-| Người tự học từ vựng | Học lẻ trên điện thoại, thời gian rời rạc, kết nối không ổn định | Ôn đúng thời điểm, dùng được mọi lúc kể cả offline | Lớp học có giáo viên quản lý |
-| Người ôn thi | Khối lượng từ lớn, có deadline | Theo dõi tiến độ, ưu tiên từ sắp quên | Người cần nội dung biên soạn sẵn |
-
-**Đã chốt:** người dùng tự tạo nội dung, **và** app cung cấp starter deck dưới
-dạng template để người dùng sao chép về. Nội dung starter hiện tại là
-fixture của dự án, chỉ phục vụ development và test — không phải nội dung
-production (BR-STARTER-010). Import/export vẫn ở nice-to-have.
-
-### Core value
-
-Ôn đúng từ vào đúng thời điểm, hoạt động đầy đủ khi không có mạng.
-
-Quyết định nền tảng: [ADR-001](shared/decisions/ADR-001-quyet-dinh-nen-tang.md). Dữ liệu nhạy cảm: [ADR-002](shared/decisions/ADR-002-du-lieu-nhay-cam-va-chua-ma-hoa-database.md).
-
-### Phạm vi MVP
-
-Nguyên tắc: MVP là **một vertical slice chạy được từ Drift đến màn hình**, đủ để
-chứng minh kiến trúc offline-first (mọi thao tác chạy từ Drift, không cần mạng —
-[ADR-013](shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md)) và cơ chế
-Drift migration hoạt động. Không phải bản đầy đủ tính năng.
-
-#### Must-have
-
-| # | Feature | Done when |
-|---|---|---|
-| M1 | Tạo/sửa/xoá deck | Deck tồn tại sau khi restart app; xoá deck cần xác nhận và cascade xoá vĩnh viễn toàn bộ card ngay, không qua Trash (BR-DECK-022, BR-DECK-023) |
-| M2 | Tạo/sửa/xoá card trong deck | Card có mặt trước/sau; sửa không làm mất lịch sử ôn tập |
-| M3 | Phiên học theo lịch SRS | Chỉ hiện card đến hạn; đánh giá kết quả cập nhật lịch ôn lần sau |
-| M4 | Danh sách deck với tiến độ | Mỗi deck hiện số card đến hạn hôm nay |
-| M5 | Hoạt động đầy đủ offline | Bật chế độ máy bay, mọi chức năng trên vẫn chạy bình thường |
-
-Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên: xem [`features/study-mode/README.md`](features/study-mode/README.md).
-
-#### Should-have
-
-| # | Feature | Done when |
-|---|---|---|
-| S1 | Tìm kiếm card trong deck | Trong phạm vi: tìm theo nội dung mặt trước/sau trong deck đang mở, không phân biệt hoa thường và giữ dấu. Tìm toàn thư viện là UC-SEARCH-001 |
-| S2 | Thống kê ôn tập cơ bản | Trong phạm vi (UC-PROGRESS-001, BR-PROGRESS-009…BR-PROGRESS-018): số card đã học hôm nay tách Learning/Reviewing, streak theo ngày, và hoạt động bảy ngày gần nhất. Ngoài phạm vi: accuracy, longest streak, goal, XP, heatmap và lọc theo deck (BR-PROGRESS-010) |
-| S3 | Đảo chiều card (nghĩa → từ) | Trong phạm vi (UC-STUDY-003, BR-MODE-013…BR-MODE-019): chọn chiều hỏi trước lượt đầu, chỉ cho phiên ôn tập `self_assess` của deck `sm2` |
-
-#### Nice-to-have
-
-| # | Feature | Notes |
-|---|---|---|
-| N1 | Import/export | Trong V8.0 theo [spec card transfer](superpowers/specs/2026-09-26-card-transfer-design.md) (UC-TRANSFER-001, UC-TRANSFER-002, BR-TRANSFER-001…BR-TRANSFER-014): import CSV/TSV/XLSX hoặc văn bản dán (màn 11), export nội dung (sheet 12) — không phải backup. Backend BE-B3 và UI FE-B3 xong |
-| N2 | Nhắc nhở ôn tập hằng ngày | Sub-project sau (UC-REMINDER-001, BR-REMINDER-001…BR-REMINDER-012): opt-in, mặc định tắt, một tóm tắt mỗi ngày dựng từ workload đến hạn tại thời điểm hiện tại. Quyền notification chỉ được xin **sau** khi người dùng bật (BR-REMINDER-011) |
-| N3 | Tag/phân loại card | Sub-project sau (UC-TAG-001, BR-TAG-003…BR-TAG-011): catalog phạm vi library, lọc nhiều tag theo OR, đổi tên có gộp, và xoá. Ngoài phạm vi: tag phân cấp, màu tag, taxonomy chia sẻ |
-
-#### Explicitly out of MVP
-
-| Feature | Why deferred | Revisit when |
-|---|---|---|
-| Đăng nhập / tài khoản | Không có backend; thêm auth lúc này là xây UI cho thứ chưa dùng được | Khi Spring Boot backend sẵn sàng |
-| Đồng bộ đa thiết bị | Cần backend và conflict resolution | Cùng lúc với auth |
-| iOS | Ổn định Android trước để tránh sửa lỗi trên hai nền tảng cùng lúc | Sau khi Android ổn định về UX + migration + test |
-| Phân quyền theo role | Chỉ có một loại user, kể cả sau khi có auth | Chưa có kế hoạch |
-| Chia sẻ deck giữa người dùng | Cần backend | Sau đồng bộ |
-| Audio / hình ảnh trong card | Kéo theo lưu trữ file, đồng bộ file, nén ảnh — một khối lượng riêng | Sau MVP |
+Định nghĩa sản phẩm: [`/PRODUCT.md`](../PRODUCT.md).
 
 ## Bản đồ
 
 ```
+PRODUCT.md                       # root repo — định nghĩa sản phẩm, bản duy nhất
+DESIGN.md                        # root repo — hệ thống hình ảnh (ADR-021)
 docs/
-├── README.md                    # file này
-├── glossary.md                  # thuật ngữ, trỏ về định nghĩa gốc
-├── wbs_BE.md                    # tiến độ backend: đã xong, còn lại, thứ tự làm
-├── wbs_FE.md                    # tiến độ frontend: đã xong, còn lại, thứ tự làm
-├── wbs_API.md                   # tiến độ memox-api-services: đã xong, còn lại, thứ tự làm
-├── wbs_supabase.md              # tiến độ sync và login trên Supabase: đã xong, còn lại, thứ tự làm
+├── README.md                    # file này: bản đồ và convention
+├── USE_CASES.md                 # mọi UC, nhóm theo feature
+├── NAVIGATION.md                # điều hướng cấp app và router
+├── functional-spec/
+│   ├── README.md                # feature → file
+│   └── <feature>.md             # FN-<DOMAIN>-NNN
+├── screens/
+│   ├── SCREEN_CATALOG.md        # mọi màn + invariant chung INV-UI
+│   └── spec/                    # SCR-<DOMAIN>-NNN-<slug>.md, một file một màn
+├── glossary.md
+├── wbs_BE.md, wbs_FE.md, wbs_API.md, wbs_supabase.md
 ├── shared/
-│   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu
+│   ├── rules/                   # BR-CORE-NNN-<slug>.md
 │   ├── decisions/               # ADR-NNN-<slug>.md
-│   ├── data/                    # schema.md — bảng, cột, index, invariant `-- N.`
-│   ├── ui/
-│   │   ├── navigation.md        # điều hướng toàn app
-│   │   └── screen-handoff/      # từng màn của app: layout, state kèm golden, ruling, copy
-│   └── testing/                 # hạ tầng kịch bản IT dùng chung
+│   ├── data/                    # schema.md
+│   └── testing/
 ├── features/<feature>/
-│   ├── README.md                # phạm vi + màn hình → use case
+│   ├── README.md                # phạm vi, thuật ngữ, depends_on
 │   ├── rules/                   # BR-<DOMAIN>-NNN-<slug>.md
-│   ├── usecases/                # UC-<DOMAIN>-NNN-<slug>.md
-│   ├── ui.md                    # TÙY CHỌN
 │   ├── data.md                  # TÙY CHỌN
-│   ├── api.md                   # TÙY CHỌN
-│   └── it-scenarios.md          # TÙY CHỌN — kịch bản IT truy vết về feature này
-├── superpowers/                 # spec + plan của quy trình Superpowers (giữ ID lịch sử)
-└── _generated/                  # KHÔNG SỬA TAY — index, traceability, open questions
+│   └── it-scenarios.md          # TÙY CHỌN
+├── superpowers/                 # spec + plan (giữ ID lịch sử)
+└── _generated/                  # KHÔNG SỬA TAY — index, traceability, screens, navigation-graph, open questions
 ```
 
 File/folder trong `shared/` và file tùy chọn của feature chỉ tồn tại khi có nội
 dung thật. Không tạo file rỗng.
 
-`shared/ui/screen-handoff/` ghi từng màn của app: layout, state kèm golden, ruling và copy
-([index](shared/ui/screen-handoff/00-index.md)). Hệ thống hình ảnh ở [`DESIGN.md`](../DESIGN.md);
-thứ tự ưu tiên theo [ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md).
+Mỗi màn có một spec trong `screens/spec/` và một hàng trong `screens/SCREEN_CATALOG.md`.
+Hệ thống hình ảnh ở [`DESIGN.md`](../DESIGN.md); thứ tự ưu tiên theo
+[ADR-021](shared/decisions/ADR-021-tai-lieu-dan-dat-ui-khi-xay-lai.md). Định nghĩa sản phẩm
+thuộc `/PRODUCT.md`; không chép phạm vi sản phẩm vào cây `docs/`.
 
 ## Thứ tự đọc
 
 1. `CLAUDE.md` ở root repo — ràng buộc áp dụng ở mọi phase.
 2. File này.
-3. `features/<feature>/README.md` của feature đang làm, rồi đúng các BR/UC mà nó
-   trỏ tới. Không đọc hết `docs/`.
-4. `shared/` khi feature tham chiếu tới; `shared/decisions/` khi cần biết **vì sao**.
-5. [`_generated/open-questions.md`](_generated/open-questions.md) trước khi coi
-   một hành vi là đã chốt.
+3. `/PRODUCT.md` khi cần phạm vi sản phẩm.
+4. Việc trên một feature: `features/<feature>/README.md`, `functional-spec/<feature>.md`, các UC
+   của nó trong `USE_CASES.md`, rồi đúng các BR mà FN trỏ tới. Không đọc hết `docs/`.
+5. Việc trên một màn: `screens/SCREEN_CATALOG.md`, spec của màn, các FN nó gọi, `/DESIGN.md`.
+6. `shared/decisions/` khi cần biết **vì sao**.
+7. [`_generated/open-questions.md`](_generated/open-questions.md) trước khi coi một hành vi là
+   đã chốt.
 
 `.claude/skills/` là hướng dẫn *cách làm*, không phải quyết định sản phẩm. Khi
 skill và `docs/` mâu thuẫn, `docs/` thắng, và mâu thuẫn đó là defect phải sửa.
@@ -130,18 +66,24 @@ skill và `docs/` mâu thuẫn, `docs/` thắng, và mâu thuẫn đó là defec
 
 | Nội dung | Vị trí |
 |---|---|
-| Ràng buộc nghiệp vụ, dùng 1 feature | `features/<f>/rules/` |
-| Ràng buộc nghiệp vụ, dùng ≥ 2 feature | `shared/rules/` (BR-CORE) |
-| Hành vi chỉ xảy ra trong 1 use case (kể cả UI/local/API của UC đó) | Section tương ứng trong file UC |
-| Màn hình, điều hướng, state dùng chung nhiều UC của feature | `features/<f>/ui.md` |
+| Định nghĩa sản phẩm, phạm vi MVP | `/PRODUCT.md` |
+| Mục tiêu và luồng của người dùng | `USE_CASES.md` (UC) |
+| Hệ thống làm gì: precondition, input, kết quả, lỗi, BR áp dụng | `functional-spec/<feature>.md` (FN) |
+| Ràng buộc nghiệp vụ, một feature sở hữu | `features/<f>/rules/` |
+| Ràng buộc nghiệp vụ không feature nào sở hữu | `shared/rules/` (BR-CORE) |
+| Một màn: vùng, state, control → FN, điều hướng cục bộ, copy, ruling | `screens/spec/` |
+| Danh mục màn; invariant hành vi mọi màn phải giữ | `screens/SCREEN_CATALOG.md` |
+| Điều hướng cấp app: shell, tab, deep link, back, guard, boot | `NAVIGATION.md` |
+| Hệ thống hình ảnh | `/DESIGN.md` |
 | Bảng/field feature dùng, dữ liệu sync, conflict rule riêng | `features/<f>/data.md` |
 | Endpoint feature dùng, lỗi đặc thù | `features/<f>/api.md` |
 | Request/response, error code | `shared/api/` |
-| Cơ chế chung: cache, sync, state pattern, token | `shared/data/`, `shared/ui/` |
+| Cơ chế chung: cache, sync, token | `shared/data/` |
+| Kịch bản IT | `features/<f>/it-scenarios.md`, `shared/testing/` |
 | Quyết định kỹ thuật có lý do và phương án bị loại | `shared/decisions/` (ADR) |
 | Định nghĩa thuật ngữ | `glossary.md` |
 
-Nguyên tắc: nghiệp vụ → rule; hành vi → use case; cơ chế → shared.
+Nguyên tắc: mục tiêu → UC; hành vi hệ thống → FN; ràng buộc → BR; giao diện → screen spec.
 Không chép nội dung sang chỗ khác — chỉ reference ID hoặc link.
 
 
@@ -162,7 +104,7 @@ chỗ có thể mâu thuẫn.
 - Kịch bản kiểm thử tích hợp: `features/<f>/it-scenarios.md` theo UC/BR mà kịch
   bản truy vết; hướng dẫn thực thi, danh mục và kịch bản không thuộc feature nào
   ở `shared/testing/`.
-- Điều hướng toàn app: `shared/ui/navigation.md`.
+- Điều hướng toàn app: `NAVIGATION.md`.
 
 ## Convention
 
@@ -187,6 +129,10 @@ Một agent đọc `docs/` cần trả lời được ba câu:
 | Business rule | `BR-<DOMAIN>-NNN` | `BR-DECK-015` |
 | Use case | `UC-<DOMAIN>-NNN` | `UC-STUDY-001` |
 | Rule dùng chung | `BR-CORE-NNN` | — (chưa có) |
+| Chức năng | `FN-<DOMAIN>-NNN` | `FN-DECK-001` |
+| Màn hình | `SCR-<DOMAIN>-NNN` | `SCR-DECK-001` |
+| Invariant UI chung | `INV-UI-NNN` | `INV-UI-001` |
+| State của một màn | `snake_case`, duy nhất trong màn | `root_loaded` |
 | Quyết định | `ADR-NNN` | `ADR-001` |
 
 - DOMAIN viết hoa, NNN đúng 3 chữ số. Tên file: `<ID>-<slug-kebab-case>.md`; ID
@@ -206,7 +152,8 @@ Một agent đọc `docs/` cần trả lời được ba câu:
   ID mới lấy số tiếp theo của DOMAIN đó, nên ID không nhất thiết tăng theo thứ tự
   đọc. Lý do: một lần đánh số lại trước V8 đã làm một ID trỏ sang rule khác mà
   không test nào bắt được. Ngoại lệ duy nhất, thuộc đợt migrate này:
-  `BR-PRIVACY-00n` → `BR-CORE-00n`.
+  `BR-PRIVACY-00n` → `BR-CORE-00n`. Áp dụng cho cả FN, SCR, INV-UI
+  và state key của màn; state bị bỏ giữ heading với `Status: removed`.
 - Rule bị thay thế: `status: deprecated` + `superseded_by: <ID>`, giữ nguyên ID
   và nguyên văn. **MUST NOT xoá** — ID biến mất làm mọi tham chiếu cũ trong
   commit, comment, PR trỏ vào hư không.
@@ -242,25 +189,6 @@ Rule cần nhiều hơn một câu (ví dụ có bảng tra) MUST dùng dạng s
 `### BR-<CODE>-nnn · <tiêu đề>` và vẫn phải xuất hiện Status/Enforced by/Related
 ngay dưới tiêu đề.
 
-Use case — `features/<f>/usecases/`:
-
-```yaml
----
-id: UC-STUDY-001
-title: <tên>
-status: ready             # draft | ready | deprecated — trạng thái SPEC, không phải tiến độ code
-rules: [BR-STUDY-001, BR-STUDY-002]
-code: []                  # path thật trong repo; không chắc → [] và ghi OPEN QUESTION
----
-## Mục tiêu / Actor / Precondition
-## Main flow
-## Alternative / Error flow
-## UI
-## Local
-## API
-## Acceptance criteria
-```
-
 Feature README — `features/<f>/README.md`:
 
 ```yaml
@@ -270,7 +198,6 @@ code: []
 depends_on: []
 ---
 ## Phạm vi
-## Màn hình → Use case
 ## Không thuộc phạm vi
 ```
 
@@ -285,10 +212,101 @@ Chiều import Dart giữa các feature trong `lib/features/` do
 đồ thị này.
 
 ADR — `shared/decisions/`: frontmatter `id`, `title`, `status`
-(`draft | active | deprecated`), `superseded_by` khi deprecated.
+(`draft | accepted | superseded | deprecated`), `superseded_by` khi superseded hoặc
+deprecated, `supersedes: [ADR-…]` ở ADR thay thế. Link trong ADR superseded hoặc deprecated
+không được kiểm (bản ghi, không sửa).
 
 Section không áp dụng: ghi "Không áp dụng", không xoá heading. Quan hệ chỉ khai
-báo một chiều: UC khai báo `rules`; không viết reverse link hay index bằng tay.
+báo một chiều (UC → FN, FN → BR, màn → FN/UC/màn); không viết reverse link hay index bằng tay.
+
+### UC, FN và screen spec
+
+Mỗi UC là một section của `USE_CASES.md`, dưới nhóm `## <Feature>`. Dòng ngay dưới heading là
+dòng meta, các phần cách nhau bởi ` · `:
+
+```markdown
+### UC-DECK-001 — <tiêu đề>
+Status: ready · Code: [<path>, …] · Invokes: [FN-DECK-001, …]
+
+#### Mục tiêu / Actor / Precondition
+#### Main flow                — bước của hệ thống trỏ FN-ID: "Hệ thống thực hiện FN-DECK-001."
+#### Alternative / Error flow
+#### Acceptance criteria
+```
+
+Mỗi FN là một section của `functional-spec/<feature>.md`; tên file là tên thư mục feature:
+
+```markdown
+## FN-DECK-001 — <tiêu đề>
+Status: active · Code: [lib/features/deck/domain/usecases/<x>_use_case.dart]
+
+### Precondition
+### Input
+### Kết quả
+### Lỗi                — failure type có thật trong lớp domain; không đặt mã lỗi mới
+### Business rules     — BR-…, một dòng một BR (quan hệ gốc FN → BR)
+```
+
+Mỗi màn là một file `screens/spec/SCR-<DOMAIN>-NNN-<slug>.md`, viết tiếng Anh:
+
+```markdown
+---
+id: SCR-DECK-001
+name: <Screen name>
+domain: <feature folder>
+status: draft | ready | built
+route: [/path, …]
+---
+# <Screen name>
+## Purpose
+## Related Use Cases          — UC-ID (quan hệ gốc màn → UC)
+## Layout                     — vùng theo vai trò, trên → dưới; không tên class widget
+## States                     — mỗi state: ### `<state_key>` · <Title>, rồi "Golden: light, dark" hoặc "Golden: none — <lý do>"
+## Controls                   — mỗi control: Type, Purpose, Enabled when, "Invokes: FN-…",
+                                #### On success ("Navigate to: SCR-…" hoặc phản hồi UI),
+                                #### On failure (<failure type> → cách hiển thị)
+## Responsive Behavior        — "Follows the shared floor" khi không có gì riêng
+## Accessibility              — như trên
+## UI Invariants              — | Invariant | Enforced by |, chỉ invariant riêng của màn
+## Copy
+## Rulings
+```
+
+UC chỉ giữ ý định của người dùng, luồng ở mức ngữ nghĩa và FN-ID. Control, layout, dialog, FAB,
+nút, lỗi hiện inline hay snackbar và cách trình bày state nằm ở screen spec của màn đó.
+
+Một màn chưa có spec là một hàng `pending` trong `screens/SCREEN_CATALOG.md` (Route và Spec ghi
+`—`). ID của nó trích được ở mọi nơi; `Navigate to:` tới nó là WARNING cho tới khi spec được
+viết, lúc đó hàng `pending` được thay bằng hàng thật.
+
+Golden của state tên `<scr_id>__<state_key>__<variant>.png`, ví dụ
+`scr_deck_001__root_loaded__light.png`, nằm dưới `test/**/goldens/`.
+
+Quan hệ gốc chỉ khai báo một chiều; chiều ngược do `generate.py` sinh vào `_generated/`, và một
+section viết tay kiểu `Used by`, `Invoked by`, `Related Screens`, `Related BR`, `Entry points`
+là ERROR.
+
+| Quan hệ gốc | Viết ở |
+|---|---|
+| UC → FN | dòng `Invokes:` của UC |
+| FN → BR | `### Business rules` của FN |
+| Màn → FN | dòng `Invokes:` ở control |
+| Màn → UC | `## Related Use Cases` |
+| Màn → màn | dòng `Navigate to:` ở control |
+| App → màn | `NAVIGATION.md` (deep link, guard, tab, back, boot) |
+
+Loại ID mỗi tài liệu được trích (dòng `OPEN QUESTION` được miễn; trong các tài liệu này, ID
+trong `inline code` vẫn tính):
+
+| Tài liệu | Được trích |
+|---|---|
+| `USE_CASES.md` | FN |
+| `functional-spec/` | BR; FN khi là tiền điều kiện hay năng lực của domain khác ở mức contract — không mô tả call graph |
+| `screens/spec/` | FN, UC, SCR, INV-UI |
+| `screens/SCREEN_CATALOG.md` | SCR, INV-UI |
+| `NAVIGATION.md` | SCR, UC |
+
+UC và màn không bao giờ trích BR; BR tới UC hay màn chỉ qua FN.
 
 ### Viết use case
 
@@ -302,11 +320,13 @@ hình sẽ đổi; luồng thì không.
 
 `Error flows` và `UI states` là hai mục hay bị bỏ và là nguồn của phần lớn màn
 hình thiếu trạng thái. MUST liệt kê đủ; trạng thái không xảy ra thì MUST nói rõ
-vì sao thay vì im lặng bỏ. Trong cấu trúc mới, hai mục đó nằm ở `## Alternative / Error flow` và `## UI`.
+vì sao thay vì im lặng bỏ. Trong cấu trúc mới, error flow nằm ở `#### Alternative / Error flow` của UC,
+còn trạng thái giao diện ở `## States` của screen spec.
 
 Mỗi UC mô tả mình và im lặng về những UC bên cạnh. Các UC nối vào nhau thế nào
-thì xem [`shared/ui/navigation.md`](shared/ui/navigation.md) và `ui.md` của từng
-feature; các sơ đồ đó tham chiếu ngược về UC bằng ID và không phát biểu lại luồng nào.
+thì xem [`NAVIGATION.md`](NAVIGATION.md) và các dòng `Navigate to:` của screen spec (đồ thị sinh ở
+[`_generated/navigation-graph.md`](_generated/navigation-graph.md)); chúng tham chiếu ngược về UC
+bằng ID và không phát biểu lại luồng nào.
 
 ### Data model
 
@@ -363,11 +383,14 @@ Chạy từ root repo, Python 3, không cần thư viện ngoài:
 ```sh
 python tools/docs/generate.py                                  # sinh docs/_generated/
 python tools/docs/check.py                                     # ERROR → exit 1
+python tools/docs/check.py --ledger docs/superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md  # ledger là bản ghi; seed từ chối vì nguồn đã gỡ
+python -m unittest discover -s tools/docs -p 'test_*.py'
 ```
 
 `check.py` kiểm frontmatter, ID (format, trùng, khớp tên file và DOMAIN của thư
 mục), `rules`/`superseded_by`, path trong `code`, link tương đối, ID và
 `invariant Qn` được trích, section bắt buộc, `_generated/` có lỗi thời không. Link trong
-`docs/superpowers/` không được kiểm (tài liệu lịch sử, [ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md)). WARNING (không fail):
-BR active không UC nào dùng, UC ready có `code: []` hoặc chưa có test chứa ID. Chi tiết
-ở docstring của hai script.
+`docs/superpowers/` không được kiểm (tài liệu lịch sử, [ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md),
+[ADR-021](shared/decisions/ADR-021-tai-lieu-dan-dat-ui-khi-xay-lai.md)). WARNING (không fail):
+BR active không FN nào trích, FN active không UC hay màn nào gọi, UC ready chưa có code hay test,
+INV-UI chưa có gì enforce. Chi tiết ở docstring của hai script.

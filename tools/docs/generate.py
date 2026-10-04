@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate docs/_generated/{index,traceability,open-questions}.md.
+"""Generate docs/_generated/{index,traceability,screens,navigation-graph,open-questions}.md.
 
     python tools/docs/generate.py [--out DIR]
 
@@ -30,6 +30,18 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+# Loaded by file path from other tools (test_ci_tooling.py), so find the sibling modules.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from mdparse import (  # noqa: F401 — re-exported: check.py and the tests use g.<name>
+    h2_sections,
+    iter_unfenced,
+    parse_scalar,
+    parse_value,
+    split_frontmatter,
+)
+import specdocs
+
 ROOT = Path.cwd()
 DOCS = ROOT / "docs"
 GENERATED = DOCS / "_generated"
@@ -58,12 +70,18 @@ INLINE_CODE = re.compile(r"`[^`]*`")
 @dataclass
 class Doc:
     path: Path
-    kind: str  # "BR" | "UC" | "ADR" | "FEATURE"
+    kind: str  # "BR" | "UC" | "ADR" | "FEATURE" | "FN" | "SCR"
     feature: str  # feature folder name, or SHARED
     meta: dict[str, object]
     body: str
     frontmatter_error: str | None = None
     sections: list[str] = field(default_factory=list)
+    line: int = 0  # heading line of a section document; 0 for a file document
+    screen: object = None  # specdocs.Screen for kind "SCR"
+
+    @property
+    def is_section(self) -> bool:
+        return self.line > 0
 
     @property
     def id(self) -> str:
@@ -87,58 +105,6 @@ class Doc:
 # ---------------------------------------------------------------- parsing
 
 
-def parse_scalar(raw: str) -> str:
-    value = raw.strip()
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
-        return value[1:-1]
-    return value
-
-
-def parse_value(raw: str) -> object:
-    value = raw.strip()
-    if not (value.startswith("[") and value.endswith("]")):
-        return parse_scalar(value)
-    inner = value[1:-1].strip()
-    if not inner:
-        return []
-    return [parse_scalar(item) for item in inner.split(",")]
-
-
-def split_frontmatter(text: str) -> tuple[dict[str, object] | None, str, str | None]:
-    """Return (meta, body, error). meta is None when the file has no block."""
-    lines = text.splitlines()
-    if not lines or lines[0].strip() != "---":
-        return None, text, None
-    try:
-        end = next(i for i in range(1, len(lines)) if lines[i].strip() == "---")
-    except StopIteration:
-        return None, text, "frontmatter has no closing `---` line"
-    meta: dict[str, object] = {}
-    for line_no, line in enumerate(lines[1:end], 2):
-        if not line.strip():
-            continue
-        if ":" not in line:
-            return meta, "\n".join(lines[end + 1 :]), f"frontmatter line {line_no}: expected `key: value`"
-        key, raw = line.split(":", 1)
-        meta[key.strip()] = parse_value(raw)
-    return meta, "\n".join(lines[end + 1 :]), None
-
-
-def iter_unfenced(text: str):
-    """Yield (line_no, line) for lines outside ``` fences."""
-    fenced = False
-    for line_no, line in enumerate(text.splitlines(), 1):
-        if line.lstrip().startswith("```"):
-            fenced = not fenced
-            continue
-        if not fenced:
-            yield line_no, line
-
-
-def h2_sections(body: str) -> list[str]:
-    return [line[3:].strip() for _, line in iter_unfenced(body) if line.startswith("## ")]
-
-
 def classify(path: Path) -> tuple[str, str] | None:
     """Return (kind, feature) for a structured doc, None for free-form docs."""
     parts = path.relative_to(DOCS).parts
@@ -150,31 +116,90 @@ def classify(path: Path) -> tuple[str, str] | None:
         return "FEATURE", parts[1]
     if len(parts) == 4 and parts[0] == "features" and parts[2] == "rules":
         return "BR", parts[1]
-    if len(parts) == 4 and parts[0] == "features" and parts[2] == "usecases":
-        return "UC", parts[1]
+    if len(parts) == 3 and parts[0] == "screens" and parts[1] == "spec":
+        return "SCR", ""
     return None
 
 
-def load_docs() -> list[Doc]:
+def load_file_docs() -> list[Doc]:
     docs: list[Doc] = []
     for path in sorted(DOCS.rglob("*.md")):
         kind_feature = classify(path)
         if kind_feature is None:
             continue
         kind, feature = kind_feature
-        meta, body, error = split_frontmatter(path.read_text(encoding="utf-8"))
-        docs.append(
-            Doc(
-                path=path,
-                kind=kind,
-                feature=feature,
-                meta=meta or {},
-                body=body,
-                frontmatter_error=error if meta is not None else (error or "missing frontmatter"),
-                sections=h2_sections(body),
-            )
+        text = path.read_text(encoding="utf-8")
+        meta, body, error = split_frontmatter(text)
+        doc = Doc(
+            path=path,
+            kind=kind,
+            feature=feature,
+            meta=meta or {},
+            body=body,
+            frontmatter_error=error if meta is not None else (error or "missing frontmatter"),
+            sections=h2_sections(body),
         )
+        if kind == "SCR":
+            doc.feature = str(doc.meta.get("domain", ""))
+            offset = len(text.splitlines()) - len(body.splitlines())
+            doc.screen = specdocs.parse_screen(body, offset)
+        docs.append(doc)
     return docs
+
+
+def use_cases_file() -> Path:
+    return DOCS / "USE_CASES.md"
+
+
+def functional_spec_dir() -> Path:
+    return DOCS / "functional-spec"
+
+
+def screen_catalog_file() -> Path:
+    return DOCS / "screens" / "SCREEN_CATALOG.md"
+
+
+def navigation_file() -> Path:
+    return DOCS / "NAVIGATION.md"
+
+
+def feature_of_domain(doc_id: str) -> str:
+    """`UC-DECK-001` → `deck`; "" when no feature folder has that DOMAIN."""
+    parts = doc_id.split("-")
+    domain = parts[1] if len(parts) == 3 else ""
+    return {domain_of(name): name for name in feature_names()}.get(domain, "")
+
+
+def section_doc(path: Path, kind: str, feature: str, section: specdocs.Section) -> Doc:
+    return Doc(
+        path=path,
+        kind=kind,
+        feature=feature,
+        meta=section.meta,
+        body=section.body,
+        frontmatter_error=section.error,
+        sections=section.subsections,
+        line=section.line,
+    )
+
+
+def load_section_docs() -> list[Doc]:
+    docs: list[Doc] = []
+    if use_cases_file().exists():
+        text = use_cases_file().read_text(encoding="utf-8")
+        for section in specdocs.use_case_sections(text):
+            docs.append(section_doc(use_cases_file(), "UC", feature_of_domain(section.id), section))
+    if functional_spec_dir().is_dir():
+        for path in sorted(functional_spec_dir().glob("*.md")):
+            if path.name == "README.md":
+                continue
+            for section in specdocs.function_sections(path.read_text(encoding="utf-8")):
+                docs.append(section_doc(path, "FN", path.stem, section))
+    return docs
+
+
+def load_docs() -> list[Doc]:
+    return load_file_docs() + load_section_docs()
 
 
 def domain_of(feature: str) -> str:
@@ -202,13 +227,28 @@ def cell(text: str) -> str:
 
 
 def used_by(docs: list[Doc]) -> dict[str, list[str]]:
+    """BR id → ids of the FNs whose `### Business rules` cite it."""
     usage: dict[str, set[str]] = {}
     for doc in docs:
-        if doc.kind != "UC":
+        if doc.kind == "FN":
+            for rule_id in doc.as_list("rules"):
+                usage.setdefault(rule_id, set()).add(doc.id)
+    return {rule_id: sorted(users) for rule_id, users in usage.items()}
+
+
+def invoked_by(docs: list[Doc]) -> dict[str, list[str]]:
+    """FN id → ids of the UC sections and screens that invoke it."""
+    usage: dict[str, set[str]] = {}
+    for doc in docs:
+        if doc.kind == "UC":
+            targets = doc.as_list("invokes")
+        elif doc.kind == "SCR" and doc.screen is not None:
+            targets = doc.screen.invokes
+        else:
             continue
-        for rule_id in doc.as_list("rules"):
-            usage.setdefault(rule_id, set()).add(doc.id)
-    return {rule_id: sorted(ucs) for rule_id, ucs in usage.items()}
+        for fn_id in targets:
+            usage.setdefault(fn_id, set()).add(doc.id)
+    return {fn_id: sorted(users) for fn_id, users in usage.items()}
 
 
 def test_files() -> list[Path]:
@@ -219,6 +259,14 @@ def test_files() -> list[Path]:
             continue
         files += [p for p in root.rglob("*") if p.is_file() and p.suffix in TEST_SUFFIXES]
     return sorted(files)
+
+
+def golden_files() -> dict[str, Path]:
+    """Golden PNG name → path, for every PNG under test/**/goldens/."""
+    root = ROOT / "test"
+    if not root.is_dir():
+        return {}
+    return {path.name: path for path in sorted(root.rglob("*.png")) if "goldens" in path.parts}
 
 
 def tests_by_id(ids: list[str]) -> dict[str, list[str]]:
@@ -241,6 +289,7 @@ def group_order(docs: list[Doc]) -> list[str]:
 
 def render_index(docs: list[Doc]) -> str:
     usage = used_by(docs)
+    invoked = invoked_by(docs)
     lines = [GENERATED_HEADER, "", "# Index", ""]
     by_id = lambda d: d.id  # noqa: E731
     for group in group_order(docs):
@@ -251,7 +300,9 @@ def render_index(docs: list[Doc]) -> str:
         rules = sorted((d for d in group_docs if d.kind == "BR"), key=by_id)
         cases = sorted((d for d in group_docs if d.kind == "UC"), key=by_id)
         decisions = sorted((d for d in group_docs if d.kind == "ADR"), key=by_id)
-        if not (rules or cases or decisions):
+        functions = sorted((d for d in group_docs if d.kind == "FN"), key=by_id)
+        screens = sorted((d for d in group_docs if d.kind == "SCR"), key=by_id)
+        if not (rules or cases or decisions or functions or screens):
             lines += ["Chưa có tài liệu.", ""]
             continue
         if rules:
@@ -261,6 +312,14 @@ def render_index(docs: list[Doc]) -> str:
                 lines.append(
                     f"| [{d.id}]({rel_link(d.path, GENERATED)}) | {cell(d.title)} | {cell(d.status)} "
                     f"| {cell(str(d.meta.get('summary', '')))} | {users} |"
+                )
+            lines.append("")
+        if functions:
+            lines += ["### Functions", "", "| ID | Title | Status | Invoked by |", "|---|---|---|---|"]
+            for d in functions:
+                lines.append(
+                    f"| [{d.id}]({rel_link(d.path, GENERATED)}) | {cell(d.title)} | {cell(d.status)} "
+                    f"| {', '.join(invoked.get(d.id, [])) or '—'} |"
                 )
             lines.append("")
         for heading, items in (("Use cases", cases), ("Decisions", decisions)):
@@ -273,33 +332,106 @@ def render_index(docs: list[Doc]) -> str:
                     f"| {cell(str(d.meta.get('summary', '')))} |"
                 )
             lines.append("")
+        if screens:
+            lines += ["### Screens", "", "| ID | Name | Status | Route |", "|---|---|---|---|"]
+            for d in screens:
+                routes = ", ".join(f"`{route}`" for route in d.as_list("route"))
+                lines.append(
+                    f"| [{d.id}]({rel_link(d.path, GENERATED)}) | {cell(str(d.meta.get('name', '')))} "
+                    f"| {cell(d.status)} | {routes or '—'} |"
+                )
+            lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
 
 def render_traceability(docs: list[Doc]) -> str:
     cases = sorted((d for d in docs if d.kind == "UC"), key=lambda d: (d.feature, d.id))
+    functions = {d.id: d for d in docs if d.kind == "FN"}
     tests = tests_by_id([d.id for d in cases])
     lines = [
         GENERATED_HEADER,
         "",
         "# Traceability",
         "",
-        "Use case → rules → code → test. Test = file trong "
+        "Use case → functions → rules → code → test. Test = file trong "
         + ", ".join(f"`{name}/`" for name in TEST_DIRS)
         + " có chứa chuỗi ID của UC.",
         "",
-        "| UC | Status | Rules | Code | Tests |",
-        "|---|---|---|---|---|",
+        "| UC | Status | Functions | Rules | Code | Tests |",
+        "|---|---|---|---|---|---|",
     ]
     for d in cases:
+        invoked = [functions[f] for f in d.as_list("invokes") if f in functions]
+        rules = sorted({r for f in invoked for r in f.as_list("rules")})
+        code = list(dict.fromkeys(d.as_list("code") + [c for f in invoked for c in f.as_list("code")]))
         lines.append(
             f"| [{d.id}]({rel_link(d.path, GENERATED)}) | {cell(d.status)} "
-            f"| {cell(', '.join(d.as_list('rules')))} "
-            f"| {cell(', '.join(f'`{c}`' for c in d.as_list('code')))} "
+            f"| {cell(', '.join(d.as_list('invokes')))} "
+            f"| {cell(', '.join(rules))} "
+            f"| {cell(', '.join(f'`{c}`' for c in code))} "
             f"| {cell(', '.join(f'`{t}`' for t in tests[d.id]))} |"
         )
     if not cases:
-        lines.append("| — | — | — | — | — |")
+        lines.append("| — | — | — | — | — | — |")
+    return "\n".join(lines) + "\n"
+
+
+def router_entries() -> list[str]:
+    path = navigation_file()
+    return specdocs.ids_in(path.read_text(encoding="utf-8"), "SCR") if path.exists() else []
+
+
+def render_screens(docs: list[Doc]) -> str:
+    screens = sorted((d for d in docs if d.kind == "SCR" and d.screen is not None), key=lambda d: d.id)
+    functions = {d.id: d for d in docs if d.kind == "FN"}
+    incoming: dict[str, set[str]] = {}
+    for doc in screens:
+        for target in doc.screen.navigates:
+            incoming.setdefault(target, set()).add(doc.id)
+    routed = router_entries()
+    goldens = golden_files()
+    lines = [GENERATED_HEADER, "", "# Screens", ""]
+    if not screens:
+        lines += ["Không có.", ""]
+    for doc in screens:
+        rules = sorted({r for f in doc.screen.invokes if f in functions for r in functions[f].as_list("rules")})
+        entries = sorted(incoming.get(doc.id, set())) + (["NAVIGATION.md"] if doc.id in routed else [])
+        lines += [
+            f"## [{doc.id}]({rel_link(doc.path, GENERATED)}) · {cell(str(doc.meta.get('name', '')))}",
+            "",
+            f"- Invokes: {', '.join(doc.screen.invokes) or '—'}",
+            f"- Rules via FN: {', '.join(rules) or '—'}",
+            f"- Use cases: {', '.join(doc.screen.related_ucs) or '—'}",
+            f"- Entry points: {', '.join(entries) or '—'}",
+            "",
+        ]
+        states = [s for s in doc.screen.states if s.key and not s.removed]
+        if states:
+            lines += ["| State | Golden | Present |", "|---|---|---|"]
+            for state in states:
+                names = [specdocs.golden_name(doc.id, state.key, v) for v in state.variants]
+                present = ", ".join(f"`{n}`" for n in names if n in goldens) or "—"
+                lines.append(f"| `{state.key}` | {', '.join(state.variants) or 'none'} | {present} |")
+            lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def render_navigation(docs: list[Doc]) -> str:
+    screens = [d for d in docs if d.kind == "SCR" and d.screen is not None]
+    edges = sorted({(d.id, target) for d in screens for target in d.screen.navigates})
+    lines = [
+        GENERATED_HEADER,
+        "",
+        "# Navigation graph",
+        "",
+        "Screen → screen edges from each spec's `Navigate to:` lines (spec R9).",
+        "",
+        "| From | To |",
+        "|---|---|",
+    ]
+    lines += [f"| {source} | {target} |" for source, target in edges] or ["| — | — |"]
+    lines += ["", "## Router entries", "", "Screens that `NAVIGATION.md` routes to.", ""]
+    lines += [f"- {doc_id}" for doc_id in sorted(router_entries())] or ["Không có."]
     return "\n".join(lines) + "\n"
 
 
@@ -349,6 +481,8 @@ def render_all() -> dict[str, str]:
     return {
         "index.md": render_index(docs),
         "traceability.md": render_traceability(docs),
+        "screens.md": render_screens(docs),
+        "navigation-graph.md": render_navigation(docs),
         "open-questions.md": render_open_questions(),
     }
 
@@ -366,8 +500,12 @@ def main() -> int:
     if not DOCS.is_dir():
         print("ERROR docs: not found — run from the repository root")
         return 1
-    write_all(args.out)
-    print(f"OK {args.out.relative_to(ROOT) if args.out.is_relative_to(ROOT) else args.out}: generated 3 files")
+    files = render_all()
+    args.out.mkdir(parents=True, exist_ok=True)
+    for name, content in files.items():
+        (args.out / name).write_text(content, encoding="utf-8", newline="\n")
+    shown = args.out.relative_to(ROOT) if args.out.is_relative_to(ROOT) else args.out
+    print(f"OK {shown}: generated {len(files)} files")
     return 0
 
 
