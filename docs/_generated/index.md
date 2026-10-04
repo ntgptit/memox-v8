@@ -47,7 +47,7 @@
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
 | [FN-ACCOUNT-001](../functional-spec/account.md) | Hiện Welcome một lần trên mỗi thiết bị | active | — |
-| [FN-ACCOUNT-002](../functional-spec/account.md) | Theo dõi trạng thái tài khoản | active | — |
+| [FN-ACCOUNT-002](../functional-spec/account.md) | Theo dõi trạng thái tài khoản | active | SCR-STUDY-001 |
 | [FN-ACCOUNT-003](../functional-spec/account.md) | Gửi mã đăng nhập qua email | active | — |
 | [FN-ACCOUNT-004](../functional-spec/account.md) | Xác nhận mã đăng nhập | active | — |
 | [FN-ACCOUNT-005](../functional-spec/account.md) | Đăng nhập bằng Google | active | — |
@@ -60,7 +60,7 @@
 | [FN-ACCOUNT-012](../functional-spec/account.md) | Tìm người dùng (admin) | active | — |
 | [FN-ACCOUNT-013](../functional-spec/account.md) | Đặt vai trò của một người dùng (admin) | active | — |
 | [FN-ACCOUNT-014](../functional-spec/account.md) | Đồng bộ thư viện với server | active | — |
-| [FN-ACCOUNT-015](../functional-spec/account.md) | Theo dõi trạng thái đồng bộ | active | — |
+| [FN-ACCOUNT-015](../functional-spec/account.md) | Theo dõi trạng thái đồng bộ | active | SCR-STUDY-001 |
 | [FN-ACCOUNT-016](../functional-spec/account.md) | Đồng bộ ngay | active | — |
 | [FN-ACCOUNT-017](../functional-spec/account.md) | Gửi lại các thay đổi bị từ chối | active | — |
 | [FN-ACCOUNT-018](../functional-spec/account.md) | Giữ các thay đổi bị từ chối chỉ trên thiết bị | active | — |
@@ -531,18 +531,18 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-STUDY-001](../functional-spec/study.md) | Xem lối vào học của một deck | active | UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
-| [FN-STUDY-002](../functional-spec/study.md) | Mở phiên học mới | active | UC-STUDY-001 |
-| [FN-STUDY-003](../functional-spec/study.md) | Mở phiên ôn tập | active | UC-STUDY-001, UC-STUDY-003 |
-| [FN-STUDY-004](../functional-spec/study.md) | Xem một phiên học | active | UC-STUDY-001, UC-STUDY-003 |
+| [FN-STUDY-001](../functional-spec/study.md) | Xem lối vào học của một deck | active | SCR-STUDY-002, UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
+| [FN-STUDY-002](../functional-spec/study.md) | Mở phiên học mới | active | SCR-STUDY-002, UC-STUDY-001 |
+| [FN-STUDY-003](../functional-spec/study.md) | Mở phiên ôn tập | active | SCR-STUDY-002, UC-STUDY-001, UC-STUDY-003 |
+| [FN-STUDY-004](../functional-spec/study.md) | Xem một phiên học | active | SCR-STUDY-009, UC-STUDY-001, UC-STUDY-003 |
 | [FN-STUDY-005](../functional-spec/study.md) | Trả lời một lượt học | active | UC-STUDY-001 |
 | [FN-STUDY-006](../functional-spec/study.md) | Mở đáp án của lượt recall | active | UC-STUDY-001 |
 | [FN-STUDY-007](../functional-spec/study.md) | Lưu thời gian còn lại của lượt recall | active | UC-STUDY-001 |
 | [FN-STUDY-008](../functional-spec/study.md) | Hiện gợi ý của lượt fill | active | UC-STUDY-001 |
 | [FN-STUDY-009](../functional-spec/study.md) | Rời phiên học | active | UC-STUDY-001 |
-| [FN-STUDY-010](../functional-spec/study.md) | Tiếp tục một phiên đang dở | active | UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
+| [FN-STUDY-010](../functional-spec/study.md) | Tiếp tục một phiên đang dở | active | SCR-STUDY-001, SCR-STUDY-002, UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
 | [FN-STUDY-011](../functional-spec/study.md) | Đóng các phiên của ngày học trước khi app mở | active | UC-STUDY-001 |
-| [FN-STUDY-012](../functional-spec/study.md) | Xem tab Study | active | UC-STUDY-002 |
+| [FN-STUDY-012](../functional-spec/study.md) | Xem tab Study | active | SCR-STUDY-001, UC-STUDY-002 |
 | [FN-STUDY-013](../functional-spec/study.md) | Xem trước khoảng ôn của từng mức tự đánh giá | active | — |
 
 ### Use cases
@@ -552,6 +552,14 @@
 | [UC-STUDY-001](../USE_CASES.md) | Ôn tập một deck — luồng chính | ready | — |
 | [UC-STUDY-002](../USE_CASES.md) | Mở tab Study và chọn việc để học | ready | — |
 | [UC-STUDY-003](../USE_CASES.md) | Chọn chiều hỏi cho một phiên self-assess | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-STUDY-001](../screens/spec/SCR-STUDY-001-study-home.md) | Study home | ready | `/study` |
+| [SCR-STUDY-002](../screens/spec/SCR-STUDY-002-study-entry.md) | Study entry | ready | `/decks/deck/:deckId/study` |
+| [SCR-STUDY-009](../screens/spec/SCR-STUDY-009-session-summary.md) | Session summary | ready | `/study/session/:sessionId` |
 
 ## [study-mode](../features/study-mode/README.md)
 

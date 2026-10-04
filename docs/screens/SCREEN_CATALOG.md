@@ -20,15 +20,15 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 | SCR-CARD-004 | Card detail | card | `/decks/card/:cardId` | ready | `spec/SCR-CARD-004-card-detail.md` |
 | SCR-TRANSFER-001 | Card import | transfer | `/decks/deck/:deckId/cards/import` | ready | `spec/SCR-TRANSFER-001-card-import.md` |
 | SCR-TRANSFER-002 | Card export | transfer | — | ready | `spec/SCR-TRANSFER-002-card-export.md` |
-| SCR-STUDY-001 | Study home | study | — | pending | — |
-| SCR-STUDY-002 | Study entry | study | — | pending | — |
+| SCR-STUDY-001 | Study home | study | `/study` | ready | `spec/SCR-STUDY-001-study-home.md` |
+| SCR-STUDY-002 | Study entry | study | `/decks/deck/:deckId/study` | ready | `spec/SCR-STUDY-002-study-entry.md` |
 | SCR-STUDY-003 | Study · Browse | study | — | pending | — |
 | SCR-STUDY-004 | Study · Self-assess | study | — | pending | — |
 | SCR-STUDY-005 | Study · Match | study | — | pending | — |
 | SCR-STUDY-006 | Study · Guess | study | — | pending | — |
 | SCR-STUDY-007 | Study · Recall | study | — | pending | — |
 | SCR-STUDY-008 | Study · Fill | study | — | pending | — |
-| SCR-STUDY-009 | Session summary | study | — | pending | — |
+| SCR-STUDY-009 | Session summary | study | `/study/session/:sessionId` | ready | `spec/SCR-STUDY-009-session-summary.md` |
 | SCR-SETTINGS-001 | Study options | settings | — | pending | — |
 | SCR-SETTINGS-002 | Settings | settings | — | pending | — |
 | SCR-SETTINGS-003 | Theme | settings | — | pending | — |

@@ -682,8 +682,8 @@ Status: ready · Code: [lib/features/study/domain/usecases/watch_study_home_use_
    deck kèm khối lượng việc. Xem không ghi gì.
 2. Nếu có đúng một phiên hợp lệ đang mở, người dùng biết trước hết nó là phiên của deck nào, loại
    gì, đang ở chặng nào.
-3. Người dùng biết mọi root deck với tên, chế độ ôn tập khi biết, ba con số Overdue / Due today /
-   New, theo thứ tự giảm dần của ba con số đó, hoà thì theo tên.
+3. Người dùng biết mọi root deck với tên và ba con số Overdue / Due today / New, theo thứ tự giảm
+   dần của ba con số đó, hoà thì theo tên.
 4. Học tiếp mở đúng phiên đó và đúng lượt đã lưu (FN-STUDY-010), không tạo phiên thứ hai. Chọn học
    một deck đưa người dùng tới lối vào học của deck đó (FN-STUDY-001), nơi có lựa chọn giữa học mới
    và ôn tập.

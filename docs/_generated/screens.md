@@ -97,7 +97,7 @@
 - Invokes: FN-DECK-007, FN-DECK-008, FN-DECK-001, FN-DECK-009, FN-DECK-002, FN-DECK-012, FN-DECK-010, FN-DECK-011, FN-DECK-004, FN-DECK-005, FN-DECK-006
 - Rules via FN: BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-DECK-005, BR-DECK-006, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-DECK-020, BR-DECK-021, BR-DECK-022, BR-DECK-023, BR-DECK-024, BR-DECK-025, BR-DECK-026, BR-DECK-027, BR-SRS-001, BR-SRS-003, BR-SRS-005, BR-SRS-006, BR-SRS-007, BR-SRS-013, BR-SRS-028, BR-SRS-029, BR-STUDY-008, BR-STUDY-046, BR-STUDY-051, BR-STUDY-067, BR-STUDY-068, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-006, BR-TRASH-008, BR-TRASH-010
 - Use cases: UC-DECK-001, UC-DECK-002, UC-DECK-003, UC-DECK-004, UC-DECK-005, UC-DECK-006
-- Entry points: SCR-CARD-002, SCR-DECK-001, SCR-SEARCH-001, SCR-SRS-001, SCR-STARTER-001, SCR-TAG-001
+- Entry points: SCR-CARD-002, SCR-DECK-001, SCR-SEARCH-001, SCR-SRS-001, SCR-STARTER-001, SCR-STUDY-001, SCR-STUDY-009, SCR-TAG-001
 
 | State | Golden | Present |
 |---|---|---|
@@ -168,7 +168,7 @@
 - Invokes: FN-STARTER-001, FN-STARTER-002
 - Rules via FN: BR-CARD-004, BR-DECK-002, BR-STARTER-001, BR-STARTER-002, BR-STARTER-003, BR-STARTER-004, BR-STARTER-005, BR-STARTER-006, BR-STARTER-007, BR-STARTER-008, BR-STARTER-009, BR-STARTER-010
 - Use cases: UC-STARTER-001
-- Entry points: SCR-DECK-001
+- Entry points: SCR-DECK-001, SCR-STUDY-001
 
 | State | Golden | Present |
 |---|---|---|
@@ -182,6 +182,67 @@
 | `loading` | light, dark | — |
 | `none` | light, dark | — |
 | `load_failed` | light, dark | — |
+
+## [SCR-STUDY-001](../screens/spec/SCR-STUDY-001-study-home.md) · Study home
+
+- Invokes: FN-STUDY-012, FN-STUDY-010, FN-ACCOUNT-015, FN-ACCOUNT-002
+- Rules via FN: BR-MODE-008, BR-MODE-017, BR-PROGRESS-011, BR-SRS-015, BR-STUDY-008, BR-STUDY-017, BR-STUDY-021, BR-STUDY-036, BR-STUDY-051, BR-STUDY-068, BR-STUDY-072, BR-STUDY-074, BR-STUDY-075, BR-STUDY-076, BR-STUDY-077
+- Use cases: UC-STUDY-002
+- Entry points: SCR-DECK-001
+
+| State | Golden | Present |
+|---|---|---|
+| `loaded` | light, dark | — |
+| `no_resume` | light, dark | — |
+| `zero` | light, dark | — |
+| `no_decks` | light, dark | — |
+| `no_cards` | light, dark | — |
+| `loading` | light, dark | — |
+| `error` | light, dark | — |
+| `sync_rejected` | light, dark | — |
+| `sync_stale` | light, dark | — |
+| `reauth` | light, dark | — |
+
+## [SCR-STUDY-002](../screens/spec/SCR-STUDY-002-study-entry.md) · Study entry
+
+- Invokes: FN-STUDY-001, FN-STUDY-002, FN-STUDY-003, FN-STUDY-010
+- Rules via FN: BR-MODE-003, BR-MODE-004, BR-MODE-007, BR-MODE-008, BR-MODE-009, BR-MODE-010, BR-MODE-013, BR-MODE-015, BR-MODE-016, BR-MODE-017, BR-MODE-018, BR-MODE-019, BR-SRS-025, BR-STUDY-002, BR-STUDY-003, BR-STUDY-008, BR-STUDY-010, BR-STUDY-012, BR-STUDY-014, BR-STUDY-017, BR-STUDY-020, BR-STUDY-021, BR-STUDY-022, BR-STUDY-024, BR-STUDY-025, BR-STUDY-036, BR-STUDY-044, BR-STUDY-045, BR-STUDY-051, BR-STUDY-054, BR-STUDY-055, BR-STUDY-056, BR-STUDY-057, BR-STUDY-067, BR-STUDY-072, BR-STUDY-074
+- Use cases: UC-STUDY-001, UC-STUDY-003
+- Entry points: SCR-CARD-001, SCR-DECK-001, SCR-STUDY-001, SCR-STUDY-009
+
+| State | Golden | Present |
+|---|---|---|
+| `sm2` | light, dark | — |
+| `eight_box` | light, dark | — |
+| `only_new` | light, dark | — |
+| `nothing` | light, dark | — |
+| `resume` | light, dark | — |
+| `starting` | light, dark | — |
+| `refused` | light, dark | — |
+| `start_failed` | light, dark | — |
+| `loading` | light, dark | — |
+| `direction_sheet` | light, dark | — |
+
+## [SCR-STUDY-009](../screens/spec/SCR-STUDY-009-session-summary.md) · Session summary
+
+- Invokes: FN-STUDY-004
+- Rules via FN: BR-MODE-002, BR-MODE-005, BR-MODE-006, BR-MODE-014, BR-STUDY-009, BR-STUDY-026, BR-STUDY-031, BR-STUDY-036, BR-STUDY-037, BR-STUDY-038, BR-STUDY-039, BR-STUDY-040, BR-STUDY-043, BR-STUDY-045, BR-STUDY-048, BR-STUDY-049, BR-STUDY-063, BR-STUDY-064, BR-STUDY-066, BR-TRASH-002
+- Use cases: UC-STUDY-001
+- Entry points: —
+
+| State | Golden | Present |
+|---|---|---|
+| `loaded` | light, dark | — |
+| `learning` | light, dark | — |
+| `large` | light, dark | — |
+| `left_early` | light, dark | — |
+| `interrupted` | light, dark | — |
+| `reset` | light, dark | — |
+| `scheduler_changed` | light, dark | — |
+| `save_error` | light, dark | — |
+| `content_deleted` | light, dark | — |
+| `nothing_answered` | none | — |
+| `loading` | none | — |
 
 ## [SCR-TAG-001](../screens/spec/SCR-TAG-001-tags.md) · Tags
 

@@ -745,131 +745,131 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/13-study-home.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/13-study-home.md:3` # 13 · Study home |  |
-| `shared/ui/screen-handoff/13-study-home.md:5` The Study tab's landing screen (FE-A8): `StudyHomeScreen`, the session Resume |  |
-| `shared/ui/screen-handoff/13-study-home.md:9` ## Layout |  |
-| `shared/ui/screen-handoff/13-study-home.md:11` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/13-study-home.md:13` \| App bar \| `MxAppBar` (screen density) \| "Study"; no date (see Rulings). \| |  |
-| `shared/ui/screen-handoff/13-study-home.md:14` \| Resume card \| `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` \| "Cont |  |
-| `shared/ui/screen-handoff/13-study-home.md:15` \| Workload card \| `MxCard` (no hero: a summary, not a door; sessions start per d |  |
-| `shared/ui/screen-handoff/13-study-home.md:16` \| Section header \| `MxListSectionHeader` + trailing `MxButton` (compact secondar |  |
-| `shared/ui/screen-handoff/13-study-home.md:17` \| Sync notice \| `MxFloatingNotice` in `MxAppShell.notice` + compact `MxButton` \| |  |
-| `shared/ui/screen-handoff/13-study-home.md:18` \| Re-auth notice \| `MxFloatingNotice` in the same slot + compact `MxButton` \| FE |  |
-| `shared/ui/screen-handoff/13-study-home.md:19` \| Rows \| full-bleed `MxCard` of `MxListRow`s \| leading `MxIconTile` ("layers"); |  |
-| `shared/ui/screen-handoff/13-study-home.md:21` ## States |  |
-| `shared/ui/screen-handoff/13-study-home.md:23` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/13-study-home.md:25` \| loaded \| `study_home_loaded_light.png` \| `study_home_loaded_dark.png` \| The he |  |
-| `shared/ui/screen-handoff/13-study-home.md:26` \| noResume \| `study_home_no_resume_light.png` \| `study_home_no_resume_dark.png` |  |
-| `shared/ui/screen-handoff/13-study-home.md:27` \| zero \| `study_home_zero_light.png` \| `study_home_zero_dark.png` \| Every root d |  |
-| `shared/ui/screen-handoff/13-study-home.md:28` \| noDecks \| `study_home_no_decks_light.png` \| `study_home_no_decks_dark.png` \| " |  |
-| `shared/ui/screen-handoff/13-study-home.md:29` \| noCards \| `study_home_no_cards_light.png` \| `study_home_no_cards_dark.png` \| R |  |
-| `shared/ui/screen-handoff/13-study-home.md:30` \| loading \| `study_home_loading_light.png` \| `study_home_loading_dark.png` \| A t |  |
-| `shared/ui/screen-handoff/13-study-home.md:31` \| error \| `study_home_error_light.png` \| `study_home_error_dark.png` \| `MxErrorS |  |
-| `shared/ui/screen-handoff/13-study-home.md:32` \| syncRejected \| ![](../../../../test/features/study/presentation/goldens/study_ |  |
-| `shared/ui/screen-handoff/13-study-home.md:33` \| syncStale \| ![](../../../../test/features/study/presentation/goldens/study_hom |  |
-| `shared/ui/screen-handoff/13-study-home.md:34` \| reauth \| ![](../../../../test/features/account/presentation/goldens/study_home |  |
-| `shared/ui/screen-handoff/13-study-home.md:36` Every state above is built. |  |
-| `shared/ui/screen-handoff/13-study-home.md:38` **Built (FE-A8, study roadmap P6):** `StudyHomeScreen` in the Study tab's branch |  |
-| `shared/ui/screen-handoff/13-study-home.md:40` - Resume runs `ResumeStudySessionUseCase` and opens the session route. A refusal |  |
-| `shared/ui/screen-handoff/13-study-home.md:43` - A deck row opens that deck's Study Entry; "Library" and "Go to Library" open t |  |
-| `shared/ui/screen-handoff/13-study-home.md:46` - Goldens: |  |
-| `shared/ui/screen-handoff/13-study-home.md:49` ## Rulings |  |
-| `shared/ui/screen-handoff/13-study-home.md:51` - **BR-STUDY-068 (owner 2026-09-30):** the hero states "{n} cards due" over its |  |
-| `shared/ui/screen-handoff/13-study-home.md:52` - **UI-base row 28:** the resume dot and paused tile use primary; there is no st |  |
-| `shared/ui/screen-handoff/13-study-home.md:53` - The app bar carries no date: `MxAppBar.actions` takes buttons only and no BR/U |  |
-| `shared/ui/screen-handoff/13-study-home.md:54` - **FE-A8 ruling S3:** the dot beside "Continue studying" is static, as on 14; n |  |
-| `shared/ui/screen-handoff/13-study-home.md:55` - **FE-A8 ruling S2, BR-STUDY-074:** the zero-workload body says "…tomorrow." on |  |
-| `shared/ui/screen-handoff/13-study-home.md:56` - **FE-A6 spec D14:** the zero card's check tile uses the `success` tone; green |  |
-| `shared/ui/screen-handoff/13-study-home.md:57` - **FE-A8 ruling S9:** Resume is a primary block `MxButton` with the play glyph; |  |
-| `shared/ui/screen-handoff/13-study-home.md:58` - **E-L3:** "Library" is a compact secondary `MxButton`. |  |
-| `shared/ui/screen-handoff/13-study-home.md:59` - **BR-STUDY-076:** the hero and row breakdowns wrap between whole terms, never |  |
-| `shared/ui/screen-handoff/13-study-home.md:60` - **UI-base ruling O3:** loading uses a two-bar hero skeleton and the standard ` |  |
-| `shared/ui/screen-handoff/13-study-home.md:61` - `MxEmptyState` actions carry no glyph. |  |
-| `shared/ui/screen-handoff/13-study-home.md:62` - **Account UI spec R2, B5:** the re-auth notice takes the slot over the sync no |  |
-| `shared/ui/screen-handoff/13-study-home.md:63` - **SB-U1 (sync status spec R2, UI-base row 143):** a floating sync notice shows |  |
-| `shared/ui/screen-handoff/13-study-home.md:64` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/13-study-home.md:66` ## Accessibility |  |
-| `shared/ui/screen-handoff/13-study-home.md:68` - The dot and the glyphs, the workload terms' included, are decorative (no node |  |
-| `shared/ui/screen-handoff/13-study-home.md:69` - A deck with no card is shown dimmed and read as a disabled button (S4); every |  |
-| `shared/ui/screen-handoff/13-study-home.md:70` - The hero title and "across {n} decks" are plurals (S5). |  |
-| `shared/ui/screen-handoff/13-study-home.md:71` - A row's breakdown wraps between whole terms (glyph, count, word and dot stay t |  |
-| `shared/ui/screen-handoff/13-study-home.md:73` ## Copy |  |
-| `shared/ui/screen-handoff/13-study-home.md:75` - Header: "Study" · "Tuesday, 16 Sep" (dropped). |  |
-| `shared/ui/screen-handoff/13-study-home.md:76` - Resume: "Continue studying" · "{kind} · {mode}" e.g. "Review · Self-assess" · |  |
-| `shared/ui/screen-handoff/13-study-home.md:77` - Workload: "Waiting for you" · "{n} cards due" · "across {n} decks". |  |
-| `shared/ui/screen-handoff/13-study-home.md:78` - Workload, zero: "Nothing due right now" · "Every card is resting. The next one |  |
-| `shared/ui/screen-handoff/13-study-home.md:79` - Resume refused: "This session can't be continued any more". |  |
-| `shared/ui/screen-handoff/13-study-home.md:80` - Section: "Your decks" · "Library". |  |
-| `shared/ui/screen-handoff/13-study-home.md:81` - No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck |  |
-| `shared/ui/screen-handoff/13-study-home.md:82` - No cards: "Your decks have no cards yet" · "Add cards to a sub-deck, or import |  |
-| `shared/ui/screen-handoff/13-study-home.md:83` - Re-auth notice (FE-B10): "Your sign-in expired. Your decks are still on this p |  |
-| `shared/ui/screen-handoff/13-study-home.md:84` - Sync notice (SB-U1): "{n} changes weren't accepted." (one: "1 change wasn't ac |  |
-| `shared/ui/screen-handoff/13-study-home.md:85` - Error: "Couldn't load your study overview" · "Your cards are safe on this devi |  |
+| `shared/ui/screen-handoff/13-study-home.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:3` # 13 · Study home | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:5` The Study tab's landing screen (FE-A8): `StudyHomeScreen`, the session Resume | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:9` ## Layout | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:11` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:13` \| App bar \| `MxAppBar` (screen density) \| "Study"; no date (see Rulings). \| | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:14` \| Resume card \| `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` \| "Cont | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:15` \| Workload card \| `MxCard` (no hero: a summary, not a door; sessions start per d | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:16` \| Section header \| `MxListSectionHeader` + trailing `MxButton` (compact secondar | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:17` \| Sync notice \| `MxFloatingNotice` in `MxAppShell.notice` + compact `MxButton` \| | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:18` \| Re-auth notice \| `MxFloatingNotice` in the same slot + compact `MxButton` \| FE | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:19` \| Rows \| full-bleed `MxCard` of `MxListRow`s \| leading `MxIconTile` ("layers"); | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:21` ## States | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:23` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:25` \| loaded \| `study_home_loaded_light.png` \| `study_home_loaded_dark.png` \| The he | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:26` \| noResume \| `study_home_no_resume_light.png` \| `study_home_no_resume_dark.png` | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:27` \| zero \| `study_home_zero_light.png` \| `study_home_zero_dark.png` \| Every root d | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:28` \| noDecks \| `study_home_no_decks_light.png` \| `study_home_no_decks_dark.png` \| " | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:29` \| noCards \| `study_home_no_cards_light.png` \| `study_home_no_cards_dark.png` \| R | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:30` \| loading \| `study_home_loading_light.png` \| `study_home_loading_dark.png` \| A t | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:31` \| error \| `study_home_error_light.png` \| `study_home_error_dark.png` \| `MxErrorS | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:32` \| syncRejected \| ![](../../../../test/features/study/presentation/goldens/study_ | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:33` \| syncStale \| ![](../../../../test/features/study/presentation/goldens/study_hom | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:34` \| reauth \| ![](../../../../test/features/account/presentation/goldens/study_home | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:36` Every state above is built. | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:38` **Built (FE-A8, study roadmap P6):** `StudyHomeScreen` in the Study tab's branch | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:40` - Resume runs `ResumeStudySessionUseCase` and opens the session route. A refusal | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:43` - A deck row opens that deck's Study Entry; "Library" and "Go to Library" open t | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:46` - Goldens: | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:49` ## Rulings | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:51` - **BR-STUDY-068 (owner 2026-09-30):** the hero states "{n} cards due" over its | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:52` - **UI-base row 28:** the resume dot and paused tile use primary; there is no st | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:53` - The app bar carries no date: `MxAppBar.actions` takes buttons only and no BR/U | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:54` - **FE-A8 ruling S3:** the dot beside "Continue studying" is static, as on 14; n | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:55` - **FE-A8 ruling S2, BR-STUDY-074:** the zero-workload body says "…tomorrow." on | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:56` - **FE-A6 spec D14:** the zero card's check tile uses the `success` tone; green | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:57` - **FE-A8 ruling S9:** Resume is a primary block `MxButton` with the play glyph; | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:58` - **E-L3:** "Library" is a compact secondary `MxButton`. | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:59` - **BR-STUDY-076:** the hero and row breakdowns wrap between whole terms, never | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:60` - **UI-base ruling O3:** loading uses a two-bar hero skeleton and the standard ` | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:61` - `MxEmptyState` actions carry no glyph. | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:62` - **Account UI spec R2, B5:** the re-auth notice takes the slot over the sync no | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:63` - **SB-U1 (sync status spec R2, UI-base row 143):** a floating sync notice shows | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:64` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:66` ## Accessibility | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:68` - The dot and the glyphs, the workload terms' included, are decorative (no node | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:69` - A deck with no card is shown dimmed and read as a disabled button (S4); every | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:70` - The hero title and "across {n} decks" are plurals (S5). | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:71` - A row's breakdown wraps between whole terms (glyph, count, word and dot stay t | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:73` ## Copy | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:75` - Header: "Study" · "Tuesday, 16 Sep" (dropped). | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:76` - Resume: "Continue studying" · "{kind} · {mode}" e.g. "Review · Self-assess" · | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:77` - Workload: "Waiting for you" · "{n} cards due" · "across {n} decks". | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:78` - Workload, zero: "Nothing due right now" · "Every card is resting. The next one | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:79` - Resume refused: "This session can't be continued any more". | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:80` - Section: "Your decks" · "Library". | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:81` - No decks: "Nothing to study yet" · "Your library is empty. Copy a starter deck | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:82` - No cards: "Your decks have no cards yet" · "Add cards to a sub-deck, or import | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:83` - Re-auth notice (FE-B10): "Your sign-in expired. Your decks are still on this p | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:84` - Sync notice (SB-U1): "{n} changes weren't accepted." (one: "1 change wasn't ac | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `shared/ui/screen-handoff/13-study-home.md:85` - Error: "Couldn't load your study overview" · "Your cards are safe on this devi | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
 
 ## shared/ui/screen-handoff/14-study-entry.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/14-study-entry.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/14-study-entry.md:3` # 14 · Study entry |  |
-| `shared/ui/screen-handoff/14-study-entry.md:5` The Study Entry of an open deck (FE-A6, FE-A7): `StudyEntryScreen`, the choice |  |
-| `shared/ui/screen-handoff/14-study-entry.md:8` ## Layout |  |
-| `shared/ui/screen-handoff/14-study-entry.md:10` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/14-study-entry.md:12` \| App bar \| `MxAppBar` (content density) \| Back, deck name (composed by `app/` f |  |
-| `shared/ui/screen-handoff/14-study-entry.md:13` \| Breadcrumb \| `MxBreadcrumb` \| Library › ancestors › deck. \| |  |
-| `shared/ui/screen-handoff/14-study-entry.md:14` \| Hero \| `MxCard` (plain, not a hero card: a summary, not a door) + `MxStatTile` |  |
-| `shared/ui/screen-handoff/14-study-entry.md:15` \| Resume banner \| `MxCard` \| "Session from today" overline with a pulse dot, "{k |  |
-| `shared/ui/screen-handoff/14-study-entry.md:16` \| Nothing-due state \| `MxEmptyState` (compact, success tone) \| "Nothing to do ri |  |
-| `shared/ui/screen-handoff/14-study-entry.md:17` \| Learn row \| full-bleed `MxCard` of one `MxListRow` \| "Learn new cards", subtit |  |
-| `shared/ui/screen-handoff/14-study-entry.md:18` \| Review options \| `MxListSectionHeader` (overline) + full-bleed `MxCard` of `Mx |  |
-| `shared/ui/screen-handoff/14-study-entry.md:19` \| Inline banners \| `MxInlineBanner` \| `refused` (warning): counts changed since |  |
-| `shared/ui/screen-handoff/14-study-entry.md:20` \| Footer \| `MxFooterBar` \| A caption line plus one block `MxButton` (primary; ou |  |
-| `shared/ui/screen-handoff/14-study-entry.md:22` ## Direction sheet (SM-2 only) |  |
-| `shared/ui/screen-handoff/14-study-entry.md:24` Tapping the footer's Review action on an SM-2 root deck opens `MxBottomSheet` |  |
-| `shared/ui/screen-handoff/14-study-entry.md:32` ## States |  |
-| `shared/ui/screen-handoff/14-study-entry.md:34` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/14-study-entry.md:36` \| sm2 \| `study_entry_sm2_light.png` \| `study_entry_sm2_dark.png` \| The hero and |  |
-| `shared/ui/screen-handoff/14-study-entry.md:37` \| eightBox \| `study_entry_eight_box_light.png` \| `study_entry_eight_box_dark.png |  |
-| `shared/ui/screen-handoff/14-study-entry.md:38` \| onlyNew \| `study_entry_only_new_light.png` \| `study_entry_only_new_dark.png` \| |  |
-| `shared/ui/screen-handoff/14-study-entry.md:39` \| nothing \| `study_entry_nothing_light.png` \| `study_entry_nothing_dark.png` \| P |  |
-| `shared/ui/screen-handoff/14-study-entry.md:40` \| resume \| `study_entry_resume_light.png` \| `study_entry_resume_dark.png` \| The |  |
-| `shared/ui/screen-handoff/14-study-entry.md:41` \| starting \| `study_entry_starting_light.png` \| `study_entry_starting_dark.png` |  |
-| `shared/ui/screen-handoff/14-study-entry.md:42` \| refused \| `study_entry_refused_light.png` \| `study_entry_refused_dark.png` \| I |  |
-| `shared/ui/screen-handoff/14-study-entry.md:43` \| startFailed \| `study_entry_start_failed_light.png` \| `study_entry_start_failed |  |
-| `shared/ui/screen-handoff/14-study-entry.md:44` \| loading \| `study_entry_loading_light.png` \| `study_entry_loading_dark.png` \| S |  |
-| `shared/ui/screen-handoff/14-study-entry.md:45` Other goldens: `study_entry_direction_sheet_light.png` / `study_entry_direction_ |  |
-| `shared/ui/screen-handoff/14-study-entry.md:48` Every state above is built. |  |
-| `shared/ui/screen-handoff/14-study-entry.md:50` **Built (FE-A6 P2):** all nine states on `sm2`. Learn (the row's button |  |
-| `shared/ui/screen-handoff/14-study-entry.md:64` ## Accessibility |  |
-| `shared/ui/screen-handoff/14-study-entry.md:66` - TalkBack reads the app bar, the breadcrumb, the hero (overline, then "New: {n} |  |
-| `shared/ui/screen-handoff/14-study-entry.md:67` - Single-line text that ellipsizes keeps line-height 1.5 for stacked marks (UI-b |  |
-| `shared/ui/screen-handoff/14-study-entry.md:68` - While a session opens, the locked footer and options stay in the reading order |  |
-| `shared/ui/screen-handoff/14-study-entry.md:70` ## Rulings |  |
-| `shared/ui/screen-handoff/14-study-entry.md:72` - **UC-STUDY-003:** SM-2's direction is chosen in a separate `MxBottomSheet` ope |  |
-| `shared/ui/screen-handoff/14-study-entry.md:73` - **UI-base row 28, FE-A8 ruling S3:** the resume dot is primary and static, as |  |
-| `shared/ui/screen-handoff/14-study-entry.md:74` - **FE-A8 H2:** the resume banner carries a `MxLinearProgress` track under its l |  |
-| `shared/ui/screen-handoff/14-study-entry.md:75` - **Plan R5:** on `refused` the footer is rebuilt from the up-to-date counts and |  |
-| `shared/ui/screen-handoff/14-study-entry.md:76` - **Plan R6:** while starting, the button spins (`MxButton.isLoading`) and "Star |  |
-| `shared/ui/screen-handoff/14-study-entry.md:77` - **Plan R7:** "Start review" answers the choice and closes the sheet; the entry |  |
-| `shared/ui/screen-handoff/14-study-entry.md:78` - **Plan R8:** the SM-2 caption reads "{shown} of {due} due · oldest first". |  |
-| `shared/ui/screen-handoff/14-study-entry.md:79` - **Plan R9:** each refusal has its own title: nothing due, no new cards, a mode |  |
-| `shared/ui/screen-handoff/14-study-entry.md:80` - **Critique 2026-09-30 part 1:** while an open session shows, "Continue" is the |  |
-| `shared/ui/screen-handoff/14-study-entry.md:81` - **FE-A6 P3 ruling C5:** `eightBox` picks the first available mode at first; th |  |
-| `shared/ui/screen-handoff/14-study-entry.md:82` - The Learn button is the secondary tone with the sparkles glyph. |  |
-| `shared/ui/screen-handoff/14-study-entry.md:83` - **BR-CARD-002:** direction descriptions name no language ("See the term, recal |  |
-| `shared/ui/screen-handoff/14-study-entry.md:84` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/14-study-entry.md:85` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig |  |
-| `shared/ui/screen-handoff/14-study-entry.md:86` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/14-study-entry.md:88` ## Copy |  |
-| `shared/ui/screen-handoff/14-study-entry.md:90` - Hero: "{algorithm}" · "Up to {n} cards per session" · "New" · "Due" · "{n} of |  |
-| `shared/ui/screen-handoff/14-study-entry.md:91` - Resume: "Session from today" · "{kind} · {mode} · {n} of {n} cards" · "Continu |  |
-| `shared/ui/screen-handoff/14-study-entry.md:92` - Nothing: "Nothing to do right now" · "Every card is learned and resting. Cards |  |
-| `shared/ui/screen-handoff/14-study-entry.md:93` - Learn row: "Learn new cards" · "Browse, then self-assess" (SM-2) / "Browse → m |  |
-| `shared/ui/screen-handoff/14-study-entry.md:94` - Review options, Eight boxes: "Review · choose how cards are asked" · "Match" " |  |
-| `shared/ui/screen-handoff/14-study-entry.md:95` - Direction sheet, SM-2: "Review · question direction" · "Term first" "See the t |  |
-| `shared/ui/screen-handoff/14-study-entry.md:96` - Banners: "Nothing is due any more." "The due cards were reviewed from another |  |
-| `shared/ui/screen-handoff/14-study-entry.md:97` - Footer: "Learn {n} new cards" · "Review {n} due cards" · "Starting…" · "Try ag |  |
+| `shared/ui/screen-handoff/14-study-entry.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:3` # 14 · Study entry | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:5` The Study Entry of an open deck (FE-A6, FE-A7): `StudyEntryScreen`, the choice | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:8` ## Layout | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:10` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:12` \| App bar \| `MxAppBar` (content density) \| Back, deck name (composed by `app/` f | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:13` \| Breadcrumb \| `MxBreadcrumb` \| Library › ancestors › deck. \| | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:14` \| Hero \| `MxCard` (plain, not a hero card: a summary, not a door) + `MxStatTile` | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:15` \| Resume banner \| `MxCard` \| "Session from today" overline with a pulse dot, "{k | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:16` \| Nothing-due state \| `MxEmptyState` (compact, success tone) \| "Nothing to do ri | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:17` \| Learn row \| full-bleed `MxCard` of one `MxListRow` \| "Learn new cards", subtit | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:18` \| Review options \| `MxListSectionHeader` (overline) + full-bleed `MxCard` of `Mx | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:19` \| Inline banners \| `MxInlineBanner` \| `refused` (warning): counts changed since | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:20` \| Footer \| `MxFooterBar` \| A caption line plus one block `MxButton` (primary; ou | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:22` ## Direction sheet (SM-2 only) | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:24` Tapping the footer's Review action on an SM-2 root deck opens `MxBottomSheet` | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:32` ## States | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:34` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:36` \| sm2 \| `study_entry_sm2_light.png` \| `study_entry_sm2_dark.png` \| The hero and | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:37` \| eightBox \| `study_entry_eight_box_light.png` \| `study_entry_eight_box_dark.png | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:38` \| onlyNew \| `study_entry_only_new_light.png` \| `study_entry_only_new_dark.png` \| | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:39` \| nothing \| `study_entry_nothing_light.png` \| `study_entry_nothing_dark.png` \| P | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:40` \| resume \| `study_entry_resume_light.png` \| `study_entry_resume_dark.png` \| The | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:41` \| starting \| `study_entry_starting_light.png` \| `study_entry_starting_dark.png` | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:42` \| refused \| `study_entry_refused_light.png` \| `study_entry_refused_dark.png` \| I | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:43` \| startFailed \| `study_entry_start_failed_light.png` \| `study_entry_start_failed | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:44` \| loading \| `study_entry_loading_light.png` \| `study_entry_loading_dark.png` \| S | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:45` Other goldens: `study_entry_direction_sheet_light.png` / `study_entry_direction_ | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:48` Every state above is built. | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:50` **Built (FE-A6 P2):** all nine states on `sm2`. Learn (the row's button | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:64` ## Accessibility | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:66` - TalkBack reads the app bar, the breadcrumb, the hero (overline, then "New: {n} | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:67` - Single-line text that ellipsizes keeps line-height 1.5 for stacked marks (UI-b | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:68` - While a session opens, the locked footer and options stay in the reading order | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:70` ## Rulings | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:72` - **UC-STUDY-003:** SM-2's direction is chosen in a separate `MxBottomSheet` ope | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:73` - **UI-base row 28, FE-A8 ruling S3:** the resume dot is primary and static, as | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:74` - **FE-A8 H2:** the resume banner carries a `MxLinearProgress` track under its l | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:75` - **Plan R5:** on `refused` the footer is rebuilt from the up-to-date counts and | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:76` - **Plan R6:** while starting, the button spins (`MxButton.isLoading`) and "Star | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:77` - **Plan R7:** "Start review" answers the choice and closes the sheet; the entry | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:78` - **Plan R8:** the SM-2 caption reads "{shown} of {due} due · oldest first". | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:79` - **Plan R9:** each refusal has its own title: nothing due, no new cards, a mode | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:80` - **Critique 2026-09-30 part 1:** while an open session shows, "Continue" is the | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:81` - **FE-A6 P3 ruling C5:** `eightBox` picks the first available mode at first; th | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:82` - The Learn button is the secondary tone with the sparkles glyph. | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:83` - **BR-CARD-002:** direction descriptions name no language ("See the term, recal | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:84` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:85` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:86` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:88` ## Copy | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:90` - Hero: "{algorithm}" · "Up to {n} cards per session" · "New" · "Due" · "{n} of | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:91` - Resume: "Session from today" · "{kind} · {mode} · {n} of {n} cards" · "Continu | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:92` - Nothing: "Nothing to do right now" · "Every card is learned and resting. Cards | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:93` - Learn row: "Learn new cards" · "Browse, then self-assess" (SM-2) / "Browse → m | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:94` - Review options, Eight boxes: "Review · choose how cards are asked" · "Match" " | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:95` - Direction sheet, SM-2: "Review · question direction" · "Term first" "See the t | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:96` - Banners: "Nothing is due any more." "The due cards were reviewed from another | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `shared/ui/screen-handoff/14-study-entry.md:97` - Footer: "Learn {n} new cards" · "Review {n} due cards" · "Starting…" · "Try ag | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 
 ## shared/ui/screen-handoff/15-study-options.md
 
@@ -1190,53 +1190,53 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/21-session-summary.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/21-session-summary.md:3` # 21 · Session summary |  |
-| `shared/ui/screen-handoff/21-session-summary.md:5` The terminal screen of a study session: shown once `StudySessionView.status` lea |  |
-| `shared/ui/screen-handoff/21-session-summary.md:9` ## Layout |  |
-| `shared/ui/screen-handoff/21-session-summary.md:11` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/21-session-summary.md:13` \| App bar \| `MxAppBar` (content density; with no leading control its title start |  |
-| `shared/ui/screen-handoff/21-session-summary.md:14` \| Hero \| `MxCard` (hero) + `MxIconTile` (large, tone-coloured) + `MxStatTile` × |  |
-| `shared/ui/screen-handoff/21-session-summary.md:15` \| Facts \| `MxListSectionHeader` + `MxCard` (full-bleed) + `MxListRow` × 3 \| "Thi |  |
-| `shared/ui/screen-handoff/21-session-summary.md:16` \| End note \| `MxNote` \| One calm info line, only for the states that need it. \| |  |
-| `shared/ui/screen-handoff/21-session-summary.md:17` \| Footer \| `MxFooterBar` + `MxButton` × 2 \| Outline "Study this deck" (hidden on |  |
-| `shared/ui/screen-handoff/21-session-summary.md:18` \| Loading \| `MxSkeleton` \| Hero and fact-row shapes while the summary is read. \| |  |
-| `shared/ui/screen-handoff/21-session-summary.md:20` ## States |  |
-| `shared/ui/screen-handoff/21-session-summary.md:22` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/21-session-summary.md:24` \| loaded \| `summary_review_light.png` \| `summary_review_dark.png` \| `completed`, |  |
-| `shared/ui/screen-handoff/21-session-summary.md:25` \| learning \| `summary_learning_light.png` \| `summary_learning_dark.png` \| `compl |  |
-| `shared/ui/screen-handoff/21-session-summary.md:26` \| large \| `summary_large_light.png` \| `summary_large_dark.png` \| `completed` at |  |
-| `shared/ui/screen-handoff/21-session-summary.md:27` \| leftEarly \| `summary_left_early_light.png` \| `summary_left_early_dark.png` \| ` |  |
-| `shared/ui/screen-handoff/21-session-summary.md:28` \| interrupted \| `summary_interrupted_light.png` \| `summary_interrupted_dark.png` |  |
-| `shared/ui/screen-handoff/21-session-summary.md:29` \| reset \| `summary_reset_light.png` \| `summary_reset_dark.png` \| `invalidated`/` |  |
-| `shared/ui/screen-handoff/21-session-summary.md:30` \| schedulerChanged \| `summary_scheduler_changed_light.png` \| `summary_scheduler_ |  |
-| `shared/ui/screen-handoff/21-session-summary.md:31` \| saveError \| `summary_save_error_light.png` \| `summary_save_error_dark.png` \| ` |  |
-| `shared/ui/screen-handoff/21-session-summary.md:32` \| loading \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/21-session-summary.md:33` Other goldens: `summary_content_deleted_light.png` / `summary_content_deleted_da |  |
-| `shared/ui/screen-handoff/21-session-summary.md:36` `contentDeleted` (`invalidated`/`content_deleted`) is reachable since the Trash |  |
-| `shared/ui/screen-handoff/21-session-summary.md:40` **Built (FE-A6 P1c):** every state above but `loading`, drawn by `SessionSummary |  |
-| `shared/ui/screen-handoff/21-session-summary.md:48` ## Accessibility |  |
-| `shared/ui/screen-handoff/21-session-summary.md:50` - TalkBack reads the title, then the hero (title, body, then each stat as one no |  |
-| `shared/ui/screen-handoff/21-session-summary.md:51` - Touch targets are at least 48 × 48; the two footer buttons keep 8 between them |  |
-| `shared/ui/screen-handoff/21-session-summary.md:53` ## Nothing answered |  |
-| `shared/ui/screen-handoff/21-session-summary.md:55` A session that ended before its first turn shows the hero without stats and no F |  |
-| `shared/ui/screen-handoff/21-session-summary.md:58` ## Rulings (FE-A5) |  |
-| `shared/ui/screen-handoff/21-session-summary.md:60` - **Critique 2026-09-30 part 3c-1 (spec `2026-09-30-critique-fixes-part3c1-desig |  |
-| `shared/ui/screen-handoff/21-session-summary.md:62` - `stale_generation` never reaches this screen: the write is refused, the sessio |  |
-| `shared/ui/screen-handoff/21-session-summary.md:65` - "Study this deck" opens Study entry (14); both ship in FE-A6. |  |
-| `shared/ui/screen-handoff/21-session-summary.md:66` - The app bar title uses the content bar's title role; the hero glyph is `MxIcon |  |
-| `shared/ui/screen-handoff/21-session-summary.md:67` - Fact rows are `MxListRow`; the wrong-turns sub-line wraps in the note role in |  |
-| `shared/ui/screen-handoff/21-session-summary.md:68` - `SessionSummary` carries "answered" and "total turns" (FE-A6) for the hero's t |  |
-| `shared/ui/screen-handoff/21-session-summary.md:69` - **Critique 2026-09-30:** the wrong-turns value reads "{wrong} of {total}" ("{w |  |
-| `shared/ui/screen-handoff/21-session-summary.md:70` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/21-session-summary.md:71` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** "Wrong |  |
-| `shared/ui/screen-handoff/21-session-summary.md:73` ## Copy |  |
-| `shared/ui/screen-handoff/21-session-summary.md:75` - App bar: "Session summary". |  |
-| `shared/ui/screen-handoff/21-session-summary.md:76` - Hero titles: "Review finished" · "Learning finished" · "You left early" · "Ses |  |
-| `shared/ui/screen-handoff/21-session-summary.md:78` - Hero bodies: "You reviewed {n} cards. Their next due dates are set." · |  |
-| `shared/ui/screen-handoff/21-session-summary.md:87` - Facts: "This session" · "Cards that finished learning" / "Cards reviewed" · "K |  |
-| `shared/ui/screen-handoff/21-session-summary.md:89` - End note: "Nothing was lost — the answers are in the history." (`schedulerChan |  |
-| `shared/ui/screen-handoff/21-session-summary.md:90` - Footer: "Study this deck" · "Done" · "Done returns you to the deck." · "Loadin |  |
+| `shared/ui/screen-handoff/21-session-summary.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:3` # 21 · Session summary | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:5` The terminal screen of a study session: shown once `StudySessionView.status` lea | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:9` ## Layout | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:11` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:13` \| App bar \| `MxAppBar` (content density; with no leading control its title start | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:14` \| Hero \| `MxCard` (hero) + `MxIconTile` (large, tone-coloured) + `MxStatTile` × | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:15` \| Facts \| `MxListSectionHeader` + `MxCard` (full-bleed) + `MxListRow` × 3 \| "Thi | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:16` \| End note \| `MxNote` \| One calm info line, only for the states that need it. \| | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:17` \| Footer \| `MxFooterBar` + `MxButton` × 2 \| Outline "Study this deck" (hidden on | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:18` \| Loading \| `MxSkeleton` \| Hero and fact-row shapes while the summary is read. \| | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:20` ## States | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:22` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:24` \| loaded \| `summary_review_light.png` \| `summary_review_dark.png` \| `completed`, | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:25` \| learning \| `summary_learning_light.png` \| `summary_learning_dark.png` \| `compl | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:26` \| large \| `summary_large_light.png` \| `summary_large_dark.png` \| `completed` at | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:27` \| leftEarly \| `summary_left_early_light.png` \| `summary_left_early_dark.png` \| ` | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:28` \| interrupted \| `summary_interrupted_light.png` \| `summary_interrupted_dark.png` | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:29` \| reset \| `summary_reset_light.png` \| `summary_reset_dark.png` \| `invalidated`/` | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:30` \| schedulerChanged \| `summary_scheduler_changed_light.png` \| `summary_scheduler_ | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:31` \| saveError \| `summary_save_error_light.png` \| `summary_save_error_dark.png` \| ` | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:32` \| loading \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:33` Other goldens: `summary_content_deleted_light.png` / `summary_content_deleted_da | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:36` `contentDeleted` (`invalidated`/`content_deleted`) is reachable since the Trash | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:40` **Built (FE-A6 P1c):** every state above but `loading`, drawn by `SessionSummary | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:48` ## Accessibility | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:50` - TalkBack reads the title, then the hero (title, body, then each stat as one no | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:51` - Touch targets are at least 48 × 48; the two footer buttons keep 8 between them | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:53` ## Nothing answered | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:55` A session that ended before its first turn shows the hero without stats and no F | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:58` ## Rulings (FE-A5) | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:60` - **Critique 2026-09-30 part 3c-1 (spec `2026-09-30-critique-fixes-part3c1-desig | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:62` - `stale_generation` never reaches this screen: the write is refused, the sessio | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:65` - "Study this deck" opens Study entry (14); both ship in FE-A6. | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:66` - The app bar title uses the content bar's title role; the hero glyph is `MxIcon | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:67` - Fact rows are `MxListRow`; the wrong-turns sub-line wraps in the note role in | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:68` - `SessionSummary` carries "answered" and "total turns" (FE-A6) for the hero's t | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:69` - **Critique 2026-09-30:** the wrong-turns value reads "{wrong} of {total}" ("{w | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:70` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:71` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** "Wrong | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:73` ## Copy | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:75` - App bar: "Session summary". | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:76` - Hero titles: "Review finished" · "Learning finished" · "You left early" · "Ses | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:78` - Hero bodies: "You reviewed {n} cards. Their next due dates are set." · | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:87` - Facts: "This session" · "Cards that finished learning" / "Cards reviewed" · "K | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:89` - End note: "Nothing was lost — the answers are in the history." (`schedulerChan | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `shared/ui/screen-handoff/21-session-summary.md:90` - Footer: "Study this deck" · "Done" · "Done returns you to the deck." · "Loadin | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
 
 ## shared/ui/screen-handoff/22-progress.md
 
@@ -2647,9 +2647,9 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:20` ## Main flow | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:22` **Main flow:** | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:23` 1. Người dùng bấm Study. Còn phiên `in_progress` của cùng ngày học thì màn chọn | superseded → UC-STUDY-001 step 1 (intent) + FN-STUDY-001 (two sets with counts, never mixed) + FN-STUDY-010 (continue) |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:28` 2. Tập ôn tập rỗng ⇒ lối đó không mở được, kèm thời điểm thẻ gần nhất đến hạn | pending → SCR-STUDY-002 (the review choice unavailable, with the next due time); intent kept in UC-STUDY-001 step 2 + FN-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:28` 2. Tập ôn tập rỗng ⇒ lối đó không mở được, kèm thời điểm thẻ gần nhất đến hạn | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:30` 3. **Chọn Học mới** — hệ thống lấy tối đa `card_limit` thẻ chưa học, theo | superseded → FN-STUDY-002 (Kết quả: card_limit, new_card_order, stage sequence) + UC-STUDY-001 step 3 |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:34` 4. **Chọn Ôn tập** — hệ thống hiện các mode chấm điểm của thuật toán: `eight_box | pending → SCR-STUDY-002 (the mode choice: browse absent, each mode with its own count, disabled with its reason, skipped when one mode); intent kept in UC-STUDY-001 step 4 + FN-STUDY-001 + FN-STUDY-003 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:34` 4. **Chọn Ôn tập** — hệ thống hiện các mode chấm điểm của thuật toán: `eight_box | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:41` 5. Cả hai loại phiên ghi `card_limit` đã dùng vào phiên (BR-STUDY-024) và dựng h | superseded → FN-STUDY-002 + FN-STUDY-003 (card_limit stored and queue built in one transaction) |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:43` 6. Người dùng trả lời một thẻ. Nguồn của `action` tùy mode: `self_assess` lấy | superseded → FN-STUDY-005 (action source per mode; generation check) |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:48` 7. Hệ thống xác định `kind` và ghi tường minh (BR-SRS-015): | superseded → FN-STUDY-005 (kind of the turn) |
@@ -2672,9 +2672,9 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:97` - **A3 — Thoát giữa phiên:** session → `abandoned`, `end_reason = user_exit`, | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:100` - **A3b — Mở lại app khi còn phiên `in_progress`:** cùng ngày học thì cho tiếp | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:105` - **A4 — Còn card quá hạn ngoài giới hạn 50:** ở tổng kết nói rõ còn bao nhiêu v | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:107` - **A5 — Xoá deck đang ôn dở:** kết thúc phiên với `content_deleted`, hiện tổng | pending → SCR-STUDY-009 (the summary "Ended — content moved to Trash", then back to the list); intent kept in UC-STUDY-001 A5 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:107` - **A5 — Xoá deck đang ôn dở:** kết thúc phiên với `content_deleted`, hiện tổng | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:111` **Error flows:** | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:112` - **E1 — Không còn card nào đến hạn lúc bắt đầu:** empty state tích cực (BR-STUD | pending → SCR-STUDY-002 (the positive empty state, not an error screen); intent kept in UC-STUDY-001 E1 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:112` - **E1 — Không còn card nào đến hạn lúc bắt đầu:** empty state tích cực (BR-STUD | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:115` - **E2 — Ghi đánh giá thất bại nhưng còn tiếp tục được:** hiện lỗi ngay, **không | pending → SCR-STUDY-004 (the error shown at once, the card stays, in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 E2 |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:118` - **E3 — Lỗi ghi không thể tiếp tục:** session → `failed`, | pending → SCR-STUDY-004 (the error, then back to the deck list, in every mode screen); intent kept in UC-STUDY-001 E3 |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:121` - **E4 — Generation của session đã lỗi thời** (root bị reset ở màn khác trong lú | pending → SCR-STUDY-004 (the notice that the session ended because progress was reset, then back to the list, in every mode screen); intent kept in UC-STUDY-001 E4 |
@@ -2692,10 +2692,10 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:152` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:154` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:156` ## Acceptance criteria | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:158` - [ ] **Given** một deck có cả thẻ `learned_at IS NULL` và thẻ đến hạn, **when** | pending → SCR-STUDY-002 (presentation of the criterion); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:158` - [ ] **Given** một deck có cả thẻ `learned_at IS NULL` và thẻ đến hạn, **when** | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:159` - [ ] **Given** một root có nhiều thẻ chưa học hơn `card_limit`, **when** người | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:160` - [ ] **Given** một phiên `learning` vừa mở, **when** hết hàng đợi của một stage | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:161` - [ ] **Given** một root có thẻ đến hạn, **when** người dùng mở lối Ôn tập, **th | pending → SCR-STUDY-002 (presentation of the criterion); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:161` - [ ] **Given** một root có thẻ đến hạn, **when** người dùng mở lối Ôn tập, **th | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:162` - [ ] **Given** một phiên `reviewing` đã mở, **when** hệ thống dựng hàng đợi, ** | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:163` - [ ] **Given** một lượt trả lời của mode khác mode đang chạy, hoặc mang action | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:164` - [ ] **Given** một thẻ học mới đi hết stage cuối mà nó tham gia, **when** lượt | moved → `USE_CASES.md` |
@@ -2708,13 +2708,13 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:171` - [ ] **Given** người dùng thoát giữa phiên, **when** thoát, **then** phiên thàn | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:172` - [ ] **Given** còn một phiên `in_progress`, **when** người dùng mở lại app cùng | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:173` - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** việc xoá xảy ra, * | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:174` - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** phiên nhận việc xo | pending → SCR-STUDY-009 (presentation of the criterion); intent kept in UC-STUDY-001 A5 |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:175` - [ ] **Given** tập ôn tập rỗng, **when** người dùng mở Study Entry, **then** lố | pending → SCR-STUDY-002 (presentation of the criterion); intent kept in UC-STUDY-001 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:174` - [ ] **Given** deck đang ôn dở bị chuyển vào Trash, **when** phiên nhận việc xo | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:175` - [ ] **Given** tập ôn tập rỗng, **when** người dùng mở Study Entry, **then** lố | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:176` - [ ] **Given** ghi một đánh giá gặp database bận, **when** người dùng thử lại đ | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:177` - [ ] **Given** ghi một đánh giá gặp lỗi không thể tiếp tục, **when** hệ thống x | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:178` - [ ] **Given** root của phiên vừa bị reset ở màn khác, **when** người dùng trả | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
 | `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:179` - [ ] **Given** phiên không đọc được, **when** màn hình mở, **then** hệ thống hi | pending → SCR-STUDY-004 (presentation of the criterion, the same in every mode screen SCR-STUDY-003…SCR-STUDY-008); intent kept in UC-STUDY-001 |
-| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:180` - [ ] **Given** một phiên ôn chạm giới hạn thẻ trong khi cây deck còn thẻ đến hạ | pending → SCR-STUDY-009 (the copy "34 more cards are due." and "Study this deck"); intent kept in UC-STUDY-001 A4 |
+| `features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md:180` - [ ] **Given** một phiên ôn chạm giới hạn thẻ trong khi cây deck còn thẻ đến hạ | moved → `screens/spec/SCR-STUDY-009-session-summary.md` |
 
 ## features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md
 
@@ -2730,21 +2730,21 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:14` ## Main flow | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:16` **Main flow:** | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:17` 1. Hệ thống đọc **một snapshot** gồm session có thể học tiếp và toàn bộ root dec | superseded → FN-STUDY-012 (one snapshot in one transaction; read-only) + UC-STUDY-002 step 1 |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:20` 2. Nếu có đúng một session hợp lệ đang mở, Resume card đứng đầu màn hình và nói | pending → SCR-STUDY-001 (the Resume card at the top: deck, kind, stage); intent kept in UC-STUDY-002 step 2 |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:23` 3. Dưới Resume là danh sách root deck, mỗi hàng có tên deck, nhãn scheduler khi | pending → SCR-STUDY-001 (the root deck rows: name, scheduler label, Overdue/Due today/New, one Study action); intent kept in UC-STUDY-002 step 3 + FN-STUDY-012 (order) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:20` 2. Nếu có đúng một session hợp lệ đang mở, Resume card đứng đầu màn hình và nói | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:23` 3. Dưới Resume là danh sách root deck, mỗi hàng có tên deck, nhãn scheduler khi | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:26` 4. Chạm Resume mở đúng session và đúng lượt đã lưu (BR-STUDY-036), không tạo ses | superseded → UC-STUDY-002 step 4 (intent) + FN-STUDY-010 (resume the saved turn) + FN-STUDY-001 |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:29` 5. Kết thúc, bỏ dở hoặc invalidate một phiên rồi quay lại: danh sách tự cập nhật | superseded → UC-STUDY-002 step 5 (intent) + FN-STUDY-012 (a stream that re-emits on change) |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:32` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:34` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:35` - **A1 — Không có session nào đang mở:** không có Resume card — không phải một | pending → SCR-STUDY-001 (no Resume card: not an empty card, not a disabled button); intent kept in UC-STUDY-002 A1 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:35` - **A1 — Không có session nào đang mở:** không có Resume card — không phải một | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:37` - **A2 — Session của ngày học cũ, generation đã đổi, deck hoặc card đã bị xoá:** | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:40` - **A3 — Mọi deck đều không còn gì đến hạn:** danh sách vẫn hiển thị, kèm một dò | pending → SCR-STUDY-001 (the caught-up line above the list); intent kept in UC-STUDY-002 A3 |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:42` - **A4 — Thư viện chưa có deck nào:** empty state dẫn tới Starter Library (UC-ST | pending → SCR-STUDY-001 (the empty state to the Starter Library, second way to Library); intent kept in UC-STUDY-002 A4 |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:44` - **A5 — Có deck nhưng chưa có card nào:** zero state riêng, dẫn về Library để t | pending → SCR-STUDY-001 (the separate zero state to Library, no starter CTA); intent kept in UC-STUDY-002 A5 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:40` - **A3 — Mọi deck đều không còn gì đến hạn:** danh sách vẫn hiển thị, kèm một dò | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:42` - **A4 — Thư viện chưa có deck nào:** empty state dẫn tới Starter Library (UC-ST | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:44` - **A5 — Có deck nhưng chưa có card nào:** zero state riêng, dẫn về Library để t | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:47` **Error flows:** | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:48` - **E1 — Đọc thất bại:** trạng thái lỗi có nút thử lại, không nêu tên bảng, câu | pending → SCR-STUDY-001 (the error state with Retry; copy says nothing was changed; no table, query or path); intent kept in UC-STUDY-002 E1 |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:52` ## UI | pending → SCR-STUDY-001 (states loading · resume + list · no resume · all zero · no deck · no card · error) |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:54` **UI states:** loading · loaded (resume + danh sách) · loaded (không resume) · | pending → SCR-STUDY-001 (states loading · resume + list · no resume · all zero · no deck · no card · error) |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:48` - **E1 — Đọc thất bại:** trạng thái lỗi có nút thử lại, không nêu tên bảng, câu | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:52` ## UI | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:54` **UI states:** loading · loaded (resume + danh sách) · loaded (không resume) · | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:57` ## Local | superseded → FN-STUDY-012 (Kết quả: reading writes nothing) |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:59` **Postconditions:** Không đổi gì — use case chỉ đọc. Mọi write phát sinh sau đó | superseded → FN-STUDY-012 (Kết quả: reading writes nothing) |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:62` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-STUDY-012 (Business rules) |
@@ -2753,14 +2753,14 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:69` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:71` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:73` - [ ] **Given** tab Study được mở, **when** hệ thống đọc dữ liệu, **then** phiên | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:74` - [ ] **Given** đúng một phiên hợp lệ đang mở, **when** màn hình tải, **then** t | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:74` - [ ] **Given** đúng một phiên hợp lệ đang mở, **when** màn hình tải, **then** t | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
 | `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:75` - [ ] **Given** nhiều root deck có workload khác nhau, **when** danh sách hiện, | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:76` - [ ] **Given** thẻ Resume đang hiện, **when** người dùng chạm Resume, **then** | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:77` - [ ] **Given** không có phiên nào đang mở, hoặc phiên đang mở đã kết thúc, thuộ | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:78` - [ ] **Given** mọi deck đều không còn gì đến hạn, **when** màn hình tải, **then | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:79` - [ ] **Given** thư viện có deck nhưng chưa deck nào có card, **when** màn hình | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:80` - [ ] **Given** việc đọc thất bại, **when** màn hình tải, **then** hệ thống hiện | pending → SCR-STUDY-001 (presentation of the criterion); intent kept in UC-STUDY-002 |
-| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:81` - [ ] **Given** thư viện chưa có root deck nào, **when** màn hình tải, **then** | pending → SCR-STUDY-001 (the empty state copy "Browse starter decks" and "Go to Library"); intent kept in UC-STUDY-002 A4 |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:76` - [ ] **Given** thẻ Resume đang hiện, **when** người dùng chạm Resume, **then** | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:77` - [ ] **Given** không có phiên nào đang mở, hoặc phiên đang mở đã kết thúc, thuộ | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:78` - [ ] **Given** mọi deck đều không còn gì đến hạn, **when** màn hình tải, **then | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:79` - [ ] **Given** thư viện có deck nhưng chưa deck nào có card, **when** màn hình | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:80` - [ ] **Given** việc đọc thất bại, **when** màn hình tải, **then** hệ thống hiện | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
+| `features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md:81` - [ ] **Given** thư viện chưa có root deck nào, **when** màn hình tải, **then** | moved → `screens/spec/SCR-STUDY-001-study-home.md` |
 
 ## features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md
 
@@ -2775,41 +2775,41 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:10` **Actor:** Người dùng | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:16` ## Main flow | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:18` **Main flow:** | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:19` 1. Người dùng bấm `Review`. Vì `sm2` chỉ offer một mode, hệ thống bỏ qua màn chọ | pending → SCR-STUDY-002 (Review skips the mode choice and opens the direction sheet); intent kept in UC-STUDY-003 step 1 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:21` 2. Hệ thống hiển thị ba lựa chọn — `Term first` (gắn nhãn Recommended; nhãn khôn | pending → SCR-STUDY-002 (Term first with Recommended, Meaning first, Mixed, each with a line; the locked-for-the-session line); intent kept in UC-STUDY-003 step 2 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:25` 3. Người dùng chạm một lựa chọn. Chạm chỉ **chọn**, không mở phiên: lựa chọn bị | pending → SCR-STUDY-002 (a tap only selects); intent kept in UC-STUDY-003 step 3 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:28` 4. Người dùng bấm `Start review`. Hệ thống khoá sheet trong lúc mở phiên — cú | pending → SCR-STUDY-002 (Start review locks the sheet while the session opens); intent kept in UC-STUDY-003 step 4 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:19` 1. Người dùng bấm `Review`. Vì `sm2` chỉ offer một mode, hệ thống bỏ qua màn chọ | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:21` 2. Hệ thống hiển thị ba lựa chọn — `Term first` (gắn nhãn Recommended; nhãn khôn | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:25` 3. Người dùng chạm một lựa chọn. Chạm chỉ **chọn**, không mở phiên: lựa chọn bị | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:28` 4. Người dùng bấm `Start review`. Hệ thống khoá sheet trong lúc mở phiên — cú | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:30` 5. Hệ thống mở phiên với chiều đã chọn, materialize hàng đợi trong cùng | superseded → FN-STUDY-003 (direction per queue row; mixed split once) + UC-STUDY-003 step 5 |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:33` 6. Màn phiên học mở ra. Mỗi thẻ hiện đề ở nửa trên theo chiều của dòng nó, và | pending → SCR-STUDY-004 (prompt on the top half, answer on the bottom half after the flip); intent kept in UC-STUDY-003 step 6 + FN-STUDY-004 |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:37` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:39` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:40` - **A1 — Đóng sheet:** người dùng vuốt xuống hoặc chạm ra ngoài. Chưa có gì được | pending → SCR-STUDY-002 (swipe down or tap outside closes the sheet; Study Entry unchanged); intent kept in UC-STUDY-003 A1 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:43` - **A2 — Deck chạy `eight_box`:** sheet này không xuất hiện. Lối vào là màn chọn | pending → SCR-STUDY-002 (no direction sheet for eight_box; the mode choice instead); intent kept in UC-STUDY-003 A2 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:45` - **A3 — Còn phiên bỏ dở:** sheet ba lối của BR-STUDY-072 hiện trước. Chọn `Cont | pending → SCR-STUDY-002 (the three-way sheet comes first; Continue does not reopen the direction sheet); intent kept in UC-STUDY-003 A3 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:40` - **A1 — Đóng sheet:** người dùng vuốt xuống hoặc chạm ra ngoài. Chưa có gì được | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:43` - **A2 — Deck chạy `eight_box`:** sheet này không xuất hiện. Lối vào là màn chọn | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:45` - **A3 — Còn phiên bỏ dở:** sheet ba lối của BR-STUDY-072 hiện trước. Chọn `Cont | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:48` - **A4 — Phiên `mixed` đang chạy:** hai thẻ liên tiếp có thể hỏi hai chiều khác | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:52` **Error flows:** | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:53` - **E1 — Deck đổi scheduler hoặc bị reset trong lúc sheet đang mở:** hệ thống đọ | pending → SCR-STUDY-002 (the banner "Self-check is no longer offered for this deck."); intent kept in UC-STUDY-003 E1 + FN-STUDY-003 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:58` - **E2 — Không còn thẻ đến hạn tại thời điểm bấm Start:** phiên bị từ chối và | pending → SCR-STUDY-002 (the sheet shows the error as in E1); intent kept in UC-STUDY-003 E2 + FN-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:53` - **E1 — Deck đổi scheduler hoặc bị reset trong lúc sheet đang mở:** hệ thống đọ | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:58` - **E2 — Không còn thẻ đến hạn tại thời điểm bấm Start:** phiên bị từ chối và | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:60` - **E3 — Yêu cầu thiếu chiều:** không thể tạo từ UI này; use case vẫn từ chối là | superseded → FN-STUDY-003 (Lỗi: direction missing or not used by the mode) + UC-STUDY-003 E3 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:63` ## UI | pending → SCR-STUDY-002 (sheet states initial · submitting · failure; no loading, no empty) |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:65` **UI states:** initial (ba lựa chọn, Term first đã chọn sẵn) · submitting | pending → SCR-STUDY-002 (sheet states initial · submitting · failure; no loading, no empty) |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:63` ## UI | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:65` **UI states:** initial (ba lựa chọn, Term first đã chọn sẵn) · submitting | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:71` ## Local | superseded → FN-STUDY-003 (Kết quả: direction on the session, the queue rows and each review_log row; schedule unchanged) |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:73` **Postconditions:** `study_session.direction` giữ lựa chọn của phiên, | superseded → FN-STUDY-003 (Kết quả: direction on the session, the queue rows and each review_log row; schedule unchanged) |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:78` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:80` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:82` ## Acceptance criteria | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:84` - [ ] **Given** một root dùng `sm2` có thẻ đến hạn, **when** người dùng bấm Revi | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:85` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng chọn `Meaning firs | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:84` - [ ] **Given** một root dùng `sm2` có thẻ đến hạn, **when** người dùng bấm Revi | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:85` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng chọn `Meaning firs | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:86` - [ ] **Given** phiên mở với `Term first` hoặc `Meaning first`, **when** hệ thốn | moved → `USE_CASES.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:87` - [ ] **Given** một thẻ hỏi theo `Meaning first`, **when** thẻ hiện ra, **then** | pending → SCR-STUDY-004 (presentation of the criterion: prompt and answer faces); intent kept in UC-STUDY-003 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:88` - [ ] **Given** Start review đang mở phiên, **when** người dùng bấm thêm lần nữa | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:89` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng đóng sheet mà khôn | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:90` - [ ] **Given** deck chạy `eight_box`, **when** người dùng bấm Review, **then** | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:91` - [ ] **Given** còn một phiên `self_assess` bỏ dở, **when** người dùng chọn Cont | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:88` - [ ] **Given** Start review đang mở phiên, **when** người dùng bấm thêm lần nữa | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:89` - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng đóng sheet mà khôn | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:90` - [ ] **Given** deck chạy `eight_box`, **when** người dùng bấm Review, **then** | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:91` - [ ] **Given** còn một phiên `self_assess` bỏ dở, **when** người dùng chọn Cont | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:92` - [ ] **Given** một phiên `Mixed` đang chạy, **when** một thẻ quay lại hàng đợi, | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:93` - [ ] **Given** không còn thẻ nào đến hạn lúc bấm Start review, **when** người d | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:93` - [ ] **Given** không còn thẻ nào đến hạn lúc bấm Start review, **when** người d | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:94` - [ ] **Given** yêu cầu mở phiên `self_assess` không kèm chiều, hoặc kèm chiều c | moved → `USE_CASES.md` |
-| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:95` - [ ] **Given** sheet chọn chiều đang mở và scheduler của root đổi sang `eight_b | pending → SCR-STUDY-002 (presentation of the criterion: the direction sheet); intent kept in UC-STUDY-003 |
+| `features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md:95` - [ ] **Given** sheet chọn chiều đang mở và scheduler của root đổi sang `eight_b | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 
 ## features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md
 
@@ -3211,7 +3211,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/study/ui.md:7` Hai UC dùng chung một đối tượng: phiên ôn tập (UC-STUDY-001) và việc đặt lại tiế | superseded → FN-STUDY-005 (Lỗi: stale generation) + FN-SRS-002 (Kết quả: open sessions invalidated); the link between the two UCs is now stated in both FNs |
 | `features/study/ui.md:12` flowchart TD | superseded → UC-STUDY-001 (the flow, as text) + FN-STUDY-005 |
 | `features/study/ui.md:13` A["Bấm ôn tập trên một deck"] --> B{"Còn thẻ đến hạn không · BR-STUDY-051, BR-ST | superseded → UC-STUDY-001 step 1 + FN-STUDY-001 |
-| `features/study/ui.md:14` B -->\|"Không"\| B1["Empty state tích cực kèm thời điểm đến hạn gần nhất; KHÔNG tạ | pending → SCR-STUDY-002 (the positive empty state with the next due time); intent kept in UC-STUDY-001 E1 + FN-STUDY-001 |
+| `features/study/ui.md:14` B -->\|"Không"\| B1["Empty state tích cực kèm thời điểm đến hạn gần nhất; KHÔNG tạ | moved → `screens/spec/SCR-STUDY-002-study-entry.md` |
 | `features/study/ui.md:15` B -->\|"Còn"\| C["Tạo study_session in_progress mang root_id và generation hiện tạ | superseded → FN-STUDY-002 + FN-STUDY-003 (the session carries root and generation; it is created when learning or review is chosen, per the code) |
 | `features/study/ui.md:16` C --> D["Chọn Học mới hoặc Ôn tập · tối đa `card_limit` thẻ · BR-STUDY-051, BR-S | superseded → FN-STUDY-002 + FN-STUDY-003 (card_limit) + UC-STUDY-001 steps 3–4 |
 | `features/study/ui.md:17` D --> E["Render nút đánh giá từ supportedActions: 2 với eight_box, 4 với sm2 · B | pending → SCR-STUDY-004 (the assessment buttons drawn from supportedActions: 2 for eight_box, 4 for sm2); contract kept in FN-STUDY-005 |
@@ -3360,12 +3360,12 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/study/README.md:10` ## Màn hình → Use case |  |
-| `features/study/README.md:12` \| Màn hình \| UC \| |  |
-| `features/study/README.md:14` \| Tab Study (Study Home) \| UC-STUDY-002 \| |  |
-| `features/study/README.md:15` \| Study Entry của một deck \| UC-STUDY-001, UC-STUDY-003 \| |  |
-| `features/study/README.md:16` \| Phiên học / phiên ôn tập \| UC-STUDY-001 \| |  |
-| `features/study/README.md:18` Nguồn: trigger của UC-STUDY-001 ("bấm Study trên một deck"), UC-STUDY-002 ("Chạm |  |
+| `features/study/README.md:10` ## Màn hình → Use case || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:12` \| Màn hình \| UC \| || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:14` \| Tab Study (Study Home) \| UC-STUDY-002 \| || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:15` \| Study Entry của một deck \| UC-STUDY-001, UC-STUDY-003 \| || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:16` \| Phiên học / phiên ôn tập \| UC-STUDY-001 \| || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/study/README.md:18` Nguồn: trigger của UC-STUDY-001 ("bấm Study trên một deck"), UC-STUDY-002 ("Chạm || superseded → SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-003…SCR-STUDY-009 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/study-mode/README.md
 
@@ -3587,8 +3587,8 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/account/presentation/goldens/sign_in_reauth_light.png` |  |
 | `test/features/account/presentation/goldens/sign_in_unsent_loss_dark.png` |  |
 | `test/features/account/presentation/goldens/sign_in_unsent_loss_light.png` |  |
-| `test/features/account/presentation/goldens/study_home_reauth_dark.png` |  |
-| `test/features/account/presentation/goldens/study_home_reauth_light.png` |  |
+| `test/features/account/presentation/goldens/study_home_reauth_dark.png` | superseded → SCR-STUDY-001 `reauth` dark |
+| `test/features/account/presentation/goldens/study_home_reauth_light.png` | superseded → SCR-STUDY-001 `reauth` light |
 | `test/features/account/presentation/goldens/users_empty_search_dark.png` |  |
 | `test/features/account/presentation/goldens/users_empty_search_light.png` |  |
 | `test/features/account/presentation/goldens/users_loaded_dark.png` |  |
@@ -3835,26 +3835,26 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/study/presentation/goldens/study_browse_light.png` |  |
 | `test/features/study/presentation/goldens/study_browse_looking_back_dark.png` |  |
 | `test/features/study/presentation/goldens/study_browse_looking_back_light.png` |  |
-| `test/features/study/presentation/goldens/study_entry_direction_sheet_dark.png` |  |
-| `test/features/study/presentation/goldens/study_entry_direction_sheet_light.png` |  |
-| `test/features/study/presentation/goldens/study_entry_eight_box_dark.png` |  |
-| `test/features/study/presentation/goldens/study_entry_eight_box_light.png` |  |
-| `test/features/study/presentation/goldens/study_entry_loading_dark.png` |  |
-| `test/features/study/presentation/goldens/study_entry_loading_light.png` |  |
-| `test/features/study/presentation/goldens/study_entry_nothing_dark.png` |  |
-| `test/features/study/presentation/goldens/study_entry_nothing_light.png` |  |
-| `test/features/study/presentation/goldens/study_entry_only_new_dark.png` |  |
-| `test/features/study/presentation/goldens/study_entry_only_new_light.png` |  |
-| `test/features/study/presentation/goldens/study_entry_refused_dark.png` |  |
-| `test/features/study/presentation/goldens/study_entry_refused_light.png` |  |
-| `test/features/study/presentation/goldens/study_entry_resume_dark.png` |  |
-| `test/features/study/presentation/goldens/study_entry_resume_light.png` |  |
-| `test/features/study/presentation/goldens/study_entry_sm2_dark.png` |  |
-| `test/features/study/presentation/goldens/study_entry_sm2_light.png` |  |
-| `test/features/study/presentation/goldens/study_entry_start_failed_dark.png` |  |
-| `test/features/study/presentation/goldens/study_entry_start_failed_light.png` |  |
-| `test/features/study/presentation/goldens/study_entry_starting_dark.png` |  |
-| `test/features/study/presentation/goldens/study_entry_starting_light.png` |  |
+| `test/features/study/presentation/goldens/study_entry_direction_sheet_dark.png` | superseded → SCR-STUDY-002 `direction_sheet` dark |
+| `test/features/study/presentation/goldens/study_entry_direction_sheet_light.png` | superseded → SCR-STUDY-002 `direction_sheet` light |
+| `test/features/study/presentation/goldens/study_entry_eight_box_dark.png` | superseded → SCR-STUDY-002 `eight_box` dark |
+| `test/features/study/presentation/goldens/study_entry_eight_box_light.png` | superseded → SCR-STUDY-002 `eight_box` light |
+| `test/features/study/presentation/goldens/study_entry_loading_dark.png` | superseded → SCR-STUDY-002 `loading` dark |
+| `test/features/study/presentation/goldens/study_entry_loading_light.png` | superseded → SCR-STUDY-002 `loading` light |
+| `test/features/study/presentation/goldens/study_entry_nothing_dark.png` | superseded → SCR-STUDY-002 `nothing` dark |
+| `test/features/study/presentation/goldens/study_entry_nothing_light.png` | superseded → SCR-STUDY-002 `nothing` light |
+| `test/features/study/presentation/goldens/study_entry_only_new_dark.png` | superseded → SCR-STUDY-002 `only_new` dark |
+| `test/features/study/presentation/goldens/study_entry_only_new_light.png` | superseded → SCR-STUDY-002 `only_new` light |
+| `test/features/study/presentation/goldens/study_entry_refused_dark.png` | superseded → SCR-STUDY-002 `refused` dark |
+| `test/features/study/presentation/goldens/study_entry_refused_light.png` | superseded → SCR-STUDY-002 `refused` light |
+| `test/features/study/presentation/goldens/study_entry_resume_dark.png` | superseded → SCR-STUDY-002 `resume` dark |
+| `test/features/study/presentation/goldens/study_entry_resume_light.png` | superseded → SCR-STUDY-002 `resume` light |
+| `test/features/study/presentation/goldens/study_entry_sm2_dark.png` | superseded → SCR-STUDY-002 `sm2` dark |
+| `test/features/study/presentation/goldens/study_entry_sm2_light.png` | superseded → SCR-STUDY-002 `sm2` light |
+| `test/features/study/presentation/goldens/study_entry_start_failed_dark.png` | superseded → SCR-STUDY-002 `start_failed` dark |
+| `test/features/study/presentation/goldens/study_entry_start_failed_light.png` | superseded → SCR-STUDY-002 `start_failed` light |
+| `test/features/study/presentation/goldens/study_entry_starting_dark.png` | superseded → SCR-STUDY-002 `starting` dark |
+| `test/features/study/presentation/goldens/study_entry_starting_light.png` | superseded → SCR-STUDY-002 `starting` light |
 | `test/features/study/presentation/goldens/study_fill_hint_dark.png` |  |
 | `test/features/study/presentation/goldens/study_fill_hint_light.png` |  |
 | `test/features/study/presentation/goldens/study_fill_input_dark.png` |  |
@@ -3869,24 +3869,24 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/study/presentation/goldens/study_guess_right_light.png` |  |
 | `test/features/study/presentation/goldens/study_guess_wrong_dark.png` |  |
 | `test/features/study/presentation/goldens/study_guess_wrong_light.png` |  |
-| `test/features/study/presentation/goldens/study_home_error_dark.png` |  |
-| `test/features/study/presentation/goldens/study_home_error_light.png` |  |
-| `test/features/study/presentation/goldens/study_home_loaded_dark.png` |  |
-| `test/features/study/presentation/goldens/study_home_loaded_light.png` |  |
-| `test/features/study/presentation/goldens/study_home_loading_dark.png` |  |
-| `test/features/study/presentation/goldens/study_home_loading_light.png` |  |
-| `test/features/study/presentation/goldens/study_home_no_cards_dark.png` |  |
-| `test/features/study/presentation/goldens/study_home_no_cards_light.png` |  |
-| `test/features/study/presentation/goldens/study_home_no_decks_dark.png` |  |
-| `test/features/study/presentation/goldens/study_home_no_decks_light.png` |  |
-| `test/features/study/presentation/goldens/study_home_no_resume_dark.png` |  |
-| `test/features/study/presentation/goldens/study_home_no_resume_light.png` |  |
-| `test/features/study/presentation/goldens/study_home_sync_rejected_dark.png` |  |
-| `test/features/study/presentation/goldens/study_home_sync_rejected_light.png` |  |
-| `test/features/study/presentation/goldens/study_home_sync_stale_dark.png` |  |
-| `test/features/study/presentation/goldens/study_home_sync_stale_light.png` |  |
-| `test/features/study/presentation/goldens/study_home_zero_dark.png` |  |
-| `test/features/study/presentation/goldens/study_home_zero_light.png` |  |
+| `test/features/study/presentation/goldens/study_home_error_dark.png` | superseded → SCR-STUDY-001 `error` dark |
+| `test/features/study/presentation/goldens/study_home_error_light.png` | superseded → SCR-STUDY-001 `error` light |
+| `test/features/study/presentation/goldens/study_home_loaded_dark.png` | superseded → SCR-STUDY-001 `loaded` dark |
+| `test/features/study/presentation/goldens/study_home_loaded_light.png` | superseded → SCR-STUDY-001 `loaded` light |
+| `test/features/study/presentation/goldens/study_home_loading_dark.png` | superseded → SCR-STUDY-001 `loading` dark |
+| `test/features/study/presentation/goldens/study_home_loading_light.png` | superseded → SCR-STUDY-001 `loading` light |
+| `test/features/study/presentation/goldens/study_home_no_cards_dark.png` | superseded → SCR-STUDY-001 `no_cards` dark |
+| `test/features/study/presentation/goldens/study_home_no_cards_light.png` | superseded → SCR-STUDY-001 `no_cards` light |
+| `test/features/study/presentation/goldens/study_home_no_decks_dark.png` | superseded → SCR-STUDY-001 `no_decks` dark |
+| `test/features/study/presentation/goldens/study_home_no_decks_light.png` | superseded → SCR-STUDY-001 `no_decks` light |
+| `test/features/study/presentation/goldens/study_home_no_resume_dark.png` | superseded → SCR-STUDY-001 `no_resume` dark |
+| `test/features/study/presentation/goldens/study_home_no_resume_light.png` | superseded → SCR-STUDY-001 `no_resume` light |
+| `test/features/study/presentation/goldens/study_home_sync_rejected_dark.png` | superseded → SCR-STUDY-001 `sync_rejected` dark |
+| `test/features/study/presentation/goldens/study_home_sync_rejected_light.png` | superseded → SCR-STUDY-001 `sync_rejected` light |
+| `test/features/study/presentation/goldens/study_home_sync_stale_dark.png` | superseded → SCR-STUDY-001 `sync_stale` dark |
+| `test/features/study/presentation/goldens/study_home_sync_stale_light.png` | superseded → SCR-STUDY-001 `sync_stale` light |
+| `test/features/study/presentation/goldens/study_home_zero_dark.png` | superseded → SCR-STUDY-001 `zero` dark |
+| `test/features/study/presentation/goldens/study_home_zero_light.png` | superseded → SCR-STUDY-001 `zero` light |
 | `test/features/study/presentation/goldens/study_match_board_dark.png` |  |
 | `test/features/study/presentation/goldens/study_match_board_light.png` |  |
 | `test/features/study/presentation/goldens/study_match_wrong_dark.png` |  |
@@ -3905,24 +3905,24 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/study/presentation/goldens/study_self_assess_relearning_light.png` |  |
 | `test/features/study/presentation/goldens/study_self_assess_revealed_dark.png` |  |
 | `test/features/study/presentation/goldens/study_self_assess_revealed_light.png` |  |
-| `test/features/study/presentation/goldens/summary_content_deleted_dark.png` |  |
-| `test/features/study/presentation/goldens/summary_content_deleted_light.png` |  |
-| `test/features/study/presentation/goldens/summary_interrupted_dark.png` |  |
-| `test/features/study/presentation/goldens/summary_interrupted_light.png` |  |
-| `test/features/study/presentation/goldens/summary_large_dark.png` |  |
-| `test/features/study/presentation/goldens/summary_large_light.png` |  |
-| `test/features/study/presentation/goldens/summary_learning_dark.png` |  |
-| `test/features/study/presentation/goldens/summary_learning_light.png` |  |
-| `test/features/study/presentation/goldens/summary_left_early_dark.png` |  |
-| `test/features/study/presentation/goldens/summary_left_early_light.png` |  |
-| `test/features/study/presentation/goldens/summary_reset_dark.png` |  |
-| `test/features/study/presentation/goldens/summary_reset_light.png` |  |
-| `test/features/study/presentation/goldens/summary_review_dark.png` |  |
-| `test/features/study/presentation/goldens/summary_review_light.png` |  |
-| `test/features/study/presentation/goldens/summary_save_error_dark.png` |  |
-| `test/features/study/presentation/goldens/summary_save_error_light.png` |  |
-| `test/features/study/presentation/goldens/summary_scheduler_changed_dark.png` |  |
-| `test/features/study/presentation/goldens/summary_scheduler_changed_light.png` |  |
+| `test/features/study/presentation/goldens/summary_content_deleted_dark.png` | superseded → SCR-STUDY-009 `content_deleted` dark |
+| `test/features/study/presentation/goldens/summary_content_deleted_light.png` | superseded → SCR-STUDY-009 `content_deleted` light |
+| `test/features/study/presentation/goldens/summary_interrupted_dark.png` | superseded → SCR-STUDY-009 `interrupted` dark |
+| `test/features/study/presentation/goldens/summary_interrupted_light.png` | superseded → SCR-STUDY-009 `interrupted` light |
+| `test/features/study/presentation/goldens/summary_large_dark.png` | superseded → SCR-STUDY-009 `large` dark |
+| `test/features/study/presentation/goldens/summary_large_light.png` | superseded → SCR-STUDY-009 `large` light |
+| `test/features/study/presentation/goldens/summary_learning_dark.png` | superseded → SCR-STUDY-009 `learning` dark |
+| `test/features/study/presentation/goldens/summary_learning_light.png` | superseded → SCR-STUDY-009 `learning` light |
+| `test/features/study/presentation/goldens/summary_left_early_dark.png` | superseded → SCR-STUDY-009 `left_early` dark |
+| `test/features/study/presentation/goldens/summary_left_early_light.png` | superseded → SCR-STUDY-009 `left_early` light |
+| `test/features/study/presentation/goldens/summary_reset_dark.png` | superseded → SCR-STUDY-009 `reset` dark |
+| `test/features/study/presentation/goldens/summary_reset_light.png` | superseded → SCR-STUDY-009 `reset` light |
+| `test/features/study/presentation/goldens/summary_review_dark.png` | superseded → SCR-STUDY-009 `loaded` dark |
+| `test/features/study/presentation/goldens/summary_review_light.png` | superseded → SCR-STUDY-009 `loaded` light |
+| `test/features/study/presentation/goldens/summary_save_error_dark.png` | superseded → SCR-STUDY-009 `save_error` dark |
+| `test/features/study/presentation/goldens/summary_save_error_light.png` | superseded → SCR-STUDY-009 `save_error` light |
+| `test/features/study/presentation/goldens/summary_scheduler_changed_dark.png` | superseded → SCR-STUDY-009 `scheduler_changed` dark |
+| `test/features/study/presentation/goldens/summary_scheduler_changed_light.png` | superseded → SCR-STUDY-009 `scheduler_changed` light |
 | `test/features/tags/presentation/goldens/tags_busy_dark.png` | superseded → SCR-TAG-001 `busy` dark |
 | `test/features/tags/presentation/goldens/tags_busy_light.png` | superseded → SCR-TAG-001 `busy` light |
 | `test/features/tags/presentation/goldens/tags_del_dark.png` | superseded → SCR-TAG-001 `del` dark |
@@ -4366,3 +4366,11 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - The export sheet has no route of its own: `route: []` and "—" in the catalog; it opens over SCR-CARD-001.
 - The legacy UC's separate import confirm step is V8's "Import {n} cards" under the deck header (ruled in the spec).
 - Warning delta: 61 → 58 = −3 navigations to pending transfer specs.
+
+## Task 35 notes — SCR-STUDY-001, SCR-STUDY-002, SCR-STUDY-009
+
+- Records 13, 14, 21 → `SCR-STUDY-001-study-home.md`, `SCR-STUDY-002-study-entry.md`, `SCR-STUDY-009-session-summary.md`; their goldens superseded (study home's re-auth golden lives in the account tests).
+- 45 pending rows moved; study README rows superseded.
+- Ruling: UC-STUDY-002 step 3 no longer says the deck rows show the review algorithm — V8 draws no scheduler label and no BR asks for one; owner precedent 2026-10-04 (tri-state icon): the UC keeps intent, the spec follows the app — cost if wrong: one clause back in the UC and an IMPLEMENTATION GAP.
+- IMPLEMENTATION GAP recorded in SCR-STUDY-002: UC-STUDY-001 step 2/E1 and FN-STUDY-001 give the next due time when nothing is due; the entry's nothing-due state does not show it (Study home's zero card does). Presentation only; FN and UC unchanged, no code change.
+- Warning delta: 58 → 67 = +14 navigations to specs still pending (study mode screens Task 36, settings Task 37, account Task 40), −3 navigations to SCR-STUDY-001/002, −2 FN-ACCOUNT-002/015 now invoked by SCR-STUDY-001.
