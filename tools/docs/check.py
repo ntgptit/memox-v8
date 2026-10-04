@@ -143,7 +143,9 @@ SKIP_LINK_CHECK = ("superpowers",)
 # Which ID kinds each new-layout document may cite (spec §4.8, R13); other docs: any kind.
 CITE_RULES: tuple[tuple[str, set[str]], ...] = (
     ("USE_CASES.md", {"FN"}),
-    ("functional-spec/", {"BR"}),
+    # An FN may cite another FN as a contract prerequisite, never as a call graph
+    # (owner checkpoint 2026-10-04).
+    ("functional-spec/", {"BR", "FN"}),
     ("screens/spec/", {"FN", "UC", "SCR", "INV"}),
     ("screens/SCREEN_CATALOG.md", {"SCR", "INV"}),
     ("NAVIGATION.md", {"SCR", "UC"}),
@@ -155,6 +157,7 @@ REVERSE_HEADING = re.compile(
     r"related business rules|entry points|functional capabilities)\b",
     re.I,
 )
+PENDING = "pending"
 REVERSE_CHECKED = {"BR", "FEATURE", "UC", "UCS", "FN", "SCR"}
 
 
@@ -199,6 +202,12 @@ def allowed_kinds(path: Path) -> set[str] | None:
         if rel == prefix or (prefix.endswith("/") and rel.startswith(prefix)):
             return kinds
     return None
+
+
+def pending_screens() -> set[str]:
+    """Catalog rows with status `pending`: the screen has an id but no spec yet."""
+    rows, _ = screen_catalog()
+    return {row.id for row in rows if row.status == PENDING}
 
 
 def screen_catalog() -> tuple[list[specdocs.CatalogScreen], list[specdocs.Invariant]]:
@@ -285,8 +294,14 @@ def check_duplicates(docs: list[g.Doc], report: Report) -> dict[str, g.Doc]:
     return by_id
 
 
-def check_reference(doc: g.Doc, label: str, ref: str, kind: str, by_id: dict[str, g.Doc], report: Report) -> None:
+def check_reference(
+    doc: g.Doc, label: str, ref: str, kind: str, by_id: dict[str, g.Doc], report: Report,
+    pending: frozenset[str] = frozenset(),
+) -> None:
     target = by_id.get(ref)
+    if target is None and kind == "SCR" and ref in pending:
+        report.warning(where(doc), f"`{label}` names {ref}, whose spec is pending")
+        return
     if target is None or target.kind != kind:
         report.error(where(doc), f"`{label}` names a {kind} that does not exist: `{ref}`")
     elif target.status == "deprecated":
@@ -294,6 +309,7 @@ def check_reference(doc: g.Doc, label: str, ref: str, kind: str, by_id: dict[str
 
 
 def check_references(docs: list[g.Doc], by_id: dict[str, g.Doc], report: Report) -> None:
+    pending = frozenset(pending_screens())
     for doc in docs:
         for label, kind in REFERENCE_FIELDS.get(schema(doc), ()):
             for ref in doc.as_list(label):
@@ -305,7 +321,7 @@ def check_references(docs: list[g.Doc], by_id: dict[str, g.Doc], report: Report)
                 ("Related Use Cases", doc.screen.related_ucs, "UC"),
             ):
                 for ref in refs:
-                    check_reference(doc, label, ref, kind, by_id, report)
+                    check_reference(doc, label, ref, kind, by_id, report, pending)
         superseded_by = str(doc.meta.get("superseded_by") or "")
         if not superseded_by:
             continue
@@ -360,6 +376,10 @@ def check_catalog(docs: list[g.Doc], report: Report) -> None:
             continue
         seen.add(row.id)
         doc = screens.get(row.id)
+        if row.status == PENDING:
+            if doc is not None:
+                report.error(at, f"catalog row `{row.id}` is pending but its spec exists")
+            continue
         if doc is None:
             report.error(at, f"catalog row `{row.id}` has no screen spec")
             continue
@@ -503,7 +523,7 @@ def check_warnings(docs: list[g.Doc], migrated: list[g.Doc], report: Report) -> 
 def defined_ids(docs: list[g.Doc]) -> set[str]:
     _, invariants = screen_catalog()
     ids = {d.id for d in docs if d.kind in ("BR", "UC", "FN", "SCR") and d.id}
-    return ids | {inv.id for inv in invariants}
+    return ids | {inv.id for inv in invariants} | pending_screens()
 
 
 def defined_invariants() -> set[int] | None:
@@ -662,6 +682,8 @@ def check_ledger(path: Path, defined: set[str], report: Report) -> None:
         match = ledger.OUTCOME.match(outcome)
         if match is None:
             report.error(at, f"outcome `{outcome or '(empty)'}` is not `moved → …`, `superseded → …` or `dropped — …, approved <date>`")
+        elif match["pending"]:
+            report.error(at, f"still pending: `{outcome}` — the target is not written yet")
         elif match["dest"] and not destination_exists(match["dest"].split("#", 1)[0]):
             report.error(at, f"moved to a path that does not exist: `{match['dest']}`")
         elif match["by"]:

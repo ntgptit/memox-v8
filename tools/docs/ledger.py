@@ -26,11 +26,14 @@ LIST_ITEM = re.compile(r"^(?:[-*]|\d+\.)\s")
 SEPARATOR_ROW = re.compile(r"^\|[\s:|-]+\|?$")
 CELL_SPLIT = re.compile(r"(?<!\\)\|")
 OUTCOME = re.compile(
-    r"^(?:moved → `(?P<dest>[^`]+)`|superseded → (?P<by>\S.*)|dropped — .+, approved \d{4}-\d{2}-\d{2})$"
+    r"^(?:moved → `(?P<dest>[^`]+)`|superseded → (?P<by>\S.*)|pending → (?P<pending>\S.*)"
+    r"|dropped — .+, approved \d{4}-\d{2}-\d{2})$"
 )
 # Files whose ledger rows cover one section only: path relative to docs/ → heading.
 ONE_SECTION = {"README.md": "## Sản phẩm"}
 FEATURE_README_SECTION = "## Màn hình → Use case"  # plan PT7
+# Everything from this line on is hand-written (task notes) and survives a re-seed.
+NOTES_MARK = "<!-- Notes below are kept by `ledger.py seed`. -->"
 
 
 def source_files() -> list[Path]:
@@ -106,13 +109,14 @@ def table(title: str, sources: list[str], existing: dict[str, str]) -> list[str]
     return lines + [""]
 
 
-def render(existing: dict[str, str]) -> str:
+def render(existing: dict[str, str], notes: str = "") -> str:
     lines = [
         "# UI docs restructure — migration ledger",
         "",
         "Seeded by `python3 tools/docs/ledger.py seed`; outcomes are written by hand.",
         "An outcome is one of: moved → `<path relative to docs/>`; superseded → <ID or ruling>;",
-        "dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.",
+        "dropped — <reason>, approved <YYYY-MM-DD>; pending → <SCR id> (…) while the target",
+        "spec is not written. `check.py --ledger` verifies them and fails on pending.",
         "",
     ]
     for path in source_files():
@@ -123,7 +127,8 @@ def render(existing: dict[str, str]) -> str:
     goldens = [f"`{p.relative_to(g.ROOT).as_posix()}`" for p in g.golden_files().values()]
     if goldens:
         lines += table("Goldens", goldens, existing)
-    return "\n".join(lines).rstrip() + "\n"
+    body = "\n".join(lines).rstrip() + "\n"
+    return body + "\n" + notes.rstrip() + "\n" if notes.strip() else body
 
 
 def rows(text: str) -> list[tuple[int, str, str]]:
@@ -142,8 +147,10 @@ def main() -> int:
     parser.add_argument("command", choices=["seed"])
     parser.add_argument("out", type=Path)
     args = parser.parse_args()
-    existing = {src: outcome for _, src, outcome in rows(args.out.read_text(encoding="utf-8"))} if args.out.exists() else {}
-    args.out.write_text(render(existing), encoding="utf-8", newline="\n")
+    text = args.out.read_text(encoding="utf-8") if args.out.exists() else ""
+    existing = {src: outcome for _, src, outcome in rows(text)}
+    notes = text[text.index(NOTES_MARK):] if NOTES_MARK in text else ""
+    args.out.write_text(render(existing, notes), encoding="utf-8", newline="\n")
     print(f"OK {args.out}: {len(rows(args.out.read_text(encoding='utf-8')))} rows")
     return 0
 

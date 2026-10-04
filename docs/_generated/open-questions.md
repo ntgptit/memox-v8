@@ -12,7 +12,7 @@
 
 ## [superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md](../superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md)
 
-- L4076: - One OPEN QUESTION raised: the order of the move checks (FN-DECK-011), UC text vs code.
+- L4079: - One OPEN QUESTION raised: the order of the move checks (FN-DECK-011), UC text vs code.
 
 ## [wbs_FE.md](../wbs_FE.md)
 

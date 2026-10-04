@@ -526,5 +526,73 @@ class LedgerCheckTest(unittest.TestCase):
         self.assertTrue(has(self.found(["moved → `USE_CASES.md`"], **{"docs/USE_CASES.md": text}), "still open"))
 
 
+PENDING_ROW = "| SCR-STUDY-002 | Study entry | study | — | pending | — |\n"
+
+
+def catalog_with_pending(status: str = "ready") -> str:
+    return catalog(status).replace(
+        "| SCR-DECK-001 | Library", PENDING_ROW.rstrip("\n") + "\n| SCR-DECK-001 | Library", 1
+    )
+
+
+class PendingScreenTest(unittest.TestCase):
+    """Owner checkpoint 2026-10-04: a screen without a spec yet is a catalog row with
+    status `pending`; its id is defined, and a reference to it is a warning."""
+
+    def test_a_navigation_to_a_pending_screen_is_a_warning_not_an_error(self):
+        text = screen().replace("- Navigate to: SCR-DECK-001", "- Navigate to: SCR-STUDY-002")
+        files = base(**{SCREEN_PATH: text, CATALOG_PATH: catalog_with_pending()})
+        found = messages(files)
+        self.assertEqual([m for m in found if m.startswith("ERROR") and "_generated" not in m], [])
+        self.assertTrue(has(found, "WARNING", "`Navigate to` names SCR-STUDY-002, whose spec is pending"))
+
+    def test_a_pending_id_in_text_is_defined(self):
+        text = screen().replace("## Purpose\nx", "## Purpose\nLeads to SCR-STUDY-002.")
+        files = base(**{SCREEN_PATH: text, CATALOG_PATH: catalog_with_pending()})
+        self.assertFalse(has(errors(files), "SCR-STUDY-002"))
+
+    def test_a_pending_row_whose_spec_exists_is_an_error(self):
+        pending_self = catalog().replace("| ready | `spec/SCR-DECK-001-deck-list.md` |", "| pending | — |")
+        self.assertTrue(has(errors(base(**{CATALOG_PATH: pending_self})), "is pending but its spec exists"))
+
+    def test_an_unknown_screen_is_still_an_error(self):
+        text = screen().replace("- Navigate to: SCR-DECK-001", "- Navigate to: SCR-STUDY-404")
+        found = errors(base(**{SCREEN_PATH: text, CATALOG_PATH: catalog_with_pending()}))
+        self.assertTrue(has(found, "`Navigate to` names a SCR that does not exist: `SCR-STUDY-404`"))
+
+
+class ContractCitationTest(unittest.TestCase):
+    """Owner checkpoint 2026-10-04: an FN may cite another FN as a contract
+    prerequisite; a UC still may not cite a BR."""
+
+    def test_a_function_may_cite_another_function(self):
+        extra = FUNCTIONS.split("## FN-DECK-001")[1].replace(" — Tạo deck", " — Hoàn tác", 1)
+        extra = extra.replace("### Precondition\nx", "### Precondition\nBatch tạo bởi FN-DECK-001.", 1)
+        files = base(**{"docs/functional-spec/deck.md": FUNCTIONS + "\n## FN-DECK-002" + extra})
+        self.assertEqual(errors(files), [])
+
+
+class LedgerPendingTest(unittest.TestCase):
+    def test_a_pending_outcome_fails_the_ledger(self):
+        files = base(**{CATALOG_PATH: catalog_with_pending()})
+        files["ledger.md"] = "## x\n\n| Source item | Outcome |\n|---|---|\n" + LEDGER_ROW.format(
+            "pending → SCR-STUDY-002 (layout)"
+        )
+        with DocsTree(files) as root:
+            docs = check.g.load_docs()
+            report = check.Report()
+            check.check_ledger(root / "ledger.md", check.defined_ids(docs), report)
+        self.assertTrue(has([m for _, _, m in report.lines], "still pending"))
+
+
+class LedgerNotesTest(unittest.TestCase):
+    def test_reseeding_keeps_the_notes_below_the_mark(self):
+        files = {"docs/features/deck/usecases/UC-DECK-001-x.md": "# T\n\nPara\n"}
+        with DocsTree(files):
+            seeded = ledger.render({}, ledger.NOTES_MARK + "\n\n## Task 12 notes\n\nkept\n")
+        self.assertTrue(seeded.rstrip().endswith("## Task 12 notes\n\nkept"))
+        self.assertEqual(seeded.count(ledger.NOTES_MARK), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

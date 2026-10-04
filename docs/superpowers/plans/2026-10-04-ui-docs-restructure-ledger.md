@@ -2,7 +2,8 @@
 
 Seeded by `python3 tools/docs/ledger.py seed`; outcomes are written by hand.
 An outcome is one of: moved → `<path relative to docs/>`; superseded → <ID or ruling>;
-dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
+dropped — <reason>, approved <YYYY-MM-DD>; pending → <SCR id> (…) while the target
+spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 ## shared/ui/screen-handoff/00-index.md
 
@@ -4048,6 +4049,8 @@ dropped — <reason>, approved <YYYY-MM-DD>. `check.py --ledger` verifies them.
 | `test/shared/widgets/goldens/mx_vietnamese_ellipsis_light.png` |  |
 | `test/shared/widgets/goldens/mx_workload_donut_dark.png` |  |
 | `test/shared/widgets/goldens/mx_workload_donut_light.png` |  |
+
+<!-- Notes below are kept by `ledger.py seed`. -->
 
 ## Task 12 notes — deck
 
