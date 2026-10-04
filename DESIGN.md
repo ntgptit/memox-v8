@@ -21,7 +21,7 @@ colors:
   surface: "#F7F9FE"
   on-surface: "#0F1638"
   on-surface-variant: "#4A5278"
-  outline: "#7C85AB"
+  outline: "#6F79A3"
   outline-variant: "#C5CBE3"
   shadow: "#0F1638"
   scrim: "#0A0E27"
@@ -47,7 +47,7 @@ colors:
   surface-container: "#E9EDF7"
   surface-container-high: "#E2E7F3"
   surface-container-highest: "#DAE0EF"
-  mastery: "#1F8A5B"
+  mastery: "#1D8758"
   on-mastery: "#FFFFFF"
   success: "#2BA88B"
   warning: "#F59E0B"
@@ -220,7 +220,7 @@ derived:
       alpha: 0.16
   outline-edge:
     light:
-      base: outline-variant
+      base: outline
       toward: on-surface
       amount: 0
     dark:
@@ -422,11 +422,16 @@ contrast:
   on-warning:
     warning: 4.5
   on-mastery:
-    mastery: 3
+    mastery: 4.5
   outline:
     surface: 3
     surface-container-lowest: 3
     surface-container-low: 3
+  outline-edge:
+    surface: 3
+    surface-container-lowest: 3
+    surface-container-low: 3
+    surface-container-high: 3
   primary:
     surface-container-low: 3
 type-slots:
@@ -663,16 +668,16 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 - **Muted Fill** (`surface-container-low`): text-field fill at rest, the mastery track, navigation rail ground, recessed study face. Dark: #1B2249.
 - **Sheet Ground** (`surface-container-high`): dialogs and bottom sheets. Dark: #2C356E.
 - **On Surface** (`on-surface`) and **Variant Ink** (`on-surface-variant`): primary and secondary text. Dark: #E4E8FA and #A4ACD0.
-- **Outline** (`outline`) and **Outline Variant** (`outline-variant`): control edges and dividers; the everyday hairline is the derived Ghost Border (primary at 14% light, 16% dark). The outline button's edge is the derived **Outline Edge** (`outlineEdge`): `outline-variant` in light; in dark `outline` pulled 25% toward `on-surface` (≈ #7D8AC1), 3.41:1 on the sheet, 5.69 on the page and 4.27 on the warning ground, since `outline-variant` nearly vanished on the dark sheet (critique 2026-09-30 part 1, R7).
+- **Outline** (`outline`) and **Outline Variant** (`outline-variant`): control edges and dividers; the everyday hairline is the derived Ghost Border (primary at 14% light, 16% dark). The outline button's edge is the derived **Outline Edge** (`outlineEdge`): `outline` in light (#6F79A3, 3.43:1 on the sheet and 4.04 on the page; owner 2026-10-04, SP3a F3, so `outline-variant` is a divider only); in dark `outline` pulled 25% toward `on-surface` (≈ #7D8AC1), 3.41:1 on the sheet, 5.69 on the page and 4.27 on the warning ground, since `outline-variant` nearly vanished on the dark sheet (critique 2026-09-30 part 1, R7).
 - **Inverse Surface** (`inverse-surface`, #34395D): the snackbar ground, identical in both themes, with `inverse-primary` (#A0ACFF, 5.21:1) for its action.
 
 ### Semantic
-- **Mastery Green** (`mastery`, #1F8A5B; dark #6FE0BD) and **Success Teal** (`success`, #2BA88B): progress and a finished session. Two roles, never interchangeable; a right answer is success, never mastery.
+- **Mastery Green** (`mastery`, #1D8758, white on it 4.51:1, owner 2026-10-04, SP3a F1; dark #6FE0BD) and **Success Teal** (`success`, #2BA88B): progress and a finished session. Two roles, never interchangeable; a right answer is success, never mastery. In dark both are #6FE0BD, so there the label and the glyph tell them apart.
 - **Status ramp**: `status-new` (#8C95B8), `status-learning` (#F59E0B), `status-reviewing` (indigo), `status-mastered` (green). Dots, fills and tints use the colour itself; status text uses an Ink derived by pulling the colour toward `on-surface`.
 - **Warning Amber** (`warning`, `on-warning`, `warning-ink`): a refusal or a limit where nothing was lost. Warning text and glyphs use **Warning Ink** (`warningInk`): #895806 in light (amber's hue at 28% lightness, 4.5:1 or more on every ground and tint, the sheet included), the amber itself in dark. `on-warning` is only the ink on an amber fill (critique 2026-09-30 tone pass, T1).
 - **Error** (`error`, #C02447) is the text/icon/edge role; **Danger Ink** (`dangerInk`) is error pulled toward `on-surface` (10% light, 30% dark) for text on the danger ground, such as a banner title, 4.5:1 or more on every surface including a sheet (critique 2026-09-30 tone pass); **Destructive Fill** (`error-fill`, #DC2D4E; dark #B0485C) is the solid destructive button only.
 - **Streak Orange** (`streak`): the Progress flame only.
-- **Derived tints**: danger/warning/success soft grounds are the role at 8-18% alpha over the surface (danger 8/16, warning 12/18, success 10/18, light/dark), with borders at 22-32%.
+- **Derived tints**: danger/warning/success soft grounds are the role at 8-18% alpha over the surface (danger 8/16, warning 12/18, success 10/18, light/dark), with borders at 22% (light) and 32% (dark).
 
 ### Named Rules
 **The One Indigo Rule.** Indigo means "act". A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8).
@@ -712,7 +717,7 @@ Every colour the app draws, light and dark, with its rule and its lowest measure
 Component styles (row title, field term, study term, banner title) override the nearest role inside that component; they never add a global style.
 
 ### Named Rules
-**The Seven Roles Rule.** Screens use the seven roles above; a new size is a component-level override of the nearest role, never a new global style.
+**The Seven Roles Rule.** Screens use the roles above (seven type roles plus the component labels); a new size is a component-level override of the nearest role, never a new global style.
 
 **The Text Grows Rule.** Text scale is never clamped and no fixed height wraps text. Heights are minimums (button 48, app bar 56, field 52) and grow with wrapped labels and OS text scaling; the settings row stacks its trailing control at large scale.
 
