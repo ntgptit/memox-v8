@@ -28,6 +28,29 @@ void main() {
     );
   });
 
+  for (final MapEntry(key: name, value: theme) in mxThemes.entries) {
+    testWidgets('$name: checked is the Indigo Accent, never the CTA primary', (
+      tester,
+    ) async {
+      final ColorScheme s = theme.colorScheme;
+      await pumpMx(
+        tester,
+        const MxSelectionCheckbox(isChecked: true),
+        theme: theme,
+      );
+      final BoxDecoration box =
+          tester
+                  .widget<AnimatedContainer>(find.byType(AnimatedContainer))
+                  .decoration!
+              as BoxDecoration;
+      expect(box.color, s.onPrimaryContainer);
+      expect(
+        tester.widget<Icon>(find.byIcon(Icons.check)).color,
+        s.primaryContainer,
+      );
+    });
+  }
+
   testWidgets('empty, it draws only its outline', (tester) async {
     await pumpMx(tester, const MxSelectionCheckbox(isChecked: false));
     expect(find.byIcon(Icons.check), findsNothing);

@@ -54,6 +54,15 @@ class MxChipShell extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // A selected filter chip says so without colour.
+                  if (isSelected && !isGhost) ...[
+                    Icon(
+                      Icons.check,
+                      size: AppIconSize.small,
+                      color: style.content,
+                    ),
+                    const SizedBox(width: AppSpacing.micro),
+                  ],
                   Flexible(
                     child: Text(
                       label,

@@ -12,3 +12,40 @@ TextStyle? mxStepperValueStyle(TextTheme texts) => texts.titleLarge?.copyWith(
 Color mxRaisedInTray(ColorScheme colors) => colors.brightness == Brightness.dark
     ? colors.surfaceContainerHighest
     : colors.surfaceContainerLowest;
+
+/// A toggle's track, thumb and edge (DESIGN.md, The Selection Ladder Rule):
+/// on is the Indigo Accent track with a `primary-container` thumb, off is a
+/// neutral track with an `outline` thumb and edge. Never the CTA `primary`.
+({Color track, Color thumb, Color? edge}) mxToggleColors(
+  ColorScheme colors, {
+  required bool isOn,
+}) {
+  if (isOn) {
+    return (
+      track: colors.onPrimaryContainer,
+      thumb: colors.primaryContainer,
+      edge: null,
+    );
+  }
+  return (
+    track: colors.surfaceContainerHighest,
+    thumb: colors.outline,
+    edge: colors.outline,
+  );
+}
+
+/// A checkbox's box and check: checked is an Indigo Accent box with a
+/// `primary-container` check; empty is an `outline` edge only.
+({Color? box, Color check, Color? edge}) mxCheckboxColors(
+  ColorScheme colors, {
+  required bool isChecked,
+}) {
+  if (isChecked) {
+    return (
+      box: colors.onPrimaryContainer,
+      check: colors.primaryContainer,
+      edge: null,
+    );
+  }
+  return (box: null, check: colors.primaryContainer, edge: colors.outline);
+}

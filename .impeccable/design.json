@@ -655,7 +655,8 @@
         "a": "status-learning",
         "b": "warning",
         "minDeltaE": 15,
-        "why": "learning progress must not read as a caution"
+        "why": "learning progress must not read as a caution",
+        "minDeltaECvd": 8
       },
       {
         "a": "status-learning-container",
@@ -679,13 +680,34 @@
         "a": "status-new",
         "b": "status-reviewing",
         "minDeltaE": 10,
-        "why": "the four statuses keep their own colour"
+        "why": "the four statuses keep their own colour",
+        "minDeltaECvd": 8
       },
       {
         "a": "status-learning",
         "b": "status-mastered",
         "minDeltaE": 15,
-        "why": "the four statuses keep their own colour"
+        "why": "the four statuses keep their own colour",
+        "minDeltaECvd": 8
+      },
+      {
+        "a": "warning",
+        "b": "error",
+        "minDeltaE": 15,
+        "minDeltaECvd": 8,
+        "why": "a limit where nothing was lost must not read as a failure"
+      },
+      {
+        "a": "status-new-container",
+        "b": "primary-container",
+        "minDeltaE": 8,
+        "why": "a new badge must not read as a selected ground"
+      },
+      {
+        "a": "status-new-container",
+        "b": "status-reviewing-container",
+        "minDeltaE": 8,
+        "why": "the four status badges keep their own ground"
       }
     ],
     "iconSize": {
@@ -775,7 +797,7 @@
       "refersTo": "filter-chip",
       "description": "28 tall pill; selected swaps fill to primary and ink to on-primary.",
       "html": "<span class=\"ds-chip\">All</span> <span class=\"ds-chip ds-chip-on\">Cards</span>",
-      "css": ".ds-chip{display:inline-flex;align-items:center;height:28px;padding:0 8px;border-radius:999px;background:var(--color-on-primary);color:var(--color-on-surface);box-shadow:inset 0 0 0 1px var(--color-outline-variant);font:600 12px \"Plus Jakarta Sans\",sans-serif;letter-spacing:0.1px} .ds-chip-on{background:var(--color-primary);color:var(--color-on-primary);box-shadow:none}"
+      "css": ".ds-chip{display:inline-flex;align-items:center;height:28px;padding:0 8px;border-radius:999px;background:var(--color-surface-container-lowest);color:var(--color-on-surface);box-shadow:inset 0 0 0 1px var(--color-outline);font:600 12px \"Plus Jakarta Sans\",sans-serif;letter-spacing:0.1px} .ds-chip-on{background:var(--color-primary-container);color:var(--color-on-primary-container);box-shadow:none}"
     },
     {
       "name": "Floating Action Button",

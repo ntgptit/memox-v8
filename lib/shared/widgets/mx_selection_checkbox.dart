@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/components/control_style.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
@@ -17,7 +18,8 @@ class MxSelectionCheckbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colors = context.colors;
+    final style = mxCheckboxColors(context.colors, isChecked: isChecked);
+    final Color? edge = style.edge;
     return Semantics(
       checked: isChecked,
       child: AnimatedContainer(
@@ -25,18 +27,14 @@ class MxSelectionCheckbox extends StatelessWidget {
         width: AppSize.checkbox,
         height: AppSize.checkbox,
         decoration: BoxDecoration(
-          color: isChecked ? colors.primary : null,
+          color: style.box,
           borderRadius: BorderRadius.circular(AppRadius.xs),
-          border: isChecked
+          border: edge == null
               ? null
-              : Border.all(color: colors.outline, width: AppStroke.control),
+              : Border.all(color: edge, width: AppStroke.control),
         ),
         child: isChecked
-            ? Icon(
-                Icons.check,
-                size: AppIconSize.small,
-                color: colors.onPrimary,
-              )
+            ? Icon(Icons.check, size: AppIconSize.small, color: style.check)
             : null,
       ),
     );

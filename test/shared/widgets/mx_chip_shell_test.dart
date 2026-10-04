@@ -21,7 +21,7 @@ BoxDecoration _ground(WidgetTester tester) =>
 void main() {
   final ColorScheme s = mxThemes['light']!.colorScheme;
 
-  testWidgets('a filled chip rests raised and fills primary when selected', (
+  testWidgets('a filled chip rests raised; selected is tonal with a check', (
     tester,
   ) async {
     await pumpMx(
@@ -39,7 +39,12 @@ void main() {
       tester,
       MxChipShell(label: 'All', isSelected: true, isGhost: false, onTap: () {}),
     );
-    expect(_ground(tester).color, s.primary);
+    expect(_ground(tester).color, s.primaryContainer);
+    expect(
+      tester.widget<Text>(find.text('All')).style!.color,
+      s.onPrimaryContainer,
+    );
+    expect(find.byIcon(Icons.check), findsOneWidget);
   });
 
   testWidgets('a ghost chip has no fill until it is active', (tester) async {

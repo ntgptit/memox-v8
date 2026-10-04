@@ -170,6 +170,22 @@ class ValidateTest(unittest.TestCase):
         ext["distinctPairs"] = [{"a": "success", "b": "on-success", "minDeltaE": 15}]
         self.assertEqual(g.validate(design(colors=values, extensions=ext)), [])
 
+    def test_a_pair_that_merges_for_colour_blind_eyes_fails(self):
+        # The old olive learning and amber warning: ΔE 17.9 to normal vision,
+        # 2.7 under protanopia.
+        values = colors()
+        values["success"], values["success-dark"] = "#6A5A12", "#D5D789"
+        values["on-success"], values["on-success-dark"] = "#895806", "#E1994E"
+        ext = extensions()
+        ext["distinctPairs"] = [{"a": "success", "b": "on-success", "minDeltaE": 15, "minDeltaECvd": 8}]
+        errors = g.validate(design(colors=values, extensions=ext))
+        self.assertTrue(has(errors, "`success` and `on-success` differ by", "under protanopia", "in light", "below ΔE 8"))
+        self.assertFalse(has(errors, "in dark"))
+
+    def test_simulated_colour_blindness_keeps_grey_grey(self):
+        self.assertEqual(g.simulate_cvd("#808080", "protanopia"), "#808080")
+        self.assertNotEqual(g.simulate_cvd("#C02447", "deuteranopia"), "#C02447")
+
     def test_delta_e_of_identical_colours_is_zero(self):
         self.assertEqual(g.delta_e("#4151C6", "#4151C6"), 0)
         self.assertGreater(g.delta_e("#FFFFFF", "#000000"), 99)

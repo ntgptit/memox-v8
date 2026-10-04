@@ -41,20 +41,46 @@ void main() {
     expect(hit.width, greaterThanOrEqualTo(AppSize.tapTarget));
   });
 
-  testWidgets('on fills primary; off rests on the highest container', (
-    tester,
-  ) async {
-    final ColorScheme s = mxThemes['light']!.colorScheme;
-    BoxDecoration track() =>
-        tester
-                .widget<AnimatedContainer>(find.byType(AnimatedContainer).first)
-                .decoration!
-            as BoxDecoration;
-    await pumpMx(tester, MxToggle(isOn: true, onChanged: (_) {}));
-    expect(track().color, s.primary);
-    await pumpMx(tester, MxToggle(isOn: false, onChanged: (_) {}));
-    expect(track().color, s.surfaceContainerHighest);
-  });
+  for (final MapEntry(key: name, value: theme) in mxThemes.entries) {
+    testWidgets('$name: on is the Indigo Accent, never the CTA primary', (
+      tester,
+    ) async {
+      final ColorScheme s = theme.colorScheme;
+      BoxDecoration track() =>
+          tester
+                  .widget<AnimatedContainer>(
+                    find.byType(AnimatedContainer).first,
+                  )
+                  .decoration!
+              as BoxDecoration;
+      BoxDecoration thumb() =>
+          tester
+                  .widget<Container>(
+                    find
+                        .descendant(
+                          of: find.byType(AnimatedContainer).first,
+                          matching: find.byType(Container),
+                        )
+                        .last,
+                  )
+                  .decoration!
+              as BoxDecoration;
+      await pumpMx(
+        tester,
+        MxToggle(isOn: true, onChanged: (_) {}),
+        theme: theme,
+      );
+      expect(track().color, s.onPrimaryContainer);
+      expect(thumb().color, s.primaryContainer);
+      await pumpMx(
+        tester,
+        MxToggle(isOn: false, onChanged: (_) {}),
+        theme: theme,
+      );
+      expect(track().color, s.surfaceContainerHighest);
+      expect(thumb().color, s.outline);
+    });
+  }
 
   testWidgets('disabled, a tap does nothing', (tester) async {
     await pumpMx(tester, const MxToggle(isOn: false, onChanged: null));

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/components/control_style.dart';
 import 'package:flutter/services.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
@@ -41,6 +42,8 @@ class _MxToggleState extends State<MxToggle> {
     final bool isOn = widget.isOn;
     final ValueChanged<bool>? change = widget.onChanged;
     final ColorScheme colors = context.colors;
+    final style = mxToggleColors(colors, isOn: isOn);
+    final Color? edge = style.edge;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final AppShadow? whisper = isDark
         ? AppShadows.whisperDark
@@ -56,18 +59,18 @@ class _MxToggleState extends State<MxToggle> {
           ? AlignmentDirectional.centerEnd
           : AlignmentDirectional.centerStart,
       decoration: BoxDecoration(
-        color: isOn ? colors.primary : colors.surfaceContainerHighest,
+        color: style.track,
         borderRadius: BorderRadius.circular(AppRadius.full),
-        border: isOn
+        border: edge == null
             ? null
-            : Border.all(color: colors.outline, width: AppStroke.hairline),
+            : Border.all(color: edge, width: AppStroke.hairline),
       ),
       child: Container(
         width: AppSize.toggleThumb,
         height: AppSize.toggleThumb,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isOn ? colors.onPrimary : colors.outline,
+          color: style.thumb,
           boxShadow: [?whisper?.on(colors.shadow)],
         ),
       ),

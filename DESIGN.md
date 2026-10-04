@@ -100,34 +100,34 @@ colors:
   success-container-dark: "#14473A"
   on-success-container: "#0B3B2F"
   on-success-container-dark: "#C9F5E7"
-  warning: "#895806"
-  warning-dark: "#F5B13D"
+  warning: "#90570C"
+  warning-dark: "#E1994E"
   on-warning: "#FFFFFF"
   on-warning-dark: "#3A2A00"
   warning-container: "#FCEFC7"
   warning-container-dark: "#4A3610"
   on-warning-container: "#3A2A00"
   on-warning-container-dark: "#FCE6B8"
-  status-new: "#5A6283"
-  status-new-dark: "#A4ACD0"
-  status-new-container: "#E6E8F0"
+  status-new: "#60646F"
+  status-new-dark: "#A2A4B0"
+  status-new-container: "#EAE9E4"
   status-new-container-dark: "#2B3256"
   on-status-new-container: "#2B3150"
   on-status-new-container-dark: "#DDE1F2"
-  status-learning: "#6A5A12"
-  status-learning-dark: "#D9C35A"
+  status-learning: "#4F501F"
+  status-learning-dark: "#D5D789"
   status-learning-container: "#DFE5BE"
   status-learning-container-dark: "#38361A"
   on-status-learning-container: "#352C00"
   on-status-learning-container-dark: "#F2E7B5"
-  status-reviewing: "#33658F"
-  status-reviewing-dark: "#93BCE0"
+  status-reviewing: "#256A93"
+  status-reviewing-dark: "#7CC3EA"
   status-reviewing-container: "#D3EAF0"
   status-reviewing-container-dark: "#1D3A52"
   on-status-reviewing-container: "#12324E"
   on-status-reviewing-container-dark: "#D2E5F4"
   status-mastered: "#1A6B48"
-  status-mastered-dark: "#6FE0BD"
+  status-mastered-dark: "#76D3B4"
   status-mastered-container: "#D3F0E2"
   status-mastered-container-dark: "#134733"
   on-status-mastered-container: "#0A3B25"
@@ -267,8 +267,8 @@ components:
     height: "28px"
     padding: "0 8px"
   filter-chip-selected:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
+    backgroundColor: "{colors.primary-container}"
+    textColor: "{colors.on-primary-container}"
   fab:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
@@ -323,7 +323,7 @@ A cool indigo-tinted neutral field with one brand indigo, one reserved violet, a
 - MemoX adds semantic extensions on the same model, with only the members a consumer uses. There is no separate ink palette and no colour derived at paint time.
 
 ### Primary
-- **Brand Indigo** (`primary`, #4151C6 in **both** themes): the brand action fill. Primary buttons, the FAB, the toggle's on track, a checked checkbox, the selected filter chip and progress fills, always under `on-primary` (#FFFFFF, 6.53:1). `primary` is a fill, not a foreground: it is never small text, and never an icon, edge or ring on a surface (on the dark page it holds only 2.91:1). A fill is named by its `on-primary` content, so the fill's own edge against the page is not a contrast pair. An unlabelled fill carries its state in its `on-primary` mark: the toggle's white thumb and its position, the checkbox's white check (6.53:1 on the fill), against an `outline` edge when off or unchecked.
+- **Brand Indigo** (`primary`, #4151C6 in **both** themes): the brand action fill. Primary buttons, the FAB and progress fills, always under `on-primary` (#FFFFFF, 6.53:1); a selection is never a `primary` fill (The Selection Ladder Rule). `primary` is a fill, not a foreground: it is never small text, and never an icon, edge or ring on a surface (on the dark page it holds only 2.91:1). A fill is named by its `on-primary` content, so the fill's own edge against the page is not a contrast pair.
 - **Indigo Accent** (`on-primary-container`: light #2A3581, dark #E2E5F6): the indigo foreground on a surface. Accent text and links, the text and outline buttons' labels, the "Required" mark, accent icons, the spinner, the selected radio, the focused field edge, the text cursor and the 2dp focus ring. It holds 4.5:1 on `surface` and every container up to `surface-container-high` in both themes (light 8.81–10.91:1, dark 9.11–15.18:1), and it is also the content on `primary-container`. In dark it is a near-white indigo by design, so dark accent text (the "Required" mark, a text button's label) is told by its weight, size and place rather than by hue; the indigo identity in dark lives in the fills.
 - **Indigo Wash** (`primary-container`: light #E2E5F6, dark #242D6D): quiet selected and informational grounds, under `on-primary-container` (light 8.71:1, dark 10.04:1), and the text selection.
 - **Fixed tones** (`primary-fixed` #D0D4F1, `primary-fixed-dim` #AAB1E5, `on-primary-fixed` #101432, `on-primary-fixed-variant` #2A3581, and the same for secondary and tertiary): identical in both themes, for a surface that must not follow the theme. They are never a stand-in for a theme-specific primary.
@@ -347,13 +347,19 @@ A cool indigo-tinted neutral field with one brand indigo, one reserved violet, a
 ### Semantic
 - **Error** (`error`, `on-error`, `error-container`, `on-error-container`): danger is Material's error. `error` is error text and glyphs, and the destructive button's fill under `on-error`; the danger ground is `error-container` under `on-error-container`.
 - **Success** (`success`, `on-success`, `success-container`, `on-success-container`): a right answer and a finished, fine state. Never mastery.
-- **Warning** (`warning`, `on-warning`, `warning-container`, `on-warning-container`): a refusal or a limit where nothing was lost. The warning button's fill under `on-warning`, warning text and glyphs, and the warning ground.
-- **Status** (`status-new`, `status-learning`, `status-reviewing`, `status-mastered`, each with `-container` and `on-…-container`): a card's learning status as a label, a dot or a progress fill, and as a badge on its container. Each status is its own colour family: new a quiet slate, learning a warm ochre, reviewing a cool blue that is quieter than `primary`, mastered green. Mastery is `status-mastered`. A status is never told by colour alone: its label or an accessible name always names it.
-- **Distinct roles** (`.impeccable/design.json` `distinctPairs`): `status-learning` MUST stay visibly apart from `warning`, and `status-reviewing` from `primary`, by colour and not only by label; the generator fails when a declared pair comes closer than its ΔE floor in either theme. Learning progress never reads as a caution, and a review state never reads as the action indigo.
+- **Warning** (`warning`, `on-warning`, `warning-container`, `on-warning-container`; light #90570C, dark #E1994E, an amber leaning orange): a refusal or a limit where nothing was lost. The warning button's fill under `on-warning`, warning text and glyphs, and the warning ground.
+- **Status** (`status-new`, `status-learning`, `status-reviewing`, `status-mastered`, each with `-container` and `on-…-container`): a card's learning status as a label, a dot or a progress fill, and as a badge on its container. Each status is its own colour family: new a quiet neutral grey, learning a dark olive (light #4F501F, dark #D5D789), reviewing a steel-to-sky blue quieter than `primary` (#256A93, dark #7CC3EA), mastered green. Learning and warning are told apart by lightness as well as hue (learning darker than warning in light, lighter in dark), so they hold for colour-blind eyes; no dark status is brighter in chroma than OKLCH 0.13. Mastery is `status-mastered`. A status is never told by colour alone: its label or an accessible name always names it.
+- **Distinct roles** (`.impeccable/design.json` `distinctPairs`): `status-learning` MUST stay visibly apart from `warning`, `status-reviewing` from `primary`, `warning` from `error`, and the new badge from the selected ground, by colour and not only by label; the generator fails when a declared pair comes closer than its ΔE floor in either theme, and, for a pair with `minDeltaECvd`, when it comes closer than that floor under simulated protanopia or deuteranopia (a bar or a dot has no label beside it). Learning progress never reads as a caution, and a review state never reads as the action indigo.
 - **Streak** (`streak`): the Progress flame only; a fill, with no text counterpart.
 
 ### Named Rules
 **The One Indigo Rule.** Indigo means "act". `primary` is the one action indigo, and it is one colour: `primary` and `primary-dark` are both #4151C6. The theme never tonal-shifts it; the generator fails when the two values differ, and a test pins both schemes to #4151C6. No component, extension or `*-ink` role overrides it for dark; where a foreground needs indigo it uses the Indigo Accent; every other indigo-family role (`primary-container`, `status-reviewing`) is a deliberate, quieter tone of the same family, never the same value. A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8).
+
+**The Selection Ladder Rule.** Strength follows meaning, so a selection never competes with the screen's one action:
+- **Action:** `primary` fill under `on-primary`: the primary button and the FAB, plus progress fills. Nothing else fills `primary`.
+- **Chosen:** a tonal ground: `primary-container` under `on-primary-container`, with a non-colour cue. A selected filter chip shows a leading check, a chip trigger in force is tinted the same way, and the chosen segment is raised on its tray.
+- **On / checked:** the Indigo Accent mark. A toggle that is on has an `on-primary-container` track with a `primary-container` thumb at the end. A checked checkbox is an `on-primary-container` box with a `primary-container` check. A selected radio is an `on-primary-container` ring.
+- **Neutral:** `surface` / `on-surface` / `outline`: unselected chips, the off toggle (`surface-container-highest` track, `outline` thumb and edge) and the empty checkbox (`outline` edge).
 
 **The Green Means Progress Rule.** Green is `status-mastered` or `success` and nothing else. Violet is never a status; green is never decoration.
 
@@ -460,7 +466,7 @@ Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` b
 
 ### Inputs
 - **MxTextField**: the one text input; its contract is under **The One Field Rule** below. Variants form (52, muted fill that lightens on focus), detail (grows from 48), meaning (16/500, grows from 76, r20), term (24/700, r20), code (one centred line of six digits on the form fill, headline role with tabular figures and wide tracking, numeric keyboard and one-time-code autofill) and study (bare). A 1dp `outline` edge at rest (3:1), a 2dp `on-primary-container` edge on focus, the `error` edge plus **MxFieldMessage** (error or warning) below.
-- **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills `primary` under `on-primary`), **MxChipTrigger** (ghost chip that opens a menu).
+- **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected is the tonal `primary-container` under `on-primary-container` with a leading check, The Selection Ladder Rule), **MxChipTrigger** (ghost chip that opens a menu).
 
 **The One Field Rule.** Every text input in the app is an `MxTextField`, or a component that composes one (`MxSearchField`; a feature field such as a deck-name field may add behaviour, never its own look). `TextField` and `TextFormField` are built only inside `lib/shared/widgets/mx_text_field.dart`, and the guard (`memox_v8.design_system.no_raw_text_field`) fails on any other instance. A feature never passes a colour, text style, padding, radius, border or focus colour: `MxTextField`'s constructor takes only meaning (variant, copy, the message and its tone, enabled, read-only, a leading icon, one trailing action) and input behaviour (controller, focus, keyboard, input action, obscured, callbacks). A new need extends this contract after review, never a local style. The contract, for every variant but the bare study field:
 
@@ -470,6 +476,8 @@ Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` b
 | Padding | 16 across (`AppSpacing.grouped`); vertical padding sets one line to the minimum height |
 | Radius | 12; meaning and term 20 |
 | Fill | `surface-container-low` at rest, `surface-container-lowest` with focus, `surface-container` when read-only |
+| State order | focused > error > resting > read-only > disabled, in edge strength, in both themes (light 10.4 > 5.6 > 4.0:1 on the page, dark 15.2 > 8.8 > 6.1:1; read-only has no edge, disabled is dimmed); a test pins it |
+| Geometry | padding, radius, type and layout are the same in every state; only colour and the edge's weight change |
 | Edge | 1dp `outline` at rest; 2dp `on-primary-container` with focus; 1dp `error` holding an error, 2dp with focus; `outline-variant` when disabled; none when read-only, 2dp `on-primary-container` with focus |
 | Type | typed text `bodyMedium` (meaning `bodyLarge`, term and code `headlineLarge`) in `on-surface`; hint in `on-surface-variant`; label above in Field Label; "Required" in `on-primary-container` |
 | Message | one `MxFieldMessage` line under the field: error or warning, glyph plus words |
@@ -648,14 +656,14 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Variants: one
 - States: on, off, disabled on, disabled off, focused
 - Accessibility: announced as toggled; Space and Enter switch it; 44 × 26 painted inside a 48 hit
-- Tokens: `primary` (on track, a fill), `on-primary` (thumb when on), `surface-container-highest`, `outline`, `on-primary-container` (focus ring), `shadow`; `AppShadows.whisper*`; `AppSize.toggle*`; `AppDurations.toggle`
+- Tokens: `on-primary-container` (on track, focus ring), `primary-container` (thumb when on), `surface-container-highest` (off track), `outline` (off thumb and edge), `shadow`; `AppShadows.whisper*`; `AppSize.toggle*`; `AppDurations.toggle`
 - Golden: states__light, states__dark
 
 #### MxSelectionCheckbox
 - Variants: one
 - States: checked, unchecked
 - Accessibility: carries its checked state into the row that holds it; the row owns the tap, the name and the 48 area
-- Tokens: `primary` (checked fill), `on-primary` (check), `outline`; `AppRadius.xs`; `AppStroke.control`; `AppSize.checkbox`
+- Tokens: `on-primary-container` (checked box), `primary-container` (check), `outline`; `AppRadius.xs`; `AppStroke.control`; `AppSize.checkbox`
 - Golden: states__light, states__dark
 
 #### MxOptionRow
@@ -684,7 +692,7 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Variants: filled (filter), ghost (trigger); optional trailing glyph
 - States: resting, selected or active, pressed
 - Accessibility: 28 painted inside a 48 hit; the chip that uses it owns the semantics
-- Tokens: `surface-container-lowest`, `outline` (the resting edge, 3:1), `primary` / `on-primary` (selected fill), `primary-container` / `on-primary-container`, `labelSmall`, `AppSize.chip`
+- Tokens: `surface-container-lowest`, `outline` (the resting edge, 3:1), `primary-container` / `on-primary-container` (selected or in force; the selected filter chip adds a leading check), `labelSmall`, `AppIconSize.small`, `AppSize.chip`
 - Golden: none — seen in `MxFilterChip` and `MxChipTrigger`
 
 #### MxFilterChip

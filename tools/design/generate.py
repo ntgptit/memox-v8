@@ -210,6 +210,25 @@ def delta_e(a: str, b: str) -> float:
     return sum((p - q) ** 2 for p, q in zip(lab(a), lab(b))) ** 0.5
 
 
+# Machado, Oliveira and Fernandes (2009), severity 1.0, applied in linear RGB.
+CVD_MATRICES = {
+    "protanopia": ((0.152286, 1.052583, -0.204868), (0.114503, 0.786281, 0.099216), (-0.003882, -0.048116, 1.051998)),
+    "deuteranopia": ((0.367322, 0.860646, -0.227968), (0.280085, 0.672501, 0.047413), (-0.011820, 0.042940, 0.968881)),
+}
+
+
+def simulate_cvd(hex_colour: str, kind: str) -> str:
+    """How `hex_colour` looks to a person with full protanopia or deuteranopia."""
+    channels = [int(hex_colour[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+    linear = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in channels]
+    seen = [sum(row[k] * linear[k] for k in range(3)) for row in CVD_MATRICES[kind]]
+    encoded = []
+    for value in seen:
+        value = min(max(value, 0.0), 1.0)
+        encoded.append(value * 12.92 if value <= 0.0031308 else 1.055 * value ** (1 / 2.4) - 0.055)
+    return "#" + "".join(f"{round(v * 255):02X}" for v in encoded)
+
+
 def base_keys(design: Design) -> list[str]:
     return [key for key in design.colors if not key.endswith(DARK)]
 
@@ -278,6 +297,13 @@ def validate(design: Design) -> list[str]:
             difference = delta_e(x, y)
             if difference < minimum:
                 errors.append(f"`{a}` and `{b}` differ by ΔE {difference:.1f} in {theme}, below ΔE {minimum:g}; they must read as two colours")
+            # A status is never told by colour alone, but a bar or a dot has no
+            # label beside it: the pair must also hold for colour-blind eyes.
+            cvd_minimum = pair.get("minDeltaECvd")
+            for kind in CVD_MATRICES if cvd_minimum is not None else ():
+                seen = delta_e(simulate_cvd(x, kind), simulate_cvd(y, kind))
+                if seen < float(cvd_minimum):
+                    errors.append(f"`{a}` and `{b}` differ by ΔE {seen:.1f} under {kind} in {theme}, below ΔE {float(cvd_minimum):g}")
 
     for slot in TEXT_THEME_SLOTS:
         role = design.text_theme.get(slot)
