@@ -2973,63 +2973,63 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:2` id: UC-TRASH-001 |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:3` title: Trash và khôi phục item đã xoá |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:4` status: ready |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:5` rules: [BR-CARD-010, BR-CARD-012, BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:6` code: [lib/features/trash/domain/usecases/watch_trash_use_case.dart, lib/feature |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:10` **Phạm vi:** Trash, từ schema v3 (BE-B1). Màn Trash và snackbar Undo thuộc FE-B1 |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:12` **Actor:** Người dùng |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:18` ## Main flow |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:20` **Main flow:** |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:21` 1. Người dùng xoá một card hoặc một deck từ luồng đã có (UC-CARD-001, UC-DECK-00 |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:26` 2. Màn đang đứng báo item đã chuyển vào Trash và hiện Undo trong một khoảng thời |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:29` 3. Người dùng mở `Trash` từ app bar của Library. Hệ thống chạy auto-purge trước |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:32` 4. Mỗi hàng nêu tên item, thời điểm đã xoá, đường dẫn gốc **như thông tin**, số |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:35` 5. Người dùng chọn `Restore` trên một hàng. Hệ thống mở picker target dựng từ |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:38` 6. Người dùng chọn một target và xác nhận. Hệ thống chạy một transaction: gỡ |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:42` 7. Trash bỏ hàng vừa khôi phục; Library hiện item ở vị trí mới với nguyên id, |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:45` ## Alternative / Error flow |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:47` **Alternative flows:** |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:48` - **A1 — Undo ngay sau khi xoá:** người dùng bấm Undo trên snackbar. Hệ thống |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:50` - **A2 — Chọn nhiều:** người dùng bật chế độ chọn trong Trash. Thanh hành động |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:53` - **A3 — Purge vĩnh viễn:** người dùng chọn `Delete permanently`. Hộp thoại nêu |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:57` - **A4 — Batch hết hạn khi Trash đang mở:** auto-purge chạy lại khi màn được |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:60` - **A5 — Deck có descendant đã ở Trash từ trước:** restore batch của deck cha |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:63` - **A6 — Trash rỗng:** màn hiển thị trạng thái rỗng giải thích item đã xoá sẽ ở |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:66` **Error flows:** |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:67` - **E1 — Không có target hợp lệ:** picker mở ra rỗng và giải thích vì sao (cây |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:70` - **E2 — Target hết hợp lệ giữa chừng:** cây đổi sau khi picker mở. Transaction |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:72` - **E3 — Undo không còn dùng được:** vị trí cũ đã bị xoá, đã thành `card`, hoặc |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:75` - **E4 — Purge bị chặn:** một descendant của batch thuộc batch chưa tới hạn hoặc |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:78` - **E5 — Lỗi ghi:** bất kỳ bước nào của xoá, restore hay purge thất bại → |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:80` - **E6 — Item đã biến mất:** batch được chọn đã bị purge bởi một lần chạy khác. |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:83` ## UI |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:85` **UI states:** loading · empty · cards-only · decks-only · mixed · selection |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:91` ## Local |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:93` **Postconditions:** Sau bước 7, item nằm dưới target đã chọn với đúng id cũ, và |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:97` Ghi chú từ mục "Business rules" của nguồn: |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:99` BR-TRASH-001…BR-TRASH-012, và BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK-017 |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:103` ## API |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:105` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:107` ## Acceptance criteria |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:109` - [ ] **Given** người dùng xoá một card hoặc một deck, **when** thao tác chạy, * |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:110` - [ ] **Given** một item vừa xoá xong, **when** người dùng nhìn Library hoặc Car |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:111` - [ ] **Given** người dùng mở Trash từ app bar của Library, **when** màn vẽ xong |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:112` - [ ] **Given** người dùng chọn Restore trên một hàng, **when** picker target mở |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:113` - [ ] **Given** người dùng bấm Undo trên snackbar sau khi xoá, **when** Undo chạ |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:114` - [ ] **Given** Trash đang mở ở chế độ chọn nhiều, **when** người dùng chọn một |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:115` - [ ] **Given** người dùng chọn "Delete permanently" cho một hoặc nhiều item, ** |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:116` - [ ] **Given** Trash đang mở khi một batch vừa quá 30 ngày, **when** app trở lạ |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:117` - [ ] **Given** một deck cha bị xoá trong khi một descendant đã ở Trash từ một b |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:118` - [ ] **Given** Trash không có batch nào, **when** mở màn, **then** hệ thống hiệ |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:119` - [ ] **Given** một item không còn target hợp lệ để restore, **when** picker mở, |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:120` - [ ] **Given** picker restore đang mở, **when** cây deck đổi, **then** danh sác |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:121` - [ ] **Given** vị trí cũ của một batch không còn nhận nó, **when** người dùng b |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:122` - [ ] **Given** một deck được chọn để xoá vĩnh viễn còn giữ một batch khác không |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:123` - [ ] **Given** một bước ghi giữa chừng của purge lỗi, **when** transaction chạy |  |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:124` - [ ] **Given** một batch được chọn để restore hoặc purge đã bị xoá vĩnh viễn tr |  |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:2` id: UC-TRASH-001 | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:3` title: Trash và khôi phục item đã xoá | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:5` rules: [BR-CARD-010, BR-CARD-012, BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK | superseded → FN-TRASH-001…FN-TRASH-007 + FN-DECK-005 + FN-CARD-004 (Business rules) |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:6` code: [lib/features/trash/domain/usecases/watch_trash_use_case.dart, lib/feature | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:10` **Phạm vi:** Trash, từ schema v3 (BE-B1). Màn Trash và snackbar Undo thuộc FE-B1 | dropped — history of how the work was split (BE-B1, FE-B1, schema v3); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:12` **Actor:** Người dùng | pending → SCR-TRASH-001 (entry point: Trash on the Library app bar); intent kept in UC-TRASH-001 (Mục tiêu, Preconditions) |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:18` ## Main flow | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:20` **Main flow:** | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:21` 1. Người dùng xoá một card hoặc một deck từ luồng đã có (UC-CARD-001, UC-DECK-00 | superseded → FN-DECK-005 + FN-CARD-004 (one batch, descendants, parent back to unset, open sessions ended with content_deleted) + UC-TRASH-001 step 1 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:26` 2. Màn đang đứng báo item đã chuyển vào Trash và hiện Undo trong một khoảng thời | pending → SCR-DECK-001 (the moved-to-Trash snackbar with Undo for a limited time; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 step 2 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:29` 3. Người dùng mở `Trash` từ app bar của Library. Hệ thống chạy auto-purge trước | pending → SCR-TRASH-001 (auto-purge before drawing; Cards and Decks sections); intent kept in UC-TRASH-001 step 3 + FN-TRASH-001 + FN-TRASH-002 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:32` 4. Mỗi hàng nêu tên item, thời điểm đã xoá, đường dẫn gốc **như thông tin**, số | pending → SCR-TRASH-001 (each row: name, deleted at, origin path as information, days left, the batch counts for a deck); intent kept in UC-TRASH-001 step 4 + FN-TRASH-002 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:35` 5. Người dùng chọn `Restore` trên một hàng. Hệ thống mở picker target dựng từ | pending → SCR-TRASH-001 (Restore opens the target picker); intent kept in UC-TRASH-001 step 5 + FN-TRASH-003 + FN-TRASH-004 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:38` 6. Người dùng chọn một target và xác nhận. Hệ thống chạy một transaction: gỡ | superseded → FN-TRASH-005 + FN-TRASH-006 (one batch, root_id rewritten, target content type set) + UC-TRASH-001 step 6 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:42` 7. Trash bỏ hàng vừa khôi phục; Library hiện item ở vị trí mới với nguyên id, | superseded → FN-TRASH-005 + FN-TRASH-006 (same id, study state, history and tags) + UC-TRASH-001 step 7 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:45` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:47` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:48` - **A1 — Undo ngay sau khi xoá:** người dùng bấm Undo trên snackbar. Hệ thống | pending → SCR-DECK-001 (Undo on the snackbar; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 A1 + FN-DECK-006 + FN-CARD-005 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:50` - **A2 — Chọn nhiều:** người dùng bật chế độ chọn trong Trash. Thanh hành động | pending → SCR-TRASH-001 (selection mode; the action bar with Restore and Delete permanently; rows of the other kind disabled with the reason); intent kept in UC-TRASH-001 A2 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:53` - **A3 — Purge vĩnh viễn:** người dùng chọn `Delete permanently`. Hộp thoại nêu | pending → SCR-TRASH-001 (the dialog: exact count, history is lost, default focus on the safe action, destructive colour on the purge only); intent kept in UC-TRASH-001 A3 + FN-TRASH-007 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:57` - **A4 — Batch hết hạn khi Trash đang mở:** auto-purge chạy lại khi màn được | pending → SCR-TRASH-001 (auto-purge again on focus; rows leave in place without a scroll jump); intent kept in UC-TRASH-001 A4 + FN-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:60` - **A5 — Deck có descendant đã ở Trash từ trước:** restore batch của deck cha | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:63` - **A6 — Trash rỗng:** màn hiển thị trạng thái rỗng giải thích item đã xoá sẽ ở | pending → SCR-TRASH-001 (the empty state saying items stay 30 days; no action bar, no filter); intent kept in UC-TRASH-001 A6 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:66` **Error flows:** | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:67` - **E1 — Không có target hợp lệ:** picker mở ra rỗng và giải thích vì sao (cây | pending → SCR-TRASH-001 (the empty picker explaining why; no disabled row that looks selectable); intent kept in UC-TRASH-001 E1 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:70` - **E2 — Target hết hợp lệ giữa chừng:** cây đổi sau khi picker mở. Transaction | pending → SCR-TRASH-001 (the typed reason; the picker reloads); intent kept in UC-TRASH-001 E2 + FN-TRASH-005 + FN-TRASH-006 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:72` - **E3 — Undo không còn dùng được:** vị trí cũ đã bị xoá, đã thành `card`, hoặc | pending → SCR-DECK-001 (the typed Undo reason pointing to the Trash; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 E3 + FN-DECK-006 + FN-CARD-005 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:75` - **E4 — Purge bị chặn:** một descendant của batch thuộc batch chưa tới hạn hoặc | pending → SCR-TRASH-001 (the typed reason of a skipped batch); intent kept in UC-TRASH-001 E4 + FN-TRASH-007 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:78` - **E5 — Lỗi ghi:** bất kỳ bước nào của xoá, restore hay purge thất bại → | pending → SCR-TRASH-001 (error + Retry); intent kept in UC-TRASH-001 E5 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:80` - **E6 — Item đã biến mất:** batch được chọn đã bị purge bởi một lần chạy khác. | pending → SCR-TRASH-001 (the typed not-found; the list refreshes, no ghost row); intent kept in UC-TRASH-001 E6 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:83` ## UI | pending → SCR-TRASH-001 (states loading · empty · cards only · decks only · mixed · selection card · selection deck · restoring · purging · target picker · validation conflict · expired live removal · error + Retry; the undo snackbar → SCR-DECK-001, SCR-CARD-001) |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:85` **UI states:** loading · empty · cards-only · decks-only · mixed · selection | pending → SCR-TRASH-001 (states loading · empty · cards only · decks only · mixed · selection card · selection deck · restoring · purging · target picker · validation conflict · expired live removal · error + Retry; the undo snackbar → SCR-DECK-001, SCR-CARD-001) |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:91` ## Local | superseded → FN-TRASH-005 + FN-TRASH-006 + FN-TRASH-007 (Kết quả) |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:93` **Postconditions:** Sau bước 7, item nằm dưới target đã chọn với đúng id cũ, và | superseded → FN-TRASH-005 + FN-TRASH-006 + FN-TRASH-007 (Kết quả) |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:97` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-TRASH-001…FN-TRASH-007 (Business rules) |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:99` BR-TRASH-001…BR-TRASH-012, và BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK-017 | superseded → FN-TRASH-001…FN-TRASH-007 (Business rules) |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:103` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:105` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:107` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:109` - [ ] **Given** người dùng xoá một card hoặc một deck, **when** thao tác chạy, * | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:110` - [ ] **Given** một item vừa xoá xong, **when** người dùng nhìn Library hoặc Car | pending → SCR-DECK-001 (presentation of the criterion: the Undo snackbar; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:111` - [ ] **Given** người dùng mở Trash từ app bar của Library, **when** màn vẽ xong | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:112` - [ ] **Given** người dùng chọn Restore trên một hàng, **when** picker target mở | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:113` - [ ] **Given** người dùng bấm Undo trên snackbar sau khi xoá, **when** Undo chạ | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:114` - [ ] **Given** Trash đang mở ở chế độ chọn nhiều, **when** người dùng chọn một | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:115` - [ ] **Given** người dùng chọn "Delete permanently" cho một hoặc nhiều item, ** | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:116` - [ ] **Given** Trash đang mở khi một batch vừa quá 30 ngày, **when** app trở lạ | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:117` - [ ] **Given** một deck cha bị xoá trong khi một descendant đã ở Trash từ một b | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:118` - [ ] **Given** Trash không có batch nào, **when** mở màn, **then** hệ thống hiệ | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:119` - [ ] **Given** một item không còn target hợp lệ để restore, **when** picker mở, | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:120` - [ ] **Given** picker restore đang mở, **when** cây deck đổi, **then** danh sác | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:121` - [ ] **Given** vị trí cũ của một batch không còn nhận nó, **when** người dùng b | pending → SCR-DECK-001 (presentation of the criterion: the typed Undo reason; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 E3 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:122` - [ ] **Given** một deck được chọn để xoá vĩnh viễn còn giữ một batch khác không | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:123` - [ ] **Given** một bước ghi giữa chừng của purge lỗi, **when** transaction chạy | moved → `USE_CASES.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:124` - [ ] **Given** một batch được chọn để restore hoặc purge đã bị xoá vĩnh viễn tr | moved → `USE_CASES.md` |
 
 ## features/card/ui.md
 
@@ -4219,3 +4219,19 @@ search_library FN-SEARCH-001. Search has no ui.md; its screen is SCR-SEARCH-001 
 - tags/ui.md:24 ("Tag này đã tồn tại") is superseded: a name clash merges on rename (BR-TAG-007) and
   reuses the tag on attach; no such error exists in the code.
 - Warning delta: 37 → 38 = +1 migrated legacy UC file. Every BR-TAG is cited by an FN.
+
+## Task 22 notes — trash
+
+purge_expired_trash FN-TRASH-001, watch_trash 002, watch_deck_restore_targets 003,
+watch_card_restore_targets 004, restore_decks_from_trash 005, restore_cards_from_trash 006,
+purge_trash 007. Deleting and its undo stay FN-DECK-005/006 and FN-CARD-004/005; UC-TRASH-001
+invokes them.
+
+- purge_expired is an FN, not plumbing: "an item leaves the Trash after 30 days" is what a QA tests,
+  and FN-TRASH-002 names it as its prerequisite (contract FN→FN, R21).
+- The restore targets and errors restate the move conditions as BR citations (BR-DECK-001/009/010/
+  017/018, BR-SRS-006, BR-CARD-010) and the real error names, not by borrowing FN-DECK-011's text.
+- A root deck restores to the top level only (`rootRestoresToTopLevel`, `subDeckNeedsParent`), as the
+  code and BR-TRASH-006 say; the legacy UC did not mention it.
+- Trash has no ui.md. The Undo snackbar's presentation goes to SCR-DECK-001 and SCR-CARD-001.
+- Warning delta: 38 → 39 = +1 migrated legacy UC file. Every BR-TRASH is cited by an FN.

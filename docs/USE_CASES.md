@@ -1176,3 +1176,79 @@ deck theo tag.
 - [ ] **Given** tag bị xoá ở nơi khác giữa lúc bắt đầu đổi tên và lúc ghi, **when** ghi chạy, **then** thao tác bị từ chối vì tag không còn, danh mục tự cập nhật, và không gì được ghi (E3).
 - [ ] **Given** ghi thất bại giữa lúc gộp tag, **when** lỗi xảy ra, **then** cả hai tag và mọi liên kết trở lại đúng như trước, và người dùng được báo lỗi chứ không phải thành công (E4).
 - [ ] **Given** ghi thất bại khi xoá tag, **when** lỗi xảy ra, **then** tag và mọi liên kết còn nguyên, không thẻ nào bị đụng tới (E5).
+
+## Trash
+
+### UC-TRASH-001 — Trash và khôi phục item đã xoá
+Status: ready · Code: [lib/features/trash/domain/usecases/purge_expired_trash_use_case.dart, lib/features/trash/domain/usecases/watch_trash_use_case.dart, lib/features/trash/domain/usecases/watch_deck_restore_targets_use_case.dart, lib/features/trash/domain/usecases/watch_card_restore_targets_use_case.dart, lib/features/trash/domain/usecases/restore_decks_from_trash_use_case.dart, lib/features/trash/domain/usecases/restore_cards_from_trash_use_case.dart, lib/features/trash/domain/usecases/purge_trash_use_case.dart] · Invokes: [FN-DECK-005, FN-CARD-004, FN-DECK-006, FN-CARD-005, FN-TRASH-001, FN-TRASH-002, FN-TRASH-003, FN-TRASH-004, FN-TRASH-005, FN-TRASH-006, FN-TRASH-007]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Xoá mà không sợ mất: lấy lại ngay thứ vừa xoá, hoặc khôi phục nó trong 30 ngày vào nơi
+mình chọn — và xoá hẳn khi thật sự muốn.
+**Preconditions:** Không có. Trash rỗng vẫn xem được — đó là cách người dùng biết nó tồn tại.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng xoá một deck (FN-DECK-005) hoặc một card (FN-CARD-004). Thứ bị xoá cùng mọi thứ bên
+   trong nó vào Trash cùng lúc, và phiên học đang mở chạm tới nó kết thúc.
+2. Người dùng biết thứ đó đã vào Trash và có thể hoàn tác trong một khoảng ngắn. Ở mọi nơi khác, nó
+   biến mất ngay — khỏi danh sách, con số, tìm kiếm và việc học.
+3. Người dùng muốn xem Trash. Hệ thống thực hiện FN-TRASH-001 trước rồi FN-TRASH-002: người dùng
+   biết các mục còn lại, tách thành card và deck.
+4. Với mỗi mục, người dùng biết tên, lúc bị xoá, nơi nó từng nằm — chỉ để biết — và còn bao nhiêu
+   ngày trước khi bị xoá vĩnh viễn; với deck, cả số deck và card đi cùng.
+5. Người dùng muốn khôi phục một mục. Hệ thống thực hiện FN-TRASH-003 hoặc FN-TRASH-004: người dùng
+   chỉ được đưa ra những nơi thật sự nhận được mục đó.
+6. Người dùng chọn một nơi và xác nhận. Hệ thống thực hiện FN-TRASH-005 hoặc FN-TRASH-006.
+7. Mục rời Trash và có mặt ở nơi mới, nguyên vẹn: cùng nội dung, trạng thái học, lịch sử và tag.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Hoàn tác ngay sau khi xoá:** hệ thống thực hiện FN-DECK-006 hoặc FN-CARD-005; đúng thứ vừa
+  xoá trở về **chỗ cũ**, không hỏi nơi nào.
+- **A2 — Chọn nhiều:** người dùng chọn nhiều mục để khôi phục hoặc xoá vĩnh viễn cùng lúc. Một lựa
+  chọn chỉ gồm một loại — toàn card hoặc toàn deck — và người dùng biết vì sao.
+- **A3 — Xoá vĩnh viễn:** người dùng xác nhận trước, biết đúng số mục và biết lịch sử học không khôi
+  phục được; mặc định là lựa chọn an toàn. Hệ thống thực hiện FN-TRASH-007.
+- **A4 — Một mục hết hạn trong lúc đang xem:** khi người dùng quay lại, việc dọn chạy lại và mục hết
+  hạn biến mất tại chỗ.
+- **A5 — Deck có deck con đã vào Trash từ trước:** khôi phục deck cha chỉ đưa về những gì bị xoá
+  cùng nó; deck con kia vẫn là một mục riêng trong Trash.
+- **A6 — Trash rỗng:** người dùng biết thứ bị xoá sẽ nằm ở đây 30 ngày.
+
+**Error flows:**
+- **E1 — Không có nơi nào nhận được:** người dùng biết vì sao (cây đã quá sâu, hoặc không còn deck
+  nào nhận loại nội dung này), và không có nơi nào trông như chọn được mà lại không.
+- **E2 — Nơi đã chọn hết hợp lệ giữa chừng:** cây đổi sau khi chọn; việc khôi phục bị từ chối, người
+  dùng biết lý do, không gì được ghi, và danh sách nơi nhận được cập nhật.
+- **E3 — Hoàn tác không còn được:** chỗ cũ đã bị xoá, đã chứa loại nội dung khác, hoặc đã quá sâu.
+  Người dùng biết lý do và được chỉ sang Trash; mục vẫn nằm nguyên trong Trash.
+- **E4 — Xoá vĩnh viễn bị chặn:** bên trong một deck còn mục chưa được chọn và chưa hết hạn. Deck đó
+  được bỏ qua nguyên vẹn, không xoá một phần, và người dùng biết lý do.
+- **E5 — Lỗi ghi:** xoá, khôi phục hay xoá vĩnh viễn thất bại thì không gì thay đổi; người dùng được
+  báo lỗi và thử lại được.
+- **E6 — Mục đã biến mất:** mục được chọn đã bị xoá vĩnh viễn ở nơi khác. Người dùng biết nó không
+  còn, và Trash tự cập nhật.
+
+#### Acceptance criteria
+
+- [ ] **Given** người dùng xoá một card hoặc một deck, **when** thao tác chạy, **then** hệ thống tạo đúng một batch trong một transaction, đánh dấu item cùng mọi descendant đang active bằng batch đó, đưa parent về `unset` khi nó vừa mất direct child active cuối, và đóng mọi phiên `in_progress` chạm tới item với `end_reason = content_deleted`.
+- [ ] **Given** một item vừa xoá xong, **when** người dùng xem bất kỳ nơi nào khác, **then** item và mọi hoạt động của nó biến mất, và người dùng hoàn tác được.
+- [ ] **Given** người dùng muốn xem Trash, **when** hệ thống đọc xong, **then** việc dọn mục hết hạn đã chạy trước, và mỗi batch còn lại có loại, tên, thời điểm bị xoá, đường dẫn gốc và số ngày còn lại.
+- [ ] **Given** người dùng muốn khôi phục một mục, **when** các nơi nhận được đưa ra, **then** chỉ gồm deck đang active hợp lệ cho mục đó; xác nhận một nơi ghi lại đúng batch đó trong một transaction, giữ nguyên id, nội dung, trạng thái học, lịch sử và tag.
+- [ ] **Given** người dùng hoàn tác ngay sau khi xoá, **when** hoàn tác chạy, **then** đúng batch đó trở về vị trí cũ mà không hỏi nơi nào (A1).
+- [ ] **Given** người dùng chọn nhiều mục, **when** đã chọn một card rồi muốn chọn một deck, **then** lựa chọn chỉ gồm một loại, và khôi phục hay xoá vĩnh viễn áp cho đúng tập đang chọn (A2).
+- [ ] **Given** người dùng muốn xoá vĩnh viễn một hoặc nhiều mục, **when** được hỏi xác nhận, **then** người dùng biết đúng số lượng, biết lịch sử học không khôi phục được, mặc định là giữ lại trong Trash, và chỉ xác nhận xoá mới xoá (A3).
+- [ ] **Given** một batch vừa quá 30 ngày trong lúc người dùng đang xem Trash, **when** người dùng quay lại app, **then** việc dọn chạy lại và mục hết hạn biến mất tại chỗ (A4).
+- [ ] **Given** một deck cha bị xoá trong khi một descendant đã ở Trash từ một batch cũ hơn, **when** xem lại Trash, **then** descendant đó vẫn là một mục riêng với batch cũ của nó (A5).
+- [ ] **Given** Trash không có batch nào, **when** người dùng xem Trash, **then** người dùng biết thứ bị xoá sẽ nằm ở đây 30 ngày (A6).
+- [ ] **Given** một mục không còn nơi nào nhận được, **when** người dùng muốn khôi phục, **then** người dùng biết lý do, và không có nơi nào trông như chọn được (E1).
+- [ ] **Given** người dùng đang chọn nơi khôi phục, **when** cây deck đổi, **then** danh sách nơi nhận được đi theo cây; nếu nơi đã chọn không còn hợp lệ lúc xác nhận thì việc khôi phục bị từ chối và không gì được ghi (E2).
+- [ ] **Given** vị trí cũ của một batch không còn nhận nó, **when** người dùng hoàn tác, **then** người dùng biết lý do và mục vẫn nằm trong Trash (E3).
+- [ ] **Given** một deck được chọn để xoá vĩnh viễn còn giữ một batch khác không được chọn, **when** xoá vĩnh viễn chạy, **then** deck đó được bỏ qua nguyên vẹn và người dùng biết lý do (E4).
+- [ ] **Given** một bước ghi giữa chừng của việc xoá vĩnh viễn lỗi, **when** transaction chạy, **then** toàn bộ rollback và dữ liệu giữ nguyên như trước (E5).
+- [ ] **Given** một batch được chọn để khôi phục hoặc xoá vĩnh viễn đã bị xoá vĩnh viễn trước đó, **when** thao tác chạy, **then** người dùng biết đúng batch đó không còn (E6).
