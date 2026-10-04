@@ -81,14 +81,14 @@ rules:
   #
   # `Scaffold` is deliberately NOT here. It is the framework's layout host, not
   # a design-system component: no architecture decision forbids a feature from
-  # owning one, and `MxAppShell` builds its own for a reason its file states —
+  # owning one, and `MxScreenScaffold` builds its own for a reason its file states —
   # that is not a prohibition on features.
   - id: memox_v8.design_system.no_raw_screen_chrome
     type: regex
     severity: error
     enabled: true
     message: >-
-      No raw screen chrome in feature code. `MxAppShell` lays out the chrome and
+      No raw screen chrome in feature code. `MxScreenScaffold` lays out the chrome and
       `MxAppBar` owns the bar and its back control, so every screen's chrome
       resolves through one owner. A bar they cannot express is a gap in them —
       extend them in lib/shared, do not build an `AppBar` / `SliverAppBar` here.
@@ -134,7 +134,7 @@ rules:
       No raw progress indicator in feature code. A wait shows `MxSpinner` or
       the `MxSkeleton` family, which carry the accessible name a bare spinner
       lacks; progress shown with `value:` is `MxLinearProgress` or
-      `MxMasteryDonut`.
+      `MasteryDonut`.
     scopes:
       - presentation_files
     patterns:

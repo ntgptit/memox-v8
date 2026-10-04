@@ -411,7 +411,7 @@ Each Material 3 TextTheme slot takes one role above; tools/design/generate.py re
 
 Phone-first, single column, 16dp screen gutter (`gutter`). Vertical rhythm: 4 icon-to-label, 8 tight stacks, 12 related rows, 16 between list items, 20 card and sheet interior, 24 between sections, 32 between major groups, and a 48 scroll tail so the last item is never trapped under pinned chrome.
 
-Every screen is a column in `MxAppShell`: top chrome, one scroll body, in-flow footer, with the FAB layered above (never over a footer). System insets (status bar, cutout, gesture bar, keyboard) are supplied by the platform, never hard-coded.
+Every screen is a column in `MxScreenScaffold`: top chrome, one scroll body, in-flow footer, with the FAB layered above (never over a footer). System insets (status bar, cutout, gesture bar, keyboard) are supplied by the platform, never hard-coded.
 
 From a 600dp window width, top-level destinations move from the bottom bar (64dp bar in an 80dp block) to an 80dp navigation rail on the leading edge (`MxNavRail`, same glyphs, pill and label as the bottom bar). The content column is centred at a 720dp maximum; the page ground fills the rest, and the FAB anchors 16dp inside the column's trailing edge, not the window's.
 
@@ -424,7 +424,7 @@ Touch targets are 48dp minimum for every interactive control, whatever the paint
 
 **The Wrap Rule.** A meta line, a breakdown line, a session context line or a hint that already wraps (the study session, Study home, the Library row meta) keeps doing so between whole terms. Large text scales are not a design target (PRODUCT.md, owner 2026-09-30), so no new work goes into wrapping for them; a title keeps one line.
 
-**The Clear Tail Rule.** A list under a FAB ends clear of it (`MxScrollClearance.fab` or `fabAboveNav`); when the FAB hides (selection), the clearance goes with it.
+**The Clear Tail Rule.** A list under a FAB ends clear of it (`MxScreenScroll`'s FAB clearance, above the bar when there is one); when the FAB hides (selection), the clearance goes with it.
 
 ## Elevation & Depth
 
@@ -455,26 +455,102 @@ Calm and exact. All shared widgets are `Mx*` (rebuilt in `lib/shared/widgets/` b
 
 ### Containers
 - **MxCard**: raised (surface-container-lowest, r12, whisper shadow or dark ghost edge), plus hero, warning, success, danger and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
-- **MxDialog** (widths 340, 320, 300; scale-in), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **MxDeckPickerSheet**, **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption at `AppOpacity.muted`).
+- **MxDialog** (widths 340, 320, 300; scale-in), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **DeckPickerSheet**, **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption at `AppOpacity.muted`).
 
 ### Inputs
 - **MxTextField**: variants form (52, muted fill that lightens on focus), detail (grows from 48), meaning (16/500, grows from 76, r20), term (24/700, r20), code (one centred line of six digits on the form fill, headline role with tabular figures and wide tracking, numeric keyboard and one-time-code autofill) and study (bare). Ghost edge, primary-ink edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
 - **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills primary with on-primary ink), **MxChipTrigger** (ghost chip that opens a menu).
 
 ### Navigation
-- **MxAppBar** (56, content or screen density; a bar without a leading control starts its title on the gutter, in line with the body, critique 2026-09-30 part 3c-1; a form's single save lives in its footer, never also in the bar), **MxStudyTopBar** (close, mode badge, thin progress, Indigo in every mode; the session context line under it names deck, kind, stage and round in two lines at most, never the mode again; critique 2026-09-30 part 3c-2), **MxBottomNav** (glass bar, outlined resting glyph, filled selected glyph, tinted pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation), **MxAppShell** and **MxScreenScroll** (tail clearance for FAB and nav).
+- **MxAppBar** (56, content or screen density; a bar without a leading control starts its title on the gutter, in line with the body, critique 2026-09-30 part 3c-1; a form's single save lives in its footer, never also in the bar), **StudyTopBar** (close, mode badge, thin progress, Indigo in every mode; the session context line under it names deck, kind, stage and round in two lines at most, never the mode again; critique 2026-09-30 part 3c-2), **MxBottomNav** (glass bar, outlined resting glyph, filled selected glyph, tinted pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation), **MxScreenScaffold** and **MxScreenScroll** (tail clearance for FAB and nav).
 
 ### Feedback and Status
 - **MxSnackbar** (inverse surface, one optional action, 4s; 8s when offering Undo), **MxFloatingNotice** (floats over a screen that does not own the problem, as Study home's sync notice; the screen that owns it shows an `MxInlineBanner` in place), **MxInlineBanner** (warning or danger; the glyph reads in warning ink or error and the bold title in warning ink or danger ink, and the message stays neutral, critique 2026-09-30 tone pass; its actions put the primary last, as Material 3 does, so screen 24's permission banner reads Try again then Open system settings; critique 2026-09-30 part 3a, R5 amends FE-B6), **MxEmptyState** (tones primary, neutral, success, warning, danger; success tints with success and draws its glyph in success ink, critique 2026-09-30 tone pass; warning draws its glyph in warning ink, part 3d-2), **MxErrorState** (inline load failure with Retry; without a retry action it is the "not found" form; the alert glyph by default, cloud-off only for a network failure), **MxSpinner** (4 sizes, 800ms cycle), **MxSkeleton** family (pulse 0.45 to 0.75 over 1.4s), **MxBadge** (primary, mastery, success, warning, danger, neutral; mastery is learning progress, success a right answer or a finished, fine state, in its success ink; critique 2026-09-30 tone pass), **MxStatusBadge** (new, learning, reviewing, mastered).
 
 ### Study-specific
-- **MxMasteryDonut**, **MxLinearProgress** and the single **MasteryRamp** threshold function: below 34% learning ink, 34 to 66% reviewing indigo, from 67% mastered green, a flat fill on a `surface-container-low` track, never a gradient; percent never rounds to 0 or 100 falsely.
-- **MxOutcomeTile** (what a reset keeps, in success, or loses, in warning; critique 2026-09-30 tone pass), **MxWorkloadBreakdownLine** ("overdue, today, new" with one colour each), study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `AppOpacity.muted`, 0.7, and stays readable) and the recessed answer face, whose ground Match's idle meaning tiles share while its terms stay raised (part 3c-2).
+- **MasteryDonut**, **MxLinearProgress** and the single **MasteryRamp** threshold function: below 34% learning ink, 34 to 66% reviewing indigo, from 67% mastered green, a flat fill on a `surface-container-low` track, never a gradient; percent never rounds to 0 or 100 falsely.
+- **OutcomeTile** (what a reset keeps, in success, or loses, in warning; critique 2026-09-30 tone pass), **WorkloadBreakdownLine** ("overdue, today, new" with one colour each), study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `AppOpacity.muted`, 0.7, and stays readable) and the recessed answer face, whose ground Match's idle meaning tiles share while its terms stay raised (part 3c-2).
 - **StudyCtaRow**: two actions share the row at up to 160 each and stack at text scale 1.3; a lone button spans the width of that pair (2 × 160 + 8), so Continue weighs what a pair does. Grades that judge the learner (Forgot, Remembered) share one tone. An action swapped in place under the finger (Show answer to the grades, Show meaning to Forgot · Remembered, Check to Continue) settles for 400 ms, easing in from `AppOpacity.muted`, before it takes a tap (critique 2026-09-30 part 3c-2).
 - **SessionFooterHint**: the glyph sits inline before the first line and wraps with the text; every hint is one line at normal size in English and Vietnamese, so the CTA above it stands in one place in every mode with no empty line under it (critique 2026-09-30 part 3c-2).
 
 ### Data Display
 - **MxListRow** (48 minimum, grows to two title lines; a trailing badge or the chevron, never both), **MxSettingsRow** (a value that only follows another setting reads as plain trailing text at full contrast, not as a dimmed control; a disabled row dims its tile, label and chevron, never the subtitle that says why; a trailing control that draws its own disabled state (`MxButton`, `MxToggle`, `MxStepper`) is not dimmed again (critique 2026-09-30 part 3a); an `isAction` row, which runs an action or opens a dialog, shows no chevron; `iconTone` sets the lead tile's tone, tinted by default (critique 2026-09-30 tone pass)), **MxListSectionHeader**, **MxStatTile** (boxed or inline; emphasis primary, plain, muted; its value keeps one line and scales down in a narrow column, critique 2026-09-30 part 3c-1), **MxStackedDayBars** (every day at full strength, each series in a colour that holds 3:1 on the card, learning in its ink; the current day is told by its bold label, critique 2026-10-02), **MxTagChip** (22 or 18), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press).
+
+### Catalog
+
+The canonical list of components (spec 2026-10-04-sp3a §4, A6). `Layer` is `primitive`, `shared`,
+`app-shell`, `product-semantic` or `feature:<domain>`; only `primitive`, `shared` and `app-shell`
+names carry `Mx`. `Consumers` are screen domains, SCR ids or other components, taken from the
+screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A component leaves
+`planned` only with a contract under [Contracts](#contracts); `tools/docs/check.py` enforces both.
+
+| Component | Purpose | Layer | Consumers | Owner phase | Status |
+|---|---|---|---|---|---|
+| MxRowInk | Shared row ripple and press | primitive | MxListRow, MxSettingsRow, MxOptionRow, MxActionSheetCommandRow | SP3a | planned |
+| MxButton | Text-labelled action in seven tones and five sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxIconButton | Icon-only action with a 48 target | shared | CARD, DECK, MONITORING, STARTER, STUDY, TAG, TRASH | SP3a | planned |
+| MxFab | Floating primary action, icon only | shared | CARD, DECK | SP3a | planned |
+| MxSpinner | Indeterminate wait in four sizes | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER | SP3a | planned |
+| MxTextField | Text input in six variants | shared | ACCOUNT, CARD, DECK, MONITORING, SEARCH, STARTER, STUDY, TAG, TRANSFER | SP3a | planned |
+| MxFieldMessage | Error or warning line under a field | shared | ACCOUNT, CARD, DECK, TAG | SP3a | planned |
+| MxSearchField | Search input, or a trigger that opens search | shared | ACCOUNT, CARD, DECK, SEARCH, TAG | SP3a | planned |
+| MxToggle | On/off switch | shared | ACCOUNT, DECK, MONITORING, PROGRESS, REMINDER, SETTINGS, SRS, TRANSFER | SP3a | planned |
+| MxOptionRow | Single-choice radio row | shared | ACCOUNT, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TRANSFER | SP3a | planned |
+| MxSelectionCheckbox | Multi-select mark | shared | CARD, TRASH | SP3a | planned |
+| MxStepper | Bounded integer with press-and-hold repeat | shared | REMINDER, SETTINGS | SP3a | planned |
+| MxSegmentedTray | One of a few segments | shared | MONITORING, PROGRESS, SETTINGS | SP3a | planned |
+| MxFilterChip | Filter toggle chip | shared | CARD, TRASH | SP3a | planned |
+| MxChipTrigger | Ghost chip that opens a menu or sheet | shared | CARD, DECK, MONITORING, TRANSFER | SP3a | planned |
+| MxCard | Raised surface in six tones | shared | CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxSection | Section label over a card | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, STUDY, TAG, TRANSFER | SP3a | planned |
+| MxNote | One calm information line, or its footnote form | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxBadge | Short label in a semantic tone | shared | ACCOUNT, CARD, DECK, MONITORING, SEARCH, STARTER, STUDY, TRANSFER, TRASH | SP3a | planned |
+| MxStatusBadge | A card's learning status | shared | CARD, MONITORING | SP3a | planned |
+| MxTagChip | A tag name | shared | CARD, SEARCH | SP3a | planned |
+| MxIconTile | Icon on a toned tile in three sizes | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
+| MxLinearProgress | Determinate bar: value, tone, size; knows no mastery | shared | DECK, STUDY | SP3a | planned |
+| MxDialog | Modal decision | shared | ACCOUNT, CARD, DECK, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
+| MxBottomSheet | Modal sheet with a grabber, a pinned header and footer | shared | ACCOUNT, CARD, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxSheetActions | Dialog and sheet footer actions | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxSnackbar | Transient message with one optional action | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxInlineBanner | Warning or danger banner owned by its screen | shared | ACCOUNT, CARD, DECK, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TRANSFER, TRASH | SP3a | planned |
+| MxEmptyState | Nothing here yet, and what to do | shared | ACCOUNT, CARD, DECK, SEARCH, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxErrorState | Inline load failure with Retry, or not found | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
+| MxSkeleton | Loading placeholder family | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRASH | SP3a | planned |
+| MxScreenScaffold | Screen frame: app-bar slot, one body, footer slot, FAB slot; not the navigation shell | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxScreenScroll | The screen's scroll body with tail clearance | shared | ACCOUNT, CARD, MONITORING, PROGRESS, STUDY, TRANSFER, TRASH | SP3a | planned |
+| MxAppBar | Top bar in two densities | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxBreadcrumb | Path of presentation-neutral items; knows no deck | shared | CARD, DECK, PROGRESS, SETTINGS, SRS, STUDY | SP3a | planned |
+| MxFooterBar | In-flow commit bar | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, STUDY, TRANSFER, TRASH | SP3a | planned |
+| MxListRow | List row, 48 minimum, two title lines | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxSettingsRow | Settings row with a trailing value or control | shared | DECK, REMINDER, SETTINGS | SP3a | planned |
+| MxListSectionHeader | Header over a list | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, SEARCH, SETTINGS, SRS, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxActionSheetCommandRow | Command row of an action sheet | shared | ACCOUNT, CARD, DECK, SETTINGS, SRS, TAG, TRASH | SP3a | planned |
+| AppNavigationShell | The four-tab navigation shell | app-shell | SCR-DECK-001, SCR-STUDY-001, SCR-PROGRESS-001, SCR-SETTINGS-002 | SP3b | planned |
+| MxBottomNav | Bottom bar of the navigation shell | app-shell | AppNavigationShell | SP3b | planned |
+| MxNavRail | Navigation rail from 600dp | app-shell | AppNavigationShell | SP3b | planned |
+| MasteryRamp | Mastery percentage to its status tone, on MxLinearProgress | product-semantic | CARD, DECK | SP3b | planned |
+| MasteryDonut | A level's mastery as a ring | product-semantic | CARD, DECK | SP3b | planned |
+| WorkloadBreakdownLine | Overdue, today and new, one colour each | product-semantic | DECK, STUDY | SP3b | planned |
+| DeckPickerSheet | Pick a destination deck | feature:deck | CARD, DECK, TRANSFER, TRASH | SP3b | planned |
+| DeckRow | A deck in the Library list | feature:deck | SCR-DECK-001 | SP3b | planned |
+| DueStrip | The Library's due hero, opening Study | feature:deck | SCR-DECK-001 | SP3b | planned |
+| MxFloatingNotice | Notice floating over a screen that does not own the problem | shared | STUDY | SP3c | planned |
+| MxStatTile | A figure with its label | shared | STUDY | SP3c | planned |
+| MxStackedDayBars | Stacked bars per day | shared | PROGRESS | SP3c | planned |
+| MxActionPair | Two footer actions, side by side or stacked | shared | TRASH | SP3c | planned |
+| MxDashedNote | Placeholder for a figure to come | shared | CARD | SP3c | planned |
+| StudyTopBar | Session close, mode and progress | feature:study | STUDY | SP3c | planned |
+| StudyCtaRow | The session's one or two actions | feature:study | STUDY | SP3c | planned |
+| SessionFooterHint | The session's one-line hint | feature:study | STUDY | SP3c | planned |
+| OutcomeTile | What a reset keeps or loses | feature:srs | SRS | SP3c | planned |
+
+### Contracts
+
+The contract of every component past `planned`: one `####` block with `- Variants:`, `- States:`,
+`- Accessibility:`, `- Tokens:` and `- Golden:` (a list of `<state>__<variant>`, or
+`none — <reason>`), plus `- Replacement:` once deprecated. The phase that builds a component
+writes its block before the code. Component debt lives in its block, as a `- Debt:` line.
 
 ## Do's and Don'ts
 

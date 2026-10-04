@@ -115,7 +115,7 @@ Raw: `CircularProgressIndicator`, `LinearProgressIndicator`.
 Tách semantics (guard `no_raw_loading_indicator`):
 
 - `MxSpinner`, `MxSkeleton` / `MxSkeletonList` / `MxSkeletonPulse` — loading.
-- `MxLinearProgress`, `MxMasteryDonut` — study/progress data.
+- `MxLinearProgress`, `MasteryDonut` — study/progress data.
 
 - [ ] Progress 100% semantic variant nếu design định nghĩa.
 - [ ] Track/fill lấy semantic tokens. (Lưu ý dark của repo này:

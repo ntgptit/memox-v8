@@ -75,10 +75,10 @@ def test_no_raw_screen_chrome_goes_red_on_a_sliver_app_bar(tmp_path: Path) -> No
 
 def test_no_raw_screen_chrome_ignores_prose_and_themes(tmp_path: Path) -> None:
     good = """
-    // MxAppShell owns the chrome; a raw AppBar( here would route around it.
+    // MxScreenScaffold owns the chrome; a raw AppBar( here would route around it.
     /// A doc comment that says SliverAppBar( is still prose.
     final AppBarTheme theme = AppBarTheme(centerTitle: false);
-    return MxAppShell(appBar: MxAppBar(title: title), body: child);
+    return MxScreenScaffold(appBar: MxAppBar(title: title), body: child);
     """
     assert not _violations(SCREEN_CHROME, tmp_path, good)
 

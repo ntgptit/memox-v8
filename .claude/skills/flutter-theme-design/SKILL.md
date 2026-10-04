@@ -103,7 +103,7 @@ Chi tiết admission rule cho một Material widget mới:
 Một screen hoàn thiện tốt phải đọc gần như thế này:
 
 ```dart
-MxAppShell(
+MxScreenScaffold(
   appBar: MxAppBar(title: ...),
   body: MxScreenScroll(
     children: [
