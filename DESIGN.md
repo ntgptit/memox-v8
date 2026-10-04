@@ -2,47 +2,138 @@
 name: MemoX V8
 description: A quiet, focused study space for spaced-repetition flashcards, in two themes, Tokyo Pure Light and Tokyo Nebula.
 colors:
-  primary: "#5265F5"
+  primary: "#4151C6"
+  primary-dark: "#AAB4FF"
   on-primary: "#FFFFFF"
+  on-primary-dark: "#141C66"
   primary-container: "#E0E5FE"
+  primary-container-dark: "#2D346A"
   on-primary-container: "#1A2580"
-  secondary: "#6E7CD9"
+  on-primary-container-dark: "#D9DFFF"
+  primary-fixed: "#E0E5FE"
+  primary-fixed-dark: "#E0E5FE"
+  primary-fixed-dim: "#BAC3FF"
+  primary-fixed-dim-dark: "#BAC3FF"
+  on-primary-fixed: "#0B1366"
+  on-primary-fixed-dark: "#0B1366"
+  on-primary-fixed-variant: "#2D3A9E"
+  on-primary-fixed-variant-dark: "#2D3A9E"
+  secondary: "#5560B8"
+  secondary-dark: "#9DA8E8"
+  on-secondary: "#FFFFFF"
+  on-secondary-dark: "#1B2257"
   secondary-container: "#E3E6F7"
+  secondary-container-dark: "#343C78"
   on-secondary-container: "#262E6E"
-  tertiary: "#8B6FF5"
+  on-secondary-container-dark: "#DDE2FB"
+  secondary-fixed: "#E3E6F7"
+  secondary-fixed-dark: "#E3E6F7"
+  secondary-fixed-dim: "#C1C7EC"
+  secondary-fixed-dim-dark: "#C1C7EC"
+  on-secondary-fixed: "#141A4D"
+  on-secondary-fixed-dark: "#141A4D"
+  on-secondary-fixed-variant: "#3A4390"
+  on-secondary-fixed-variant-dark: "#3A4390"
+  tertiary: "#6A4BD8"
+  tertiary-dark: "#B5A0FF"
+  on-tertiary: "#FFFFFF"
+  on-tertiary-dark: "#2A1470"
   tertiary-container: "#EBE3FE"
+  tertiary-container-dark: "#443078"
   on-tertiary-container: "#33177E"
+  on-tertiary-container-dark: "#E6DCFF"
+  tertiary-fixed: "#EBE3FE"
+  tertiary-fixed-dark: "#EBE3FE"
+  tertiary-fixed-dim: "#CFC0FF"
+  tertiary-fixed-dim-dark: "#CFC0FF"
+  on-tertiary-fixed: "#1F0A55"
+  on-tertiary-fixed-dark: "#1F0A55"
+  on-tertiary-fixed-variant: "#4B30A8"
+  on-tertiary-fixed-variant-dark: "#4B30A8"
   error: "#C02447"
+  error-dark: "#FF8FA3"
+  on-error: "#FFFFFF"
+  on-error-dark: "#5C0A1E"
   error-container: "#FBDDE3"
+  error-container-dark: "#7A2036"
   on-error-container: "#7A0A23"
+  on-error-container-dark: "#FFD9DF"
   surface: "#F7F9FE"
-  surface-bright: "#FFFFFF"
-  surface-container-lowest: "#FFFFFF"
-  surface-container-low: "#F1F4FB"
-  surface-container: "#E9EDF7"
-  surface-container-high: "#E2E7F3"
-  surface-container-highest: "#DAE0EF"
+  surface-dark: "#0A0E27"
   on-surface: "#0F1638"
+  on-surface-dark: "#E4E8FA"
   on-surface-variant: "#4A5278"
-  outline: "#7C85AB"
+  on-surface-variant-dark: "#A4ACD0"
+  surface-dim: "#D5DBEA"
+  surface-dim-dark: "#0A0E27"
+  surface-bright: "#FFFFFF"
+  surface-bright-dark: "#2A3266"
+  surface-container-lowest: "#FFFFFF"
+  surface-container-lowest-dark: "#131A3A"
+  surface-container-low: "#F1F4FB"
+  surface-container-low-dark: "#1B2249"
+  surface-container: "#E9EDF7"
+  surface-container-dark: "#232B5A"
+  surface-container-high: "#E2E7F3"
+  surface-container-high-dark: "#2C356E"
+  surface-container-highest: "#DAE0EF"
+  surface-container-highest-dark: "#353D7E"
+  outline: "#717AA0"
+  outline-dark: "#7D8AC1"
   outline-variant: "#C5CBE3"
-  inverse-surface: "#34395D"
-  on-inverse-surface: "#E8EAFC"
-  inverse-primary: "#A0ACFF"
+  outline-variant-dark: "#2A3267"
+  shadow: "#0F1638"
+  shadow-dark: "#000000"
   scrim: "#0A0E27"
-  mastery: "#1F8A5B"
-  on-mastery: "#FFFFFF"
-  success: "#2BA88B"
-  warning: "#F59E0B"
-  on-warning: "#3A2A00"
-  warning-ink: "#895806"
-  error-fill: "#DC2D4E"
-  on-error-fill: "#FFFFFF"
-  status-new: "#8C95B8"
-  status-learning: "#F59E0B"
-  status-reviewing: "#5265F5"
-  status-mastered: "#1F8A5B"
-  streak: "#F97316"
+  scrim-dark: "#000000"
+  inverse-surface: "#34395D"
+  inverse-surface-dark: "#34395D"
+  on-inverse-surface: "#E8EAFC"
+  on-inverse-surface-dark: "#E8EAFC"
+  inverse-primary: "#AAB4FF"
+  inverse-primary-dark: "#AAB4FF"
+  success: "#176B57"
+  success-dark: "#5FD3B4"
+  on-success: "#FFFFFF"
+  on-success-dark: "#06362A"
+  success-container: "#D5F2E9"
+  success-container-dark: "#14473A"
+  on-success-container: "#0B3B2F"
+  on-success-container-dark: "#C9F5E7"
+  warning: "#895806"
+  warning-dark: "#F5B13D"
+  on-warning: "#FFFFFF"
+  on-warning-dark: "#3A2A00"
+  warning-container: "#FCEFC7"
+  warning-container-dark: "#4A3610"
+  on-warning-container: "#3A2A00"
+  on-warning-container-dark: "#FCE6B8"
+  status-new: "#5A6283"
+  status-new-dark: "#A4ACD0"
+  status-new-container: "#E6E8F0"
+  status-new-container-dark: "#2B3256"
+  on-status-new-container: "#2B3150"
+  on-status-new-container-dark: "#DDE1F2"
+  status-learning: "#895806"
+  status-learning-dark: "#F5B13D"
+  status-learning-container: "#FCEFC7"
+  status-learning-container-dark: "#4A3610"
+  on-status-learning-container: "#3A2A00"
+  on-status-learning-container-dark: "#FCE6B8"
+  status-reviewing: "#4151C6"
+  status-reviewing-dark: "#AAB4FF"
+  status-reviewing-container: "#E0E5FE"
+  status-reviewing-container-dark: "#2D346A"
+  on-status-reviewing-container: "#1A2580"
+  on-status-reviewing-container-dark: "#D9DFFF"
+  status-mastered: "#1A6B48"
+  status-mastered-dark: "#6FE0BD"
+  status-mastered-container: "#D3F0E2"
+  status-mastered-container-dark: "#134733"
+  on-status-mastered-container: "#0A3B25"
+  on-status-mastered-container-dark: "#C6F5E2"
+  streak: "#E8620C"
+  streak-dark: "#FB8A3C"
 typography:
   stat:
     fontFamily: "PlusJakartaSans"
@@ -141,8 +232,8 @@ components:
     height: "48px"
     padding: "0 16px"
   button-destructive:
-    backgroundColor: "{colors.error-fill}"
-    textColor: "{colors.on-error-fill}"
+    backgroundColor: "{colors.error}"
+    textColor: "{colors.on-error}"
     typography: "{typography.button-label}"
     rounded: "{rounded.md}"
     height: "48px"
@@ -224,12 +315,17 @@ MemoX should feel like a quiet, focused study space. The system ships two themes
 
 ## Colors
 
-A cool indigo-tinted neutral field with one saturated brand indigo, one reserved violet, and a green that only ever means progress. Frontmatter holds the Tokyo Pure Light values; Tokyo Nebula values and tonal information live in `.impeccable/design.json` `colorMeta`.
+A cool indigo-tinted neutral field with one brand indigo, one reserved violet, and greens that only ever mean progress or success. Every colour has a light value and a `-dark` value in the frontmatter, the only place a colour value is written. `tools/design/generate.py` turns them into the two `ColorScheme`s and `AppSemanticColors`, and checks every pair in `.impeccable/design.json` `contrastPairs` in both themes (spec 2026-10-04-sp3a A2, A3).
+
+### The model
+- Material 3 roles keep their meaning. A role is text or a glyph on a surface wherever it holds its floor on that surface; the generator proves each declared pair.
+- Content on a coloured surface uses the role's pair: `X` → `on-X`, `X-container` → `on-X-container`. `on-X` is never a text colour on a plain surface.
+- MemoX adds semantic extensions on the same model, with only the members a consumer uses. There is no separate ink palette and no colour derived at paint time.
 
 ### Primary
-- **Brand Indigo** (`primary`): the fill of primary buttons, the FAB, the selected filter chip, progress fills and the selected-choice surface. Identical in both themes (#5265F5). White ink on it in both themes.
-- **Indigo Ink** (derived, not a fill): primary as text, icon, focus ring or spinner is `primary` pulled toward `on-surface` (25% in light, 45% in dark) so it reads at 4.5:1 on every ground. Outline buttons, links and the 2dp focus ring use it.
-- **Indigo Wash** (`primary-container`, `on-primary-container`): quiet selected and informational grounds. Dark: #2D346A / #D9DFFF.
+- **Brand Indigo** (`primary`, #4151C6; dark #AAB4FF): the fill of primary buttons, the FAB, the selected filter chip and progress fills, under `on-primary`; and indigo text, links, icons and the 2dp focus ring on any surface.
+- **Indigo Wash** (`primary-container`, `on-primary-container`): quiet selected and informational grounds.
+- **Fixed tones** (`primary-fixed`, `primary-fixed-dim`, `on-primary-fixed`, `on-primary-fixed-variant`, and the same for secondary and tertiary): identical in both themes, for a surface that must not follow the theme.
 
 ### Secondary
 - **Soft Periwinkle** (`secondary`, `secondary-container`): supporting tonal role; rarely painted directly.
@@ -239,29 +335,29 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 
 ### Neutral
 - **Pure Light Page** (`surface`, #F7F9FE): the screen ground. Dark: #0A0E27 (Nebula Night).
-- **Raised White** (`surface-container-lowest`): cards, list rows, chips. Dark: #131A3A.
-- **Muted Fill** (`surface-container-low`): text-field fill at rest, the mastery track, navigation rail ground, recessed study face. Dark: #1B2249.
-- **Sheet Ground** (`surface-container-high`): dialogs and bottom sheets. Dark: #2C356E.
-- **On Surface** (`on-surface`) and **Variant Ink** (`on-surface-variant`): primary and secondary text. Dark: #E4E8FA and #A4ACD0.
-- **Outline** (`outline`) and **Outline Variant** (`outline-variant`): control edges and dividers; the everyday hairline is the derived Ghost Border (primary at 14% light, 16% dark). The outline button's edge is the derived **Outline Edge** (`outlineEdge`): `outline-variant` in light; in dark `outline` pulled 25% toward `on-surface` (≈ #7D8AC1), 3.41:1 on the sheet, 5.69 on the page and 4.27 on the warning ground, since `outline-variant` nearly vanished on the dark sheet (critique 2026-09-30 part 1, R7).
-- **Inverse Surface** (`inverse-surface`, #34395D): the snackbar ground, identical in both themes, with `inverse-primary` (#A0ACFF, 5.21:1) for its action.
+- **Raised White** (`surface-container-lowest`): cards, list rows, chips.
+- **Muted Fill** (`surface-container-low`): text-field fill at rest, the progress track, navigation rail ground, recessed study face.
+- **Sheet Ground** (`surface-container-high`): dialogs and bottom sheets.
+- **On Surface** (`on-surface`) and **Variant Text** (`on-surface-variant`): primary and secondary text.
+- **Outline** (`outline`): control edges, the outline button's edge included; 3:1 on the page, row, low and sheet grounds in both themes. **Outline Variant** (`outline-variant`): dividers and the everyday 1px hairline.
+- **Inverse Surface** (`inverse-surface`, #34395D): the snackbar ground, identical in both themes, with `on-inverse-surface` text and `inverse-primary` for its action.
+- **Shadow** (`shadow`) and **Scrim** (`scrim`): the colours every named shadow and the modal scrim are built on.
 
 ### Semantic
-- **Mastery Green** (`mastery`, #1F8A5B; dark #6FE0BD) and **Success Teal** (`success`, #2BA88B): progress and a finished session. Two roles, never interchangeable; a right answer is success, never mastery.
-- **Status ramp**: `status-new` (#8C95B8), `status-learning` (#F59E0B), `status-reviewing` (indigo), `status-mastered` (green). Dots, fills and tints use the colour itself; status text uses an Ink derived by pulling the colour toward `on-surface`.
-- **Warning Amber** (`warning`, `on-warning`, `warning-ink`): a refusal or a limit where nothing was lost. Warning text and glyphs use **Warning Ink** (`warningInk`): #895806 in light (amber's hue at 28% lightness, 4.5:1 or more on every ground and tint, the sheet included), the amber itself in dark. `on-warning` is only the ink on an amber fill (critique 2026-09-30 tone pass, T1).
-- **Error** (`error`, #C02447) is the text/icon/edge role; **Danger Ink** (`dangerInk`) is error pulled toward `on-surface` (10% light, 30% dark) for text on the danger ground, such as a banner title, 4.5:1 or more on every surface including a sheet (critique 2026-09-30 tone pass); **Destructive Fill** (`error-fill`, #DC2D4E; dark #B0485C) is the solid destructive button only.
-- **Streak Orange** (`streak`): the Progress flame only.
-- **Derived tints**: danger/warning/success soft grounds are the role at 8-18% alpha over the surface (danger 8/16, warning 12/18, success 10/18, light/dark), with borders at 22-32%.
+- **Error** (`error`, `on-error`, `error-container`, `on-error-container`): danger is Material's error. `error` is error text and glyphs, and the destructive button's fill under `on-error`; the danger ground is `error-container` under `on-error-container`.
+- **Success** (`success`, `on-success`, `success-container`, `on-success-container`): a right answer and a finished, fine state. Never mastery.
+- **Warning** (`warning`, `on-warning`, `warning-container`, `on-warning-container`): a refusal or a limit where nothing was lost. The warning button's fill under `on-warning`, warning text and glyphs, and the warning ground.
+- **Status** (`status-new`, `status-learning`, `status-reviewing`, `status-mastered`, each with `-container` and `on-…-container`): a card's learning status as a label, a dot or a progress fill, and as a badge on its container. Mastery is `status-mastered`.
+- **Streak** (`streak`): the Progress flame only; a fill, with no text counterpart.
 
 ### Named Rules
 **The One Indigo Rule.** Indigo means "act". A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8).
 
-**The Green Means Progress Rule.** Green is `mastery` or `success` and nothing else. Violet is never a status; green is never decoration.
+**The Green Means Progress Rule.** Green is `status-mastered` or `success` and nothing else. Violet is never a status; green is never decoration.
 
-**The Ink Is Not The Fill Rule.** Text, icons and focus rings use the derived ink (primary ink, status inks, success ink, warning ink, `error`), never the fill colour, because the fills fail 4.5:1 as text on light surfaces.
+**The Role On Its Ground Rule.** A colour is a semantic role used on a ground it was checked against. Text and glyphs use a role that holds 4.5:1 on that ground; content on a coloured fill or container uses that role's `on-` pair. There is no fill palette beside an ink palette, and no colour derived at paint time.
 
-**The Contrast Floor Rule.** Text and glyphs hold 4.5:1 and non-text (edges, thumbs, progress fill on its track, grabber) hold 3:1, on page, row, low and sheet grounds, in both themes. Pull the ink, not the ground, to pass.
+**The Contrast Floor Rule.** Text and glyphs hold 4.5:1 and non-text (edges, thumbs, progress fill on its track, grabber) hold 3:1, on page, row, low and sheet grounds, in both themes. A role that fails is changed here; nothing patches it with a darker copy.
 
 ## Typography
 
@@ -288,6 +384,28 @@ Component styles (row title, field term, study term, banner title) override the 
 **The Seven Roles Rule.** Screens use the seven roles above; a new size is a component-level override of the nearest role, never a new global style.
 
 **The Text Grows Rule.** Text scale is never clamped and no fixed height wraps text. Heights are minimums (button 48, app bar 56, field 52) and grow with wrapped labels and OS text scaling; the settings row stacks its trailing control at large scale.
+
+### Text theme
+
+Each Material 3 TextTheme slot takes one role above; tools/design/generate.py reads this table, so no slot falls back to a Flutter default.
+
+| M3 slot | Role |
+|---|---|
+| displayLarge | stat |
+| displayMedium | display |
+| displaySmall | display |
+| headlineLarge | headline |
+| headlineMedium | headline |
+| headlineSmall | title |
+| titleLarge | title |
+| titleMedium | body-large |
+| titleSmall | button-label |
+| bodyLarge | body-large |
+| bodyMedium | body |
+| bodySmall | caption |
+| labelLarge | button-label |
+| labelMedium | section-label |
+| labelSmall | caption |
 
 ## Layout
 

@@ -3,448 +3,6 @@
   "generatedAt": "2026-09-29T15:57:34.636Z",
   "title": "Design System: MemoX V8",
   "extensions": {
-    "colorMeta": {
-      "primary": {
-        "role": "primary",
-        "displayName": "Brand Indigo",
-        "canonical": "#5265F5",
-        "light": "#5265F5",
-        "dark": "#5265F5",
-        "tonalRamp": [
-          "#1A2580",
-          "#2D346A",
-          "#5265F5",
-          "#E0E5FE"
-        ],
-        "tonalInfo": "Derived, not stored: primary ink = primary lerped toward on-surface by 25% (light) / 45% (dark). Ghost border = primary at 14% (light) / 16% (dark). Status inks are the status colour lerped toward on-surface by 40/50/25/25% (new/learning/reviewing/mastered, light) and 40/0/10/0% (dark)."
-      },
-      "on-primary": {
-        "role": "on",
-        "displayName": "White on Indigo",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#FFFFFF",
-        "tonalRamp": [
-          "#FFFFFF"
-        ]
-      },
-      "primary-container": {
-        "role": "primary",
-        "displayName": "Indigo Wash",
-        "canonical": "#E0E5FE",
-        "light": "#E0E5FE",
-        "dark": "#2D346A",
-        "tonalRamp": [
-          "#2D346A",
-          "#E0E5FE"
-        ]
-      },
-      "on-primary-container": {
-        "role": "on",
-        "displayName": "Ink on Indigo Wash",
-        "canonical": "#1A2580",
-        "light": "#1A2580",
-        "dark": "#D9DFFF",
-        "tonalRamp": [
-          "#D9DFFF",
-          "#1A2580"
-        ]
-      },
-      "secondary": {
-        "role": "secondary",
-        "displayName": "Soft Periwinkle",
-        "canonical": "#6E7CD9",
-        "light": "#6E7CD9",
-        "dark": "#9DA8E8",
-        "tonalRamp": [
-          "#9DA8E8",
-          "#6E7CD9"
-        ]
-      },
-      "secondary-container": {
-        "role": "secondary",
-        "displayName": "Periwinkle Container",
-        "canonical": "#E3E6F7",
-        "light": "#E3E6F7",
-        "dark": "#343C78",
-        "tonalRamp": [
-          "#343C78",
-          "#E3E6F7"
-        ]
-      },
-      "on-secondary-container": {
-        "role": "on",
-        "displayName": "Ink on Periwinkle",
-        "canonical": "#262E6E",
-        "light": "#262E6E",
-        "dark": "#DDE2FB",
-        "tonalRamp": [
-          "#DDE2FB",
-          "#262E6E"
-        ]
-      },
-      "tertiary": {
-        "role": "tertiary",
-        "displayName": "Meaningful Violet",
-        "canonical": "#8B6FF5",
-        "light": "#8B6FF5",
-        "dark": "#B5A0FF",
-        "tonalRamp": [
-          "#33177E",
-          "#443078",
-          "#8B6FF5",
-          "#EBE3FE"
-        ]
-      },
-      "tertiary-container": {
-        "role": "tertiary",
-        "displayName": "Violet Container",
-        "canonical": "#EBE3FE",
-        "light": "#EBE3FE",
-        "dark": "#443078",
-        "tonalRamp": [
-          "#443078",
-          "#EBE3FE"
-        ]
-      },
-      "on-tertiary-container": {
-        "role": "on",
-        "displayName": "Ink on Violet",
-        "canonical": "#33177E",
-        "light": "#33177E",
-        "dark": "#E6DCFF",
-        "tonalRamp": [
-          "#E6DCFF",
-          "#33177E"
-        ]
-      },
-      "error": {
-        "role": "error",
-        "displayName": "Error Ink",
-        "canonical": "#C02447",
-        "light": "#C02447",
-        "dark": "#FF8FA3",
-        "tonalRamp": [
-          "#FF8FA3",
-          "#C02447"
-        ]
-      },
-      "error-container": {
-        "role": "error",
-        "displayName": "Error Container",
-        "canonical": "#FBDDE3",
-        "light": "#FBDDE3",
-        "dark": "#7A2036",
-        "tonalRamp": [
-          "#7A2036",
-          "#FBDDE3"
-        ]
-      },
-      "on-error-container": {
-        "role": "on",
-        "displayName": "Ink on Error Container",
-        "canonical": "#7A0A23",
-        "light": "#7A0A23",
-        "dark": "#FFD9DF",
-        "tonalRamp": [
-          "#FFD9DF",
-          "#7A0A23"
-        ]
-      },
-      "surface": {
-        "role": "neutral",
-        "displayName": "Page Ground",
-        "canonical": "#F7F9FE",
-        "light": "#F7F9FE",
-        "dark": "#0A0E27",
-        "tonalRamp": [
-          "#0A0E27",
-          "#F7F9FE"
-        ]
-      },
-      "surface-bright": {
-        "role": "neutral",
-        "displayName": "Bright Surface",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#232B5A",
-        "tonalRamp": [
-          "#232B5A",
-          "#FFFFFF"
-        ]
-      },
-      "surface-container-lowest": {
-        "role": "neutral",
-        "displayName": "Raised White",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#131A3A",
-        "tonalRamp": [
-          "#131A3A",
-          "#FFFFFF"
-        ]
-      },
-      "surface-container-low": {
-        "role": "neutral",
-        "displayName": "Muted Fill",
-        "canonical": "#F1F4FB",
-        "light": "#F1F4FB",
-        "dark": "#1B2249",
-        "tonalRamp": [
-          "#1B2249",
-          "#F1F4FB"
-        ]
-      },
-      "surface-container": {
-        "role": "neutral",
-        "displayName": "Container",
-        "canonical": "#E9EDF7",
-        "light": "#E9EDF7",
-        "dark": "#232B5A",
-        "tonalRamp": [
-          "#232B5A",
-          "#E9EDF7"
-        ]
-      },
-      "surface-container-high": {
-        "role": "neutral",
-        "displayName": "Sheet Ground",
-        "canonical": "#E2E7F3",
-        "light": "#E2E7F3",
-        "dark": "#2C356E",
-        "tonalRamp": [
-          "#2C356E",
-          "#E2E7F3"
-        ]
-      },
-      "surface-container-highest": {
-        "role": "neutral",
-        "displayName": "Highest Container",
-        "canonical": "#DAE0EF",
-        "light": "#DAE0EF",
-        "dark": "#353D7E",
-        "tonalRamp": [
-          "#353D7E",
-          "#DAE0EF"
-        ]
-      },
-      "on-surface": {
-        "role": "neutral",
-        "displayName": "On Surface",
-        "canonical": "#0F1638",
-        "light": "#0F1638",
-        "dark": "#E4E8FA",
-        "tonalRamp": [
-          "#E4E8FA",
-          "#0F1638"
-        ]
-      },
-      "on-surface-variant": {
-        "role": "neutral",
-        "displayName": "Variant Ink",
-        "canonical": "#4A5278",
-        "light": "#4A5278",
-        "dark": "#A4ACD0",
-        "tonalRamp": [
-          "#A4ACD0",
-          "#4A5278"
-        ]
-      },
-      "outline": {
-        "role": "neutral",
-        "displayName": "Outline",
-        "canonical": "#7C85AB",
-        "light": "#7C85AB",
-        "dark": "#5A6BAE",
-        "tonalRamp": [
-          "#5A6BAE",
-          "#7C85AB"
-        ]
-      },
-      "outline-variant": {
-        "role": "neutral",
-        "displayName": "Outline Variant",
-        "canonical": "#C5CBE3",
-        "light": "#C5CBE3",
-        "dark": "#2A3267",
-        "tonalRamp": [
-          "#2A3267",
-          "#C5CBE3"
-        ]
-      },
-      "inverse-surface": {
-        "role": "neutral",
-        "displayName": "Inverse Surface (theme-invariant)",
-        "canonical": "#34395D",
-        "light": "#34395D",
-        "dark": "#34395D",
-        "tonalRamp": [
-          "#34395D"
-        ]
-      },
-      "on-inverse-surface": {
-        "role": "neutral",
-        "displayName": "On Inverse Surface (theme-invariant)",
-        "canonical": "#E8EAFC",
-        "light": "#E8EAFC",
-        "dark": "#E8EAFC",
-        "tonalRamp": [
-          "#E8EAFC"
-        ]
-      },
-      "inverse-primary": {
-        "role": "primary",
-        "displayName": "Snackbar Action (theme-invariant)",
-        "canonical": "#A0ACFF",
-        "light": "#A0ACFF",
-        "dark": "#A0ACFF",
-        "tonalRamp": [
-          "#A0ACFF"
-        ]
-      },
-      "scrim": {
-        "role": "neutral",
-        "displayName": "Scrim (45% alpha behind overlays)",
-        "canonical": "#0A0E27",
-        "light": "#0A0E27",
-        "dark": "#000000",
-        "tonalRamp": [
-          "#000000",
-          "#0A0E27"
-        ]
-      },
-      "mastery": {
-        "role": "semantic",
-        "displayName": "Mastery Green",
-        "canonical": "#1F8A5B",
-        "light": "#1F8A5B",
-        "dark": "#6FE0BD",
-        "tonalRamp": [
-          "#6FE0BD",
-          "#1F8A5B"
-        ]
-      },
-      "on-mastery": {
-        "role": "semantic",
-        "displayName": "Ink on Mastery",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#11173A",
-        "tonalRamp": [
-          "#11173A",
-          "#FFFFFF"
-        ]
-      },
-      "success": {
-        "role": "semantic",
-        "displayName": "Success Teal",
-        "canonical": "#2BA88B",
-        "light": "#2BA88B",
-        "dark": "#6FE0BD",
-        "tonalRamp": [
-          "#6FE0BD",
-          "#2BA88B"
-        ]
-      },
-      "warning": {
-        "role": "semantic",
-        "displayName": "Warning Amber",
-        "canonical": "#F59E0B",
-        "light": "#F59E0B",
-        "dark": "#FFC658",
-        "tonalRamp": [
-          "#FFC658",
-          "#F59E0B"
-        ]
-      },
-      "on-warning": {
-        "role": "semantic",
-        "displayName": "Ink on Warning",
-        "canonical": "#3A2A00",
-        "light": "#3A2A00",
-        "dark": "#2A1E00",
-        "tonalRamp": [
-          "#2A1E00",
-          "#3A2A00"
-        ]
-      },
-      "error-fill": {
-        "role": "semantic",
-        "displayName": "Destructive Fill",
-        "canonical": "#DC2D4E",
-        "light": "#DC2D4E",
-        "dark": "#B0485C",
-        "tonalRamp": [
-          "#B0485C",
-          "#DC2D4E"
-        ]
-      },
-      "on-error-fill": {
-        "role": "semantic",
-        "displayName": "Ink on Destructive Fill",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#FFFFFF",
-        "tonalRamp": [
-          "#FFFFFF"
-        ]
-      },
-      "status-new": {
-        "role": "semantic",
-        "displayName": "Status New",
-        "canonical": "#8C95B8",
-        "light": "#8C95B8",
-        "dark": "#6B75A3",
-        "tonalRamp": [
-          "#6B75A3",
-          "#8C95B8"
-        ]
-      },
-      "status-learning": {
-        "role": "semantic",
-        "displayName": "Status Learning",
-        "canonical": "#F59E0B",
-        "light": "#F59E0B",
-        "dark": "#FFC658",
-        "tonalRamp": [
-          "#FFC658",
-          "#F59E0B"
-        ]
-      },
-      "status-reviewing": {
-        "role": "semantic",
-        "displayName": "Status Reviewing",
-        "canonical": "#5265F5",
-        "light": "#5265F5",
-        "dark": "#8B9AFF",
-        "tonalRamp": [
-          "#8B9AFF",
-          "#5265F5"
-        ]
-      },
-      "status-mastered": {
-        "role": "semantic",
-        "displayName": "Status Mastered",
-        "canonical": "#1F8A5B",
-        "light": "#1F8A5B",
-        "dark": "#6FE0BD",
-        "tonalRamp": [
-          "#6FE0BD",
-          "#1F8A5B"
-        ]
-      },
-      "streak": {
-        "role": "semantic",
-        "displayName": "Streak Orange",
-        "canonical": "#F97316",
-        "light": "#F97316",
-        "dark": "#FFAE6E",
-        "tonalRamp": [
-          "#FFAE6E",
-          "#F97316"
-        ]
-      }
-    },
     "typographyMeta": {
       "stat": {
         "displayName": "Stat",
@@ -483,75 +41,571 @@
         "purpose": "Introduces a list or settings group; not a decorative kicker."
       }
     },
-    "shadows": [
+    "shadows": {
+      "whisper": {
+        "light": {
+          "dy": 1,
+          "blur": 2,
+          "alpha": 0.04
+        },
+        "dark": null
+      },
+      "chrome": {
+        "light": {
+          "dy": -2,
+          "blur": 12,
+          "alpha": 0.05
+        },
+        "dark": {
+          "dy": -2,
+          "blur": 14,
+          "alpha": 0.36
+        }
+      },
+      "overlay": {
+        "light": {
+          "dy": 12,
+          "blur": 32,
+          "alpha": 0.1
+        },
+        "dark": {
+          "dy": 16,
+          "blur": 40,
+          "alpha": 0.42
+        }
+      },
+      "fab": {
+        "light": {
+          "dy": 8,
+          "blur": 24,
+          "alpha": 0.12
+        },
+        "dark": {
+          "dy": 10,
+          "blur": 28,
+          "alpha": 0.5
+        }
+      }
+    },
+    "motion": {
+      "toggle": 160,
+      "standard": 200,
+      "scrim-fade": 220,
+      "sheet": 260,
+      "settle": 400,
+      "spinner-cycle": 800,
+      "skeleton-pulse": 1400,
+      "toast": 4000,
+      "toast-with-undo": 8000
+    },
+    "breakpoints": {
+      "nav-rail": 600,
+      "content-max": 720
+    },
+    "semanticExtensions": {
+      "success": [
+        "success",
+        "on-success",
+        "success-container",
+        "on-success-container"
+      ],
+      "warning": [
+        "warning",
+        "on-warning",
+        "warning-container",
+        "on-warning-container"
+      ],
+      "status-new": [
+        "status-new",
+        "status-new-container",
+        "on-status-new-container"
+      ],
+      "status-learning": [
+        "status-learning",
+        "status-learning-container",
+        "on-status-learning-container"
+      ],
+      "status-reviewing": [
+        "status-reviewing",
+        "status-reviewing-container",
+        "on-status-reviewing-container"
+      ],
+      "status-mastered": [
+        "status-mastered",
+        "status-mastered-container",
+        "on-status-mastered-container"
+      ],
+      "streak": [
+        "streak"
+      ]
+    },
+    "contrastPairs": [
       {
-        "name": "whisper",
-        "value": "light: 0 1px 2px rgba(15,22,56,0.04); dark: none (ghost border)",
-        "purpose": "Card, toggle thumb."
+        "fg": "on-surface",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "body text"
       },
       {
-        "name": "chrome",
-        "value": "light: 0 -2px 12px rgba(15,22,56,0.05); dark: 0 -2px 14px rgba(0,0,0,0.36)",
-        "purpose": "Bottom sheet and bottom chrome, cast upward."
+        "fg": "on-surface",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "body text"
       },
       {
-        "name": "overlay",
-        "value": "light: 0 12px 32px rgba(15,22,56,0.10); dark: 0 16px 40px rgba(0,0,0,0.42)",
-        "purpose": "Dialog."
+        "fg": "on-surface",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "body text"
       },
       {
-        "name": "fab",
-        "value": "light: 0 8px 24px rgba(15,22,56,0.12); dark: 0 10px 28px rgba(0,0,0,0.5)",
-        "purpose": "Floating action."
+        "fg": "on-surface",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "body text"
+      },
+      {
+        "fg": "on-surface-variant",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "secondary text"
+      },
+      {
+        "fg": "on-surface-variant",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "secondary text"
+      },
+      {
+        "fg": "on-surface-variant",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "secondary text"
+      },
+      {
+        "fg": "on-surface-variant",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "secondary text"
+      },
+      {
+        "fg": "primary",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "primary text, icon, link and focus ring"
+      },
+      {
+        "fg": "primary",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "primary text, icon, link and focus ring"
+      },
+      {
+        "fg": "primary",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "primary text, icon, link and focus ring"
+      },
+      {
+        "fg": "primary",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "primary text, icon, link and focus ring"
+      },
+      {
+        "fg": "error",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "error text and icon"
+      },
+      {
+        "fg": "error",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "error text and icon"
+      },
+      {
+        "fg": "error",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "error text and icon"
+      },
+      {
+        "fg": "error",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "error text and icon"
+      },
+      {
+        "fg": "success",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "success text and icon"
+      },
+      {
+        "fg": "success",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "success text and icon"
+      },
+      {
+        "fg": "success",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "success text and icon"
+      },
+      {
+        "fg": "success",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "success text and icon"
+      },
+      {
+        "fg": "warning",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "warning text and icon"
+      },
+      {
+        "fg": "warning",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "warning text and icon"
+      },
+      {
+        "fg": "warning",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "warning text and icon"
+      },
+      {
+        "fg": "warning",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "warning text and icon"
+      },
+      {
+        "fg": "status-new",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-new",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-new",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-new",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-learning",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-learning",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-learning",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-learning",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-reviewing",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-reviewing",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-reviewing",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-reviewing",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-mastered",
+        "bg": "surface",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-mastered",
+        "bg": "surface-container-lowest",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-mastered",
+        "bg": "surface-container-low",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "status-mastered",
+        "bg": "surface-container-high",
+        "min": 4.5,
+        "use": "status label"
+      },
+      {
+        "fg": "on-primary",
+        "bg": "primary",
+        "min": 4.5,
+        "use": "content on a primary fill"
+      },
+      {
+        "fg": "on-primary-container",
+        "bg": "primary-container",
+        "min": 4.5,
+        "use": "content on a primary container"
+      },
+      {
+        "fg": "on-secondary",
+        "bg": "secondary",
+        "min": 4.5,
+        "use": "content on a secondary fill"
+      },
+      {
+        "fg": "on-secondary-container",
+        "bg": "secondary-container",
+        "min": 4.5,
+        "use": "content on a secondary container"
+      },
+      {
+        "fg": "on-tertiary",
+        "bg": "tertiary",
+        "min": 4.5,
+        "use": "content on a tertiary fill"
+      },
+      {
+        "fg": "on-tertiary-container",
+        "bg": "tertiary-container",
+        "min": 4.5,
+        "use": "content on a tertiary container"
+      },
+      {
+        "fg": "on-error",
+        "bg": "error",
+        "min": 4.5,
+        "use": "content on a error fill"
+      },
+      {
+        "fg": "on-error-container",
+        "bg": "error-container",
+        "min": 4.5,
+        "use": "content on a error container"
+      },
+      {
+        "fg": "on-success",
+        "bg": "success",
+        "min": 4.5,
+        "use": "content on a success fill"
+      },
+      {
+        "fg": "on-success-container",
+        "bg": "success-container",
+        "min": 4.5,
+        "use": "content on a success container"
+      },
+      {
+        "fg": "on-warning",
+        "bg": "warning",
+        "min": 4.5,
+        "use": "content on a warning fill"
+      },
+      {
+        "fg": "on-warning-container",
+        "bg": "warning-container",
+        "min": 4.5,
+        "use": "content on a warning container"
+      },
+      {
+        "fg": "on-status-new-container",
+        "bg": "status-new-container",
+        "min": 4.5,
+        "use": "status badge"
+      },
+      {
+        "fg": "on-status-learning-container",
+        "bg": "status-learning-container",
+        "min": 4.5,
+        "use": "status badge"
+      },
+      {
+        "fg": "on-status-reviewing-container",
+        "bg": "status-reviewing-container",
+        "min": 4.5,
+        "use": "status badge"
+      },
+      {
+        "fg": "on-status-mastered-container",
+        "bg": "status-mastered-container",
+        "min": 4.5,
+        "use": "status badge"
+      },
+      {
+        "fg": "on-primary-fixed",
+        "bg": "primary-fixed",
+        "min": 4.5,
+        "use": "content on a fixed tone"
+      },
+      {
+        "fg": "on-primary-fixed",
+        "bg": "primary-fixed-dim",
+        "min": 4.5,
+        "use": "content on a fixed tone"
+      },
+      {
+        "fg": "on-primary-fixed-variant",
+        "bg": "primary-fixed",
+        "min": 4.5,
+        "use": "content on a fixed tone"
+      },
+      {
+        "fg": "on-secondary-fixed",
+        "bg": "secondary-fixed",
+        "min": 4.5,
+        "use": "content on a fixed tone"
+      },
+      {
+        "fg": "on-secondary-fixed",
+        "bg": "secondary-fixed-dim",
+        "min": 4.5,
+        "use": "content on a fixed tone"
+      },
+      {
+        "fg": "on-secondary-fixed-variant",
+        "bg": "secondary-fixed",
+        "min": 4.5,
+        "use": "content on a fixed tone"
+      },
+      {
+        "fg": "on-tertiary-fixed",
+        "bg": "tertiary-fixed",
+        "min": 4.5,
+        "use": "content on a fixed tone"
+      },
+      {
+        "fg": "on-tertiary-fixed",
+        "bg": "tertiary-fixed-dim",
+        "min": 4.5,
+        "use": "content on a fixed tone"
+      },
+      {
+        "fg": "on-tertiary-fixed-variant",
+        "bg": "tertiary-fixed",
+        "min": 4.5,
+        "use": "content on a fixed tone"
+      },
+      {
+        "fg": "on-inverse-surface",
+        "bg": "inverse-surface",
+        "min": 4.5,
+        "use": "snackbar text"
+      },
+      {
+        "fg": "inverse-primary",
+        "bg": "inverse-surface",
+        "min": 4.5,
+        "use": "snackbar action"
+      },
+      {
+        "fg": "outline",
+        "bg": "surface",
+        "min": 3.0,
+        "use": "control edge"
+      },
+      {
+        "fg": "outline",
+        "bg": "surface-container-lowest",
+        "min": 3.0,
+        "use": "control edge"
+      },
+      {
+        "fg": "outline",
+        "bg": "surface-container-low",
+        "min": 3.0,
+        "use": "control edge"
+      },
+      {
+        "fg": "outline",
+        "bg": "surface-container-high",
+        "min": 3.0,
+        "use": "control edge"
+      },
+      {
+        "fg": "status-learning",
+        "bg": "surface-container-low",
+        "min": 3.0,
+        "use": "progress fill on its track"
+      },
+      {
+        "fg": "status-reviewing",
+        "bg": "surface-container-low",
+        "min": 3.0,
+        "use": "progress fill on its track"
+      },
+      {
+        "fg": "status-mastered",
+        "bg": "surface-container-low",
+        "min": 3.0,
+        "use": "progress fill on its track"
+      },
+      {
+        "fg": "streak",
+        "bg": "surface-container-lowest",
+        "min": 3.0,
+        "use": "streak flame on a card"
       }
     ],
-    "motion": [
-      {
-        "name": "toggle",
-        "value": "160ms",
-        "purpose": "Toggle track colour and thumb."
-      },
-      {
-        "name": "standard",
-        "value": "200ms",
-        "purpose": "Dialog scale-in, snackbar in, study progress fill."
-      },
-      {
-        "name": "scrim-fade",
-        "value": "220ms",
-        "purpose": "Modal scrim."
-      },
-      {
-        "name": "sheet",
-        "value": "260ms",
-        "purpose": "Bottom sheet translate-in."
-      },
-      {
-        "name": "spinner-cycle",
-        "value": "800ms",
-        "purpose": "One spinner revolution."
-      },
-      {
-        "name": "skeleton-pulse",
-        "value": "1400ms, opacity 0.45 to 0.75",
-        "purpose": "Loading placeholder."
-      },
-      {
-        "name": "toast",
-        "value": "4000ms (8000ms with Undo)",
-        "purpose": "Snackbar dwell."
-      }
-    ],
-    "breakpoints": [
-      {
-        "name": "nav-rail",
-        "value": "600dp window width: bottom bar becomes an 80dp rail"
-      },
-      {
-        "name": "content-max",
-        "value": "720dp centred column"
-      }
-    ]
+    "opacity": {
+      "disabled": 0.38,
+      "muted": 0.7,
+      "pressed": 0.12,
+      "scrim": 0.45,
+      "glass": 0.84,
+      "skeleton-low": 0.45,
+      "skeleton-high": 0.75
+    },
+    "stroke": {
+      "hairline": 1,
+      "control": 2,
+      "focus": 2,
+      "indicator": 6
+    }
   },
   "components": [
     {
@@ -560,7 +614,7 @@
       "refersTo": "button-primary",
       "description": "The one indigo action per decision. 48 tall, r12; pressed overlay 12%; disabled 0.38 opacity.",
       "html": "<button class=\"ds-btn-primary\">Start session</button>",
-      "css": ".ds-btn-primary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#5265F5;color:#FFFFFF;} .ds-btn-primary:active{filter:brightness(0.88)} .ds-btn-primary:focus-visible{outline:2px solid #4151C6;outline-offset:2px}"
+      "css": ".ds-btn-primary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:var(--color-primary);color:var(--color-on-primary);} .ds-btn-primary:active{filter:brightness(0.88)} .ds-btn-primary:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}"
     },
     {
       "name": "Secondary Button",
@@ -568,7 +622,7 @@
       "refersTo": "button-secondary",
       "description": "Quiet alternative on a container fill.",
       "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
-      "css": ".ds-btn-secondary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#E9EDF7;color:#0F1638;} .ds-btn-secondary:active{filter:brightness(0.88)} .ds-btn-secondary:focus-visible{outline:2px solid #4151C6;outline-offset:2px}"
+      "css": ".ds-btn-secondary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:var(--color-surface-container);color:var(--color-on-surface);} .ds-btn-secondary:active{filter:brightness(0.88)} .ds-btn-secondary:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}"
     },
     {
       "name": "Outline Button",
@@ -576,7 +630,7 @@
       "refersTo": "button-outline",
       "description": "Ghost action in primary ink with a 1px outlineEdge: outline-variant in light, outline pulled 25% toward on-surface in dark (critique 2026-09-30 part 1).",
       "html": "<button class=\"ds-btn-outline\">Edit deck</button>",
-      "css": ".ds-btn-outline{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:transparent;color:#4151C6;box-shadow:inset 0 0 0 1px #C5CBE3;} .ds-btn-outline:active{filter:brightness(0.88)} .ds-btn-outline:focus-visible{outline:2px solid #4151C6;outline-offset:2px}"
+      "css": ".ds-btn-outline{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:transparent;color:var(--color-primary);box-shadow:inset 0 0 0 1px var(--color-outline-variant);} .ds-btn-outline:active{filter:brightness(0.88)} .ds-btn-outline:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}"
     },
     {
       "name": "Destructive Button",
@@ -584,7 +638,7 @@
       "refersTo": "button-destructive",
       "description": "Solid destructive fill, used only to confirm a destructive dialog.",
       "html": "<button class=\"ds-btn-danger\">Delete</button>",
-      "css": ".ds-btn-danger{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#DC2D4E;color:#FFFFFF;} .ds-btn-danger:active{filter:brightness(0.88)} .ds-btn-danger:focus-visible{outline:2px solid #4151C6;outline-offset:2px}"
+      "css": ".ds-btn-danger{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:var(--color-error);color:var(--color-on-primary);} .ds-btn-danger:active{filter:brightness(0.88)} .ds-btn-danger:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}"
     },
     {
       "name": "Text Field",
@@ -592,7 +646,7 @@
       "refersTo": "text-field",
       "description": "52 tall, muted fill that lightens on focus, ghost edge, primary-ink edge on focus, error edge with a message below.",
       "html": "<input class=\"ds-input\" placeholder=\"Term\">",
-      "css": ".ds-input{box-sizing:border-box;height:52px;padding:0 12px;width:260px;font:400 14px \"Plus Jakarta Sans\",sans-serif;color:#0F1638;background:#F1F4FB;border:1px solid rgba(82,101,245,0.14);border-radius:12px;outline:none} .ds-input::placeholder{color:#4A5278} .ds-input:focus-visible{background:#FFFFFF;border-color:#4151C6}"
+      "css": ".ds-input{box-sizing:border-box;height:52px;padding:0 12px;width:260px;font:400 14px \"Plus Jakarta Sans\",sans-serif;color:var(--color-on-surface);background:var(--color-surface-container-low);border:1px solid var(--color-outline-variant);border-radius:12px;outline:none} .ds-input::placeholder{color:var(--color-on-surface-variant)} .ds-input:focus-visible{background:var(--color-on-primary);border-color:var(--color-primary)}"
     },
     {
       "name": "Card",
@@ -600,7 +654,7 @@
       "refersTo": "card",
       "description": "Raised surface, r12, whisper shadow in light (dark: 1px ghost edge, no shadow). Interior 20.",
       "html": "<div class=\"ds-card\"><strong>Spanish basics</strong><p>42 cards</p></div>",
-      "css": ".ds-card{padding:20px;width:240px;background:#FFFFFF;border-radius:12px;box-shadow:0 1px 2px rgba(15,22,56,0.04);font:400 14px/1.5 \"Plus Jakarta Sans\",sans-serif;color:#0F1638} .ds-card strong{font:500 16px/1.5 \"Plus Jakarta Sans\",sans-serif} .ds-card p{margin:0;color:#4A5278}"
+      "css": ".ds-card{padding:20px;width:240px;background:var(--color-on-primary);border-radius:12px;box-shadow:0 1px 2px color-mix(in srgb, var(--color-shadow) 4%, transparent);font:400 14px/1.5 \"Plus Jakarta Sans\",sans-serif;color:var(--color-on-surface)} .ds-card strong{font:500 16px/1.5 \"Plus Jakarta Sans\",sans-serif} .ds-card p{margin:0;color:var(--color-on-surface-variant)}"
     },
     {
       "name": "Filter Chip",
@@ -608,15 +662,15 @@
       "refersTo": "filter-chip",
       "description": "28 tall pill; selected swaps fill to primary and ink to on-primary.",
       "html": "<span class=\"ds-chip\">All</span> <span class=\"ds-chip ds-chip-on\">Cards</span>",
-      "css": ".ds-chip{display:inline-flex;align-items:center;height:28px;padding:0 8px;border-radius:999px;background:#FFFFFF;color:#0F1638;box-shadow:inset 0 0 0 1px rgba(82,101,245,0.14);font:600 12px \"Plus Jakarta Sans\",sans-serif;letter-spacing:0.1px} .ds-chip-on{background:#5265F5;color:#FFFFFF;box-shadow:none}"
+      "css": ".ds-chip{display:inline-flex;align-items:center;height:28px;padding:0 8px;border-radius:999px;background:var(--color-on-primary);color:var(--color-on-surface);box-shadow:inset 0 0 0 1px var(--color-outline-variant);font:600 12px \"Plus Jakarta Sans\",sans-serif;letter-spacing:0.1px} .ds-chip-on{background:var(--color-primary);color:var(--color-on-primary);box-shadow:none}"
     },
     {
       "name": "Floating Action Button",
       "kind": "custom",
       "refersTo": "fab",
       "description": "Square 52, r16, icon only, fab shadow.",
-      "html": "<button class=\"ds-fab\" aria-label=\"Add\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></button>",
-      "css": ".ds-fab{width:52px;height:52px;border:0;border-radius:16px;background:#5265F5;box-shadow:0 8px 24px rgba(15,22,56,0.12);display:grid;place-items:center} .ds-fab:focus-visible{outline:2px solid #4151C6;outline-offset:2px}"
+      "html": "<button class=\"ds-fab\" aria-label=\"Add\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"var(--color-on-primary)\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></button>",
+      "css": ".ds-fab{width:52px;height:52px;border:0;border-radius:16px;background:var(--color-primary);box-shadow:0 8px 24px color-mix(in srgb, var(--color-shadow) 12%, transparent);display:grid;place-items:center} .ds-fab:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}"
     }
   ],
   "narrative": {
