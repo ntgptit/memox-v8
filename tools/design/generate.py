@@ -427,6 +427,8 @@ def emit(design: Design) -> dict[Path, str]:
         OUT_DIR / "app_stroke.dart": emit_scale("AppStroke", "Stroke widths.", ext["stroke"]),
         OUT_DIR / "app_opacity.dart": emit_scale("AppOpacity", "Named opacities.", ext["opacity"]),
         OUT_DIR / "app_breakpoints.dart": emit_scale("AppBreakpoints", "Window-width breakpoints.", ext["breakpoints"]),
+        OUT_DIR / "app_icon_size.dart": emit_scale("AppIconSize", "Glyph sizes.", ext["iconSize"]),
+        OUT_DIR / "app_size.dart": emit_scale("AppSize", "Component geometry: painted sizes, the 48 target, fixed offsets.", ext["size"]),
         OUT_DIR / "app_durations.dart": emit_scale("AppDurations", "Motion and dwell durations.", ext["motion"], "Duration"),
         OUT_DIR / "app_shadows.dart": emit_shadows(design),
     }

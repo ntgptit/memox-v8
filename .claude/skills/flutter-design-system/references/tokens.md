@@ -17,9 +17,13 @@ lib/core/theme/foundations/   (generated, DO NOT EDIT; the gate fails when stale
 ├── app_opacity.dart          # AppOpacity.disabled, muted, pressed, …
 ├── app_durations.dart        # AppDurations.toggle, standard, …
 ├── app_breakpoints.dart      # AppBreakpoints.navRail, contentMax
+├── app_icon_size.dart        # AppIconSize.small (16), mark (18), medium (20), large (24)
+├── app_size.dart             # AppSize: painted sizes, the 48 tap target, fixed offsets
 └── app_shadows.dart          # AppShadows.<name><Light|Dark>, built on the scheme's `shadow`
 lib/core/theme/app_typography.dart  # AppTypography.withWeight — moves the variable font's axis
 lib/core/theme/app_theme.dart       # AppTheme.light() / .dark()
+lib/core/theme/theme_context.dart   # context.colors / .semanticColors / .texts (design-system layer)
+lib/core/theme/components/          # one style source per component family; AppTheme's slots and the Mx* widgets share it
 ```
 
 To change a value, edit `DESIGN.md` (or the sidecar for a non-colour metadata

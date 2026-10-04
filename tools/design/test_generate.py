@@ -31,6 +31,8 @@ def extensions() -> dict:
         "stroke": {"hairline": 1},
         "motion": {"standard": 200},
         "breakpoints": {"nav-rail": 600},
+        "iconSize": {"small": 16},
+        "size": {"tap-target": 48},
         "shadows": {"whisper": {"light": {"dy": 1, "blur": 2, "alpha": 0.04}, "dark": None}},
     }
 
@@ -246,6 +248,11 @@ class EmitTest(unittest.TestCase):
         self.assertNotIn("fontWeight:", source)
         for slot in g.TEXT_THEME_SLOTS:
             self.assertIn(f"    {slot}: body,\n", source)
+
+    def test_icon_sizes_and_component_sizes_are_generated(self):
+        emitted = g.emit(design())
+        self.assertIn("static const double small = 16;", emitted[g.OUT_DIR / "app_icon_size.dart"])
+        self.assertIn("static const double tapTarget = 48;", emitted[g.OUT_DIR / "app_size.dart"])
 
     def test_durations_are_named_constants(self):
         source = g.emit(design())[g.OUT_DIR / "app_durations.dart"]

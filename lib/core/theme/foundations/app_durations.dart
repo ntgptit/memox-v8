@@ -7,6 +7,7 @@ abstract final class AppDurations {
   static const Duration scrimFade = Duration(milliseconds: 220);
   static const Duration sheet = Duration(milliseconds: 260);
   static const Duration settle = Duration(milliseconds: 400);
+  static const Duration repeat = Duration(milliseconds: 80);
   static const Duration spinnerCycle = Duration(milliseconds: 800);
   static const Duration skeletonPulse = Duration(milliseconds: 1400);
   static const Duration toast = Duration(milliseconds: 4000);

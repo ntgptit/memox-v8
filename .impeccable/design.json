@@ -93,6 +93,7 @@
       "scrim-fade": 220,
       "sheet": 260,
       "settle": 400,
+      "repeat": 80,
       "spinner-cycle": 800,
       "skeleton-pulse": 1400,
       "toast": 4000,
@@ -692,7 +693,38 @@
         "minDeltaE": 15,
         "why": "the four statuses keep their own colour"
       }
-    ]
+    ],
+    "iconSize": {
+      "small": 16,
+      "mark": 18,
+      "medium": 20,
+      "large": 24
+    },
+    "size": {
+      "tap-target": 48,
+      "button-regular": 48,
+      "button-small": 36,
+      "button-compact": 32,
+      "button-chip": 28,
+      "button-study-padding": 36,
+      "icon-button": 36,
+      "fab": 52,
+      "field": 52,
+      "field-detail": 48,
+      "field-meaning": 76,
+      "toggle-width": 44,
+      "toggle-height": 26,
+      "toggle-thumb": 20,
+      "chip": 28,
+      "checkbox": 18,
+      "radio": 20,
+      "focus-offset": 2,
+      "spinner-small": 16,
+      "spinner-medium": 20,
+      "spinner-large": 32,
+      "spinner-xlarge": 48,
+      "segment": 36
+    }
   },
   "components": [
     {
