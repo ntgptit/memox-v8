@@ -347,7 +347,9 @@ Golden: none — no golden in V8 (record 01)
 
 - No algorithm chosen → inline error "Choose how the cards are reviewed." under the algorithm
   choice (UC-DECK-001 E3).
-- `blankName`, `nameTooLong` → the field's error under Name.
+- `blankName`, `nameTooLong` → the field's error under Name. The field has no hard cap: the user
+  can type past 200 characters, and Create fails with "Keep the name to 200 characters."
+  (owner ruling 2026-10-04).
 - Any other failure → a snackbar with the failure's message; the dialog keeps what was typed.
 
 ### Cancel, Back or tap outside (create dialog)
@@ -655,8 +657,8 @@ Otherwise follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
 - **From UC-DECK-001 (moved here 2026-10-04, spec R20):** a name error is inline under the field,
   not a snackbar; a missing algorithm is inline under the algorithm choice; a failed save keeps
   the dialog and what was typed.
-- **From UC-DECK-003 (moved here 2026-10-04, spec R20):** a deck with due cards is marked by an
-  icon and text, never colour alone; the mastery bar has no text, so the row reads
+- **From UC-DECK-003 (moved here 2026-10-04, spec R20):** a deck with due cards is marked by
+  text, never colour alone; the mastery bar has no text, so the row reads
   "{n}% mastered" to TalkBack; an open deck holding sub-decks shows the level's mastery donut
   beside "Mastered · {algorithm}".
 - **From UC-DECK-006 (moved here 2026-10-04, spec R20):** Reorder is a command of the action
@@ -664,9 +666,7 @@ Otherwise follows the shared floor (DESIGN.md, SCREEN_CATALOG.md).
   (no Move up on the first deck, no Move down on the last); a level with one deck offers no
   Reorder; any view-only sort hides it; an error keeps the list as it was.
 
-> ⚠️ OPEN QUESTION: UC-DECK-001 E2 asked the Name field to stop input at 200 characters instead of truncating silently; the V8 app accepts the input and shows "Keep the name to 200 characters." when Create is pressed. Which does the rebuild do?
 
-> ⚠️ OPEN QUESTION: UC-DECK-003 step 3 described a deck tile showing total Due + New, a large icon in three schedule states (not due: outlined, neutral; due today: filled, the time-pressure amber; overdue: missed with a days badge on the error container) and a hero summary as a 2×2 grid of Overdue / Due today / New / Scheduled on one baseline. The V8 app shows a "{n} due" badge per row, a due strip "overdue · today", and the open deck's breakdown as one wrapping line; the schedule status exists in the domain (`DeckScheduleStatus`) but no screen draws it. Which does the rebuild follow?
 
 - Pending — a level-10 banner "This is level 10, the deepest a deck can go…" over sub-decks at
   level 10; absent today, the header says "· level 10"; waits for a later phase (owner decision

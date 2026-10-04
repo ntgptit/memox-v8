@@ -193,11 +193,17 @@ trở lại cấp gốc.
 - `notFound` — batch không còn.
 - `targetNotFound` — deck cha cũ không còn.
 - `targetInTrash` — deck cha cũ đang ở Trash.
-- `movingIntoOwnSubtree`, `notADeckContainer`, `depthExceeded`, `subtreeSchedulerMismatch` — deck
-  cha cũ không còn nhận được deck này, theo cùng các phép kiểm của FN-DECK-011.
+- `movingIntoOwnSubtree` — deck cha cũ nay nằm trong cây con của chính deck này.
+- `notADeckContainer` — deck cha cũ nay chứa card.
+- `depthExceeded` — trở lại dưới deck cha cũ sẽ vượt độ sâu tối đa.
+- `subtreeSchedulerMismatch` — root của deck cha cũ nay khác scheduler hoặc generation.
 
 ### Business rules
 
+- BR-DECK-001
+- BR-DECK-009
+- BR-DECK-017
+- BR-SRS-006
 - BR-TRASH-006
 - BR-TRASH-008
 

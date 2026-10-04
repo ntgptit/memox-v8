@@ -2,19 +2,12 @@
 
 # Open questions
 
-## [screens/spec/SCR-DECK-001-deck-list.md](../screens/spec/SCR-DECK-001-deck-list.md)
-
-- L667: > ⚠️ OPEN QUESTION: UC-DECK-001 E2 asked the Name field to stop input at 200 characters instead of truncating silently; the V8 app accepts the input and shows "Keep the name to 200 characters." when Create is pressed. Which does the rebuild do?
-- L669: > ⚠️ OPEN QUESTION: UC-DECK-003 step 3 described a deck tile showing total Due + New, a large icon in three schedule states (not due: outlined, neutral; due today: filled, the time-pressure amber; overdue: missed with a days badge on the error container) and a hero summary as a 2×2 grid of Overdue / Due today / New / Scheduled on one baseline. The V8 app shows a "{n} due" badge per row, a due strip "overdue · today", and the open deck's breakdown as one wrapping line; the schedule status exists in the domain (`DeckScheduleStatus`) but no screen draws it. Which does the rebuild follow?
-
 ## [superpowers/plans/2026-09-23-memox-v8-foundation.md](../superpowers/plans/2026-09-23-memox-v8-foundation.md)
 
 - L161: **OPEN QUESTION** line are the ones raised for review; the rest are decisions
 
 ## [superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md](../superpowers/plans/2026-10-04-ui-docs-restructure-ledger.md)
 
-- L1981: | `features/deck/usecases/UC-DECK-001-tao-root-deck.md:39` - **E2 — Tên quá 200 ký tự:** lỗi inline; chặn nhập thêm thay vì cắt âm thầm. | superseded → UC-DECK-001 E2 (intent) + SCR-DECK-001 (OPEN QUESTION: stop input at 200 characters) |
-- L2079: | `features/deck/usecases/UC-DECK-003-xem-danh-sach-deck-voi-tien-do.md:22` 3. Deck có card đến hạn được làm nổi bật bằng **cả biểu tượng lẫn chữ**, không | superseded → UC-DECK-003 step 3 (intent) + SCR-DECK-001 (Rulings + OPEN QUESTION: tile, schedule icon, 2×2 grid) |
 - L4079: - The OPEN QUESTION on the order of the move checks (FN-DECK-011) was ruled by the owner on
 - L4090: - Two OPEN QUESTIONs raised in SCR-DECK-001, where UC-DECK-001 E2 and UC-DECK-003 step 3 described
 
