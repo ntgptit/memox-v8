@@ -532,9 +532,9 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxSegmentedTray | One of a few segments | shared | MONITORING, PROGRESS, SETTINGS | SP3a | built |
 | MxFilterChip | Filter toggle chip | shared | CARD, TRASH | SP3a | built |
 | MxChipTrigger | Ghost chip that opens a menu or sheet | shared | CARD, DECK, MONITORING, TRANSFER | SP3a | built |
-| MxCard | Raised surface in six tones | shared | CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
-| MxSection | Section label over a card | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, STUDY, TAG, TRANSFER | SP3a | planned |
-| MxNote | One calm information line, or its footnote form | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | planned |
+| MxCard | Raised surface in six tones | shared | CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
+| MxSection | Section label over a card | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, STUDY, TAG, TRANSFER | SP3a | built |
+| MxNote | One calm information line, or its footnote form | shared | ACCOUNT, CARD, DECK, MONITORING, PROGRESS, REMINDER, SEARCH, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER, TRASH | SP3a | built |
 | MxBadge | Short label in a semantic tone | shared | ACCOUNT, CARD, DECK, MONITORING, SEARCH, STARTER, STUDY, TRANSFER, TRASH | SP3a | planned |
 | MxStatusBadge | A card's learning status | shared | CARD, MONITORING | SP3a | planned |
 | MxTagChip | A tag name | shared | CARD, SEARCH | SP3a | planned |
@@ -709,6 +709,29 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: a button named by its label; 28 painted inside a 48 hit
 - Tokens: through `MxChipShell`
 - Golden: states__light, states__dark
+
+#### MxCard
+- Variants: tones raised, hero, warning, success, danger, recessed (one at a time); `isSelected`; `isFullBleed`; tappable with `onTap`
+- States: resting, selected (2dp Indigo Accent edge), pressed and focused when tappable
+- Accessibility: a tappable card is one target with the keyboard ring; its content reads in the tone's `on-` role
+- Tokens: `surface-container-lowest` (raised; whisper shadow in light, `outline-variant` hairline in dark), `primary-container`, `warning-container`, `success-container`, `error-container`, `surface-container-low` and their `on-` roles; `on-primary-container` (selected edge); `AppRadius.md`; `AppSpacing.card`
+- Golden: tones__light, tones__dark
+
+
+#### MxSection
+- Variants: with or without an overline and a footnote
+- States: one
+- Accessibility: the overline is a header, upper-cased by the widget, 8 above the card; rows keep their own semantics
+- Tokens: Section Label (`labelMedium`) in `on-surface-variant`; a full-bleed `MxCard`; `outline-variant` hairlines between rows; `MxNote.hint`
+- Golden: default__light, default__dark
+
+
+#### MxNote
+- Variants: note (muted fill and hairline), dismissible note (with a named close button), hint (no fill, no edge)
+- States: one
+- Accessibility: the close button is named by `dismissLabel` and keeps its 48 hit; the glyph is decorative
+- Tokens: `surface-container-low`, `outline-variant`, `on-surface-variant`; `bodyMedium` (note), `bodySmall` (hint); `AppIconSize.small`; `AppRadius.md`
+- Golden: forms__light, forms__dark
 
 ## Do's and Don'ts
 
