@@ -3479,45 +3479,45 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `README.md:7` ## Sản phẩm |  |
-| `README.md:9` ### Problem |  |
-| `README.md:11` Người học từ vựng quên phần lớn những gì vừa học nếu ôn tập không đúng thời |  |
-| `README.md:15` ### Target users |  |
-| `README.md:17` \| Group \| Context \| What they need \| Not the target \| |  |
-| `README.md:19` \| Người tự học từ vựng \| Học lẻ trên điện thoại, thời gian rời rạc, kết nối khôn |  |
-| `README.md:20` \| Người ôn thi \| Khối lượng từ lớn, có deadline \| Theo dõi tiến độ, ưu tiên từ s |  |
-| `README.md:22` **Đã chốt:** người dùng tự tạo nội dung, **và** app cung cấp starter deck dưới |  |
-| `README.md:27` ### Core value |  |
-| `README.md:29` Ôn đúng từ vào đúng thời điểm, hoạt động đầy đủ khi không có mạng. |  |
-| `README.md:31` Quyết định nền tảng: [ADR-001](shared/decisions/ADR-001-quyet-dinh-nen-tang.md). |  |
-| `README.md:33` ### Phạm vi MVP |  |
-| `README.md:35` Nguyên tắc: MVP là **một vertical slice chạy được từ Drift đến màn hình**, đủ để |  |
-| `README.md:40` #### Must-have |  |
-| `README.md:42` \| # \| Feature \| Done when \| |  |
-| `README.md:44` \| M1 \| Tạo/sửa/xoá deck \| Deck tồn tại sau khi restart app; xoá deck cần xác nhậ |  |
-| `README.md:45` \| M2 \| Tạo/sửa/xoá card trong deck \| Card có mặt trước/sau; sửa không làm mất lị |  |
-| `README.md:46` \| M3 \| Phiên học theo lịch SRS \| Chỉ hiện card đến hạn; đánh giá kết quả cập nhậ |  |
-| `README.md:47` \| M4 \| Danh sách deck với tiến độ \| Mỗi deck hiện số card đến hạn hôm nay \| |  |
-| `README.md:48` \| M5 \| Hoạt động đầy đủ offline \| Bật chế độ máy bay, mọi chức năng trên vẫn chạ |  |
-| `README.md:50` Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên: xem [`features |  |
-| `README.md:52` #### Should-have |  |
-| `README.md:54` \| # \| Feature \| Done when \| |  |
-| `README.md:56` \| S1 \| Tìm kiếm card trong deck \| Trong phạm vi: tìm theo nội dung mặt trước/sau |  |
-| `README.md:57` \| S2 \| Thống kê ôn tập cơ bản \| Trong phạm vi (UC-PROGRESS-001, BR-PROGRESS-009… |  |
-| `README.md:58` \| S3 \| Đảo chiều card (nghĩa → từ) \| Trong phạm vi (UC-STUDY-003, BR-MODE-013…BR |  |
-| `README.md:60` #### Nice-to-have |  |
-| `README.md:62` \| # \| Feature \| Notes \| |  |
-| `README.md:64` \| N1 \| Import/export \| Trong V8.0 theo [spec card transfer](superpowers/specs/20 |  |
-| `README.md:65` \| N2 \| Nhắc nhở ôn tập hằng ngày \| Sub-project sau (UC-REMINDER-001, BR-REMINDER |  |
-| `README.md:66` \| N3 \| Tag/phân loại card \| Sub-project sau (UC-TAG-001, BR-TAG-003…BR-TAG-011): |  |
-| `README.md:68` #### Explicitly out of MVP |  |
-| `README.md:70` \| Feature \| Why deferred \| Revisit when \| |  |
-| `README.md:72` \| Đăng nhập / tài khoản \| Không có backend; thêm auth lúc này là xây UI cho thứ |  |
-| `README.md:73` \| Đồng bộ đa thiết bị \| Cần backend và conflict resolution \| Cùng lúc với auth \| |  |
-| `README.md:74` \| iOS \| Ổn định Android trước để tránh sửa lỗi trên hai nền tảng cùng lúc \| Sau |  |
-| `README.md:75` \| Phân quyền theo role \| Chỉ có một loại user, kể cả sau khi có auth \| Chưa có k |  |
-| `README.md:76` \| Chia sẻ deck giữa người dùng \| Cần backend \| Sau đồng bộ \| |  |
-| `README.md:77` \| Audio / hình ảnh trong card \| Kéo theo lưu trữ file, đồng bộ file, nén ảnh — m |  |
+| `README.md:7` ## Sản phẩm | moved → `../PRODUCT.md` |
+| `README.md:9` ### Problem | moved → `../PRODUCT.md` |
+| `README.md:11` Người học từ vựng quên phần lớn những gì vừa học nếu ôn tập không đúng thời | moved → `../PRODUCT.md` |
+| `README.md:15` ### Target users | moved → `../PRODUCT.md` |
+| `README.md:17` \| Group \| Context \| What they need \| Not the target \| | moved → `../PRODUCT.md` |
+| `README.md:19` \| Người tự học từ vựng \| Học lẻ trên điện thoại, thời gian rời rạc, kết nối khôn | moved → `../PRODUCT.md` |
+| `README.md:20` \| Người ôn thi \| Khối lượng từ lớn, có deadline \| Theo dõi tiến độ, ưu tiên từ s | moved → `../PRODUCT.md` |
+| `README.md:22` **Đã chốt:** người dùng tự tạo nội dung, **và** app cung cấp starter deck dưới | moved → `../PRODUCT.md` |
+| `README.md:27` ### Core value | moved → `../PRODUCT.md` |
+| `README.md:29` Ôn đúng từ vào đúng thời điểm, hoạt động đầy đủ khi không có mạng. | moved → `../PRODUCT.md` |
+| `README.md:31` Quyết định nền tảng: [ADR-001](shared/decisions/ADR-001-quyet-dinh-nen-tang.md). | moved → `../PRODUCT.md` |
+| `README.md:33` ### Phạm vi MVP | moved → `../PRODUCT.md` |
+| `README.md:35` Nguyên tắc: MVP là **một vertical slice chạy được từ Drift đến màn hình**, đủ để | moved → `../PRODUCT.md` |
+| `README.md:40` #### Must-have | moved → `../PRODUCT.md` |
+| `README.md:42` \| # \| Feature \| Done when \| | moved → `../PRODUCT.md` |
+| `README.md:44` \| M1 \| Tạo/sửa/xoá deck \| Deck tồn tại sau khi restart app; xoá deck cần xác nhậ | moved → `../PRODUCT.md` |
+| `README.md:45` \| M2 \| Tạo/sửa/xoá card trong deck \| Card có mặt trước/sau; sửa không làm mất lị | moved → `../PRODUCT.md` |
+| `README.md:46` \| M3 \| Phiên học theo lịch SRS \| Chỉ hiện card đến hạn; đánh giá kết quả cập nhậ | moved → `../PRODUCT.md` |
+| `README.md:47` \| M4 \| Danh sách deck với tiến độ \| Mỗi deck hiện số card đến hạn hôm nay \| | moved → `../PRODUCT.md` |
+| `README.md:48` \| M5 \| Hoạt động đầy đủ offline \| Bật chế độ máy bay, mọi chức năng trên vẫn chạ | moved → `../PRODUCT.md` |
+| `README.md:50` Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên: xem [`features | moved → `../PRODUCT.md` |
+| `README.md:52` #### Should-have | moved → `../PRODUCT.md` |
+| `README.md:54` \| # \| Feature \| Done when \| | moved → `../PRODUCT.md` |
+| `README.md:56` \| S1 \| Tìm kiếm card trong deck \| Trong phạm vi: tìm theo nội dung mặt trước/sau | moved → `../PRODUCT.md` |
+| `README.md:57` \| S2 \| Thống kê ôn tập cơ bản \| Trong phạm vi (UC-PROGRESS-001, BR-PROGRESS-009… | moved → `../PRODUCT.md` |
+| `README.md:58` \| S3 \| Đảo chiều card (nghĩa → từ) \| Trong phạm vi (UC-STUDY-003, BR-MODE-013…BR | moved → `../PRODUCT.md` |
+| `README.md:60` #### Nice-to-have | moved → `../PRODUCT.md` |
+| `README.md:62` \| # \| Feature \| Notes \| | moved → `../PRODUCT.md` |
+| `README.md:64` \| N1 \| Import/export \| Trong V8.0 theo [spec card transfer](superpowers/specs/20 | moved → `../PRODUCT.md` |
+| `README.md:65` \| N2 \| Nhắc nhở ôn tập hằng ngày \| Sub-project sau (UC-REMINDER-001, BR-REMINDER | moved → `../PRODUCT.md` |
+| `README.md:66` \| N3 \| Tag/phân loại card \| Sub-project sau (UC-TAG-001, BR-TAG-003…BR-TAG-011): | moved → `../PRODUCT.md` |
+| `README.md:68` #### Explicitly out of MVP | moved → `../PRODUCT.md` |
+| `README.md:70` \| Feature \| Why deferred \| Revisit when \| | moved → `../PRODUCT.md` |
+| `README.md:72` \| Đăng nhập / tài khoản \| Không có backend; thêm auth lúc này là xây UI cho thứ | moved → `../PRODUCT.md` |
+| `README.md:73` \| Đồng bộ đa thiết bị \| Cần backend và conflict resolution \| Cùng lúc với auth \| | moved → `../PRODUCT.md` |
+| `README.md:74` \| iOS \| Ổn định Android trước để tránh sửa lỗi trên hai nền tảng cùng lúc \| Sau | moved → `../PRODUCT.md` |
+| `README.md:75` \| Phân quyền theo role \| Chỉ có một loại user, kể cả sau khi có auth \| Chưa có k | moved → `../PRODUCT.md` |
+| `README.md:76` \| Chia sẻ deck giữa người dùng \| Cần backend \| Sau đồng bộ \| | moved → `../PRODUCT.md` |
+| `README.md:77` \| Audio / hình ảnh trong card \| Kéo theo lưu trữ file, đồng bộ file, nén ảnh — m | moved → `../PRODUCT.md` |
 
 ## Goldens
 
@@ -4299,3 +4299,18 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
   FN-MONITORING-001's Input.
 - Warning delta: 60 → 65 = +5 FN-MONITORING invoked by no UC and no screen; SCR-MONITORING-001
   (Task 28–41) invokes them.
+
+## Task 27 notes — PRODUCT.md
+
+- `## MVP Scope` (Must, Should, Nice to have, Out of scope) sits after `## Capabilities and
+  Constraints`; every ID and "done when" condition is kept, translated to English. "màn 11" and
+  "sheet 12" are written as SCR-TRANSFER-001 and SCR-TRANSFER-002 (no screen numbers).
+- Ruling: the MVP tables are the scope as it was set, and two cells are out of date — M1's "cascade
+  permanently, not via the Trash" (BR-DECK-022 now moves the tree to the Trash) and "Sign-in —
+  revisit when the Spring Boot backend is ready" (ADR-015: Supabase; sign-in shipped). The cells are
+  kept as the plan says, and a "Later decisions" note under the tables names the decisions that win
+  — cost if wrong: the owner may prefer the cells rewritten; a one-paragraph change.
+- PRODUCT.md no longer points at `docs/README.md`; the Problem paragraph was already in Product
+  Purpose. The 39 rows of README.md's "Sản phẩm" section are `moved → ../PRODUCT.md`; the section
+  itself stays until Task 44 (R18).
+- Warning delta: 65 → 65.
