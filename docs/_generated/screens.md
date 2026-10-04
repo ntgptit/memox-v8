@@ -115,3 +115,28 @@
 | `op_error` | light, dark | — |
 | `tag_gone` | light, dark | — |
 | `read_error` | light, dark | — |
+
+## [SCR-TRASH-001](../screens/spec/SCR-TRASH-001-trash.md) · Trash
+
+- Invokes: FN-TRASH-001, FN-TRASH-002, FN-TRASH-003, FN-TRASH-004, FN-TRASH-005, FN-TRASH-006, FN-TRASH-007
+- Rules via FN: BR-CARD-010, BR-CORE-001, BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK-015, BR-DECK-017, BR-DECK-018, BR-SRS-006, BR-TRASH-003, BR-TRASH-006, BR-TRASH-007, BR-TRASH-009, BR-TRASH-010, BR-TRASH-011, BR-TRASH-012
+- Use cases: UC-TRASH-001
+- Entry points: SCR-DECK-001
+
+| State | Golden | Present |
+|---|---|---|
+| `all` | light, dark | — |
+| `cards` | none | — |
+| `decks` | none | — |
+| `actions` | light, dark | — |
+| `restore_target` | light, dark | — |
+| `no_target` | light, dark | — |
+| `restored` | none | — |
+| `undo_refused` | none | — |
+| `selection` | light, dark | — |
+| `purge_confirm` | light, dark | — |
+| `purged` | none | — |
+| `younger_inside` | light, dark | — |
+| `empty` | light, dark | — |
+| `loading` | none | — |
+| `error` | light, dark | — |

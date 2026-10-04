@@ -671,16 +671,22 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-TRASH-001](../functional-spec/trash.md) | Dọn các batch đã hết hạn | active | UC-TRASH-001 |
-| [FN-TRASH-002](../functional-spec/trash.md) | Xem Trash | active | UC-TRASH-001 |
-| [FN-TRASH-003](../functional-spec/trash.md) | Xem các đích khôi phục của deck | active | UC-TRASH-001 |
-| [FN-TRASH-004](../functional-spec/trash.md) | Xem các đích khôi phục của card | active | UC-TRASH-001 |
-| [FN-TRASH-005](../functional-spec/trash.md) | Khôi phục deck từ Trash | active | UC-TRASH-001 |
-| [FN-TRASH-006](../functional-spec/trash.md) | Khôi phục card từ Trash | active | UC-TRASH-001 |
-| [FN-TRASH-007](../functional-spec/trash.md) | Xoá vĩnh viễn khỏi Trash | active | UC-TRASH-001 |
+| [FN-TRASH-001](../functional-spec/trash.md) | Dọn các batch đã hết hạn | active | SCR-TRASH-001, UC-TRASH-001 |
+| [FN-TRASH-002](../functional-spec/trash.md) | Xem Trash | active | SCR-TRASH-001, UC-TRASH-001 |
+| [FN-TRASH-003](../functional-spec/trash.md) | Xem các đích khôi phục của deck | active | SCR-TRASH-001, UC-TRASH-001 |
+| [FN-TRASH-004](../functional-spec/trash.md) | Xem các đích khôi phục của card | active | SCR-TRASH-001, UC-TRASH-001 |
+| [FN-TRASH-005](../functional-spec/trash.md) | Khôi phục deck từ Trash | active | SCR-TRASH-001, UC-TRASH-001 |
+| [FN-TRASH-006](../functional-spec/trash.md) | Khôi phục card từ Trash | active | SCR-TRASH-001, UC-TRASH-001 |
+| [FN-TRASH-007](../functional-spec/trash.md) | Xoá vĩnh viễn khỏi Trash | active | SCR-TRASH-001, UC-TRASH-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
 | [UC-TRASH-001](../USE_CASES.md) | Trash và khôi phục item đã xoá | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-TRASH-001](../screens/spec/SCR-TRASH-001-trash.md) | Trash | ready | `/decks/trash` |

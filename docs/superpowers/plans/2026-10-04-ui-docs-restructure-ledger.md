@@ -326,66 +326,66 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/06-trash.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/06-trash.md:3` # 06 · Trash |  |
-| `shared/ui/screen-handoff/06-trash.md:5` Everything deleted in the last 30 days, newest first. Each entry can be restored |  |
-| `shared/ui/screen-handoff/06-trash.md:10` ## Entry points |  |
-| `shared/ui/screen-handoff/06-trash.md:12` - **The Library's app bar:** the Trash icon, beside Coming soon (D1). |  |
-| `shared/ui/screen-handoff/06-trash.md:13` - **Toasts:** the toast after several cards move to the Trash, and every refused |  |
-| `shared/ui/screen-handoff/06-trash.md:15` - **Gone states:** the "no longer here" states of an open deck, the card editor |  |
-| `shared/ui/screen-handoff/06-trash.md:18` The Trash is a full-screen task on the root navigator, `/decks/trash`, with no b |  |
-| `shared/ui/screen-handoff/06-trash.md:21` ## Layout |  |
-| `shared/ui/screen-handoff/06-trash.md:23` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/06-trash.md:25` \| App bar \| `MxAppBar` \| Back, "Trash" and "Select" (a compact secondary `MxButt |  |
-| `shared/ui/screen-handoff/06-trash.md:26` \| Note \| `MxNote` (history icon), dismissible \| "Kept for 30 days from deletion, |  |
-| `shared/ui/screen-handoff/06-trash.md:27` \| Filters \| `MxFilterChip` × 3 \| All · Cards · Decks, each with its count (A6). |  |
-| `shared/ui/screen-handoff/06-trash.md:28` \| Header \| `MxListSectionHeader` \| "{n} entries · newest first"; while selecting |  |
-| `shared/ui/screen-handoff/06-trash.md:29` \| Rows \| `MxCard` + `MxRowInk` per entry \| The kind's tile (a checkbox while sel |  |
-| `shared/ui/screen-handoff/06-trash.md:30` \| Kind lock \| `MxNote` \| "Cards and decks can't be selected together." \| |  |
-| `shared/ui/screen-handoff/06-trash.md:31` \| Blocked purge \| `MxInlineBanner` (warning) \| One per batch the last purge skip |  |
-| `shared/ui/screen-handoff/06-trash.md:32` \| Bar \| `MxFooterBar` + `MxActionPair` \| While selecting: "Restore ({n})" (prima |  |
-| `shared/ui/screen-handoff/06-trash.md:33` \| Actions \| `MxBottomSheet` + `MxActionSheetCommandRow` × 2 \| The name and "{kin |  |
-| `shared/ui/screen-handoff/06-trash.md:34` \| Restore \| `MxDeckPickerSheet` \| "Restore “{name}” to…" or "Restore {n} cards/d |  |
-| `shared/ui/screen-handoff/06-trash.md:35` \| Delete for good \| `MxDialog` + `MxSheetActions.custom` \| "Delete {n} cards per |  |
-| `shared/ui/screen-handoff/06-trash.md:36` \| Toasts \| `MxSnackbar` \| "“{name}” restored to {deck}" / "{n} entries restored |  |
-| `shared/ui/screen-handoff/06-trash.md:38` ## States |  |
-| `shared/ui/screen-handoff/06-trash.md:40` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/06-trash.md:42` \| all \| `trash_all_light.png` \| `trash_all_dark.png` \| The tile is tinted, and " |  |
-| `shared/ui/screen-handoff/06-trash.md:43` \| cards \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/06-trash.md:44` \| decks \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/06-trash.md:45` \| actions \| `trash_actions_light.png` \| `trash_actions_dark.png` \| A row tap ope |  |
-| `shared/ui/screen-handoff/06-trash.md:46` \| restoreTarget \| `trash_restore_target_light.png` \| `trash_restore_target_dark. |  |
-| `shared/ui/screen-handoff/06-trash.md:47` \| noTarget \| `trash_no_target_light.png` \| `trash_no_target_dark.png` \| As the m |  |
-| `shared/ui/screen-handoff/06-trash.md:48` \| restored \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/06-trash.md:49` \| undoRefused \| no golden \| no golden \| Shown where the item was deleted, with O |  |
-| `shared/ui/screen-handoff/06-trash.md:50` \| selection \| `trash_selection_light.png` \| `trash_selection_dark.png` \| "Restor |  |
-| `shared/ui/screen-handoff/06-trash.md:51` \| purgeConfirm \| `trash_purge_confirm_light.png` \| `trash_purge_confirm_dark.png |  |
-| `shared/ui/screen-handoff/06-trash.md:52` \| purged \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/06-trash.md:53` \| youngerInside \| `trash_purge_blocked_light.png` \| `trash_purge_blocked_dark.pn |  |
-| `shared/ui/screen-handoff/06-trash.md:54` \| empty \| `trash_empty_light.png` \| `trash_empty_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/06-trash.md:55` \| loading \| no golden \| no golden \| Skeleton rows. \| |  |
-| `shared/ui/screen-handoff/06-trash.md:56` \| error \| `trash_error_light.png` \| `trash_error_dark.png` \| The app's local-fir |  |
-| `shared/ui/screen-handoff/06-trash.md:58` Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta |  |
-| `shared/ui/screen-handoff/06-trash.md:60` ## Rulings |  |
-| `shared/ui/screen-handoff/06-trash.md:62` - **Invariant 36 (spec D6):** a blocked restore says "“X” still contains an entr |  |
-| `shared/ui/screen-handoff/06-trash.md:63` - **P3-L8:** a restore target shows its path, as the move sheets do; targets car |  |
-| `shared/ui/screen-handoff/06-trash.md:64` - **BR-TRASH-006:** a deck has its own restore sheet and rule, with "Top level" |  |
-| `shared/ui/screen-handoff/06-trash.md:65` - **E-L3:** "Select" is a compact secondary `MxButton`. |  |
-| `shared/ui/screen-handoff/06-trash.md:66` - **O11:** the no-target state is `MxDeckPickerSheet`'s empty state (the neutral |  |
-| `shared/ui/screen-handoff/06-trash.md:67` - **Spec §6:** a refused restore closes the sheet and shows a toast; the list fo |  |
-| `shared/ui/screen-handoff/06-trash.md:68` - **Owner 2026-09-26 (UI refinements phase 2):** the selection bar reads "Restor |  |
-| `shared/ui/screen-handoff/06-trash.md:69` - **Owner 2026-09-26:** the time left under 3 days is a warning `MxBadge`; the m |  |
-| `shared/ui/screen-handoff/06-trash.md:70` - **Owner 2026-09-26, BR-TRASH-011:** while selecting, the note hides, the other |  |
-| `shared/ui/screen-handoff/06-trash.md:71` - **Critique 2026-09-30:** the retention note has a close button ("Hide this not |  |
-| `shared/ui/screen-handoff/06-trash.md:72` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig |  |
-| `shared/ui/screen-handoff/06-trash.md:74` ## Copy |  |
-| `shared/ui/screen-handoff/06-trash.md:76` - Header: "Trash" · "Select" · "Kept for 30 days from deletion, then removed aut |  |
-| `shared/ui/screen-handoff/06-trash.md:77` - Row: "Card · deleted {ago}" · "Deck · {n} sub-decks · {m} cards · deleted {ago |  |
-| `shared/ui/screen-handoff/06-trash.md:78` - Actions: "Restore…" · "Choose which deck it goes to" · "Delete permanently" · |  |
-| `shared/ui/screen-handoff/06-trash.md:79` - Restore: "Restore “{name}” to…" · "Its schedule, history, flag and tags come b |  |
-| `shared/ui/screen-handoff/06-trash.md:80` - Selection: "Select entries" · "{n} cards selected" · "{m} cards" · "{m} decks" |  |
-| `shared/ui/screen-handoff/06-trash.md:81` - Delete for good: "Delete {n} cards permanently?" · "They disappear for good, t |  |
-| `shared/ui/screen-handoff/06-trash.md:82` - Empty and error: "Trash is empty" · "Decks and cards you delete stay here for |  |
+| `shared/ui/screen-handoff/06-trash.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:3` # 06 · Trash | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:5` Everything deleted in the last 30 days, newest first. Each entry can be restored | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:10` ## Entry points | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:12` - **The Library's app bar:** the Trash icon, beside Coming soon (D1). | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:13` - **Toasts:** the toast after several cards move to the Trash, and every refused | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:15` - **Gone states:** the "no longer here" states of an open deck, the card editor | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:18` The Trash is a full-screen task on the root navigator, `/decks/trash`, with no b | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:21` ## Layout | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:23` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:25` \| App bar \| `MxAppBar` \| Back, "Trash" and "Select" (a compact secondary `MxButt | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:26` \| Note \| `MxNote` (history icon), dismissible \| "Kept for 30 days from deletion, | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:27` \| Filters \| `MxFilterChip` × 3 \| All · Cards · Decks, each with its count (A6). | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:28` \| Header \| `MxListSectionHeader` \| "{n} entries · newest first"; while selecting | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:29` \| Rows \| `MxCard` + `MxRowInk` per entry \| The kind's tile (a checkbox while sel | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:30` \| Kind lock \| `MxNote` \| "Cards and decks can't be selected together." \| | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:31` \| Blocked purge \| `MxInlineBanner` (warning) \| One per batch the last purge skip | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:32` \| Bar \| `MxFooterBar` + `MxActionPair` \| While selecting: "Restore ({n})" (prima | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:33` \| Actions \| `MxBottomSheet` + `MxActionSheetCommandRow` × 2 \| The name and "{kin | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:34` \| Restore \| `MxDeckPickerSheet` \| "Restore “{name}” to…" or "Restore {n} cards/d | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:35` \| Delete for good \| `MxDialog` + `MxSheetActions.custom` \| "Delete {n} cards per | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:36` \| Toasts \| `MxSnackbar` \| "“{name}” restored to {deck}" / "{n} entries restored | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:38` ## States | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:40` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:42` \| all \| `trash_all_light.png` \| `trash_all_dark.png` \| The tile is tinted, and " | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:43` \| cards \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:44` \| decks \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:45` \| actions \| `trash_actions_light.png` \| `trash_actions_dark.png` \| A row tap ope | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:46` \| restoreTarget \| `trash_restore_target_light.png` \| `trash_restore_target_dark. | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:47` \| noTarget \| `trash_no_target_light.png` \| `trash_no_target_dark.png` \| As the m | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:48` \| restored \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:49` \| undoRefused \| no golden \| no golden \| Shown where the item was deleted, with O | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:50` \| selection \| `trash_selection_light.png` \| `trash_selection_dark.png` \| "Restor | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:51` \| purgeConfirm \| `trash_purge_confirm_light.png` \| `trash_purge_confirm_dark.png | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:52` \| purged \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:53` \| youngerInside \| `trash_purge_blocked_light.png` \| `trash_purge_blocked_dark.pn | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:54` \| empty \| `trash_empty_light.png` \| `trash_empty_dark.png` \| — \| | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:55` \| loading \| no golden \| no golden \| Skeleton rows. \| | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:56` \| error \| `trash_error_light.png` \| `trash_error_dark.png` \| The app's local-fir | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:58` Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:60` ## Rulings | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:62` - **Invariant 36 (spec D6):** a blocked restore says "“X” still contains an entr | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:63` - **P3-L8:** a restore target shows its path, as the move sheets do; targets car | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:64` - **BR-TRASH-006:** a deck has its own restore sheet and rule, with "Top level" | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:65` - **E-L3:** "Select" is a compact secondary `MxButton`. | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:66` - **O11:** the no-target state is `MxDeckPickerSheet`'s empty state (the neutral | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:67` - **Spec §6:** a refused restore closes the sheet and shows a toast; the list fo | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:68` - **Owner 2026-09-26 (UI refinements phase 2):** the selection bar reads "Restor | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:69` - **Owner 2026-09-26:** the time left under 3 days is a warning `MxBadge`; the m | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:70` - **Owner 2026-09-26, BR-TRASH-011:** while selecting, the note hides, the other | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:71` - **Critique 2026-09-30:** the retention note has a close button ("Hide this not | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:72` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:74` ## Copy | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:76` - Header: "Trash" · "Select" · "Kept for 30 days from deletion, then removed aut | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:77` - Row: "Card · deleted {ago}" · "Deck · {n} sub-decks · {m} cards · deleted {ago | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:78` - Actions: "Restore…" · "Choose which deck it goes to" · "Delete permanently" · | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:79` - Restore: "Restore “{name}” to…" · "Its schedule, history, flag and tags come b | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:80` - Selection: "Select entries" · "{n} cards selected" · "{m} cards" · "{m} decks" | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:81` - Delete for good: "Delete {n} cards permanently?" · "They disappear for good, t | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `shared/ui/screen-handoff/06-trash.md:82` - Empty and error: "Trash is empty" · "Decks and cards you delete stay here for | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 
 ## shared/ui/screen-handoff/07-card-list.md
 
@@ -2980,33 +2980,33 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:6` code: [lib/features/trash/domain/usecases/watch_trash_use_case.dart, lib/feature | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:10` **Phạm vi:** Trash, từ schema v3 (BE-B1). Màn Trash và snackbar Undo thuộc FE-B1 | dropped — history of how the work was split (BE-B1, FE-B1, schema v3); those specs stay under docs/superpowers/specs, approved PENDING |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:12` **Actor:** Người dùng | pending → SCR-TRASH-001 (entry point: Trash on the Library app bar); intent kept in UC-TRASH-001 (Mục tiêu, Preconditions) |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:12` **Actor:** Người dùng | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:18` ## Main flow | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:20` **Main flow:** | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:21` 1. Người dùng xoá một card hoặc một deck từ luồng đã có (UC-CARD-001, UC-DECK-00 | superseded → FN-DECK-005 + FN-CARD-004 (one batch, descendants, parent back to unset, open sessions ended with content_deleted) + UC-TRASH-001 step 1 |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:26` 2. Màn đang đứng báo item đã chuyển vào Trash và hiện Undo trong một khoảng thời | pending → SCR-DECK-001 (the moved-to-Trash snackbar with Undo for a limited time; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 step 2 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:29` 3. Người dùng mở `Trash` từ app bar của Library. Hệ thống chạy auto-purge trước | pending → SCR-TRASH-001 (auto-purge before drawing; Cards and Decks sections); intent kept in UC-TRASH-001 step 3 + FN-TRASH-001 + FN-TRASH-002 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:32` 4. Mỗi hàng nêu tên item, thời điểm đã xoá, đường dẫn gốc **như thông tin**, số | pending → SCR-TRASH-001 (each row: name, deleted at, origin path as information, days left, the batch counts for a deck); intent kept in UC-TRASH-001 step 4 + FN-TRASH-002 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:35` 5. Người dùng chọn `Restore` trên một hàng. Hệ thống mở picker target dựng từ | pending → SCR-TRASH-001 (Restore opens the target picker); intent kept in UC-TRASH-001 step 5 + FN-TRASH-003 + FN-TRASH-004 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:29` 3. Người dùng mở `Trash` từ app bar của Library. Hệ thống chạy auto-purge trước | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:32` 4. Mỗi hàng nêu tên item, thời điểm đã xoá, đường dẫn gốc **như thông tin**, số | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:35` 5. Người dùng chọn `Restore` trên một hàng. Hệ thống mở picker target dựng từ | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:38` 6. Người dùng chọn một target và xác nhận. Hệ thống chạy một transaction: gỡ | superseded → FN-TRASH-005 + FN-TRASH-006 (one batch, root_id rewritten, target content type set) + UC-TRASH-001 step 6 |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:42` 7. Trash bỏ hàng vừa khôi phục; Library hiện item ở vị trí mới với nguyên id, | superseded → FN-TRASH-005 + FN-TRASH-006 (same id, study state, history and tags) + UC-TRASH-001 step 7 |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:45` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:47` **Alternative flows:** | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:48` - **A1 — Undo ngay sau khi xoá:** người dùng bấm Undo trên snackbar. Hệ thống | pending → SCR-DECK-001 (Undo on the snackbar; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 A1 + FN-DECK-006 + FN-CARD-005 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:50` - **A2 — Chọn nhiều:** người dùng bật chế độ chọn trong Trash. Thanh hành động | pending → SCR-TRASH-001 (selection mode; the action bar with Restore and Delete permanently; rows of the other kind disabled with the reason); intent kept in UC-TRASH-001 A2 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:53` - **A3 — Purge vĩnh viễn:** người dùng chọn `Delete permanently`. Hộp thoại nêu | pending → SCR-TRASH-001 (the dialog: exact count, history is lost, default focus on the safe action, destructive colour on the purge only); intent kept in UC-TRASH-001 A3 + FN-TRASH-007 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:57` - **A4 — Batch hết hạn khi Trash đang mở:** auto-purge chạy lại khi màn được | pending → SCR-TRASH-001 (auto-purge again on focus; rows leave in place without a scroll jump); intent kept in UC-TRASH-001 A4 + FN-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:50` - **A2 — Chọn nhiều:** người dùng bật chế độ chọn trong Trash. Thanh hành động | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:53` - **A3 — Purge vĩnh viễn:** người dùng chọn `Delete permanently`. Hộp thoại nêu | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:57` - **A4 — Batch hết hạn khi Trash đang mở:** auto-purge chạy lại khi màn được | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:60` - **A5 — Deck có descendant đã ở Trash từ trước:** restore batch của deck cha | moved → `USE_CASES.md` |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:63` - **A6 — Trash rỗng:** màn hiển thị trạng thái rỗng giải thích item đã xoá sẽ ở | pending → SCR-TRASH-001 (the empty state saying items stay 30 days; no action bar, no filter); intent kept in UC-TRASH-001 A6 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:63` - **A6 — Trash rỗng:** màn hiển thị trạng thái rỗng giải thích item đã xoá sẽ ở | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:66` **Error flows:** | moved → `USE_CASES.md` |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:67` - **E1 — Không có target hợp lệ:** picker mở ra rỗng và giải thích vì sao (cây | pending → SCR-TRASH-001 (the empty picker explaining why; no disabled row that looks selectable); intent kept in UC-TRASH-001 E1 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:70` - **E2 — Target hết hợp lệ giữa chừng:** cây đổi sau khi picker mở. Transaction | pending → SCR-TRASH-001 (the typed reason; the picker reloads); intent kept in UC-TRASH-001 E2 + FN-TRASH-005 + FN-TRASH-006 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:67` - **E1 — Không có target hợp lệ:** picker mở ra rỗng và giải thích vì sao (cây | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:70` - **E2 — Target hết hợp lệ giữa chừng:** cây đổi sau khi picker mở. Transaction | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:72` - **E3 — Undo không còn dùng được:** vị trí cũ đã bị xoá, đã thành `card`, hoặc | pending → SCR-DECK-001 (the typed Undo reason pointing to the Trash; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 E3 + FN-DECK-006 + FN-CARD-005 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:75` - **E4 — Purge bị chặn:** một descendant của batch thuộc batch chưa tới hạn hoặc | pending → SCR-TRASH-001 (the typed reason of a skipped batch); intent kept in UC-TRASH-001 E4 + FN-TRASH-007 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:78` - **E5 — Lỗi ghi:** bất kỳ bước nào của xoá, restore hay purge thất bại → | pending → SCR-TRASH-001 (error + Retry); intent kept in UC-TRASH-001 E5 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:80` - **E6 — Item đã biến mất:** batch được chọn đã bị purge bởi một lần chạy khác. | pending → SCR-TRASH-001 (the typed not-found; the list refreshes, no ghost row); intent kept in UC-TRASH-001 E6 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:83` ## UI | pending → SCR-TRASH-001 (states loading · empty · cards only · decks only · mixed · selection card · selection deck · restoring · purging · target picker · validation conflict · expired live removal · error + Retry; the undo snackbar → SCR-DECK-001, SCR-CARD-001) |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:85` **UI states:** loading · empty · cards-only · decks-only · mixed · selection | pending → SCR-TRASH-001 (states loading · empty · cards only · decks only · mixed · selection card · selection deck · restoring · purging · target picker · validation conflict · expired live removal · error + Retry; the undo snackbar → SCR-DECK-001, SCR-CARD-001) |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:75` - **E4 — Purge bị chặn:** một descendant của batch thuộc batch chưa tới hạn hoặc | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:78` - **E5 — Lỗi ghi:** bất kỳ bước nào của xoá, restore hay purge thất bại → | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:80` - **E6 — Item đã biến mất:** batch được chọn đã bị purge bởi một lần chạy khác. | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:83` ## UI | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:85` **UI states:** loading · empty · cards-only · decks-only · mixed · selection | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:91` ## Local | superseded → FN-TRASH-005 + FN-TRASH-006 + FN-TRASH-007 (Kết quả) |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:93` **Postconditions:** Sau bước 7, item nằm dưới target đã chọn với đúng id cũ, và | superseded → FN-TRASH-005 + FN-TRASH-006 + FN-TRASH-007 (Kết quả) |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:97` Ghi chú từ mục "Business rules" của nguồn: | superseded → FN-TRASH-001…FN-TRASH-007 (Business rules) |
@@ -3016,15 +3016,15 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:107` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:109` - [ ] **Given** người dùng xoá một card hoặc một deck, **when** thao tác chạy, * | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:110` - [ ] **Given** một item vừa xoá xong, **when** người dùng nhìn Library hoặc Car | pending → SCR-DECK-001 (presentation of the criterion: the Undo snackbar; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:111` - [ ] **Given** người dùng mở Trash từ app bar của Library, **when** màn vẽ xong | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:111` - [ ] **Given** người dùng mở Trash từ app bar của Library, **when** màn vẽ xong | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:112` - [ ] **Given** người dùng chọn Restore trên một hàng, **when** picker target mở | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:113` - [ ] **Given** người dùng bấm Undo trên snackbar sau khi xoá, **when** Undo chạ | moved → `USE_CASES.md` |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:114` - [ ] **Given** Trash đang mở ở chế độ chọn nhiều, **when** người dùng chọn một | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:115` - [ ] **Given** người dùng chọn "Delete permanently" cho một hoặc nhiều item, ** | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:116` - [ ] **Given** Trash đang mở khi một batch vừa quá 30 ngày, **when** app trở lạ | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:114` - [ ] **Given** Trash đang mở ở chế độ chọn nhiều, **when** người dùng chọn một | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:115` - [ ] **Given** người dùng chọn "Delete permanently" cho một hoặc nhiều item, ** | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:116` - [ ] **Given** Trash đang mở khi một batch vừa quá 30 ngày, **when** app trở lạ | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:117` - [ ] **Given** một deck cha bị xoá trong khi một descendant đã ở Trash từ một b | moved → `USE_CASES.md` |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:118` - [ ] **Given** Trash không có batch nào, **when** mở màn, **then** hệ thống hiệ | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:119` - [ ] **Given** một item không còn target hợp lệ để restore, **when** picker mở, | pending → SCR-TRASH-001 (presentation of the criterion); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:118` - [ ] **Given** Trash không có batch nào, **when** mở màn, **then** hệ thống hiệ | moved → `screens/spec/SCR-TRASH-001-trash.md` |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:119` - [ ] **Given** một item không còn target hợp lệ để restore, **when** picker mở, | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:120` - [ ] **Given** picker restore đang mở, **when** cây deck đổi, **then** danh sác | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:121` - [ ] **Given** vị trí cũ của một batch không còn nhận nó, **when** người dùng b | pending → SCR-DECK-001 (presentation of the criterion: the typed Undo reason; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 E3 |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:122` - [ ] **Given** một deck được chọn để xoá vĩnh viễn còn giữ một batch khác không | moved → `USE_CASES.md` |
@@ -3398,10 +3398,10 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/trash/README.md:24` ## Màn hình → Use case |  |
-| `features/trash/README.md:26` \| Màn hình \| UC \| |  |
-| `features/trash/README.md:28` \| `Trash` từ app bar (và thao tác xoá card/deck vào Trash) \| UC-TRASH-001 \| |  |
-| `features/trash/README.md:30` Nguồn: trigger của UC-TRASH-001. |  |
+| `features/trash/README.md:24` ## Màn hình → Use case || superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/trash/README.md:26` \| Màn hình \| UC \| || superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/trash/README.md:28` \| `Trash` từ app bar (và thao tác xoá card/deck vào Trash) \| UC-TRASH-001 \| || superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/trash/README.md:30` Nguồn: trigger của UC-TRASH-001. || superseded → SCR-TRASH-001 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## shared/ui/navigation.md
 
@@ -3965,24 +3965,24 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/transfer/presentation/goldens/import_preview_light.png` |  |
 | `test/features/transfer/presentation/goldens/import_source_dark.png` |  |
 | `test/features/transfer/presentation/goldens/import_source_light.png` |  |
-| `test/features/trash/presentation/goldens/trash_actions_dark.png` |  |
-| `test/features/trash/presentation/goldens/trash_actions_light.png` |  |
-| `test/features/trash/presentation/goldens/trash_all_dark.png` |  |
-| `test/features/trash/presentation/goldens/trash_all_light.png` |  |
-| `test/features/trash/presentation/goldens/trash_empty_dark.png` |  |
-| `test/features/trash/presentation/goldens/trash_empty_light.png` |  |
-| `test/features/trash/presentation/goldens/trash_error_dark.png` |  |
-| `test/features/trash/presentation/goldens/trash_error_light.png` |  |
-| `test/features/trash/presentation/goldens/trash_no_target_dark.png` |  |
-| `test/features/trash/presentation/goldens/trash_no_target_light.png` |  |
-| `test/features/trash/presentation/goldens/trash_purge_blocked_dark.png` |  |
-| `test/features/trash/presentation/goldens/trash_purge_blocked_light.png` |  |
-| `test/features/trash/presentation/goldens/trash_purge_confirm_dark.png` |  |
-| `test/features/trash/presentation/goldens/trash_purge_confirm_light.png` |  |
-| `test/features/trash/presentation/goldens/trash_restore_target_dark.png` |  |
-| `test/features/trash/presentation/goldens/trash_restore_target_light.png` |  |
-| `test/features/trash/presentation/goldens/trash_selection_dark.png` |  |
-| `test/features/trash/presentation/goldens/trash_selection_light.png` |  |
+| `test/features/trash/presentation/goldens/trash_actions_dark.png` | superseded → SCR-TRASH-001 `actions` dark |
+| `test/features/trash/presentation/goldens/trash_actions_light.png` | superseded → SCR-TRASH-001 `actions` light |
+| `test/features/trash/presentation/goldens/trash_all_dark.png` | superseded → SCR-TRASH-001 `all` dark |
+| `test/features/trash/presentation/goldens/trash_all_light.png` | superseded → SCR-TRASH-001 `all` light |
+| `test/features/trash/presentation/goldens/trash_empty_dark.png` | superseded → SCR-TRASH-001 `empty` dark |
+| `test/features/trash/presentation/goldens/trash_empty_light.png` | superseded → SCR-TRASH-001 `empty` light |
+| `test/features/trash/presentation/goldens/trash_error_dark.png` | superseded → SCR-TRASH-001 `error` dark |
+| `test/features/trash/presentation/goldens/trash_error_light.png` | superseded → SCR-TRASH-001 `error` light |
+| `test/features/trash/presentation/goldens/trash_no_target_dark.png` | superseded → SCR-TRASH-001 `no_target` dark |
+| `test/features/trash/presentation/goldens/trash_no_target_light.png` | superseded → SCR-TRASH-001 `no_target` light |
+| `test/features/trash/presentation/goldens/trash_purge_blocked_dark.png` | superseded → SCR-TRASH-001 `younger_inside` dark |
+| `test/features/trash/presentation/goldens/trash_purge_blocked_light.png` | superseded → SCR-TRASH-001 `younger_inside` light |
+| `test/features/trash/presentation/goldens/trash_purge_confirm_dark.png` | superseded → SCR-TRASH-001 `purge_confirm` dark |
+| `test/features/trash/presentation/goldens/trash_purge_confirm_light.png` | superseded → SCR-TRASH-001 `purge_confirm` light |
+| `test/features/trash/presentation/goldens/trash_restore_target_dark.png` | superseded → SCR-TRASH-001 `restore_target` dark |
+| `test/features/trash/presentation/goldens/trash_restore_target_light.png` | superseded → SCR-TRASH-001 `restore_target` light |
+| `test/features/trash/presentation/goldens/trash_selection_dark.png` | superseded → SCR-TRASH-001 `selection` dark |
+| `test/features/trash/presentation/goldens/trash_selection_light.png` | superseded → SCR-TRASH-001 `selection` light |
 | `test/shared/widgets/goldens/mx_app_bar_dark.png` |  |
 | `test/shared/widgets/goldens/mx_app_bar_light.png` |  |
 | `test/shared/widgets/goldens/mx_app_shell_dark.png` |  |
@@ -4344,3 +4344,9 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - 24 rows `pending → SCR-TAG-001` moved into the spec; tags README rows superseded by SCR-TAG-001 and SCR-CARD-001 (the filter).
 - The legacy trigger "Manage tags" in the card list overflow does not exist in V8; recorded as a ruling (presentation, not a BR).
 - Warning delta: 63 → 62 = −1 SCR-DECK-001 → pending SCR-TAG-001.
+
+## Task 32 notes — SCR-TRASH-001
+
+- Record 06 → `screens/spec/SCR-TRASH-001-trash.md`; 18 goldens superseded by its states (`trash_purge_blocked` → `younger_inside`).
+- 21 rows `pending → SCR-TRASH-001` moved; trash README rows superseded. The rows pending to SCR-DECK-001 and SCR-CARD-001 (the Undo snackbar) stay for those screens: SCR-DECK-001 already draws it, SCR-CARD-001 in Task 33.
+- Warning delta: 62 → 61 = −1 SCR-DECK-001 → pending SCR-TRASH-001.
