@@ -496,7 +496,7 @@ screen specs. `Status` is `planned`, `implementing`, `built` or `deprecated`. A 
 | MxSpinner | Indeterminate wait in four sizes | shared | ACCOUNT, CARD, DECK, MONITORING, REMINDER, SETTINGS, SRS, STARTER, STUDY, TAG, TRANSFER | SP3a | built |
 | MxTextField | Text input in six variants | shared | ACCOUNT, CARD, DECK, MONITORING, SEARCH, STARTER, STUDY, TAG, TRANSFER | SP3a | built |
 | MxFieldMessage | Error or warning line under a field | shared | ACCOUNT, CARD, DECK, TAG | SP3a | built |
-| MxSearchField | Search input, or a trigger that opens search | shared | ACCOUNT, CARD, DECK, SEARCH, TAG | SP3a | planned |
+| MxSearchField | Search input, or a trigger that opens search | shared | ACCOUNT, CARD, DECK, SEARCH, TAG | SP3a | built |
 | MxToggle | On/off switch | shared | ACCOUNT, DECK, MONITORING, PROGRESS, REMINDER, SETTINGS, SRS, TRANSFER | SP3a | planned |
 | MxOptionRow | Single-choice radio row | shared | ACCOUNT, DECK, MONITORING, SETTINGS, SRS, STARTER, STUDY, TRANSFER | SP3a | planned |
 | MxSelectionCheckbox | Multi-select mark | shared | CARD, TRASH | SP3a | planned |
@@ -617,6 +617,13 @@ writes its block before the code. Component debt lives in its block, as a `- Deb
 - Accessibility: the field label sits above the field; the message is announced; code takes digits only and offers one-time-code autofill; a painted height of 52 (form), 48 (detail) or 76 (meaning) that grows with text
 - Tokens: `surface-container-low` (focused `surface-container-lowest`), `outline-variant`, `primary`, `error`; `bodyMedium`, `bodyLarge`, `headlineLarge`, `titleSmall`; `AppRadius.md` / `xl`; `AppSize.field*`
 - Golden: variants__light, variants__dark, states__light, states__dark
+
+#### MxSearchField
+- Variants: input (with a clear button), trigger (opens the search screen)
+- States: empty, typed, trigger
+- Accessibility: the clear button is named by `clearLabel`; the trigger is a button named by its hint; the trigger's hint starts where typed text starts
+- Tokens: `surface-container-low`, `outline-variant`, `on-surface-variant`; `bodyMedium`; `AppIconSize.medium`; `AppSize.field`
+- Golden: modes__light, modes__dark
 
 ## Do's and Don'ts
 
