@@ -2361,58 +2361,58 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:2` id: UC-REMINDER-001 |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:3` title: Bật nhắc học hằng ngày |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:4` status: ready |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:5` rules: [BR-DECK-003, BR-CORE-001, BR-CORE-004, BR-REMINDER-001, BR-REMINDER-002, |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:6` code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/ |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:8` ## Mục tiêu / Actor / Precondition |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:10` **Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2). Phần logic xong ở B |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:15` **Actor:** Người dùng |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:20` ## Main flow |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:22` **Main flow:** |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:23` 1. Người dùng mở màn nhắc học từ Settings. Hệ thống hiển thị toggle **tắt**, giờ |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:27` 2. Người dùng bật toggle. Hệ thống chuyển sang trạng thái `enabling` và **chỉ |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:29` 3. Người dùng cấp quyền. Hệ thống lưu `enabled = true` cùng giờ đang chọn, đặt |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:32` 4. Đến giờ, hệ thống đọc lại workload đến hạn. Còn `overdue + due-today > 0` thì |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:36` 5. Người dùng chạm notification. Hệ thống mở Study Home, không mở phiên nào |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:39` ## Alternative / Error flow |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:41` **Alternative flows:** |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:42` - **A1 — Đổi giờ nhắc:** chạm hàng giờ → dialog chọn giờ; xác nhận thì lưu giờ |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:45` - **A2 — Tắt nhắc:** tắt toggle → lịch bị huỷ và mọi notification đang chờ bị |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:47` - **A3 — Đến giờ nhưng không còn thẻ đến hạn:** bỏ lượt nhắc, không hiện gì, vẫn |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:49` - **A4 — Chỉ còn thẻ chưa học:** như A3 — thẻ mới không làm phát notification |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:51` - **A5 — Đổi múi giờ hoặc mở lại app:** hệ thống hoà giải lịch lúc khởi động; |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:53` - **A6 — Vuốt bỏ notification:** không có mutation nào; lượt nhắc hôm sau không |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:56` **Error flows:** |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:57` - **E1 — Từ chối quyền (Android 13+):** settings giữ nguyên **tắt**, không đặt |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:60` - **E2 — Nền tảng không hỗ trợ:** toggle bị vô hiệu và màn nói rõ nhắc học chưa |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:62` - **E3 — Đặt lịch thất bại:** lỗi của nền tảng map thành lý do có kiểu; settings |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:65` - **E4 — Lưu settings thất bại:** không đặt lịch, trạng thái UI quay về giá trị |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:67` - **E5 — Đọc workload thất bại lúc fire:** bỏ lượt nhắc thay vì hiện notificatio |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:69` - **E6 — Huỷ lịch thất bại khi tắt:** settings **đã** ở trạng thái tắt — ghi đã |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:74` - **E7 — Đọc settings thất bại khi mở màn:** không vẽ hàng nào — không toggle, |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:80` ## UI |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:82` **UI states:** loading (đọc settings) · off · enabling (đang xin quyền/đặt lịch, |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:89` ## Local |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:91` **Postconditions:** `app_settings` mang đúng trạng thái bật/tắt và giờ nhắc mà |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:95` ## API |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:97` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:99` ## Acceptance criteria |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:101` - [ ] **Given** nhắc học đang tắt, **when** người dùng bật lúc 20:00 và cấp quyề |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:102` - [ ] **Given** người dùng từ chối quyền, **when** bật, **then** settings vẫn tắ |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:103` - [ ] **Given** nền tảng không hỗ trợ nhắc học, **when** mở màn hoặc bật, **then |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:104` - [ ] **Given** nền tảng từ chối đặt lịch, **when** bật hoặc đổi giờ, **then** s |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:105` - [ ] **Given** lưu settings thất bại, **when** bật, **then** lượt vừa đặt bị gỡ |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:106` - [ ] **Given** nhắc học đang bật và có thẻ đến hạn, **when** đến giờ, **then** |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:107` - [ ] **Given** không còn thẻ đến hạn, hoặc chỉ còn thẻ chưa học, **when** đến g |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:108` - [ ] **Given** đọc workload thất bại lúc fire, **when** đến giờ, **then** không |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:109` - [ ] **Given** một ngày địa phương đã có digest, **when** lượt nhắc fire lần nữ |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:110` - [ ] **Given** nhắc học đang bật, **when** người dùng đổi giờ, **then** giờ mới |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:111` - [ ] **Given** người dùng tắt nhắc học, **when** huỷ lịch thất bại, **then** se |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:112` - [ ] **Given** app mở lại nhiều lần trong ngày khi đang bật, **when** hoà giải |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:113` - [ ] **Given** đọc settings thất bại khi mở màn, **then** stream báo `Failure`, |  |
-| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:114` - [ ] Main 5 và A6 (chạm và vuốt bỏ notification) được kiểm ở BE-B5b và FE-B5, t |  |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:2` id: UC-REMINDER-001 | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:3` title: Bật nhắc học hằng ngày | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:4` status: ready | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:5` rules: [BR-DECK-003, BR-CORE-001, BR-CORE-004, BR-REMINDER-001, BR-REMINDER-002, | superseded → FN-REMINDER-001…FN-REMINDER-007 (Business rules) |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:6` code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/ | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:10` **Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2). Phần logic xong ở B | dropped — history of how the work was split (BE-B5a, BE-B5b, FE-B5); those specs stay under docs/superpowers/specs, approved PENDING |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:15` **Actor:** Người dùng | pending → SCR-REMINDER-001 (entry point: Settings → Daily reminder); intent kept in UC-REMINDER-001 (Mục tiêu, Preconditions) |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:20` ## Main flow | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:22` **Main flow:** | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:23` 1. Người dùng mở màn nhắc học từ Settings. Hệ thống hiển thị toggle **tắt**, giờ | pending → SCR-REMINDER-001 (the toggle off, 20:00 shown inactive, the two explaining lines); intent kept in UC-REMINDER-001 step 1 + FN-REMINDER-001 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:27` 2. Người dùng bật toggle. Hệ thống chuyển sang trạng thái `enabling` và **chỉ | pending → SCR-REMINDER-001 (the enabling state with the toggle locked); intent kept in UC-REMINDER-001 step 2 + FN-REMINDER-003 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:29` 3. Người dùng cấp quyền. Hệ thống lưu `enabled = true` cùng giờ đang chọn, đặt | superseded → FN-REMINDER-003 (Kết quả) + UC-REMINDER-001 step 3 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:32` 4. Đến giờ, hệ thống đọc lại workload đến hạn. Còn `overdue + due-today > 0` thì | superseded → FN-REMINDER-004 (Kết quả) + UC-REMINDER-001 step 4 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:36` 5. Người dùng chạm notification. Hệ thống mở Study Home, không mở phiên nào | superseded → FN-REMINDER-005 + UC-REMINDER-001 step 5 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:39` ## Alternative / Error flow | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:41` **Alternative flows:** | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:42` - **A1 — Đổi giờ nhắc:** chạm hàng giờ → dialog chọn giờ; xác nhận thì lưu giờ | pending → SCR-REMINDER-001 (a tap on the time row opens the time dialog; Cancel changes nothing); intent kept in UC-REMINDER-001 A1 + FN-REMINDER-006 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:45` - **A2 — Tắt nhắc:** tắt toggle → lịch bị huỷ và mọi notification đang chờ bị | pending → SCR-REMINDER-001 (the toggle turned off, no confirmation); intent kept in UC-REMINDER-001 A2 + FN-REMINDER-007 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:47` - **A3 — Đến giờ nhưng không còn thẻ đến hạn:** bỏ lượt nhắc, không hiện gì, vẫn | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:49` - **A4 — Chỉ còn thẻ chưa học:** như A3 — thẻ mới không làm phát notification | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:51` - **A5 — Đổi múi giờ hoặc mở lại app:** hệ thống hoà giải lịch lúc khởi động; | superseded → UC-REMINDER-001 A5 (intent) + the reconcile note at the top of functional-spec/reminders.md (not an FN, spec R6) |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:53` - **A6 — Vuốt bỏ notification:** không có mutation nào; lượt nhắc hôm sau không | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:56` **Error flows:** | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:57` - **E1 — Từ chối quyền (Android 13+):** settings giữ nguyên **tắt**, không đặt | pending → SCR-REMINDER-001 (the typed reason, the system-settings guidance and Retry); intent kept in UC-REMINDER-001 E1 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:60` - **E2 — Nền tảng không hỗ trợ:** toggle bị vô hiệu và màn nói rõ nhắc học chưa | pending → SCR-REMINDER-001 (the disabled toggle and the unavailable line); intent kept in UC-REMINDER-001 E2 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:62` - **E3 — Đặt lịch thất bại:** lỗi của nền tảng map thành lý do có kiểu; settings | pending → SCR-REMINDER-001 (the typed error with Retry, no technical detail); intent kept in UC-REMINDER-001 E3 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:65` - **E4 — Lưu settings thất bại:** không đặt lịch, trạng thái UI quay về giá trị | pending → SCR-REMINDER-001 (the screen back to the stored value, the typed reason and Retry); intent kept in UC-REMINDER-001 E4 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:67` - **E5 — Đọc workload thất bại lúc fire:** bỏ lượt nhắc thay vì hiện notificatio | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:69` - **E6 — Huỷ lịch thất bại khi tắt:** settings **đã** ở trạng thái tắt — ghi đã | pending → SCR-REMINDER-001 (Copy unlike E3: one old reminder may remain; Retry); intent kept in UC-REMINDER-001 E6 + FN-REMINDER-007 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:74` - **E7 — Đọc settings thất bại khi mở màn:** không vẽ hàng nào — không toggle, | pending → SCR-REMINDER-001 (the whole-body error with Retry and no rows; Copy about a read, not E4's); intent kept in UC-REMINDER-001 E7 |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:80` ## UI | pending → SCR-REMINDER-001 (states loading · off · enabling · on · time picker · permission denied · unavailable · schedule error · settings error · cancel error · read error; no empty) |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:82` **UI states:** loading (đọc settings) · off · enabling (đang xin quyền/đặt lịch, | pending → SCR-REMINDER-001 (states loading · off · enabling · on · time picker · permission denied · unavailable · schedule error · settings error · cancel error · read error; no empty) |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:89` ## Local | superseded → FN-REMINDER-003 + FN-REMINDER-007 (Kết quả) + the reconcile note at the top of functional-spec/reminders.md (one pending reminder when on, none when off) |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:91` **Postconditions:** `app_settings` mang đúng trạng thái bật/tắt và giờ nhắc mà | superseded → FN-REMINDER-003 + FN-REMINDER-007 (Kết quả) + the reconcile note at the top of functional-spec/reminders.md (one pending reminder when on, none when off) |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:95` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:97` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:99` ## Acceptance criteria | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:101` - [ ] **Given** nhắc học đang tắt, **when** người dùng bật lúc 20:00 và cấp quyề | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:102` - [ ] **Given** người dùng từ chối quyền, **when** bật, **then** settings vẫn tắ | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:103` - [ ] **Given** nền tảng không hỗ trợ nhắc học, **when** mở màn hoặc bật, **then | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:104` - [ ] **Given** nền tảng từ chối đặt lịch, **when** bật hoặc đổi giờ, **then** s | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:105` - [ ] **Given** lưu settings thất bại, **when** bật, **then** lượt vừa đặt bị gỡ | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:106` - [ ] **Given** nhắc học đang bật và có thẻ đến hạn, **when** đến giờ, **then** | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:107` - [ ] **Given** không còn thẻ đến hạn, hoặc chỉ còn thẻ chưa học, **when** đến g | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:108` - [ ] **Given** đọc workload thất bại lúc fire, **when** đến giờ, **then** không | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:109` - [ ] **Given** một ngày địa phương đã có digest, **when** lượt nhắc fire lần nữ | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:110` - [ ] **Given** nhắc học đang bật, **when** người dùng đổi giờ, **then** giờ mới | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:111` - [ ] **Given** người dùng tắt nhắc học, **when** huỷ lịch thất bại, **then** se | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:112` - [ ] **Given** app mở lại nhiều lần trong ngày khi đang bật, **when** hoà giải | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:113` - [ ] **Given** đọc settings thất bại khi mở màn, **then** stream báo `Failure`, | moved → `USE_CASES.md` |
+| `features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md:114` - [ ] Main 5 và A6 (chạm và vuốt bỏ notification) được kiểm ở BE-B5b và FE-B5, t | moved → `USE_CASES.md` |
 
 ## features/search/usecases/UC-SEARCH-001-tim-kiem-toan-thu-vien.md
 
@@ -3138,17 +3138,17 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/reminders/ui.md:1` # Reminders — UI |  |
-| `features/reminders/ui.md:3` Màn hình, điều hướng và validation của nhắc học hằng ngày. Hành vi riêng nằm tro |  |
-| `features/reminders/ui.md:6` ## Màn hình và điều hướng |  |
-| `features/reminders/ui.md:8` \| Màn \| Route \| Mở từ \| Handoff \| |  |
-| `features/reminders/ui.md:10` \| 24 · Daily reminder \| `/settings/reminder`, trên root navigator, không có bott |  |
-| `features/reminders/ui.md:11` \| Notification \| chạm mở `/study` (Study Home), không mở phiên nào (BR-REMINDER- |  |
-| `features/reminders/ui.md:13` Màn 24 đọc nhắc học đã lưu qua stream của `WatchReminderUseCase`; bật, tắt và đổ |  |
-| `features/reminders/ui.md:18` ## Validation |  |
-| `features/reminders/ui.md:20` \| Trường \| Rule \| Message hiển thị \| Enforced by \| |  |
-| `features/reminders/ui.md:22` \| app_settings.reminder_minute_of_day \| 0–1439, phút trong ngày địa phương (BR-R |  |
-| `features/reminders/ui.md:23` \| app_settings.reminder_enabled \| chỉ lưu bật khi đã có quyền và đã đặt lịch (BR |  |
+| `features/reminders/ui.md:1` # Reminders — UI | superseded → UC-REMINDER-001 + FN-REMINDER-001…FN-REMINDER-007; per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/reminders/ui.md:3` Màn hình, điều hướng và validation của nhắc học hằng ngày. Hành vi riêng nằm tro | superseded → UC-REMINDER-001 + FN-REMINDER-001…FN-REMINDER-007; per-feature UI files are replaced by screen specs (ADR-021) |
+| `features/reminders/ui.md:6` ## Màn hình và điều hướng | pending → SCR-REMINDER-001 (route and where it opens from, with NAVIGATION.md) |
+| `features/reminders/ui.md:8` \| Màn \| Route \| Mở từ \| Handoff \| | pending → SCR-REMINDER-001 (route and where it opens from, with NAVIGATION.md) |
+| `features/reminders/ui.md:10` \| 24 · Daily reminder \| `/settings/reminder`, trên root navigator, không có bott | pending → SCR-REMINDER-001 (route /settings/reminder on the root navigator, no bottom bar; opened from the Daily reminder row of SCR-SETTINGS-002) |
+| `features/reminders/ui.md:11` \| Notification \| chạm mở `/study` (Study Home), không mở phiên nào (BR-REMINDER- | superseded → FN-REMINDER-005 (a tap opens the Study tab, no session); the deep link itself goes to NAVIGATION.md in Task 42 |
+| `features/reminders/ui.md:13` Màn 24 đọc nhắc học đã lưu qua stream của `WatchReminderUseCase`; bật, tắt và đổ | superseded → FN-REMINDER-001 (the stream) + FN-REMINDER-003, FN-REMINDER-006, FN-REMINDER-007 (one operation at a time, stated at the top of functional-spec/reminders.md) |
+| `features/reminders/ui.md:18` ## Validation | superseded → FN-REMINDER-003 + FN-REMINDER-006 (Input, Lỗi) |
+| `features/reminders/ui.md:20` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | superseded → FN-REMINDER-003 + FN-REMINDER-006 (Input, Lỗi) |
+| `features/reminders/ui.md:22` \| app_settings.reminder_minute_of_day \| 0–1439, phút trong ngày địa phương (BR-R | pending → SCR-REMINDER-001 (the time dialog: hour 0–23, minute 0–59; an out-of-range number marks the stepper and locks Save; nothing written); rule kept in FN-REMINDER-006 (minuteOutOfRange) |
+| `features/reminders/ui.md:23` \| app_settings.reminder_enabled \| chỉ lưu bật khi đã có quyền và đã đặt lịch (BR | pending → SCR-REMINDER-001 (the E1 or E3 banner, the toggle stays off); rule kept in FN-REMINDER-003 (on is stored only with permission and a pending reminder) |
 
 ## features/settings/ui.md
 
@@ -4151,3 +4151,27 @@ reset_app_settings 005, watch_study_options 006, save_root_study_options 007, us
 - settings/ui.md:30 ("no server yet, client validation is UX") is dropped: ADR-015 already says
   where integrity is checked (approval PENDING until Task 43).
 - Warning delta: 32 → 33 = +1 migrated legacy UC file. Every BR-SETTINGS is cited by an FN.
+
+## Task 18 notes — reminders
+
+| Use case class | FN |
+|---|---|
+| watch_reminder | FN-REMINDER-001 |
+| read_reminder_preview | FN-REMINDER-002 |
+| enable_reminder | FN-REMINDER-003 |
+| deliver_reminder | FN-REMINDER-004 |
+| (no class: `lib/app/app.dart` follows the notification tap) | FN-REMINDER-005 |
+| change_reminder_time | FN-REMINDER-006 |
+| disable_reminder | FN-REMINDER-007 |
+| reconcile_reminder | not an FN — internal plumbing, spec R6; described once at the top of functional-spec/reminders.md |
+
+- Ruling: deliver_reminder is an FN, against the brief's "likely not" — what the notification says,
+  when it does not come and the one-a-day limit are what a QA tests on a device, and BR-REMINDER-003
+  …007 would otherwise be cited by no FN — cost if wrong: one FN to fold into a note.
+- Ruling: the notification tap gets FN-REMINDER-005 with `Code: lib/app/app.dart` (plan P1 step 1,
+  a behaviour no class covers), so BR-REMINDER-008 has its FN; the deep link itself is written in
+  NAVIGATION.md in Task 42 — cost if wrong: one FN folded into NAVIGATION.
+- The one-operation-at-a-time gate (`ReminderOperationGate`) is a contract and is stated at the top
+  of functional-spec/reminders.md; the digest names the top root's own due count, as the legacy AC
+  and code do (BR-REMINDER-005 says MAY).
+- Warning delta: 33 → 34 = +1 migrated legacy UC file. Every BR-REMINDER is cited by an FN.

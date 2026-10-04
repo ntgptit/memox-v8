@@ -8,10 +8,10 @@
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-CORE-001](../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) | Nội dung người dùng là dữ liệu riêng tư | active | Nội dung deck/card, ghi chú, lịch sử học, file import, hình ảnh, audio và backup là dữ liệu riêng tư. | UC-PROGRESS-002, UC-REMINDER-001, UC-TRANSFER-002 |
+| [BR-CORE-001](../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) | Nội dung người dùng là dữ liệu riêng tư | active | Nội dung deck/card, ghi chú, lịch sử học, file import, hình ảnh, audio và backup là dữ liệu riêng tư. | FN-REMINDER-004, UC-PROGRESS-002, UC-TRANSFER-002 |
 | [BR-CORE-002](../shared/rules/BR-CORE-002-khong-log-noi-dung.md) | Không log nội dung | deprecated | Không log nội dung flashcard hoặc ghi chú ở bất kỳ log level nào; log ID thì được. | — |
 | [BR-CORE-003](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md) | Media trong thư mục riêng của ứng dụng | active | Media lưu trong thư mục riêng của ứng dụng. | — |
-| [BR-CORE-004](../shared/rules/BR-CORE-004-export-backup-chi-khi-nguoi-dung-yeu-cau.md) | Export và backup chỉ khi người dùng yêu cầu | active | Export và backup chỉ chạy khi người dùng chủ động yêu cầu. | UC-REMINDER-001, UC-TRANSFER-002 |
+| [BR-CORE-004](../shared/rules/BR-CORE-004-export-backup-chi-khi-nguoi-dung-yeu-cau.md) | Export và backup chỉ khi người dùng yêu cầu | active | Export và backup chỉ chạy khi người dùng chủ động yêu cầu. | UC-TRANSFER-002 |
 | [BR-CORE-005](../shared/rules/BR-CORE-005-thong-bao-loi-khong-lo-chi-tiet-ky-thuat.md) | Thông báo lỗi không lộ chi tiết kỹ thuật | active | Thông báo lỗi hiển thị cho người dùng không là thông báo kỹ thuật và không lộ id, đường dẫn hay SQL. | FN-CARD-013, FN-CARD-014 |
 
 ### Decisions
@@ -105,7 +105,7 @@ Chưa có tài liệu.
 |---|---|---|---|---|
 | [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | FN-DECK-006, FN-DECK-008, FN-DECK-009, FN-DECK-010, FN-DECK-011, UC-PROGRESS-002, UC-SEARCH-001, UC-TRASH-001 |
 | [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | FN-DECK-001, FN-DECK-007, FN-DECK-009, FN-DECK-011, FN-DECK-012, UC-PROGRESS-002, UC-SEARCH-001, UC-STARTER-001 |
-| [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | FN-DECK-007, UC-PROGRESS-002, UC-REMINDER-001, UC-SEARCH-001 |
+| [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | FN-DECK-007, UC-PROGRESS-002, UC-SEARCH-001 |
 | [BR-DECK-004](../features/deck/rules/BR-DECK-004-root-deck-chi-chua-deck-con.md) | Root deck chỉ chứa deck con | active | Root deck chỉ chứa deck con, không chứa card trực tiếp. | FN-CARD-002, FN-DECK-001, FN-DECK-005, FN-DECK-008, UC-TRANSFER-001 |
 | [BR-DECK-005](../features/deck/rules/BR-DECK-005-create-o-root-chi-co-create-deck.md) | Create ở root deck chỉ có Create deck | active | Nút Create tại root deck chỉ có một lựa chọn: Create deck. | FN-DECK-008 |
 | [BR-DECK-006](../features/deck/rules/BR-DECK-006-sub-deck-moi-co-content-type-unset.md) | Sub-deck mới có content_type unset | active | Sub-deck mới tạo có `content_type = unset`; người dùng không chọn `content_type` khi tạo. | FN-DECK-009 |
@@ -207,24 +207,36 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-REMINDER-001](../features/reminders/rules/BR-REMINDER-001-mac-dinh-tat.md) | Nhắc học mặc định tắt | active | Nhắc học mặc định tắt; không xin quyền, không đặt lịch, không hiện notification cho tới khi người dùng bật. | UC-REMINDER-001 |
-| [BR-REMINDER-002](../features/reminders/rules/BR-REMINDER-002-gio-nhac-phut-trong-ngay.md) | Giờ nhắc là phút trong ngày | active | Giờ nhắc lưu là phút trong ngày theo giờ địa phương, miền 0…1439, gợi ý mặc định 1200. | UC-REMINDER-001 |
-| [BR-REMINDER-003](../features/reminders/rules/BR-REMINDER-003-chi-nhac-khi-co-the-den-han-luc-fire.md) | Chỉ nhắc khi có thẻ đến hạn lúc fire | active | Notification chỉ hiện khi `overdue + due-today` > 0 đo lại tại thời điểm fire. | UC-REMINDER-001 |
-| [BR-REMINDER-004](../features/reminders/rules/BR-REMINDER-004-mot-notification-moi-ngay.md) | Một notification mỗi ngày | active | Nhiều nhất một notification tóm tắt mỗi ngày địa phương, thay thế notification của ngày trước. | UC-REMINDER-001 |
-| [BR-REMINDER-005](../features/reminders/rules/BR-REMINDER-005-noi-dung-notification-rieng-tu.md) | Nội dung notification giữ riêng tư | active | Notification có thể nêu tên root deck cấp bách nhất, tổng số thẻ đến hạn, số deck còn lại; không chứa nội dung thẻ. | UC-REMINDER-001 |
-| [BR-REMINDER-006](../features/reminders/rules/BR-REMINDER-006-thu-tu-cap-bach-nhat.md) | Thứ tự "cấp bách nhất" | active | "Cấp bách nhất" là thứ tự toàn phần, tất định theo overdue, tuổi overdue, rồi tên và id. | UC-REMINDER-001 |
-| [BR-REMINDER-007](../features/reminders/rules/BR-REMINDER-007-tong-den-han-gop-theo-root.md) | Tổng đến hạn gộp theo root deck | active | Tổng thẻ đến hạn gộp theo root qua `root_id`, mỗi thẻ đếm đúng một lần. | UC-REMINDER-001 |
-| [BR-REMINDER-008](../features/reminders/rules/BR-REMINDER-008-cham-notification-mo-study-home.md) | Chạm notification mở Study Home | active | Chạm notification mở Study Home, không tự mở phiên hay ghi gì; vuốt bỏ không đổi gì. | UC-REMINDER-001 |
-| [BR-REMINDER-009](../features/reminders/rules/BR-REMINDER-009-lich-inexact-va-dat-lai.md) | Lịch inexact và đặt lại lịch | active | Đặt lịch dùng cơ chế inexact, không xin exact alarm; đặt lại khi các điều kiện liệt kê xảy ra. | UC-REMINDER-001 |
-| [BR-REMINDER-010](../features/reminders/rules/BR-REMINDER-010-dat-lich-idempotent.md) | Đặt lịch idempotent | active | Hoà giải lịch với cùng settings và giờ địa phương cho đúng một lịch đang chờ. | UC-REMINDER-001 |
-| [BR-REMINDER-011](../features/reminders/rules/BR-REMINDER-011-xin-quyen-sau-khi-bat.md) | Xin quyền sau khi bật | active | Quyền notification chỉ được xin sau khi người dùng chạm bật; bị từ chối là trạng thái có kiểu. | UC-REMINDER-001 |
-| [BR-REMINDER-012](../features/reminders/rules/BR-REMINDER-012-nen-tang-khong-ho-tro.md) | Nền tảng không hỗ trợ | active | Nền tảng không hỗ trợ báo capability có kiểu, không crash, UI hiện trạng thái không khả dụng. | UC-REMINDER-001 |
+| [BR-REMINDER-001](../features/reminders/rules/BR-REMINDER-001-mac-dinh-tat.md) | Nhắc học mặc định tắt | active | Nhắc học mặc định tắt; không xin quyền, không đặt lịch, không hiện notification cho tới khi người dùng bật. | FN-REMINDER-001, FN-REMINDER-003 |
+| [BR-REMINDER-002](../features/reminders/rules/BR-REMINDER-002-gio-nhac-phut-trong-ngay.md) | Giờ nhắc là phút trong ngày | active | Giờ nhắc lưu là phút trong ngày theo giờ địa phương, miền 0…1439, gợi ý mặc định 1200. | FN-REMINDER-001, FN-REMINDER-003, FN-REMINDER-006 |
+| [BR-REMINDER-003](../features/reminders/rules/BR-REMINDER-003-chi-nhac-khi-co-the-den-han-luc-fire.md) | Chỉ nhắc khi có thẻ đến hạn lúc fire | active | Notification chỉ hiện khi `overdue + due-today` > 0 đo lại tại thời điểm fire. | FN-REMINDER-002, FN-REMINDER-004, FN-REMINDER-007 |
+| [BR-REMINDER-004](../features/reminders/rules/BR-REMINDER-004-mot-notification-moi-ngay.md) | Một notification mỗi ngày | active | Nhiều nhất một notification tóm tắt mỗi ngày địa phương, thay thế notification của ngày trước. | FN-REMINDER-004 |
+| [BR-REMINDER-005](../features/reminders/rules/BR-REMINDER-005-noi-dung-notification-rieng-tu.md) | Nội dung notification giữ riêng tư | active | Notification có thể nêu tên root deck cấp bách nhất, tổng số thẻ đến hạn, số deck còn lại; không chứa nội dung thẻ. | FN-REMINDER-002, FN-REMINDER-004 |
+| [BR-REMINDER-006](../features/reminders/rules/BR-REMINDER-006-thu-tu-cap-bach-nhat.md) | Thứ tự "cấp bách nhất" | active | "Cấp bách nhất" là thứ tự toàn phần, tất định theo overdue, tuổi overdue, rồi tên và id. | FN-REMINDER-002, FN-REMINDER-004 |
+| [BR-REMINDER-007](../features/reminders/rules/BR-REMINDER-007-tong-den-han-gop-theo-root.md) | Tổng đến hạn gộp theo root deck | active | Tổng thẻ đến hạn gộp theo root qua `root_id`, mỗi thẻ đếm đúng một lần. | FN-REMINDER-002, FN-REMINDER-004 |
+| [BR-REMINDER-008](../features/reminders/rules/BR-REMINDER-008-cham-notification-mo-study-home.md) | Chạm notification mở Study Home | active | Chạm notification mở Study Home, không tự mở phiên hay ghi gì; vuốt bỏ không đổi gì. | FN-REMINDER-005 |
+| [BR-REMINDER-009](../features/reminders/rules/BR-REMINDER-009-lich-inexact-va-dat-lai.md) | Lịch inexact và đặt lại lịch | active | Đặt lịch dùng cơ chế inexact, không xin exact alarm; đặt lại khi các điều kiện liệt kê xảy ra. | FN-REMINDER-003, FN-REMINDER-004, FN-REMINDER-006, FN-REMINDER-007 |
+| [BR-REMINDER-010](../features/reminders/rules/BR-REMINDER-010-dat-lich-idempotent.md) | Đặt lịch idempotent | active | Hoà giải lịch với cùng settings và giờ địa phương cho đúng một lịch đang chờ. | FN-REMINDER-003, FN-REMINDER-004, FN-REMINDER-006 |
+| [BR-REMINDER-011](../features/reminders/rules/BR-REMINDER-011-xin-quyen-sau-khi-bat.md) | Xin quyền sau khi bật | active | Quyền notification chỉ được xin sau khi người dùng chạm bật; bị từ chối là trạng thái có kiểu. | FN-REMINDER-003 |
+| [BR-REMINDER-012](../features/reminders/rules/BR-REMINDER-012-nen-tang-khong-ho-tro.md) | Nền tảng không hỗ trợ | active | Nền tảng không hỗ trợ báo capability có kiểu, không crash, UI hiện trạng thái không khả dụng. | FN-REMINDER-001, FN-REMINDER-003 |
+
+### Functions
+
+| ID | Title | Status | Invoked by |
+|---|---|---|---|
+| [FN-REMINDER-001](../functional-spec/reminders.md) | Theo dõi nhắc học | active | UC-REMINDER-001 |
+| [FN-REMINDER-002](../functional-spec/reminders.md) | Xem trước nội dung nhắc học | active | UC-REMINDER-001 |
+| [FN-REMINDER-003](../functional-spec/reminders.md) | Bật nhắc học | active | UC-REMINDER-001 |
+| [FN-REMINDER-004](../functional-spec/reminders.md) | Gửi nhắc học khi đến giờ | active | UC-REMINDER-001 |
+| [FN-REMINDER-005](../functional-spec/reminders.md) | Mở lối học từ notification | active | UC-REMINDER-001 |
+| [FN-REMINDER-006](../functional-spec/reminders.md) | Đổi giờ nhắc | active | UC-REMINDER-001 |
+| [FN-REMINDER-007](../functional-spec/reminders.md) | Tắt nhắc học | active | UC-REMINDER-001 |
 
 ### Use cases
 
 | ID | Title | Status | Summary |
 |---|---|---|---|
-| [UC-REMINDER-001](../features/reminders/usecases/UC-REMINDER-001-bat-nhac-hoc-hang-ngay.md) | Bật nhắc học hằng ngày | ready | — |
+| [UC-REMINDER-001](../USE_CASES.md) | Bật nhắc học hằng ngày | ready | — |
 
 ## [search](../features/search/README.md)
 
@@ -411,7 +423,7 @@ Chưa có tài liệu.
 | [BR-STUDY-048](../features/study/rules/BR-STUDY-048-browse-xem-lai-the-da-qua.md) | browse: xem lại thẻ đã qua | active | Chỉ `browse` cho xem lại thẻ đã qua trong round; xem lại không ghi lượt, không lùi `cursor`. | FN-STUDY-004 |
 | [BR-STUDY-049](../features/study/rules/BR-STUDY-049-match-toi-da-nam-cap-moi-ban.md) | match: tối đa năm cặp mỗi bàn | active | `match` bày tối đa năm cặp một lúc, chia round thành các bàn liên tiếp theo `position`. | FN-STUDY-004 |
 | [BR-STUDY-050](../features/study/rules/BR-STUDY-050-reset-dua-learned-at-va-due-at-ve-null.md) | Reset đưa learned_at và due_at về NULL | active | Reset đặt `learned_at` và `due_at` cùng về NULL. | FN-SRS-002 |
-| [BR-STUDY-051](../features/study/rules/BR-STUDY-051-hai-loai-phien-learning-reviewing.md) | Hai loại phiên learning và reviewing | active | Có đúng hai loại phiên: `learning` lấy thẻ chưa học xong, `reviewing` lấy thẻ đã học và đến hạn. | FN-DECK-007, FN-SRS-002, FN-STUDY-001, FN-STUDY-002, FN-STUDY-012, UC-REMINDER-001 |
+| [BR-STUDY-051](../features/study/rules/BR-STUDY-051-hai-loai-phien-learning-reviewing.md) | Hai loại phiên learning và reviewing | active | Có đúng hai loại phiên: `learning` lấy thẻ chưa học xong, `reviewing` lấy thẻ đã học và đến hạn. | FN-DECK-007, FN-SRS-002, FN-STUDY-001, FN-STUDY-002, FN-STUDY-012 |
 | [BR-STUDY-052](../features/study/rules/BR-STUDY-052-kind-learning-cho-chuoi-hoc-moi.md) | kind learning cho chuỗi học mới | active | `kind = learning` dành cho lượt trong chuỗi học mới; không xuất hiện trong phiên `reviewing`. | FN-STUDY-005 |
 | [BR-STUDY-053](../features/study/rules/BR-STUDY-053-hoan-tat-chuoi-hoc-moi-la-su-kien.md) | Hoàn tất chuỗi học mới là sự kiện | active | Chuỗi học mới không đổi lịch tới khi thẻ đi hết stage của nó; hoàn tất là sự kiện đặt `learned_at` và lịch đầu. | FN-CARD-014, FN-STUDY-005 |
 | [BR-STUDY-054](../features/study/rules/BR-STUDY-054-khong-mo-reviewing-khi-khong-co-the-den-han.md) | Không mở reviewing khi không có thẻ đến hạn | active | Phiên `reviewing` không mở khi không có thẻ đến hạn; không có ôn sớm hơn hạn. | FN-STUDY-001, FN-STUDY-003 |
@@ -427,14 +439,14 @@ Chưa có tài liệu.
 | [BR-STUDY-064](../features/study/rules/BR-STUDY-064-don-vi-hoc-o-lai-man-hinh-giua-luot.md) | Đơn vị học ở lại màn hình giữa hai lượt | active | Đơn vị học đang hiện ở lại trong lúc đọc kết quả và tải lượt kế; không thay bằng trạng thái tải. | FN-STUDY-004 |
 | [BR-STUDY-065](../features/study/rules/BR-STUDY-065-recall-mo-dap-an-khong-phai-ket-cuc.md) | recall: mở đáp án không phải kết cục | active | Ở `recall`, mở đáp án không ghi lượt; dừng đồng hồ và chuyển sang tự đánh giá hai lựa chọn. | FN-STUDY-006 |
 | [BR-STUDY-066](../features/study/rules/BR-STUDY-066-recall-nhip-hai-ket-thuc.md) | recall: nhịp của hai kết thúc | active | Tự đánh giá tự chuyển lượt sau commit; hết giờ hiện trạng thái sai và nút Tiếp theo. | FN-STUDY-004 |
-| [BR-STUDY-067](../features/study/rules/BR-STUDY-067-phan-loai-deck-theo-lich.md) | Phân loại deck theo lịch | active | Danh sách deck phân loại `notDue`/`dueToday`/`overdue`, suy ra lúc đọc, badge số ngày quá hạn. | FN-DECK-007, FN-STUDY-001, UC-REMINDER-001 |
+| [BR-STUDY-067](../features/study/rules/BR-STUDY-067-phan-loai-deck-theo-lich.md) | Phân loại deck theo lịch | active | Danh sách deck phân loại `notDue`/`dueToday`/`overdue`, suy ra lúc đọc, badge số ngày quá hạn. | FN-DECK-007, FN-STUDY-001 |
 | [BR-STUDY-068](../features/study/rules/BR-STUDY-068-hero-summary-bon-tap-roi-nhau.md) | Hero summary nêu tổng Due và hai nửa rời nhau | active | Hero summary nêu tổng Due của level đang xem và hai nửa rời nhau Overdue, Due today; New và Scheduled không ở hero. | FN-CARD-001, FN-DECK-007, FN-STUDY-012 |
 | [BR-STUDY-069](../features/study/rules/BR-STUDY-069-mode-round-hoan-tat-khi-sach.md) | Mode dùng round hoàn tất khi sạch | active | Mode dùng round hoàn tất khi một round kết thúc mà tập không đạt rỗng; không trần số round. | FN-STUDY-005 |
 | [BR-STUDY-070](../features/study/rules/BR-STUDY-070-muc-phan-hoi-khong-dung-la-sai.md) | Mức phản hồi không đúng là sai | active | Mọi mức phản hồi không phải "đúng" vào tập không đạt và ánh xạ như sai; không lưu vào `action`. | FN-STUDY-005 |
 | [BR-STUDY-071](../features/study/rules/BR-STUDY-071-bo-qua-the-thieu-du-lieu-co-ghi-nhan.md) | Bỏ qua thẻ thiếu dữ liệu có ghi nhận | active | Thẻ thiếu dữ liệu cho một stage bị bỏ qua có ghi nhận ở stage đó, vẫn xuất hiện ở stage khác. | FN-STUDY-005 |
 | [BR-STUDY-072](../features/study/rules/BR-STUDY-072-phien-do-khi-mo-app.md) | Phiên dở khi mở app | active | Còn phiên dở cùng ngày học: ba đường tiếp tục, Học mới, Ôn tập; phiên của ngày khác bị đóng `interrupted`. | FN-STUDY-001, FN-STUDY-002, FN-STUDY-003, FN-STUDY-010, FN-STUDY-011, FN-STUDY-012 |
 | [BR-STUDY-073](../features/study/rules/BR-STUDY-073-self-assess-tran-ba-luot-relearning.md) | self_assess: trần 3 lượt relearning | active | Chỉ `self_assess`: chạm trần 3 lượt `relearning` thì thẻ rời hàng đợi và được bật cờ. | FN-STUDY-005 |
-| [BR-STUDY-074](../features/study/rules/BR-STUDY-074-next-due-at-neo-00-00-dia-phuong.md) | next_due_at neo 00:00 địa phương | active | `next_due_at` rơi vào 00:00 giờ địa phương của ngày thứ N; lưu bằng UTC. | FN-STUDY-001, FN-STUDY-005, FN-STUDY-012, UC-PROGRESS-001, UC-PROGRESS-002, UC-REMINDER-001 |
+| [BR-STUDY-074](../features/study/rules/BR-STUDY-074-next-due-at-neo-00-00-dia-phuong.md) | next_due_at neo 00:00 địa phương | active | `next_due_at` rơi vào 00:00 giờ địa phương của ngày thứ N; lưu bằng UTC. | FN-REMINDER-004, FN-STUDY-001, FN-STUDY-005, FN-STUDY-012, UC-PROGRESS-001, UC-PROGRESS-002 |
 | [BR-STUDY-075](../features/study/rules/BR-STUDY-075-tab-study-doc-thu-vien-that.md) | Tab Study đọc thư viện thật | active | Tab Study đọc thư viện thật, không phụ thuộc deck id cố định, và không ghi database. | FN-STUDY-012 |
 | [BR-STUDY-076](../features/study/rules/BR-STUDY-076-study-home-liet-ke-root-deck.md) | Study Home liệt kê root deck | active | Study Home liệt kê root deck với workload toàn subtree, xếp theo ba khoá. | FN-STUDY-012 |
 | [BR-STUDY-077](../features/study/rules/BR-STUDY-077-study-home-ba-trang-thai.md) | Study Home ba trạng thái | active | Study Home phân biệt ba trạng thái đã tải, mỗi trạng thái một bước tiếp theo. | FN-STUDY-012, UC-STARTER-001 |

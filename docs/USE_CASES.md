@@ -851,3 +851,79 @@ Status: ready · Code: [lib/features/settings/domain/usecases/watch_app_settings
 - [ ] **Given** một lần ghi tuỳ chọn thất bại, **when** người dùng được báo, **then** thông báo không lộ SQL hay đường dẫn file, các tuỳ chọn khác vẫn là giá trị đã lưu, và thử lại ghi lại đúng thay đổi đó (E2).
 - [ ] **Given** việc đọc tuỳ chọn ứng dụng lỗi, **when** người dùng mở tuỳ chọn, **then** người dùng được báo lỗi và thử lại được, và không tuỳ chọn nào hiện giá trị bịa ra (E3).
 - [ ] **Given** việc cho cây dùng lại mặc định thất bại khi ghi, **when** người dùng được báo, **then** tuỳ chọn riêng của root giữ nguyên như trước, người dùng biết lý do, và không có thay đổi một phần (E4).
+
+## Reminders
+
+### UC-REMINDER-001 — Bật nhắc học hằng ngày
+Status: ready · Code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/features/reminders/domain/usecases/read_reminder_preview_use_case.dart, lib/features/reminders/domain/usecases/enable_reminder_use_case.dart, lib/features/reminders/domain/usecases/deliver_reminder_use_case.dart, lib/features/reminders/domain/usecases/change_reminder_time_use_case.dart, lib/features/reminders/domain/usecases/disable_reminder_use_case.dart, lib/features/reminders/domain/usecases/reconcile_reminder_use_case.dart, lib/app/app.dart] · Invokes: [FN-REMINDER-001, FN-REMINDER-002, FN-REMINDER-003, FN-REMINDER-004, FN-REMINDER-005, FN-REMINDER-006, FN-REMINDER-007]
+
+#### Mục tiêu / Actor / Precondition
+
+**Actor:** Người dùng
+**Mục tiêu:** Được nhắc mỗi ngày một lần, vào giờ mình chọn, khi còn thẻ đến hạn — và không bị
+làm phiền khi không có gì để ôn.
+**Preconditions:** Không có. Nhắc học mặc định tắt và không phụ thuộc dữ liệu nào; người dùng đặt
+được nó cả khi thư viện rỗng.
+
+#### Main flow
+
+**Main flow:**
+1. Người dùng muốn đặt nhắc học. Hệ thống thực hiện FN-REMINDER-001: người dùng biết nhắc học đang
+   **tắt**, giờ gợi ý 20:00, rằng nhắc chỉ đến khi còn thẻ đến hạn, và rằng notification có thể nêu
+   tên deck cùng số thẻ trên màn khoá. Người dùng biết notification sẽ nói gì nếu nó đến ngay lúc
+   này (FN-REMINDER-002).
+2. Người dùng bật nhắc học. Hệ thống thực hiện FN-REMINDER-003, và **chỉ lúc này** mới xin quyền
+   notification của hệ điều hành.
+3. Người dùng cấp quyền. Nhắc học bật ở giờ đã chọn, và người dùng biết nó đã bật cùng giờ đó.
+4. Đến giờ, hệ thống thực hiện FN-REMINDER-004: còn thẻ đến hạn thì người dùng nhận đúng một
+   notification tóm tắt, rồi lượt của ngày kế tiếp được đặt.
+5. Người dùng mở notification. Hệ thống thực hiện FN-REMINDER-005: người dùng tới tab Study, và
+   không phiên nào được mở thay cho họ.
+
+#### Alternative / Error flow
+
+**Alternative flows:**
+- **A1 — Đổi giờ nhắc:** người dùng chọn giờ mới (FN-REMINDER-006); giờ mới được lưu và lịch đặt lại
+  trong cùng một thao tác. Thôi chọn thì không đổi gì.
+- **A2 — Tắt nhắc:** hệ thống thực hiện FN-REMINDER-007; lượt đang chờ bị huỷ. Không xin quyền,
+  không hỏi xác nhận.
+- **A3 — Đến giờ nhưng không còn thẻ đến hạn:** không có gì đến tay người dùng, và lượt ngày kế tiếp
+  vẫn được đặt.
+- **A4 — Chỉ còn thẻ chưa học:** như A3 — thẻ mới không làm phát notification.
+- **A5 — Đổi múi giờ hoặc mở lại app:** lịch nhắc được đưa về khớp với giá trị đã lưu lúc khởi động;
+  dù việc này chạy bao nhiêu lần, vẫn chỉ có đúng một lượt chờ.
+- **A6 — Bỏ qua notification:** không gì thay đổi; lượt nhắc hôm sau giữ nguyên.
+
+**Error flows:**
+- **E1 — Từ chối quyền:** nhắc học giữ nguyên **tắt** và không có lượt nào được đặt. Người dùng biết
+  lý do, biết cách bật lại quyền ở cài đặt hệ thống, và thử lại được. Hệ thống không tự xin lại.
+- **E2 — Nền tảng không hỗ trợ:** người dùng biết nhắc học chưa có trên nền tảng này và không bật
+  được; không có trạng thái bật giả.
+- **E3 — Đặt lịch thất bại:** nhắc học **không** ở trạng thái bật; người dùng biết lý do, không kèm
+  chi tiết kỹ thuật, và thử lại được.
+- **E4 — Lưu thất bại:** không có lượt nào được đặt cho thay đổi đó; người dùng thấy lại giá trị
+  đang lưu, biết lý do và thử lại được.
+- **E5 — Đọc khối lượng việc thất bại lúc đến giờ:** không có notification đoán mò nào; lượt ngày kế
+  tiếp vẫn được đặt.
+- **E6 — Huỷ lịch thất bại khi tắt:** nhắc học **đã** tắt — chỉ lượt đang chờ là chưa huỷ được.
+  Người dùng biết có thể còn một lần nhắc cũ và thử lại được; đây không phải "chưa bật được gì".
+  Lần nhắc cũ đó vô hại: lúc đến giờ, nó đọc lại tuỳ chọn và không hiện gì.
+- **E7 — Đọc tuỳ chọn thất bại:** người dùng được báo một lần **đọc** thất bại — không phải một thay
+  đổi chưa lưu được, vì người dùng chưa đổi gì — và thử lại được; không giá trị nào được bịa ra.
+
+#### Acceptance criteria
+
+- [ ] **Given** nhắc học đang tắt, **when** người dùng bật lúc 20:00 và cấp quyền, **then** quyền được xin đúng lúc này, đúng một lượt nhắc được đặt cho lần 20:00 địa phương kế tiếp, rồi nhắc học mới được lưu bật cùng giờ.
+- [ ] **Given** người dùng từ chối quyền, **when** bật, **then** nhắc học vẫn tắt, không có lượt nào chờ, và hệ thống không tự xin lại (E1).
+- [ ] **Given** nền tảng không hỗ trợ nhắc học, **when** người dùng muốn đặt hoặc bật nhắc học, **then** người dùng biết nó không có trên nền tảng này, và không có gì được xin, lưu hay đặt lịch (E2).
+- [ ] **Given** nền tảng từ chối đặt lịch, **when** bật hoặc đổi giờ, **then** nhắc học giữ nguyên giá trị cũ và không có gì được ghi (E3).
+- [ ] **Given** lưu thất bại, **when** bật, **then** lượt vừa đặt bị gỡ và người dùng được báo lỗi (E4).
+- [ ] **Given** nhắc học đang bật và có thẻ đến hạn, **when** đến giờ, **then** khối lượng việc được đọc lại, đúng một notification nêu tên root deck cấp bách nhất, số thẻ đến hạn của deck đó và số deck khác còn thẻ đến hạn, lần gửi được ghi, và lượt của ngày mai được đặt.
+- [ ] **Given** không còn thẻ đến hạn, hoặc chỉ còn thẻ chưa học, **when** đến giờ, **then** không có gì hiện và lượt kế tiếp vẫn được đặt (A3, A4).
+- [ ] **Given** đọc khối lượng việc thất bại lúc đến giờ, **when** đến giờ, **then** không có gì hiện và lượt kế tiếp vẫn được đặt (E5).
+- [ ] **Given** một ngày địa phương đã có notification, **when** lượt nhắc đến giờ lần nữa trong ngày đó, **then** không có thêm notification.
+- [ ] **Given** nhắc học đang bật, **when** người dùng đổi giờ, **then** giờ mới được đặt lịch rồi mới lưu, trong cùng một thao tác (A1).
+- [ ] **Given** người dùng tắt nhắc học, **when** huỷ lịch thất bại, **then** nhắc học đã tắt, người dùng biết chỉ lượt chờ còn sót, và thử lại chỉ huỷ, không ghi gì (A2, E6).
+- [ ] **Given** app mở lại nhiều lần trong ngày khi đang bật, **when** lịch được đưa về khớp, **then** vẫn đúng một lượt chờ; khi đang tắt, lượt còn sót bị huỷ (A5).
+- [ ] **Given** đọc tuỳ chọn thất bại, **when** người dùng muốn đặt nhắc học, **then** người dùng được báo lỗi đọc, và không giá trị nào được bịa ra (E7).
+- [ ] **Given** notification đang hiện, **when** người dùng mở nó, **then** người dùng tới tab Study, không phiên nào được mở và không gì được ghi; bỏ qua notification thì không gì thay đổi (bước 5, A6 — kiểm trên thiết bị).

@@ -10,3 +10,4 @@ section. Định dạng: [docs/README.md](../README.md), mục "UC, FN và scree
 | SRS | [srs.md](srs.md) |
 | Study | [study.md](study.md) |
 | Settings | [settings.md](settings.md) |
+| Reminders | [reminders.md](reminders.md) |
