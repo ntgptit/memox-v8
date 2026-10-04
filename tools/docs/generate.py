@@ -30,6 +30,14 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from mdparse import (  # noqa: F401 — re-exported: check.py and the tests use g.<name>
+    h2_sections,
+    iter_unfenced,
+    parse_scalar,
+    parse_value,
+    split_frontmatter,
+)
+
 ROOT = Path.cwd()
 DOCS = ROOT / "docs"
 GENERATED = DOCS / "_generated"
@@ -85,58 +93,6 @@ class Doc:
 
 
 # ---------------------------------------------------------------- parsing
-
-
-def parse_scalar(raw: str) -> str:
-    value = raw.strip()
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
-        return value[1:-1]
-    return value
-
-
-def parse_value(raw: str) -> object:
-    value = raw.strip()
-    if not (value.startswith("[") and value.endswith("]")):
-        return parse_scalar(value)
-    inner = value[1:-1].strip()
-    if not inner:
-        return []
-    return [parse_scalar(item) for item in inner.split(",")]
-
-
-def split_frontmatter(text: str) -> tuple[dict[str, object] | None, str, str | None]:
-    """Return (meta, body, error). meta is None when the file has no block."""
-    lines = text.splitlines()
-    if not lines or lines[0].strip() != "---":
-        return None, text, None
-    try:
-        end = next(i for i in range(1, len(lines)) if lines[i].strip() == "---")
-    except StopIteration:
-        return None, text, "frontmatter has no closing `---` line"
-    meta: dict[str, object] = {}
-    for line_no, line in enumerate(lines[1:end], 2):
-        if not line.strip():
-            continue
-        if ":" not in line:
-            return meta, "\n".join(lines[end + 1 :]), f"frontmatter line {line_no}: expected `key: value`"
-        key, raw = line.split(":", 1)
-        meta[key.strip()] = parse_value(raw)
-    return meta, "\n".join(lines[end + 1 :]), None
-
-
-def iter_unfenced(text: str):
-    """Yield (line_no, line) for lines outside ``` fences."""
-    fenced = False
-    for line_no, line in enumerate(text.splitlines(), 1):
-        if line.lstrip().startswith("```"):
-            fenced = not fenced
-            continue
-        if not fenced:
-            yield line_no, line
-
-
-def h2_sections(body: str) -> list[str]:
-    return [line[3:].strip() for _, line in iter_unfenced(body) if line.startswith("## ")]
 
 
 def classify(path: Path) -> tuple[str, str] | None:
