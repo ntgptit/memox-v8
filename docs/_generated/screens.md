@@ -2,12 +2,102 @@
 
 # Screens
 
+## [SCR-CARD-001](../screens/spec/SCR-CARD-001-card-list.md) · Card list
+
+- Invokes: FN-DECK-008, FN-CARD-001, FN-CARD-012, FN-CARD-008, FN-CARD-006, FN-CARD-007, FN-CARD-009, FN-CARD-010, FN-CARD-004, FN-CARD-005, FN-DECK-002, FN-DECK-010, FN-DECK-011, FN-DECK-004, FN-DECK-005
+- Rules via FN: BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD-009, BR-CARD-010, BR-CARD-011, BR-CARD-012, BR-DECK-001, BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-DECK-020, BR-DECK-021, BR-DECK-022, BR-DECK-023, BR-DECK-024, BR-SRS-003, BR-SRS-005, BR-SRS-006, BR-SRS-028, BR-SRS-029, BR-STUDY-047, BR-STUDY-068, BR-TAG-001, BR-TAG-002, BR-TAG-004, BR-TAG-005, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-006, BR-TRASH-008, BR-TRASH-010
+- Use cases: UC-CARD-001, UC-CARD-002, UC-TAG-001, UC-TRASH-001
+- Entry points: SCR-DECK-001
+
+| State | Golden | Present |
+|---|---|---|
+| `loaded` | light, dark | — |
+| `empty` | none | — |
+| `search_empty` | light, dark | — |
+| `search_results` | light, dark | — |
+| `loading` | none | — |
+| `error` | none | — |
+| `not_found` | none | — |
+| `deck_actions` | none | — |
+| `selection` | light, dark | — |
+| `move_targets` | none | — |
+| `no_move_target` | none | — |
+| `bulk_failed` | light, dark | — |
+| `del_card` | light, dark | — |
+| `del_deck` | none | — |
+| `trashed` | light, dark | — |
+| `tag_filter_none` | light, dark | — |
+| `tag_filter_one` | light, dark | — |
+| `tag_filter_several` | light, dark | — |
+| `tag_filter_applied` | light, dark | — |
+| `tag_filter_no_card` | light, dark | — |
+
+## [SCR-CARD-002](../screens/spec/SCR-CARD-002-card-create.md) · Card create
+
+- Invokes: FN-CARD-002
+- Rules via FN: BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-CARD-009, BR-DECK-004, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-TAG-001, BR-TAG-002
+- Use cases: UC-CARD-001
+- Entry points: SCR-CARD-001, SCR-DECK-001
+
+| State | Golden | Present |
+|---|---|---|
+| `empty_form` | light, dark | — |
+| `empty_form_keyboard` | light, dark | — |
+| `valid` | none | — |
+| `details` | none | — |
+| `validation_err` | light, dark | — |
+| `front_too_long` | none | — |
+| `tag_limit` | none | — |
+| `deck_rejects` | none | — |
+| `saving` | none | — |
+| `save_failed` | none | — |
+| `deck_gone` | none | — |
+| `discard` | none | — |
+
+## [SCR-CARD-003](../screens/spec/SCR-CARD-003-card-edit.md) · Card edit
+
+- Invokes: FN-CARD-013, FN-CARD-003, FN-CARD-004
+- Rules via FN: BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-005, BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD-009, BR-CARD-011, BR-CARD-013, BR-CARD-014, BR-CARD-019, BR-CARD-020, BR-CORE-005, BR-DECK-015, BR-TAG-001, BR-TAG-002, BR-TRASH-001, BR-TRASH-004, BR-TRASH-005
+- Use cases: UC-CARD-001, UC-CARD-002
+- Entry points: SCR-CARD-004
+
+| State | Golden | Present |
+|---|---|---|
+| `loaded` | light, dark | — |
+| `more` | light, dark | — |
+| `loading` | none | — |
+| `load_error` | none | — |
+| `not_found` | none | — |
+| `validation_err` | light, dark | — |
+| `dirty_saving` | none | — |
+| `save_failed` | none | — |
+| `discard` | none | — |
+| `del_confirm` | light, dark | — |
+
+## [SCR-CARD-004](../screens/spec/SCR-CARD-004-card-detail.md) · Card detail
+
+- Invokes: FN-CARD-013, FN-CARD-014
+- Rules via FN: BR-CARD-003, BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD-009, BR-CARD-013, BR-CARD-014, BR-CARD-015, BR-CARD-016, BR-CARD-017, BR-CARD-018, BR-CARD-019, BR-CARD-020, BR-CORE-005, BR-MODE-008, BR-SRS-014, BR-SRS-015, BR-STUDY-028, BR-STUDY-034, BR-STUDY-035, BR-STUDY-053, BR-TAG-001
+- Use cases: UC-CARD-002
+- Entry points: SCR-CARD-001, SCR-CARD-003, SCR-SEARCH-001
+
+| State | Golden | Present |
+|---|---|---|
+| `loaded` | light, dark | — |
+| `history` | light, dark | — |
+| `load_more` | none | — |
+| `load_more_failed` | none | — |
+| `empty` | none | — |
+| `loading` | none | — |
+| `error` | none | — |
+| `not_found` | none | — |
+
 ## [SCR-DECK-001](../screens/spec/SCR-DECK-001-deck-list.md) · Deck list
 
 - Invokes: FN-DECK-007, FN-DECK-008, FN-DECK-001, FN-DECK-009, FN-DECK-002, FN-DECK-012, FN-DECK-010, FN-DECK-011, FN-DECK-004, FN-DECK-005, FN-DECK-006
 - Rules via FN: BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-DECK-004, BR-DECK-005, BR-DECK-006, BR-DECK-007, BR-DECK-008, BR-DECK-009, BR-DECK-010, BR-DECK-011, BR-DECK-012, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-DECK-020, BR-DECK-021, BR-DECK-022, BR-DECK-023, BR-DECK-024, BR-DECK-025, BR-DECK-026, BR-DECK-027, BR-SRS-001, BR-SRS-003, BR-SRS-005, BR-SRS-006, BR-SRS-007, BR-SRS-013, BR-SRS-028, BR-SRS-029, BR-STUDY-008, BR-STUDY-046, BR-STUDY-051, BR-STUDY-067, BR-STUDY-068, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-006, BR-TRASH-008, BR-TRASH-010
 - Use cases: UC-DECK-001, UC-DECK-002, UC-DECK-003, UC-DECK-004, UC-DECK-005, UC-DECK-006
-- Entry points: SCR-DECK-001, SCR-SEARCH-001, SCR-SRS-001, SCR-STARTER-001, SCR-TAG-001
+- Entry points: SCR-CARD-002, SCR-DECK-001, SCR-SEARCH-001, SCR-SRS-001, SCR-STARTER-001, SCR-TAG-001
 
 | State | Golden | Present |
 |---|---|---|
@@ -121,7 +211,7 @@
 - Invokes: FN-TRASH-001, FN-TRASH-002, FN-TRASH-003, FN-TRASH-004, FN-TRASH-005, FN-TRASH-006, FN-TRASH-007
 - Rules via FN: BR-CARD-010, BR-CORE-001, BR-DECK-001, BR-DECK-009, BR-DECK-010, BR-DECK-015, BR-DECK-017, BR-DECK-018, BR-SRS-006, BR-TRASH-003, BR-TRASH-006, BR-TRASH-007, BR-TRASH-009, BR-TRASH-010, BR-TRASH-011, BR-TRASH-012
 - Use cases: UC-TRASH-001
-- Entry points: SCR-DECK-001
+- Entry points: SCR-CARD-001, SCR-CARD-002, SCR-CARD-004, SCR-DECK-001
 
 | State | Golden | Present |
 |---|---|---|

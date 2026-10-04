@@ -391,233 +391,233 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/07-card-list.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/07-card-list.md:3` # 07 · Card list |  |
-| `shared/ui/screen-handoff/07-card-list.md:5` An open deck whose content type is `card`: the card section of `DeckLevelScreen` |  |
-| `shared/ui/screen-handoff/07-card-list.md:8` ## Layout |  |
-| `shared/ui/screen-handoff/07-card-list.md:10` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:12` \| App bar \| `MxAppBar`, injected by `app/` (spec A14) \| Back, deck name, search |  |
-| `shared/ui/screen-handoff/07-card-list.md:13` \| Breadcrumb \| `MxBreadcrumb` \| Library › ancestors › deck; hidden while selecti |  |
-| `shared/ui/screen-handoff/07-card-list.md:14` \| Search \| `MxSearchField` \| Revealed by the search action; closing it clears th |  |
-| `shared/ui/screen-handoff/07-card-list.md:15` \| Summary card \| `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` |  |
-| `shared/ui/screen-handoff/07-card-list.md:16` \| Filters \| `MxFilterChip` \| All · Due · New · Flagged with counts, then Tags wi |  |
-| `shared/ui/screen-handoff/07-card-list.md:17` \| Header \| `MxListSectionHeader` + `MxChipTrigger` \| "Cards" while every card of |  |
-| `shared/ui/screen-handoff/07-card-list.md:18` \| Rows \| card surface per row, 8 apart \| The checkbox while selecting (no status |  |
-| `shared/ui/screen-handoff/07-card-list.md:19` \| Bulk bar \| `MxFooterBar` with five icon buttons \| Move · Flag · Tag · Export ( |  |
-| `shared/ui/screen-handoff/07-card-list.md:20` \| FAB \| `MxFab` \| "New card" (#33); hidden while selecting and while search is o |  |
-| `shared/ui/screen-handoff/07-card-list.md:22` ## Deck action sheet (`⋮`) |  |
-| `shared/ui/screen-handoff/07-card-list.md:24` Study this deck · Rename · Move to another deck · Import cards (screen 11) · Exp |  |
-| `shared/ui/screen-handoff/07-card-list.md:27` ## States |  |
-| `shared/ui/screen-handoff/07-card-list.md:29` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:31` \| loaded \| `card_list_light.png` \| `card_list_dark.png` \| The Tags chip reads as |  |
-| `shared/ui/screen-handoff/07-card-list.md:32` \| empty \| no golden \| no golden \| The deck is unset again (E-L1): screen 01's un |  |
-| `shared/ui/screen-handoff/07-card-list.md:33` \| searchEmpty \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:34` \| loading \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:35` \| error \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:36` \| notFound \| no golden \| no golden \| As screen 01 deckNotFound. \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:37` \| deckActions \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:38` \| selection \| `card_selection_light.png` \| `card_selection_dark.png` \| Long-pres |  |
-| `shared/ui/screen-handoff/07-card-list.md:39` \| moveTargets \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:40` \| noMoveTarget \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:41` \| bulkFailed \| `card_list_bulk_failed_light.png` \| `card_list_bulk_failed_dark.p |  |
-| `shared/ui/screen-handoff/07-card-list.md:42` \| delCard \| `card_list_trash_dialog_light.png` \| `card_list_trash_dialog_dark.pn |  |
-| `shared/ui/screen-handoff/07-card-list.md:43` \| delDeck \| no golden \| no golden \| As screen 01 deckDelete. \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:44` \| trashed \| `card_list_trashed_light.png` \| `card_list_trashed_dark.png` \| One c |  |
-| `shared/ui/screen-handoff/07-card-list.md:45` Other goldens: `card_list_search_light.png` / `card_list_search_dark.png` (searc |  |
-| `shared/ui/screen-handoff/07-card-list.md:48` Not captured: `cardActions` gives way to the card detail: a tap opens it (#35). |  |
-| `shared/ui/screen-handoff/07-card-list.md:53` ## Tag filter |  |
-| `shared/ui/screen-handoff/07-card-list.md:55` Shaped by Impeccable before the plan (FE-B2 D3, |  |
-| `shared/ui/screen-handoff/07-card-list.md:58` - **The sheet:** `MxBottomSheet`, "Filter by tags" over "Show cards with any of |  |
-| `shared/ui/screen-handoff/07-card-list.md:63` - **The footer:** "Clear" (empties the choice, stays open; off when nothing is c |  |
-| `shared/ui/screen-handoff/07-card-list.md:67` - **Applying:** a card passes with any chosen tag (BR-TAG-004), and with the sta |  |
-| `shared/ui/screen-handoff/07-card-list.md:70` - **No card with these tags (A7):** "No cards with these tags" with "Clear tag f |  |
-| `shared/ui/screen-handoff/07-card-list.md:72` \| State \| Golden (light) \| Golden (dark) \| |  |
-| `shared/ui/screen-handoff/07-card-list.md:74` \| none chosen \| `card_tag_filter_none_light.png` \| `card_tag_filter_none_dark.pn |  |
-| `shared/ui/screen-handoff/07-card-list.md:75` \| one chosen \| `card_tag_filter_one_light.png` \| `card_tag_filter_one_dark.png` |  |
-| `shared/ui/screen-handoff/07-card-list.md:76` \| several chosen \| `card_tag_filter_several_light.png` \| `card_tag_filter_severa |  |
-| `shared/ui/screen-handoff/07-card-list.md:77` \| applied \| `card_tag_filter_applied_light.png` \| `card_tag_filter_applied_dark. |  |
-| `shared/ui/screen-handoff/07-card-list.md:78` \| no card (A7) \| `card_tag_filter_no_card_light.png` \| `card_tag_filter_no_card_ |  |
-| `shared/ui/screen-handoff/07-card-list.md:80` The goldens are in `test/features/card/presentation/goldens/`. |  |
-| `shared/ui/screen-handoff/07-card-list.md:82` ## Rulings |  |
-| `shared/ui/screen-handoff/07-card-list.md:84` - **Critique 2026-09-30 part 1:** search hides the summary card and keeps the fi |  |
-| `shared/ui/screen-handoff/07-card-list.md:85` - **Move to Trash dialog:** no glyph (`MxDialog` has no glyph slot); the body re |  |
-| `shared/ui/screen-handoff/07-card-list.md:86` - **FE-B2 D14 (critique P1b):** Tags is a filter chip, selected while tags are a |  |
-| `shared/ui/screen-handoff/07-card-list.md:87` - **BR-DECK-015, E-L1:** an empty card list makes the deck unset again; screen 0 |  |
-| `shared/ui/screen-handoff/07-card-list.md:88` - **E-L2:** the flag uses the warning colour; the theme has no streak token. Sup |  |
-| `shared/ui/screen-handoff/07-card-list.md:89` - **E-L3:** "Select all" is a compact secondary `MxButton`. |  |
-| `shared/ui/screen-handoff/07-card-list.md:90` - **E-L4:** the due chip is an `MxBadge`: overdue warning, today primary, else n |  |
-| `shared/ui/screen-handoff/07-card-list.md:91` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/07-card-list.md:92` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig |  |
-| `shared/ui/screen-handoff/07-card-list.md:93` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/07-card-list.md:94` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the fla |  |
-| `shared/ui/screen-handoff/07-card-list.md:96` ## Copy |  |
-| `shared/ui/screen-handoff/07-card-list.md:98` - Summary: "Deck progress · {algorithm}" · "{n} of {total} cards mastered" · "Ne |  |
-| `shared/ui/screen-handoff/07-card-list.md:99` - Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Cards" · "Sh |  |
-| `shared/ui/screen-handoff/07-card-list.md:100` - Selection: "{n} selected" · "Select all {total}" · "Move" · "Flag" · "Tag" · " |  |
-| `shared/ui/screen-handoff/07-card-list.md:101` - Move to Trash: "Move this card to Trash?" / "Move {n} cards to Trash?" · "Reco |  |
-| `shared/ui/screen-handoff/07-card-list.md:102` - Empty: "No cards in this deck yet" · "Write your first card, or bring many at |  |
-| `shared/ui/screen-handoff/07-card-list.md:103` - Search empty: "No cards match “{term}”" · "Try a different term, or clear the |  |
-| `shared/ui/screen-handoff/07-card-list.md:104` - Tag filter: "Tags" · "Filter by tags" · "Show cards with any of the chosen tag |  |
-| `shared/ui/screen-handoff/07-card-list.md:105` - Error: "Couldn't open this deck" · "Your data is safe on this device. Try agai |  |
-| `shared/ui/screen-handoff/07-card-list.md:106` - Move: "Move {n} cards to…" · "Schedule, history, flags and tags travel with th |  |
+| `shared/ui/screen-handoff/07-card-list.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:3` # 07 · Card list | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:5` An open deck whose content type is `card`: the card section of `DeckLevelScreen` | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:8` ## Layout | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:10` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:12` \| App bar \| `MxAppBar`, injected by `app/` (spec A14) \| Back, deck name, search | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:13` \| Breadcrumb \| `MxBreadcrumb` \| Library › ancestors › deck; hidden while selecti | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:14` \| Search \| `MxSearchField` \| Revealed by the search action; closing it clears th | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:15` \| Summary card \| `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:16` \| Filters \| `MxFilterChip` \| All · Due · New · Flagged with counts, then Tags wi | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:17` \| Header \| `MxListSectionHeader` + `MxChipTrigger` \| "Cards" while every card of | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:18` \| Rows \| card surface per row, 8 apart \| The checkbox while selecting (no status | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:19` \| Bulk bar \| `MxFooterBar` with five icon buttons \| Move · Flag · Tag · Export ( | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:20` \| FAB \| `MxFab` \| "New card" (#33); hidden while selecting and while search is o | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:22` ## Deck action sheet (`⋮`) | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:24` Study this deck · Rename · Move to another deck · Import cards (screen 11) · Exp | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:27` ## States | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:29` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:31` \| loaded \| `card_list_light.png` \| `card_list_dark.png` \| The Tags chip reads as | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:32` \| empty \| no golden \| no golden \| The deck is unset again (E-L1): screen 01's un | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:33` \| searchEmpty \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:34` \| loading \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:35` \| error \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:36` \| notFound \| no golden \| no golden \| As screen 01 deckNotFound. \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:37` \| deckActions \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:38` \| selection \| `card_selection_light.png` \| `card_selection_dark.png` \| Long-pres | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:39` \| moveTargets \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:40` \| noMoveTarget \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:41` \| bulkFailed \| `card_list_bulk_failed_light.png` \| `card_list_bulk_failed_dark.p | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:42` \| delCard \| `card_list_trash_dialog_light.png` \| `card_list_trash_dialog_dark.pn | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:43` \| delDeck \| no golden \| no golden \| As screen 01 deckDelete. \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:44` \| trashed \| `card_list_trashed_light.png` \| `card_list_trashed_dark.png` \| One c | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:45` Other goldens: `card_list_search_light.png` / `card_list_search_dark.png` (searc | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:48` Not captured: `cardActions` gives way to the card detail: a tap opens it (#35). | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:53` ## Tag filter | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:55` Shaped by Impeccable before the plan (FE-B2 D3, | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:58` - **The sheet:** `MxBottomSheet`, "Filter by tags" over "Show cards with any of | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:63` - **The footer:** "Clear" (empties the choice, stays open; off when nothing is c | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:67` - **Applying:** a card passes with any chosen tag (BR-TAG-004), and with the sta | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:70` - **No card with these tags (A7):** "No cards with these tags" with "Clear tag f | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:72` \| State \| Golden (light) \| Golden (dark) \| | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:74` \| none chosen \| `card_tag_filter_none_light.png` \| `card_tag_filter_none_dark.pn | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:75` \| one chosen \| `card_tag_filter_one_light.png` \| `card_tag_filter_one_dark.png` | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:76` \| several chosen \| `card_tag_filter_several_light.png` \| `card_tag_filter_severa | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:77` \| applied \| `card_tag_filter_applied_light.png` \| `card_tag_filter_applied_dark. | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:78` \| no card (A7) \| `card_tag_filter_no_card_light.png` \| `card_tag_filter_no_card_ | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:80` The goldens are in `test/features/card/presentation/goldens/`. | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:82` ## Rulings | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:84` - **Critique 2026-09-30 part 1:** search hides the summary card and keeps the fi | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:85` - **Move to Trash dialog:** no glyph (`MxDialog` has no glyph slot); the body re | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:86` - **FE-B2 D14 (critique P1b):** Tags is a filter chip, selected while tags are a | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:87` - **BR-DECK-015, E-L1:** an empty card list makes the deck unset again; screen 0 | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:88` - **E-L2:** the flag uses the warning colour; the theme has no streak token. Sup | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:89` - **E-L3:** "Select all" is a compact secondary `MxButton`. | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:90` - **E-L4:** the due chip is an `MxBadge`: overdue warning, today primary, else n | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:91` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:92` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:93` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:94` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the fla | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:96` ## Copy | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:98` - Summary: "Deck progress · {algorithm}" · "{n} of {total} cards mastered" · "Ne | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:99` - Filters and header: "All" · "Due" · "New" · "Flagged" · "Tags" · "Cards" · "Sh | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:100` - Selection: "{n} selected" · "Select all {total}" · "Move" · "Flag" · "Tag" · " | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:101` - Move to Trash: "Move this card to Trash?" / "Move {n} cards to Trash?" · "Reco | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:102` - Empty: "No cards in this deck yet" · "Write your first card, or bring many at | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:103` - Search empty: "No cards match “{term}”" · "Try a different term, or clear the | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:104` - Tag filter: "Tags" · "Filter by tags" · "Show cards with any of the chosen tag | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:105` - Error: "Couldn't open this deck" · "Your data is safe on this device. Try agai | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `shared/ui/screen-handoff/07-card-list.md:106` - Move: "Move {n} cards to…" · "Schedule, history, flags and tags travel with th | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 
 ## shared/ui/screen-handoff/08-card-create.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/08-card-create.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/08-card-create.md:3` # 08 · Card create |  |
-| `shared/ui/screen-handoff/08-card-create.md:5` Adding a card to an open `card` deck: `CardEditorScreen.create` → |  |
-| `shared/ui/screen-handoff/08-card-create.md:9` ## Layout |  |
-| `shared/ui/screen-handoff/08-card-create.md:11` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/08-card-create.md:13` \| App bar \| `MxAppBar` (content density) \| Close (✕); title "New card". No Save |  |
-| `shared/ui/screen-handoff/08-card-create.md:14` \| Deck path \| `DeckContextHeaderWidget` (`MxBreadcrumb`), injected by `app/` (ru |  |
-| `shared/ui/screen-handoff/08-card-create.md:15` \| Deck-rejects banner \| `MxInlineBanner` (warning) \| "This deck no longer accept |  |
-| `shared/ui/screen-handoff/08-card-create.md:16` \| Front \| `CardFieldWidget` (`MxTextField`, `MxTextFieldVariant.term`) \| Overlin |  |
-| `shared/ui/screen-handoff/08-card-create.md:17` \| Back \| `CardFieldWidget` (`MxTextFieldVariant.meaning`) \| Overline "Back · Mea |  |
-| `shared/ui/screen-handoff/08-card-create.md:18` \| Optional details \| `CardAddDetailsWidget` disclosure → `CardOptionalFieldsWidg |  |
-| `shared/ui/screen-handoff/08-card-create.md:19` \| Tags \| `CardTagEditorWidget` (`CardRemovableTagChipWidget` × n, `MxButton` "Ad |  |
-| `shared/ui/screen-handoff/08-card-create.md:20` \| Footer \| `CardEditorFooterWidget` (`MxFooterBar`) \| Caption line; Cancel (`MxB |  |
-| `shared/ui/screen-handoff/08-card-create.md:21` \| Discard dialog \| `CardDiscardDialogWidget` (`MxDialog`, `MxSheetActions`) \| "D |  |
-| `shared/ui/screen-handoff/08-card-create.md:22` \| Gone state \| `CardGoneWidget` (`MxEmptyState`) \| "This deck is no longer here" |  |
-| `shared/ui/screen-handoff/08-card-create.md:24` ## States |  |
-| `shared/ui/screen-handoff/08-card-create.md:26` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/08-card-create.md:28` \| emptyForm \| `card_editor_create_light.png` \| `card_editor_create_dark.png` \| B |  |
-| `shared/ui/screen-handoff/08-card-create.md:29` \| valid \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/08-card-create.md:30` \| details \| no golden \| no golden \| The opened example, hint and pronunciation a |  |
-| `shared/ui/screen-handoff/08-card-create.md:31` \| validationErr \| `card_editor_errors_light.png` \| `card_editor_errors_dark.png` |  |
-| `shared/ui/screen-handoff/08-card-create.md:32` \| frontTooLong \| no golden \| no golden \| Shown once the front field is touched. |  |
-| `shared/ui/screen-handoff/08-card-create.md:33` \| tagLimit \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/08-card-create.md:34` \| deckRejects \| no golden \| no golden \| Caption "This deck can't take cards now. |  |
-| `shared/ui/screen-handoff/08-card-create.md:35` \| saving \| no golden \| no golden \| The button shows only its spinner in place of |  |
-| `shared/ui/screen-handoff/08-card-create.md:36` \| saveFailed \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/08-card-create.md:37` Other goldens: `card_editor_create_keyboard_light.png` / `card_editor_create_key |  |
-| `shared/ui/screen-handoff/08-card-create.md:39` Two further states, both built as |  |
-| `shared/ui/screen-handoff/08-card-create.md:45` ## Rulings |  |
-| `shared/ui/screen-handoff/08-card-create.md:47` - **§9 row 81 (P4a-L7):** the deck chip is not a picker, so a deck that rejects |  |
-| `shared/ui/screen-handoff/08-card-create.md:48` - **§9 row 101:** "Add details" has a solid `outlineVariant` edge, 48 tall (touc |  |
-| `shared/ui/screen-handoff/08-card-create.md:49` - **§9 row 81 (P4a-L8):** "Add tag" is an outline `MxButton` chip; there is no d |  |
-| `shared/ui/screen-handoff/08-card-create.md:50` - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persiste |  |
-| `shared/ui/screen-handoff/08-card-create.md:51` - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spin |  |
-| `shared/ui/screen-handoff/08-card-create.md:52` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/08-card-create.md:53` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/08-card-create.md:55` ## Copy |  |
-| `shared/ui/screen-handoff/08-card-create.md:57` - App bar and caption: "New card" · "Front and back are required to save." · "Fi |  |
-| `shared/ui/screen-handoff/08-card-create.md:58` - Fields: "Front · Term" · "Back · Meaning" · "Required" · "{count} / {limit}" · |  |
-| `shared/ui/screen-handoff/08-card-create.md:59` - Errors: "Add the term to remember." · "The term can be at most 60 characters. |  |
-| `shared/ui/screen-handoff/08-card-create.md:60` - Deck rejects: "This deck no longer accepts cards." · "It now holds sub-decks." |  |
-| `shared/ui/screen-handoff/08-card-create.md:61` - Tags: "Tags" · "optional · {count} / {limit}" · "Add tag" · "Add" · "Remove {t |  |
-| `shared/ui/screen-handoff/08-card-create.md:62` - Footer: "Cancel" · "Save card" · "Retry save" · "Couldn't save card." · "Nothi |  |
-| `shared/ui/screen-handoff/08-card-create.md:63` - Discard: "Discard this card?" · "What you typed is not saved." · "Keep editing |  |
-| `shared/ui/screen-handoff/08-card-create.md:64` - Gone: "This deck is no longer here" · "It was moved to Trash or deleted while |  |
-| `shared/ui/screen-handoff/08-card-create.md:65` - Toast: "Card added". |  |
+| `shared/ui/screen-handoff/08-card-create.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:3` # 08 · Card create | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:5` Adding a card to an open `card` deck: `CardEditorScreen.create` → | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:9` ## Layout | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:11` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:13` \| App bar \| `MxAppBar` (content density) \| Close (✕); title "New card". No Save | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:14` \| Deck path \| `DeckContextHeaderWidget` (`MxBreadcrumb`), injected by `app/` (ru | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:15` \| Deck-rejects banner \| `MxInlineBanner` (warning) \| "This deck no longer accept | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:16` \| Front \| `CardFieldWidget` (`MxTextField`, `MxTextFieldVariant.term`) \| Overlin | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:17` \| Back \| `CardFieldWidget` (`MxTextFieldVariant.meaning`) \| Overline "Back · Mea | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:18` \| Optional details \| `CardAddDetailsWidget` disclosure → `CardOptionalFieldsWidg | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:19` \| Tags \| `CardTagEditorWidget` (`CardRemovableTagChipWidget` × n, `MxButton` "Ad | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:20` \| Footer \| `CardEditorFooterWidget` (`MxFooterBar`) \| Caption line; Cancel (`MxB | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:21` \| Discard dialog \| `CardDiscardDialogWidget` (`MxDialog`, `MxSheetActions`) \| "D | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:22` \| Gone state \| `CardGoneWidget` (`MxEmptyState`) \| "This deck is no longer here" | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:24` ## States | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:26` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:28` \| emptyForm \| `card_editor_create_light.png` \| `card_editor_create_dark.png` \| B | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:29` \| valid \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:30` \| details \| no golden \| no golden \| The opened example, hint and pronunciation a | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:31` \| validationErr \| `card_editor_errors_light.png` \| `card_editor_errors_dark.png` | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:32` \| frontTooLong \| no golden \| no golden \| Shown once the front field is touched. | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:33` \| tagLimit \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:34` \| deckRejects \| no golden \| no golden \| Caption "This deck can't take cards now. | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:35` \| saving \| no golden \| no golden \| The button shows only its spinner in place of | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:36` \| saveFailed \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:37` Other goldens: `card_editor_create_keyboard_light.png` / `card_editor_create_key | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:39` Two further states, both built as | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:45` ## Rulings | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:47` - **§9 row 81 (P4a-L7):** the deck chip is not a picker, so a deck that rejects | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:48` - **§9 row 101:** "Add details" has a solid `outlineVariant` edge, 48 tall (touc | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:49` - **§9 row 81 (P4a-L8):** "Add tag" is an outline `MxButton` chip; there is no d | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:50` - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persiste | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:51` - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spin | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:52` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:53` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:55` ## Copy | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:57` - App bar and caption: "New card" · "Front and back are required to save." · "Fi | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:58` - Fields: "Front · Term" · "Back · Meaning" · "Required" · "{count} / {limit}" · | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:59` - Errors: "Add the term to remember." · "The term can be at most 60 characters. | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:60` - Deck rejects: "This deck no longer accepts cards." · "It now holds sub-decks." | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:61` - Tags: "Tags" · "optional · {count} / {limit}" · "Add tag" · "Add" · "Remove {t | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:62` - Footer: "Cancel" · "Save card" · "Retry save" · "Couldn't save card." · "Nothi | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:63` - Discard: "Discard this card?" · "What you typed is not saved." · "Keep editing | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:64` - Gone: "This deck is no longer here" · "It was moved to Trash or deleted while | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `shared/ui/screen-handoff/08-card-create.md:65` - Toast: "Card added". | moved → `screens/spec/SCR-CARD-002-card-create.md` |
 
 ## shared/ui/screen-handoff/09-card-edit.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/09-card-edit.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/09-card-edit.md:3` # 09 · Card edit |  |
-| `shared/ui/screen-handoff/09-card-edit.md:5` Editing a card's content: `CardEditorScreen.edit` → `_EditLoader` → |  |
-| `shared/ui/screen-handoff/09-card-edit.md:10` ## Layout |  |
-| `shared/ui/screen-handoff/09-card-edit.md:12` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/09-card-edit.md:14` \| App bar \| `MxAppBar` (content density) \| Back; title "Edit card"; a flag `MxIc |  |
-| `shared/ui/screen-handoff/09-card-edit.md:15` \| Deck path \| `DeckContextHeaderWidget` \| Library › ancestors › deck › "Edit". \| |  |
-| `shared/ui/screen-handoff/09-card-edit.md:16` \| History summary \| `CardEditSummaryWidget` (full-bleed `MxCard`, `MxListRow`, ` |  |
-| `shared/ui/screen-handoff/09-card-edit.md:17` \| Front / Back \| `CardFieldWidget` \| Same fields as create, prefilled from the c |  |
-| `shared/ui/screen-handoff/09-card-edit.md:18` \| Optional details \| `CardOptionalFieldsWidget` (always open, "Optional details" |  |
-| `shared/ui/screen-handoff/09-card-edit.md:19` \| Tags \| `CardTagEditorWidget` \| Prefilled tags; same add/remove/limit behaviour |  |
-| `shared/ui/screen-handoff/09-card-edit.md:20` \| More \| `CardTrashSectionWidget` (`MxCard`, `MxButton` outline "Move to Trash") |  |
-| `shared/ui/screen-handoff/09-card-edit.md:21` \| Footer \| `CardEditorFooterWidget` \| Cancel + "Save changes" / "Retry save"; da |  |
-| `shared/ui/screen-handoff/09-card-edit.md:22` \| Move to Trash dialog \| `CardDeleteDialogWidget` (`MxDialog`, `MxNote`, `MxShee |  |
-| `shared/ui/screen-handoff/09-card-edit.md:23` \| Discard dialog \| `CardDiscardDialogWidget` \| "Discard changes?" / "You edited |  |
-| `shared/ui/screen-handoff/09-card-edit.md:24` \| Gone state \| `CardGoneWidget` (`MxEmptyState`) \| "This card is no longer here" |  |
-| `shared/ui/screen-handoff/09-card-edit.md:26` ## States |  |
-| `shared/ui/screen-handoff/09-card-edit.md:28` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/09-card-edit.md:30` \| loaded \| `card_editor_edit_light.png` \| `card_editor_edit_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/09-card-edit.md:31` \| loading \| no golden \| no golden \| A single generic `MxSkeletonList` (4 rows) s |  |
-| `shared/ui/screen-handoff/09-card-edit.md:32` \| loadError \| no golden \| no golden \| Full-screen `MxErrorState`, "Couldn't load |  |
-| `shared/ui/screen-handoff/09-card-edit.md:33` \| notFound \| no golden \| no golden \| `CardGoneWidget`; both actions are live now |  |
-| `shared/ui/screen-handoff/09-card-edit.md:34` \| validationErr \| `card_editor_errors_light.png` \| `card_editor_errors_dark.png` |  |
-| `shared/ui/screen-handoff/09-card-edit.md:35` \| dirtySaving \| no golden \| no golden \| The button shows only its spinner in pla |  |
-| `shared/ui/screen-handoff/09-card-edit.md:36` \| saveFailed \| no golden \| no golden \| — \| |  |
-| `shared/ui/screen-handoff/09-card-edit.md:37` \| discard \| no golden \| no golden \| The body names what was edited ("You edited |  |
-| `shared/ui/screen-handoff/09-card-edit.md:38` \| delConfirm \| `card_editor_trash_dialog_light.png` \| `card_editor_trash_dialog_ |  |
-| `shared/ui/screen-handoff/09-card-edit.md:39` Other goldens: `card_editor_more_light.png` / `card_editor_more_dark.png` (the M |  |
-| `shared/ui/screen-handoff/09-card-edit.md:42` Every state above is built. |  |
-| `shared/ui/screen-handoff/09-card-edit.md:44` ## Rulings |  |
-| `shared/ui/screen-handoff/09-card-edit.md:46` - **§9 row 108:** the Move to Trash dialog has no glyph (`MxDialog` has no glyph |  |
-| `shared/ui/screen-handoff/09-card-edit.md:47` - **§9 row 110:** the dialog reads "Recoverable from Trash for 30 days, with its |  |
-| `shared/ui/screen-handoff/09-card-edit.md:48` - **§9 rows 80, 28, E-L2:** the flag glyph swaps (`flag` → `flagged`) but never |  |
-| `shared/ui/screen-handoff/09-card-edit.md:49` - **§9 rows 101, 81 (P4a-L8):** "Add details" has a solid edge, 48 tall; "Add ta |  |
-| `shared/ui/screen-handoff/09-card-edit.md:50` - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persiste |  |
-| `shared/ui/screen-handoff/09-card-edit.md:51` - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spin |  |
-| `shared/ui/screen-handoff/09-card-edit.md:52` - **§9 row 125:** loading is a single generic `MxSkeletonList`, the app-wide con |  |
-| `shared/ui/screen-handoff/09-card-edit.md:53` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/09-card-edit.md:54` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig |  |
-| `shared/ui/screen-handoff/09-card-edit.md:55` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/09-card-edit.md:56` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the fla |  |
-| `shared/ui/screen-handoff/09-card-edit.md:58` ## Copy |  |
-| `shared/ui/screen-handoff/09-card-edit.md:60` - App bar: "Edit card" · "Flag this card" · "Remove flag" · "Save". |  |
-| `shared/ui/screen-handoff/09-card-edit.md:61` - History summary: "{status} · {answers}" · "{lapses}" · "due {date}". |  |
-| `shared/ui/screen-handoff/09-card-edit.md:62` - Fields: same labels, hints and errors as 08-card-create, plus "Optional detail |  |
-| `shared/ui/screen-handoff/09-card-edit.md:63` - Footer: "Cancel" · "Save changes" · "Retry save" · "Couldn't save changes." · |  |
-| `shared/ui/screen-handoff/09-card-edit.md:64` - More: "More" · "Move this card to Trash" · "Leaves this deck and can be restor |  |
-| `shared/ui/screen-handoff/09-card-edit.md:65` - Move to Trash dialog: "Move this card to Trash?" · "Recoverable from Trash for |  |
-| `shared/ui/screen-handoff/09-card-edit.md:66` - Discard: "Discard changes?" · "You edited {parts}. Leaving now keeps the card |  |
-| `shared/ui/screen-handoff/09-card-edit.md:67` - Gone: "This card is no longer here" · "It was moved to Trash while you were ed |  |
-| `shared/ui/screen-handoff/09-card-edit.md:68` - Load error: "Couldn't load this card" · "Nothing was lost. Try again in a mome |  |
+| `shared/ui/screen-handoff/09-card-edit.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:3` # 09 · Card edit | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:5` Editing a card's content: `CardEditorScreen.edit` → `_EditLoader` → | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:10` ## Layout | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:12` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:14` \| App bar \| `MxAppBar` (content density) \| Back; title "Edit card"; a flag `MxIc | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:15` \| Deck path \| `DeckContextHeaderWidget` \| Library › ancestors › deck › "Edit". \| | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:16` \| History summary \| `CardEditSummaryWidget` (full-bleed `MxCard`, `MxListRow`, ` | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:17` \| Front / Back \| `CardFieldWidget` \| Same fields as create, prefilled from the c | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:18` \| Optional details \| `CardOptionalFieldsWidget` (always open, "Optional details" | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:19` \| Tags \| `CardTagEditorWidget` \| Prefilled tags; same add/remove/limit behaviour | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:20` \| More \| `CardTrashSectionWidget` (`MxCard`, `MxButton` outline "Move to Trash") | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:21` \| Footer \| `CardEditorFooterWidget` \| Cancel + "Save changes" / "Retry save"; da | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:22` \| Move to Trash dialog \| `CardDeleteDialogWidget` (`MxDialog`, `MxNote`, `MxShee | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:23` \| Discard dialog \| `CardDiscardDialogWidget` \| "Discard changes?" / "You edited | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:24` \| Gone state \| `CardGoneWidget` (`MxEmptyState`) \| "This card is no longer here" | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:26` ## States | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:28` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:30` \| loaded \| `card_editor_edit_light.png` \| `card_editor_edit_dark.png` \| — \| | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:31` \| loading \| no golden \| no golden \| A single generic `MxSkeletonList` (4 rows) s | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:32` \| loadError \| no golden \| no golden \| Full-screen `MxErrorState`, "Couldn't load | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:33` \| notFound \| no golden \| no golden \| `CardGoneWidget`; both actions are live now | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:34` \| validationErr \| `card_editor_errors_light.png` \| `card_editor_errors_dark.png` | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:35` \| dirtySaving \| no golden \| no golden \| The button shows only its spinner in pla | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:36` \| saveFailed \| no golden \| no golden \| — \| | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:37` \| discard \| no golden \| no golden \| The body names what was edited ("You edited | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:38` \| delConfirm \| `card_editor_trash_dialog_light.png` \| `card_editor_trash_dialog_ | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:39` Other goldens: `card_editor_more_light.png` / `card_editor_more_dark.png` (the M | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:42` Every state above is built. | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:44` ## Rulings | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:46` - **§9 row 108:** the Move to Trash dialog has no glyph (`MxDialog` has no glyph | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:47` - **§9 row 110:** the dialog reads "Recoverable from Trash for 30 days, with its | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:48` - **§9 rows 80, 28, E-L2:** the flag glyph swaps (`flag` → `flagged`) but never | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:49` - **§9 rows 101, 81 (P4a-L8):** "Add details" has a solid edge, 48 tall; "Add ta | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:50` - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persiste | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:51` - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spin | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:52` - **§9 row 125:** loading is a single generic `MxSkeletonList`, the app-wide con | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:53` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:54` - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-desig | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:55` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:56` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the fla | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:58` ## Copy | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:60` - App bar: "Edit card" · "Flag this card" · "Remove flag" · "Save". | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:61` - History summary: "{status} · {answers}" · "{lapses}" · "due {date}". | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:62` - Fields: same labels, hints and errors as 08-card-create, plus "Optional detail | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:63` - Footer: "Cancel" · "Save changes" · "Retry save" · "Couldn't save changes." · | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:64` - More: "More" · "Move this card to Trash" · "Leaves this deck and can be restor | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:65` - Move to Trash dialog: "Move this card to Trash?" · "Recoverable from Trash for | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:66` - Discard: "Discard changes?" · "You edited {parts}. Leaving now keeps the card | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:67` - Gone: "This card is no longer here" · "It was moved to Trash while you were ed | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
+| `shared/ui/screen-handoff/09-card-edit.md:68` - Load error: "Couldn't load this card" · "Nothing was lost. Try again in a mome | moved → `screens/spec/SCR-CARD-003-card-edit.md` |
 
 ## shared/ui/screen-handoff/10-card-detail.md
 
 | Source item | Outcome |
 |---|---|
-| `shared/ui/screen-handoff/10-card-detail.md:1` <!-- Hand-written screen record. --> |  |
-| `shared/ui/screen-handoff/10-card-detail.md:3` # 10 · Card detail |  |
-| `shared/ui/screen-handoff/10-card-detail.md:5` A card, read-only, pushed over the card list: `CardDetailScreen` (library |  |
-| `shared/ui/screen-handoff/10-card-detail.md:9` ## Layout |  |
-| `shared/ui/screen-handoff/10-card-detail.md:11` \| Region \| Widget \| Design \| |  |
-| `shared/ui/screen-handoff/10-card-detail.md:13` \| App bar \| `MxAppBar` (content density) \| Back; title "Card"; trailing compact |  |
-| `shared/ui/screen-handoff/10-card-detail.md:14` \| Deck path \| `DeckContextHeaderWidget` \| Library › ancestors › deck › "Card"; s |  |
-| `shared/ui/screen-handoff/10-card-detail.md:15` \| Content \| `CardDetailContentWidget` (`MxCard`, `MxStatusBadge`, `MxTagChip`) \| |  |
-| `shared/ui/screen-handoff/10-card-detail.md:16` \| Schedule \| `CardScheduleWidget` (`MxCard`, `MxIconTile` × n) \| "Current schedu |  |
-| `shared/ui/screen-handoff/10-card-detail.md:17` \| History header \| `MxListSectionHeader` \| "History" / "History · newest first". |  |
-| `shared/ui/screen-handoff/10-card-detail.md:18` \| History list \| `CardHistoryEventWidget` × n (`MxBadge`, `MxCard`), grouped und |  |
-| `shared/ui/screen-handoff/10-card-detail.md:19` \| Load more \| `MxButton` (secondary, block) or `MxInlineBanner` (danger) on fail |  |
-| `shared/ui/screen-handoff/10-card-detail.md:20` \| End of history \| Centred caption line \| "Beginning of history · card added {da |  |
-| `shared/ui/screen-handoff/10-card-detail.md:21` \| Gone state \| `CardGoneWidget` (`MxEmptyState`) \| "This card is no longer here" |  |
-| `shared/ui/screen-handoff/10-card-detail.md:23` ## States |  |
-| `shared/ui/screen-handoff/10-card-detail.md:25` \| State \| Golden (light) \| Golden (dark) \| App \| |  |
-| `shared/ui/screen-handoff/10-card-detail.md:27` \| loaded \| `card_detail_top_light.png` \| `card_detail_top_dark.png` \| — \| |  |
-| `shared/ui/screen-handoff/10-card-detail.md:28` \| loadMore \| no golden \| no golden \| A secondary block `MxButton` "Load older hi |  |
-| `shared/ui/screen-handoff/10-card-detail.md:29` \| loadMoreFailed \| no golden \| no golden \| Retry sits under the message (see Rul |  |
-| `shared/ui/screen-handoff/10-card-detail.md:30` \| empty \| no golden \| no golden \| `MxEmptyState` (neutral, compact) "Not studied |  |
-| `shared/ui/screen-handoff/10-card-detail.md:31` \| loading \| no golden \| no golden \| A single generic `MxSkeletonList` (4 rows) r |  |
-| `shared/ui/screen-handoff/10-card-detail.md:32` \| error \| no golden \| no golden \| Full-screen `MxErrorState`, "Couldn't load thi |  |
-| `shared/ui/screen-handoff/10-card-detail.md:33` \| notFound \| no golden \| no golden \| `CardGoneWidget` (shared with the editor's |  |
-| `shared/ui/screen-handoff/10-card-detail.md:34` Other goldens: `card_detail_history_light.png` / `card_detail_history_dark.png` |  |
-| `shared/ui/screen-handoff/10-card-detail.md:37` Every state above is built. |  |
-| `shared/ui/screen-handoff/10-card-detail.md:39` ## Rulings |  |
-| `shared/ui/screen-handoff/10-card-detail.md:41` - **§9 row 89:** the status badge and flag sit above the front/back, full width. |  |
-| `shared/ui/screen-handoff/10-card-detail.md:42` - **§9 row 86:** history is a plain `MxCard` per event with absolute date and ti |  |
-| `shared/ui/screen-handoff/10-card-detail.md:43` - **§9 row 90 (amended, critique 2026-09-30 part 3d-2):** the `MxBadge` carries |  |
-| `shared/ui/screen-handoff/10-card-detail.md:44` - **§9 row 50:** `MxInlineBanner` actions sit under the message. |  |
-| `shared/ui/screen-handoff/10-card-detail.md:45` - **UC-CARD-002 E1:** the deck path shows only once the card has loaded; the det |  |
-| `shared/ui/screen-handoff/10-card-detail.md:46` - **§9 row 125:** loading is a single generic `MxSkeletonList`, the app-wide con |  |
-| `shared/ui/screen-handoff/10-card-detail.md:47` - **§9 row 115:** in-flow cards are `MxCard` at radius 12. |  |
-| `shared/ui/screen-handoff/10-card-detail.md:48` - The load error uses the app's shared local-first body "Nothing was lost. Try a |  |
-| `shared/ui/screen-handoff/10-card-detail.md:49` - **Critique 2026-09-30 tone pass, T5:** a history badge (it names the outcome, |  |
-| `shared/ui/screen-handoff/10-card-detail.md:50` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography |  |
-| `shared/ui/screen-handoff/10-card-detail.md:51` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig |  |
-| `shared/ui/screen-handoff/10-card-detail.md:52` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the fla |  |
-| `shared/ui/screen-handoff/10-card-detail.md:54` ## Copy |  |
-| `shared/ui/screen-handoff/10-card-detail.md:56` - App bar: "Card" · "Edit". |  |
-| `shared/ui/screen-handoff/10-card-detail.md:57` - Content: card front, back, "Example sentence" · "Hint" · "Pronunciation" (each |  |
-| `shared/ui/screen-handoff/10-card-detail.md:58` - Schedule: "Current schedule · Box {box} of {count}" · "Current schedule · SM-2 |  |
-| `shared/ui/screen-handoff/10-card-detail.md:59` - History: "History" · "History · newest first" · "Cycle {generation} · {schedul |  |
-| `shared/ui/screen-handoff/10-card-detail.md:60` - History outcomes (badge) and kinds (plain text): "Learning" · "Review" · "Repe |  |
-| `shared/ui/screen-handoff/10-card-detail.md:61` - Error: "Couldn't load this card" · "Nothing was lost. Try again in a moment." |  |
-| `shared/ui/screen-handoff/10-card-detail.md:62` - Gone: "This card is no longer here" · "It was moved to Trash while you were aw |  |
+| `shared/ui/screen-handoff/10-card-detail.md:1` <!-- Hand-written screen record. --> | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:3` # 10 · Card detail | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:5` A card, read-only, pushed over the card list: `CardDetailScreen` (library | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:9` ## Layout | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:11` \| Region \| Widget \| Design \| | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:13` \| App bar \| `MxAppBar` (content density) \| Back; title "Card"; trailing compact | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:14` \| Deck path \| `DeckContextHeaderWidget` \| Library › ancestors › deck › "Card"; s | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:15` \| Content \| `CardDetailContentWidget` (`MxCard`, `MxStatusBadge`, `MxTagChip`) \| | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:16` \| Schedule \| `CardScheduleWidget` (`MxCard`, `MxIconTile` × n) \| "Current schedu | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:17` \| History header \| `MxListSectionHeader` \| "History" / "History · newest first". | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:18` \| History list \| `CardHistoryEventWidget` × n (`MxBadge`, `MxCard`), grouped und | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:19` \| Load more \| `MxButton` (secondary, block) or `MxInlineBanner` (danger) on fail | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:20` \| End of history \| Centred caption line \| "Beginning of history · card added {da | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:21` \| Gone state \| `CardGoneWidget` (`MxEmptyState`) \| "This card is no longer here" | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:23` ## States | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:25` \| State \| Golden (light) \| Golden (dark) \| App \| | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:27` \| loaded \| `card_detail_top_light.png` \| `card_detail_top_dark.png` \| — \| | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:28` \| loadMore \| no golden \| no golden \| A secondary block `MxButton` "Load older hi | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:29` \| loadMoreFailed \| no golden \| no golden \| Retry sits under the message (see Rul | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:30` \| empty \| no golden \| no golden \| `MxEmptyState` (neutral, compact) "Not studied | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:31` \| loading \| no golden \| no golden \| A single generic `MxSkeletonList` (4 rows) r | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:32` \| error \| no golden \| no golden \| Full-screen `MxErrorState`, "Couldn't load thi | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:33` \| notFound \| no golden \| no golden \| `CardGoneWidget` (shared with the editor's | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:34` Other goldens: `card_detail_history_light.png` / `card_detail_history_dark.png` | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:37` Every state above is built. | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:39` ## Rulings | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:41` - **§9 row 89:** the status badge and flag sit above the front/back, full width. | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:42` - **§9 row 86:** history is a plain `MxCard` per event with absolute date and ti | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:43` - **§9 row 90 (amended, critique 2026-09-30 part 3d-2):** the `MxBadge` carries | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:44` - **§9 row 50:** `MxInlineBanner` actions sit under the message. | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:45` - **UC-CARD-002 E1:** the deck path shows only once the card has loaded; the det | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:46` - **§9 row 125:** loading is a single generic `MxSkeletonList`, the app-wide con | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:47` - **§9 row 115:** in-flow cards are `MxCard` at radius 12. | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:48` - The load error uses the app's shared local-first body "Nothing was lost. Try a | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:49` - **Critique 2026-09-30 tone pass, T5:** a history badge (it names the outcome, | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:50` - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:51` - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-desig | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:52` - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the fla | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:54` ## Copy | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:56` - App bar: "Card" · "Edit". | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:57` - Content: card front, back, "Example sentence" · "Hint" · "Pronunciation" (each | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:58` - Schedule: "Current schedule · Box {box} of {count}" · "Current schedule · SM-2 | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:59` - History: "History" · "History · newest first" · "Cycle {generation} · {schedul | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:60` - History outcomes (badge) and kinds (plain text): "Learning" · "Review" · "Repe | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:61` - Error: "Couldn't load this card" · "Nothing was lost. Try again in a moment." | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `shared/ui/screen-handoff/10-card-detail.md:62` - Gone: "This card is no longer here" · "It was moved to Trash while you were aw | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 
 ## shared/ui/screen-handoff/11-card-import.md
 
@@ -1857,23 +1857,23 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:28` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:30` **Alternative flows:** | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:31` - **A1 — Sửa card:** nội dung đổi; study state và history **không** đổi (BR-CARD | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:32` - **A2 — Xoá card:** hỏi xác nhận; xác nhận thì card vào Trash trong một | pending → SCR-CARD-001 (the delete confirmation and the Undo toast where the card was deleted); intent kept in UC-CARD-001 A2 |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:43` - **A3 — Deck còn card nhưng danh sách rỗng theo bộ lọc:** empty state của bộ | pending → SCR-CARD-001 (the filter's empty state, different from the deck's, with a way to show all); intent kept in UC-CARD-001 A3 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:32` - **A2 — Xoá card:** hỏi xác nhận; xác nhận thì card vào Trash trong một | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:43` - **A3 — Deck còn card nhưng danh sách rỗng theo bộ lọc:** empty state của bộ | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:45` - **A5 — Di chuyển thẻ sang deck khác:** chọn deck đích trong cùng root; thẻ giữ | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:49` - **A6 — Chọn nhiều thẻ:** long-press một thẻ hoặc dùng action **Select** trên | pending → SCR-CARD-001 (long-press or the Select app-bar action; the contextual bar with the count and Move, Add tag, Flag, Remove flag, Delete; Select all); intent kept in UC-CARD-001 A6 |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:54` - **A4 — Thêm liên tiếp nhiều card:** sau khi lưu, giữ form mở và xoá trống các | pending → SCR-CARD-002 (the form stays open with its fields cleared after a save); intent kept in UC-CARD-001 A4 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:49` - **A6 — Chọn nhiều thẻ:** long-press một thẻ hoặc dùng action **Select** trên | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:54` - **A4 — Thêm liên tiếp nhiều card:** sau khi lưu, giữ form mở và xoá trống các | moved → `screens/spec/SCR-CARD-002-card-create.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:55` - **A7 — Cờ:** người dùng bật hoặc bỏ cờ của một thẻ (BR-CARD-009). | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:56` - **A8 — Tag:** người dùng gắn tag theo tên — dùng lại tag trùng tên đã fold, tạ | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:58` - **A9 — Mở chi tiết:** chạm một thẻ ở chế độ thường mở chi tiết chỉ đọc (UC-CAR | pending → SCR-CARD-001 (a tap on a row in normal mode opens the detail); intent kept in UC-CARD-001 A9 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:58` - **A9 — Mở chi tiết:** chạm một thẻ ở chế độ thường mở chi tiết chỉ đọc (UC-CAR | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:61` **Error flows:** | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:62` - **E1 — Mặt trước hoặc mặt sau rỗng:** lỗi inline ở đúng ô đó. | pending → SCR-CARD-002 (inline error at that field); intent kept in UC-CARD-001 E1 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:62` - **E1 — Mặt trước hoặc mặt sau rỗng:** lỗi inline ở đúng ô đó. | moved → `screens/spec/SCR-CARD-002-card-create.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:63` - **E5 — Deck đích không hợp lệ:** picker chỉ liệt kê deck cùng root, không phải | superseded → FN-CARD-006 (the targets the picker lists) + FN-CARD-007 (Lỗi); intent kept in UC-CARD-001 E5 |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:68` - **E6 — Một thẻ trong lô vi phạm:** cả lô rollback; danh sách và selection giữ | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:70` - **E2 — Vượt giới hạn độ dài** (BR-CARD-002, BR-CARD-003): lỗi inline ở đúng ô | pending → SCR-CARD-002 (inline error at that field); intent kept in UC-CARD-001 E2 |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:71` - **E3 — Ghi thất bại:** hiện lỗi, giữ nội dung; không tạo card không có study | pending → SCR-CARD-002 (the error with the form content kept); intent kept in UC-CARD-001 E3 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:70` - **E2 — Vượt giới hạn độ dài** (BR-CARD-002, BR-CARD-003): lỗi inline ở đúng ô | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:71` - **E3 — Ghi thất bại:** hiện lỗi, giữ nội dung; không tạo card không có study | moved → `screens/spec/SCR-CARD-002-card-create.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:73` - **E7 — Tag không hợp lệ, hoặc thẻ đã đủ 10 tag:** lỗi có kiểu; tag của thẻ giữ | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:76` ## UI | pending → SCR-CARD-001 (states loading · loaded · empty · submitting · error) |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:78` **UI states:** loading · loaded · empty · submitting · error | pending → SCR-CARD-001 (states loading · loaded · empty · submitting · error) |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:76` ## UI | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:78` **UI states:** loading · loaded · empty · submitting · error | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:80` ## Local | superseded → FN-CARD-002 (Kết quả) |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:82` **Postconditions:** Card tồn tại kèm đúng một study state, đúng scheduler và | superseded → FN-CARD-002 (Kết quả) |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:85` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
@@ -1881,18 +1881,18 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:89` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:91` - [ ] **Given** một deck `unset` và một draft hợp lệ, **when** người dùng thêm c | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:92` - [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa n | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:93` - [ ] **Given** người dùng xoá đúng một card, **when** xác nhận, **then** card v | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:93` - [ ] **Given** người dùng xoá đúng một card, **when** xác nhận, **then** card v | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:94` - [ ] **Given** người dùng xoá nhiều card, **when** xác nhận, **then** tất cả và | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:95` - [ ] **Given** card bị xoá là card active cuối cùng của deck, **when** xoá thàn | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:96` - [ ] **Given** deck còn card nhưng bộ lọc đang bật không khớp card nào, **when* | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:97` - [ ] **Given** form thêm card, **when** Save ghi xong, **then** form vẫn mở, cá | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:96` - [ ] **Given** deck còn card nhưng bộ lọc đang bật không khớp card nào, **when* | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:97` - [ ] **Given** form thêm card, **when** Save ghi xong, **then** form vẫn mở, cá | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:98` - [ ] **Given** người dùng di chuyển card sang deck khác cùng root, **when** xác | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:99` - [ ] **Given** bộ lọc hoặc search đang áp và mới tải một phần kết quả, **when** | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:99` - [ ] **Given** bộ lọc hoặc search đang áp và mới tải một phần kết quả, **when** | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:100` - [ ] **Given** một hoặc nhiều card đã chọn, **when** áp Flag hoặc Remove flag, | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:101` - [ ] **Given** một tên tag gắn cho nhiều card, **when** attach, **then** hệ thố | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:102` - [ ] **Given** card list ở chế độ thường, **when** chạm một hàng, **then** chi | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:103` - [ ] **Given** mặt trước hoặc mặt sau rỗng, hoặc vượt giới hạn độ dài, **when** | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
-| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:104` - [ ] **Given** ghi card mới thất bại, **when** người dùng thấy lỗi, **then** nộ | pending → SCR-CARD-001 (presentation of the criterion; SCR-CARD-002 for the form ones); intent kept in UC-CARD-001 |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:102` - [ ] **Given** card list ở chế độ thường, **when** chạm một hàng, **then** chi | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:103` - [ ] **Given** mặt trước hoặc mặt sau rỗng, hoặc vượt giới hạn độ dài, **when** | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:104` - [ ] **Given** ghi card mới thất bại, **when** người dùng thấy lỗi, **then** nộ | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:105` - [ ] **Given** deck đích không còn hợp lệ (mất, là root, giữ deck con, hoặc chí | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-001-quan-ly-card-trong-deck.md:106` - [ ] **Given** một card trong lô vi phạm luật (ví dụ đã đủ 10 tag), **when** th | moved → `USE_CASES.md` |
 
@@ -1906,50 +1906,50 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:5` rules: [BR-CARD-003, BR-CARD-005, BR-CARD-006, BR-CARD-007, BR-CARD-008, BR-CARD | superseded → FN-CARD-013, FN-CARD-014 (Business rules) |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:6` code: [lib/features/card/domain/usecases/watch_card_detail_use_case.dart, lib/fe | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:8` ## Mục tiêu / Actor / Precondition | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:10` **Actor:** Người dùng | pending → SCR-CARD-001 (a tap on a card row outside selection mode is the Trigger); intent kept in UC-CARD-002 (Mục tiêu) |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:10` **Actor:** Người dùng | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:16` ## Main flow | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:18` **Main flow:** | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:19` 1. Người dùng chạm một hàng card. Hệ thống mở màn chi tiết **chỉ đọc** của đúng | pending → SCR-CARD-004 (the read-only detail is pushed over the list, not replacing it); intent kept in UC-CARD-002 step 1 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:19` 1. Người dùng chạm một hàng card. Hệ thống mở màn chi tiết **chỉ đọc** của đúng | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:21` 2. Hệ thống hiển thị toàn bộ nội dung thẻ: mặt trước đầy đủ, mặt sau đầy đủ, và | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:24` 3. Hệ thống hiển thị phần siêu dữ liệu và trạng thái học **hiện tại**: tag, cờ, | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:28` 4. Hệ thống tải trang lịch sử đầu tiên — 50 event gần nhất, mới nhất trước | pending → SCR-CARD-004 (the history shown as a timeline grouped by generation); intent kept in UC-CARD-002 step 4 + FN-CARD-014 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:28` 4. Hệ thống tải trang lịch sử đầu tiên — 50 event gần nhất, mới nhất trước | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:31` 5. Mỗi event nói: thời điểm, chế độ học, loại lượt, hành động đã ghi, lý do kết | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:34` 6. Người dùng cuộn tới cuối danh sách lịch sử và chọn tải thêm; hệ thống nối | pending → SCR-CARD-004 (scrolling to the end and choosing to load more); intent kept in UC-CARD-002 step 6 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:34` 6. Người dùng cuộn tới cuối danh sách lịch sử và chọn tải thêm; hệ thống nối | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:37` 7. Người dùng quay lại. Hệ thống trả về danh sách card **đúng như lúc rời đi** — | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:41` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:43` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:44` - **A1 — Sửa thẻ:** người dùng chọn hành động `Edit` tường minh trên màn chi | pending → SCR-CARD-004 (an explicit Edit action that opens the editor, SCR-CARD-003); intent kept in UC-CARD-002 A1 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:48` - **A2 — Thẻ chưa có lịch sử:** phần dòng thời gian hiện trạng thái rỗng có nội | pending → SCR-CARD-004 (the timeline's explained empty state); intent kept in UC-CARD-002 A2 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:44` - **A1 — Sửa thẻ:** người dùng chọn hành động `Edit` tường minh trên màn chi | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:48` - **A2 — Thẻ chưa có lịch sử:** phần dòng thời gian hiện trạng thái rỗng có nội | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:51` - **A3 — Lịch sử trải nhiều generation:** sau một lần Reset (UC-SRS-001), các ev | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:54` - **A4 — Chạm khi đang ở chế độ chọn nhiều:** chạm giữ nguyên nghĩa chọn/bỏ | pending → SCR-CARD-001 (a tap in selection mode only toggles selection); intent kept in UC-CARD-002 A4 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:56` - **A5 — Đã tải hết lịch sử:** hệ thống nói rõ đã hết thay vì để một nút tải | pending → SCR-CARD-004 (the end-of-history note instead of a dead load-more button); intent kept in UC-CARD-002 A5 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:54` - **A4 — Chạm khi đang ở chế độ chọn nhiều:** chạm giữ nguyên nghĩa chọn/bỏ | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:56` - **A5 — Đã tải hết lịch sử:** hệ thống nói rõ đã hết thay vì để một nút tải | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:59` **Error flows:** | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:60` - **E1 — Thẻ không tồn tại khi mở:** deep link hoặc route cũ trỏ tới một id đã | pending → SCR-CARD-004 (the typed not-found face with the way back; no blank screen); intent kept in UC-CARD-002 E1 + FN-CARD-013 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:63` - **E2 — Thẻ bị xoá từ màn khác khi chi tiết đang mở:** stream nội dung chuyển | pending → SCR-CARD-004 (the not-found face when the card goes away); intent kept in UC-CARD-002 E2 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:66` - **E3 — Đọc nội dung/trạng thái thất bại:** lỗi database map thành lý do có | pending → SCR-CARD-004 (the top-level error face with Retry); intent kept in UC-CARD-002 E3 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:69` - **E4 — Tải một trang lịch sử thất bại:** các event đã hiện **giữ nguyên**; | pending → SCR-CARD-004 (the error strip with Retry at the end of the list); intent kept in UC-CARD-002 E4 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:72` - **E5 — Kết quả trang tới muộn sau khi người dùng đã rời hoặc đã thử lại:** hệ | pending → SCR-CARD-004 (a late page result is dropped); intent kept in UC-CARD-002 E5 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:76` ## UI | pending → SCR-CARD-004 (the detail's states) |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:78` **UI states:** loading (đọc nội dung + trạng thái) · loaded không có lịch sử · | pending → SCR-CARD-004 (the detail's states) |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:60` - **E1 — Thẻ không tồn tại khi mở:** deep link hoặc route cũ trỏ tới một id đã | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:63` - **E2 — Thẻ bị xoá từ màn khác khi chi tiết đang mở:** stream nội dung chuyển | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:66` - **E3 — Đọc nội dung/trạng thái thất bại:** lỗi database map thành lý do có | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:69` - **E4 — Tải một trang lịch sử thất bại:** các event đã hiện **giữ nguyên**; | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:72` - **E5 — Kết quả trang tới muộn sau khi người dùng đã rời hoặc đã thử lại:** hệ | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:76` ## UI | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:78` **UI states:** loading (đọc nội dung + trạng thái) · loaded không có lịch sử · | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:83` ## Local | superseded → FN-CARD-013 (Kết quả: không ghi gì) |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:85` **Postconditions:** Database không đổi — nội dung, `updated_at`, study state, | superseded → FN-CARD-013 (Kết quả: không ghi gì) |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:89` ## API | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:91` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:93` ## Acceptance criteria | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:95` - [ ] **Given** chạm một hàng card ở chế độ thường, **when** chi tiết mở, **then | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:95` - [ ] **Given** chạm một hàng card ở chế độ thường, **when** chi tiết mở, **then | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:96` - [ ] **Given** chi tiết đang mở, **when** tag, study state hoặc nội dung đổi, * | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:97` - [ ] **Given** một card có lịch sử, **when** chi tiết tải, **then** trang đầu l | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:98` - [ ] **Given** một event lịch sử, **when** hiển thị, **then** nó nêu thời điểm, | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:99` - [ ] **Given** đã cuộn tới cuối trang đã tải, **when** người dùng tải thêm, **t | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:100` - [ ] **Given** người dùng chọn Edit trên chi tiết, **when** editor mở, **then** | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:101` - [ ] **Given** một card chưa có lịch sử, **when** chi tiết mở, **then** dòng th | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:99` - [ ] **Given** đã cuộn tới cuối trang đã tải, **when** người dùng tải thêm, **t | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:100` - [ ] **Given** người dùng chọn Edit trên chi tiết, **when** editor mở, **then** | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:101` - [ ] **Given** một card chưa có lịch sử, **when** chi tiết mở, **then** dòng th | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:102` - [ ] **Given** người dùng đang ở chi tiết mở từ card list, **when** quay lại, * | moved → `USE_CASES.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:103` - [ ] **Given** đang ở chế độ chọn nhiều, **when** chạm một hàng, **then** hàng | moved → `USE_CASES.md` |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:104` - [ ] **Given** đã tải hết lịch sử, **when** tới cuối, **then** hệ thống nói rõ | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:105` - [ ] **Given** id card không còn tồn tại (deep link hoặc route cũ), **when** mở | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:106` - [ ] **Given** chi tiết đang mở, **when** card bị xoá ở nơi khác, **then** màn | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:107` - [ ] **Given** đọc nội dung hoặc trạng thái thất bại, **when** lỗi xảy ra, **th | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
-| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:108` - [ ] **Given** tải một trang lịch sử thất bại, **when** lỗi xảy ra, **then** cá | pending → SCR-CARD-004 (presentation of the criterion); intent kept in UC-CARD-002 |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:104` - [ ] **Given** đã tải hết lịch sử, **when** tới cuối, **then** hệ thống nói rõ | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:105` - [ ] **Given** id card không còn tồn tại (deep link hoặc route cũ), **when** mở | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:106` - [ ] **Given** chi tiết đang mở, **when** card bị xoá ở nơi khác, **then** màn | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:107` - [ ] **Given** đọc nội dung hoặc trạng thái thất bại, **when** lỗi xảy ra, **th | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:108` - [ ] **Given** tải một trang lịch sử thất bại, **when** lỗi xảy ra, **then** cá | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/usecases/UC-CARD-002-xem-chi-tiet-card-va-lich-su-hoc.md:109` - [ ] **Given** một trang lịch sử đang tải, **when** người dùng rời màn hoặc yêu | moved → `USE_CASES.md` |
 
 ## features/deck/usecases/UC-DECK-001-tao-root-deck.md
@@ -2830,18 +2830,18 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:27` 3. Người dùng gõ vào ô tìm kiếm để thu hẹp catalog. Hệ thống lọc theo cùng phép | superseded → FN-TAG-001 (the search uses the identity fold) + UC-TAG-001 step 3 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:30` 4. Người dùng chọn `Rename` trên một hàng. Hệ thống mở form với tên hiện tại đã | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:32` 5. Người dùng sửa tên rồi xác nhận. Hệ thống validate theo BR-TAG-001 và, vì tên | superseded → FN-TAG-003 (rename on the same row; id and links kept) + UC-TAG-001 step 5 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:35` 6. Người dùng quay lại card list và chạm pill `Tags`. Hệ thống mở overlay lọc | pending → SCR-CARD-001 (the Tags pill opens the filter overlay with every tag, its count and the current selection); intent kept in UC-TAG-001 step 6 + FN-CARD-012 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:37` 7. Người dùng chọn nhiều tag rồi bấm `Apply`. Hệ thống áp vị từ **OR giữa các | pending → SCR-CARD-001 (multi-select then Apply; the page window resets and the selection clears); intent kept in UC-TAG-001 step 7 + FN-CARD-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:35` 6. Người dùng quay lại card list và chạm pill `Tags`. Hệ thống mở overlay lọc | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:37` 7. Người dùng chọn nhiều tag rồi bấm `Apply`. Hệ thống áp vị từ **OR giữa các | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:40` 8. Card list hiển thị đúng tập thẻ khớp, mỗi thẻ đúng một lần, với count khớp | superseded → FN-CARD-001 (each card once; counts read the same query) + UC-TAG-001 step 8 |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:43` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:45` **Alternative flows:** | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:46` - **A1 — Đổi tên gây trùng (gộp):** tên mới fold trùng một tag khác đang tồn | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:52` - **A2 — Đổi tên chỉ đổi cách viết hoa:** `noun` → `Noun`. Tên đã fold không | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:55` - **A3 — Xoá tag:** người dùng chọn `Delete`. Hệ thống hỏi xác nhận, nêu rõ số | moved → `screens/spec/SCR-TAG-001-tags.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:58` - **A4 — Bỏ chọn hết tag trong overlay lọc:** `Clear` đưa tập chọn về rỗng. Tập | pending → SCR-CARD-001 (Clear empties the selection in the filter overlay); intent kept in UC-TAG-001 A4 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:61` - **A5 — Huỷ overlay lọc:** đóng overlay mà không `Apply` giữ nguyên tập tag | pending → SCR-CARD-001 (closing the overlay without Apply drops the draft); intent kept in UC-TAG-001 A5 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:58` - **A4 — Bỏ chọn hết tag trong overlay lọc:** `Clear` đưa tập chọn về rỗng. Tập | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:61` - **A5 — Huỷ overlay lọc:** đóng overlay mà không `Apply` giữ nguyên tập tag | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:63` - **A6 — Tìm kiếm trong catalog không khớp gì:** catalog hiển thị trạng thái | moved → `screens/spec/SCR-TAG-001-tags.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:66` - **A7 — Lọc theo tag không còn thẻ nào khớp:** card list hiển thị trạng thái | pending → SCR-CARD-001 (the filtered empty state with Clear); intent kept in UC-TAG-001 A7 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:66` - **A7 — Lọc theo tag không còn thẻ nào khớp:** card list hiển thị trạng thái | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:69` **Error flows:** | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:70` - **E1 — Đọc catalog thất bại:** hệ thống hiện trạng thái lỗi có Retry; chưa | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:72` - **E2 — Đổi tên với tên không hợp lệ:** rỗng sau trim, quá 50 ký tự, hoặc chứa | moved → `screens/spec/SCR-TAG-001-tags.md` |
@@ -2858,14 +2858,14 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:104` - [ ] **Given** người dùng mở catalog tag, **when** đọc xong, **then** mọi tag c | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:105` - [ ] **Given** người dùng gõ vào ô tìm của catalog, **when** lọc, **then** hệ t | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:106` - [ ] **Given** đổi tên chỉ khác chữ hoa hoặc dấu và tên đã fold không trùng tag | moved → `USE_CASES.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:107` - [ ] **Given** chọn nhiều tag trong overlay lọc, **when** bấm Apply, **then** c | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:108` - [ ] **Given** một tập tag lọc mới, **when** Apply, **then** cửa sổ phân trang | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:107` - [ ] **Given** chọn nhiều tag trong overlay lọc, **when** bấm Apply, **then** c | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:108` - [ ] **Given** một tập tag lọc mới, **when** Apply, **then** cửa sổ phân trang | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:109` - [ ] **Given** tên mới fold trùng một tag khác, **when** xác nhận đổi tên, **th | moved → `USE_CASES.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:110` - [ ] **Given** người dùng chọn Delete trên một tag, **when** xác nhận, **then** | moved → `USE_CASES.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:111` - [ ] **Given** overlay lọc đang có tag chọn, **when** bấm Clear rồi Apply, **th | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:112` - [ ] **Given** một tập tag đã Apply, **when** đóng overlay mà không Apply lại, | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:111` - [ ] **Given** overlay lọc đang có tag chọn, **when** bấm Clear rồi Apply, **th | moved → `screens/spec/SCR-CARD-001-card-list.md` |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:112` - [ ] **Given** một tập tag đã Apply, **when** đóng overlay mà không Apply lại, | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:113` - [ ] **Given** tìm trong catalog không khớp tag nào, **when** hiển thị, **then* | moved → `screens/spec/SCR-TAG-001-tags.md` |
-| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:114` - [ ] **Given** lọc theo một tag không có card nào trong deck đang mở, **when** | pending → SCR-CARD-001 (presentation of the criterion: the tag filter sheet); intent kept in UC-TAG-001 |
+| `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:114` - [ ] **Given** lọc theo một tag không có card nào trong deck đang mở, **when** | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:115` - [ ] **Given** đọc catalog thất bại, **when** lỗi xảy ra, **then** hệ thống hiệ | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:116` - [ ] **Given** tên mới rỗng sau khi trim, quá 50 ký tự hoặc chứa ký tự điều khi | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/usecases/UC-TAG-001-quan-ly-tag-va-loc-the-theo-tag.md:117` - [ ] **Given** tag bị xoá ở nơi khác giữa lúc mở form và lúc ghi, **when** ghi | moved → `screens/spec/SCR-TAG-001-tags.md` |
@@ -2984,7 +2984,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:18` ## Main flow | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:20` **Main flow:** | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:21` 1. Người dùng xoá một card hoặc một deck từ luồng đã có (UC-CARD-001, UC-DECK-00 | superseded → FN-DECK-005 + FN-CARD-004 (one batch, descendants, parent back to unset, open sessions ended with content_deleted) + UC-TRASH-001 step 1 |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:26` 2. Màn đang đứng báo item đã chuyển vào Trash và hiện Undo trong một khoảng thời | pending → SCR-DECK-001 (the moved-to-Trash snackbar with Undo for a limited time; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 step 2 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:26` 2. Màn đang đứng báo item đã chuyển vào Trash và hiện Undo trong một khoảng thời | superseded → SCR-DECK-001 + SCR-CARD-001 (the moved-to-Trash snackbar with Undo for a limited time; SCR-CARD-001 for cards; both specs draw it) |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:29` 3. Người dùng mở `Trash` từ app bar của Library. Hệ thống chạy auto-purge trước | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:32` 4. Mỗi hàng nêu tên item, thời điểm đã xoá, đường dẫn gốc **như thông tin**, số | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:35` 5. Người dùng chọn `Restore` trên một hàng. Hệ thống mở picker target dựng từ | moved → `screens/spec/SCR-TRASH-001-trash.md` |
@@ -2992,7 +2992,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:42` 7. Trash bỏ hàng vừa khôi phục; Library hiện item ở vị trí mới với nguyên id, | superseded → FN-TRASH-005 + FN-TRASH-006 (same id, study state, history and tags) + UC-TRASH-001 step 7 |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:45` ## Alternative / Error flow | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:47` **Alternative flows:** | moved → `USE_CASES.md` |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:48` - **A1 — Undo ngay sau khi xoá:** người dùng bấm Undo trên snackbar. Hệ thống | pending → SCR-DECK-001 (Undo on the snackbar; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 A1 + FN-DECK-006 + FN-CARD-005 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:48` - **A1 — Undo ngay sau khi xoá:** người dùng bấm Undo trên snackbar. Hệ thống | superseded → SCR-DECK-001 + SCR-CARD-001 (Undo on the snackbar; SCR-CARD-001 for cards; both specs draw it) |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:50` - **A2 — Chọn nhiều:** người dùng bật chế độ chọn trong Trash. Thanh hành động | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:53` - **A3 — Purge vĩnh viễn:** người dùng chọn `Delete permanently`. Hộp thoại nêu | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:57` - **A4 — Batch hết hạn khi Trash đang mở:** auto-purge chạy lại khi màn được | moved → `screens/spec/SCR-TRASH-001-trash.md` |
@@ -3001,7 +3001,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:66` **Error flows:** | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:67` - **E1 — Không có target hợp lệ:** picker mở ra rỗng và giải thích vì sao (cây | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:70` - **E2 — Target hết hợp lệ giữa chừng:** cây đổi sau khi picker mở. Transaction | moved → `screens/spec/SCR-TRASH-001-trash.md` |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:72` - **E3 — Undo không còn dùng được:** vị trí cũ đã bị xoá, đã thành `card`, hoặc | pending → SCR-DECK-001 (the typed Undo reason pointing to the Trash; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 E3 + FN-DECK-006 + FN-CARD-005 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:72` - **E3 — Undo không còn dùng được:** vị trí cũ đã bị xoá, đã thành `card`, hoặc | superseded → SCR-DECK-001 + SCR-CARD-001 (the typed Undo reason pointing to the Trash; SCR-CARD-001 for cards; both specs draw it) |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:75` - **E4 — Purge bị chặn:** một descendant của batch thuộc batch chưa tới hạn hoặc | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:78` - **E5 — Lỗi ghi:** bất kỳ bước nào của xoá, restore hay purge thất bại → | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:80` - **E6 — Item đã biến mất:** batch được chọn đã bị purge bởi một lần chạy khác. | moved → `screens/spec/SCR-TRASH-001-trash.md` |
@@ -3015,7 +3015,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:105` Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/de | dropped — mục API không áp dụng: app local-only (ADR-001), approved PENDING |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:107` ## Acceptance criteria | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:109` - [ ] **Given** người dùng xoá một card hoặc một deck, **when** thao tác chạy, * | moved → `USE_CASES.md` |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:110` - [ ] **Given** một item vừa xoá xong, **when** người dùng nhìn Library hoặc Car | pending → SCR-DECK-001 (presentation of the criterion: the Undo snackbar; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:110` - [ ] **Given** một item vừa xoá xong, **when** người dùng nhìn Library hoặc Car | superseded → SCR-DECK-001 + SCR-CARD-001 (presentation of the criterion: the Undo snackbar; SCR-CARD-001 for cards; both specs draw it) |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:111` - [ ] **Given** người dùng mở Trash từ app bar của Library, **when** màn vẽ xong | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:112` - [ ] **Given** người dùng chọn Restore trên một hàng, **when** picker target mở | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:113` - [ ] **Given** người dùng bấm Undo trên snackbar sau khi xoá, **when** Undo chạ | moved → `USE_CASES.md` |
@@ -3026,7 +3026,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:118` - [ ] **Given** Trash không có batch nào, **when** mở màn, **then** hệ thống hiệ | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:119` - [ ] **Given** một item không còn target hợp lệ để restore, **when** picker mở, | moved → `screens/spec/SCR-TRASH-001-trash.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:120` - [ ] **Given** picker restore đang mở, **when** cây deck đổi, **then** danh sác | moved → `USE_CASES.md` |
-| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:121` - [ ] **Given** vị trí cũ của một batch không còn nhận nó, **when** người dùng b | pending → SCR-DECK-001 (presentation of the criterion: the typed Undo reason; SCR-CARD-001 for cards); intent kept in UC-TRASH-001 E3 |
+| `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:121` - [ ] **Given** vị trí cũ của một batch không còn nhận nó, **when** người dùng b | superseded → SCR-DECK-001 + SCR-CARD-001 (presentation of the criterion: the typed Undo reason; SCR-CARD-001 for cards; both specs draw it) |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:122` - [ ] **Given** một deck được chọn để xoá vĩnh viễn còn giữ một batch khác không | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:123` - [ ] **Given** một bước ghi giữa chừng của purge lỗi, **when** transaction chạy | moved → `USE_CASES.md` |
 | `features/trash/usecases/UC-TRASH-001-trash-va-khoi-phuc-item-da-xoa.md:124` - [ ] **Given** một batch được chọn để restore hoặc purge đã bị xoá vĩnh viễn tr | moved → `USE_CASES.md` |
@@ -3041,32 +3041,32 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/card/ui.md:7` Điểm vào là một deck đã có `content_type = 'card'` (BR-DECK-009). Card **đầu tiê | superseded → FN-CARD-002 (Kết quả: the first card sets content_type) |
 | `features/card/ui.md:12` flowchart TD | superseded → FN-CARD-001 |
 | `features/card/ui.md:13` A["Deck có content_type = card"] --> B["Danh sách card · UC-CARD-001"] | superseded → FN-CARD-001 |
-| `features/card/ui.md:14` B -->\|"Chưa có card nào"\| B1["Empty state kèm hành động Thêm card · UC-CARD-001 | pending → SCR-CARD-001 (empty state with Add card) |
+| `features/card/ui.md:14` B -->\|"Chưa có card nào"\| B1["Empty state kèm hành động Thêm card · UC-CARD-001 | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/card/ui.md:16` B --> C{"Người dùng chọn gì"} | superseded → FN-CARD-001 |
 | `features/card/ui.md:18` C -->\|"Thêm"\| D["Nhập mặt trước và mặt sau"] | superseded → FN-CARD-002 (Input) |
 | `features/card/ui.md:19` D --> E{"Validate · BR-CARD-001, BR-CARD-002"} | superseded → FN-CARD-002 (Lỗi) |
-| `features/card/ui.md:20` E -->\|"Rỗng hoặc quá dài"\| E1["Lỗi inline ở đúng ô · UC-CARD-001 E1, E2"] | pending → SCR-CARD-002 (inline error at that field) |
+| `features/card/ui.md:20` E -->\|"Rỗng hoặc quá dài"\| E1["Lỗi inline ở đúng ô · UC-CARD-001 E1, E2"] | moved → `screens/spec/SCR-CARD-002-card-create.md` |
 | `features/card/ui.md:21` E -->\|"Hợp lệ"\| F["Tạo card và study state trong cùng transaction, theo schedule | superseded → FN-CARD-002 (Kết quả) |
 | `features/card/ui.md:22` F -->\|"Ghi thất bại"\| F1["Hiện lỗi, giữ nội dung, không tạo card thiếu study sta | superseded → FN-CARD-002 (Lỗi: no card without study state); presentation pending → SCR-CARD-002 |
-| `features/card/ui.md:23` F -->\|"Thành công"\| G["Giữ form mở và xoá trống các ô · UC-CARD-001 A4"] | pending → SCR-CARD-002 (the form stays open with its fields cleared) |
-| `features/card/ui.md:24` G --> B | pending → SCR-CARD-002 (back to the list after Add) |
+| `features/card/ui.md:23` F -->\|"Thành công"\| G["Giữ form mở và xoá trống các ô · UC-CARD-001 A4"] | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `features/card/ui.md:24` G --> B | moved → `screens/spec/SCR-CARD-002-card-create.md` |
 | `features/card/ui.md:26` C -->\|"Chạm một hàng"\| J["Chi tiết card, chỉ đọc · UC-CARD-002"] | superseded → FN-CARD-013 |
 | `features/card/ui.md:27` J --> J1["Lịch sử học phân trang keyset, nhóm theo generation · UC-CARD-002, BR- | superseded → FN-CARD-014 |
-| `features/card/ui.md:28` J -->\|"Edit — action riêng, không phải cử chỉ chạm"\| H | pending → SCR-CARD-004 (Edit is a separate action, not the tap) |
-| `features/card/ui.md:29` J -->\|"Back"\| B | pending → SCR-CARD-004 (Back to the list) |
+| `features/card/ui.md:28` J -->\|"Edit — action riêng, không phải cử chỉ chạm"\| H | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
+| `features/card/ui.md:29` J -->\|"Back"\| B | moved → `screens/spec/SCR-CARD-004-card-detail.md` |
 | `features/card/ui.md:31` C -->\|"Sửa"\| H["Đổi nội dung; study state và history không đổi · UC-CARD-001 A1, | superseded → FN-CARD-003 |
 | `features/card/ui.md:32` C -->\|"Xoá"\| I["Xác nhận, xoá kèm study state và history của card đó · UC-CARD-0 | superseded → FN-CARD-004 |
 | `features/card/ui.md:33` I --> I1["Card cuối cùng bị xoá → deck tự về unset trong cùng transaction · BR-D | superseded → FN-CARD-004 (Kết quả: the last card sends the deck back to unset) |
 | `features/card/ui.md:36` **`J` đổi nghĩa của một lần chạm, và đó là cạnh dễ nhớ sai thứ hai ở đây.** Chạm | superseded → FN-CARD-013 (opening the detail is what selecting a card means outside selection mode); presentation pending → SCR-CARD-001 |
 | `features/card/ui.md:41` **`I1` là cạnh dễ vẽ sai nhất trong tài liệu này.** Xoá card cuối cùng **có** đư | superseded → FN-CARD-004 (Kết quả) |
 | `features/card/ui.md:46` **Card cũng mang cờ, tag và ba trường phụ (BR-CARD-009, BR-TAG-001, BR-TAG-002, | superseded → FN-CARD-002, FN-CARD-003 (flag, tags, optional fields) |
-| `features/card/ui.md:49` ## Validation | pending → SCR-CARD-002 (Copy: field errors — compare with the app's English copy) |
-| `features/card/ui.md:51` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | pending → SCR-CARD-002 (Copy: field errors) |
-| `features/card/ui.md:53` \| Card.front \| không rỗng sau trim (BR-CARD-001) \| "Mặt trước không được để trốn | pending → SCR-CARD-002 (Copy: field errors) |
-| `features/card/ui.md:54` \| Card.back \| không rỗng sau trim (BR-CARD-001) \| "Mặt sau không được để trống" | pending → SCR-CARD-002 (Copy: field errors) |
-| `features/card/ui.md:55` \| Card.front \| ≤ 60 ký tự (BR-CARD-002) \| "Mặt trước tối đa 60 ký tự" \| rule \| | pending → SCR-CARD-002 (Copy: field errors) |
-| `features/card/ui.md:56` \| Card.back \| ≤ 240 ký tự (BR-CARD-002) \| "Mặt sau tối đa 240 ký tự" \| rule \| | pending → SCR-CARD-002 (Copy: field errors) |
-| `features/card/ui.md:57` \| Card.example / hint / pronunciation \| ≤ 240 ký tự (BR-CARD-003) \| "Tối đa 240 | pending → SCR-CARD-002 (Copy: field errors) |
+| `features/card/ui.md:49` ## Validation | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `features/card/ui.md:51` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `features/card/ui.md:53` \| Card.front \| không rỗng sau trim (BR-CARD-001) \| "Mặt trước không được để trốn | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `features/card/ui.md:54` \| Card.back \| không rỗng sau trim (BR-CARD-001) \| "Mặt sau không được để trống" | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `features/card/ui.md:55` \| Card.front \| ≤ 60 ký tự (BR-CARD-002) \| "Mặt trước tối đa 60 ký tự" \| rule \| | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `features/card/ui.md:56` \| Card.back \| ≤ 240 ký tự (BR-CARD-002) \| "Mặt sau tối đa 240 ký tự" \| rule \| | moved → `screens/spec/SCR-CARD-002-card-create.md` |
+| `features/card/ui.md:57` \| Card.example / hint / pronunciation \| ≤ 240 ký tự (BR-CARD-003) \| "Tối đa 240 | moved → `screens/spec/SCR-CARD-002-card-create.md` |
 | `features/card/ui.md:59` Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server valid | superseded → ADR-015 (the server checks integrity only; business rules live in the app) |
 
 ## features/deck/ui.md
@@ -3246,7 +3246,7 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `features/tags/ui.md:5` ## Màn hình và điều hướng | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/ui.md:7` \| Màn \| Route \| Mở từ \| Handoff \| | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/ui.md:9` \| 05 · Tags \| `/decks/tags`, toàn màn hình trên root navigator, không có bottom | moved → `screens/spec/SCR-TAG-001-tags.md` |
-| `features/tags/ui.md:10` \| 07 · Overlay lọc theo tag \| Bottom sheet trên card list \| Chip Tags trên thanh | pending → SCR-CARD-001 (the tag filter overlay: a bottom sheet over the card list, opened from the Tags chip) |
+| `features/tags/ui.md:10` \| 07 · Overlay lọc theo tag \| Bottom sheet trên card list \| Chip Tags trên thanh | moved → `screens/spec/SCR-CARD-001-card-list.md` |
 | `features/tags/ui.md:12` "Find cards with this tag" mở tìm kiếm thư viện với tên tag; tìm kiếm nằm trong | moved → `screens/spec/SCR-TAG-001-tags.md` |
 | `features/tags/ui.md:18` ## Validation | superseded → FN-TAG-002 + FN-TAG-003 + FN-CARD-010 (Lỗi) |
 | `features/tags/ui.md:20` \| Trường \| Rule \| Message hiển thị \| Enforced by \| | superseded → FN-TAG-002 + FN-TAG-003 + FN-CARD-010 (Lỗi) |
@@ -3272,11 +3272,11 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 
 | Source item | Outcome |
 |---|---|
-| `features/card/README.md:10` ## Màn hình → Use case |  |
-| `features/card/README.md:12` \| Màn hình \| UC \| |  |
-| `features/card/README.md:14` \| Danh sách card (deck có `content_type = card`) \| UC-CARD-001 \| |  |
-| `features/card/README.md:15` \| Chi tiết card, chỉ đọc \| UC-CARD-002 \| |  |
-| `features/card/README.md:17` Nguồn: trigger của UC-CARD-001 ("Mở một deck có `content_type = 'card'`") và UC- |  |
+| `features/card/README.md:10` ## Màn hình → Use case || superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/card/README.md:12` \| Màn hình \| UC \| || superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/card/README.md:14` \| Danh sách card (deck có `content_type = card`) \| UC-CARD-001 \| || superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/card/README.md:15` \| Chi tiết card, chỉ đọc \| UC-CARD-002 \| || superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
+| `features/card/README.md:17` Nguồn: trigger của UC-CARD-001 ("Mở một deck có `content_type = 'card'`") và UC- || superseded → SCR-CARD-001, SCR-CARD-002, SCR-CARD-003, SCR-CARD-004 (Related Use Cases; the reverse view is _generated/screens.md) |
 
 ## features/deck/README.md
 
@@ -3605,46 +3605,46 @@ spec is not written. `check.py --ledger` verifies them and fails on pending.
 | `test/features/account/presentation/goldens/welcome_offline_light.png` |  |
 | `test/features/account/presentation/goldens/welcome_ready_dark.png` |  |
 | `test/features/account/presentation/goldens/welcome_ready_light.png` |  |
-| `test/features/card/presentation/goldens/card_detail_history_dark.png` |  |
-| `test/features/card/presentation/goldens/card_detail_history_light.png` |  |
-| `test/features/card/presentation/goldens/card_detail_top_dark.png` |  |
-| `test/features/card/presentation/goldens/card_detail_top_light.png` |  |
-| `test/features/card/presentation/goldens/card_editor_create_dark.png` |  |
-| `test/features/card/presentation/goldens/card_editor_create_keyboard_dark.png` |  |
-| `test/features/card/presentation/goldens/card_editor_create_keyboard_light.png` |  |
-| `test/features/card/presentation/goldens/card_editor_create_light.png` |  |
-| `test/features/card/presentation/goldens/card_editor_edit_dark.png` |  |
-| `test/features/card/presentation/goldens/card_editor_edit_light.png` |  |
-| `test/features/card/presentation/goldens/card_editor_errors_dark.png` |  |
-| `test/features/card/presentation/goldens/card_editor_errors_light.png` |  |
-| `test/features/card/presentation/goldens/card_editor_more_dark.png` |  |
-| `test/features/card/presentation/goldens/card_editor_more_light.png` |  |
-| `test/features/card/presentation/goldens/card_editor_trash_dialog_dark.png` |  |
-| `test/features/card/presentation/goldens/card_editor_trash_dialog_light.png` |  |
-| `test/features/card/presentation/goldens/card_list_bulk_failed_dark.png` |  |
-| `test/features/card/presentation/goldens/card_list_bulk_failed_light.png` |  |
-| `test/features/card/presentation/goldens/card_list_dark.png` |  |
-| `test/features/card/presentation/goldens/card_list_light.png` |  |
-| `test/features/card/presentation/goldens/card_list_search_dark.png` |  |
-| `test/features/card/presentation/goldens/card_list_search_light.png` |  |
-| `test/features/card/presentation/goldens/card_list_search_results_dark.png` |  |
-| `test/features/card/presentation/goldens/card_list_search_results_light.png` |  |
-| `test/features/card/presentation/goldens/card_list_trash_dialog_dark.png` |  |
-| `test/features/card/presentation/goldens/card_list_trash_dialog_light.png` |  |
-| `test/features/card/presentation/goldens/card_list_trashed_dark.png` |  |
-| `test/features/card/presentation/goldens/card_list_trashed_light.png` |  |
-| `test/features/card/presentation/goldens/card_selection_dark.png` |  |
-| `test/features/card/presentation/goldens/card_selection_light.png` |  |
-| `test/features/card/presentation/goldens/card_tag_filter_applied_dark.png` |  |
-| `test/features/card/presentation/goldens/card_tag_filter_applied_light.png` |  |
-| `test/features/card/presentation/goldens/card_tag_filter_no_card_dark.png` |  |
-| `test/features/card/presentation/goldens/card_tag_filter_no_card_light.png` |  |
-| `test/features/card/presentation/goldens/card_tag_filter_none_dark.png` |  |
-| `test/features/card/presentation/goldens/card_tag_filter_none_light.png` |  |
-| `test/features/card/presentation/goldens/card_tag_filter_one_dark.png` |  |
-| `test/features/card/presentation/goldens/card_tag_filter_one_light.png` |  |
-| `test/features/card/presentation/goldens/card_tag_filter_several_dark.png` |  |
-| `test/features/card/presentation/goldens/card_tag_filter_several_light.png` |  |
+| `test/features/card/presentation/goldens/card_detail_history_dark.png` | superseded → SCR-CARD-004 `history` dark |
+| `test/features/card/presentation/goldens/card_detail_history_light.png` | superseded → SCR-CARD-004 `history` light |
+| `test/features/card/presentation/goldens/card_detail_top_dark.png` | superseded → SCR-CARD-004 `loaded` dark |
+| `test/features/card/presentation/goldens/card_detail_top_light.png` | superseded → SCR-CARD-004 `loaded` light |
+| `test/features/card/presentation/goldens/card_editor_create_dark.png` | superseded → SCR-CARD-002 `empty_form` dark |
+| `test/features/card/presentation/goldens/card_editor_create_keyboard_dark.png` | superseded → SCR-CARD-002 `empty_form_keyboard` dark |
+| `test/features/card/presentation/goldens/card_editor_create_keyboard_light.png` | superseded → SCR-CARD-002 `empty_form_keyboard` light |
+| `test/features/card/presentation/goldens/card_editor_create_light.png` | superseded → SCR-CARD-002 `empty_form` light |
+| `test/features/card/presentation/goldens/card_editor_edit_dark.png` | superseded → SCR-CARD-003 `loaded` dark |
+| `test/features/card/presentation/goldens/card_editor_edit_light.png` | superseded → SCR-CARD-003 `loaded` light |
+| `test/features/card/presentation/goldens/card_editor_errors_dark.png` | superseded → SCR-CARD-003 `validation_err` dark |
+| `test/features/card/presentation/goldens/card_editor_errors_light.png` | superseded → SCR-CARD-003 `validation_err` light |
+| `test/features/card/presentation/goldens/card_editor_more_dark.png` | superseded → SCR-CARD-003 `more` dark |
+| `test/features/card/presentation/goldens/card_editor_more_light.png` | superseded → SCR-CARD-003 `more` light |
+| `test/features/card/presentation/goldens/card_editor_trash_dialog_dark.png` | superseded → SCR-CARD-003 `del_confirm` dark |
+| `test/features/card/presentation/goldens/card_editor_trash_dialog_light.png` | superseded → SCR-CARD-003 `del_confirm` light |
+| `test/features/card/presentation/goldens/card_list_bulk_failed_dark.png` | superseded → SCR-CARD-001 `bulk_failed` dark |
+| `test/features/card/presentation/goldens/card_list_bulk_failed_light.png` | superseded → SCR-CARD-001 `bulk_failed` light |
+| `test/features/card/presentation/goldens/card_list_dark.png` | superseded → SCR-CARD-001 `loaded` dark |
+| `test/features/card/presentation/goldens/card_list_light.png` | superseded → SCR-CARD-001 `loaded` light |
+| `test/features/card/presentation/goldens/card_list_search_dark.png` | superseded → SCR-CARD-001 `search_empty` dark |
+| `test/features/card/presentation/goldens/card_list_search_light.png` | superseded → SCR-CARD-001 `search_empty` light |
+| `test/features/card/presentation/goldens/card_list_search_results_dark.png` | superseded → SCR-CARD-001 `search_results` dark |
+| `test/features/card/presentation/goldens/card_list_search_results_light.png` | superseded → SCR-CARD-001 `search_results` light |
+| `test/features/card/presentation/goldens/card_list_trash_dialog_dark.png` | superseded → SCR-CARD-001 `del_card` dark |
+| `test/features/card/presentation/goldens/card_list_trash_dialog_light.png` | superseded → SCR-CARD-001 `del_card` light |
+| `test/features/card/presentation/goldens/card_list_trashed_dark.png` | superseded → SCR-CARD-001 `trashed` dark |
+| `test/features/card/presentation/goldens/card_list_trashed_light.png` | superseded → SCR-CARD-001 `trashed` light |
+| `test/features/card/presentation/goldens/card_selection_dark.png` | superseded → SCR-CARD-001 `selection` dark |
+| `test/features/card/presentation/goldens/card_selection_light.png` | superseded → SCR-CARD-001 `selection` light |
+| `test/features/card/presentation/goldens/card_tag_filter_applied_dark.png` | superseded → SCR-CARD-001 `tag_filter_applied` dark |
+| `test/features/card/presentation/goldens/card_tag_filter_applied_light.png` | superseded → SCR-CARD-001 `tag_filter_applied` light |
+| `test/features/card/presentation/goldens/card_tag_filter_no_card_dark.png` | superseded → SCR-CARD-001 `tag_filter_no_card` dark |
+| `test/features/card/presentation/goldens/card_tag_filter_no_card_light.png` | superseded → SCR-CARD-001 `tag_filter_no_card` light |
+| `test/features/card/presentation/goldens/card_tag_filter_none_dark.png` | superseded → SCR-CARD-001 `tag_filter_none` dark |
+| `test/features/card/presentation/goldens/card_tag_filter_none_light.png` | superseded → SCR-CARD-001 `tag_filter_none` light |
+| `test/features/card/presentation/goldens/card_tag_filter_one_dark.png` | superseded → SCR-CARD-001 `tag_filter_one` dark |
+| `test/features/card/presentation/goldens/card_tag_filter_one_light.png` | superseded → SCR-CARD-001 `tag_filter_one` light |
+| `test/features/card/presentation/goldens/card_tag_filter_several_dark.png` | superseded → SCR-CARD-001 `tag_filter_several` dark |
+| `test/features/card/presentation/goldens/card_tag_filter_several_light.png` | superseded → SCR-CARD-001 `tag_filter_several` light |
 | `test/features/deck/presentation/goldens/library_algorithm_locked_dark.png` | superseded → SCR-SRS-001 `locked` dark |
 | `test/features/deck/presentation/goldens/library_algorithm_locked_light.png` | superseded → SCR-SRS-001 `locked` light |
 | `test/features/deck/presentation/goldens/library_algorithm_reset_dark.png` | superseded → SCR-SRS-001 `reset_confirm` dark |
@@ -4350,3 +4350,11 @@ get_pending_log 005. No UC, no BR; each FN cites ADR-018's decisions 5–8 and t
 - Record 06 → `screens/spec/SCR-TRASH-001-trash.md`; 18 goldens superseded by its states (`trash_purge_blocked` → `younger_inside`).
 - 21 rows `pending → SCR-TRASH-001` moved; trash README rows superseded. The rows pending to SCR-DECK-001 and SCR-CARD-001 (the Undo snackbar) stay for those screens: SCR-DECK-001 already draws it, SCR-CARD-001 in Task 33.
 - Warning delta: 62 → 61 = −1 SCR-DECK-001 → pending SCR-TRASH-001.
+
+## Task 33 notes — SCR-CARD-001…004
+
+- Records 07–10 → `SCR-CARD-001-card-list.md`, `SCR-CARD-002-card-create.md`, `SCR-CARD-003-card-edit.md`, `SCR-CARD-004-card-detail.md`; their goldens superseded by the specs' states (`card_editor_errors`, shared by create and edit, → SCR-CARD-003 `validation_err`).
+- 65 rows `pending → SCR-CARD-00x` moved; the 5 rows `pending → SCR-DECK-001` left by Task 32 (the Undo snackbar) are superseded by SCR-DECK-001 + SCR-CARD-001; card README rows superseded.
+- Followed the code where the record was silent: an edit save and Back from a gone state return to the screen the editor was opened from (`maybePop`); a rejection the fields' checks let through is a snackbar.
+- The legacy UC-CARD-001 A6 bar (Add tag, Flag, Remove flag, Delete) differs from V8's Move · Flag · Tag · Export · Trash; ruled in SCR-CARD-001 (presentation, no BR).
+- Warning delta: 61 → 61 = −3 navigations to pending card specs, +3 SCR-CARD-001 navigations to pending study/transfer specs.

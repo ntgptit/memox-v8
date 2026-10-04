@@ -96,20 +96,20 @@
 
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
-| [FN-CARD-001](../functional-spec/card.md) | Xem danh sách card của một deck | active | UC-CARD-001, UC-TAG-001 |
-| [FN-CARD-002](../functional-spec/card.md) | Tạo card | active | UC-CARD-001, UC-DECK-004 |
-| [FN-CARD-003](../functional-spec/card.md) | Sửa card | active | UC-CARD-001, UC-CARD-002 |
-| [FN-CARD-004](../functional-spec/card.md) | Chuyển card vào Trash | active | UC-CARD-001, UC-TRASH-001 |
-| [FN-CARD-005](../functional-spec/card.md) | Hoàn tác xoá card | active | UC-CARD-001, UC-TRASH-001 |
-| [FN-CARD-006](../functional-spec/card.md) | Xem các deck đích để di chuyển card | active | UC-CARD-001 |
-| [FN-CARD-007](../functional-spec/card.md) | Di chuyển card sang deck khác | active | UC-CARD-001 |
-| [FN-CARD-008](../functional-spec/card.md) | Chọn mọi card khớp danh sách | active | UC-CARD-001 |
-| [FN-CARD-009](../functional-spec/card.md) | Bật hoặc bỏ cờ của card | active | UC-CARD-001 |
-| [FN-CARD-010](../functional-spec/card.md) | Gắn tag cho card theo tên | active | UC-CARD-001 |
+| [FN-CARD-001](../functional-spec/card.md) | Xem danh sách card của một deck | active | SCR-CARD-001, UC-CARD-001, UC-TAG-001 |
+| [FN-CARD-002](../functional-spec/card.md) | Tạo card | active | SCR-CARD-002, UC-CARD-001, UC-DECK-004 |
+| [FN-CARD-003](../functional-spec/card.md) | Sửa card | active | SCR-CARD-003, UC-CARD-001, UC-CARD-002 |
+| [FN-CARD-004](../functional-spec/card.md) | Chuyển card vào Trash | active | SCR-CARD-001, SCR-CARD-003, UC-CARD-001, UC-TRASH-001 |
+| [FN-CARD-005](../functional-spec/card.md) | Hoàn tác xoá card | active | SCR-CARD-001, UC-CARD-001, UC-TRASH-001 |
+| [FN-CARD-006](../functional-spec/card.md) | Xem các deck đích để di chuyển card | active | SCR-CARD-001, UC-CARD-001 |
+| [FN-CARD-007](../functional-spec/card.md) | Di chuyển card sang deck khác | active | SCR-CARD-001, UC-CARD-001 |
+| [FN-CARD-008](../functional-spec/card.md) | Chọn mọi card khớp danh sách | active | SCR-CARD-001, UC-CARD-001 |
+| [FN-CARD-009](../functional-spec/card.md) | Bật hoặc bỏ cờ của card | active | SCR-CARD-001, UC-CARD-001 |
+| [FN-CARD-010](../functional-spec/card.md) | Gắn tag cho card theo tên | active | SCR-CARD-001, UC-CARD-001 |
 | [FN-CARD-011](../functional-spec/card.md) | Gỡ tag khỏi card | active | UC-CARD-001 |
-| [FN-CARD-012](../functional-spec/card.md) | Xem tag của thư viện kèm số card của một deck | active | UC-CARD-001, UC-TAG-001 |
-| [FN-CARD-013](../functional-spec/card.md) | Xem chi tiết một card | active | UC-CARD-002 |
-| [FN-CARD-014](../functional-spec/card.md) | Tải một trang lịch sử học của card | active | UC-CARD-002 |
+| [FN-CARD-012](../functional-spec/card.md) | Xem tag của thư viện kèm số card của một deck | active | SCR-CARD-001, UC-CARD-001, UC-TAG-001 |
+| [FN-CARD-013](../functional-spec/card.md) | Xem chi tiết một card | active | SCR-CARD-003, SCR-CARD-004, UC-CARD-002 |
+| [FN-CARD-014](../functional-spec/card.md) | Tải một trang lịch sử học của card | active | SCR-CARD-004, UC-CARD-002 |
 
 ### Use cases
 
@@ -117,6 +117,15 @@
 |---|---|---|---|
 | [UC-CARD-001](../USE_CASES.md) | Quản lý card trong deck | ready | — |
 | [UC-CARD-002](../USE_CASES.md) | Xem chi tiết một card và lịch sử học của nó | ready | — |
+
+### Screens
+
+| ID | Name | Status | Route |
+|---|---|---|---|
+| [SCR-CARD-001](../screens/spec/SCR-CARD-001-card-list.md) | Card list | ready | `/decks/deck/:deckId` |
+| [SCR-CARD-002](../screens/spec/SCR-CARD-002-card-create.md) | Card create | ready | `/decks/deck/:deckId/cards/new` |
+| [SCR-CARD-003](../screens/spec/SCR-CARD-003-card-edit.md) | Card edit | ready | `/decks/card/:cardId/edit` |
+| [SCR-CARD-004](../screens/spec/SCR-CARD-004-card-detail.md) | Card detail | ready | `/decks/card/:cardId` |
 
 ## [deck](../features/deck/README.md)
 
@@ -157,16 +166,16 @@
 | ID | Title | Status | Invoked by |
 |---|---|---|---|
 | [FN-DECK-001](../functional-spec/deck.md) | Tạo root deck | active | SCR-DECK-001, UC-DECK-001, UC-STARTER-001 |
-| [FN-DECK-002](../functional-spec/deck.md) | Đổi tên deck | active | SCR-DECK-001, UC-DECK-002 |
+| [FN-DECK-002](../functional-spec/deck.md) | Đổi tên deck | active | SCR-CARD-001, SCR-DECK-001, UC-DECK-002 |
 | [FN-DECK-003](../functional-spec/deck.md) | Đổi chế độ ôn tập của root deck | active | SCR-SRS-001, UC-DECK-002 |
-| [FN-DECK-004](../functional-spec/deck.md) | Xem số deck con và card sẽ vào Trash cùng deck | active | SCR-DECK-001, UC-DECK-002 |
-| [FN-DECK-005](../functional-spec/deck.md) | Chuyển deck và cây con vào Trash | active | SCR-DECK-001, UC-DECK-002, UC-TRASH-001 |
+| [FN-DECK-004](../functional-spec/deck.md) | Xem số deck con và card sẽ vào Trash cùng deck | active | SCR-CARD-001, SCR-DECK-001, UC-DECK-002 |
+| [FN-DECK-005](../functional-spec/deck.md) | Chuyển deck và cây con vào Trash | active | SCR-CARD-001, SCR-DECK-001, UC-DECK-002, UC-TRASH-001 |
 | [FN-DECK-006](../functional-spec/deck.md) | Hoàn tác xoá deck | active | SCR-DECK-001, UC-DECK-002, UC-TRASH-001 |
 | [FN-DECK-007](../functional-spec/deck.md) | Xem một cấp của thư viện kèm tiến độ | active | SCR-DECK-001, UC-DECK-003 |
-| [FN-DECK-008](../functional-spec/deck.md) | Xem một deck đang mở | active | SCR-DECK-001, SCR-SRS-001, UC-DECK-003, UC-DECK-004 |
+| [FN-DECK-008](../functional-spec/deck.md) | Xem một deck đang mở | active | SCR-CARD-001, SCR-DECK-001, SCR-SRS-001, UC-DECK-003, UC-DECK-004 |
 | [FN-DECK-009](../functional-spec/deck.md) | Tạo deck con | active | SCR-DECK-001, UC-DECK-004 |
-| [FN-DECK-010](../functional-spec/deck.md) | Xem các đích di chuyển hợp lệ | active | SCR-DECK-001, UC-DECK-005 |
-| [FN-DECK-011](../functional-spec/deck.md) | Di chuyển deck trong cây | active | SCR-DECK-001, UC-DECK-005 |
+| [FN-DECK-010](../functional-spec/deck.md) | Xem các đích di chuyển hợp lệ | active | SCR-CARD-001, SCR-DECK-001, UC-DECK-005 |
+| [FN-DECK-011](../functional-spec/deck.md) | Di chuyển deck trong cây | active | SCR-CARD-001, SCR-DECK-001, UC-DECK-005 |
 | [FN-DECK-012](../functional-spec/deck.md) | Sắp xếp lại deck cùng cấp | active | SCR-DECK-001, UC-DECK-006 |
 
 ### Use cases

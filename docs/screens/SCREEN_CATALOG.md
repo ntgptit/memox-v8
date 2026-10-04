@@ -14,10 +14,10 @@ Every screen of the app; one spec per screen in `spec/`. The visual system is in
 | SCR-SEARCH-001 | Library search | search | `/decks/search` | ready | `spec/SCR-SEARCH-001-library-search.md` |
 | SCR-TAG-001 | Tags | tags | `/decks/tags` | ready | `spec/SCR-TAG-001-tags.md` |
 | SCR-TRASH-001 | Trash | trash | `/decks/trash` | ready | `spec/SCR-TRASH-001-trash.md` |
-| SCR-CARD-001 | Card list | card | — | pending | — |
-| SCR-CARD-002 | Card create | card | — | pending | — |
-| SCR-CARD-003 | Card edit | card | — | pending | — |
-| SCR-CARD-004 | Card detail | card | — | pending | — |
+| SCR-CARD-001 | Card list | card | `/decks/deck/:deckId` | ready | `spec/SCR-CARD-001-card-list.md` |
+| SCR-CARD-002 | Card create | card | `/decks/deck/:deckId/cards/new` | ready | `spec/SCR-CARD-002-card-create.md` |
+| SCR-CARD-003 | Card edit | card | `/decks/card/:cardId/edit` | ready | `spec/SCR-CARD-003-card-edit.md` |
+| SCR-CARD-004 | Card detail | card | `/decks/card/:cardId` | ready | `spec/SCR-CARD-004-card-detail.md` |
 | SCR-TRANSFER-001 | Card import | transfer | — | pending | — |
 | SCR-TRANSFER-002 | Card export | transfer | — | pending | — |
 | SCR-STUDY-001 | Study home | study | — | pending | — |
