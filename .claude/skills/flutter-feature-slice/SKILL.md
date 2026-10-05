@@ -31,7 +31,7 @@ out to be open becomes rework, and the rework is always larger than the check.
       `docs/features/<feature>/api.md` first, and build against a fake
       implementing the same interface.
 - [ ] **Data model known** — entities, tables, whether a migration is needed.
-- [ ] **Acceptance criteria written** in the WBS entry, checkable by someone
+- [ ] **Acceptance criteria written** in the Linear issue, checkable by someone
       else.
 - [ ] **Dependencies identified** — which features or shared components this
       needs, and whether they exist yet.
@@ -50,7 +50,7 @@ gap is a use case or business rule. Report which item is open and what you need
 
 The exception worth naming: if the user has heard the gap and says build it
 anyway, build it. State the assumption you are proceeding on, record it in the
-WBS entry, and continue with the full scope.
+Linear issue, and continue with the full scope.
 
 ## Step 1 — Domain
 
@@ -214,9 +214,10 @@ level, and their size is a reference for a slice of that weight.
 - [ ] `.claude/skills/flutter-workflow/scripts/dod_check.sh` passes.
 - [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
       (`flutter analyze` does not cover the Riverpod and layering rules).
-- [ ] The item's Linear issue (project MemoX, ADR-021) updated — status, and
-      anything descoped with the reason; for a screen, its row in the screen
-      handoff index in this commit.
+- [ ] The item's Linear issue (project MemoX, ADR-021): In Progress, then In Review, while the
+      branch and PR name its `DEV-n`; Done once merged into `master`, with the
+      evidence (PR, commit, tests) and anything descoped with the reason; for a screen, its row in the screen handoff index
+      in this commit.
 - [ ] Docs the feature changed (data model, API spec, architecture decisions)
       updated in the same commit.
 - [ ] Full Definition of Done reviewed:
@@ -224,7 +225,7 @@ level, and their size is a reference for a slice of that weight.
 - [ ] Conventional commit scoped to the feature: `feat(<feature>): ...`.
 
 `assets/feature_checklist.md` is a copy-paste version of all of the above to
-paste into a WBS entry or PR description.
+paste into a Linear issue or PR description.
 
 ## What does not transfer from Deck and Card
 

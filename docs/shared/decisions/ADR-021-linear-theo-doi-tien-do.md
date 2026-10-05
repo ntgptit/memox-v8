@@ -21,13 +21,14 @@ bảng dài, hai file có thể cùng ghi một hạng mục (BE-E1 và BE-E8 c�
   (presentation), `Supabase` (sync và login trên Supabase). Mỗi issue mang đúng
   một label của nhóm.
 - Trạng thái của issue thay cho cột Trạng thái: `xong` → Done (chỉ khi đạt
-  Definition of Done và đã merge vào `master`); `đang làm` → In Progress;
-  `chưa bắt đầu` → Todo; `bị chặn`, `hoãn`, `tạm dừng` → Backlog, lý do ghi
-  trong issue; `cắt` → Canceled, lý do ghi trong issue.
+  Definition of Done và đã merge vào `master`); `đang làm` → In Progress, rồi
+  In Review khi có PR; `chưa bắt đầu` → Todo; `bị chặn`, `hoãn`, `tạm dừng` →
+  Backlog, lý do ghi trong issue; `cắt` → Canceled, lý do ghi trong issue.
 - Thứ tự làm tiếp là priority của issue. Điểm chặn và câu hỏi còn mở là comment
   trên issue đó.
 - Issue mới chỉ dùng mã `DEV-n` của Linear. ID cũ (`BE-03`, `FE-A2`, `SB-S8`…)
-  chỉ còn ở đầu tiêu đề của 128 issue đã chuyển (DEV-6…DEV-133). Nhánh và PR nhắc
+  chỉ còn ở đầu tiêu đề của 128 issue đã chuyển (DEV-6…DEV-133); BE-E1 và BE-E8
+  có ở hai file, mỗi cái thành một issue mang label `Supabase`. Nhánh và PR nhắc
   `DEV-n` để Linear tự liên kết.
 - Ba file WBS đóng băng ngày 2026-10-05, giữ nguyên làm lịch sử: các spec và plan
   có ngày đều dẫn tới chúng.
@@ -36,8 +37,10 @@ bảng dài, hai file có thể cùng ghi một hạng mục (BE-E1 và BE-E8 c�
 
 ## Hệ quả
 
-- PR làm một hạng mục thì cập nhật issue của nó trên Linear (trạng thái, bằng
-  chứng, phần bị cắt kèm lý do), không còn sửa file WBS.
+- Nhánh và PR làm một hạng mục nhắc `DEV-n` của nó: issue ở In Progress rồi In
+  Review trong lúc làm (tích hợp GitHub của Linear tự chuyển), sang Done khi PR
+  merge, kèm bằng chứng (PR, commit, test) và phần bị cắt kèm lý do. Không còn
+  sửa file WBS.
 - Agent cần connector Linear để đọc và ghi tiến độ. Session không có connector
   thì báo chủ dự án, không tự ghi tiến độ vào file khác.
 - Gate (`dod_check.sh`) không kiểm được Linear. Việc issue có nói đúng sự thật

@@ -2,7 +2,8 @@
 
 > **Đóng băng 2026-10-05** ([ADR-021](shared/decisions/ADR-021-linear-theo-doi-tien-do.md)).
 > Tiến độ nằm trong project MemoX trên Linear, label `WBS` › `BE`; mỗi hạng mục
-> dưới đây là một issue có ID cũ ở đầu tiêu đề. File này chỉ còn là lịch sử.
+> dưới đây là một issue có ID cũ ở đầu tiêu đề (BE-E1, BE-E8 mang label `Supabase`).
+> File này chỉ còn là lịch sử.
 
 - **Trạng thái:** đóng băng 2026-10-05, không sửa nữa.
 - **Mục đích:** cho người và agent biết phần backend nào đã xong, phần nào còn lại

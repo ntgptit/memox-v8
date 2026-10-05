@@ -56,7 +56,7 @@ covers it.
 ## Modelling screen state
 
 Every screen enumerates its states explicitly: initial, loading, loaded, empty,
-error, refreshing, submitting. Whichever cannot occur, say so in the WBS entry
+error, refreshing, submitting. Whichever cannot occur, say so in the Linear issue
 rather than leaving it undecided — an unlisted state is one nobody builds, and
 empty is the one most often missed.
 

@@ -137,7 +137,7 @@ Nothing merges on a red pipeline: `CI gate` must be green before a pull request
 is merged. Release builds run by hand (`.github/workflows/build-apk.yml`).
 
 **PR quality gate**: small single-purpose scope, a description, a link to the
-WBS item, screenshots or video for UI changes, test results, no unexplained new
+Linear issue, screenshots or video for UI changes, test results, no unexplained new
 dependency, no out-of-scope refactor, at least one approval.
 
 **Delivery**: build per flavor, signing keys from CI secrets and never in the

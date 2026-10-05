@@ -1,14 +1,14 @@
 # Definition of Done
 
 A task is done when every line below is true. "Mostly done" is not a state that
-exists here — a task marked done in the WBS is one the next person will build on
+exists here — a task marked Done on Linear is one the next person will build on
 without re-checking.
 
 ## Scope
-- [ ] The work matches the WBS entry — no more, no less.
-- [ ] Acceptance criteria from the WBS entry all pass.
+- [ ] The work matches its Linear issue — no more, no less.
+- [ ] Acceptance criteria from the Linear issue all pass.
 - [ ] No refactoring outside the stated scope leaked in. If you found something
-      that needs fixing, note it in the WBS as a separate item rather than
+      that needs fixing, open a separate Linear issue (`DEV-n`) rather than
       widening this one.
 - [ ] Existing architecture was not broken to make this fit. If the architecture
       genuinely blocked the task, that is a design conversation, not a workaround.
@@ -53,9 +53,10 @@ without re-checking.
 - [ ] No user-visible string outside the ARB files.
 
 ## Paperwork
-- [ ] The item's Linear issue (project MemoX, ADR-021) tells the truth: state,
-      evidence, anything descoped with the reason; for a screen, its row in the
-      screen handoff index updated in this commit too.
+- [ ] The item's Linear issue (project MemoX, ADR-021): In Progress, then In Review, while the
+      branch and PR name its `DEV-n`; Done once merged into `master`, with the
+      evidence (PR, commit, tests) and anything descoped with the reason; for a screen, its row in the screen handoff index
+      updated in this commit.
 - [ ] Any doc the change invalidates (data model, API spec, design system) updated
       in this commit too.
 - [ ] Code reviewed.

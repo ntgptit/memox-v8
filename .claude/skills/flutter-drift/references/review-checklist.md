@@ -145,8 +145,10 @@ second about the evidence.
       `flutter test` all pass.
 - [ ] Generated code fresh and uncommitted: `check_generated.sh` passes after a
       clean `build_runner build`.
-- [ ] `docs/shared/data/schema.md` updated in the same commit, and the item's
-      Linear issue (ADR-021) updated.
+- [ ] `docs/shared/data/schema.md` updated in the same commit.
+- [ ] The item's Linear issue (project MemoX, ADR-021): In Progress, then In Review, while the
+      branch and PR name its `DEV-n`; Done once merged into `master`, with the
+      evidence (PR, commit, tests) and anything descoped with the reason.
 
 ## Writing up findings
 

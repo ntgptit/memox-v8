@@ -1,6 +1,6 @@
 # Feature: <name>
 
-WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
+Linear: `DEV-n` · Use cases: `UC-xx` · Business rules: `BR-xx`
 
 ## Pre-flight
 - [ ] Use case approved with main / alternative / error flows
@@ -106,8 +106,10 @@ WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
 - [ ] CI green on the PR — the same gates, plus the web build and the
       generated-code check
 - [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
-- [ ] The item's Linear issue (project MemoX, ADR-021) updated; for a screen,
-      its row in the screen handoff index in this commit
+- [ ] The item's Linear issue (project MemoX, ADR-021): In Progress, then In Review, while the
+      branch and PR name its `DEV-n`; Done once merged into `master`, with the
+      evidence (PR, commit, tests) and anything descoped with the reason; for a screen, its row in the screen handoff index
+      in this commit
 - [ ] Affected docs updated in this commit
 - [ ] Descoped items recorded with reasons
 - [ ] Reviewed against the full Definition of Done

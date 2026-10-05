@@ -72,17 +72,18 @@ mechanical half is automated:
 
 That runs the full mechanical gate — codegen freshness, format, analyze, tests, the architecture boundary check, the code-verification guard and the docs guard (see the script header for the exact list). It cannot
 judge whether the acceptance criteria are met, whether the UI matches the design,
-or whether the WBS entry is honest — that part is on you, and it is the half
+or whether the Linear issue is honest — that part is on you, and it is the half
 that actually catches problems.
 
 ## Keeping the ledger honest
 
-Update the item's Linear issue (state, evidence: PR, commit, tests) when the PR
-that does the work it describes merges, and a screen's row in the screen handoff
-index in that PR when the screen is built. New work is a new issue in project
-MemoX with its `WBS` label; it is named by its `DEV-n` only, and the branch and
-PR mention that `DEV-n`. Move an issue to Done only when it is done by the
-Definition of Done and merged into `master`, not when the code first runs. If
+The item's Linear issue is In Progress, then In Review, while the branch and PR
+name its `DEV-n` (Linear's GitHub integration moves it), and Done once the PR is
+merged into `master`, with the evidence (PR, commit, tests). A screen's row in
+the screen handoff index is updated in that PR when the screen is built. New
+work is a new issue in project MemoX with its `WBS` label, named by its `DEV-n`
+only. Done means done by the Definition of Done and merged, not that the code
+first runs. If
 something was descoped or deferred, write that down on the issue with the
 reason — a future session reading "done" on a half-finished item will build on
 sand.

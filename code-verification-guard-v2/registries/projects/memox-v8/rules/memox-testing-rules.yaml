@@ -16,7 +16,7 @@ rules:
     message: >-
       A skipped test still counts as a passing suite, so the lost coverage is
       invisible. Fix it or delete it; if it must stay, say why on the same line
-      and link the WBS entry.
+      and link the Linear issue (DEV-n).
     scopes:
       - test_files
     patterns:
