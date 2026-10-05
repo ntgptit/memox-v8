@@ -21,10 +21,10 @@ import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 /// The card detail's scroll, ending in the card's review history
-/// (UC-CARD-002, kit 10): newest first, grouped by cycle (BR-CARD-017), with
-/// older pages on request and a line where it begins (rulings P4b-L3,
-/// P4b-L6). Each history row is its own child of the scroll, so a long
-/// history builds only the rows in view.
+/// (UC-CARD-002): a timeline, newest first, grouped by cycle (BR-CARD-017),
+/// with older pages on request and a mark where it begins (DEV-170). Each
+/// history node is its own child of the scroll, so a long history builds
+/// only the nodes in view.
 class CardHistoryScrollWidget extends ConsumerWidget {
   const CardHistoryScrollWidget({
     super.key,
@@ -162,7 +162,13 @@ class _Marker extends StatelessWidget {
   Widget build(BuildContext context) {
     final styles = context.textStyles;
     final style = isEnd ? styles.noteText : styles.fieldLabel;
-    final above = isFirst ? 0.0 : AppSpacing.grouped;
+    // A cycle mark keeps a section's space from the answer above; the end
+    // mark sits close under the last answer, as the kit's does.
+    final above = switch ((isFirst, isEnd)) {
+      (true, _) => 0.0,
+      (_, true) => AppSpacing.micro,
+      _ => AppSpacing.grouped,
+    };
     return CardHistoryRailWidget(
       dotTop: above + CardHistoryRailWidget.dotTopOn(context, style),
       isFirst: isFirst,

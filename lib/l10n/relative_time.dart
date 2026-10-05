@@ -8,7 +8,9 @@ extension RelativeTime on AppLocalizations {
   static const int _daysPerYear = 365;
 
   String ago(DateTime at, DateTime now) {
-    final elapsed = now.difference(at);
+    // A time ahead of now (another device's fast clock) reads as just now.
+    final ahead = now.difference(at);
+    final elapsed = ahead.isNegative ? Duration.zero : ahead;
     if (elapsed.inHours < 1) return commonAgoMinutes(elapsed.inMinutes);
     if (elapsed.inDays < 1) return commonAgoHours(elapsed.inHours);
     if (elapsed.inDays == 1) return commonAgoYesterday;

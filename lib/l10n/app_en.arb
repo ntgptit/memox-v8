@@ -1381,7 +1381,7 @@
         "type": "String"
       }
     },
-    "description": "Screen 06: a card row's meta line; ago is a trashDeleted* phrase."
+    "description": "Screen 06: a card row's meta line; ago is a commonAgo* phrase (RelativeTime.ago)."
   },
   "trashDeckMeta": "Deck · {subDeckCount, plural, =1{1 sub-deck} other{{subDeckCount} sub-decks}} · {cardCount, plural, =1{1 card} other{{cardCount} cards}} · deleted {ago}",
   "@trashDeckMeta": {
@@ -1396,7 +1396,7 @@
         "type": "String"
       }
     },
-    "description": "Screen 06: a deck row's meta line; ago is a trashDeleted* phrase."
+    "description": "Screen 06: a deck row's meta line; ago is a commonAgo* phrase (RelativeTime.ago)."
   },
   "commonAgoMinutes": "{count, plural, =0{just now} =1{1 minute ago} other{{count} minutes ago}}",
   "@commonAgoMinutes": {

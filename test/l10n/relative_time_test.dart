@@ -25,6 +25,10 @@ void main() {
     expect(ago(const Duration(days: 800)), '2 years ago');
   });
 
+  test('a time ahead of now reads as just now', () {
+    expect(en.ago(now.add(const Duration(minutes: 5)), now), 'just now');
+  });
+
   test('Vietnamese reads the same steps', () {
     expect(ago(const Duration(days: 3), vi), '3 ngày trước');
     expect(ago(const Duration(days: 61), vi), '2 tháng trước');

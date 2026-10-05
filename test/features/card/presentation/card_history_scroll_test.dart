@@ -250,6 +250,32 @@ void main() {
     );
   });
 
+  libraryTest('the rail starts at the first cycle mark, runs on while older '
+      'answers remain, and ends at the beginning mark (DEV-170)', (
+    tester,
+    env,
+  ) async {
+    await _card(env);
+    await _answers(env, ReviewHistoryPage.size + 1);
+    await pumpLibraryScreen(tester, env, _section());
+    await tester.pumpAndSettle();
+    List<CardHistoryRailWidget> rails() => tester
+        .widgetList<CardHistoryRailWidget>(
+          find.byType(CardHistoryRailWidget, skipOffstage: false),
+        )
+        .toList();
+
+    expect(rails().first.isFirst, isTrue);
+    expect(rails().first.ink, isNull, reason: 'a cycle mark is hollow');
+    expect(rails().where((rail) => rail.isLast), isEmpty);
+
+    await _tapLoadMore(tester, _en.cardHistoryLoadMore);
+    await _scrollToEnd(tester);
+
+    expect(rails().last.isLast, isTrue);
+    expect(rails().last.ink, isNull);
+  });
+
   libraryTest('a failed older page keeps the rows and offers Retry (E4)', (
     tester,
     env,
