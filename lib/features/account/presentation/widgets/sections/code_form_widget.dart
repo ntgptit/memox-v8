@@ -114,7 +114,7 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
           controller: _code,
           variant: MxTextFieldVariant.code,
           label: l10n.accountCodeLabel,
-          autofocus: true,
+          isAutofocused: true,
           isEnabled: !state.isVerifying,
           onChanged: (text) => unawaited(_changed(text)),
           errorText: problem == null ? null : signInProblemText(l10n, problem),
