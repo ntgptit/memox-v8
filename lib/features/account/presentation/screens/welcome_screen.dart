@@ -16,15 +16,16 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
-import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Screen 29 (account UI spec U1, §5.1, §6): the first launch invites an
-/// account. The name, the promise and three benefits sit on top; the three
-/// ways on sit in the thumb zone, Google the one fill. Every exit answers
+/// account. The name, an honest lead and two benefits sit on top; the ways on
+/// sit in the thumb zone: Google, the one fill, while the account can link;
+/// otherwise only "Continue without an account", the one usable way, with the
+/// note under it (sign-in redesign 2026-10-05 S10). Every exit answers
 /// Welcome for good. There is no back: Back leaves the app, as on any
 /// root.
 class WelcomeScreen extends ConsumerWidget {
@@ -78,6 +79,14 @@ class WelcomeScreen extends ConsumerWidget {
     final canLink = ref.watch(canLinkProvider);
     final isRunning = ref.watch(signInControllerProvider(_link)).isRunning;
     final canSignIn = canLink && !isRunning;
+    // "Continue without an account": the quiet skip beside the ways in, or
+    // the one fill when none of them can be used (S10).
+    MxButton without(MxButtonTone tone) => MxButton(
+      label: l10n.accountContinueWithout,
+      tone: tone,
+      isBlock: true,
+      onPressed: isRunning ? null : () => _leave(ref, onDone),
+    );
     return MxAppShell(
       body: SafeArea(
         bottom: false,
@@ -110,45 +119,38 @@ class WelcomeScreen extends ConsumerWidget {
                   label: l10n.welcomeBenefitPhones,
                   icon: AppIcons.devices,
                 ),
-                MxSettingsRow(
-                  label: l10n.welcomeBenefitOffline,
-                  icon: AppIcons.offline,
-                ),
               ],
             ),
-            if (!canLink) MxNote(text: l10n.accountOfflineNote),
           ],
         ),
       ),
       footer: MxFooterBar(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.grouped,
-          children: [
-            MxButton(
-              label: l10n.accountContinueGoogle,
-              mark: googleMark,
-              isBlock: true,
-              isLoading: isRunning,
-              onPressed: canSignIn
-                  ? () => unawaited(_google(context, ref))
-                  : null,
-            ),
-            MxButton(
-              label: l10n.accountContinueEmail,
-              tone: MxButtonTone.outline,
-              isBlock: true,
-              onPressed: canSignIn ? () => _leave(ref, onEmail) : null,
-            ),
-            MxButton(
-              label: l10n.accountContinueWithout,
-              tone: MxButtonTone.text,
-              isBlock: true,
-              onPressed: isRunning ? null : () => _leave(ref, onDone),
-            ),
-          ],
-        ),
+        caption: canLink ? null : l10n.accountOfflineNote,
+        child: canLink
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                spacing: AppSpacing.grouped,
+                children: [
+                  MxButton(
+                    label: l10n.accountContinueGoogle,
+                    mark: googleMark,
+                    isBlock: true,
+                    isLoading: isRunning,
+                    onPressed: canSignIn
+                        ? () => unawaited(_google(context, ref))
+                        : null,
+                  ),
+                  MxButton(
+                    label: l10n.accountContinueEmail,
+                    tone: MxButtonTone.outline,
+                    isBlock: true,
+                    onPressed: canSignIn ? () => _leave(ref, onEmail) : null,
+                  ),
+                  without(MxButtonTone.text),
+                ],
+              )
+            : without(MxButtonTone.primary),
       ),
     );
   }

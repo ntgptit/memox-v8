@@ -6756,7 +6756,7 @@
   "@accountSignedInHint": {
     "description": "Screen 23: under the attached account's email (plan ruling 5)."
   },
-  "welcomeLead": "Sign in to keep your decks safe and the same on every phone.",
+  "welcomeLead": "MemoX works on this phone without an account, offline too. Signing in adds:",
   "@welcomeLead": {
     "description": "Screen 29: the line under the app name."
   },
@@ -6767,10 +6767,6 @@
   "welcomeBenefitPhones": "Study on several phones",
   "@welcomeBenefitPhones": {
     "description": "Screen 29: the second benefit."
-  },
-  "welcomeBenefitOffline": "Still works offline",
-  "@welcomeBenefitOffline": {
-    "description": "Screen 29: the third benefit."
   },
   "accountContinueGoogle": "Continue with Google",
   "@accountContinueGoogle": {

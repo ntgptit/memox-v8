@@ -8,6 +8,8 @@ import 'package:memox/features/account/presentation/screens/welcome_screen.dart'
 import 'package:memox/features/account/presentation/widgets/overlays/merge_choice_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_footer_bar.dart';
+import 'package:memox/shared/widgets/mx_settings_row.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/deck_fixtures.dart';
@@ -107,15 +109,70 @@ void main() {
       ],
     );
 
-    MxButton button(String label) =>
-        tester.widget<MxButton>(find.widgetWithText(MxButton, label));
-    expect(button(_en.accountContinueGoogle).onPressed, isNull);
-    expect(button(_en.accountContinueEmail).onPressed, isNull);
-    expect(find.text(_en.accountOfflineNote), findsOneWidget);
+    expect(find.text(_en.accountContinueGoogle), findsNothing);
+    expect(find.text(_en.accountContinueEmail), findsNothing);
+    final without = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, _en.accountContinueWithout),
+    );
+    expect(without.tone, MxButtonTone.primary);
+    expect(
+      find.descendant(
+        of: find.byType(MxFooterBar),
+        matching: find.text(_en.accountOfflineNote),
+      ),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text(_en.accountContinueWithout));
     await _settle(tester);
     expect(dones, 1);
+  });
+
+  accountTest('the lead says MemoX works without an account, and two '
+      'benefits follow', (tester, env, world) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    expect(find.text(_en.welcomeLead), findsOneWidget);
+    expect(find.text(_en.welcomeBenefitReinstall), findsOneWidget);
+    expect(find.text(_en.welcomeBenefitPhones), findsOneWidget);
+    expect(find.byType(MxSettingsRow), findsNWidgets(2));
+    expect(
+      tester
+          .widget<MxButton>(
+            find.widgetWithText(MxButton, _en.accountContinueGoogle),
+          )
+          .tone,
+      MxButtonTone.primary,
+    );
+  });
+
+  accountTest('when the account becomes ready, the three ways come back '
+      '(Review Focus 4)', (tester, env, world) async {
+    final auth = ValueNotifier<AuthState>(const LocalOnly());
+    addTearDown(auth.dispose);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [
+        ...accountOverrides(world),
+        shown,
+        authStateOfListenable(auth),
+      ],
+    );
+    expect(find.text(_en.accountContinueGoogle), findsNothing);
+
+    auth.value = world.state;
+    await _settle(tester);
+
+    expect(find.text(_en.accountContinueGoogle), findsOneWidget);
+    expect(find.text(_en.accountContinueEmail), findsOneWidget);
+    expect(find.text(_en.accountOfflineNote), findsNothing);
   });
 
   accountTest("a Google account that is another account's asks to merge, "
