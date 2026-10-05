@@ -45,7 +45,7 @@ card?") when leaving a dirty new-card form without saving.
 ## Rulings
 
 - **§9 row 81 (P4a-L7):** the deck chip is not a picker, so a deck that rejects cards says "This deck can't take cards now." / "It now holds sub-decks." with no "choose another deck".
-- **§9 row 101:** "Add details" has a solid `outlineVariant` edge, 48 tall (touch floor).
+- **§9 row 101:** "Add details" has a solid edge, 48 tall (touch floor); the edge is Outline Edge, as the fields beside it (DEV-166, was `outlineVariant` at about 1.5:1).
 - **§9 row 81 (P4a-L8):** "Add tag" is an outline `MxButton` chip; there is no dashed-border token.
 - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persistent header.
 - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spinner; the words live only in the caption line.

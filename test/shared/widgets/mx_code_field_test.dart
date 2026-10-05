@@ -173,6 +173,26 @@ void main() {
     );
   });
 
+  testWidgets('a disabled code rests its slots on the ghost edge, as a '
+      'disabled field does (DEV-166)', (tester) async {
+    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+    await pumpMx(
+      tester,
+      const MxTextField(variant: MxTextFieldVariant.code, isEnabled: false),
+    );
+    final slot =
+        tester
+                .widget<DecoratedBox>(
+                  find.descendant(
+                    of: find.byKey(MxCodeField.slotKey(0)),
+                    matching: find.byType(DecoratedBox),
+                  ),
+                )
+                .decoration
+            as BoxDecoration;
+    expect((slot.border! as Border).top.color, derived.ghostBorder);
+  });
+
   testWidgets('a tap on a slot focuses the code', (tester) async {
     await pumpMx(tester, const MxTextField(variant: MxTextFieldVariant.code));
 
