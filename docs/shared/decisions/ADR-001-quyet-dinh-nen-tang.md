@@ -19,6 +19,10 @@ superseded_by:
 > Các dòng *Data posture* và *Authentication*, cùng việc Drift là source of truth,
 > đã được thay bởi [ADR-013](ADR-013-dong-bo-voi-server-offline-first.md) (2026-09-27):
 > server là dữ liệu chính thức, app offline-first và tự đồng bộ.
+>
+> Dòng *Roles & permissions* đã được thay bởi
+> [ADR-015](ADR-015-supabase-lam-backend.md) (chủ dự án chốt 2026-10-05): có hai role
+> `user` và `admin`, nằm trong `public.profiles`; admin xem log và gán role.
 
 ## Lý do và hệ quả
 

@@ -7,7 +7,7 @@ code: [lib/features/reminders/domain/usecases/watch_reminder_use_case.dart, lib/
 ---
 ## Mục tiêu / Actor / Precondition
 
-**Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2). Phần logic xong ở BE-B5a
+**Phạm vi:** nhắc học hằng ngày, làm sau V8.0 (spec §2). Phần logic xong ở BE-B5a
 ([spec](../../../superpowers/specs/2026-09-26-reminders-backend-design.md)); adapter Android (lịch nền, notification, quyền) là BE-B5b; màn
 24 dựng ở FE-B5 ([spec](../../../superpowers/specs/2026-09-28-daily-reminder-ui-design.md),
 [handoff 24](../../../shared/ui/screen-handoff/24-daily-reminder.md)).
@@ -94,7 +94,7 @@ tắt (BR-REMINDER-010); không thao tác nào ở đây đụng tới study sta
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

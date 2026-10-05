@@ -68,7 +68,7 @@ AI agent MUST đọc theo thứ tự:
 | Ranh giới nền tảng — thứ duy nhất còn cần thiết bị | Có thể kiểm thử | [`features/deck/it-scenarios.md`](../../features/deck/it-scenarios.md) · [`features/study/it-scenarios.md`](../../features/study/it-scenarios.md) · [`shared/testing/it-scenarios.md`](it-scenarios.md) |
 | Hồ sơ thực thi và truy vết UC/BR theo từng kịch bản | Tham chiếu | [`host-coverage-map.md`](host-coverage-map.md) |
 
-**Không có kịch bản `FIXTURE-BLOCKED` nào** — cả 141 dòng của
+**Không có kịch bản `FIXTURE-BLOCKED` nào** — cả 142 dòng của
 `scenario-catalog.md` đều `READY`. Luật "không được ghi thẳng vào cơ sở dữ
 liệu" là luật viết cho **một thiết bị**; nó không áp cho một test host tự
 dựng SQLite in-memory của chính nó (§4.3).
@@ -80,10 +80,10 @@ Các luồng sau MUST NOT được ghi nhận là đạt khi chạy trên bản 
 - Luồng thuộc phạm vi ngoài V8.0 theo spec
   `docs/superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2: sáu
   sub-project sau (Trash, nhập/xuất, tag, nhắc học hằng ngày, thư viện
-  starter deck tức UC-STARTER-001, thống kê mở rộng) và những gì ngoài V8 hoàn toàn
-  (đa phương tiện, xác thực, đồng bộ/máy chủ, iOS/web/desktop). Kịch bản của
-  các luồng này vẫn là tài liệu nghiệp vụ cho sub-project sau, không phải
-  tiêu chí nghiệm thu của V8.0.
+  starter deck tức UC-STARTER-001, thống kê mở rộng), cùng xác thực và đồng
+  bộ/máy chủ. Các phần đó đã làm sau V8.0 (Linear, project MemoX); kịch bản của chúng là tiêu chí
+  của chính sub-project ấy, không phải tiêu chí nghiệm thu của V8.0. Đa phương
+  tiện và iOS/web/desktop vẫn ngoài phạm vi.
 
 ## 3. Quy ước kịch bản
 
@@ -171,7 +171,7 @@ AI agent MUST hiểu cột bên trái là ngôn ngữ rà soát; cột bên ph�
 Các mã `S-PROGRESS`, `S-DUE`, `S-LARGE` và `S-STUDY-*` có hợp đồng xác định tại
 [`agent-execution-guide.md`](agent-execution-guide.md) mục 5–6.
 
-**Tám kịch bản `DEVICE-E2E` không dùng loader nào.** Mỗi kịch bản tự dựng đúng
+**Các kịch bản `DEVICE-E2E` không dùng loader nào.** Mỗi kịch bản tự dựng đúng
 trạng thái tối thiểu nó cần, qua giao diện. Đó là điều kiện tiên quyết chứ không
 phải một bước, và nó giữ cho bộ device không mọc lại một tầng fixture thứ hai.
 

@@ -56,4 +56,4 @@ Thêm/Sửa ở trên.**
 | Card.back | ≤ 240 ký tự (BR-CARD-002) | "Mặt sau tối đa 240 ký tự" | rule |
 | Card.example / hint / pronunciation | ≤ 240 ký tự (BR-CARD-003) | "Tối đa 240 ký tự" | rule |
 
-Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server validate lại — client validation là trải nghiệm, không phải bảo mật.
+Toàn bộ enforce ở tầng nghiệp vụ của app. Server chỉ kiểm lại tính toàn vẹn (CHECK, khoá ngoại, bất biến cây, [ADR-015](../../shared/decisions/ADR-015-supabase-lam-backend.md) #2) — client validation là trải nghiệm, không phải bảo mật.

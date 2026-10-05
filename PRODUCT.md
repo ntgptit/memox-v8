@@ -46,10 +46,10 @@ This is not a market product. It is a personal app its owner builds so they can 
 
 ## Capabilities and Constraints
 
-- **Offline-first, server-backed.** MemoX stays fully usable without a network connection: user data is persisted in Drift (SQLite) on each device and synchronized with a Supabase project when connectivity is available (`ADR-013`, `ADR-015`). The server is the canonical cross-device store and checks integrity only; business rules and SRS live in the app alone. Decks sync today; each install signs in anonymously until login lands. Deck sharing and role permissions remain out of scope. `memox-api-services/` is frozen as a reference (`ADR-015`).
+- **Offline-first, server-backed.** MemoX stays fully usable without a network connection: user data is persisted in Drift (SQLite) on each device and synchronized with a Supabase project when connectivity is available (`ADR-013`, `ADR-015`). The server is the canonical cross-device store and checks integrity only; business rules and SRS live in the app alone. Every user data type syncs (decks, cards, tags, Trash batches, reviews, schedules, account settings). Each install starts with an anonymous session; signing in with email OTP or Google attaches it to an account, and an admin role manages users (`ADR-015`). Deck sharing remains out of scope. `memox-api-services/` is frozen as a reference (`ADR-015`).
 - **Android release target.** iOS is deferred until Android is stable. Web is used only for development (E2E, visual regression) and is never shipped. Desktop is out of scope (`ADR-001`).
 - **Phones first; tablets get a rail and a column.** From a window width of 600 dp (tablets, and phones in landscape) the four destinations move to a navigation rail and every screen keeps its phone layout in a centred column of at most 720 dp (FE-C5, owner 2026-09-28; spec `2026-09-28-tablet-rail-design.md`). There are no two-pane or tablet-specific layouts.
-- **UI languages:** follow the system, English or Vietnamese; the fallback is English (`BR-SETTINGS-006`). Vietnamese strings currently trail the English ones.
+- **UI languages:** follow the system, English or Vietnamese; the fallback is English (`BR-SETTINGS-006`).
 - **Data handling:**
   - Everything is logged, user content included, to a server table only an admin can read (`ADR-018`, which retired `BR-CORE-002`).
   - Export happens only on explicit request (`BR-CORE-004`).
@@ -59,7 +59,7 @@ This is not a market product. It is a personal app its owner builds so they can 
 - **Cards are text only.** Audio and images are out of MVP.
 - **In scope for V8.0 (`docs/features/*/README.md`):** deck, card, srs, study-mode, study, progress, settings, search (`ADR-009`), card tags (`ADR-009`).
 - **Built after V8.0:** full tag management, starter decks (development fixtures, not production content), daily reminders (opt-in, off by default; Android only, the on-device check pending), CSV/TSV/XLSX import and export, and Trash (a delete is recoverable for 30 days, `BR-TRASH-009`). Progress: the Linear project MemoX (ADR-021).
-- **No V7 data compatibility or migration.** V7 is an architecture reference only (`CLAUDE.md`).
+- **No V7 data compatibility or migration.** V7 is an architecture reference only (`ADR-011`).
 
 ## Brand Commitments
 

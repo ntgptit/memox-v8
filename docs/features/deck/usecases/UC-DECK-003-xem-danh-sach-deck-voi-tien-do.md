@@ -2,7 +2,7 @@
 id: UC-DECK-003
 title: Xem danh sách deck với tiến độ
 status: ready
-rules: [BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-DECK-026, BR-DECK-027, BR-STUDY-008, BR-STUDY-051]
+rules: [BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-DECK-026, BR-DECK-027, BR-STUDY-008, BR-STUDY-046, BR-STUDY-051, BR-STUDY-067, BR-STUDY-068]
 code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/features/deck/domain/usecases/watch_deck_use_case.dart, lib/features/deck/domain/models/deck_level_model.dart, lib/features/deck/domain/models/deck_level_query_model.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -68,7 +68,7 @@ named query. Ngoài ra BR-DECK-002, BR-DECK-003, BR-DECK-011.
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

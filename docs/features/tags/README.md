@@ -11,7 +11,7 @@ bộ lọc tag của card list (FE-B2): [ui.md](ui.md).
 
 Mô hình dữ liệu tag (BR-TAG-001, BR-TAG-002) và Tag Management v1: catalog, lọc theo tag, đổi tên/gộp, xoá.
 
-Gắn/gỡ tag trên thẻ (BR-TAG-001, BR-TAG-002, UC-CARD-001 A8) thuộc V8.0 (chủ dự án chốt ngày 2026-09-23, [ADR-009](../../shared/decisions/ADR-009-chot-pham-vi-v8-0.md)); Tag Management là sub-project sau V8.0, phần store làm ở BE-B2.
+Gắn/gỡ tag trên thẻ (BR-TAG-001, BR-TAG-002, UC-CARD-001 A8) thuộc V8.0 (chủ dự án chốt ngày 2026-09-23, [ADR-009](../../shared/decisions/ADR-009-chot-pham-vi-v8-0.md)); Tag Management làm sau V8.0: phần store ở BE-B2, màn hình ở FE-B2.
 
 Đổi tên được xem trước rồi mới ghi: `PlanTagRenameUseCase` nói trước lúc xác nhận là
 giữ nguyên, đổi tên hay gộp vào tag nào, kèm số thẻ; `RenameTagUseCase` chỉ gộp vào

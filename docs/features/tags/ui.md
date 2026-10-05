@@ -24,4 +24,4 @@ tên đã gõ. Nguồn: [spec FE-B2 + FE-B4](../../superpowers/specs/2026-09-27-
 | Tag.name | không trùng, không phân biệt hoa thường (BR-TAG-001) | "Tag này đã tồn tại" | rule + db |
 | Card.tags | ≤ 10 tag mỗi thẻ (BR-TAG-002) | "Mỗi thẻ tối đa 10 tag" | rule |
 
-Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server validate lại — client validation là trải nghiệm, không phải bảo mật.
+Toàn bộ enforce ở tầng nghiệp vụ của app. Server chỉ kiểm lại tính toàn vẹn (CHECK, khoá ngoại, bất biến cây, [ADR-015](../../shared/decisions/ADR-015-supabase-lam-backend.md) #2) — client validation là trải nghiệm, không phải bảo mật.

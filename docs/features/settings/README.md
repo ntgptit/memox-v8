@@ -15,6 +15,7 @@ Tuỳ chọn ứng dụng (V8.0): mặc định học toàn app, theme và ngôn
 | Theme (màn 25) | UC-SETTINGS-001 |
 | Language (màn 26) | UC-SETTINGS-001 |
 | Study options của bộ thẻ (màn 15) | UC-SETTINGS-001 (A1, E4) |
+| Sync (màn 27) | Chưa có UC; hành vi theo [spec sync status](../../superpowers/specs/2026-09-28-sync-status-design.md) §5.2 và [handoff 27](../../shared/ui/screen-handoff/27-sync.md) |
 
 Nguồn: trigger của UC-SETTINGS-001 ("Mở tab `Settings` của navigation shell, hoặc deep link `/settings`"). Nhắc học hằng ngày (UC-REMINDER-001) nằm trong branch Settings nhưng thuộc feature `reminders`.
 
@@ -24,3 +25,4 @@ Nguồn: trigger của UC-SETTINGS-001 ("Mở tab `Settings` của navigation sh
 |---|---|
 | Override theo root deck | Luật ở BR-STUDY-056 (feature `study`) |
 | Nhắc học hằng ngày: lịch, quyền, nội dung notification | Feature `reminders`; settings chỉ lưu giá trị của nó |
+| Cơ chế sync, outbox, lỗi sync | `lib/core/sync/` ([ADR-013](../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md)); màn 27 chỉ hiển thị và cho thử lại |

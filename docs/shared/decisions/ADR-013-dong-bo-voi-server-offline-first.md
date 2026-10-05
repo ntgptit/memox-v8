@@ -22,7 +22,7 @@ Thiết kế chi tiết nằm ở
 |---|---|---|
 | 1 | Nguồn dữ liệu | PostgreSQL của `memox-api-services` là **nguồn chính thức** của dữ liệu người dùng, dùng chung cho mọi thiết bị. Drift trên mỗi máy là **kho vận hành bền vững**: app luôn đọc và ghi local, kể cả khi đang có mạng. Drift không phải cache có thể xoá |
 | 2 | Ghi | Ghi local trước: dữ liệu và một dòng `sync_outbox` được ghi trong **cùng một transaction Drift**, UI phản hồi ngay, rồi `SyncCoordinator` (tầng `data/`) đẩy lên server khi có mạng. Use case và presentation không biết gì về mạng |
-| 3 | Danh tính | Làm sớm, **login làm sau**. Server lấy owner qua `CurrentUserProvider`, hiện trả về một user dev cố định, sau này thay bằng JWT. Mọi bảng trên server có `user_id`; server không bao giờ tin owner do client gửi. Mỗi máy có một `device_id` 2026-09-30: login đã thiết kế ở `docs/superpowers/specs/2026-09-30-auth-design.md` (SB-A1); P1 server và P2 core auth xong. |
+| 3 | Danh tính | Làm sớm, **login làm sau**. Server lấy owner qua `CurrentUserProvider`, hiện trả về một user dev cố định, sau này thay bằng JWT. Mọi bảng trên server có `user_id`; server không bao giờ tin owner do client gửi. Mỗi máy có một `device_id` |
 | 4 | Giao thức | Push theo lô, có idempotency key (id của dòng outbox). Pull theo cursor `server_version`, là một chuỗi số tăng dần theo từng user |
 | 5 | Conflict: nội dung | deck, card, tags, card_tags và setting theo tài khoản: cả hàng bị ghi đè, thao tác mà server nhận **sau** thắng; không dựa vào đồng hồ của máy |
 | 6 | Conflict: cây deck | Server kiểm các bất biến của cây khi áp dụng thao tác (không có chu trình, `root_id` và `content_type` nhất quán). Thao tác vi phạm bị từ chối, và client nhận lại trạng thái của server |
@@ -36,20 +36,25 @@ Thiết kế chi tiết nằm ở
 > nên các dòng đó có hiệu lực trở lại như văn bản gốc. Server là Supabase: đọc
 > "PostgreSQL của `memox-api-services`" là Postgres của Supabase, và
 > `CurrentUserProvider` là `auth.uid()`.
+>
+> Dòng #8 đã được thay bởi [ADR-017](ADR-017-lich-srs-dong-bo-nhu-mot-dong.md)
+> (2026-09-28, chủ dự án chốt lại 2026-10-05): `card_schedule` đồng bộ như một dòng,
+> không phát lại log, lịch tiến xa hơn thắng. Dòng #3: login đã làm theo
+> [auth spec](../../superpowers/specs/2026-09-30-auth-design.md) (email OTP và Google,
+> SB-A1, SB-A2); owner là `auth.uid()` ([ADR-015](ADR-015-supabase-lam-backend.md) #4).
 
 ## Hệ quả
 
 - ADR này thay các dòng *Data posture* ("local-only, không network") và
   *Authentication* ("chưa có auth, một local profile") của ADR-001, cùng
-  câu "Drift là source of truth". Các dòng còn lại của ADR-001 giữ nguyên, kể
-  cả việc chỉ có một loại user.
+  câu "Drift là source of truth". Dòng *Roles & permissions* của ADR-001 sau đó
+  được ADR-015 thay: có role `user` và `admin`.
 - `PRODUCT.md` mô tả MemoX là app dùng được đầy đủ khi không có mạng, và đồng
   bộ với backend khi có mạng.
-- Schema Drift sẽ cần thêm `sync_outbox`, `sync_state` và cột `server_version`
-  trên các bảng được sync, trong một migration làm ở lát cắt tích hợp đầu tiên.
-- Lộ trình: (1) ADR và spec này; (2) server: bảng `deck`, API sync,
-  `CurrentUserProvider`; (3) app: migration sync và coordinator cho `deck`;
-  (4) mở rộng sang card, tag, `review_log` và việc chạy lại lịch ôn; (5) login.
+- Schema Drift có `sync_outbox`, `sync_state` và cột `server_version` trên các bảng
+  được sync ([`schema.md`](../data/schema.md)).
+- Lộ trình đã đi hết: deck, rồi card, tag, `review_log` và lịch ôn, rồi login
+  (Linear, project MemoX; [ADR-021](ADR-021-linear-theo-doi-tien-do.md)).
 - Phương án bị loại:
   - **server tự tính lịch ôn:** phải có hai bản cài đặt thuật toán SRS, một
     bằng Dart, một bằng Java, và chúng sẽ lệch nhau;

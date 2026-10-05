@@ -2,7 +2,7 @@
 id: UC-DECK-002
 title: Sửa và xoá deck
 status: ready
-rules: [BR-DECK-015, BR-DECK-020, BR-DECK-022, BR-DECK-023, BR-DECK-025, BR-SRS-002, BR-SRS-003, BR-SRS-004, BR-STUDY-016, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-008]
+rules: [BR-DECK-004, BR-DECK-015, BR-DECK-020, BR-DECK-022, BR-DECK-023, BR-DECK-025, BR-SRS-002, BR-SRS-003, BR-SRS-004, BR-STUDY-016, BR-TRASH-001, BR-TRASH-002, BR-TRASH-003, BR-TRASH-004, BR-TRASH-005, BR-TRASH-008, BR-TRASH-010]
 code: [lib/features/deck/domain/usecases/rename_deck_use_case.dart, lib/features/deck/domain/usecases/change_deck_scheduler_use_case.dart, lib/features/deck/domain/usecases/get_deck_deletion_summary_use_case.dart, lib/features/deck/domain/usecases/delete_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -88,7 +88,7 @@ code: [lib/features/deck/domain/usecases/rename_deck_use_case.dart, lib/features
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

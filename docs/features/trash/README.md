@@ -33,4 +33,4 @@ Nguồn: trigger của UC-TRASH-001.
 
 | Thứ | Vì sao |
 |---|---|
-| Đồng bộ batch giữa các thiết bị | `owner_id` luôn NULL; thuộc sub-project auth/sync sau |
+| Đồng bộ batch giữa các thiết bị | `lib/core/sync/` (`delete_batch_sync_adapter.dart`, SB-S2); feature này chỉ ghi Drift |

@@ -4,6 +4,14 @@ title: App gọi API bằng Retrofit trên một Dio client dùng chung
 status: active
 superseded_by:
 ---
+> **Hiện trạng (2026-10-05).** App chưa gọi API REST nào. Backend là Supabase
+> ([ADR-015](ADR-015-supabase-lam-backend.md)) và sync đi qua RPC: `SupabaseSyncApi`
+> triển khai interface `SyncApi`, interface `@RestApi()` duy nhất, nằm ở `lib/core/sync/`
+> chứ không ở `data/datasources/` của một feature. Không chỗ nào dựng `SyncApi(dio)` hay
+> đọc `dioProvider`. ADR-015 #7 giữ Dio và Retrofit cho một API REST về sau; khi đó các
+> quyết định dưới đây áp dụng. Phần nói về server Spring (`X-Request-ID` khớp server,
+> `ProblemDetail`) chỉ còn là lịch sử, vì `memox-api-services/` đã đóng băng.
+
 ## Bối cảnh
 
 V8.0 hiện chỉ chạy local và chưa gọi mạng

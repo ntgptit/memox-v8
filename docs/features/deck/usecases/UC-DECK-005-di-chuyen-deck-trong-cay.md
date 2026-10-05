@@ -2,7 +2,7 @@
 id: UC-DECK-005
 title: Di chuyển deck trong cây
 status: ready
-rules: [BR-DECK-001, BR-DECK-002, BR-DECK-008, BR-DECK-010, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-SRS-005, BR-SRS-006]
+rules: [BR-DECK-001, BR-DECK-002, BR-DECK-008, BR-DECK-010, BR-DECK-011, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-SRS-005, BR-SRS-006, BR-SRS-028, BR-SRS-029]
 code: [lib/features/deck/domain/usecases/watch_deck_move_targets_use_case.dart, lib/features/deck/domain/usecases/move_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -74,7 +74,7 @@ code: [lib/features/deck/domain/usecases/watch_deck_move_targets_use_case.dart, 
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

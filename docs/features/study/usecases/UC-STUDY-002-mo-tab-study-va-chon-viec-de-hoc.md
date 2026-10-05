@@ -2,7 +2,7 @@
 id: UC-STUDY-002
 title: Mở tab Study và chọn việc để học
 status: ready
-rules: [BR-STUDY-008, BR-STUDY-017, BR-STUDY-020, BR-STUDY-036, BR-STUDY-051, BR-STUDY-068, BR-STUDY-072, BR-STUDY-074, BR-STUDY-075, BR-STUDY-076, BR-STUDY-077]
+rules: [BR-MODE-008, BR-SRS-015, BR-STUDY-008, BR-STUDY-017, BR-STUDY-020, BR-STUDY-036, BR-STUDY-051, BR-STUDY-068, BR-STUDY-072, BR-STUDY-074, BR-STUDY-075, BR-STUDY-076, BR-STUDY-077]
 code: [lib/features/study/domain/usecases/watch_study_home_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -66,7 +66,7 @@ BR-STUDY-074, BR-STUDY-036, BR-STUDY-051, BR-STUDY-068.
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

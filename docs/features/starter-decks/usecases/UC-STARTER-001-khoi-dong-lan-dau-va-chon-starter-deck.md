@@ -2,7 +2,7 @@
 id: UC-STARTER-001
 title: Khởi động lần đầu và chọn starter deck
 status: ready
-rules: [BR-CARD-004, BR-DECK-002, BR-STARTER-001, BR-STARTER-002, BR-STARTER-003, BR-STARTER-004, BR-STARTER-005, BR-STARTER-006, BR-STARTER-007, BR-STARTER-008, BR-STARTER-009, BR-STARTER-010, BR-STUDY-077]
+rules: [BR-CARD-004, BR-DECK-002, BR-STARTER-001, BR-STARTER-002, BR-STARTER-003, BR-STARTER-004, BR-STARTER-005, BR-STARTER-006, BR-STARTER-007, BR-STARTER-008, BR-STARTER-009, BR-STARTER-010, BR-STUDY-046, BR-STUDY-051, BR-STUDY-077]
 code: [lib/features/starter_decks/domain/usecases/watch_starter_library_use_case.dart, lib/features/starter_decks/domain/usecases/add_starter_deck_use_case.dart, lib/features/starter_decks/presentation/screens/starter_library_screen.dart, lib/features/starter_decks/presentation/controllers/starter_add_controller.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -73,7 +73,7 @@ state theo scheduler đã chọn (BR-CARD-004, BR-STARTER-003).
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

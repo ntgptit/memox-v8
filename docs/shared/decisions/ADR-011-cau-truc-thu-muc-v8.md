@@ -81,7 +81,8 @@ Cây này cho biết file đặt ở đâu, không phải danh sách thư mục 
   - Không bao giờ import `data/`, `presentation/`, `domain/usecases/` của feature khác.
 - Map import Dart khai báo trong `test/architecture/boundary_rules.dart`, không có chu
   trình:
-  - Hiện gồm `srs → ∅`, `deck → {srs}`, `card → {deck, srs}`.
+  - Map gồm một entry cho mỗi feature; danh sách hiện hành là chính file đó (lúc đầu chỉ
+    có `srs → ∅`, `deck → {srs}`, `card → {deck, srs}`).
   - Feature mới thêm entry của nó trong chính commit tạo thư mục feature.
   - Map này có thể khác `depends_on` trong docs. `deck` và `card` cần contract của `srs`
     (BR-SRS-001, BR-CARD-004, UC-CARD-002), còn `srs` đọc dữ liệu của `deck`/`card` qua

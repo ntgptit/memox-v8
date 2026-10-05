@@ -10,28 +10,36 @@ phiên đang mở có thể bị vô hiệu hoá từ màn khác.
 
 ```mermaid
 flowchart TD
-    A["Bấm ôn tập trên một deck"] --> B{"Còn thẻ đến hạn không · BR-STUDY-051, BR-STUDY-054"}
-    B -->|"Không"| B1["Empty state tích cực kèm thời điểm đến hạn gần nhất; KHÔNG tạo session · UC-STUDY-001 E1, BR-STUDY-008"]
-    B -->|"Còn"| C["Tạo study_session in_progress mang root_id và generation hiện tại · BR-SRS-025, BR-STUDY-010"]
-    C --> D["Chọn Học mới hoặc Ôn tập · tối đa `card_limit` thẻ · BR-STUDY-051, BR-STUDY-003"]
-    D --> E["Render nút đánh giá từ supportedActions: 2 với eight_box, 4 với sm2 · BR-STUDY-009"]
-    E --> F["Hiện mặt trước và tiến độ phiên"]
-    F --> G["Người dùng lật rồi chọn một action"]
+    A["Bấm Study trên một deck"] --> B["Đếm hai tập, không trộn: học mới và ôn tập · UC-STUDY-001 bước 1, BR-STUDY-051"]
+    B --> D{"Học mới hay Ôn tập"}
+    D -->|"Ôn tập, tập rỗng"| B1["Lối ôn tập không mở được, kèm thời điểm đến hạn gần nhất; KHÔNG tạo session · BR-STUDY-008, BR-STUDY-054"]
+    D -->|"Học mới"| D1["Tối đa card_limit thẻ chưa học; phiên learning theo chuỗi stage của thuật toán · BR-STUDY-056, BR-MODE-003, BR-MODE-004"]
+    D -->|"Ôn tập"| D2["Chọn mode chấm điểm của thuật toán; mọi thẻ đến hạn, tối đa card_limit; phiên reviewing · BR-STUDY-055, BR-STUDY-002, BR-STUDY-003"]
+    D1 --> C["Tạo study_session in_progress mang root_id và generation hiện tại, dựng hàng đợi cùng transaction · BR-SRS-025, BR-STUDY-010, BR-STUDY-021"]
+    D2 --> C
+    C --> F["Hiện thẻ và tiến độ phiên"]
+    F --> G["Người dùng trả lời: self_assess chọn action từ supportedActions, mode chấm điểm chấm nhị phân · BR-STUDY-009, BR-MODE-011"]
 
     G --> H{"session.generation còn khớp root không · BR-SRS-026"}
     H -->|"Lệch"| H1["Từ chối ghi; session invalidated, end_reason stale_generation · UC-STUDY-001 E4, BR-STUDY-017"]
-    H -->|"Khớp"| I{"Lượt đầu tiên của card này trong phiên"}
-    I -->|"Đúng"| J["kind = scheduled: tính lịch mới rồi ghi history · BR-SRS-016"]
-    I -->|"Không"| K["kind = relearning: chỉ cập nhật last_answered_at · BR-SRS-017"]
+    H -->|"Khớp"| I{"Loại phiên và lượt"}
+    I -->|"learning"| K1["kind = learning hoặc relearning; không đổi lịch · BR-STUDY-023, BR-STUDY-052"]
+    I -->|"reviewing, lượt đầu"| J["kind = scheduled: tính lịch mới rồi ghi history · BR-SRS-016"]
+    I -->|"reviewing, lượt lặp"| K["kind = relearning: chỉ cập nhật last_answered_at · BR-SRS-017"]
 
-    J --> L{"Action có phải forgotten hoặc again"}
+    J --> L{"Trả lời sai không"}
     K --> L
-    L -->|"Đúng"| M["Card quay lại trong phiên sau ít nhất 3 card khác · UC-STUDY-001 A1, BR-STUDY-005"]
-    L -->|"Không"| N["Card rời hàng đợi · BR-STUDY-007"]
+    K1 --> L
+    L -->|"Sai, self_assess"| M["Quay lại sau ít nhất 3 thẻ khác, trần 3 lượt · UC-STUDY-001 A1, BR-STUDY-005, BR-STUDY-073"]
+    L -->|"Sai, mode chấm điểm"| M2["Ở lại tập không đạt, quay lại ở round sau · UC-STUDY-001 A0c, BR-STUDY-059"]
+    L -->|"Đúng"| N["Thẻ rời hàng đợi · BR-STUDY-007"]
     M --> F
-    N --> O{"Hàng đợi còn card không"}
+    M2 --> O
+    N --> O{"Hàng đợi còn thẻ không"}
     O -->|"Còn"| F
-    O -->|"Hết"| P["session completed, end_reason NULL; hiện tổng kết · BR-STUDY-013"]
+    O -->|"Hết"| O2{"Còn round hoặc stage kế không · UC-STUDY-001 A0, A0c, BR-STUDY-069"}
+    O2 -->|"Còn"| F
+    O2 -->|"Hết"| P["session completed, end_reason NULL; hiện tổng kết · BR-STUDY-013"]
 
     G -->|"Thoát giữa phiên"| Q["session abandoned, end_reason user_exit; mọi đánh giá đã ghi vẫn giữ · UC-STUDY-001 A3, BR-STUDY-014, BR-STUDY-019"]
 
