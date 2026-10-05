@@ -23,6 +23,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -94,9 +95,14 @@ class _LayerPage extends ConsumerWidget {
         ),
       );
     }
+    // A stopped layer keeps its actions in the footer, as every sign-in
+    // screen does; running, it is the centred step alone (2026-10-05 L5).
     return MxAppShell(
       appBar: appBar,
       body: SafeArea(child: _Progress(view: view)),
+      footer: isStopped
+          ? MxFooterBar(child: _StoppedActions(view: view))
+          : null,
     );
   }
 
@@ -162,14 +168,14 @@ class _LayerCodePage extends ConsumerWidget {
   }
 }
 
-/// The step, or what stopped it and how to go on (spec §5.4).
-class _Progress extends ConsumerWidget {
+/// The step, or what stopped it (spec §5.4); the way on is the footer's.
+class _Progress extends StatelessWidget {
   const _Progress({required this.view});
 
   final BlockingView view;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final error = view.error;
     final isStopped = error != null || view.isStuck;
@@ -186,25 +192,16 @@ class _Progress extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (isStopped) ...[
+                if (isStopped)
                   Semantics(
                     liveRegion: true,
                     child: MxInlineBanner(
                       tone: MxBannerTone.warning,
                       message: _stoppedMessage(l10n, error),
+                      hasBottomMargin: false,
                     ),
-                  ),
-                  const SizedBox(height: AppSpacing.gutter),
-                  MxButton(
-                    label: l10n.commonRetry,
-                    isBlock: true,
-                    onPressed: () => unawaited(_retry(ref)),
-                  ),
-                  if (_isSignOutStoppedOffline(error)) ...[
-                    const SizedBox(height: AppSpacing.grouped),
-                    const _SignOutNow(),
-                  ],
-                ] else ...[
+                  )
+                else ...[
                   Center(
                     child: MxSpinner(
                       size: MxSpinnerSize.large,
@@ -244,6 +241,29 @@ class _Progress extends ConsumerWidget {
         ? l10n.accountSignOutStoppedOffline
         : l10n.accountLayerOffline;
   }
+}
+
+/// The stopped layer's footer: Retry, and for a sign-out stopped offline
+/// the way on that loses the unsent changes (2026-10-05 L5).
+class _StoppedActions extends ConsumerWidget {
+  const _StoppedActions({required this.view});
+
+  final BlockingView view;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => Column(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    spacing: AppSpacing.grouped,
+    children: [
+      MxButton(
+        label: context.l10n.commonRetry,
+        isBlock: true,
+        onPressed: () => unawaited(_retry(ref)),
+      ),
+      if (_isSignOutStoppedOffline(view.error)) const _SignOutNow(),
+    ],
+  );
 
   /// Auth spec #39: offline, a sign-out waits to send unless its loss is
   /// accepted (plan ruling 10 of P2).

@@ -297,6 +297,14 @@ void main() {
     expect(find.text(_en.accountLayerOffline), findsNothing);
     expect(find.text(_en.accountSignOutLosing(2)), findsOneWidget);
     expect(find.text(_en.commonCancel), findsOneWidget);
+    // L5: the stopped layer's actions sit in the footer, once.
+    Finder inFooter(String text) => find.descendant(
+      of: find.byType(MxFooterBar),
+      matching: find.text(text),
+    );
+    expect(inFooter(_en.commonRetry), findsOneWidget);
+    expect(find.text(_en.commonRetry), findsOneWidget);
+    expect(inFooter(_en.accountSignOutLosing(2)), findsOneWidget);
   });
 
   libraryTest('a sign-out still sending offers no Cancel (R4)', (
@@ -346,6 +354,13 @@ void main() {
     expect(find.text(_en.accountLayerStuck), findsOneWidget);
     expect(find.text(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.commonCancel), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(MxFooterBar),
+        matching: find.text(_en.commonRetry),
+      ),
+      findsOneWidget,
+    );
   });
 
   libraryTest('running, it names the step and says closing loses nothing', (
@@ -372,5 +387,7 @@ void main() {
 
     expect(find.text(_en.accountStepMerging), findsWidgets);
     expect(find.text(_en.accountSafeToClose), findsOneWidget);
+    // L5: running, the layer has no footer.
+    expect(find.byType(MxFooterBar), findsNothing);
   });
 }
