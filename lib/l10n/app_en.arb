@@ -6796,13 +6796,21 @@
   "@accountTargetLine": {
     "description": "Transition layer: the target sign-in."
   },
-  "accountOr": "or",
-  "@accountOr": {
-    "description": "Screen 30: between Google and the email field."
+  "accountEmailHint": "name@example.com",
+  "@accountEmailHint": {
+    "description": "Screen 30: the email field's hint."
+  },
+  "accountReauthTitle": "Sign in again",
+  "@accountReauthTitle": {
+    "description": "Screen 30, re-auth: the title."
+  },
+  "accountContinueWithoutThis": "Continue without this account",
+  "@accountContinueWithoutThis": {
+    "description": "Screen 30, re-auth: the way out under the form and its dialog's confirm; Welcome keeps accountContinueWithout."
   },
   "accountEmail": "Email address",
   "@accountEmail": {
-    "description": "Screen 30: the email field's label and hint."
+    "description": "Screen 30: the email field's label."
   },
   "accountSendCode": "Send code",
   "@accountSendCode": {
@@ -7105,7 +7113,7 @@
   "@accountCommandFailed": {
     "description": "Screen 32: toast when a command was refused (Account UI spec §9)."
   },
-  "accountReauthLine": "Sign in again to keep syncing. Your decks are still here.",
+  "accountReauthLine": "This phone was signed out, so syncing paused. Your decks are still here.",
   "@accountReauthLine": {
     "description": "Screen 30 in reauth mode: the mode line (Account UI spec §5.2)."
   },
@@ -7127,7 +7135,7 @@
     },
     "description": "Screen 30 reauth, another account: body (Account UI spec §5.2)."
   },
-  "accountWithoutTitle": "Continue without an account?",
+  "accountWithoutTitle": "Continue without this account?",
   "@accountWithoutTitle": {
     "description": "Screen 30 reauth: the confirm's title (Account UI spec §9.1)."
   },

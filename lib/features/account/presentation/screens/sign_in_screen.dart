@@ -14,12 +14,9 @@ import 'package:memox/features/account/presentation/widgets/sections/sign_in_for
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
-import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
-import 'package:memox/shared/widgets/mx_note.dart';
-import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
 /// Screen 30 (account UI spec §5.2): attach Google or an email to this
 /// device's anonymous user (`link`), or sign in again after the session was
@@ -54,9 +51,9 @@ class SignInScreen extends ConsumerWidget {
         : ref.watch(canLinkProvider);
     // Watched, so the command's controller lives while it runs.
     final isLeaving = ref.watch(accountManageControllerProvider);
-    return MxAppShell(
+    return SignInFormWidget(
       appBar: MxAppBar(
-        title: l10n.accountSignIn,
+        titleWidget: const SizedBox.shrink(),
         density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
@@ -64,38 +61,29 @@ class SignInScreen extends ConsumerWidget {
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
       ),
-      body: MxScreenScroll(
-        children: [
-          if (!isReauth && !canAct) ...[
-            MxNote(text: l10n.accountOfflineNote),
-            const SizedBox(height: AppSpacing.gutter),
-          ],
-          SignInFormWidget(
-            purpose: purpose,
-            isEnabled: canAct,
-            initialEmail: isReauth
-                ? ref.watch(deviceAccountProvider)?.email
+      purpose: purpose,
+      isEnabled: canAct,
+      initialEmail: isReauth ? ref.watch(deviceAccountProvider)?.email : null,
+      onCodeSent: onCodeSent,
+      onSignedIn: () {
+        saySignedIn(context, stateAfterCommand(ref));
+        onSignedIn();
+      },
+      below: [
+        // S9: the way out sits in the body, 32 under the form, out of the
+        // footer's thumb path.
+        if (isReauth) ...[
+          const SizedBox(height: AppSpacing.major),
+          MxButton(
+            label: l10n.accountContinueWithoutThis,
+            tone: MxButtonTone.text,
+            isBlock: true,
+            onPressed: canAct && !isLeaving
+                ? () => unawaited(_leave(context, ref))
                 : null,
-            onCodeSent: onCodeSent,
-            onSignedIn: () {
-              saySignedIn(context, stateAfterCommand(ref));
-              onSignedIn();
-            },
           ),
-          // P3b plan ruling 10: the way out sits under the form.
-          if (isReauth) ...[
-            const SizedBox(height: AppSpacing.section),
-            MxButton(
-              label: l10n.accountContinueWithout,
-              tone: MxButtonTone.text,
-              isBlock: true,
-              onPressed: canAct && !isLeaving
-                  ? () => unawaited(_leave(context, ref))
-                  : null,
-            ),
-          ],
         ],
-      ),
+      ],
     );
   }
 
@@ -119,7 +107,7 @@ class SignInScreen extends ConsumerWidget {
               tone: MxBannerTone.danger,
               message: l10n.accountUnsentBody(unsent),
             ),
-      confirmLabel: l10n.accountContinueWithout,
+      confirmLabel: l10n.accountContinueWithoutThis,
       isDestructive: true,
     );
     if (!isSure || !context.mounted) return;

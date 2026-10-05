@@ -13,6 +13,7 @@ import 'package:memox/features/account/presentation/widgets/sections/sign_in_for
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
+import 'package:memox/shared/widgets/mx_footer_bar.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/auth_fakes.dart';
@@ -165,6 +166,14 @@ void main() {
     );
     await _settle(tester);
 
+    expect(find.text(_en.commonCancel), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(MxFooterBar),
+        matching: find.text(_en.accountSendCode),
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.text(_en.accountSendCode));
     await _settle(tester);
     await tester.enterText(

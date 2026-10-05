@@ -65,27 +65,38 @@ class _LayerPage extends ConsumerWidget {
         (canCancelSwitch(transition) && !view.isStuck) ||
         (canCancelSignOut(transition) && isStopped);
     final isSigningIn = view.isAwaitingTargetSignIn && !view.isStuck;
+    final appBar = canCancel
+        ? MxAppBar(
+            titleWidget: const SizedBox.shrink(),
+            density: MxAppBarDensity.content,
+            actions: [
+              MxButton(
+                label: context.l10n.commonCancel,
+                tone: MxButtonTone.text,
+                size: MxButtonSize.small,
+                onPressed: () =>
+                    unawaited(_cancel(context, ref, transition.kind)),
+              ),
+            ],
+          )
+        : null;
+    // The target sign-in: the address, then the code on the layer's
+    // navigator (§3.3).
+    if (isSigningIn) {
+      return SignInFormWidget(
+        appBar: appBar,
+        purpose: SignInPurpose.target,
+        initialEmail: view.transition.targetHint,
+        onCodeSent: (email) => unawaited(
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => _LayerCodePage(email)),
+          ),
+        ),
+      );
+    }
     return MxAppShell(
-      appBar: canCancel
-          ? MxAppBar(
-              titleWidget: const SizedBox.shrink(),
-              density: MxAppBarDensity.content,
-              actions: [
-                MxButton(
-                  label: context.l10n.commonCancel,
-                  tone: MxButtonTone.text,
-                  size: MxButtonSize.small,
-                  onPressed: () =>
-                      unawaited(_cancel(context, ref, transition.kind)),
-                ),
-              ],
-            )
-          : null,
-      body: SafeArea(
-        child: isSigningIn
-            ? _TargetSignIn(targetHint: view.transition.targetHint)
-            : _Progress(view: view),
-      ),
+      appBar: appBar,
+      body: SafeArea(child: _Progress(view: view)),
     );
   }
 
@@ -109,30 +120,6 @@ class _LayerPage extends ConsumerWidget {
       return;
     }
   }
-}
-
-/// The target sign-in, first the address, then the code on the layer's
-/// navigator.
-class _TargetSignIn extends StatelessWidget {
-  const _TargetSignIn({required this.targetHint});
-
-  final String? targetHint;
-
-  @override
-  Widget build(BuildContext context) => MxScreenScroll(
-    children: [
-      const SizedBox(height: AppSpacing.gutter),
-      SignInFormWidget(
-        purpose: SignInPurpose.target,
-        initialEmail: targetHint,
-        onCodeSent: (email) => unawaited(
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (_) => _LayerCodePage(email)),
-          ),
-        ),
-      ),
-    ],
-  );
 }
 
 /// The code step inside the layer. It closes itself once the target has
