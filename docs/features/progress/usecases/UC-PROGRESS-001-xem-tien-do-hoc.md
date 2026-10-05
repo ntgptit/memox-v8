@@ -2,7 +2,7 @@
 id: UC-PROGRESS-001
 title: Xem tiến độ học
 status: ready
-rules: [BR-MODE-005, BR-PROGRESS-009, BR-PROGRESS-010, BR-PROGRESS-011, BR-PROGRESS-012, BR-PROGRESS-013, BR-PROGRESS-014, BR-PROGRESS-015, BR-PROGRESS-016, BR-PROGRESS-017, BR-PROGRESS-018, BR-STUDY-074]
+rules: [BR-CORE-005, BR-MODE-005, BR-PROGRESS-007, BR-PROGRESS-009, BR-PROGRESS-010, BR-PROGRESS-011, BR-PROGRESS-012, BR-PROGRESS-013, BR-PROGRESS-014, BR-PROGRESS-015, BR-PROGRESS-016, BR-PROGRESS-017, BR-PROGRESS-018, BR-STUDY-074]
 code: [lib/features/progress/domain/usecases/watch_progress_use_case.dart, lib/features/progress/presentation/screens/progress_screen.dart, lib/features/progress/presentation/providers/progress_provider.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -79,7 +79,7 @@ Retry (BR-PROGRESS-009). Không session nào được mở, tiếp tục hay đ�
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

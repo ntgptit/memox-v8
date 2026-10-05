@@ -16,9 +16,9 @@ nào (`HOST-FLOW`, `HOST-WIDGET` hay `DEVICE-E2E` — định nghĩa ở
 vết tới UC/BR nào. `—` nghĩa là kịch bản không truy vết tới một UC/BR cụ thể
 (thường là một ranh giới nền tảng thuần tuý, không phải một luật nghiệp vụ).
 
-Tám kịch bản `DEVICE-E2E` chạy trên thiết bị bằng `tools/device/run_device_e2e.sh`
-(`integration_test/`); cách chạy và lần chạy gần nhất ở
-[device-e2e.md](device-e2e.md).
+Tám trong chín kịch bản `DEVICE-E2E` chạy trên thiết bị bằng
+`tools/device/run_device_e2e.sh` (`integration_test/`); cách chạy và lần chạy gần nhất ở
+[device-e2e.md](device-e2e.md). IT-PLAT-009 chưa có phase nào trong `integration_test/`.
 
 | ID | Profile | Truy vết (UC/BR) |
 |---|---|---|
@@ -126,6 +126,7 @@ Tám kịch bản `DEVICE-E2E` chạy trên thiết bị bằng `tools/device/ru
 | IT-PLAT-004 | `DEVICE-E2E` | UC-DECK-003 |
 | IT-PLAT-005 | `DEVICE-E2E` | UC-STUDY-001, BR-STUDY-014 |
 | IT-PLAT-006 | `DEVICE-E2E` | UC-DECK-001, UC-CARD-001, UC-STUDY-001 |
+| IT-PLAT-009 | `DEVICE-E2E` | — |
 | IT-REVIEW-001 | `HOST-FLOW` | UC-STUDY-001, BR-STUDY-051 |
 | IT-REVIEW-002 | `HOST-FLOW + HOST-WIDGET` | BR-MODE-003, BR-STUDY-055 |
 | IT-REVIEW-003 | `HOST-WIDGET` | BR-STUDY-009, BR-MODE-011, BR-STUDY-055 |

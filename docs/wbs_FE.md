@@ -176,61 +176,15 @@ Không còn điểm chặn nào của FE (FE-C1 và FE-D3 đã xong 2026-09-28).
   - companion trong `test/visual_audit/` (2 luật guard của lớp `visual-audit`);
   - chuỗi en/vi trong ARB;
   - các kịch bản IT `HOST-WIDGET` của UC. host-coverage-map có 71 kịch bản
-    `HOST-WIDGET` và 8 kịch bản `DEVICE-E2E`.
-- **Gate:** `dod_check.sh` ([`README.md` gốc](../README.md)). CI chạy nó cùng goldens
-  trên mỗi pull request, và `CI gate` phải xanh trước khi merge (BE-D2 trong
-  [`wbs_BE.md`](wbs_BE.md)).
+    `HOST-WIDGET` và 9 kịch bản `DEVICE-E2E`.
+- **Gate:** `dod_check.sh` rồi goldens trong container Linux ([`CLAUDE.md`](../CLAUDE.md#the-gate)).
+  CI đang tạm dừng và chỉ chạy tay; gate local là thứ quyết định.
 
 ## Bước tiếp theo
 
-Mọi hạng mục FE của V8.0 đã có backend (BE-A1…BE-A10 xong). Thứ tự còn lại do thiết kế
-và phụ thuộc giữa các màn quyết định:
-
-1. Mọi màn của V8.0 đã dựng, không còn phần dở, và mọi màn trong index là `aligned`.
-2. FE-C1 và FE-C5 xong (2026-09-28).
-3. Sau V8.0: FE-B1 (Trash, #78), FE-B3 (import/export, #72), FE-B2 (tag), FE-B4
-   (starter), FE-B5 (nhắc học, cả bước thiết bị) và FE-B6 (nút Open system
-   settings) đã xong.
-4. FE-D4 xong (2026-09-28).
-
-## Ước lượng effort (rà soát 2026-09-25)
-
-Đơn vị là **giờ agent**: một session theo quy trình của repo (plan, TDD, golden trong
-container, review opus). Không gồm thời gian chủ dự án duyệt, khoảng 10–15% thêm.
-
-**Hiệu chỉnh:** Thư viện có 7 màn với 76 trạng thái trong kit (01, 02, 04, 07–10). Khi
-backend đã sẵn, nó mất khoảng 14 PR và khoảng 16 giờ agent (#28…#53), tức khoảng 0,2
-giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
-
-| ID | Trạng thái kit | Chờ | Giờ agent | PR |
-|---|---|---|---|---|
-| FE-A5 | 13, 14, 16–21 có; thiếu `self_assess` | — | 2–3 | 1 |
-| FE-A6 | 14 (9), 16–20 (9), 21 (10), `self_assess` | — | 12–18 | 5–6 |
-| FE-A7 | trong 14 | — | 1–2 | 0–1 |
-| FE-A3 | 23 (8), 25 (3), 26 (3), 15 (7) | — | 4–6 | 2 |
-| FE-A8 | 13 (7) | FE-A6 P1 | 2–3 | 1 |
-| FE-A9 | 22 (8) | — | 4–6 | 2 |
-| FE-A10 | 04 (mở rộng) | — | 2–3 | 1 |
-| FE-C2, C3, C4, C6, C7, C8 | — | — | 7–10 | 2–3 |
-| FE-D2 | — | — | 2–4 | 1 |
-| FE-C1 | — | quyết định contrast | 2–3 | 1 |
-| FE-C5 | — | mở lại phạm vi tablet | 4–8 | 1–2 |
-| FE-D3 | — | emulator hoặc thiết bị | 3–5 | 1 |
-| FE-B1…FE-B5 | 06, 05, 11–12, 03, 24 | BE-B1…BE-B5 | 15–22 | 5–7 |
-
-- **V8.0**, không tính C1, C5, D3: khoảng **36–55 giờ agent** theo ước lượng ban đầu.
-  Ngày 2026-09-26, FE-A5, FE-C2, FE-C3, FE-C4, FE-C6, FE-C7, FE-C8 và FE-D2 đã xong;
-  phần còn lại (FE-A3, FE-A6…FE-A10) khoảng **25–38 giờ agent**, và không phần nào còn
-  chờ backend.
-- **Ngày 2026-09-26, sau #78:** FE-A10, FE-B1, FE-B3 và phase P1–P3 của FE-A6 đã xong.
-  Còn lại của V8.0: FE-A3, FE-A6 (P4, P5), FE-A8, FE-A9; sau V8.0: FE-B2, FE-B4, FE-B5.
-  Chưa ước lượng lại số giờ sau các phase này.
-- **Ngày 2026-09-26, sau P5 của FE-A6:** FE-A6 xong (P4 #80: Recall, Fill, `eight_box`
-  trọn vẹn; P5: bộ kịch bản IT tầng host). Còn lại của V8.0: FE-A3, FE-A8, FE-A9. Bốn
-  kịch bản `DEVICE-E2E` của study (`IT-CONT-008`, `IT-PLAT-002`, `IT-PLAT-003`,
-  `IT-PLAT-005`) vẫn chờ chạy trên thiết bị.
-- **Rủi ro lớn nhất:** FE-A6. Đó là luồng nhiều tương tác nhất; màn `self_assess` không
-  có trong kit và dựng theo shape brief 16a.
+Mọi hạng mục trong các bảng trên đã xong, kể cả phần sau V8.0 (FE-B1…FE-B11). Việc
+frontend mới mở một hạng mục mới ở đây; việc của sync và tài khoản theo
+[`wbs_supabase.md`](wbs_supabase.md).
 
 ## Ngữ cảnh cập nhật
 
@@ -280,7 +234,7 @@ giờ mỗi trạng thái, cộng thêm phần tương tác phức tạp.
   FE-A2 (đã xong); FE-B5 không còn chờ BE-B5b cho phần host; màn 13 còn lượt audit.
 - **Cập nhật ngày 2026-09-28:** audit màn 13 theo kit: state `noDecks` có lại "Browse
   starter decks" mở Starter Library (lý do ẩn nó, màn 03 ngoài V8, đã hết từ FE-B4);
-  OPEN QUESTION A4 của UC-STUDY-002 đóng; màn 13 `aligned`.
+  câu hỏi mở A4 của UC-STUDY-002 đóng; màn 13 `aligned`.
 - **Cập nhật ngày 2026-09-28:** FE-B5 xong phần host: màn 24 (9/9 state của kit, cộng E4 và
   E7), hàng Daily reminder của màn 23, reset nêu nhắc học và hoà giải sau reset. Thêm FE-B6
   cho nút "Open system settings" mà FE-B5 ẩn (D1). Checklist: 209/211 state xong, 2 không

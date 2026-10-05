@@ -5,7 +5,7 @@ depends_on: [deck, settings, study]
 ---
 ## Phạm vi
 
-**Phạm vi:** sub-project sau — nhắc học hằng ngày (spec §2). Phần logic xong ở BE-B5a
+**Phạm vi:** nhắc học hằng ngày, làm sau V8.0 (spec §2). Phần logic xong ở BE-B5a
 ([spec](../../superpowers/specs/2026-09-26-reminders-backend-design.md)); adapter Android là BE-B5b; màn 24 thuộc FE-B5.
 
 Nhắc học hằng ngày (UC-REMINDER-001). Công tắc, giờ nhắc và lần gửi gần nhất nằm trong

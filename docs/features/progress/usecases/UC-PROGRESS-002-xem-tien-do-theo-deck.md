@@ -2,7 +2,7 @@
 id: UC-PROGRESS-002
 title: Xem tiến độ theo deck
 status: ready
-rules: [BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-CORE-001, BR-PROGRESS-001, BR-PROGRESS-002, BR-PROGRESS-003, BR-PROGRESS-004, BR-PROGRESS-005, BR-PROGRESS-006, BR-PROGRESS-007, BR-PROGRESS-008, BR-SRS-015, BR-SRS-023, BR-STUDY-074]
+rules: [BR-CORE-001, BR-CORE-005, BR-DECK-001, BR-DECK-002, BR-DECK-003, BR-PROGRESS-001, BR-PROGRESS-002, BR-PROGRESS-003, BR-PROGRESS-004, BR-PROGRESS-005, BR-PROGRESS-006, BR-PROGRESS-007, BR-PROGRESS-008, BR-SRS-015, BR-SRS-023, BR-STUDY-074]
 code: [lib/features/progress/domain/usecases/watch_progress_use_case.dart, lib/features/progress/domain/usecases/watch_deck_progress_use_case.dart, lib/features/progress/presentation/screens/progress_screen.dart, lib/features/progress/presentation/screens/deck_progress_screen.dart, lib/features/progress/presentation/providers/deck_progress_provider.dart, lib/features/progress/presentation/providers/progress_range_provider.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -78,7 +78,7 @@ hay đóng (BR-PROGRESS-007).
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

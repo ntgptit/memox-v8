@@ -54,12 +54,7 @@ convenience; the CI `supabase` job is the gate.
 
    The server reads the role from `public.profiles` (auth spec 2026-09-30,
    migration `20261010000000`), at once; the migration already copied an
-   existing `app_metadata.role = admin`. Until the app reads `me()` (auth
-   phase P2), it still shows the Admin section from the token, so also keep
-
-       update auth.users
-       set raw_app_meta_data = raw_app_meta_data || '{"role":"admin"}'
-       where id = '<uuid>';
+   existing `app_metadata.role = admin`. The app reads the role through `me()`.
 
    Later admins are granted in the app (`role_set`). Only an admin can call
    `log_query`, `log_get`, `log_set_status`, `role_list` and `role_set`;
@@ -187,4 +182,5 @@ there.
 | `supabase migrations` | merge to `master` touching `migrations/`, or by hand | pgTAP, `db push`, then `db diff --linked` must be empty |
 | `supabase keep-alive` | daily | calls `ping` so the Free project does not pause |
 | `app-log-retention` (pg_cron, in the database) | daily at 03:41 UTC | `private.purge_app_log()`: deletes `debug`/`info` logs older than 7 days and `warning`/`error` older than 180 days (ADR-018 §5) |
+| `account-cleanup` (pg_cron, in the database) | daily at 04:17 UTC | `private.cleanup_accounts()`: deletes the data of anonymous users inactive for 90 days (never an admin), and spent merge receipts and claims |
 | `supabase usage` | weekly, or by hand | reports database size, users and 30-day active users; fails at 80% of a Free limit, so GitHub emails the owner |

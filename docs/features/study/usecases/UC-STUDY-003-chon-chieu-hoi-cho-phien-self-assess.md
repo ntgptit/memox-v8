@@ -2,7 +2,7 @@
 id: UC-STUDY-003
 title: Chọn chiều hỏi cho một phiên self-assess
 status: ready
-rules: [BR-MODE-013, BR-MODE-014, BR-MODE-015, BR-MODE-016, BR-MODE-017, BR-MODE-018, BR-MODE-019, BR-STUDY-004, BR-STUDY-009, BR-STUDY-020, BR-STUDY-051, BR-STUDY-054, BR-STUDY-055, BR-STUDY-072]
+rules: [BR-CARD-002, BR-DECK-025, BR-MODE-013, BR-MODE-014, BR-MODE-015, BR-MODE-016, BR-MODE-017, BR-MODE-018, BR-MODE-019, BR-SRS-003, BR-STUDY-004, BR-STUDY-005, BR-STUDY-009, BR-STUDY-015, BR-STUDY-020, BR-STUDY-051, BR-STUDY-054, BR-STUDY-055, BR-STUDY-072]
 code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/features/study/domain/usecases/open_review_session_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -77,7 +77,7 @@ số.
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

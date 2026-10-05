@@ -225,19 +225,19 @@ Không có.
 ## Trạng thái kiểm chứng
 
 - **Gate:** kết quả ở mục "Đã xong và đã kiểm chứng" là của cây `f28bdfd`. Gate hiện
-  hành là `dod_check.sh` trong [`README.md` gốc](../README.md). CI chạy nó trên mỗi pull
-  request, cùng job `goldens`, và `CI gate` phải xanh trước khi merge (BE-D2).
-- **Kịch bản IT:** [host-coverage-map.md](shared/testing/host-coverage-map.md) có 141
+  hành là `dod_check.sh` rồi goldens trong container Linux ([`CLAUDE.md`](../CLAUDE.md#the-gate)).
+  CI (BE-D2) đang tạm dừng và chỉ chạy tay; gate local là thứ quyết định.
+- **Kịch bản IT:** [host-coverage-map.md](shared/testing/host-coverage-map.md) có 142
   kịch bản, trong đó 93 mang profile `HOST-FLOW`. Đây là phần backend chứng minh bằng
   store và SQLite in-memory thật. Mỗi hạng mục đóng các kịch bản `HOST-FLOW` truy vết
   về UC của nó.
   - Test hiện có nhắc tới 68 ID: IT-CARD (1), IT-CONT (12), IT-DISC (5), IT-LEARN (10), IT-MODE (13), IT-NAV (4), IT-ORG (3), IT-REVIEW (9), IT-STUDY (11). Danh sách:
     `grep -rhoE 'IT-[A-Z]+-[0-9]+' test | sort -u`.
   - Nhắc ID trong test chưa chứng minh kịch bản đã được phủ trọn.
-- **Thiết bị:** tám kịch bản `DEVICE-E2E` chạy tay bằng
+- **Thiết bị:** tám trong chín kịch bản `DEVICE-E2E` chạy tay bằng
   `tools/device/run_device_e2e.sh` (FE-D3 trong [`wbs_FE.md`](wbs_FE.md);
-  [device-e2e.md](shared/testing/device-e2e.md)). Goldens chạy trên Linux ở job
-  `goldens` của CI.
+  [device-e2e.md](shared/testing/device-e2e.md)). Goldens chạy trong container Linux
+  (`run_goldens.sh`).
 
 ## Bước tiếp theo
 

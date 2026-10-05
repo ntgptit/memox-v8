@@ -57,8 +57,9 @@ Ba nguyên tắc chi phối cách chia bảng:
 
 ```
 app_settings (một dòng — mặc định tùy chọn học)
+account_state, account_transition (tối đa một dòng — tài khoản trên máy, schema 12)
 
-deck_templates (sub-project sau — Starter decks; asset JSON)
+starter template (asset JSON, không phải bảng — Starter decks)
         │ sao chép một lần, không liên kết ghi ngược
         ▼
      deck ──┐ parent_id  (cây nhiều cấp)
@@ -85,16 +86,17 @@ deck_templates (sub-project sau — Starter decks; asset JSON)
 | `root_id` | TEXT NOT NULL | root có `root_id = id`; descendant mang id của root (BR-DECK-002) |
 | `depth` | INTEGER NOT NULL | Root = 1. `CHECK (depth <= 10)` là an toàn tầng DB (BR-DECK-001) |
 | `content_type` | TEXT NOT NULL | `'unset'` \| `'card'` \| `'deck'` (BR-DECK-006…BR-DECK-012, BR-DECK-015) |
-| `owner_id` | TEXT NULL | NULL = local profile. **Phạm vi:** sub-project sau — auth |
+| `owner_id` | TEXT NULL | Luôn NULL ở local; owner trên server là `auth.uid()` ([ADR-015](../decisions/ADR-015-supabase-lam-backend.md) #4) |
 | `scheduler_type` | TEXT NULL | `'eight_box'` \| `'sm2'`. **NOT NULL trên root, NULL trên deck con** |
 | `scheduler_version` | INTEGER NULL | cùng quy tắc NULL |
 | `scheduler_config` | TEXT NULL | JSON tham số ghi đè của thuật toán. Cùng quy tắc NULL |
 | `study_config` | TEXT NULL | JSON tùy chọn học ghi đè mặc định toàn app (BR-STUDY-056). NULL = theo mặc định. Chỉ trên root |
 | `generation` | INTEGER NULL | bắt đầu từ 1, +1 mỗi lần reset (BR-SRS-020). Chỉ trên root |
 | `first_answered_at` | DATETIME NULL | NULL = chưa thẻ nào hoàn tất chuỗi học mới ở generation hiện tại → scheduler mở khoá (BR-SRS-002). Được đặt bởi chính lần hoàn tất đầu tiên, cùng transaction (BR-SRS-003, BR-STUDY-053); chỉ Reset đưa về NULL (BR-SRS-024) |
-| `source_template_id` | TEXT NULL | NULL = deck tự tạo (BR-STARTER-004). **Phạm vi:** sub-project sau — Starter decks |
-| `source_template_version` | INTEGER NULL | version tại thời điểm sao chép. **Phạm vi:** sub-project sau — Starter decks |
+| `source_template_id` | TEXT NULL | NULL = deck tự tạo (BR-STARTER-004). Không có FK: template là asset, không phải bảng |
+| `source_template_version` | INTEGER NULL | version tại thời điểm sao chép |
 | `delete_batch_id` | TEXT NULL | NULL = deck đang active. Khác NULL = tombstone thuộc batch đó (BR-TRASH-001, BR-TRASH-003). → `delete_batches(id)` ON DELETE CASCADE, từ v3, với index `idx_deck_delete_batch`: purge batch là xoá hàng (BR-TRASH-010) |
+| `server_version` | INTEGER NULL | Version server đã xác nhận (ADR-013); NULL là chưa |
 | `sibling_position` | INTEGER NOT NULL | Thứ tự manual trong nhóm cùng `parent_id`; tie-break bằng `id` (BR-SRS-007) |
 | `created_at` | DATETIME NOT NULL | UTC |
 | `updated_at` | DATETIME NOT NULL | UTC |
@@ -322,7 +324,7 @@ xoá (cascade).
 |---|---|---|
 | `id` | TEXT PK | UUID |
 | `card_id` | TEXT NOT NULL | → `card(id)` ON DELETE CASCADE |
-| `session_id` | TEXT NOT NULL | → `study_session(id)` |
+| `session_id` | TEXT NOT NULL | id của `study_session`, **không có FK**: srs không phụ thuộc bảng của study |
 | `scheduler_type` | TEXT NOT NULL | scheduler tại thời điểm đánh giá |
 | `generation` | INTEGER NOT NULL | generation tại thời điểm đánh giá |
 | `kind` | TEXT NOT NULL | `'learning'` \| `'scheduled'` \| `'relearning'` (BR-SRS-014, BR-SRS-015, BR-STUDY-052) |
@@ -496,8 +498,8 @@ một lựa chọn vì card bị xoá. Câu bị chặn không hiện và không
 
 ## `app_settings`
 
-**Phạm vi:** V8.0 — mặc định toàn app: tuỳ chọn học và trình bày. Ba cột
-`reminder_*` thuộc sub-project sau (xem ghi chú dưới bảng).
+**Phạm vi:** mặc định toàn app: tuỳ chọn học và trình bày (V8.0), nhắc học hằng ngày
+(ba cột `reminder_*`, làm sau V8.0) và cờ Welcome (`welcome_seen`, schema 12).
 
 Một dòng, cho local profile. Mặc định toàn app của tùy chọn học (BR-STUDY-056) và hai
 tuỳ chọn trình bày (BR-SETTINGS-005, BR-SETTINGS-006).
@@ -512,10 +514,8 @@ tuỳ chọn trình bày (BR-SETTINGS-005, BR-SETTINGS-006).
 | `reminder_enabled` | INTEGER NOT NULL DEFAULT 0 | `0` \| `1`; mặc định tắt (BR-REMINDER-001). `CHECK (reminder_enabled IN (0, 1))` |
 | `reminder_minute_of_day` | INTEGER NOT NULL DEFAULT 1200 | phút trong ngày **theo giờ địa phương**, `1200` = 20:00 (BR-REMINDER-002). `CHECK (reminder_minute_of_day BETWEEN 0 AND 1439)` |
 | `reminder_last_delivered_at` | DATETIME NULL | lúc notification tóm tắt gần nhất được hiện; NULL nghĩa là chưa lần nào (BR-REMINDER-004). UTC |
+| `welcome_seen` | INTEGER NOT NULL DEFAULT 0 | `0` \| `1`; Welcome lần đầu đã được trả lời (màn 29). Chỉ trên máy: không đồng bộ, giữ khi xoá dữ liệu của máy |
 | `updated_at` | DATETIME NOT NULL | UTC |
-
-**Phạm vi:** sub-project sau — nhắc học hằng ngày. Ba cột `reminder_*` giữ ở
-đây để nghiệp vụ không phải đào lại.
 
 **`reminder_last_delivered_at` là bookkeeping của hệ thống, không phải lựa chọn
 của người dùng, và nó nằm cùng bảng vì lần hoà giải lịch cần đọc nó **cùng lúc**
@@ -634,6 +634,41 @@ Những ghi chú một lần người dùng đã tắt trên máy này (critique
 `dismissed_at` (UTC). Bảng chỉ ở trên thiết bị: không trigger sync, không
 `server_version`; đổi máy thì ghi chú hiện lại một lần. Đọc và ghi qua
 `DismissedNoteStore` (`lib/core/notes/`).
+
+## `account_state` và `account_transition` (schema 12)
+
+Tài khoản trên máy ([auth spec](../../superpowers/specs/2026-09-30-auth-design.md) §3.3,
+§4). Cả hai bảng chỉ ở trên thiết bị: không trigger sync, không `server_version`.
+
+`account_state`: tài khoản server xác nhận lần gần nhất qua `me()`, đọc lúc khởi động
+trước mọi lượt mạng. Tối đa một dòng (`CHECK (id = 1)`), ghi đè ở mỗi lần `me()`, xoá
+khi dữ liệu của máy bị xoá.
+
+| Cột | Kiểu | Ghi chú |
+|---|---|---|
+| `id` | INTEGER PK | luôn `1` |
+| `user_id` | TEXT NOT NULL | id của user trên Supabase |
+| `email` | TEXT NULL | NULL với session ẩn danh |
+| `is_anonymous` | INTEGER NOT NULL | `0` \| `1` |
+| `role` | TEXT NOT NULL | `user` \| `admin` |
+| `validated_at` | DATETIME NOT NULL | UTC |
+
+`account_transition`: lượt chuyển tài khoản đang chạy — ý định và đã đi tới đâu, không
+phải ai đang đăng nhập. Không hoặc một dòng (`CHECK (id = 1)`) cho tới khi luồng kết thúc.
+
+| Cột | Kiểu | Ghi chú |
+|---|---|---|
+| `id` | INTEGER PK | luôn `1` |
+| `op_id` | TEXT NOT NULL | id của lượt chuyển |
+| `kind` | TEXT NOT NULL | `switchAccount` \| `signOut` \| `delete` \| `clearToAnon` \| `anonRecovery` |
+| `choice` | TEXT NULL | `merge` \| `discard` |
+| `source_user_id` | TEXT NULL | |
+| `source_is_anonymous` | INTEGER NULL | `0` \| `1` |
+| `target_user_id` | TEXT NULL | |
+| `target_hint` | TEXT NULL | |
+| `stage` | TEXT NOT NULL | `started` \| `sourcePushed` \| `claimed` \| `targetSignedIn` \| `merged` \| `localCleared` \| `targetPulled` \| `acknowledged` \| `serverDeleted` \| `signedOut` \| `newAnon` |
+| `created_at` | DATETIME NOT NULL | UTC |
+| `updated_at` | DATETIME NOT NULL | UTC |
 
 ## Bất biến — phải kiểm tra được bằng query
 

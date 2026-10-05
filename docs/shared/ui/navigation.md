@@ -19,8 +19,14 @@ trong khi branch nội bộ và màn hình gốc của nó vẫn là Decks.
   nằm trong branch Settings: màn 24 ở `/settings/reminder`, trên root navigator như Theme
   và Language, Back về màn 23.
 - Thư viện starter (M6) là child flow bên trong tab Thư viện (branch Decks), không phải tab riêng.
-- Không có tab Profile chừng nào chưa có auth/profile domain — nhất quán với
-  "Đăng nhập / tài khoản" ở Explicitly out of MVP.
+- Tài khoản không có tab riêng; mọi màn của nó nằm trong branch Settings, trên root
+  navigator: đồng bộ (màn 27, `/settings/sync`), đăng nhập và mã (màn 30–31,
+  `/settings/sign-in`), tài khoản (màn 32, `/settings/account`), và hai màn chỉ admin
+  thấy: Users (màn 33, `/settings/users`) và Monitoring (màn 28, `/settings/monitoring`).
+- Đăng nhập là tuỳ chọn. Redirect duy nhất về tài khoản (`lib/app/router/account_redirect.dart`):
+  Welcome (màn 29, `/welcome`) mở trước mọi màn cho tới khi được trả lời, rồi đưa người
+  dùng về đúng chỗ đã mở; máy đã có tài khoản không vào luồng gắn tài khoản mà sang
+  màn 32; máy ẩn danh không mở được màn 32.
 
 ## Primary business flows
 
@@ -49,7 +55,7 @@ luật nghiệp vụ sống ở `features/*/rules/` và luồng sống ở `feat
 trong sơ đồ là **rút gọn để đọc được**, không phải bản gốc. Khi sơ đồ và UC/BR
 mâu thuẫn, **UC/BR thắng**, và sơ đồ sai là một defect phải sửa.
 
-**Tách theo đối tượng, không theo hành động.** Mục 3–5 chia theo *deck*, *card*,
+**Tách theo đối tượng, không theo hành động.** Sơ đồ chia theo *deck*, *card*,
 *review* — không có mục riêng cho "tạo deck" hay "xoá deck". Một tài liệu cho mỗi
 hành động sẽ nhân số file theo số nút bấm, và phần lớn chúng sẽ chỉ có một sơ đồ
 ba đỉnh.
@@ -57,11 +63,13 @@ ba đỉnh.
 ## Master flow — toàn app
 
 Hành trình từ lúc mở app tới lúc vào được một phiên ôn tập. Nhánh nào đi sâu vào
-một đối tượng thì dừng ở đó và tiếp tục ở mục tương ứng.
+một đối tượng thì dừng ở đó và tiếp tục ở `ui.md` của feature đó.
 
 ```mermaid
 flowchart TD
     A["Mở app"] --> B["Khởi tạo database"]
+    B -->|"Lần đầu, chưa trả lời Welcome"| W["Welcome · màn 29"]
+    W --> C
     B -->|"Thất bại"| B1["Màn hình lỗi có nút thử lại · UC-STARTER-001 E1"]
     B --> C{"Đã có deck nào chưa?"}
 
@@ -83,8 +91,8 @@ flowchart TD
     L -->|"Tạo deck con"| J
     L -->|"Tạo card"| K
 
-    H --> M["Quản lý deck: đổi tên, xoá, di chuyển · mục 3"]
-    G --> N["Bắt đầu phiên ôn tập · mục 5"]
+    H --> M["Quản lý deck: đổi tên, xoá, di chuyển · deck/ui.md"]
+    G --> N["Bắt đầu phiên ôn tập · study/ui.md"]
     K --> N
     N --> G
 ```
@@ -95,8 +103,8 @@ phải hai màn khác nhau cho root và cho deck con.
 
 ## UC theo đối tượng nghiệp vụ
 
-Phân loại 22 UC theo đối tượng nghiệp vụ. Mục 2–5 chỉ vẽ sơ đồ cho các UC quanh deck, card, review và Trash (mục 2–5); bảng dưới đây phủ toàn bộ 22 UC, kể cả những UC
-vốn không có sơ đồ riêng trong tài liệu này.
+Phân loại 22 UC theo đối tượng nghiệp vụ. Sơ đồ riêng chỉ có cho deck, card và
+review (`ui.md` của từng feature); bảng dưới đây phủ toàn bộ 22 UC.
 
 | UC | Đối tượng |
 |---|---|

@@ -68,7 +68,7 @@ Không thao tác nào của deck ghi cột này.
 | Deck.create (sub-deck) | cấp của deck mới ≤ 10 (BR-DECK-001) | "Deck đã ở độ sâu tối đa (10 cấp)" | store |
 | Deck.move | cấp đích + chiều cao subtree nguồn ≤ 10 (BR-DECK-001) | "Di chuyển vào đây sẽ vượt độ sâu tối đa (10 cấp)" | store |
 
-Toàn bộ enforce ở tầng nghiệp vụ vì chưa có server. Khi có backend, server validate lại — client validation là trải nghiệm, không phải bảo mật.
+Toàn bộ enforce ở tầng nghiệp vụ của app. Server chỉ kiểm lại tính toàn vẹn (CHECK, khoá ngoại, bất biến cây, [ADR-015](../../shared/decisions/ADR-015-supabase-lam-backend.md) #2) — client validation là trải nghiệm, không phải bảo mật.
 
 ## Edge case
 

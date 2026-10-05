@@ -2,7 +2,7 @@
 id: UC-STUDY-001
 title: Ôn tập một deck — luồng chính
 status: ready
-rules: [BR-DECK-024, BR-MODE-002, BR-MODE-003, BR-MODE-006, BR-MODE-009, BR-SRS-003, BR-SRS-008, BR-SRS-009, BR-SRS-010, BR-SRS-011, BR-SRS-012, BR-SRS-014, BR-SRS-015, BR-SRS-016, BR-SRS-017, BR-SRS-018, BR-SRS-019, BR-SRS-025, BR-SRS-026, BR-STUDY-002, BR-STUDY-003, BR-STUDY-004, BR-STUDY-005, BR-STUDY-006, BR-STUDY-007, BR-STUDY-008, BR-STUDY-009, BR-STUDY-010, BR-STUDY-012, BR-STUDY-013, BR-STUDY-014, BR-STUDY-015, BR-STUDY-017, BR-STUDY-018, BR-STUDY-019, BR-STUDY-020, BR-STUDY-021]
+rules: [BR-CARD-009, BR-DECK-024, BR-MODE-002, BR-MODE-003, BR-MODE-004, BR-MODE-006, BR-MODE-009, BR-MODE-011, BR-MODE-012, BR-SRS-003, BR-SRS-008, BR-SRS-009, BR-SRS-010, BR-SRS-011, BR-SRS-012, BR-SRS-014, BR-SRS-015, BR-SRS-016, BR-SRS-017, BR-SRS-018, BR-SRS-019, BR-SRS-025, BR-SRS-026, BR-STUDY-002, BR-STUDY-003, BR-STUDY-004, BR-STUDY-005, BR-STUDY-006, BR-STUDY-007, BR-STUDY-008, BR-STUDY-009, BR-STUDY-010, BR-STUDY-012, BR-STUDY-013, BR-STUDY-014, BR-STUDY-015, BR-STUDY-017, BR-STUDY-018, BR-STUDY-019, BR-STUDY-020, BR-STUDY-021, BR-STUDY-022, BR-STUDY-023, BR-STUDY-024, BR-STUDY-044, BR-STUDY-045, BR-STUDY-051, BR-STUDY-052, BR-STUDY-053, BR-STUDY-054, BR-STUDY-055, BR-STUDY-056, BR-STUDY-057, BR-STUDY-059, BR-STUDY-060, BR-STUDY-061, BR-STUDY-069, BR-STUDY-071, BR-STUDY-072, BR-STUDY-073, BR-STUDY-074]
 code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/features/study/domain/usecases/open_learning_session_use_case.dart, lib/features/study/domain/usecases/open_review_session_use_case.dart, lib/features/study/domain/usecases/watch_study_session_use_case.dart, lib/features/study/domain/usecases/answer_study_turn_use_case.dart, lib/features/study/domain/usecases/reveal_recall_answer_use_case.dart, lib/features/study/domain/usecases/save_recall_time_use_case.dart, lib/features/study/domain/usecases/show_fill_hint_use_case.dart, lib/features/study/domain/usecases/abandon_study_session_use_case.dart, lib/features/study/domain/usecases/resume_study_session_use_case.dart, lib/features/study/domain/usecases/abandon_stale_sessions_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -151,7 +151,7 @@ khoá để tránh bấm đúp.
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

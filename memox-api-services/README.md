@@ -11,8 +11,8 @@ Conventions and the review checklist live in the repo skill
 ```
 
 The gate also checks the format (palantir-java-format; fix it with
-`./mvnw spotless:apply`) and line coverage of at least 80% (JaCoCo). CI runs
-it in the `api` job.
+`./mvnw spotless:apply`) and line coverage of at least 80% (JaCoCo). The project
+left CI when it was frozen; run the gate by hand.
 
 ## Package layout
 

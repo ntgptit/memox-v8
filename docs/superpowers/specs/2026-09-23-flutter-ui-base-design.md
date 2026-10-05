@@ -3,6 +3,13 @@
 Status: approved 2026-09-23 · amended while writing the phase 1 plan (§3, §4.2, §4.4, §4.6,
 §8.1, §8.3) · Path: architectural
 
+> **Historical, except §9.** The V3 handoff and UI kit this spec binds to were retired
+> on 2026-09-30 ([ADR-019](../../shared/decisions/ADR-019-app-la-chuan-ui.md)); its files
+> under `docs/shared/ui/design-handoff/` no longer exist, so the links to them are dead.
+> The visual authority is [`DESIGN.md`](../../../DESIGN.md) with the reviewed goldens.
+> §1–§8 and §10 record how the base was first built; §9 stays the live UI debt
+> register (`CLAUDE.md`), and its row numbers are cited from code.
+
 ## 1. Intent
 
 `lib/` holds only the default `main.dart`. Before any feature screen can be

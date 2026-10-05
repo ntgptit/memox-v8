@@ -25,7 +25,7 @@ and tag names (FE-A10, [spec](../../../superpowers/specs/2026-09-26-library-sear
 |---|---|---|---|
 | emptyQuery | `search_empty_query_light.png` | `search_empty_query_dark.png` | Without the fill arrows. |
 | loading | `search_loading_light.png` | `search_loading_dark.png` | — |
-| results | `search_results_light.png` | `search_results_dark.png` | Colours per the deviations. |
+| results | `search_results_light.png` | `search_results_dark.png` | — |
 | noResults | `search_no_results_light.png` | `search_no_results_dark.png` | — |
 | error | `search_error_light.png` | `search_error_dark.png` | — |
 | loadMoreFailed | `search_load_more_failed_light.png` | `search_load_more_failed_dark.png` | An `MxInlineBanner` with Retry under the loaded rows (spec D24). |

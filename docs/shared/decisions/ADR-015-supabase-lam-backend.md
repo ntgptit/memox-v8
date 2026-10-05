@@ -25,7 +25,7 @@ chi tiết nằm ở
 | # | Chủ đề | Quyết định |
 |---|---|---|
 | 1 | Backend | Một project Supabase (Postgres và Auth). Logic sync là các hàm Postgres gọi qua RPC (`sync_push`, `sync_changes`). SQL nằm trong `supabase/migrations/` của repo |
-| 2 | Nghiệp vụ | **App là nơi duy nhất cài BR và SRS**, như ADR-013 ban đầu. Server chỉ kiểm tính toàn vẹn: owner, bất biến của cây deck, CHECK và khoá ngoại, tombstone. Các dòng #1, #2, #4, #5 và #8 của ADR-013 có hiệu lực trở lại đúng như văn bản gốc |
+| 2 | Nghiệp vụ | **App là nơi duy nhất cài BR và SRS**, như ADR-013 ban đầu. Server chỉ kiểm tính toàn vẹn: owner, bất biến của cây deck, CHECK và khoá ngoại, tombstone. Các dòng #1, #2, #4, #5 và #8 của ADR-013 có hiệu lực trở lại đúng như văn bản gốc; dòng #8 sau đó được [ADR-017](ADR-017-lich-srs-dong-bo-nhu-mot-dong.md) thay |
 | 3 | Giao thức | Giữ nguyên wire format của spec sync (push theo hàng có idempotency theo `opId`, pull theo `server_version`). Chỉ phần hiện thực phía server đổi |
 | 4 | Danh tính | Supabase Auth. App **đăng nhập ẩn danh** (`signInAnonymously`) khi có cấu hình Supabase mà chưa có session. Owner của mọi hàng là `auth.uid()`; server không bao giờ tin owner do client gửi. Login bằng email OTP và Google gắn vào cùng user ([auth spec 2026-09-30](../../superpowers/specs/2026-09-30-auth-design.md)); role nằm trong `public.profiles`, mọi hàng dữ liệu tham chiếu `auth.users` (migration `20261010000000`) |
 | 5 | Ranh giới bảo mật | Mọi bảng bật RLS, không có policy, và `anon`, `authenticated` không có quyền nào trên bảng, nên client không đọc hay ghi bảng trực tiếp. Hàm RPC chạy `SECURITY DEFINER` với `search_path` cố định, lọc theo `auth.uid()`, và chỉ `authenticated` được `EXECUTE` |
@@ -42,6 +42,9 @@ chi tiết nằm ở
   hiệu lực.
 - Trong ADR-013, phần "PostgreSQL của `memox-api-services`" đọc là "Postgres của
   Supabase", và `CurrentUserProvider` với user dev đọc là `auth.uid()`.
+- Dòng #4 thay dòng *Roles & permissions* của [ADR-001](ADR-001-quyet-dinh-nen-tang.md)
+  (chủ dự án chốt 2026-10-05): có hai role `user` và `admin`; chỉ admin gọi được các
+  RPC log và role ([`supabase/README.md`](../../../supabase/README.md#rules)).
 - Nếu sau này làm web: web đọc và ghi qua cùng các RPC. Vì BR và SRS ở app,
   web phải tự cài chúng (TS), hoặc lúc đó một ADR mới đưa phần cần dùng chung
   lên Edge Function hay một service riêng.

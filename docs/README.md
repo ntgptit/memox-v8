@@ -41,7 +41,7 @@ Drift migration hoạt động. Không phải bản đầy đủ tính năng.
 
 | # | Feature | Done when |
 |---|---|---|
-| M1 | Tạo/sửa/xoá deck | Deck tồn tại sau khi restart app; xoá deck cần xác nhận và cascade xoá vĩnh viễn toàn bộ card ngay, không qua Trash (BR-DECK-022, BR-DECK-023) |
+| M1 | Tạo/sửa/xoá deck | Deck tồn tại sau khi restart app; xoá deck cần xác nhận (BR-DECK-022, BR-DECK-023) |
 | M2 | Tạo/sửa/xoá card trong deck | Card có mặt trước/sau; sửa không làm mất lịch sử ôn tập |
 | M3 | Phiên học theo lịch SRS | Chỉ hiện card đến hạn; đánh giá kết quả cập nhật lịch ôn lần sau |
 | M4 | Danh sách deck với tiến độ | Mỗi deck hiện số card đến hạn hôm nay |
@@ -62,19 +62,26 @@ Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên:
 | # | Feature | Notes |
 |---|---|---|
 | N1 | Import/export | Trong V8.0 theo [spec card transfer](superpowers/specs/2026-09-26-card-transfer-design.md) (UC-TRANSFER-001, UC-TRANSFER-002, BR-TRANSFER-001…BR-TRANSFER-014): import CSV/TSV/XLSX hoặc văn bản dán (màn 11), export nội dung (sheet 12) — không phải backup. Backend BE-B3 và UI FE-B3 xong |
-| N2 | Nhắc nhở ôn tập hằng ngày | Sub-project sau (UC-REMINDER-001, BR-REMINDER-001…BR-REMINDER-012): opt-in, mặc định tắt, một tóm tắt mỗi ngày dựng từ workload đến hạn tại thời điểm hiện tại. Quyền notification chỉ được xin **sau** khi người dùng bật (BR-REMINDER-011) |
-| N3 | Tag/phân loại card | Sub-project sau (UC-TAG-001, BR-TAG-003…BR-TAG-011): catalog phạm vi library, lọc nhiều tag theo OR, đổi tên có gộp, và xoá. Ngoài phạm vi: tag phân cấp, màu tag, taxonomy chia sẻ |
+| N2 | Nhắc nhở ôn tập hằng ngày | Làm sau V8.0, đã xong (UC-REMINDER-001, BR-REMINDER-001…BR-REMINDER-012): opt-in, mặc định tắt, một tóm tắt mỗi ngày dựng từ workload đến hạn tại thời điểm hiện tại. Quyền notification chỉ được xin **sau** khi người dùng bật (BR-REMINDER-011) |
+| N3 | Tag/phân loại card | Làm sau V8.0, đã xong (UC-TAG-001, BR-TAG-003…BR-TAG-011): catalog phạm vi library, lọc nhiều tag theo OR, đổi tên có gộp, và xoá. Ngoài phạm vi: tag phân cấp, màu tag, taxonomy chia sẻ |
 
 #### Explicitly out of MVP
 
 | Feature | Why deferred | Revisit when |
 |---|---|---|
-| Đăng nhập / tài khoản | Không có backend; thêm auth lúc này là xây UI cho thứ chưa dùng được | Khi Spring Boot backend sẵn sàng |
-| Đồng bộ đa thiết bị | Cần backend và conflict resolution | Cùng lúc với auth |
 | iOS | Ổn định Android trước để tránh sửa lỗi trên hai nền tảng cùng lúc | Sau khi Android ổn định về UX + migration + test |
-| Phân quyền theo role | Chỉ có một loại user, kể cả sau khi có auth | Chưa có kế hoạch |
-| Chia sẻ deck giữa người dùng | Cần backend | Sau đồng bộ |
+| Chia sẻ deck giữa người dùng | Server chỉ giữ dữ liệu của chính mỗi user (ADR-015) | Khi được chọn để đặc tả |
 | Audio / hình ảnh trong card | Kéo theo lưu trữ file, đồng bộ file, nén ảnh — một khối lượng riêng | Sau MVP |
+
+#### Làm sau V8.0
+
+Ngoài N1–N3, các phần sau đã xong sau V8.0; tiến độ ghi ở WBS, không ở đây:
+
+- Trash, starter deck: [`wbs_BE.md`](wbs_BE.md), [`wbs_FE.md`](wbs_FE.md).
+- Đồng bộ đa thiết bị, đăng nhập (email OTP, Google), tài khoản và role admin trên
+  Supabase ([ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md)):
+  [`wbs_supabase.md`](wbs_supabase.md).
+- Log tập trung và màn monitoring ([ADR-018](shared/decisions/ADR-018-log-tap-trung-va-monitoring.md)).
 
 ## Bản đồ
 
@@ -84,8 +91,9 @@ docs/
 ├── glossary.md                  # thuật ngữ, trỏ về định nghĩa gốc
 ├── wbs_BE.md                    # tiến độ backend: đã xong, còn lại, thứ tự làm
 ├── wbs_FE.md                    # tiến độ frontend: đã xong, còn lại, thứ tự làm
-├── wbs_API.md                   # tiến độ memox-api-services: đã xong, còn lại, thứ tự làm
+├── wbs_API.md                   # tiến độ memox-api-services — đóng băng (ADR-015)
 ├── wbs_supabase.md              # tiến độ sync và login trên Supabase: đã xong, còn lại, thứ tự làm
+├── agent/                       # quy ước làm việc của agent: ECC vendored, session handoff
 ├── shared/
 │   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu
 │   ├── decisions/               # ADR-NNN-<slug>.md
@@ -100,9 +108,8 @@ docs/
 │   ├── usecases/                # UC-<DOMAIN>-NNN-<slug>.md
 │   ├── ui.md                    # TÙY CHỌN
 │   ├── data.md                  # TÙY CHỌN
-│   ├── api.md                   # TÙY CHỌN
 │   └── it-scenarios.md          # TÙY CHỌN — kịch bản IT truy vết về feature này
-├── superpowers/                 # spec + plan của quy trình Superpowers (giữ ID lịch sử)
+├── superpowers/                 # spec + plan của quy trình Superpowers — lịch sử: giữ ID, không bảo trì link/path
 └── _generated/                  # KHÔNG SỬA TAY — index, traceability, open questions
 ```
 
@@ -135,8 +142,7 @@ skill và `docs/` mâu thuẫn, `docs/` thắng, và mâu thuẫn đó là defec
 | Hành vi chỉ xảy ra trong 1 use case (kể cả UI/local/API của UC đó) | Section tương ứng trong file UC |
 | Màn hình, điều hướng, state dùng chung nhiều UC của feature | `features/<f>/ui.md` |
 | Bảng/field feature dùng, dữ liệu sync, conflict rule riêng | `features/<f>/data.md` |
-| Endpoint feature dùng, lỗi đặc thù | `features/<f>/api.md` |
-| Request/response, error code | `shared/api/` |
+| RPC mà client được gọi, quyền và lỗi phía server | [`supabase/README.md`](../supabase/README.md#rules) |
 | Cơ chế chung: cache, sync, state pattern, token | `shared/data/`, `shared/ui/` |
 | Quyết định kỹ thuật có lý do và phương án bị loại | `shared/decisions/` (ADR) |
 | Định nghĩa thuật ngữ | `glossary.md` |
@@ -158,7 +164,7 @@ chỗ có thể mâu thuẫn.
 - **"Dùng ≥ 2 feature" nghĩa là không feature nào sở hữu.** Rule ràng buộc một
   đối tượng ở lại feature của đối tượng đó dù feature khác trích nó; feature khác
   tham chiếu bằng ID. `shared/rules/` chỉ giữ rule không có chủ — các rule riêng
-  tư, sẽ nhận DOMAIN `CORE` khi chuyển sang.
+  tư, mang DOMAIN `CORE`.
 - Kịch bản kiểm thử tích hợp: `features/<f>/it-scenarios.md` theo UC/BR mà kịch
   bản truy vết; hướng dẫn thực thi, danh mục và kịch bản không thuộc feature nào
   ở `shared/testing/`.
@@ -186,7 +192,7 @@ Một agent đọc `docs/` cần trả lời được ba câu:
 |---|---|---|
 | Business rule | `BR-<DOMAIN>-NNN` | `BR-DECK-015` |
 | Use case | `UC-<DOMAIN>-NNN` | `UC-STUDY-001` |
-| Rule dùng chung | `BR-CORE-NNN` | — (chưa có) |
+| Rule dùng chung | `BR-CORE-NNN` | `BR-CORE-001` |
 | Quyết định | `ADR-NNN` | `ADR-001` |
 
 - DOMAIN viết hoa, NNN đúng 3 chữ số. Tên file: `<ID>-<slug-kebab-case>.md`; ID

@@ -2,7 +2,7 @@
 id: UC-DECK-001
 title: Tạo root deck
 status: ready
-rules: [BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK-020, BR-DECK-021, BR-SRS-001]
+rules: [BR-DECK-002, BR-DECK-004, BR-DECK-005, BR-DECK-020, BR-DECK-021, BR-SRS-001, BR-SRS-003]
 code: [lib/features/deck/domain/usecases/create_root_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -51,7 +51,7 @@ chọn: Create deck (BR-DECK-005). Việc tạo phần tử con nằm ở UC-DEC
 
 ## API
 
-Không áp dụng — ứng dụng local-only, không network ([ADR-001](../../../shared/decisions/ADR-001-quyet-dinh-nen-tang.md)).
+Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng bộ với server chạy ngoài UC ([ADR-013](../../../shared/decisions/ADR-013-dong-bo-voi-server-offline-first.md), [ADR-015](../../../shared/decisions/ADR-015-supabase-lam-backend.md)).
 
 ## Acceptance criteria
 

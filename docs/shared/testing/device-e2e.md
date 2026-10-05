@@ -33,7 +33,8 @@ Có thể chạy một vài kịch bản:
 - Khi một bước chờ hết giờ, phase chụp màn hình vào `build/device_e2e/<phase>.png`.
   Thông báo lỗi kèm các chữ đang hiện trên màn.
 
-Chạy cả tám kịch bản mất khoảng 20 phút, vì mỗi phase build lại APK.
+Chạy cả tám kịch bản mất khoảng 20 phút, vì mỗi phase build lại APK. Kịch bản
+`DEVICE-E2E` thứ chín của danh mục, IT-PLAT-009 (font CJK của hệ thống), chưa có phase.
 
 ## Cách hoạt động
 
