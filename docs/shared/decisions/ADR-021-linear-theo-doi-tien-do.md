@@ -38,10 +38,18 @@ bảng dài, hai file có thể cùng ghi một hạng mục (BE-E1 và BE-E8 c�
 - Thứ tự làm tiếp là priority của issue. Điểm chặn và câu hỏi còn mở là comment
   trên issue đó.
 - Issue mới chỉ dùng mã `DEV-n` của Linear. ID cũ (`BE-03`, `FE-A2`, `SB-S8`…)
-  chỉ còn ở đầu tiêu đề của 128 issue đã chuyển (DEV-6…DEV-133); BE-E1 và BE-E8
+  chỉ còn ở dòng `Mã WBS cũ` cuối mô tả của 128 issue đã chuyển (DEV-6…DEV-133);
+  tìm bằng `list_issues` với mã đó làm query. Đến 2026-10-05 ID cũ nằm ở đầu tiêu
+  đề; đợt migrate DEV-165 chuyển nó xuống mô tả. BE-E1 và BE-E8
   có ở hai file, mỗi cái thành một issue mang label `Supabase`. 128 issue này
   được gom vào 15 epic (DEV-134…DEV-148). Nhánh và PR nhắc `DEV-n` để Linear tự
   liên kết.
+- Nội dung issue và comment theo các template trong
+  `.claude/skills/flutter-workflow/references/linear-templates.md`: bốn loại
+  issue (Epic; sub-issue Task, Bug, Chore/Docs, mang thêm đúng một label loại
+  `Feature`, `Bug` hoặc `Improvement` ngoài label `WBS`), mẫu comment khi Done,
+  bị chặn, có câu hỏi, Canceled và Duplicate. Bốn template cùng tên có trong
+  Linear UI là bản sao; khi lệch thì file trong repo thắng.
 - Ba file WBS đóng băng ngày 2026-10-05, giữ nguyên làm lịch sử: các spec và plan
   có ngày đều dẫn tới chúng.
 - Màn hình vẫn có dòng trong screen handoff index. Quyết định kiến trúc vẫn là

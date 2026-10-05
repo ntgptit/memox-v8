@@ -105,8 +105,11 @@ asked. Without the connector, tell the owner and record progress nowhere else.
 - **Create:**
   - Search the project first (`list_issues` with a query); never duplicate.
   - New work is a sub-issue of an existing epic: team, project, `parentId`,
-    the epic's milestone, one `WBS` label, a plain title named by its `DEV-n`
-    only.
+    the epic's milestone, one `WBS` label, one kind label (`Feature`, `Bug`
+    or `Improvement`), a plain title with no legacy WBS code (the issue is
+    known by its `DEV-n`).
+  - Titles, descriptions and comments follow
+    [linear-templates.md](.claude/skills/flutter-workflow/references/linear-templates.md).
   - A new epic only for a new feature or spec — one spec, one epic — created
     once the owner approves the spec. Its plan's tasks become its sub-issues,
     one per task, never split further.
