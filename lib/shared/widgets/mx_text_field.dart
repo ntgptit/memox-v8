@@ -6,6 +6,7 @@ import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
@@ -30,9 +31,9 @@ enum MxTextFieldVariant {
   /// frames it (FE-A6 P4 F1).
   study,
 
-  /// A sign-in code (account UI spec U2): one centred line of six digits
-  /// on the form fill, the numeric keyboard, the platform's one-time-code
-  /// autofill.
+  /// A sign-in code (account UI spec U2; sign-in redesign 2026-10-05 §4.1):
+  /// six slots painted over one hidden field, which keeps the numeric
+  /// keyboard, the one-time-code autofill, paste and the TalkBack label.
   code,
 }
 
@@ -58,6 +59,7 @@ class MxTextField extends StatelessWidget {
     this.errorText,
     this.variant = MxTextFieldVariant.form,
     this.isEnabled = true,
+    this.autofocus = false,
     this.onChanged,
     this.onSubmitted,
     this.textInputAction,
@@ -79,6 +81,7 @@ class MxTextField extends StatelessWidget {
       errorText = field.errorText,
       variant = field.variant,
       isEnabled = field.isEnabled,
+      autofocus = field.autofocus,
       onChanged = field.onChanged,
       onSubmitted = field.onSubmitted,
       textInputAction = field.textInputAction,
@@ -97,6 +100,9 @@ class MxTextField extends StatelessWidget {
   final String? errorText;
   final MxTextFieldVariant variant;
   final bool isEnabled;
+
+  /// Takes the focus when first shown, such as the sign-in code.
+  final bool autofocus;
   final ValueChanged<String>? onChanged;
 
   /// The keyboard's action key (Done, Next…) was pressed.
@@ -113,6 +119,10 @@ class MxTextField extends StatelessWidget {
 
   /// The digits a sign-in code holds (auth spec O1).
   static const int codeLength = 6;
+
+  /// A code slot, for tests that find one.
+  @visibleForTesting
+  static Key slotKey(int index) => ValueKey('mx-code-slot-$index');
 
   static _Geometry _geometry(MxTextFieldVariant variant) => switch (variant) {
     MxTextFieldVariant.form => (
@@ -177,6 +187,7 @@ class MxTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (variant == MxTextFieldVariant.code) return _CodeField(field: this);
     final controller = this.controller;
     if (!_geometry(variant).isMultiline) return _field(context, null);
     // An editor box pads to its floor around what it holds, and a term
@@ -239,6 +250,7 @@ class MxTextField extends StatelessWidget {
     return math.max(geometry.vertical, (geometry.floor - content) / 2);
   }
 
+  // The code variant never reaches here: _CodeField draws it.
   Widget _field(BuildContext context, double? width) {
     final colors = context.colors;
     final hasError = errorText != null;
@@ -264,10 +276,10 @@ class MxTextField extends StatelessWidget {
         : context.fieldHint;
     final isForm = variant == MxTextFieldVariant.form;
     final isBare = variant == MxTextFieldVariant.study;
-    final isCode = variant == MxTextFieldVariant.code;
     final field = TextField(
       controller: controller,
       focusNode: focusNode,
+      autofocus: autofocus,
       enabled: isEnabled,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
@@ -277,18 +289,10 @@ class MxTextField extends StatelessWidget {
       keyboardType: switch (variant) {
         MxTextFieldVariant.detail ||
         MxTextFieldVariant.meaning => TextInputType.multiline,
-        MxTextFieldVariant.code => TextInputType.number,
         _ => TextInputType.text,
       },
-      inputFormatters: isCode
-          ? [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(codeLength),
-            ]
-          : null,
-      autofillHints: isCode ? const [AutofillHints.oneTimeCode] : null,
       style: textStyle,
-      textAlign: isBare || isCode ? TextAlign.center : TextAlign.start,
+      textAlign: isBare ? TextAlign.center : TextAlign.start,
       cursorColor: colors.primary,
       textAlignVertical: TextAlignVertical.center,
       decoration: isBare
@@ -308,9 +312,7 @@ class MxTextField extends StatelessWidget {
               hintStyle: hintStyle,
               // The editor's boxes sit white on the page; a form field keeps the
               // theme's fill, which lightens on focus.
-              fillColor: isForm || isCode
-                  ? null
-                  : colors.surfaceContainerLowest,
+              fillColor: isForm ? null : colors.surfaceContainerLowest,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: geometry.horizontal,
                 vertical: _verticalPadding(
@@ -394,4 +396,142 @@ class _OwnControllerState extends State<_OwnController> {
   @override
   Widget build(BuildContext context) =>
       MxTextField._on(widget.field, _controller);
+}
+
+/// The code variant: six slots over one hidden field. The field fills the
+/// row, so a tap on any slot focuses it and a long press offers paste; the
+/// slots follow its text and focus.
+class _CodeField extends StatefulWidget {
+  const _CodeField({required this.field});
+
+  final MxTextField field;
+
+  @override
+  State<_CodeField> createState() => _CodeFieldState();
+}
+
+class _CodeFieldState extends State<_CodeField> {
+  TextEditingController? _ownController;
+  FocusNode? _ownFocus;
+
+  TextEditingController get _controller =>
+      widget.field.controller ?? (_ownController ??= TextEditingController());
+
+  FocusNode get _focus => widget.field.focusNode ?? (_ownFocus ??= FocusNode());
+
+  @override
+  void dispose() {
+    _ownController?.dispose();
+    _ownFocus?.dispose();
+    super.dispose();
+  }
+
+  BorderSide _edge(BuildContext context, int index) {
+    final colors = context.colors;
+    if (widget.field.errorText != null) {
+      return BorderSide(color: colors.error, width: AppStroke.hairline);
+    }
+    final isNext = _focus.hasFocus && index == _controller.text.length;
+    if (isNext) {
+      return BorderSide(
+        color: context.derivedColors.primaryInk,
+        width: AppStroke.focus,
+      );
+    }
+    return BorderSide(color: colors.outline, width: AppStroke.hairline);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final field = widget.field;
+    final hidden = TextField(
+      controller: _controller,
+      focusNode: _focus,
+      autofocus: field.autofocus,
+      enabled: field.isEnabled,
+      onChanged: field.onChanged,
+      onSubmitted: field.onSubmitted,
+      textInputAction: field.textInputAction,
+      maxLines: 1,
+      keyboardType: TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(MxTextField.codeLength),
+      ],
+      autofillHints: const [AutofillHints.oneTimeCode],
+      showCursor: false,
+      style: context.textStyles.fieldCode,
+      decoration: const InputDecoration.collapsed(hintText: null),
+    );
+    final slots = ListenableBuilder(
+      listenable: Listenable.merge([_controller, _focus]),
+      builder: (context, _) {
+        final text = _controller.text;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: AppSpacing.control,
+          children: [
+            for (var i = 0; i < MxTextField.codeLength; i++)
+              Flexible(
+                child: _CodeSlot(
+                  key: MxTextField.slotKey(i),
+                  digit: i < text.length ? text[i] : '',
+                  edge: _edge(context, i),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+    final column = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Stack(
+          children: [
+            slots,
+            Positioned.fill(
+              child: Opacity(
+                opacity: AppOpacity.hidden,
+                // The field stays in the tree for TalkBack and autofill.
+                alwaysIncludeSemantics: true,
+                child: field.label == null
+                    ? hidden
+                    : Semantics(label: field.label, child: hidden),
+              ),
+            ),
+          ],
+        ),
+        if (field.errorText case final message?)
+          MxFieldMessage(message: message),
+      ],
+    );
+    if (field.isEnabled) return column;
+    return Opacity(opacity: AppOpacity.disabled, child: column);
+  }
+}
+
+/// One digit's box: 48 wide at most (it shrinks in a narrow column), 56 tall
+/// at least, on the form fill.
+class _CodeSlot extends StatelessWidget {
+  const _CodeSlot({super.key, required this.digit, required this.edge});
+
+  final String digit;
+  final BorderSide edge;
+
+  @override
+  Widget build(BuildContext context) => ConstrainedBox(
+    constraints: const BoxConstraints(
+      maxWidth: AppSize.touchTarget,
+      minHeight: AppSize.codeSlot,
+    ),
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.fromBorderSide(edge),
+      ),
+      child: Center(child: Text(digit, style: context.textStyles.fieldCode)),
+    ),
+  );
 }

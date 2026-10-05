@@ -17,6 +17,10 @@ abstract final class AppSize {
 
   static const double touchTarget = 48;
 
+  /// A code field's slot (sign-in redesign 2026-10-05): a minimum, so the
+  /// digit grows with the text scale.
+  static const double codeSlot = 56;
+
   /// A list row grows to two title lines from here.
   static const double listRowMin = 48;
 

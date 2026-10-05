@@ -367,8 +367,8 @@ void main() {
     );
   });
 
-  testWidgets('the code variant asks for digits, offers the one-time code '
-      'and centres them', (tester) async {
+  testWidgets('the code variant asks for digits and offers the one-time '
+      'code', (tester) async {
     await pumpMx(
       tester,
       const MxTextField(label: 'Code', variant: MxTextFieldVariant.code),
@@ -377,8 +377,144 @@ void main() {
 
     expect(field.keyboardType, TextInputType.number);
     expect(field.autofillHints, [AutofillHints.oneTimeCode]);
-    expect(field.textAlign, TextAlign.center);
     expect(field.maxLines, 1);
+    expect(field.showCursor, isFalse);
+  });
+
+  testWidgets('the code variant paints six slots, one digit in each', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: '427');
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
+    );
+
+    for (var i = 0; i < MxTextField.codeLength; i++) {
+      expect(find.byKey(MxTextField.slotKey(i)), findsOneWidget);
+    }
+    expect(
+      find.descendant(
+        of: find.byKey(MxTextField.slotKey(1)),
+        matching: find.text('2'),
+      ),
+      findsOneWidget,
+    );
+    expect(tester.getSize(find.byKey(MxTextField.slotKey(0))).width, 48);
+    expect(
+      tester.getSize(find.byKey(MxTextField.slotKey(0))).height,
+      greaterThanOrEqualTo(56),
+    );
+  });
+
+  testWidgets('a pasted "123 456" fills six slots', (tester) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
+    );
+
+    await tester.enterText(find.byType(TextField), '123 456');
+    await tester.pump();
+
+    expect(controller.text, '123456');
+    expect(
+      find.descendant(
+        of: find.byKey(MxTextField.slotKey(5)),
+        matching: find.text('6'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('the slot that takes the next digit carries the focus edge; '
+      'the rest the outline; an error edges every slot', (tester) async {
+    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+    final controller = TextEditingController(text: '12');
+    addTearDown(controller.dispose);
+    Border edgeOf(int i) =>
+        (tester
+                        .widget<DecoratedBox>(
+                          find.descendant(
+                            of: find.byKey(MxTextField.slotKey(i)),
+                            matching: find.byType(DecoratedBox),
+                          ),
+                        )
+                        .decoration
+                    as BoxDecoration)
+                .border!
+            as Border;
+
+    await pumpMx(
+      tester,
+      MxTextField(
+        controller: controller,
+        variant: MxTextFieldVariant.code,
+        autofocus: true,
+      ),
+    );
+    await tester.pump();
+    expect(edgeOf(2).top.color, derived.primaryInk);
+    expect(edgeOf(2).top.width, 2);
+    expect(edgeOf(3).top.color, scheme.outline);
+
+    await pumpMx(
+      tester,
+      MxTextField(
+        controller: controller,
+        variant: MxTextFieldVariant.code,
+        errorText: 'Wrong',
+      ),
+    );
+    expect(edgeOf(0).top.color, scheme.error);
+    expect(edgeOf(5).top.color, scheme.error);
+  });
+
+  testWidgets('a tap on a slot focuses the code', (tester) async {
+    await pumpMx(tester, const MxTextField(variant: MxTextFieldVariant.code));
+
+    // The hidden field covers the slots and takes the tap itself.
+    await tester.tap(find.byKey(MxTextField.slotKey(4)), warnIfMissed: false);
+    await tester.pump();
+
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isTrue,
+    );
+  });
+
+  testWidgets('six slots fit a 288 wide column', (tester) async {
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 288,
+        child: MxTextField(variant: MxTextFieldVariant.code),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getSize(find.byKey(MxTextField.slotKey(0))).width,
+      lessThan(48),
+    );
+  });
+
+  testWidgets('TalkBack still reads the code field by its label', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxTextField(
+        label: 'Code, 6 digits',
+        variant: MxTextFieldVariant.code,
+      ),
+    );
+
+    expect(find.bySemanticsLabel('Code, 6 digits'), findsOneWidget);
+    handle.dispose();
   });
 
   testWidgets('the code variant keeps six digits and nothing else', (

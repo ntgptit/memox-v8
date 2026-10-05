@@ -11,4 +11,8 @@ abstract final class AppOpacity {
 
   /// The platform pressed overlay.
   static const double pressed = 0.12;
+
+  /// A control kept for input and semantics while something else paints it,
+  /// such as the code field's hidden text field under its slots.
+  static const double hidden = 0;
 }

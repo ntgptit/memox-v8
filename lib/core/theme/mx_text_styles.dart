@@ -40,7 +40,6 @@ final class MxTextStyles {
   static const double _bannerHeight = 1.55;
   static const double _snackbarHeight = 1.4;
   static const String _codeFamily = 'monospace';
-  static const double _codeTracking = 6;
   static const List<String> _codeFallback = ['Menlo', 'Courier New'];
   static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
   static const double _termTracking = -0.4;
@@ -216,10 +215,9 @@ final class MxTextStyles {
   TextStyle get fieldTermHint =>
       _texts.bodyLarge!.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// A sign-in code (account UI spec §6): the headline role, tabular
-  /// figures and wide tracking, so six digits read as one code.
+  /// A code slot's digit: the headline role with tabular figures. Each slot
+  /// holds one digit, so the line needs no wide tracking.
   TextStyle get fieldCode => _texts.headlineSmall!.copyWith(
-    letterSpacing: _codeTracking,
     fontFeatures: _tabular,
     color: _scheme.onSurface,
   );
