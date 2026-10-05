@@ -26,7 +26,8 @@ abstract final class AppComponentThemes {
   );
 
   /// Every form field (TextField contract): the muted fill that lightens on
-  /// focus, a ghost edge, primary on focus, error in error, the 14 hint.
+  /// focus, the Outline Edge at rest (ghost when disabled), primary on focus,
+  /// error in error, the 14 hint.
   static InputDecorationTheme fields(
     ColorScheme scheme,
     MxSemanticColors semantic,

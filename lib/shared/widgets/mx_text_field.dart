@@ -44,8 +44,8 @@ typedef _Geometry = ({
   bool isMultiline,
 });
 
-/// Every form field: a filled surface with a ghost edge, a primary edge on
-/// focus, and an error edge with an MxFieldMessage below. Focus, caret,
+/// Every form field: a filled surface on the Outline Edge at rest (a ghost
+/// edge when disabled), a primary edge on focus, and an error edge with an MxFieldMessage below. Focus, caret,
 /// selection and IME are the platform's. Validation and the message text are
 /// the caller's.
 class MxTextField extends StatelessWidget {

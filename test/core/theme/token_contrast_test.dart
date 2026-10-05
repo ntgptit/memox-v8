@@ -93,8 +93,8 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       _text,
     ),
     // The one control edge (DEV-166, spec 2026-10-05 control edges §3.1):
-    // fields, outline buttons and code slots hold 3:1 on every ground they
-    // sit on, in both themes.
+    // fields, outline buttons and code slots hold 3:1 on the grounds they
+    // sit on (page, field fill, card, sheet, warning), in both themes.
     for (final (ground, where) in [
       (page, 'page'),
       (scheme.surfaceContainerLow, 'field fill'),
