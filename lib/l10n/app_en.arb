@@ -3183,7 +3183,7 @@
     },
     "description": "Screen handoff 14 (FE-A6 P2): footer caption under Review."
   },
-  "studyEntryNothingDueCaption": "Nothing is due — review is available once cards come due.",
+  "studyEntryNothingDueCaption": "Nothing is due. Review opens once cards come due.",
   "@studyEntryNothingDueCaption": {
     "description": "Screen handoff 14 (FE-A6 P2): footer caption under Learn with nothing due."
   },
@@ -3727,7 +3727,7 @@
   "@importCaptionProblemPaste": {
     "description": "Import commit bar, step 1, the pasted text could not be read."
   },
-  "importCaptionColumns": "Next you'll preview every row before anything is imported.",
+  "importCaptionColumns": "Next you'll preview every row before importing.",
   "@importCaptionColumns": {
     "description": "Import commit bar caption at step 2."
   },
@@ -6773,7 +6773,7 @@
   "@accountSignedInHint": {
     "description": "Screen 23: under the attached account's email (plan ruling 5)."
   },
-  "welcomeLead": "Sign in to keep your decks safe and the same on every phone.",
+  "welcomeLead": "MemoX works on this phone without an account, offline too. Signing in adds:",
   "@welcomeLead": {
     "description": "Screen 29: the line under the app name."
   },
@@ -6784,10 +6784,6 @@
   "welcomeBenefitPhones": "Study on several phones",
   "@welcomeBenefitPhones": {
     "description": "Screen 29: the second benefit."
-  },
-  "welcomeBenefitOffline": "Still works offline",
-  "@welcomeBenefitOffline": {
-    "description": "Screen 29: the third benefit."
   },
   "accountContinueGoogle": "Continue with Google",
   "@accountContinueGoogle": {
@@ -6801,9 +6797,9 @@
   "@accountContinueWithout": {
     "description": "Screen 29: leave without signing in."
   },
-  "accountOfflineNote": "Signing in needs a connection. You can do it later in Settings.",
+  "accountOfflineNote": "Signing in needs a connection. Try later in Settings.",
   "@accountOfflineNote": {
-    "description": "Screens 29 and 30: sign-in must wait for the network (plan ruling 6)."
+    "description": "The footer caption on screens 29 and 30: sign-in must wait for the network (plan ruling 6)."
   },
   "accountLinkLine": "Your decks stay on this phone and join the account.",
   "@accountLinkLine": {
@@ -6813,13 +6809,21 @@
   "@accountTargetLine": {
     "description": "Transition layer: the target sign-in."
   },
-  "accountOr": "or",
-  "@accountOr": {
-    "description": "Screen 30: between Google and the email field."
+  "accountEmailHint": "name@example.com",
+  "@accountEmailHint": {
+    "description": "Screen 30: the email field's hint."
+  },
+  "accountReauthTitle": "Sign in again",
+  "@accountReauthTitle": {
+    "description": "Screen 30, re-auth: the title."
+  },
+  "accountContinueWithoutThis": "Continue without this account",
+  "@accountContinueWithoutThis": {
+    "description": "Screen 30, re-auth: the way out under the form and its dialog's confirm; Welcome keeps accountContinueWithout."
   },
   "accountEmail": "Email address",
   "@accountEmail": {
-    "description": "Screen 30: the email field's label and hint."
+    "description": "Screen 30: the email field's label."
   },
   "accountSendCode": "Send code",
   "@accountSendCode": {
@@ -6858,31 +6862,26 @@
   "@accountCodeTitle": {
     "description": "Screen 31's title."
   },
-  "accountCodeSentTo": "Enter the 6-digit code sent to {email}",
+  "accountCodeSentTo": "We sent a 6-digit code to",
   "@accountCodeSentTo": {
-    "placeholders": {
-      "email": {
-        "type": "String"
-      }
-    },
-    "description": "Screen 31: where the code went."
+    "description": "Screen 31: the lead; the address follows on its own line."
   },
   "accountCodeLabel": "Code, 6 digits",
   "@accountCodeLabel": {
     "description": "Screen 31: the code field's TalkBack label."
   },
-  "accountCodeWrong": "That code is wrong or has expired. Check the latest email, or send a new code.",
+  "accountCodeWrong": "That code is wrong or has expired. Check the latest email.",
   "@accountCodeWrong": {
     "description": "Screen 31: a refused code (Account UI spec R3)."
   },
-  "accountResendIn": "Resend code in {time}",
+  "accountResendIn": "New code in {time}",
   "@accountResendIn": {
     "placeholders": {
       "time": {
         "type": "String"
       }
     },
-    "description": "Screen 31: the resend countdown, as m:ss."
+    "description": "Screen 31: the wait before a new code can be sent, as m:ss; a caption, not a button."
   },
   "accountResend": "Resend code",
   "@accountResend": {
@@ -6895,6 +6894,10 @@
   "accountUseAnotherEmail": "Use another email",
   "@accountUseAnotherEmail": {
     "description": "Screen 31: back to the email."
+  },
+  "accountCodeSpamHint": "Not there yet? Check your spam folder.",
+  "@accountCodeSpamHint": {
+    "description": "Screen 31: the footnote under the code."
   },
   "accountTakenEmail": "{email} already has an account",
   "@accountTakenEmail": {
@@ -6945,9 +6948,9 @@
   "@accountContinue": {
     "description": "Merge sheet: confirm the merge."
   },
-  "accountDiscardContinue": "Discard and continue",
+  "accountDiscardContinue": "Discard data",
   "@accountDiscardContinue": {
-    "description": "Merge sheet: confirm the discard."
+    "description": "Merge sheet: confirm the discard. The Short Label Rule in DESIGN.md: it must fit its half of the even footer pair."
   },
   "accountStepSending": "Sending your changes…",
   "@accountStepSending": {
@@ -7123,7 +7126,7 @@
   "@accountCommandFailed": {
     "description": "Screen 32: toast when a command was refused (Account UI spec §9)."
   },
-  "accountReauthLine": "Sign in again to keep syncing. Your decks are still here.",
+  "accountReauthLine": "This phone was signed out, so syncing paused. Your decks are still here.",
   "@accountReauthLine": {
     "description": "Screen 30 in reauth mode: the mode line (Account UI spec §5.2)."
   },
@@ -7136,6 +7139,19 @@
     },
     "description": "Screen 30 reauth, another account: title (Account UI spec §9 B8)."
   },
+  "accountUnsentConfirm": "Lose {count, plural, =1{1 change} other{{count} changes}}",
+  "@accountUnsentConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screens 30 and 31: the unsent-loss dialog's confirm, naming what it loses (DEV-168)."
+  },
+  "accountSignedOutLabel": "Signed out",
+  "@accountSignedOutLabel": {
+    "description": "Screen 30 in reauth mode: the eyebrow's label before the account's email, upper-cased by the screen (DEV-168)."
+  },
   "accountUnsentBody": "{count, plural, =1{1 change on this phone isn't sent and will be lost.} other{{count} changes on this phone aren't sent and will be lost.}}",
   "@accountUnsentBody": {
     "placeholders": {
@@ -7145,7 +7161,7 @@
     },
     "description": "Screen 30 reauth, another account: body (Account UI spec §5.2)."
   },
-  "accountWithoutTitle": "Continue without an account?",
+  "accountWithoutTitle": "Continue without this account?",
   "@accountWithoutTitle": {
     "description": "Screen 30 reauth: the confirm's title (Account UI spec §9.1)."
   },

@@ -361,33 +361,31 @@ void main() {
     );
   });
 
-  testWidgets('the code variant asks for digits, offers the one-time code '
-      'and centres them', (tester) async {
+  testWidgets('a strong edge rests on outline; focus and error are '
+      'unchanged (DEV-166)', (tester) async {
     await pumpMx(
       tester,
-      const MxTextField(label: 'Code', variant: MxTextFieldVariant.code),
+      const SizedBox(
+        width: 300,
+        child: MxTextField(hintText: 'Email', hasStrongEdge: true),
+      ),
     );
-    final field = tester.widget<TextField>(find.byType(TextField));
+    final rest = _decoration(tester).enabledBorder! as OutlineInputBorder;
+    expect(rest.borderSide.color, scheme.outline);
+    expect(rest.borderSide.width, 1);
+    expect(_edge(_decoration(tester).focusedBorder), isNot(scheme.outline));
 
-    expect(field.keyboardType, TextInputType.number);
-    expect(field.autofillHints, [AutofillHints.oneTimeCode]);
-    expect(field.textAlign, TextAlign.center);
-    expect(field.maxLines, 1);
-  });
-
-  testWidgets('the code variant keeps six digits and nothing else', (
-    tester,
-  ) async {
-    final controller = TextEditingController();
-    addTearDown(controller.dispose);
     await pumpMx(
       tester,
-      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
+      const SizedBox(
+        width: 300,
+        child: MxTextField(
+          hintText: 'Email',
+          hasStrongEdge: true,
+          errorText: 'Wrong',
+        ),
+      ),
     );
-
-    await tester.enterText(find.byType(TextField), '12a3456789');
-
-    expect(controller.text, '123456');
-    expect(MxTextField.codeLength, 6);
+    expect(_edge(_decoration(tester).enabledBorder), scheme.error);
   });
 }

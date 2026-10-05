@@ -40,7 +40,6 @@ final class MxTextStyles {
   static const double _bannerHeight = 1.55;
   static const double _snackbarHeight = 1.4;
   static const String _codeFamily = 'monospace';
-  static const double _codeTracking = 6;
   static const List<String> _codeFallback = ['Menlo', 'Courier New'];
   static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
   static const double _termTracking = -0.4;
@@ -120,6 +119,13 @@ final class MxTextStyles {
     color: _scheme.onSurfaceVariant,
   );
 
+  /// The part of a lead the reader must check, such as the address a code
+  /// went to: the lead at 600 in on-surface ink.
+  TextStyle get emptyBodyStrong => AppTypography.withWeight(
+    _texts.bodyMedium!,
+    FontWeight.w600,
+  ).copyWith(height: _emptyBodyHeight, color: _scheme.onSurface);
+
   /// Tappable breadcrumb level: 12/500, 0.1 tracking.
   TextStyle get breadcrumbAncestor => AppTypography.withWeight(
     _texts.labelSmall!,
@@ -192,10 +198,9 @@ final class MxTextStyles {
   TextStyle get disclosureLabel =>
       _texts.labelSmall!.copyWith(color: _primaryInk);
 
-  /// A sign-in code (account UI spec §6): the headline role, tabular
-  /// figures and wide tracking, so six digits read as one code.
+  /// A code slot's digit: the headline role with tabular figures. Each slot
+  /// holds one digit, so the line needs no wide tracking.
   TextStyle get fieldCode => _texts.headlineSmall!.copyWith(
-    letterSpacing: _codeTracking,
     fontFeatures: _tabular,
     color: _scheme.onSurface,
   );

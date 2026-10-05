@@ -76,6 +76,17 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       _nonText,
     ),
     ('toggle off edge on a row', scheme.outline, row, _nonText),
+    // The code field's slots (sign-in redesign 2026-10-05, §4.1): the edge
+    // holds 3:1 against the page around it and the fill inside it.
+    ('code slot edge on page', scheme.outline, page, _nonText),
+    // No sheet hosts the code field; its edge fails 3:1 on the sheet ground
+    // in both themes (final review F6), so it is not asserted there.
+    (
+      'code slot edge on its fill',
+      scheme.outline,
+      scheme.surfaceContainerLow,
+      _nonText,
+    ),
     (
       'toggle off thumb on its track',
       scheme.onSurfaceVariant,

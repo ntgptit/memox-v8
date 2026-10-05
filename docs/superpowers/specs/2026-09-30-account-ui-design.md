@@ -93,6 +93,8 @@ the same meaning. Copy is local-first: what is kept before what is asked.
 
 ### 5.1 Welcome (29)
 
+> Layout amended by `2026-10-05-sign-in-flow-redesign-design.md`.
+
 Top: the icon tile (U5) and "MemoX", three `MxIconTile` benefit rows (keep
 your decks when you reinstall · study on several phones · still works
 offline). Bottom, in the thumb zone: "Continue with Google" (primary, G
@@ -102,6 +104,8 @@ leaves the app as on any root. Every exit sets `welcome_seen = 1` first,
 then goes to `from ?? /decks`. Email opens 30 (`link`) above the welcome.
 
 ### 5.2 Sign-in (30) and code (31)
+
+> Layout amended by `2026-10-05-sign-in-flow-redesign-design.md`.
 
 - The **sign-in form** (a presentation widget used by 30 and by the layer):
   a mode line, "Continue with Google" (outline, G mark), an "or" divider,
@@ -140,7 +144,9 @@ takes two deliberate taps; the default stays merge (O4).
 
 Over the whole app while `Transitioning`/`Recovering` holds a Switch,
 SignOut, Delete or ClearToAnon (AnonRecovery stays silent: writes are
-allowed). `PopScope` swallows Back; the status line is a live region.
+allowed). `PopScope` keeps Back inside the layer: at its root, Back does what
+Cancel does while Cancel shows, and is swallowed otherwise (DEV-167); the
+status line is a live region.
 
 | Condition | Shows |
 |---|---|
@@ -186,6 +192,8 @@ P3b states and wiring are in §9.
 action as §5.5. The notice comes from the router as a slot (§9 B5).
 
 ## 6. Shape (Impeccable, 2026-09-30)
+
+> Layout amended by `2026-10-05-sign-in-flow-redesign-design.md`.
 
 Critiqued against `DESIGN.md` and the goldens of 23, 27 and 13; the rulings
 above already carry the outcome. Layout notes for the builder:

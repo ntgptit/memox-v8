@@ -6,7 +6,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 /// The footer every dialog and sheet ends with. The confirm takes 1.3 shares
-/// to Cancel's 1, so a real verb ("Move to Trash") keeps its line and Cancel
+/// to Cancel's 1 (an even half each with [isEvenSplit]), so a real verb ("Move to Trash") keeps its line and Cancel
 /// gives up width first; when a label cannot fit its share on one line, the
 /// two stack instead (MxActionPair, spec 2026-09-26 D3).
 class MxSheetActions extends StatelessWidget {
@@ -21,6 +21,7 @@ class MxSheetActions extends StatelessWidget {
     this.isWarning = false,
     this.isInSheet = false,
     this.isConfirmLoading = false,
+    this.isEvenSplit = false,
   }) : assert(!(isDestructive && isWarning), 'a confirm has one tone'),
        children = const [];
 
@@ -38,7 +39,8 @@ class MxSheetActions extends StatelessWidget {
        confirmIcon = null,
        isDestructive = false,
        isWarning = false,
-       isConfirmLoading = false;
+       isConfirmLoading = false,
+       isEvenSplit = false;
 
   final String? cancelLabel;
 
@@ -59,6 +61,10 @@ class MxSheetActions extends StatelessWidget {
   /// The confirm's work is running: it spins and cannot be pressed; Cancel
   /// stays live.
   final bool isConfirmLoading;
+
+  /// Cancel and the confirm share the width 1:1 (the sign-in confirms,
+  /// 2026-10-05 L2).
+  final bool isEvenSplit;
 
   /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of 16
   /// all round.
@@ -93,8 +99,8 @@ class MxSheetActions extends StatelessWidget {
               isBlock: true,
               isSingleLine: true,
             ),
-            leadingFlex: _cancelShare,
-            trailingFlex: _confirmShare,
+            leadingFlex: isEvenSplit ? 1 : _cancelShare,
+            trailingFlex: isEvenSplit ? 1 : _confirmShare,
           );
     if (!isInSheet) {
       return Padding(

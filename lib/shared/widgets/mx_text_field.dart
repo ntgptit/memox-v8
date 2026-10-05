@@ -1,11 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
 /// How a field takes its text. Every boxed variant shares one box and one
@@ -28,9 +29,9 @@ enum MxTextFieldVariant {
   /// frames it (FE-A6 P4 F1).
   study,
 
-  /// A sign-in code (account UI spec U2): one centred line of six digits
-  /// on the form fill, the numeric keyboard, the platform's one-time-code
-  /// autofill.
+  /// A sign-in code (account UI spec U2; sign-in redesign 2026-10-05 §4.1):
+  /// six slots painted over one hidden field, which keeps the numeric
+  /// keyboard, the one-time-code autofill, paste and the TalkBack label.
   code,
 }
 
@@ -55,6 +56,9 @@ class MxTextField extends StatelessWidget {
     this.errorText,
     this.variant = MxTextFieldVariant.form,
     this.isEnabled = true,
+    this.isAutofocused = false,
+    this.isReadOnly = false,
+    this.hasStrongEdge = false,
     this.onChanged,
     this.onSubmitted,
     this.textInputAction,
@@ -76,6 +80,9 @@ class MxTextField extends StatelessWidget {
       errorText = field.errorText,
       variant = field.variant,
       isEnabled = field.isEnabled,
+      isAutofocused = field.isAutofocused,
+      isReadOnly = field.isReadOnly,
+      hasStrongEdge = field.hasStrongEdge,
       onChanged = field.onChanged,
       onSubmitted = field.onSubmitted,
       textInputAction = field.textInputAction,
@@ -94,6 +101,16 @@ class MxTextField extends StatelessWidget {
   final String? errorText;
   final MxTextFieldVariant variant;
   final bool isEnabled;
+
+  /// Takes the focus when first shown, such as the sign-in code.
+  final bool isAutofocused;
+
+  /// Shows the value but takes no input, such as a code being checked.
+  final bool isReadOnly;
+
+  /// Rests on the outline edge (3:1) instead of the ghost border, for a
+  /// field that must read at a glance (sign-in, DEV-166).
+  final bool hasStrongEdge;
   final ValueChanged<String>? onChanged;
 
   /// The keyboard's action key (Done, Next…) was pressed.
@@ -104,6 +121,18 @@ class MxTextField extends StatelessWidget {
 
   /// The digits a sign-in code holds (auth spec O1).
   static const int codeLength = 6;
+
+  /// The themed resting edge redrawn in [color] at a hairline.
+  static InputBorder? _strongEdge(InputBorder? themed, Color color) =>
+      switch (themed) {
+        final OutlineInputBorder outline => outline.copyWith(
+          borderSide: outline.borderSide.copyWith(
+            color: color,
+            width: AppStroke.hairline,
+          ),
+        ),
+        _ => themed,
+      };
 
   static _Geometry _geometry(MxTextFieldVariant variant) => switch (variant) {
     MxTextFieldVariant.form || MxTextFieldVariant.code => (
@@ -140,6 +169,7 @@ class MxTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (variant == MxTextFieldVariant.code) return MxCodeField(field: this);
     final controller = this.controller;
     if (!_geometry(variant).isMultiline) return _field(context, null);
     // A multi-line box pads to its floor around what it holds, which follows
@@ -204,6 +234,7 @@ class MxTextField extends StatelessWidget {
     return math.max(geometry.vertical, (geometry.floor - content) / 2);
   }
 
+  // The code variant never reaches here: MxCodeField draws it.
   Widget _field(BuildContext context, double? width) {
     final colors = context.colors;
     final hasError = errorText != null;
@@ -211,7 +242,10 @@ class MxTextField extends StatelessWidget {
     // The theme carries the field (spec §4.6): its fill, which lightens on
     // focus, and its edges; an error holds the error edge at rest too.
     final fields = Theme.of(context).inputDecorationTheme;
-    final restingEdge = hasError ? fields.errorBorder : fields.enabledBorder;
+    final themedRest = hasError ? fields.errorBorder : fields.enabledBorder;
+    final restingEdge = hasStrongEdge && !hasError
+        ? _strongEdge(themedRest, colors.outline)
+        : themedRest;
     // The box height is a floor painted by the decorator itself, reached by
     // padding (InputDecoration.constraints reserves the height but paints
     // the fill and edge around the text only); more lines or scaled text
@@ -219,11 +253,12 @@ class MxTextField extends StatelessWidget {
     final textStyle = _valueStyle(context);
     final hintStyle = context.fieldHint;
     final isBare = variant == MxTextFieldVariant.study;
-    final isCode = variant == MxTextFieldVariant.code;
     final field = TextField(
       controller: controller,
       focusNode: focusNode,
+      autofocus: isAutofocused,
       enabled: isEnabled,
+      readOnly: isReadOnly,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       textInputAction: textInputAction,
@@ -231,18 +266,10 @@ class MxTextField extends StatelessWidget {
       // A term wraps but is one line of meaning: Enter fires the action.
       keyboardType: switch (variant) {
         MxTextFieldVariant.detail => TextInputType.multiline,
-        MxTextFieldVariant.code => TextInputType.number,
         _ => TextInputType.text,
       },
-      inputFormatters: isCode
-          ? [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(codeLength),
-            ]
-          : null,
-      autofillHints: isCode ? const [AutofillHints.oneTimeCode] : null,
       style: textStyle,
-      textAlign: isBare || isCode ? TextAlign.center : TextAlign.start,
+      textAlign: isBare ? TextAlign.center : TextAlign.start,
       cursorColor: colors.primary,
       textAlignVertical: TextAlignVertical.center,
       decoration: isBare

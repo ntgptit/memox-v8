@@ -252,4 +252,42 @@ void main() {
       darkDerived.warningInk,
     );
   });
+
+  testWidgets('without a bottom margin the banner ends at its painted edge; '
+      'by default it keeps 16 below (2026-10-05 L3)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(
+          tone: MxBannerTone.danger,
+          message: _message,
+          hasBottomMargin: false,
+        ),
+      ),
+    );
+    final flush = find.byType(MxInlineBanner);
+    final painted = find
+        .descendant(of: flush, matching: find.byType(DecoratedBox))
+        .first;
+    expect(tester.getBottomLeft(flush).dy, tester.getBottomLeft(painted).dy);
+
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
+      ),
+    );
+    final spaced = find.byType(MxInlineBanner);
+    expect(
+      tester.getBottomLeft(spaced).dy -
+          tester
+              .getBottomLeft(
+                find
+                    .descendant(of: spaced, matching: find.byType(DecoratedBox))
+                    .first,
+              )
+              .dy,
+      16,
+    );
+  });
 }

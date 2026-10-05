@@ -282,7 +282,7 @@ void main() {
         hasMark: true,
         before: () async {
           await _settle(tester);
-          await tapping(tester, _en.accountContinueWithout)();
+          await tapping(tester, _en.accountContinueWithoutThis)();
         },
       );
     });

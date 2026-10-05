@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart' show driftRuntimeOptions;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -69,6 +72,20 @@ Future<void> refuseSession(AuthWorld world) async {
 /// [state] as the only account state, for a surface that renders it.
 Override authStateOf(AuthState state) =>
     authStateProvider.overrideWith((ref) => Stream.value(state));
+
+/// Overrides the auth state with [state]'s values as they change.
+Override authStateOfListenable(ValueListenable<AuthState> state) =>
+    authStateProvider.overrideWith((ref) {
+      final controller = StreamController<AuthState>();
+      void push() => controller.add(state.value);
+      state.addListener(push);
+      push();
+      ref.onDispose(() {
+        state.removeListener(push);
+        unawaited(controller.close());
+      });
+      return controller.stream;
+    });
 
 /// A transition record for a rendering test.
 AccountTransition transitionOf(

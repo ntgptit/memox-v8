@@ -47,9 +47,9 @@ their goldens, its rulings and its copy. The visual system is in
 | 26 | Language | 4 | FE-A3 | built | [26-language.md](26-language.md) |
 | 27 | Sync | 10 | SB-U1 | built | [27-sync.md](27-sync.md) (shape brief in the spec) |
 | 28 | Monitoring (admin only) | 15 | FE-B8 | built | [28-monitoring.md](28-monitoring.md) (shape brief in the spec) |
-| 29 | Welcome (first launch) | 2 | FE-B9 | built | [29-welcome.md](29-welcome.md) (shape in the account UI spec) |
-| 30 | Sign-in, merge sheet, transition layer | 13 | FE-B9, FE-B10 | built | [30-sign-in.md](30-sign-in.md) (shape in the account UI spec) |
-| 31 | Code | 3 | FE-B9 | built | [31-code.md](31-code.md) |
+| 29 | Welcome (first launch) | 2 | FE-B9 | built | [29-welcome.md](29-welcome.md) (shape in the account UI spec; redesign in `2026-10-05-sign-in-flow-redesign-design.md`) |
+| 30 | Sign-in, merge sheet, transition layer | 13 | FE-B9, FE-B10 | built | [30-sign-in.md](30-sign-in.md) (shape in the account UI spec; redesign in `2026-10-05-sign-in-flow-redesign-design.md`; layout balance in `2026-10-05-sign-in-layout-balance-design.md`) |
+| 31 | Code | 3 | FE-B9 | built | [31-code.md](31-code.md) (redesign in `2026-10-05-sign-in-flow-redesign-design.md`; layout balance in `2026-10-05-sign-in-layout-balance-design.md`) |
 | 32 | Account | 9 | FE-B10 | built | [32-account.md](32-account.md) (shape in the account UI spec §9.1) |
 | 33 | Users (admin) | 10 | FE-B11 | built | [33-users.md](33-users.md) (shape in the users spec §6) |
 

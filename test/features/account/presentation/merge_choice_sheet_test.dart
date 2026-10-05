@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -192,5 +193,27 @@ void main() {
 
     expect(find.text(_en.failureAccount), findsOneWidget);
     expect(world.state, isA<Booting>());
+  });
+
+  accountTest('the sheet pairs Cancel and Continue evenly and keeps one left '
+      'edge (2026-10-05 L2, L4)', (tester, env, world) async {
+    await env.decks.root('Korean');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(),
+      overrides: accountOverrides(world),
+    );
+    await tester.tap(find.text('go'));
+    await _settle(tester);
+
+    double widthOf(String label) =>
+        tester.getSize(find.widgetWithText(MxButton, label)).width;
+    expect(widthOf(_en.commonCancel), widthOf(_en.accountContinue));
+    // The title, the rows and the footer share the 16 dp edge.
+    expect(
+      tester.getTopLeft(find.text(_en.accountTakenEmail('b@example.com'))).dx,
+      tester.getTopLeft(find.widgetWithText(MxButton, _en.commonCancel)).dx,
+    );
   });
 }

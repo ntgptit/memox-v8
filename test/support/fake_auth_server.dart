@@ -106,7 +106,7 @@ class FakeAuthGateway implements AuthGateway {
   /// The next code request fails with this, as GoTrue's rate limit does.
   Failure? failNextRequest;
 
-  /// While set, code requests wait on it, as a slow network does.
+  /// While set, code requests and checks wait on it, as a slow network does.
   Completer<void>? holdRequests;
 
   Future<void> _waitIfHeld() async => holdRequests?.future;
@@ -184,6 +184,7 @@ class FakeAuthGateway implements AuthGateway {
   Future<void> verifyEmailLink(String email, String code) async {
     kill?.step();
     server.checkOnline();
+    await _waitIfHeld();
     _checkCode(email, code);
     server.users[_userId]!
       ..email = email
@@ -205,6 +206,7 @@ class FakeAuthGateway implements AuthGateway {
   Future<void> verifyEmailSignIn(String email, String code) async {
     kill?.step();
     server.checkOnline();
+    await _waitIfHeld();
     _checkCode(email, code);
     final user = server.userByEmail(email) ?? server.addUser(email: email);
     user.methods.add(SignInMethod.email);
@@ -280,6 +282,9 @@ class FakeAccountApi implements AccountApi {
   /// How many next `me()` calls the server answers with an error of its own.
   var serverFailuresOnMe = 0;
 
+  /// While set, `me()` waits on it, as a slow network does.
+  Completer<void>? holdMe;
+
   FakeUser _caller() {
     final id = gateway.currentUserId;
     if (id == null) throw const SessionInvalidFailure();
@@ -288,6 +293,7 @@ class FakeAccountApi implements AccountApi {
 
   @override
   Future<AccountUser> me() async {
+    await holdMe?.future;
     kill?.step();
     server.checkOnline();
     meCalls++;
