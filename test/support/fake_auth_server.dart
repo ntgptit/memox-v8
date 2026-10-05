@@ -282,6 +282,9 @@ class FakeAccountApi implements AccountApi {
   /// How many next `me()` calls the server answers with an error of its own.
   var serverFailuresOnMe = 0;
 
+  /// While set, `me()` waits on it, as a slow network does.
+  Completer<void>? holdMe;
+
   FakeUser _caller() {
     final id = gateway.currentUserId;
     if (id == null) throw const SessionInvalidFailure();
@@ -290,6 +293,7 @@ class FakeAccountApi implements AccountApi {
 
   @override
   Future<AccountUser> me() async {
+    await holdMe?.future;
     kill?.step();
     server.checkOnline();
     meCalls++;

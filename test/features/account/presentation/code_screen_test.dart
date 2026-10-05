@@ -160,6 +160,33 @@ void main() {
     expect(find.text(_en.accountResendIn('1:00')), findsOneWidget);
   });
 
+  accountTest('a resend in flight spins on the button, not "New code in '
+      '0:00" (final review F1)', (tester, env, world) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+    await tester.pump(const Duration(seconds: 60));
+
+    final held = world.gateway.holdRequests = Completer<void>();
+    await tester.tap(find.text(_en.accountResend));
+    await tester.pump();
+
+    expect(find.text(_en.accountResendIn('0:00')), findsNothing);
+    final resend = find.widgetWithText(MxButton, _en.accountResend);
+    expect(resend, findsOneWidget);
+    expect(tester.widget<MxButton>(resend).isLoading, isTrue);
+
+    held.complete();
+    world.gateway.holdRequests = null;
+    await _settle(tester);
+
+    expect(find.text(_en.accountResendIn('1:00')), findsOneWidget);
+  });
+
   accountTest('a re-auth resend to another address names the unsent '
       'changes again (P3b minor M7)', (tester, env, world) async {
     await refuseSession(world);

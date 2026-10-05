@@ -6782,7 +6782,7 @@
   },
   "accountOfflineNote": "Signing in needs a connection. You can do it later in Settings.",
   "@accountOfflineNote": {
-    "description": "Screens 29 and 30: sign-in must wait for the network (plan ruling 6)."
+    "description": "The footer caption on screens 29 and 30: sign-in must wait for the network (plan ruling 6)."
   },
   "accountLinkLine": "Your decks stay on this phone and join the account.",
   "@accountLinkLine": {

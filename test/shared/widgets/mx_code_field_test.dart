@@ -269,4 +269,55 @@ void main() {
     expect(controller.text, '123456');
     expect(MxTextField.codeLength, 6);
   });
+
+  testWidgets('pasting a code after typed digits replaces them, not mixes '
+      '(final review F3)', (tester) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
+    );
+    await tester.enterText(find.byType(TextField), '123');
+    await tester.pump();
+
+    tester.testTextInput.updateEditingValue(
+      const TextEditingValue(
+        text: '123987654',
+        selection: TextSelection.collapsed(offset: 9),
+      ),
+    );
+    await tester.pump();
+
+    expect(controller.text, '987654');
+  });
+
+  testWidgets('typing digits one at a time still stops at six', (tester) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
+    );
+    await tester.enterText(find.byType(TextField), '12345');
+    await tester.pump();
+
+    tester.testTextInput.updateEditingValue(
+      const TextEditingValue(
+        text: '123459',
+        selection: TextSelection.collapsed(offset: 6),
+      ),
+    );
+    await tester.pump();
+
+    expect(controller.text, '123459');
+  });
+
+  testWidgets('MxCodeField draws the code variant only (final review F4)', (
+    tester,
+  ) async {
+    await pumpMx(tester, const MxCodeField(field: MxTextField(label: 'Name')));
+
+    expect(tester.takeException(), isA<AssertionError>());
+  });
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,6 +97,34 @@ void main() {
     expect(dones, 1);
     expect(isDue(tester), isFalse);
     expect(find.text(_en.accountSignedInAs('g@example.com')), findsOneWidget);
+  });
+
+  accountTest('while Google signs in, Welcome keeps its ways and never '
+      'looks offline (final review F2)', (tester, env, world) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+    final held = world.api.holdMe = Completer<void>();
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.text(_en.accountContinueGoogle), findsOneWidget);
+    expect(find.text(_en.accountContinueEmail), findsOneWidget);
+    expect(find.text(_en.accountOfflineNote), findsNothing);
+    final without = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, _en.accountContinueWithout),
+    );
+    expect(without.tone, MxButtonTone.text);
+
+    held.complete();
+    world.api.holdMe = null;
+    await _settle(tester);
+    expect(dones, 1);
   });
 
   accountTest('Continue with email goes to screen 30', (

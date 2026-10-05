@@ -43,7 +43,7 @@ The images are the goldens.
 - **U1:** shown once on every device, including one that used the app before the update.
 - **U5:** the tile until MemoX has its own icon (UI-base row 149).
 - **U6:** Google's G mark on the Google button.
-- **P3a plan rulings 3, 4, 6:** only on a build that can sign in; the email exit lands on Sign-in over Settings; sign-in waits, with a note, while the account cannot link yet.
+- **P3a plan rulings 3, 4, 6:** only on a build that can sign in; the email exit lands on Sign-in over Settings; sign-in waits, with a note, while the account cannot link yet (now the footer caption, S10).
 - **Sign-in redesign 2026-10-05 (spec `2026-10-05-sign-in-flow-redesign-design.md`, S1–S10):** the lead says what works without an account and what signing in adds; the benefits are two; offline the footer shows one usable action, "Continue without an account", as the primary, with the offline note as its caption instead of a note 400 px above two disabled buttons (S10). Welcome asks *which way*, so Google is its fill (S7).
 
 ## Copy

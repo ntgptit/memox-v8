@@ -153,7 +153,12 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
     // S9: re-auth names the account it signs in again to.
     final eyebrow = isReauth ? widget.initialEmail : null;
     // Plan ruling 6: only a link waits for the account to be ready.
-    final isWaiting = !widget.isEnabled && widget.purpose == SignInPurpose.link;
+    // A Google sign-in in flight turns the account away from linking for a
+    // moment: that is not waiting (final review F2).
+    final isWaiting =
+        !widget.isEnabled &&
+        !state.isRunning &&
+        widget.purpose == SignInPurpose.link;
     // A re-auth and a prefilled target already hold their address: only an
     // empty one takes the keyboard.
     final isAutofocused =

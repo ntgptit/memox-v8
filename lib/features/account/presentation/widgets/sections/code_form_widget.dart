@@ -123,7 +123,8 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
         const SizedBox(height: AppSpacing.grouped),
         _WaitLine(
           isVerifying: state.isVerifying,
-          wait: state.canResend ? null : _clock(state.resendIn),
+          // A resend in flight has no wait left: the button shows and spins.
+          wait: state.resendIn == Duration.zero ? null : _clock(state.resendIn),
           isResending: state.isResending,
           onResend: () => unawaited(_resend()),
         ),

@@ -12,6 +12,9 @@ import 'package:memox/shared/widgets/mx_text_field.dart';
 /// The code variant of [MxTextField]: six slots over one hidden field. The field fills the
 /// row, so a tap on any slot focuses it and a long press offers paste; the
 /// slots follow its text and focus.
+///
+/// Built by `MxTextField` for the code variant; features use
+/// `MxTextField(variant: code)`.
 class MxCodeField extends StatefulWidget {
   const MxCodeField({super.key, required this.field});
 
@@ -92,6 +95,12 @@ class _MxCodeFieldState extends State<MxCodeField> {
   @override
   Widget build(BuildContext context) {
     final field = widget.field;
+    // Not in the constructor, which stays const-able.
+    assert(
+      field.variant == MxTextFieldVariant.code,
+      'MxCodeField draws the code variant; use '
+      'MxTextField(variant: MxTextFieldVariant.code)',
+    );
     final hidden = TextField(
       controller: _controller,
       focusNode: _focus,
@@ -105,6 +114,7 @@ class _MxCodeFieldState extends State<MxCodeField> {
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
+        const _PasteReplacesFormatter(),
         LengthLimitingTextInputFormatter(MxTextField.codeLength),
       ],
       autofillHints: const [AutofillHints.oneTimeCode],
@@ -158,6 +168,31 @@ class _MxCodeFieldState extends State<MxCodeField> {
     );
     if (field.isEnabled) return column;
     return Opacity(opacity: AppOpacity.disabled, child: column);
+  }
+}
+
+/// A paste of a whole code replaces what was typed: the caret is pinned to the
+/// end, so the limiter alone would keep the typed digits and cut the paste
+/// ("123" + "987654" → "123987"). One edit that adds six digits or more is a
+/// paste; its first six digits are the value.
+class _PasteReplacesFormatter extends TextInputFormatter {
+  const _PasteReplacesFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final added = newValue.text.length - oldValue.text.length;
+    if (added < MxTextField.codeLength) return newValue;
+    final selection = newValue.selection;
+    final end = selection.isValid ? selection.end : newValue.text.length;
+    final run = newValue.text.substring((end - added).clamp(0, end), end);
+    final code = run.substring(0, MxTextField.codeLength);
+    return TextEditingValue(
+      text: code,
+      selection: TextSelection.collapsed(offset: code.length),
+    );
   }
 }
 

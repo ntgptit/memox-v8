@@ -79,6 +79,9 @@ class WelcomeScreen extends ConsumerWidget {
     final canLink = ref.watch(canLinkProvider);
     final isRunning = ref.watch(signInControllerProvider(_link)).isRunning;
     final canSignIn = canLink && !isRunning;
+    // A Google sign-in in flight takes the account through Validating, where
+    // it cannot link: that is not offline, so the ways stay (final review F2).
+    final isOffline = !canLink && !isRunning;
     // "Continue without an account": the quiet skip beside the ways in, or
     // the one fill when none of them can be used (S10).
     MxButton without(MxButtonTone tone) => MxButton(
@@ -126,8 +129,8 @@ class WelcomeScreen extends ConsumerWidget {
         ),
       ),
       footer: MxFooterBar(
-        caption: canLink ? null : l10n.accountOfflineNote,
-        child: canLink
+        caption: isOffline ? l10n.accountOfflineNote : null,
+        child: !isOffline
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,

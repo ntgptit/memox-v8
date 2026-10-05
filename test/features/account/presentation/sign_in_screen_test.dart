@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/sign_in_form_widget.dart';
@@ -11,6 +14,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
+import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/deck_fixtures.dart';
@@ -180,6 +184,29 @@ void main() {
     expect(find.text(_en.accountSignedInAs('g@example.com')), findsOneWidget);
   });
 
+  accountTest('while Google signs in, the link form never shows the offline '
+      'caption (final review F2)', (tester, env, world) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+    final held = world.api.holdMe = Completer<void>();
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.text(_en.accountOfflineNote), findsNothing);
+    expect(_button(tester, _en.accountContinueGoogle).isLoading, isTrue);
+
+    held.complete();
+    world.api.holdMe = null;
+    await _settle(tester);
+    expect(signIns, 1);
+  });
+
   accountTest("another account's address asks to merge", (
     tester,
     env,
@@ -279,6 +306,16 @@ void main() {
         findsNothing,
       );
       expect(find.text(_en.accountContinueWithoutThis), findsOneWidget);
+      // S9: the way out sits 32 under the address field.
+      final wayOut = find.widgetWithText(
+        MxButton,
+        _en.accountContinueWithoutThis,
+      );
+      final field = find.byType(MxTextField);
+      expect(
+        tester.getTopLeft(wayOut).dy - tester.getBottomLeft(field).dy,
+        AppSpacing.major,
+      );
     });
 
     accountTest('the reauth line, and the last address filled in', (
