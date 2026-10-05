@@ -54,7 +54,7 @@ Thiết kế chi tiết nằm ở
 - Schema Drift có `sync_outbox`, `sync_state` và cột `server_version` trên các bảng
   được sync ([`schema.md`](../data/schema.md)).
 - Lộ trình đã đi hết: deck, rồi card, tag, `review_log` và lịch ôn, rồi login
-  ([`wbs_supabase.md`](../../wbs_supabase.md)).
+  (Linear, project MemoX; [ADR-021](ADR-021-linear-theo-doi-tien-do.md)).
 - Phương án bị loại:
   - **server tự tính lịch ôn:** phải có hai bản cài đặt thuật toán SRS, một
     bằng Dart, một bằng Java, và chúng sẽ lệch nhau;

@@ -55,7 +55,7 @@ Each layer answers one question; none takes over another's.
 | The visual system | `DESIGN.md` |
 | A screen's layout, states, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
 | Known UI debt | the UI-base register (§9 of `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`) |
-| Work progress | `docs/wbs_FE.md`, `docs/wbs_BE.md`, `docs/wbs_supabase.md` (`flutter-workflow`) |
+| Work progress | the Linear project MemoX, team `DEV`: epics (label `Epic`) and their sub-issues (label group `WBS`: `BE`, `FE`, `Supabase`) ([ADR-021](docs/shared/decisions/ADR-021-linear-theo-doi-tien-do.md), `flutter-workflow`); the `docs/wbs_*.md` files are frozen history |
 | Plan-time rulings | the plan and its execution ledger, then the PR |
 | The agent's working preferences and lessons | Claude Code auto-memory |
 | Work in flight that moves to another session | a session handoff in `.claude/handoff/`, deleted before the merge ([docs/agent/session-handoff.md](docs/agent/session-handoff.md)) |
@@ -86,6 +86,46 @@ project goes into the repo through a PR.
   lists them and holds the subagent rules they enforce: every subagent on
   Sonnet except the final whole-branch review, which runs on Opus, and a
   `Workflow` whose token floor reaches 300k offered to the owner first. CI is paused and runs by hand; the local gate is what counts.
+
+## Progress on Linear
+
+Progress lives in the Linear project **MemoX** (team `DevelopmentTool`, key
+`DEV`), never in `docs/wbs_*.md`, which are frozen
+([ADR-021](docs/shared/decisions/ADR-021-linear-theo-doi-tien-do.md)). Every
+session keeps it true on its own, through the Linear connector, without being
+asked. Without the connector, tell the owner and record progress nowhere else.
+
+- **Shape:** two levels only. An **epic** is a parent issue labelled `Epic`,
+  one feature or theme, in a project milestone (`V8.0`, `Sau V8.0`,
+  `Sync & tài khoản`; none for infrastructure). An **item** is a sub-issue of
+  exactly one epic, in the epic's milestone, with exactly one `WBS` label:
+  `BE`, `FE` or `Supabase`. Never nest a sub-issue under a sub-issue.
+- **Read:** before starting work, find the issue it belongs to: the open
+  sub-issues of the relevant epic, ordered by priority.
+- **Create:**
+  - Search the project first (`list_issues` with a query); never duplicate.
+  - New work is a sub-issue of an existing epic: team, project, `parentId`,
+    the epic's milestone, one `WBS` label, a plain title named by its `DEV-n`
+    only.
+  - A new epic only for a new feature or spec — one spec, one epic — created
+    once the owner approves the spec. Its plan's tasks become its sub-issues,
+    one per task, never split further.
+  - A small defect found along the way goes into the issue in hand, or
+    becomes a sub-issue of the nearest epic.
+- **Update:**
+  - The branch and PR name the issue's `DEV-n`.
+  - The issue is In Progress when work starts, In Review while its PR is
+    open, and Done only once merged into `master`, with a comment carrying
+    the evidence (PR, commit, tests) and anything descoped with its reason.
+  - Blockers and open questions are comments on the issue; the order of work
+    is priority.
+  - An epic is Done when all its sub-issues are Done or Canceled.
+  - After saving, check any PR link Linear made: the workspace's GitHub
+    integration may point `#n` at `memox-v6`; if it does, write
+    "pull request số n của `ntgptit/memox-v8`" without `#`.
+- **Delete:** never delete an issue. Cut work is Canceled with the reason,
+  and only on the owner's decision (`AskUserQuestion`). A duplicate is set to
+  Duplicate with `duplicateOf`.
 
 ## Project invariants
 

@@ -5,3 +5,7 @@
 ## [superpowers/plans/2026-09-23-memox-v8-foundation.md](../superpowers/plans/2026-09-23-memox-v8-foundation.md)
 
 - L161: **OPEN QUESTION** line are the ones raised for review; the rest are decisions
+
+## [wbs_FE.md](../wbs_FE.md)
+
+- L287: OPEN QUESTION A4 của UC-STUDY-002 đóng; màn 13 `aligned`.

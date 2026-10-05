@@ -463,7 +463,7 @@ if [[ ${#FAILED[@]} -eq 0 ]]; then
   echo
   echo "Still needs a human: acceptance criteria, scope match, design fidelity,"
   echo "light/dark, small screen, text scale, loading/empty/error/success,"
-  echo "accessibility, and whether docs/wbs_BE.md and docs/wbs_FE.md tell the truth."
+  echo "accessibility, and whether the Linear issue of the work tells the truth."
   exit 0
 fi
 

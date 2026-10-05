@@ -1,9 +1,10 @@
 # WBS API — MemoX V8
 
 > **Đóng băng 2026-09-28** cùng `memox-api-services` ([ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md)).
-> Tiến độ sync và login nằm ở [`wbs_supabase.md`](wbs_supabase.md).
+> Tiến độ sync và login nằm ở [`wbs_supabase.md`](wbs_supabase.md) (đóng băng 2026-10-05; tiến độ
+> ở Linear, [ADR-021](shared/decisions/ADR-021-linear-theo-doi-tien-do.md)).
 
-- **Trạng thái:** đóng băng, chỉ là lịch sử; không hạng mục nào được làm tiếp.
+- **Trạng thái:** hiện hành, sửa mỗi khi một hạng mục đổi trạng thái.
 - **Mục đích:** cho người và agent biết phần API nào đã xong, phần nào còn lại và
   làm theo thứ tự nào.
 - **Phạm vi:** sub-project `memox-api-services/`: service nghiệp vụ, REST endpoint,
@@ -110,14 +111,21 @@ Không làm trước khi có sự kiện (`CLAUDE.md`, "No speculative structure
 ## Trạng thái kiểm chứng
 
 - **Gate:** `./mvnw verify` trong `memox-api-services/` (test, format palantir, line
-  coverage ≥ 80%, IT với PostgreSQL 18 qua Testcontainers nên cần Docker). Dự án đã
-  ra khỏi CI khi đóng băng; không còn job `api`.
+  coverage ≥ 80%, IT với PostgreSQL 18 qua Testcontainers nên cần Docker). CI chạy nó ở
+  job `api`, và `CI gate` cần job này xanh.
 - Trạng thái `xong` dựa trên các PR đã merge; khi tạo file này, gate chưa được chạy lại.
 
 ## Bước tiếp theo
 
-Không có: dự án đóng băng (ADR-015). Các hạng mục `chưa bắt đầu` ở trên không được
-làm; tiến độ sync và login ở [`wbs_supabase.md`](wbs_supabase.md).
+Theo §9 của spec API authority:
+
+1. BE-E7 ở phía app (API-A2 đã xong).
+2. API-B1, API-B2.
+3. API-C1 khi có spec auth.
+4. API-B3.
+5. API-B4 rồi API-B5.
+6. API-B6.
+7. API-B7, API-B8 trước khi có client thứ hai.
 
 ## Ngữ cảnh cập nhật
 

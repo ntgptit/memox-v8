@@ -58,7 +58,7 @@ This is not a market product. It is a personal app its owner builds so they can 
   - Datetimes are stored in UTC (`ADR-008`).
 - **Cards are text only.** Audio and images are out of MVP.
 - **In scope for V8.0 (`docs/features/*/README.md`):** deck, card, srs, study-mode, study, progress, settings, search (`ADR-009`), card tags (`ADR-009`).
-- **Built after V8.0:** full tag management, starter decks (development fixtures, not production content), daily reminders (opt-in, off by default; Android only, the on-device check pending), CSV/TSV/XLSX import and export, and Trash (a delete is recoverable for 30 days, `BR-TRASH-009`). Progress: `docs/wbs_FE.md`, `docs/wbs_BE.md`; sync and login: `docs/wbs_supabase.md`.
+- **Built after V8.0:** full tag management, starter decks (development fixtures, not production content), daily reminders (opt-in, off by default; Android only, the on-device check pending), CSV/TSV/XLSX import and export, and Trash (a delete is recoverable for 30 days, `BR-TRASH-009`). Progress: the Linear project MemoX (ADR-021).
 - **No V7 data compatibility or migration.** V7 is an architecture reference only (`ADR-011`).
 
 ## Brand Commitments

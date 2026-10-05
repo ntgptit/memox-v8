@@ -75,12 +75,12 @@ Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên:
 
 #### Làm sau V8.0
 
-Ngoài N1–N3, các phần sau đã xong sau V8.0; tiến độ ghi ở WBS, không ở đây:
+Ngoài N1–N3, các phần sau đã xong sau V8.0; tiến độ ghi ở Linear, project MemoX
+([ADR-021](shared/decisions/ADR-021-linear-theo-doi-tien-do.md)), không ở đây:
 
-- Trash, starter deck: [`wbs_BE.md`](wbs_BE.md), [`wbs_FE.md`](wbs_FE.md).
+- Trash, starter deck.
 - Đồng bộ đa thiết bị, đăng nhập (email OTP, Google), tài khoản và role admin trên
-  Supabase ([ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md)):
-  [`wbs_supabase.md`](wbs_supabase.md).
+  Supabase ([ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md)).
 - Log tập trung và màn monitoring ([ADR-018](shared/decisions/ADR-018-log-tap-trung-va-monitoring.md)).
 
 ## Bản đồ
@@ -89,10 +89,10 @@ Ngoài N1–N3, các phần sau đã xong sau V8.0; tiến độ ghi ở WBS, kh
 docs/
 ├── README.md                    # file này
 ├── glossary.md                  # thuật ngữ, trỏ về định nghĩa gốc
-├── wbs_BE.md                    # tiến độ backend: đã xong, còn lại, thứ tự làm
-├── wbs_FE.md                    # tiến độ frontend: đã xong, còn lại, thứ tự làm
-├── wbs_API.md                   # tiến độ memox-api-services — đóng băng (ADR-015)
-├── wbs_supabase.md              # tiến độ sync và login trên Supabase: đã xong, còn lại, thứ tự làm
+├── wbs_BE.md                    # ĐÓNG BĂNG 2026-10-05 — tiến độ ở Linear (ADR-021)
+├── wbs_FE.md                    # ĐÓNG BĂNG 2026-10-05 — tiến độ ở Linear (ADR-021)
+├── wbs_API.md                   # ĐÓNG BĂNG 2026-09-28 cùng memox-api-services (ADR-015)
+├── wbs_supabase.md              # ĐÓNG BĂNG 2026-10-05 — tiến độ ở Linear (ADR-021)
 ├── agent/                       # quy ước làm việc của agent: ECC vendored, session handoff
 ├── shared/
 │   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu

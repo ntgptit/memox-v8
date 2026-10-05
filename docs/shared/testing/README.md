@@ -81,7 +81,7 @@ Các luồng sau MUST NOT được ghi nhận là đạt khi chạy trên bản 
   `docs/superpowers/specs/2026-09-21-memox-v8-foundation-design.md` §2: sáu
   sub-project sau (Trash, nhập/xuất, tag, nhắc học hằng ngày, thư viện
   starter deck tức UC-STARTER-001, thống kê mở rộng), cùng xác thực và đồng
-  bộ/máy chủ. Các phần đó đã làm sau V8.0 (WBS); kịch bản của chúng là tiêu chí
+  bộ/máy chủ. Các phần đó đã làm sau V8.0 (Linear, project MemoX); kịch bản của chúng là tiêu chí
   của chính sub-project ấy, không phải tiêu chí nghiệm thu của V8.0. Đa phương
   tiện và iOS/web/desktop vẫn ngoài phạm vi.
 

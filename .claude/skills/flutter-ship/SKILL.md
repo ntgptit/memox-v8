@@ -137,7 +137,7 @@ Nothing merges on a red pipeline: `CI gate` must be green before a pull request
 is merged. Release builds run by hand (`.github/workflows/build-apk.yml`).
 
 **PR quality gate**: small single-purpose scope, a description, a link to the
-WBS item, screenshots or video for UI changes, test results, no unexplained new
+Linear issue, screenshots or video for UI changes, test results, no unexplained new
 dependency, no out-of-scope refactor, at least one approval.
 
 **Delivery**: build per flavor, signing keys from CI secrets and never in the
@@ -182,6 +182,5 @@ the rest into the next cycle.
 Then close the loop, which is the part usually skipped: review the KPIs against
 what you predicted, update the roadmap, **remove feature flags that have
 stabilised** (a permanent flag is permanent complexity and a permanent untested
-code path), and schedule the technical debt recorded in `docs/wbs_BE.md` and
-`docs/wbs_FE.md` rather
-than letting it accumulate silently.
+code path), and schedule the technical debt recorded in the Linear project
+MemoX rather than letting it accumulate silently.
