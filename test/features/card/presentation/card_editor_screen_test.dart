@@ -394,17 +394,16 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  libraryTest('the back of a new card sits on its 76 floor', (
-    tester,
-    env,
-  ) async {
+  libraryTest('the front and back of a card sit on the form field\'s 52 '
+      '(DEV-169)', (tester, env) async {
     final deckId = await _words(env);
     await pumpLibraryScreen(tester, env, _create(deckId));
-
-    expect(tester.getSize(find.byType(TextField).at(1)).height, 76);
+    await tester.enterText(_field(0), 'gamsahamnida');
     await tester.enterText(_field(1), 'thank you');
     await tester.pump();
-    expect(tester.getSize(find.byType(TextField).at(1)).height, 76);
+
+    expect(tester.getSize(find.byType(TextField).at(0)).height, 52);
+    expect(tester.getSize(find.byType(TextField).at(1)).height, 52);
   });
 
   libraryTest('the editor saves from the footer only and marks the required '

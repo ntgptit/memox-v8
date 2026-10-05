@@ -29,7 +29,7 @@ bar is gone while it is open.
 | Mapping error | `MxInlineBanner` (warning) | Its own row when Term or Meaning is unmapped (K3). Preview is locked. |
 | 3 · Preview | `MxListSectionHeader` + `MxBadge` + `MxSection` | The title alone (the badges carry the counts; critique 2026-09-30 part 3b); Ready, Invalid, Duplicate and Blank badges, only for counts above 0; the "Include duplicates" toggle when there is one (after the badges, before the rows); one row per source row with its number, front and back (two lines each), its reason, and a status icon with a semantic label (K3); the first 50 rows and "Showing the first {n} of {m} rows" (K2). |
 | Importing | `MxCard` + `MxSpinner` | "Adding {n} cards…". Close and Back do nothing until the write ends. |
-| Footer | `MxFooterBar` | Cancel + the step action (Read and map columns · Preview rows · Import {n} cards) and a caption; at Preview the caption shows only when nothing can be imported, since the button states the count (critique 2026-09-30 part 3b). |
+| Footer | `MxFooterBar`, `MxActionPair` 1 : 1 | Cancel + the step action, sharing the row equally and stacked (Cancel on top) when a label does not fit its half (DEV-169) (Read and map columns · Preview rows · Import {n} cards) and a caption; at Preview the caption shows only when nothing can be imported, since the button states the count (critique 2026-09-30 part 3b). |
 | Result | `MxEmptyState` in the outcome's tone + `MxSection` counts + `MxNote` | By outcome (K4); see States. |
 
 ## States
