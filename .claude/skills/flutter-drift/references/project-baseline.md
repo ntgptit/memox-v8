@@ -139,7 +139,8 @@ Knowing the negatives prevents half of the bad suggestions:
   `sync_state`, and its triggers queue each write to `deck` and
   `delete_batches` in the same statement; `server_version` on those two tables
   records the server's acknowledgement. A table that does not sync yet has
-  neither; the order is BE-E2…BE-E7 in `docs/wbs_BE.md`.
+  neither; its order is the priority of the `Supabase` issues in the Linear
+  project MemoX (ADR-021).
 - **No encryption.** ADR-002 decides it for now; opening the database in one
   place (`connection.dart`) keeps adding it a change to one function.
 - **No `build.yaml`.** Adding one changes code generation for the whole repo —

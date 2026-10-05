@@ -53,8 +53,9 @@ without re-checking.
 - [ ] No user-visible string outside the ARB files.
 
 ## Paperwork
-- [ ] `docs/wbs_BE.md` or `docs/wbs_FE.md` updated in this commit; for a screen,
-      its row in the screen handoff index too.
+- [ ] The item's Linear issue (project MemoX, ADR-021) tells the truth: state,
+      evidence, anything descoped with the reason; for a screen, its row in the
+      screen handoff index updated in this commit too.
 - [ ] Any doc the change invalidates (data model, API spec, design system) updated
       in this commit too.
 - [ ] Code reviewed.

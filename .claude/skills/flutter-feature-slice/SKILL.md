@@ -214,9 +214,9 @@ level, and their size is a reference for a slice of that weight.
 - [ ] `.claude/skills/flutter-workflow/scripts/dod_check.sh` passes.
 - [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
       (`flutter analyze` does not cover the Riverpod and layering rules).
-- [ ] `docs/wbs_BE.md` or `docs/wbs_FE.md` updated in this commit — status, and
+- [ ] The item's Linear issue (project MemoX, ADR-021) updated — status, and
       anything descoped with the reason; for a screen, its row in the screen
-      handoff index.
+      handoff index in this commit.
 - [ ] Docs the feature changed (data model, API spec, architecture decisions)
       updated in the same commit.
 - [ ] Full Definition of Done reviewed:

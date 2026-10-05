@@ -82,10 +82,10 @@ Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên:
 docs/
 ├── README.md                    # file này
 ├── glossary.md                  # thuật ngữ, trỏ về định nghĩa gốc
-├── wbs_BE.md                    # tiến độ backend: đã xong, còn lại, thứ tự làm
-├── wbs_FE.md                    # tiến độ frontend: đã xong, còn lại, thứ tự làm
-├── wbs_API.md                   # tiến độ memox-api-services: đã xong, còn lại, thứ tự làm
-├── wbs_supabase.md              # tiến độ sync và login trên Supabase: đã xong, còn lại, thứ tự làm
+├── wbs_BE.md                    # ĐÓNG BĂNG 2026-10-05 — tiến độ ở Linear (ADR-021)
+├── wbs_FE.md                    # ĐÓNG BĂNG 2026-10-05 — tiến độ ở Linear (ADR-021)
+├── wbs_API.md                   # ĐÓNG BĂNG 2026-09-28 cùng memox-api-services (ADR-015)
+├── wbs_supabase.md              # ĐÓNG BĂNG 2026-10-05 — tiến độ ở Linear (ADR-021)
 ├── shared/
 │   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu
 │   ├── decisions/               # ADR-NNN-<slug>.md

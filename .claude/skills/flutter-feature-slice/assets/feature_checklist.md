@@ -106,8 +106,8 @@ WBS task: `T<x.y>` · Use cases: `UC-xx` · Business rules: `BR-xx`
 - [ ] CI green on the PR — the same gates, plus the web build and the
       generated-code check
 - [ ] `python3.13 code-verification-guard-v2/guard/run.py check --project . --ruleset memox-v8` clean
-- [ ] `docs/wbs_BE.md` or `docs/wbs_FE.md` updated in this commit; for a screen,
-      its row in the screen handoff index
+- [ ] The item's Linear issue (project MemoX, ADR-021) updated; for a screen,
+      its row in the screen handoff index in this commit
 - [ ] Affected docs updated in this commit
 - [ ] Descoped items recorded with reasons
 - [ ] Reviewed against the full Definition of Done

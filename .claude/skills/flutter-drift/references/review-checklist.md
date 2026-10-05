@@ -145,8 +145,8 @@ second about the evidence.
       `flutter test` all pass.
 - [ ] Generated code fresh and uncommitted: `check_generated.sh` passes after a
       clean `build_runner build`.
-- [ ] `docs/shared/data/schema.md` and `docs/wbs_BE.md` updated in the same
-      commit.
+- [ ] `docs/shared/data/schema.md` updated in the same commit, and the item's
+      Linear issue (ADR-021) updated.
 
 ## Writing up findings
 

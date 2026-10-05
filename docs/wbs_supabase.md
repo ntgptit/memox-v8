@@ -1,6 +1,10 @@
 # WBS Supabase — MemoX V8
 
-- **Trạng thái:** hiện hành, sửa mỗi khi một hạng mục đổi trạng thái.
+> **Đóng băng 2026-10-05** ([ADR-021](shared/decisions/ADR-021-linear-theo-doi-tien-do.md)).
+> Tiến độ nằm trong project MemoX trên Linear, label `WBS` › `Supabase`; mỗi hạng mục
+> dưới đây là một issue có ID cũ ở đầu tiêu đề. File này chỉ còn là lịch sử.
+
+- **Trạng thái:** đóng băng 2026-10-05, không sửa nữa.
 - **Mục đích:** cho người và agent biết phần đồng bộ với server trên Supabase nào đã
   xong, phần nào còn lại và làm theo thứ tự nào.
 - **Phạm vi:** mọi thứ của sync và danh tính theo

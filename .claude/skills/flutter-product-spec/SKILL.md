@@ -48,7 +48,7 @@ Write into `docs/`. Templates are in `assets/`.
 | `docs/README.md` (mục Sản phẩm) + `docs/shared/decisions/` | Problem, users, core value, MVP scope (must/should/nice/out with completion conditions) in the README; platforms, online/offline, auth and sensitive data as ADRs | `assets/product_template.md` |
 | `docs/features/<feature>/usecases/` | One file per use case (`UC-<DOMAIN>-NNN-<slug>.md`), frontmatter + sections per `docs/README.md` | `assets/use_case_template.md` |
 | `docs/features/<feature>/rules/` (+ `ui.md` for validation, `data.md` for entity states) | One file per rule (`BR-<DOMAIN>-NNN-<slug>.md`) with its edge cases | `assets/business_rules_template.md` |
-| `docs/wbs_BE.md`, `docs/wbs_FE.md` | Work packages with status, dependencies and evidence, the live progress ledger; the files themselves are the format | — |
+| Linear project MemoX (ADR-021) | Work packages as issues with state, priority, dependencies and evidence, label group `WBS` (`BE`, `FE`, `Supabase`), the live progress ledger; `docs/wbs_*.md` are frozen history | — |
 | `docs/shared/decisions/` | Architecture and product decisions and their deviations, one ADR each, written as they are made | — |
 | `docs/shared/data/schema.md` | Entities, relationships, Drift schema intent, invariants | — |
 | `docs/features/<feature>/api.md` | Endpoints, request/response shapes, error format, pagination — from the first slice that calls the API (ADR-012) | — |
@@ -104,9 +104,9 @@ inline error from BR-AUTH-004 and the password field is not cleared" is.
 
 Order tasks by dependency, and let vertical slices dominate: one feature working
 end to end beats four features half-built, because only the former proves the
-architecture. `docs/wbs_BE.md` and `docs/wbs_FE.md` are then maintained for the
-life of the project as
-the progress ledger — see `flutter-workflow` for the update discipline.
+architecture. The issues of the Linear project MemoX are then maintained for
+the life of the project as the progress ledger — see `flutter-workflow` for the
+update discipline.
 
 ## When to stop
 

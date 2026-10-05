@@ -182,6 +182,5 @@ the rest into the next cycle.
 Then close the loop, which is the part usually skipped: review the KPIs against
 what you predicted, update the roadmap, **remove feature flags that have
 stabilised** (a permanent flag is permanent complexity and a permanent untested
-code path), and schedule the technical debt recorded in `docs/wbs_BE.md` and
-`docs/wbs_FE.md` rather
-than letting it accumulate silently.
+code path), and schedule the technical debt recorded in the Linear project
+MemoX rather than letting it accumulate silently.
