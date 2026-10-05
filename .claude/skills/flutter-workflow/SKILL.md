@@ -22,9 +22,11 @@ git log --oneline -10
 ```
 
 Linear is authoritative for progress ([ADR-021](../../../docs/shared/decisions/ADR-021-linear-theo-doi-tien-do.md)).
-The label group `WBS` splits it: `BE` for `domain/`, `data/` and use cases,
-`FE` for presentation, `Supabase` for sync and login on Supabase (`supabase/`,
-`lib/core/sync/`). The `docs/wbs_*.md` files are frozen history; never edit
+It has two levels: an **epic** (a parent issue labelled `Epic`, one feature or
+theme, inside a project milestone) and its **sub-issues** (the items). Each
+sub-issue carries one label of the group `WBS`: `BE` for `domain/`, `data/` and
+use cases, `FE` for presentation, `Supabase` for sync and login on Supabase
+(`supabase/`, `lib/core/sync/`). The `docs/wbs_*.md` files are frozen history; never edit
 them. A screen's row in the
 [screen handoff index](../../../docs/shared/ui/screen-handoff/00-index.md) is
 authoritative for that screen. If one is clearly stale relative to the code,
@@ -80,10 +82,16 @@ that actually catches problems.
 The item's Linear issue is In Progress, then In Review, while the branch and PR
 name its `DEV-n` (Linear's GitHub integration moves it), and Done once the PR is
 merged into `master`, with the evidence (PR, commit, tests). A screen's row in
-the screen handoff index is updated in that PR when the screen is built. New
-work is a new issue in project MemoX with its `WBS` label, named by its `DEV-n`
-only. Done means done by the Definition of Done and merged, not that the code
-first runs. If
-something was descoped or deferred, write that down on the issue with the
+the screen handoff index is updated in that PR when the screen is built. Done
+means done by the Definition of Done and merged, not that the code first runs.
+If something was descoped or deferred, write that down on the issue with the
 reason — a future session reading "done" on a half-finished item will build on
 sand.
+
+Keep the project small enough to read. New work is a sub-issue of an existing
+epic, with its `WBS` label and the epic's milestone, named by its `DEV-n` only.
+Open a new epic only for a new feature or spec — one spec, one epic — and make
+each task of its plan one sub-issue; never split a task further, and never nest
+a sub-issue under a sub-issue. A small defect found along the way goes into the
+issue in hand, or becomes a sub-issue of the nearest epic. An epic is Done when
+every sub-issue is Done or Canceled.

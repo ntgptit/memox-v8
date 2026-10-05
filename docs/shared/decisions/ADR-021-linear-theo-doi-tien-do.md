@@ -17,9 +17,20 @@ bảng dài, hai file có thể cùng ghi một hạng mục (BE-E1 và BE-E8 c�
 
 - Tiến độ công việc nằm trong project **MemoX** của team **DevelopmentTool**
   (key `DEV`) trên Linear. Mỗi hạng mục là một issue.
-- Nhóm label `WBS` thay cho từng file: `BE` (domain, data, use case), `FE`
-  (presentation), `Supabase` (sync và login trên Supabase). Mỗi issue mang đúng
-  một label của nhóm.
+- Project có hai cấp issue, không hơn:
+  - **Epic**: issue cha mang label `Epic`, gom một tính năng hoặc một chủ đề
+    (ví dụ "Học và SRS", "Sync với Supabase"), không mang label `WBS`. Epic
+    nằm trong một milestone của project (`V8.0`, `Sau V8.0`, `Sync & tài
+    khoản`) hoặc không thuộc milestone nào nếu là hạ tầng.
+  - **Hạng mục**: sub-issue của đúng một epic, cùng milestone với epic, mang
+    đúng một label của nhóm `WBS`: `BE` (domain, data, use case), `FE`
+    (presentation), `Supabase` (sync và login trên Supabase).
+- Chống tạo issue tràn lan: việc mới là sub-issue của một epic có sẵn. Chỉ mở
+  epic mới khi có một tính năng hay spec mới (một spec, một epic); các task của
+  plan cho spec đó là sub-issue của epic, mỗi task một sub-issue, không tách
+  bước nhỏ hơn. Lỗi nhỏ phát hiện trong lúc làm đi vào issue đang làm, hoặc
+  thành một sub-issue của epic gần nhất. Không tạo sub-issue của sub-issue.
+- Epic sang Done khi mọi sub-issue đã Done hoặc Canceled.
 - Trạng thái của issue thay cho cột Trạng thái: `xong` → Done (chỉ khi đạt
   Definition of Done và đã merge vào `master`); `đang làm` → In Progress, rồi
   In Review khi có PR; `chưa bắt đầu` → Todo; `bị chặn`, `hoãn`, `tạm dừng` →
@@ -28,8 +39,9 @@ bảng dài, hai file có thể cùng ghi một hạng mục (BE-E1 và BE-E8 c�
   trên issue đó.
 - Issue mới chỉ dùng mã `DEV-n` của Linear. ID cũ (`BE-03`, `FE-A2`, `SB-S8`…)
   chỉ còn ở đầu tiêu đề của 128 issue đã chuyển (DEV-6…DEV-133); BE-E1 và BE-E8
-  có ở hai file, mỗi cái thành một issue mang label `Supabase`. Nhánh và PR nhắc
-  `DEV-n` để Linear tự liên kết.
+  có ở hai file, mỗi cái thành một issue mang label `Supabase`. 128 issue này
+  được gom vào 15 epic (DEV-134…DEV-148). Nhánh và PR nhắc `DEV-n` để Linear tự
+  liên kết.
 - Ba file WBS đóng băng ngày 2026-10-05, giữ nguyên làm lịch sử: các spec và plan
   có ngày đều dẫn tới chúng.
 - Màn hình vẫn có dòng trong screen handoff index. Quyết định kiến trúc vẫn là

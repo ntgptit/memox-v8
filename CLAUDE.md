@@ -55,7 +55,7 @@ Each layer answers one question; none takes over another's.
 | The visual system | `DESIGN.md` |
 | A screen's layout, states, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
 | Known UI debt | the UI-base register (§9 of `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`) |
-| Work progress | the Linear project MemoX, team `DEV`, label group `WBS` (`BE`, `FE`, `Supabase`) ([ADR-021](docs/shared/decisions/ADR-021-linear-theo-doi-tien-do.md), `flutter-workflow`); the `docs/wbs_*.md` files are frozen history |
+| Work progress | the Linear project MemoX, team `DEV`: epics (label `Epic`) and their sub-issues (label group `WBS`: `BE`, `FE`, `Supabase`) ([ADR-021](docs/shared/decisions/ADR-021-linear-theo-doi-tien-do.md), `flutter-workflow`); the `docs/wbs_*.md` files are frozen history |
 | Plan-time rulings | the plan and its execution ledger, then the PR |
 | The agent's working preferences and lessons | Claude Code auto-memory |
 | Work in flight that moves to another session | a session handoff in `.claude/handoff/`, deleted before the merge ([docs/agent/session-handoff.md](docs/agent/session-handoff.md)) |

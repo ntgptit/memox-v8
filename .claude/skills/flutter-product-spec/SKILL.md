@@ -48,7 +48,7 @@ Write into `docs/`. Templates are in `assets/`.
 | `docs/README.md` (mục Sản phẩm) + `docs/shared/decisions/` | Problem, users, core value, MVP scope (must/should/nice/out with completion conditions) in the README; platforms, online/offline, auth and sensitive data as ADRs | `assets/product_template.md` |
 | `docs/features/<feature>/usecases/` | One file per use case (`UC-<DOMAIN>-NNN-<slug>.md`), frontmatter + sections per `docs/README.md` | `assets/use_case_template.md` |
 | `docs/features/<feature>/rules/` (+ `ui.md` for validation, `data.md` for entity states) | One file per rule (`BR-<DOMAIN>-NNN-<slug>.md`) with its edge cases | `assets/business_rules_template.md` |
-| Linear project MemoX (ADR-021) | Work packages as issues with state, priority, dependencies and evidence, label group `WBS` (`BE`, `FE`, `Supabase`), the live progress ledger; `docs/wbs_*.md` are frozen history | — |
+| Linear project MemoX (ADR-021) | Work packages as sub-issues of one epic per feature or spec (label `Epic`), with state, priority, dependencies and evidence, label group `WBS` (`BE`, `FE`, `Supabase`), the live progress ledger; `docs/wbs_*.md` are frozen history | — |
 | `docs/shared/decisions/` | Architecture and product decisions and their deviations, one ADR each, written as they are made | — |
 | `docs/shared/data/schema.md` | Entities, relationships, Drift schema intent, invariants | — |
 | `docs/features/<feature>/api.md` | Endpoints, request/response shapes, error format, pagination — from the first slice that calls the API (ADR-012) | — |
