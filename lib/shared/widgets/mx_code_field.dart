@@ -71,10 +71,15 @@ class _MxCodeFieldState extends State<MxCodeField> {
 
   BorderSide _edge(BuildContext context, int index) {
     final colors = context.colors;
-    if (widget.field.errorText != null) {
-      return BorderSide(color: colors.error, width: AppStroke.hairline);
-    }
     final isNext = _focus.hasFocus && index == _controller.text.length;
+    // A wrong code keeps the cue of the slot that takes the next digit: the
+    // same 2dp edge, in the error tone.
+    if (widget.field.errorText != null) {
+      return BorderSide(
+        color: colors.error,
+        width: isNext ? AppStroke.focus : AppStroke.hairline,
+      );
+    }
     if (isNext) {
       return BorderSide(
         color: context.derivedColors.primaryInk,
@@ -92,6 +97,7 @@ class _MxCodeFieldState extends State<MxCodeField> {
       focusNode: _focus,
       autofocus: field.isAutofocused,
       enabled: field.isEnabled,
+      readOnly: field.isReadOnly,
       onChanged: field.onChanged,
       onSubmitted: field.onSubmitted,
       textInputAction: field.textInputAction,

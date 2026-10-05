@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -39,6 +40,25 @@ void main() {
   bool isDue(WidgetTester tester) =>
       ProviderScope.containerOf(tester.element(find.byType(WelcomeScreen)))
           .read(welcomeDueProvider);
+
+  accountTest('the title names the route for TalkBack', (
+    tester,
+    env,
+    world,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    final node = tester.getSemantics(find.text(_en.appTitle));
+    expect(node.hasFlag(SemanticsFlag.namesRoute), isTrue);
+    expect(node.hasFlag(SemanticsFlag.isHeader), isTrue);
+    handle.dispose();
+  });
 
   accountTest('Continue without an account answers Welcome for good and '
       'goes on', (tester, env, world) async {

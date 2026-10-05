@@ -119,7 +119,7 @@ DESIGN.md's Inputs line for the code variant is rewritten to this.
 | Lead | `emptyBody` | "We sent a 6-digit code to", then the email on its own line in the same style at `on-surface` ink, weight 600, so a typo shows. |
 | Code | `MxTextField` (code) | `section` (24) under the lead; autofocused when the screen opens. |
 | Status line | 48 dp minimum, `grouped` (12) under the field | While waiting: "New code in 0:42" as a caption in `on-surface-variant` (no button). When the wait ends: "Resend code" (text button), as today. While verifying: `MxSpinner` in this line, so nothing below moves. While resending: the button spins, as today. |
-| Hint | `MxNote.hint` | "Check your spam folder if it hasn't arrived in a minute." |
+| Hint | `MxNote.hint` | "Not there yet? Check your spam folder." |
 | Another email | `MxButton` (text) | "Use another email" (unchanged). |
 
 No footer: the code verifies on its sixth digit, so there is no commit action.
@@ -152,7 +152,7 @@ status line says when a new code can be sent. The resend loss dialog (P3b M7) is
 | `accountCodeSentTo` (changed, no placeholder) | We sent a 6-digit code to | Mã 6 chữ số đã được gửi tới |
 | `accountResendIn` (changed) | New code in {time} | Có thể gửi mã mới sau {time} |
 | `accountCodeWrong` (changed) | That code is wrong or has expired. Check the latest email. | Mã sai hoặc đã hết hạn. Hãy xem email mới nhất. |
-| `accountCodeSpamHint` (new) | Check your spam folder if it hasn't arrived in a minute. | Nếu sau một phút chưa thấy, hãy xem thư mục spam. |
+| `accountCodeSpamHint` (new) | Not there yet? Check your spam folder. | Chưa thấy mã? Hãy xem thư mục spam. |
 
 Every other string stays.
 

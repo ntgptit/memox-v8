@@ -104,6 +104,7 @@ class WelcomeScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.gutter),
             Semantics(
               header: true,
+              namesRoute: true,
               child: Text(l10n.appTitle, style: context.textStyles.screenTitle),
             ),
             const SizedBox(height: AppSpacing.control),

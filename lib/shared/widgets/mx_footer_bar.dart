@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -9,6 +8,9 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 /// scroll, so it never overlaps content. It owns the gesture inset below
 /// itself; call sites never re-declare it. The caption steps aside while
 /// the keyboard is up.
+///
+/// The caption sits at full ink: it can carry a reason, such as the offline
+/// note (Contrast Floor Rule).
 class MxFooterBar extends StatelessWidget {
   const MxFooterBar({super.key, required this.child, this.caption});
 
@@ -48,13 +50,10 @@ class MxFooterBar extends StatelessWidget {
           children: [
             child,
             if (caption case final caption? when !isTyping)
-              Opacity(
-                opacity: AppOpacity.muted,
-                child: Text(
-                  caption,
-                  textAlign: TextAlign.center,
-                  style: context.textStyles.footerCaption,
-                ),
+              Text(
+                caption,
+                textAlign: TextAlign.center,
+                style: context.textStyles.footerCaption,
               ),
           ],
         ),

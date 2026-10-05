@@ -59,6 +59,7 @@ class MxTextField extends StatelessWidget {
     this.variant = MxTextFieldVariant.form,
     this.isEnabled = true,
     this.isAutofocused = false,
+    this.isReadOnly = false,
     this.onChanged,
     this.onSubmitted,
     this.textInputAction,
@@ -81,6 +82,7 @@ class MxTextField extends StatelessWidget {
       variant = field.variant,
       isEnabled = field.isEnabled,
       isAutofocused = field.isAutofocused,
+      isReadOnly = field.isReadOnly,
       onChanged = field.onChanged,
       onSubmitted = field.onSubmitted,
       textInputAction = field.textInputAction,
@@ -102,6 +104,9 @@ class MxTextField extends StatelessWidget {
 
   /// Takes the focus when first shown, such as the sign-in code.
   final bool isAutofocused;
+
+  /// Shows the value but takes no input, such as a code being checked.
+  final bool isReadOnly;
   final ValueChanged<String>? onChanged;
 
   /// The keyboard's action key (Done, Next…) was pressed.
@@ -276,6 +281,7 @@ class MxTextField extends StatelessWidget {
       focusNode: focusNode,
       autofocus: isAutofocused,
       enabled: isEnabled,
+      readOnly: isReadOnly,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       textInputAction: textInputAction,

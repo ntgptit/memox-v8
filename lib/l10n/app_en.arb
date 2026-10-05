@@ -6878,7 +6878,7 @@
   "@accountUseAnotherEmail": {
     "description": "Screen 31: back to the email."
   },
-  "accountCodeSpamHint": "Check your spam folder if it hasn't arrived in a minute.",
+  "accountCodeSpamHint": "Not there yet? Check your spam folder.",
   "@accountCodeSpamHint": {
     "description": "Screen 31: the footnote under the code."
   },

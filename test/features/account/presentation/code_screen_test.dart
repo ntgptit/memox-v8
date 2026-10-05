@@ -1,14 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/account_harness.dart';
@@ -46,6 +49,63 @@ void main() {
 
     expect(signIns, 1);
     expect(find.text(_en.accountSignedInAs('a@example.com')), findsOneWidget);
+  });
+
+  accountTest('the title names the route for TalkBack', (
+    tester,
+    env,
+    world,
+  ) async {
+    await world.coordinator.requestCode('a@example.com');
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    final node = tester.getSemantics(find.text(_en.accountCodeTitle));
+    expect(node.hasFlag(SemanticsFlag.namesRoute), isTrue);
+    expect(node.hasFlag(SemanticsFlag.isHeader), isTrue);
+    handle.dispose();
+  });
+
+  accountTest('a code being checked is read-only and its digits stay at '
+      'full ink', (tester, env, world) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    final held = world.gateway.holdRequests = Completer<void>();
+    await tester.enterText(find.byType(TextField), '123456');
+    await tester.pump();
+
+    expect(tester.widget<TextField>(find.byType(TextField)).readOnly, isTrue);
+    expect(
+      find.descendant(
+        of: find.byKey(MxCodeField.slotKey(0)),
+        matching: find.text('1'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.ancestor(
+        of: find.byKey(MxCodeField.slotKey(0)),
+        matching: find.byWidgetPredicate(
+          (w) => w is Opacity && w.opacity == AppOpacity.disabled,
+        ),
+      ),
+      findsNothing,
+    );
+
+    held.complete();
+    world.gateway.holdRequests = null;
+    await _settle(tester);
   });
 
   accountTest('a wrong code clears the field and says so; the right one then '

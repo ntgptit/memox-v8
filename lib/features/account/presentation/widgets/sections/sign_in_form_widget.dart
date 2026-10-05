@@ -154,6 +154,10 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
     final eyebrow = isReauth ? widget.initialEmail : null;
     // Plan ruling 6: only a link waits for the account to be ready.
     final isWaiting = !widget.isEnabled && widget.purpose == SignInPurpose.link;
+    // A re-auth and a prefilled target already hold their address: only an
+    // empty one takes the keyboard.
+    final isAutofocused =
+        widget.isEnabled && !isReauth && (widget.initialEmail ?? '').isEmpty;
     return MxAppShell(
       appBar: widget.appBar,
       body: MxScreenScroll(
@@ -164,6 +168,7 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
           ],
           Semantics(
             header: true,
+            namesRoute: true,
             child: Text(
               isReauth ? l10n.accountReauthTitle : l10n.accountSignIn,
               style: styles.screenTitle,
@@ -186,6 +191,7 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
             label: l10n.accountEmail,
             hintText: l10n.accountEmailHint,
             isEnabled: widget.isEnabled,
+            isAutofocused: isAutofocused,
             textInputAction: TextInputAction.send,
             onSubmitted: canAct ? (_) => unawaited(_send()) : null,
             errorText: fieldProblem == null

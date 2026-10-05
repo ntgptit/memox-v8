@@ -1324,7 +1324,7 @@
   "accountResend": "Gửi lại mã",
   "accountCodeResent": "Mã mới đang được gửi tới.",
   "accountUseAnotherEmail": "Dùng email khác",
-  "accountCodeSpamHint": "Nếu sau một phút chưa thấy, hãy xem thư mục spam.",
+  "accountCodeSpamHint": "Chưa thấy mã? Hãy xem thư mục spam.",
   "accountTakenEmail": "{email} đã có tài khoản",
   "accountTakenGoogle": "Tài khoản Google này đã được dùng",
   "accountMerge": "Gộp vào tài khoản",

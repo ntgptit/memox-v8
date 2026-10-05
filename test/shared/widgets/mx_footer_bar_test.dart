@@ -63,7 +63,7 @@ void main() {
     );
   });
 
-  testWidgets('the caption sits under the action, centred at 0.7', (
+  testWidgets('the caption sits under the action, centred at full ink', (
     tester,
   ) async {
     await pumpMx(
@@ -79,15 +79,11 @@ void main() {
       greaterThan(tester.getBottomLeft(find.byType(MxButton)).dy),
     );
     expect(
-      tester
-          .widget<Opacity>(
-            find.ancestor(
-              of: find.text('12 cards selected'),
-              matching: find.byType(Opacity),
-            ),
-          )
-          .opacity,
-      0.7,
+      find.descendant(
+        of: find.byType(MxFooterBar),
+        matching: find.byType(Opacity),
+      ),
+      findsNothing,
     );
     expect(
       tester.widget<Text>(find.text('12 cards selected')).textAlign,

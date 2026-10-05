@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -61,6 +62,40 @@ void main() {
     expect(find.text(_en.accountEmail), findsOneWidget);
     expect(find.text(_en.accountEmailHint), findsOneWidget);
     expect(find.text(_en.accountOfflineNote), findsNothing);
+  });
+
+  accountTest('the title names the route for TalkBack', (
+    tester,
+    env,
+    world,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    final node = tester.getSemantics(find.text(_en.accountSignIn));
+    expect(node.hasFlag(SemanticsFlag.namesRoute), isTrue);
+    expect(node.hasFlag(SemanticsFlag.isHeader), isTrue);
+    handle.dispose();
+  });
+
+  accountTest('linking focuses the empty address', (tester, env, world) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+    await tester.pump();
+
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isTrue,
+    );
   });
 
   accountTest('a re-auth whose address is not known yet shows no eyebrow, '
@@ -204,6 +239,11 @@ void main() {
       findsOneWidget,
     );
     expect(find.text(_en.accountOfflineNote), findsOneWidget);
+    await tester.pump();
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isFalse,
+    );
   });
 
   group('reauth', () {
@@ -257,6 +297,14 @@ void main() {
       expect(find.text(_en.accountReauthLine), findsOneWidget);
       expect(find.text('a@example.com'), findsNWidgets(2));
       expect(_button(tester, _en.accountSendCode).onPressed, isNotNull);
+      await tester.pump();
+      expect(
+        tester
+            .widget<EditableText>(find.byType(EditableText))
+            .focusNode
+            .hasFocus,
+        isFalse,
+      );
     });
 
     accountTest('another address with changes unsent asks, then sends', (

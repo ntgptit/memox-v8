@@ -104,6 +104,7 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
       children: [
         Semantics(
           header: true,
+          namesRoute: true,
           child: Text(l10n.accountCodeTitle, style: styles.screenTitle),
         ),
         const SizedBox(height: AppSpacing.control),
@@ -115,7 +116,7 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
           variant: MxTextFieldVariant.code,
           label: l10n.accountCodeLabel,
           isAutofocused: true,
-          isEnabled: !state.isVerifying,
+          isReadOnly: state.isVerifying,
           onChanged: (text) => unawaited(_changed(text)),
           errorText: problem == null ? null : signInProblemText(l10n, problem),
         ),
