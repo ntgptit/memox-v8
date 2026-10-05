@@ -31,6 +31,10 @@ class MxActionPair extends StatelessWidget {
 
   static const double _gap = AppSpacing.control;
 
+  /// The phone width The Short Label Rule measures at; a narrower window
+  /// may stack.
+  static const double _ruleWidth = 360;
+
   @override
   Widget build(BuildContext context) {
     final leading = this.leading;
@@ -49,10 +53,12 @@ class MxActionPair extends StatelessWidget {
             leading.naturalWidth(context) <= leadingShare &&
             trailing.naturalWidth(context) <= trailingShare;
         if (!fits) {
-          // Stacking answers a reader's larger text, never a long label
-          // (DESIGN.md, The Short Label Rule).
+          // Stacking answers a reader's larger text or a phone narrower
+          // than 360, never a long label (DESIGN.md, The Short Label Rule).
           assert(
-            canStack || MediaQuery.textScalerOf(context).scale(1) != 1,
+            canStack ||
+                MediaQuery.textScalerOf(context).scale(1) != 1 ||
+                MediaQuery.sizeOf(context).width < _ruleWidth,
             'A pair stacked at the default text scale: shorten '
             '"${leading.label}" or "${trailing.label}" to fit its share '
             '(DESIGN.md, The Short Label Rule).',

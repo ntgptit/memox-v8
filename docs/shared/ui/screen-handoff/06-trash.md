@@ -29,7 +29,7 @@ bar (D2). Opening it runs the auto-purge, as the app's start and every resume do
 | Rows | `MxCard` + `MxRowInk` per entry | The kind's tile (a checkbox while selecting). The name ("front · back" for a card), and the time left on the right: a warning `MxBadge` under 3 days, grey text otherwise. Then "Card · deleted {ago}" or "Deck · {n} sub-decks · {m} cards · deleted {ago}" (up to two lines), then "Was in {path}" or "Was in Top level", 8 apart. Then `⋮`. While selecting, an entry of the other kind is dimmed to 0.38. The row is one TalkBack node with every fact (D15). |
 | Kind lock | `MxNote` | "Cards and decks can't be selected together." |
 | Blocked purge | `MxInlineBanner` (warning) | One per batch the last purge skipped (D6). |
-| Bar | `MxFooterBar` + `MxActionPair` | While selecting: "Restore ({n})" (primary) · "Delete ({n})" (destructive), side by side, stacked when a label cannot fit. Both are disabled until a pick. |
+| Bar | `MxFooterBar` + `MxActionPair` | While selecting: "Restore ({n})" (primary) · "Delete ({n})" (destructive), side by side; from 1,000 selected items they may stack (see Rulings). Both are disabled until a pick. |
 | Actions | `MxBottomSheet` + `MxActionSheetCommandRow` × 2 | The name and "{kind} · deleted {ago} · was in {deck}"; "Restore…" / "Choose which deck it goes to"; "Delete permanently" / "Cannot be undone · history lost" (destructive). |
 | Restore | `MxDeckPickerSheet` | "Restore “{name}” to…" or "Restore {n} cards/decks to…", the rule, then the targets as paths, or the single "Top level" for top-level decks. With no target: "Nowhere to restore right now", why, and OK. |
 | Delete for good | `MxDialog` + `MxSheetActions.custom` | "Delete {n} cards permanently?", "They disappear for good, together with their study history. This cannot be undone.", "Keep in Trash" (primary, focused) · "Delete {n}" (destructive, spinning while it runs). |
@@ -59,7 +59,7 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 
 ## Rulings
 
-- **The Short Label Rule (DEV-169):** the pairs stay side by side in English and Vietnamese; Vietnamese reads "Xoá ({n})" in the selection bar and "Giữ lại" in the delete-for-good dialog. Exception: from 1,000 selected items the selection bar's counts no longer fit their shares and the pair stacks, since the count is what the action acts on.
+- **The Short Label Rule (DEV-169):** the pairs stay side by side in English and Vietnamese; Vietnamese reads "Xoá ({n})" in the selection bar and "Giữ lại" in the delete-for-good dialog. Exception: from 1,000 items the counts in the selection bar and in the delete-for-good dialog ("Delete {n}") no longer fit their shares and the pair stacks (`canStack`), since the count is what the action acts on.
 - **Invariant 36 (spec D6):** a blocked restore says "“X” still contains an entry deleted earlier (“Y”)" in a warning banner, one per blocked batch.
 - **P3-L8:** a restore target shows its path, as the move sheets do; targets carry no counts.
 - **BR-TRASH-006:** a deck has its own restore sheet and rule, with "Top level" for a top-level deck.

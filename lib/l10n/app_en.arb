@@ -5700,14 +5700,9 @@
     },
     "description": "Screen 05 delete dialog: the note that no card is touched (BR-TAG-008)."
   },
-  "tagsDeleteConfirm": "{count, plural, =0{Delete tag} other{Remove tag}}",
+  "tagsDeleteConfirm": "Delete tag",
   "@tagsDeleteConfirm": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen 05 delete dialog: the destructive confirm."
+    "description": "Screen 05 delete dialog: the destructive confirm; the title's verb, no count (the body states it, The Short Label Rule)."
   },
   "tagsRenameFailed": "Couldn't rename tag. Nothing changed — try again in a moment.",
   "@tagsRenameFailed": {

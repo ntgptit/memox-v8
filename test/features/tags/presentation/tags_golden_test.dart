@@ -150,7 +150,7 @@ void main() {
         before: (store) async {
           held = store..hold = Completer<void>();
           await openDelete(tester);
-          await tester.tap(find.text(_en.tagsDeleteConfirm(14)));
+          await tester.tap(find.text(_en.tagsDeleteConfirm));
           await tester.pump(const Duration(milliseconds: 300));
           await tester.pump(const Duration(milliseconds: 300));
         },
@@ -184,7 +184,7 @@ void main() {
             "DELETE FROM card_tags WHERE tag_id = 't-hay'",
           );
           await env.db.customStatement("DELETE FROM tags WHERE id = 't-hay'");
-          await tester.tap(find.text(_en.tagsDeleteConfirm(14)));
+          await tester.tap(find.text(_en.tagsDeleteConfirm));
           await tester.pumpAndSettle();
         },
       );

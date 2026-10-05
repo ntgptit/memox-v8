@@ -23,12 +23,16 @@ const double _dialogRow = 288;
 /// longest the screen shows.
 const int _count = 99999;
 
+/// Export names the deck's cards (owner ruling 2026-09-26, screen 12): it
+/// fits up to 9,999.
+const int _deckCount = 9999;
+
 /// A reset names the next cycle, two digits at most.
 const int _cycle = 99;
 
-/// A Trash selection is measured up to three digits; from 1,000 selected
-/// items the pair may stack, the exception recorded in screen 06's detail
-/// file.
+/// Trash's selection bar and delete-for-good dialog are measured up to
+/// three digits; from 1,000 items the pair may stack, the exception
+/// recorded in screen 06's detail file.
 const int _selectionCount = 999;
 
 typedef _Pair = ({
@@ -50,9 +54,15 @@ MxButton _button(String label, [IconData? icon]) => MxButton(
 );
 
 /// A dialog's Cancel and confirm, sharing the row 10 : 13 (MxSheetActions).
-_Pair _sheet(String name, MxButton cancel, MxButton confirm) => (
+/// A bottom sheet's row is the footer's.
+_Pair _sheet(
+  String name,
+  MxButton cancel,
+  MxButton confirm, {
+  bool isInSheet = false,
+}) => (
   name: name,
-  row: _dialogRow,
+  row: isInSheet ? _footerRow : _dialogRow,
   leadingFlex: 10,
   trailingFlex: 13,
   leading: cancel,
@@ -137,7 +147,7 @@ List<_Pair> _pairs(AppLocalizations l10n) {
     _sheet(
       'tag delete',
       cancel,
-      _button(l10n.tagsDeleteConfirm(_count), AppIcons.delete),
+      _button(l10n.tagsDeleteConfirm, AppIcons.delete),
     ),
     _sheet('continue without', cancel, _button(l10n.accountWithoutConfirm)),
     _sheet(
@@ -145,10 +155,54 @@ List<_Pair> _pairs(AppLocalizations l10n) {
       cancel,
       _button(l10n.trashMoveConfirm, AppIcons.delete),
     ),
+    (
+      name: 'purge',
+      row: _dialogRow,
+      leadingFlex: 12,
+      trailingFlex: 10,
+      leading: _button(l10n.trashPurgeKeep),
+      trailing: _button(
+        l10n.trashPurgeConfirm(_selectionCount),
+        AppIcons.delete,
+      ),
+    ),
     _sheet(
-      'purge',
-      _button(l10n.trashPurgeKeep),
-      _button(l10n.trashPurgeConfirm(_count), AppIcons.delete),
+      'card discard',
+      _button(l10n.cardKeepEditing),
+      _button(l10n.cardDiscard),
+    ),
+    _sheet(
+      'deck discard',
+      _button(l10n.deckKeepEditing),
+      _button(l10n.deckDiscard),
+    ),
+    _sheet('account switch', cancel, _button(l10n.accountSwitch)),
+    _sheet(
+      'account delete',
+      cancel,
+      _button(l10n.accountDelete, AppIcons.delete),
+    ),
+    _sheet(
+      'merge, discard',
+      cancel,
+      _button(l10n.accountDiscardContinue),
+      isInSheet: true,
+    ),
+    _sheet(
+      'export',
+      cancel,
+      _button(l10n.exportAction(_deckCount), AppIcons.share),
+      isInSheet: true,
+    ),
+    _footer(
+      'import, done',
+      _button(l10n.importAnother),
+      _button(l10n.importViewCards, AppIcons.cardDeck),
+    ),
+    _footer(
+      'import, back',
+      _button(l10n.importAnother),
+      _button(l10n.importBackToDeck, AppIcons.back),
     ),
   ];
 }
