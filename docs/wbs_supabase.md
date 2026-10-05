@@ -76,7 +76,7 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 | SB-O1 | Dọn và khoá project trên dashboard, một lượt: (1) thay secret key và mật khẩu database đã lộ trong phiên chat ngày 2026-09-28, cập nhật secret `SUPABASE_DB_PASSWORD` của repo và biến User env trên máy; (2) xoá dữ liệu test: user ẩn danh `208b8bc6-…` (deck "AB isolation check") và `dd6d7a13-…`, rồi xoá tay các dòng của hai user trong `deck`, `user_sync_version`, `sync_applied_op`; (3) chống tạo user ẩn danh hàng loạt: giữ giới hạn tần suất mặc định cho anonymous sign-ins, hoặc bật CAPTCHA | chưa bắt đầu | chủ dự án | — | M | Làm trước mọi hạng mục khác. Gộp SB-O2 (2) và SB-O3 (3) vào đây ngày 2026-09-28. Xác nhận (1): workflow `supabase migrations` chạy tay (`workflow_dispatch`) vẫn xanh với mật khẩu mới. (2): `deck.user_id` không có FK tới `auth.users` (spec backend Supabase §3), nên xoá user **không** kéo theo dữ liệu. (3): README `supabase/` bước 2; bật CAPTCHA thì app phải gửi token CAPTCHA khi `signInAnonymously`, là việc phía app chưa có hạng mục, nên đề xuất giữ giới hạn mặc định |
 | SB-O5 | Gate và phát hiện lệch schema trong workflow `supabase migrations`: (1) chạy `supabase db start` và `supabase test db` (pgTAP) trước `db push`, để một migration hỏng không lên project; (2) một bước `supabase db diff --linked` báo lỗi khi project có thay đổi schema làm tay trên dashboard | xong | | — | M | Gộp SB-O6 (2) vào đây ngày 2026-09-28: cùng một file workflow, và `db diff` cần Docker mà bước (1) đã khởi động. `migration list` không thay được `db diff`: nó chỉ so lịch sử migration, không thấy DDL chạy trong SQL Editor. Hiện CI (có job `supabase`) chỉ chạy tay nên không chặn được merge. Quy tắc: không sửa schema bằng SQL Editor; migration là đường duy nhất. Code: `.github/workflows/supabase-migrations.yml` (bước `pgTAP` trước `link`, bước `schema matches migrations` sau `db push`). Lần chạy đầu ([run 36388782572](https://github.com/ntgptit/memox-v8/actions/runs/36388782572)) bắt được `public.rls_auto_enable()`, hàm event trigger Supabase tạo cùng project để tự bật RLS; chủ dự án quyết miễn trừ nó (README `supabase/`). Xanh ở [run 36389329856](https://github.com/ntgptit/memox-v8/actions/runs/36389329856) (2026-09-28) |
 | SB-O7 | Sao lưu: chốt cách giữ bản sao dữ liệu trên gói Free, ví dụ workflow hằng tuần `supabase db dump --data-only` lưu thành artifact có hạn | tạm dừng | chủ dự án | SB-O1 | M | Ngày 2026-09-28 chủ dự án quyết chưa sao lưu, làm khi có người dùng thật; repo đang public nên bản dump phải mã hoá (đề xuất: workflow hằng tuần, gpg với secret `BACKUP_PASSPHRASE`, artifact giữ 30 ngày). Giả định: gói Free không có bản sao lưu tải được. Cần chủ dự án chọn nơi lưu và thời hạn; dump chứa dữ liệu người dùng nên không để ở chỗ công khai |
-| SB-O8 | Theo dõi hạn mức Free (500 MB database, 50.000 MAU, pause sau một tuần không hoạt động): một truy vấn hoặc bước CI báo cỡ database và số user | đang làm | | — | S | Số liệu hạn mức từ ADR-015 (kiểm ngày 2026-09-28). Code: `.github/workflows/supabase-usage.yml` (thứ Hai hằng tuần và chạy tay; `db query --linked` chỉ cần `SUPABASE_ACCESS_TOKEN`; đỏ ở 80% hạn mức). Số user hoạt động 30 ngày là xấp xỉ MAU. Chờ lần chạy tay đầu tiên sau merge |
+| SB-O8 | Theo dõi hạn mức Free (500 MB database, 50.000 MAU, pause sau một tuần không hoạt động): một truy vấn hoặc bước CI báo cỡ database và số user | xong | | — | S | Số liệu hạn mức từ ADR-015 (kiểm ngày 2026-09-28). Code: `.github/workflows/supabase-usage.yml` (thứ Hai hằng tuần và chạy tay; `db query --linked` chỉ cần `SUPABASE_ACCESS_TOKEN`; đỏ ở 80% hạn mức). Số user hoạt động 30 ngày là xấp xỉ MAU. Lần chạy tay đầu tiên 2026-10-05 xanh ([run 37268300749](https://github.com/ntgptit/memox-v8/actions/runs/37268300749)): database 30 MB (5%), 13 user, 13 hoạt động trong 30 ngày (0% của 50.000) |
 
 ### B. Mở rộng sync (spec sync §9 bước 4)
 
@@ -115,10 +115,11 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 
 ## Bước tiếp theo
 
-1. SB-O1 (chủ dự án, một lượt trên dashboard).
-2. SB-O8: chủ dự án chạy tay workflow `supabase usage` lần đầu trên `master`.
-3. SB-S8: kiểm dựng lại từ `since = 0` trên hai máy thật.
-4. SB-O7 tạm dừng tới khi có người dùng thật.
+1. SB-O1 (chủ dự án, một lượt trên dashboard; agent dọn dữ liệu test qua Supabase MCP
+   khi chủ dự án duyệt danh sách).
+2. SB-S8: một test trong `test_supabase/auth/` cho máy mới dựng lại đủ dữ liệu từ
+   `since = 0`.
+3. SB-O7 khi có người dùng thật.
 
 ## Ngữ cảnh cập nhật
 
@@ -163,3 +164,4 @@ Quy ước giống [`wbs_BE.md`](wbs_BE.md):
 - **Cập nhật ngày 2026-10-05:** SB-A4 xong: login bằng mã email và Google chạy trên project thật. SB-A2, SB-A3, SB-A5 chỉ còn lượt kiểm máy D1–D12 (auth spec §9.1).
 - **Cập nhật ngày 2026-10-05:** lượt kiểm máy dừng sau D1, D2, D6 (đạt về dữ liệu) và D11 (chạy ngoài ý muốn, đạt); D6 thấy F1 và F2, ghi và sửa ở SB-A7. Chủ dự án quyết viết test tự động cho các hàng dùng email trước khi kiểm tiếp; chỉ D2 (Google thật) giữ kiểm tay.
 - **Cập nhật ngày 2026-10-05:** SB-T1 xong: D1, D3–D8, D10–D12 chạy tự động trên stack local và đều đạt; kết quả ghi ở cột Result của §9.1. Cùng D2 (đạt trên máy ảo) và D9 (widget test), mọi hàng của §9.1 đã có kết quả; chủ dự án xác nhận, SB-A2, SB-A3, SB-A5 sang xong.
+- **Cập nhật ngày 2026-10-05:** SB-O8 xong: lần chạy tay đầu tiên của `supabase usage` xanh. Viết lại "Bước tiếp theo": nhóm B và C đã xong, còn SB-O1, SB-S8, SB-O7.
