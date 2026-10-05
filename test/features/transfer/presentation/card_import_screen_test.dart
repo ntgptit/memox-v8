@@ -227,8 +227,8 @@ void main() {
     },
   );
 
-  libraryTest('Cancel and the step action share the footer 1 : 1, and '
-      'stack when the action does not fit its half (DEV-169)', (
+  libraryTest('Cancel and the step action share the footer 1 : 1, side by '
+      'side at every step (DEV-169, The Short Label Rule)', (
     tester,
     env,
   ) async {
@@ -238,19 +238,22 @@ void main() {
 
     Rect rect(String label) =>
         tester.getRect(find.widgetWithText(MxButton, label));
+    void expectSideBySide(String action) {
+      expect(rect(_en.commonCancel).width, rect(action).width, reason: action);
+      expect(rect(_en.commonCancel).top, rect(action).top, reason: action);
+    }
+
     final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
     expect(pair.leadingFlex, pair.trailingFlex);
     expect(pair.leading!.tone, MxButtonTone.outline);
-    // "Read and map columns" outgrows half the phone row: Cancel on top.
-    expect(
-      rect(_en.commonCancel).bottom,
-      lessThanOrEqualTo(rect(_en.importReadAction).top),
-    );
+    expectSideBySide(_en.importReadAction);
 
     await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
-    expect(rect(_en.commonCancel).width, rect(_en.importPreviewAction).width);
-    expect(rect(_en.commonCancel).top, rect(_en.importPreviewAction).top);
+    expectSideBySide(_en.importPreviewAction);
+
+    await _tap(tester, _en.importPreviewAction);
+    expectSideBySide(_en.importCommitAction(1));
   });
 
   libraryTest('the results footer is one MxActionPair, outline first', (

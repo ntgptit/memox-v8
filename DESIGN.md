@@ -299,6 +299,8 @@ Touch targets are 48dp minimum for every interactive control, whatever the paint
 
 **The Column Rule.** Content never grows wider than 720dp; wide windows gain empty ground, not longer lines.
 
+**The Short Label Rule.** Two actions side by side (`MxActionPair`, `MxSheetActions`) stay on one row in English and Vietnamese at a 360dp phone and the default text scale. When a label does not fit its share, shorten the label first: a verb and its object, dropping what the title, the step or the caption already says ("Read and map columns" became "Map columns", "Import 12 cards" became "Import 12"). Stack the pair only when no shorter label keeps the meaning, and record that exception and its reason in the screen's detail file (owner 2026-10-05).
+
 **The Wrap Rule.** A meta line, a breakdown line, a session context line or a hint that already wraps (the study session, Study home, the Library row meta) keeps doing so between whole terms. Large text scales are not a design target (PRODUCT.md, owner 2026-09-30), so no new work goes into wrapping for them; a title keeps one line.
 
 **The Clear Tail Rule.** A list under a FAB ends clear of it (`MxScrollClearance.fab` or `fabAboveNav`); when the FAB hides (selection), the clearance goes with it.
@@ -328,7 +330,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 ### Actions
 - **MxButton**: tones primary, secondary, outline, text (no fill and no edge, Indigo Ink: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outlineEdge`.
 - **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area. **MxFab**: square 52, r16, icon only, no extended form.
-- **MxActionPair** (two footer actions, side by side or stacked when labels do not fit; a screen footer's Cancel and its action share the row 1 : 1, as Card editor and Import do, DEV-169) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
+- **MxActionPair** (two footer actions, side by side; stacked only as the last resort of The Short Label Rule; a screen footer's Cancel and its action share the row 1 : 1, as Card editor and Import do, DEV-169) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
 
 ### Containers
 - **MxCard**: raised (surface-container-lowest, r12, whisper shadow or dark ghost edge), plus hero, warning, success, danger and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
@@ -362,7 +364,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Do** write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.
 - **Do** use `mastery` and `success` green only for mastery and success, and route mastery fills through `MasteryRamp`.
 - **Do** state a number once per screen (critique 2026-09-30 part 3b). A number lives in the element that explains it: a hero, a tile, a filter chip or the app bar title. A hero figure is not repeated in a list, a legend or a second tile.
-  - A button names the action; it carries a count only when that count is what the action acts on and nothing else states that total: "Study this deck · 4 due" (the hero lists the parts), "Import 1 card", "Review 12 due cards", a bulk action's "({n})".
+  - A button names the action; it carries a count only when that count is what the action acts on and nothing else states that total: "Study this deck · 4 due" (the hero lists the parts), "Import 12", "Review 12 due cards", a bulk action's "({n})".
   - A caption under a button never repeats the button's number.
   - A list header counts only when no hero, title or chip above states the same number.
   - While selecting, the selected count lives in the app bar title only.
@@ -378,6 +380,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Don't** use violet or green as decoration, or green for anything but progress and success.
 - **Don't** tint shadows with the brand colour, and don't add elevation where a hairline groups the content.
 - **Don't** add hover states (Android only) or a global text style for one component.
+- **Don't** stack a pair of actions to make room for a long label; shorten the label (The Short Label Rule).
 - **Don't** put text below 12px (the 9px donut label is the sole exception, inside a fixed ring) or a fixed height around text.
 - **Don't** put failure copy in a component, or word a load failure as though data was lost.
 - **Don't** introduce an all-caps overline above headings as decoration; the section label introduces a list or settings group, the eyebrow is the one context line above a title or number, and user data is never upper-cased.

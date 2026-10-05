@@ -3664,7 +3664,7 @@
   "@importIncludeDuplicatesBody": {
     "description": "Import preview: what the duplicate toggle does."
   },
-  "importReadAction": "Read and map columns",
+  "importReadAction": "Map columns",
   "@importReadAction": {
     "description": "Import commit bar: step 1 → 2."
   },
@@ -3672,14 +3672,14 @@
   "@importPreviewAction": {
     "description": "Import commit bar: step 2 → 3."
   },
-  "importCommitAction": "{count, plural, =1{Import 1 card} other{Import {count} cards}}",
+  "importCommitAction": "{count, plural, other{Import {count}}}",
   "@importCommitAction": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Import commit bar: step 3 → 4."
+    "description": "Import commit bar: step 3 → 4. No noun: the screen title says cards, and the label must fit half the footer row (DESIGN.md, The Short Label Rule)."
   },
   "importCommitting": "Importing…",
   "@importCommitting": {
