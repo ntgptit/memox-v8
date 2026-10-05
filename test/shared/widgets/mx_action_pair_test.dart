@@ -54,8 +54,29 @@ void main() {
     expect(study.width / done.width, closeTo(5 / 6, 0.02));
   });
 
-  testWidgets('a label that cannot fit its share stacks the pair, leading on '
-      'top, full width, 8 apart', (tester) async {
+  testWidgets('at a larger text scale a label that cannot fit its share '
+      'stacks the pair, leading on top, full width, 8 apart', (tester) async {
+    await pumpMx(
+      tester,
+      _bar(
+        MxActionPair(
+          leading: _button('Học lại bộ thẻ này', icon: Icons.play_arrow),
+          trailing: _button('Xoá vĩnh viễn khỏi thùng rác', icon: Icons.delete),
+        ),
+      ),
+      textScale: 1.3,
+    );
+    final top = tester.getRect(_labelled('Học lại bộ thẻ này'));
+    final bottom = tester.getRect(_labelled('Xoá vĩnh viễn khỏi thùng rác'));
+
+    expect(top.width, 328);
+    expect(bottom.width, 328);
+    expect(bottom.top - top.bottom, 8);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('at the default text scale a label too long for its share '
+      'fails: shorten it first (The Short Label Rule)', (tester) async {
     await pumpMx(
       tester,
       _bar(
@@ -65,13 +86,8 @@ void main() {
         ),
       ),
     );
-    final top = tester.getRect(_labelled('Học lại bộ thẻ này'));
-    final bottom = tester.getRect(_labelled('Xoá vĩnh viễn khỏi thùng rác'));
 
-    expect(top.width, 328);
-    expect(bottom.width, 328);
-    expect(bottom.top - top.bottom, 8);
-    expect(tester.takeException(), isNull);
+    expect(tester.takeException(), isAssertionError);
   });
 
   testWidgets('no leading: the trailing button alone, full width', (

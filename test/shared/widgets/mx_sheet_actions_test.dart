@@ -214,9 +214,8 @@ void main() {
     expect(find.text('Cancel'), findsNothing);
   });
 
-  testWidgets('labels too long for their shares stack the pair', (
-    tester,
-  ) async {
+  testWidgets('at a larger text scale labels too long for their shares '
+      'stack the pair', (tester) async {
     await pumpMx(
       tester,
       _width(
@@ -229,6 +228,7 @@ void main() {
           onConfirm: () {},
         ),
       ),
+      textScale: 1.3,
     );
     final cancel = tester.getRect(_button('Giữ lại tất cả'));
     final confirm = tester.getRect(_button('Xoá vĩnh viễn 12 thẻ'));
@@ -259,19 +259,22 @@ void main() {
     expect(cancel.height, confirm.height);
   });
 
-  testWidgets('an even split stacks a label too long for its half, both '
-      'full width', (tester) async {
+  testWidgets('at a larger text scale an even split stacks a label too long '
+      'for its half, both full width (The Short Label Rule)', (tester) async {
     const long = 'Discard and continue with everything';
     await pumpMx(
       tester,
-      SizedBox(
-        width: 328,
-        child: MxSheetActions(
-          cancelLabel: 'Cancel',
-          onCancel: () {},
-          confirmLabel: long,
-          onConfirm: () {},
-          isEvenSplit: true,
+      MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
+        child: SizedBox(
+          width: 328,
+          child: MxSheetActions(
+            cancelLabel: 'Cancel',
+            onCancel: () {},
+            confirmLabel: long,
+            onConfirm: () {},
+            isEvenSplit: true,
+          ),
         ),
       ),
     );

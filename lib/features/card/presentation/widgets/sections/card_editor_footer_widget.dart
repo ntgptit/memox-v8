@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
 /// The editor's save bar (kit 08/09): an inline banner after a failed save,
-/// Cancel and the save button, and the caption line (ruling P4a-L3).
+/// Cancel and the save button sharing the row 1 : 1 as every footer pair
+/// does (DEV-169), and the caption line (ruling P4a-L3).
 class CardEditorFooterWidget extends StatelessWidget {
   const CardEditorFooterWidget({
     super.key,
@@ -45,24 +47,22 @@ class CardEditorFooterWidget extends StatelessWidget {
               message: l10n.cardSaveFailedBody,
               isInCommitBar: true,
             ),
-          Row(
-            spacing: AppSpacing.control,
-            children: [
-              MxButton(
-                label: l10n.commonCancel,
-                tone: MxButtonTone.outline,
-                onPressed: onCancel,
-              ),
-              Expanded(
-                child: MxButton(
-                  label: hasFailed ? l10n.cardRetrySave : saveLabel,
-                  icon: hasFailed ? AppIcons.retry : AppIcons.check,
-                  isBlock: true,
-                  isLoading: isSaving,
-                  onPressed: onSave,
-                ),
-              ),
-            ],
+          MxActionPair(
+            leading: MxButton(
+              label: l10n.commonCancel,
+              tone: MxButtonTone.outline,
+              isBlock: true,
+              isSingleLine: true,
+              onPressed: onCancel,
+            ),
+            trailing: MxButton(
+              label: hasFailed ? l10n.cardRetrySave : saveLabel,
+              icon: hasFailed ? AppIcons.retry : AppIcons.check,
+              isBlock: true,
+              isSingleLine: true,
+              isLoading: isSaving,
+              onPressed: onSave,
+            ),
           ),
         ],
       ),

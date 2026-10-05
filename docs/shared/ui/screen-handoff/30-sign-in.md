@@ -35,7 +35,7 @@ the whole page.
 | Lead | `emptyBody`, `control` (8) under the title | Link: "Your decks stay on this phone and join the account." Target: "Sign in to the account this phone moves to." |
 | Email | `fieldLabel` + `MxTextField` (form), `section` (24) under the lead | The label "Email address" is painted above the field (`control`, 8, between) and stays the field's TalkBack name; the hint is "name@example.com". The field rests on the `outline` edge (`hasStrongEdge`, 3:1), not the ghost border (L1). Checked on send; its problem shows under the field (`MxFieldMessage`). Text keyboard (UI-base row 150). |
 | Footer | `MxFooterBar` + `MxButton` × 2, `grouped` (12) apart | "Send code" (primary, block, the form's one fill; spins while sending and never greys out for a bad address); "Continue with Google" (outline, block, G mark; spins while picking). Its failure is a toast; a cancelled pick says nothing. No "or" divider (S8). While the keyboard is up the footer keeps "Send code" alone, so a low or landscape window keeps the field in view; Google returns when the keyboard goes (DEV-168). |
-| Caption | `MxFooterBar` caption | "Signing in needs a connection. You can do it later in Settings." only while the account cannot link yet (`link` only). |
+| Caption | `MxFooterBar` caption | "Signing in needs a connection. Try later in Settings." only while the account cannot link yet (`link` only). |
 
 ### Re-auth (`mode=reauth`, P3b)
 
@@ -45,7 +45,7 @@ the whole page.
 | Title | "Sign in again". |
 | Lead | "This phone was signed out, so syncing paused. Your decks are still here." |
 | Email | Filled with the last account's email (the usual case signs in again to it). |
-| Way out | `major` (32) under the field, in the body and out of the footer's thumb path (S9): "Continue without this account" (`MxButton` text, block). Opens "Continue without this account?" · "This phone's decks from {email} are removed. Sign in to {email} later to get them back." With changes unsent, a danger `MxInlineBanner` names them: "{n} changes on this phone aren't sent and will be lost." (final review I2), with no margin below it, so the actions sit 16 under it as under a body (L3). Cancel · "Continue without this account" (destructive), an even pair (L2): the long label stacks the two, Cancel on top. Then `continueWithoutAccount()`; the layer clears; the flow lands on 23. Welcome keeps "Continue without an account": that skip removes nothing. |
+| Way out | `major` (32) under the field, in the body and out of the footer's thumb path (S9): "Continue without this account" (`MxButton` text, block). Opens "Continue without this account?" · "This phone's decks from {email} are removed. Sign in to {email} later to get them back." With changes unsent, a danger `MxInlineBanner` names them: "{n} changes on this phone aren't sent and will be lost." (final review I2), with no margin below it, so the actions sit 16 under it as under a body (L3). Cancel · "Continue" (destructive; the title asks the whole question, The Short Label Rule, DEV-169), an even pair (L2). Then `continueWithoutAccount()`; the layer clears; the flow lands on 23. Welcome keeps "Continue without an account": that skip removes nothing. |
 | Footer | As in the link table above. |
 | Another account, changes unsent | A dialog "Lose {n} changes?" · "{n} changes on this phone aren't sent and will be lost." · Cancel · "Lose {n} changes" (destructive, naming what it loses, DEV-168), an even pair (L2), then the same command with the loss confirmed (B8). The same address asks nothing. Cancel forgets the Google account picked, so the next press shows the picker again (final review I1). |
 | Code step (31) | A resend to another account names the unsent changes again, in the same dialog: a link may open 31 without passing here (P3b minor M7, which retires plan ruling 8). |
@@ -57,7 +57,7 @@ the whole page.
 | Title | `compactTitle` | "{email} already has an account" or "This Google account is already in use" (plan ruling 12). |
 | Choices | `MxOptionRow` × 2 | "Merge into the account" (selected) · "Your {n} decks and {m} cards join it." (or "This phone's decks and cards join it." when the count failed); "Discard this phone's data" · "They're removed from this phone. The account's decks come down instead." |
 | Warning | `MxInlineBanner` (danger) | "This phone's decks and progress go for good." Only while Discard is chosen (plan ruling 14). |
-| Footer | `MxSheetActions` (`isEvenSplit`) | Cancel · "Continue" (primary) or "Discard and continue" (destructive), an even pair (L2); the long label stacks them. The title starts 16 in, the edge of the rows and the banner (L4). |
+| Footer | `MxSheetActions` (`isEvenSplit`) | Cancel · "Continue" (primary) or "Discard data" (destructive), an even pair (L2) on one row (The Short Label Rule, DEV-169; it was "Discard and continue"). The title starts 16 in, the edge of the rows and the banner (L4). |
 
 A phone with no live deck skips the sheet and moves at once (R6).
 
@@ -120,7 +120,7 @@ The images are the goldens.
 
 - "Sign in" · "Your decks stay on this phone and join the account." · "Email address" (painted label) · "name@example.com" (hint) · "Send code" · "Continue with Google". "or" is gone.
 - Problems: "Enter an email address, like name@example.com." · "Too many tries. Wait a minute, then try again." · "No connection. Nothing changed; try again when you're online." · "Couldn't sign in. Nothing changed; try again."
-- Offline caption: "Signing in needs a connection. You can do it later in Settings."
+- Offline caption: "Signing in needs a connection. Try later in Settings."
 - Re-auth: "SIGNED OUT · {email}" (eyebrow) · "Sign in again" · "This phone was signed out, so syncing paused. Your decks are still here." · "Continue without this account" · "Continue without this account?"; the loss confirm "Lose {n} changes"; the dialogs as in the table above.
 - Toast: "Signed in as {email}" once `me()` confirmed the account, "Signed in" while it is still being checked; none while the account moves, such as a switch that stopped on the way, which the layer speaks for (P3b minor M2).
 - Merge sheet and layer: as in the tables above.

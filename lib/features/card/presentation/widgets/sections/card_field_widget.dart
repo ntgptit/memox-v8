@@ -34,7 +34,8 @@ class CardFieldWidget extends StatelessWidget {
   final IconData? icon;
   final bool isRequired;
 
-  /// The box the kit draws for this field: term, meaning or detail.
+  /// How the field takes its text: a term moves on at Enter, a meaning or
+  /// detail breaks the line. Every card field shares the form box.
   final MxTextFieldVariant variant;
   final FocusNode? focusNode;
   final String? errorText;

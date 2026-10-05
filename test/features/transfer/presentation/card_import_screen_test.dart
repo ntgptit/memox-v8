@@ -227,6 +227,35 @@ void main() {
     },
   );
 
+  libraryTest('Cancel and the step action share the footer 1 : 1, side by '
+      'side at every step (DEV-169, The Short Label Rule)', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(tester, env, deck.id, file: _file('front,back\nmul,water\n'));
+
+    Rect rect(String label) =>
+        tester.getRect(find.widgetWithText(MxButton, label));
+    void expectSideBySide(String action) {
+      expect(rect(_en.commonCancel).width, rect(action).width, reason: action);
+      expect(rect(_en.commonCancel).top, rect(action).top, reason: action);
+    }
+
+    final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
+    expect(pair.leadingFlex, pair.trailingFlex);
+    expect(pair.leading!.tone, MxButtonTone.outline);
+    expectSideBySide(_en.importReadAction);
+
+    await _tap(tester, _en.importSourceFile);
+    await _tap(tester, _en.importReadAction);
+    expectSideBySide(_en.importPreviewAction);
+
+    await _tap(tester, _en.importPreviewAction);
+    expectSideBySide(_en.importCommitAction(1));
+  });
+
   libraryTest('the results footer is one MxActionPair, outline first', (
     tester,
     env,

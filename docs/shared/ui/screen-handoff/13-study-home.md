@@ -42,7 +42,7 @@ Every state above is built.
   "Couldn't start the session."; the stream refreshes by itself.
 - A deck row opens that deck's Study Entry; "Library" and "Go to Library" open the
   Library root, and "Browse starter decks" the Starter Library. All navigate into the
-  Library branch, as the summary's "Study this deck" does.
+  Library branch, as the summary's "Study again" does.
 - Goldens:
   `test/features/study/presentation/goldens/study_home_{loaded,no_resume,zero,no_decks,no_cards,loading,error}_*`.
 

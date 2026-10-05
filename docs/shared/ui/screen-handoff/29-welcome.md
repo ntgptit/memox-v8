@@ -23,7 +23,7 @@ spec [2026-09-30-account-ui-design.md](../../../superpowers/specs/2026-09-30-acc
 | Name and lead | `screenTitle` + `emptyBody` | "MemoX"; "MemoX works on this phone without an account, offline too. Signing in adds:" |
 | Benefits | `MxSection` + `MxSettingsRow` × 2 | Shield "Keep your decks when you reinstall"; devices "Study on several phones". Not tappable. "Still works offline" is gone: the lead says it. |
 | Actions, can link | `MxFooterBar` + `MxButton` × 3, 12 apart | "Continue with Google" (primary, the G mark: the one fill); "Continue with email" (outline); "Continue without an account" (text). |
-| Actions, cannot link | `MxFooterBar` + `MxButton`, caption | "Continue without an account" (primary, block) alone, and the footer caption "Signing in needs a connection. You can do it later in Settings." When linking becomes possible the footer returns to the three buttons. There is no mid-page note. |
+| Actions, cannot link | `MxFooterBar` + `MxButton`, caption | "Continue without an account" (primary, block) alone, and the footer caption "Signing in needs a connection. Try later in Settings." When linking becomes possible the footer returns to the three buttons. There is no mid-page note. |
 
 Every exit answers Welcome first, then goes on: Google and "without" to `from`, email
 to Sign-in with Settings under it (P3a plan ruling 4). A Google account that belongs
@@ -51,5 +51,5 @@ The images are the goldens.
 - "MemoX" · "MemoX works on this phone without an account, offline too. Signing in adds:"
 - "Keep your decks when you reinstall" · "Study on several phones".
 - "Continue with Google" · "Continue with email" · "Continue without an account".
-- "Signing in needs a connection. You can do it later in Settings."
+- "Signing in needs a connection. Try later in Settings."
 - Toast: "Signed in as {email}" (or "Signed in").
