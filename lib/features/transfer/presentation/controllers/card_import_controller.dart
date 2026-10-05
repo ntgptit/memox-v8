@@ -85,7 +85,7 @@ class CardImportController extends _$CardImportController {
     state = CardImportDraft(sourceKind: draft.sourceKind);
   }
 
-  /// Step 1 → 2 ("Read and map columns"), or another sheet of the same
+  /// Step 1 → 2 ("Map columns"), or another sheet of the same
   /// workbook (A2): the rows are read again and mapped from their header.
   Future<void> readSource({int? sheetIndex}) async {
     final draft = _draft;

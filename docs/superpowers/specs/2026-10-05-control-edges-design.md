@@ -37,6 +37,9 @@ owns the rest of the app, and the same audit left two P3 items with it:
 - **E3 · Outline button.** Its edge holds 3:1 in light too.
 - **E4 · Dialog actions.** The pair is inset 20 dp at the sides and the bottom. The 16 dp above
   it stays, so the L3 gap is unchanged. Sheets keep 16 dp.
+  **Amended (owner, merge with DEV-169):** a pair 8 dp narrower stacked four dialogs at the
+  default text scale, against The Short Label Rule. The edge is shared the other way: the
+  dialog's title and body move to 16, and the pair keeps 16 all round (§3.5).
 - **E5 · One edge token.** Plain `outline` fails 3:1 on the sheet and dialog ground
   (`surface-container-high`): 2.92:1 light, 2.25:1 dark. So fields, the outline button and the
   six code slots all take the derived **Outline Edge**, retuned to hold everywhere.
@@ -90,18 +93,14 @@ button). The disabled outline button keeps its dimmed edge (0.38).
 
 ### 3.5 Dialog actions (`MxSheetActions`, dialog form)
 
-**Insets.** The dialog form's padding goes from 16 all round to 16 on top and 20 at the start,
-end and bottom (`gutter` on top, `card` elsewhere).
-
-**Effects.**
-- The pair lines up with the title and body (20).
-- Its bottom matches the dialog's top inset (20).
-- The gap above it stays 16 (L3).
+**Edge (as amended).** The pair keeps 16 all round. `MxDialog`'s title and body move from
+20 to 16 at the sides (20 above stays), so text and pair share one 16 edge and the pair keeps its
+width under The Short Label Rule.
 
 **Unchanged.**
+- The gap above the pair (16, L3).
 - The sheet form (8 / 16 / 16 under a ghost rule).
-- `MxSheetActions.custom` (a single OK, Trash's footer), which uses the same dialog form and
-  takes the same insets.
+- `MxSheetActions.custom` (a single OK, Trash's footer).
 
 ### 3.6 What stays on Ghost Border
 

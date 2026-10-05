@@ -113,6 +113,8 @@ class _TrashPurgeDialogWidgetState
                 ),
                 leadingFlex: _keepShare,
                 trailingFlex: _deleteShare,
+                // From 1,000 items the count outgrows its share (screen 06).
+                canStack: true,
               ),
             ),
           ],

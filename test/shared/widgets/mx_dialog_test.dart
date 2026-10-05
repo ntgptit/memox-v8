@@ -4,6 +4,7 @@ import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -68,9 +69,8 @@ void main() {
     }
   });
 
-  testWidgets('title 16/700 over a 14 body, 20 in; the route is named', (
-    tester,
-  ) async {
+  testWidgets('title 16/700 over a 14 body, 16 in and 20 down, on the action '
+      'pair\'s edge (DEV-166); the route is named', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpMx(
       tester,
@@ -85,7 +85,7 @@ void main() {
     );
     expect(
       tester.getTopLeft(find.text('Delete deck?')) - surface,
-      const Offset(20, 20),
+      const Offset(16, 20),
     );
     expect(
       tester.getSemantics(find.byType(MxDialog)),
@@ -156,5 +156,25 @@ void main() {
           .value,
       1,
     );
+  });
+
+  testWidgets('the title, the body and the action pair share one 16 edge '
+      '(DEV-166)', (tester) async {
+    await pumpMx(
+      tester,
+      MxDialog(
+        title: 'Delete deck?',
+        body: 'Its cards move to Trash.',
+        actions: MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: () {},
+          confirmLabel: 'Delete',
+          onConfirm: () {},
+        ),
+      ),
+    );
+    final edge = tester.getTopLeft(find.text('Delete deck?')).dx;
+    expect(tester.getTopLeft(find.text('Its cards move to Trash.')).dx, edge);
+    expect(tester.getTopLeft(find.widgetWithText(MxButton, 'Cancel')).dx, edge);
   });
 }

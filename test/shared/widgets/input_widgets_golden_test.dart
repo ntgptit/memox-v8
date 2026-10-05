@@ -78,10 +78,6 @@ void main() {
             variant: MxTextFieldVariant.detail,
           ),
           const MxTextField(
-            hintText: 'The meaning',
-            variant: MxTextFieldVariant.meaning,
-          ),
-          const MxTextField(
             hintText: 'The term',
             variant: MxTextFieldVariant.term,
           ),

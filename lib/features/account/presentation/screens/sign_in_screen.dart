@@ -108,7 +108,7 @@ class SignInScreen extends ConsumerWidget {
               message: l10n.accountUnsentBody(unsent),
               hasBottomMargin: false,
             ),
-      confirmLabel: l10n.accountContinueWithoutThis,
+      confirmLabel: l10n.accountWithoutConfirm,
       isDestructive: true,
       isEvenSplit: true,
     );

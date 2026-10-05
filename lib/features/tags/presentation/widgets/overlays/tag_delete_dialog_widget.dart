@@ -37,7 +37,7 @@ class TagDeleteDialogWidget extends StatelessWidget {
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(false),
-        confirmLabel: l10n.tagsDeleteConfirm(count),
+        confirmLabel: l10n.tagsDeleteConfirm,
         confirmIcon: AppIcons.delete,
         isDestructive: true,
         onConfirm: () => Navigator.of(context).pop(true),

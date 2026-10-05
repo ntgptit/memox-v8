@@ -46,6 +46,8 @@ class TrashSelectionBarWidget extends StatelessWidget {
         ),
         leadingFlex: _restoreShare,
         trailingFlex: _purgeShare,
+        // From 1,000 selected the counts outgrow their shares (screen 06).
+        canStack: true,
       ),
     );
   }
