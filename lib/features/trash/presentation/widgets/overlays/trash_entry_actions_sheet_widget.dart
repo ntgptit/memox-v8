@@ -5,6 +5,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/relative_time.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 
@@ -38,7 +39,7 @@ class TrashEntryActionsSheetWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final styles = context.textStyles;
-    final ago = trashDeletedAgo(l10n, entry.deletedAt, now);
+    final ago = l10n.ago(entry.deletedAt, now);
     final parent = trashParent(l10n, entry);
     void choose(TrashEntryAction action) => Navigator.of(context).pop(action);
     return MxBottomSheet(

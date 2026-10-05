@@ -53,6 +53,7 @@ abstract final class AppIcons {
   static const IconData lock = Icons.lock_outline; // lock
   static const IconData lockOpen = Icons.lock_open_outlined; // lock-open
   static const IconData timeout = Icons.timer_off_outlined; // timer-off
+  static const IconData studyMode = Icons.layers_outlined; // layers
   static const IconData calendar = Icons.event; // calendar
   // Monitoring (screen 28): one glyph per log level, so colour is never the
   // only cue; info and error are [info] and [alert].

@@ -13,7 +13,9 @@ import 'package:memox/features/card/domain/usecases/load_card_history_page_use_c
 import 'package:memox/features/card/presentation/providers/load_card_history_page_use_case_provider.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_history_event_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_history_scroll_widget.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
+import 'package:memox/features/card/presentation/widgets/support/card_history_rail_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
@@ -155,21 +157,15 @@ void main() {
       expect(find.text(label), findsOneWidget);
     }
     expect(find.text(_en.cardModeFill), findsOneWidget);
-    // The badge is the event's one glyph; the metadata is text (critique
-    // 2026-09-30 part 3d-2, E9).
-    for (final glyph in [
-      AppIcons.study,
-      AppIcons.progress,
-      AppIcons.calendar,
-      AppIcons.hint,
-      AppIcons.timeout,
-    ]) {
+    // The timeline's metadata carries its glyph (DEV-170): mode, hint used
+    // and time ran out each have one.
+    for (final glyph in [AppIcons.studyMode, AppIcons.hint, AppIcons.timeout]) {
       expect(
         find.descendant(
           of: find.byType(CardHistoryEventWidget),
           matching: find.byIcon(glyph),
         ),
-        findsNothing,
+        findsWidgets,
         reason: '$glyph',
       );
     }
@@ -215,11 +211,9 @@ void main() {
     await tester.pumpAndSettle();
 
     final current = find.text(
-      _en.cardHistoryCycle(2, _en.cardSchedulerEightBox).toUpperCase(),
+      _en.cardHistoryCycle(2, _en.cardSchedulerEightBox),
     );
-    final earlier = find.text(
-      _en.cardHistoryCycle(1, _en.cardSchedulerSm2).toUpperCase(),
-    );
+    final earlier = find.text(_en.cardHistoryCycle(1, _en.cardSchedulerSm2));
     expect(current, findsOneWidget);
     expect(earlier, findsOneWidget);
     expect(
@@ -355,7 +349,12 @@ void main() {
       await pumpLibraryScreen(
         tester,
         env,
-        Scaffold(body: CardHistoryEventWidget(entry: entry(kind, action))),
+        Scaffold(
+          body: CardHistoryEventWidget(
+            entry: entry(kind, action),
+            now: env.clock.now(),
+          ),
+        ),
       );
       expect(
         tester.widget<MxBadge>(find.byType(MxBadge)).tone,
@@ -368,5 +367,46 @@ void main() {
       expect(badge.label, _en.cardHistoryAction(action), reason: '$action');
       expect(find.text(_en.cardHistoryKind(kind)), findsOneWidget);
     }
+  });
+
+  libraryTest('an answer sits on the timeline: its dot in the outcome ink, '
+      'how long ago over the date (DEV-170)', (tester, env) async {
+    final now = env.clock.now();
+    final entry = ReviewHistoryEntry(
+      id: 'r',
+      generation: 1,
+      schedulerType: SchedulerType.eightBox,
+      kind: ReviewKind.scheduled,
+      mode: 'recall',
+      action: EightBoxAction.forgotten,
+      answeredAt: now.subtract(const Duration(days: 3)),
+      isTimedOut: true,
+      usedHint: null,
+      nextDueAt: null,
+      previousBox: 4,
+      nextBox: 1,
+      previousEaseFactor: null,
+      nextEaseFactor: null,
+      previousIntervalDays: null,
+      nextIntervalDays: null,
+    );
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: CardHistoryEventWidget(entry: entry, now: now),
+      ),
+    );
+
+    expect(find.text(_en.commonAgoDays(3)), findsOneWidget);
+    final rail = tester.widget<CardHistoryRailWidget>(
+      find.byType(CardHistoryRailWidget),
+    );
+    final context = tester.element(find.byType(CardHistoryEventWidget));
+    expect(rail.ink, context.derivedColors.warningInk);
+    final move = tester.widget<Text>(find.text(_en.cardHistoryBoxMove(4, 1)));
+    expect(move.style!.color, context.derivedColors.warningInk);
+    expect(find.text(_en.cardHistoryTimedOut), findsOneWidget);
+    expect(find.byIcon(AppIcons.timeout), findsOneWidget);
   });
 }

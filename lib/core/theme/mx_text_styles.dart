@@ -306,6 +306,17 @@ final class MxTextStyles {
     color: isOver ? _scheme.error : null,
   );
 
+  /// A card history move ("Box 4 → 5"): the row description at 700 in the
+  /// outcome's ink (DEV-170).
+  TextStyle historyMove(Color ink) => AppTypography.withWeight(
+    rowDescription,
+    FontWeight.w700,
+  ).copyWith(color: ink);
+
+  /// How long ago an answer was, over its date: the counter in on-surface
+  /// (DEV-170).
+  TextStyle get historyAgo => counter.copyWith(color: _scheme.onSurface);
+
   /// A removable tag's label: the tag label in primary, on its tint.
   TextStyle get removableTagLabel => tagLabel.copyWith(color: _primaryInk);
 
