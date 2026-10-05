@@ -146,8 +146,9 @@ section with nothing to say is deleted, not left empty, except
 
 Once the branch and PR name the `DEV-n`, Linear's GitHub integration sets In
 Progress, then In Review, then Done on merge. Set a state by hand only when no
-PR drives it: Backlog when blocked, Canceled, Duplicate. Every update below is
-a comment; edit the description only to correct it, never to log progress.
+PR drives it: Backlog when blocked, Canceled, Duplicate, and Done for an epic
+once every sub-issue is Done or Canceled (an epic has no PR). Every update below
+is a comment; edit the description only to correct it, never to log progress.
 
 **Done** (after the merge into `master`)
 
@@ -162,6 +163,12 @@ Done: đã merge vào `master`.
   - Golden review: <link trang review, hoặc "không đổi golden">
 - Bị cắt: <phần, lý do> (bỏ dòng nếu không có)
 - Làm sau: DEV-<n>, DEV-<m> (bỏ dòng nếu không có)
+```
+
+**Done của epic** (set by hand, after its last sub-issue closes)
+
+```markdown
+Done: mọi sub-issue đã Done hoặc Canceled (DEV-<a>…DEV-<b>).
 ```
 
 **Bị chặn** (state Backlog)
@@ -217,6 +224,7 @@ copied from [Description templates](#description-templates):
 
 - The `WBS` label, parent and milestone are chosen per issue; the templates
   leave them blank.
-- An agent may pass `template` to `save_issue` to get the default labels, but
-  still writes the full `description`: a description passed with a template
-  replaces the template body.
+- An agent passes `template` to `save_issue` only if `list_templates` shows it
+  for team DevelopmentTool; the mirror may be missing. It always passes
+  `labels` explicitly and writes the full `description`: a description passed
+  with a template replaces the template body.

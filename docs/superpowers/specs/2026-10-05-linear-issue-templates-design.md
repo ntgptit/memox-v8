@@ -181,7 +181,10 @@ A section with nothing to say is deleted, not left empty, except
 States move by themselves once the branch and PR name the `DEV-n`: Linear's
 GitHub integration sets In Progress, then In Review, then Done on merge
 (seen on DEV-154). A session sets a state by hand only when no PR drives it
-(Backlog when blocked, Canceled, Duplicate). Every update below is a comment;
+(Backlog when blocked, Canceled, Duplicate, and Done for an epic once every
+sub-issue is Done or Canceled, since an epic has no PR; its comment is
+"Done: mọi sub-issue đã Done hoặc Canceled (DEV-<a>…DEV-<b>)."). Every update
+below is a comment;
 the description is edited only to correct it, never to log progress.
 
 **Done** (after the merge into `master`)
@@ -252,9 +255,10 @@ Templates:
 
 - The `WBS` label, parent and milestone are chosen per issue, so the
   templates leave them blank.
-- Agents may pass `template` to `save_issue` to get the default labels, but
-  must still write the full `description`: a description passed with a
-  template replaces the template body.
+- Agents pass `template` to `save_issue` only if `list_templates` shows it
+  (the mirror may be missing); they always pass `labels` explicitly and write
+  the full `description`: a description passed with a template replaces the
+  template body.
 
 ## 8. Out of scope
 
