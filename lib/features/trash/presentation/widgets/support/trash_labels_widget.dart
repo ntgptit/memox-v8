@@ -31,19 +31,6 @@ String trashOrigin(AppLocalizations l10n, TrashEntry entry) =>
 String trashParent(AppLocalizations l10n, TrashEntry entry) =>
     entry.origin.isEmpty ? l10n.trashTopLevel : entry.origin.last.name;
 
-/// How long ago the entry was deleted, for "deleted {ago}".
-String trashDeletedAgo(
-  AppLocalizations l10n,
-  DateTime deletedAt,
-  DateTime now,
-) {
-  final elapsed = now.difference(deletedAt);
-  if (elapsed.inHours < 1) return l10n.trashDeletedMinutes(elapsed.inMinutes);
-  if (elapsed.inDays < 1) return l10n.trashDeletedHours(elapsed.inHours);
-  if (elapsed.inDays == 1) return l10n.trashDeletedYesterday;
-  return l10n.trashDeletedDays(elapsed.inDays);
-}
-
 /// The time until the auto-purge takes the entry (BR-TRASH-009): whole days
 /// rounded up, then hours under a day, never less than one.
 String trashTimeLeft(AppLocalizations l10n, TrashEntry entry, DateTime now) {

@@ -8,7 +8,9 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/presentation/controllers/card_history_controller.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_history_event_widget.dart';
+import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
+import 'package:memox/features/card/presentation/widgets/support/card_history_rail_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
@@ -19,10 +21,10 @@ import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 /// The card detail's scroll, ending in the card's review history
-/// (UC-CARD-002, kit 10): newest first, grouped by cycle (BR-CARD-017), with
-/// older pages on request and a line where it begins (rulings P4b-L3,
-/// P4b-L6). Each history row is its own child of the scroll, so a long
-/// history builds only the rows in view.
+/// (UC-CARD-002): a timeline, newest first, grouped by cycle (BR-CARD-017),
+/// with older pages on request and a mark where it begins (DEV-170). Each
+/// history node is its own child of the scroll, so a long history builds
+/// only the nodes in view.
 class CardHistoryScrollWidget extends ConsumerWidget {
   const CardHistoryScrollWidget({
     super.key,
@@ -50,7 +52,12 @@ class CardHistoryScrollWidget extends ConsumerWidget {
     final l10n = context.l10n;
     final provider = cardHistoryControllerProvider(cardId);
     final history = switch (ref.watch(provider)) {
-      AsyncData(:final value) => _history(context, value, () => _loadMore(ref)),
+      AsyncData(:final value) => _history(
+        context,
+        value,
+        ref.read(dayClockProvider).now(),
+        () => _loadMore(ref),
+      ),
       AsyncError(:final isLoading) => [
         MxErrorState(
           title: l10n.cardHistoryLoadErrorTitle,
@@ -73,10 +80,10 @@ class CardHistoryScrollWidget extends ConsumerWidget {
   List<Widget> _history(
     BuildContext context,
     CardHistoryView view,
+    DateTime now,
     VoidCallback onLoadMore,
   ) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final entries = view.entries;
     if (entries.isEmpty) {
       return [
@@ -95,13 +102,14 @@ class CardHistoryScrollWidget extends ConsumerWidget {
       MxListSectionHeader(label: l10n.cardHistoryNewestFirst),
       for (final (index, entry) in entries.indexed) ...[
         if (index == 0 || entries[index - 1].generation != entry.generation)
-          _CycleHeader(
+          _Marker(
             label: l10n.cardHistoryCycle(
               entry.generation,
               l10n.cardScheduler(entry.schedulerType),
             ),
+            isFirst: index == 0,
           ),
-        CardHistoryEventWidget(entry: entry),
+        CardHistoryEventWidget(entry: entry, now: now),
       ],
       if (view.hasMoreFailed)
         MxInlineBanner(
@@ -125,38 +133,51 @@ class CardHistoryScrollWidget extends ConsumerWidget {
           onPressed: onLoadMore,
         )
       else
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.control),
-          child: Text(
-            l10n.cardHistoryEnd(
-              DateFormat.yMMMd(locale).format(addedAt.toLocal()),
-            ),
-            textAlign: TextAlign.center,
-            style: styles.noteText,
+        _Marker(
+          label: l10n.cardHistoryEnd(
+            DateFormat.yMMMd(locale).format(addedAt.toLocal()),
           ),
+          isEnd: true,
         ),
     ];
   }
 }
 
-/// "Cycle n · scheduler" over one generation's answers (ruling P4b-L4).
-class _CycleHeader extends StatelessWidget {
-  const _CycleHeader({required this.label});
+/// A hollow mark on the timeline's rail (DEV-170): "Cycle n · scheduler"
+/// over one generation's answers (BR-CARD-017), or, at the end, where the
+/// history begins. A cycle mark after an answer keeps a section's space
+/// above it.
+class _Marker extends StatelessWidget {
+  const _Marker({
+    required this.label,
+    this.isFirst = false,
+    this.isEnd = false,
+  });
 
   final String label;
+  final bool isFirst;
+  final bool isEnd;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      AppSpacing.micro,
-      AppSpacing.control,
-      AppSpacing.micro,
-      AppSpacing.control,
-    ),
-    child: Text(
-      label.toUpperCase(),
-      semanticsLabel: label,
-      style: context.textStyles.overline,
-    ),
-  );
+  Widget build(BuildContext context) {
+    final styles = context.textStyles;
+    final style = isEnd ? styles.noteText : styles.fieldLabel;
+    // A cycle mark keeps a section's space from the answer above; the end
+    // mark sits close under the last answer, as the kit's does.
+    final above = switch ((isFirst, isEnd)) {
+      (true, _) => 0.0,
+      (_, true) => AppSpacing.micro,
+      _ => AppSpacing.grouped,
+    };
+    return CardHistoryRailWidget(
+      dotTop: above + CardHistoryRailWidget.dotTopOn(context, style),
+      isFirst: isFirst,
+      isLast: isEnd,
+      gap: isEnd ? 0 : AppSpacing.control,
+      child: Padding(
+        padding: EdgeInsets.only(top: above),
+        child: Text(label, style: style),
+      ),
+    );
+  }
 }

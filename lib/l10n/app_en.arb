@@ -1381,7 +1381,7 @@
         "type": "String"
       }
     },
-    "description": "Screen 06: a card row's meta line; ago is a trashDeleted* phrase."
+    "description": "Screen 06: a card row's meta line; ago is a commonAgo* phrase (RelativeTime.ago)."
   },
   "trashDeckMeta": "Deck · {subDeckCount, plural, =1{1 sub-deck} other{{subDeckCount} sub-decks}} · {cardCount, plural, =1{1 card} other{{cardCount} cards}} · deleted {ago}",
   "@trashDeckMeta": {
@@ -1396,38 +1396,56 @@
         "type": "String"
       }
     },
-    "description": "Screen 06: a deck row's meta line; ago is a trashDeleted* phrase."
+    "description": "Screen 06: a deck row's meta line; ago is a commonAgo* phrase (RelativeTime.ago)."
   },
-  "trashDeletedMinutes": "{count, plural, =0{just now} =1{1 minute ago} other{{count} minutes ago}}",
-  "@trashDeletedMinutes": {
+  "commonAgoMinutes": "{count, plural, =0{just now} =1{1 minute ago} other{{count} minutes ago}}",
+  "@commonAgoMinutes": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Screen 06: when an entry was deleted, under an hour ago."
+    "description": "How long ago, under an hour (Trash, card history)."
   },
-  "trashDeletedHours": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
-  "@trashDeletedHours": {
+  "commonAgoHours": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@commonAgoHours": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Screen 06: when an entry was deleted, under a day ago."
+    "description": "How long ago, under a day."
   },
-  "trashDeletedYesterday": "yesterday",
-  "@trashDeletedYesterday": {
-    "description": "Screen 06: when an entry was deleted, a day ago."
+  "commonAgoYesterday": "yesterday",
+  "@commonAgoYesterday": {
+    "description": "How long ago, one day."
   },
-  "trashDeletedDays": "{count} days ago",
-  "@trashDeletedDays": {
+  "commonAgoDays": "{count} days ago",
+  "@commonAgoDays": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Screen 06: when an entry was deleted, two days ago or more."
+    "description": "How long ago, two to 29 days."
+  },
+  "commonAgoMonths": "{count, plural, =1{1 month ago} other{{count} months ago}}",
+  "@commonAgoMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "How long ago, 30 days to a year, in 30-day months."
+  },
+  "commonAgoYears": "{count, plural, =1{1 year ago} other{{count} years ago}}",
+  "@commonAgoYears": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "How long ago, a year or more."
   },
   "trashWasIn": "Was in {path}",
   "@trashWasIn": {
