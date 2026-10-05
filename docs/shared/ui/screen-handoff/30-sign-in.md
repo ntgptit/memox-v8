@@ -65,8 +65,9 @@ A phone with no live deck skips the sheet and moves at once (R6).
 
 Over the whole app while a switch, sign-out, deletion or clear runs. It is not a route:
 a host above the router shows it, hides the app from TalkBack, and takes the system Back
-with priority over the router (plan ruling 9), so Back only steps from the code to the
-form inside it. The running, error and stuck states are centred in the page; the target
+with priority over the router (plan ruling 9), so Back never reaches the app beneath: it
+steps from the code to the form, and at the layer's root it does what "Cancel" does while
+Cancel shows; otherwise it is swallowed (DEV-167). The running, error and stuck states are centred in the page; the target
 sign-in follows the sign-in frame (F1 below).
 
 | Condition | Design |
@@ -108,7 +109,7 @@ The images are the goldens.
 - **R1:** no `mode=switch`: "Switch account" (32, P3b) signs in the target inside the layer.
 - **R3:** a wrong and an expired code read alike; a rate limit asks to wait a minute.
 - **B8, B9 and P3b plan rulings 3, 10:** the re-auth's loss and way out; where flows end; 13 through Settings; the way out under the form. Plan ruling 8 (no loss question on a resend) is retired by P3b minor M7.
-- **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ended on Settings (now 32, B9); text keyboard; notices as toasts; Back held by the layer; a failed count still asks; Google's title; the danger banner on Discard.
+- **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ended on Settings (now 32, B9); text keyboard; notices as toasts; Back held by the layer (at its root, Back is Cancel while Cancel shows, DEV-167); a failed count still asks; Google's title; the danger banner on Discard.
 - **Polish 2026-10-05 (DEV-168):** the footer keeps "Send code" alone while typing; the loss dialog's confirm reads "Lose {n} changes"; the re-auth eyebrow is labelled "Signed out".
 - **Layout balance 2026-10-05 (spec `2026-10-05-sign-in-layout-balance-design.md`, L1–L5):** the email field's outline edge, even confirm pairs, one gap above dialog actions, the merge sheet's one edge, and a stopped layer's actions in the footer (DEV-166, sign-in part).
 - **Impeccable after the build (F1):** the layer's content is centred, not top-aligned (spec §6); the target sign-in follows the sign-in frame; F1 holds for the running, error and stuck states, whose content stays centred while a stopped layer's actions sit in the footer (layout balance 2026-10-05, L5).

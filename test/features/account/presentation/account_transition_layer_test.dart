@@ -66,8 +66,9 @@ Future<void> _backSwipe(WidgetTester tester) async {
 }
 
 void main() {
-  accountTest('a switch covers the app, keeps Back inside, and Cancel puts '
-      'the page back (Review Focus 2)', (tester, env, world) async {
+  accountTest('a switch covers the app; Back steps from the code to the '
+      'form, then acts as Cancel and puts the page back (Review Focus 2, '
+      'DEV-167)', (tester, env, world) async {
     await _onThemePage(tester, env, world);
 
     await world.coordinator.beginSwitch(
@@ -78,10 +79,6 @@ void main() {
     expect(find.byType(SignInFormWidget), findsOneWidget);
     expect(find.text(_en.accountTargetLine), findsOneWidget);
 
-    await tester.binding.handlePopRoute();
-    await _settle(tester);
-    expect(find.byType(SignInFormWidget), findsOneWidget);
-
     await tester.tap(find.text(_en.accountSendCode));
     await _settle(tester);
     expect(find.byType(CodeFormWidget), findsOneWidget);
@@ -91,19 +88,16 @@ void main() {
     expect(find.byType(CodeFormWidget), findsNothing);
     expect(find.byType(SignInFormWidget), findsOneWidget);
 
-    await tester.tap(find.text(_en.commonCancel));
+    await tester.binding.handlePopRoute();
     await _settle(tester);
     expect(find.byType(AccountTransitionLayerWidget), findsNothing);
     expect(find.byType(ThemeScreen), findsOneWidget);
     expect(world.state, isA<Ready>());
   });
 
-  accountTest('a system back swipe under the layer never pops the page '
-      'beneath, and Back works again once the layer closes', (
-    tester,
-    env,
-    world,
-  ) async {
+  accountTest('a system back swipe at the layer root cancels it and never '
+      'pops the page beneath; Back works again once the layer closes '
+      '(DEV-167)', (tester, env, world) async {
     await _onThemePage(tester, env, world);
     await world.coordinator.beginSwitch(
       choice: TransitionChoice.discard,
@@ -112,12 +106,9 @@ void main() {
     await _settle(tester);
 
     await _backSwipe(tester);
-    expect(find.byType(SignInFormWidget), findsOneWidget);
-    expect(find.byType(ThemeScreen, skipOffstage: false), findsOneWidget);
-
-    await tester.tap(find.text(_en.commonCancel));
-    await _settle(tester);
     expect(find.byType(AccountTransitionLayerWidget), findsNothing);
+    expect(find.byType(ThemeScreen), findsOneWidget);
+    expect(world.state, isA<Ready>());
 
     await tester.binding.handlePopRoute();
     await _settle(tester);

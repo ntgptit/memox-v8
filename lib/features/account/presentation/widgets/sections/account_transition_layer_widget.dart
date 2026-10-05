@@ -31,7 +31,9 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 
 /// The transition layer (account UI spec U4, §5.4, §6): over the whole app
 /// while a switch, sign-out, deletion or clear runs. Its own navigator
-/// holds the target sign-in's code step; the host sends Back here.
+/// holds the target sign-in's code step; the host sends Back here. At the
+/// root, Back is Cancel while Cancel shows, and is swallowed otherwise
+/// (DEV-167).
 class AccountTransitionLayerWidget extends StatelessWidget {
   const AccountTransitionLayerWidget({super.key, required this.navigatorKey});
 
@@ -41,11 +43,10 @@ class AccountTransitionLayerWidget extends StatelessWidget {
   Widget build(BuildContext context) => Navigator(
     key: navigatorKey,
     onGenerateRoute: (_) => PageRouteBuilder<void>(
-      // Its root route refuses to pop, so the navigator tells Android that
+      // Its root page refuses to pop, so the navigator tells Android that
       // the framework handles Back (predictive back); the host then keeps
       // it inside the layer (P3a plan ruling 9).
-      pageBuilder: (_, _, _) =>
-          const PopScope(canPop: false, child: _LayerPage()),
+      pageBuilder: (_, _, _) => const _LayerPage(),
       transitionDuration: Duration.zero,
     ),
   );
@@ -65,6 +66,31 @@ class _LayerPage extends ConsumerWidget {
     final canCancel =
         (canCancelSwitch(transition) && !view.isStuck) ||
         (canCancelSignOut(transition) && isStopped);
+    void cancel() => unawaited(_cancel(context, ref, transition.kind));
+    return PopScope(
+      canPop: false,
+      // Back at the root does what the Cancel on screen does (DEV-167).
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop || !canCancel) return;
+        cancel();
+      },
+      child: _page(
+        context,
+        view,
+        isStopped: isStopped,
+        canCancel: canCancel,
+        cancel: cancel,
+      ),
+    );
+  }
+
+  Widget _page(
+    BuildContext context,
+    BlockingView view, {
+    required bool isStopped,
+    required bool canCancel,
+    required VoidCallback cancel,
+  }) {
     final isSigningIn = view.isAwaitingTargetSignIn && !view.isStuck;
     final appBar = canCancel
         ? MxAppBar(
@@ -75,8 +101,7 @@ class _LayerPage extends ConsumerWidget {
                 label: context.l10n.commonCancel,
                 tone: MxButtonTone.text,
                 size: MxButtonSize.small,
-                onPressed: () =>
-                    unawaited(_cancel(context, ref, transition.kind)),
+                onPressed: cancel,
               ),
             ],
           )

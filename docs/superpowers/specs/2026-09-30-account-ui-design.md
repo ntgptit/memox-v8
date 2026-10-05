@@ -144,7 +144,9 @@ takes two deliberate taps; the default stays merge (O4).
 
 Over the whole app while `Transitioning`/`Recovering` holds a Switch,
 SignOut, Delete or ClearToAnon (AnonRecovery stays silent: writes are
-allowed). `PopScope` swallows Back; the status line is a live region.
+allowed). `PopScope` keeps Back inside the layer: at its root, Back does what
+Cancel does while Cancel shows, and is swallowed otherwise (DEV-167); the
+status line is a live region.
 
 | Condition | Shows |
 |---|---|
