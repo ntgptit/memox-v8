@@ -89,7 +89,9 @@ reason — a future session reading "done" on a half-finished item will build on
 sand.
 
 Keep the project small enough to read. New work is a sub-issue of an existing
-epic, with its `WBS` label and the epic's milestone, named by its `DEV-n` only.
+epic, with its `WBS` label, a kind label and the epic's milestone, named by its
+`DEV-n` only; its title, description and comments follow
+[`references/linear-templates.md`](references/linear-templates.md).
 Open a new epic only for a new feature or spec — one spec, one epic — and make
 each task of its plan one sub-issue; never split a task further, and never nest
 a sub-issue under a sub-issue. A small defect found along the way goes into the
