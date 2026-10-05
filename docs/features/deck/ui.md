@@ -41,12 +41,12 @@ flowchart TD
     B -->|"Đổi chế độ ôn tập · chỉ root"| I{"first_answered_at"}
     I -->|"NULL"| I1["Mở khoá: cảnh báo rồi khởi tạo lại study state toàn cây, generation giữ nguyên, session đang mở → invalidated · UC-DECK-002, BR-SRS-002, BR-SRS-004, BR-STUDY-016"]
     I -->|"Đã có"| I2["Khoá, hiện kèm lối đi sang Reset learning progress · UC-DECK-002 A1, BR-SRS-003"]
-    I2 --> I3["UC-SRS-001 · mục 5"]
+    I2 --> I3["UC-SRS-001 · study/ui.md"]
 ```
 
 **Nhánh `I` là chỗ hai đối tượng gặp nhau.** Chế độ ôn tập là thuộc tính của deck
 nhưng bị khoá bởi một sự kiện của review, nên đường thoát duy nhất khi đã khoá
-nằm ở mục 5. Ẩn nó đi thay vì hiện trạng thái khoá là điều BR-SRS-003 cấm.
+nằm ở [study/ui.md](../study/ui.md). Ẩn nó đi thay vì hiện trạng thái khoá là điều BR-SRS-003 cấm.
 
 **`I1` và `I3` là hai thao tác, không phải một thao tác với hai cách gọi.** Cả hai
 ghi scheduler và khởi tạo lại toàn cây; chỉ `I3` tiêu một generation, vì chỉ nó
@@ -55,7 +55,7 @@ bị thay thế" và bắt người dùng xác nhận một cảnh báo phá hu�
 (BR-SRS-002, UC-DECK-002).
 
 **Ai đặt khoá ở `I`:** chính lần một thẻ hoàn tất chuỗi học mới, trong cùng
-transaction với lần hoàn tất đó (mục 5, bước 10–11 của UC-STUDY-001; BR-SRS-003, BR-STUDY-053).
+transaction với lần hoàn tất đó (bước 10–11 của UC-STUDY-001; BR-SRS-003, BR-STUDY-053).
 Không thao tác nào của deck ghi cột này.
 
 ## Validation

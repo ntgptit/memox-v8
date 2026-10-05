@@ -2,7 +2,7 @@
 
 Bảng, cột, index, quan hệ và các câu query bất biến (`-- N.`) của V8. Trích dẫn
 `invariant Qn` trỏ vào mục "Bất biến" dưới đây. Bảng chỉ một feature dùng nằm ở
-`data.md` của feature đó: [`deck_templates`](../../features/starter-decks/data.md),
+`data.md` của feature đó: template starter (asset JSON, [`data.md`](../../features/starter-decks/data.md)),
 [`delete_batches`](../../features/trash/data.md).
 
 **Tài liệu này, không phải bảng tóm tắt ở §5 của

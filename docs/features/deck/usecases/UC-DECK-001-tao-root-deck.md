@@ -18,7 +18,7 @@ code: [lib/features/deck/domain/usecases/create_root_deck_use_case.dart]
 2. Người dùng **chọn chế độ ôn tập**: `eight_box` hoặc `sm2` (BR-SRS-001). Bắt buộc,
    không có mặc định ngầm bỏ qua bước này.
 3. Hệ thống hiển thị mô tả ngắn cho từng chế độ, kèm lưu ý rằng chế độ sẽ bị khoá
-   sau lượt ôn đầu tiên (BR-SRS-003).
+   khi thẻ đầu tiên hoàn tất chuỗi học mới (BR-SRS-003).
 4. Người dùng xác nhận.
 5. Hệ thống validate tên (BR-DECK-020) và chế độ đã chọn.
 6. Hệ thống tạo root deck với: `parent_id = NULL`, `root_id = id`,

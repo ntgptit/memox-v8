@@ -171,7 +171,7 @@ AI agent MUST hiểu cột bên trái là ngôn ngữ rà soát; cột bên ph�
 Các mã `S-PROGRESS`, `S-DUE`, `S-LARGE` và `S-STUDY-*` có hợp đồng xác định tại
 [`agent-execution-guide.md`](agent-execution-guide.md) mục 5–6.
 
-**Tám kịch bản `DEVICE-E2E` không dùng loader nào.** Mỗi kịch bản tự dựng đúng
+**Các kịch bản `DEVICE-E2E` không dùng loader nào.** Mỗi kịch bản tự dựng đúng
 trạng thái tối thiểu nó cần, qua giao diện. Đó là điều kiện tiên quyết chứ không
 phải một bước, và nó giữ cho bộ device không mọc lại một tầng fixture thứ hai.
 

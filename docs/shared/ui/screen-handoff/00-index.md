@@ -14,7 +14,7 @@ their goldens, its rulings and its copy. The visual system is in
 
 ## Screens
 
-**States** counts the rows of the detail file's States table.
+**States** is the number of states the detail file records, most of them rows of its States table.
 
 | # | Screen | States | FE item | Status | Detail |
 |---|---|---|---|---|---|
