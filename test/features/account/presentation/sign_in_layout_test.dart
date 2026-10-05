@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
@@ -97,5 +99,36 @@ void main() {
     tester.view.resetViewInsets();
     await tester.pump();
     expect(find.text(_en.accountContinueGoogle), findsOneWidget);
+  });
+
+  accountTest('a Google pick in flight keeps its spinning button while '
+      'typing (final review M2)', (tester, env, world) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      SignInScreen(onCodeSent: (_) {}, onSignedIn: () {}),
+      overrides: accountOverrides(world),
+    );
+    final held = world.api.holdMe = Completer<void>();
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await tester.pump();
+
+    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pump();
+
+    expect(
+      tester
+          .widget<MxButton>(
+            find.widgetWithText(MxButton, _en.accountContinueGoogle),
+          )
+          .isLoading,
+      isTrue,
+    );
+
+    tester.view.resetViewInsets();
+    held.complete();
+    world.api.holdMe = null;
+    await _settle(tester);
   });
 }

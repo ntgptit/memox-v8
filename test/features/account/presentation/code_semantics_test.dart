@@ -43,29 +43,21 @@ void main() {
     handle.dispose();
   });
 
-  accountTest('Resend is announced when the wait ends', (
+  accountTest('Resend arrives as one labelled live-region button, so '
+      'TalkBack speaks it when the wait ends (final review I1)', (
     tester,
     env,
     world,
   ) async {
     final handle = tester.ensureSemantics();
     await pumpCode(tester, env, world);
-    final live = find.byWidgetPredicate(
-      (widget) =>
-          widget is Semantics && (widget.properties.liveRegion ?? false),
-    );
-    expect(live, findsNothing);
 
     await tester.pump(const Duration(seconds: 60));
 
     expect(
-      find.descendant(
-        of: live,
-        matching: find.widgetWithText(MxButton, _en.accountResend),
-      ),
-      findsOneWidget,
+      tester.getSemantics(find.widgetWithText(MxButton, _en.accountResend)),
+      isSemantics(label: _en.accountResend, isButton: true, isLiveRegion: true),
     );
-    expect(tester.getSemantics(live), isSemantics(isLiveRegion: true));
     handle.dispose();
   });
 }

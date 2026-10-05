@@ -67,8 +67,8 @@ Over the whole app while a switch, sign-out, deletion or clear runs. It is not a
 a host above the router shows it, hides the app from TalkBack, and takes the system Back
 with priority over the router (plan ruling 9), so Back never reaches the app beneath: it
 steps from the code to the form, and at the layer's root it does what "Cancel" does while
-Cancel shows; otherwise it is swallowed (DEV-167). The running, error and stuck states are centred in the page; the target
-sign-in follows the sign-in frame (F1 below).
+Cancel shows; otherwise it is swallowed (DEV-167). The running, error and stuck states are
+centred in the page; the target sign-in follows the sign-in frame (F1 below).
 
 | Condition | Design |
 |---|---|

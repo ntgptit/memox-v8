@@ -179,16 +179,17 @@ class _WaitLine extends StatelessWidget {
             l10n.accountResendIn(time),
             style: context.textStyles.footerCaption,
           ),
-          // A polite live region: TalkBack says a new code may go now
-          // (DEV-168).
-          (false, null) => Semantics(
-            container: true,
-            liveRegion: true,
-            child: MxButton(
-              label: l10n.accountResend,
-              tone: MxButtonTone.text,
-              isLoading: isResending,
-              onPressed: onResend,
+          // A polite live region on the button's own node, so TalkBack
+          // speaks its label when the wait ends (DEV-168, final review I1).
+          (false, null) => MergeSemantics(
+            child: Semantics(
+              liveRegion: true,
+              child: MxButton(
+                label: l10n.accountResend,
+                tone: MxButtonTone.text,
+                isLoading: isResending,
+                onPressed: onResend,
+              ),
             ),
           ),
         },

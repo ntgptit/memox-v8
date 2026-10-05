@@ -230,8 +230,10 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
                 onPressed: canAct ? () => unawaited(_send()) : null,
               ),
               // While typing the address, Send code is the only next step;
-              // a low window keeps the field in view (DEV-168).
-              if (!MxAppShell.isTypingOf(footerContext))
+              // a low window keeps the field in view (DEV-168). A pick in
+              // flight keeps its spinner (final review M2).
+              if (!MxAppShell.isTypingOf(footerContext) ||
+                  state.task == SignInTask.google)
                 MxButton(
                   label: l10n.accountContinueGoogle,
                   tone: MxButtonTone.outline,

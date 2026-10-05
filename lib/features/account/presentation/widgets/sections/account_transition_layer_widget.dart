@@ -164,6 +164,10 @@ class _LayerCodePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(authStateProvider, (_, next) {
       final view = blockingViewOf(next.value);
+      // Only while on top: a page already leaving must not pop the root,
+      // where Back now cancels (DEV-167, final review M4).
+      final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
+      if (!isCurrent) return;
       if (view == null || !view.isAwaitingTargetSignIn) {
         unawaited(Navigator.of(context).maybePop());
       }
