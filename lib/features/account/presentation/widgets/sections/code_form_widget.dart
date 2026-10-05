@@ -108,8 +108,16 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
           child: Text(l10n.accountCodeTitle, style: styles.screenTitle),
         ),
         const SizedBox(height: AppSpacing.control),
-        Text(l10n.accountCodeSentTo, style: styles.emptyBody),
-        Text(widget.email, style: styles.emptyBodyStrong),
+        // TalkBack reads the lead and its address as one sentence (DEV-168).
+        MergeSemantics(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(l10n.accountCodeSentTo, style: styles.emptyBody),
+              Text(widget.email, style: styles.emptyBodyStrong),
+            ],
+          ),
+        ),
         const SizedBox(height: AppSpacing.section),
         MxTextField(
           controller: _code,
@@ -171,11 +179,17 @@ class _WaitLine extends StatelessWidget {
             l10n.accountResendIn(time),
             style: context.textStyles.footerCaption,
           ),
-          (false, null) => MxButton(
-            label: l10n.accountResend,
-            tone: MxButtonTone.text,
-            isLoading: isResending,
-            onPressed: onResend,
+          // A polite live region: TalkBack says a new code may go now
+          // (DEV-168).
+          (false, null) => Semantics(
+            container: true,
+            liveRegion: true,
+            child: MxButton(
+              label: l10n.accountResend,
+              tone: MxButtonTone.text,
+              isLoading: isResending,
+              onPressed: onResend,
+            ),
           ),
         },
       ),

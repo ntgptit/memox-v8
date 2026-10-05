@@ -7122,6 +7122,19 @@
     },
     "description": "Screen 30 reauth, another account: title (Account UI spec §9 B8)."
   },
+  "accountUnsentConfirm": "Lose {count, plural, =1{1 change} other{{count} changes}}",
+  "@accountUnsentConfirm": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screens 30 and 31: the unsent-loss dialog's confirm, naming what it loses (DEV-168)."
+  },
+  "accountSignedOutLabel": "Signed out",
+  "@accountSignedOutLabel": {
+    "description": "Screen 30 in reauth mode: the eyebrow's label before the account's email, upper-cased by the screen (DEV-168)."
+  },
   "accountUnsentBody": "{count, plural, =1{1 change on this phone isn't sent and will be lost.} other{{count} changes on this phone aren't sent and will be lost.}}",
   "@accountUnsentBody": {
     "placeholders": {

@@ -125,7 +125,10 @@ void main() {
     email.value = 'a@example.com';
     await tester.pump();
 
-    expect(find.text('a@example.com'), findsNWidgets(2));
+    expect(
+      find.text('${_en.accountSignedOutLabel.toUpperCase()} · a@example.com'),
+      findsOneWidget,
+    );
   });
 
   accountTest('an address gets a code, and the code screen is next', (
@@ -332,7 +335,10 @@ void main() {
       );
 
       expect(find.text(_en.accountReauthLine), findsOneWidget);
-      expect(find.text('a@example.com'), findsNWidgets(2));
+      expect(
+        find.text('${_en.accountSignedOutLabel.toUpperCase()} · a@example.com'),
+        findsOneWidget,
+      );
       expect(_button(tester, _en.accountSendCode).onPressed, isNotNull);
       await tester.pump();
       expect(
@@ -362,7 +368,9 @@ void main() {
       await _settle(tester);
       expect(find.text(_en.accountUnsentTitle(2)), findsOneWidget);
 
-      await tester.tap(find.widgetWithText(MxButton, _en.accountContinue));
+      await tester.tap(
+        find.widgetWithText(MxButton, _en.accountUnsentConfirm(2)),
+      );
       await _settle(tester);
       expect(codesSent, ['b@example.com']);
     });

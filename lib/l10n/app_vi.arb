@@ -1378,6 +1378,8 @@
   "accountCommandFailed": "Chưa làm được. Chưa có gì thay đổi; hãy thử lại.",
   "accountReauthLine": "Điện thoại này đã bị đăng xuất nên việc đồng bộ tạm dừng. Bộ thẻ vẫn còn ở đây.",
   "accountUnsentTitle": "Mất {count} thay đổi?",
+  "accountUnsentConfirm": "Mất {count} thay đổi",
+  "accountSignedOutLabel": "Đã đăng xuất",
   "accountUnsentBody": "{count} thay đổi trên điện thoại này chưa được gửi và sẽ bị mất.",
   "accountWithoutTitle": "Tiếp tục không dùng tài khoản này?",
   "accountWithoutBody": "Bộ thẻ của {email} trên điện thoại này sẽ bị xoá. Đăng nhập lại {email} sau để lấy lại.",

@@ -59,6 +59,8 @@ class SignInFormWidget extends ConsumerStatefulWidget {
 }
 
 class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
+  static const String _separator = ' · ';
+
   late final _email = TextEditingController(text: widget.initialEmail);
 
   SignInController get _controller =>
@@ -150,8 +152,12 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
         ? state.problem
         : null;
     final isReauth = widget.purpose == SignInPurpose.reauth;
-    // S9: re-auth names the account it signs in again to.
-    final eyebrow = isReauth ? widget.initialEmail : null;
+    // S9: re-auth names the account it signs in again to, under a label so
+    // the line says why (DEV-168). The address keeps its case.
+    final email = widget.initialEmail;
+    final eyebrow = isReauth && (email ?? '').isNotEmpty
+        ? '${l10n.accountSignedOutLabel.toUpperCase()}$_separator$email'
+        : null;
     // Plan ruling 6: only a link waits for the account to be ready.
     // A Google sign-in in flight turns the account away from linking for a
     // moment: that is not waiting (final review F2).
@@ -210,26 +216,32 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
       ),
       footer: MxFooterBar(
         caption: isWaiting ? l10n.accountOfflineNote : null,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.grouped,
-          children: [
-            MxButton(
-              label: l10n.accountSendCode,
-              isBlock: true,
-              isLoading: state.task == SignInTask.email,
-              onPressed: canAct ? () => unawaited(_send()) : null,
-            ),
-            MxButton(
-              label: l10n.accountContinueGoogle,
-              tone: MxButtonTone.outline,
-              mark: googleMark,
-              isBlock: true,
-              isLoading: state.task == SignInTask.google,
-              onPressed: canAct ? () => unawaited(_google()) : null,
-            ),
-          ],
+        // The shell knows the keyboard below its Scaffold: ask from inside.
+        child: Builder(
+          builder: (footerContext) => Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.grouped,
+            children: [
+              MxButton(
+                label: l10n.accountSendCode,
+                isBlock: true,
+                isLoading: state.task == SignInTask.email,
+                onPressed: canAct ? () => unawaited(_send()) : null,
+              ),
+              // While typing the address, Send code is the only next step;
+              // a low window keeps the field in view (DEV-168).
+              if (!MxAppShell.isTypingOf(footerContext))
+                MxButton(
+                  label: l10n.accountContinueGoogle,
+                  tone: MxButtonTone.outline,
+                  mark: googleMark,
+                  isBlock: true,
+                  isLoading: state.task == SignInTask.google,
+                  onPressed: canAct ? () => unawaited(_google()) : null,
+                ),
+            ],
+          ),
         ),
       ),
     );

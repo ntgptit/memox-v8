@@ -34,20 +34,20 @@ the whole page.
 | Title | `screenTitle`, header semantics | "Sign in". |
 | Lead | `emptyBody`, `control` (8) under the title | Link: "Your decks stay on this phone and join the account." Target: "Sign in to the account this phone moves to." |
 | Email | `fieldLabel` + `MxTextField` (form), `section` (24) under the lead | The label "Email address" is painted above the field (`control`, 8, between) and stays the field's TalkBack name; the hint is "name@example.com". The field rests on the `outline` edge (`hasStrongEdge`, 3:1), not the ghost border (L1). Checked on send; its problem shows under the field (`MxFieldMessage`). Text keyboard (UI-base row 150). |
-| Footer | `MxFooterBar` + `MxButton` × 2, `grouped` (12) apart | "Send code" (primary, block, the form's one fill; spins while sending and never greys out for a bad address); "Continue with Google" (outline, block, G mark; spins while picking). Its failure is a toast; a cancelled pick says nothing. No "or" divider (S8). |
+| Footer | `MxFooterBar` + `MxButton` × 2, `grouped` (12) apart | "Send code" (primary, block, the form's one fill; spins while sending and never greys out for a bad address); "Continue with Google" (outline, block, G mark; spins while picking). Its failure is a toast; a cancelled pick says nothing. No "or" divider (S8). While the keyboard is up the footer keeps "Send code" alone, so a low or landscape window keeps the field in view; Google returns when the keyboard goes (DEV-168). |
 | Caption | `MxFooterBar` caption | "Signing in needs a connection. You can do it later in Settings." only while the account cannot link yet (`link` only). |
 
 ### Re-auth (`mode=reauth`, P3b)
 
 | Region | Design |
 |---|---|
-| Eyebrow | The refused account's email, as typed (never upper-cased), above the title. Absent when the email is unknown. |
+| Eyebrow | "SIGNED OUT · {email}": the label upper-cased, the refused account's email as typed (never upper-cased), above the title (DEV-168). Absent when the email is unknown. |
 | Title | "Sign in again". |
 | Lead | "This phone was signed out, so syncing paused. Your decks are still here." |
 | Email | Filled with the last account's email (the usual case signs in again to it). |
 | Way out | `major` (32) under the field, in the body and out of the footer's thumb path (S9): "Continue without this account" (`MxButton` text, block). Opens "Continue without this account?" · "This phone's decks from {email} are removed. Sign in to {email} later to get them back." With changes unsent, a danger `MxInlineBanner` names them: "{n} changes on this phone aren't sent and will be lost." (final review I2), with no margin below it, so the actions sit 16 under it as under a body (L3). Cancel · "Continue without this account" (destructive), an even pair (L2): the long label stacks the two, Cancel on top. Then `continueWithoutAccount()`; the layer clears; the flow lands on 23. Welcome keeps "Continue without an account": that skip removes nothing. |
 | Footer | As in the link table above. |
-| Another account, changes unsent | A dialog "Lose {n} changes?" · "{n} changes on this phone aren't sent and will be lost." · Cancel · "Continue" (destructive), an even pair (L2), then the same command with the loss confirmed (B8). The same address asks nothing. Cancel forgets the Google account picked, so the next press shows the picker again (final review I1). |
+| Another account, changes unsent | A dialog "Lose {n} changes?" · "{n} changes on this phone aren't sent and will be lost." · Cancel · "Lose {n} changes" (destructive, naming what it loses, DEV-168), an even pair (L2), then the same command with the loss confirmed (B8). The same address asks nothing. Cancel forgets the Google account picked, so the next press shows the picker again (final review I1). |
 | Code step (31) | A resend to another account names the unsent changes again, in the same dialog: a link may open 31 without passing here (P3b minor M7, which retires plan ruling 8). |
 
 ### Merge sheet (auth spec #17)
@@ -109,6 +109,7 @@ The images are the goldens.
 - **R3:** a wrong and an expired code read alike; a rate limit asks to wait a minute.
 - **B8, B9 and P3b plan rulings 3, 10:** the re-auth's loss and way out; where flows end; 13 through Settings; the way out under the form. Plan ruling 8 (no loss question on a resend) is retired by P3b minor M7.
 - **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ended on Settings (now 32, B9); text keyboard; notices as toasts; Back held by the layer; a failed count still asks; Google's title; the danger banner on Discard.
+- **Polish 2026-10-05 (DEV-168):** the footer keeps "Send code" alone while typing; the loss dialog's confirm reads "Lose {n} changes"; the re-auth eyebrow is labelled "Signed out".
 - **Layout balance 2026-10-05 (spec `2026-10-05-sign-in-layout-balance-design.md`, L1–L5):** the email field's outline edge, even confirm pairs, one gap above dialog actions, the merge sheet's one edge, and a stopped layer's actions in the footer (DEV-166, sign-in part).
 - **Impeccable after the build (F1):** the layer's content is centred, not top-aligned (spec §6); the target sign-in follows the sign-in frame; F1 holds for the running, error and stuck states, whose content stays centred while a stopped layer's actions sit in the footer (layout balance 2026-10-05, L5).
 - **Sign-in redesign 2026-10-05 (spec `2026-10-05-sign-in-flow-redesign-design.md`, S1–S10):** the page leads with its title and email field; "Send code" is the fill and Google the outline beside it (S7), the "or" divider is gone (S8), both ways sit in the footer above the keyboard (S6), the offline note is the footer caption, at full ink; the empty address takes the focus on link and target (a prefilled one, and re-auth, do not); the title names the route for TalkBack; re-auth gains the eyebrow, "Sign in again" and the way out named "Continue without this account", 32 under the field (S9); the transition layer's target sign-in uses the same frame.
@@ -119,6 +120,6 @@ The images are the goldens.
 - "Sign in" · "Your decks stay on this phone and join the account." · "Email address" (painted label) · "name@example.com" (hint) · "Send code" · "Continue with Google". "or" is gone.
 - Problems: "Enter an email address, like name@example.com." · "Too many tries. Wait a minute, then try again." · "No connection. Nothing changed; try again when you're online." · "Couldn't sign in. Nothing changed; try again."
 - Offline caption: "Signing in needs a connection. You can do it later in Settings."
-- Re-auth: "Sign in again" · "This phone was signed out, so syncing paused. Your decks are still here." · "Continue without this account" · "Continue without this account?"; the dialogs as in the table above.
+- Re-auth: "SIGNED OUT · {email}" (eyebrow) · "Sign in again" · "This phone was signed out, so syncing paused. Your decks are still here." · "Continue without this account" · "Continue without this account?"; the loss confirm "Lose {n} changes"; the dialogs as in the table above.
 - Toast: "Signed in as {email}" once `me()` confirmed the account, "Signed in" while it is still being checked; none while the account moves, such as a switch that stopped on the way, which the layer speaks for (P3b minor M2).
 - Merge sheet and layer: as in the tables above.

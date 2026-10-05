@@ -79,4 +79,23 @@ void main() {
       closeTo(16, 0.5),
     );
   });
+
+  accountTest('while the keyboard is up the footer keeps Send code alone '
+      '(DEV-168)', (tester, env, world) async {
+    tester.view.viewInsets = const FakeViewPadding(bottom: 900);
+    addTearDown(tester.view.resetViewInsets);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      SignInScreen(onCodeSent: (_) {}, onSignedIn: () {}),
+      overrides: accountOverrides(world),
+    );
+
+    expect(find.widgetWithText(MxButton, _en.accountSendCode), findsOneWidget);
+    expect(find.text(_en.accountContinueGoogle), findsNothing);
+
+    tester.view.resetViewInsets();
+    await tester.pump();
+    expect(find.text(_en.accountContinueGoogle), findsOneWidget);
+  });
 }

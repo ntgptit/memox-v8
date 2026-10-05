@@ -111,7 +111,7 @@ void main() {
 
     expect(
       widthOf(tester, _en.commonCancel),
-      widthOf(tester, _en.accountContinue),
+      widthOf(tester, _en.accountUnsentConfirm(2)),
     );
   });
 

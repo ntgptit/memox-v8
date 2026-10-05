@@ -45,7 +45,8 @@ Future<bool> confirmUnsentLoss(BuildContext context, int count) {
     context,
     title: l10n.accountUnsentTitle(count),
     body: l10n.accountUnsentBody(count),
-    confirmLabel: l10n.accountContinue,
+    // The confirm names what it loses (DEV-168).
+    confirmLabel: l10n.accountUnsentConfirm(count),
     isDestructive: true,
     isEvenSplit: true,
   );
