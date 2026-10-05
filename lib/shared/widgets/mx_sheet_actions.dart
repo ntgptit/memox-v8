@@ -66,8 +66,8 @@ class MxSheetActions extends StatelessWidget {
   /// 2026-10-05 L2).
   final bool isEvenSplit;
 
-  /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of 16
-  /// all round.
+  /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of
+  /// the dialog's 16 on top and 20 at the sides and bottom (DEV-166).
   final bool isInSheet;
   final List<Widget> children;
 
@@ -103,8 +103,15 @@ class MxSheetActions extends StatelessWidget {
             trailingFlex: isEvenSplit ? 1 : _confirmShare,
           );
     if (!isInSheet) {
+      // A dialog's pair lines up with its title and body (20), 16 under the
+      // content (L3) and 20 above the edge (DEV-166).
       return Padding(
-        padding: const EdgeInsets.all(AppSpacing.gutter),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.card,
+          AppSpacing.gutter,
+          AppSpacing.card,
+          AppSpacing.card,
+        ),
         child: row,
       );
     }

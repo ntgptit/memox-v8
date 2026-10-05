@@ -14,9 +14,8 @@ Finder _button(String label) => find.widgetWithText(MxButton, label);
 Widget _width(Widget child) => SizedBox(width: 340, child: child);
 
 void main() {
-  testWidgets('cancel outline at 1 share, confirm primary at 1.3; 16 inset', (
-    tester,
-  ) async {
+  testWidgets('cancel outline at 1 share, confirm primary at 1.3; 20 at the '
+      'sides, 16 on top (DEV-166)', (tester) async {
     await pumpMx(
       tester,
       _width(
@@ -28,12 +27,12 @@ void main() {
         ),
       ),
     );
-    // 340 − 16 − 16 − 8 = 300, split 10 : 13.
+    // 340 − 20 − 20 − 8 = 292, split 10 : 13.
     expect(
       tester.getSize(_button('Cancel')).width,
-      closeTo(300 * 10 / 23, 0.01),
+      closeTo(292 * 10 / 23, 0.01),
     );
-    expect(tester.getSize(_button('Move')).width, closeTo(300 * 13 / 23, 0.01));
+    expect(tester.getSize(_button('Move')).width, closeTo(292 * 13 / 23, 0.01));
     expect(
       tester.widget<MxButton>(_button('Cancel')).tone,
       MxButtonTone.outline,
@@ -42,7 +41,7 @@ void main() {
     expect(
       tester.getTopLeft(_button('Cancel')) -
           tester.getTopLeft(find.byType(MxSheetActions)),
-      const Offset(16, 16),
+      const Offset(20, 16),
     );
   });
 
@@ -279,5 +278,73 @@ void main() {
     final confirm = tester.getRect(_button(long));
     expect(cancel.width, confirm.width);
     expect(cancel.top, lessThan(confirm.top));
+  });
+
+  testWidgets('a dialog pair ends 20 above the dialog edge (DEV-166)', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: () {},
+          confirmLabel: 'Move',
+          onConfirm: () {},
+        ),
+      ),
+    );
+    expect(
+      tester.getBottomLeft(find.byType(MxSheetActions)).dy -
+          tester.getBottomLeft(_button('Cancel')).dy,
+      20,
+    );
+  });
+
+  testWidgets('a custom footer in a dialog takes the same insets (DEV-166)', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions.custom(
+          children: [
+            Expanded(
+              child: MxButton(label: 'OK', isBlock: true, onPressed: () {}),
+            ),
+          ],
+        ),
+      ),
+    );
+    expect(
+      tester.getTopLeft(_button('OK')) -
+          tester.getTopLeft(find.byType(MxSheetActions)),
+      const Offset(20, 16),
+    );
+  });
+
+  testWidgets('a stacked dialog pair keeps the 20 side insets (DEV-166)', (
+    tester,
+  ) async {
+    const long = 'Discard everything on this phone and continue';
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: () {},
+          confirmLabel: long,
+          onConfirm: () {},
+        ),
+      ),
+    );
+    final box = tester.getRect(find.byType(MxSheetActions));
+    final cancel = tester.getRect(_button('Cancel'));
+    final confirm = tester.getRect(_button(long));
+    expect(confirm.top, greaterThan(cancel.bottom), reason: 'stacked');
+    for (final button in [cancel, confirm]) {
+      expect(button.left - box.left, 20);
+      expect(box.right - button.right, 20);
+    }
   });
 }
