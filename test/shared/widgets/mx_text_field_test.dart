@@ -366,4 +366,32 @@ void main() {
       greaterThanOrEqualTo(48),
     );
   });
+
+  testWidgets('a strong edge rests on outline; focus and error are '
+      'unchanged (DEV-166)', (tester) async {
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 300,
+        child: MxTextField(hintText: 'Email', hasStrongEdge: true),
+      ),
+    );
+    final rest = _decoration(tester).enabledBorder! as OutlineInputBorder;
+    expect(rest.borderSide.color, scheme.outline);
+    expect(rest.borderSide.width, 1);
+    expect(_edge(_decoration(tester).focusedBorder), isNot(scheme.outline));
+
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 300,
+        child: MxTextField(
+          hintText: 'Email',
+          hasStrongEdge: true,
+          errorText: 'Wrong',
+        ),
+      ),
+    );
+    expect(_edge(_decoration(tester).enabledBorder), scheme.error);
+  });
 }

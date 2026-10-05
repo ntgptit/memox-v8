@@ -237,4 +237,47 @@ void main() {
     expect(cancel.width, confirm.width);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('an even split gives Cancel and the confirm one width and one '
+      'height (2026-10-05 L2)', (tester) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 328,
+        child: MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: () {},
+          confirmLabel: 'Continue',
+          onConfirm: () {},
+          isEvenSplit: true,
+        ),
+      ),
+    );
+    final cancel = tester.getSize(_button('Cancel'));
+    final confirm = tester.getSize(_button('Continue'));
+    expect(cancel.width, confirm.width);
+    expect(cancel.height, confirm.height);
+  });
+
+  testWidgets('an even split stacks a label too long for its half, both '
+      'full width', (tester) async {
+    const long = 'Discard and continue with everything';
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 328,
+        child: MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: () {},
+          confirmLabel: long,
+          onConfirm: () {},
+          isEvenSplit: true,
+        ),
+      ),
+    );
+    final cancel = tester.getRect(_button('Cancel'));
+    final confirm = tester.getRect(_button(long));
+    expect(cancel.width, confirm.width);
+    expect(cancel.top, lessThan(confirm.top));
+  });
 }
