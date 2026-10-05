@@ -156,8 +156,8 @@ class MxTextField extends StatelessWidget {
 
   /// The vertical padding that brings the box to its floor. A form field
   /// centres one line; a multi-line box keeps its padding, or more when
-  /// its value (or its hint, which the decorator sizes for) is shorter than
-  /// the floor, measured at [width] and the reader's text scale.
+  /// what it shows (its value, or its hint while empty) is shorter than the
+  /// floor, measured at [width] and the reader's text scale.
   double _verticalPadding(
     BuildContext context,
     double? width,
@@ -193,12 +193,14 @@ class MxTextField extends StatelessWidget {
     }
 
     final value = controller?.text ?? '';
-    // An empty value still holds one line.
+    // A typed value sizes the box alone: the hint is hidden and holds no
+    // room (maintainHintSize off), so a short value sits on the 52 floor
+    // beside the other fields. An empty value still holds one line.
     final hint = hintText;
-    final content = math.max(
-      measure(value.isEmpty ? ' ' : value, valueStyle),
-      hint == null ? 0.0 : measure(hint, hintStyle),
-    );
+    final shown = measure(value.isEmpty ? ' ' : value, valueStyle);
+    final content = value.isEmpty && hint != null
+        ? math.max(shown, measure(hint, hintStyle))
+        : shown;
     return math.max(geometry.vertical, (geometry.floor - content) / 2);
   }
 
@@ -258,6 +260,7 @@ class MxTextField extends StatelessWidget {
           : InputDecoration(
               hintText: hintText,
               hintStyle: hintStyle,
+              maintainHintSize: false,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: geometry.horizontal,
                 vertical: _verticalPadding(

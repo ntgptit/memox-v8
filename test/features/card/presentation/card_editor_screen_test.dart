@@ -15,6 +15,7 @@ import 'package:memox/features/card/presentation/screens/card_editor_screen.dart
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import 'package:memox/shared/widgets/mx_dot_overline.dart';
@@ -392,6 +393,20 @@ void main() {
     final term = tester.renderObject<RenderBox>(_field(0));
     expect(term.size.height, greaterThan(40));
     expect(tester.takeException(), isNull);
+  });
+
+  libraryTest('Cancel and Save share the footer 1 : 1, outline first '
+      '(DEV-169)', (tester, env) async {
+    final deckId = await _words(env);
+    await pumpLibraryScreen(tester, env, _create(deckId));
+
+    final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
+    expect(pair.leadingFlex, pair.trailingFlex);
+    expect(pair.leading!.tone, MxButtonTone.outline);
+    expect(pair.leading!.label, _en.commonCancel);
+    Size size(String label) =>
+        tester.getSize(find.widgetWithText(MxButton, label));
+    expect(size(_en.commonCancel).width, size(_en.cardSaveCard).width);
   });
 
   libraryTest('the front and back of a card sit on the form field\'s 52 '

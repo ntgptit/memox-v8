@@ -253,7 +253,9 @@ void main() {
     }
   });
 
-  testWidgets('a wrapping hint holds the room its words would', (tester) async {
+  testWidgets('a wrapping hint holds its room only while the box is empty', (
+    tester,
+  ) async {
     const hint = 'A clue that jogs memory without giving the answer';
     final controller = TextEditingController(text: hint);
     addTearDown(controller.dispose);
@@ -274,6 +276,10 @@ void main() {
     controller.clear();
     await tester.pump();
     expect(tester.getSize(find.byType(TextField)).height, typed);
+
+    controller.text = 'nunchi';
+    await tester.pump();
+    expect(tester.getSize(find.byType(TextField)).height, 52);
   });
 
   testWidgets('a long detail grows past its floor on the 12 padding', (

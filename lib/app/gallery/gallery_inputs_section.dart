@@ -74,10 +74,6 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
         variant: MxTextFieldVariant.detail,
       ),
       MxTextField(
-        hintText: context.l10n.galleryTheMeaning,
-        variant: MxTextFieldVariant.detail,
-      ),
-      MxTextField(
         hintText: context.l10n.galleryTheTerm,
         variant: MxTextFieldVariant.term,
       ),

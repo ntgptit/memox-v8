@@ -2542,10 +2542,6 @@
   "@galleryAnExampleSentence": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
-  "galleryTheMeaning": "The meaning",
-  "@galleryTheMeaning": {
-    "description": "Debug gallery: sample copy in the component showcase."
-  },
   "galleryTheTerm": "The term",
   "@galleryTheTerm": {
     "description": "Debug gallery: sample copy in the component showcase."

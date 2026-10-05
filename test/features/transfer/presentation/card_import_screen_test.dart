@@ -227,6 +227,32 @@ void main() {
     },
   );
 
+  libraryTest('Cancel and the step action share the footer 1 : 1, and '
+      'stack when the action does not fit its half (DEV-169)', (
+    tester,
+    env,
+  ) async {
+    final root = await env.decks.root('Korean');
+    final deck = await env.decks.sub(root.id, 'Words');
+    await _pump(tester, env, deck.id, file: _file('front,back\nmul,water\n'));
+
+    Rect rect(String label) =>
+        tester.getRect(find.widgetWithText(MxButton, label));
+    final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
+    expect(pair.leadingFlex, pair.trailingFlex);
+    expect(pair.leading!.tone, MxButtonTone.outline);
+    // "Read and map columns" outgrows half the phone row: Cancel on top.
+    expect(
+      rect(_en.commonCancel).bottom,
+      lessThanOrEqualTo(rect(_en.importReadAction).top),
+    );
+
+    await _tap(tester, _en.importSourceFile);
+    await _tap(tester, _en.importReadAction);
+    expect(rect(_en.commonCancel).width, rect(_en.importPreviewAction).width);
+    expect(rect(_en.commonCancel).top, rect(_en.importPreviewAction).top);
+  });
+
   libraryTest('the results footer is one MxActionPair, outline first', (
     tester,
     env,
