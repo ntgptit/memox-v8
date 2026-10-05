@@ -43,4 +43,8 @@ abstract final class AppSize {
   /// A screen's column never grows past this; the page ground fills the
   /// rest of a wide window (FE-C5).
   static const double contentMaxWidth = 720;
+
+  /// A node on a timeline's rail: the card history's answers and markers
+  /// (DEV-170).
+  static const double timelineDot = 14;
 }

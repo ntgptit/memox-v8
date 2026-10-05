@@ -1,90 +1,118 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
+import 'package:memox/features/card/presentation/widgets/support/card_history_rail_widget.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/relative_time.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 
-/// One answer in a card's history (kit 10, ruling P4b-L3): kind and action,
-/// when, then the values its row stored (BR-CARD-016).
+/// One answer on the card history's timeline (DEV-170, kit "Flashcard
+/// history"): a dot in the outcome's ink on the rail, then a card with the
+/// outcome, when (how long ago over the date and time), the kind, and the
+/// values its row stored (BR-CARD-016).
 class CardHistoryEventWidget extends StatelessWidget {
-  const CardHistoryEventWidget({super.key, required this.entry});
+  const CardHistoryEventWidget({
+    super.key,
+    required this.entry,
+    required this.now,
+  });
 
   final ReviewHistoryEntry entry;
+
+  /// The clock's now, for "how long ago".
+  final DateTime now;
 
   static const String _easePattern = '0.00';
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.colors;
+    final derived = context.derivedColors;
+    final styles = context.textStyles;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final action = entry.action;
     final isLapse =
         action == EightBoxAction.forgotten || action == Sm2Action.again;
     // A right answer is success, never mastery or the action Indigo
-    // (DESIGN.md; critique 2026-09-30 tone pass, T5).
-    final (tone, icon) = switch (entry.kind) {
-      _ when isLapse => (MxBadgeTone.warning, AppIcons.lapses),
-      ReviewKind.relearning => (MxBadgeTone.neutral, AppIcons.repeat),
-      _ => (MxBadgeTone.success, AppIcons.check),
+    // (DESIGN.md; critique 2026-09-30 tone pass, T5). The dot and the
+    // moves read in the same tone's ink.
+    final (tone, icon, ink) = switch (entry.kind) {
+      _ when isLapse => (
+        MxBadgeTone.warning,
+        AppIcons.lapses,
+        derived.warningInk,
+      ),
+      ReviewKind.relearning => (
+        MxBadgeTone.neutral,
+        AppIcons.repeat,
+        colors.onSurfaceVariant,
+      ),
+      _ => (MxBadgeTone.success, AppIcons.check, derived.successInk),
     };
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.control),
+    final meta = _meta(l10n, locale, ink);
+    // The dot centres on the header row, which the two-line time sets:
+    // the card's 20 interior, then the middle of those lines.
+    return CardHistoryRailWidget(
+      dotTop:
+          AppSpacing.card +
+          CardHistoryRailWidget.dotTopOn(context, styles.counter, lines: 2),
+      ink: ink,
       child: MxCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: AppSpacing.control,
           children: [
-            Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
+            Row(
               spacing: AppSpacing.control,
-              runSpacing: AppSpacing.micro,
               children: [
-                // The badge is the outcome its tone states, short enough
-                // never to wrap; the kind is text beside it and can (critique
-                // 2026-09-30 part 3d-2, E9).
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: AppSpacing.control,
-                  runSpacing: AppSpacing.micro,
-                  children: [
-                    MxBadge(
+                Expanded(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: MxBadge(
                       label: l10n.cardHistoryAction(action),
                       tone: tone,
                       icon: icon,
                     ),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
                     Text(
-                      l10n.cardHistoryKind(entry.kind),
-                      style: context.textStyles.rowTitle,
+                      l10n.ago(entry.answeredAt, now),
+                      style: styles.historyAgo,
+                    ),
+                    Text(
+                      DateFormat.MMMd(locale)
+                          .add_Hm()
+                          .format(entry.answeredAt.toLocal()),
+                      style: styles.counter,
                     ),
                   ],
                 ),
-                Text(
-                  DateFormat.MMMd(locale)
-                      .add_Hm()
-                      .format(entry.answeredAt.toLocal()),
-                  style: context.textStyles.counter,
-                ),
               ],
             ),
-            Wrap(
-              spacing: AppSpacing.grouped,
-              runSpacing: AppSpacing.micro,
-              children: [
-                // Text only: the badge is the event's one glyph (critique
-                // 2026-09-30 part 3d-2, E9).
-                for (final text in _meta(l10n, locale))
-                  Text(text, style: context.textStyles.rowDescription),
-              ],
+            Text(
+              l10n.cardHistoryKind(entry.kind),
+              style: context.texts.bodyMedium,
             ),
+            if (meta.isNotEmpty)
+              Wrap(
+                spacing: AppSpacing.grouped,
+                runSpacing: AppSpacing.micro,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: meta,
+              ),
           ],
         ),
       ),
@@ -92,26 +120,67 @@ class CardHistoryEventWidget extends StatelessWidget {
   }
 
   /// Only what the row stored; before → after only when both are stored.
-  List<String> _meta(AppLocalizations l10n, String locale) {
+  /// The moves read in the outcome's ink; the rest carry their glyph.
+  List<Widget> _meta(AppLocalizations l10n, String locale, Color ink) {
     final ease = NumberFormat(_easePattern, locale).format;
     return [
-      l10n.cardHistoryMode(entry.mode),
       if ((entry.previousBox, entry.nextBox) case (final from?, final to?))
-        l10n.cardHistoryBoxMove(from, to),
+        _Meta(text: l10n.cardHistoryBoxMove(from, to), ink: ink),
       if ((entry.previousEaseFactor, entry.nextEaseFactor) case (
         final from?,
         final to?,
       ))
-        l10n.cardHistoryEaseMove(ease(from), ease(to)),
+        _Meta(text: l10n.cardHistoryEaseMove(ease(from), ease(to)), ink: ink),
       if ((entry.previousIntervalDays, entry.nextIntervalDays) case (
         final from?,
         final to?,
       ))
-        l10n.cardHistoryIntervalMove(from, to),
-      if (entry.usedHint ?? false) l10n.cardHistoryHintUsed,
-      if (entry.isTimedOut) l10n.cardHistoryTimedOut,
+        _Meta(text: l10n.cardHistoryIntervalMove(from, to), ink: ink),
+      _Meta(text: l10n.cardHistoryMode(entry.mode), icon: AppIcons.studyMode),
+      if (entry.usedHint ?? false)
+        _Meta(text: l10n.cardHistoryHintUsed, icon: AppIcons.hint),
+      if (entry.isTimedOut)
+        _Meta(text: l10n.cardHistoryTimedOut, icon: AppIcons.timeout),
       if (entry.nextDueAt case final due?)
-        l10n.cardHistoryNextDue(DateFormat.MMMd(locale).format(due.toLocal())),
+        _Meta(
+          text: l10n.cardHistoryNextDue(
+            DateFormat.MMMd(locale).format(due.toLocal()),
+          ),
+          icon: AppIcons.clock,
+        ),
     ];
+  }
+}
+
+/// One metadata item: a glyph and words, or a move in the outcome's ink.
+class _Meta extends StatelessWidget {
+  const _Meta({required this.text, this.icon, this.ink});
+
+  final String text;
+  final IconData? icon;
+  final Color? ink;
+
+  @override
+  Widget build(BuildContext context) {
+    final styles = context.textStyles;
+    final ink = this.ink;
+    final icon = this.icon;
+    final style = ink == null ? styles.rowDescription : styles.historyMove(ink);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: AppSpacing.micro,
+      children: [
+        if (icon != null)
+          // The words carry the meaning; the glyph is not read out.
+          ExcludeSemantics(
+            child: Icon(
+              icon,
+              size: AppIconSize.inline,
+              color: context.colors.onSurfaceVariant,
+            ),
+          ),
+        Flexible(child: Text(text, style: style)),
+      ],
+    );
   }
 }

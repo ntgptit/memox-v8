@@ -5,6 +5,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/relative_time.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -128,7 +129,7 @@ class TrashEntryRowWidget extends StatelessWidget {
 
   String _meta(BuildContext context) {
     final l10n = context.l10n;
-    final ago = trashDeletedAgo(l10n, entry.deletedAt, now);
+    final ago = l10n.ago(entry.deletedAt, now);
     return switch (entry) {
       TrashCardEntry() => l10n.trashCardMeta(ago),
       TrashDeckEntry(:final subDeckCount, :final cardCount) =>

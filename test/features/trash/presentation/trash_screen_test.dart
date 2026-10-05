@@ -39,11 +39,11 @@ void main() {
     expect(tops, [...tops]..sort());
 
     expect(
-      find.text(_en.trashCardMeta(_en.trashDeletedMinutes(4))),
+      find.text(_en.trashCardMeta(_en.commonAgoMinutes(4))),
       findsOneWidget,
     );
     expect(
-      find.text(_en.trashDeckMeta(1, 2, _en.trashDeletedYesterday)),
+      find.text(_en.trashDeckMeta(1, 2, _en.commonAgoYesterday)),
       findsOneWidget,
     );
     expect(find.text(_en.trashDaysLeft(30)), findsOneWidget);
@@ -139,7 +139,7 @@ void main() {
     await tester.tap(find.byTooltip(_en.trashEntryActions('meokda · eat')));
     await tester.pumpAndSettle();
     expect(
-      find.text(_en.trashCardActionsMeta(_en.trashDeletedMinutes(4), 'Words')),
+      find.text(_en.trashCardActionsMeta(_en.commonAgoMinutes(4), 'Words')),
       findsOneWidget,
     );
     expect(find.text(_en.trashRestore), findsOneWidget);
@@ -156,7 +156,7 @@ void main() {
 
     expect(
       find.bySemanticsLabel(
-        'Places, ${_en.trashDeckMeta(0, 3, _en.trashDeletedDays(28))}, '
+        'Places, ${_en.trashDeckMeta(0, 3, _en.commonAgoDays(28))}, '
         '${_en.trashDaysLeft(2)}, ${_en.trashWasIn('Korean')}',
       ),
       findsOneWidget,
