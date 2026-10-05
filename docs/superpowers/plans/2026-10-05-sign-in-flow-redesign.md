@@ -416,7 +416,7 @@ Add `import 'package:memox/core/theme/foundations/app_stroke.dart';` if it is mi
 
 - [ ] **Step 7: Analyzer and guard on the touched files.** Run `dart format lib/shared/widgets/mx_text_field.dart lib/core/theme test/shared/widgets/mx_text_field_test.dart test/core/theme/token_contrast_test.dart && flutter analyze lib/shared/widgets/mx_text_field.dart lib/core/theme`. Expected: no issues.
 
-- [ ] **Step 8: Commit.** `git add` the files above, then `git commit -m "feat(shared): the code field draws six slots (DEV-n)"` with the attribution lines.
+- [ ] **Step 8: Commit.** `git add` the files above, then `git commit -m "feat(shared): the code field draws six slots (DEV-156)"` with the attribution lines.
 
 ---
 
@@ -648,7 +648,7 @@ class _WaitLine extends StatelessWidget {
 
 - [ ] **Step 7: Run the tests.** Run `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/features/account/presentation/code_screen_test.dart test/features/account/presentation/account_transition_layer_test.dart`. Expected: PASS. A layer test that looks up the code title still finds it, because the step paints it.
 
-- [ ] **Step 8: Commit.** `git commit -m "feat(account): the code step leads with its address and waits in a caption (DEV-n)"` with the attribution lines.
+- [ ] **Step 8: Commit.** `git commit -m "feat(account): the code step leads with its address and waits in a caption (DEV-157)"` with the attribution lines.
 
 ---
 
@@ -960,7 +960,7 @@ class _WaitLine extends StatelessWidget {
 
 - [ ] **Step 7: Run the tests.** Run `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/features/account/presentation/sign_in_screen_test.dart test/features/account/presentation/account_transition_layer_test.dart test/features/account/presentation/welcome_screen_test.dart`. Expected: PASS. Welcome still opens screen 30 by callback, so its tests are unaffected.
 
-- [ ] **Step 8: Commit.** `git commit -m "feat(account): sign-in leads with its title and keeps its ways in the footer (DEV-n)"` with the attribution lines.
+- [ ] **Step 8: Commit.** `git commit -m "feat(account): sign-in leads with its title and keeps its ways in the footer (DEV-158)"` with the attribution lines.
 
 ---
 
@@ -1127,7 +1127,7 @@ Override authStateOfListenable(ValueListenable<AuthState> state) =>
 
 - [ ] **Step 5: Run the tests.** Run `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/features/account/presentation/welcome_screen_test.dart`. Expected: PASS.
 
-- [ ] **Step 6: Commit.** `git commit -m "feat(account): Welcome tells the truth offline and keeps one usable way (DEV-n)"` with the attribution lines.
+- [ ] **Step 6: Commit.** `git commit -m "feat(account): Welcome tells the truth offline and keeps one usable way (DEV-159)"` with the attribution lines.
 
 ---
 
@@ -1159,7 +1159,7 @@ Override authStateOfListenable(ValueListenable<AuthState> state) =>
 
 - [ ] **Step 5: Auth integration run.** Run `bash tools/supabase/run_auth_it.sh`. If Docker is missing in the container, record "not run: no Docker" in the ledger and in the PR. Never pass it silently.
 
-- [ ] **Step 6: Commit.** `git commit -m "docs(account): sign-in redesign records and goldens (DEV-n)"` with the attribution lines. Then push: `git push -u origin claude/nifty-maxwell-nz5nl3`.
+- [ ] **Step 6: Commit.** `git commit -m "docs(account): sign-in redesign records and goldens (DEV-160)"` with the attribution lines. Then push: `git push -u origin claude/nifty-maxwell-nz5nl3`.
 
 After this task, CLAUDE.md's screen workflow continues outside the plan:
 1. Impeccable critique and audit of the new goldens against DESIGN.md, with one fix batch and its one audit.
@@ -1172,8 +1172,8 @@ After this task, CLAUDE.md's screen workflow continues outside the plan:
 
 | Task | Linear | Status | Notes |
 |---|---|---|---|
-| 1 · code field six slots | DEV-n | | |
-| 2 · screen 31 | DEV-n | | |
-| 3 · screen 30, re-auth, layer | DEV-n | | |
-| 4 · screen 29 | DEV-n | | |
-| 5 · records, goldens, gate | DEV-n | | |
+| 1 · code field six slots | DEV-156 | | |
+| 2 · screen 31 | DEV-157 | | |
+| 3 · screen 30, re-auth, layer | DEV-158 | | |
+| 4 · screen 29 | DEV-159 | | |
+| 5 · records, goldens, gate | DEV-160 | | |
