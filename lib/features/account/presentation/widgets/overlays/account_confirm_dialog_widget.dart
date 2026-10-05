@@ -18,6 +18,7 @@ Future<bool> confirmAccountStep(
   bool isDestructive = false,
   bool isWarning = false,
   bool canConfirm = true,
+  bool isEvenSplit = false,
 }) async =>
     await showMxDialog<bool>(
       context,
@@ -30,6 +31,7 @@ Future<bool> confirmAccountStep(
         isDestructive: isDestructive,
         isWarning: isWarning,
         canConfirm: canConfirm,
+        isEvenSplit: isEvenSplit,
       ),
     ) ??
     false;
@@ -45,6 +47,7 @@ Future<bool> confirmUnsentLoss(BuildContext context, int count) {
     body: l10n.accountUnsentBody(count),
     confirmLabel: l10n.accountContinue,
     isDestructive: true,
+    isEvenSplit: true,
   );
 }
 
@@ -83,6 +86,7 @@ class AccountConfirmDialogWidget extends StatelessWidget {
     this.isDestructive = false,
     this.isWarning = false,
     this.canConfirm = true,
+    this.isEvenSplit = false,
   });
 
   final String title;
@@ -100,6 +104,10 @@ class AccountConfirmDialogWidget extends StatelessWidget {
   /// False disables the confirm, as a deletion offline (spec §9 B6).
   final bool canConfirm;
 
+  /// Cancel and the confirm share the width evenly (the sign-in confirms,
+  /// 2026-10-05 L2).
+  final bool isEvenSplit;
+
   @override
   Widget build(BuildContext context) => MxDialog(
     title: title,
@@ -113,6 +121,7 @@ class AccountConfirmDialogWidget extends StatelessWidget {
       isDestructive: isDestructive,
       isWarning: isWarning,
       onConfirm: canConfirm ? () => Navigator.of(context).pop(true) : null,
+      isEvenSplit: isEvenSplit,
     ),
   );
 }

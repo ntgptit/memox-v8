@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -450,5 +452,64 @@ void main() {
       expect(left, 1);
       expect(world.state, isNot(isA<ReauthRequired>()));
     });
+  });
+
+  accountTest('the email field rests on the outline edge (2026-10-05 L1)', (
+    tester,
+    env,
+    world,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    final decoration = tester
+        .widget<InputDecorator>(find.byType(InputDecorator))
+        .decoration;
+    expect(
+      (decoration.enabledBorder! as OutlineInputBorder).borderSide.color,
+      AppColorSchemes.light.outline,
+    );
+  });
+
+  accountTest('the way-out dialog leaves 16 dp between its banner and the '
+      'actions, as a dialog without a note does (2026-10-05 L3)', (
+    tester,
+    env,
+    world,
+  ) async {
+    await refuseSession(world);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      SignInScreen(
+        purpose: SignInPurpose.reauth,
+        onCodeSent: (_) {},
+        onSignedIn: () {},
+        onLeftAccount: () {},
+      ),
+      overrides: accountOverrides(world),
+    );
+    await _settle(tester);
+    await tester.tap(find.text(_en.accountContinueWithoutThis));
+    await _settle(tester);
+
+    final painted = find
+        .descendant(
+          of: find.byType(MxInlineBanner),
+          matching: find.byType(DecoratedBox),
+        )
+        .first;
+    final cancel = find.descendant(
+      of: find.byType(MxDialog),
+      matching: find.widgetWithText(MxButton, _en.commonCancel),
+    );
+    expect(
+      tester.getTopLeft(cancel).dy - tester.getBottomLeft(painted).dy,
+      closeTo(16, 0.5),
+    );
   });
 }

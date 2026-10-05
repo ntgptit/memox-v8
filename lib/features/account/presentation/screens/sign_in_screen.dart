@@ -106,9 +106,11 @@ class SignInScreen extends ConsumerWidget {
           : MxInlineBanner(
               tone: MxBannerTone.danger,
               message: l10n.accountUnsentBody(unsent),
+              hasBottomMargin: false,
             ),
       confirmLabel: l10n.accountContinueWithoutThis,
       isDestructive: true,
+      isEvenSplit: true,
     );
     if (!isSure || !context.mounted) return;
     final result = await controller.continueWithoutAccount();

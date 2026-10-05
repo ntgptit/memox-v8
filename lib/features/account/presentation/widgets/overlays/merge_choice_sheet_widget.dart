@@ -93,10 +93,11 @@ class _MergeChoiceSheetWidgetState extends State<MergeChoiceSheetWidget> {
     final library = widget.library;
     return MxBottomSheet(
       header: Padding(
+        // The rows, the banner and the footer start 16 in (L4).
         padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
+          AppSpacing.gutter,
           AppSpacing.micro,
-          AppSpacing.card,
+          AppSpacing.gutter,
           AppSpacing.grouped,
         ),
         child: Text(
@@ -108,6 +109,7 @@ class _MergeChoiceSheetWidgetState extends State<MergeChoiceSheetWidget> {
       ),
       footer: MxSheetActions(
         isInSheet: true,
+        isEvenSplit: true,
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(),
         confirmLabel: _isDiscarding

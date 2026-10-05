@@ -23,6 +23,7 @@ class MxInlineBanner extends StatelessWidget {
     this.title,
     this.actions = const [],
     this.isInCommitBar = false,
+    this.hasBottomMargin = true,
   });
 
   final MxBannerTone tone;
@@ -36,6 +37,11 @@ class MxInlineBanner extends StatelessWidget {
 
   /// The commit-bar variant: 8 12 padding and no margin below.
   final bool isInCommitBar;
+
+  /// The 16 below the banner, kept for a banner in a flow. A banner that
+  /// ends a dialog's content drops it, so the actions sit at the dialog's
+  /// usual gap (the sign-in confirms, 2026-10-05 L3).
+  final bool hasBottomMargin;
 
   static const double _titleGap = 2;
 
@@ -79,7 +85,7 @@ class MxInlineBanner extends StatelessWidget {
             vertical: AppSpacing.grouped + AppStroke.hairline,
           );
     return Padding(
-      padding: isInCommitBar
+      padding: isInCommitBar || !hasBottomMargin
           ? EdgeInsets.zero
           : const EdgeInsets.only(bottom: AppSpacing.gutter),
       child: Semantics(

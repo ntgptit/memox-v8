@@ -86,4 +86,55 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(_en.accountLastAdminTitle), findsNothing);
   });
+
+  Widget asker(Future<bool> Function(BuildContext context) ask) => Scaffold(
+    body: Builder(
+      builder: (context) => TextButton(
+        onPressed: () => unawaited(ask(context)),
+        child: const Text('ask'),
+      ),
+    ),
+  );
+
+  double widthOf(WidgetTester tester, String label) =>
+      tester.getSize(find.widgetWithText(MxButton, label)).width;
+
+  libraryTest('the unsent-loss confirm splits its pair evenly (2026-10-05 '
+      'L2)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      asker((context) => confirmUnsentLoss(context, 2)),
+    );
+    await tester.tap(find.text('ask'));
+    await tester.pumpAndSettle();
+
+    expect(
+      widthOf(tester, _en.commonCancel),
+      widthOf(tester, _en.accountContinue),
+    );
+  });
+
+  libraryTest('by default a confirm keeps the larger share, as screen 32 '
+      'does', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      asker(
+        (context) => confirmAccountStep(
+          context,
+          title: 'Sure?',
+          body: 'Body',
+          confirmLabel: 'Do it',
+        ),
+      ),
+    );
+    await tester.tap(find.text('ask'));
+    await tester.pumpAndSettle();
+
+    expect(
+      widthOf(tester, 'Do it'),
+      greaterThan(widthOf(tester, _en.commonCancel)),
+    );
+  });
 }
