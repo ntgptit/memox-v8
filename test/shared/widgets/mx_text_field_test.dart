@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
@@ -501,20 +502,56 @@ void main() {
     );
   });
 
-  testWidgets('TalkBack still reads the code field by its label', (
-    tester,
-  ) async {
+  testWidgets('TalkBack reads the code field once, by its label, and not '
+      'each painted digit', (tester) async {
+    final controller = TextEditingController(text: '4');
+    addTearDown(controller.dispose);
     final handle = tester.ensureSemantics();
     await pumpMx(
       tester,
-      const MxTextField(
+      MxTextField(
+        controller: controller,
         label: 'Code, 6 digits',
         variant: MxTextFieldVariant.code,
       ),
     );
 
     expect(find.bySemanticsLabel('Code, 6 digits'), findsOneWidget);
+    expect(find.bySemanticsLabel('4'), findsNothing);
     handle.dispose();
+  });
+
+  testWidgets('a tap on the first slot keeps the caret after the last digit', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: '123456');
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
+    );
+
+    await tester.tap(find.byKey(MxTextField.slotKey(0)), warnIfMissed: false);
+    await tester.pump();
+
+    expect(controller.selection, const TextSelection.collapsed(offset: 6));
+  });
+
+  testWidgets('Backspace after a tap on the first slot deletes the last '
+      'digit', (tester) async {
+    final controller = TextEditingController(text: '123456');
+    addTearDown(controller.dispose);
+    await pumpMx(
+      tester,
+      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
+    );
+
+    await tester.tap(find.byKey(MxTextField.slotKey(0)), warnIfMissed: false);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.backspace);
+    await tester.pump();
+
+    expect(controller.text, '12345');
   });
 
   testWidgets('the code variant keeps six digits and nothing else', (

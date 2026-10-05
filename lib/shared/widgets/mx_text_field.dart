@@ -420,7 +420,35 @@ class _CodeFieldState extends State<_CodeField> {
   FocusNode get _focus => widget.field.focusNode ?? (_ownFocus ??= FocusNode());
 
   @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_keepCaretAtEnd);
+  }
+
+  @override
+  void didUpdateWidget(_CodeField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final old = oldWidget.field.controller;
+    if (old == widget.field.controller) return;
+    // The slots fill left to right: the caret belongs after the last digit,
+    // so a tap on any slot or a drag cannot park it mid-code.
+    (old ?? _ownController)?.removeListener(_keepCaretAtEnd);
+    _controller.addListener(_keepCaretAtEnd);
+  }
+
+  /// Keeps the selection collapsed after the last digit, so Backspace removes
+  /// the last digit and the next-slot edge is the caret. Setting it to the
+  /// value it already has notifies nobody, so this cannot loop.
+  void _keepCaretAtEnd() {
+    final controller = _controller;
+    final end = TextSelection.collapsed(offset: controller.text.length);
+    if (controller.selection == end) return;
+    controller.selection = end;
+  }
+
+  @override
   void dispose() {
+    _controller.removeListener(_keepCaretAtEnd);
     _ownController?.dispose();
     _ownFocus?.dispose();
     super.dispose();
@@ -489,7 +517,8 @@ class _CodeFieldState extends State<_CodeField> {
       children: [
         Stack(
           children: [
-            slots,
+            // TalkBack reads the field below, by its label and value, once.
+            ExcludeSemantics(child: slots),
             Positioned.fill(
               child: Opacity(
                 opacity: AppOpacity.hidden,
