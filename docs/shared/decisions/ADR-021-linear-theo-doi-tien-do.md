@@ -42,6 +42,12 @@ bảng dài, hai file có thể cùng ghi một hạng mục (BE-E1 và BE-E8 c�
   có ở hai file, mỗi cái thành một issue mang label `Supabase`. 128 issue này
   được gom vào 15 epic (DEV-134…DEV-148). Nhánh và PR nhắc `DEV-n` để Linear tự
   liên kết.
+- Nội dung issue và comment theo các template trong
+  `.claude/skills/flutter-workflow/references/linear-templates.md`: bốn loại
+  issue (Epic; sub-issue Task, Bug, Chore/Docs, mang thêm đúng một label loại
+  `Feature`, `Bug` hoặc `Improvement` ngoài label `WBS`), mẫu comment khi Done,
+  bị chặn, có câu hỏi, Canceled và Duplicate. Bốn template cùng tên có trong
+  Linear UI là bản sao; khi lệch thì file trong repo thắng.
 - Ba file WBS đóng băng ngày 2026-10-05, giữ nguyên làm lịch sử: các spec và plan
   có ngày đều dẫn tới chúng.
 - Màn hình vẫn có dòng trong screen handoff index. Quyết định kiến trúc vẫn là
