@@ -1,6 +1,6 @@
 # Sign-in flow redesign: screens 29 Welcome, 30 Sign-in, 31 Code — design
 
-Status: approved by the owner 2026-10-05 (sections 1–3 in chat; this file awaits review) ·
+Status: approved by the owner 2026-10-05 · Linear epic DEV-155 ·
 Path: architectural (three screens, the transition layer's form, one shared widget, `DESIGN.md`) ·
 Critique snapshot `.impeccable/critique/2026-10-05T07-34-30Z__presentation-screens-sign-in-screen-dart-2cf0f53d.md`
 
@@ -65,7 +65,7 @@ amended by this spec where they disagree.
 | App bar | `MxAppBar` (content) | Back only, no title. |
 | Title | `screenTitle`, header semantics | "Sign in". |
 | Lead | `emptyBody` | "Your decks stay on this phone and join the account." (unchanged), `control` (8) under the title. |
-| Email | `MxTextField` (form) | `section` (24) under the lead. Label "Email address"; hint "name@example.com" (was the label again). Error under it as today. |
+| Email | `fieldLabel` + `MxTextField` (form) | `section` (24) under the lead. The label "Email address" is painted above the field (`control`, 8, between) and stays the field's TalkBack name; the hint becomes "name@example.com" (it was the label again, and the label was never painted). Error under it as today. |
 | Footer | `MxFooterBar` | "Send code" (primary, block, spins while sending), then `grouped` (12), "Continue with Google" (outline, block, G mark, spins while picking). Caption "Signing in needs a connection. You can do it later in Settings." only while the account cannot link; it replaces the `MxNote` at the top. |
 
 The divider (`_OrDivider`) and `accountOr` go. Enabling, spinners, the field check on send, the
