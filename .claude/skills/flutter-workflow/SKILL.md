@@ -1,6 +1,6 @@
 ---
 name: flutter-workflow
-description: Router for development work on MemoX V8 — which `flutter-*` skill applies to a task, where progress is recorded (`docs/wbs_BE.md`, `docs/wbs_FE.md`, `docs/wbs_supabase.md`), and the Definition of Done. Use it when work starts and the owning skill is not obvious — "what's next", "let's build X", "add a feature", "is this done", "review before commit". Process (brainstorm, plan, execute, review) belongs to Superpowers, per CLAUDE.md.
+description: Router for development work on MemoX V8 — which `flutter-*` skill applies to a task, where progress is recorded (the Linear project MemoX, ADR-021), and the Definition of Done. Use it when work starts and the owning skill is not obvious — "what's next", "let's build X", "add a feature", "is this done", "review before commit". Process (brainstorm, plan, execute, review) belongs to Superpowers, per CLAUDE.md.
 ---
 
 # Flutter workflow router
@@ -13,22 +13,26 @@ authority").
 
 ## First: find out where the project actually is
 
-Do not trust memory or assumption about project state. Check:
+Do not trust memory or assumption about project state. Check the Linear
+project **MemoX** (team `DEV`) through the Linear connector — the open issues
+(Todo, In Progress, Backlog) ordered by priority — and:
 
 ```bash
-sed -n 1,40p docs/wbs_BE.md   # backend: domain, data, use cases
-sed -n 1,40p docs/wbs_FE.md   # frontend: screens, theme, shared widgets
-sed -n 1,40p docs/wbs_supabase.md   # server sync and login on Supabase
 git log --oneline -10
 ```
 
-The WBS files are authoritative for progress: `wbs_BE.md` for `domain/`,
-`data/` and use cases, `wbs_FE.md` for presentation, `wbs_supabase.md` for
-sync and login on Supabase (`supabase/`, `lib/core/sync/`). A screen's row in the
+Linear is authoritative for progress ([ADR-021](../../../docs/shared/decisions/ADR-021-linear-theo-doi-tien-do.md)).
+It has two levels: an **epic** (a parent issue labelled `Epic`, one feature or
+theme, inside a project milestone) and its **sub-issues** (the items). Each
+sub-issue carries one label of the group `WBS`: `BE` for `domain/`, `data/` and
+use cases, `FE` for presentation, `Supabase` for sync and login on Supabase
+(`supabase/`, `lib/core/sync/`). The `docs/wbs_*.md` files are frozen history; never edit
+them. A screen's row in the
 [screen handoff index](../../../docs/shared/ui/screen-handoff/00-index.md) is
 authoritative for that screen. If one is clearly stale relative to the code,
 say so and fix it before building anything else — every later decision
-depends on it being true.
+depends on it being true. A session without the Linear connector says so to
+the owner and records progress nowhere else.
 
 ## Routing table
 
@@ -70,14 +74,24 @@ mechanical half is automated:
 
 That runs the full mechanical gate — codegen freshness, format, analyze, tests, the architecture boundary check, the code-verification guard and the docs guard (see the script header for the exact list). It cannot
 judge whether the acceptance criteria are met, whether the UI matches the design,
-or whether the WBS entry is honest — that part is on you, and it is the half
+or whether the Linear issue is honest — that part is on you, and it is the half
 that actually catches problems.
 
 ## Keeping the ledger honest
 
-Update the WBS row (`docs/wbs_BE.md`, `docs/wbs_FE.md` or `docs/wbs_supabase.md`) in the PR that does the
-work it describes, and a screen's row in the screen handoff index when the
-screen is built. Mark items `xong` only when they are done by the Definition of
-Done, not when the code first runs. If something was descoped or deferred, write
-that down with the reason — a future session reading "done" on a half-finished
-item will build on sand.
+The item's Linear issue is In Progress, then In Review, while the branch and PR
+name its `DEV-n` (Linear's GitHub integration moves it), and Done once the PR is
+merged into `master`, with the evidence (PR, commit, tests). A screen's row in
+the screen handoff index is updated in that PR when the screen is built. Done
+means done by the Definition of Done and merged, not that the code first runs.
+If something was descoped or deferred, write that down on the issue with the
+reason — a future session reading "done" on a half-finished item will build on
+sand.
+
+Keep the project small enough to read. New work is a sub-issue of an existing
+epic, with its `WBS` label and the epic's milestone, named by its `DEV-n` only.
+Open a new epic only for a new feature or spec — one spec, one epic — and make
+each task of its plan one sub-issue; never split a task further, and never nest
+a sub-issue under a sub-issue. A small defect found along the way goes into the
+issue in hand, or becomes a sub-issue of the nearest epic. An epic is Done when
+every sub-issue is Done or Canceled.

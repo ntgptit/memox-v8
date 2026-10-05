@@ -1,7 +1,8 @@
 # WBS API — MemoX V8
 
 > **Đóng băng 2026-09-28** cùng `memox-api-services` ([ADR-015](shared/decisions/ADR-015-supabase-lam-backend.md)).
-> Tiến độ sync và login nằm ở [`wbs_supabase.md`](wbs_supabase.md).
+> Tiến độ sync và login nằm ở [`wbs_supabase.md`](wbs_supabase.md) (đóng băng 2026-10-05; tiến độ
+> ở Linear, [ADR-021](shared/decisions/ADR-021-linear-theo-doi-tien-do.md)).
 
 - **Trạng thái:** hiện hành, sửa mỗi khi một hạng mục đổi trạng thái.
 - **Mục đích:** cho người và agent biết phần API nào đã xong, phần nào còn lại và

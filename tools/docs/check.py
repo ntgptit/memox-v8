@@ -399,7 +399,7 @@ def check_acceptance_criteria(doc: g.Doc, report: Report) -> None:
 
 # V7 is gone from V8 (BE-D7). These name V7 things V8 does
 # not have: its component catalog, its progress ledger (`wbs.md` by any path;
-# V8's are `wbs_BE.md` and `wbs_FE.md`), its phase checklist, and its
+# V8's were `wbs_*.md`, now Linear per ADR-021), its phase checklist, and its
 # repository (local backend spec 2026-09-27 §6, BE-D7).
 V7_MARKER = re.compile(
     r"widgetbook|\bwbs\.md|docs/checklist\.md|memox-v7|checklist phases?\b",
