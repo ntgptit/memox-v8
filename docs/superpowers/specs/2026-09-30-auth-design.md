@@ -472,20 +472,25 @@ own. The dashboard's **Authentication → Users** and **Table Editor →
 note; a failure becomes a WBS row before it is fixed. This check closes P3
 and P4.
 
+**Since 2026-10-05** the rows that need only email run as tests on a local
+stack: `test_supabase/auth/` through `bash tools/supabase/run_auth_it.sh`
+([spec](2026-10-05-auth-local-integration-tests-design.md)). D2 (real Google)
+stays a device check, and D9 (Back) belongs to the widget tests.
+
 | # | Steps | Expected | Result |
 |---|---|---|---|
-| D1 | A: Welcome → Sign in → an email with no account → the code from the mail | The mail arrives through the custom SMTP within a minute and shows the code; A is signed in; Authentication → Users shows the **same user id** as before, now with the email; A's decks stay | — |
-| D2 | A: Settings → Account → Switch account → Google → a Google account with no MemoX account | The account picker opens; A is signed in as that Google account; no nonce or client ID error | — |
-| D3 | B (anonymous, own decks): Sign in with A's email → the code | The merge sheet opens; "Merge into the account" keeps B's decks and adds the account's; after a sync A shows B's decks too; B's anonymous user is gone from Users | — |
-| D4 | Repeat D3 on B with "Discard this phone's data" (clear B first) | B's own decks are removed; B shows only the account's decks | — |
-| D5 | Repeat D3, and force-stop B while the transition layer shows | On reopen the layer resumes and ends in the same state as D3; no duplicated decks | — |
-| D6 | B, online: Account → Sign out | The changes are sent first; B returns to a new anonymous user with no decks; signing in again brings them back | — |
-| D7 | B, flight mode, edit a card, then Sign out | The dialog names the unsent changes that will be lost; cancelling keeps everything | — |
-| D8 | A signed in: in the SQL Editor, `delete from auth.sessions where user_id = '<A's id>';`, then reopen A after its access token expires (at most an hour) | Settings shows the re-auth banner and Study home the notice; "Sign in" with the same email returns to where it started; nothing is lost | — |
-| D9 | Android Back on 30, 31, 32, the merge sheet and the transition layer | Back leaves 30–32; on the sheet it cancels, merging and discarding nothing; the layer ignores Back while it runs | — |
-| D10 | An admin on A: Settings → Admin → Users; make B's account an admin, then a user; try to demote yourself as the only admin from B | The list shows both accounts; the badge changes and B's Settings shows or hides Admin after a restart; the last admin is refused with the in-sheet banner | — |
-| D11 | A second account, online: Account → Delete account | The account and its rows are gone from the dashboard; the device returns to a fresh anonymous user. Offline, the confirm is disabled and says why | — |
-| D12 | A, flight mode: Welcome → Sign in → Send code; then back online | Offline says so and nothing changes; online, sign-in and sync resume | — |
+| D1 | A: Welcome → Sign in → an email with no account → the code from the mail | The mail arrives through the custom SMTP within a minute and shows the code; A is signed in; Authentication → Users shows the **same user id** as before, now with the email; A's decks stay | 2026-10-05: emulator ✓; IT `link_test` ✓ |
+| D2 | A: Settings → Account → Switch account → Google → a Google account with no MemoX account | The account picker opens; A is signed in as that Google account; no nonce or client ID error | 2026-10-05: emulator ✓ (`ntgptit@gmail.com`) |
+| D3 | B (anonymous, own decks): Sign in with A's email → the code | The merge sheet opens; "Merge into the account" keeps B's decks and adds the account's; after a sync A shows B's decks too; B's anonymous user is gone from Users | 2026-10-05: IT `switch_test` ✓ |
+| D4 | Repeat D3 on B with "Discard this phone's data" (clear B first) | B's own decks are removed; B shows only the account's decks | 2026-10-05: IT `switch_test` ✓ |
+| D5 | Repeat D3, and force-stop B while the transition layer shows | On reopen the layer resumes and ends in the same state as D3; no duplicated decks | 2026-10-05: IT `switch_test` ✓ (coordinator dropped after the merge commit) |
+| D6 | B, online: Account → Sign out | The changes are sent first; B returns to a new anonymous user with no decks; signing in again brings them back | 2026-10-05: emulator ✓ for data, F1 and F2 found (SB-A7, fixed); IT `leave_test` ✓ |
+| D7 | B, flight mode, edit a card, then Sign out | The dialog names the unsent changes that will be lost; cancelling keeps everything | 2026-10-05: IT `leave_test` ✓ (stops before removing anything; Cancel restores) |
+| D8 | A signed in: in the SQL Editor, `delete from auth.sessions where user_id = '<A's id>';`, then reopen A after its access token expires (at most an hour) | Settings shows the re-auth banner and Study home the notice; "Sign in" with the same email returns to where it started; nothing is lost | 2026-10-05: IT `session_role_test` ✓ (sessions revoked by the service role) |
+| D9 | Android Back on 30, 31, 32, the merge sheet and the transition layer | Back leaves 30–32; on the sheet it cancels, merging and discarding nothing; the layer ignores Back while it runs | widget tests in `test/app/`, `test/features/account/` |
+| D10 | An admin on A: Settings → Admin → Users; make B's account an admin, then a user; try to demote yourself as the only admin from B | The list shows both accounts; the badge changes and B's Settings shows or hides Admin after a restart; the last admin is refused with the in-sheet banner | 2026-10-05: IT `session_role_test` ✓ |
+| D11 | A second account, online: Account → Delete account | The account and its rows are gone from the dashboard; the device returns to a fresh anonymous user. Offline, the confirm is disabled and says why | 2026-10-05: emulator ✓ (on `+a`, unplanned); IT `leave_test` ✓ |
+| D12 | A, flight mode: Welcome → Sign in → Send code; then back online | Offline says so and nothing changes; online, sign-in and sync resume | 2026-10-05: IT `leave_test` ✓ |
 
 ## 10. Risks
 
