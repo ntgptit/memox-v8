@@ -1,7 +1,8 @@
 # Linear issue templates
 
-Status: draft 2026-10-05, design approved by the owner in chat; awaiting
-review of this spec. Extends
+Status: approved 2026-10-05; implemented by
+`docs/superpowers/plans/2026-10-05-linear-issue-templates.md` (PR 206), and
+amended by §10 (migration of the existing issues, DEV-165). Extends
 [ADR-021](../../shared/decisions/ADR-021-linear-theo-doi-tien-do.md), which
 fixes the *structure* of the Linear project MemoX (two levels, `WBS` labels,
 milestones, states) but not what an issue *says*.
@@ -266,8 +267,8 @@ Templates:
 
 ## 8. Out of scope
 
-- Rewriting DEV-6…DEV-133: they are migrated history.
-- DEV-149…DEV-154 are close enough to the new shape and stay as they are.
+- ~~Rewriting DEV-6…DEV-133~~ and ~~leaving DEV-149…DEV-154 as they are~~:
+  reversed by the owner on 2026-10-05; see §10.
 - A mechanical check: the gate cannot reach Linear (ADR-021).
 - Project, document and status-update templates.
 
@@ -279,3 +280,65 @@ Templates:
 - The sub-issues of this spec's own epic are created from the templates
   through the MCP and read back with `get_issue`: labels, milestone, parent
   and body as §3 says. No throwaway test issue is created.
+
+## 10. Migration of the existing issues
+
+Owner ruling, 2026-10-05: every issue in the project follows the templates,
+not only the new ones. Tracked as DEV-165, a sub-issue of DEV-161.
+
+### 10.1 Rules
+
+- **Scope:** every issue in project MemoX at the time of the run (157 on
+  2026-10-05), epics and sub-issues, in every state.
+- **Title:**
+  - rewritten to §3.2;
+  - an epic's title is a feature or theme name already, so it changes only
+    where it breaks §3.2.
+- **Description:**
+  - the existing content is rearranged into the §3.4 template of the issue's
+    kind;
+  - nothing is invented: a section with no source text is dropped, except
+    **Điều kiện xong**;
+  - on a Done issue, **Điều kiện xong** holds the original evidence as ticked
+    checkboxes; on a Canceled one, the reason it was cut;
+  - after a `---` rule, a history block keeps what the migrated issues carried:
+    `Mã WBS cũ: <code>`, the WBS file, the original state, dependencies and
+    size. Issues created on Linear have no such block.
+- **Kind label:**
+  - `Feature` for a feature, screen, use case or a feature's spec;
+  - `Bug` only when the text describes a defect;
+  - `Improvement` for docs, tooling, the gate, refactors (such as moving
+    queries into `.drift`) and clean-up;
+  - an epic gets none.
+- **Priority:** kept when set; otherwise Medium, closed issues included.
+- **Unchanged:** state, parent, milestone, comments, attachments.
+- **DEV-155…DEV-160:** another session is working on them. They get the kind
+  label and a Vietnamese translation of their description in the template
+  shape; their titles and states stay.
+
+### 10.2 Steps
+
+1. **Dry run.** Sonnet subagents, one per `DEV-n` range, read every issue and
+   write two files to the session scratchpad: a snapshot of the original
+   title and description, and a proposal (title, description, kind label,
+   priority). Nothing is written to Linear.
+2. **Check.** A script checks every proposal:
+   - each issue appears exactly once;
+   - the label is one of the three kinds (none for an epic);
+   - the title has no legacy code and stays within about 70 characters;
+   - a migrated issue's history block names its legacy code;
+   - every snapshot title equals the live title.
+3. **Owner review.** A before/after page of all proposals; the owner approves
+   it, or names the rows to redo.
+4. **Apply.** One `save_issue` per issue, then `get_issue` to compare with the
+   proposal. The snapshot is attached to DEV-165 so any issue can be restored.
+5. **Record.** One Done comment on DEV-165 with the counts; no comment on the
+   migrated issues themselves.
+
+### 10.3 Consequences
+
+- ADR-021 no longer says legacy IDs sit at the start of the titles: they sit in
+  the `Mã WBS cũ` line, and `list_issues` with that code as the query finds the
+  issue.
+- Specs and plans that cite a legacy code (`BE-A4`, `SB-S8`…) still resolve,
+  through that query.
