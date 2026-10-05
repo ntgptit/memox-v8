@@ -604,7 +604,7 @@ Bản trên server nằm ở Supabase (`supabase/migrations/`), đọc và ghi q
 | `rejected_at` | DATETIME NOT NULL | UTC |
 
 Dòng bị xoá khi entity đó được `applied` ở lần push sau, hoặc khi người dùng chọn
-"Keep on this device" (màn 27). "Try again" đưa entity lại vào outbox (upsert nếu còn
+"Keep on device" (màn 27). "Try again" đưa entity lại vào outbox (upsert nếu còn
 ở local, delete nếu đã mất) và giữ dòng tới khi server trả lời.
 
 Trigger `AFTER INSERT/UPDATE/DELETE` trên `deck`, `delete_batches`, từ schema 7

@@ -32,7 +32,7 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
   shrinks to fit, so the track stays at least 48 wide at large text
   (FE-A6 P3 ruling T1 and its final review).
 - **Exit / abandon.** The close icon, system Back and Guess's blocked-question
-  Close open one confirm dialog (owner ruling 2026-09-27). "Keep studying" changes nothing;
+  Close open one confirm dialog (owner ruling 2026-09-27). "Keep going" changes nothing;
   "Stop" ends the session. Every turn already committed stays recorded
   (BR-STUDY-004, BR-STUDY-019); the session becomes `abandoned` with
   `end_reason = user_exit` (BR-STUDY-014).
@@ -90,7 +90,7 @@ look-back order is the order served, which the stage shuffles (BR-STUDY-022). Go
 
 ## Rulings
 
-- **Owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004:** the close icon and system Back open a confirm dialog first: Keep studying or Stop.
+- **Owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004:** the close icon and system Back open a confirm dialog first: Keep going or Stop.
 - The card follows the finger without a tilt while dragged, and stays still with reduced motion.
 - Pronunciation uses the detail role of the body face; V8's typography has one family.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face label and the session context line are eyebrows; the deck name keeps its case.

@@ -3,26 +3,24 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
-/// What a field holds, which sets its box and its type (kit 08/09).
+/// How a field takes its text. Every boxed variant shares one box and one
+/// type: the form fill, radius 12, padding 12, 52 tall, the body role
+/// (DEV-169).
 enum MxTextFieldVariant {
-  /// A form or dialog entry: one line, 52 tall, on the muted fill.
+  /// A form or dialog entry: one line.
   form,
 
-  /// An optional card detail (kit OptionalField): grows from the 48 touch
-  /// minimum, not the kit's 40.
+  /// A multi-line entry (a card's meaning or detail, pasted rows): grows
+  /// with its lines, Enter breaks the line.
   detail,
 
-  /// A card's meaning (kit Back): 16/500, grows from 76.
-  meaning,
-
-  /// A card's term (kit Front): 24/700, 18/700 past 30 characters, wraps
-  /// from 66; Enter still moves on.
+  /// A card's term: wraps like [detail] but is one line of meaning, so
+  /// Enter still moves on.
   term,
 
   /// A typed study answer (kit Fill): bare — no fill, no edge in any state —
@@ -40,7 +38,6 @@ typedef _Geometry = ({
   double floor,
   double horizontal,
   double vertical,
-  double radius,
   bool isMultiline,
 });
 
@@ -66,11 +63,11 @@ class MxTextField extends StatelessWidget {
   }) : assert(
          variant == MxTextFieldVariant.form ||
              (leading == null && trailing == null),
-         'Only a form field takes leading and trailing slots: an editor box '
+         'Only a form field takes leading and trailing slots: a multi-line box '
          'measures its text across its whole width',
        );
 
-  /// [field] on [controller]: an editor box that must follow typing owns
+  /// [field] on [controller]: a multi-line box that must follow typing owns
   /// one when its caller does not. The outer field keeps the key.
   MxTextField._on(MxTextField field, TextEditingController this.controller)
     : focusNode = field.focusNode,
@@ -105,73 +102,39 @@ class MxTextField extends StatelessWidget {
   final Widget? leading;
   final Widget? trailing;
 
-  static const double _meaningFloor = 76;
-  static const double _termFloor = 66;
-
-  /// Past this many characters a term steps down to 18 (kit).
-  static const int _termLongAt = 30;
-
   /// The digits a sign-in code holds (auth spec O1).
   static const int codeLength = 6;
 
   static _Geometry _geometry(MxTextFieldVariant variant) => switch (variant) {
-    MxTextFieldVariant.form => (
+    MxTextFieldVariant.form || MxTextFieldVariant.code => (
       floor: AppSize.input,
       horizontal: AppSpacing.grouped,
       // Centred by the floor: see _field.
       vertical: 0,
-      radius: AppRadius.md,
       isMultiline: false,
     ),
-    MxTextFieldVariant.detail => (
-      floor: AppSize.touchTarget,
+    // One line sits exactly as a form field does; more lines keep 12 above
+    // and below.
+    MxTextFieldVariant.detail || MxTextFieldVariant.term => (
+      floor: AppSize.input,
       horizontal: AppSpacing.grouped,
-      vertical: AppSpacing.control,
-      radius: AppRadius.md,
-      isMultiline: true,
-    ),
-    MxTextFieldVariant.meaning => (
-      floor: _meaningFloor,
-      horizontal: AppSpacing.gutter,
       vertical: AppSpacing.grouped,
-      radius: AppRadius.xl,
       isMultiline: true,
     ),
     MxTextFieldVariant.study => (
       floor: AppSize.touchTarget,
       horizontal: 0,
       vertical: 0,
-      radius: AppRadius.md,
       isMultiline: false,
-    ),
-    MxTextFieldVariant.code => (
-      floor: AppSize.input,
-      horizontal: AppSpacing.grouped,
-      vertical: 0,
-      radius: AppRadius.md,
-      isMultiline: false,
-    ),
-    MxTextFieldVariant.term => (
-      floor: _termFloor,
-      horizontal: AppSpacing.gutter,
-      vertical: AppSpacing.gutter,
-      radius: AppRadius.xl,
-      isMultiline: true,
     ),
   };
 
   TextStyle _valueStyle(BuildContext context) {
     final styles = context.textStyles;
     return switch (variant) {
-      MxTextFieldVariant.form => context.texts.bodyMedium!,
       MxTextFieldVariant.study => styles.studyTerm,
       MxTextFieldVariant.code => styles.fieldCode,
-      MxTextFieldVariant.detail => styles.fieldDetail,
-      MxTextFieldVariant.meaning => styles.fieldMeaning,
-      MxTextFieldVariant.term
-          when (controller?.text.characters.length ?? 0) > _termLongAt =>
-        styles.fieldTermLong,
-      MxTextFieldVariant.term => styles.fieldTerm,
+      _ => context.texts.bodyMedium!,
     };
   }
 
@@ -179,8 +142,8 @@ class MxTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = this.controller;
     if (!_geometry(variant).isMultiline) return _field(context, null);
-    // An editor box pads to its floor around what it holds, and a term
-    // restyles past its long mark: both follow the text and the width.
+    // A multi-line box pads to its floor around what it holds, which follows
+    // the text and the width.
     Widget sized() => LayoutBuilder(
       builder: (context, constraints) => _field(context, constraints.maxWidth),
     );
@@ -192,9 +155,9 @@ class MxTextField extends StatelessWidget {
   }
 
   /// The vertical padding that brings the box to its floor. A form field
-  /// centres one line; an editor box keeps the kit's padding, or more when
-  /// its value (or its hint, which the decorator sizes for) is shorter than
-  /// the floor, measured at [width] and the reader's text scale.
+  /// centres one line; a multi-line box keeps its padding, or more when
+  /// what it shows (its value, or its hint while empty) is shorter than the
+  /// floor, measured at [width] and the reader's text scale.
   double _verticalPadding(
     BuildContext context,
     double? width,
@@ -230,12 +193,14 @@ class MxTextField extends StatelessWidget {
     }
 
     final value = controller?.text ?? '';
-    // An empty value still holds one line.
+    // A typed value sizes the box alone: the hint is hidden and holds no
+    // room (maintainHintSize off), so a short value sits on the 52 floor
+    // beside the other fields. An empty value still holds one line.
     final hint = hintText;
-    final content = math.max(
-      measure(value.isEmpty ? ' ' : value, valueStyle),
-      hint == null ? 0.0 : measure(hint, hintStyle),
-    );
+    final shown = measure(value.isEmpty ? ' ' : value, valueStyle);
+    final content = value.isEmpty && hint != null
+        ? math.max(shown, measure(hint, hintStyle))
+        : shown;
     return math.max(geometry.vertical, (geometry.floor - content) / 2);
   }
 
@@ -243,26 +208,16 @@ class MxTextField extends StatelessWidget {
     final colors = context.colors;
     final hasError = errorText != null;
     final geometry = _geometry(variant);
-    // The theme carries the field (spec §4.6); an editor box only rounds its
-    // edges further, and an error holds the error edge at rest too.
+    // The theme carries the field (spec §4.6): its fill, which lightens on
+    // focus, and its edges; an error holds the error edge at rest too.
     final fields = Theme.of(context).inputDecorationTheme;
-    InputBorder? edge(InputBorder? themed) => switch (themed) {
-      final OutlineInputBorder outline when geometry.radius != AppRadius.md =>
-        outline.copyWith(borderRadius: BorderRadius.circular(geometry.radius)),
-      _ => themed,
-    };
-    final restingEdge = edge(
-      hasError ? fields.errorBorder : fields.enabledBorder,
-    );
+    final restingEdge = hasError ? fields.errorBorder : fields.enabledBorder;
     // The box height is a floor painted by the decorator itself, reached by
     // padding (InputDecoration.constraints reserves the height but paints
     // the fill and edge around the text only); more lines or scaled text
     // grow the box.
     final textStyle = _valueStyle(context);
-    final hintStyle = variant == MxTextFieldVariant.term
-        ? context.textStyles.fieldTermHint
-        : context.fieldHint;
-    final isForm = variant == MxTextFieldVariant.form;
+    final hintStyle = context.fieldHint;
     final isBare = variant == MxTextFieldVariant.study;
     final isCode = variant == MxTextFieldVariant.code;
     final field = TextField(
@@ -275,8 +230,7 @@ class MxTextField extends StatelessWidget {
       maxLines: geometry.isMultiline ? null : 1,
       // A term wraps but is one line of meaning: Enter fires the action.
       keyboardType: switch (variant) {
-        MxTextFieldVariant.detail ||
-        MxTextFieldVariant.meaning => TextInputType.multiline,
+        MxTextFieldVariant.detail => TextInputType.multiline,
         MxTextFieldVariant.code => TextInputType.number,
         _ => TextInputType.text,
       },
@@ -306,11 +260,7 @@ class MxTextField extends StatelessWidget {
           : InputDecoration(
               hintText: hintText,
               hintStyle: hintStyle,
-              // The editor's boxes sit white on the page; a form field keeps the
-              // theme's fill, which lightens on focus.
-              fillColor: isForm || isCode
-                  ? null
-                  : colors.surfaceContainerLowest,
+              maintainHintSize: false,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: geometry.horizontal,
                 vertical: _verticalPadding(
@@ -342,10 +292,10 @@ class MxTextField extends StatelessWidget {
               suffixIconConstraints: const BoxConstraints(),
               border: restingEdge,
               enabledBorder: restingEdge,
-              disabledBorder: edge(fields.disabledBorder),
-              focusedBorder: edge(
-                hasError ? fields.focusedErrorBorder : fields.focusedBorder,
-              ),
+              disabledBorder: fields.disabledBorder,
+              focusedBorder: hasError
+                  ? fields.focusedErrorBorder
+                  : fields.focusedBorder,
             ),
     );
     // A bare field has no padded box to reach its floor with: the floor
@@ -372,7 +322,7 @@ class MxTextField extends StatelessWidget {
   }
 }
 
-/// Owns the controller an editor box listens to when its caller passed none.
+/// Owns the controller a multi-line box listens to when its caller passed none.
 class _OwnController extends StatefulWidget {
   const _OwnController({required this.field});
 

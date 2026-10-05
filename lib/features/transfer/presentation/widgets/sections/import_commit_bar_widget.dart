@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_action_pair.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 
@@ -69,24 +69,22 @@ class ImportCommitBarWidget extends StatelessWidget {
     final isImporting = draft.step == CardImportStep.importing;
     return MxFooterBar(
       caption: caption,
-      child: Row(
-        spacing: AppSpacing.control,
-        children: [
-          MxButton(
-            label: l10n.commonCancel,
-            tone: MxButtonTone.outline,
-            onPressed: isImporting ? null : onCancel,
-          ),
-          Expanded(
-            child: MxButton(
-              label: label,
-              icon: icon,
-              isBlock: true,
-              isLoading: isBusy,
-              onPressed: isBusy ? null : action,
-            ),
-          ),
-        ],
+      child: MxActionPair(
+        leading: MxButton(
+          label: l10n.commonCancel,
+          tone: MxButtonTone.outline,
+          isBlock: true,
+          isSingleLine: true,
+          onPressed: isImporting ? null : onCancel,
+        ),
+        trailing: MxButton(
+          label: label,
+          icon: icon,
+          isBlock: true,
+          isSingleLine: true,
+          isLoading: isBusy,
+          onPressed: isBusy ? null : action,
+        ),
       ),
     );
   }

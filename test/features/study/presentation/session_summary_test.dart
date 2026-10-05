@@ -82,7 +82,7 @@ void main() {
     expect(find.text(_en.summaryFactsHeader.toUpperCase()), findsNothing);
 
     await tester.tap(find.widgetWithText(MxButton, _en.summaryDone));
-    await tester.tap(find.widgetWithText(MxButton, _en.studyThisDeck));
+    await tester.tap(find.widgetWithText(MxButton, _en.summaryStudyAgain));
     expect((done, again), (1, 1));
   });
 
@@ -110,7 +110,10 @@ void main() {
     expect(find.text(_en.summaryLeftEarly), findsOneWidget);
     expect(find.text(_en.summaryLeftEarlyLearningBody(4, 8)), findsOneWidget);
     expect(find.text(_en.summaryFactLearned), findsNothing);
-    expect(find.widgetWithText(MxButton, _en.studyThisDeck), findsOneWidget);
+    expect(
+      find.widgetWithText(MxButton, _en.summaryStudyAgain),
+      findsOneWidget,
+    );
     // Answered (9) differs from the 4 learned, so it has a tile.
     expect(
       [
@@ -169,7 +172,7 @@ void main() {
     expect(find.text(_en.summarySaveErrorBody), findsOneWidget);
     expect(find.byType(MxStatTile), findsNothing);
     expect(find.byType(MxListRow), findsNWidgets(3));
-    expect(find.widgetWithText(MxButton, _en.studyThisDeck), findsNothing);
+    expect(find.widgetWithText(MxButton, _en.summaryStudyAgain), findsNothing);
   });
 
   libraryTest('an algorithm change draws no facts and says nothing was lost '
@@ -308,7 +311,7 @@ void main() {
     final pair = tester.widget<MxActionPair>(find.byType(MxActionPair));
     expect(pair.leadingFlex, 5);
     expect(pair.trailingFlex, 6);
-    expect(pair.leading!.label, _en.studyThisDeck);
+    expect(pair.leading!.label, _en.summaryStudyAgain);
     expect(pair.leading!.isSingleLine, isTrue);
   });
 

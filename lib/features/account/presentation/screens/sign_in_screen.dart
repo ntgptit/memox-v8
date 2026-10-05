@@ -119,7 +119,7 @@ class SignInScreen extends ConsumerWidget {
               tone: MxBannerTone.danger,
               message: l10n.accountUnsentBody(unsent),
             ),
-      confirmLabel: l10n.accountContinueWithout,
+      confirmLabel: l10n.accountWithoutConfirm,
       isDestructive: true,
     );
     if (!isSure || !context.mounted) return;

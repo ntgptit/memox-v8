@@ -403,7 +403,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
       limit: CardDraft.maxBackLength,
       controller: _back,
       isRequired: true,
-      variant: MxTextFieldVariant.meaning,
+      variant: MxTextFieldVariant.detail,
       errorText: errors[_Field.back],
       onChanged: (_) => _touch(_Field.back),
     ),

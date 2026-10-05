@@ -29,7 +29,7 @@ bar is gone while it is open.
 | Mapping error | `MxInlineBanner` (warning) | Its own row when Term or Meaning is unmapped (K3). Preview is locked. |
 | 3 · Preview | `MxListSectionHeader` + `MxBadge` + `MxSection` | The title alone (the badges carry the counts; critique 2026-09-30 part 3b); Ready, Invalid, Duplicate and Blank badges, only for counts above 0; the "Include duplicates" toggle when there is one (after the badges, before the rows); one row per source row with its number, front and back (two lines each), its reason, and a status icon with a semantic label (K3); the first 50 rows and "Showing the first {n} of {m} rows" (K2). |
 | Importing | `MxCard` + `MxSpinner` | "Adding {n} cards…". Close and Back do nothing until the write ends. |
-| Footer | `MxFooterBar` | Cancel + the step action (Read and map columns · Preview rows · Import {n} cards) and a caption; at Preview the caption shows only when nothing can be imported, since the button states the count (critique 2026-09-30 part 3b). |
+| Footer | `MxFooterBar`, `MxActionPair` 1 : 1 | Cancel + the step action (Map columns · Preview rows · Import {n}), side by side at every step in English and Vietnamese (The Short Label Rule, DEV-169), and a caption; at Preview the caption shows only when nothing can be imported, since the button states the count (critique 2026-09-30 part 3b). |
 | Result | `MxEmptyState` in the outcome's tone + `MxSection` counts + `MxNote` | By outcome (K4); see States. |
 
 ## States
@@ -87,5 +87,5 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 - Problems: "This file is not UTF-8" · "This file can’t be read" · "There are no rows to import".
 - Mapping: "2 · Map columns" · "First row is a header" · "Column {letter}" · "Term (front)" · "Meaning (back)" · "Example" · "Hint" · "Pronunciation" · "Tags" · "Not imported" · "Map one column to Term and one to Meaning. Both are required."
 - Preview: "3 · Preview" · "Ready · {n}" · "Invalid · {n}" · "Duplicate · {n}" · "Blank · {n}" · "Already in this deck" · "Repeated in the file (row {row})" · "Showing the first {shown} of {total} rows" · "Include duplicates".
-- Footer: "Read and map columns" · "Preview rows" · "Import {n} cards" · "Importing…".
+- Footer: "Map columns" · "Preview rows" · "Import {n}" · "Importing…" (Vietnamese "Ghép cột" · "Xem trước" · "Nhập {n}" · "Đang nhập…"); each fits half the 360 dp footer row (The Short Label Rule).
 - Result: "Imported" · "Imported with skips" · "Nothing added" · "Import didn’t finish" · "This deck no longer accepts cards" · "Added as new cards" · "Skipped — duplicates" · "Skipped — invalid rows" · "View the cards" · "Import another file" · "Back to deck" · "Try again".

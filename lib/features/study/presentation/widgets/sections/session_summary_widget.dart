@@ -73,7 +73,7 @@ class SessionSummaryWidget extends StatelessWidget {
         child: MxActionPair(
           leading: outcome.canStudyAgain
               ? MxButton(
-                  label: l10n.studyThisDeck,
+                  label: l10n.summaryStudyAgain,
                   tone: MxButtonTone.outline,
                   icon: AppIcons.play,
                   isBlock: true,

@@ -113,7 +113,7 @@ class _DeckDeleteDialogWidgetState
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(),
-        confirmLabel: l10n.deckDelete,
+        confirmLabel: l10n.trashMoveConfirm,
         confirmIcon: AppIcons.delete,
         isConfirmLoading: _isDeleting,
         onConfirm: switch (counted) {

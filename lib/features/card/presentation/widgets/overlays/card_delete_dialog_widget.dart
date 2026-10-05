@@ -109,7 +109,7 @@ class _CardDeleteDialogWidgetState
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(false),
-        confirmLabel: l10n.cardMoveToTrash,
+        confirmLabel: l10n.trashMoveConfirm,
         confirmIcon: AppIcons.delete,
         isConfirmLoading: _isDeleting,
         onConfirm: _isDeleting ? null : _delete,

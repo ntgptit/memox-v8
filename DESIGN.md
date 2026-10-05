@@ -299,6 +299,8 @@ Touch targets are 48dp minimum for every interactive control, whatever the paint
 
 **The Column Rule.** Content never grows wider than 720dp; wide windows gain empty ground, not longer lines.
 
+**The Short Label Rule.** Two actions side by side (`MxActionPair`, `MxSheetActions`) stay on one row in English and Vietnamese at a 360dp phone and the default text scale. When a label does not fit its share, shorten the label first: a verb and its object, dropping what the title, the step or the caption already says ("Read and map columns" became "Map columns", "Import 12 cards" became "Import 12"). Stack the pair only when no shorter label keeps the meaning, and record that exception and its reason in the screen's detail file (owner 2026-10-05). `MxActionPair` asserts the rule at the default text scale on a window of 360dp or wider; a recorded exception passes `canStack`, as Trash's selection bar and delete-for-good dialog do from 1,000 items.
+
 **The Wrap Rule.** A meta line, a breakdown line, a session context line or a hint that already wraps (the study session, Study home, the Library row meta) keeps doing so between whole terms. Large text scales are not a design target (PRODUCT.md, owner 2026-09-30), so no new work goes into wrapping for them; a title keeps one line.
 
 **The Clear Tail Rule.** A list under a FAB ends clear of it (`MxScrollClearance.fab` or `fabAboveNav`); when the FAB hides (selection), the clearance goes with it.
@@ -319,7 +321,7 @@ Hybrid, tonal first. Depth is conveyed by stepping through the surface-container
 
 ## Shapes
 
-One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, notes, banners and snackbars. 4 for checkboxes, 8 for compact buttons and the smallest tiles, 16 for the FAB, the bottom bar and the error tile, 20 for surfaces that float (dialogs, sheet top corners, the meaning and term fields, the empty-state tile), and a pill (999) for chips, badges, toggle tracks, grabbers, progress tracks and study action buttons. Borders are 1px hairlines; the focus ring is 2px with a 2px offset; radio and checkbox controls use a 2px stroke, and a selected radio thickens its ring to 6 without moving.
+One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, notes, banners and snackbars. 4 for checkboxes, 8 for compact buttons and the smallest tiles, 16 for the FAB, the bottom bar and the error tile, 20 for surfaces that float (dialogs, sheet top corners, the empty-state tile), and a pill (999) for chips, badges, toggle tracks, grabbers, progress tracks and study action buttons. Borders are 1px hairlines; the focus ring is 2px with a 2px offset; radio and checkbox controls use a 2px stroke, and a selected radio thickens its ring to 6 without moving.
 
 ## Components
 
@@ -328,14 +330,14 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 ### Actions
 - **MxButton**: tones primary, secondary, outline, text (no fill and no edge, Indigo Ink: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width, disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outlineEdge`.
 - **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area. **MxFab**: square 52, r16, icon only, no extended form.
-- **MxActionPair** (two footer actions, side by side or stacked when labels do not fit) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
+- **MxActionPair** (two footer actions, side by side; stacked only as the last resort of The Short Label Rule; a screen footer's Cancel and its action share the row 1 : 1, as Card editor and Import do, DEV-169) and **MxSheetActions** (dialog and sheet footer, confirm takes 1.3 shares).
 
 ### Containers
 - **MxCard**: raised (surface-container-lowest, r12, whisper shadow or dark ghost edge), plus hero, warning, success, danger and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
 - **MxDialog** (widths 340, 320, 300; scale-in), **MxBottomSheet** (top corners 20, chrome shadow, grabber), **MxDeckPickerSheet**, **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption at `AppOpacity.muted`).
 
 ### Inputs
-- **MxTextField**: variants form (52, muted fill that lightens on focus), detail (grows from 48), meaning (16/500, grows from 76, r20), term (24/700, r20), code (one centred line of six digits on the form fill, headline role with tabular figures and wide tracking, numeric keyboard and one-time-code autofill) and study (bare). Ghost edge, primary-ink edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
+- **MxTextField**: one box for every entry: 52 floor, muted fill that lightens on focus, r12, 12 padding, the body role. Variants form (one line), detail (multi-line, grows with its lines on a 12 padding; a card's meaning and details, pasted rows), term (wraps like detail, Enter moves on; a card's term, in the body role like every field, DEV-169), code (one centred line of six digits on the form fill, headline role with tabular figures and wide tracking, numeric keyboard and one-time-code autofill) and study (bare). Ghost edge, primary-ink edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
 - **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills primary with on-primary ink), **MxChipTrigger** (ghost chip that opens a menu).
 
 ### Navigation
@@ -362,7 +364,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Do** write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.
 - **Do** use `mastery` and `success` green only for mastery and success, and route mastery fills through `MasteryRamp`.
 - **Do** state a number once per screen (critique 2026-09-30 part 3b). A number lives in the element that explains it: a hero, a tile, a filter chip or the app bar title. A hero figure is not repeated in a list, a legend or a second tile.
-  - A button names the action; it carries a count only when that count is what the action acts on and nothing else states that total: "Study this deck · 4 due" (the hero lists the parts), "Import 1 card", "Review 12 due cards", a bulk action's "({n})".
+  - A button names the action; it carries a count only when that count is what the action acts on and nothing else states that total: "Study this deck · 4 due" (the hero lists the parts), "Import 12", "Review 12 due cards", a bulk action's "({n})".
   - A caption under a button never repeats the button's number.
   - A list header counts only when no hero, title or chip above states the same number.
   - While selecting, the selected count lives in the app bar title only.
@@ -378,6 +380,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **Don't** use violet or green as decoration, or green for anything but progress and success.
 - **Don't** tint shadows with the brand colour, and don't add elevation where a hairline groups the content.
 - **Don't** add hover states (Android only) or a global text style for one component.
+- **Don't** stack a pair of actions to make room for a long label; shorten the label (The Short Label Rule).
 - **Don't** put text below 12px (the 9px donut label is the sole exception, inside a fixed ring) or a fixed height around text.
 - **Don't** put failure copy in a component, or word a load failure as though data was lost.
 - **Don't** introduce an all-caps overline above headings as decoration; the section label introduces a list or settings group, the eyebrow is the one context line above a title or number, and user data is never upper-cased.

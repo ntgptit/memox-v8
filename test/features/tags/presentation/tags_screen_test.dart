@@ -255,10 +255,10 @@ void main() {
       findsNothing,
     );
     expect(
-      _confirm(tester, _en.tagsDeleteConfirm(46)).tone,
+      _confirm(tester, _en.tagsDeleteConfirm).tone,
       MxButtonTone.destructive,
     );
-    await tester.tap(find.text(_en.tagsDeleteConfirm(46)));
+    await tester.tap(find.text(_en.tagsDeleteConfirm));
     await tester.pumpAndSettle();
 
     expect(find.text('động từ'), findsNothing);
@@ -277,7 +277,7 @@ void main() {
     await _actions(tester, 'tạm');
     await tester.tap(find.text(_en.tagsDelete));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.tagsDeleteConfirm(2)));
+    await tester.tap(find.text(_en.tagsDeleteConfirm));
     await tester.pump();
     await tester.pump();
 
@@ -297,7 +297,7 @@ void main() {
     await _actions(tester, 'tạm');
     await tester.tap(find.text(_en.tagsDelete));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.tagsDeleteConfirm(2)));
+    await tester.tap(find.text(_en.tagsDeleteConfirm));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.tagsDeleteFailed), findsOneWidget);
@@ -319,7 +319,7 @@ void main() {
       "DELETE FROM card_tags WHERE tag_id = 't-tam'",
     );
     await env.db.customStatement("DELETE FROM tags WHERE id = 't-tam'");
-    await tester.tap(find.text(_en.tagsDeleteConfirm(2)));
+    await tester.tap(find.text(_en.tagsDeleteConfirm));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.tagsGone('tạm')), findsOneWidget);
