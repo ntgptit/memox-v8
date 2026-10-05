@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/code_controller.dart';
@@ -11,13 +12,16 @@ import 'package:memox/features/account/presentation/widgets/overlays/account_con
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 /// The code step of screen 31 and of the transition layer (account UI spec
-/// §5.2): six digits check at once; a wrong code clears the field (plan
-/// ruling 11); "Resend code" counts down its wait in its label.
+/// §5.2): the title, the lead and the address, six slots, a wait line that is
+/// a caption while the wait runs, a spinner while six digits are checked, and
+/// Resend once it may (sign-in redesign 2026-10-05 §4). Six digits check at
+/// once; a wrong code clears the field (plan ruling 11).
 class CodeFormWidget extends ConsumerStatefulWidget {
   const CodeFormWidget({
     super.key,
@@ -94,42 +98,85 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
       codeControllerProvider(widget.email, widget.purpose),
     );
     final problem = state.problem;
+    final styles = context.textStyles;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          l10n.accountCodeSentTo(widget.email),
-          style: context.textStyles.emptyBody,
+        Semantics(
+          header: true,
+          child: Text(l10n.accountCodeTitle, style: styles.screenTitle),
         ),
+        const SizedBox(height: AppSpacing.control),
+        Text(l10n.accountCodeSentTo, style: styles.emptyBody),
+        Text(widget.email, style: styles.emptyBodyStrong),
         const SizedBox(height: AppSpacing.section),
         MxTextField(
           controller: _code,
           variant: MxTextFieldVariant.code,
           label: l10n.accountCodeLabel,
+          autofocus: true,
           isEnabled: !state.isVerifying,
           onChanged: (text) => unawaited(_changed(text)),
           errorText: problem == null ? null : signInProblemText(l10n, problem),
         ),
-        if (state.isVerifying)
-          Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.grouped),
-            child: Center(child: MxSpinner(semanticLabel: l10n.commonLoading)),
-          ),
         const SizedBox(height: AppSpacing.grouped),
-        MxButton(
-          label: state.canResend
-              ? l10n.accountResend
-              : l10n.accountResendIn(_clock(state.resendIn)),
-          tone: MxButtonTone.text,
-          isLoading: state.isResending,
-          onPressed: state.canResend ? () => unawaited(_resend()) : null,
+        _WaitLine(
+          isVerifying: state.isVerifying,
+          wait: state.canResend ? null : _clock(state.resendIn),
+          isResending: state.isResending,
+          onResend: () => unawaited(_resend()),
         ),
+        MxNote.hint(text: l10n.accountCodeSpamHint),
         MxButton(
           label: l10n.accountUseAnotherEmail,
           tone: MxButtonTone.text,
           onPressed: state.isVerifying ? null : widget.onUseAnotherEmail,
         ),
       ],
+    );
+  }
+}
+
+/// The line under the code, 48 tall at least so its three forms never move
+/// what is below: a spinner while the code is checked, the wait as a
+/// caption, then "Resend code" once a new code may go (critique 2026-10-05
+/// P1: a disabled button read at 1.83:1).
+class _WaitLine extends StatelessWidget {
+  const _WaitLine({
+    required this.isVerifying,
+    required this.wait,
+    required this.isResending,
+    required this.onResend,
+  });
+
+  final bool isVerifying;
+
+  /// The time left as m:ss, or null once a new code may be sent.
+  final String? wait;
+  final bool isResending;
+  final VoidCallback onResend;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final wait = this.wait;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
+      child: Center(
+        child: switch ((isVerifying, wait)) {
+          (true, _) => MxSpinner(semanticLabel: l10n.commonLoading),
+          (false, final String time) => Text(
+            l10n.accountResendIn(time),
+            style: context.textStyles.footerCaption,
+          ),
+          (false, null) => MxButton(
+            label: l10n.accountResend,
+            tone: MxButtonTone.text,
+            isLoading: isResending,
+            onPressed: onResend,
+          ),
+        },
+      ),
     );
   }
 }

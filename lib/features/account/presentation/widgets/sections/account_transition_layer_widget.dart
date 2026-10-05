@@ -154,7 +154,7 @@ class _LayerCodePage extends ConsumerWidget {
     void back() => unawaited(Navigator.of(context).maybePop());
     return MxAppShell(
       appBar: MxAppBar(
-        title: l10n.accountCodeTitle,
+        titleWidget: const SizedBox.shrink(),
         density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,

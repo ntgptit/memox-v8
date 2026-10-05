@@ -121,6 +121,13 @@ final class MxTextStyles {
     color: _scheme.onSurfaceVariant,
   );
 
+  /// The part of a lead the reader must check, such as the address a code
+  /// went to: the lead at 600 in on-surface ink.
+  TextStyle get emptyBodyStrong => AppTypography.withWeight(
+    _texts.bodyMedium!,
+    FontWeight.w600,
+  ).copyWith(height: _emptyBodyHeight, color: _scheme.onSurface);
+
   /// Tappable breadcrumb level: 12/500, 0.1 tracking.
   TextStyle get breadcrumbAncestor => AppTypography.withWeight(
     _texts.labelSmall!,

@@ -6841,31 +6841,26 @@
   "@accountCodeTitle": {
     "description": "Screen 31's title."
   },
-  "accountCodeSentTo": "Enter the 6-digit code sent to {email}",
+  "accountCodeSentTo": "We sent a 6-digit code to",
   "@accountCodeSentTo": {
-    "placeholders": {
-      "email": {
-        "type": "String"
-      }
-    },
-    "description": "Screen 31: where the code went."
+    "description": "Screen 31: the lead; the address follows on its own line."
   },
   "accountCodeLabel": "Code, 6 digits",
   "@accountCodeLabel": {
     "description": "Screen 31: the code field's TalkBack label."
   },
-  "accountCodeWrong": "That code is wrong or has expired. Check the latest email, or send a new code.",
+  "accountCodeWrong": "That code is wrong or has expired. Check the latest email.",
   "@accountCodeWrong": {
     "description": "Screen 31: a refused code (Account UI spec R3)."
   },
-  "accountResendIn": "Resend code in {time}",
+  "accountResendIn": "New code in {time}",
   "@accountResendIn": {
     "placeholders": {
       "time": {
         "type": "String"
       }
     },
-    "description": "Screen 31: the resend countdown, as m:ss."
+    "description": "Screen 31: the wait before a new code can be sent, as m:ss; a caption, not a button."
   },
   "accountResend": "Resend code",
   "@accountResend": {
@@ -6878,6 +6873,10 @@
   "accountUseAnotherEmail": "Use another email",
   "@accountUseAnotherEmail": {
     "description": "Screen 31: back to the email."
+  },
+  "accountCodeSpamHint": "Check your spam folder if it hasn't arrived in a minute.",
+  "@accountCodeSpamHint": {
+    "description": "Screen 31: the footnote under the code."
   },
   "accountTakenEmail": "{email} already has an account",
   "@accountTakenEmail": {

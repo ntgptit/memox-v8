@@ -12,7 +12,8 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
-/// Screen 31 (account UI spec §5.2): the six digits sent to [email].
+/// Screen 31 (account UI spec §5.2): the six digits sent to [email]; the app
+/// bar holds Back, the step paints its own title.
 class CodeScreen extends ConsumerWidget {
   const CodeScreen({
     super.key,
@@ -35,7 +36,7 @@ class CodeScreen extends ConsumerWidget {
     void back() => unawaited(Navigator.of(context).maybePop());
     return MxAppShell(
       appBar: MxAppBar(
-        title: l10n.accountCodeTitle,
+        titleWidget: const SizedBox.shrink(),
         density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,

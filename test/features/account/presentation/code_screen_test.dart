@@ -9,6 +9,7 @@ import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/fake_auth_server.dart';
@@ -38,7 +39,8 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    expect(find.text(_en.accountCodeSentTo('a@example.com')), findsOneWidget);
+    expect(find.text(_en.accountCodeSentTo), findsOneWidget);
+    expect(find.text('a@example.com'), findsOneWidget);
     await tester.enterText(find.byType(TextField), '123456');
     await _settle(tester);
 
@@ -84,8 +86,11 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    final waiting = find.widgetWithText(MxButton, _en.accountResendIn('1:00'));
-    expect(tester.widget<MxButton>(waiting).onPressed, isNull);
+    expect(find.text(_en.accountResendIn('1:00')), findsOneWidget);
+    expect(
+      find.widgetWithText(MxButton, _en.accountResendIn('1:00')),
+      findsNothing,
+    );
 
     await tester.pump(const Duration(seconds: 60));
     await tester.tap(find.text(_en.accountResend));
@@ -284,6 +289,69 @@ void main() {
     expect(world.state, isNot(isA<Ready>()));
     expect(find.text(_en.accountSignedIn), findsNothing);
     expect(find.text(_en.accountSignedInAs('b@example.com')), findsNothing);
+  });
+
+  accountTest('the code step leads with its title, the address and the spam '
+      'hint, and opens on the code', (tester, env, world) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+    await tester.pump();
+
+    expect(find.text(_en.accountCodeTitle), findsOneWidget);
+    expect(find.text(_en.accountCodeSpamHint), findsOneWidget);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).focusNode.hasFocus,
+      isTrue,
+    );
+  });
+
+  accountTest('while six digits are checked a spinner takes the wait line, '
+      'and nothing under it moves', (tester, env, world) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+    final before = tester.getTopLeft(find.text(_en.accountUseAnotherEmail));
+
+    final held = world.gateway.holdRequests = Completer<void>();
+    await tester.enterText(find.byType(TextField), '123456');
+    await tester.pump();
+
+    expect(find.byType(MxSpinner), findsOneWidget);
+    expect(find.text(_en.accountResendIn('1:00')), findsNothing);
+    expect(tester.getTopLeft(find.text(_en.accountUseAnotherEmail)), before);
+
+    held.complete();
+    world.gateway.holdRequests = null;
+    await _settle(tester);
+  });
+
+  accountTest('a wrong code no longer asks for a new one while the wait runs', (
+    tester,
+    env,
+    world,
+  ) async {
+    await world.coordinator.requestCode('a@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    await tester.enterText(find.byType(TextField), '000000');
+    await _settle(tester);
+
+    expect(find.text(_en.accountCodeWrong), findsOneWidget);
+    expect(_en.accountCodeWrong, isNot(contains('new code')));
   });
 }
 

@@ -106,7 +106,7 @@ class FakeAuthGateway implements AuthGateway {
   /// The next code request fails with this, as GoTrue's rate limit does.
   Failure? failNextRequest;
 
-  /// While set, code requests wait on it, as a slow network does.
+  /// While set, code requests and checks wait on it, as a slow network does.
   Completer<void>? holdRequests;
 
   Future<void> _waitIfHeld() async => holdRequests?.future;
@@ -184,6 +184,7 @@ class FakeAuthGateway implements AuthGateway {
   Future<void> verifyEmailLink(String email, String code) async {
     kill?.step();
     server.checkOnline();
+    await _waitIfHeld();
     _checkCode(email, code);
     server.users[_userId]!
       ..email = email
@@ -205,6 +206,7 @@ class FakeAuthGateway implements AuthGateway {
   Future<void> verifyEmailSignIn(String email, String code) async {
     kill?.step();
     server.checkOnline();
+    await _waitIfHeld();
     _checkCode(email, code);
     final user = server.userByEmail(email) ?? server.addUser(email: email);
     user.methods.add(SignInMethod.email);
