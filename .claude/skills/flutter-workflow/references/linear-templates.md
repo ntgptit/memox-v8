@@ -9,6 +9,21 @@ The owner keeps a copy of the four issue templates in the Linear UI
 ([Linear UI mirror](#linear-ui-mirror)). This file wins when they disagree; a PR
 that changes a template says in its body that the mirror needs updating.
 
+## Language
+
+Titles, descriptions and comments are written in Vietnamese, with Vietnamese
+sentence structure; never a whole sentence in English. Common IT terms stay as
+they are and are not translated:
+
+- process and tools: PR, commit, merge, branch, review, test, golden,
+  emulator, log, label, epic, sub-issue, spec, plan;
+- Linear state names: Todo, In Progress, In Review, Done, Canceled, Backlog,
+  Duplicate;
+- identifiers: file names, paths, `DEV-n`, BR/UC/ADR codes, commands.
+
+For example "Sửa test golden của màn 07 sau khi merge PR", not "Sửa kiểm thử
+ảnh mẫu…" and not "Fix the golden test of screen 07".
+
 ## Create
 
 ### Fields
@@ -52,7 +67,8 @@ The `WBS` label says which layer; the kind label says what sort of work.
 
 ### Description templates
 
-Bodies are Markdown in Vietnamese; paths are repo-relative in backticks. A
+Bodies are Markdown, in the language of [Language](#language); paths are
+repo-relative in backticks. A
 section with nothing to say is deleted, not left empty, except
 **Điều kiện xong**, which every issue has.
 

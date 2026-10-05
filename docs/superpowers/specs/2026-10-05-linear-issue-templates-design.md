@@ -79,7 +79,11 @@ label still says *which layer*; the kind label says *what sort of work*.
 
 ### 3.4 Description templates
 
-All bodies are Markdown in Vietnamese. Paths are repo-relative in backticks.
+All bodies are Markdown in Vietnamese, with Vietnamese sentence structure;
+common IT terms stay untranslated (PR, commit, merge, branch, review, test,
+golden, emulator, log, label, epic, sub-issue, spec, plan; Linear state
+names; file names, paths, `DEV-n`, BR/UC/ADR codes, commands). Titles and
+comments follow the same rule. Paths are repo-relative in backticks.
 A section with nothing to say is deleted, not left empty, except
 **Điều kiện xong**, which every issue has.
 
