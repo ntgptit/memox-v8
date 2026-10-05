@@ -33,6 +33,9 @@ abstract final class AppComponentThemes {
     TextTheme texts,
   ) {
     final ghost = MxDerivedColors.resolve(scheme, semantic).ghostBorder;
+    // Every edged field rests on the one control edge (3:1, DEV-166); a
+    // disabled one keeps the ghost hairline, as SC 1.4.11 exempts it.
+    final rest = MxDerivedColors.outlineEdgeOf(scheme);
     return InputDecorationTheme(
       filled: true,
       isDense: true,
@@ -45,8 +48,8 @@ abstract final class AppComponentThemes {
         horizontal: AppSpacing.grouped,
       ),
       hintStyle: MxTextStyles(texts, scheme).inputHint,
-      border: fieldEdge(ghost),
-      enabledBorder: fieldEdge(ghost),
+      border: fieldEdge(rest),
+      enabledBorder: fieldEdge(rest),
       disabledBorder: fieldEdge(ghost),
       focusedBorder: fieldEdge(MxDerivedColors.primaryInkOf(scheme)),
       errorBorder: fieldEdge(scheme.error),

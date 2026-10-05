@@ -89,7 +89,10 @@ class _MxCodeFieldState extends State<MxCodeField> {
         width: AppStroke.focus,
       );
     }
-    return BorderSide(color: colors.outline, width: AppStroke.hairline);
+    return BorderSide(
+      color: context.derivedColors.outlineEdge,
+      width: AppStroke.hairline,
+    );
   }
 
   @override

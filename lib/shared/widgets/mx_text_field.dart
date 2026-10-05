@@ -5,7 +5,6 @@ import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
@@ -61,7 +60,6 @@ class MxTextField extends StatelessWidget {
     this.isEnabled = true,
     this.isAutofocused = false,
     this.isReadOnly = false,
-    this.hasStrongEdge = false,
     this.onChanged,
     this.onSubmitted,
     this.textInputAction,
@@ -85,7 +83,6 @@ class MxTextField extends StatelessWidget {
       isEnabled = field.isEnabled,
       isAutofocused = field.isAutofocused,
       isReadOnly = field.isReadOnly,
-      hasStrongEdge = field.hasStrongEdge,
       onChanged = field.onChanged,
       onSubmitted = field.onSubmitted,
       textInputAction = field.textInputAction,
@@ -111,9 +108,6 @@ class MxTextField extends StatelessWidget {
   /// Shows the value but takes no input, such as a code being checked.
   final bool isReadOnly;
 
-  /// Rests on the outline edge (3:1) instead of the ghost border, for a
-  /// field that must read at a glance (sign-in, DEV-166).
-  final bool hasStrongEdge;
   final ValueChanged<String>? onChanged;
 
   /// The keyboard's action key (Done, Next…) was pressed.
@@ -130,18 +124,6 @@ class MxTextField extends StatelessWidget {
 
   /// The digits a sign-in code holds (auth spec O1).
   static const int codeLength = 6;
-
-  /// The themed resting edge redrawn in [color] at a hairline.
-  static InputBorder? _strongEdge(InputBorder? themed, Color color) =>
-      switch (themed) {
-        final OutlineInputBorder outline => outline.copyWith(
-          borderSide: outline.borderSide.copyWith(
-            color: color,
-            width: AppStroke.hairline,
-          ),
-        ),
-        _ => themed,
-      };
 
   static _Geometry _geometry(MxTextFieldVariant variant) => switch (variant) {
     MxTextFieldVariant.form => (
@@ -282,11 +264,8 @@ class MxTextField extends StatelessWidget {
         outline.copyWith(borderRadius: BorderRadius.circular(geometry.radius)),
       _ => themed,
     };
-    final themedRest = hasError ? fields.errorBorder : fields.enabledBorder;
     final restingEdge = edge(
-      hasStrongEdge && !hasError
-          ? _strongEdge(themedRest, colors.outline)
-          : themedRest,
+      hasError ? fields.errorBorder : fields.enabledBorder,
     );
     // The box height is a floor painted by the decorator itself, reached by
     // padding (InputDecoration.constraints reserves the height but paints

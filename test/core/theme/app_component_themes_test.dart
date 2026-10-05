@@ -43,7 +43,8 @@ void main() {
         expect(filled.side!.resolve(focused)!.color, ink);
       });
 
-      test('fields: filled, ghost edge, radius 12, no label gap', () {
+      test('fields: filled, outline edge at rest, ghost when disabled, '
+          'radius 12, no label gap (DEV-166)', () {
         final fields = theme.inputDecorationTheme;
         expect(fields.filled, isTrue);
         expect(
@@ -56,8 +57,14 @@ void main() {
           }),
           scheme.surfaceContainerLowest,
         );
+        final rest = MxDerivedColors.outlineEdgeOf(scheme);
         final edge = fields.enabledBorder! as OutlineInputBorder;
-        expect(edge.borderSide.color, ghost);
+        expect(edge.borderSide.color, rest);
+        expect((fields.border! as OutlineInputBorder).borderSide.color, rest);
+        expect(
+          (fields.disabledBorder! as OutlineInputBorder).borderSide.color,
+          ghost,
+        );
         expect(edge.gapPadding, 0);
         expect(edge.borderRadius, BorderRadius.circular(12));
         expect(
@@ -275,7 +282,7 @@ void main() {
         expect(applied.filled, isTrue);
         expect(
           (applied.enabledBorder! as OutlineInputBorder).borderSide.color,
-          ghost,
+          MxDerivedColors.outlineEdgeOf(scheme),
         );
       });
     });

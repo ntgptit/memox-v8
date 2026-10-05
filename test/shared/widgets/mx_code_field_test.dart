@@ -76,7 +76,7 @@ void main() {
   });
 
   testWidgets('the slot that takes the next digit carries the focus edge; '
-      'the rest the outline; an error edges every slot', (tester) async {
+      'the rest the outline edge; an error edges every slot', (tester) async {
     final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
     final controller = TextEditingController(text: '12');
     addTearDown(controller.dispose);
@@ -104,7 +104,7 @@ void main() {
     await tester.pump();
     expect(edgeOf(2).top.color, derived.primaryInk);
     expect(edgeOf(2).top.width, 2);
-    expect(edgeOf(3).top.color, scheme.outline);
+    expect(edgeOf(3).top.color, derived.outlineEdge);
 
     await pumpMx(
       tester,
