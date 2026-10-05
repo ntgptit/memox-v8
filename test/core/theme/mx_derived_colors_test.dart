@@ -20,6 +20,30 @@ void main() {
     MxSemanticColors.dark,
   );
 
+  test('outlineEdge: outline pulled toward onSurface, 10% light and 25% '
+      'dark (DEV-166)', () {
+    expect(
+      light.outlineEdge,
+      Color.lerp(
+        AppColorSchemes.light.outline,
+        AppColorSchemes.light.onSurface,
+        0.10,
+      ),
+    );
+    expect(
+      dark.outlineEdge,
+      Color.lerp(
+        AppColorSchemes.dark.outline,
+        AppColorSchemes.dark.onSurface,
+        0.25,
+      ),
+    );
+    expect(
+      MxDerivedColors.outlineEdgeOf(AppColorSchemes.light),
+      light.outlineEdge,
+    );
+  });
+
   test('dangerSoft: error at 8% light, 16% dark', () {
     expect(light.dangerSoft, isColorCloseTo(0x14C02447));
     expect(dark.dangerSoft, isColorCloseTo(0x29FF8FA3));

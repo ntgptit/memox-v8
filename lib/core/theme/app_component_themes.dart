@@ -118,7 +118,10 @@ abstract final class AppComponentThemes {
       texts,
       fill: null,
       ink: MxDerivedColors.primaryInkOf(scheme),
-      edge: BorderSide(color: scheme.outlineVariant, width: AppStroke.hairline),
+      edge: BorderSide(
+        color: MxDerivedColors.outlineEdgeOf(scheme),
+        width: AppStroke.hairline,
+      ),
     ),
   );
 

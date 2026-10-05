@@ -108,7 +108,7 @@ void main() {
         expect(paintOf('Text').color, anyOf(isNull, Colors.transparent));
         expect(
           (paintOf('Outlined').shape! as RoundedRectangleBorder).side.color,
-          scheme.outlineVariant,
+          MxDerivedColors.outlineEdgeOf(scheme),
         );
       });
 
@@ -254,7 +254,10 @@ void main() {
         );
         final edge =
             (paintOf('Outlined').shape! as RoundedRectangleBorder).side;
-        expect(edge.color.a, closeTo(scheme.outlineVariant.a * 0.38, 0.01));
+        expect(
+          edge.color.a,
+          closeTo(MxDerivedColors.outlineEdgeOf(scheme).a * 0.38, 0.01),
+        );
       });
 
       testWidgets('a raw TextField takes the V3 field', (tester) async {

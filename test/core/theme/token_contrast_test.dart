@@ -76,17 +76,6 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       _nonText,
     ),
     ('toggle off edge on a row', scheme.outline, row, _nonText),
-    // The code field's slots (sign-in redesign 2026-10-05, §4.1): the edge
-    // holds 3:1 against the page around it and the fill inside it.
-    ('code slot edge on page', scheme.outline, page, _nonText),
-    // No sheet hosts the code field; its edge fails 3:1 on the sheet ground
-    // in both themes (final review F6), so it is not asserted there.
-    (
-      'code slot edge on its fill',
-      scheme.outline,
-      scheme.surfaceContainerLow,
-      _nonText,
-    ),
     (
       'toggle off thumb on its track',
       scheme.onSurfaceVariant,
@@ -103,18 +92,17 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       _tint(scheme.surfaceContainerLowest, AppOpacity.muted, page),
       _text,
     ),
-    // Critique 2026-09-30 part 1 (R7): the outline button's edge in dark
-    // holds 3:1 on every ground it sits on; light keeps outlineVariant.
-    if (scheme.brightness == Brightness.dark) ...[
-      ('outline edge on page', derived.outlineEdge, page, _nonText),
-      ('outline edge on sheet', derived.outlineEdge, sheet, _nonText),
-      (
-        'outline edge on the warning ground',
-        derived.outlineEdge,
-        Color.alphaBlend(derived.warningSoft, page),
-        _nonText,
-      ),
-    ],
+    // The one control edge (DEV-166, spec 2026-10-05 control edges §3.1):
+    // fields, outline buttons and code slots hold 3:1 on every ground they
+    // sit on, in both themes.
+    for (final (ground, where) in [
+      (page, 'page'),
+      (scheme.surfaceContainerLow, 'field fill'),
+      (scheme.surfaceContainerLowest, 'lowest'),
+      (sheet, 'sheet'),
+      (Color.alphaBlend(derived.warningSoft, page), 'warning ground'),
+    ])
+      ('outline edge on $where', derived.outlineEdge, ground, _nonText),
   ];
 }
 
