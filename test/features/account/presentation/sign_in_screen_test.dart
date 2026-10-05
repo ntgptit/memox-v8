@@ -266,11 +266,11 @@ void main() {
         find.text(_en.accountWithoutBody('a@example.com')),
         findsOneWidget,
       );
-      // The dialog's confirm, not the screen's button of the same name.
+      // The dialog's confirm.
       await tester.tap(
         find.descendant(
           of: find.byType(MxDialog),
-          matching: find.widgetWithText(MxButton, _en.accountContinueWithout),
+          matching: find.widgetWithText(MxButton, _en.accountWithoutConfirm),
         ),
       );
       await _settle(tester);

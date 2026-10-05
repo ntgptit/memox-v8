@@ -631,6 +631,10 @@
   "@cardMoveToTrash": {
     "description": "The Move to Trash dialog's confirm (kit 07, 09)."
   },
+  "trashMoveConfirm": "Move to Trash",
+  "@trashMoveConfirm": {
+    "description": "Move-to-Trash dialogs (card, deck): the confirm. The Short Label Rule in DESIGN.md: it must fit its half of the footer pair."
+  },
   "cardTrashedToast": "“{front}” moved to Trash",
   "@cardTrashedToast": {
     "placeholders": {
@@ -2299,7 +2303,7 @@
     },
     "description": "Screen handoff 02 (library alignment phase D): resetSwitchTo."
   },
-  "resetConfirm": "Reset and start cycle {cycle}",
+  "resetConfirm": "Start cycle {cycle}",
   "@resetConfirm": {
     "placeholders": {
       "cycle": {
@@ -4961,6 +4965,10 @@
   "@summaryNoteTrash": {
     "description": "Screen handoff 21 (FE-A6 P1c): the end note after content moved to the Trash."
   },
+  "summaryStudyAgain": "Study again",
+  "@summaryStudyAgain": {
+    "description": "Screen handoff 21: the footer's outline button that studies the deck again. The Short Label Rule in DESIGN.md: it must fit its half of the footer pair."
+  },
   "summaryDone": "Done",
   "@summaryDone": {
     "description": "Screen handoff 21 (FE-A6 P1c): the footer's primary button."
@@ -5692,7 +5700,7 @@
     },
     "description": "Screen 05 delete dialog: the note that no card is touched (BR-TAG-008)."
   },
-  "tagsDeleteConfirm": "{count, plural, =0{Delete tag} =1{Remove from 1 card} other{Remove from {count} cards}}",
+  "tagsDeleteConfirm": "{count, plural, =0{Delete tag} other{Remove tag}}",
   "@tagsDeleteConfirm": {
     "placeholders": {
       "count": {
@@ -5792,7 +5800,7 @@
   "@studyExitBody": {
     "description": "The exit confirm dialog body."
   },
-  "studyExitKeep": "Keep studying",
+  "studyExitKeep": "Keep going",
   "@studyExitKeep": {
     "description": "The exit confirm dialog: stay in the session."
   },
@@ -6249,7 +6257,7 @@
   "@syncTryAgain": {
     "description": "Screen 27 (SB-U1): re-queues the refused rows and syncs."
   },
-  "syncKeepOnDevice": "Keep on this device",
+  "syncKeepOnDevice": "Keep on device",
   "@syncKeepOnDevice": {
     "description": "Screen 27 (SB-U1): forgets the refusals; the data stays local (R7)."
   },
@@ -7127,6 +7135,10 @@
   "accountWithoutTitle": "Continue without an account?",
   "@accountWithoutTitle": {
     "description": "Screen 30 reauth: the confirm's title (Account UI spec §9.1)."
+  },
+  "accountWithoutConfirm": "Continue",
+  "@accountWithoutConfirm": {
+    "description": "Continue-without-an-account dialog: the confirm; the title asks the whole question. The Short Label Rule in DESIGN.md: it must fit its half of the footer pair."
   },
   "accountWithoutBody": "This phone's decks from {email} are removed. Sign in to {email} later to get them back.",
   "@accountWithoutBody": {

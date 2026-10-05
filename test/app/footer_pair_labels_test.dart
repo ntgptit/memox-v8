@@ -7,16 +7,41 @@ import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../support/widget_harness.dart';
 
-/// The Short Label Rule (DESIGN.md, owner 2026-10-05): a footer pair stays
-/// side by side in English and Vietnamese on a 360 dp phone, so each label
-/// fits its half of the row. Covers the 1 : 1 footers of the card editor
-/// and Import (DEV-169).
+/// The Short Label Rule (DESIGN.md, owner 2026-10-05): every pair of
+/// actions stays side by side in English and Vietnamese on a 360 dp phone
+/// at the default text scale. MxActionPair asserts it wherever a test pumps
+/// a pair; this test also measures the Vietnamese labels, which few screen
+/// tests pump.
 
-/// The largest count Import may show without breaking the rule.
-const int _largeImport = 99999;
+/// The footer row of a 360 dp phone: the width less two gutters.
+const double _footerRow = 328;
 
-/// [MxButton] as the footers build it: block and single line.
-MxButton _button(String label, IconData? icon) => MxButton(
+/// A dialog's action row on that phone, the narrowest one measured.
+const double _dialogRow = 288;
+
+/// The count each counted label is measured with: large enough to be the
+/// longest the screen shows.
+const int _count = 99999;
+
+/// A reset names the next cycle, two digits at most.
+const int _cycle = 99;
+
+/// A Trash selection is measured up to three digits; from 1,000 selected
+/// items the pair may stack, the exception recorded in screen 06's detail
+/// file.
+const int _selectionCount = 999;
+
+typedef _Pair = ({
+  String name,
+  double row,
+  int leadingFlex,
+  int trailingFlex,
+  MxButton leading,
+  MxButton trailing,
+});
+
+/// [MxButton] as a pair builds it: block and single line.
+MxButton _button(String label, [IconData? icon]) => MxButton(
   label: label,
   icon: icon,
   isBlock: true,
@@ -24,21 +49,114 @@ MxButton _button(String label, IconData? icon) => MxButton(
   onPressed: () {},
 );
 
-List<MxButton> _footerButtons(AppLocalizations l10n) => [
-  _button(l10n.commonCancel, null),
-  _button(l10n.cardSaveCard, AppIcons.check),
-  _button(l10n.cardSaveChanges, AppIcons.check),
-  _button(l10n.cardRetrySave, AppIcons.retry),
-  _button(l10n.importReadAction, AppIcons.arrowRight),
-  _button(l10n.importPreviewAction, AppIcons.preview),
-  _button(l10n.importCommitAction(_largeImport), AppIcons.download),
-  _button(l10n.importCommitting, AppIcons.download),
-];
+/// A dialog's Cancel and confirm, sharing the row 10 : 13 (MxSheetActions).
+_Pair _sheet(String name, MxButton cancel, MxButton confirm) => (
+  name: name,
+  row: _dialogRow,
+  leadingFlex: 10,
+  trailingFlex: 13,
+  leading: cancel,
+  trailing: confirm,
+);
+
+/// A screen footer's two actions.
+_Pair _footer(
+  String name,
+  MxButton leading,
+  MxButton trailing, {
+  int leadingFlex = 1,
+  int trailingFlex = 1,
+}) => (
+  name: name,
+  row: _footerRow,
+  leadingFlex: leadingFlex,
+  trailingFlex: trailingFlex,
+  leading: leading,
+  trailing: trailing,
+);
+
+List<_Pair> _pairs(AppLocalizations l10n) {
+  final cancel = _button(l10n.commonCancel);
+  return [
+    _footer('card editor', cancel, _button(l10n.cardSaveCard, AppIcons.check)),
+    _footer(
+      'card editor, edit',
+      cancel,
+      _button(l10n.cardSaveChanges, AppIcons.check),
+    ),
+    _footer(
+      'card editor, retry',
+      cancel,
+      _button(l10n.cardRetrySave, AppIcons.retry),
+    ),
+    _footer(
+      'import, source',
+      cancel,
+      _button(l10n.importReadAction, AppIcons.arrowRight),
+    ),
+    _footer(
+      'import, columns',
+      cancel,
+      _button(l10n.importPreviewAction, AppIcons.preview),
+    ),
+    _footer(
+      'import, preview',
+      cancel,
+      _button(l10n.importCommitAction(_count), AppIcons.download),
+    ),
+    _footer(
+      'import, importing',
+      cancel,
+      _button(l10n.importCommitting, AppIcons.download),
+    ),
+    _footer(
+      'session summary',
+      _button(l10n.summaryStudyAgain, AppIcons.play),
+      _button(l10n.summaryDone, AppIcons.check),
+      leadingFlex: 5,
+      trailingFlex: 6,
+    ),
+    _footer(
+      'trash selection',
+      _button(l10n.trashRestoreSelected(_selectionCount), AppIcons.restore),
+      _button(l10n.trashPurgeSelected(_selectionCount), AppIcons.delete),
+      leadingFlex: 13,
+      trailingFlex: 10,
+    ),
+    _sheet(
+      'reset',
+      cancel,
+      _button(l10n.resetConfirm(_cycle), AppIcons.resetProgress),
+    ),
+    _sheet(
+      'study exit',
+      _button(l10n.studyExitKeep),
+      _button(l10n.studyExitStop),
+    ),
+    _sheet('sync keep', cancel, _button(l10n.syncKeepOnDevice)),
+    _sheet(
+      'tag delete',
+      cancel,
+      _button(l10n.tagsDeleteConfirm(_count), AppIcons.delete),
+    ),
+    _sheet('continue without', cancel, _button(l10n.accountWithoutConfirm)),
+    _sheet(
+      'move to trash',
+      cancel,
+      _button(l10n.trashMoveConfirm, AppIcons.delete),
+    ),
+    _sheet(
+      'purge',
+      _button(l10n.trashPurgeKeep),
+      _button(l10n.trashPurgeConfirm(_count), AppIcons.delete),
+    ),
+  ];
+}
 
 void main() {
   for (final code in ['en', 'vi']) {
-    testWidgets('$code: every card editor and Import footer label fits half '
-        'the 360 dp row', (tester) async {
+    testWidgets('$code: every pair of actions fits side by side on a 360 dp '
+        'phone', (tester) async {
       late BuildContext context;
       await pumpMx(
         tester,
@@ -49,18 +167,20 @@ void main() {
           },
         ),
       );
-      final row =
-          tester.view.physicalSize.width / tester.view.devicePixelRatio -
-          2 * AppSpacing.gutter;
-      final half = (row - AppSpacing.control) / 2;
 
-      for (final button in _footerButtons(
-        lookupAppLocalizations(Locale(code)),
-      )) {
+      for (final pair in _pairs(lookupAppLocalizations(Locale(code)))) {
+        final shared = pair.row - AppSpacing.control;
+        final leadingShare =
+            shared * pair.leadingFlex / (pair.leadingFlex + pair.trailingFlex);
         expect(
-          button.naturalWidth(context),
-          lessThanOrEqualTo(half),
-          reason: button.label,
+          pair.leading.naturalWidth(context),
+          lessThanOrEqualTo(leadingShare),
+          reason: '${pair.name}: ${pair.leading.label}',
+        );
+        expect(
+          pair.trailing.naturalWidth(context),
+          lessThanOrEqualTo(shared - leadingShare),
+          reason: '${pair.name}: ${pair.trailing.label}',
         );
       }
     });

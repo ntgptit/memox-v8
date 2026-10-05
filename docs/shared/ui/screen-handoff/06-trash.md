@@ -59,6 +59,7 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 
 ## Rulings
 
+- **The Short Label Rule (DEV-169):** the pairs stay side by side in English and Vietnamese; Vietnamese reads "Xoá ({n})" in the selection bar and "Giữ lại" in the delete-for-good dialog. Exception: from 1,000 selected items the selection bar's counts no longer fit their shares and the pair stacks, since the count is what the action acts on.
 - **Invariant 36 (spec D6):** a blocked restore says "“X” still contains an entry deleted earlier (“Y”)" in a warning banner, one per blocked batch.
 - **P3-L8:** a restore target shows its path, as the move sheets do; targets carry no counts.
 - **BR-TRASH-006:** a deck has its own restore sheet and rule, with "Top level" for a top-level deck.

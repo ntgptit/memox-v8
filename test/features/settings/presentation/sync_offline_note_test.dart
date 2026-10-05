@@ -80,7 +80,7 @@ void main() {
         FakeSyncCommands(),
       ),
     );
-    await tester.tap(find.text('Keep on this device'));
+    await tester.tap(find.text('Keep on device'));
     await tester.pumpAndSettle();
 
     expect(
