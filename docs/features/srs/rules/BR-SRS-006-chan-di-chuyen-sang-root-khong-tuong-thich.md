@@ -9,7 +9,9 @@ superseded_by:
 
 Di chuyển subtree sang root có scheduler hoặc generation không tương thích MUST bị chặn, hoặc MUST yêu cầu người dùng reset tường minh.
 
-**Enforced by:** rule
+Khoá scheduler (BR-SRS-003) MUST đi theo subtree: khi một subtree có thẻ đã hoàn tất chuỗi học được di chuyển, khôi phục từ Thùng rác hoặc hoàn tác xoá vào root tương thích mà chưa khoá, root đích MUST bị khoá trong cùng transaction với lần di chuyển đó (invariant Q30), để không thể đổi scheduler bên dưới thẻ đã học.
+
+**Enforced by:** rule + store + invariant Q30
 
 ## Lý do
 
@@ -26,3 +28,5 @@ Không áp dụng
 | Case | Expected behaviour |
 |---|---|
 | Di chuyển subtree sang root khác scheduler | Chặn, đề nghị reset (BR-SRS-006) |
+| Di chuyển, khôi phục hoặc hoàn tác xoá subtree có thẻ đã học vào root cùng scheduler chưa khoá | Cho phép; root đích bị khoá ngay, đổi scheduler ở đó bị chặn (BR-SRS-003) |
+| Subtree không có thẻ đã học vào root chưa khoá | Cho phép; root đích không khoá |
