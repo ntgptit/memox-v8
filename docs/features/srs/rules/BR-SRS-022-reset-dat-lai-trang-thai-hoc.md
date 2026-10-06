@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-Reset MUST xoá/đặt lại: active scheduler state của mọi card trong cây — **bao gồm `learned_at`** — và mọi session đang dở. Thẻ trở lại tập học mới và đi lại chuỗi (BR-STUDY-051, BR-STUDY-053).
+Reset MUST xoá/đặt lại: active scheduler state của mọi card trong cây — **bao gồm `learned_at`** — và mọi session đang dở. Thẻ trở lại tập học mới và đi lại chuỗi (BR-STUDY-051, BR-STUDY-053). Reset giữ loại scheduler MUST giữ nguyên `scheduler_version` của root; reset kèm loại khác MUST đặt `scheduler_version` là version app đang chạy cho loại đó, như đổi scheduler khi chưa khoá (BR-SRS-002); `scheduler_config` giữ NULL (spec settings reset D7).
 
 **Enforced by:** store
 **Liên quan:** BR-STUDY-050
