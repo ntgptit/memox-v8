@@ -254,7 +254,10 @@ read `as T?` with the default (`deck.contentType`, `card.isFlagged`,
   `deleted_at IS NULL` except in `sync/changes`.
 - Foreign keys and `CHECK` constraints mirror Drift's.
 - Support tables: `user_sync_version(user_id PK, version bigint)` and
-  `sync_applied_op(user_id, op_id, PRIMARY KEY (user_id, op_id))`.
+  `sync_applied_op(user_id, op_id, PRIMARY KEY (user_id, op_id))`. The daily
+  `cleanup_accounts` forgets applied op ids older than 90 days (DEV-200):
+  every operation is idempotent by content, so a forgotten op id resent is
+  applied again as the same upsert or delete, never doubled.
 
 ## 8. Local changes (one Drift migration, at the first integration slice)
 

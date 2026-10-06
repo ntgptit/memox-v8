@@ -42,6 +42,12 @@ class FakeAuthServer {
   /// Runs right after a merge commits and before it answers.
   void Function()? afterMergeCommit;
 
+  /// The daily `cleanup_accounts` ran, long after every receipt was written:
+  /// an acknowledged receipt goes, an unacknowledged one stays whatever its
+  /// age (DEV-188), so a late retry of a committed merge still gets MERGED.
+  void expireReceipts() =>
+      receipts.removeWhere((_, receipt) => receipt.acknowledged);
+
   String nextId(String prefix) => '$prefix${_next++}';
 
   FakeUser addUser({
