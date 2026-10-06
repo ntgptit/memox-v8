@@ -54,14 +54,20 @@ final class DeckTreeDataSource {
     Deck moving, {
     required int siblingPosition,
     required DateTime at,
-  }) => _dao.moveSubtree(
-    moving.id,
-    parentId: target.id,
-    rootId: target.rootId,
-    depthShift: target.depth + 1 - moving.depth,
-    siblingPosition: siblingPosition,
-    now: at,
-  );
+  }) async {
+    await _dao.moveSubtree(
+      moving.id,
+      parentId: target.id,
+      rootId: target.rootId,
+      depthShift: target.depth + 1 - moving.depth,
+      siblingPosition: siblingPosition,
+      now: at,
+    );
+    // The scheduler lock follows the subtree (BR-SRS-006, invariant 30): a
+    // learned card now under a root that is not locked locks it here, in the
+    // same transaction, as its first completed card would (BR-SRS-003).
+    await _dao.lockRootIfLearned(at, target.rootId);
+  }
 
   /// Why [deckId] cannot take a restore: it is in the Trash, or it is gone
   /// (BR-TRASH-006).
