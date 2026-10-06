@@ -1,5 +1,7 @@
 # MemoX V8 Tags and Starter decks UI Implementation Plan (FE-B2 + FE-B4)
 
+> **Historical (ADR-019).** Written against the "Mobile UI Kit v3", retired on 2026-09-30; its kit references and screen captures are history, not authority. The app, `DESIGN.md` and the goldens decide the UI; each screen's current state is in its detail file under `docs/shared/ui/screen-handoff/`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build FE-B2 and FE-B4 in [`docs/wbs_FE.md`](../../wbs_FE.md) as one batch: kit

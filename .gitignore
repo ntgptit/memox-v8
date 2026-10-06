@@ -23,3 +23,6 @@ lib/l10n/generated/
 
 # Golden diff images flutter_test writes on a failed comparison.
 **/test/**/failures/
+
+# Console output of the guard, never committed (DEV-153).
+code-verification-guard-v2/guard_report.txt

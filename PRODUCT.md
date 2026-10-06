@@ -10,22 +10,15 @@ android
 
 MemoX is a personal app. Its owner builds it for their own study and uses it first.
 
-The product documents two user profiles (`docs/README.md`, Target users). The owner fits both:
+The two user profiles, the self-learner and the exam crammer, are defined once in `docs/README.md` › Target users (context, need, who is not the target). The owner fits both.
 
-- **Self-learner.** Studies vocabulary on a phone in scattered moments, often with an unreliable connection. Needs each word resurfaced at the right time, anywhere, offline included.
-- **Exam crammer.** Has a large word volume and a deadline. Needs to see progress and to have the words closest to being forgotten come first.
-
-Cards are language-agnostic term/meaning pairs (`BR-CARD-002`), so learners of any language are in scope. Most worked examples and fixtures are Korean vocabulary. That is sample content, not a market restriction.
+Cards are term/meaning pairs with no language field (`docs/shared/data/schema.md`, table `card`), so learners of any language are in scope. Most worked examples and fixtures are Korean vocabulary. That is sample content, not a market restriction.
 
 Not the target: classrooms managed by a teacher, and learners who want ready-made curated content.
 
 ## Product Purpose
 
-People forget most new vocabulary unless they review it at the right moment. Reviewing by hand from a notebook or a file never says *when* a word is due, so learners review too early (wasted effort) or too late (already forgotten).
-
-MemoX schedules each card with spaced repetition. It shows only what is due, and every result updates the next review date.
-
-Core value: review the right word at the right time, fully working without a network (`docs/README.md`, Core value).
+The problem and the core value are stated once in `docs/README.md` › Problem and › Core value, and are not repeated here. In one line: MemoX schedules each card with spaced repetition, shows only what is due, and works fully without a network.
 
 Success is the MVP "done when" checklist in `docs/README.md` (M1–M5, S1–S3): decks and cards persist, study sessions follow the SRS schedule, each deck shows today's due count, and everything works in airplane mode. No usage metrics are defined.
 
@@ -48,7 +41,7 @@ This is not a market product. It is a personal app its owner builds so they can 
 
 - **Offline-first, server-backed.** MemoX stays fully usable without a network connection: user data is persisted in Drift (SQLite) on each device and synchronized with a Supabase project when connectivity is available (`ADR-013`, `ADR-015`). The server is the canonical cross-device store and checks integrity only; business rules and SRS live in the app alone. Every user data type syncs (decks, cards, tags, Trash batches, reviews, schedules, account settings). Each install starts with an anonymous session; signing in with email OTP or Google attaches it to an account, and an admin role manages users (`ADR-015`). Deck sharing remains out of scope. `memox-api-services/` is frozen as a reference (`ADR-015`).
 - **Android release target.** iOS is deferred until Android is stable. Web is used only for development (E2E, visual regression) and is never shipped. Desktop is out of scope (`ADR-001`).
-- **Phones first; tablets get a rail and a column.** From a window width of 600 dp (tablets, and phones in landscape) the four destinations move to a navigation rail and every screen keeps its phone layout in a centred column of at most 720 dp (FE-C5, owner 2026-09-28; spec `2026-09-28-tablet-rail-design.md`). There are no two-pane or tablet-specific layouts.
+- **Phones first; tablets get a rail and a column.** The adaptive behaviour (the navigation rail from 600 dp, the centred content column) is recorded in `DESIGN.md` › Layout, not here. There are no two-pane or tablet-specific layouts (FE-C5, owner 2026-09-28; spec `2026-09-28-tablet-rail-design.md`).
 - **UI languages:** follow the system, English or Vietnamese; the fallback is English (`BR-SETTINGS-006`).
 - **Data handling:**
   - Everything is logged, user content included, to a server table only an admin can read (`ADR-018`, which retired `BR-CORE-002`).

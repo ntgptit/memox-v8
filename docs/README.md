@@ -216,7 +216,12 @@ Một agent đọc `docs/` cần trả lời được ba câu:
 - Rule bị thay thế: `status: deprecated` + `superseded_by: <ID>`, giữ nguyên ID
   và nguyên văn. **MUST NOT xoá** — ID biến mất làm mọi tham chiếu cũ trong
   commit, comment, PR trỏ vào hư không.
-- `docs/superpowers/` giữ ID lịch sử; `check.py` không kiểm ID ở đó.
+- `docs/superpowers/` giữ ID lịch sử; `check.py` không kiểm ID ở đó. Spec và
+  plan ở đó là hồ sơ của một lần làm: **giữ nguyên sau khi nhánh merge, không
+  xoá, không viết lại**. Khi cơ sở của một plan bị thu hồi (kit V3,
+  [ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md)), plan nhận một banner
+  `> **Historical (…)**` ngay dưới tiêu đề, trỏ tới quyết định thay thế; phần
+  còn lại giữ nguyên làm lịch sử.
 
 ### Frontmatter
 
