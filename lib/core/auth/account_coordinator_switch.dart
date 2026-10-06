@@ -314,8 +314,20 @@ extension AccountSwitching on AccountCoordinator {
 
   /// Ruling 7: the SDK holds another account than the one whose data the
   /// device has, and no transition says why. The device takes the SDK's
-  /// account, as a discard switch that is past the sign-in.
-  Future<void> _adopt(AccountUser last, String userId) {
+  /// account, as a discard switch that is past the sign-in. With changes
+  /// unsent it asks for a sign-in instead (#14), so their loss is confirmed
+  /// at #37 or #38 and never silent (DEV-189).
+  Future<void> _adopt(AccountUser last, String userId) async {
+    final unsent = await _sync.pendingCount();
+    if (unsent > 0) {
+      _log.warning(
+        'auth.account_mismatch_unsent',
+        category: LogCategory.state,
+        context: {'last': last.id, 'signed_in': userId, 'unsent': unsent},
+      );
+      await _sync.pause();
+      return _emit(ReauthRequired(last));
+    }
     _log.warning(
       'auth.account_mismatch',
       category: LogCategory.state,

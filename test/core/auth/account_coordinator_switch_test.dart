@@ -369,7 +369,7 @@ void main() {
 
   test('ruling 7: the SDK on another account than the last known one, with no '
       'record, adopts the SDK account and its data', () async {
-    final a = await readyAnonymous(world);
+    final a = await readyAnonymous(world, pending: 0); // DEV-189
     final u = world.server.addUser(email: 'u@example.com').id;
     world.gateway.adopt(u);
 

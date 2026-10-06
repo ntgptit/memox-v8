@@ -155,7 +155,7 @@ Error classes (data layer only): `NETWORK`, `SESSION_INVALID`
 | # | State | Event / guard | Action | Next |
 |---|---|---|---|---|
 | 1 | BOOTING | record exists | — | RECOVERING(t) |
-| 2 | BOOTING | no record, SDK has a session | snapshot = `lastKnownAccount` | VALIDATING |
+| 2 | BOOTING | no record, SDK has a session | snapshot = `lastKnownAccount`. SDK uid ≠ `lastKnownAccount` (plan ruling 7): outbox empty → record Switch{discard, source = last, target = SDK uid, targetSignedIn} → #27; outbox not empty → keep local, pause sync, log `auth.account_mismatch_unsent` → REAUTH_REQUIRED(last), so the loss goes through #37 or #38 (DEV-189) | VALIDATING |
 | 3 | BOOTING | no record, no session | — | BOOTSTRAPPING (online) / LOCAL_ONLY |
 | 4 | LOCAL_ONLY | online | — | BOOTSTRAPPING |
 | 5 | BOOTSTRAPPING | SDK already has a session | no second anonymous user | VALIDATING |
