@@ -207,6 +207,30 @@ void main() {
     }
   });
 
+  test('the cards of a copy keep the template order under one created_at '
+      '(DEV-216, ADR-007)', () async {
+    final fronts = List.generate(12, (i) => 'word ${i + 1}');
+    final repo = library([
+      _template(
+        decks: [
+          StarterDeck(
+            name: 'Ordered',
+            cards: [for (final f in fronts) StarterCard(front: f, back: 'b')],
+          ),
+        ],
+      ),
+    ]);
+
+    await added(repo);
+
+    expect([
+      for (final row in await rows(
+        'SELECT front FROM card ORDER BY created_at, id',
+      ))
+        row['front'],
+    ], fronts);
+  });
+
   test('the deepest template the library lists copies whole: ten levels '
       'with the root, cards on the tenth (BR-DECK-001, spec D6)', () async {
     var deepest = const StarterDeck(

@@ -6,6 +6,7 @@ import 'package:memox/features/card/data/repositories/card_transfer_repository_i
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
@@ -54,21 +55,20 @@ final class _SecondScheduleFails implements ScheduleRepository {
 void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
+  late CardRepositoryImpl list;
   late CardTransferRepositoryImpl cards;
   late DeckEntity root;
   late DeckEntity leaf;
   setUp(() async {
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db, now: _now);
-    cards = CardTransferRepositoryImpl(
+    list = CardRepositoryImpl(
       db,
-      CardRepositoryImpl(
-        db,
-        ScheduleRepositoryImpl(db, now: _now),
-        TagRepositoryImpl(db, now: _now),
-        now: _now,
-      ),
+      ScheduleRepositoryImpl(db, now: _now),
+      TagRepositoryImpl(db, now: _now),
+      now: _now,
     );
+    cards = CardTransferRepositoryImpl(db, list);
     root = await decks.root('r');
     leaf = await decks.sub(root.id, 'l');
   });
@@ -136,6 +136,34 @@ void main() {
         (await decks.findById(leaf.id))!.contentType,
         DeckContentType.card,
       );
+    });
+
+    test('cards of one import keep the source order in the list and in an export (DEV-216)', () async {
+      // One import writes every card with the same created_at, so the
+      // source order can only survive through the ids (ADR-007).
+      final fronts = List.generate(12, (i) => 'row ${i + 1}');
+      _ok(
+        await cards.importCards(
+          deckId: leaf.id,
+          drafts: [for (final f in fronts) CardDraft(front: f, back: 'b')],
+          includeDuplicates: false,
+        ),
+      );
+
+      final snapshot = _ok(await cards.exportSnapshot(deckId: leaf.id));
+      final view = await list
+          .watchCardList(
+            deckId: leaf.id,
+            query: const CardListQuery(),
+            windowSize: 50,
+            now: _now(),
+          )
+          .first;
+
+      expect([for (final r in snapshot.rows) r.front], fronts);
+      expect([
+        for (final item in view.items) item.front,
+      ], fronts.reversed.toList());
     });
 
     test('a draft written in the other Unicode form is a duplicate (BE-C5, '
