@@ -26,3 +26,4 @@ Không áp dụng
 | Case | Expected behaviour |
 |---|---|
 | Mở phiên → reset ở màn khác → quay lại bấm đánh giá | Từ chối ghi; session → `invalidated`/`stale_generation` (BR-STUDY-017) |
+| Root vẫn ở generation của phiên nhưng `card_schedule` của thẻ đã lệch (pull từ máy khác) → bấm đánh giá | srs từ chối `stale`; session → `invalidated`/`stale_generation` ngay tại lượt đó, không phục vụ lại thẻ (DEV-224) |

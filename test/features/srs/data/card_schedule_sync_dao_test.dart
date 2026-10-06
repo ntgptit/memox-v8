@@ -68,4 +68,51 @@ void main() {
       );
     });
   }
+
+  // Invariant 9 (BR-SRS-028, BR-SRS-029): a pull that moved the root on,
+  // past a schedule the pull had to skip because it was pending here, leaves
+  // no schedule behind its root (DEV-224).
+  test('afterPull reseeds a schedule whose generation or scheduler is not its '
+      "root's and queues it; one at the root's is left as it is", () async {
+    final db = openTestDatabase();
+    addTearDown(db.close);
+    final store = SyncStore(db);
+    final cards = CardSyncDao(db);
+    final schedules = CardScheduleSyncDao(db, store);
+    await _root(db, 'R', 'sm2');
+    await _child(db, 'D', 'R');
+    await cards.upsertFromServer(_wire('behind', 'D'), 1);
+    await cards.upsertFromServer(_wire('other', 'D'), 2);
+    await cards.upsertFromServer(_wire('kept', 'D'), 3);
+    final repository = ScheduleRepositoryImpl(db);
+    for (final id in ['behind', 'other', 'kept']) {
+      await repository.initializeCard(cardId: id);
+    }
+    await db.customStatement(
+      "UPDATE card_schedule SET generation = 2, answer_count = 4 WHERE card_id = 'behind'",
+    );
+    await db.customStatement(
+      "UPDATE card_schedule SET scheduler_type = 'eight_box', current_box = 1, "
+      'ease_factor = NULL, interval_days = NULL, repetitions = NULL '
+      "WHERE card_id = 'other'",
+    );
+    await db.customStatement(
+      "UPDATE card_schedule SET answer_count = 2 WHERE card_id = 'kept'",
+    );
+    await db.customStatement('DELETE FROM sync_outbox');
+
+    await store.applyingRemote(schedules.afterPull);
+
+    final rows = {
+      for (final s in await db.select(db.cardSchedule).get()) s.cardId: s,
+    };
+    expect(rows['behind']!.generation, 3);
+    expect(rows['behind']!.answerCount, 0);
+    expect(rows['other']!.schedulerType, 'sm2');
+    expect(rows['other']!.generation, 3);
+    expect(rows['kept']!.answerCount, 2);
+    expect(await store.isPendingEntity('card_schedule', 'behind'), isTrue);
+    expect(await store.isPendingEntity('card_schedule', 'other'), isTrue);
+    expect(await store.isPendingEntity('card_schedule', 'kept'), isFalse);
+  });
 }
