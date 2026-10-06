@@ -162,7 +162,7 @@ void main() {
         await _settleOverlay(tester);
         await tester.tap(find.text(_en.deckDelete));
         await _settleOverlay(tester);
-        await tester.tap(find.text(_en.deckDelete));
+        await tester.tap(find.text(_en.trashMoveConfirm));
         await _settleOverlay(tester);
         await expectBoundaryGolden(
           tester,
