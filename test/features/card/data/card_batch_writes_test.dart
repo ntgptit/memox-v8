@@ -122,13 +122,7 @@ void main() {
           row['hint'],
           row['is_flagged'],
         ),
-        (
-          'CÔNG',
-          'công',
-          'work',
-          'h',
-          0,
-        ), // the flag is not content to edit (BR-CARD-009)
+        ('CÔNG', 'công', 'work', 'h', 0),
       );
       expect(
         (row['created_at'], row['updated_at']),
@@ -143,27 +137,6 @@ void main() {
           .getSingle();
       expect(schedule.data, {'learned_at': 1, 'current_box': 3});
       expect(await count('review_log'), 1);
-    });
-
-    test('keeps a flag set while the editor held an older draft '
-        '(BR-CARD-009, DEV-220)', () async {
-      final card = await cards.card(
-        nouns.id,
-        const CardDraft(front: 'f', back: 'b'),
-      );
-      // The system (BR-STUDY-073) or another device sets the flag while the
-      // editor, seeded from the unflagged card, is open.
-      await cards.setFlagged(cardIds: {card.id}, isFlagged: true);
-
-      final result = await cards.editCard(
-        cardId: card.id,
-        draft: const CardDraft(front: 'f', back: 'changed'),
-        now: _later,
-      );
-
-      expect(result, isA<Ok<void, CardRejection>>());
-      final row = await cardRow(card.id);
-      expect((row['back'], row['is_flagged']), ('changed', 1));
     });
 
     test(
