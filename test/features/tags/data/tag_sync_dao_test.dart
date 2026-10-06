@@ -73,4 +73,34 @@ void main() {
     expect(queued, {'card/K': 'upsert', 'tag/L': 'delete'});
     expect(await store.rejections(), isEmpty);
   });
+
+  // Review focus 5 (DEV-173, plan ruling P1): the card already carries the
+  // pulled tag, so the relink must not trip the card_tags primary key.
+  test('a renamed tag absorbs a local one on a card that has both', () async {
+    await db.customStatement(
+      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+      "scheduler_version, generation, sibling_position, created_at, updated_at) "
+      "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES ('K', 'R', 'f', 'b', 0, 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('P', 'noun', 'noun', 0), ('L', 'verb', 'verb', 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 'P'), ('K', 'L')",
+    );
+    await db.customStatement('DELETE FROM sync_outbox');
+
+    await remote(() => adapter.upsertFromServer(_wire('P', 'Verb'), 6));
+
+    final links = await db.select(db.cardTags).get();
+    expect(links.map((l) => '${l.cardId}/${l.tagId}'), ['K/P']);
+    final queued = {
+      for (final e in await db.select(db.syncOutbox).get())
+        '${e.entityType}/${e.entityId}': e.op,
+    };
+    expect(queued, {'card/K': 'upsert', 'tag/L': 'delete'});
+  });
 }
