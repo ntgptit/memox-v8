@@ -15,7 +15,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/network/supabase_config.dart';
-import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 

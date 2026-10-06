@@ -7,7 +7,7 @@ import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/buffer_sink.dart';
 import 'package:memox/core/logging/console_sink.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
-import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/features/reminders/presentation/providers/deliver_reminder_use_case_provider.dart';
 
 /// What the alarm runs, in its own background isolate (UC-REMINDER-001 step
