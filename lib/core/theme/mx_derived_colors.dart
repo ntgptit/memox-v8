@@ -153,18 +153,23 @@ final class MxDerivedColors {
   static const double _dangerInkDark = 0.30;
   static const double _primaryInkLight = 0.25;
   static const double _primaryInkDark = 0.45;
-  static const double _outlineEdgeLight = 0.10;
-  static const double _outlineEdgeDark = 0.25;
+  static const double _outlineEdgeSaturationLight = 0.30;
+  static const double _outlineEdgeDark = 0.20;
 
   /// The one control edge: fields at rest, the outline button, the code
-  /// slots. Outline pulled toward onSurface until it holds 3:1 on the page,
-  /// the field fill, the sheet and the warning ground in both themes
-  /// (DEV-166; replaces owner ruling R7's light outlineVariant).
-  static Color outlineEdgeOf(ColorScheme scheme) => Color.lerp(
-    scheme.outline,
-    scheme.onSurface,
-    scheme.brightness == Brightness.dark ? _outlineEdgeDark : _outlineEdgeLight,
-  )!;
+  /// slots. It holds 3:1 on the page, the field fill, the sheet and the
+  /// warning ground in both themes, as lightly as it can (DEV-166, DEV-179):
+  /// light keeps outline's hue and lightness and only raises its saturation;
+  /// dark, where saturation alone cannot reach 3:1, pulls outline toward
+  /// onSurface.
+  static Color outlineEdgeOf(ColorScheme scheme) {
+    if (scheme.brightness == Brightness.dark) {
+      return Color.lerp(scheme.outline, scheme.onSurface, _outlineEdgeDark)!;
+    }
+    return HSLColor.fromColor(scheme.outline)
+        .withSaturation(_outlineEdgeSaturationLight)
+        .toColor();
+  }
 
   /// Primary as TEXT, icon, focus ring or off-fill spinner: primary pulled
   /// toward onSurface until it reads at 4.5:1 on every ground and primary

@@ -99,24 +99,10 @@ void main() {
   double widthOf(WidgetTester tester, String label) =>
       tester.getSize(find.widgetWithText(MxButton, label)).width;
 
-  libraryTest('the unsent-loss confirm splits its pair evenly (2026-10-05 '
-      'L2)', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      asker((context) => confirmUnsentLoss(context, 2)),
-    );
-    await tester.tap(find.text('ask'));
-    await tester.pumpAndSettle();
-
-    expect(
-      widthOf(tester, _en.commonCancel),
-      widthOf(tester, _en.accountUnsentConfirm(2)),
-    );
-  });
-
-  libraryTest('by default a confirm keeps the larger share, as screen 32 '
-      'does', (tester, env) async {
+  libraryTest('every account confirm splits its pair evenly (DEV-179)', (
+    tester,
+    env,
+  ) async {
     await pumpLibraryScreen(
       tester,
       env,
@@ -132,9 +118,23 @@ void main() {
     await tester.tap(find.text('ask'));
     await tester.pumpAndSettle();
 
+    expect(widthOf(tester, 'Do it'), widthOf(tester, _en.commonCancel));
+  });
+
+  libraryTest('the unsent-loss confirm is the verb alone: its title names '
+      'the count (DEV-179)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      asker((context) => confirmUnsentLoss(context, 2)),
+    );
+    await tester.tap(find.text('ask'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.accountUnsentTitle(2)), findsOneWidget);
     expect(
-      widthOf(tester, 'Do it'),
-      greaterThan(widthOf(tester, _en.commonCancel)),
+      find.widgetWithText(MxButton, _en.accountUnsentConfirm),
+      findsOneWidget,
     );
   });
 }

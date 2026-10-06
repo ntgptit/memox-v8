@@ -120,7 +120,7 @@ void main() {
     expect(find.text('meokda · eat'), findsOneWidget);
 
     await _tap(tester, _button(_en.trashPurgeSelected(2)));
-    await tester.tap(_inDialog(_en.trashPurgeConfirm(2)));
+    await tester.tap(_inDialog(_en.trashPurgeConfirm));
     await tester.pump();
     expect(find.byType(MxSpinner), findsOneWidget);
     await tester.pumpAndSettle();
@@ -156,7 +156,7 @@ void main() {
     await _tap(tester, find.byTooltip(_en.trashEntryActions('Food')));
     await _tap(tester, find.text(_en.trashDeletePermanently));
     expect(find.text(_en.trashPurgeDecksTitle(1)), findsOneWidget);
-    await _tap(tester, _inDialog(_en.trashPurgeConfirm(1)));
+    await _tap(tester, _inDialog(_en.trashPurgeConfirm));
 
     expect(find.text('Food'), findsOneWidget);
     expect(find.text(_en.trashPurgedDecks(1)), findsNothing);
@@ -202,7 +202,7 @@ void main() {
     await pumpLibraryScreen(tester, env, const TrashScreen());
     await _selectCards(tester);
     await _tap(tester, _button(_en.trashPurgeSelected(2)));
-    await tester.tap(_inDialog(_en.trashPurgeConfirm(2)));
+    await tester.tap(_inDialog(_en.trashPurgeConfirm));
     await tester.pump();
 
     final keep = tester.widget<MxButton>(

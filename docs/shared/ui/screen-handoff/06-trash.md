@@ -32,7 +32,7 @@ bar (D2). Opening it runs the auto-purge, as the app's start and every resume do
 | Bar | `MxFooterBar` + `MxActionPair` | While selecting: "Restore ({n})" (primary) · "Delete ({n})" (destructive), side by side; from 1,000 selected items they may stack (see Rulings). Both are disabled until a pick. |
 | Actions | `MxBottomSheet` + `MxActionSheetCommandRow` × 2 | The name and "{kind} · deleted {ago} · was in {deck}"; "Restore…" / "Choose which deck it goes to"; "Delete permanently" / "Cannot be undone · history lost" (destructive). |
 | Restore | `MxDeckPickerSheet` | "Restore “{name}” to…" or "Restore {n} cards/decks to…", the rule, then the targets as paths, or the single "Top level" for top-level decks. With no target: "Nowhere to restore right now", why, and OK. |
-| Delete for good | `MxDialog` + `MxSheetActions.custom` | "Delete {n} cards permanently?", "They disappear for good, together with their study history. This cannot be undone.", "Keep in Trash" (primary, focused) · "Delete {n}" (destructive, spinning while it runs). |
+| Delete for good | `MxDialog` + `MxSheetActions.custom` | "Delete {n} cards permanently?", "They disappear for good, together with their study history. This cannot be undone.", "Keep in Trash" (primary, focused) · "Delete" (destructive, spinning while it runs), 1 : 1 (DEV-179). |
 | Toasts | `MxSnackbar` | "“{name}” restored to {deck}" / "{n} entries restored to {deck}"; "{n} cards deleted permanently". |
 
 ## States
@@ -59,7 +59,8 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 
 ## Rulings
 
-- **The Short Label Rule (DEV-169):** the pairs stay side by side in English and Vietnamese; Vietnamese reads "Xoá ({n})" in the selection bar and "Giữ lại" in the delete-for-good dialog. Exception: from 1,000 items the counts in the selection bar and in the delete-for-good dialog ("Delete {n}") no longer fit their shares and the pair stacks (`canStack`), since the count is what the action acts on.
+- **The Short Label Rule (DEV-169):** the pairs stay side by side in English and Vietnamese; Vietnamese reads "Xoá ({n})" in the selection bar and "Giữ lại" in the delete-for-good dialog. Exception: from 1,000 items the counts in the selection bar no longer fit their shares and the pair stacks (`canStack`), since the count is what the action acts on.
+- **DEV-179 (owner 2026-10-06):** the delete-for-good dialog's title names the count, so its confirm is "Delete" / "Xoá" alone, sharing the row 1 : 1 with "Keep in Trash"; it no longer stacks.
 - **Invariant 36 (spec D6):** a blocked restore says "“X” still contains an entry deleted earlier (“Y”)" in a warning banner, one per blocked batch.
 - **P3-L8:** a restore target shows its path, as the move sheets do; targets carry no counts.
 - **BR-TRASH-006:** a deck has its own restore sheet and rule, with "Top level" for a top-level deck.
@@ -79,5 +80,5 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 - Actions: "Restore…" · "Choose which deck it goes to" · "Delete permanently" · "Cannot be undone · history lost".
 - Restore: "Restore “{name}” to…" · "Its schedule, history, flag and tags come back with it. Only decks in the same tree that hold cards or are empty are offered." · "Nowhere to restore right now" · "No deck in “{root}” can hold cards at the moment. Create an empty sub-deck there, then restore." · "“{name}” restored to {deck}".
 - Selection: "Select entries" · "{n} cards selected" · "{m} cards" · "{m} decks" · "Cards and decks can't be selected together." · "Restore ({n})" · "Delete ({n})" · "Clear selection".
-- Delete for good: "Delete {n} cards permanently?" · "They disappear for good, together with their study history. This cannot be undone." · "Keep in Trash" · "Delete {n}" · "{n} cards deleted permanently".
+- Delete for good: "Delete {n} cards permanently?" · "They disappear for good, together with their study history. This cannot be undone." · "Keep in Trash" · "Delete" · "{n} cards deleted permanently".
 - Empty and error: "Trash is empty" · "Decks and cards you delete stay here for 30 days before they are removed for good." · "Couldn't open Trash".

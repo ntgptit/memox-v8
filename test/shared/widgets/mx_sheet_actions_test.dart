@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -28,12 +27,9 @@ void main() {
         ),
       ),
     );
-    // 340 − 16 − 16 − 8 = 300, split 10 : 13.
-    expect(
-      tester.getSize(_button('Cancel')).width,
-      closeTo(300 * 10 / 23, 0.01),
-    );
-    expect(tester.getSize(_button('Move')).width, closeTo(300 * 13 / 23, 0.01));
+    // 340 − 16 − 16 − 8 = 300, split 1 : 1 (DEV-179).
+    expect(tester.getSize(_button('Cancel')).width, closeTo(150, 0.01));
+    expect(tester.getSize(_button('Move')).width, closeTo(150, 0.01));
     expect(
       tester.widget<MxButton>(_button('Cancel')).tone,
       MxButtonTone.outline,
@@ -69,7 +65,7 @@ void main() {
     },
   );
 
-  testWidgets('a destructive confirm, with its glyph passed through', (
+  testWidgets('a destructive confirm, without a glyph (DEV-179)', (
     tester,
   ) async {
     await pumpMx(
@@ -80,17 +76,14 @@ void main() {
           onCancel: () {},
           confirmLabel: 'Delete',
           onConfirm: () {},
-          confirmIcon: AppIcons.delete,
           isDestructive: true,
         ),
       ),
     );
     final confirm = tester.widget<MxButton>(_button('Delete'));
 
-    expect(
-      (confirm.tone, confirm.icon),
-      (MxButtonTone.destructive, AppIcons.delete),
-    );
+    // A popup's buttons carry no icon; the tone tells the weight (DEV-179).
+    expect((confirm.tone, confirm.icon), (MxButtonTone.destructive, null));
   });
 
   testWidgets('a warning confirm, for a merge (spec D15)', (tester) async {
@@ -223,7 +216,6 @@ void main() {
           cancelLabel: 'Giữ lại tất cả',
           onCancel: () {},
           confirmLabel: 'Xoá vĩnh viễn 12 thẻ',
-          confirmIcon: Icons.delete,
           isDestructive: true,
           onConfirm: () {},
         ),
@@ -238,8 +230,8 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('an even split gives Cancel and the confirm one width and one '
-      'height (2026-10-05 L2)', (tester) async {
+  testWidgets('Cancel and the confirm share one width and one height '
+      '(DEV-179)', (tester) async {
     await pumpMx(
       tester,
       SizedBox(
@@ -249,7 +241,6 @@ void main() {
           onCancel: () {},
           confirmLabel: 'Continue',
           onConfirm: () {},
-          isEvenSplit: true,
         ),
       ),
     );
@@ -259,7 +250,7 @@ void main() {
     expect(cancel.height, confirm.height);
   });
 
-  testWidgets('at a larger text scale an even split stacks a label too long '
+  testWidgets('at a larger text scale the pair stacks a label too long '
       'for its half, both full width (The Short Label Rule)', (tester) async {
     const long = 'Discard and continue with everything';
     await pumpMx(
@@ -273,7 +264,6 @@ void main() {
             onCancel: () {},
             confirmLabel: long,
             onConfirm: () {},
-            isEvenSplit: true,
           ),
         ),
       ),

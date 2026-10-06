@@ -130,7 +130,7 @@ void main() {
         await _settle(tester);
         await tester.tap(find.text(_en.trashDeletePermanently));
         await _settle(tester);
-        await tester.tap(find.text(_en.trashPurgeConfirm(1)));
+        await tester.tap(find.text(_en.trashPurgeConfirm));
         await tester.pumpAndSettle();
         await expectBoundaryGolden(
           tester,

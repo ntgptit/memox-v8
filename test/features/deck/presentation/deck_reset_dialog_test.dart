@@ -132,7 +132,7 @@ void main() {
       isTrue,
     );
 
-    await tester.tap(find.text(_en.resetConfirm(2)));
+    await tester.tap(find.text(_en.resetConfirm));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.resetDoneToast(2, 2)), findsOneWidget);
@@ -153,7 +153,7 @@ void main() {
 
     await tester.tap(find.text(_en.resetSwitchTo(_en.deckSchedulerEightBox)));
     await tester.pump();
-    await tester.tap(find.text(_en.resetConfirm(2)));
+    await tester.tap(find.text(_en.resetConfirm));
     await tester.pumpAndSettle();
 
     expect(_option(tester, _en.deckSchedulerEightBox).isSelected, isTrue);
@@ -174,7 +174,7 @@ void main() {
 
     expect(find.text(_en.resetNothingToLose), findsOneWidget);
     expect(find.byType(MxOutcomeTile), findsNothing);
-    await tester.tap(find.text(_en.resetConfirm(2)));
+    await tester.tap(find.text(_en.resetConfirm));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.resetDoneToast(2, 0)), findsOneWidget);
@@ -222,12 +222,14 @@ void main() {
       deckAlgorithmScreen(deckId: korean.id),
     );
     await _openReset(tester);
-    expect(find.text(_en.resetConfirm(2)), findsOneWidget);
 
     await ScheduleRepositoryImpl(env.db).resetLearning(rootDeckId: korean.id);
     await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.resetConfirm));
+    await tester.pumpAndSettle();
 
-    expect(find.text(_en.resetConfirm(3)), findsOneWidget);
+    // The dialog follows the live deck: its reset opens cycle 3, not 2.
+    expect(find.text(_en.resetDoneToast(3, 0)), findsOneWidget);
   });
 
   libraryTest('while the reset runs the confirm spins and Cancel is off', (
@@ -245,7 +247,7 @@ void main() {
     );
     await _openReset(tester);
 
-    await tester.tap(find.text(_en.resetConfirm(2)));
+    await tester.tap(find.text(_en.resetConfirm));
     await tester.pump();
     expect(find.byType(MxSpinner), findsOneWidget);
     expect(
@@ -285,7 +287,7 @@ void main() {
     );
     await _openReset(tester);
 
-    await tester.tap(find.text(_en.resetConfirm(2)));
+    await tester.tap(find.text(_en.resetConfirm));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.resetDialogTitle), findsOneWidget);
@@ -295,7 +297,7 @@ void main() {
     );
     expect(find.text(_en.algorithmLockedTitle(1)), findsOneWidget);
 
-    await tester.tap(find.text(_en.resetConfirm(2)));
+    await tester.tap(find.text(_en.resetConfirm));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.resetDialogTitle), findsNothing);

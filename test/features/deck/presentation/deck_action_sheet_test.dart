@@ -197,7 +197,7 @@ void main() {
     expect(find.text(_en.deckDeleteTitle), findsOneWidget);
     expect(find.text(_en.deckDeleteSummary('Words', 1, 2)), findsOneWidget);
     expect(find.text(_en.deckDeleteNote), findsOneWidget);
-    await tester.tap(find.text(_en.deckDelete));
+    await tester.tap(find.text(_en.trashMoveConfirm));
     // The screen is the test's only route: nothing to pop back to.
     await tester.pump();
     await tester.pump();
@@ -220,7 +220,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckDelete));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.deckDelete));
+    await tester.tap(find.text(_en.trashMoveConfirm));
     await tester.pumpAndSettle();
     expect(await _activeDeckCount(env), 1);
 
@@ -241,7 +241,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckDelete));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.deckDelete));
+    await tester.tap(find.text(_en.trashMoveConfirm));
     await tester.pumpAndSettle();
     // Meanwhile the deck it was in goes to the Trash as well.
     await env.decks.deleteDeck(deckId: words.id);
@@ -265,7 +265,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.deckDelete));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.deckDelete));
+    await tester.tap(find.text(_en.trashMoveConfirm));
     await tester.pump();
     expect(find.byType(MxSpinner), findsOneWidget);
     await tester.pumpAndSettle();

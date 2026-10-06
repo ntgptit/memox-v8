@@ -368,9 +368,7 @@ void main() {
       await _settle(tester);
       expect(find.text(_en.accountUnsentTitle(2)), findsOneWidget);
 
-      await tester.tap(
-        find.widgetWithText(MxButton, _en.accountUnsentConfirm(2)),
-      );
+      await tester.tap(find.widgetWithText(MxButton, _en.accountUnsentConfirm));
       await _settle(tester);
       expect(codesSent, ['b@example.com']);
     });

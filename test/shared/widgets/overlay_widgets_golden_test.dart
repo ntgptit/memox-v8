@@ -26,9 +26,8 @@ void main() {
           MxSheetActions(
             cancelLabel: 'Cancel',
             onCancel: () {},
-            confirmLabel: 'Move to Trash',
+            confirmLabel: 'Move',
             onConfirm: () {},
-            confirmIcon: AppIcons.delete,
             isDestructive: true,
           ),
           MxSheetActions(
@@ -72,7 +71,7 @@ void main() {
         actions: MxSheetActions(
           cancelLabel: 'Cancel',
           onCancel: () {},
-          confirmLabel: 'Move to Trash',
+          confirmLabel: 'Move',
           onConfirm: () {},
           isDestructive: true,
         ),

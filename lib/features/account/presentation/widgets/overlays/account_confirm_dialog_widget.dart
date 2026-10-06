@@ -14,11 +14,9 @@ Future<bool> confirmAccountStep(
   required String body,
   required String confirmLabel,
   Widget? note,
-  IconData? confirmIcon,
   bool isDestructive = false,
   bool isWarning = false,
   bool canConfirm = true,
-  bool isEvenSplit = false,
 }) async =>
     await showMxDialog<bool>(
       context,
@@ -27,11 +25,9 @@ Future<bool> confirmAccountStep(
         body: body,
         confirmLabel: confirmLabel,
         note: note,
-        confirmIcon: confirmIcon,
         isDestructive: isDestructive,
         isWarning: isWarning,
         canConfirm: canConfirm,
-        isEvenSplit: isEvenSplit,
       ),
     ) ??
     false;
@@ -45,10 +41,9 @@ Future<bool> confirmUnsentLoss(BuildContext context, int count) {
     context,
     title: l10n.accountUnsentTitle(count),
     body: l10n.accountUnsentBody(count),
-    // The confirm names what it loses (DEV-168).
-    confirmLabel: l10n.accountUnsentConfirm(count),
+    // The title names what it loses; the confirm is the verb (DEV-179).
+    confirmLabel: l10n.accountUnsentConfirm,
     isDestructive: true,
-    isEvenSplit: true,
   );
 }
 
@@ -83,11 +78,9 @@ class AccountConfirmDialogWidget extends StatelessWidget {
     required this.body,
     required this.confirmLabel,
     this.note,
-    this.confirmIcon,
     this.isDestructive = false,
     this.isWarning = false,
     this.canConfirm = true,
-    this.isEvenSplit = false,
   });
 
   final String title;
@@ -96,7 +89,6 @@ class AccountConfirmDialogWidget extends StatelessWidget {
 
   /// An `MxNote`: the reassurance, or why the confirm cannot go.
   final Widget? note;
-  final IconData? confirmIcon;
   final bool isDestructive;
 
   /// A confirm that changes a lot but loses nothing (critique 2026-10-02).
@@ -104,10 +96,6 @@ class AccountConfirmDialogWidget extends StatelessWidget {
 
   /// False disables the confirm, as a deletion offline (spec §9 B6).
   final bool canConfirm;
-
-  /// Cancel and the confirm share the width evenly (the sign-in confirms,
-  /// 2026-10-05 L2).
-  final bool isEvenSplit;
 
   @override
   Widget build(BuildContext context) => MxDialog(
@@ -118,11 +106,9 @@ class AccountConfirmDialogWidget extends StatelessWidget {
       cancelLabel: context.l10n.commonCancel,
       onCancel: () => Navigator.of(context).pop(false),
       confirmLabel: confirmLabel,
-      confirmIcon: confirmIcon,
       isDestructive: isDestructive,
       isWarning: isWarning,
       onConfirm: canConfirm ? () => Navigator.of(context).pop(true) : null,
-      isEvenSplit: isEvenSplit,
     ),
   );
 }

@@ -59,7 +59,7 @@ class _MonitoringStatusSheetWidgetState
         isInSheet: true,
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(),
-        confirmLabel: title,
+        confirmLabel: l10n.monitoringStatusConfirm,
         onConfirm: () => Navigator.of(context).pop(_note.text.trim()),
       ),
       child: Padding(

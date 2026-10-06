@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/controllers/trash_controller.dart';
 import 'package:memox/l10n/failure_message.dart';
@@ -40,10 +39,6 @@ class TrashPurgeDialogWidget extends ConsumerStatefulWidget {
 
 class _TrashPurgeDialogWidgetState
     extends ConsumerState<TrashPurgeDialogWidget> {
-  /// Kit 06: Keep in Trash 1.2, Delete 1.
-  static const int _keepShare = 12;
-  static const int _deleteShare = 10;
-
   var _isPurging = false;
 
   bool get _isCards => widget.entries.first is TrashCardEntry;
@@ -103,18 +98,13 @@ class _TrashPurgeDialogWidgetState
                   isAutofocused: true,
                 ),
                 trailing: MxButton(
-                  label: l10n.trashPurgeConfirm(count),
-                  icon: AppIcons.delete,
+                  label: l10n.trashPurgeConfirm,
                   tone: MxButtonTone.destructive,
                   isBlock: true,
                   isSingleLine: true,
                   isLoading: _isPurging,
                   onPressed: _purge,
                 ),
-                leadingFlex: _keepShare,
-                trailingFlex: _deleteShare,
-                // From 1,000 items the count outgrows its share (screen 06).
-                canStack: true,
               ),
             ),
           ],

@@ -117,7 +117,7 @@ void main() {
     await tester.tap(find.text(_en.accountSwitch));
     await tester.pumpAndSettle();
     expect(find.text(_en.accountSwitchTitle), findsOneWidget);
-    await tester.tap(find.widgetWithText(MxButton, _en.accountSwitch));
+    await tester.tap(find.widgetWithText(MxButton, _en.accountSwitchConfirm));
     await tester.pumpAndSettle();
 
     expect(world.state, isA<Transitioning>());
@@ -216,7 +216,7 @@ void main() {
     expect(confirm.onPressed, isNull);
   });
 
-  accountTest('Delete confirms with the short verb, shared 1:1 with Cancel', (
+  accountTest('Delete confirms with the short verb (owner 2026-10-06)', (
     tester,
     env,
     world,
@@ -237,7 +237,5 @@ void main() {
       find.widgetWithText(MxButton, _en.accountDeleteConfirm),
       findsOneWidget,
     );
-    final actions = tester.widget<MxSheetActions>(find.byType(MxSheetActions));
-    expect(actions.isEvenSplit, isTrue);
   });
 }

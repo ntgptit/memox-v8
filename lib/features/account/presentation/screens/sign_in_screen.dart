@@ -110,7 +110,6 @@ class SignInScreen extends ConsumerWidget {
             ),
       confirmLabel: l10n.accountWithoutConfirm,
       isDestructive: true,
-      isEvenSplit: true,
     );
     if (!isSure || !context.mounted) return;
     final result = await controller.continueWithoutAccount();

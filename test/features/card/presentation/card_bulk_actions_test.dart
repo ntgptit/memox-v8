@@ -233,7 +233,7 @@ void main() {
     );
 
     await _bulk(tester, _en.cardDelete);
-    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.tap(_inDialog(_en.trashMoveConfirm));
     await tester.pumpAndSettle();
     expect(await _activeCount(env), 2);
     expect(find.text(_en.cardsTrashedToast(2)), findsOneWidget);
@@ -251,7 +251,7 @@ void main() {
     expect(_inDialog('annyeong'), findsOneWidget);
     expect(_inDialog('back'), findsOneWidget);
     expect(find.text(_en.cardDeleteNote(1)), findsOneWidget);
-    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.tap(_inDialog(_en.trashMoveConfirm));
     await tester.pumpAndSettle();
     expect(await _activeCount(env), 3);
     expect(find.text(_en.cardTrashedToast('annyeong')), findsOneWidget);
@@ -268,7 +268,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _section(ids.words));
     await _select(tester, ['annyeong']);
     await _bulk(tester, _en.cardDelete);
-    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.tap(_inDialog(_en.trashMoveConfirm));
     await tester.pumpAndSettle();
     // Meanwhile its deck goes to the Trash as well.
     await env.decks.deleteDeck(deckId: ids.words);
@@ -297,7 +297,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _section(ids.words));
     await _select(tester, ['annyeong']);
     await _bulk(tester, _en.cardDelete);
-    await tester.tap(_inDialog(_en.cardMoveToTrash));
+    await tester.tap(_inDialog(_en.trashMoveConfirm));
     await tester.pump();
 
     expect(find.byType(MxSpinner), findsOneWidget);

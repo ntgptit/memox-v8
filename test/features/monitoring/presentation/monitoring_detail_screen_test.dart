@@ -58,7 +58,7 @@ Future<void> _markFixed(WidgetTester tester, {String note = ''}) async {
   if (note.isNotEmpty) {
     await tester.enterText(find.byType(TextField), note);
   }
-  await tester.tap(find.widgetWithText(MxButton, 'Mark fixed').last);
+  await tester.tap(find.widgetWithText(MxButton, 'Save'));
   await _settle(tester);
 }
 
@@ -296,7 +296,7 @@ void main() {
 
     await tester.tap(find.widgetWithText(MxButton, 'Reopen'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(MxButton, 'Reopen').last);
+    await tester.tap(find.widgetWithText(MxButton, 'Save'));
     await _settle(tester);
 
     expect(repository.statusChanges.single.status, LogStatus.open);

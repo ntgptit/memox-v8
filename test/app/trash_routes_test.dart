@@ -73,7 +73,7 @@ void main() {
     await tester.pumpAndSettle();
     await _tap(tester, find.text('gim'));
     await _tap(tester, find.text(_en.cardDelete));
-    await _tap(tester, _inDialog(_en.cardMoveToTrash));
+    await _tap(tester, _inDialog(_en.trashMoveConfirm));
 
     expect(find.text(_en.cardsTrashedToast(2)), findsOneWidget);
     await _tap(tester, find.text(_en.commonOpenTrash));
@@ -91,7 +91,7 @@ void main() {
     await tester.longPress(find.text('bap'));
     await tester.pumpAndSettle();
     await _tap(tester, find.text(_en.cardDelete));
-    await _tap(tester, _inDialog(_en.cardMoveToTrash));
+    await _tap(tester, _inDialog(_en.trashMoveConfirm));
     // Meanwhile its deck goes to the Trash as well.
     await env.decks.deleteDeck(deckId: words);
     await tester.pumpAndSettle();
@@ -174,7 +174,7 @@ void main() {
       tester,
       find.descendant(
         of: find.byType(MxDialog),
-        matching: find.text(_en.cardMoveToTrash),
+        matching: find.text(_en.trashMoveConfirm),
       ),
     );
 

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
@@ -136,8 +135,7 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: _isResetting ? null : () => Navigator.of(context).pop(),
-        confirmLabel: l10n.resetConfirm(_nextCycle(view)),
-        confirmIcon: AppIcons.resetProgress,
+        confirmLabel: l10n.resetConfirm,
         isConfirmLoading: _isResetting,
         // An irreversible loss of progress, not of data: warning, as the
         // Lost tile (critique 2026-09-30 part 3d-2, E4).

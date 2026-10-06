@@ -27,7 +27,7 @@ class SyncKeepDialogWidget extends StatelessWidget {
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(false),
-        confirmLabel: l10n.syncKeepOnDevice,
+        confirmLabel: l10n.syncKeepConfirm,
         // The changes then never sync: warned, not destroyed (critique
         // 2026-10-02, F8).
         isWarning: true,

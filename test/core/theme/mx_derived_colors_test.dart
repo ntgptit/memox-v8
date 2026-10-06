@@ -20,22 +20,19 @@ void main() {
     MxSemanticColors.dark,
   );
 
-  test('outlineEdge: outline pulled toward onSurface, 10% light and 25% '
-      'dark (DEV-166)', () {
-    expect(
-      light.outlineEdge,
-      Color.lerp(
-        AppColorSchemes.light.outline,
-        AppColorSchemes.light.onSurface,
-        0.10,
-      ),
-    );
+  test('outlineEdge: light raises outline\'s saturation to 30% alone; dark '
+      'pulls outline 20% toward onSurface (DEV-179)', () {
+    final lightOutline = HSLColor.fromColor(AppColorSchemes.light.outline);
+    final lightEdge = HSLColor.fromColor(light.outlineEdge);
+    expect(lightEdge.hue, closeTo(lightOutline.hue, 1));
+    expect(lightEdge.lightness, closeTo(lightOutline.lightness, 0.005));
+    expect(lightEdge.saturation, closeTo(0.30, 0.005));
     expect(
       dark.outlineEdge,
       Color.lerp(
         AppColorSchemes.dark.outline,
         AppColorSchemes.dark.onSurface,
-        0.25,
+        0.20,
       ),
     );
     expect(

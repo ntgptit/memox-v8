@@ -19,7 +19,7 @@ touch the study state or history).
 | Tags | `CardTagEditorWidget` | Prefilled tags; same add/remove/limit behaviour as create, including the "Add" button and Save adding the tag still typed (invalid: error, nothing saved). |
 | More | `CardTrashSectionWidget` (`MxCard`, `MxButton` outline "Move to Trash") | "Move this card to Trash" / "Leaves this deck and can be restored from Trash for 30 days, schedule and history included."; opens the shared delete dialog (FE-B1 D13). |
 | Footer | `CardEditorFooterWidget` (`MxActionPair` 1 : 1) | Cancel + "Save changes" / "Retry save", sharing the row equally; danger banner after a failed save. |
-| Move to Trash dialog | `CardDeleteDialogWidget` (`MxDialog`, `MxNote`, `MxSheetActions`) | "Move this card to Trash?", a front/back preview card, "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected."; the confirm spins while it moves (FE-B1 D15). |
+| Move to Trash dialog | `CardDeleteDialogWidget` (`MxDialog`, `MxNote`, `MxSheetActions`) | "Move this card to Trash?", a front/back preview card, "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected."; Cancel · "Move" (the title names the Trash, DEV-179), spinning while it moves (FE-B1 D15). |
 | Discard dialog | `CardDiscardDialogWidget` | "Discard changes?" / "You edited {parts}. Leaving now keeps the card as it was saved.", naming what changed; Keep editing / Discard (ruling P4a-L5). |
 | Gone state | `CardGoneWidget` (`MxEmptyState`) | "This card is no longer here" / "It was moved to Trash while you were editing. Your unsaved changes were not applied; the card can still be restored from Trash."; Back to deck + Open Trash (FE-B1 D11). |
 
@@ -63,7 +63,7 @@ Every state above is built.
 - Fields: same labels, hints and errors as 08-card-create, plus "Optional details".
 - Footer: "Cancel" · "Save changes" · "Retry save" · "Couldn't save changes." · "Nothing was lost. Tap Save to try again." · "Editing content never changes the schedule or history." · "Add the missing field to enable save." · "Fix the marked field to enable save." · "Saving to this device…".
 - More: "More" · "Move this card to Trash" · "Leaves this deck and can be restored from Trash for 30 days, schedule and history included." · "Move to Trash".
-- Move to Trash dialog: "Move this card to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move to Trash".
+- Move to Trash dialog: "Move this card to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move".
 - Discard: "Discard changes?" · "You edited {parts}. Leaving now keeps the card as it was saved." (parts: "the term", "the meaning", "the example", "the hint", "the pronunciation", "the flag", "the tags", joined "a, b and c") · "Keep editing" · "Discard".
 - Gone: "This card is no longer here" · "It was moved to Trash while you were editing. Your unsaved changes were not applied; the card can still be restored from Trash." · "Back to deck" · "Open Trash".
 - Load error: "Couldn't load this card" · "Nothing was lost. Try again in a moment." · "Retry".

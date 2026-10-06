@@ -22,7 +22,7 @@ each renamed, merged or deleted from its actions. UC-TAG-001; BR-TAG-001…011; 
 | Rows | `MxSection` + `MxListRow` | A tag tile, the name (one line, ellipsis), "{n} cards" and ⋮ ("Actions for {tag}"). While the tag's write runs, ⋮ is a spinner and the row cannot be tapped. |
 | Action sheet | `MxBottomSheet` + `MxTagChip` + `MxActionSheetCommandRow` ×3 | The chip "{tag} · {n}" and "Tag actions"; "Find cards with this tag" / "Search the library for “{tag}”"; "Rename tag" / "Renaming onto an existing name merges the two"; "Delete tag" / "Removes it from {n} cards · the cards stay" (destructive). |
 | Rename dialog | `MxDialog` + `MxTextField` + `MxSheetActions` | "Rename tag", "Renaming updates every card that uses “{tag}”.", the overline "NEW NAME", the field prefilled, "Tag names are case-insensitive."; Cancel / Rename. The name rules are checked as it is typed; what the rename would do is read 250 ms after the name stops changing (D8). Rename is off while the name is unchanged. |
-| Delete dialog | `MxDialog` + `MxNote` + `MxSheetActions` | "Delete this tag?", "“{tag}” is removed from {n} cards and disappears from the catalog. Tags are not kept in Trash.", the note (a neutral `MxNote`, not a success card) "No card is deleted, hidden or changed — all {n} cards stay exactly where they are."; Cancel / "Delete tag" (destructive) (The Short Label Rule, DEV-169). |
+| Delete dialog | `MxDialog` + `MxNote` + `MxSheetActions` | "Delete this tag?", "“{tag}” is removed from {n} cards and disappears from the catalog. Tags are not kept in Trash.", the note (a neutral `MxNote`, not a success card) "No card is deleted, hidden or changed — all {n} cards stay exactly where they are."; Cancel / "Delete" (destructive) (The Short Label Rule, DEV-169; the verb alone, DEV-179). |
 
 "Find cards with this tag" opens the Library search on the tag's name (D11). The search
 lives in the Library branch, under the shell, so Back from it returns to the Library,
@@ -75,7 +75,7 @@ letter case." · "A tag name can be at most {max} characters." · "Rename" · "M
 spelling stays “{target}”." · "No card is deleted. Cards carrying both keep one tag; no
 card goes over 10 tags." · "Delete this tag?" · "“{tag}” is removed from {n} cards and
 disappears from the catalog. Tags are not kept in Trash." · "No card is deleted, hidden
-or changed — all {n} cards stay exactly where they are." · "Delete tag" ·
+or changed — all {n} cards stay exactly where they are." · "Delete" ·
 "Couldn't rename tag. Nothing changed — try again in a moment." · "Couldn't delete tag.
 Nothing changed — try again in a moment." · "“{tag}” no longer exists — it was removed a
 moment ago."

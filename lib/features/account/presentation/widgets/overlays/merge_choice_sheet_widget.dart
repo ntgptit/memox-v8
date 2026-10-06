@@ -109,7 +109,6 @@ class _MergeChoiceSheetWidgetState extends State<MergeChoiceSheetWidget> {
       ),
       footer: MxSheetActions(
         isInSheet: true,
-        isEvenSplit: true,
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(),
         confirmLabel: _isDiscarding
