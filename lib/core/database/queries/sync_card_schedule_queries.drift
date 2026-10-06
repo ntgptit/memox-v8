@@ -38,3 +38,6 @@ cardsWithoutSchedule:
 SELECT c.id AS card_id, r.scheduler_type, r.scheduler_version, r.generation
 FROM card c JOIN deck d ON d.id = c.deck_id JOIN deck r ON r.id = d.root_id
 WHERE NOT EXISTS (SELECT 1 FROM card_schedule s WHERE s.card_id = c.id);
+
+-- The initial row of a card the pull left without one (afterPull).
+createInitialSchedule: INSERT INTO card_schedule $row;

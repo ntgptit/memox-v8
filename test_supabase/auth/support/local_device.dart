@@ -12,17 +12,12 @@ import 'package:memox/core/database/local_data_reset.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/network/network_status.dart';
-import 'package:memox/core/sync/account_settings_sync_adapter.dart';
-import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
-import 'package:memox/core/sync/card_sync_adapter.dart';
-import 'package:memox/core/sync/deck_sync_adapter.dart';
-import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
-import 'package:memox/core/sync/review_log_sync_adapter.dart';
 import 'package:memox/core/sync/supabase_sync_api.dart';
 import 'package:memox/core/sync/sync_control.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
-import 'package:memox/core/sync/tag_sync_adapter.dart';
+import 'package:memox/app/sync_tables.dart';
+import 'package:memox/features/settings/data/datasources/settings_dao.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
@@ -109,7 +104,6 @@ class LocalDevice {
     Future<Object?> rpc(String function, Map<String, Object?> params) =>
         client.rpc<Object?>(function, params: params);
     final syncStore = SyncStore(db);
-    final cards = CardSyncAdapter(db);
     _sync = SyncCoordinator(
       api: SupabaseSyncApi(
         ensureSession: () async {
@@ -120,16 +114,7 @@ class LocalDevice {
         rpc: rpc,
       ),
       store: syncStore,
-      adapters: [
-        DeleteBatchSyncAdapter(db),
-        DeckSyncAdapter(db),
-        TagSyncAdapter(db, syncStore),
-        cards,
-        CardScheduleSyncAdapter(db, syncStore),
-        ReviewLogSyncAdapter(db),
-        AccountSettingsSyncAdapter(db),
-      ],
-      afterPull: cards.ensureSchedules,
+      adapters: appSyncAdaptersOf(db, syncStore),
     );
     coordinator = AccountCoordinator(
       gateway: SupabaseAuthGateway(
@@ -151,7 +136,11 @@ class LocalDevice {
         coordinator: _sync,
         store: syncStore,
       ),
-      localReset: LocalDataReset(db),
+      localReset: LocalDataReset(
+        db,
+        resetSyncedSettings: () =>
+            SettingsDao(db).resetSyncedDefaults(DateTime.now()),
+      ),
       gate: db.mutationGate,
       network: network,
       retryDelay: (_) => Duration.zero,

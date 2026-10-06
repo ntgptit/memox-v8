@@ -23,9 +23,7 @@ part 'auth_providers.g.dart';
 /// transaction; the device's own columns (reminder, welcome) stay. Overridden
 /// at the composition root by the settings feature (DEV-173).
 @Riverpod(keepAlive: true)
-Future<void> Function() syncedSettingsReset(
-  Ref ref,
-) => throw UnimplementedError(
+Future<void> Function() syncedSettingsReset(Ref ref) => throw StateError(
   'override syncedSettingsResetProvider at the root (lib/app/sync_tables.dart)',
 );
 

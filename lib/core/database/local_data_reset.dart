@@ -15,10 +15,7 @@ import 'package:memox/core/database/tables/sync_keys.dart';
 /// Kept: the transition record, the welcome flag, the reminder columns, the
 /// device id and the log database.
 class LocalDataReset {
-  LocalDataReset(
-    this._db, {
-    required Future<void> Function() resetSyncedSettings,
-  }) : _resetSyncedSettings = resetSyncedSettings;
+  LocalDataReset(this._db, {required this._resetSyncedSettings});
 
   final AppDatabase _db;
 

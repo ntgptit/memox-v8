@@ -84,24 +84,19 @@ class CardScheduleSyncDao extends DatabaseAccessor<AppDatabase>
   /// Gives every card without a schedule the row a new card starts with
   /// (BR-CARD-004): its root's scheduler at the root's generation, nothing
   /// learned, the row `ScheduleRepository.initializeCard` writes. Runs at the
-  /// end of a pull, under `applying_remote`; one read and one batch.
+  /// end of a pull, under `applying_remote`, inside its transaction.
   @override
   Future<void> afterPull() async {
-    final missing = await cardsWithoutSchedule().get();
-    if (missing.isEmpty) return;
-    await batch((batch) {
-      for (final row in missing) {
-        final type = SchedulerType.fromCode(row.schedulerType!);
-        batch.insert(
-          attachedDatabase.cardSchedule,
-          cardScheduleColumnsOf(
-            CardScheduleState.initial(type, generation: row.generation!),
-            type: type,
-            version: row.schedulerVersion!,
-          ).copyWith(cardId: Value(row.cardId)),
-        );
-      }
-    });
+    for (final row in await cardsWithoutSchedule().get()) {
+      final type = SchedulerType.fromCode(row.schedulerType!);
+      await createInitialSchedule(
+        cardScheduleColumnsOf(
+          CardScheduleState.initial(type, generation: row.generation!),
+          type: type,
+          version: row.schedulerVersion!,
+        ).copyWith(cardId: Value(row.cardId)),
+      );
+    }
   }
 
   @override

@@ -25,9 +25,9 @@ The app always reads and writes Drift, online or offline: reads come from
 `watch()` streams, and a write lands locally first, so the UI never waits for
 the network. Drift is the durable store, not a cache. Sync is the data layer's
 own job, which use cases and presentation never see: `lib/core/sync/` pushes
-the outbox and pulls the server's changes, for decks today, and the repository
-contract is what lets it reach the other tables without touching `domain/` or
-`presentation/`.
+the outbox and pulls the server's changes through the adapters the app lists
+in `lib/app/sync_tables.dart`, each a `_sync_dao` in the feature that owns its
+table (DEV-173), without touching `domain/` or `presentation/`.
 
 The networking half of this skill, `references/networking.md`, describes the
 client sync uses: one `Dio` in `lib/core/network/`, under a Retrofit interface

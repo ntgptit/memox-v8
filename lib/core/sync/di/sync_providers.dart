@@ -39,7 +39,7 @@ SyncStore syncStore(Ref ref) => SyncStore(ref.watch(databaseProvider));
 /// at the composition root (`lib/app/sync_tables.dart`), which may import
 /// the features that own the tables (ADR-011, DEV-173).
 @Riverpod(keepAlive: true)
-List<EntitySyncAdapter> syncAdapters(Ref ref) => throw UnimplementedError(
+List<EntitySyncAdapter> syncAdapters(Ref ref) => throw StateError(
   'override syncAdaptersProvider at the root (lib/app/sync_tables.dart)',
 );
 
