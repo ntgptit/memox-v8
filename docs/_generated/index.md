@@ -111,6 +111,7 @@ Chưa có tài liệu.
 | [BR-DECK-025](../features/deck/rules/BR-DECK-025-cot-scheduler-chi-co-gia-tri-tren-root.md) | Cột scheduler chỉ có giá trị trên root | active | Cột scheduler chỉ có giá trị trên root deck; deck khác để NULL và tra qua `root_id`. | UC-DECK-002, UC-DECK-004, UC-STUDY-003 |
 | [BR-DECK-026](../features/deck/rules/BR-DECK-026-mastery-cua-deck.md) | Mastery của deck | active | Mastery của một deck là số thẻ `mastered` chia cho mọi thẻ active trong cả cây, kể cả thẻ mới; suy ra khi đọc, không lưu cột. | UC-DECK-003 |
 | [BR-DECK-027](../features/deck/rules/BR-DECK-027-sap-theo-tien-do.md) | Sắp theo tiến độ | active | Sort Progress xếp deck theo mastery tăng dần; deck không có thẻ xếp cuối; bằng nhau thì theo thứ tự thủ công. | UC-DECK-003, UC-DECK-006 |
+| [BR-DECK-028](../features/deck/rules/BR-DECK-028-root-khong-di-chuyen-va-cung-cha-bi-tu-choi.md) | Root không di chuyển và di chuyển về cùng cha bị từ chối | active | Root deck không di chuyển được; di chuyển một deck về đúng cha hiện tại bị từ chối và không ghi gì. | UC-DECK-005 |
 
 ### Use cases
 
@@ -370,7 +371,7 @@ Chưa có tài liệu.
 | [BR-STUDY-069](../features/study/rules/BR-STUDY-069-mode-round-hoan-tat-khi-sach.md) | Mode dùng round hoàn tất khi sạch | active | Mode dùng round hoàn tất khi một round kết thúc mà tập không đạt rỗng; không trần số round. | UC-STUDY-001 |
 | [BR-STUDY-070](../features/study/rules/BR-STUDY-070-muc-phan-hoi-khong-dung-la-sai.md) | Mức phản hồi không đúng là sai | active | Mọi mức phản hồi không phải "đúng" vào tập không đạt và ánh xạ như sai; không lưu vào `action`. | — |
 | [BR-STUDY-071](../features/study/rules/BR-STUDY-071-bo-qua-the-thieu-du-lieu-co-ghi-nhan.md) | Bỏ qua thẻ thiếu dữ liệu có ghi nhận | active | Thẻ thiếu dữ liệu cho một stage bị bỏ qua có ghi nhận ở stage đó, vẫn xuất hiện ở stage khác. | UC-STUDY-001 |
-| [BR-STUDY-072](../features/study/rules/BR-STUDY-072-phien-do-khi-mo-app.md) | Phiên dở khi mở app | active | Còn phiên dở cùng ngày học: ba đường tiếp tục, Học mới, Ôn tập; phiên của ngày khác bị đóng `interrupted`. | UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
+| [BR-STUDY-072](../features/study/rules/BR-STUDY-072-phien-do-khi-mo-app.md) | Phiên dở khi mở app | active | Còn phiên dở cùng ngày học: ba đường tiếp tục, Học mới, Ôn tập; phiên của ngày khác bị đóng `interrupted`; toàn app tối đa một phiên `in_progress`. | UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
 | [BR-STUDY-073](../features/study/rules/BR-STUDY-073-self-assess-tran-ba-luot-relearning.md) | self_assess: trần 3 lượt relearning | active | Chỉ `self_assess`: chạm trần 3 lượt `relearning` thì thẻ rời hàng đợi và được bật cờ. | UC-STUDY-001 |
 | [BR-STUDY-074](../features/study/rules/BR-STUDY-074-next-due-at-neo-00-00-dia-phuong.md) | next_due_at neo 00:00 địa phương | active | `next_due_at` rơi vào 00:00 giờ địa phương của ngày thứ N; lưu bằng UTC. | UC-PROGRESS-001, UC-PROGRESS-002, UC-REMINDER-001, UC-STUDY-001, UC-STUDY-002 |
 | [BR-STUDY-075](../features/study/rules/BR-STUDY-075-tab-study-doc-thu-vien-that.md) | Tab Study đọc thư viện thật | active | Tab Study đọc thư viện thật, không phụ thuộc deck id cố định, và không ghi database. | UC-STUDY-002 |

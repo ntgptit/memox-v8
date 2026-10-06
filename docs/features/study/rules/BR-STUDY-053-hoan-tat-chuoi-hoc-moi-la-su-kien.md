@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-Chuỗi học mới MUST NOT đổi `card_schedule` cho tới khi thẻ đi hết **stage cuối mà chính nó tham gia** — stage bỏ qua thẻ theo BR-STUDY-071 không được tính là stage nó phải đợi. **Hoàn tất là một sự kiện, không phải một lượt đánh giá**: nó đặt `learned_at`, khởi tạo lịch ở mức thấp nhất — `eight_box` box 1, `sm2` interval 1 — với `due_at` là đầu ngày học kế tiếp (BR-STUDY-074), và MUST NOT ghi lượt `scheduled` nào.
+Chuỗi học mới MUST NOT đổi `card_schedule` cho tới khi thẻ đi hết **stage cuối mà chính nó tham gia** — stage bỏ qua thẻ theo BR-STUDY-071 không được tính là stage nó phải đợi. **Hoàn tất là một sự kiện, không phải một lượt đánh giá**: nó đặt `learned_at`, khởi tạo lịch ở mức thấp nhất — `eight_box` box 1, `sm2` interval 1 với `repetitions = 1` để lượt `good` đầu của ôn tập cho 6 ngày (BR-SRS-011), `ease_factor` giữ nguyên — với `due_at` là đầu ngày học kế tiếp (BR-STUDY-074), và MUST NOT ghi lượt `scheduled` nào.
 
 **Enforced by:** store
 **Liên quan:** BR-STUDY-023, BR-STUDY-074, BR-SRS-003, BR-STUDY-071
