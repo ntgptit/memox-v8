@@ -187,10 +187,13 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       note: canDelete
           ? null
           : MxNote(icon: AppIcons.offline, text: l10n.accountDeleteOffline),
-      confirmLabel: l10n.accountDelete,
+      // The title names the account, so the confirm is the verb alone and
+      // shares the row evenly with Cancel (owner 2026-10-06).
+      confirmLabel: l10n.accountDeleteConfirm,
       confirmIcon: AppIcons.delete,
       isDestructive: true,
       canConfirm: canDelete,
+      isEvenSplit: true,
     );
     if (!isSure || !context.mounted) return;
     final result = await controller.deleteAccount();

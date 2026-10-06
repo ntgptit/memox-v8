@@ -211,8 +211,33 @@ void main() {
 
     expect(find.text(_en.accountDeleteOffline), findsOneWidget);
     final confirm = tester.widget<MxButton>(
-      find.widgetWithText(MxButton, _en.accountDelete),
+      find.widgetWithText(MxButton, _en.accountDeleteConfirm),
     );
     expect(confirm.onPressed, isNull);
+  });
+
+  accountTest('Delete confirms with the short verb, shared 1:1 with Cancel', (
+    tester,
+    env,
+    world,
+  ) async {
+    await linkEmail(world);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    await tester.tap(find.text(_en.accountDelete));
+    await tester.pumpAndSettle();
+
+    // The title names the account, so the confirm is the verb alone.
+    expect(
+      find.widgetWithText(MxButton, _en.accountDeleteConfirm),
+      findsOneWidget,
+    );
+    final actions = tester.widget<MxSheetActions>(find.byType(MxSheetActions));
+    expect(actions.isEvenSplit, isTrue);
   });
 }
