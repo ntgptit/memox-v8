@@ -7,6 +7,7 @@ import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
+import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -265,6 +266,9 @@ class _Progress extends StatelessWidget {
   /// beside its loss button (critique 2026-10-02, F2).
   String _stoppedMessage(AppLocalizations l10n, Failure? error) {
     if (view.isStuck) return l10n.accountLayerStuck;
+    if (_isSwitchStoppedOnRefused(view.transition, error)) {
+      return l10n.accountSwitchRefused((error as UnsentChangesFailure).count);
+    }
     if (error is! OfflineFailure) return l10n.accountLayerFailed;
     return view.transition.kind == TransitionKind.signOut
         ? l10n.accountSignOutStoppedOffline
@@ -291,6 +295,8 @@ class _StoppedActions extends ConsumerWidget {
         onPressed: () => unawaited(_retry(ref)),
       ),
       if (_isSignOutStoppedOffline(view.error)) const _SignOutNow(),
+      if (_isSwitchStoppedOnRefused(view.transition, view.error))
+        _SwitchLosing(count: (view.error as UnsentChangesFailure).count),
     ],
   );
 
@@ -308,6 +314,44 @@ class _StoppedActions extends ConsumerWidget {
       // The state carries what stopped; the log keeps why.
       appLogger.warning(
         'account.retry_failed',
+        category: LogCategory.state,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+}
+
+/// Auth spec #19 (DEV-191): a merge stopped on rows the server refused,
+/// which exist only on this phone. Retry alone repeats the refusal; the
+/// way on keeps them on the device, where the switch's reset loses them.
+bool _isSwitchStoppedOnRefused(AccountTransition transition, Failure? error) =>
+    transition.kind == TransitionKind.switchAccount &&
+    transition.choice == TransitionChoice.merge &&
+    error is UnsentChangesFailure;
+
+/// "Continue and lose n changes": the refused rows are kept on the device
+/// (screen 27's command), then the switch goes on (DEV-191).
+class _SwitchLosing extends ConsumerWidget {
+  const _SwitchLosing({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => MxButton(
+    label: context.l10n.accountSwitchLosing(count),
+    tone: MxButtonTone.dangerSoft,
+    isBlock: true,
+    onPressed: () => unawaited(_loseAndRetry(ref)),
+  );
+
+  Future<void> _loseAndRetry(WidgetRef ref) async {
+    try {
+      await ref.read(syncCommandsProvider)?.keepRejectedOnDevice();
+      await ref.read(accountCoordinatorProvider)?.retry();
+    } on Failure catch (error, stackTrace) {
+      appLogger.warning(
+        'account.switch_losing_failed',
         category: LogCategory.state,
         error: error,
         stackTrace: stackTrace,

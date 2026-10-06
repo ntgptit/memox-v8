@@ -172,7 +172,7 @@ Error classes (data layer only): `NETWORK`, `SESSION_INVALID`
 | 16 | READY(anon) | email or Google link OK (same uid) | `me()` | READY(account) |
 | 17 | READY(anon) | IDENTITY_TAKEN | local has data → ask Merge (default) / Discard; empty → skip | (choice) |
 | 18 | READY(anon A) | chosen | record Switch{op, choice, source A}; **gate closed** | TRANSITIONING(Switch) |
-| 19 | Switch | started, online | push outbox under A until empty; stage = sourcePushed | — |
+| 19 | Switch | started, online | push outbox under A until empty, then ship the logs under A (DEV-190); stage = sourcePushed. Rows the server refused (`sync_rejection`, no copy of its own) stop a merge here with `UnsentChangesFailure`: Retry repeats it, the layer's "Continue and lose n changes" keeps them on the device first; a discard goes on, those rows go with the device at #27 (DEV-191) | — |
 | 20 | Switch | sourcePushed, merge | A's refresh token and the claim token → Secure Storage; stage = claimed | — |
 | 21 | Switch | sign-in to B OK | R1 reads B; stage = targetSignedIn(B) | — |
 | 22 | Switch | cancelled before the target sign-in | drop secrets and record; open gate | READY(A) |
@@ -187,7 +187,7 @@ Error classes (data layer only): `NETWORK`, `SESSION_INVALID`
 | 31 | RECOVERING(Switch) | R1: SDK uid = A | stage ≤ claimed → drop secrets and record, open gate; stage ≥ merged cannot happen → error, gate stays shut | VALIDATING |
 | 32 | RECOVERING(Switch) | R1: SDK uid = U ≠ A (even if killed before saving targetSignedIn) | target = U; stage = max(stage, targetSignedIn); continue #23 or #27 with the same op | TRANSITIONING |
 | 33 | RECOVERING(Switch) | R1: no session | stage < merged + A backup → `setSession(A)` → #31; stage ≥ merged → ask to sign in to the target again, gate shut | RECOVERING |
-| 34 | READY(account X) | "Switch account" | record Switch{source X, permanent, discard}; gate; push under X (#19) | TRANSITIONING(Switch) |
+| 34 | READY(account X) | "Switch account" | record Switch{source X, permanent, discard}; gate; push under X and ship the logs (#19); rows the server refused do not stop it (discard, DEV-191) | TRANSITIONING(Switch) |
 | 35 | Switch (permanent source) | sign-in to Y OK (R1) | #27 → #28 → #30; **no anonymous in between** | READY(Y) |
 | 36 | REAUTH_REQUIRED(X) | sign-in, SDK uid = X | `me()` | VALIDATING → READY(X) |
 | 37 | REAUTH_REQUIRED(X) | sign-in, uid Y ≠ X; user confirmed losing N unsent changes | record Switch{source X, discard, targetSignedIn(Y)} → #27 | READY(Y) |
@@ -397,8 +397,10 @@ Future<void> _recoverSignOut(AccountTransition t) async {         // #39–#45
 }
 ```
 
-`beginSwitch` records Switch{started}, closes the gate, pushes under A
-(#19) and, for a merge, stores the backup and the claim token (#20); the
+`beginSwitch` records Switch{started}, closes the gate, pushes under A and
+ships A's logs (#19; `app_log.user_id` is the shipping session's, so they
+go before the SDK moves to B, as a sign-out ships them at #39) and, for a
+merge, stores the backup and the claim token (#20); the
 target sign-in then calls `_recover`, which R1 routes. Every
 `on Network { return; }` keeps the record; the connectivity listener calls
 `_recover` again. Each stage is saved before the next step, so a rerun is a
