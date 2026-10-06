@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_store.dart';
+import 'package:memox/core/text/folded_text.dart';
 
 part 'tag_sync_dao.g.dart';
 
@@ -48,7 +49,11 @@ class TagSyncDao extends DatabaseAccessor<AppDatabase>
     int serverVersion,
   ) async {
     final id = row['id'] as String;
-    final nameFolded = row['nameFolded'] as String;
+    final name = row['name'] as String;
+    // Folded here, never taken from the wire (schema.md, the foldText
+    // contract; DEV-201): a client that folds differently still lands on the
+    // one local tag of that name (BR-TAG-001).
+    final nameFolded = foldText(name);
     final clash = await syncTagClashOf(nameFolded, id).getSingleOrNull();
     final moved = clash == null ? const <String>[] : await _cardsOf(clash.id);
     if (clash != null) {
@@ -58,7 +63,7 @@ class TagSyncDao extends DatabaseAccessor<AppDatabase>
     await upsertSyncedTag(
       TagsCompanion.insert(
         id: id,
-        name: row['name'] as String,
+        name: name,
         nameFolded: nameFolded,
         createdAt: fromWireTime(row['createdAt'])!,
         serverVersion: Value(serverVersion),

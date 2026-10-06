@@ -206,6 +206,20 @@ mọi bảng chữ cái. Đây đúng là lập luận `tags.name_folded` đã d
 Mọi text người dùng lưu ở dạng NFC (`storedText`), và migration v4 → v5 đưa dữ liệu
 cũ về dạng đó, gộp các tag trùng tên sau chuẩn hoá (BE-C5).
 
+**`foldText` là hợp đồng wire, không phải chi tiết triển khai** (DEV-201). Server
+lưu `tags.name_folded` đúng như client gửi và giữ tên tag unique trên cột đó
+(`uq_tags_user_live_name`); `tag_upsert` so `r->>'nameFolded'`, không tính lại.
+Hai build fold khác nhau sẽ tạo hai tag người dùng đọc là một mà `TAG_NAME_TAKEN`
+không bắt. Vì thế đổi `foldText` là một release có **hai** migration: một step
+local tính lại mọi cột `*_folded` và gộp tag trùng tên sau fold (step v4 → v5,
+`nfc_text_migration.dart`, là mẫu), **và** một migration server backfill
+`tags.name_folded` cho mọi hàng đã lưu, kèm pgTAP trên dữ liệu cũ. Không chuyển
+fold sang server: `normalize()` của Postgres không khớp NFC của Dart trên mọi
+đầu vào. Mọi đường pull tính lại cột dẫn xuất từ text thô trên wire bằng
+`foldText` của chính build này (`card_sync_dao`, `tag_sync_dao`), không lưu giá
+trị `*Folded` wire mang theo; text thô lưu như wire gửi, vì client ghi đã đưa nó
+về dạng lưu (`storedText`).
+
 Chỉ hạ hoa, **không** bỏ dấu: `công` vẫn không khớp `cong`. Tìm kiếm không dấu là
 quyết định sản phẩm (S1), không phải hệ quả phụ của một bản vá.
 
@@ -246,7 +260,7 @@ không phải lịch: reset giữ nguyên (BR-SRS-021, BR-TAG-001).
 |---|---|---|
 | `id` | TEXT PK | UUID sinh phía client |
 | `name` | TEXT NOT NULL | BR-TAG-001. Lưu nguyên dạng người dùng gõ |
-| `name_folded` | TEXT NOT NULL | `foldText(name)`: trim, NFC, hạ hoa (BE-C5). Cột để **cưỡng chế** unique |
+| `name_folded` | TEXT NOT NULL | `foldText(name)`: trim, NFC, hạ hoa (BE-C5). Cột để **cưỡng chế** unique. Hợp đồng wire — xem `foldText` ở bảng `card` (DEV-201); pull tính lại từ `name`, không lấy `nameFolded` của wire |
 | `owner_id` | TEXT NULL | **Retired** (DEV-198): luôn NULL, như `deck.owner_id`; chỉ còn được đọc như hằng `owner_id IS NULL` và trong index bên dưới. Giữ cột tới lần rebuild bảng vì lý do khác |
 | `created_at` | DATETIME NOT NULL | UTC |
 | `server_version` | INTEGER NULL | Version server đã xác nhận (schema 8, SB-S3); NULL là chưa. Chỉ ghi, không truy vấn nào đọc: cột chẩn đoán, không phải hợp đồng (DEV-198) |
