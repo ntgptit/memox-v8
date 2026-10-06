@@ -28,7 +28,6 @@ void main() {
             onCancel: () {},
             confirmLabel: 'Move',
             onConfirm: () {},
-            confirmIcon: AppIcons.delete,
             isDestructive: true,
           ),
           MxSheetActions(

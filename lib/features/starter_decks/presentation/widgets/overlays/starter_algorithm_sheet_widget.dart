@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -113,7 +112,6 @@ class _StarterAlgorithmSheetWidgetState
         confirmLabel: state.hasFailed
             ? l10n.starterTryAgain
             : l10n.starterAddDeck,
-        confirmIcon: state.hasFailed ? null : AppIcons.add,
         isConfirmLoading: isAdding,
         onConfirm: () => unawaited(_add()),
       ),

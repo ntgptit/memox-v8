@@ -8,7 +8,8 @@ import 'package:memox/shared/widgets/mx_action_pair.dart';
 /// The footer every dialog and sheet ends with: Cancel and the confirm share
 /// the row 1 : 1, since the title names the object and the confirm is its
 /// verb alone (DEV-179); when a label cannot fit its half on one line, the
-/// two stack instead (MxActionPair, spec 2026-09-26 D3).
+/// two stack instead (MxActionPair, spec 2026-09-26 D3). A popup's buttons
+/// carry no icon: the tone already tells the weight (DEV-179).
 class MxSheetActions extends StatelessWidget {
   const MxSheetActions({
     super.key,
@@ -16,7 +17,6 @@ class MxSheetActions extends StatelessWidget {
     required this.onCancel,
     required String this.confirmLabel,
     required this.onConfirm,
-    this.confirmIcon,
     this.isDestructive = false,
     this.isWarning = false,
     this.isInSheet = false,
@@ -35,7 +35,6 @@ class MxSheetActions extends StatelessWidget {
        onCancel = null,
        confirmLabel = null,
        onConfirm = null,
-       confirmIcon = null,
        isDestructive = false,
        isWarning = false,
        isConfirmLoading = false;
@@ -48,7 +47,6 @@ class MxSheetActions extends StatelessWidget {
 
   /// Null disables the confirm; Cancel stays live.
   final VoidCallback? onConfirm;
-  final IconData? confirmIcon;
 
   /// The destructive Button tone on the confirm.
   final bool isDestructive;
@@ -80,7 +78,6 @@ class MxSheetActions extends StatelessWidget {
             trailing: MxButton(
               label: confirmLabel!,
               onPressed: onConfirm,
-              icon: confirmIcon,
               isLoading: isConfirmLoading,
               tone: switch ((isDestructive, isWarning)) {
                 (true, _) => MxButtonTone.destructive,

@@ -181,7 +181,6 @@ class _TagRenameDialogWidgetState extends ConsumerState<TagRenameDialogWidget> {
         confirmLabel: merge == null
             ? l10n.tagsRenameConfirm
             : l10n.tagsMergeConfirm,
-        confirmIcon: merge == null ? null : AppIcons.merge,
         isWarning: merge != null,
         onConfirm: confirm,
       ),

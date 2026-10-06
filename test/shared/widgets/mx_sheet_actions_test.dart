@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -66,7 +65,7 @@ void main() {
     },
   );
 
-  testWidgets('a destructive confirm, with its glyph passed through', (
+  testWidgets('a destructive confirm, without a glyph (DEV-179)', (
     tester,
   ) async {
     await pumpMx(
@@ -77,17 +76,14 @@ void main() {
           onCancel: () {},
           confirmLabel: 'Delete',
           onConfirm: () {},
-          confirmIcon: AppIcons.delete,
           isDestructive: true,
         ),
       ),
     );
     final confirm = tester.widget<MxButton>(_button('Delete'));
 
-    expect(
-      (confirm.tone, confirm.icon),
-      (MxButtonTone.destructive, AppIcons.delete),
-    );
+    // A popup's buttons carry no icon; the tone tells the weight (DEV-179).
+    expect((confirm.tone, confirm.icon), (MxButtonTone.destructive, null));
   });
 
   testWidgets('a warning confirm, for a merge (spec D15)', (tester) async {
@@ -220,7 +216,6 @@ void main() {
           cancelLabel: 'Giữ lại tất cả',
           onCancel: () {},
           confirmLabel: 'Xoá vĩnh viễn 12 thẻ',
-          confirmIcon: Icons.delete,
           isDestructive: true,
           onConfirm: () {},
         ),

@@ -114,7 +114,6 @@ class _DeckDeleteDialogWidgetState
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(),
         confirmLabel: l10n.trashMoveConfirm,
-        confirmIcon: AppIcons.delete,
         isConfirmLoading: _isDeleting,
         onConfirm: switch (counted) {
           final summary? when !_isDeleting => () => _delete(summary),

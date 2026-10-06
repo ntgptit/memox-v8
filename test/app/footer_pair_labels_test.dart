@@ -125,28 +125,20 @@ List<_Pair> _pairs(AppLocalizations l10n) {
       leadingFlex: 13,
       trailingFlex: 10,
     ),
-    _sheet('reset', cancel, _button(l10n.resetConfirm, AppIcons.resetProgress)),
+    _sheet('reset', cancel, _button(l10n.resetConfirm)),
     _sheet(
       'study exit',
       _button(l10n.studyExitKeep),
       _button(l10n.studyExitStop),
     ),
     _sheet('sync keep', cancel, _button(l10n.syncKeepConfirm)),
-    _sheet(
-      'tag delete',
-      cancel,
-      _button(l10n.tagsDeleteConfirm, AppIcons.delete),
-    ),
+    _sheet('tag delete', cancel, _button(l10n.tagsDeleteConfirm)),
     _sheet('continue without', cancel, _button(l10n.accountWithoutConfirm)),
-    _sheet(
-      'move to trash',
-      cancel,
-      _button(l10n.trashMoveConfirm, AppIcons.delete),
-    ),
+    _sheet('move to trash', cancel, _button(l10n.trashMoveConfirm)),
     _sheet(
       'purge',
       _button(l10n.trashPurgeKeep),
-      _button(l10n.trashPurgeConfirm, AppIcons.delete),
+      _button(l10n.trashPurgeConfirm),
     ),
     _sheet(
       'card discard',
@@ -159,18 +151,14 @@ List<_Pair> _pairs(AppLocalizations l10n) {
       _button(l10n.deckDiscard),
     ),
     _sheet('account switch', cancel, _button(l10n.accountSwitchConfirm)),
-    _sheet(
-      'account delete',
-      cancel,
-      _button(l10n.accountDeleteConfirm, AppIcons.delete),
-    ),
+    _sheet('account delete', cancel, _button(l10n.accountDeleteConfirm)),
     _sheet('unsent loss', cancel, _button(l10n.accountUnsentConfirm)),
     _sheet('settings reset', cancel, _button(l10n.settingsResetConfirm)),
     _sheet('second copy', cancel, _button(l10n.starterSecondCopyConfirm)),
     _sheet(
       'starter add',
       cancel,
-      _button(l10n.starterAddDeck, AppIcons.add),
+      _button(l10n.starterAddDeck),
       isInSheet: true,
     ),
     _sheet(
@@ -185,12 +173,7 @@ List<_Pair> _pairs(AppLocalizations l10n) {
       _button(l10n.accountDiscardContinue),
       isInSheet: true,
     ),
-    _sheet(
-      'export',
-      cancel,
-      _button(l10n.exportAction, AppIcons.share),
-      isInSheet: true,
-    ),
+    _sheet('export', cancel, _button(l10n.exportAction), isInSheet: true),
     _footer(
       'import, done',
       _button(l10n.importAnother),

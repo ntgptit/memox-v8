@@ -23,7 +23,7 @@ sheet as a CSV, TSV or XLSX file. UC-TRANSFER-002; spec
 | Problem | `MxInlineBanner` | One banner per problem, above the formats. Danger for a file that could not be prepared, warning otherwise. |
 | Formats | `MxListSectionHeader` + `MxOptionRow` × 3 | CSV (default, "Recommended" badge), TSV, XLSX, each with what it is for. Locked while a file is prepared. |
 | Content note | `MxNote` (file icon) | The six columns; no schedule, no history. |
-| Footer | `MxSheetActions` (sheet form) | Cancel · "Export" with the share icon (the title names the cards, DEV-179); "Preparing…" spinning while the file is built and shared (A4); "Try again" after a failure it can fix; Close alone when it cannot. |
+| Footer | `MxSheetActions` (sheet form) | Cancel · "Export", no icon (the title names the cards, DEV-179); "Preparing…" spinning while the file is built and shared (A4); "Try again" after a failure it can fix; Close alone when it cannot. |
 | Toast | `MxSnackbar` | "Handed {n} cards to the system." once the share sheet took the file. |
 
 The overline, the banner and the note line up with the title (20 dp).

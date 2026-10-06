@@ -188,7 +188,6 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
           ? null
           : MxNote(icon: AppIcons.offline, text: l10n.accountDeleteOffline),
       confirmLabel: l10n.accountDeleteConfirm,
-      confirmIcon: AppIcons.delete,
       isDestructive: true,
       canConfirm: canDelete,
     );

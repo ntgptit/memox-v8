@@ -38,7 +38,6 @@ class TagDeleteDialogWidget extends StatelessWidget {
         cancelLabel: l10n.commonCancel,
         onCancel: () => Navigator.of(context).pop(false),
         confirmLabel: l10n.tagsDeleteConfirm,
-        confirmIcon: AppIcons.delete,
         isDestructive: true,
         onConfirm: () => Navigator.of(context).pop(true),
       ),

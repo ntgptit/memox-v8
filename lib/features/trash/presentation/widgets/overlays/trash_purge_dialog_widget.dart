@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/controllers/trash_controller.dart';
 import 'package:memox/l10n/failure_message.dart';
@@ -100,7 +99,6 @@ class _TrashPurgeDialogWidgetState
                 ),
                 trailing: MxButton(
                   label: l10n.trashPurgeConfirm,
-                  icon: AppIcons.delete,
                   tone: MxButtonTone.destructive,
                   isBlock: true,
                   isSingleLine: true,

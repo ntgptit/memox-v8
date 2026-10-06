@@ -14,7 +14,6 @@ Future<bool> confirmAccountStep(
   required String body,
   required String confirmLabel,
   Widget? note,
-  IconData? confirmIcon,
   bool isDestructive = false,
   bool isWarning = false,
   bool canConfirm = true,
@@ -26,7 +25,6 @@ Future<bool> confirmAccountStep(
         body: body,
         confirmLabel: confirmLabel,
         note: note,
-        confirmIcon: confirmIcon,
         isDestructive: isDestructive,
         isWarning: isWarning,
         canConfirm: canConfirm,
@@ -80,7 +78,6 @@ class AccountConfirmDialogWidget extends StatelessWidget {
     required this.body,
     required this.confirmLabel,
     this.note,
-    this.confirmIcon,
     this.isDestructive = false,
     this.isWarning = false,
     this.canConfirm = true,
@@ -92,7 +89,6 @@ class AccountConfirmDialogWidget extends StatelessWidget {
 
   /// An `MxNote`: the reassurance, or why the confirm cannot go.
   final Widget? note;
-  final IconData? confirmIcon;
   final bool isDestructive;
 
   /// A confirm that changes a lot but loses nothing (critique 2026-10-02).
@@ -110,7 +106,6 @@ class AccountConfirmDialogWidget extends StatelessWidget {
       cancelLabel: context.l10n.commonCancel,
       onCancel: () => Navigator.of(context).pop(false),
       confirmLabel: confirmLabel,
-      confirmIcon: confirmIcon,
       isDestructive: isDestructive,
       isWarning: isWarning,
       onConfirm: canConfirm ? () => Navigator.of(context).pop(true) : null,
