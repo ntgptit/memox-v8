@@ -29,11 +29,10 @@ UC-STUDY-001 (steps 13, A3, E3, E4).
 | reset | `summary_reset_light.png` | `summary_reset_dark.png` | `invalidated`/`scheduler_reset`: reset while the session was open, reached on returning to it (BR-STUDY-015). |
 | schedulerChanged | `summary_scheduler_changed_light.png` | `summary_scheduler_changed_dark.png` | `invalidated`/`scheduler_changed` (BR-STUDY-016). No Facts card. |
 | saveError | `summary_save_error_light.png` | `summary_save_error_dark.png` | `failed`/`persistence_error` (BR-STUDY-018); turns saved before the failure are kept (BR-STUDY-019). |
+| contentDeleted | `summary_content_deleted_light.png` | `summary_content_deleted_dark.png` | `invalidated`/`content_deleted`: ended because content moved to Trash (BR-TRASH-004; UC-STUDY-001 A5). |
 | loading | no golden | no golden | — |
-Other goldens: `summary_content_deleted_light.png` / `summary_content_deleted_dark.png` (ended because content moved to Trash).
 
-
-`contentDeleted` (`invalidated`/`content_deleted`) is reachable since the Trash backend (BE-B1,
+`contentDeleted` is reachable since the Trash backend (BE-B1,
 BR-TRASH-004) and reads "Ended — content moved to Trash", the facts, and the
 note "Restore the card from Trash to include it in the next review."
 
