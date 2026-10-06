@@ -507,7 +507,7 @@ tuỳ chọn trình bày (BR-SETTINGS-005, BR-SETTINGS-006).
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
 | `id` | INTEGER PK | luôn `1`; `CHECK (id = 1)` giữ bảng ở đúng một dòng (BR-SETTINGS-001) |
-| `card_limit` | INTEGER NOT NULL DEFAULT 20 | trần thẻ **mỗi phiên**, không phải mỗi ngày (BR-STUDY-003) |
+| `card_limit` | INTEGER NOT NULL DEFAULT 20 | trần thẻ **mỗi phiên**, không phải mỗi ngày, 1–200 (BR-STUDY-003). Local không có CHECK: domain kiểm khi lưu, khi pull sync và khi đọc mặc định; server CHECK 1–200 (DEV-214) |
 | `new_card_order` | TEXT NOT NULL DEFAULT 'created' | `created` \| `random` (BR-STUDY-057) |
 | `theme_mode` | TEXT NOT NULL DEFAULT 'system' | `system` \| `light` \| `dark` (BR-SETTINGS-005) |
 | `language` | TEXT NOT NULL DEFAULT 'system' | `system` \| `en` \| `vi` (BR-SETTINGS-006) |

@@ -9,7 +9,7 @@ superseded_by:
 
 Số thẻ của một phiên MUST được chốt **một lần lúc mở phiên** từ tùy chọn hiệu lực (BR-STUDY-056) và lưu vào `study_session.card_limit`. Đổi tùy chọn sau đó MUST NOT ảnh hưởng phiên đang chạy.
 
-**Enforced by:** db
+**Enforced by:** domain + store
 **Liên quan:** BR-STUDY-003, BR-STUDY-056
 
 ## Lý do

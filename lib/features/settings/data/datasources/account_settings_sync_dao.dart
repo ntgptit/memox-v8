@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
+import 'package:memox/features/settings/domain/models/study_options_model.dart';
 
 part 'account_settings_sync_dao.g.dart';
 
@@ -41,8 +42,10 @@ class AccountSettingsSyncDao extends DatabaseAccessor<AppDatabase>
       updateAppSettings(
         // Every setting is an optional wire key (server sync spec §4.4): one
         // the row leaves out stays as it is on this device.
+        // A card limit outside 1..200 is left out too: this device keeps a
+        // limit a session can open with (DEV-214, BR-STUDY-003).
         AppSettingsCompanion(
-          cardLimit: Value.absentIfNull(row['cardLimit'] as int?),
+          cardLimit: Value.absentIfNull(_cardLimitOf(row['cardLimit'] as int?)),
           newCardOrder: Value.absentIfNull(row['newCardOrder'] as String?),
           themeMode: Value.absentIfNull(row['themeMode'] as String?),
           language: Value.absentIfNull(row['language'] as String?),
@@ -50,6 +53,14 @@ class AccountSettingsSyncDao extends DatabaseAccessor<AppDatabase>
         ),
         appSettingsRowId,
       );
+
+  /// [cardLimit] when a session can open with it, null otherwise.
+  static int? _cardLimitOf(int? cardLimit) {
+    if (cardLimit == null) return null;
+    if (cardLimit < StudyOptions.minCardLimit) return null;
+    if (cardLimit > StudyOptions.maxCardLimit) return null;
+    return cardLimit;
+  }
 
   @override
   Future<void> deleteFromServer(String id) async {}

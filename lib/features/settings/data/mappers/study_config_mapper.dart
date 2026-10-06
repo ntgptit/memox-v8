@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/features/settings/data/mappers/app_settings_mapper.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
@@ -43,7 +44,7 @@ StudyOptions? studyOptionsOf(String studyConfig) {
 /// app-wide defaults of [settings] otherwise (BR-STUDY-056). An unreadable
 /// override is reported, never repaired here (IT-STUDY-013).
 EffectiveStudyOptions effectiveStudyOptionsOf(Deck root, AppSetting settings) {
-  final appDefaults = appSettingsOf(settings).studyDefaults;
+  final appDefaults = _checkedAppDefaults(settings);
   final studyConfig = root.studyConfig;
   if (studyConfig == null) {
     return EffectiveStudyOptions(
@@ -68,4 +69,20 @@ EffectiveStudyOptions effectiveStudyOptionsOf(Deck root, AppSetting settings) {
     options: override,
     source: StudyOptionsSource.rootOverride,
   );
+}
+
+/// The app-wide defaults of [settings], held to the same rule as an override
+/// (BR-STUDY-003): a row outside it, which no write path of a released build
+/// makes, studies with the fresh-install defaults (DEV-214).
+StudyOptions _checkedAppDefaults(AppSetting settings) {
+  final appDefaults = appSettingsOf(settings).studyDefaults;
+  if (appDefaults.check() case Ok()) return appDefaults;
+  appLogger.warning(
+    'settings.app_defaults_out_of_range',
+    message:
+        'app_settings holds a card limit no session can open with; '
+        'studying with the defaults',
+    context: {'cardLimit': appDefaults.cardLimit},
+  );
+  return StudyOptions.defaults;
 }

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(9);
+select plan(12);
 -- The users these tests act as (the owned tables reference auth.users, 20261010000000).
 insert into auth.users (id) values
   ('aaaaaaaa-0000-0000-0000-000000000001'), ('bbbbbbbb-0000-0000-0000-000000000002'),
@@ -43,6 +43,17 @@ select is(public.t_push(jsonb_build_array(public.t_op(4, public.t_nil(), 'upsert
   'VALIDATION_FAILED', 'a theme outside the CHECK is refused');
 select is(public.t_push(jsonb_build_array(public.t_op(5, public.t_nil(), 'delete', null)))->0->>'code',
   'VALIDATION_FAILED', 'settings are never deleted');
+-- DEV-214: the server keeps card_limit inside 1..200 (BR-STUDY-003), as the app does; the
+-- refusal carries the row the server holds, so the pushing device applies it.
+select is(public.t_push(jsonb_build_array(public.t_op(6, public.t_nil(), 'upsert',
+    public.t_settings('light') || '{"cardLimit": 0}'::jsonb)))->0->>'code',
+  'VALIDATION_FAILED', 'a card limit below 1 is refused');
+select is(public.t_push(jsonb_build_array(public.t_op(7, public.t_nil(), 'upsert',
+    public.t_settings('light') || '{"cardLimit": 201}'::jsonb)))->0->'current'->'row'->>'cardLimit',
+  '30', 'a card limit above 200 is refused with the row the server holds');
+select is(public.t_push(jsonb_build_array(public.t_op(8, public.t_nil(), 'upsert',
+    public.t_settings('light') || '{"cardLimit": 200}'::jsonb)))->0->>'status',
+  'applied', 'the upper bound itself is applied');
 
 select set_config('request.jwt.claims',
   '{"sub":"bbbbbbbb-0000-0000-0000-000000000002","role":"authenticated"}', true);
