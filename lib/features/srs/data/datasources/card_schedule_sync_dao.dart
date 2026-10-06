@@ -124,8 +124,9 @@ class CardScheduleSyncDao extends DatabaseAccessor<AppDatabase>
     learnedAt: Value(fromWireTime(row['learnedAt'])),
     dueAt: Value(fromWireTime(row['dueAt'])),
     lastAnsweredAt: Value(fromWireTime(row['lastAnsweredAt'])),
-    answerCount: Value(row['answerCount'] as int),
-    lapseCount: Value(row['lapseCount'] as int),
+    // Optional wire keys (server sync spec §4.4): absent means no answer yet.
+    answerCount: Value(row['answerCount'] as int? ?? 0),
+    lapseCount: Value(row['lapseCount'] as int? ?? 0),
     currentBox: Value(row['currentBox'] as int?),
     easeFactor: Value((row['easeFactor'] as num?)?.toDouble()),
     intervalDays: Value(row['intervalDays'] as int?),

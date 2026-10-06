@@ -117,6 +117,18 @@ void main() {
     }
   });
 
+  test('a schedule without answerCount and lapseCount, from a build before the '
+      'keys, takes the defaults (server sync spec §4.4)', () async {
+    final row = _eightBox()
+      ..remove('answerCount')
+      ..remove('lapseCount');
+    await remote(() => schedules.upsertFromServer(row, 5));
+
+    final pulled = (await schedules.readRow('K'))!;
+    expect(pulled['answerCount'], 0);
+    expect(pulled['lapseCount'], 0);
+  });
+
   test('an older pulled schedule leaves the local one and queues it', () async {
     await remote(
       () => schedules.upsertFromServer(

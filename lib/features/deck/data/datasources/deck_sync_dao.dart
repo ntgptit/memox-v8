@@ -55,7 +55,9 @@ class DeckSyncDao extends DatabaseAccessor<AppDatabase>
           parentId: Value(row['parentId'] as String?),
           rootId: row['rootId'] as String,
           depth: row['depth'] as int,
-          contentType: Value(row['contentType'] as String),
+          // Optional wire key (server sync spec §4.4): absent means the
+          // column's default.
+          contentType: Value(row['contentType'] as String? ?? 'unset'),
           schedulerType: Value(row['schedulerType'] as String?),
           schedulerVersion: Value(row['schedulerVersion'] as int?),
           schedulerConfig: Value(row['schedulerConfig'] as String?),
