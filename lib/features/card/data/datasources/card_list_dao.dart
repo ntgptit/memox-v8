@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/card_due_sql.dart';
 import 'package:memox/core/database/id_chunks.dart';
 import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
@@ -132,9 +133,8 @@ final class CardListDao extends DatabaseAccessor<AppDatabase>
     DateTime now,
   ) => switch (filter) {
     CardListFilter.all => const Constant(true),
-    CardListFilter.due =>
-      s.learnedAt.isNotNull() & s.dueAt.isSmallerOrEqualValue(now),
-    CardListFilter.newCards => s.learnedAt.isNull(),
+    CardListFilter.due => CardDueSql.isDue(s, now),
+    CardListFilter.newCards => CardDueSql.isNew(s),
     CardListFilter.flagged => c.isFlagged.equals(1),
   };
 
