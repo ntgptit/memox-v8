@@ -86,6 +86,19 @@ void main() {
     expect(effective?.hasRootOverride, isFalse);
   });
 
+  test('app defaults outside 1..200 in the row study with the fresh-install '
+      'defaults (DEV-214, BR-STUDY-003)', () async {
+    await _insertTree(db);
+    await db.customStatement(
+      "UPDATE app_settings SET card_limit = 0, new_card_order = 'random' WHERE id = 1",
+    );
+
+    final effective = await settings.watchStudyOptions(deckId: 'r').first;
+
+    expect(effective?.options, StudyOptions.defaults);
+    expect(effective?.source, StudyOptionsSource.appDefaults);
+  });
+
   test("a sub-deck studies with its root's override (BR-STUDY-056)", () async {
     await _insertTree(
       db,

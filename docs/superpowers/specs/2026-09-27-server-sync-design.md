@@ -191,6 +191,12 @@ of a change is a JSON object; these rules keep it readable by both sides:
 - **An old build's `delete`** carries no `row`; a slice that adds keys to
   the operation (DEV-181's `deleteBatchId` and `serverVersion`) treats their
   absence as the behaviour before the slice: the delete is unconditional.
+- **A server `CHECK` on a released column is tightened only to a rule every
+  released build already enforces before writing** (DEV-214:
+  `account_settings.card_limit` 1..200, BR-STUDY-003), so no stored row and
+  no push of a released build breaks it. A push that does is
+  `VALIDATION_FAILED` with `current`, as for any `CHECK`; an adapter reads
+  such a value as it reads a missing key, leaving the device's own value.
 
 **Contract keys.** `NOT NULL` without a default on both sides, written by
 every build and never dropped; an adapter reads them `as T`:
