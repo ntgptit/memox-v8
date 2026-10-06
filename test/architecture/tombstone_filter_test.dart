@@ -26,7 +26,7 @@ const _readsTombstones = <String, String>{
   'lib/core/database/queries/sync_card_queries.drift#syncCardRow':
       'sync uploads a card in any state: a card in the Trash carries its '
       'delete_batch_id to the server (SB-S2)',
-  'lib/core/database/queries/sync_card_queries.drift#ensureCardSchedules':
+  'lib/core/database/queries/sync_card_schedule_queries.drift#cardsWithoutSchedule':
       'every card has a schedule row, a card in the Trash too, as a local '
       'card keeps its row when trashed (BR-CARD-004, SB-S2)',
   'lib/core/database/queries/sync_outbox_queries.drift#seedDeckOutbox':

@@ -30,3 +30,11 @@ SELECT r.scheduler_type FROM card c
 JOIN deck d ON d.id = c.deck_id
 JOIN deck r ON r.id = d.root_id
 WHERE c.id = :card_id;
+
+-- BR-CARD-004: the cards without a schedule, each with its root's scheduler
+-- and generation; CardScheduleSyncDao.afterPull gives each the initial row.
+-- A card in the Trash is included, as a local card keeps its row when trashed.
+cardsWithoutSchedule:
+SELECT c.id AS card_id, r.scheduler_type, r.scheduler_version, r.generation
+FROM card c JOIN deck d ON d.id = c.deck_id JOIN deck r ON r.id = d.root_id
+WHERE NOT EXISTS (SELECT 1 FROM card_schedule s WHERE s.card_id = c.id);

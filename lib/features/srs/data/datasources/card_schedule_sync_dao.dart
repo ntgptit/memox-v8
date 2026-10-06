@@ -1,10 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
-import 'package:memox/core/sync/schedule_progress.dart';
 import 'package:memox/core/sync/sync_store.dart';
+import 'package:memox/features/srs/data/mappers/card_schedule_mapper.dart';
+import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
+import 'package:memox/features/srs/domain/models/schedule_progress_model.dart';
+import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
-part 'card_schedule_sync_adapter.g.dart';
+part 'card_schedule_sync_dao.g.dart';
 
 /// Syncs `card_schedule` as a row keyed by its card (library and study sync
 /// spec §3.4, ADR-017). A pulled schedule replaces the local one unless the
@@ -17,9 +20,9 @@ part 'card_schedule_sync_adapter.g.dart';
     'package:memox/core/database/queries/sync_card_schedule_queries.drift',
   },
 )
-class CardScheduleSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$CardScheduleSyncAdapterMixin, EntitySyncAdapter {
-  CardScheduleSyncAdapter(
+class CardScheduleSyncDao extends DatabaseAccessor<AppDatabase>
+    with _$CardScheduleSyncDaoMixin, EntitySyncAdapter {
+  CardScheduleSyncDao(
     super.attachedDatabase,
     this._store, {
     this._now = DateTime.now,
@@ -76,6 +79,29 @@ class CardScheduleSyncAdapter extends DatabaseAccessor<AppDatabase>
       return;
     }
     await upsertSyncedCardSchedule(pulled);
+  }
+
+  /// Gives every card without a schedule the row a new card starts with
+  /// (BR-CARD-004): its root's scheduler at the root's generation, nothing
+  /// learned, the row `ScheduleRepository.initializeCard` writes. Runs at the
+  /// end of a pull, under `applying_remote`; one read and one batch.
+  @override
+  Future<void> afterPull() async {
+    final missing = await cardsWithoutSchedule().get();
+    if (missing.isEmpty) return;
+    await batch((batch) {
+      for (final row in missing) {
+        final type = SchedulerType.fromCode(row.schedulerType!);
+        batch.insert(
+          attachedDatabase.cardSchedule,
+          cardScheduleColumnsOf(
+            CardScheduleState.initial(type, generation: row.generation!),
+            type: type,
+            version: row.schedulerVersion!,
+          ).copyWith(cardId: Value(row.cardId)),
+        );
+      }
+    });
   }
 
   @override

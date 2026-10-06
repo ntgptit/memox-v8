@@ -3,8 +3,8 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/sync/account_settings_sync_adapter.dart';
-import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
-import 'package:memox/core/sync/card_sync_adapter.dart';
+import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
+import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
 import 'package:memox/core/sync/deck_sync_adapter.dart';
 import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
@@ -23,8 +23,8 @@ List<EntitySyncAdapter> appSyncAdapters(Ref ref) {
     DeleteBatchSyncAdapter(db),
     DeckSyncAdapter(db),
     TagSyncAdapter(db, store, now: now),
-    CardSyncAdapter(db),
-    CardScheduleSyncAdapter(db, store, now: now),
+    CardSyncDao(db),
+    CardScheduleSyncDao(db, store, now: now),
     ReviewLogSyncAdapter(db),
     AccountSettingsSyncAdapter(db),
   ];

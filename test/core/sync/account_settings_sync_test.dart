@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/tables/sync_keys.dart';
 import 'package:memox/core/sync/account_settings_sync_adapter.dart';
-import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
-import 'package:memox/core/sync/card_sync_adapter.dart';
+import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
+import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
 import 'package:memox/core/sync/deck_sync_adapter.dart';
 import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
 import 'package:memox/core/sync/review_log_sync_adapter.dart';
@@ -17,7 +17,7 @@ import 'fake_sync_server.dart';
 class _Device {
   _Device(FakeSyncServer server) : db = openTestDatabase() {
     final store = SyncStore(db);
-    final cards = CardSyncAdapter(db);
+    final cards = CardSyncDao(db);
     coordinator = SyncCoordinator(
       api: server,
       store: store,
@@ -26,7 +26,7 @@ class _Device {
         DeckSyncAdapter(db),
         TagSyncAdapter(db, store),
         cards,
-        CardScheduleSyncAdapter(db, store),
+        CardScheduleSyncDao(db, store),
         ReviewLogSyncAdapter(db),
         AccountSettingsSyncAdapter(db),
       ],

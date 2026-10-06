@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/sync/account_settings_sync_adapter.dart';
-import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
-import 'package:memox/core/sync/card_sync_adapter.dart';
+import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
+import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
 import 'package:memox/core/sync/deck_sync_adapter.dart';
 import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
 import 'package:memox/core/sync/review_log_sync_adapter.dart';
@@ -30,8 +30,8 @@ void main() {
         DeleteBatchSyncAdapter(db),
         DeckSyncAdapter(db),
         TagSyncAdapter(db, store),
-        CardSyncAdapter(db),
-        CardScheduleSyncAdapter(db, store),
+        CardSyncDao(db),
+        CardScheduleSyncDao(db, store),
         ReviewLogSyncAdapter(db),
         AccountSettingsSyncAdapter(db),
       ],

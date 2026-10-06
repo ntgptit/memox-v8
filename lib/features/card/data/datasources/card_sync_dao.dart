@@ -3,16 +3,16 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/text/folded_text.dart';
 
-part 'card_sync_adapter.g.dart';
+part 'card_sync_dao.g.dart';
 
 /// Syncs `card` (library and study sync spec §3.1). The folded columns are
 /// not on the wire: a pulled card is folded here as the repository folds.
 @DriftAccessor(
   include: {'package:memox/core/database/queries/sync_card_queries.drift'},
 )
-class CardSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$CardSyncAdapterMixin, EntitySyncAdapter {
-  CardSyncAdapter(super.attachedDatabase);
+class CardSyncDao extends DatabaseAccessor<AppDatabase>
+    with _$CardSyncDaoMixin, EntitySyncAdapter {
+  CardSyncDao(super.attachedDatabase);
 
   static const type = 'card';
 
@@ -84,11 +84,6 @@ class CardSyncAdapter extends DatabaseAccessor<AppDatabase>
       acknowledgeCard(serverVersion, id);
 
   Future<List<String>> _tagIds(String cardId) => syncCardTagIds(cardId).get();
-
-  /// Gives every card without a schedule the row a new card starts with
-  /// (BR-CARD-004). Moves to srs with DEV-173 Task 4.
-  @override
-  Future<void> afterPull() => ensureCardSchedules();
 
   /// Drift stores whole seconds; the wire drops the fraction so a round trip
   /// is exact.

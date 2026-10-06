@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/sync/schedule_progress.dart';
+import 'package:memox/features/srs/domain/models/schedule_progress_model.dart';
 
 ScheduleProgress _p({
   int generation = 1,

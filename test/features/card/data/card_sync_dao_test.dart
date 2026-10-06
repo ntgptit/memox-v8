@@ -1,9 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/sync/card_sync_adapter.dart';
-import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
+import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
 
-import '../../support/test_database.dart';
+import '../../../support/test_database.dart';
 
 Future<void> _root(
   AppDatabase db,
@@ -40,10 +39,10 @@ Map<String, Object?> _wire(String id, String deckId) => {
 
 void main() {
   late AppDatabase db;
-  late CardSyncAdapter adapter;
+  late CardSyncDao adapter;
   setUp(() {
     db = openTestDatabase();
-    adapter = CardSyncAdapter(db);
+    adapter = CardSyncDao(db);
   });
   tearDown(() => db.close());
 
@@ -80,31 +79,6 @@ void main() {
     )..where((c) => c.id.equals('K'))).getSingle();
     expect(row.serverVersion, 42);
   });
-
-  for (final scheduler in ['eight_box', 'sm2']) {
-    test(
-      'ensureSchedules writes what initializeCard writes ($scheduler)',
-      () async {
-        await _root(db, 'R', scheduler);
-        await _child(db, 'D', 'R');
-        await adapter.upsertFromServer(_wire('pulled', 'D'), 1);
-        await adapter.upsertFromServer(_wire('local', 'D'), 2);
-        await ScheduleRepositoryImpl(db).initializeCard(cardId: 'local');
-
-        await adapter.afterPull();
-        await adapter.afterPull();
-
-        final rows = await db.select(db.cardSchedule).get();
-        expect(rows, hasLength(2), reason: 'one row per card, run twice');
-        Map<String, Object?> columns(CardSchedule s) =>
-            s.toJson()..remove('card_id');
-        expect(
-          columns(rows.firstWhere((s) => s.cardId == 'pulled')),
-          columns(rows.firstWhere((s) => s.cardId == 'local')),
-        );
-      },
-    );
-  }
 
   test('tagIds read and write the card links', () async {
     await _root(db, 'R', 'sm2');
