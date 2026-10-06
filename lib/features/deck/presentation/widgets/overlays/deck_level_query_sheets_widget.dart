@@ -31,6 +31,12 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
   final String? parentId;
 
   /// The handoff's order: manual, date added, name, most due, progress.
+  /// "Sort by" starts on the rows' edge, 16 from the sheet like the option
+  /// rows' radios (DESIGN.md gutter): the header carries 4 of its own, so the
+  /// sheet gives it the rest (DEV-232).
+  static const double _sectionHeaderInset =
+      AppSpacing.gutter - AppSpacing.micro;
+
   static const _sorts = [
     DeckLevelSort.manual,
     DeckLevelSort.recent,
@@ -75,7 +81,7 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
           Padding(
             padding:
                 const EdgeInsets.only(top: AppSpacing.micro) +
-                const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+                const EdgeInsets.symmetric(horizontal: _sectionHeaderInset),
             child: MxListSectionHeader(label: l10n.deckSortByHeader),
           ),
           for (final sort in _sorts)

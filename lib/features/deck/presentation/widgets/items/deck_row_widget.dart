@@ -4,7 +4,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
-import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_tile_signs_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -28,23 +28,6 @@ class DeckRowWidget extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onMore;
 
-  IconData get _glyph => switch (tile) {
-    DeckTile(subDeckCount: > 0) => AppIcons.library,
-    DeckTile(cardCount: > 0) => AppIcons.cardDeck,
-    _ => AppIcons.folder,
-  };
-
-  /// "4 sub-decks · 1,248 cards", "420 cards" for a deck of cards, or the
-  /// empty line (screen 01).
-  String _meta(AppLocalizations l10n) => switch (tile) {
-    DeckTile(subDeckCount: 0, cardCount: 0) => l10n.deckRowEmpty,
-    DeckTile(subDeckCount: 0) => l10n.deckCardCount(tile.cardCount),
-    _ => l10n.deckRowMeta(
-      l10n.deckSubDeckCount(tile.subDeckCount),
-      l10n.deckCardCount(tile.cardCount),
-    ),
-  };
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -62,7 +45,7 @@ class DeckRowWidget extends StatelessWidget {
           child: Row(
             spacing: AppSpacing.gutter,
             children: [
-              MxIconTile(icon: _glyph, size: MxIconTileSize.large),
+              MxIconTile(icon: deckTileGlyph(tile), size: MxIconTileSize.large),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -88,7 +71,7 @@ class DeckRowWidget extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          _meta(l10n),
+                          deckTileMeta(tile, l10n),
                           style: context.textStyles.rowSubtitle,
                         ),
                       ],
