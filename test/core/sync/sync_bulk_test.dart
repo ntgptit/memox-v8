@@ -39,7 +39,6 @@ void main() {
           ReviewLogSyncAdapter(db),
           AccountSettingsSyncAdapter(db),
         ],
-        afterPull: cards.ensureSchedules,
       );
     }
 

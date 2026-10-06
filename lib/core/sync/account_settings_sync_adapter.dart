@@ -12,8 +12,7 @@ part 'account_settings_sync_adapter.g.dart';
   include: {'package:memox/core/database/queries/settings_queries.drift'},
 )
 class AccountSettingsSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$AccountSettingsSyncAdapterMixin
-    implements EntitySyncAdapter {
+    with _$AccountSettingsSyncAdapterMixin, EntitySyncAdapter {
   AccountSettingsSyncAdapter(super.attachedDatabase);
 
   static const type = 'account_settings';

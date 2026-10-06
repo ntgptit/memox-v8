@@ -11,8 +11,7 @@ part 'card_sync_adapter.g.dart';
   include: {'package:memox/core/database/queries/sync_card_queries.drift'},
 )
 class CardSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$CardSyncAdapterMixin
-    implements EntitySyncAdapter {
+    with _$CardSyncAdapterMixin, EntitySyncAdapter {
   CardSyncAdapter(super.attachedDatabase);
 
   static const type = 'card';
@@ -87,11 +86,9 @@ class CardSyncAdapter extends DatabaseAccessor<AppDatabase>
   Future<List<String>> _tagIds(String cardId) => syncCardTagIds(cardId).get();
 
   /// Gives every card without a schedule the row a new card starts with
-  /// (BR-CARD-004): its root's scheduler at the root's generation, nothing
-  /// learned. The values are `CardScheduleState.initial`'s; `lib/core` cannot
-  /// call the srs feature, and `card_sync_adapter_test.dart` holds the two
-  /// equal. Runs at the end of a pull, under `applying_remote`.
-  Future<void> ensureSchedules() => ensureCardSchedules();
+  /// (BR-CARD-004). Moves to srs with DEV-173 Task 4.
+  @override
+  Future<void> afterPull() => ensureCardSchedules();
 
   /// Drift stores whole seconds; the wire drops the fraction so a round trip
   /// is exact.

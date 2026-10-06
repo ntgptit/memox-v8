@@ -30,7 +30,6 @@ class _Device {
         AccountSettingsSyncAdapter(db),
       ],
       pullLimit: pullLimit,
-      afterPull: cards.ensureSchedules,
     );
   }
   final AppDatabase db;

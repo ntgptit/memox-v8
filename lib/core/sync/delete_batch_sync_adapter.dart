@@ -11,8 +11,7 @@ part 'delete_batch_sync_adapter.g.dart';
   },
 )
 class DeleteBatchSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$DeleteBatchSyncAdapterMixin
-    implements EntitySyncAdapter {
+    with _$DeleteBatchSyncAdapterMixin, EntitySyncAdapter {
   DeleteBatchSyncAdapter(super.attachedDatabase);
 
   static const type = 'delete_batch';

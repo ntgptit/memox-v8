@@ -45,7 +45,6 @@ SyncCoordinator syncCoordinator(Ref ref) {
   final db = ref.watch(databaseProvider);
   final store = ref.watch(syncStoreProvider);
   final clock = ref.watch(dayClockProvider);
-  final cards = CardSyncAdapter(db);
   return SyncCoordinator(
     api: ref.watch(syncApiProvider),
     store: store,
@@ -53,13 +52,12 @@ SyncCoordinator syncCoordinator(Ref ref) {
       DeleteBatchSyncAdapter(db),
       DeckSyncAdapter(db),
       TagSyncAdapter(db, store, now: clock.now),
-      cards,
+      CardSyncAdapter(db),
       CardScheduleSyncAdapter(db, store, now: clock.now),
       ReviewLogSyncAdapter(db),
       AccountSettingsSyncAdapter(db),
     ],
     now: clock.now,
-    afterPull: cards.ensureSchedules,
   );
 }
 

@@ -31,7 +31,6 @@ class _Device {
         ReviewLogSyncAdapter(db),
         AccountSettingsSyncAdapter(db),
       ],
-      afterPull: cards.ensureSchedules,
     );
   }
   final AppDatabase db;

@@ -14,8 +14,7 @@ part 'review_log_sync_adapter.g.dart';
   },
 )
 class ReviewLogSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$ReviewLogSyncAdapterMixin
-    implements EntitySyncAdapter {
+    with _$ReviewLogSyncAdapterMixin, EntitySyncAdapter {
   ReviewLogSyncAdapter(super.attachedDatabase);
 
   static const type = 'review_log';

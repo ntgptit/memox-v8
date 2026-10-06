@@ -10,8 +10,7 @@ part 'deck_sync_adapter.g.dart';
   include: {'package:memox/core/database/queries/sync_deck_queries.drift'},
 )
 class DeckSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$DeckSyncAdapterMixin
-    implements EntitySyncAdapter {
+    with _$DeckSyncAdapterMixin, EntitySyncAdapter {
   DeckSyncAdapter(super.attachedDatabase);
 
   static const type = 'deck';

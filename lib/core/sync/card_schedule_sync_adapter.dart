@@ -18,8 +18,7 @@ part 'card_schedule_sync_adapter.g.dart';
   },
 )
 class CardScheduleSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$CardScheduleSyncAdapterMixin
-    implements EntitySyncAdapter {
+    with _$CardScheduleSyncAdapterMixin, EntitySyncAdapter {
   CardScheduleSyncAdapter(
     super.attachedDatabase,
     this._store, {

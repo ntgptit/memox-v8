@@ -58,12 +58,35 @@ class _Device {
             AccountSettingsSyncAdapter(db),
           ],
       pullLimit: pullLimit,
-      afterPull: cards.ensureSchedules,
     );
   }
 
   final AppDatabase db;
   late final SyncCoordinator coordinator;
+}
+
+/// Records the order [afterPull] reaches each adapter in (DEV-173).
+class _RecordingAdapter extends EntitySyncAdapter {
+  _RecordingAdapter(this.entityType, this.calls);
+
+  @override
+  final String entityType;
+  final List<String> calls;
+
+  @override
+  Future<Map<String, Object?>?> readRow(String id) async => null;
+
+  @override
+  Future<void> upsertFromServer(Map<String, Object?> row, int version) async {}
+
+  @override
+  Future<void> deleteFromServer(String id) async {}
+
+  @override
+  Future<void> markAcknowledged(String id, int version) async {}
+
+  @override
+  Future<void> afterPull() async => calls.add(entityType);
 }
 
 Map<String, Object?> _rootRow(String id) => {
@@ -102,6 +125,37 @@ Map<String, Object?> _cardRow(String id, String deckId) => {
 };
 
 void main() {
+  test('afterPull runs on every adapter in list order after a pull '
+      '(DEV-173)', () async {
+    final calls = <String>[];
+    final device = _Device(
+      FakeSyncServer(),
+      adapters: (_) => [
+        _RecordingAdapter('a', calls),
+        _RecordingAdapter('b', calls),
+      ],
+    );
+    addTearDown(device.db.close);
+
+    await device.coordinator.runOnce();
+
+    expect(calls, ['a', 'b']);
+  });
+
+  test('afterPull is not called when a pull fails (DEV-173)', () async {
+    final calls = <String>[];
+    final server = FakeSyncServer()..failChangesAfter = 0;
+    final device = _Device(
+      server,
+      adapters: (_) => [_RecordingAdapter('a', calls)],
+    );
+    addTearDown(device.db.close);
+
+    await expectLater(device.coordinator.runOnce(), throwsA(anything));
+
+    expect(calls, isEmpty);
+  });
+
   late FakeSyncServer server;
   late _Device a;
   late _Device b;

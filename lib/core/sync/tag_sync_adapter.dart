@@ -13,8 +13,7 @@ part 'tag_sync_adapter.g.dart';
   include: {'package:memox/core/database/queries/sync_tag_queries.drift'},
 )
 class TagSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$TagSyncAdapterMixin
-    implements EntitySyncAdapter {
+    with _$TagSyncAdapterMixin, EntitySyncAdapter {
   TagSyncAdapter(
     super.attachedDatabase,
     this._store, {

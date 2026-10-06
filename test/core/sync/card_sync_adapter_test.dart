@@ -91,8 +91,8 @@ void main() {
         await adapter.upsertFromServer(_wire('local', 'D'), 2);
         await ScheduleRepositoryImpl(db).initializeCard(cardId: 'local');
 
-        await adapter.ensureSchedules();
-        await adapter.ensureSchedules();
+        await adapter.afterPull();
+        await adapter.afterPull();
 
         final rows = await db.select(db.cardSchedule).get();
         expect(rows, hasLength(2), reason: 'one row per card, run twice');
