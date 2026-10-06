@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/local_data_reset.dart';
+import 'package:memox/features/settings/data/datasources/settings_dao.dart';
 
 import '../../support/test_database.dart';
 
@@ -37,7 +38,11 @@ void main() {
     await _seed(db);
     db.mutationGate.close();
 
-    await LocalDataReset(db).run();
+    await LocalDataReset(
+      db,
+      resetSyncedSettings: () =>
+          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
+    ).run();
 
     for (final table in [
       'deck',
@@ -77,7 +82,11 @@ void main() {
     final db = openTestDatabase();
     addTearDown(db.close);
     await _seed(db);
-    final reset = LocalDataReset(db);
+    final reset = LocalDataReset(
+      db,
+      resetSyncedSettings: () =>
+          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
+    );
 
     await reset.run();
     await reset.run();
@@ -104,7 +113,11 @@ void main() {
     addTearDown(settingsWatch.cancel);
     await pumpEventQueue();
 
-    await LocalDataReset(db).run();
+    await LocalDataReset(
+      db,
+      resetSyncedSettings: () =>
+          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
+    ).run();
     await pumpEventQueue();
 
     expect(decks.last, 0);

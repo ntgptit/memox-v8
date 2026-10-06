@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
-import 'package:memox/core/sync/review_log_sync_adapter.dart';
+import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
+import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
 import 'package:memox/core/sync/sync_store.dart';
 
-import '../../support/test_database.dart';
+import '../../../support/test_database.dart';
 
 Map<String, Object?> _review(String id, String cardId) => {
   'id': id,
@@ -68,13 +68,13 @@ final Map<String, Object?> _sm2 = {
 void main() {
   late AppDatabase db;
   late SyncStore store;
-  late ReviewLogSyncAdapter reviews;
-  late CardScheduleSyncAdapter schedules;
+  late ReviewLogSyncDao reviews;
+  late CardScheduleSyncDao schedules;
   setUp(() async {
     db = openTestDatabase();
     store = SyncStore(db);
-    reviews = ReviewLogSyncAdapter(db);
-    schedules = CardScheduleSyncAdapter(
+    reviews = ReviewLogSyncDao(db);
+    schedules = CardScheduleSyncDao(
       db,
       store,
       now: () => DateTime.utc(2026, 9, 28, 12),

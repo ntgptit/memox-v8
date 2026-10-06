@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 
-part 'review_log_sync_adapter.g.dart';
+part 'review_log_sync_dao.g.dart';
 
 /// Syncs `review_log`, the append-only study history (library and study sync
 /// spec §3.3). A pulled review is inserted if absent; the table forbids
@@ -13,10 +13,9 @@ part 'review_log_sync_adapter.g.dart';
     'package:memox/core/database/queries/sync_review_log_queries.drift',
   },
 )
-class ReviewLogSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$ReviewLogSyncAdapterMixin
-    implements EntitySyncAdapter {
-  ReviewLogSyncAdapter(super.attachedDatabase);
+class ReviewLogSyncDao extends DatabaseAccessor<AppDatabase>
+    with _$ReviewLogSyncDaoMixin, EntitySyncAdapter {
+  ReviewLogSyncDao(super.attachedDatabase);
 
   static const type = 'review_log';
 

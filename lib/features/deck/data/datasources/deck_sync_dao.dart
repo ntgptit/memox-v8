@@ -2,17 +2,16 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 
-part 'deck_sync_adapter.g.dart';
+part 'deck_sync_dao.g.dart';
 
 /// Syncs `deck`. The server derives rootId and depth; the pulled values are
 /// written as they come.
 @DriftAccessor(
   include: {'package:memox/core/database/queries/sync_deck_queries.drift'},
 )
-class DeckSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$DeckSyncAdapterMixin
-    implements EntitySyncAdapter {
-  DeckSyncAdapter(super.attachedDatabase);
+class DeckSyncDao extends DatabaseAccessor<AppDatabase>
+    with _$DeckSyncDaoMixin, EntitySyncAdapter {
+  DeckSyncDao(super.attachedDatabase);
 
   static const type = 'deck';
 

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/app/sync_tables.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
@@ -43,5 +44,48 @@ void main() {
 
     final status = await _status(container);
     expect(status?.pendingCount, 0);
+  });
+
+  test('the coordinator cannot be built without the root override '
+      '(DEV-173)', () {
+    final container = _container(
+      const SupabaseConfig(url: 'https://x.supabase.co', publishableKey: 'k'),
+    );
+
+    expect(
+      () => container.read(syncCoordinatorProvider),
+      // Riverpod wraps it; the message still names the missing override.
+      throwsA(
+        predicate(
+          (error) => '$error'.contains('override syncAdaptersProvider'),
+        ),
+      ),
+    );
+  });
+
+  test('with the app overrides sync covers the seven tables, parent before '
+      'child (DEV-173)', () {
+    final db = openTestDatabase();
+    final container = ProviderContainer(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        ...syncTableOverrides,
+      ],
+    );
+    addTearDown(() async {
+      container.dispose();
+      await db.close();
+    });
+
+    expect(container.read(syncAdaptersProvider).map((a) => a.entityType), [
+      'delete_batch',
+      'deck',
+      'tag',
+      'card',
+      'card_schedule',
+      'review_log',
+      'account_settings',
+    ]);
+    expect(container.read(syncCoordinatorProvider), isNotNull);
   });
 }

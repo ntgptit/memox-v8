@@ -7,18 +7,21 @@ import 'package:memox/core/database/tables/sync_keys.dart';
 /// The capture triggers are silenced with `applying_remote`, so the deletes
 /// queue nothing. Cards go first: their schedules, tag links, reviews and
 /// study rows go with them by cascade, and reviews cannot be deleted while
-/// their card exists. The synced settings go back to `settings.drift`'s
-/// defaults while the triggers are still silent. Then sync's keys (all but
+/// their card exists. The synced settings go back to their defaults, through
+/// the settings feature the root hands in, while the triggers are still
+/// silent (DEV-173). Then sync's keys (all but
 /// the device id), the outbox and the refusals.
 ///
 /// Kept: the transition record, the welcome flag, the reminder columns, the
 /// device id and the log database.
 class LocalDataReset {
-  LocalDataReset(this._db, {DateTime Function()? now})
-    : _now = now ?? DateTime.now;
+  LocalDataReset(this._db, {required this._resetSyncedSettings});
 
   final AppDatabase _db;
-  final DateTime Function() _now;
+
+  /// The synced settings back to their defaults; the device's own columns
+  /// stay. Runs inside this reset's transaction.
+  final Future<void> Function() _resetSyncedSettings;
 
   Future<void> run() async {
     await _db.transaction(() async {
@@ -29,12 +32,7 @@ class LocalDataReset {
       for (final table in ['card', 'deck', 'delete_batches', 'tags']) {
         await _db.customStatement('DELETE FROM $table');
       }
-      await _db.customStatement(
-        "UPDATE app_settings SET card_limit = 20, new_card_order = 'created', "
-        "theme_mode = 'system', language = 'system', updated_at = ? "
-        'WHERE id = $appSettingsRowId',
-        [_now().millisecondsSinceEpoch ~/ 1000],
-      );
+      await _resetSyncedSettings();
       await _db.customStatement('DELETE FROM sync_state WHERE name <> ?', [
         syncDeviceIdKey,
       ]);

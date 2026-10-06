@@ -5,6 +5,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
 import 'package:memox/features/srs/data/datasources/srs_dao.dart';
+import 'package:memox/features/srs/data/mappers/card_schedule_mapper.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
 import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
@@ -46,7 +47,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
           generation: root.generation!,
         );
         await _dao.insertSchedule(
-          _columnsOf(
+          cardScheduleColumnsOf(
             state,
             type: type,
             version: root.schedulerVersion!,
@@ -109,7 +110,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
         : _unchanged(before, turn.kind, turn.answeredAt);
     await _dao.updateSchedule(
       turn.cardId,
-      _columnsOf(after, type: type, version: root.schedulerVersion!),
+      cardScheduleColumnsOf(after, type: type, version: root.schedulerVersion!),
     );
     await _dao.insertReviewLog(_logOf(entry, turn, type));
     return const Ok(null);
@@ -125,7 +126,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
     final type = SchedulerType.fromCode(root.schedulerType!);
     await _dao.updateSchedule(
       cardId,
-      _columnsOf(
+      cardScheduleColumnsOf(
         schedulerFor(type).learned(before, at),
         type: type,
         version: root.schedulerVersion!,
@@ -192,7 +193,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
       );
       await _dao.replaceTreeSchedules(
         rootDeckId,
-        _columnsOf(
+        cardScheduleColumnsOf(
           CardScheduleState.initial(type, generation: generation),
           type: type,
           version: version,
@@ -256,7 +257,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
       );
       await _dao.replaceTreeSchedules(
         rootDeckId,
-        _columnsOf(
+        cardScheduleColumnsOf(
           CardScheduleState.initial(newType, generation: root.generation!),
           type: newType,
           version: version,
@@ -308,25 +309,6 @@ CardScheduleState _stateOf(CardSchedule row) => CardScheduleState.fromColumns(
 );
 
 /// Every column of a `card_schedule` row but `card_id`.
-CardScheduleCompanion _columnsOf(
-  CardScheduleState state, {
-  required SchedulerType type,
-  required int version,
-}) => CardScheduleCompanion(
-  schedulerType: Value(type.code),
-  schedulerVersion: Value(version),
-  generation: Value(state.generation),
-  learnedAt: Value(state.learnedAt),
-  dueAt: Value(state.dueAt),
-  lastAnsweredAt: Value(state.lastAnsweredAt),
-  answerCount: Value(state.answerCount),
-  lapseCount: Value(state.lapseCount),
-  currentBox: Value(state.currentBox),
-  easeFactor: Value(state.easeFactor),
-  intervalDays: Value(state.intervalDays),
-  repetitions: Value(state.repetitions),
-);
-
 ReviewLogCompanion _logOf(
   ReviewLogEntry entry,
   ReviewTurn turn,

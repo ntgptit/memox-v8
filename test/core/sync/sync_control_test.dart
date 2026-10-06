@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/sync/account_settings_sync_adapter.dart';
-import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
-import 'package:memox/core/sync/card_sync_adapter.dart';
-import 'package:memox/core/sync/deck_sync_adapter.dart';
-import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
-import 'package:memox/core/sync/review_log_sync_adapter.dart';
+import 'package:memox/features/settings/data/datasources/account_settings_sync_dao.dart';
+import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
+import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
+import 'package:memox/features/deck/data/datasources/deck_sync_dao.dart';
+import 'package:memox/features/trash/data/datasources/delete_batch_sync_dao.dart';
+import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
 import 'package:memox/core/sync/sync_control.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_models.dart';
 import 'package:memox/core/sync/sync_store.dart';
-import 'package:memox/core/sync/tag_sync_adapter.dart';
+import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
 
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
@@ -27,13 +27,13 @@ void main() {
       api: server,
       store: store,
       adapters: [
-        DeleteBatchSyncAdapter(db),
-        DeckSyncAdapter(db),
-        TagSyncAdapter(db, store),
-        CardSyncAdapter(db),
-        CardScheduleSyncAdapter(db, store),
-        ReviewLogSyncAdapter(db),
-        AccountSettingsSyncAdapter(db),
+        DeleteBatchSyncDao(db),
+        DeckSyncDao(db),
+        TagSyncDao(db, store),
+        CardSyncDao(db),
+        CardScheduleSyncDao(db, store),
+        ReviewLogSyncDao(db),
+        AccountSettingsSyncDao(db),
       ],
     );
     final control = AppSyncControl(
@@ -64,7 +64,7 @@ void main() {
       coordinator: SyncCoordinator(
         api: _OfflineApi(),
         store: store,
-        adapters: [TagSyncAdapter(db, store)],
+        adapters: [TagSyncDao(db, store)],
       ),
       store: store,
     );
@@ -88,7 +88,7 @@ void main() {
         coordinator: SyncCoordinator(
           api: server,
           store: store,
-          adapters: [TagSyncAdapter(db, store)],
+          adapters: [TagSyncDao(db, store)],
         ),
         store: store,
       );

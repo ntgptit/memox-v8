@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 
 part 'settings_dao.g.dart';
 
@@ -28,6 +29,22 @@ final class SettingsDao extends DatabaseAccessor<AppDatabase>
   Future<void> updateRow(AppSettingsCompanion values) async {
     if (values.toColumns(false).isEmpty) return;
     await updateAppSettings(values, appSettingsRowId);
+  }
+
+  /// The synced settings back to [AppSettingsEntity.defaults]; the device's
+  /// own columns (reminder, welcome) are left alone. The account reset runs
+  /// it inside its transaction (auth spec §4, DEV-173).
+  Future<void> resetSyncedDefaults(DateTime at) {
+    const defaults = AppSettingsEntity.defaults;
+    return updateRow(
+      AppSettingsCompanion(
+        cardLimit: Value(defaults.studyDefaults.cardLimit),
+        newCardOrder: Value(defaults.studyDefaults.newCardOrder.name),
+        themeMode: Value(defaults.theme.name),
+        language: Value(defaults.language.name),
+        updatedAt: Value(at),
+      ),
+    );
   }
 
   /// The root of [deckId] and the settings row, in one statement, again when

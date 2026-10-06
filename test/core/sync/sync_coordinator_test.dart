@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/sync/account_settings_sync_adapter.dart';
-import 'package:memox/core/sync/card_schedule_sync_adapter.dart';
-import 'package:memox/core/sync/card_sync_adapter.dart';
-import 'package:memox/core/sync/deck_sync_adapter.dart';
-import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
-import 'package:memox/core/sync/review_log_sync_adapter.dart';
+import 'package:memox/features/settings/data/datasources/account_settings_sync_dao.dart';
+import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
+import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
+import 'package:memox/features/deck/data/datasources/deck_sync_dao.dart';
+import 'package:memox/features/trash/data/datasources/delete_batch_sync_dao.dart';
+import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
-import 'package:memox/core/sync/tag_sync_adapter.dart';
+import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
 
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
@@ -42,28 +42,51 @@ class _Device {
     int pullLimit = SyncCoordinator.pullPageSize,
     List<EntitySyncAdapter> Function(AppDatabase db)? adapters,
   }) : db = openTestDatabase() {
-    final cards = CardSyncAdapter(db);
+    final cards = CardSyncDao(db);
     coordinator = SyncCoordinator(
       api: server,
       store: SyncStore(db),
       adapters:
           adapters?.call(db) ??
           [
-            DeleteBatchSyncAdapter(db),
-            DeckSyncAdapter(db),
-            TagSyncAdapter(db, SyncStore(db)),
+            DeleteBatchSyncDao(db),
+            DeckSyncDao(db),
+            TagSyncDao(db, SyncStore(db)),
             cards,
-            CardScheduleSyncAdapter(db, SyncStore(db)),
-            ReviewLogSyncAdapter(db),
-            AccountSettingsSyncAdapter(db),
+            CardScheduleSyncDao(db, SyncStore(db)),
+            ReviewLogSyncDao(db),
+            AccountSettingsSyncDao(db),
           ],
       pullLimit: pullLimit,
-      afterPull: cards.ensureSchedules,
     );
   }
 
   final AppDatabase db;
   late final SyncCoordinator coordinator;
+}
+
+/// Records the order [afterPull] reaches each adapter in (DEV-173).
+class _RecordingAdapter extends EntitySyncAdapter {
+  _RecordingAdapter(this.entityType, this.calls);
+
+  @override
+  final String entityType;
+  final List<String> calls;
+
+  @override
+  Future<Map<String, Object?>?> readRow(String id) async => null;
+
+  @override
+  Future<void> upsertFromServer(Map<String, Object?> row, int version) async {}
+
+  @override
+  Future<void> deleteFromServer(String id) async {}
+
+  @override
+  Future<void> markAcknowledged(String id, int version) async {}
+
+  @override
+  Future<void> afterPull() async => calls.add(entityType);
 }
 
 Map<String, Object?> _rootRow(String id) => {
@@ -102,6 +125,37 @@ Map<String, Object?> _cardRow(String id, String deckId) => {
 };
 
 void main() {
+  test('afterPull runs on every adapter in list order after a pull '
+      '(DEV-173)', () async {
+    final calls = <String>[];
+    final device = _Device(
+      FakeSyncServer(),
+      adapters: (_) => [
+        _RecordingAdapter('a', calls),
+        _RecordingAdapter('b', calls),
+      ],
+    );
+    addTearDown(device.db.close);
+
+    await device.coordinator.runOnce();
+
+    expect(calls, ['a', 'b']);
+  });
+
+  test('afterPull is not called when a pull fails (DEV-173)', () async {
+    final calls = <String>[];
+    final server = FakeSyncServer()..failChangesAfter = 0;
+    final device = _Device(
+      server,
+      adapters: (_) => [_RecordingAdapter('a', calls)],
+    );
+    addTearDown(device.db.close);
+
+    await expectLater(device.coordinator.runOnce(), throwsA(anything));
+
+    expect(calls, isEmpty);
+  });
+
   late FakeSyncServer server;
   late _Device a;
   late _Device b;
@@ -310,7 +364,7 @@ void main() {
       ..seed('card', 'K', _cardRow('K', 'R'));
     final old = _Device(
       server,
-      adapters: (db) => [DeckSyncAdapter(db), DeleteBatchSyncAdapter(db)],
+      adapters: (db) => [DeckSyncDao(db), DeleteBatchSyncDao(db)],
     );
     addTearDown(old.db.close);
     await old.coordinator.runOnce();
@@ -320,9 +374,9 @@ void main() {
       api: server,
       store: SyncStore(old.db),
       adapters: [
-        DeckSyncAdapter(old.db),
-        DeleteBatchSyncAdapter(old.db),
-        CardSyncAdapter(old.db),
+        DeckSyncDao(old.db),
+        DeleteBatchSyncDao(old.db),
+        CardSyncDao(old.db),
       ],
     );
     await upgraded.runOnce();

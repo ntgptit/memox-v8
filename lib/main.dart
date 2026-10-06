@@ -6,6 +6,7 @@ import 'package:memox/app/app.dart';
 import 'package:memox/app/logging_bootstrap.dart';
 import 'package:memox/app/startup_settings.dart';
 import 'package:memox/app/startup_welcome.dart';
+import 'package:memox/app/sync_tables.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
@@ -21,6 +22,8 @@ Future<void> main() async {
   // in a hidden retry loop while showing AsyncLoading. Every provider that
   // fails is logged (ADR-018).
   final container = ProviderContainer(
+    // Core's sync and account reset see the app's tables (DEV-173).
+    overrides: syncTableOverrides,
     retry: _noRetry,
     observers: [LogProviderObserver()],
   );

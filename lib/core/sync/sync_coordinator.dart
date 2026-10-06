@@ -13,7 +13,6 @@ class SyncCoordinator {
     required List<EntitySyncAdapter> adapters,
     this._now = DateTime.now,
     this._pullLimit = pullPageSize,
-    this._afterPull,
     this._logger,
   }) : _adapters = {for (final a in adapters) a.entityType: a};
 
@@ -27,7 +26,6 @@ class SyncCoordinator {
   final Map<String, EntitySyncAdapter> _adapters;
   final DateTime Function() _now;
   final int _pullLimit;
-  final Future<void> Function()? _afterPull;
   final AppLogger? _logger;
 
   AppLogger get _log => _logger ?? appLogger;
@@ -195,7 +193,9 @@ class SyncCoordinator {
         }
         await _applyServerCopy(adapter, change.entityId, change);
       }
-      await _afterPull?.call();
+      for (final adapter in _adapters.values) {
+        await adapter.afterPull();
+      }
       await _store.setSince(since);
       await _store.setPullEntityTypes(types);
     });
