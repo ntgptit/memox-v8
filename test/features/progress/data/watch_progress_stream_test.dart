@@ -8,6 +8,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/deck/data/datasources/deck_dao.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/progress/data/repositories/progress_repository_impl.dart';
@@ -77,6 +78,7 @@ void main() {
     db,
     ScheduleRepositoryImpl(db, now: () => now),
     TagRepositoryImpl(db, now: () => now),
+    DeckTreeDataSource(db),
     now: () => now,
   );
 

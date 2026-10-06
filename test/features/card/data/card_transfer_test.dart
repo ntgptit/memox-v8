@@ -7,6 +7,7 @@ import 'package:memox/features/card/data/repositories/card_repository_impl.dart'
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
@@ -66,6 +67,7 @@ void main() {
       db,
       ScheduleRepositoryImpl(db, now: _now),
       TagRepositoryImpl(db, now: _now),
+      DeckTreeDataSource(db),
       now: _now,
     );
     cards = CardTransferRepositoryImpl(db, list);
@@ -172,6 +174,7 @@ void main() {
         db,
         ScheduleRepositoryImpl(db, now: _now),
         TagRepositoryImpl(db, now: _now),
+        DeckTreeDataSource(db),
         now: _now,
       ).card(leaf.id, const CardDraft(front: 'c\u00F4ng', back: 'work'));
 
@@ -320,6 +323,7 @@ void main() {
             db,
             _SecondScheduleFails(ScheduleRepositoryImpl(db, now: _now)),
             TagRepositoryImpl(db, now: _now),
+            DeckTreeDataSource(db),
             now: _now,
           ),
         );
