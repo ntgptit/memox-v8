@@ -92,6 +92,18 @@ class SyncStore extends DatabaseAccessor<AppDatabase> with _$SyncStoreMixin {
 
   Future<T> inTransaction<T>(Future<T> Function() body) => transaction(body);
 
+  /// The rows whose foreign key is unmet right now, as `table#rowid->parent`
+  /// (SQLite's `foreign_key_check`), for a log before a commit that would
+  /// fail on them (DEV-185).
+  Future<List<String>> foreignKeyViolations() async {
+    final rows = await customSelect('PRAGMA foreign_key_check').get();
+    return [
+      for (final row in rows)
+        '${row.read<String>('table')}#${row.readNullable<int>('rowid')}'
+            '->${row.read<String>('parent')}',
+    ];
+  }
+
   Future<void> recordSuccess(DateTime now) =>
       _put(syncLastSuccessAtKey, _millis(now));
 

@@ -128,8 +128,9 @@ void main() {
   test('afterPull runs on every adapter in list order after a pull '
       '(DEV-173)', () async {
     final calls = <String>[];
+    // A pull with something to apply: an empty one skips afterPull (DEV-210).
     final device = _Device(
-      FakeSyncServer(),
+      FakeSyncServer()..seed('a', '1', {'id': '1'}),
       adapters: (_) => [
         _RecordingAdapter('a', calls),
         _RecordingAdapter('b', calls),

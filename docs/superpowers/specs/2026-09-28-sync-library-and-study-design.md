@@ -165,13 +165,27 @@ are skipped as usual.
 ### 4.2 One transaction per pull (D4)
 
 `_pull` runs every page inside one `applyingRemote(deferForeignKeys: true)`
-transaction and stores `since` once, at the end. A failure rolls the whole pull back
-and the next run starts from the stored cursor. The last step inside the transaction
-gives every card without a `card_schedule` row its initial schedule (section 3.1).
+transaction and stores `since` once, at the end. The transaction is open before the
+first page and each page is applied as it arrives (DEV-206), so the pull holds one
+page in memory whatever the size of the account. A failure rolls the whole pull back
+and the next run starts from the stored cursor. Each change applies in a savepoint of
+its own: one this device cannot hold is recorded as `PULL_APPLY_FAILED` and skipped
+(DEV-185). The last step inside the transaction, run only when the pull applied
+something (DEV-210), gives every card without a `card_schedule` row its initial
+schedule (section 3.1).
 
 Cost: local writes wait while a pull runs. The SB-S2 measurement (section 6) records
 the time of a large first pull; if it blocks study noticeably, the fix is a smaller
 unit of commit that still orders parents first, decided then with numbers.
+
+**Checkpoint for `since = 0` (DEV-206, decided 2026-10-06 with the numbers in the
+card-sync plan's ledger):** kept as one transaction. 300 001 changes (50 000 cards
+with schedules, 200 000 review logs) pull in about 101 s in this container, about
+0.34 ms per change, with the pull adding about 100 MB to the process; memory no
+longer grows with the account, and the first pull happens on a device before study
+starts (auth spec #28). A per-type cursor (`sync_changes(since, max_rows,
+entity_types)`, commit per page) is the next step, taken when a real account's first
+pull is reported to exceed about two minutes or to be killed mid-way and repeat.
 
 ### 4.3 Adapters
 
