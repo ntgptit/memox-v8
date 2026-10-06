@@ -21,7 +21,7 @@ LogDatabase logDatabase(Ref ref) {
   return db;
 }
 
-/// `log_push` through the Supabase project; main.dart has initialized it.
+/// `log_push` through the Supabase project; `startApp` has initialized it.
 /// It waits for sync's session instead of signing in.
 @Riverpod(keepAlive: true)
 LogApi logApi(Ref ref) => LogApi(
@@ -43,6 +43,8 @@ bool isForegroundState(AppLifecycleState? state) =>
 
 /// Pushes the buffer at start, every [_every] and when the network returns,
 /// backing off like sync; null when this build names no Supabase project.
+/// It starts here; `startApp` (app_bootstrap.dart) is its only reader and
+/// reads it before the account coordinator starts (DEV-176).
 @Riverpod(keepAlive: true)
 SyncScheduler? logScheduler(Ref ref) {
   if (!ref.watch(supabaseConfigProvider).isEnabled) return null;

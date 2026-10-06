@@ -45,7 +45,7 @@ Future<void> Function() appSyncedSettingsReset(Ref ref) {
   return () => dao.resetSyncedDefaults(now());
 }
 
-/// What `main.dart` and the tests install so core's sync and account reset
+/// What `startApp` and the tests install so core's sync and account reset
 /// see the app's tables.
 final syncTableOverrides = [
   syncAdaptersProvider.overrideWith(appSyncAdapters),

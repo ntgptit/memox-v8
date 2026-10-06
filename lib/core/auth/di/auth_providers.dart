@@ -28,7 +28,7 @@ Future<void> Function() syncedSettingsReset(Ref ref) => throw StateError(
 );
 
 /// The account's one owner (auth spec §5). Null when this build names no
-/// Supabase project (plan ruling 20). main.dart prepares and starts it.
+/// Supabase project (plan ruling 20). `startApp` (app_bootstrap.dart) prepares and starts it.
 @Riverpod(keepAlive: true)
 AccountCoordinator? accountCoordinator(Ref ref) {
   if (!ref.watch(supabaseConfigProvider).isEnabled) return null;

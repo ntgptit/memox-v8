@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/gallery/gallery_screen.dart';
+import 'package:memox/app/app_lifecycle_hooks.dart';
 import 'package:memox/app/router/account_routes.dart';
 import 'package:memox/app/router/admin_routes.dart';
 import 'package:memox/app/router/app_routes.dart';
@@ -12,11 +13,9 @@ import 'package:memox/app/router/app_tab_shell.dart';
 import 'package:memox/app/router/log_navigator_observer.dart';
 import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/app/router/study_route_screens.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_admin_gate_widget.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_screen.dart';
-import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
@@ -465,13 +464,7 @@ void _openAncestor(
   unawaited(router.push(levelOf(deckId)));
 }
 
-/// Reconcile after Reset app options. A refusal or a read that fails
-/// changes nothing on screen; the next start or resume reconciles again, as
-/// `app.dart` does.
-Future<void> _reconcileAfterReset(ProviderContainer container) async {
-  try {
-    await container.read(reconcileReminderProvider)();
-  } on Failure {
-    // Retried at the next start or resume.
-  }
-}
+/// Reconcile after Reset app options, through the one path the start and
+/// the resume use (DEV-176).
+Future<void> _reconcileAfterReset(ProviderContainer container) =>
+    AppLifecycleHooks(container).reconcileReminder();
