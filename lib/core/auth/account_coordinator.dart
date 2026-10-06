@@ -96,15 +96,17 @@ class AccountCoordinator {
 
   /// Before the first frame, local only: shuts the gate if a blocking
   /// transition is pending, so no write slips in before recovery (#1, R3),
-  /// and drops the secrets of any other operation (spec §4).
+  /// waits for any sync run in progress, and drops the secrets of any other
+  /// operation (spec §4). The gate shuts before the wait, as a transition's
+  /// start does.
   Future<void> prepare() async {
     if (_prepared) return;
     _prepared = true;
     _emit(const Booting());
-    await _sync.pause();
     final pending = await _store.transition();
-    await purgeAccountSecrets(_secrets, keepOpId: pending?.opId);
     if (pending != null && pending.blocksWrites) _gate.close();
+    await _sync.pause();
+    await purgeAccountSecrets(_secrets, keepOpId: pending?.opId);
   }
 
   /// Recovers a pending transition or settles the session (#1–#3), then
