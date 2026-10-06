@@ -293,6 +293,7 @@ final class CardRepositoryImpl implements CardRepository {
             card,
             schedule,
             tags: tags[card.id] ?? const [],
+            now: now,
             startOfToday: startOfToday,
           ),
       ],
@@ -304,7 +305,7 @@ final class CardRepositoryImpl implements CardRepository {
         flagged: counts.flagged,
       ),
       statusCounts: statusCountsOf(schedules),
-      workload: workloadOf(schedules, startOfToday),
+      workload: workloadOf(schedules, now: now, startOfToday: startOfToday),
     );
   }
 

@@ -8,6 +8,7 @@ import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
+import 'package:memox/features/srs/domain/models/due_state_model.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
 import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
@@ -46,6 +47,7 @@ CardListItem listItemOf(
   CardRow card,
   CardSchedule schedule, {
   required List<Tag> tags,
+  required DateTime now,
   required DateTime startOfToday,
 }) => CardListItem(
   id: card.id,
@@ -55,8 +57,9 @@ CardListItem listItemOf(
   dueAt: schedule.dueAt,
   displayStatus: CardDisplayStatus.of(scheduleStateOf(schedule)),
   due: CardDue.of(
-    isLearned: schedule.learnedAt != null,
+    learnedAt: schedule.learnedAt,
     dueAt: schedule.dueAt,
+    now: now,
     startOfToday: startOfToday,
   ),
   tags: [for (final tag in tags) TagEntity(id: tag.id, name: tag.name)],
@@ -88,28 +91,31 @@ CardStatusCounts statusCountsOf(Iterable<CardSchedule> schedules) {
   );
 }
 
-/// Every schedule row by when it comes back, counted once each (E-O1).
+/// Every schedule row by its set of BR-STUDY-068, counted once each (E-O1),
+/// through the one Dart copy of the rule (DEV-221).
 CardWorkload workloadOf(
-  Iterable<CardSchedule> schedules,
-  DateTime startOfToday,
-) {
+  Iterable<CardSchedule> schedules, {
+  required DateTime now,
+  required DateTime startOfToday,
+}) {
   var overdue = 0;
   var today = 0;
   var newCards = 0;
   for (final schedule in schedules) {
-    final due = CardDue.of(
-      isLearned: schedule.learnedAt != null,
+    final state = dueStateOf(
+      learnedAt: schedule.learnedAt,
       dueAt: schedule.dueAt,
+      now: now,
       startOfToday: startOfToday,
     );
-    switch (due.kind) {
-      case CardDueKind.overdue:
+    switch (state) {
+      case DueState.overdue:
         overdue++;
-      case CardDueKind.today:
+      case DueState.dueToday:
         today++;
-      case CardDueKind.newCard:
+      case DueState.newCard:
         newCards++;
-      case CardDueKind.later:
+      case DueState.scheduled:
         break;
     }
   }

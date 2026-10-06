@@ -1,5 +1,6 @@
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/domain/models/deck_schedule_status_model.dart';
+import 'package:memox/features/srs/domain/models/due_state_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 /// One deck of a level with the counts of its whole subtree (UC-DECK-003).
@@ -47,7 +48,11 @@ final class DeckTile {
   int get dueCount => overdueCount + dueTodayCount;
 
   /// Learned cards not Due yet: the neutral set (BR-STUDY-068).
-  int get scheduledCount => cardCount - newCount - dueCount;
+  int get scheduledCount => scheduledCountOf(
+    cardCount: cardCount,
+    newCount: newCount,
+    dueCount: dueCount,
+  );
 
   /// Mastered over every card of the subtree (BR-DECK-026); null when the
   /// subtree holds no card, which has nothing to master.

@@ -851,6 +851,10 @@ WHERE available_at < 0 OR answers_in_session < 0 OR round < 1
    OR (mode = 'self_assess' AND answers_in_session > 4);
 
 -- 24. Thẻ đã xong học mới nhưng không có lịch (BR-STUDY-053, BR-STUDY-058)
+--     Chưa có CHECK. Một hàng như vậy được mọi read model xếp vào Scheduled
+--     (đã học, chưa đến hạn) qua một luật chung: `dueStateOf` (srs domain)
+--     và `CardDueSql` (core/database), parity test `due_state_parity_test`
+--     (DEV-221).
 SELECT card_id FROM card_schedule
 WHERE learned_at IS NOT NULL AND due_at IS NULL;
 
