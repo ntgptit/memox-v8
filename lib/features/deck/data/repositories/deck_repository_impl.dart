@@ -297,6 +297,7 @@ final class DeckRepositoryImpl implements DeckRepository {
       final parentId = item.parentId;
       if (parentId == null) {
         await _dao.restoreBatch(batchId);
+        await _makeRoom(null, item, at);
         return const Ok(null);
       }
       final target = await _dao.findRow(parentId);
@@ -305,8 +306,8 @@ final class DeckRepositoryImpl implements DeckRepository {
         return Rejected(reason);
       }
       await _dao.restoreBatch(batchId);
-      // Its old place: nothing took that position, since a new sibling's
-      // position counts the tombstones (trash spec D9).
+      await _makeRoom(parentId, item, at);
+      // Its old place (BR-TRASH-008), free again.
       await _tree.moveUnder(
         target,
         item,
@@ -316,6 +317,27 @@ final class DeckRepositoryImpl implements DeckRepository {
       await _tree.refresh(target.id, at);
       return const Ok(null);
     });
+  }
+
+  /// Frees [item]'s old position among the live siblings under [parentId]
+  /// before an Undo puts it back. A new sibling's position counts the
+  /// tombstones (trash spec D9), but a reorder renumbers the live ones from
+  /// 0, so a live sibling may hold the place by now: it and every one after
+  /// it move up by one, last first, so no two live decks share a position
+  /// (BR-SRS-007, DEV-219).
+  Future<void> _makeRoom(String? parentId, Deck item, DateTime at) async {
+    final others = [
+      for (final row in await _dao.siblingRows(parentId))
+        if (row.id != item.id && row.siblingPosition >= item.siblingPosition)
+          row,
+    ];
+    final taken = others.any(
+      (row) => row.siblingPosition == item.siblingPosition,
+    );
+    if (!taken) return;
+    for (final row in others.reversed) {
+      await _dao.setSiblingPosition(row.id, row.siblingPosition + 1, at);
+    }
   }
 
   @override
