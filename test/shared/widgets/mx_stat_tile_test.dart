@@ -90,6 +90,27 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  // DEV-231 (UI-REV-002): a boxed tile sits on the Muted Fill, not the
+  // card's own surface, so it stays a visible box on the plain study-entry
+  // card (ruling E5 made the hero a plain card on surfaceContainerLowest).
+  testWidgets('a boxed tile fills with the Muted Fill', (tester) async {
+    await pumpMx(
+      tester,
+      const MxStatTile(
+        value: '4',
+        label: 'Due',
+        layout: MxStatTileLayout.boxed,
+      ),
+    );
+    final box = tester.widget<DecoratedBox>(
+      find.ancestor(of: find.text('4'), matching: find.byType(DecoratedBox)),
+    );
+    expect(
+      (box.decoration as BoxDecoration).color,
+      AppColorSchemes.light.surfaceContainerLow,
+    );
+  });
+
   testWidgets('the label is an eyebrow (critique 2026-09-30 part 2, P1)', (
     tester,
   ) async {

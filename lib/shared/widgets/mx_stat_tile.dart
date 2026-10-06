@@ -7,9 +7,11 @@ import 'package:memox/core/theme/theme_context.dart';
 /// screen offers, [plain] states a fact, [muted] a figure nothing acts on.
 enum MxStatTileEmphasis { primary, plain, muted }
 
-/// [boxed]: left-aligned on its own surface, as the Study Entry hero draws
-/// New and Due. [inline]: centred with no surface, as the session summary
-/// hero draws its three stats.
+/// [boxed]: left-aligned on the Muted Fill, as the Study Entry hero draws
+/// New and Due: the fill is one step below the plain card the hero became
+/// (ruling E5), so the box stays visible in both themes (DEV-231).
+/// [inline]: centred with no surface, as the session summary hero draws its
+/// three stats.
 enum MxStatTileLayout { boxed, inline }
 
 /// A figure over its label (FE-A6 D17): screens 14 and 21. One semantics
@@ -61,7 +63,7 @@ class MxStatTile extends StatelessWidget {
     final body = isBoxed
         ? DecoratedBox(
             decoration: BoxDecoration(
-              color: colors.surfaceContainerLowest,
+              color: colors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Padding(
