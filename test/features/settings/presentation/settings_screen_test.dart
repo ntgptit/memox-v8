@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
+import 'package:memox/features/settings/domain/usecases/reset_app_settings_use_case.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
@@ -30,12 +32,12 @@ SettingsScreen _screen({
   VoidCallback? onOpenTheme,
   VoidCallback? onOpenLanguage,
   VoidCallback? onOpenReminder,
-  VoidCallback? onAppOptionsReset,
+  ResetAppOptions? resetAppOptions,
 }) => SettingsScreen(
   onOpenTheme: onOpenTheme ?? () {},
   onOpenLanguage: onOpenLanguage ?? () {},
   onOpenReminder: onOpenReminder ?? () {},
-  onAppOptionsReset: onAppOptionsReset ?? () {},
+  resetAppOptions: resetAppOptions ?? () async => const Ok(null),
   onOpenSync: () {},
 );
 
@@ -80,14 +82,20 @@ void main() {
     expect(opened, 1);
   });
 
-  libraryTest('reset: onAppOptionsReset runs once on success, never on '
-      'failure', (tester, env) async {
+  libraryTest('reset runs the reset app/ composed; a failure says so and '
+      'the next confirm runs it again', (tester, env) async {
     final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db));
+    final reset = ResetAppSettingsUseCase(store);
     var resets = 0;
     await pumpLibraryScreen(
       tester,
       env,
-      _screen(onAppOptionsReset: () => resets++),
+      _screen(
+        resetAppOptions: () {
+          resets++;
+          return reset();
+        },
+      ),
       overrides: [settingsRepositoryProvider.overrideWithValue(store)],
     );
 
@@ -101,7 +109,8 @@ void main() {
     );
     await tester.tap(find.text(_en.settingsResetConfirm));
     await tester.pumpAndSettle();
-    expect(resets, 0);
+    expect(resets, 1);
+    expect(find.text(_en.settingsResetFailed), findsOneWidget);
 
     store.isFailing = false;
     // The failure's toast sits over the bottom row: bring the row above it.
@@ -111,8 +120,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.settingsResetConfirm));
     await tester.pumpAndSettle();
-    expect(resets, 1);
+    expect(resets, 2);
     expect(find.text(_en.settingsResetBody), findsNothing, reason: 'closed');
+    expect(find.text(_en.settingsResetDone), findsOneWidget);
   });
 
   libraryTest('steps settle into one save, then "Saved" (D1)', (
@@ -272,7 +282,11 @@ void main() {
         newCardOrder: NewCardOrder.random,
       );
     });
-    await pumpLibraryScreen(tester, env, _screen());
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(resetAppOptions: ResetAppSettingsUseCase(repository).call),
+    );
 
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();

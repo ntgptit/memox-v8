@@ -34,7 +34,7 @@ class SettingsScreen extends ConsumerWidget {
     required this.onOpenTheme,
     required this.onOpenLanguage,
     required this.onOpenReminder,
-    required this.onAppOptionsReset,
+    required this.resetAppOptions,
     required this.onOpenSync,
     this.accountSection,
     this.adminRows = const [],
@@ -45,9 +45,10 @@ class SettingsScreen extends ConsumerWidget {
   final VoidCallback onOpenLanguage;
   final VoidCallback onOpenReminder;
 
-  /// After Reset app options landed: `app/` reconciles the reminder, which
-  /// the reset turned off (FE-B5 spec D7; reminders spec §9 "For FE-A3").
-  final VoidCallback onAppOptionsReset;
+  /// Reset app options as `app/` composes it: the settings' reset, then the
+  /// reminder's reconcile, which the reset turned off, in one reminder
+  /// operation (FE-B5 spec D7; reminders spec §9 "For FE-A3"; DEV-218).
+  final ResetAppOptions resetAppOptions;
 
   /// Opens screen 27 (SB-U1).
   final VoidCallback onOpenSync;
@@ -116,7 +117,12 @@ class SettingsScreen extends ConsumerWidget {
                   icon: AppIcons.resetOptions,
                   // Opens a dialog, not a page (critique 2026-09-30).
                   isAction: true,
-                  onTap: () => unawaited(showSettingsResetDialog(context)),
+                  onTap: () => unawaited(
+                    showSettingsResetDialog(
+                      context,
+                      resetAppOptions: resetAppOptions,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -144,9 +150,6 @@ class SettingsScreen extends ConsumerWidget {
   /// Language pages say their own.
   void _say(BuildContext context, WidgetRef ref, SettingsNotice? notice) {
     if (notice == null) return;
-    if (notice is SettingsSaved && notice.kind == SettingsSubmit.reset) {
-      onAppOptionsReset();
-    }
     final l10n = context.l10n;
     void retry() => unawaited(
       ref.read(settingsControllerProvider.notifier).retry(notice.kind),

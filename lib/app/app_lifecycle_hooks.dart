@@ -7,8 +7,8 @@ import 'package:memox/features/study/presentation/providers/abandon_stale_sessio
 import 'package:memox/features/trash/presentation/providers/purge_expired_trash_use_case_provider.dart';
 
 /// The features' side effects of the app's lifecycle, in one place
-/// (DEV-176): the start, every resume, and the router's Reset app options
-/// call these, so each rule runs through one path. Every hook swallows its
+/// (DEV-176): the start and every resume call these, so each rule runs
+/// through one path. Every hook swallows its
 /// [Failure]: a refusal changes nothing the person sees, and the next start
 /// or resume tries again.
 final class AppLifecycleHooks {

@@ -9,19 +9,23 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
-/// Asks before Reset app options (UC-SETTINGS-001 A3) and runs it. The
-/// toasts are screen 23's.
-Future<void> showSettingsResetDialog(BuildContext context) =>
-    showMxDialog<void>(
-      context,
-      builder: (_) => const SettingsResetDialogWidget(),
-    );
+/// Asks before Reset app options (UC-SETTINGS-001 A3) and runs it through
+/// [resetAppOptions]. The toasts are screen 23's.
+Future<void> showSettingsResetDialog(
+  BuildContext context, {
+  required ResetAppOptions resetAppOptions,
+}) => showMxDialog<void>(
+  context,
+  builder: (_) => SettingsResetDialogWidget(resetAppOptions: resetAppOptions),
+);
 
 /// The reset confirmation of kit 23: what goes back to its default, and
 /// that learning progress is not touched (BR-SETTINGS-008, BR-SRS-022).
 /// While it runs, nothing can look like a cancel.
 class SettingsResetDialogWidget extends ConsumerStatefulWidget {
-  const SettingsResetDialogWidget({super.key});
+  const SettingsResetDialogWidget({super.key, required this.resetAppOptions});
+
+  final ResetAppOptions resetAppOptions;
 
   @override
   ConsumerState<SettingsResetDialogWidget> createState() =>
@@ -35,7 +39,9 @@ class _SettingsResetDialogWidgetState
   Future<void> _reset() async {
     if (_isResetting) return;
     setState(() => _isResetting = true);
-    await ref.read(settingsControllerProvider.notifier).reset();
+    await ref
+        .read(settingsControllerProvider.notifier)
+        .reset(widget.resetAppOptions);
     if (mounted) Navigator.of(context).pop();
   }
 
