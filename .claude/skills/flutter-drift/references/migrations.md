@@ -49,6 +49,14 @@ run, and it cannot be regenerated once the `.drift` files have moved on.
   oldest supported and the current one must have a snapshot.
 - **Never delete user data to make a migration simpler.** If the migration is
   hard, the migration is hard.
+- **A dead column goes with its table's next rebuild, never in a rebuild of its
+  own.** Dropping a column is the twelve-step rebuild of the whole table, paid
+  by every installed device, for no behaviour. A column nobody reads is marked
+  retired or diagnostic in `schema.md` and here, kept nullable or defaulted,
+  and dropped the day that table is rebuilt for another reason. Today:
+  `owner_id` on `deck`, `tags` and `delete_batches` (retired, always `NULL`),
+  `sync_outbox.attempts` and `server_version` on `tags` and `delete_batches`
+  (written, never read) (DEV-198).
 - **Never call current application queries inside a migration.** The generated
   API always expects the *latest* schema; running it against a half-upgraded
   database throws or, worse, reads a column that does not exist yet. Use
