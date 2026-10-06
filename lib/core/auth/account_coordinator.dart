@@ -147,6 +147,16 @@ class AccountCoordinator {
   /// Runs again whatever stopped on an error (a network error's Retry).
   Future<void> retry() => _serial(_resume);
 
+  /// A sync run was refused for want of an account (`UNAUTHORIZED` under a
+  /// live JWT, DEV-192): the account is validated again, which finds the
+  /// profile gone (#13), the session refused (#14), or nothing wrong. Only
+  /// while Ready; a transition or a validation in flight already decides.
+  Future<void> recheckSession() => _serial(() async {
+    if (_state is! Ready) return;
+    _log.warning('auth.sync_refused', category: LogCategory.state);
+    return _validate();
+  });
+
   // --- Sign-in and switch commands -----------------------------------------
 
   // --- The switch -------------------------------------------------------------

@@ -131,13 +131,13 @@ select lives_ok($$ delete from auth.users where id = '12000000-0000-0000-0000-00
 select is(public.t_owned('12000000-0000-0000-0000-000000000004'), 0, 'nothing of it is left');
 select is(public.t_owned('12000000-0000-0000-0000-000000000005'), 10, 'another user keeps all of theirs');
 
--- An access token outlives its user; the keys stop it from writing (spec §10): sync_push
--- rejects the operation (the key violation is caught per operation), and nothing is stored.
+-- An access token outlives its user (spec §10): sync_push refuses the whole call for want of
+-- a profile (DEV-192, 14_sync_requires_profile.sql), and nothing is stored.
 set local role authenticated;
 select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000004',
   'role', 'authenticated')::text, true);
-select is(public.sync_push(public.t_root_push('12000000-0000-0000-0000-0000000000f1'))->'results'->0->>'code',
-  'VALIDATION_FAILED', 'a deleted user''s push is rejected');
+select throws_ok($$ select public.sync_push(public.t_root_push('12000000-0000-0000-0000-0000000000f1')) $$,
+  'P0001', 'UNAUTHORIZED', 'a deleted user''s push is refused');
 select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000005',
   'role', 'authenticated')::text, true);
 select is(public.sync_push(public.t_root_push('12000000-0000-0000-0000-0000000000f2'))->'results'->0->>'status',

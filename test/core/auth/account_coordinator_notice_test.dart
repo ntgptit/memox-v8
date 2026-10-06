@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_transition.dart';
+import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
 
 import '../../support/auth_fakes.dart';
@@ -14,10 +15,12 @@ void main() {
   setUp(() => world = AuthWorld());
   tearDown(() => world.close());
 
-  /// A deletion killed after its record was saved, retried offline at the
-  /// next start: #44 refuses it and says so before any frame.
+  /// A deletion killed after its record was saved, retried at the next
+  /// start by the last admin: #44 refuses it and says so before any frame.
   Future<void> deletionRefusedAtStart() async {
-    final x = world.server.addUser(email: 'x@example.com').id;
+    final x = world.server
+        .addUser(email: 'x@example.com', role: AccountRole.admin)
+        .id;
     world.gateway.adopt(x);
     world.boot();
     await world.coordinator.start();
@@ -32,7 +35,6 @@ void main() {
         updatedAt: t0,
       ),
     );
-    world.network.goOffline();
     world.boot(subscribeNotices: false);
     await world.coordinator.start();
   }
