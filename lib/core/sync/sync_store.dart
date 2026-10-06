@@ -37,29 +37,30 @@ class SyncStore extends DatabaseAccessor<AppDatabase> with _$SyncStoreMixin {
   Future<void> setPullEntityTypes(String types) =>
       _put(syncPullEntityTypesKey, types);
 
-  /// Pending operations of [entityTypes], oldest first (parents before
-  /// children).
-  /// Parents before children: by the position of the entity type in
-  /// [entityTypes] (the coordinator's adapter order), then by first queued.
-  /// A card queued before the deck it moved into still follows that deck.
+  /// The entity type whose pending entries go shallower first (DEV-182); the
+  /// literal `pendingDeckOutbox` filters on.
+  static const _deckEntityType = 'deck';
+
+  /// Up to [limit] pending operations of one entity type: the first of
+  /// [entityTypes] (the coordinator's adapter order) that has any, first
+  /// queued first, so parents go before children. A card queued before the
+  /// deck it moved into still follows that deck; among decks, a shallower
+  /// row goes before a deeper one, so a child pending since before its new
+  /// parent was made still follows it (DEV-182). Each type is one range read
+  /// of `idx_sync_outbox_type_created`, never a sort of the outbox (DEV-205).
   Future<List<SyncOutboxEntry>> pendingBatch(
     List<String> entityTypes,
     int limit,
   ) async {
-    // caseMatch needs at least one case, and no type has no entry.
-    if (entityTypes.isEmpty) return const [];
-    return pendingOutbox(
-      entityTypes,
-      (o) => OrderingTerm(
-        expression: o.entityType.caseMatch<int>(
-          when: {
-            for (var i = 0; i < entityTypes.length; i++)
-              Constant(entityTypes[i]): Constant(i),
-          },
-        ),
-      ),
-      limit,
-    ).get();
+    for (final entityType in entityTypes) {
+      final batch = entityType == _deckEntityType
+          ? await pendingDeckOutbox(limit).get()
+          : await pendingOutboxOfType(entityType, limit).get();
+      if (batch.isNotEmpty) {
+        return batch;
+      }
+    }
+    return const [];
   }
 
   Future<bool> isPendingEntity(String entityType, String entityId) =>

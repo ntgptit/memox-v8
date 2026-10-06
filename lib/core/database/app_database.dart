@@ -34,8 +34,22 @@ class AppDatabase extends _$AppDatabase {
   /// The account's write gate (auth spec R3); open unless a transition runs.
   final MutationGate mutationGate;
 
+  /// Whether `beforeOpen` ran: a database whose open failed (a migration
+  /// stopped, a file that cannot be read) has no statistics to keep.
+  var _opened = false;
+
+  /// Keeps the planner's statistics current before the connection goes
+  /// (DEV-208), then closes it.
   @override
-  int get schemaVersion => 13;
+  Future<void> close() async {
+    if (_opened) {
+      await customStatement('PRAGMA optimize');
+    }
+    await super.close();
+  }
+
+  @override
+  int get schemaVersion => 14;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -60,6 +74,11 @@ class AppDatabase extends _$AppDatabase {
     ),
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
+      // The planner's statistics (DEV-208): `PRAGMA optimize` analyses the
+      // tables whose queries on this connection would gain from it, at open
+      // and again before close, so the next open plans with them.
+      await customStatement('PRAGMA optimize');
+      _opened = true;
       // BR-SETTINGS-001: the one settings row exists from the first open, so
       // every surface reads real values. It changes nothing once it exists.
       await into(appSettings).insert(
@@ -231,6 +250,14 @@ class AppDatabase extends _$AppDatabase {
       await m.createTrigger(schema.cardSyncInsert);
       await m.createTrigger(schema.cardSyncUpdate);
       await m.createTrigger(schema.cardSyncDelete);
+    },
+    from13To14: (m, schema) async {
+      // DEV-205: a push batch is one entity type, oldest first, read through
+      // this index instead of a sort of the whole outbox. DEV-208: Progress
+      // reads the week, the month and the streak through an index on
+      // answered_at instead of folding the whole history. No row changes.
+      await m.createIndex(schema.idxSyncOutboxTypeCreated);
+      await m.createIndex(schema.idxReviewLogAnswered);
     },
   );
 }

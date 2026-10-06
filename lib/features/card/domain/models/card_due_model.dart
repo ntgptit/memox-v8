@@ -1,4 +1,5 @@
 import 'package:memox/features/deck/domain/models/deck_schedule_status_model.dart';
+import 'package:memox/features/srs/domain/models/due_state_model.dart';
 
 /// Which way a card's next review lies from today.
 enum CardDueKind { newCard, overdue, today, later }
@@ -15,23 +16,32 @@ final class CardDue {
   const CardDue.overdue(int days) : this._(CardDueKind.overdue, days);
   const CardDue.later(int days) : this._(CardDueKind.later, days);
 
-  /// [isLearned] is `learned_at` set (BR-CARD-007); [startOfToday] is the
-  /// start of the local day the list reads at.
+  /// From the card's schedule at the moment of the read: the set of
+  /// BR-STUDY-068 through `dueStateOf` (the one Dart copy of the rule,
+  /// DEV-221), then the calendar count of days overdue or ahead.
+  /// [startOfToday] is the start of the local day the list reads at.
   factory CardDue.of({
-    required bool isLearned,
+    required DateTime? learnedAt,
     required DateTime? dueAt,
+    required DateTime now,
     required DateTime startOfToday,
-  }) {
-    if (!isLearned || dueAt == null) return const CardDue.newCard();
-    if (dueAt.isBefore(startOfToday)) {
-      return CardDue.overdue(
-        DeckScheduleStatus.overdueDays(dueAt, startOfToday),
-      );
-    }
-    // The same calendar count, from today forward to the due date.
-    final ahead = DeckScheduleStatus.overdueDays(startOfToday, dueAt);
-    return ahead == 0 ? const CardDue.today() : CardDue.later(ahead);
-  }
+  }) => switch (dueStateOf(
+    learnedAt: learnedAt,
+    dueAt: dueAt,
+    now: now,
+    startOfToday: startOfToday,
+  )) {
+    DueState.newCard => const CardDue.newCard(),
+    DueState.dueToday => const CardDue.today(),
+    DueState.overdue => CardDue.overdue(
+      DeckScheduleStatus.overdueDays(dueAt, startOfToday),
+    ),
+    // The same calendar count, from today forward to the due date; a
+    // learned card with no due date rests with no day to count.
+    DueState.scheduled => CardDue.later(
+      dueAt == null ? 0 : DeckScheduleStatus.overdueDays(startOfToday, dueAt),
+    ),
+  };
 
   final CardDueKind kind;
 

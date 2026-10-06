@@ -6,6 +6,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
@@ -63,6 +64,7 @@ StudySessionRepositoryImpl studySessionRepository(
       db,
       schedules,
       TagRepositoryImpl(db, now: now),
+      DeckTreeDataSource(db),
       now: now,
     ),
     now: now,

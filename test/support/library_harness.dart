@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/app/app.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
@@ -49,6 +50,7 @@ final class LibraryEnv {
         db,
         ScheduleRepositoryImpl(db),
         TagRepositoryImpl(db),
+        DeckTreeDataSource(db),
       ),
       sessions = LockableSessions(studySessionRepository(db, clock.now)),
       entries = FailingEntries(studyEntryRepository(db, clock.now));

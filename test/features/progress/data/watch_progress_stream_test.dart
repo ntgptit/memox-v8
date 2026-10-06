@@ -1,4 +1,5 @@
-import 'package:drift/drift.dart' show QueryExecutor, QueryInterceptor;
+import 'package:drift/drift.dart'
+    show QueryExecutor, QueryInterceptor, UpdateKind;
 import 'package:drift/native.dart' show SqliteException;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
@@ -6,6 +7,8 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/deck/data/datasources/deck_dao.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/progress/data/repositories/progress_repository_impl.dart';
@@ -14,6 +17,7 @@ import 'package:memox/features/progress/domain/models/progress_level_model.dart'
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
+import 'package:memox/features/study/data/datasources/study_view_dao.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 
@@ -74,6 +78,7 @@ void main() {
     db,
     ScheduleRepositoryImpl(db, now: () => now),
     TagRepositoryImpl(db, now: () => now),
+    DeckTreeDataSource(db),
     now: () => now,
   );
 
@@ -114,6 +119,46 @@ void main() {
     expect(monthCards(snapshots.last), {'Aardvark': 0});
     expect(snapshots.last.overview.hasLifetimeActivity, isFalse);
     await subscription.cancel();
+  });
+
+  test('one answer transaction re-reads Progress, Study Home and the deck '
+      'level once each (DEV-208)', () async {
+    final korean = await decks.root('Korean');
+    final lesson = await decks.sub(korean.id, 'Lesson');
+    await learnedCard(db, lesson.id, 'c1');
+    await lockScheduler(db, korean.id);
+    var snapshots = 0;
+    var homeFirings = 0;
+    var levels = 0;
+    final subscriptions = [
+      progress.watchProgress(days).listen((_) => snapshots++),
+      StudyViewDao(db).homeChanges().listen((_) => homeFirings++),
+      DeckDao(db)
+          .watchLevel(
+            parentId: null,
+            now: now,
+            startOfToday: DateTime(2026, 9, 25),
+          )
+          .listen((_) => levels++),
+    ];
+    await pumpEventQueue();
+    expect((snapshots, homeFirings, levels), (1, 1, 1));
+
+    await db.transaction(() async {
+      await answer(db, 'c1', hanoi(9, 25, 9));
+      await db.customUpdate(
+        "UPDATE card_schedule SET answer_count = answer_count + 1 "
+        "WHERE card_id = 'c1'",
+        updates: {db.cardSchedule},
+        updateKind: UpdateKind.update,
+      );
+    });
+    await pumpEventQueue();
+
+    expect((snapshots, homeFirings, levels), (2, 2, 2));
+    for (final subscription in subscriptions) {
+      await subscription.cancel();
+    }
   });
 
   test('a sub-deck moved to another root takes its whole history along '
