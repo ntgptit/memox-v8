@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/gallery/gallery_screen.dart';
-import 'package:memox/app/app_lifecycle_hooks.dart';
 import 'package:memox/app/router/account_routes.dart';
 import 'package:memox/app/router/admin_routes.dart';
 import 'package:memox/app/router/app_routes.dart';
@@ -16,6 +15,7 @@ import 'package:memox/app/router/study_route_screens.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_admin_gate_widget.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_screen.dart';
+import 'package:memox/features/reminders/presentation/providers/reset_app_options_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
@@ -255,13 +255,13 @@ GoRouter buildAppRouter({
                       context.push(AppRoutes.settingsLanguage),
                   onOpenReminder: () =>
                       context.push(AppRoutes.settingsReminder),
-                  // The reset turned the reminder off; the pending alarm
-                  // follows through the gate (FE-B5 spec D7).
                   onOpenSync: () => context.push(AppRoutes.settingsSync),
                   adminRows: adminSettingsRows(context),
-                  onAppOptionsReset: () => unawaited(
-                    _reconcileAfterReset(ProviderScope.containerOf(context)),
-                  ),
+                  // The reminders feature owns the reset's consequence: the
+                  // alarm follows in the same turn of the gate (DEV-218).
+                  resetAppOptions: () =>
+                      ProviderScope.containerOf(context)
+                          .read(resetAppOptionsProvider)(),
                   onOpenGallery: hasGallery
                       ? () => context.push(AppRoutes.gallery)
                       : null,
@@ -463,8 +463,3 @@ void _openAncestor(
   if (deckId == null || isOnStack) return;
   unawaited(router.push(levelOf(deckId)));
 }
-
-/// Reconcile after Reset app options, through the one path the start and
-/// the resume use (DEV-176).
-Future<void> _reconcileAfterReset(ProviderContainer container) =>
-    AppLifecycleHooks(container).reconcileReminder();

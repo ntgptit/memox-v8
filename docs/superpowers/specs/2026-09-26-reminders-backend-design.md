@@ -357,7 +357,10 @@ plain class, so 11b's background entry point can build it without Riverpod.
   - The report has no text field, so a log line built from it cannot carry a deck name
     (BR-005).
 - **For FE-A3.**
-  - Call `ReconcileReminderUseCase` after a successful `Reset to defaults`.
+  - `Reset to defaults` runs as one reminder operation: the reminders feature's
+    `ResetAppOptionsUseCase` resets the settings, then runs
+    `ReconcileReminderUseCase`, inside the gate of §14, so no Enable can land
+    between the two (DEV-218). `app/` hands it to screen 23 as `resetAppOptions`.
   - Name the daily reminder in the reset copy (D4).
 - **For FE-B5.**
   - The screen watches `ReminderStatus`. `permDenied`, `couldNotSchedule` and `offMayShow`

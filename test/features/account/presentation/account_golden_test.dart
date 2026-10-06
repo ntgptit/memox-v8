@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -253,7 +254,7 @@ void main() {
           onOpenTheme: () {},
           onOpenLanguage: () {},
           onOpenReminder: () {},
-          onAppOptionsReset: () {},
+          resetAppOptions: () async => const Ok(null),
           onOpenSync: () {},
           accountSection: AccountSettingsSectionWidget(
             onSignIn: () {},

@@ -8,6 +8,7 @@ import 'package:memox/features/settings/domain/entities/app_settings_entity.dart
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
+import 'package:memox/features/settings/domain/usecases/reset_app_settings_use_case.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/providers/watch_app_settings_use_case_provider.dart';
@@ -201,7 +202,10 @@ void main() {
     await pumpEventQueue();
     rig.store.writes = 0;
 
-    expect(await _controller(rig).reset(), isTrue);
+    expect(
+      await _controller(rig).reset(ResetAppSettingsUseCase(rig.store).call),
+      isTrue,
+    );
     final stored = await _stored(rig);
     expect(stored.theme, AppSettingsEntity.defaults.theme);
     expect(stored.language, AppSettingsEntity.defaults.language);
@@ -215,7 +219,10 @@ void main() {
     await pumpEventQueue();
     rig.store.isFailing = true;
 
-    expect(await _controller(rig).reset(), isFalse);
+    expect(
+      await _controller(rig).reset(ResetAppSettingsUseCase(rig.store).call),
+      isFalse,
+    );
     expect((await _stored(rig)).theme, ThemeChoice.dark);
     expect(_state(rig).notice, isA<SettingsSaveFailed>());
   });
