@@ -137,6 +137,25 @@ void main() {
     );
   });
 
+  test('two matching tags of one tier: the hit names the first by folded '
+      'name, whatever order they were attached in (Search spec §6.2, '
+      'DEV-209)', () async {
+    await insertCard(db, id: 'later', deckId: lessonId, front: 'homework');
+    await tag('later', 'Học tập');
+    await tag('later', 'Học sinh');
+    await insertCard(db, id: 'sooner', deckId: lessonId, front: 'exercise');
+    await tag('sooner', 'Học sinh');
+    await tag('sooner', 'Học tập');
+
+    expect(
+      [
+        for (final hit in (await read('học')).cards)
+          (hit.cardId, hit.matchedTag),
+      ],
+      [('sooner', 'Học sinh'), ('later', 'Học sinh')],
+    );
+  });
+
   test("a card's hit shows its faces as written and the path from the root "
       'to its deck (UC-SEARCH-001 step 5)', () async {
     await insertCard(
