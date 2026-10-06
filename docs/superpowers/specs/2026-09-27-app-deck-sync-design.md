@@ -146,6 +146,11 @@ failure, with backoff of 5 s, 10 s, 20 s and so on, capped at 5 minutes.
   reconnection retries at once and resets the backoff.
 - **Errors:**
   - A network error or 5xx increments `attempts` and schedules a backoff.
+  - Each RPC (`sync_push` of one batch, `sync_changes` of one page) is
+    bounded at 30 s (`SupabaseSyncApi.rpcTimeout`, DEV-186): a request the
+    network never answers fails as `TimeoutException`, a network failure,
+    so the run ends, backs off, and a `pause()` waiting on it (an account
+    transition) returns instead of hanging until the app is killed.
   - A 4xx on push, meaning a batch the server refuses as a whole, is logged
     and backs off.
   - Nothing reaches the UI.
