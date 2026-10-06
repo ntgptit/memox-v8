@@ -21,7 +21,6 @@ class CardAddDetailsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final styles = context.textStyles;
-    final colors = context.colors;
     final radius = BorderRadius.circular(AppRadius.md);
     final glyph = IconThemeData(
       color: context.derivedColors.primaryInk,
@@ -42,8 +41,9 @@ class CardAddDetailsWidget extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             borderRadius: radius,
+            // The control edge, as the fields beside it (DEV-166).
             border: Border.all(
-              color: colors.outlineVariant,
+              color: context.derivedColors.outlineEdge,
               width: AppStroke.hairline,
             ),
           ),

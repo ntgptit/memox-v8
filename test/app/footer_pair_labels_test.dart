@@ -53,18 +53,19 @@ MxButton _button(String label, [IconData? icon]) => MxButton(
   onPressed: () {},
 );
 
-/// A dialog's Cancel and confirm, sharing the row 10 : 13 (MxSheetActions).
-/// A bottom sheet's row is the footer's.
+/// A dialog's Cancel and confirm, sharing the row 10 : 13 (MxSheetActions),
+/// or 1 : 1 with [isEvenSplit]. A bottom sheet's row is the footer's.
 _Pair _sheet(
   String name,
   MxButton cancel,
   MxButton confirm, {
   bool isInSheet = false,
+  bool isEvenSplit = false,
 }) => (
   name: name,
   row: isInSheet ? _footerRow : _dialogRow,
-  leadingFlex: 10,
-  trailingFlex: 13,
+  leadingFlex: isEvenSplit ? 1 : 10,
+  trailingFlex: isEvenSplit ? 1 : 13,
   leading: cancel,
   trailing: confirm,
 );
@@ -180,7 +181,8 @@ List<_Pair> _pairs(AppLocalizations l10n) {
     _sheet(
       'account delete',
       cancel,
-      _button(l10n.accountDelete, AppIcons.delete),
+      _button(l10n.accountDeleteConfirm, AppIcons.delete),
+      isEvenSplit: true,
     ),
     _sheet(
       'merge, discard',

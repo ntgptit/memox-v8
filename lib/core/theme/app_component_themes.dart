@@ -26,13 +26,18 @@ abstract final class AppComponentThemes {
   );
 
   /// Every form field (TextField contract): the muted fill that lightens on
-  /// focus, a ghost edge, primary on focus, error in error, the 14 hint.
+  /// focus, the Outline Edge at rest (ghost when disabled), primary on focus,
+  /// error in error, the 14 hint.
   static InputDecorationTheme fields(
     ColorScheme scheme,
     MxSemanticColors semantic,
     TextTheme texts,
   ) {
-    final ghost = MxDerivedColors.resolve(scheme, semantic).ghostBorder;
+    final derived = MxDerivedColors.resolve(scheme, semantic);
+    final ghost = derived.ghostBorder;
+    // Every edged field rests on the one control edge (3:1, DEV-166); a
+    // disabled one keeps the ghost hairline, as SC 1.4.11 exempts it.
+    final rest = derived.outlineEdge;
     return InputDecorationTheme(
       filled: true,
       isDense: true,
@@ -45,8 +50,8 @@ abstract final class AppComponentThemes {
         horizontal: AppSpacing.grouped,
       ),
       hintStyle: MxTextStyles(texts, scheme).inputHint,
-      border: fieldEdge(ghost),
-      enabledBorder: fieldEdge(ghost),
+      border: fieldEdge(rest),
+      enabledBorder: fieldEdge(rest),
       disabledBorder: fieldEdge(ghost),
       focusedBorder: fieldEdge(MxDerivedColors.primaryInkOf(scheme)),
       errorBorder: fieldEdge(scheme.error),
@@ -118,7 +123,10 @@ abstract final class AppComponentThemes {
       texts,
       fill: null,
       ink: MxDerivedColors.primaryInkOf(scheme),
-      edge: BorderSide(color: scheme.outlineVariant, width: AppStroke.hairline),
+      edge: BorderSide(
+        color: MxDerivedColors.outlineEdgeOf(scheme),
+        width: AppStroke.hairline,
+      ),
     ),
   );
 

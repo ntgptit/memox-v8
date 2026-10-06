@@ -7059,7 +7059,11 @@
   },
   "accountDelete": "Delete account",
   "@accountDelete": {
-    "description": "Screen 32's row and its dialog's confirm (Account UI spec §5.6)."
+    "description": "Screen 32's row (Account UI spec §5.6)."
+  },
+  "accountDeleteConfirm": "Delete",
+  "@accountDeleteConfirm": {
+    "description": "Screen 32: the delete dialog's confirm; its title already names the account (owner 2026-10-06)."
   },
   "accountDeleteHint": "Your account and its data, for good",
   "@accountDeleteHint": {

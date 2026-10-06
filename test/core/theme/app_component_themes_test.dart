@@ -43,7 +43,8 @@ void main() {
         expect(filled.side!.resolve(focused)!.color, ink);
       });
 
-      test('fields: filled, ghost edge, radius 12, no label gap', () {
+      test('fields: filled, outline edge at rest, ghost when disabled, '
+          'radius 12, no label gap (DEV-166)', () {
         final fields = theme.inputDecorationTheme;
         expect(fields.filled, isTrue);
         expect(
@@ -56,8 +57,14 @@ void main() {
           }),
           scheme.surfaceContainerLowest,
         );
+        final rest = MxDerivedColors.outlineEdgeOf(scheme);
         final edge = fields.enabledBorder! as OutlineInputBorder;
-        expect(edge.borderSide.color, ghost);
+        expect(edge.borderSide.color, rest);
+        expect((fields.border! as OutlineInputBorder).borderSide.color, rest);
+        expect(
+          (fields.disabledBorder! as OutlineInputBorder).borderSide.color,
+          ghost,
+        );
         expect(edge.gapPadding, 0);
         expect(edge.borderRadius, BorderRadius.circular(12));
         expect(
@@ -108,7 +115,7 @@ void main() {
         expect(paintOf('Text').color, anyOf(isNull, Colors.transparent));
         expect(
           (paintOf('Outlined').shape! as RoundedRectangleBorder).side.color,
-          scheme.outlineVariant,
+          MxDerivedColors.outlineEdgeOf(scheme),
         );
       });
 
@@ -254,7 +261,10 @@ void main() {
         );
         final edge =
             (paintOf('Outlined').shape! as RoundedRectangleBorder).side;
-        expect(edge.color.a, closeTo(scheme.outlineVariant.a * 0.38, 0.01));
+        expect(
+          edge.color.a,
+          closeTo(MxDerivedColors.outlineEdgeOf(scheme).a * 0.38, 0.01),
+        );
       });
 
       testWidgets('a raw TextField takes the V3 field', (tester) async {
@@ -272,7 +282,7 @@ void main() {
         expect(applied.filled, isTrue);
         expect(
           (applied.enabledBorder! as OutlineInputBorder).borderSide.color,
-          ghost,
+          MxDerivedColors.outlineEdgeOf(scheme),
         );
       });
     });

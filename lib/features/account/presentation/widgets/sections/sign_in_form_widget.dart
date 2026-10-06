@@ -201,8 +201,6 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
             controller: _email,
             label: l10n.accountEmail,
             hintText: l10n.accountEmailHint,
-            // The field reads at a glance on its quiet page (DEV-166, L1).
-            hasStrongEdge: true,
             isEnabled: widget.isEnabled,
             isAutofocused: isAutofocused,
             textInputAction: TextInputAction.send,

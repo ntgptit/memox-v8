@@ -115,13 +115,7 @@ final class MxDerivedColors {
         isDark ? _masteredInkDark : _masteredInkLight,
       ),
       primaryInk: primaryInkOf(scheme),
-      // The outline button's edge. Dark pulls outline toward onSurface so it
-      // holds 3:1 on the page, the sheet and the warning ground (3.41 on the
-      // sheet); light keeps outlineVariant (owner ruling R7, critique
-      // 2026-09-30 part 1).
-      outlineEdge: isDark
-          ? Color.lerp(scheme.outline, scheme.onSurface, _outlineEdgeDark)!
-          : scheme.outlineVariant,
+      outlineEdge: outlineEdgeOf(scheme),
     );
   }
 
@@ -159,7 +153,18 @@ final class MxDerivedColors {
   static const double _dangerInkDark = 0.30;
   static const double _primaryInkLight = 0.25;
   static const double _primaryInkDark = 0.45;
+  static const double _outlineEdgeLight = 0.10;
   static const double _outlineEdgeDark = 0.25;
+
+  /// The one control edge: fields at rest, the outline button, the code
+  /// slots. Outline pulled toward onSurface until it holds 3:1 on the page,
+  /// the field fill, the sheet and the warning ground in both themes
+  /// (DEV-166; replaces owner ruling R7's light outlineVariant).
+  static Color outlineEdgeOf(ColorScheme scheme) => Color.lerp(
+    scheme.outline,
+    scheme.onSurface,
+    scheme.brightness == Brightness.dark ? _outlineEdgeDark : _outlineEdgeLight,
+  )!;
 
   /// Primary as TEXT, icon, focus ring or off-fill spinner: primary pulled
   /// toward onSurface until it reads at 4.5:1 on every ground and primary

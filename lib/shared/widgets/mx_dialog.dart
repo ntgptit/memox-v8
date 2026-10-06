@@ -104,11 +104,19 @@ class MxDialog extends StatelessWidget {
                     if (hasText)
                       Flexible(
                         child: SingleChildScrollView(
+                          // The text sits on the action pair's 16 edge, so
+                          // the pair keeps its width (DEV-166, The Short
+                          // Label Rule).
                           padding: actions == null
-                              ? const EdgeInsets.all(AppSpacing.card)
+                              ? const EdgeInsets.fromLTRB(
+                                  AppSpacing.gutter,
+                                  AppSpacing.card,
+                                  AppSpacing.gutter,
+                                  AppSpacing.card,
+                                )
                               : const EdgeInsetsDirectional.only(
-                                  start: AppSpacing.card,
-                                  end: AppSpacing.card,
+                                  start: AppSpacing.gutter,
+                                  end: AppSpacing.gutter,
                                   top: AppSpacing.card,
                                 ),
                           child: Column(

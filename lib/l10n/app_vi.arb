@@ -1364,6 +1364,7 @@
   "accountSignOutHint": "Xoá dữ liệu trên máy này · đăng nhập lại để lấy lại",
   "accountDeleteSection": "Xoá",
   "accountDelete": "Xoá tài khoản",
+  "accountDeleteConfirm": "Xoá",
   "accountDeleteHint": "Tài khoản và dữ liệu của nó, vĩnh viễn",
   "accountNeedsConnection": "Cần kết nối mạng để quản lý tài khoản. Bộ thẻ vẫn an toàn trên điện thoại này.",
   "accountReauthBanner": "Phiên đăng nhập đã hết hạn. Bộ thẻ vẫn còn trên điện thoại này.",
