@@ -16,10 +16,16 @@ SELECT d.id, d.name, d.parent_id, d.sibling_position, d.content_type,
 FROM deck d WHERE d.delete_batch_id IS NULL;
 
 -- BR-SEARCH-001, BR-SEARCH-004, BR-SEARCH-006, BR-SEARCH-007: every live
--- card whose front, back or tag name holds :term, one row each from
--- correlated subqueries (never DISTINCT over a join), with the tier of each
--- face and of its best tag, the name of its best matching tag, and its tier,
--- the best of the three. In the card group's order, the key
+-- card whose front, back or tag name holds :term, one row each, with the
+-- tier of each face and of its best tag, the name of its best matching tag,
+-- and its tier, the best of the three. The tag side is computed from the
+-- tags, not per card (DEV-209): the tags that hold the term, ranked once by
+-- (tier, name_folded, id), their links, and each card's best of them; the
+-- cards found are those whose faces hold the term plus those with a
+-- matching tag, and only they join the deck and take their tiers. So the
+-- cost is one scan of the faces plus the links of the matching tags, never
+-- a lookup per card.
+-- Never DISTINCT over a join. In the card group's order, the key
 -- (tier, front_folded, created_at, id): after the :after_* key when it is
 -- given, through the :through_* key when it is given, at most :limit rows
 -- when it is given (-1 is no limit), never an OFFSET.
@@ -29,7 +35,38 @@ searchCardHits(:term AS TEXT,
   :through_tier AS INTEGER OR NULL, :through_text AS TEXT OR NULL,
   :through_created_at AS DATETIME OR NULL, :through_id AS TEXT OR NULL,
   :limit AS INTEGER OR NULL) AS SearchCardHitRow:
-WITH hits AS (
+WITH matching_tags AS (
+  SELECT t.id, t.name,
+    CASE WHEN t.name_folded = :term THEN 0
+      WHEN instr(t.name_folded, :term) = 1 THEN 1
+      ELSE 2 END AS tier,
+    -- The order a card's tags are ranked in, once over the matching tags.
+    ROW_NUMBER() OVER (ORDER BY
+      CASE WHEN t.name_folded = :term THEN 0
+        WHEN instr(t.name_folded, :term) = 1 THEN 1
+        ELSE 2 END, t.name_folded, t.id) AS rank
+  FROM tags t WHERE instr(t.name_folded, :term) > 0),
+-- From the matching tags to their links (idx_card_tags_tag), in this order;
+-- each card's best tag is the lowest rank among its links.
+best_links AS (
+  SELECT ct.card_id, MIN(mt.rank) AS rank
+  FROM matching_tags mt CROSS JOIN card_tags ct ON ct.tag_id = mt.id
+  GROUP BY ct.card_id),
+best_tags AS (
+  SELECT b.card_id, mt.tier AS tag_tier, mt.name AS tag_name
+  FROM best_links b JOIN matching_tags mt ON mt.rank = b.rank),
+-- The cards found: by a face and by no tag, or by a tag; disjoint, once each.
+found AS (
+  SELECT c.id, CAST(NULL AS INTEGER) AS tag_tier, CAST(NULL AS TEXT) AS tag_name
+  FROM card c
+  -- One pass over the table: + keeps the planner off idx_card_delete_batch,
+  -- which would fetch every live row by rowid.
+  WHERE +c.delete_batch_id IS NULL
+    AND (instr(c.front_folded, :term) > 0 OR instr(c.back_folded, :term) > 0)
+    AND NOT EXISTS (SELECT 1 FROM best_tags b WHERE b.card_id = c.id)
+  UNION ALL
+  SELECT card_id, tag_tier, tag_name FROM best_tags),
+hits AS (
   SELECT c.id, c.deck_id, c.front, c.back, c.front_folded, c.created_at,
     CASE WHEN c.front_folded = :term THEN 0
       WHEN instr(c.front_folded, :term) = 1 THEN 1
@@ -39,22 +76,12 @@ WITH hits AS (
       WHEN instr(c.back_folded, :term) = 1 THEN 1
       WHEN instr(c.back_folded, :term) > 0 THEN 2
       ELSE 3 END AS back_tier,
-    COALESCE((
-      SELECT MIN(CASE WHEN t.name_folded = :term THEN 0
-        WHEN instr(t.name_folded, :term) = 1 THEN 1
-        WHEN instr(t.name_folded, :term) > 0 THEN 2
-        ELSE 3 END)
-      FROM card_tags ct JOIN tags t ON t.id = ct.tag_id
-      WHERE ct.card_id = c.id), 3) AS tag_tier,
-    (SELECT t.name
-     FROM card_tags ct JOIN tags t ON t.id = ct.tag_id
-     WHERE ct.card_id = c.id AND instr(t.name_folded, :term) > 0
-     ORDER BY CASE WHEN t.name_folded = :term THEN 0
-       WHEN instr(t.name_folded, :term) = 1 THEN 1
-       WHEN instr(t.name_folded, :term) > 0 THEN 2
-       ELSE 3 END, t.name_folded, t.id
-     LIMIT 1) AS tag_name
-  FROM card c JOIN deck k ON k.id = c.deck_id
+    COALESCE(f.tag_tier, 3) AS tag_tier,
+    f.tag_name
+  -- From the cards found to their rows and decks, in this order: left to
+  -- itself the planner scans every card again and probes the found ones.
+  FROM found f CROSS JOIN card c ON c.id = f.id
+  CROSS JOIN deck k ON k.id = c.deck_id
   WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL),
 tiered AS (
   SELECT hits.*, MIN(front_tier, back_tier, tag_tier) AS tier FROM hits)
