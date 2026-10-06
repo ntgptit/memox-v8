@@ -125,6 +125,12 @@ failure, with backoff of 5 s, 10 s, 20 s and so on, capped at 5 minutes.
       never seen the row, so the row and its cards are **kept** and the
       rejection is logged. The entry is deleted on the same `op_id`
       condition.
+    - `current` is applied in a savepoint of its own (DEV-183): a copy this
+      device cannot hold yet (its parent not pulled, a constraint the local
+      rows break) fails only that entity. The row stays as it is, recorded
+      in `sync_rejection` as `LOCAL_APPLY_FAILED`, and the run goes on to
+      the pull, which brings the parent; a pull that applies the server's
+      copy of a listed row clears its record.
   - Repeat while entries remain.
 - **Pull:**
   - `GET /sync/changes?since=` from `sync_state.since`, paging while

@@ -21,6 +21,13 @@ class SyncCoordinator {
 
   static const pushBatchSize = 100;
   static const pullPageSize = 500;
+
+  /// The code of a refused row whose server copy this device could not
+  /// hold (DEV-183): it stays as it is, listed on screen 27, until a pull
+  /// brings a copy that applies or the person decides (sync status spec R3,
+  /// R7).
+  static const localApplyFailed = 'LOCAL_APPLY_FAILED';
+
   static const _upsert = 'upsert';
   static const _delete = 'delete';
 
@@ -159,7 +166,7 @@ class SyncCoordinator {
               _now(),
             );
           } else {
-            await _applyServerCopy(adapter, entry.entityId, result.current);
+            await _applyRefusedCopy(adapter, entry, result.current!);
           }
           await _store.removeIfUnchanged(result.opId);
         }
@@ -167,6 +174,45 @@ class SyncCoordinator {
       if (batch.length < pushBatchSize) {
         return pushed;
       }
+    }
+  }
+
+  /// The server's copy of a refused row, inside a savepoint of its own: a
+  /// copy this device cannot hold yet (its parent not pulled, a constraint
+  /// the local rows break) fails only this entity. The row stays as it is
+  /// and is listed as [localApplyFailed]; the pull that follows brings the
+  /// parent and clears the listing once a copy applies (DEV-183).
+  Future<void> _applyRefusedCopy(
+    EntitySyncAdapter adapter,
+    SyncOutboxEntry entry,
+    SyncChangeModel copy,
+  ) async {
+    try {
+      await _store.inTransaction(
+        () => _applyServerCopy(adapter, entry.entityId, copy),
+      );
+      await _store.clearRejection(entry.entityType, entry.entityId);
+    } catch (error, stackTrace) {
+      _log.warning(
+        'sync.apply_failed',
+        category: LogCategory.sync,
+        message:
+            '${entry.entityType}/${entry.entityId}: the server copy cannot '
+            'be applied here yet',
+        error: error,
+        stackTrace: stackTrace,
+        context: {
+          'entityType': entry.entityType,
+          'entityId': entry.entityId,
+          'serverVersion': copy.serverVersion,
+        },
+      );
+      await _store.recordRejection(
+        entry.entityType,
+        entry.entityId,
+        localApplyFailed,
+        _now(),
+      );
     }
   }
 
@@ -190,6 +236,13 @@ class SyncCoordinator {
       }
     }
     await _store.applyingRemote(deferForeignKeys: true, () async {
+      // A row listed as refused is cleared once the server's copy of it
+      // applies here (DEV-183); read once, so a pull with nothing listed
+      // costs nothing more.
+      final listed = {
+        for (final r in await _store.rejections())
+          '${r.entityType}/${r.entityId}',
+      };
       for (final change in changes) {
         final adapter = _adapters[change.entityType];
         // Asked per change: a tag merge earlier in this pull may have queued
@@ -199,6 +252,9 @@ class SyncCoordinator {
           continue;
         }
         await _applyServerCopy(adapter, change.entityId, change);
+        if (listed.contains('${change.entityType}/${change.entityId}')) {
+          await _store.clearRejection(change.entityType, change.entityId);
+        }
       }
       for (final adapter in _adapters.values) {
         await adapter.afterPull();

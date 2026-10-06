@@ -26,6 +26,11 @@ class FakeSyncServer implements SyncApi {
   /// cursor: simulates the network dropping in the middle of a pull.
   int? failChangesAfter;
 
+  /// Runs after push has recorded every result, before the response goes
+  /// out: throwing here is the server's commit with the response lost on
+  /// the way back (DEV-225).
+  Future<void> Function()? afterPushCommit;
+
   SyncChangeModel? row(String type, String id) => _rows['$type/$id'];
 
   void seed(String type, String id, Map<String, Object?>? row) {
@@ -69,6 +74,7 @@ class FakeSyncServer implements SyncApi {
       _applied[op.opId] = _version;
       results.add(_applied_(op.opId, _version));
     }
+    await afterPushCommit?.call();
     return PushResponseModel(results: results);
   }
 
