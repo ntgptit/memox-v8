@@ -69,6 +69,17 @@ run, and it cannot be regenerated once the `.drift` files have moved on.
   are off until `beforeOpen`). `test/drift/interrupted_migration_test.dart`
   is the proof: it plants the cause of a mid-step failure, opens, and expects
   the old version whole.
+- **An upgrade keeps the sync state whole.** The outbox (every entry with its
+  `op_id`, `created_at` and `attempts`), the acknowledged `server_version` of
+  every row, `sync_rejection` and `sync_state` come out of an upgrade exactly
+  as they went in, and the outbox gains no entry (a step never seeds rows the
+  server already acknowledged). `test/drift/sync_state_migration_test.dart`
+  (DEV-228) holds that fixture at the last released version and upgrades it
+  to the current one: every new step runs through it, and a step that
+  rebuilds a table (`TableMigration` keeps `server_version` only if the
+  column is in its schema), updates a synced table (the sync triggers queue
+  the rows) or seeds the outbox again fails there. At every release, raise
+  `_releasedVersion` in that file to the version shipped.
 
 ## Changing a column safely
 
