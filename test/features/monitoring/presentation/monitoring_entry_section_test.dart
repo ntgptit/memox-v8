@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -21,7 +22,7 @@ SettingsScreen _screen({
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},
-  onAppOptionsReset: () {},
+  resetAppOptions: () async => const Ok(null),
   onOpenSync: () {},
   adminRows: [
     MonitoringEntryRowWidget(onOpen: onOpen),

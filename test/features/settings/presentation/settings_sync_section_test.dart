@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,7 +16,7 @@ SettingsScreen _screen({void Function()? onOpenSync}) => SettingsScreen(
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},
-  onAppOptionsReset: () {},
+  resetAppOptions: () async => const Ok(null),
   onOpenSync: onOpenSync ?? () {},
 );
 

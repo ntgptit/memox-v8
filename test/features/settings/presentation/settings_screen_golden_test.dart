@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
@@ -26,7 +27,7 @@ final _screen = SettingsScreen(
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},
-  onAppOptionsReset: () {},
+  resetAppOptions: () async => const Ok(null),
   onOpenSync: () {},
 );
 

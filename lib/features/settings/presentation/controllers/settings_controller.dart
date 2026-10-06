@@ -8,7 +8,6 @@ import 'package:memox/features/settings/domain/models/language_choice_model.dart
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
-import 'package:memox/features/settings/presentation/providers/reset_app_settings_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/providers/save_study_defaults_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/providers/set_language_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/providers/set_theme_use_case_provider.dart';
@@ -16,6 +15,10 @@ import 'package:memox/features/settings/presentation/states/settings_state.dart'
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'settings_controller.g.dart';
+
+/// Reset app options as `app/` composes it: the settings' reset and what
+/// another feature must do right after it (DEV-218).
+typedef ResetAppOptions = Future<Outcome<void, SettingsRejection>> Function();
 
 /// How long the card limit stays still before it is saved (spec §5.2): a
 /// hold or a run of taps is one write.
@@ -122,14 +125,15 @@ class SettingsController extends _$SettingsController {
     );
   }
 
-  /// A3: every app option back to its default in one write; completes true
-  /// once it landed, so the dialog can close.
-  Future<bool> reset() async {
+  /// A3: every app option back to its default in one write, through [run],
+  /// the reset as `app/` composes it; completes true once it landed, so the
+  /// dialog can close.
+  Future<bool> reset(ResetAppOptions run) async {
     _settle?.cancel();
     final hasReset = await _submit(
       SettingsSubmit.reset,
-      () => ref.read(resetAppSettingsUseCaseProvider)(),
-      retry: () async => unawaited(reset()),
+      run,
+      retry: () async => unawaited(reset(run)),
     );
     if (hasReset && ref.mounted) {
       _written = null;

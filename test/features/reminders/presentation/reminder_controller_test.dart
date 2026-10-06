@@ -172,6 +172,21 @@ void main() {
     expect(s.platform.calls, isNot(contains(PlatformCall.cancel)));
   });
 
+  libraryTest(
+    'turnOn before the status loaded does nothing: no permission asked, no '
+    'minute made up (BR-SETTINGS-001, DEV-218)',
+    (tester, env) async {
+      final s = _setUp(env);
+
+      await _controller(s.container).turnOn();
+
+      expect(s.platform.calls, isNot(contains(PlatformCall.requestPermission)));
+      expect(s.platform.pending, isNull);
+      expect(s.container.read(reminderControllerProvider).isBusy, isFalse);
+      expect(s.store.writes, 0);
+    },
+  );
+
   libraryTest('the outcome survives a stream re-emission', (tester, env) async {
     final s = _setUp(
       env,
