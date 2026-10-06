@@ -99,7 +99,7 @@ One new migration (after `20261009000000`), pgTAP in
 | Function | Who | Does |
 |---|---|---|
 | `private.is_admin()` | internal | now reads `profiles.role` (immediate effect; Monitoring's RPCs keep calling it) |
-| `private.require_current_profile()` | internal | raises `UNAUTHORIZED` when the caller has no profile (a deleted user with an old JWT) |
+| `private.require_current_profile()` | internal | raises `UNAUTHORIZED` when the caller has no profile (a deleted user with an old JWT); called by every account RPC and, since DEV-192, by `sync_push` and `sync_changes` |
 | `private.touch_user_activity()` | internal | sets `last_active_at = now()` when it is older than 1 day |
 | `public.me()` | authenticated | touches activity; returns `{id, email, isAnonymous, role}` |
 | `public.role_list(query, cursor)` | admin | searches non-anonymous users by email: id, email, role, created, last sign-in |
@@ -166,7 +166,7 @@ Error classes (data layer only): `NETWORK`, `SESSION_INVALID`
 | 10 | VALIDATING / READY | anonymous + SESSION_INVALID or PROFILE_GONE | record AnonRecovery{started}; `signOut(local)` | TRANSITIONING(AnonRecovery) |
 | 11 | AnonRecovery | R1: no session → `signInAnonymously()`; session → reuse | stage = newAnon(uid) | — |
 | 12 | AnonRecovery | newAnon | `markAllPending` + cursor 0 (idempotent); clear record | VALIDATING |
-| 13 | VALIDATING / READY | account + PROFILE_GONE | record ClearToAnon | TRANSITIONING |
+| 13 | VALIDATING / READY | account + PROFILE_GONE (`me()`; or, while READY, a sync run refused with `UNAUTHORIZED`, which validates again first, DEV-192) | record ClearToAnon | TRANSITIONING |
 | 14 | VALIDATING / READY | account + SESSION_INVALID | keep local, pause sync | REAUTH_REQUIRED(X) |
 | 15 | READY | NETWORK | keep | READY |
 | 16 | READY(anon) | email or Google link OK (same uid) | `me()` | READY(account) |
@@ -196,9 +196,9 @@ Error classes (data layer only): `NETWORK`, `SESSION_INVALID`
 | 39a | SignOut, stage started (nothing local removed) | "Cancel" (critique 2026-10-02) | drop record; open gate; `me()` (#8/#9) | VALIDATING → READY(X) |
 | 40 | SignOut / ClearToAnon | pushed | `signOut(local)`; stage = signedOut | — |
 | 41 | SignOut / ClearToAnon | signedOut (R1: no session) | `LocalDataReset`; clear `lastKnownAccount` and record; open gate | BOOTSTRAPPING |
-| 42 | READY(account) | delete (online) | record Delete; gate; `account_delete()` | — |
+| 42 | READY(account) | delete (online) | record Delete; gate; `account_delete()`. NETWORK during the call: whether the server took it is unknown, so the record stays and Retry sends it again (#43 if it was taken, DEV-192) | — |
 | 43 | Delete | OK, or PROFILE_GONE on a retry (the record proves the request) | stage = serverDeleted → #40 → #41 | BOOTSTRAPPING |
-| 44 | Delete | LAST_ADMIN, or NETWORK before the server took it | clear record; open gate | READY |
+| 44 | Delete | LAST_ADMIN (offline before the call, `deleteAccount()` refuses without a record) | clear record; open gate; `DeleteRefused` | READY |
 | 45 | RECOVERING(SignOut / Delete / ClearToAnon / AnonRecovery) | launch | reconcile by R1, continue the stage (every step idempotent) | as above |
 
 ### 3.4 Invariants
@@ -504,8 +504,10 @@ stays a device check, and D9 (Back) belongs to the widget tests.
   has been deleted so far, and the migration checks first. pgTAP deletes a
   user owning decks, cards, tags with links, reviews and schedules, and
   expects every row gone and no error.
-- **A 1-hour access JWT survives deletion**; the FKs stop it from writing
-  data, and `require_current_profile` stops the new RPCs.
+- **A 1-hour access JWT survives deletion**; `require_current_profile`
+  stops the account RPCs and, since DEV-192, `sync_push` and `sync_changes`
+  too (`UNAUTHORIZED`, which the app answers by validating the account
+  again, #13); the FKs remain the last line.
 - **Rollback:** the client work is behind the account UI; the server
   migration only adds tables, functions and constraints; reverting the app
   leaves anonymous sign-in working as today.

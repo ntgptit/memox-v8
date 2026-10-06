@@ -1,4 +1,5 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/network/supabase_client.dart';
@@ -67,8 +68,15 @@ SyncScheduler? syncScheduler(Ref ref) {
     triggers: store.outboxChanges().skip(1),
     reconnects: online,
     onSucceeded: () => store.recordSuccess(clock.now()),
-    onFailed: (error) =>
-        store.recordFailure(classifySyncFailure(error), clock.now()),
+    onFailed: (error) async {
+      final kind = classifySyncFailure(error);
+      await store.recordFailure(kind, clock.now());
+      // A run refused for want of an account: the coordinator validates the
+      // account again (auth spec #13, DEV-192). Read late, so the account
+      // providers' dependency on sync stays one way at build time.
+      if (kind != SyncFailureKind.signIn) return;
+      await ref.read(accountCoordinatorProvider)?.recheckSession();
+    },
     // Paused until the account coordinator reaches Ready (auth spec R2).
   )..start(paused: true);
   ref.onDispose(scheduler.dispose);
