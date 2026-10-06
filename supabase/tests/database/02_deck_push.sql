@@ -106,15 +106,15 @@ select is((select (r->0->>'status') || '/' || (r->1->>'code') || '/' || (public.
     public.t_op(22, 'deck', public.t_uuid(61), 'upsert', public.t_root(public.t_uuid(61))) || '{"opId":"not-a-uuid"}')) r),
   'applied/VALIDATION_FAILED/true', 'a malformed opId is rejected alone, not the whole batch');
 
--- Delete tombstones the live subtree, one version per row; resurrection clears it.
+-- Delete tombstones the live subtree, one version per row; the tombstone is final (DEV-184, policy A).
 select is(public.t_push(jsonb_build_array(public.t_op(19, 'deck', public.t_uuid(10), 'delete', null)))->0->>'status',
   'applied', 'a subtree delete is applied');
 select is(public.t_change(public.t_uuid(3)) - 'serverVersion',
   jsonb_build_object('entityType', 'deck', 'entityId', public.t_uuid(3), 'deleted', true, 'row', null),
   'a descendant is a tombstone with no row');
-select is(public.t_push(jsonb_build_array(public.t_op(20, 'deck', public.t_uuid(10), 'upsert', public.t_root(public.t_uuid(10)))))->0->>'status',
-  'applied', 'a tombstoned deck can be upserted again');
-select is(public.t_change(public.t_uuid(10))->>'deleted', 'false', 'the upsert resurrects it');
+select is(public.t_push(jsonb_build_array(public.t_op(20, 'deck', public.t_uuid(10), 'upsert', public.t_root(public.t_uuid(10)))))->0->>'code',
+  'ENTITY_TOMBSTONED', 'an upsert on a tombstoned deck is refused');
+select is(public.t_change(public.t_uuid(10))->>'deleted', 'true', 'the tombstone stays');
 
 select * from finish();
 rollback;

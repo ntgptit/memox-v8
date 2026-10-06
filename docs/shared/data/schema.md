@@ -586,6 +586,7 @@ Bản trên server nằm ở Supabase (`supabase/migrations/`), đọc và ghi q
 | `op` | TEXT NOT NULL | `upsert` \| `delete` |
 | `created_at` | DATETIME NOT NULL | lần ghi chờ đầu tiên; giữ nguyên khi hàng được ghi lại, nên cha luôn đi trước con |
 | `attempts` | INTEGER NOT NULL | số lần push lỗi |
+| `payload` | TEXT | schema 13 (DEV-181): JSON `{deleteBatchId, serverVersion}` mà trigger xoá của `deck`/`card` giữ lại khi hàng đang trong Thùng rác, gửi làm `row` của op `delete`; NULL với mọi op khác |
 
 `sync_state(name, value)` giữ `device_id`, cursor `since`, cờ tạm
 `applying_remote`, và từ schema 6 (SB-U1) kết quả các lượt sync: `last_success_at`,

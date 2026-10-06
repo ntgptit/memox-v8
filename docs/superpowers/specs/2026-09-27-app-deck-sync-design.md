@@ -50,6 +50,7 @@ CREATE TABLE sync_outbox (
   op TEXT NOT NULL CHECK (op IN ('upsert', 'delete')),
   created_at DATETIME NOT NULL,
   attempts INTEGER NOT NULL DEFAULT 0,
+  payload TEXT,  -- schema 13 (DEV-181): what a delete sends beyond the op
   UNIQUE (entity_type, entity_id)
 ) AS SyncOutboxEntry;
 
@@ -69,7 +70,11 @@ Triggers, one set per synced table. They run only when
   `sync_outbox` with `op = 'upsert'`. The upsert sets a **new `op_id`** and
   keeps the existing `created_at`.
 - `AFTER DELETE` → the same with `op = 'delete'`. This covers purge and
-  foreign-key cascades.
+  foreign-key cascades. From schema 13 (DEV-181) the deck and card triggers
+  keep the row's `delete_batch_id` and `server_version` in `payload` as JSON
+  (`{"deleteBatchId", "serverVersion"}`) when the row was in the Trash, so
+  the server can tell a purge of a row still in that batch from one another
+  device restored; a delete outside the Trash carries none.
 - `op_id` is a random UUID built in SQL from `randomblob(16)`.
 - `created_at` is the time of the first pending write, and push order is
   `created_at`, so a parent is pushed before its child.
@@ -105,14 +110,18 @@ failure, with backoff of 5 s, 10 s, 20 s and so on, capped at 5 minutes.
 - **Push:**
   - Read up to 100 outbox entries ordered by `created_at`.
   - For each entry, the adapter reads the entity's current row. An `upsert`
-    whose row is gone is sent as a `delete`.
+    whose row is gone is sent as a `delete`. A `delete` sends the entry's
+    `payload` as its `row` (server sync spec §4.1).
   - `POST /sync/push`.
   - For each result, in one transaction with `applying_remote`:
     - `applied` sets the row's `server_version`, and deletes the outbox
       entry **only if its `op_id` still equals the one sent**. An edit made
       during the push has replaced the `op_id`, so that entry stays pending.
     - `rejected` applies `current`: it upserts the row, or deletes it when
-      `current` is a tombstone. When `current` is `null` the server has
+      `current` is a tombstone. So a purge the server refuses
+      (`ENTITY_NOT_IN_TRASH`: another device restored the row) brings the
+      row back, and an edit of a row purged elsewhere
+      (`ENTITY_TOMBSTONED`) removes it. When `current` is `null` the server has
       never seen the row, so the row and its cards are **kept** and the
       rejection is logged. The entry is deleted on the same `op_id`
       condition.

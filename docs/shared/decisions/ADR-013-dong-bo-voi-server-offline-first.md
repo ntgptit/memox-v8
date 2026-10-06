@@ -42,6 +42,13 @@ Thiết kế chi tiết nằm ở
 > không phát lại log, lịch tiến xa hơn thắng. Dòng #3: login đã làm theo
 > [auth spec](../../superpowers/specs/2026-09-30-auth-design.md) (email OTP và Google,
 > SB-A1, SB-A2); owner là `auth.uid()` ([ADR-015](ADR-015-supabase-lam-backend.md) #4).
+>
+> Dòng #5 và #9 được làm rõ ngày 2026-10-06 (DEV-181, DEV-184; chủ dự án chốt
+> policy A): tombstone là **cuối cùng**, upsert lên deck/card đã tombstone bị từ chối
+> kèm tombstone và máy gửi xoá bản local; `delete` của purge mang batch và
+> `server_version` máy đã ack, server chỉ tombstone khi hàng còn ở đúng version đó,
+> hàng đã đổi (máy khác khôi phục) bị từ chối kèm bản live để máy nhận lại
+> ([spec sync](../../superpowers/specs/2026-09-27-server-sync-design.md) §4.1, §5).
 
 ## Hệ quả
 

@@ -59,10 +59,14 @@ server applies later wins, tombstones for deletes, pending local rows skipped on
   `server_version` and `deleted_at`; `deck_id → deck`, `delete_batch_id →
   delete_batch`.
 - Upsert: another user's id → `SYNC_ENTITY_CONFLICT`; a deck that is missing,
-  another user's or tombstoned → `CARD_DECK_MISSING`. The upsert clears
-  `deleted_at`.
+  another user's or tombstoned → `CARD_DECK_MISSING`; a tombstoned card →
+  `ENTITY_TOMBSTONED` with the tombstone (DEV-184, policy A: a tombstone is
+  final, for decks too).
 - Delete: tombstones the card and **hard-deletes** its `card_schedule`,
-  `review_log` and `card_tags` rows on the server. A device that already holds them
+  `review_log` and `card_tags` rows on the server, when the card is still at
+  the version the device last acknowledged (the delete's `row`, server sync
+  spec §4.1); a card changed since is refused with `ENTITY_NOT_IN_TRASH` and
+  its live copy (DEV-181). A device that already holds them
   loses them through the local cascade when it applies the card tombstone; a device
   that never pulled them never sees them.
 - A deck delete (subtree tombstone) also tombstones every live card of those decks,
