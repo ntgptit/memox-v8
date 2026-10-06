@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/sync_store.dart';
-import 'package:memox/core/sync/tag_sync_adapter.dart';
+import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
 
-import '../../support/test_database.dart';
+import '../../../support/test_database.dart';
 
 Map<String, Object?> _wire(String id, String name) => {
   'id': id,
@@ -15,11 +15,11 @@ Map<String, Object?> _wire(String id, String name) => {
 void main() {
   late AppDatabase db;
   late SyncStore store;
-  late TagSyncAdapter adapter;
+  late TagSyncDao adapter;
   setUp(() {
     db = openTestDatabase();
     store = SyncStore(db);
-    adapter = TagSyncAdapter(db, store, now: () => DateTime.utc(2026, 9, 28));
+    adapter = TagSyncDao(db, store, now: () => DateTime.utc(2026, 9, 28));
   });
   tearDown(() => db.close());
 

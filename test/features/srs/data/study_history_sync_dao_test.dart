@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
-import 'package:memox/core/sync/review_log_sync_adapter.dart';
+import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
 import 'package:memox/core/sync/sync_store.dart';
 
 import '../../../support/test_database.dart';
@@ -68,12 +68,12 @@ final Map<String, Object?> _sm2 = {
 void main() {
   late AppDatabase db;
   late SyncStore store;
-  late ReviewLogSyncAdapter reviews;
+  late ReviewLogSyncDao reviews;
   late CardScheduleSyncDao schedules;
   setUp(() async {
     db = openTestDatabase();
     store = SyncStore(db);
-    reviews = ReviewLogSyncAdapter(db);
+    reviews = ReviewLogSyncDao(db);
     schedules = CardScheduleSyncDao(
       db,
       store,

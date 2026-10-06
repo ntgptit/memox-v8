@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 
-part 'delete_batch_sync_adapter.g.dart';
+part 'delete_batch_sync_dao.g.dart';
 
 /// Syncs `delete_batches`, the trash batches that trashed decks reference.
 @DriftAccessor(
@@ -10,9 +10,9 @@ part 'delete_batch_sync_adapter.g.dart';
     'package:memox/core/database/queries/sync_delete_batch_queries.drift',
   },
 )
-class DeleteBatchSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$DeleteBatchSyncAdapterMixin, EntitySyncAdapter {
-  DeleteBatchSyncAdapter(super.attachedDatabase);
+class DeleteBatchSyncDao extends DatabaseAccessor<AppDatabase>
+    with _$DeleteBatchSyncDaoMixin, EntitySyncAdapter {
+  DeleteBatchSyncDao(super.attachedDatabase);
 
   static const type = 'delete_batch';
 

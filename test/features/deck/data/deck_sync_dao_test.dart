@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/sync/deck_sync_adapter.dart';
+import 'package:memox/features/deck/data/datasources/deck_sync_dao.dart';
 import 'package:memox/core/sync/sync_store.dart';
 
-import '../../support/test_database.dart';
+import '../../../support/test_database.dart';
 
 Map<String, Object?> _serverRoot(String id) => {
   'id': id,
@@ -28,11 +28,11 @@ Map<String, Object?> _serverRoot(String id) => {
 
 void main() {
   late AppDatabase db;
-  late DeckSyncAdapter adapter;
+  late DeckSyncDao adapter;
   late SyncStore store;
   setUp(() {
     db = openTestDatabase();
-    adapter = DeckSyncAdapter(db);
+    adapter = DeckSyncDao(db);
     store = SyncStore(db);
   });
   tearDown(() => db.close());

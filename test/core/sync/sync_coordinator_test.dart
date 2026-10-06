@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/sync/account_settings_sync_adapter.dart';
+import 'package:memox/features/settings/data/datasources/account_settings_sync_dao.dart';
 import 'package:memox/features/srs/data/datasources/card_schedule_sync_dao.dart';
 import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
-import 'package:memox/core/sync/deck_sync_adapter.dart';
-import 'package:memox/core/sync/delete_batch_sync_adapter.dart';
-import 'package:memox/core/sync/review_log_sync_adapter.dart';
+import 'package:memox/features/deck/data/datasources/deck_sync_dao.dart';
+import 'package:memox/features/trash/data/datasources/delete_batch_sync_dao.dart';
+import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
-import 'package:memox/core/sync/tag_sync_adapter.dart';
+import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
 
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
@@ -49,13 +49,13 @@ class _Device {
       adapters:
           adapters?.call(db) ??
           [
-            DeleteBatchSyncAdapter(db),
-            DeckSyncAdapter(db),
-            TagSyncAdapter(db, SyncStore(db)),
+            DeleteBatchSyncDao(db),
+            DeckSyncDao(db),
+            TagSyncDao(db, SyncStore(db)),
             cards,
             CardScheduleSyncDao(db, SyncStore(db)),
-            ReviewLogSyncAdapter(db),
-            AccountSettingsSyncAdapter(db),
+            ReviewLogSyncDao(db),
+            AccountSettingsSyncDao(db),
           ],
       pullLimit: pullLimit,
     );
@@ -364,7 +364,7 @@ void main() {
       ..seed('card', 'K', _cardRow('K', 'R'));
     final old = _Device(
       server,
-      adapters: (db) => [DeckSyncAdapter(db), DeleteBatchSyncAdapter(db)],
+      adapters: (db) => [DeckSyncDao(db), DeleteBatchSyncDao(db)],
     );
     addTearDown(old.db.close);
     await old.coordinator.runOnce();
@@ -374,8 +374,8 @@ void main() {
       api: server,
       store: SyncStore(old.db),
       adapters: [
-        DeckSyncAdapter(old.db),
-        DeleteBatchSyncAdapter(old.db),
+        DeckSyncDao(old.db),
+        DeleteBatchSyncDao(old.db),
         CardSyncDao(old.db),
       ],
     );

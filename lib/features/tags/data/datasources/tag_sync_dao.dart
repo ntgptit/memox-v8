@@ -3,22 +3,20 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_store.dart';
 
-part 'tag_sync_adapter.g.dart';
+part 'tag_sync_dao.g.dart';
 
 /// Syncs `tags` (library and study sync spec §3.2). A pulled tag whose name
 /// a different local tag holds absorbs that tag: its links move over and it
 /// is deleted, and since pulls skip the triggers, the moved cards and the
-/// deleted tag are queued here.
+/// deleted tag are queued here. The local tag goes first because the folded
+/// name is unique (BR-TAG-006), which drops its links, so the moved cards are
+/// relinked with `INSERT OR IGNORE` rather than `mergeTagLinks` (DEV-173).
 @DriftAccessor(
   include: {'package:memox/core/database/queries/sync_tag_queries.drift'},
 )
-class TagSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$TagSyncAdapterMixin, EntitySyncAdapter {
-  TagSyncAdapter(
-    super.attachedDatabase,
-    this._store, {
-    this._now = DateTime.now,
-  });
+class TagSyncDao extends DatabaseAccessor<AppDatabase>
+    with _$TagSyncDaoMixin, EntitySyncAdapter {
+  TagSyncDao(super.attachedDatabase, this._store, {this._now = DateTime.now});
 
   static const type = 'tag';
   static const _card = 'card';

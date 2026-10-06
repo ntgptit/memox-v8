@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 
-part 'account_settings_sync_adapter.g.dart';
+part 'account_settings_sync_dao.g.dart';
 
 /// Syncs the study and display settings of `app_settings` row 1 as the one
 /// account row the server keeps per user (library and study sync spec §3.5).
@@ -11,9 +11,9 @@ part 'account_settings_sync_adapter.g.dart';
 @DriftAccessor(
   include: {'package:memox/core/database/queries/settings_queries.drift'},
 )
-class AccountSettingsSyncAdapter extends DatabaseAccessor<AppDatabase>
-    with _$AccountSettingsSyncAdapterMixin, EntitySyncAdapter {
-  AccountSettingsSyncAdapter(super.attachedDatabase);
+class AccountSettingsSyncDao extends DatabaseAccessor<AppDatabase>
+    with _$AccountSettingsSyncDaoMixin, EntitySyncAdapter {
+  AccountSettingsSyncDao(super.attachedDatabase);
 
   static const type = 'account_settings';
 
