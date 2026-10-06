@@ -22,6 +22,11 @@ CREATE TABLE sync_outbox (
   UNIQUE (entity_type, entity_id)
 ) AS SyncOutboxEntry;
 
+-- Schema 14 (DEV-205): a push batch is one entity type, oldest first
+-- (`pendingOutboxOfType`, `pendingDeckOutbox`); the index serves the filter
+-- and the order, so a batch is a range read, never a sort of the outbox.
+CREATE INDEX idx_sync_outbox_type_created ON sync_outbox (entity_type, created_at);
+
 CREATE TABLE sync_state (
   -- `name`, not `key`: KEY is reserved in drift's SQL parser.
   name TEXT NOT NULL PRIMARY KEY,

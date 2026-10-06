@@ -74,9 +74,12 @@ void main() {
     pull.stop();
 
     expect(await a.select(a.syncOutbox).get(), isEmpty);
+    // One batch per type (DEV-205): the deck, the tag, then the cards.
     expect(
       server.pushCalls,
-      (cardCount + 2) ~/ SyncCoordinator.pushBatchSize + 1,
+      2 +
+          (cardCount + SyncCoordinator.pushBatchSize - 1) ~/
+              SyncCoordinator.pushBatchSize,
     );
     expect(await b.select(b.card).get(), hasLength(cardCount));
     expect(await b.select(b.cardSchedule).get(), hasLength(cardCount));

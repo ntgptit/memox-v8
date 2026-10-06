@@ -76,8 +76,13 @@ Triggers, one set per synced table. They run only when
   the server can tell a purge of a row still in that batch from one another
   device restored; a delete outside the Trash carries none.
 - `op_id` is a random UUID built in SQL from `randomblob(16)`.
-- `created_at` is the time of the first pending write, and push order is
-  `created_at`, so a parent is pushed before its child.
+- `created_at` is the time of the first pending write. Push order is the
+  entity type (the coordinator's adapter order), then, among decks, the
+  local row's `depth` (a delete has no row and goes first), then
+  `created_at`: a parent is pushed before its child, even a child pending
+  since before its new parent was made (DEV-182). Schema 14 (DEV-205)
+  indexes the outbox on `(entity_type, created_at)`, so a batch is one
+  range read of one type, never a sort of the whole outbox.
 
 The migration seeds the outbox with every existing `delete_batches` and `deck`
 row, in that order, so the first sync uploads the existing library. It also
@@ -108,7 +113,10 @@ failure, with backoff of 5 s, 10 s, 20 s and so on, capped at 5 minutes.
 **Run = push, then pull.**
 
 - **Push:**
-  - Read up to 100 outbox entries ordered by `created_at`.
+  - Read up to 100 outbox entries of one entity type: the first type in
+    adapter order that has any, in the order of §3. The push goes on, batch
+    by batch, until nothing is pending (a short batch ends a type, not the
+    run), or until the server answers for none of a batch.
   - For each entry, the adapter reads the entity's current row. An `upsert`
     whose row is gone is sent as a `delete`. A `delete` sends the entry's
     `payload` as its `row` (server sync spec §4.1).

@@ -94,7 +94,10 @@ class SyncCoordinator {
     }
   });
 
-  /// The number of operations sent.
+  /// The number of operations sent. A batch holds one entity type, so a
+  /// short batch is the end of that type, not of the outbox: the push goes
+  /// on until nothing is pending (DEV-205), or until the server answers for
+  /// none of a batch, which a resend would only repeat.
   Future<int> _push(String deviceId) async {
     var pushed = 0;
     while (true) {
@@ -135,12 +138,17 @@ class SyncCoordinator {
         rethrow;
       }
       final sent = {for (final e in batch) e.opId: e};
+      var answered = 0;
       await _store.applyingRemote(() async {
         for (final result in response.results) {
           final entry = sent[result.opId];
+          if (entry == null) {
+            continue;
+          }
+          answered++;
           // A later local write replaced this op id: the newer state is
           // pending, so neither the ack nor the server copy may touch it.
-          if (entry == null || !await _store.isPending(result.opId)) {
+          if (!await _store.isPending(result.opId)) {
             continue;
           }
           final adapter = _adapters[entry.entityType]!;
@@ -179,7 +187,7 @@ class SyncCoordinator {
           await _store.removeIfUnchanged(result.opId);
         }
       });
-      if (batch.length < pushBatchSize) {
+      if (answered == 0) {
         return pushed;
       }
     }

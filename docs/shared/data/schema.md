@@ -618,8 +618,13 @@ Liên kết card–tag đi cùng card (trường `tagIds`), nên trigger trên `
 card vào outbox; riêng liên kết bị xoá theo chính card thì không, để lệnh xoá card giữ
 nguyên. `deck.server_version`, `delete_batches.server_version`, `card.server_version`
 và `tags.server_version` là version server đã xác nhận; NULL là chưa từng được xác
-nhận. Outbox đẩy theo loại (batch, deck, tag, card) rồi mới theo `created_at`, nên
-hàng cha luôn lên trước hàng con dù hàng con đã chờ từ trước (plan tag sync R6).
+nhận. Outbox đẩy theo loại (batch, deck, tag, card…) rồi mới theo `created_at`, nên
+hàng cha luôn lên trước hàng con dù hàng con đã chờ từ trước (plan tag sync R6);
+riêng `deck` xếp theo `depth` của hàng local trước `created_at` (lệnh `delete`
+không còn hàng, đi đầu), nên deck con đang chờ được kéo vào deck tạo sau vẫn đi
+sau cha (DEV-182). Mỗi lô push là một loại, đọc qua index
+`idx_sync_outbox_type_created` trên `(entity_type, created_at)` (schema 14,
+DEV-205), không sort cả bảng.
 
 Khoá `pull_entity_types` của `sync_state` (từ SB-S2, không cần DDL) giữ các loại entity
 của lượt pull gần nhất, xếp và nối bằng dấu phẩy; lượt pull với tập loại khác bắt đầu
