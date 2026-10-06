@@ -235,7 +235,9 @@ class AuthWorld {
   /// A store that is not killable, for the test's own reads and setup.
   AccountStore get store => AccountStore(db);
 
-  AccountCoordinator boot() {
+  /// Launches the app. [subscribeNotices] false leaves [notices] unlistened,
+  /// as the layer host is before the first frame (DEV-202).
+  AccountCoordinator boot({bool subscribeNotices = true}) {
     final previous = _coordinator;
     if (previous != null) unawaited(previous.dispose());
     gate = MutationGate();
@@ -254,7 +256,7 @@ class AuthWorld {
       retryDelay: (_) => Duration.zero,
       logger: AppLogger(sinks: const []),
     );
-    coordinator.notices.listen(notices.add);
+    if (subscribeNotices) coordinator.notices.listen(notices.add);
     return _coordinator = coordinator;
   }
 

@@ -62,7 +62,14 @@ class AccountCoordinator {
 
   AuthState _state = const Booting();
   final _states = StreamController<AuthState>.broadcast();
-  final _notices = StreamController<AccountNotice>.broadcast();
+  late final _notices = StreamController<AccountNotice>.broadcast(
+    onListen: _flushNotices,
+  );
+
+  /// Notices raised while nobody listened: start() runs before the first
+  /// frame, and the layer host listens only after it. They go to the first
+  /// listener, once (DEV-202).
+  final _pendingNotices = <AccountNotice>[];
   final _subscriptions = <StreamSubscription<Object?>>[];
   Future<void> _tail = Future<void>.value();
   var _prepared = false;
@@ -155,8 +162,22 @@ class AccountCoordinator {
     }
   }
 
+  /// A one-time result for the person (plan rulings 3 and 8): said to the
+  /// listener, or kept until one listens.
   void _notice(AccountNotice notice) {
-    if (!_notices.isClosed) _notices.add(notice);
+    if (_notices.isClosed) return;
+    if (!_notices.hasListener) {
+      _pendingNotices.add(notice);
+      return;
+    }
+    _notices.add(notice);
+  }
+
+  void _flushNotices() {
+    for (final notice in _pendingNotices) {
+      _notices.add(notice);
+    }
+    _pendingNotices.clear();
   }
 
   Future<void> dispose() async {

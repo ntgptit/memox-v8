@@ -157,7 +157,8 @@ status line is a live region.
 | `isAwaitingTargetSignIn` | the sign-in form (target line) then the code form, inside the layer's own `Navigator`; Google reuses the account already picked; Cancel → `cancelSwitch()` |
 | `Recovering.isStuck` | "Something went wrong while moving your account. Your data is safe on this phone." + Retry |
 
-Notices (`MergeNotDone`, `DeleteRefused`) are read at the app root:
+Notices (`MergeNotDone`, `DeleteRefused`) are read at the app root (one raised
+before the host listens, during `start()`, waits for it, DEV-202):
 `MergeNotDone` → snackbar "Couldn't merge. Your decks are still on this
 phone."; `DeleteRefused(LastAdmin)` → dialog "An admin must remain. Give
 another person the admin role first."; any other `DeleteRefused` → snackbar

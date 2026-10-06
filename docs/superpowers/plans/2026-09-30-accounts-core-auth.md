@@ -43,7 +43,7 @@
 
 1. **Reuse of existing failures.** Spec §5's `AuthFailure.Network` is the existing `OfflineFailure`, and `Forbidden` is the existing `NotAdminFailure`. Both are thrown by the new code, and there are no duplicate types.
 2. **`CodeExpired` is not a type.** GoTrue answers both a wrong and an expired OTP with `otp_expired`, so the classifier maps it to `InvalidCodeFailure`. P3 decides whether its copy says "wrong or expired" (no speculative type).
-3. **Notices.** One-off outcomes that are not states go out on `AccountCoordinator.notices`, a stream of `AccountNotice`: "Couldn't merge" (#25) and a refused deletion (#44, carrying the failure). The states stay pure.
+3. **Notices.** One-off outcomes that are not states go out on `AccountCoordinator.notices`, a stream of `AccountNotice`: "Couldn't merge" (#25) and a refused deletion (#44, carrying the failure). The states stay pure. A notice raised while nobody listens (`start()` runs before the first frame; the layer host listens after it) waits for the first listener and goes out once, never dropped (DEV-202).
 4. **The A backup is written just before the target sign-in, not at #20.** The SDK rotates refresh tokens on every refresh. A backup taken at claim time can be revoked by the time #25 or #33 restores it, because GoTrue's reuse detection revokes the whole family. The claim token is still written at #20. The cost of this order is none, because before the target sign-in the SDK still holds A (R1 → #31).
 5. **The source is never signed out during a switch.** `signOut` revokes the session on the server, while `setSession` needs A's refresh token alive. Signing in to B replaces the SDK session without revoking A.
 6. **Reauth with another account.**
