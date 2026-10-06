@@ -217,7 +217,9 @@ triggers do the capturing.
   table; `sync_scheduler_store_test.dart` runs the real coordinator and
   scheduler on Drift against the fake server: a deck made through the
   repository reaches the server with nobody calling `syncNow`, and a pull
-  echoes nothing back and does not keep the scheduler running. Drift
+  echoes nothing back and does not keep the scheduler running;
+  `sync_providers_test.dart` does the same through `syncSchedulerProvider`
+  and its 2 s debounce. Drift
   propagates the trigger statically, so the stream also fires for a write
   under `applying_remote`; the run it starts finds nothing to push.
 - **Migration:** v1/v2/v3 → v4, with the outbox seeded.

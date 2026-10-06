@@ -1,13 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/app/sync_tables.dart';
+import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
+import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 
 import '../../support/auth_fakes.dart';
+import '../../support/deck_fixtures.dart';
 import 'fake_sync_server.dart';
 
 import '../../support/test_database.dart';
@@ -95,30 +98,11 @@ void main() {
 
   test('a reconnect from networkStatusProvider makes the scheduler run at '
       'once, with no syncNow (DEV-203)', () async {
-    final server = FakeAuthServer();
-    final network = FakeNetworkStatus(server);
+    final network = FakeNetworkStatus(FakeAuthServer());
     final api = FakeSyncServer();
     var pulls = 0;
     api.beforeChanges = (_) async => pulls++;
-    final db = openTestDatabase();
-    final container = ProviderContainer(
-      overrides: [
-        ...syncTableOverrides,
-        databaseProvider.overrideWithValue(db),
-        supabaseConfigProvider.overrideWithValue(
-          const SupabaseConfig(
-            url: 'https://x.supabase.co',
-            publishableKey: 'k',
-          ),
-        ),
-        networkStatusProvider.overrideWithValue(network),
-        syncApiProvider.overrideWithValue(api),
-      ],
-    );
-    addTearDown(() async {
-      container.dispose();
-      await db.close();
-    });
+    final (:container, db: _) = _app(api, network);
     final scheduler = container.read(syncSchedulerProvider)!;
 
     scheduler.resume(); // the account is Ready: the first run
@@ -130,4 +114,50 @@ void main() {
 
     expect(pulls, 2);
   });
+
+  test('a deck made through the repository reaches the server by the '
+      "app's own wiring, with no syncNow (DEV-226)", () async {
+    final api = FakeSyncServer();
+    final (:container, :db) = _app(api, FakeNetworkStatus(FakeAuthServer()));
+    final scheduler = container.read(syncSchedulerProvider)!;
+    scheduler.resume();
+    await pumpEventQueue();
+    expect(api.pushCalls, 0, reason: 'nothing pending at the first run');
+
+    final deck = await DeckRepositoryImpl(db).root('Korean');
+
+    // The real debounce (2 s) runs on the wall clock: poll, bounded.
+    final deadline = DateTime.now().add(const Duration(seconds: 10));
+    while (api.row('deck', deck.id) == null &&
+        DateTime.now().isBefore(deadline)) {
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    }
+    expect(api.row('deck', deck.id), isNotNull);
+    expect(api.pushCalls, 1);
+  });
+}
+
+/// The app's sync providers over a fresh database, a fake server and a
+/// fake network: `syncTableOverrides` as `startApp` installs them.
+({ProviderContainer container, AppDatabase db}) _app(
+  FakeSyncServer api,
+  FakeNetworkStatus network,
+) {
+  final db = openTestDatabase();
+  final container = ProviderContainer(
+    overrides: [
+      ...syncTableOverrides,
+      databaseProvider.overrideWithValue(db),
+      supabaseConfigProvider.overrideWithValue(
+        const SupabaseConfig(url: 'https://x.supabase.co', publishableKey: 'k'),
+      ),
+      networkStatusProvider.overrideWithValue(network),
+      syncApiProvider.overrideWithValue(api),
+    ],
+  );
+  addTearDown(() async {
+    container.dispose();
+    await db.close();
+  });
+  return (container: container, db: db);
 }
