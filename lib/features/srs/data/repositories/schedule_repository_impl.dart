@@ -16,9 +16,11 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 
-// `study_session.end_reason` values (schema.md, invariant 12).
-const _schedulerChanged = 'scheduler_changed';
-const _schedulerReset = 'scheduler_reset';
+/// `study_session.end_reason` codes (schema.md, invariant 12). The study
+/// feature names them in `SessionEndReason`, which srs may not import
+/// (ADR-011); schema_constants_parity_test keeps the copies equal (DEV-222).
+const schedulerChangedEndReason = 'scheduler_changed';
+const schedulerResetEndReason = 'scheduler_reset';
 
 /// The root of a card's tree and the card's schedule.
 typedef _Studied = (Deck, CardScheduleState);
@@ -202,7 +204,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
       );
       await _dao.invalidateOpenSessions(
         rootDeckId,
-        endReason: _schedulerReset,
+        endReason: schedulerResetEndReason,
         now: at,
       );
       return const Ok(null);
@@ -266,7 +268,7 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
       );
       await _dao.invalidateOpenSessions(
         rootDeckId,
-        endReason: _schedulerChanged,
+        endReason: schedulerChangedEndReason,
         now: at,
       );
       return const Ok(null);
