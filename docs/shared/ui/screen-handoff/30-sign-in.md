@@ -76,6 +76,7 @@ centred in the page; the target sign-in follows the sign-in frame (F1 below).
 | Network error | `MxInlineBanner` (warning) "No connection. Your data is safe on this phone." centred; Retry (primary) in the `MxFooterBar` (L5). |
 | Other error | "Something went wrong. Your data is safe on this phone." + Retry. |
 | Sign-out stopped offline | "No connection. Nothing has been removed yet." centred; Retry and "Sign out now and lose {n} changes" (`dangerSoft`) in the footer (L5); Cancel at the top (critique 2026-10-02). |
+| Merge stopped on refused changes | "{n} changes on this phone were refused by the server and can't be merged." centred; Retry and "Continue and lose {n} changes" (`dangerSoft`, keeps them on the device then retries) in the footer (L5); Cancel at the top. Retry alone would repeat the refusal (DEV-191). A discard switch goes on without stopping. |
 | Target sign-in | The sign-in frame in target mode: "Cancel" (text) at the top in place of the back arrow, title "Sign in", lead "Sign in to the account this phone moves to.", the address pre-filled, the footer (Send code, Google) at the layer's bottom above the keyboard; the code step on the layer's own navigator. |
 | Stuck | "Something went wrong while moving your account. Your data is safe on this phone." centred; Retry only, in the footer (L5). |
 | Before the target signs in | "Cancel" at the top returns to where the switch started. |

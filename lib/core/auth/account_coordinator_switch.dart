@@ -182,9 +182,17 @@ extension AccountSwitching on AccountCoordinator {
     if (s.stage == TransitionStage.started) {
       try {
         await _sync.pushPending(); // #19
+      } on UnsentChangesFailure catch (error) {
+        // Rows the server refused exist only on this device. A discard
+        // loses them with the rest of the device at #27; a merge stops on
+        // them until they are kept on the device (DEV-191).
+        if (s.choice != TransitionChoice.discard) {
+          return _emit(Transitioning(s, error: error));
+        }
       } on Failure catch (error) {
         return _emit(Transitioning(s, error: error));
       }
+      await _flushLogsQuietly(); // the source's logs go under it (DEV-190)
       s = await _save(s.copyWith(stage: TransitionStage.sourcePushed));
     }
     if (s.merges && s.stage == TransitionStage.sourcePushed) {

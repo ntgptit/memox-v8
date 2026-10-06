@@ -153,6 +153,7 @@ status line is a live region.
 | running | `MxSpinner`, the step ("Sending your changes…", "Merging…", "Downloading your decks…", "Signing out…", "Deleting your account…"), "Nothing is lost if you close the app." |
 | `error` is a network failure | "No connection. Your data is safe on this phone." + Retry (`retry()`) |
 | SignOut stopped on unsent changes offline | the above + "Sign out now and lose {n} changes" (`signOut(discardUnsent: true)`) |
+| Switch (merge) stopped on rows the server refused (`UnsentChangesFailure`, DEV-191) | "{n} changes on this phone were refused by the server and can't be merged." + Retry + "Continue and lose {n} changes" (`dangerSoft`: `keepRejectedOnDevice()`, then `retry()`); Cancel at the top as before the target sign-in. A discard switch never stops here. |
 | `isAwaitingTargetSignIn` | the sign-in form (target line) then the code form, inside the layer's own `Navigator`; Google reuses the account already picked; Cancel → `cancelSwitch()` |
 | `Recovering.isStuck` | "Something went wrong while moving your account. Your data is safe on this phone." + Retry |
 
