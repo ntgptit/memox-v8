@@ -7177,6 +7177,7 @@ final class Schema14 extends i0.VersionedSchema {
     idxCardScheduleDue,
     idxReviewLogCard,
     idxReviewLogSession,
+    idxReviewLogAnswered,
     reviewLogAppendOnly,
     reviewLogNoDelete,
     idxTagsOwnerNameFolded,
@@ -7662,6 +7663,10 @@ final class Schema14 extends i0.VersionedSchema {
   final i1.Index idxReviewLogSession = i1.Index(
     'idx_review_log_session',
     'CREATE INDEX idx_review_log_session ON review_log (session_id)',
+  );
+  final i1.Index idxReviewLogAnswered = i1.Index(
+    'idx_review_log_answered',
+    'CREATE INDEX idx_review_log_answered ON review_log (answered_at)',
   );
   final i1.Trigger reviewLogAppendOnly = i1.Trigger(
     'CREATE TRIGGER review_log_append_only BEFORE UPDATE ON review_log BEGIN SELECT RAISE (ABORT, \'review_log is append-only\');END',

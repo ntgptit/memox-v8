@@ -72,7 +72,8 @@ Success means:
   - `review_log` (`lib/core/database/tables/srs.drift`): `kind` (`learning`,
     `scheduled`, `relearning`), `mode`, `answered_at` (drift's default: UTC seconds),
     `card_id REFERENCES card (id) ON DELETE CASCADE`; append-only triggers; indexes
-    `(card_id, answered_at)` and `(session_id)`, none on `answered_at` alone.
+    `(card_id, answered_at)` and `(session_id)`; none on `answered_at` alone until
+    schema 14 added `idx_review_log_answered` (DEV-208).
   - `deck_queries.drift`: `deckLevelOfRoots` groups a tree by `root_id`;
     `deckLevelOfChildren` walks each child's subtree recursively (`UNION`, cycle safe);
     `deckAndAncestors(deckId)` returns the deck and every deck above it, root first,
@@ -137,13 +138,13 @@ Success means:
 |---|---|---|---|
 | D1 | Scope | UC-PROGRESS-001 and UC-PROGRESS-002. The deck list's mastery display and its "progress" sort stay blocked; their blocked row leaves BE-A7 for the deck list, which owns them (the card list's panel of IT-ORG-010 is already built) | Owner, 2026-09-25 |
 | D2 | Approach | Two read models: `WatchProgressUseCase` for `/progress` (the overview and the library level) and `WatchDeckProgressUseCase` for `/progress/:deckId` (a deck's level, or the deck is missing). Each emission runs its statements in one transaction | Owner, 2026-09-25 (approach A of three) |
-| D3 | Local days | A row's day is `(answered_at + offset) / 86400`, with `answered_at` in UTC seconds and the offset of the read. `ProgressDays` computes today, both ranges and `validUntil` in Dart, from `now` and its offset; SQL gets day numbers and never derives a midnight | BR-PROGRESS-011, BR-PROGRESS-013 |
+| D3 | Local days | A row's day is `(answered_at + offset) / 86400`, with `answered_at` in UTC seconds and the offset of the read. `ProgressDays` computes today, both ranges and `validUntil` in Dart, from `now` and its offset; SQL gets day numbers, and since DEV-208 the first and last second of a range (`startOfDay`, `endOfDay`), and never derives a midnight | BR-PROGRESS-011, BR-PROGRESS-013 |
 | D4 | Midnight | The use cases read again at each local midnight through `watchEachLocalDay`, as the Library and the Study tab do, and the snapshot carries `validUntil` (BR-PROGRESS-003). The documents put a one-shot timer in the UI controller over V7's providers; V8's lives in `DayClock` and behaves as they require: one per listener, cancelled with it, never looping on a boundary already past, and the offset read again at every read | Owner, 2026-09-25 |
 | D5 | Totals | One statement per level returns the rows and one total row, `UNION ALL` over the same set of card-days: a total is read, never added up | BR-PROGRESS-002 |
 | D6 | The overview | SQL folds the whole history into the days with activity, and the last seven days into card-days with their Learning and Reviewing split. Dart takes the streak and the last active day from the first, Today and the bars from the second (plan Clarification 1) | UC-PROGRESS-001 step 2; Owner, 2026-09-25 |
 | D7 | What counts | A card and its deck out of the Trash. Never a row of mode `browse` (BR-PROGRESS-012; no such row is written today). Never a row whose day is after today. A hard delete leaves nothing to filter: the cascade took it | Owner, 2026-09-25 |
 | D8 | The change stream | Package 3's listen-first stream becomes a helper in `lib/core/database/` over a list of tables; Study Home and Progress share it. Progress listens to `review_log`, `card` and `deck` | Owner, 2026-09-25 |
-| D9 | Schema | No change. Measured by the plan on a synthetic log: the `/progress` snapshot reads in about 100 ms at 100,000 answers and 280 ms at 300,000 on a 4-core desktop container. An index on `answered_at` would be its own package, with a migration | Owner, 2026-09-25 |
+| D9 | Schema | No change at first. Measured by the plan on a synthetic log: the `/progress` snapshot reads in about 100 ms at 100,000 answers and 280 ms at 300,000 on a 4-core desktop container. An index on `answered_at` would be its own package, with a migration: schema 14 added `idx_review_log_answered`, and the statements read through it (DEV-208, §6.1) | Owner, 2026-09-25; DEV-208, 2026-10-06 |
 | D10 | Read only | Nothing on these paths writes; no session is opened, resumed or closed | BR-PROGRESS-007, BR-PROGRESS-009 |
 | D11 | Documents | Of the BR and UC files, only the `code:` of UC-PROGRESS-001 and UC-PROGRESS-002 changes. With them: the progress README (`code:`, and its stale note that the repository has no `lib/`), a new `features/progress/data.md`, `wbs_BE.md`, the FE-A1 blocked row of `wbs_FE.md`, and `docs/_generated/`, and the three cells of `shared/ui/screen-handoff/01-deck-list.md` that wait on BE-A7 (the mastery display twice, the progress sort once), which point to the blocked row instead | Owner, 2026-09-25 |
 | D12 | Branch and PR | Branch `claude/be-progress` from `master`. When the gate is green and the final review is clean, the package is opened as a PR and squash-merged | Owner's standing choice |
@@ -300,23 +301,27 @@ and stays in the list. `ProgressLevel` sorts once per range when it is built;
 ### 6.1 The card-days
 
 Statements 2 to 4 (§6.2) start from the same set, the card-days of live cards in
-their scope; statement 1 takes only the distinct days of the same answers:
+their scope; statement 1 probes the same answers one day at a time:
 
 ```sql
 SELECT c.id AS card_id, <tile> AS tile_id,
-       (r.answered_at + :offset) / 86400 AS day,
+       CAST((r.answered_at + :offset) / 86400 AS INTEGER) AS day,
        MAX(r.kind = 'learning') AS is_learning
 FROM review_log r
-JOIN card c ON c.id = r.card_id
-JOIN deck k ON k.id = c.deck_id
-WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
-  AND r.mode <> 'browse'
-  AND (r.answered_at + :offset) / 86400 BETWEEN :month_start AND :today
+CROSS JOIN card c ON c.id = r.card_id
+CROSS JOIN deck k ON k.id = c.deck_id
+WHERE r.answered_at BETWEEN :from AND :to AND r.mode <> 'browse'
+  AND c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
 GROUP BY c.id, day
 ```
 
-The day condition sits in `WHERE`, so answers outside the range are never grouped;
-statement 2 takes the week instead of the month.
+The range sits in `WHERE` as a range of `answered_at` (`:from` the first second of
+the range's first day, `:to` the last second of today, both from `ProgressDays`),
+so it is one range read of `idx_review_log_answered` (schema 14, DEV-208) and
+answers outside it are never visited; the day is cast in `SELECT` only. `CROSS
+JOIN` keeps `review_log` the outer loop, whatever statistics the planner has.
+Statement 2 takes the week instead of the month; `test/drift/progress_plan_test.dart`
+pins the plan.
 
 `is_learning` makes the partition (BR-PROGRESS-005, BR-PROGRESS-014). A range's four
 numbers are `COUNT(DISTINCT card_id)`, `COUNT(DISTINCT day)`,
@@ -326,17 +331,25 @@ with `day >= :week_start` added for the week. SQLite accepts `DISTINCT` with
 
 ### 6.2 The five statements
 
-1. **`activeDays(offset, today)`:** the distinct days with activity over the whole
-   history up to today, oldest first: the streak's days.
-2. **`weekActivity(offset, weekStart, today)`:** the card-days of the last seven
+1. **`activeDays(days)`:** the active days the overview needs, oldest first: the
+   days that follow each other back from the streak's anchor, or the latest active
+   day alone when the streak is lost, or none. Two statements (DEV-208):
+   `progressLastActiveDay` walks `idx_review_log_answered` backwards to the latest
+   counting answer up to the last second of today; when that day is today or
+   yesterday, `progressStreakDays` walks back from it one day per step (a recursive
+   CTE, one range probe each) and stops at the first day without a counting answer,
+   with no cap (BR-PROGRESS-016). The history before the gap is never read;
+   `progressOverviewOf` takes the streak and the last active day from the list as
+   before.
+2. **`weekActivity(offset, from, to)`:** the card-days of the last seven
    days, grouped by `day` with their Learning and Reviewing card-days. Neither
    statement lets a raw `review_log` row or a per-day read leave SQLite
    (UC-PROGRESS-001 step 2). Folding every card-day of the history instead cost
    about twice as much (plan Clarification 1).
-3. **`rootLevel(offset, weekStart, monthStart, today)`:** every active root deck,
+3. **`rootLevel(offset, from, to, weekStart)`:** every active root deck,
    with no activity too (`LEFT JOIN`), with its eight numbers, `<tile>` being
    `k.root_id`; then, `UNION ALL`, one total row over the same card-days (D5).
-4. **`childLevel(deckId, offset, weekStart, monthStart, today)`:** every active direct
+4. **`childLevel(deckId, offset, from, to, weekStart)`:** every active direct
    child of `deckId`, its subtree walked from each child as `deckLevelOfChildren`
    walks it (`UNION`, cycle safe, no cap); the total row also takes the cards held
    by the deck itself.
@@ -476,17 +489,19 @@ the shared helper.
 - The mastery display of the deck list and its "progress" sort (D1). The card
   list's panel of IT-ORG-010 is already built on BE-A9's counts.
 - Every metric of BR-PROGRESS-010.
-- An index on `review_log.answered_at` (D9).
 - The Trash (BE-B1): the filters are in place; restore and purge come with it.
 
 ## 12. Risks and rollback
 
 - **Load.** Each write to `review_log`, `card` or `deck` re-reads the snapshot while a
-  Progress screen listens. Statement 1 scans the whole history, since the streak has
-  no cap; the others filter by day, with no index to help. Measured (D9): about
-  100 ms per `/progress` snapshot at 100,000 answers and 280 ms at 300,000, on a
-  4-core desktop container; a phone is slower. FE-A9's providers dispose when their
-  screen is gone.
+  Progress screen listens. Measured (D9) before schema 14: about 100 ms per
+  `/progress` snapshot at 100,000 answers and 280 ms at 300,000, on a 4-core
+  desktop container, as statement 1 scanned the whole history and the others
+  filtered by day with no index to help. Since DEV-208 every statement reads a
+  range of `idx_review_log_answered` and the streak walks back from its anchor one
+  day at a time (§6.1, §6.2); `PRAGMA optimize` runs at open and before close so
+  the planner keeps its statistics. FE-A9's providers dispose when their screen is
+  gone.
 - **The shared helper** changes package 3's stream; its tests prove it unchanged.
 - **Time zones.** A change of offset re-buckets past days (BR-PROGRESS-011). On a DST
   day, the day of the read's offset can differ by an hour from the calendar day

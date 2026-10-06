@@ -2504,6 +2504,20 @@
       "references": [
         27
       ],
+      "type": "index",
+      "data": {
+        "on": 27,
+        "name": "idx_review_log_answered",
+        "sql": "CREATE INDEX idx_review_log_answered ON review_log (answered_at);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 43,
+      "references": [
+        27
+      ],
       "type": "trigger",
       "data": {
         "on": 27,
@@ -2515,7 +2529,7 @@
       }
     },
     {
-      "id": 43,
+      "id": 44,
       "references": [
         27,
         14
@@ -2532,7 +2546,7 @@
       }
     },
     {
-      "id": 44,
+      "id": 45,
       "references": [
         18
       ],
@@ -2546,7 +2560,7 @@
       }
     },
     {
-      "id": 45,
+      "id": 46,
       "references": [
         22
       ],
@@ -2560,7 +2574,7 @@
       }
     },
     {
-      "id": 46,
+      "id": 47,
       "references": [
         14
       ],
@@ -2574,7 +2588,7 @@
       }
     },
     {
-      "id": 47,
+      "id": 48,
       "references": [
         14
       ],
@@ -2588,7 +2602,7 @@
       }
     },
     {
-      "id": 48,
+      "id": 49,
       "references": [
         7
       ],
@@ -2602,7 +2616,7 @@
       }
     },
     {
-      "id": 49,
+      "id": 50,
       "references": [
         7
       ],
@@ -2616,7 +2630,7 @@
       }
     },
     {
-      "id": 50,
+      "id": 51,
       "references": [
         7
       ],
@@ -3006,6 +3020,15 @@
         {
           "dialect": "sqlite",
           "sql": "CREATE INDEX idx_review_log_session ON review_log (session_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_review_log_answered",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_review_log_answered ON review_log (answered_at)"
         }
       ]
     },
