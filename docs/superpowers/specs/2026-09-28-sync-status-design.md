@@ -45,7 +45,10 @@ Success means:
   (spec backend Supabase §4). With a server copy (`current`), the copy is applied: that
   is conflict resolution, not a failure. A copy this device cannot hold yet is
   recorded with the app's own code `LOCAL_APPLY_FAILED` (DEV-183) and cleared once a
-  pull applies the server's copy; until then it counts as a refused row.
+  pull applies the server's copy; until then it counts as a refused row. A pulled
+  change this device cannot hold is recorded as `PULL_APPLY_FAILED` (DEV-185): Try
+  again sends nothing for it (there is no local state to send), Keep on this device
+  forgets it, and the next pull of the row that applies clears it.
 - The kit (UI Kit v3) has no sync UI: v3 removed `OfflineBanner` because the product
   had no network then. The UI here comes from Impeccable `shape` (2026-09-28) and is a
   deviation recorded per screen (§8).

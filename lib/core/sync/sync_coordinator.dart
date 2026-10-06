@@ -28,6 +28,11 @@ class SyncCoordinator {
   /// R7).
   static const localApplyFailed = 'LOCAL_APPLY_FAILED';
 
+  /// The code of a pulled change this device could not hold (DEV-185): the
+  /// row stays as it is, listed on screen 27; Try again sends nothing for
+  /// it, and the next pull of the row that applies clears it.
+  static const pullApplyFailed = 'PULL_APPLY_FAILED';
+
   static const _upsert = 'upsert';
   static const _delete = 'delete';
 
@@ -76,6 +81,9 @@ class SyncCoordinator {
     for (final rejection in await _store.rejections()) {
       final adapter = _adapters[rejection.entityType];
       if (adapter == null) continue;
+      // Nothing of this device's to send: the server's copy is what could
+      // not be held, and only a pull of it can settle that (DEV-185).
+      if (rejection.code == pullApplyFailed) continue;
       final exists = await adapter.readRow(rejection.entityId) != null;
       await _store.enqueue(
         rejection.entityType,
@@ -216,25 +224,19 @@ class SyncCoordinator {
     }
   }
 
-  /// Every page is fetched first, then applied in one transaction with keys
-  /// checked at commit: a child may come pages before its parent (spec §4.2).
-  /// A set of adapters other than the last pull's starts from 0, so a type
-  /// this build adds gets the rows the server already holds (spec §4.1).
-  /// The number of changes fetched.
+  /// One transaction, open before the first page: each page is applied as
+  /// it arrives, so the pull holds one page at a time (DEV-206), and keys
+  /// are checked at commit, so a child may come pages before its parent
+  /// (spec §4.2). A set of adapters other than the last pull's starts from
+  /// 0, so a type this build adds gets the rows the server already holds
+  /// (spec §4.1). The number of changes fetched.
   Future<int> _pull() async {
     final types = (_adapters.keys.toList()..sort()).join(',');
     var since = await _store.pullEntityTypes() == types
         ? await _store.since()
         : 0;
-    final changes = <SyncChangeModel>[];
-    while (true) {
-      final page = await _api.changes(since, _pullLimit);
-      changes.addAll(page.changes);
-      since = page.nextSince;
-      if (!page.hasMore) {
-        break;
-      }
-    }
+    var fetched = 0;
+    var applied = 0;
     await _store.applyingRemote(deferForeignKeys: true, () async {
       // A row listed as refused is cleared once the server's copy of it
       // applies here (DEV-183); read once, so a pull with nothing listed
@@ -243,26 +245,100 @@ class SyncCoordinator {
         for (final r in await _store.rejections())
           '${r.entityType}/${r.entityId}',
       };
-      for (final change in changes) {
-        final adapter = _adapters[change.entityType];
-        // Asked per change: a tag merge earlier in this pull may have queued
-        // a card that a later change would overwrite (tag sync plan R7).
-        if (adapter == null ||
-            await _store.isPendingEntity(change.entityType, change.entityId)) {
-          continue;
+      while (true) {
+        final page = await _api.changes(since, _pullLimit);
+        fetched += page.changes.length;
+        for (final change in page.changes) {
+          final adapter = _adapters[change.entityType];
+          // Asked per change: a tag merge earlier in this pull may have
+          // queued a card that a later change would overwrite (tag sync
+          // plan R7).
+          if (adapter == null ||
+              await _store.isPendingEntity(
+                change.entityType,
+                change.entityId,
+              )) {
+            continue;
+          }
+          if (!await _applyPulledChange(adapter, change)) {
+            continue;
+          }
+          applied++;
+          if (listed.contains('${change.entityType}/${change.entityId}')) {
+            await _store.clearRejection(change.entityType, change.entityId);
+          }
         }
-        await _applyServerCopy(adapter, change.entityId, change);
-        if (listed.contains('${change.entityType}/${change.entityId}')) {
-          await _store.clearRejection(change.entityType, change.entityId);
+        since = page.nextSince;
+        if (!page.hasMore) {
+          break;
         }
       }
-      for (final adapter in _adapters.values) {
-        await adapter.afterPull();
+      // Nothing applied, nothing to finish: the common pull after a local
+      // write has no page to scan the library for (DEV-210).
+      if (applied > 0) {
+        for (final adapter in _adapters.values) {
+          await adapter.afterPull();
+        }
+        await _logForeignKeyViolations();
       }
       await _store.setSince(since);
       await _store.setPullEntityTypes(types);
     });
-    return changes.length;
+    return fetched;
+  }
+
+  /// A pulled change inside a savepoint of its own: one this device cannot
+  /// hold (a constraint the server does not mirror) fails alone, listed as
+  /// [pullApplyFailed], and the pull goes on (DEV-185). True when applied.
+  Future<bool> _applyPulledChange(
+    EntitySyncAdapter adapter,
+    SyncChangeModel change,
+  ) async {
+    try {
+      await _store.inTransaction(
+        () => _applyServerCopy(adapter, change.entityId, change),
+      );
+      return true;
+    } catch (error, stackTrace) {
+      _log.warning(
+        'sync.pull_apply_failed',
+        category: LogCategory.sync,
+        message:
+            '${change.entityType}/${change.entityId}: the change cannot be '
+            'applied here',
+        error: error,
+        stackTrace: stackTrace,
+        context: {
+          'entityType': change.entityType,
+          'entityId': change.entityId,
+          'serverVersion': change.serverVersion,
+        },
+      );
+      await _store.recordRejection(
+        change.entityType,
+        change.entityId,
+        pullApplyFailed,
+        _now(),
+      );
+      return false;
+    }
+  }
+
+  /// Keys are checked at commit (spec §4.2); a violation there rolls the
+  /// pull back with an error that names no row, so the rows are logged
+  /// first (DEV-185).
+  Future<void> _logForeignKeyViolations() async {
+    final violations = await _store.foreignKeyViolations();
+    if (violations.isEmpty) return;
+    _log.warning(
+      'sync.pull_foreign_keys',
+      category: LogCategory.sync,
+      message: 'the pull leaves rows whose parent is missing; it rolls back',
+      context: {
+        'count': violations.length,
+        'violations': violations.take(10).toList(),
+      },
+    );
   }
 
   static Map<String, Object?>? _payloadOf(SyncOutboxEntry entry) {

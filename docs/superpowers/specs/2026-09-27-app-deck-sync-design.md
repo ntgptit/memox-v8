@@ -135,10 +135,23 @@ failure, with backoff of 5 s, 10 s, 20 s and so on, capped at 5 minutes.
 - **Pull:**
   - `GET /sync/changes?since=` from `sync_state.since`, paging while
     `hasMore`.
-  - Each page is applied in one transaction with `applying_remote` and
-    `PRAGMA defer_foreign_keys = ON`, because a child may arrive before its
-    parent.
+  - One transaction with `applying_remote` and
+    `PRAGMA defer_foreign_keys = ON` is open before the first page, and
+    each page is applied as it arrives (DEV-206): the pull holds one page
+    at a time, and a child may still arrive before its parent because keys
+    are checked at commit. The transaction stays open while a page is on
+    the wire, bounded by the RPC's 30 s.
   - Changes for entities that still have an outbox entry are skipped.
+  - Each change is applied in a savepoint of its own (DEV-185): one this
+    device cannot hold (a local constraint the server does not mirror)
+    fails alone, recorded in `sync_rejection` as `PULL_APPLY_FAILED`, and
+    the pull goes on; `since` still moves at commit. Try again sends
+    nothing for such a row; the next pull of it that applies clears the
+    record. Before commit, `PRAGMA foreign_key_check` is logged when it
+    finds rows, so a commit that fails on a deferred key names them.
+  - `afterPull` runs only when the pull applied at least one change
+    (DEV-210): the pull after a local write, which brings nothing, no
+    longer scans the library for cards without a schedule.
   - Upserts write the row, including `server_version`. Tombstones delete it,
     and Drift's cascades remove its local descendants, matching the server's
     subtree tombstone.

@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:memox/core/sync/sync_api.dart';
 import 'package:memox/core/sync/sync_models.dart';
 
@@ -8,6 +10,10 @@ import 'package:memox/core/sync/sync_models.dart';
 /// saw it (the version in the delete's row), and a tombstone is final.
 class FakeSyncServer implements SyncApi {
   final _rows = <String, SyncChangeModel>{};
+
+  /// The same rows by version, so a page is a range read whatever the size
+  /// of the data set (DEV-206's bulk case).
+  final _byVersion = SplayTreeMap<int, SyncChangeModel>();
   final _applied = <String, int>{};
   var _version = 0;
   var pushCalls = 0;
@@ -31,17 +37,28 @@ class FakeSyncServer implements SyncApi {
   /// the way back (DEV-225).
   Future<void> Function()? afterPushCommit;
 
+  /// Runs as `changes` is asked for a page, with the cursor asked for: a
+  /// test can look at what the device did with the pages before it.
+  Future<void> Function(int since)? beforeChanges;
+
   SyncChangeModel? row(String type, String id) => _rows['$type/$id'];
 
   void seed(String type, String id, Map<String, Object?>? row) {
+    final key = '$type/$id';
+    final previous = _rows[key];
+    if (previous != null) {
+      _byVersion.remove(previous.serverVersion);
+    }
     _version++;
-    _rows['$type/$id'] = SyncChangeModel(
+    final change = SyncChangeModel(
       entityType: type,
       entityId: id,
       serverVersion: _version,
       isDeleted: row == null,
       row: row,
     );
+    _rows[key] = change;
+    _byVersion[_version] = change;
   }
 
   @override
@@ -101,17 +118,21 @@ class FakeSyncServer implements SyncApi {
 
   @override
   Future<ChangesResponseModel> changes(int since, int limit) async {
+    await beforeChanges?.call(since);
     final failAfter = failChangesAfter;
     if (failAfter != null && since >= failAfter) {
       throw StateError('network dropped');
     }
-    final sorted = _rows.values.where((c) => c.serverVersion > since).toList()
-      ..sort((a, b) => a.serverVersion.compareTo(b.serverVersion));
-    final page = sorted.take(limit).toList();
+    final page = <SyncChangeModel>[];
+    var key = _byVersion.firstKeyAfter(since);
+    while (key != null && page.length < limit) {
+      page.add(_byVersion[key]!);
+      key = _byVersion.firstKeyAfter(key);
+    }
     return ChangesResponseModel(
       changes: page,
       nextSince: page.isEmpty ? since : page.last.serverVersion,
-      hasMore: sorted.length > limit,
+      hasMore: key != null,
     );
   }
 
