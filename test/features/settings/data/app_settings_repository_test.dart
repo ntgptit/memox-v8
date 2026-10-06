@@ -19,11 +19,6 @@ import '../../../support/test_database.dart';
 
 DateTime _t0() => DateTime(2026, 9, 24, 9);
 
-const _sevenRandom = StudyOptions(
-  cardLimit: 7,
-  newCardOrder: NewCardOrder.random,
-);
-
 const _rootOverride = '{"card_limit":30,"new_card_order":"created"}';
 
 /// A root deck `r` holding [_rootOverride], written as SQL: the import map
@@ -77,7 +72,10 @@ void main() {
     );
     await pumpEventQueue();
 
-    final result = await settings.saveStudyDefaults(options: _sevenRandom);
+    final result = await settings.saveStudyDefaults(
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.random,
+    );
     await pumpEventQueue();
     await subscription.cancel();
 
@@ -86,16 +84,42 @@ void main() {
     expect((await settingsRow(db))['updated_at'], isNotNull);
   });
 
+  test(
+    'a save writes only the columns it is given: a limit a pull changed '
+    'meanwhile survives a save of the order (BR-SETTINGS-007, DEV-217)',
+    () async {
+      await settings.saveStudyDefaults(
+        cardLimit: 7,
+        newCardOrder: NewCardOrder.random,
+      );
+      // A pull brought another device's limit between the form's snapshot and
+      // its save.
+      await db.customStatement('UPDATE app_settings SET card_limit = 55');
+
+      final order = await settings.saveStudyDefaults(
+        newCardOrder: NewCardOrder.created,
+      );
+      expect(order, isA<Ok<void, SettingsRejection>>());
+      var row = await settingsRow(db);
+      expect((row['card_limit'], row['new_card_order']), (55, 'created'));
+
+      final limit = await settings.saveStudyDefaults(cardLimit: 9);
+      expect(limit, isA<Ok<void, SettingsRejection>>());
+      row = await settingsRow(db);
+      expect((row['card_limit'], row['new_card_order']), (9, 'created'));
+
+      expect(() => settings.saveStudyDefaults(), throwsArgumentError);
+    },
+  );
+
   test('a card limit out of bounds is refused and writes nothing '
       '(UC-SETTINGS-001 E1, BR-SETTINGS-002)', () async {
     await settings.watchAppSettings().first;
     final before = await totalChanges(db);
 
     final result = await settings.saveStudyDefaults(
-      options: const StudyOptions(
-        cardLimit: 201,
-        newCardOrder: NewCardOrder.random,
-      ),
+      cardLimit: 201,
+      newCardOrder: NewCardOrder.random,
     );
 
     expect(
@@ -129,7 +153,10 @@ void main() {
       "'in_progress', 0, 20, 0)",
     );
 
-    await settings.saveStudyDefaults(options: _sevenRandom);
+    await settings.saveStudyDefaults(
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.random,
+    );
 
     final session = await db
         .customSelect("SELECT card_limit FROM study_session WHERE id = 's'")
@@ -142,7 +169,10 @@ void main() {
       'else: not the last delivery, not a root override '
       '(UC-SETTINGS-001 A3, BR-SETTINGS-008, reminders spec D3)', () async {
     await _insertRootWithOverride(db);
-    await settings.saveStudyDefaults(options: _sevenRandom);
+    await settings.saveStudyDefaults(
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.random,
+    );
     await settings.setTheme(theme: ThemeChoice.light);
     await settings.setLanguage(language: LanguageChoice.en);
     await db.customStatement(
@@ -214,7 +244,7 @@ void main() {
     await SettingsRepositoryImpl(
       first,
       now: _t0,
-    ).saveStudyDefaults(options: _sevenRandom);
+    ).saveStudyDefaults(cardLimit: 7, newCardOrder: NewCardOrder.random);
     await first.close();
 
     final second = AppDatabase(NativeDatabase(file));

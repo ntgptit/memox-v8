@@ -75,10 +75,7 @@ class SettingsController extends _$SettingsController {
   void typeCardLimit(String text) {
     _settle?.cancel();
     final value = int.tryParse(text);
-    final isValid =
-        value != null &&
-        value >= StudyOptions.minCardLimit &&
-        value <= StudyOptions.maxCardLimit;
+    final isValid = StudyOptions.isValidCardLimit(value);
     state = state.withDraft(value, isInvalid: !isValid);
     if (isValid) unawaited(_saveCardLimit());
   }
@@ -87,16 +84,19 @@ class SettingsController extends _$SettingsController {
     final persisted = _studyDefaults;
     if (persisted == null || order == persisted.newCardOrder) return;
     if (state.isStudyDefaultsBusy) return;
-    final options = StudyOptions(
-      cardLimit: persisted.cardLimit,
-      newCardOrder: order,
-    );
+    // Only the order is written: a limit that arrived meanwhile stays
+    // (BR-SETTINGS-007, DEV-217).
     unawaited(
       _submit(
         SettingsSubmit.newCardOrder,
-        () => ref.read(saveStudyDefaultsUseCaseProvider)(options: options),
+        () => ref.read(saveStudyDefaultsUseCaseProvider)(newCardOrder: order),
         retry: () async => chooseNewCardOrder(order),
-      ).then((hasSaved) => _afterStudyDefaults(options, hasSaved: hasSaved)),
+      ).then(
+        (hasSaved) => _afterStudyDefaults(
+          StudyOptions(cardLimit: persisted.cardLimit, newCardOrder: order),
+          hasSaved: hasSaved,
+        ),
+      ),
     );
   }
 
@@ -154,13 +154,14 @@ class SettingsController extends _$SettingsController {
       _isCardLimitQueued = true;
       return;
     }
+    // Only the limit is written (BR-SETTINGS-007, DEV-217).
     final options = StudyOptions(
       cardLimit: draft,
       newCardOrder: persisted.newCardOrder,
     );
     final hasSaved = await _submit(
       SettingsSubmit.cardLimit,
-      () => ref.read(saveStudyDefaultsUseCaseProvider)(options: options),
+      () => ref.read(saveStudyDefaultsUseCaseProvider)(cardLimit: draft),
       retry: () async {
         state = state.withDraft(draft);
         await _saveCardLimit();

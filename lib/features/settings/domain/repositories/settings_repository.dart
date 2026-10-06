@@ -15,11 +15,14 @@ abstract interface class SettingsRepository {
   /// The one `app_settings` row, again after every save (BR-SETTINGS-001).
   Stream<AppSettingsEntity> watchAppSettings();
 
-  /// The app-wide study defaults. It never writes a root's override
-  /// (BR-SETTINGS-002), and a session already open keeps its limit
-  /// (BR-SETTINGS-004).
+  /// The app-wide study defaults: only the columns given are written, so a
+  /// save of one never carries a stale copy of the other over a change that
+  /// arrived meanwhile (BR-SETTINGS-007, DEV-217); at least one is given. It
+  /// never writes a root's override (BR-SETTINGS-002), and a session already
+  /// open keeps its limit (BR-SETTINGS-004).
   Future<Outcome<void, SettingsRejection>> saveStudyDefaults({
-    required StudyOptions options,
+    int? cardLimit,
+    NewCardOrder? newCardOrder,
   });
 
   Future<Outcome<void, SettingsRejection>> setTheme({

@@ -268,10 +268,8 @@ void main() {
     await tester.runAsync(() async {
       await repository.setTheme(theme: ThemeChoice.dark);
       await repository.saveStudyDefaults(
-        options: const StudyOptions(
-          cardLimit: 50,
-          newCardOrder: NewCardOrder.random,
-        ),
+        cardLimit: 50,
+        newCardOrder: NewCardOrder.random,
       );
     });
     await pumpLibraryScreen(tester, env, _screen());

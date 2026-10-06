@@ -71,10 +71,8 @@ void main() {
       '(BR-STUDY-056)', () async {
     await _insertTree(db);
     await settings.saveStudyDefaults(
-      options: const StudyOptions(
-        cardLimit: 7,
-        newCardOrder: NewCardOrder.random,
-      ),
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.random,
     );
 
     final effective = await settings.watchStudyOptions(deckId: 'r').first;
@@ -180,10 +178,8 @@ void main() {
     await pumpEventQueue();
     final overridden = seen.last;
     await settings.saveStudyDefaults(
-      options: const StudyOptions(
-        cardLimit: 7,
-        newCardOrder: NewCardOrder.created,
-      ),
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.created,
     );
     await pumpEventQueue();
     final overrideStillWins = seen.last;
@@ -215,10 +211,8 @@ void main() {
     await pumpEventQueue();
 
     await settings.saveStudyDefaults(
-      options: const StudyOptions(
-        cardLimit: 7,
-        newCardOrder: NewCardOrder.created,
-      ),
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.created,
     );
     await pumpEventQueue();
     await subscription.cancel();

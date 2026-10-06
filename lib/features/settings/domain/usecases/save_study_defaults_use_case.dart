@@ -11,6 +11,10 @@ final class SaveStudyDefaultsUseCase {
   final SettingsRepository _settings;
 
   Future<Outcome<void, SettingsRejection>> call({
-    required StudyOptions options,
-  }) => _settings.saveStudyDefaults(options: options);
+    int? cardLimit,
+    NewCardOrder? newCardOrder,
+  }) => _settings.saveStudyDefaults(
+    cardLimit: cardLimit,
+    newCardOrder: newCardOrder,
+  );
 }
