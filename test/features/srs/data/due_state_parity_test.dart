@@ -64,7 +64,7 @@ void main() {
   /// rows, through the Dart rule.
   Future<(int, int, int, int)> dartCounts() async {
     final counts = <DueState, int>{};
-    for (final s in await CardListDao(db).activeSchedules(leafId)) {
+    for (final s in await liveSchedulesOf(db, leafId)) {
       final state = dueStateOf(
         learnedAt: s.learnedAt,
         dueAt: s.dueAt,
@@ -128,9 +128,8 @@ void main() {
     final list = await CardListDao(db)
         .counts(deckId: leafId, searchTerm: '', tagIds: const {}, now: _now);
     final workload = workloadOf(
-      await CardListDao(db).activeSchedules(leafId),
-      now: _now,
-      startOfToday: _today,
+      await CardListDao(db)
+          .statusCounts(leafId, now: _now, startOfToday: _today),
     );
 
     expect(
