@@ -69,9 +69,3 @@ WHERE id IN :card_ids AND delete_batch_id IS NULL;
 flagLiveCardsIn(:flag AS INTEGER, :now AS DATETIME):
 UPDATE card SET is_flagged = :flag, updated_at = :now
 WHERE id IN :card_ids AND is_flagged <> :flag AND delete_batch_id IS NULL;
-
--- Invariant 29: whether :deck_id still holds a live card.
-deckHoldsLiveCards(:deck_id AS TEXT):
-SELECT EXISTS (
-  SELECT 1 FROM card WHERE deck_id = :deck_id AND delete_batch_id IS NULL
-);

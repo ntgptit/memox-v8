@@ -158,18 +158,6 @@ final class CardDao extends DatabaseAccessor<AppDatabase> with _$CardDaoMixin {
       await flagLiveCardsIn(flag, now, chunk);
     }
   }
-
-  /// Whether [deckId] still holds a live card; tombstones do not count, as in
-  /// invariant 29.
-  Future<bool> holdsCards(String deckId) =>
-      deckHoldsLiveCards(deckId).getSingle();
-
-  /// A deck in the Trash keeps its row as it is.
-  Future<void> setDeckContentType(
-    String deckId,
-    String contentType,
-    DateTime now,
-  ) => setLiveDeckContentType(contentType, now, deckId);
 }
 
 /// The columns a draft sets: sides in their stored form (trimmed, NFC) with

@@ -5,6 +5,7 @@ import 'package:memox/features/card/data/repositories/card_repository_impl.dart'
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -36,6 +37,7 @@ void main() {
       db,
       ScheduleRepositoryImpl(db, now: now),
       tags,
+      DeckTreeDataSource(db),
       now: now,
     );
     root = await decks.root('Korean');

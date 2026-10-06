@@ -5,19 +5,18 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/data/datasources/card_dao.dart';
 import 'package:memox/features/card/data/datasources/card_list_dao.dart';
-import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_export_snapshot_model.dart';
 import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
 import 'package:memox/features/card/domain/models/card_import_result_model.dart';
+import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
-import 'package:memox/features/deck/domain/entities/deck_entity.dart';
-import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 
-/// An import writes every card inside one transaction, each as
-/// [CardRepositoryImpl.insertCard] writes one; an export reads in one
-/// transaction and writes nothing.
+/// An import keeps the duplicate policy and writes the drafts it keeps
+/// through [CardRepository.insertCards], inside one transaction: the deck's
+/// rules and its content type are the card and deck features' to hold. An
+/// export reads in one transaction and writes nothing.
 final class CardTransferRepositoryImpl implements CardTransferRepository {
   CardTransferRepositoryImpl(this._db, this._cards, {DateTime Function()? now})
     : _dao = CardDao(_db),
@@ -25,7 +24,7 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
       _now = now ?? DateTime.now;
 
   final AppDatabase _db;
-  final CardRepositoryImpl _cards;
+  final CardRepository _cards;
   final CardDao _dao;
   final CardListDao _listDao;
   final DateTime Function() _now;
@@ -43,18 +42,13 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
   }) {
     final at = now ?? _now();
     return _db.mappedTransaction(() async {
+      // Every draft, the skipped ones too: a draft the rules refuse refuses
+      // the batch (BR-TRANSFER-004).
       for (final draft in drafts) {
         if (draft.check() case Rejected(:final reason)) return Rejected(reason);
       }
-      final deck = await _dao.deckRow(deckId);
-      if (deck == null) return const Rejected(CardRejection.notFound);
-      final contentType = DeckContentType.values.byName(deck.contentType);
-      if (DeckEntity.checkCreateCard(parentContentType: contentType)
-          case Rejected()) {
-        return const Rejected(CardRejection.notACardContainer);
-      }
-
       final taken = await _dao.foldedPairs(deckId);
+      final kept = <CardDraft>[];
       final skipped = <int>[];
       for (final (index, draft) in drafts.indexed) {
         final pair = (front: foldText(draft.front), back: foldText(draft.back));
@@ -63,13 +57,19 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
           continue;
         }
         taken.add(pair);
-        await _cards.insertCard(deckId, draft, at);
+        kept.add(draft);
       }
-      final written = drafts.length - skipped.length;
-      if (written > 0 && contentType == DeckContentType.unset) {
-        await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
-      }
-      return Ok(CardImportResult(written: written, skippedIndexes: skipped));
+      final written = await _cards.insertCards(
+        deckId: deckId,
+        drafts: kept,
+        now: at,
+      );
+      return switch (written) {
+        Rejected(:final reason) => Rejected(reason),
+        Ok(:final value) => Ok(
+          CardImportResult(written: value.length, skippedIndexes: skipped),
+        ),
+      };
     });
   }
 

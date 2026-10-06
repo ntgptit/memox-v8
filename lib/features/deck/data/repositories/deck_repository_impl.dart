@@ -103,7 +103,7 @@ final class DeckRepositoryImpl implements DeckRepository {
           updatedAt: at,
         ),
       );
-      await _tree.refreshContentType(parentId, at);
+      await _tree.refresh(parentId, at);
       return Ok(deckEntityOf((await _dao.findRow(id))!));
     });
   }
@@ -138,8 +138,8 @@ final class DeckRepositoryImpl implements DeckRepository {
         siblingPosition: await _dao.nextSiblingPosition(newParentId),
         at: at,
       );
-      await _tree.refreshContentType(oldParentId, at);
-      await _tree.refreshContentType(newParentId, at);
+      await _tree.refresh(oldParentId, at);
+      await _tree.refresh(newParentId, at);
       return const Ok(null);
     });
   }
@@ -227,7 +227,7 @@ final class DeckRepositoryImpl implements DeckRepository {
       await _dao.insertBatch(batchId, deckId, at);
       await _dao.markSubtree(deckId, batchId);
       if (deck.parentId case final parentId?) {
-        await _tree.refreshContentType(parentId, at);
+        await _tree.refresh(parentId, at);
       }
       await _dao.closeSessionsTouching(batchId, at);
       return Ok(batchId);
@@ -280,7 +280,7 @@ final class DeckRepositoryImpl implements DeckRepository {
           at: at,
         );
       }
-      await _tree.refreshContentType(target.id, at);
+      await _tree.refresh(target.id, at);
       return const Ok(null);
     });
   }
@@ -313,7 +313,7 @@ final class DeckRepositoryImpl implements DeckRepository {
         siblingPosition: item.siblingPosition,
         at: at,
       );
-      await _tree.refreshContentType(target.id, at);
+      await _tree.refresh(target.id, at);
       return const Ok(null);
     });
   }

@@ -14,6 +14,7 @@ import 'package:memox/features/card/di/card_transfer_repository_provider.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_export_snapshot_model.dart';
 import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -107,7 +108,12 @@ void main() {
   }) {
     final cards = CardTransferRepositoryImpl(
       db,
-      CardRepositoryImpl(db, ScheduleRepositoryImpl(db), TagRepositoryImpl(db)),
+      CardRepositoryImpl(
+        db,
+        ScheduleRepositoryImpl(db),
+        TagRepositoryImpl(db),
+        DeckTreeDataSource(db),
+      ),
     );
     final result = ProviderContainer(
       overrides: [

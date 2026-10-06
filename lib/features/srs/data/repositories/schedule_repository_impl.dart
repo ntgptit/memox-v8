@@ -34,11 +34,12 @@ final class ScheduleRepositoryImpl implements ScheduleRepository {
   final SrsDao _dao;
   final DateTime Function() _now;
 
-  /// Not mapped to a [Failure]: the contract's [StateError] must reach the
-  /// caller, whose own transaction maps what leaves it.
+  /// Through the gate like every business write (auth spec R3, DEV-178);
+  /// nested in the caller's transaction it is a savepoint. A missing card is
+  /// a bug and leaves as the [Failure] the guard makes of its [StateError].
   @override
   Future<void> initializeCard({required String cardId}) =>
-      _db.transaction(() async {
+      _db.mappedTransaction(() async {
         final root = await _dao.rootOfCard(cardId);
         if (root == null) throw StateError('card $cardId does not exist');
         final type = SchedulerType.fromCode(root.schedulerType!);

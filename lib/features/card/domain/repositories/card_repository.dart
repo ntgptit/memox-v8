@@ -24,6 +24,18 @@ abstract interface class CardRepository {
     DateTime? now,
   });
 
+  /// [drafts] into [deckId], each as [createCard] writes one, joining the
+  /// caller's own transaction, for an import (BR-TRANSFER-004): every draft
+  /// is checked, the deck is read once and asked whether it takes cards
+  /// (BR-DECK-008), and its content type follows what it holds afterwards.
+  /// The ids written, in order; a refusal writes nothing. An empty list
+  /// still checks the deck.
+  Future<Outcome<List<String>, CardRejection>> insertCards({
+    required String deckId,
+    required List<CardDraft> drafts,
+    required DateTime now,
+  });
+
   /// UC-CARD-001 A1: new content, flag and tags; the schedule row and the
   /// review log stay as they are (BR-CARD-005).
   Future<Outcome<void, CardRejection>> editCard({
