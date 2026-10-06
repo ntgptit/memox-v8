@@ -126,10 +126,8 @@ void main() {
 
     final deck = await DeckRepositoryImpl(db).root('Korean');
 
-    // The real debounce (2 s) runs on the wall clock: poll, bounded.
-    final deadline = DateTime.now().add(const Duration(seconds: 10));
-    while (api.row('deck', deck.id) == null &&
-        DateTime.now().isBefore(deadline)) {
+    // The real debounce (2 s) runs on the wall clock: poll, at most 10 s.
+    for (var i = 0; i < 100 && api.row('deck', deck.id) == null; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 100));
     }
     expect(api.row('deck', deck.id), isNotNull);
