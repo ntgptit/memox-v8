@@ -20,7 +20,7 @@ part 'sync_providers.g.dart';
 @Riverpod(keepAlive: true)
 SupabaseConfig supabaseConfig(Ref ref) => SupabaseConfig.environment;
 
-/// Sync through the Supabase project main.dart initialized. It never signs
+/// Sync through the Supabase project `startApp` initialized. It never signs
 /// in: the account coordinator does, and resumes sync once `me()` confirms
 /// the account (auth spec R2).
 @Riverpod(keepAlive: true)
@@ -52,6 +52,8 @@ SyncCoordinator syncCoordinator(Ref ref) => SyncCoordinator(
 );
 
 /// The running sync, or null when this build names no Supabase project.
+/// It starts here, paused; `startApp` (app_bootstrap.dart) is its only
+/// reader and reads it before the account coordinator starts (DEV-176).
 @Riverpod(keepAlive: true)
 SyncScheduler? syncScheduler(Ref ref) {
   if (!ref.watch(supabaseConfigProvider).isEnabled) {

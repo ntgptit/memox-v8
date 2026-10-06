@@ -40,6 +40,34 @@
   "@commonRetry": {
     "description": "Generic retry action after a failure."
   },
+  "startupDatabaseErrorTitle": "Couldn't open your data",
+  "@startupDatabaseErrorTitle": {
+    "description": "Recovery screen title when the database does not open at start (DEV-195)."
+  },
+  "startupDatabaseErrorBody": "Nothing was deleted. Try again; if it keeps failing, send a report so it can be looked into.",
+  "@startupDatabaseErrorBody": {
+    "description": "Recovery screen body; says first that nothing was deleted, then the two actions."
+  },
+  "startupDatabaseMigrationHint": "The update of your data from version {from} to {to} stopped before it finished. Nothing was changed; Retry runs it again.",
+  "@startupDatabaseMigrationHint": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    },
+    "description": "Guidance line on the recovery screen when the open stopped inside a schema migration step (DEV-194: a stopped step is rolled back)."
+  },
+  "startupSendReport": "Send report",
+  "@startupSendReport": {
+    "description": "Recovery screen action that ships the log buffer, where the open's error was written."
+  },
+  "startupReportQueued": "Report queued; it goes up with the logs.",
+  "@startupReportQueued": {
+    "description": "Confirmation after Send report; the logs ship once a session exists."
+  },
   "commonDismissNote": "Hide this note",
   "@commonDismissNote": {
     "description": "The close button of a one-time note that can be hidden for good (critique 2026-09-30)."

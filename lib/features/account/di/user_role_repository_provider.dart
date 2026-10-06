@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user_role_repository_provider.g.dart';
 
-/// The role RPCs through the Supabase project main.dart initialized; read
+/// The role RPCs through the Supabase project `startApp` initialized; read
 /// only from screen 33, which only an admin reaches.
 @riverpod
 UserRoleRepository userRoleRepository(Ref ref) => UserRoleRepositoryImpl(

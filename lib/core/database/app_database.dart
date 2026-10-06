@@ -48,6 +48,16 @@ class AppDatabase extends _$AppDatabase {
     await super.close();
   }
 
+  /// Where the last open stopped inside a migration step, as `(from, to)`
+  /// (DEV-195): a start that cannot open tells a stopped upgrade from a file
+  /// that cannot be read.
+  (int, int)? lastMigrationFailure;
+
+  /// Opens the file and runs its migrations now, not on the first query
+  /// (DEV-195): the start asks before the first frame, so a file that cannot
+  /// open is a result there, not an error under the first screen.
+  Future<void> ensureOpened() => executor.ensureOpen(this);
+
   @override
   int get schemaVersion => 14;
 
@@ -64,14 +74,21 @@ class AppDatabase extends _$AppDatabase {
   /// starts the step over.
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onUpgrade: (m, from, to) => transaction(
-      () => VersionedSchema.runMigrationSteps(
-        migrator: m,
-        from: from,
-        to: to,
-        steps: _steps,
-      ),
-    ),
+    onUpgrade: (m, from, to) async {
+      try {
+        await transaction(
+          () => VersionedSchema.runMigrationSteps(
+            migrator: m,
+            from: from,
+            to: to,
+            steps: _steps,
+          ),
+        );
+      } on Object {
+        lastMigrationFailure = (from, to);
+        rethrow;
+      }
+    },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
       // The planner's statistics (DEV-208): `PRAGMA optimize` analyses the
