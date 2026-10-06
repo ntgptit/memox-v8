@@ -212,6 +212,37 @@ void main() {
     });
   });
 
+  group('di', () {
+    // DEV-174: a use case is reached through its own feature's
+    // presentation/providers/, never through di/ (ADR-011 D5).
+    test('di/ importing a use case fails, its own feature or another', () {
+      final sources = [
+        _file('lib/features/srs/di/reset_use_case_provider.dart', [
+          'package:memox/features/srs/domain/usecases/reset_use_case.dart',
+          'package:memox/features/deck/domain/usecases/move_deck_use_case.dart',
+          '../domain/usecases/other_use_case.dart',
+        ]),
+      ];
+
+      expect(diUseCaseViolations(sources), hasLength(3));
+    });
+
+    test('di/ importing repositories and data passes', () {
+      final sources = [
+        _file('lib/features/srs/di/schedule_repository_provider.dart', [
+          'package:memox/features/srs/domain/repositories/schedule_repository.dart',
+          'package:memox/features/srs/data/repositories/schedule_repository_impl.dart',
+        ]),
+        _file(
+          'lib/features/deck/presentation/providers/x_use_case_provider.dart',
+          ['package:memox/features/deck/domain/usecases/x_use_case.dart'],
+        ),
+      ];
+
+      expect(diUseCaseViolations(sources), isEmpty);
+    });
+  });
+
   group('import map', () {
     test('the declared map is acyclic', () {
       expect(cyclesIn(allowedFeatureImports), isEmpty);

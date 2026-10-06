@@ -5,8 +5,8 @@ import 'package:memox/features/srs/data/repositories/schedule_repository_impl.da
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/reset_learning_summary_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
-import 'package:memox/features/srs/domain/usecases/get_reset_learning_summary_use_case.dart';
-import 'package:memox/features/srs/domain/usecases/reset_learning_progress_use_case.dart';
+import 'package:memox/features/deck/domain/usecases/get_reset_learning_summary_use_case.dart';
+import 'package:memox/features/deck/domain/usecases/reset_learning_progress_use_case.dart';
 
 import '../../../support/test_database.dart';
 
