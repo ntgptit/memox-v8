@@ -280,12 +280,16 @@ final class CardRepositoryImpl implements CardRepository {
       tagIds: query.tagIds,
       now: now,
     );
-    final schedules = await _listDao.activeSchedules(deckId);
+    final startOfToday = startOfLocalDay(now);
+    final status = await _listDao.statusCounts(
+      deckId,
+      now: now,
+      startOfToday: startOfToday,
+    );
     final shown = rows.take(windowSize).toList();
     final tags = await _listDao.tagsOf([
       for (final (card, _) in shown) card.id,
     ]);
-    final startOfToday = startOfLocalDay(now);
     return CardListView(
       items: [
         for (final (card, schedule) in shown)
@@ -304,8 +308,8 @@ final class CardRepositoryImpl implements CardRepository {
         newCards: counts.newCards,
         flagged: counts.flagged,
       ),
-      statusCounts: statusCountsOf(schedules),
-      workload: workloadOf(schedules, now: now, startOfToday: startOfToday),
+      statusCounts: statusCountsOf(status),
+      workload: workloadOf(status),
     );
   }
 

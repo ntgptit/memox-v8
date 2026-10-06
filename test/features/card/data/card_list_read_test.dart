@@ -371,4 +371,18 @@ void main() {
       (1, 1, 1),
     );
   });
+
+  test('a read never pulls the deck\'s schedule rows: card_schedule is read '
+      'only within the window or under an aggregate (DEV-211)', () async {
+    counter.statements.clear();
+    await list();
+
+    final rowReads = counter.statements.where(
+      (sql) =>
+          sql.contains('card_schedule') &&
+          !sql.contains('LIMIT') &&
+          !sql.contains('COUNT('),
+    );
+    expect(rowReads, isEmpty, reason: 'reads every schedule row of the deck');
+  });
 }
