@@ -86,7 +86,7 @@ starter template (asset JSON, không phải bảng — Starter decks)
 | `root_id` | TEXT NOT NULL | root có `root_id = id`; descendant mang id của root (BR-DECK-002) |
 | `depth` | INTEGER NOT NULL | Root = 1. `CHECK (depth <= 10)` là an toàn tầng DB (BR-DECK-001) |
 | `content_type` | TEXT NOT NULL | `'unset'` \| `'card'` \| `'deck'` (BR-DECK-006…BR-DECK-012, BR-DECK-015) |
-| `owner_id` | TEXT NULL | Luôn NULL ở local; owner trên server là `auth.uid()` ([ADR-015](../decisions/ADR-015-supabase-lam-backend.md) #4) |
+| `owner_id` | TEXT NULL | **Retired** (DEV-198): luôn NULL — một profile mỗi máy, đăng nhập không namespace dữ liệu theo user (auth spec O12, `LocalDataReset`); owner trên server là `auth.uid()` ([ADR-015](../decisions/ADR-015-supabase-lam-backend.md) #4). Không ai ghi; chỉ còn được đọc như hằng `owner_id IS NULL`. Giữ cột tới lần rebuild bảng vì lý do khác (`migrations.md`) |
 | `scheduler_type` | TEXT NULL | `'eight_box'` \| `'sm2'`. **NOT NULL trên root, NULL trên deck con** |
 | `scheduler_version` | INTEGER NULL | cùng quy tắc NULL |
 | `scheduler_config` | TEXT NULL | JSON tham số ghi đè của thuật toán. Cùng quy tắc NULL |
@@ -96,7 +96,7 @@ starter template (asset JSON, không phải bảng — Starter decks)
 | `source_template_id` | TEXT NULL | NULL = deck tự tạo (BR-STARTER-004). Không có FK: template là asset, không phải bảng |
 | `source_template_version` | INTEGER NULL | version tại thời điểm sao chép |
 | `delete_batch_id` | TEXT NULL | NULL = deck đang active. Khác NULL = tombstone thuộc batch đó (BR-TRASH-001, BR-TRASH-003). → `delete_batches(id)` ON DELETE CASCADE, từ v3, với index `idx_deck_delete_batch`: purge batch là xoá hàng (BR-TRASH-010) |
-| `server_version` | INTEGER NULL | Version server đã xác nhận (ADR-013); NULL là chưa |
+| `server_version` | INTEGER NULL | Version server đã xác nhận (ADR-013); NULL là chưa. Trigger xoá đọc nó vào `payload` của op `delete` (schema 13, DEV-181) — là hợp đồng, không chỉ chẩn đoán |
 | `sibling_position` | INTEGER NOT NULL | Thứ tự manual trong nhóm cùng `parent_id`; tie-break bằng `id` (BR-SRS-007) |
 | `created_at` | DATETIME NOT NULL | UTC |
 | `updated_at` | DATETIME NOT NULL | UTC |
@@ -193,7 +193,7 @@ trả lời được mọi lookup cũ, giữ cả hai chỉ khiến mỗi insert
 | `delete_batch_id` | TEXT NULL | NULL = card đang active. Khác NULL = tombstone thuộc batch đó (BR-TRASH-001, BR-TRASH-003). → `delete_batches(id)` ON DELETE CASCADE, từ v3, với index `idx_card_delete_batch`: purge batch là xoá hàng (BR-TRASH-010) |
 | `created_at` | DATETIME NOT NULL | UTC |
 | `updated_at` | DATETIME NOT NULL | UTC |
-| `server_version` | INTEGER NULL | Version server đã xác nhận (schema 7, SB-S2); NULL là chưa |
+| `server_version` | INTEGER NULL | Version server đã xác nhận (schema 7, SB-S2); NULL là chưa. Trigger xoá đọc nó vào `payload` của op `delete` (schema 13, DEV-181) |
 
 **Hai cột `_folded` tồn tại vì `lower()` của SQLite chỉ hạ hoa ASCII.** Nó không
 đụng tới `Ô`, `Ê`, `Đ`. Search từng so `instr(lower(front), :term)` với `:term`
@@ -247,9 +247,9 @@ không phải lịch: reset giữ nguyên (BR-SRS-021, BR-TAG-001).
 | `id` | TEXT PK | UUID sinh phía client |
 | `name` | TEXT NOT NULL | BR-TAG-001. Lưu nguyên dạng người dùng gõ |
 | `name_folded` | TEXT NOT NULL | `foldText(name)`: trim, NFC, hạ hoa (BE-C5). Cột để **cưỡng chế** unique |
-| `owner_id` | TEXT NULL | NULL = local profile |
+| `owner_id` | TEXT NULL | **Retired** (DEV-198): luôn NULL, như `deck.owner_id`; chỉ còn được đọc như hằng `owner_id IS NULL` và trong index bên dưới. Giữ cột tới lần rebuild bảng vì lý do khác |
 | `created_at` | DATETIME NOT NULL | UTC |
-| `server_version` | INTEGER NULL | Version server đã xác nhận (schema 8, SB-S3); NULL là chưa |
+| `server_version` | INTEGER NULL | Version server đã xác nhận (schema 8, SB-S3); NULL là chưa. Chỉ ghi, không truy vấn nào đọc: cột chẩn đoán, không phải hợp đồng (DEV-198) |
 
 Index: `UNIQUE (COALESCE(owner_id, ''), name_folded)`.
 
@@ -587,7 +587,7 @@ Bản trên server nằm ở Supabase (`supabase/migrations/`), đọc và ghi q
 | `entity_id` | TEXT NOT NULL | `UNIQUE (entity_type, entity_id)`: một thao tác chờ cho mỗi hàng |
 | `op` | TEXT NOT NULL | `upsert` \| `delete` |
 | `created_at` | DATETIME NOT NULL | lần ghi chờ đầu tiên; giữ nguyên khi hàng được ghi lại, nên cha luôn đi trước con |
-| `attempts` | INTEGER NOT NULL | số lần push lỗi |
+| `attempts` | INTEGER NOT NULL | số lần push lỗi; chỉ tăng (`countFailedAttempt`), không ai đọc — cột chẩn đoán, không phải hợp đồng, không phải ngưỡng retry (DEV-198) |
 | `payload` | TEXT | schema 13 (DEV-181): JSON `{deleteBatchId, serverVersion}` mà trigger xoá của `deck`/`card` giữ lại khi hàng đang trong Thùng rác, gửi làm `row` của op `delete`; NULL với mọi op khác |
 
 `sync_state(name, value)` giữ `device_id`, cursor `since`, cờ tạm
@@ -620,7 +620,10 @@ Liên kết card–tag đi cùng card (trường `tagIds`), nên trigger trên `
 card vào outbox; riêng liên kết bị xoá theo chính card thì không, để lệnh xoá card giữ
 nguyên. `deck.server_version`, `delete_batches.server_version`, `card.server_version`
 và `tags.server_version` là version server đã xác nhận; NULL là chưa từng được xác
-nhận. Outbox đẩy theo loại (batch, deck, tag, card…) rồi mới theo `created_at`, nên
+nhận. Ở local chỉ `deck` và `card` đọc lại cột này — trigger xoá giữ nó trong
+`payload` của op `delete` (schema 13, DEV-181); trên `tags` và `delete_batches` nó
+chỉ được ghi, là cột chẩn đoán, không phải hợp đồng (DEV-198). Outbox đẩy theo loại
+(batch, deck, tag, card…) rồi mới theo `created_at`, nên
 hàng cha luôn lên trước hàng con dù hàng con đã chờ từ trước (plan tag sync R6);
 riêng `deck` xếp theo `depth` của hàng local trước `created_at` (lệnh `delete`
 không còn hàng, đi đầu), nên deck con đang chờ được kéo vào deck tạo sau vẫn đi
