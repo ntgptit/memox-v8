@@ -84,8 +84,8 @@ void main() {
     await tester.tap(find.text(_en.deckDelete));
     await tester.pumpAndSettle();
 
-    await tester.tap(_confirm(_en.deckDelete));
-    await tester.tap(_confirm(_en.deckDelete));
+    await tester.tap(_confirm(_en.trashMoveConfirm));
+    await tester.tap(_confirm(_en.trashMoveConfirm));
     await tester.pumpAndSettle();
     expect(decks.deletes, 1);
   });
@@ -118,8 +118,8 @@ void main() {
     await tester.tap(find.text(_en.cardDelete));
     await tester.pumpAndSettle();
 
-    await tester.tap(_confirm(_en.cardMoveToTrash));
-    await tester.tap(_confirm(_en.cardMoveToTrash));
+    await tester.tap(_confirm(_en.trashMoveConfirm));
+    await tester.tap(_confirm(_en.trashMoveConfirm));
     await tester.pumpAndSettle();
     expect(cards.deletes, 1);
   });

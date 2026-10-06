@@ -5,9 +5,9 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 
-/// The footer every dialog and sheet ends with. The confirm takes 1.3 shares
-/// to Cancel's 1 (an even half each with [isEvenSplit]), so a real verb ("Move to Trash") keeps its line and Cancel
-/// gives up width first; when a label cannot fit its share on one line, the
+/// The footer every dialog and sheet ends with: Cancel and the confirm share
+/// the row 1 : 1, since the title names the object and the confirm is its
+/// verb alone (DEV-179); when a label cannot fit its half on one line, the
 /// two stack instead (MxActionPair, spec 2026-09-26 D3).
 class MxSheetActions extends StatelessWidget {
   const MxSheetActions({
@@ -21,7 +21,6 @@ class MxSheetActions extends StatelessWidget {
     this.isWarning = false,
     this.isInSheet = false,
     this.isConfirmLoading = false,
-    this.isEvenSplit = false,
   }) : assert(!(isDestructive && isWarning), 'a confirm has one tone'),
        children = const [];
 
@@ -39,8 +38,7 @@ class MxSheetActions extends StatelessWidget {
        confirmIcon = null,
        isDestructive = false,
        isWarning = false,
-       isConfirmLoading = false,
-       isEvenSplit = false;
+       isConfirmLoading = false;
 
   final String? cancelLabel;
 
@@ -62,17 +60,10 @@ class MxSheetActions extends StatelessWidget {
   /// stays live.
   final bool isConfirmLoading;
 
-  /// Cancel and the confirm share the width 1:1 (the sign-in confirms,
-  /// 2026-10-05 L2).
-  final bool isEvenSplit;
-
   /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of
   /// the dialog's 16 all round.
   final bool isInSheet;
   final List<Widget> children;
-
-  static const int _cancelShare = 10;
-  static const int _confirmShare = 13;
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +90,6 @@ class MxSheetActions extends StatelessWidget {
               isBlock: true,
               isSingleLine: true,
             ),
-            leadingFlex: isEvenSplit ? 1 : _cancelShare,
-            trailingFlex: isEvenSplit ? 1 : _confirmShare,
           );
     if (!isInSheet) {
       // A dialog's pair, 16 in on the edge its title and body share

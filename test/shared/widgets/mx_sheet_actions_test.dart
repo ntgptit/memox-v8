@@ -28,12 +28,9 @@ void main() {
         ),
       ),
     );
-    // 340 − 16 − 16 − 8 = 300, split 10 : 13.
-    expect(
-      tester.getSize(_button('Cancel')).width,
-      closeTo(300 * 10 / 23, 0.01),
-    );
-    expect(tester.getSize(_button('Move')).width, closeTo(300 * 13 / 23, 0.01));
+    // 340 − 16 − 16 − 8 = 300, split 1 : 1 (DEV-179).
+    expect(tester.getSize(_button('Cancel')).width, closeTo(150, 0.01));
+    expect(tester.getSize(_button('Move')).width, closeTo(150, 0.01));
     expect(
       tester.widget<MxButton>(_button('Cancel')).tone,
       MxButtonTone.outline,
@@ -238,8 +235,8 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('an even split gives Cancel and the confirm one width and one '
-      'height (2026-10-05 L2)', (tester) async {
+  testWidgets('Cancel and the confirm share one width and one height '
+      '(DEV-179)', (tester) async {
     await pumpMx(
       tester,
       SizedBox(
@@ -249,7 +246,6 @@ void main() {
           onCancel: () {},
           confirmLabel: 'Continue',
           onConfirm: () {},
-          isEvenSplit: true,
         ),
       ),
     );
@@ -259,7 +255,7 @@ void main() {
     expect(cancel.height, confirm.height);
   });
 
-  testWidgets('at a larger text scale an even split stacks a label too long '
+  testWidgets('at a larger text scale the pair stacks a label too long '
       'for its half, both full width (The Short Label Rule)', (tester) async {
     const long = 'Discard and continue with everything';
     await pumpMx(
@@ -273,7 +269,6 @@ void main() {
             onCancel: () {},
             confirmLabel: long,
             onConfirm: () {},
-            isEvenSplit: true,
           ),
         ),
       ),

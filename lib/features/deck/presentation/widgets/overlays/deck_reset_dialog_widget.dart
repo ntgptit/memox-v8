@@ -136,7 +136,7 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
         onCancel: _isResetting ? null : () => Navigator.of(context).pop(),
-        confirmLabel: l10n.resetConfirm(_nextCycle(view)),
+        confirmLabel: l10n.resetConfirm,
         confirmIcon: AppIcons.resetProgress,
         isConfirmLoading: _isResetting,
         // An irreversible loss of progress, not of data: warning, as the

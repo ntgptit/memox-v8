@@ -143,7 +143,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       title: l10n.accountSwitchTitle,
       body: l10n.accountSwitchBody,
       note: MxNote(icon: AppIcons.safe, text: l10n.accountChangesSentFirst),
-      confirmLabel: l10n.accountSwitch,
+      confirmLabel: l10n.accountSwitchConfirm,
     );
     if (!isSure || !context.mounted) return;
     final result = await controller.switchAccount();
@@ -187,13 +187,10 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       note: canDelete
           ? null
           : MxNote(icon: AppIcons.offline, text: l10n.accountDeleteOffline),
-      // The title names the account, so the confirm is the verb alone and
-      // shares the row evenly with Cancel (owner 2026-10-06).
       confirmLabel: l10n.accountDeleteConfirm,
       confirmIcon: AppIcons.delete,
       isDestructive: true,
       canConfirm: canDelete,
-      isEvenSplit: true,
     );
     if (!isSure || !context.mounted) return;
     final result = await controller.deleteAccount();

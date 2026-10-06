@@ -23,16 +23,8 @@ const double _dialogRow = 288;
 /// longest the screen shows.
 const int _count = 99999;
 
-/// Export names the deck's cards (owner ruling 2026-09-26, screen 12): it
-/// fits up to 9,999.
-const int _deckCount = 9999;
-
-/// A reset names the next cycle, two digits at most.
-const int _cycle = 99;
-
-/// Trash's selection bar and delete-for-good dialog are measured up to
-/// three digits; from 1,000 items the pair may stack, the exception
-/// recorded in screen 06's detail file.
+/// Trash's selection bar is measured up to three digits; from 1,000 items
+/// the pair may stack, the exception recorded in screen 06's detail file.
 const int _selectionCount = 999;
 
 typedef _Pair = ({
@@ -53,19 +45,18 @@ MxButton _button(String label, [IconData? icon]) => MxButton(
   onPressed: () {},
 );
 
-/// A dialog's Cancel and confirm, sharing the row 10 : 13 (MxSheetActions),
-/// or 1 : 1 with [isEvenSplit]. A bottom sheet's row is the footer's.
+/// A dialog's Cancel and confirm, sharing the row 1 : 1 (MxSheetActions,
+/// DEV-179). A bottom sheet's row is the footer's.
 _Pair _sheet(
   String name,
   MxButton cancel,
   MxButton confirm, {
   bool isInSheet = false,
-  bool isEvenSplit = false,
 }) => (
   name: name,
   row: isInSheet ? _footerRow : _dialogRow,
-  leadingFlex: isEvenSplit ? 1 : 10,
-  trailingFlex: isEvenSplit ? 1 : 13,
+  leadingFlex: 1,
+  trailingFlex: 1,
   leading: cancel,
   trailing: confirm,
 );
@@ -134,17 +125,13 @@ List<_Pair> _pairs(AppLocalizations l10n) {
       leadingFlex: 13,
       trailingFlex: 10,
     ),
-    _sheet(
-      'reset',
-      cancel,
-      _button(l10n.resetConfirm(_cycle), AppIcons.resetProgress),
-    ),
+    _sheet('reset', cancel, _button(l10n.resetConfirm, AppIcons.resetProgress)),
     _sheet(
       'study exit',
       _button(l10n.studyExitKeep),
       _button(l10n.studyExitStop),
     ),
-    _sheet('sync keep', cancel, _button(l10n.syncKeepOnDevice)),
+    _sheet('sync keep', cancel, _button(l10n.syncKeepConfirm)),
     _sheet(
       'tag delete',
       cancel,
@@ -156,16 +143,10 @@ List<_Pair> _pairs(AppLocalizations l10n) {
       cancel,
       _button(l10n.trashMoveConfirm, AppIcons.delete),
     ),
-    (
-      name: 'purge',
-      row: _dialogRow,
-      leadingFlex: 12,
-      trailingFlex: 10,
-      leading: _button(l10n.trashPurgeKeep),
-      trailing: _button(
-        l10n.trashPurgeConfirm(_selectionCount),
-        AppIcons.delete,
-      ),
+    _sheet(
+      'purge',
+      _button(l10n.trashPurgeKeep),
+      _button(l10n.trashPurgeConfirm, AppIcons.delete),
     ),
     _sheet(
       'card discard',
@@ -177,12 +158,26 @@ List<_Pair> _pairs(AppLocalizations l10n) {
       _button(l10n.deckKeepEditing),
       _button(l10n.deckDiscard),
     ),
-    _sheet('account switch', cancel, _button(l10n.accountSwitch)),
+    _sheet('account switch', cancel, _button(l10n.accountSwitchConfirm)),
     _sheet(
       'account delete',
       cancel,
       _button(l10n.accountDeleteConfirm, AppIcons.delete),
-      isEvenSplit: true,
+    ),
+    _sheet('unsent loss', cancel, _button(l10n.accountUnsentConfirm)),
+    _sheet('settings reset', cancel, _button(l10n.settingsResetConfirm)),
+    _sheet('second copy', cancel, _button(l10n.starterSecondCopyConfirm)),
+    _sheet(
+      'starter add',
+      cancel,
+      _button(l10n.starterAddDeck, AppIcons.add),
+      isInSheet: true,
+    ),
+    _sheet(
+      'monitoring status',
+      cancel,
+      _button(l10n.monitoringStatusConfirm),
+      isInSheet: true,
     ),
     _sheet(
       'merge, discard',
@@ -193,7 +188,7 @@ List<_Pair> _pairs(AppLocalizations l10n) {
     _sheet(
       'export',
       cancel,
-      _button(l10n.exportAction(_deckCount), AppIcons.share),
+      _button(l10n.exportAction, AppIcons.share),
       isInSheet: true,
     ),
     _footer(

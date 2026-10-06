@@ -93,7 +93,7 @@ void main() {
     libraryTest('export failed, $theme', (tester, env) async {
       await withRealShadows(() async {
         await pump(tester, env, wholeDeck, isFailing: true);
-        await tester.tap(find.widgetWithText(MxButton, _en.exportAction(1)));
+        await tester.tap(find.widgetWithText(MxButton, _en.exportAction));
         await tester.pumpAndSettle();
         await expectBoundaryGolden(tester, 'goldens/export_failed_$theme.png');
       });
@@ -107,7 +107,7 @@ void main() {
           (deckId) =>
               CardExportScope.selection(deckId: deckId, ids: {'a', 'gone'}),
         );
-        await tester.tap(find.widgetWithText(MxButton, _en.exportAction(2)));
+        await tester.tap(find.widgetWithText(MxButton, _en.exportAction));
         await tester.pumpAndSettle();
         await expectBoundaryGolden(tester, 'goldens/export_stale_$theme.png');
       });

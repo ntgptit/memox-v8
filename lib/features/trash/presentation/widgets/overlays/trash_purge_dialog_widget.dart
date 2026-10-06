@@ -40,10 +40,6 @@ class TrashPurgeDialogWidget extends ConsumerStatefulWidget {
 
 class _TrashPurgeDialogWidgetState
     extends ConsumerState<TrashPurgeDialogWidget> {
-  /// Kit 06: Keep in Trash 1.2, Delete 1.
-  static const int _keepShare = 12;
-  static const int _deleteShare = 10;
-
   var _isPurging = false;
 
   bool get _isCards => widget.entries.first is TrashCardEntry;
@@ -103,7 +99,7 @@ class _TrashPurgeDialogWidgetState
                   isAutofocused: true,
                 ),
                 trailing: MxButton(
-                  label: l10n.trashPurgeConfirm(count),
+                  label: l10n.trashPurgeConfirm,
                   icon: AppIcons.delete,
                   tone: MxButtonTone.destructive,
                   isBlock: true,
@@ -111,10 +107,6 @@ class _TrashPurgeDialogWidgetState
                   isLoading: _isPurging,
                   onPressed: _purge,
                 ),
-                leadingFlex: _keepShare,
-                trailingFlex: _deleteShare,
-                // From 1,000 items the count outgrows its share (screen 06).
-                canStack: true,
               ),
             ),
           ],

@@ -215,9 +215,7 @@ void main() {
 
     await tester.tap(find.text(_en.accountResend));
     await _settle(tester);
-    await tester.tap(
-      find.widgetWithText(MxButton, _en.accountUnsentConfirm(2)),
-    );
+    await tester.tap(find.widgetWithText(MxButton, _en.accountUnsentConfirm));
     await _settle(tester);
     expect(find.text(_en.accountCodeResent), findsOneWidget);
   });

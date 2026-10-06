@@ -46,7 +46,7 @@ The images are the goldens.
 - **R3:** "wrong or expired" is one state: GoTrue answers both alike.
 - **P3a plan ruling 11:** a wrong code clears the field.
 - **Sign-in redesign 2026-10-05 (spec `2026-10-05-sign-in-flow-redesign-design.md`, S1–S10):** the title and the address move into the body; the code is six drawn slots (S5); the wait is a caption in a 48 dp status line instead of a disabled button, and the wrong-code error no longer says to send a new code while the wait runs; a spam hint is added. Batch A (same day): a wrong code keeps the 2 dp next-slot cue in `error`; the code is read-only, not disabled, while it is checked; the spam hint reads "Not there yet? Check your spam folder."; the title names the route for TalkBack.
-- **Polish 2026-10-05 (DEV-168):** the lead and the address are one TalkBack stop; "Resend code" is a live region; the loss dialog's confirm reads "Lose {n} changes".
+- **Polish 2026-10-05 (DEV-168):** the lead and the address are one TalkBack stop; "Resend code" is a live region; the loss dialog's confirm reads "Lose {n} changes" (DEV-179 later shortened it to "Lose").
 
 ## Copy
 

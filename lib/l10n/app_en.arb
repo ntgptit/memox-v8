@@ -631,9 +631,9 @@
   "@cardMoveToTrash": {
     "description": "The Move to Trash dialog's confirm (kit 07, 09)."
   },
-  "trashMoveConfirm": "Move to Trash",
+  "trashMoveConfirm": "Move",
   "@trashMoveConfirm": {
-    "description": "Move-to-Trash dialogs (card, deck): the confirm. The Short Label Rule in DESIGN.md: it must fit its half of the footer pair."
+    "description": "Move-to-Trash dialogs (card, deck): the confirm (DEV-179: the title names the object, so the confirm is the verb alone). The Short Label Rule in DESIGN.md: it must fit its half of the footer pair."
   },
   "cardTrashedToast": "“{front}” moved to Trash",
   "@cardTrashedToast": {
@@ -1734,14 +1734,9 @@
   "@trashPurgeKeep": {
     "description": "Screen 06 purge dialog: the safe choice, focused by default (BR-TRASH-011)."
   },
-  "trashPurgeConfirm": "Delete {count}",
+  "trashPurgeConfirm": "Delete",
   "@trashPurgeConfirm": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen 06 purge dialog: the destructive confirm."
+    "description": "Screen 06 purge dialog: the destructive confirm (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "trashPurgedCards": "{count, plural, =1{1 card deleted permanently} other{{count} cards deleted permanently}}",
   "@trashPurgedCards": {
@@ -2321,14 +2316,9 @@
     },
     "description": "Screen handoff 02 (library alignment phase D): resetSwitchTo."
   },
-  "resetConfirm": "Start cycle {cycle}",
+  "resetConfirm": "Reset",
   "@resetConfirm": {
-    "placeholders": {
-      "cycle": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 02 (library alignment phase D): resetConfirm."
+    "description": "Screen handoff 02 (library alignment phase D): resetConfirm. The intro names the cycle it starts, so the confirm is the verb alone (DEV-179)."
   },
   "resetDoneToast": "Cycle {cycle} started · {count, plural, =1{1 card is new again} other{{count} cards are new again}}",
   "@resetDoneToast": {
@@ -2628,7 +2618,7 @@
   "@galleryFOverlaysFeedback": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
-  "galleryMoveToTrash": "Move to Trash",
+  "galleryMoveToTrash": "Move",
   "@galleryMoveToTrash": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
@@ -3945,14 +3935,9 @@
   "@exportContentNote": {
     "description": "Export sheet: what the file holds and what it leaves out (BR-TRANSFER-008)."
   },
-  "exportAction": "{count, plural, =1{Export 1 card} other{Export {count} cards}}",
+  "exportAction": "Export",
   "@exportAction": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Export sheet primary action (UC-TRANSFER-002 step 3)."
+    "description": "Export sheet primary action (UC-TRANSFER-002 step 3); the title names the cards (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "exportPreparing": "Preparing…",
   "@exportPreparing": {
@@ -5201,9 +5186,9 @@
   "@settingsResetSafe": {
     "description": "Reset confirmation note: it is not Reset learning progress (BR-SETTINGS-008, BR-SRS-022)."
   },
-  "settingsResetConfirm": "Reset options",
+  "settingsResetConfirm": "Reset",
   "@settingsResetConfirm": {
-    "description": "Reset confirmation button."
+    "description": "Reset confirmation button (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "settingsResetDone": "App options reset to defaults",
   "@settingsResetDone": {
@@ -5429,9 +5414,9 @@
     },
     "description": "Screen 03 algorithm sheet: the suggested scheduler's description."
   },
-  "starterAddDeck": "Add deck",
+  "starterAddDeck": "Add",
   "@starterAddDeck": {
-    "description": "Screen 03 algorithm sheet: adds the template."
+    "description": "Screen 03 algorithm sheet: adds the template (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "starterTryAgain": "Try again",
   "@starterTryAgain": {
@@ -5481,9 +5466,9 @@
     },
     "description": "Screen 03 second copy dialog: the body."
   },
-  "starterSecondCopyConfirm": "Add second copy",
+  "starterSecondCopyConfirm": "Add",
   "@starterSecondCopyConfirm": {
-    "description": "Screen 03 second copy dialog: confirms and opens the algorithm sheet."
+    "description": "Screen 03 second copy dialog: confirms and opens the algorithm sheet (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "starterNoneTitle": "No starter decks in this build",
   "@starterNoneTitle": {
@@ -5718,9 +5703,9 @@
     },
     "description": "Screen 05 delete dialog: the note that no card is touched (BR-TAG-008)."
   },
-  "tagsDeleteConfirm": "Delete tag",
+  "tagsDeleteConfirm": "Delete",
   "@tagsDeleteConfirm": {
-    "description": "Screen 05 delete dialog: the destructive confirm; the title's verb, no count (the body states it, The Short Label Rule)."
+    "description": "Screen 05 delete dialog: the destructive confirm; the title's verb, no count (the body states it, The Short Label Rule) (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "tagsRenameFailed": "Couldn't rename tag. Nothing changed — try again in a moment.",
   "@tagsRenameFailed": {
@@ -6270,6 +6255,10 @@
   "@syncTryAgain": {
     "description": "Screen 27 (SB-U1): re-queues the refused rows and syncs."
   },
+  "syncKeepConfirm": "Keep",
+  "@syncKeepConfirm": {
+    "description": "Screen 27 keep dialog: the confirm (DEV-179: the title names the object, so the confirm is the verb alone)."
+  },
   "syncKeepOnDevice": "Keep on device",
   "@syncKeepOnDevice": {
     "description": "Screen 27 (SB-U1): forgets the refusals; the data stays local (R7)."
@@ -6717,6 +6706,10 @@
   "@monitoringReopen": {
     "description": "Screen 28 detail: the triage button of a fixed log."
   },
+  "monitoringStatusConfirm": "Save",
+  "@monitoringStatusConfirm": {
+    "description": "Screen 28 triage sheet: the confirm; the sheet's title is the action (DEV-179)."
+  },
   "monitoringNoteLabel": "Note (optional)",
   "@monitoringNoteLabel": {
     "description": "Screen 28 detail: the note field of the triage sheet."
@@ -7039,7 +7032,11 @@
   },
   "accountSwitch": "Switch account",
   "@accountSwitch": {
-    "description": "Screen 32's row and its dialog's confirm (Account UI spec §5.6)."
+    "description": "Screen 32's row (Account UI spec §5.6)."
+  },
+  "accountSwitchConfirm": "Switch",
+  "@accountSwitchConfirm": {
+    "description": "Screen 32: the switch dialog's confirm (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "accountSwitchHint": "Move this phone to another account",
   "@accountSwitchHint": {
@@ -7143,14 +7140,9 @@
     },
     "description": "Screen 30 reauth, another account: title (Account UI spec §9 B8)."
   },
-  "accountUnsentConfirm": "Lose {count, plural, =1{1 change} other{{count} changes}}",
+  "accountUnsentConfirm": "Lose",
   "@accountUnsentConfirm": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screens 30 and 31: the unsent-loss dialog's confirm, naming what it loses (DEV-168)."
+    "description": "Screens 30 and 31: the unsent-loss dialog's confirm; the title names what it loses (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "accountSignedOutLabel": "Signed out",
   "@accountSignedOutLabel": {

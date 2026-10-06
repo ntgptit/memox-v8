@@ -282,7 +282,7 @@ class _Actions extends StatelessWidget {
           ? l10n.exportPreparing
           : isRetry
           ? l10n.exportTryAgain
-          : l10n.exportAction(scope.cardCount),
+          : l10n.exportAction,
       confirmIcon: isRetry ? AppIcons.retry : AppIcons.share,
       isConfirmLoading: state.isPreparing,
       onConfirm: onExport,

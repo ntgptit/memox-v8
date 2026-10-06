@@ -241,7 +241,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Keep 3 changes on this device only?'), findsOneWidget);
     expect(commands.keeps, 0);
-    await tester.tap(find.text('Keep on device').last);
+    await tester.tap(find.text('Keep'));
     await _settle(tester);
     expect(commands.keeps, 1);
     expect(find.text('Kept on this device'), findsOneWidget);
