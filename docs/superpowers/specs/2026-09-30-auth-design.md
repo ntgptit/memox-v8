@@ -76,7 +76,9 @@ One new migration (after `20261009000000`), pgTAP in
   `expires_at` (15 minutes); one live token per anonymous user.
 - **`public.account_merge_receipt`**: `operation_id` (PK), `source_user_id`,
   `target_user_id` (no cascade on the source), `merged_at`,
-  `acknowledged_at`, `expires_at` (7 days).
+  `acknowledged_at`, `expires_at` (7 days; no longer read since DEV-188: a
+  receipt stays until acknowledged, so a device that merged and comes back
+  months later still gets MERGED).
 - **Foreign keys added**: `user_id → auth.users(id) on delete cascade` on
   every table with a `user_id` (`deck`, `card`, `tags`, `delete_batch`,
   `review_log`, `card_schedule`, `account_settings`, `user_sync_version`,
@@ -106,7 +108,7 @@ One new migration (after `20261009000000`), pgTAP in
 | `public.account_merge(token, operation_id)` | non-anonymous | if a receipt for `operation_id` with `target = auth.uid()` exists → `MERGED`. Else consumes the token atomically (`delete … where token_hash = … and expires_at > now() returning`); none → `CLAIM_INVALID`. In one transaction: moves every source row to the caller with **new `server_version`s** from the caller's counter, merges tags with the same `name_folded` (re-pointing `card_tags`), keeps the caller's `account_settings`, writes the receipt, deletes the source user (its profile and role go with it) |
 | `public.account_merge_ack(operation_id)` | non-anonymous | sets `acknowledged_at` on the caller's receipt; idempotent |
 | `public.account_delete()` | authenticated | refuses the last admin (`LAST_ADMIN`); `private.delete_user_data(uid)` = delete from `auth.users` (cascades). Later, Storage objects would have to go first |
-| cron `account-cleanup` (daily) | — | deletes users with `is_anonymous` and `last_active_at < now() - 90 days`; deletes receipts acknowledged or expired |
+| cron `account-cleanup` (daily) | — | deletes users with `is_anonymous` and `last_active_at < now() - 90 days`; deletes acknowledged receipts (an unacknowledged one stays whatever its age, DEV-188) and expired claims; forgets `sync_applied_op` rows older than 90 days (DEV-200: every operation is idempotent by content, so a forgotten op id resent is applied again as the same upsert or delete) |
 
 ### 2.4 Owner setup (SB-A4)
 
