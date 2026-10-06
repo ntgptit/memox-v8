@@ -81,6 +81,29 @@ run, and it cannot be regenerated once the `.drift` files have moved on.
   the rows) or seeds the outbox again fails there. At every release, raise
   `_releasedVersion` in that file to the version shipped.
 
+## Wire evolution
+
+A Drift migration ships with a build; the server and the other devices may be
+ahead of it or behind it for weeks. The sync wire (the `row` of a push
+operation and of a pulled change) therefore evolves by addition only, per
+`docs/superpowers/specs/2026-09-27-server-sync-design.md` §4.4:
+
+- A new key is nullable or has a default; absent means the old behaviour (the
+  column's default, or unchanged for a collection key such as `tagIds`).
+- A key is never renamed or dropped without the old key kept for at least one
+  release.
+- The adapter reads a new key `as T?` with its default, never `as T`; only
+  the contract keys the spec lists are read `as T`.
+- A new entity type is ignored by older builds; `pull_entity_types` brings it
+  down once the build that knows it runs.
+- A slice that changes the wire adds one pgTAP test: a push in the previous
+  slice's wire is still `applied`.
+
+So a column added by a migration is a new optional key on the wire, with its
+`DEFAULT` in the `.drift` file and the same default in the adapter; and a
+`NOT NULL` column without a default is a new contract key only when every
+build that pushes already writes it.
+
 ## Changing a column safely
 
 Adding a nullable or defaulted column is the cheap case, and it is why the v1 → v2

@@ -39,11 +39,13 @@ class AccountSettingsSyncDao extends DatabaseAccessor<AppDatabase>
   @override
   Future<void> upsertFromServer(Map<String, Object?> row, int serverVersion) =>
       updateAppSettings(
+        // Every setting is an optional wire key (server sync spec §4.4): one
+        // the row leaves out stays as it is on this device.
         AppSettingsCompanion(
-          cardLimit: Value(row['cardLimit'] as int),
-          newCardOrder: Value(row['newCardOrder'] as String),
-          themeMode: Value(row['themeMode'] as String),
-          language: Value(row['language'] as String),
+          cardLimit: Value.absentIfNull(row['cardLimit'] as int?),
+          newCardOrder: Value.absentIfNull(row['newCardOrder'] as String?),
+          themeMode: Value.absentIfNull(row['themeMode'] as String?),
+          language: Value.absentIfNull(row['language'] as String?),
           updatedAt: Value(fromWireTime(row['updatedAt'])!),
         ),
         appSettingsRowId,

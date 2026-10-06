@@ -154,6 +154,49 @@ created_at DATETIME, attempts INTEGER)`
 - Network errors and 5xx responses keep the entry, increase `attempts`, and
   retry with exponential backoff from 5 seconds up to 5 minutes.
 
+### 4.4 Wire evolution
+
+A build that is behind the server, and a server that is behind a build, talk
+to each other across every release (DEV-197). The `row` of an operation and
+of a change is a JSON object; these rules keep it readable by both sides:
+
+- **Keys are only added.** A new key is nullable or has a default; a row
+  without it means the old behaviour: the column's default, or for a key that
+  carries a collection, unchanged (R10 `tagIds`: a card row without the key
+  leaves the card's links as they are). The server reads a missing key as
+  `null` and never fails a push on a key a build could not know.
+- **A key is never renamed or dropped** without the old key being written
+  and read for at least one release.
+- **An adapter reads a new key null-safe:** `row['x'] as T?` with the
+  default, never `row['x'] as T`. Only the contract keys below are read
+  `as T`.
+- **A new entity type** is ignored by an older build (it has no adapter), and
+  `pull_entity_types` in `sync_state` brings its rows down once the build
+  that knows it runs.
+- **Every slice that changes the wire** adds one pgTAP test: a push in the
+  wire of the previous slice is still `applied`.
+- **An old build's `delete`** carries no key but the entity (above); a slice
+  that adds a key to the operation (DEV-181's `deleteBatchId`) treats its
+  absence as the behaviour before the slice: the delete is unconditional.
+
+**Contract keys.** `NOT NULL` without a default on both sides, written by
+every build and never dropped; an adapter reads them `as T`:
+
+| Entity | Contract keys |
+|---|---|
+| `deck` | `id`, `name`, `rootId`, `depth`, `siblingPosition`, `createdAt`, `updatedAt` |
+| `card` | `id`, `deckId`, `front`, `back`, `createdAt`, `updatedAt` |
+| `tag` | `id`, `name`, `nameFolded`, `createdAt` |
+| `delete_batch` | `id`, `itemType`, `rootItemId`, `deletedAt` |
+| `card_schedule` | `cardId`, `schedulerType`, `schedulerVersion`, `generation` |
+| `review_log` | `id`, `cardId`, `sessionId`, `schedulerType`, `generation`, `kind`, `mode`, `action`, `answeredAt` |
+| `account_settings` | `updatedAt` |
+
+Every other key is optional: nullable columns read `as T?`, defaulted ones
+read `as T?` with the default (`deck.contentType`, `card.isFlagged`,
+`card_schedule.answerCount` and `lapseCount`), and the four settings of
+`account_settings` are left as they are when the row leaves them out.
+
 ## 5. Conflict rules by data class
 
 | Data | Rule |

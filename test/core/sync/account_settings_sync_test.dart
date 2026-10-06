@@ -93,6 +93,28 @@ void main() {
     },
   );
 
+  test(
+    'a pulled row without a setting, from a build before the key, leaves that '
+    'setting as it is (server sync spec §4.4)',
+    () async {
+      await a.db.customStatement(
+        "UPDATE app_settings SET card_limit = 30, theme_mode = 'dark' WHERE id = 1",
+      );
+      await SyncStore(a.db).applyingRemote(
+        () => AccountSettingsSyncDao(a.db).upsertFromServer({
+          'language': 'vi',
+          'updatedAt': '2026-09-28T00:00:00Z',
+        }, 7),
+      );
+
+      final settings = await _settings(a.db);
+      expect(settings.language, 'vi');
+      expect(settings.cardLimit, 30);
+      expect(settings.themeMode, 'dark');
+      expect(settings.newCardOrder, 'created');
+    },
+  );
+
   test('a device on the defaults pushes no settings', () async {
     await b.coordinator.runOnce();
     expect(
