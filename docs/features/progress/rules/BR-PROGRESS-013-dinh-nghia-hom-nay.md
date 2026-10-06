@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-"Hôm nay" của Progress là nửa khoảng `[startOfToday, startOfTomorrow)` theo đúng ranh giới ngày học cục bộ của BR-STUDY-074, dựng từ **một** snapshot của `clockProvider` và `utcOffsetProvider`. Mọi con số của một lần hiển thị — Today, Last 7 days, streak — MUST đến từ cùng snapshot đó; MUST NOT có hai lần đọc đồng hồ trong một emission, và SQL MUST NOT tự dẫn xuất local midnight.
+"Hôm nay" của Progress là nửa khoảng `[startOfToday, startOfTomorrow)` theo đúng ranh giới ngày học cục bộ của BR-STUDY-074, dựng từ **một** lần đọc `DayClock` trong use case (`WatchProgressUseCase`, `WatchDeckProgressUseCase`): `now` và offset múi giờ của chính nó, không có provider offset riêng. Mọi con số của một lần hiển thị — Today, Last 7 days, streak — MUST đến từ cùng snapshot đó; MUST NOT có hai lần đọc đồng hồ trong một emission, và SQL MUST NOT tự dẫn xuất local midnight.
 
 **Enforced by:** store
 **Liên quan:** BR-STUDY-074

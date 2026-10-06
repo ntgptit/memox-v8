@@ -102,8 +102,8 @@ do người dùng chọn và cập nhật lịch. Chúng không bao giờ trộn
   học khác thì phiên đó chuyển `abandoned` với `end_reason = interrupted`, và
   người dùng dựng phiên mới (BR-STUDY-072). App bị hệ điều hành thu hồi rơi vào
   đúng nhánh này, và nó khác `user_exit`: người dùng không hề bỏ cuộc.
-- **A4 — Còn card quá hạn ngoài giới hạn 50:** ở tổng kết nói rõ còn bao nhiêu và
-  cho phép bắt đầu phiên tiếp theo ngay.
+- **A4 — Còn card quá hạn ngoài `card_limit`** (mặc định 20, BR-STUDY-003): ở tổng
+  kết nói rõ còn bao nhiêu và cho phép bắt đầu phiên tiếp theo ngay.
 - **A5 — Xoá deck đang ôn dở:** kết thúc phiên với `content_deleted`, hiện tổng kết
   "Ended — content moved to Trash", rồi người dùng về danh sách (quyết định của chủ
   dự án 2026-09-28, như D8 của spec study UI: thoát giữa phiên hiện tổng kết).

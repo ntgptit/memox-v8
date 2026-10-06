@@ -20,6 +20,9 @@ AppDatabase openTestDatabase({QueryInterceptor? interceptor}) {
 final class SelectCounter extends QueryInterceptor {
   int selects = 0;
 
+  /// Every SELECT run, in order, for a test that checks a statement's shape.
+  final statements = <String>[];
+
   @override
   Future<List<Map<String, Object?>>> runSelect(
     QueryExecutor executor,
@@ -27,6 +30,7 @@ final class SelectCounter extends QueryInterceptor {
     List<Object?> args,
   ) {
     selects++;
+    statements.add(statement);
     return super.runSelect(executor, statement, args);
   }
 }
