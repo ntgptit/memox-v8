@@ -41,8 +41,14 @@ final class FlakySettingsRepository implements SettingsRepository {
 
   @override
   Future<Outcome<void, SettingsRejection>> saveStudyDefaults({
-    required StudyOptions options,
-  }) => _write(() => _inner.saveStudyDefaults(options: options));
+    int? cardLimit,
+    NewCardOrder? newCardOrder,
+  }) => _write(
+    () => _inner.saveStudyDefaults(
+      cardLimit: cardLimit,
+      newCardOrder: newCardOrder,
+    ),
+  );
 
   @override
   Future<Outcome<void, SettingsRejection>> setTheme({

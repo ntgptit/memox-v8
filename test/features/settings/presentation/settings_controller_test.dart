@@ -102,6 +102,19 @@ void main() {
     expect(_state(rig).isCardLimitInvalid, isFalse);
   });
 
+  _settingsTest('choosing the order writes only the order: a limit a pull '
+      'changed meanwhile stays (BR-SETTINGS-007, DEV-217)', (rig) async {
+    // The row changes under the controller's snapshot, as a pull does.
+    await rig.store.saveStudyDefaults(cardLimit: 55);
+
+    _controller(rig).chooseNewCardOrder(NewCardOrder.random);
+    await pumpEventQueue();
+
+    final stored = await _stored(rig);
+    expect(stored.studyDefaults.newCardOrder, NewCardOrder.random);
+    expect(stored.studyDefaults.cardLimit, 55);
+  });
+
   _settingsTest('a second submit of a kind in flight is ignored (A4)', (
     rig,
   ) async {

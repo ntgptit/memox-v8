@@ -26,10 +26,18 @@ final class StudyOptions {
   final int cardLimit;
   final NewCardOrder newCardOrder;
 
-  Outcome<void, SettingsRejection> check() {
+  Outcome<void, SettingsRejection> check() => checkCardLimit(cardLimit);
+
+  /// BR-STUDY-003 on one limit: the check every save and every form uses,
+  /// so the bounds are compared in one place (DEV-217).
+  static Outcome<void, SettingsRejection> checkCardLimit(int cardLimit) {
     if (cardLimit < minCardLimit || cardLimit > maxCardLimit) {
       return const Rejected(SettingsRejection.cardLimitOutOfRange);
     }
     return const Ok(null);
   }
+
+  /// Whether a typed limit may be saved: parsed, and within the bounds.
+  static bool isValidCardLimit(int? cardLimit) =>
+      cardLimit != null && checkCardLimit(cardLimit) is Ok;
 }

@@ -65,10 +65,8 @@ void main() {
 
   Future<void> limitCards(int cardLimit) async => expect(
     await SettingsRepositoryImpl(db, now: () => now).saveStudyDefaults(
-      options: StudyOptions(
-        cardLimit: cardLimit,
-        newCardOrder: NewCardOrder.created,
-      ),
+      cardLimit: cardLimit,
+      newCardOrder: NewCardOrder.created,
     ),
     isA<Ok<void, SettingsRejection>>(),
   );

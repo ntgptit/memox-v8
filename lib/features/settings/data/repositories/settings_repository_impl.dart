@@ -33,15 +33,25 @@ final class SettingsRepositoryImpl implements SettingsRepository {
 
   @override
   Future<Outcome<void, SettingsRejection>> saveStudyDefaults({
-    required StudyOptions options,
+    int? cardLimit,
+    NewCardOrder? newCardOrder,
   }) {
+    if (cardLimit == null && newCardOrder == null) {
+      throw ArgumentError('saveStudyDefaults needs a limit or an order');
+    }
     final at = _now();
     return _db.mappedTransaction(() async {
-      if (options.check() case Rejected(:final reason)) return Rejected(reason);
+      if (cardLimit != null) {
+        if (StudyOptions.checkCardLimit(cardLimit) case Rejected(
+          :final reason,
+        )) {
+          return Rejected(reason);
+        }
+      }
       await _dao.updateRow(
         AppSettingsCompanion(
-          cardLimit: Value(options.cardLimit),
-          newCardOrder: Value(options.newCardOrder.name),
+          cardLimit: Value.absentIfNull(cardLimit),
+          newCardOrder: Value.absentIfNull(newCardOrder?.name),
           updatedAt: Value(at),
         ),
       );

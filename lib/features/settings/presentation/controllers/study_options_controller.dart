@@ -61,10 +61,7 @@ class StudyOptionsController extends _$StudyOptionsController {
   void typeCardLimit(String text) {
     if (state.isSaving) return;
     final value = int.tryParse(text);
-    final isValid =
-        value != null &&
-        value >= StudyOptions.minCardLimit &&
-        value <= StudyOptions.maxCardLimit;
+    final isValid = StudyOptions.isValidCardLimit(value);
     state = state.edited(cardLimit: value, isCardLimitInvalid: !isValid);
   }
 
