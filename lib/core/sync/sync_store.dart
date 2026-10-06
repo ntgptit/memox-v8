@@ -101,7 +101,8 @@ class SyncStore extends DatabaseAccessor<AppDatabase> with _$SyncStoreMixin {
         await _put(syncLastFailureKindKey, kind.name);
       });
 
-  /// A refusal without a server copy (spec §4); replaces an earlier one.
+  /// A refusal without a server copy, or one whose copy could not be applied
+  /// here (spec §4, DEV-183); replaces an earlier one.
   Future<void> recordRejection(
     String entityType,
     String entityId,

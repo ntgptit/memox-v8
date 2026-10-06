@@ -43,7 +43,9 @@ Success means:
 - Server codes on a refused row with no server copy: `SYNC_ENTITY_UNSUPPORTED`,
   `VALIDATION_FAILED`, `DECK_PARENT_MISSING`, `DECK_TREE_CYCLE`, `DECK_TREE_TOO_DEEP`
   (spec backend Supabase §4). With a server copy (`current`), the copy is applied: that
-  is conflict resolution, not a failure.
+  is conflict resolution, not a failure. A copy this device cannot hold yet is
+  recorded with the app's own code `LOCAL_APPLY_FAILED` (DEV-183) and cleared once a
+  pull applies the server's copy; until then it counts as a refused row.
 - The kit (UI Kit v3) has no sync UI: v3 removed `OfflineBanner` because the product
   had no network then. The UI here comes from Impeccable `shape` (2026-09-28) and is a
   deviation recorded per screen (§8).
