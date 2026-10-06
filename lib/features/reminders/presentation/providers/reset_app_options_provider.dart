@@ -6,7 +6,6 @@ import 'package:memox/features/reminders/domain/usecases/reconcile_reminder_use_
 import 'package:memox/features/reminders/domain/usecases/reset_app_options_use_case.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
-import 'package:memox/features/settings/domain/usecases/reset_app_settings_use_case.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'reset_app_options_provider.g.dart';
@@ -18,7 +17,7 @@ part 'reset_app_options_provider.g.dart';
 Future<Outcome<void, SettingsRejection>> Function() resetAppOptions(Ref ref) {
   final settings = ref.watch(settingsRepositoryProvider);
   final reset = ResetAppOptionsUseCase(
-    ResetAppSettingsUseCase(settings),
+    settings,
     ReconcileReminderUseCase(
       settings,
       ref.watch(reminderPlatformRepositoryProvider),

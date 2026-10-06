@@ -2,7 +2,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/reminders/domain/usecases/reconcile_reminder_use_case.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
-import 'package:memox/features/settings/domain/usecases/reset_app_settings_use_case.dart';
+import 'package:memox/features/settings/domain/repositories/settings_repository.dart';
 
 /// Reset app options as the app runs it (UC-SETTINGS-001 A3): the settings
 /// back to their defaults, then the pending reminder brought in line with
@@ -15,13 +15,13 @@ import 'package:memox/features/settings/domain/usecases/reset_app_settings_use_c
 /// after the reset landed is not an error of the reset: the next start or
 /// resume reconciles again.
 final class ResetAppOptionsUseCase {
-  const ResetAppOptionsUseCase(this._reset, this._reconcile);
+  const ResetAppOptionsUseCase(this._settings, this._reconcile);
 
-  final ResetAppSettingsUseCase _reset;
+  final SettingsRepository _settings;
   final ReconcileReminderUseCase _reconcile;
 
   Future<Outcome<void, SettingsRejection>> call() async {
-    final outcome = await _reset();
+    final outcome = await _settings.resetToDefaults();
     if (outcome case Rejected()) return outcome;
     try {
       await _reconcile();
