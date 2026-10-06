@@ -352,7 +352,9 @@ Giữ history qua các lần reset là lý do bảng này mang `scheduler_type` 
 **hiện tại**, còn dòng history phải nói được nó thuộc chu kỳ nào theo luật nào.
 
 Index: `idx_review_log_card` trên `(card_id, answered_at)`; `idx_review_log_session`
-trên `(session_id)`.
+trên `(session_id)`; từ schema 14 (DEV-208) `idx_review_log_answered` trên
+`(answered_at)`: các câu Progress đọc tuần, tháng theo khoảng `answered_at` và streak
+dò từng ngày qua index này thay vì gộp cả lịch sử.
 
 Bảng này lớn nhanh nhất — mỗi lượt đánh giá một dòng, reset không dọn bớt. Đây là
 bảng đầu tiên cần nhìn khi bàn về kích thước DB.

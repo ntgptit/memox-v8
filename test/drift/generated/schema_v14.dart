@@ -2101,6 +2101,10 @@ class DatabaseAtV14 extends GeneratedDatabase {
     'idx_review_log_session',
     'CREATE INDEX idx_review_log_session ON review_log (session_id)',
   );
+  late final Index idxReviewLogAnswered = Index(
+    'idx_review_log_answered',
+    'CREATE INDEX idx_review_log_answered ON review_log (answered_at)',
+  );
   late final Trigger reviewLogAppendOnly = Trigger(
     'CREATE TRIGGER review_log_append_only BEFORE UPDATE ON review_log BEGIN SELECT RAISE (ABORT, \'review_log is append-only\');END',
     'review_log_append_only',
@@ -2184,6 +2188,7 @@ class DatabaseAtV14 extends GeneratedDatabase {
     idxCardScheduleDue,
     idxReviewLogCard,
     idxReviewLogSession,
+    idxReviewLogAnswered,
     reviewLogAppendOnly,
     reviewLogNoDelete,
     idxTagsOwnerNameFolded,
