@@ -136,6 +136,11 @@ server applies later wins, tombstones for deletes, pending local rows skipped on
   with it after at most one more push.
 - Cost (D5): when two devices review the same card offline, the later answer decides
   the schedule; the other answer stays in the history.
+- A pull skips a schedule pending on this device, so a reset or a scheduler change
+  pulled from another device can move the root past it. At the end of the pull the
+  adapter reseeds every schedule not at its root's scheduler and generation (invariant
+  9) with the initial state at the root's generation, as the change reseeded it on
+  the device it was made, and queues it (DEV-224).
 
 ### 3.5 Account settings
 
@@ -172,7 +177,8 @@ and the next run starts from the stored cursor. Each change applies in a savepoi
 its own: one this device cannot hold is recorded as `PULL_APPLY_FAILED` and skipped
 (DEV-185). The last step inside the transaction, run only when the pull applied
 something (DEV-210), gives every card without a `card_schedule` row its initial
-schedule (section 3.1).
+schedule (section 3.1) and reseeds every schedule the pull left behind its root
+(section 3.4, DEV-224).
 
 Cost: local writes wait while a pull runs. The SB-S2 measurement (section 6) records
 the time of a large first pull; if it blocks study noticeably, the fix is a smaller
