@@ -54,7 +54,21 @@ run, and it cannot be regenerated once the `.drift` files have moved on.
   database throws or, worse, reads a column that does not exist yet. Use
   `customStatement` / raw SQL for data movement inside a step.
 - **Seed data only in `onCreate`** (or gated on `details.wasCreated`). Seeding in
-  `onUpgrade` duplicates rows on every existing device.
+  `onUpgrade` duplicates rows on every existing device. The one exception is
+  queueing rows a device already holds for sync (the `seedOutboxSql` steps);
+  from v13 on such a seed ends in `ON CONFLICT (entity_type, entity_id) DO
+  NOTHING`, so a row already queued is never a reason for the step to fail.
+- **An upgrade is one transaction.** `onUpgrade` wraps
+  `VersionedSchema.runMigrationSteps` in `transaction(...)` (DEV-194): Drift
+  writes `user_version` only after a whole step, so a step stopped halfway (the
+  app killed, a statement refused) would otherwise leave the new version's
+  tables, columns and seeded rows under the old version, and every later open
+  would fail on them. A step therefore never opens a transaction of its own
+  beyond the savepoint `TableMigration` takes, never commits, and never relies
+  on `PRAGMA foreign_keys` inside it (a no-op in a transaction; foreign keys
+  are off until `beforeOpen`). `test/drift/interrupted_migration_test.dart`
+  is the proof: it plants the cause of a mid-step failure, opens, and expects
+  the old version whole.
 
 ## Changing a column safely
 
