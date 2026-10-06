@@ -81,6 +81,9 @@ Cây này cho biết file đặt ở đâu, không phải danh sách thư mục 
 - Giữa các feature:
   - Được import `domain/{entities,models,repositories,failures}/` của feature khác.
   - `di/` của feature khác chỉ được import từ `presentation/` và `di/`.
+  - `di/` không import `domain/usecases/` của feature nào: provider của use case nằm ở
+    `presentation/providers/` của chính feature đó, nên use case không lọt sang feature khác qua
+    `di/` (DEV-174, `diUseCaseViolations`).
   - Không bao giờ import `data/`, `presentation/`, `domain/usecases/` của feature khác.
 - Map import Dart khai báo trong `test/architecture/boundary_rules.dart`, không có chu
   trình:

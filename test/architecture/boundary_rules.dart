@@ -161,6 +161,19 @@ List<String> crossFeatureViolations(
   return violations;
 }
 
+/// ADR-011 D5: `di/` wires repositories, never a use case; a use case's
+/// provider sits in its own feature's `presentation/providers/`, so no
+/// feature reaches another's use case through `di/` (DEV-174).
+List<String> diUseCaseViolations(List<SourceFile> sources) => [
+  for (final source in sources)
+    if (_layerOf(source.path) == 'di')
+      for (final uri in source.imports)
+        if (_isUseCase(uri)) '${source.path} imports $uri',
+];
+
+bool _isUseCase(String uri) =>
+    uri.startsWith('${_package}features/') && uri.contains('/domain/usecases/');
+
 /// ADR-011 dependency rules: `core/` knows no feature, no `app/` and no
 /// `shared/`.
 List<String> coreViolations(List<SourceFile> sources) => [

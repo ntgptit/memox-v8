@@ -21,6 +21,10 @@ void main() {
     expect(crossFeatureViolations(sources), isEmpty);
   });
 
+  test('no di/ reaches a use case (DEV-174)', () {
+    expect(diUseCaseViolations(sources), isEmpty);
+  });
+
   test('core imports no feature, app/ or shared/', () {
     expect(coreViolations(sources), isEmpty);
   });
