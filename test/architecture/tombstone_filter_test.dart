@@ -32,6 +32,9 @@ const _readsTombstones = <String, String>{
   'lib/core/database/queries/sync_outbox_queries.drift#seedDeckOutbox':
       'a new anonymous user uploads every deck, a deck in the Trash too, '
       'with its delete_batch_id (auth spec #12)',
+  'lib/core/database/queries/sync_outbox_queries.drift#pendingDeckOutbox':
+      'the push order reads the depth of a pending deck in any state: a deck '
+      'in the Trash is pushed too, with its delete_batch_id (DEV-182)',
   'lib/core/database/queries/sync_outbox_queries.drift#seedCardOutbox':
       'a new anonymous user uploads every card, a card in the Trash too, '
       'with its delete_batch_id (auth spec #12)',

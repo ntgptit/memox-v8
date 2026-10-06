@@ -27,6 +27,54 @@ void main() {
     expect(await store.pendingBatch(const [], 10), isEmpty);
   });
 
+  test(
+    'a batch holds the first type in adapter order that has entries',
+    () async {
+      await store.enqueue('card', 'K', 'upsert', DateTime.utc(2026, 9, 1));
+      await store.enqueue('deck', 'D', 'upsert', DateTime.utc(2026, 9, 2));
+
+      final batch = await store.pendingBatch(['deck', 'card'], 10);
+
+      expect(batch.map((e) => '${e.entityType}/${e.entityId}'), ['deck/D']);
+      expect(
+        (await store.pendingBatch(['tag', 'card'], 10)).map((e) => e.entityId),
+        ['K'],
+      );
+    },
+  );
+
+  test('a pending deck follows the deck it moved into, whatever was queued '
+      'first; a delete goes before both (DEV-182)', () async {
+    await store.applyingRemote(() async {
+      await _root(db, 'N');
+      await db.customStatement(
+        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, "
+        "sibling_position, created_at, updated_at) "
+        "VALUES ('C', 'c', 'N', 'N', 2, 'card', 0, 0, 0)",
+      );
+    });
+    await store.enqueue('deck', 'C', 'upsert', DateTime.utc(2026, 9, 1));
+    await store.enqueue('deck', 'N', 'upsert', DateTime.utc(2026, 9, 2));
+    await store.enqueue('deck', 'X', 'delete', DateTime.utc(2026, 9, 3));
+
+    final batch = await store.pendingBatch(['deck'], 10);
+
+    expect(batch.map((e) => e.entityId), ['X', 'N', 'C']);
+  });
+
+  test('a batch of one type is read through its index, in index order '
+      '(DEV-205)', () async {
+    final plan = await db
+        .customSelect(
+          'EXPLAIN QUERY PLAN SELECT * FROM sync_outbox '
+          "WHERE entity_type = 'card' ORDER BY created_at, rowid LIMIT 100",
+        )
+        .get();
+    final lines = plan.map((r) => r.data.values.join(' ')).join('\n');
+    expect(lines, contains('USING INDEX idx_sync_outbox_type_created'));
+    expect(lines, isNot(contains('USE TEMP B-TREE')));
+  });
+
   test('the device id is created once and kept', () async {
     final first = await store.deviceId();
     expect(await store.deviceId(), first);

@@ -187,7 +187,8 @@ void main() {
     );
   });
 
-  test('an edit made while its push is in flight survives the ack', () async {
+  test('an edit made while its push is in flight survives the ack and goes '
+      'in the next batch of the same run', () async {
     await _root(a.db, 'R', name: 'first');
     server.duringPush = () async {
       server.duringPush = null;
@@ -197,10 +198,10 @@ void main() {
     };
 
     await a.coordinator.runOnce();
-    expect(await a.db.select(a.db.syncOutbox).get(), hasLength(1));
 
-    await a.coordinator.runOnce();
+    expect(server.pushed, ['deck/R', 'deck/R']);
     expect(server.row('deck', 'R')!.row!['name'], 'second');
+    expect(await a.db.select(a.db.syncOutbox).get(), isEmpty);
   });
 
   test('a rejection applies the server copy', () async {

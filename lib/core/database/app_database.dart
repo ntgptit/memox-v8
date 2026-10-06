@@ -35,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
   final MutationGate mutationGate;
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -231,6 +231,11 @@ class AppDatabase extends _$AppDatabase {
       await m.createTrigger(schema.cardSyncInsert);
       await m.createTrigger(schema.cardSyncUpdate);
       await m.createTrigger(schema.cardSyncDelete);
+    },
+    from13To14: (m, schema) async {
+      // DEV-205: a push batch is one entity type, oldest first, read through
+      // this index instead of a sort of the whole outbox. No row changes.
+      await m.createIndex(schema.idxSyncOutboxTypeCreated);
     },
   );
 }
