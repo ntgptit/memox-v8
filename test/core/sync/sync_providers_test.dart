@@ -4,7 +4,11 @@ import 'package:memox/app/sync_tables.dart';
 import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
+
+import '../../support/auth_fakes.dart';
+import 'fake_sync_server.dart';
 
 import '../../support/test_database.dart';
 
@@ -87,5 +91,43 @@ void main() {
       'account_settings',
     ]);
     expect(container.read(syncCoordinatorProvider), isNotNull);
+  });
+
+  test('a reconnect from networkStatusProvider makes the scheduler run at '
+      'once, with no syncNow (DEV-203)', () async {
+    final server = FakeAuthServer();
+    final network = FakeNetworkStatus(server);
+    final api = FakeSyncServer();
+    var pulls = 0;
+    api.beforeChanges = (_) async => pulls++;
+    final db = openTestDatabase();
+    final container = ProviderContainer(
+      overrides: [
+        ...syncTableOverrides,
+        databaseProvider.overrideWithValue(db),
+        supabaseConfigProvider.overrideWithValue(
+          const SupabaseConfig(
+            url: 'https://x.supabase.co',
+            publishableKey: 'k',
+          ),
+        ),
+        networkStatusProvider.overrideWithValue(network),
+        syncApiProvider.overrideWithValue(api),
+      ],
+    );
+    addTearDown(() async {
+      container.dispose();
+      await db.close();
+    });
+    final scheduler = container.read(syncSchedulerProvider)!;
+
+    scheduler.resume(); // the account is Ready: the first run
+    await pumpEventQueue();
+    expect(pulls, 1);
+
+    network.goOnline();
+    await pumpEventQueue();
+
+    expect(pulls, 2);
   });
 }

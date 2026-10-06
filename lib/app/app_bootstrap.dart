@@ -11,6 +11,7 @@ import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
 import 'package:memox/core/logging/log_provider_observer.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/core/network/supabase_client.dart' as supabase;
 import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';

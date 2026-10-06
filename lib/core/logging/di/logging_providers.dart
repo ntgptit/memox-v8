@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/database/connection.dart';
 import 'package:memox/core/database/log/log_database.dart';
@@ -6,8 +5,8 @@ import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/console_sink.dart';
 import 'package:memox/core/logging/log_api.dart';
 import 'package:memox/core/logging/log_shipper.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/core/network/supabase_client.dart';
-import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_scheduler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -52,13 +51,11 @@ SyncScheduler? logScheduler(Ref ref) {
     ref.watch(logDatabaseProvider),
     ref.watch(logApiProvider),
   );
-  final online = Connectivity().onConnectivityChanged
-      .where((results) => !results.contains(ConnectivityResult.none))
-      .map((_) {});
   final scheduler = startLogScheduler(
     run: shipper.runOnce,
     periodic: Stream<void>.periodic(_every),
-    reconnects: online,
+    // The one reconnect signal, the coordinator's too (DEV-203).
+    reconnects: ref.watch(networkStatusProvider).reconnects,
     isForeground: ref.watch(isForegroundProvider),
   );
   ref.onDispose(scheduler.dispose);
