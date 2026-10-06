@@ -224,4 +224,55 @@ void main() {
     expect(await store.since(), 0);
     expect(await store.pendingCount(), 8);
   });
+
+  // The chain a local write takes to a sync run starts here (app deck-sync
+  // spec §5, DEV-226): the trigger queues the row and the outbox stream
+  // reports it. A write the triggers skip queues nothing.
+  test('outboxChanges fires on listen, after a write the triggers queue, and '
+      'not for a device-local table', () async {
+    var fired = 0;
+    final subscription = store.outboxChanges().listen((_) => fired++);
+    addTearDown(subscription.cancel);
+    await pumpEventQueue();
+    expect(fired, 1, reason: 'once on listen, so a read model reads once');
+
+    await db.customInsert(
+      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+      "scheduler_version, generation, sibling_position, created_at, updated_at) "
+      "VALUES ('D', 'r', NULL, 'D', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
+      updates: {db.deck},
+    );
+    await pumpEventQueue();
+    expect(fired, 2, reason: 'the trigger wrote the outbox');
+    expect(await store.pendingCount(), 1);
+
+    await db.customInsert(
+      "INSERT INTO dismissed_note (note_key, dismissed_at) VALUES ('n', 0)",
+      updates: {db.dismissedNote},
+    );
+    await pumpEventQueue();
+    expect(fired, 2, reason: 'never synced: no trigger, no firing');
+  });
+
+  test('a write under applyingRemote queues nothing; the stream still reports '
+      'the write, as Drift propagates the trigger statically', () async {
+    var fired = 0;
+    final subscription = store.outboxChanges().listen((_) => fired++);
+    addTearDown(subscription.cancel);
+    await pumpEventQueue();
+
+    await store.applyingRemote(
+      () => db.customInsert(
+        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+        "scheduler_version, generation, sibling_position, created_at, updated_at) "
+        "VALUES ('E', 'r', NULL, 'E', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
+        updates: {db.deck},
+      ),
+    );
+    await pumpEventQueue();
+
+    expect(await store.pendingCount(), 0, reason: 'the trigger skipped it');
+    // A run the firing starts finds nothing to push (sync_scheduler_store_test).
+    expect(fired, 2);
+  });
 }
