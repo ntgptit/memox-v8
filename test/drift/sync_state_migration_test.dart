@@ -87,11 +87,30 @@ void main() {
   test('keeps every outbox entry, state and rejection row as it was', () async {
     for (final table in _syncTables) {
       final after = await db.customSelect('SELECT * FROM $table').get();
+      // A column a later version added is NULL on every migrated row; the
+      // columns of the released version come out as they went in.
+      final released = {
+        for (final column in before[table]!.first.split('|'))
+          column.substring(0, column.indexOf('=')),
+      };
       expect(
-        _values([for (final row in after) row.data]),
+        _values([
+          for (final row in after)
+            {
+              for (final MapEntry(:key, :value) in row.data.entries)
+                if (released.contains(key)) key: value,
+            },
+        ]),
         before[table],
         reason: table,
       );
+      for (final row in after) {
+        for (final MapEntry(:key, :value) in row.data.entries) {
+          if (!released.contains(key)) {
+            expect(value, isNull, reason: '$table.$key added later');
+          }
+        }
+      }
     }
     expect(before['sync_outbox'], hasLength(2));
     expect(before['sync_rejection'], hasLength(1));

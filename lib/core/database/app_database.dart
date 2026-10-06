@@ -35,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
   final MutationGate mutationGate;
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -207,6 +207,30 @@ class AppDatabase extends _$AppDatabase {
       await m.createTable(schema.accountState);
       await m.createTable(schema.accountTransition);
       await m.addColumn(schema.appSettings, schema.appSettings.welcomeSeen);
+    },
+    from12To13: (m, schema) async {
+      // DEV-181: a purge's delete carries the batch it purged. The outbox
+      // gains the payload column, and the deck and card triggers are
+      // recreated to write it (a trigger cannot be altered). Pending entries
+      // keep their rows; a payload is NULL until a delete writes one. No
+      // seed.
+      await m.addColumn(schema.syncOutbox, schema.syncOutbox.payload);
+      for (final trigger in const [
+        'deck_sync_insert',
+        'deck_sync_update',
+        'deck_sync_delete',
+        'card_sync_insert',
+        'card_sync_update',
+        'card_sync_delete',
+      ]) {
+        await customStatement('DROP TRIGGER IF EXISTS $trigger');
+      }
+      await m.createTrigger(schema.deckSyncInsert);
+      await m.createTrigger(schema.deckSyncUpdate);
+      await m.createTrigger(schema.deckSyncDelete);
+      await m.createTrigger(schema.cardSyncInsert);
+      await m.createTrigger(schema.cardSyncUpdate);
+      await m.createTrigger(schema.cardSyncDelete);
     },
   );
 }

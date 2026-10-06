@@ -88,10 +88,23 @@ Presentation → UseCase → Repository (domain contract)
   "deviceId": "…",
   "operations": [
     {"opId": "…", "entityType": "deck", "entityId": "…", "op": "upsert", "row": {"…": "…"}},
-    {"opId": "…", "entityType": "deck", "entityId": "…", "op": "delete"}
+    {"opId": "…", "entityType": "deck", "entityId": "…", "op": "delete",
+     "row": {"deleteBatchId": "…", "serverVersion": 40}}
   ]
 }
 ```
+
+- A `delete` of a deck or card comes only from a Trash purge, and its `row`
+  says what the device purged: the batch and the row's acknowledged
+  `serverVersion` (DEV-181). The server tombstones the row only while it is
+  still at that version; a row changed since (another device restored or
+  re-trashed it) is refused with `ENTITY_NOT_IN_TRASH` and the live copy,
+  which the device takes back. A delete without `serverVersion` (an older
+  build, or a row never acknowledged) tombstones as before.
+- A tombstone is final (DEV-184, policy A): an `upsert` on a tombstoned deck
+  or card is refused with `ENTITY_TOMBSTONED` and the tombstone, and the
+  device deletes its copy. An offline edit of a row purged elsewhere is lost,
+  the price rule 5 already accepts.
 
 - `opId` is the outbox row's id and the **idempotency key**. The server keeps
   the applied `opId`s per user (table `sync_applied_op`), so a resent
@@ -175,8 +188,8 @@ of a change is a JSON object; these rules keep it readable by both sides:
   that knows it runs.
 - **Every slice that changes the wire** adds one pgTAP test: a push in the
   wire of the previous slice is still `applied`.
-- **An old build's `delete`** carries no key but the entity (above); a slice
-  that adds a key to the operation (DEV-181's `deleteBatchId`) treats its
+- **An old build's `delete`** carries no `row`; a slice that adds keys to
+  the operation (DEV-181's `deleteBatchId` and `serverVersion`) treats their
   absence as the behaviour before the slice: the delete is unconditional.
 
 **Contract keys.** `NOT NULL` without a default on both sides, written by
@@ -205,7 +218,7 @@ read `as T?` with the default (`deck.contentType`, `card.isFlagged`,
 | deck tree | `root_id` and `depth` are **server-derived**: the server ignores the client's values, computes them from `parent_id`, and on a move rewrites the whole live subtree in the same transaction, so a client's per-row operations may arrive in any order. It rejects a cycle (`DECK_TREE_CYCLE`), a subtree that would pass 10 levels (`DECK_TREE_TOO_DEEP`), and a missing, deleted or foreign parent (`DECK_PARENT_MISSING`). The root shape (a root holds decks and owns the scheduler) is validated as `VALIDATION_FAILED` |
 | `review_log` | Append-only. Insert-if-absent by `id`; an existing id is `applied` without change |
 | `card_schedule` | Derived (section 6) |
-| deletes and trash purge | `op: delete` sets `deleted_at` (a tombstone) and bumps `server_version`; children follow their foreign-key semantics on the server. Devices delete the row on pull. Trash `delete_batch_id` states sync as ordinary deck/card upserts |
+| deletes and trash purge | `op: delete` sets `deleted_at` (a tombstone) and bumps `server_version`; children follow their foreign-key semantics on the server. Devices delete the row on pull. Trash `delete_batch_id` states sync as ordinary deck/card upserts. A purge tombstones only a row still at the version the device last acknowledged (4.1); a row changed since is refused with its live copy. A tombstone is final: a later upsert is refused with the tombstone (DEV-181, DEV-184) |
 | `study_session`, `study_queue_items`, `study_guess_options`, device settings (reminders, notifications) | Not synced |
 
 ## 6. SRS schedule

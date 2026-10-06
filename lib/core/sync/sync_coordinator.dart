@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:memox/core/database/app_database.dart' show SyncOutboxEntry;
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/sync_api.dart';
@@ -90,16 +93,20 @@ class SyncCoordinator {
       pushed += batch.length;
       final operations = <SyncOperationModel>[];
       for (final entry in batch) {
-        final row = entry.op == _upsert
+        // An upsert sends the row as it is now, or goes as a delete once
+        // the row is gone; a delete sends what the trigger kept for the
+        // server (the purged batch and the acknowledged version, spec §4.1).
+        final current = entry.op == _upsert
             ? await _adapters[entry.entityType]!.readRow(entry.entityId)
             : null;
+        final isDelete = entry.op == _delete || current == null;
         operations.add(
           SyncOperationModel(
             opId: entry.opId,
             entityType: entry.entityType,
             entityId: entry.entityId,
-            op: row == null ? _delete : _upsert,
-            row: row,
+            op: isDelete ? _delete : _upsert,
+            row: isDelete ? _payloadOf(entry) : current,
           ),
         );
       }
@@ -200,6 +207,14 @@ class SyncCoordinator {
       await _store.setPullEntityTypes(types);
     });
     return changes.length;
+  }
+
+  static Map<String, Object?>? _payloadOf(SyncOutboxEntry entry) {
+    final payload = entry.payload;
+    if (payload == null) {
+      return null;
+    }
+    return jsonDecode(payload) as Map<String, Object?>;
   }
 
   static Future<void> _applyServerCopy(

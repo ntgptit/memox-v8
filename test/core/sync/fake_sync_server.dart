@@ -3,6 +3,9 @@ import 'package:memox/core/sync/sync_models.dart';
 
 /// An in-memory server with the wire semantics the coordinator relies on:
 /// idempotent op ids, one version per write, tombstones, rejections by rule.
+/// Deletes and upserts follow the Trash rules of the migrations (DEV-181,
+/// DEV-184): a purge tombstones a row only while it is as the device last
+/// saw it (the version in the delete's row), and a tombstone is final.
 class FakeSyncServer implements SyncApi {
   final _rows = <String, SyncChangeModel>{};
   final _applied = <String, int>{};
@@ -49,7 +52,7 @@ class FakeSyncServer implements SyncApi {
         results.add(_applied_(op.opId, already));
         continue;
       }
-      final rejection = rejectNext.remove(key);
+      final rejection = rejectNext.remove(key) ?? _refusal(op);
       if (rejection != null) {
         results.add(
           OperationResultModel(
@@ -67,6 +70,27 @@ class FakeSyncServer implements SyncApi {
       results.add(_applied_(op.opId, _version));
     }
     return PushResponseModel(results: results);
+  }
+
+  /// The code the migrations' rules refuse [op] with, or null.
+  String? _refusal(SyncOperationModel op) {
+    final existing = _rows['${op.entityType}/${op.entityId}'];
+    if (existing == null) {
+      return null;
+    }
+    if (op.op == 'upsert') {
+      return existing.isDeleted ? 'ENTITY_TOMBSTONED' : null;
+    }
+    if (existing.isDeleted) {
+      return null;
+    }
+    // A purge carries the version the device last saw; a row changed on
+    // this server since (restored elsewhere) is not the device's to purge.
+    final seen = op.row?['serverVersion'] as int?;
+    if (seen == null || seen == existing.serverVersion) {
+      return null;
+    }
+    return 'ENTITY_NOT_IN_TRASH';
   }
 
   @override
