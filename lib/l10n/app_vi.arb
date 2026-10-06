@@ -1357,6 +1357,8 @@
   "accountLayerFailed": "Đã có lỗi. Dữ liệu vẫn an toàn trên điện thoại này.",
   "accountLayerStuck": "Đã có lỗi khi chuyển tài khoản. Dữ liệu vẫn an toàn trên điện thoại này.",
   "accountSignOutLosing": "Đăng xuất ngay, mất {count} thay đổi",
+  "accountSwitchRefused": "Máy chủ đã từ chối {count} thay đổi trên điện thoại này, không gộp được.",
+  "accountSwitchLosing": "Tiếp tục, mất {count} thay đổi",
   "accountMergeNotDone": "Không gộp được. Bộ thẻ vẫn còn trên điện thoại này.",
   "accountLastAdmin": "Hãy cấp quyền admin cho người khác trước, rồi xoá tài khoản.",
   "accountDeleteRefused": "Không xoá được tài khoản. Chưa có gì thay đổi.",

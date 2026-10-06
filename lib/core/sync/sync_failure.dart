@@ -16,8 +16,17 @@ enum SyncFailureKind {
   }
 }
 
-/// The kind of [error] a run threw (the transport's classification).
-SyncFailureKind classifySyncFailure(Object error) =>
+/// The sync RPCs' refusal of a live JWT whose account is gone (DEV-192).
+const _unauthorized = 'UNAUTHORIZED';
+
+/// The kind of [error] a run threw (the transport's classification). A run
+/// refused for want of an account is a sign-in failure, not a server one.
+SyncFailureKind classifySyncFailure(Object error) {
+  if (rpcErrorCode(error) == _unauthorized) return SyncFailureKind.signIn;
+  return _transportKind(error);
+}
+
+SyncFailureKind _transportKind(Object error) =>
     switch (classifyRemoteError(error)) {
       RemoteErrorKind.network => SyncFailureKind.network,
       RemoteErrorKind.signIn => SyncFailureKind.signIn,

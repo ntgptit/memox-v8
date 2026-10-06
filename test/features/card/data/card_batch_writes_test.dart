@@ -87,7 +87,7 @@ void main() {
   int seconds(DateTime at) => at.millisecondsSinceEpoch ~/ 1000;
 
   group('editCard (BR-CARD-005)', () {
-    test('replaces the content, the flag and the tags; keeps the schedule and the log', () async {
+    test('replaces the content and the tags; keeps the flag, the schedule and the log', () async {
       final card = await cards.card(
         nouns.id,
         const CardDraft(front: 'f', back: 'b', tagNames: ['old']),
@@ -122,7 +122,7 @@ void main() {
           row['hint'],
           row['is_flagged'],
         ),
-        ('CÔNG', 'công', 'work', 'h', 1),
+        ('CÔNG', 'công', 'work', 'h', 0),
       );
       expect(
         (row['created_at'], row['updated_at']),

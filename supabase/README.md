@@ -164,7 +164,10 @@ there.
   for an admin, ADR-018) and the account RPCs (`me`, `account_claim_begin`,
   `account_merge`, `account_merge_ack`, `account_delete` for everyone,
   `role_list` and `role_set` for an admin, auth spec 2026-09-30). Every owned
-  row references `auth.users`, so deleting a user deletes their data.
+  row references `auth.users`, so deleting a user deletes their data. Every
+  RPC that reads or writes a user's data starts with
+  `private.require_current_profile()`: a deleted user's live JWT gets
+  `UNAUTHORIZED`, never a row-by-row rejection (DEV-192).
   Tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
 - A new migration never edits one already pushed to the project.

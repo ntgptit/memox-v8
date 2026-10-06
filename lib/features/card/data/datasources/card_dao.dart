@@ -78,8 +78,15 @@ final class CardDao extends DatabaseAccessor<AppDatabase> with _$CardDaoMixin {
     ),
   );
 
+  /// The content of [draft], never its flag: the flag is set by the person
+  /// or the system on the card as it is (BR-CARD-009), not by a draft that
+  /// may predate either (DEV-220).
   Future<void> updateContent(String id, CardDraft draft, DateTime now) =>
-      updateLiveCard(_contentOf(draft).copyWith(updatedAt: Value(now)), id);
+      updateLiveCard(
+        _contentOf(draft)
+            .copyWith(isFlagged: const Value.absent(), updatedAt: Value(now)),
+        id,
+      );
 
   /// [id] goes to the Trash as the item root of the batch [batchId]
   /// (BR-TRASH-001). The row stays as it is otherwise; only a purge deletes

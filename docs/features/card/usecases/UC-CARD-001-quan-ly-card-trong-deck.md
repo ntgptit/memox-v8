@@ -28,7 +28,7 @@ Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và c
 ## Alternative / Error flow
 
 **Alternative flows:**
-- **A1 — Sửa card:** nội dung đổi; study state và history **không** đổi (BR-CARD-005).
+- **A1 — Sửa card:** nội dung và tag đổi; study state, history và cờ **không** đổi (BR-CARD-005, BR-CARD-009). Nút cờ trong editor là A7, ghi riêng sau khi nội dung được lưu.
 - **A2 — Xoá card:** hỏi xác nhận; xác nhận thì card vào Trash trong một
   transaction, mỗi card là **một** batch của riêng nó, cùng một `deleted_at`
   (BR-TRASH-001). Nội dung, study state và history giữ nguyên tới khi purge
@@ -89,7 +89,7 @@ Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng b�
 ## Acceptance criteria
 
 - [ ] **Given** một deck `unset` và một draft hợp lệ, **when** người dùng thêm card, **then** card và study state mới của nó (theo scheduler và generation của root) được ghi trong một transaction, và deck thành `content_type = card` (BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004).
-- [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa nội dung, **then** nội dung, cờ và tag đổi nhưng study state và `review_log` không đổi (BR-CARD-005, A1).
+- [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa nội dung, **then** nội dung và tag đổi nhưng study state, `review_log` và cờ không đổi — kể cả khi cờ được bật trong lúc editor đang mở (BR-CARD-005, BR-CARD-009, A1).
 - [ ] **Given** người dùng xoá đúng một card, **when** xác nhận, **then** card vào Trash, nội dung, study state và lịch sử giữ nguyên tới khi purge, và có Undo ngay tại chỗ (BR-TRASH-001, BR-TRASH-004, BR-TRASH-008, A2).
 - [ ] **Given** người dùng xoá nhiều card, **when** xác nhận, **then** tất cả vào Trash cùng lúc và không có Undo (BR-TRASH-001, A2).
 - [ ] **Given** card bị xoá là card active cuối cùng của deck, **when** xoá thành công, **then** deck về `content_type = unset` trong cùng transaction (BR-DECK-015, BR-TRASH-005, A2).

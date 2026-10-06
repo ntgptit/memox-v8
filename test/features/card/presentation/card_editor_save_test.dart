@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
@@ -71,5 +72,54 @@ void main() {
     await tester.tap(find.byTooltip(_en.cardFlagLabel));
     await tester.pump();
     expect(saveChanges(tester).onPressed, isNotNull);
+  });
+
+  Future<int> flagOf(LibraryEnv env, String cardId) async =>
+      (await env.db
+              .customSelect(
+                'SELECT is_flagged FROM card WHERE id = ?',
+                variables: [Variable(cardId)],
+              )
+              .getSingle())
+          .read<int>('is_flagged');
+
+  libraryTest('edit: a flag toggled in the editor is saved (DEV-220)', (
+    tester,
+    env,
+  ) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip(_en.cardFlagLabel));
+    await tester.pump();
+    await tester.tap(_footerSave(_en.cardSaveChanges));
+    await tester.pumpAndSettle();
+
+    expect(await flagOf(env, card.id), 1);
+  });
+
+  libraryTest('edit: a flag set while the editor was open survives a '
+      'content-only save (BR-CARD-009, DEV-220)', (tester, env) async {
+    final deckId = await _words(env);
+    final card = await env.cards.card(
+      deckId,
+      const CardDraft(front: 'bap', back: 'rice'),
+    );
+    await pumpLibraryScreen(tester, env, _edit(card.id));
+    await tester.pumpAndSettle();
+    // Another device, or the system (BR-STUDY-073), sets the flag meanwhile.
+    await env.cards.setFlagged(cardIds: {card.id}, isFlagged: true);
+
+    await tester.enterText(_field(1), 'cooked rice');
+    await tester.pump();
+    await tester.tap(_footerSave(_en.cardSaveChanges));
+    await tester.pumpAndSettle();
+
+    expect(await flagOf(env, card.id), 1);
   });
 }

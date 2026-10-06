@@ -45,6 +45,13 @@ void main() {
     expect(classifySyncFailure(TypeError()), SyncFailureKind.server);
   });
 
+  test('a sync RPC refused for want of an account is signIn (DEV-192)', () {
+    expect(
+      classifySyncFailure(const PostgrestException(message: 'UNAUTHORIZED')),
+      SyncFailureKind.signIn,
+    );
+  });
+
   test('anything else is unknown', () {
     expect(classifySyncFailure(StateError('x')), SyncFailureKind.unknown);
   });

@@ -7026,6 +7026,24 @@
     },
     "description": "Transition layer: a sign-out stopped offline."
   },
+  "accountSwitchRefused": "{count, plural, =1{1 change on this phone was refused by the server and can't be merged.} other{{count} changes on this phone were refused by the server and can't be merged.}}",
+  "@accountSwitchRefused": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Transition layer (DEV-191): a merge stopped on rows the server refused, which exist only on this phone; Retry repeats the refusal, so the footer also offers to lose them."
+  },
+  "accountSwitchLosing": "Continue and lose {count, plural, =1{1 change} other{{count} changes}}",
+  "@accountSwitchLosing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Transition layer (DEV-191): the way on from a merge stopped on refused rows; they are kept on the device, where the switch's reset loses them."
+  },
   "accountMergeNotDone": "Couldn't merge. Your decks are still on this phone.",
   "@accountMergeNotDone": {
     "description": "Toast: the merge was refused (auth spec #25)."

@@ -62,7 +62,14 @@ class AccountCoordinator {
 
   AuthState _state = const Booting();
   final _states = StreamController<AuthState>.broadcast();
-  final _notices = StreamController<AccountNotice>.broadcast();
+  late final _notices = StreamController<AccountNotice>.broadcast(
+    onListen: _flushNotices,
+  );
+
+  /// Notices raised while nobody listened: start() runs before the first
+  /// frame, and the layer host listens only after it. They go to the first
+  /// listener, once (DEV-202).
+  final _pendingNotices = <AccountNotice>[];
   final _subscriptions = <StreamSubscription<Object?>>[];
   Future<void> _tail = Future<void>.value();
   var _prepared = false;
@@ -140,6 +147,16 @@ class AccountCoordinator {
   /// Runs again whatever stopped on an error (a network error's Retry).
   Future<void> retry() => _serial(_resume);
 
+  /// A sync run was refused for want of an account (`UNAUTHORIZED` under a
+  /// live JWT, DEV-192): the account is validated again, which finds the
+  /// profile gone (#13), the session refused (#14), or nothing wrong. Only
+  /// while Ready; a transition or a validation in flight already decides.
+  Future<void> recheckSession() => _serial(() async {
+    if (_state is! Ready) return;
+    _log.warning('auth.sync_refused', category: LogCategory.state);
+    return _validate();
+  });
+
   // --- Sign-in and switch commands -----------------------------------------
 
   // --- The switch -------------------------------------------------------------
@@ -155,8 +172,22 @@ class AccountCoordinator {
     }
   }
 
+  /// A one-time result for the person (plan rulings 3 and 8): said to the
+  /// listener, or kept until one listens.
   void _notice(AccountNotice notice) {
-    if (!_notices.isClosed) _notices.add(notice);
+    if (_notices.isClosed) return;
+    if (!_notices.hasListener) {
+      _pendingNotices.add(notice);
+      return;
+    }
+    _notices.add(notice);
+  }
+
+  void _flushNotices() {
+    for (final notice in _pendingNotices) {
+      _notices.add(notice);
+    }
+    _pendingNotices.clear();
   }
 
   Future<void> dispose() async {
