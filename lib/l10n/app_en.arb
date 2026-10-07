@@ -4080,7 +4080,25 @@
   },
   "studySpeakTerm": "Read aloud",
   "@studySpeakTerm": {
-    "description": "Study session: the speaker button under the term; reads it through the device's TTS (BR-STUDY-079)."
+    "description": "Study session: the speaker button under the term while the session's language is not known yet (BR-STUDY-079)."
+  },
+  "studySpeakTermIn": "Read aloud · {language}",
+  "@studySpeakTermIn": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Study session: the speaker button under the term, naming the language it reads in, so a wrong voice is explained (critique 2026-10-07)."
+  },
+  "studySpeakVoiceMissing": "No {language} voice on this device",
+  "@studySpeakVoiceMissing": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Study session: the disabled speaker button when the device's engine lacks the session's language (BR-STUDY-081, critique 2026-10-07)."
   },
   "studyBrowseMeaning": "Meaning",
   "@studyBrowseMeaning": {
@@ -5117,7 +5135,7 @@
   "@settingsStudyDefaults": {
     "description": "Screen 23 section title (UC-SETTINGS-001 step 1)."
   },
-  "settingsStudyDefaultsNote": "Applies to sessions started from now on. A deck with its own study options keeps them.",
+  "settingsStudyDefaultsNote": "The card limit and order apply to sessions started from now on; reading aloud changes at once. A deck with its own study options keeps them.",
   "@settingsStudyDefaultsNote": {
     "description": "Note under Study defaults (BR-SETTINGS-003, BR-SETTINGS-004)."
   },
@@ -5185,57 +5203,36 @@
   "@settingsSpeechLanguage": {
     "description": "Settings › Study defaults and Study options: the row that opens the language sheet (BR-SETTINGS-009)."
   },
-  "settingsSpeechLanguageHint": "Used by decks that follow the defaults",
-  "@settingsSpeechLanguageHint": {
-    "description": "Subtitle of the speech language row on Settings."
+  "settingsSpeechLanguageValue": "{language} · Used by decks that follow the defaults",
+  "@settingsSpeechLanguageValue": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Settings › Study defaults: subtitle of the speech language row, the value first as the Theme and Language rows do (critique 2026-10-07)."
   },
-  "settingsSpeechLanguageMissing": "Not installed on this device",
+  "settingsSpeechLanguageMissing": "No voice on this device · nothing is read",
   "@settingsSpeechLanguageMissing": {
-    "description": "Speech language sheet: the device's engine does not report this language; it stays selectable (study speech spec D5)."
+    "description": "Speech language sheet: the device's engine lacks this language; it stays selectable and the term is not read in another voice (study speech spec D5, BR-STUDY-081)."
   },
-  "studyOptionsSpeechLanguageHint": "The language the term is read in",
-  "@studyOptionsSpeechLanguageHint": {
-    "description": "Study options (screen 15): subtitle of the speech language row."
+  "studyOptionsSpeechLanguageValue": "{language} · The language the term is read in",
+  "@studyOptionsSpeechLanguageValue": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Study options (screen 15): subtitle of the speech language row, the value first."
   },
-  "speechLanguageEnUs": "English (US)",
-  "@speechLanguageEnUs": {
-    "description": "SpeechLanguage.enUs"
-  },
-  "speechLanguageEnGb": "English (UK)",
-  "@speechLanguageEnGb": {
-    "description": "SpeechLanguage.enGb"
-  },
-  "speechLanguageViVn": "Vietnamese",
-  "@speechLanguageViVn": {
-    "description": "SpeechLanguage.viVn"
-  },
-  "speechLanguageKoKr": "Korean",
-  "@speechLanguageKoKr": {
-    "description": "SpeechLanguage.koKr"
-  },
-  "speechLanguageJaJp": "Japanese",
-  "@speechLanguageJaJp": {
-    "description": "SpeechLanguage.jaJp"
-  },
-  "speechLanguageZhCn": "Chinese (Simplified)",
-  "@speechLanguageZhCn": {
-    "description": "SpeechLanguage.zhCn"
-  },
-  "speechLanguageZhTw": "Chinese (Traditional)",
-  "@speechLanguageZhTw": {
-    "description": "SpeechLanguage.zhTw"
-  },
-  "speechLanguageFrFr": "French",
-  "@speechLanguageFrFr": {
-    "description": "SpeechLanguage.frFr"
-  },
-  "speechLanguageDeDe": "German",
-  "@speechLanguageDeDe": {
-    "description": "SpeechLanguage.deDe"
-  },
-  "speechLanguageEsEs": "Spanish",
-  "@speechLanguageEsEs": {
-    "description": "SpeechLanguage.esEs"
+  "speechLanguageName": "{language, select, enUs{English (US)} enGb{English (UK)} viVn{Vietnamese} koKr{Korean} jaJp{Japanese} zhCn{Chinese (Simplified)} zhTw{Chinese (Traditional)} frFr{French} deDe{German} esEs{Spanish} other{{language}}}",
+  "@speechLanguageName": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "The display name of a SpeechLanguage, by its enum name."
   },
   "settingsApp": "App",
   "@settingsApp": {
@@ -5315,11 +5312,11 @@
   "@settingsSpeechLanguageSaveFailed": {
     "description": "Settings toast after a failed save of the speech language; Retry follows (UC-SETTINGS-001 E2)."
   },
-  "settingsSpeechAutoPlaySaveFailed": "Couldn't save read-aloud.",
+  "settingsSpeechAutoPlaySaveFailed": "Couldn't save the read-aloud switch.",
   "@settingsSpeechAutoPlaySaveFailed": {
     "description": "Settings toast after a failed save of the read-aloud switch; Retry follows (UC-SETTINGS-001 E2)."
   },
-  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it. Changes apply to sessions started from now on; a session already open keeps its options.",
+  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it. The card limit and order apply to sessions started from now on; the speech language changes at once.",
   "@studyOptionsBelongTo": {
     "placeholders": {
       "root": {

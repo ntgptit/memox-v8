@@ -311,7 +311,12 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen(ids.subId));
 
     expect(find.text(_en.settingsSpeechLanguage), findsOneWidget);
-    expect(find.text(_en.speechLanguageEnUs), findsOneWidget);
+    expect(
+      find.text(
+        _en.studyOptionsSpeechLanguageValue(_en.speechLanguageName('enUs')),
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.text(_en.settingsSpeechLanguage));
     await tester.pumpAndSettle();
     expect(find.byType(MxBottomSheet), findsNothing);
@@ -321,7 +326,7 @@ void main() {
     await tester.tap(find.text(_en.settingsSpeechLanguage));
     await tester.pumpAndSettle();
     expect(find.byType(MxBottomSheet), findsOneWidget);
-    await tester.tap(find.text(_en.speechLanguageJaJp));
+    await tester.tap(find.text(_en.speechLanguageName('jaJp')));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.cardSave));
     await tester.pumpAndSettle();

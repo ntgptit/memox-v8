@@ -2,11 +2,12 @@ import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/speech/speech_synthesizer.dart';
 
 /// Records what the session asked the engine to read (study speech spec
-/// §8); [available] is what the "device" reports it can read.
+/// §8); [available] is the tags the "device" can read, or null for an
+/// engine that cannot say (which marks nothing).
 final class FakeSpeechSynthesizer implements SpeechSynthesizer {
-  FakeSpeechSynthesizer({this.available = const {}});
+  FakeSpeechSynthesizer({this.available});
 
-  final Set<String> available;
+  final Set<String>? available;
 
   /// Every `speak`, in order: the text and its language.
   final spoken = <(String, SpeechLanguage)>[];
@@ -25,5 +26,6 @@ final class FakeSpeechSynthesizer implements SpeechSynthesizer {
   }
 
   @override
-  Future<Set<String>> availableLanguageTags() async => available;
+  Future<bool> isLanguageAvailable(SpeechLanguage language) async =>
+      available?.contains(language.tag) ?? true;
 }

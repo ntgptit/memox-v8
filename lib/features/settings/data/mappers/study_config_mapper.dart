@@ -106,11 +106,13 @@ StudyOptions _checkedAppDefaults(AppSetting settings) {
   return StudyOptions.defaults;
 }
 
-/// Study speech spec D6: an override written before speech has no key and
-/// reads in [fallback], the app default; a key of another type or a tag the
-/// app does not know makes the override unreadable, as the other keys do.
+/// Study speech spec D6: an override written before speech has no key, and
+/// one written by a later build may carry a tag this build does not know
+/// (the list grows, and `study_config` syncs with the deck); both read in
+/// [fallback], the app default, so the limit and the order stay readable. A
+/// key of another type makes the override unreadable, as the other keys do.
 SpeechLanguage? _speechLanguageOf(Object? value, SpeechLanguage fallback) {
   if (value == null) return fallback;
   if (value is! String) return null;
-  return SpeechLanguage.fromTag(value);
+  return SpeechLanguage.fromTag(value) ?? fallback;
 }

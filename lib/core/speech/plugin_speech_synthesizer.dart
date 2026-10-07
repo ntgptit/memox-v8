@@ -16,12 +16,19 @@ final class PluginSpeechSynthesizer implements SpeechSynthesizer {
   /// (`TextToSpeech.LANG_AVAILABLE` and above); 0 when it does not.
   static const _languageAvailable = 1;
 
+  /// Bumped by every `speak` and `stop`: a reading whose generation is stale
+  /// by the time its engine calls return hands the engine nothing, so a
+  /// `stop` issued meanwhile is never overtaken (BR-STUDY-082, D10).
+  int _generation = 0;
+
   @override
   Future<void> speak(String text, {required SpeechLanguage language}) async {
     final toRead = speechTextOf(text);
-    if (toRead == null) return;
+    final generation = ++_generation;
     try {
       await _tts.stop();
+      // A blank term reads nothing, but the last reading still stops.
+      if (toRead == null || generation != _generation) return;
       // Before every reading (spec §7): the plugin may rebind its engine,
       // which starts in its default locale.
       final answer = await _tts.setLanguage(language.tag);
@@ -35,6 +42,7 @@ final class PluginSpeechSynthesizer implements SpeechSynthesizer {
         );
         return;
       }
+      if (generation != _generation) return;
       await _tts.speak(toRead);
     } on Object catch (error, stackTrace) {
       appLogger.warning(
@@ -49,6 +57,7 @@ final class PluginSpeechSynthesizer implements SpeechSynthesizer {
 
   @override
   Future<void> stop() async {
+    _generation++;
     try {
       await _tts.stop();
     } on Object catch (error, stackTrace) {
@@ -62,19 +71,20 @@ final class PluginSpeechSynthesizer implements SpeechSynthesizer {
   }
 
   @override
-  Future<Set<String>> availableLanguageTags() async {
+  Future<bool> isLanguageAvailable(SpeechLanguage language) async {
     try {
-      final languages = await _tts.getLanguages;
-      if (languages is! List) return const {};
-      return {for (final language in languages) language.toString()};
+      // The plugin's own test, the one its `setLanguage` applies, so the
+      // mark on screen agrees with what `speak` will do.
+      return await _tts.isLanguageAvailable(language.tag) != false;
     } on Object catch (error, stackTrace) {
       appLogger.warning(
         'speech.languages_failed',
         category: LogCategory.ui,
         error: error,
         stackTrace: stackTrace,
+        context: {'language': language.tag},
       );
-      return const {};
+      return true;
     }
   }
 }

@@ -26,9 +26,10 @@ abstract interface class SpeechSynthesizer {
   /// Stops what is being read, if anything.
   Future<void> stop();
 
-  /// The BCP-47 tags the device engine reports it can read; empty when it
-  /// cannot say.
-  Future<Set<String>> availableLanguageTags();
+  /// Whether a reading in [language] would be heard: false only when the
+  /// engine answers that it lacks the language, the same answer `speak`
+  /// acts on; true when it has it or cannot say (spec D5).
+  Future<bool> isLanguageAvailable(SpeechLanguage language);
 }
 
 /// No engine: every platform but Android, and the host running the tests.
@@ -42,5 +43,5 @@ final class SilentSpeechSynthesizer implements SpeechSynthesizer {
   Future<void> stop() async {}
 
   @override
-  Future<Set<String>> availableLanguageTags() async => const {};
+  Future<bool> isLanguageAvailable(SpeechLanguage language) async => true;
 }

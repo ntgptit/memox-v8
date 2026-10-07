@@ -20,10 +20,13 @@ void main() {
     expect(speechTextOf(long), hasLength(maxSpeechInputLength));
   });
 
-  test('the silent synthesizer does nothing and reports no language', () async {
-    const silent = SilentSpeechSynthesizer();
-    await silent.speak('abandon', language: SpeechLanguage.enUs);
-    await silent.stop();
-    expect(await silent.availableLanguageTags(), isEmpty);
-  });
+  test(
+    'the silent synthesizer does nothing and marks no language missing',
+    () async {
+      const silent = SilentSpeechSynthesizer();
+      await silent.speak('abandon', language: SpeechLanguage.enUs);
+      await silent.stop();
+      expect(await silent.isLanguageAvailable(SpeechLanguage.koKr), isTrue);
+    },
+  );
 }

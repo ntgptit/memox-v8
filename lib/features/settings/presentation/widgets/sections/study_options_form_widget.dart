@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/speech/di/speech_providers.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -8,7 +9,6 @@ import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/presentation/controllers/study_options_controller.dart';
 import 'package:memox/features/settings/presentation/states/study_options_state.dart';
 import 'package:memox/features/settings/presentation/widgets/overlays/speech_language_sheet_widget.dart';
-import 'package:memox/features/settings/presentation/widgets/support/speech_labels_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
@@ -205,20 +205,22 @@ class StudyOptionsFormWidget extends ConsumerWidget {
                           : null,
                     ),
             ),
+            // The value first in the subtitle, at full contrast like the two
+            // rows above; only the editable row carries the chevron (critique
+            // 2026-10-07).
             MxSettingsRow(
               label: l10n.settingsSpeechLanguage,
-              subtitle: l10n.studyOptionsSpeechLanguageHint,
-              icon: AppIcons.speak,
-              trailing: Text(
-                speechLanguageName(l10n, options.speechLanguage),
-                style: styles.settingsLabel,
+              subtitle: l10n.studyOptionsSpeechLanguageValue(
+                l10n.speechLanguageName(options.speechLanguage.name),
               ),
+              icon: AppIcons.voice,
               onTap: !isEditable
                   ? null
                   : () async {
                       final picked = await showSpeechLanguageSheet(
                         context,
                         selected: options.speechLanguage,
+                        speech: ref.read(speechSynthesizerProvider),
                       );
                       if (picked != null && context.mounted) {
                         _controller(ref).chooseSpeechLanguage(picked);

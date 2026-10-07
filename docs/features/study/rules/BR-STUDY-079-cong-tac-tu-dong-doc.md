@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-Tự động đọc (BR-STUDY-078) MUST chỉ chạy khi `app_settings.tts_auto_play` bật (BR-SETTINGS-010). Nút loa dưới term MUST đọc term khi chạm bất kể công tắc.
+Tự động đọc (BR-STUDY-078) MUST chỉ chạy khi `app_settings.tts_auto_play` bật (BR-SETTINGS-010). Nút loa dưới term MUST đọc term khi chạm bất kể công tắc, và nhãn của nó MUST nêu ngôn ngữ đang đọc ("Read aloud · Korean"); khi máy không có giọng cho ngôn ngữ đó nút MUST ở trạng thái disabled và nói rõ (BR-STUDY-081).
 
 **Enforced by:** UI
 **Liên quan:** BR-STUDY-078, BR-SETTINGS-010

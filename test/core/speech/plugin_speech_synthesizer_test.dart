@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -18,11 +20,24 @@ class _FakeTts extends FlutterTts {
   /// What `setLanguage` answers: 1 is available on Android, 0 is not.
   int languageResult = 1;
   bool throwOnSpeak = false;
+  bool throwOnIsAvailable = false;
+
+  /// When set, `setLanguage` answers only once this completes: an engine
+  /// still binding (spec §7).
+  Completer<void>? languageGate;
 
   @override
   Future<dynamic> setLanguage(String language) async {
     calls.add('setLanguage:$language');
+    await languageGate?.future;
     return languageResult;
+  }
+
+  @override
+  Future<dynamic> isLanguageAvailable(String language) async {
+    calls.add('isLanguageAvailable:$language');
+    if (throwOnIsAvailable) throw PlatformException(code: 'engine');
+    return languageResult == 1;
   }
 
   @override
@@ -37,9 +52,6 @@ class _FakeTts extends FlutterTts {
     calls.add('stop');
     return 1;
   }
-
-  @override
-  Future<dynamic> get getLanguages async => ['en-US', 'ko-KR'];
 }
 
 void main() {
@@ -94,13 +106,48 @@ void main() {
     expect(log.entries.single.message, isNot(contains('abandon')));
   });
 
-  test('a blank term asks the engine for nothing', () async {
-    await door.speak('   ', language: SpeechLanguage.enUs);
+  test(
+    'a blank term asks the engine for nothing but stops the last reading',
+    () async {
+      await door.speak('   ', language: SpeechLanguage.enUs);
 
-    expect(tts.calls, isEmpty);
+      expect(tts.calls, ['stop']);
+    },
+  );
+
+  test('a stop while a reading waits on the engine wins: the engine is '
+      'handed nothing (BR-STUDY-082, D10)', () async {
+    tts.languageGate = Completer<void>();
+    final reading = door.speak('abandon', language: SpeechLanguage.enUs);
+    await door.stop();
+    tts.languageGate!.complete();
+    await reading;
+
+    expect(tts.calls.where((c) => c.startsWith('speak:')), isEmpty);
   });
 
-  test('the languages the engine reports come back as a set of tags', () async {
-    expect(await door.availableLanguageTags(), {'en-US', 'ko-KR'});
+  test('a later reading supersedes one still waiting on the engine', () async {
+    tts.languageGate = Completer<void>();
+    final first = door.speak('abandon', language: SpeechLanguage.enUs);
+    final second = door.speak('먹다', language: SpeechLanguage.koKr);
+    tts.languageGate!.complete();
+    await Future.wait([first, second]);
+
+    expect(tts.calls.where((c) => c.startsWith('speak:')), ['speak:먹다']);
+  });
+
+  test('a language is available when the engine says so, missing when it '
+      'says not, and not marked when it cannot say (D5)', () async {
+    expect(await door.isLanguageAvailable(SpeechLanguage.koKr), isTrue);
+    tts.languageResult = 0;
+    expect(await door.isLanguageAvailable(SpeechLanguage.koKr), isFalse);
+    tts.throwOnIsAvailable = true;
+    expect(await door.isLanguageAvailable(SpeechLanguage.koKr), isTrue);
+    expect(log.events, ['speech.languages_failed']);
+    expect(tts.calls, [
+      'isLanguageAvailable:ko-KR',
+      'isLanguageAvailable:ko-KR',
+      'isLanguageAvailable:ko-KR',
+    ]);
   });
 }

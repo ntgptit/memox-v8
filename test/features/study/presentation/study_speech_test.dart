@@ -10,6 +10,7 @@ import 'package:memox/features/study/presentation/screens/study_session_screen.d
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -127,13 +128,35 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(speech.spoken, [(_front(tester), SpeechLanguage.enUs)]);
-    expect(find.byTooltip(_en.studySpeakTerm), findsOneWidget);
+    // The label names the language it reads in (critique 2026-10-07).
+    expect(
+      find.byTooltip(_en.studySpeakTermIn(_en.speechLanguageName('enUs'))),
+      findsOneWidget,
+    );
 
     // The next turn reads nothing, but the voice of this one stops (D10).
     final stopsBefore = speech.stops;
     await _swipeLeft(tester);
     expect(speech.stops, greaterThan(stopsBefore));
     expect(speech.spoken, hasLength(1));
+  });
+
+  libraryTest('a language the device lacks disables the speaker and says so; '
+      'auto-play asks the engine, which reads nothing (BR-STUDY-081)', (
+    tester,
+    env,
+  ) async {
+    final speech = FakeSpeechSynthesizer(available: {'en-US'});
+    final id = await _learning(env, language: SpeechLanguage.koKr);
+    await _pump(tester, env, id, speech);
+
+    final label = _en.studySpeakVoiceMissing(_en.speechLanguageName('koKr'));
+    expect(find.byTooltip(label), findsOneWidget);
+    final speaker = find.descendant(
+      of: find.byType(StudySpeakButtonWidget),
+      matching: find.byType(MxIconButton),
+    );
+    expect(tester.widget<MxIconButton>(speaker).onPressed, isNull);
   });
 
   libraryTest('a review session reads nothing (BR-STUDY-078)', (

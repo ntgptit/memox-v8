@@ -22,4 +22,4 @@ Không áp dụng
 
 ## Edge case
 
-Không áp dụng
+Máy không có giọng cho ngôn ngữ của phiên (`isLanguageAvailable` trả false): nút loa mờ (disabled) và nhãn nói rõ ("No Korean voice on this device"), vì chạm cũng không giúp được; vẫn không banner, không toast (owner 2026-10-07).

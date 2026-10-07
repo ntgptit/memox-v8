@@ -101,6 +101,8 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       studySessionControllerProvider(widget.sessionId).notifier,
     );
     _speech = ref.read(speechSynthesizerProvider);
+    // The device's voices, asked once per session for the speaker button.
+    ref.invalidate(speechVoiceAvailableProvider);
     // The view may already be there when the screen opens (a resume).
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _cueSpeech();

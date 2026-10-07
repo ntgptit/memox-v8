@@ -39,20 +39,26 @@ void main() {
     );
   });
 
-  for (final (shape, studyConfig) in [
-    (
-      'a tts_language that is a number',
-      '{"card_limit":20,"new_card_order":"created","tts_language":7}',
-    ),
-    (
-      'a tts_language the app does not know',
-      '{"card_limit":20,"new_card_order":"created","tts_language":"xx-XX"}',
-    ),
-  ]) {
-    test('$shape cannot be read (spec D6)', () {
-      expect(studyOptionsOf(studyConfig), isNull);
-    });
-  }
+  test('a tts_language that is a number cannot be read (spec D6)', () {
+    expect(
+      studyOptionsOf(
+        '{"card_limit":20,"new_card_order":"created","tts_language":7}',
+      ),
+      isNull,
+    );
+  });
+
+  test('a tts_language this build does not know, from a later one, reads in '
+      'the fallback and keeps the rest (spec D6, review 2026-10-07)', () {
+    final read = studyOptionsOf(
+      '{"card_limit":35,"new_card_order":"random","tts_language":"xx-XX"}',
+      fallbackLanguage: SpeechLanguage.koKr,
+    );
+
+    expect(read?.cardLimit, 35);
+    expect(read?.newCardOrder, NewCardOrder.random);
+    expect(read?.speechLanguage, SpeechLanguage.koKr);
+  });
 
   test('both bounds of the card limit read back (BR-STUDY-003)', () {
     expect(

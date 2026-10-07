@@ -370,7 +370,12 @@ void main() {
 
     expect(find.text(_en.settingsSpeechAutoPlay), findsOneWidget);
     expect(find.text(_en.settingsSpeechLanguage), findsOneWidget);
-    expect(find.text(_en.speechLanguageEnUs), findsOneWidget);
+    expect(
+      find.text(
+        _en.settingsSpeechLanguageValue(_en.speechLanguageName('enUs')),
+      ),
+      findsOneWidget,
+    );
   });
 
   libraryTest('the speech language row opens the sheet; a pick saves and '
@@ -392,11 +397,16 @@ void main() {
     // A language the device lacks says so and stays selectable (D5).
     expect(find.text(_en.settingsSpeechLanguageMissing), findsNWidgets(8));
 
-    await tester.tap(find.text(_en.speechLanguageViVn));
+    await tester.tap(find.text(_en.speechLanguageName('viVn')));
     await tester.pumpAndSettle();
 
     expect(find.byType(MxBottomSheet), findsNothing);
-    expect(find.text(_en.speechLanguageViVn), findsOneWidget);
+    expect(
+      find.text(
+        _en.settingsSpeechLanguageValue(_en.speechLanguageName('viVn')),
+      ),
+      findsOneWidget,
+    );
     // The store answers on the real event loop (as `_storedLimit` is read).
     final stored = await tester.runAsync(
       () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
@@ -461,7 +471,7 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen());
     await tester.tap(find.text(_en.settingsSpeechLanguage));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.speechLanguageJaJp));
+    await tester.tap(find.text(_en.speechLanguageName('jaJp')));
     await tester.pumpAndSettle();
 
     expect(find.text(_en.settingsSaved), findsOneWidget);

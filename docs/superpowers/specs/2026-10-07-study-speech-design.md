@@ -66,7 +66,7 @@ a review session, and a speech rate or voice choice.
 | D3 | The speech language is a **study option of the root deck** with an **app-wide default**: `StudyOptions.speechLanguage`, key `tts_language` in `deck.study_config`, column `tts_language` in `app_settings` | Owner 2026-10-07. A person learns more than one language; the root deck already carries the other study options (BR-STUDY-056) |
 | D4 | Automatic reading is on by default, with an app-wide device-only switch `tts_auto_play` on screen 23, and a speaker button on the term in every mode that shows it as the prompt | Owner 2026-10-07. Hearing the word is the point; a public place needs a way off; the button serves whoever turned it off |
 | D5 | The languages offered are a fixed list, `SpeechLanguage` (§4), not what the engine reports | Owner 2026-10-07. The engine's list is long, its tags vary by vendor, and Flutter has no display names for them; a fixed list has translated names and a CHECK. A language the device lacks is still offered, marked, so a choice survives a change of device |
-| D6 | A `study_config` without `tts_language` reads in the **app default in force** (`app_settings.tts_language`), not a constant; a key of the wrong type or an unknown tag makes the override unreadable, as today | Every root with an override today lacks the key; none of them may turn "unreadable" (IT-STUDY-013) on update, and a person who never chose a language for a root expects the default they set on screen 23 (final review 2026-10-07) |
+| D6 | A `study_config` without `tts_language`, or with a tag this build does not know, reads in the **app default in force** (`app_settings.tts_language`), not a constant, and keeps its limit and order; only a key of the wrong type makes the override unreadable | Every root with an override today lacks the key; none of them may turn "unreadable" (IT-STUDY-013) on update, and a person who never chose a language for a root expects the default they set on screen 23 (final review 2026-10-07). The list grows (§4) and `study_config` syncs with the deck, so a tag from a later build must not break an older one; only the build that will become "old" can carry that tolerance (owner 2026-10-07, review round 2) |
 | D7 | The two new columns are device-only: not in `AccountSettingsSyncDao`, not on the server. The root override syncs with the deck row as it does today | Keeps Supabase and its migrations out of this change; a root's language reaches the other device through the deck |
 | D8 | The session reads the language and the switch **live**, through `SettingsRepository.watchSpeechSettings(view.deckId)` (D14) | Unlike the card limit and the order, nothing of the session is written from them; a change applies to the next card without a restart (BR-STUDY-080) |
 | D9 | Speech is best-effort: an engine failure is logged (`LogCategory.ui`) and swallowed; nothing waits on it, nothing is retried | A turn never depends on sound (BR-STUDY-081) |
@@ -108,11 +108,11 @@ Gains `speechLanguage` (`SpeechLanguage`, a named parameter defaulted to `enUs`,
 ### `deck.study_config`
 
 Gains the key `tts_language` with the tag. `studyConfigOf` writes it; `studyOptionsOf`
-reads it per D6: absent → the caller's `fallbackLanguage` (`effectiveStudyOptionsOf`
-passes the app default); present but not a string, or a string `fromTag` does not know →
+reads it per D6: absent, or a string `fromTag` does not know → the caller's
+`fallbackLanguage` (`effectiveStudyOptionsOf` passes the app default); present but not a string →
 null (unreadable).
 
-### `app_settings` (schema 14 → 15)
+### `app_settings` (schema 15 → 16, after master's 14 → 15 SQL log switch)
 
 ```sql
 tts_language TEXT NOT NULL DEFAULT 'en-US'
@@ -120,7 +120,7 @@ tts_language TEXT NOT NULL DEFAULT 'en-US'
 tts_auto_play INTEGER NOT NULL DEFAULT 1 CHECK (tts_auto_play IN (0, 1)),
 ```
 
-`from14To15` adds the two columns; no row changes. `schema_constants_parity_test` checks
+`from15To16` adds the two columns; no row changes. `schema_constants_parity_test` checks
 the CHECK list against `SpeechLanguage.values`. `AppSettingsEntity` gains
 `isSpeechAutoPlay` (bool); `studyDefaults.speechLanguage` carries the language.
 `appSettingsOf` maps both; an unknown tag throws, as the other codes do.
@@ -200,8 +200,14 @@ not when the stream moves ahead under a hold.
 ### The speaker button
 
 `StudySpeakButtonWidget` (`lib/features/study/presentation/widgets/support/`): an
-`MxIconButton` with `AppIcons.speak` (new, `Icons.volume_up_rounded`) and the semantic
-label "Read aloud" / "Đọc to"; `onPressed` reads `item.front` in the session's language.
+`MxIconButton` with `AppIcons.speak` (new, `Icons.volume_up_outlined`) and the semantic
+label "Read aloud · {language}" / "Đọc to · {language}", naming the session's language
+so a voice that does not fit the deck is explained; `onPressed` reads `item.front` in
+that language. While the device's engine lacks that language
+(`speechVoiceAvailableProvider`, D5) the button is disabled and reads "No {language}
+voice on this device" / "Máy chưa có giọng {language}": a tap could not help, and no
+banner or toast (BR-STUDY-081; owner 2026-10-07, review round 2). Before the language
+is known it is disabled with "Read aloud".
 Placed under the term, after the pronunciation, in: Browse's term half, Self-assess's
 `_TermFace` (shown with the face), Guess's prompt, Recall's prompt. Not in Fill or Match.
 
@@ -232,10 +238,14 @@ failed-save banner stay as they are: the language is in the rows below.
 ### The language sheet (`SpeechLanguageSheetWidget`, `settings/presentation/widgets/overlays/`)
 
 `showMxBottomSheet` with the title "Speech language", one `MxOptionRow` per
-`SpeechLanguage` in the order of §4, the current one selected. The sheet asks
-`SpeechSynthesizer.availableLanguageTags()` once when it opens; a language not in the
-set gets the description "Not installed on this device" / "Chưa có trên máy này" and
-stays selectable (D5). A failed query marks nothing.
+`SpeechLanguage` in the order of §4, the current one selected and scrolled into view.
+Before the sheet opens, `showSpeechLanguageSheet` asks
+`SpeechSynthesizer.isLanguageAvailable` for every language (300 ms at most, then nothing
+is marked; a second tap meanwhile opens nothing), so no row changes once shown; a language the engine answers it lacks gets the description "No voice on this
+device · nothing is read" / "Máy chưa có giọng đọc · sẽ không đọc" and stays selectable
+(D5). An engine that cannot say marks nothing. The rows on screens 23 and 15 that open
+it carry the value first in their subtitle and a chevron, as the Theme and Language rows
+do, with their own glyph `AppIcons.voice` (critique and audit 2026-10-07).
 
 ## 7. `lib/core/speech/`
 
@@ -253,8 +263,9 @@ abstract interface class SpeechSynthesizer {
   /// a failure is logged (BR-STUDY-081).
   Future<void> speak(String text, {required SpeechLanguage language});
   Future<void> stop();
-  /// The BCP-47 tags the device engine reports; empty when it cannot say.
-  Future<Set<String>> availableLanguageTags();
+  /// False only when the engine answers that it lacks [language], the same
+  /// answer `speak` acts on; true when it has it or cannot say.
+  Future<bool> isLanguageAvailable(SpeechLanguage language);
 }
 ```
 
@@ -262,7 +273,14 @@ abstract interface class SpeechSynthesizer {
 (`setLanguage`, then `speak`), reads nothing when the engine answers that it lacks the
 language (Android returns 0; logged as `speech.language_unavailable`, D5), awaits
 nothing beyond the plugin's own future, and catches `Object` around every plugin call
-to log it. It is the only file that imports
+to log it. A generation counter, bumped by every `speak` and `stop`, makes a reading
+whose calls were overtaken by a later `stop` or `speak` hand the engine nothing, so a
+term never plays into a silent turn (BR-STUDY-082, D10; review 2026-10-07).
+`isLanguageAvailable` is the plugin's own test (`isLanguageAvailable`, the one its
+`setLanguage` applies), so the mark on screen agrees with what `speak` does.
+`speechVoiceAvailableProvider(language)` (keep-alive, invalidated when a session
+opens) caches the answer for the speaker button, so it does not re-ask and re-flash on
+every card (audit 2026-10-07). It is the only file that imports
 `package:flutter_tts`; the guard rule `tts_plugin_has_one_door` and its test in
 `code-verification-guard-v2/tests/test_memox_v8_architecture_guard_rules.py` hold that.
 Tests use `FakeSpeechSynthesizer` (`test/support/`), which records calls.
@@ -272,16 +290,18 @@ Tests use `FakeSpeechSynthesizer` (`test/support/`), which records calls.
 - **Unit:** `studyOptionsOf` with and without `tts_language`, with a wrong type and an
   unknown tag (D6); `studyConfigOf` round-trip; `appSettingsOf` on both columns;
   `speechCueOf` for every branch of BR-STUDY-078 (mode, kind, busy, held, same card,
-  ending); `readsTermAloud` per mode; schema 14 → 15 in `schema_test.dart`; the parity
+  ending); `readsTermAloud` per mode; schema 15 → 16 in `schema_test.dart`; the parity
   test on the CHECK list; the guard rule test.
 - **Controllers:** `SettingsController` toggles and chooses; `StudyOptionsController`
   draft, `isChanged` and save with the language.
 - **Widgets:** the session screen reads on a new card in Browse and Self-assess, not in
   Fill, not in a review, not with the switch off, and stops on leave (fake synthesizer);
-  the speaker button speaks on tap; screen 23's two rows; screen 15's row in both
-  states; the sheet marks a missing language.
-- **Goldens:** screens 15 (`override`, `defaults`), 16, 16a, 18, 19, 23 change; a
-  golden-compare page goes to the owner before merge.
+  the speaker button speaks on tap, names its language and is disabled when the device
+  lacks the voice; screen 23's two rows; screen 15's row in both states; the sheet
+  marks a missing language; the door's generation counter.
+- **Goldens:** screens 15 (`override`, `defaults`), 16, 16a, 18, 19, 23 change, and
+  `settings_speech_language_sheet` is added; a golden-compare page goes to the owner
+  before merge.
 - The gate (`dod_check.sh`) and `run_goldens.sh` in the container.
 
 ## 9. Documentation

@@ -15,7 +15,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 |---|---|---|
 | Top bar | `MxStudyTopBar` | Indigo, as every mode (3c-2 R8); see the shared section. |
 | Context line | `SessionContextLine` | "{deck} · Review · round {n}". |
-| Prompt | new: `StudyFaceCard` (feature-local; `MxCard`-based, never promoted to shared — a session face is meaningless outside a session) | Overline "What is this?" in flow placement, the term below it, the speaker ("Read aloud") under the term (BR-STUDY-079). |
+| Prompt | new: `StudyFaceCard` (feature-local; `MxCard`-based, never promoted to shared — a session face is meaningless outside a session) | Overline "What is this?" in flow placement, the term below it, the speaker ("Read aloud · {language}", disabled with "No {language} voice on this device" when the device lacks the voice) under the term (BR-STUDY-079; 16-study-browse.md, Speech). |
 | Options | 5 rows, new: `GuessOptionRow` (feature-local) | Lettered A–E badge + meaning text. After the first tap: the chosen and the correct row switch to their tone (correct/wrong), the rest fade; matched by card id, never by display string (BR-STUDY-041). |
 | Footer hint | `SessionFooterHint` | "Answer shown — the correct option is highlighted" once answered. |
 

@@ -48,7 +48,6 @@ abstract interface class SettingsRepository {
     required bool enabled,
   });
 
-  /// The six values a person can set back to their defaults, in one
   /// The eight values a person can set back to their defaults, in one
   /// transaction, and nothing else: not the last delivery of the reminder,
   /// which is bookkeeping (BR-SETTINGS-008; reminders spec D3).
