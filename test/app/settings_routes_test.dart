@@ -10,6 +10,9 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 
+import 'package:memox/core/network/di/network_providers.dart';
+import 'package:memox/core/network/supabase_config.dart';
+
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
 
@@ -69,6 +72,26 @@ void main() {
     await _tap(tester, find.byTooltip(_en.commonBack));
     expect(find.byType(StudyDefaultsScreen), findsNothing);
     expect(_barTitle(_en.navSettings), findsOneWidget);
+  });
+
+  libraryTest('a build without Supabase composes no account row: the hub '
+      'has no Account & sync section (settings hub spec §5.1)', (
+    tester,
+    env,
+  ) async {
+    await pumpMemoxApp(
+      tester,
+      env,
+      overrides: [
+        supabaseConfigProvider.overrideWithValue(
+          const SupabaseConfig(url: '', publishableKey: ''),
+        ),
+      ],
+    );
+    await _tap(tester, _tab(_en.navSettings));
+
+    expect(find.text(_en.settingsAccountSync.toUpperCase()), findsNothing);
+    expect(find.text(_en.settingsStudySection.toUpperCase()), findsOneWidget);
   });
 
   libraryTest('a deck\'s Study options opens screen 15 above the shell; '

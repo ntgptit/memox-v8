@@ -135,8 +135,8 @@ class SettingsScreen extends ConsumerWidget {
               onOpenLanguage: onOpenLanguage,
               onOpenReminder: onOpenReminder,
             ),
-            // A build with an account has a row; isAdmin is false without one.
-            if (accountRow != null && ref.watch(isAdminProvider))
+            // isAdmin is false without an account, so no slot check is needed.
+            if (ref.watch(isAdminProvider))
               MxSection(
                 title: l10n.settingsAdmin,
                 children: [

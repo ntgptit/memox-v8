@@ -322,11 +322,7 @@ void main() {
   // Settings hub spec D4; users spec U2; ADR-018 §7.
 
   libraryTest('a non-admin sees no Admin section at all', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(accountRow: const SizedBox.shrink()),
-    );
+    await pumpLibraryScreen(tester, env, _screen());
 
     expect(find.text(_en.settingsAdmin.toUpperCase()), findsNothing);
     expect(find.text(_en.settingsAdminTools), findsNothing);
@@ -359,7 +355,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      _screen(accountRow: const SizedBox.shrink()),
+      _screen(),
       overrides: [
         supabaseConfigProvider.overrideWithValue(
           const SupabaseConfig(

@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/router/app_routes.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/features/account/presentation/screens/account_screen.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
@@ -106,16 +108,30 @@ final class _SignInFlow {
       : AppRoutes.settingsSignInCodeLink(email);
 }
 
-/// The hub's account row (settings hub spec D7).
-Widget accountSettingsRow(BuildContext context) => AccountSettingsRowWidget(
-  onSignIn: () => unawaited(context.push(AppRoutes.settingsSignInLink)),
-  onOpenAccount: () => unawaited(context.push(AppRoutes.settingsAccount)),
-);
+/// Whether this build can have an account at all: the hub draws its
+/// "Account & sync" section only when it gets a row, so a build without
+/// Supabase (no coordinator) gets none and shows no empty section
+/// (settings hub spec §5.1).
+bool _hasAccount(BuildContext context) =>
+    ProviderScope.containerOf(context).read(accountCoordinatorProvider) != null;
 
-/// The expired sign-in banner above the hub's Account & sync section.
-Widget accountSettingsBanner(BuildContext context) =>
-    AccountSettingsBannerWidget(
-      onSignIn: () => unawaited(
-        context.push(AppRoutes.settingsSignInReauth(from: AppRoutes.settings)),
-      ),
-    );
+/// The hub's account row (settings hub spec D7); null when the build has no
+/// account.
+Widget? accountSettingsRow(BuildContext context) => _hasAccount(context)
+    ? AccountSettingsRowWidget(
+        onSignIn: () => unawaited(context.push(AppRoutes.settingsSignInLink)),
+        onOpenAccount: () => unawaited(context.push(AppRoutes.settingsAccount)),
+      )
+    : null;
+
+/// The expired sign-in banner above the hub's Account & sync section; null
+/// when the build has no account.
+Widget? accountSettingsBanner(BuildContext context) => _hasAccount(context)
+    ? AccountSettingsBannerWidget(
+        onSignIn: () => unawaited(
+          context.push(
+            AppRoutes.settingsSignInReauth(from: AppRoutes.settings),
+          ),
+        ),
+      )
+    : null;
