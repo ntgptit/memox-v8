@@ -1328,7 +1328,7 @@ git commit -m "DEV-nnn: screens 23 and 28 show the SQL log switch row"
 
 **Files:**
 - Create: `supabase/migrations/20261015000000_account_settings_log_sql.sql`
-- Create: `supabase/tests/database/15_account_settings_log_sql.sql`
+- Create: `supabase/tests/database/16_account_settings_log_sql.sql` (15 landed on master meanwhile)
 
 **Interfaces:**
 - Consumes: the wire key `logSqlStatements` (Task 2).
@@ -1337,7 +1337,7 @@ git commit -m "DEV-nnn: screens 23 and 28 show the SQL log switch row"
 - [ ] **Step 1: Write the failing pgTAP test**
 
 ```sql
--- supabase/tests/database/15_account_settings_log_sql.sql
+-- supabase/tests/database/16_account_settings_log_sql.sql
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(4);
