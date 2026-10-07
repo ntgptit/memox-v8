@@ -6401,6 +6401,18 @@
   "@settingsMonitoringHint": {
     "description": "Screen 23 (Monitoring): the Monitoring row subtitle."
   },
+  "settingsLogSql": "Log SQL statements",
+  "@settingsLogSql": {
+    "description": "Admin row on screens 23 and 28: the SQL log switch (SQL log switch spec §5)."
+  },
+  "settingsLogSqlHint": "Each statement the app runs is logged, for performance checks. Turn off to keep the log small.",
+  "@settingsLogSqlHint": {
+    "description": "Subtitle of the SQL log switch row."
+  },
+  "settingsLogSqlSaveFailed": "Couldn't change that. The switch is unchanged.",
+  "@settingsLogSqlSaveFailed": {
+    "description": "Snackbar after a failed save of the SQL log switch."
+  },
   "monitoringTitle": "Monitoring",
   "@monitoringTitle": {
     "description": "Screen 28: the app bar title."
