@@ -89,7 +89,10 @@ class SettingsScreen extends ConsumerWidget {
         AsyncData(:final value) => MxScreenScroll(
           children: [
             ?accountSection,
-            SettingsStudyDefaultsSectionWidget(stored: value.studyDefaults),
+            SettingsStudyDefaultsSectionWidget(
+              stored: value.studyDefaults,
+              isSpeechAutoPlay: value.isSpeechAutoPlay,
+            ),
             SettingsAppSectionWidget(
               stored: value,
               onOpenTheme: onOpenTheme,
