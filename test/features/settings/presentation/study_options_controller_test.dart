@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
@@ -208,4 +209,29 @@ void main() {
     await first;
     expect(rig.store.writes, 1);
   });
+
+  // Study speech spec §6; BR-SETTINGS-009, D6.
+
+  _optionsTest('chooseSpeechLanguage changes the draft; Save writes it in the '
+      'override (BR-SETTINGS-009)', (rig) async {
+    _controller(rig).chooseSpeechLanguage(SpeechLanguage.koKr);
+    final form = await _form(rig);
+    expect(form.isChanged, isTrue);
+    expect(form.options.speechLanguage, SpeechLanguage.koKr);
+
+    await _controller(rig).save();
+    await _settled();
+
+    final stored = await _stored(rig);
+    expect(stored.options.speechLanguage, SpeechLanguage.koKr);
+    expect(stored.options.cardLimit, 50);
+  }, rootConfig: _override);
+
+  _optionsTest('an override from before speech shows the default language '
+      'and is unchanged until edited (D6)', (rig) async {
+    final form = await _form(rig);
+
+    expect(form.options.speechLanguage, SpeechLanguage.enUs);
+    expect(form.isChanged, isFalse);
+  }, rootConfig: _override);
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -15,6 +16,7 @@ import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/presentation/providers/study_options_provider.dart';
 import 'package:memox/features/settings/presentation/screens/study_options_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -180,9 +182,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text(
-        _en.studyOptionsSaveFailed(20, _en.studyOptionsOrderCreatedShort),
-      ),
+      find.text(_en.studyOptionsSaveFailed(20, _en.studyOptionsOrderCreatedShort)),
       findsOneWidget,
     );
     expect(find.textContaining('memox.sqlite'), findsNothing);
@@ -296,5 +296,35 @@ void main() {
     await tester.pumpAndSettle();
     expect(banner, findsNothing);
     expect(find.text(_en.cardRetrySave), findsNothing);
+  });
+
+  // Study speech spec §6; BR-SETTINGS-009.
+
+  libraryTest('following the defaults, the speech language is plain text; '
+      'own options open the sheet and Save writes the pick', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _screen(ids.subId));
+
+    expect(find.text(_en.settingsSpeechLanguage), findsOneWidget);
+    expect(find.text(_en.speechLanguageEnUs), findsOneWidget);
+    await tester.tap(find.text(_en.settingsSpeechLanguage));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBottomSheet), findsNothing);
+
+    await tester.tap(find.bySemanticsLabel(_en.studyOptionsUseAppDefaults));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.settingsSpeechLanguage));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBottomSheet), findsOneWidget);
+    await tester.tap(find.text(_en.speechLanguageJaJp));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.cardSave));
+    await tester.pumpAndSettle();
+
+    final stored = await tester.runAsync(() => _stored(env, ids.rootId));
+    expect(stored!.options.speechLanguage, SpeechLanguage.jaJp);
   });
 }

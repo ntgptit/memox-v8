@@ -7,6 +7,8 @@ import 'package:memox/features/settings/domain/models/effective_study_options_mo
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/presentation/controllers/study_options_controller.dart';
 import 'package:memox/features/settings/presentation/states/study_options_state.dart';
+import 'package:memox/features/settings/presentation/widgets/overlays/speech_language_sheet_widget.dart';
+import 'package:memox/features/settings/presentation/widgets/support/speech_labels_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
@@ -26,9 +28,9 @@ String studyOptionsOrderName(AppLocalizations l10n, NewCardOrder order) =>
       NewCardOrder.random => l10n.studyOptionsOrderRandomShort,
     };
 
-/// Screen 15's options: Use app defaults, then the card limit and the
-/// new-card order, drawn as Settings draws them (ruling M3-E1), read-only
-/// while the deck follows Settings (A1).
+/// Screen 15's options: Use app defaults, then the card limit, the
+/// new-card order and the speech language, drawn as Settings draws them
+/// (ruling M3-E1), read-only while the deck follows Settings (A1).
 class StudyOptionsFormWidget extends ConsumerWidget {
   const StudyOptionsFormWidget({
     super.key,
@@ -202,6 +204,26 @@ class StudyOptionsFormWidget extends ConsumerWidget {
                                 _controller(ref).chooseNewCardOrder(order)
                           : null,
                     ),
+            ),
+            MxSettingsRow(
+              label: l10n.settingsSpeechLanguage,
+              subtitle: l10n.studyOptionsSpeechLanguageHint,
+              icon: AppIcons.speak,
+              trailing: Text(
+                speechLanguageName(l10n, options.speechLanguage),
+                style: styles.settingsLabel,
+              ),
+              onTap: !isEditable
+                  ? null
+                  : () async {
+                      final picked = await showSpeechLanguageSheet(
+                        context,
+                        selected: options.speechLanguage,
+                      );
+                      if (picked != null && context.mounted) {
+                        _controller(ref).chooseSpeechLanguage(picked);
+                      }
+                    },
             ),
           ],
         ),
