@@ -64,6 +64,11 @@ The `WBS` label says which layer; the kind label says what sort of work.
 2. Pick the nearest existing epic. A new epic is opened only for a new
    feature or spec, once the owner approves the spec.
 3. A small defect found along the way goes into the issue in hand first.
+4. Never open a coordination issue: no execution group over other issues and
+   no `[REF]` pointer to one. Progress lives on the issue itself, and a
+   finding along the way is a comment on it (owner's ruling 2026-10-07: the
+   free plan caps the workspace at 250 unarchived issues, and that layer used
+   42 of them).
 
 ### Description templates
 
