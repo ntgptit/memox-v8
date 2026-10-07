@@ -17,6 +17,7 @@ AppSettingsEntity appSettingsOf(AppSetting row) => AppSettingsEntity(
   theme: ThemeChoice.values.byName(row.themeMode),
   language: LanguageChoice.values.byName(row.language),
   reminder: _reminderOf(row),
+  logSqlStatements: row.logSqlStatements == 1,
 );
 
 ReminderSnapshot reminderSnapshotOf(AppSetting row) => ReminderSnapshot(

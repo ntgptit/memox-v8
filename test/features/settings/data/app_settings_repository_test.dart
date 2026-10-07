@@ -133,6 +133,21 @@ void main() {
     expect(await totalChanges(db), before);
   });
 
+  test('setLogSqlStatements writes the column and updated_at', () async {
+    await db.customStatement('UPDATE app_settings SET updated_at = 0');
+    final outcome = await settings.setLogSqlStatements(enabled: false);
+    expect(outcome, isA<Ok<void, SettingsRejection>>());
+    expect((await settingsRow(db))['log_sql_statements'], 0);
+    expect((await db.select(db.appSettings).getSingle()).updatedAt, _t0());
+    expect((await settings.watchAppSettings().first).logSqlStatements, false);
+  });
+
+  test('Use app defaults leaves the SQL log switch alone', () async {
+    await settings.setLogSqlStatements(enabled: false);
+    await settings.resetToDefaults();
+    expect((await settingsRow(db))['log_sql_statements'], 0);
+  });
+
   test('each save changes only its own value (BR-SETTINGS-007)', () async {
     await settings.setTheme(theme: ThemeChoice.dark);
     await settings.setLanguage(language: LanguageChoice.vi);

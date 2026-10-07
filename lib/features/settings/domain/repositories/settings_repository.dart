@@ -33,6 +33,12 @@ abstract interface class SettingsRepository {
     required LanguageChoice language,
   });
 
+  /// The SQL log switch (SQL log switch spec §4.4): an admin's tool, synced
+  /// with the account like the theme, never touched by [resetToDefaults].
+  Future<Outcome<void, SettingsRejection>> setLogSqlStatements({
+    required bool enabled,
+  });
+
   /// The six values a person can set back to their defaults, in one
   /// transaction, and nothing else: not the last delivery of the reminder,
   /// which is bookkeeping (BR-SETTINGS-008; reminders spec D3).
