@@ -14,8 +14,8 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 /// Adds one tag, by name, to every card of [cardIds] (UC-CARD-001 A8).
-/// Completes true once it landed. Ruling P3-L9: a dialog, since a sheet does
-/// not yet pad for the keyboard (UI-base §9 row 64).
+/// Completes true once it landed. Ruling P3-L9 chose a dialog when only it
+/// could hold a field; both pad for the keyboard now (UI-base §9 row 78).
 Future<bool> showCardTagDialog(
   BuildContext context, {
   required Set<String> cardIds,
