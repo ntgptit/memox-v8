@@ -95,6 +95,12 @@ abstract base class StudyModeHandler {
   /// changing what is graded (BR-MODE-013).
   bool get takesDirection => false;
 
+  /// Whether the mode shows the term as its prompt, so a new card is read
+  /// aloud in a learning session (BR-STUDY-078): every mode but `fill`,
+  /// where the term is the answer, and `match`, where no one card is
+  /// served.
+  bool get readsTermAloud => true;
+
   /// The cards of [cards] the stage asks, or why it cannot run on them
   /// (BR-MODE-009, BR-STUDY-071). [distinctMeaningCount] counts the distinct
   /// `back_folded` of the distractor source (spec D5).
