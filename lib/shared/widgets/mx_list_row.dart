@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
@@ -11,6 +12,10 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 /// A content row: decks, search results, tags, move targets and cards. The
 /// title is one line by default and the sub one line, each with an
 /// ellipsis, so every row in a list is one height. It is not a SettingsRow: this is a piece of content.
+///
+/// A disabled row dims its leading, title and end (chevron, trailing or
+/// spinner), never the subtitle or meta that says why, as MxSettingsRow and
+/// MxOptionRow do (critique 2026-09-30 part 3a, DEV-230).
 class MxListRow extends StatelessWidget {
   const MxListRow({
     super.key,
@@ -112,6 +117,7 @@ class MxListRow extends StatelessWidget {
       child: MxRowInk(
         onTap: onTap,
         isEnabled: isEnabled,
+        shouldDimWhenDisabled: false,
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
           child: Padding(
@@ -119,7 +125,7 @@ class MxListRow extends StatelessWidget {
             child: Row(
               spacing: AppSpacing.grouped,
               children: [
-                ?leading,
+                if (leading case final lead?) _dim(lead),
                 // Only the text carries the 12/12 inset, so a 48 trailing
                 // control sits inside the text height instead of growing the
                 // row: every row in a list stays one height.
@@ -132,12 +138,14 @@ class MxListRow extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text.rich(
-                          _titleSpan(styles.rowTitleMatch),
-                          maxLines: titleMaxLines,
-                          softWrap: titleMaxLines > 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: styles.listRowTitle,
+                        _dim(
+                          Text.rich(
+                            _titleSpan(styles.rowTitleMatch),
+                            maxLines: titleMaxLines,
+                            softWrap: titleMaxLines > 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: styles.listRowTitle,
+                          ),
                         ),
                         if (subtitle case final text?) ...[
                           const SizedBox(height: _subtitleGap),
@@ -157,7 +165,7 @@ class MxListRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                ?end,
+                if (end case final slot?) _dim(slot),
               ],
             ),
           ),
@@ -165,4 +173,7 @@ class MxListRow extends StatelessWidget {
       ),
     );
   }
+
+  Widget _dim(Widget child) =>
+      isEnabled ? child : Opacity(opacity: AppOpacity.disabled, child: child);
 }
