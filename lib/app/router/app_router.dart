@@ -34,6 +34,7 @@ import 'package:memox/features/progress/presentation/screens/progress_screen.dar
 import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
 import 'package:memox/features/settings/presentation/screens/language_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
+import 'package:memox/features/settings/presentation/screens/study_defaults_screen.dart';
 import 'package:memox/features/settings/presentation/screens/sync_screen.dart';
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/features/starter_decks/presentation/screens/starter_library_screen.dart';
@@ -250,14 +251,17 @@ GoRouter buildAppRouter({
               GoRoute(
                 path: AppRoutes.settings,
                 builder: (context, state) => SettingsScreen(
-                  accountSection: accountSettingsSection(context),
+                  accountRow: accountSettingsRow(context),
+                  accountBanner: accountSettingsBanner(context),
+                  onOpenStudyDefaults: () =>
+                      context.push(AppRoutes.settingsStudy),
                   onOpenTheme: () => context.push(AppRoutes.settingsTheme),
                   onOpenLanguage: () =>
                       context.push(AppRoutes.settingsLanguage),
                   onOpenReminder: () =>
                       context.push(AppRoutes.settingsReminder),
                   onOpenSync: () => context.push(AppRoutes.settingsSync),
-                  adminRows: adminSettingsRows(context),
+                  onOpenAdmin: () => context.push(AppRoutes.settingsAdmin),
                   // The reminders feature owns the reset's consequence: the
                   // alarm follows in the same turn of the gate (DEV-218).
                   resetAppOptions: () =>
@@ -272,6 +276,11 @@ GoRouter buildAppRouter({
                     path: AppRoutes.settingsThemeChild,
                     parentNavigatorKey: rootNavigator,
                     builder: (context, state) => const ThemeScreen(),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.settingsStudyChild,
+                    parentNavigatorKey: rootNavigator,
+                    builder: (context, state) => const StudyDefaultsScreen(),
                   ),
                   GoRoute(
                     path: AppRoutes.settingsLanguageChild,
@@ -291,6 +300,7 @@ GoRouter buildAppRouter({
                   signInRoute(rootNavigator),
                   accountRoute(rootNavigator),
                   usersRoute(rootNavigator),
+                  adminRoute(rootNavigator),
                   GoRoute(
                     path: AppRoutes.settingsMonitoringChild,
                     parentNavigatorKey: rootNavigator,

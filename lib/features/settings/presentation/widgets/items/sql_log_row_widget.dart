@@ -11,7 +11,7 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
 /// The SQL log switch row (SQL log switch spec §5): an `MxSettingsRow` with
-/// a trailing toggle, drawn by `app/` in screen 23's Admin section and at
+/// a trailing toggle, drawn by `app/` in screen 23b's Logs section and at
 /// the top of screen 28's Not sent tab, for an admin only (both hosts gate
 /// it). The toggle shows the account's row and is disabled while a save
 /// runs; a failed save says so and the row keeps its value.

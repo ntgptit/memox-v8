@@ -7,6 +7,7 @@ import 'package:memox/features/monitoring/di/monitoring_repository_provider.dart
 import 'package:memox/features/monitoring/domain/models/log_page_model.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_screen.dart';
+import 'package:memox/features/settings/presentation/screens/admin_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -53,10 +54,10 @@ void main() {
     );
     await tester.tap(_tab(_en.navSettings));
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.text(_en.settingsMonitoring), 200);
-    // Clear of the bottom bar, which the row was scrolled under.
-    await tester.drag(find.byType(Scrollable).first, const Offset(0, -150));
-    await tester.pumpAndSettle();
+    // Through the Admin page (23b, settings hub spec D4).
+    await tester.tap(find.text(_en.settingsAdminTools));
+    await _settle(tester);
+    expect(find.byType(AdminScreen), findsOneWidget);
     await tester.tap(find.text(_en.settingsMonitoring));
     await _settle(tester);
 
@@ -72,6 +73,10 @@ void main() {
     expect(find.byType(MonitoringScreen), findsOneWidget);
     expect(find.text('sync.push_failed'), findsOneWidget);
     expect(repository.queries, hasLength(1), reason: 'the pages are kept');
+
+    await tester.tap(find.byTooltip(_en.commonBack));
+    await _settle(tester);
+    expect(find.byType(AdminScreen), findsOneWidget, reason: 'Back to 23b');
 
     await tester.tap(find.byTooltip(_en.commonBack));
     await _settle(tester);

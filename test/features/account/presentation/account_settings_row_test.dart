@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
-import 'package:memox/features/account/presentation/widgets/sections/account_settings_section_widget.dart';
+import 'package:memox/features/account/presentation/widgets/items/account_settings_row_widget.dart';
+import 'package:memox/features/account/presentation/widgets/sections/account_settings_banner_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
@@ -31,11 +32,17 @@ void main() {
     reauths = 0;
   });
 
+  // The hub's slots, as app/ composes them (settings hub spec D7): the
+  // banner above the section, the row inside it.
   Widget section() => Scaffold(
-    body: AccountSettingsSectionWidget(
-      onSignIn: () => opens++,
-      onOpenAccount: () => accounts++,
-      onSignInAgain: () => reauths++,
+    body: Column(
+      children: [
+        AccountSettingsBannerWidget(onSignIn: () => reauths++),
+        AccountSettingsRowWidget(
+          onSignIn: () => opens++,
+          onOpenAccount: () => accounts++,
+        ),
+      ],
     ),
   );
 
@@ -51,8 +58,8 @@ void main() {
       overrides: accountOverrides(world),
     );
 
-    expect(find.text(_en.accountSection.toUpperCase()), findsOneWidget);
     expect(find.text(_en.accountSignInHint), findsOneWidget);
+    expect(find.text(_en.accountReauthBanner), findsNothing);
     await tester.tap(find.text(_en.accountSignIn));
     expect(opens, 1);
   });
@@ -124,6 +131,10 @@ void main() {
     );
 
     expect(find.text(_en.accountReauthBanner), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text(_en.accountReauthBanner)).dy,
+      lessThan(tester.getTopLeft(find.text(_en.accountSignIn).first).dy),
+    );
     await tester.tap(find.widgetWithText(MxButton, _en.accountSignIn));
     expect(reauths, 1);
   });

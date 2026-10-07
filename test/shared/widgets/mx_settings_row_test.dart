@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -339,6 +340,60 @@ void main() {
         matching: find.byType(Opacity),
       ),
       findsOneWidget,
+    );
+  });
+
+  testWidgets('a message sits under the text and the trailing control, from '
+      'the label\'s start to the row\'s end (Study options compaction)', (
+    tester,
+  ) async {
+    const messageKey = ValueKey('message');
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Cards per session',
+          icon: AppIcons.library,
+          trailing: SizedBox(key: _controlKey, width: 140, height: 44),
+          message: SizedBox(key: messageKey, height: 20),
+        ),
+      ),
+    );
+    final label = tester.getRect(find.text('Cards per session'));
+    final control = tester.getRect(find.byKey(_controlKey));
+    final message = tester.getRect(find.byKey(messageKey));
+
+    // The control stays beside the label.
+    expect(control.left, greaterThan(label.left));
+    expect(control.top, lessThan(label.bottom));
+    // The message starts under the label and runs under the control.
+    expect(message.left, label.left);
+    expect(message.right, greaterThanOrEqualTo(control.right));
+    expect(message.top, greaterThanOrEqualTo(control.bottom));
+    expect(message.top, greaterThanOrEqualTo(label.bottom));
+  });
+
+  testWidgets('a field message\'s glyph lines up with the label (audit '
+      '2026-10-07)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Cards',
+          icon: AppIcons.library,
+          trailing: SizedBox(key: _controlKey, width: 140, height: 44),
+          message: MxFieldMessage(message: 'Enter a number from 1 to 200'),
+        ),
+      ),
+    );
+    final glyph = find.descendant(
+      of: find.byType(MxFieldMessage),
+      matching: find.byType(Icon),
+    );
+
+    expect(
+      tester.getTopLeft(glyph).dx,
+      tester.getTopLeft(find.text('Cards')).dx,
     );
   });
 }

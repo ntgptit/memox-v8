@@ -42,10 +42,15 @@ class MxListSectionHeader extends StatelessWidget {
       spacing: AppSpacing.control,
       overflowSpacing: AppSpacing.control,
       children: [
-        Text(
-          label.toUpperCase(),
-          semanticsLabel: label,
-          style: context.textStyles.overline,
+        // A heading for screen readers, so a list of sections can be
+        // skimmed by its overlines.
+        Semantics(
+          header: true,
+          child: Text(
+            label.toUpperCase(),
+            semanticsLabel: label,
+            style: context.textStyles.overline,
+          ),
         ),
         ?trailing,
       ],

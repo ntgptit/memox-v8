@@ -10,7 +10,7 @@ last failed run, and the rows the server refused. Shaped by Impeccable before th
 
 ## Entry points
 
-- Screen 23, Sync section, row "Sync". Route `/settings/sync`, on the root navigator like
+- Screen 23, the Account & sync section, row "Sync" (settings hub spec D2). Route `/settings/sync`, on the root navigator like
   Theme and Language; Back returns to 23.
 - Screen 13's sync banner, "Details" (`context.go`, as Study home opens the Library);
   Back lands on Settings.
