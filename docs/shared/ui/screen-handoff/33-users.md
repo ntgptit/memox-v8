@@ -8,7 +8,7 @@ auth spec O9; spec
 
 ## Entry points
 
-- Screen 23, Admin section, row "Users" · "Who can manage the app" (shown only to an admin).
+- Screen 23b (Admin, admin only), People, row "Users" · "Who can manage the app" (settings hub spec D4).
   Route `/settings/users`, on the root navigator; Back returns to 23.
 - A deep link meets the admin gate: a non-admin sees "Only an admin can see this" under
   the app bar "Users" (P4 plan ruling 2).

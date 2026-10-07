@@ -9,7 +9,7 @@ delete. FE-B10, SB-A5; spec
 
 ## Entry points
 
-- Screen 23, the Account section's row once the device holds an account (its chevron).
+- Screen 23, the Account & sync section's account row once the device holds an account (its chevron; settings hub spec D7).
   Route `/settings/account`, on the root navigator; Back returns to 23.
 - The link flow (29, 30, 31) ends here (B9).
 - On a plainly anonymous device the route redirects to 23; during a transition it stays

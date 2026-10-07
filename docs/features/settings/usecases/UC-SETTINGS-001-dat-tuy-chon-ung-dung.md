@@ -15,9 +15,13 @@ code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, l
 ## Main flow
 
 **Main flow:**
-1. Người dùng mở tab Settings. Hệ thống đọc dòng `app_settings` qua stream và
-   hiển thị ba nhóm: `Study defaults`, `Appearance`, `Language` — mỗi control
+1. Người dùng mở tab Settings (một hub gồm các hàng điều hướng: `Account & sync`,
+   `Study`, `App`, `Admin` cho admin, `Reset`; mỗi hàng nêu giá trị hiện tại trong
+   subtitle) và chạm hàng `Study defaults` để mở màn 23a. Hệ thống đọc dòng
+   `app_settings` qua stream và hiển thị hai nhóm `Session` và `Speech` — mỗi control
    hiển thị **giá trị đang có hiệu lực**, không phải placeholder (BR-SETTINGS-001).
+   (Sửa ngày 2026-10-07 theo [spec settings hub](../../../superpowers/specs/2026-10-07-settings-hub-design.md)
+   D1–D3, chủ dự án duyệt.)
 2. Người dùng đổi trần thẻ mỗi phiên, thứ tự thẻ mới, công tắc tự động đọc hoặc
    ngôn ngữ phát âm mặc định (BR-SETTINGS-009, BR-SETTINGS-010). Không có nút lưu: mỗi
    thay đổi đã dừng là một submit (trần thẻ dừng 600 ms sau bước cuối, kể cả khi giữ
@@ -69,11 +73,12 @@ code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, l
 
 ## UI
 
-**UI states:** loading (đọc lần đầu) · loaded ở mặc định · loaded ở giá trị
-không mặc định · saving (control của nhóm đang ghi bị khoá, các nhóm khác vẫn
-dùng được) · validation error trên trần thẻ · persistence error + retry · reset
-confirm · System resolution theo platform (light/dark, en/vi). Không có state
-`empty`: một màn tuỳ chọn luôn có đủ ba nhóm.
+**UI states:** hub (màn 23): loading · loaded · admin row · reset confirm · reset done ·
+read error. Study defaults (màn 23a): loading (đọc lần đầu) · loaded ở mặc định ·
+loaded ở giá trị không mặc định · saving (control của nhóm đang ghi bị khoá, các nhóm
+khác vẫn dùng được) · validation error trên trần thẻ · persistence error + retry · System
+resolution theo platform (light/dark, en/vi). Không có state `empty`: một màn tuỳ chọn
+luôn có đủ các nhóm của nó.
 
 ## Local
 
@@ -89,7 +94,7 @@ Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng b�
 
 ## Acceptance criteria
 
-- [ ] **Given** app vừa cài hoặc mở tab Settings, **when** đọc xong dòng `app_settings`, **then** ba nhóm Study defaults, Appearance, Language hiện đúng giá trị đang có hiệu lực, không phải placeholder (BR-SETTINGS-001).
+- [ ] **Given** app vừa cài hoặc mở tab Settings, **when** đọc xong dòng `app_settings`, **then** hub hiện các nhóm Account & sync, Study, App, Reset với giá trị hiện tại trong subtitle, và màn Study defaults hiện hai nhóm Session, Speech đúng giá trị đang có hiệu lực, không phải placeholder (BR-SETTINGS-001).
 - [ ] **Given** người dùng bấm nút −/+ hoặc giữ trên trần thẻ mỗi phiên, **when** dừng thao tác 600 ms, **then** hệ thống ghi đúng một transaction với giá trị cuối cùng, dù bấm nhiều lần liên tiếp (BR-SETTINGS-002, BR-SETTINGS-007).
 - [ ] **Given** người dùng đổi thứ tự thẻ mới hoặc gõ tay một trần thẻ hợp lệ (1–200), **when** thao tác dừng, **then** hệ thống ghi ngay không cần nút lưu, và mọi surface đang mở thấy giá trị mới qua stream (BR-SETTINGS-001, BR-SETTINGS-002).
 - [ ] **Given** người dùng chọn theme `System`, `Light` hoặc `Dark`, **when** chạm một lựa chọn, **then** hệ thống ghi ngay trong một transaction riêng và giao diện đổi trong cùng phiên chạy, không mất navigation stack (BR-SETTINGS-005).

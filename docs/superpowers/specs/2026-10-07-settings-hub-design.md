@@ -1,6 +1,6 @@
 # Settings hub: regrouping the Settings area — design
 
-Status: approved in conversation 2026-10-07, spec under owner review · Path: architectural · Owner rulings 2026-10-07 (§3)
+Status: approved 2026-10-07 · Path: architectural · Owner rulings 2026-10-07 (§3)
 
 ## 1. Intent
 
