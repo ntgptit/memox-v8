@@ -14,7 +14,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_settle_g
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 
-// Screen 20, Fill: BR-STUDY-026 to BR-STUDY-030, BR-STUDY-059,
+// Screen 20, Fill (UC-STUDY-008): BR-STUDY-026 to BR-STUDY-030, BR-STUDY-059,
 // BR-STUDY-063, BR-STUDY-064; FE-A6 P4 rulings F1–F4, V1, V4, V6, V7, V10.
 
 final _en = lookupAppLocalizations(const Locale('en'));

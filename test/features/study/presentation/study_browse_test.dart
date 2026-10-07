@@ -18,7 +18,7 @@ import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_fixtures.dart';
 
-// Screen 16: IT-MODE-002; BR-STUDY-048; FE-A6 D20.
+// Screen 16: UC-STUDY-004; IT-MODE-002; BR-STUDY-048; FE-A6 D20.
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
