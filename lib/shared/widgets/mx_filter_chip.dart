@@ -66,7 +66,16 @@ class MxFilterChip extends StatelessWidget {
             spacing: AppSpacing.micro,
             children: [
               if (icon case final glyph?) Icon(glyph, size: AppIconSize.inline),
-              Text(label, maxLines: 1, softWrap: false),
+              // A label wider than the column ends in an ellipsis, as
+              // MxTagChip's does (SW-REV-010).
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
               if (count case final value?)
                 Text(
                   value.toString(),

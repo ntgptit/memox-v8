@@ -43,7 +43,16 @@ class MxChipTrigger extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         spacing: AppSpacing.micro,
         children: [
-          Text(label, maxLines: 1, softWrap: false),
+          // A label wider than the column ends in an ellipsis, as
+          // MxTagChip's does (SW-REV-010).
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              softWrap: false,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           Icon(icon, size: AppIconSize.inline),
         ],
       ),

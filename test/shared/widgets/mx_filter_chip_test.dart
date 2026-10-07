@@ -139,4 +139,31 @@ void main() {
       0.38,
     );
   });
+
+  // SW-REV-010: a label wider than the column ends in an ellipsis.
+  testWidgets('a label wider than its column ends in an ellipsis', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 200,
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: MxFilterChip(
+            label: 'Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)',
+            count: 12,
+            isSelected: false,
+            onSelected: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.widget<Text>(find.text('Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)')).overflow,
+      TextOverflow.ellipsis,
+    );
+  });
 }
