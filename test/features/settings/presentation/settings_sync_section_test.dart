@@ -13,6 +13,7 @@ import '../../../support/library_harness.dart';
 import '../../../support/sync_fakes.dart';
 
 SettingsScreen _screen({void Function()? onOpenSync}) => SettingsScreen(
+  onOpenStudyDefaults: () {},
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},

@@ -3,14 +3,25 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
-/// Screen 23 loading as its sections: three cards of rows, on one pulse
+/// A settings page loading as its sections: cards of rows on one pulse
 /// (critique 2026-09-30 part 3d-2, E12).
 class SettingsSkeletonWidget extends StatelessWidget {
-  const SettingsSkeletonWidget({super.key, required this.semanticLabel});
+  const SettingsSkeletonWidget({
+    super.key,
+    required this.semanticLabel,
+    this.rowsPerSection = hubRows,
+  });
 
   final String semanticLabel;
 
-  static const List<int> _rowsPerSection = [2, 3, 2];
+  /// One entry per section card, the rows it holds.
+  final List<int> rowsPerSection;
+
+  /// The hub's shape: Account & sync, Study, App, Reset (spec §5.1).
+  static const List<int> hubRows = [2, 1, 3, 1];
+
+  /// Screen 23a's shape: Session, Speech (spec §5.2).
+  static const List<int> studyRows = [2, 2];
   static const double _headerWidth = 96;
 
   @override
@@ -22,7 +33,7 @@ class SettingsSkeletonWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            for (final rows in _rowsPerSection) ...[
+            for (final rows in rowsPerSection) ...[
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: AppSpacing.control),
                 child: Align(

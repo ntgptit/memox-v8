@@ -13,7 +13,7 @@ import 'package:memox/features/settings/presentation/widgets/overlays/settings_r
 import 'package:memox/features/settings/presentation/widgets/sections/settings_app_section_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_skeleton_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_sync_section_widget.dart';
-import 'package:memox/features/settings/presentation/widgets/sections/settings_study_defaults_section_widget.dart';
+import 'package:memox/features/settings/presentation/widgets/items/settings_study_summary_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -24,13 +24,13 @@ import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
-/// Screen 23, the Settings tab (UC-SETTINGS-001): the app-wide study
-/// defaults, the Theme and Language pages, and Reset app options. Every
-/// value shown is the persisted one, or the card limit being changed
-/// (BR-SETTINGS-001).
+/// Screen 23, the Settings tab (UC-SETTINGS-001): the hub of the Settings
+/// area (settings hub spec §5.1): Account & sync, Study, App, Admin and
+/// Reset, each row naming its stored value and opening its page.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({
     super.key,
+    required this.onOpenStudyDefaults,
     required this.onOpenTheme,
     required this.onOpenLanguage,
     required this.onOpenReminder,
@@ -40,6 +40,9 @@ class SettingsScreen extends ConsumerWidget {
     this.adminRows = const [],
     this.onOpenGallery,
   });
+
+  /// Opens screen 23a (settings hub spec D2).
+  final VoidCallback onOpenStudyDefaults;
 
   final VoidCallback onOpenTheme;
   final VoidCallback onOpenLanguage;
@@ -89,9 +92,20 @@ class SettingsScreen extends ConsumerWidget {
         AsyncData(:final value) => MxScreenScroll(
           children: [
             ?accountSection,
-            SettingsStudyDefaultsSectionWidget(
-              stored: value.studyDefaults,
-              isSpeechAutoPlay: value.isSpeechAutoPlay,
+            MxSection(
+              title: l10n.settingsStudySection,
+              children: [
+                MxSettingsRow(
+                  label: l10n.settingsStudyDefaults,
+                  subtitle: studyDefaultsSummary(
+                    l10n,
+                    value.studyDefaults,
+                    isAutoPlay: value.isSpeechAutoPlay,
+                  ),
+                  icon: AppIcons.library,
+                  onTap: onOpenStudyDefaults,
+                ),
+              ],
             ),
             SettingsAppSectionWidget(
               stored: value,
@@ -149,29 +163,16 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  /// The toasts of the study defaults and the reset; the Theme and
-  /// Language pages say their own.
+  /// The reset's toasts (settings hub spec D9); Study defaults, Theme and
+  /// Language say their own.
   void _say(BuildContext context, WidgetRef ref, SettingsNotice? notice) {
     if (notice == null) return;
     final l10n = context.l10n;
     void retry() => unawaited(
       ref.read(settingsControllerProvider.notifier).retry(notice.kind),
     );
-    final stored = ref.read(appSettingsProvider).value?.studyDefaults;
     final message = switch ((notice, notice.kind)) {
-      (SettingsSaved(), SettingsSubmit.cardLimit) => l10n.settingsSaved,
-      (SettingsSaved(), SettingsSubmit.newCardOrder) => l10n.settingsSaved,
-      (SettingsSaved(), SettingsSubmit.speechLanguage) => l10n.settingsSaved,
-      (SettingsSaved(), SettingsSubmit.speechAutoPlay) => l10n.settingsSaved,
       (SettingsSaved(), SettingsSubmit.reset) => l10n.settingsResetDone,
-      (SettingsSaveFailed(), SettingsSubmit.cardLimit) when stored != null =>
-        l10n.settingsCardLimitSaveFailed(stored.cardLimit),
-      (SettingsSaveFailed(), SettingsSubmit.newCardOrder) =>
-        l10n.settingsOrderSaveFailed,
-      (SettingsSaveFailed(), SettingsSubmit.speechLanguage) =>
-        l10n.settingsSpeechLanguageSaveFailed,
-      (SettingsSaveFailed(), SettingsSubmit.speechAutoPlay) =>
-        l10n.settingsSpeechAutoPlaySaveFailed,
       (SettingsSaveFailed(), SettingsSubmit.reset) => l10n.settingsResetFailed,
       _ => null,
     };

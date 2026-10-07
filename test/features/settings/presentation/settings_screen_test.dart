@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/speech/di/speech_providers.dart';
-import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
@@ -16,17 +14,12 @@ import 'package:memox/features/settings/presentation/controllers/settings_contro
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_skeleton_widget.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
-import 'package:memox/shared/widgets/mx_settings_row.dart';
-import 'package:memox/shared/widgets/mx_spinner.dart';
-import 'package:memox/shared/widgets/mx_toggle.dart';
 
-import '../../../support/fake_speech_synthesizer.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
 
@@ -35,11 +28,13 @@ final _en = lookupAppLocalizations(const Locale('en'));
 const _valueKey = ValueKey('mx-stepper-value');
 
 SettingsScreen _screen({
+  VoidCallback? onOpenStudyDefaults,
   VoidCallback? onOpenTheme,
   VoidCallback? onOpenLanguage,
   VoidCallback? onOpenReminder,
   ResetAppOptions? resetAppOptions,
 }) => SettingsScreen(
+  onOpenStudyDefaults: onOpenStudyDefaults ?? () {},
   onOpenTheme: onOpenTheme ?? () {},
   onOpenLanguage: onOpenLanguage ?? () {},
   onOpenReminder: onOpenReminder ?? () {},
@@ -52,23 +47,61 @@ Future<int> _storedLimit(LibraryEnv env) async => (await SettingsRepositoryImpl(
 ).watchAppSettings().first).studyDefaults.cardLimit;
 
 void main() {
-  libraryTest('the three sections show the stored values, the reminder row '
-      'included', (tester, env) async {
+  libraryTest('the hub names every group and value: Study summary, Theme, '
+      'reminder, Reset (settings hub spec §5.1)', (tester, env) async {
     await pumpLibraryScreen(tester, env, _screen());
 
     // Section titles show in capitals; their semantics keep the words.
-    expect(find.text(_en.settingsStudyDefaults.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.settingsStudySection.toUpperCase()), findsOneWidget);
     expect(find.text(_en.settingsApp.toUpperCase()), findsOneWidget);
-    // Below the fold since the speech rows (study speech spec §6).
-    await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
-    expect(find.text(_en.settingsResetRow), findsOneWidget);
+    expect(find.text(_en.settingsReset.toUpperCase()), findsOneWidget);
     expect(
-      find.descendant(of: find.byKey(_valueKey), matching: find.text('20')),
+      find.text(
+        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'true'),
+      ),
       findsOneWidget,
     );
     expect(find.text(_en.settingsThemeFollowsSystem), findsOneWidget);
-    expect(find.text(_en.settingsReminder), findsOneWidget);
     expect(find.text(_en.settingsReminderOff), findsOneWidget);
+    expect(find.text(_en.settingsResetRow), findsOneWidget);
+    expect(
+      find.byKey(_valueKey),
+      findsNothing,
+      reason: 'no stepper on the hub',
+    );
+    // The summary may wrap, never clip (review focus 4).
+    final summary = tester.widget<Text>(
+      find.text(
+        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'true'),
+      ),
+    );
+    expect(summary.maxLines, isNull);
+  });
+
+  libraryTest('the Study defaults row opens screen 23a and reflects a '
+      'stored change (D8)', (tester, env) async {
+    await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db)
+          .saveStudyDefaults(cardLimit: 35, newCardOrder: NewCardOrder.random),
+    );
+    await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db).setSpeechAutoPlay(isOn: false),
+    );
+    var opened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(onOpenStudyDefaults: () => opened++),
+    );
+
+    expect(
+      find.text(
+        _en.settingsStudyDefaultsSummary(35, _en.settingsOrderRandom, 'false'),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.text(_en.settingsStudyDefaults));
+    expect(opened, 1);
   });
 
   libraryTest('the reminder row names the time when on, and opens screen 24', (
@@ -108,7 +141,6 @@ void main() {
     );
 
     store.isFailing = true;
-    await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
     // M3-B3: the dialog's footer is the stock MxSheetActions pair.
@@ -122,10 +154,6 @@ void main() {
     expect(find.text(_en.settingsResetFailed), findsOneWidget);
 
     store.isFailing = false;
-    // The failure's toast sits over the bottom row: bring the row above it.
-    await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
-    await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.settingsResetConfirm));
@@ -133,64 +161,6 @@ void main() {
     expect(resets, 2);
     expect(find.text(_en.settingsResetBody), findsNothing, reason: 'closed');
     expect(find.text(_en.settingsResetDone), findsOneWidget);
-  });
-
-  libraryTest('steps settle into one save, then "Saved" (D1)', (
-    tester,
-    env,
-  ) async {
-    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db));
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
-    );
-    for (var i = 0; i < 3; i++) {
-      await tester.tap(find.byTooltip(_en.settingsMoreCards));
-      await tester.pump();
-    }
-    expect(store.writes, 0);
-
-    await tester.pump(cardLimitSettle);
-    await tester.pumpAndSettle();
-
-    expect(store.writes, 1);
-    expect(find.text(_en.settingsSaved), findsOneWidget);
-    expect(
-      find.descendant(of: find.byKey(_valueKey), matching: find.text('23')),
-      findsOneWidget,
-    );
-  });
-
-  libraryTest('while the limit writes, the stepper spins and the order '
-      'stays usable (saving)', (tester, env) async {
-    final gate = Completer<void>();
-    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
-      ..hold = gate;
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
-    );
-    await tester.tap(find.byTooltip(_en.settingsMoreCards));
-    await tester.pump(cardLimitSettle);
-    await tester.pump();
-
-    expect(
-      find.descendant(
-        of: find.byKey(_valueKey),
-        matching: find.byType(MxSpinner),
-      ),
-      findsOneWidget,
-    );
-    expect(find.text(_en.settingsSaved), findsNothing);
-
-    store.hold = null;
-    gate.complete();
-    await tester.pumpAndSettle();
-    expect(find.text(_en.settingsSaved), findsOneWidget);
   });
 
   libraryTest('before the first read the screen shows skeleton rows and no '
@@ -211,61 +181,8 @@ void main() {
         of: find.byType(SettingsSkeletonWidget),
         matching: find.byType(MxCard),
       ),
-      findsNWidgets(3),
+      findsNWidgets(4),
     );
-    expect(find.byKey(_valueKey), findsNothing);
-  });
-
-  libraryTest('a typed 250 is refused under the stepper and saves nothing '
-      '(E1)', (tester, env) async {
-    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db));
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
-    );
-    await tester.tap(find.byKey(_valueKey));
-    await tester.pump();
-    await tester.enterText(find.byType(TextField), '250');
-    await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pumpAndSettle();
-
-    expect(
-      find.text(
-        _en.settingsCardLimitInvalid(
-          StudyOptions.minCardLimit,
-          StudyOptions.maxCardLimit,
-        ),
-      ),
-      findsOneWidget,
-    );
-    expect(store.writes, 0);
-  });
-
-  libraryTest('a failed save names the kept value and Retry saves it (E2)', (
-    tester,
-    env,
-  ) async {
-    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
-      ..isFailing = true;
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
-    );
-    await tester.tap(find.byTooltip(_en.settingsMoreCards));
-    await tester.pump(cardLimitSettle);
-    await tester.pumpAndSettle();
-
-    expect(find.text(_en.settingsCardLimitSaveFailed(20)), findsOneWidget);
-    expect(find.textContaining('memox.sqlite'), findsNothing);
-
-    store.isFailing = false;
-    await tester.tap(find.text(_en.commonRetry));
-    await tester.pumpAndSettle();
-    expect(await tester.runAsync(() => _storedLimit(env)), 21);
   });
 
   libraryTest('the Theme row names a fixed choice by its name (§5.2)', (
@@ -298,7 +215,6 @@ void main() {
       _screen(resetAppOptions: ResetAppSettingsUseCase(repository).call),
     );
 
-    await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
     expect(find.byType(MxDialog), findsOneWidget);
@@ -309,7 +225,6 @@ void main() {
     expect(find.byType(MxDialog), findsNothing);
     expect(await tester.runAsync(() => _storedLimit(env)), 50);
 
-    await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.settingsResetConfirm));
@@ -360,120 +275,5 @@ void main() {
     await tester.tap(find.text(_en.settingsLanguage));
 
     expect(opened, ['theme', 'language']);
-  });
-
-  // Study speech spec §6; BR-SETTINGS-009, BR-SETTINGS-010.
-
-  libraryTest('Study defaults show the read-aloud switch and the default '
-      'language', (tester, env) async {
-    await pumpLibraryScreen(tester, env, _screen());
-
-    expect(find.text(_en.settingsSpeechAutoPlay), findsOneWidget);
-    expect(find.text(_en.settingsSpeechLanguage), findsOneWidget);
-    expect(
-      find.text(
-        _en.settingsSpeechLanguageValue(_en.speechLanguageName('enUs')),
-      ),
-      findsOneWidget,
-    );
-  });
-
-  libraryTest('the speech language row opens the sheet; a pick saves and '
-      'shows its name (BR-SETTINGS-009)', (tester, env) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [
-        speechSynthesizerProvider.overrideWithValue(
-          FakeSpeechSynthesizer(available: {'en-US', 'vi-VN'}),
-        ),
-      ],
-    );
-
-    await tester.tap(find.text(_en.settingsSpeechLanguage));
-    await tester.pumpAndSettle();
-    expect(find.byType(MxBottomSheet), findsOneWidget);
-    // A language the device lacks says so and stays selectable (D5).
-    expect(find.text(_en.settingsSpeechLanguageMissing), findsNWidgets(8));
-
-    await tester.tap(find.text(_en.speechLanguageName('viVn')));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(MxBottomSheet), findsNothing);
-    expect(
-      find.text(
-        _en.settingsSpeechLanguageValue(_en.speechLanguageName('viVn')),
-      ),
-      findsOneWidget,
-    );
-    // The store answers on the real event loop (as `_storedLimit` is read).
-    final stored = await tester.runAsync(
-      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
-    );
-    expect(stored!.studyDefaults.speechLanguage, SpeechLanguage.viVn);
-  });
-
-  libraryTest('the read-aloud toggle saves on change (BR-SETTINGS-010)', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, _screen());
-
-    await tester.tap(
-      find.descendant(
-        of: find.widgetWithText(MxSettingsRow, _en.settingsSpeechAutoPlay),
-        matching: find.byType(MxToggle),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    // The store answers on the real event loop (as `_storedLimit` is read).
-    final stored = await tester.runAsync(
-      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
-    );
-    expect(stored!.isSpeechAutoPlay, isFalse);
-  });
-
-  libraryTest('a failed speech save says so, and Retry writes it '
-      '(UC-SETTINGS-001 E2)', (tester, env) async {
-    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
-      ..isFailing = true;
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
-    );
-    await tester.tap(
-      find.descendant(
-        of: find.widgetWithText(MxSettingsRow, _en.settingsSpeechAutoPlay),
-        matching: find.byType(MxToggle),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.text(_en.settingsSpeechAutoPlaySaveFailed), findsOneWidget);
-
-    store.isFailing = false;
-    await tester.tap(find.text(_en.commonRetry));
-    await tester.pumpAndSettle();
-
-    final stored = await tester.runAsync(
-      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
-    );
-    expect(stored!.isSpeechAutoPlay, isFalse);
-  });
-
-  libraryTest('a saved speech language says "Saved", as the other rows do', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(tester, env, _screen());
-    await tester.tap(find.text(_en.settingsSpeechLanguage));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(_en.speechLanguageName('jaJp')));
-    await tester.pumpAndSettle();
-
-    expect(find.text(_en.settingsSaved), findsOneWidget);
   });
 }

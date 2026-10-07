@@ -26,6 +26,7 @@ import '../../../support/sync_fakes.dart';
 final _en = lookupAppLocalizations(const Locale('en'));
 
 final _screen = SettingsScreen(
+  onOpenStudyDefaults: () {},
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},
