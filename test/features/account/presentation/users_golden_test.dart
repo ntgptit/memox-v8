@@ -4,16 +4,11 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/account/di/user_role_repository_provider.dart';
 import 'package:memox/features/account/presentation/screens/users_screen.dart';
-import 'package:memox/features/account/presentation/widgets/items/users_entry_row_widget.dart';
-import 'package:memox/features/monitoring/presentation/widgets/items/monitoring_entry_row_widget.dart';
-import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
-import 'package:memox/features/settings/presentation/widgets/items/sql_log_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/golden_harness.dart';
@@ -39,20 +34,6 @@ FakeUserRoleRepository _roles() => FakeUserRoleRepository([
   managedUser('me@example.com', role: AccountRole.admin),
   managedUser('minh.pham@example.com'),
 ]);
-
-Widget _settings() => SettingsScreen(
-  onOpenStudyDefaults: () {},
-  onOpenTheme: () {},
-  onOpenLanguage: () {},
-  onOpenReminder: () {},
-  resetAppOptions: () async => const Ok(null),
-  onOpenSync: () {},
-  adminRows: [
-    MonitoringEntryRowWidget(onOpen: () {}),
-    UsersEntryRowWidget(onOpen: () {}),
-    const SqlLogRowWidget(),
-  ],
-);
 
 Future<void> _settle(WidgetTester tester) async {
   await tester.pump();
@@ -169,20 +150,6 @@ void main() {
           await _settle(tester);
           await tester.tap(find.text(_en.usersSave));
           await _settle(tester);
-          await _rest(tester);
-        },
-      );
-    });
-
-    libraryTest('settings, admin rows, $theme', (tester, env) async {
-      await capture(
-        tester,
-        env,
-        _settings(),
-        'settings_admin_rows',
-        overrides: [isAdminProvider.overrideWithValue(true)],
-        before: () async {
-          await tester.scrollUntilVisible(find.text(_en.usersTitle), 200);
           await _rest(tester);
         },
       );

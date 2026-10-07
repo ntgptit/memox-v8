@@ -13,6 +13,7 @@ import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/screens/welcome_screen.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
+import 'package:memox/features/settings/presentation/screens/admin_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -343,14 +344,48 @@ void main() {
     _router(tester).go(AppRoutes.settings);
     await tester.pumpAndSettle();
 
-    await tester.scrollUntilVisible(find.text(_en.usersTitle), 200);
-    // Then to the top of the viewport, clear of the bottom bar.
-    await tester.ensureVisible(find.text(_en.usersTitle));
+    await tester.tap(find.text(_en.settingsAdminTools));
     await tester.pumpAndSettle();
+    expect(find.byType(AdminScreen), findsOneWidget);
     await tester.tap(find.text(_en.usersTitle));
     await tester.pumpAndSettle();
     expect(find.byType(UsersScreen), findsOneWidget);
     expect(find.text('ann@example.com'), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byType(AdminScreen), findsOneWidget, reason: 'Back to 23b');
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byType(SettingsScreen), findsOneWidget);
+  });
+
+  accountTest('a non-admin\'s deep link to Admin meets the gate, titled '
+      'Admin', (tester, env, world) async {
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+
+    _router(tester).go(AppRoutes.settingsAdmin);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AdminScreen), findsNothing);
+    expect(find.text(_en.monitoringNotAdminTitle), findsOneWidget);
+    expect(find.text(_en.settingsAdmin), findsOneWidget);
+  });
+
+  accountTest('an admin\'s deep link to Monitoring returns to the hub, not '
+      'to 23b (settings hub spec D5)', (tester, env, world) async {
+    await pumpMemoxApp(
+      tester,
+      env,
+      overrides: [
+        ...accountOverrides(world),
+        isAdminProvider.overrideWithValue(true),
+      ],
+    );
+
+    _router(tester).go(AppRoutes.settingsMonitoring);
+    await tester.pumpAndSettle();
+    expect(find.text(_en.monitoringTitle), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();

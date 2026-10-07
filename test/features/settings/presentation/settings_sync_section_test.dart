@@ -14,6 +14,7 @@ import '../../../support/sync_fakes.dart';
 
 SettingsScreen _screen({void Function()? onOpenSync}) => SettingsScreen(
   onOpenStudyDefaults: () {},
+  onOpenAdmin: () {},
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},

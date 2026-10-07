@@ -44,6 +44,7 @@ Widget _account32() => AccountScreen(onSignInAgain: () {});
 
 Widget _settings() => SettingsScreen(
   onOpenStudyDefaults: () {},
+  onOpenAdmin: () {},
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},

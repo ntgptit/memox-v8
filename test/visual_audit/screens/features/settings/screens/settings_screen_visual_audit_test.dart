@@ -14,6 +14,7 @@ void main() {
         env,
         SettingsScreen(
           onOpenStudyDefaults: () {},
+          onOpenAdmin: () {},
           onOpenTheme: () {},
           onOpenLanguage: () {},
           onOpenReminder: () {},

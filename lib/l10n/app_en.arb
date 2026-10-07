@@ -6499,7 +6499,23 @@
   },
   "settingsAdmin": "Admin",
   "@settingsAdmin": {
-    "description": "Screen 23 (Monitoring): the section title of the admin-only entry."
+    "description": "Settings hub (screen 23): the admin-only group's overline, and the title of the Admin page (screen 23b)."
+  },
+  "settingsAdminTools": "Admin tools",
+  "@settingsAdminTools": {
+    "description": "Settings hub (screen 23): the one Admin row, for an admin only; opens screen 23b (settings hub spec D4)."
+  },
+  "settingsAdminToolsHint": "Monitoring, users, SQL log",
+  "@settingsAdminToolsHint": {
+    "description": "Subtitle of the Admin tools row."
+  },
+  "settingsAdminLogs": "Logs",
+  "@settingsAdminLogs": {
+    "description": "Admin (screen 23b): the overline over Monitoring and Log SQL statements."
+  },
+  "settingsAdminPeople": "People",
+  "@settingsAdminPeople": {
+    "description": "Admin (screen 23b): the overline over Users."
   },
   "settingsMonitoring": "Monitoring",
   "@settingsMonitoring": {

@@ -37,9 +37,9 @@ class SettingsScreen extends ConsumerWidget {
     required this.onOpenReminder,
     required this.resetAppOptions,
     required this.onOpenSync,
+    required this.onOpenAdmin,
     this.accountRow,
     this.accountBanner,
-    this.adminRows = const [],
     this.onOpenGallery,
   });
 
@@ -66,10 +66,9 @@ class SettingsScreen extends ConsumerWidget {
   /// (P3b plan ruling 1); null in a test without an account.
   final Widget? accountBanner;
 
-  /// The rows features supply for the Admin section (Monitoring, Users),
-  /// which `app/` composes; the section shows only to an admin (users spec
-  /// U2).
-  final List<Widget> adminRows;
+  /// Opens screen 23b (settings hub spec D4); the row shows only to an
+  /// admin.
+  final VoidCallback onOpenAdmin;
 
   /// Debug builds only: opens the component gallery.
   final VoidCallback? onOpenGallery;
@@ -136,8 +135,19 @@ class SettingsScreen extends ConsumerWidget {
               onOpenLanguage: onOpenLanguage,
               onOpenReminder: onOpenReminder,
             ),
-            if (adminRows.isNotEmpty && ref.watch(isAdminProvider))
-              MxSection(title: l10n.settingsAdmin, children: adminRows),
+            // A build with an account has a row; isAdmin is false without one.
+            if (accountRow != null && ref.watch(isAdminProvider))
+              MxSection(
+                title: l10n.settingsAdmin,
+                children: [
+                  MxSettingsRow(
+                    label: l10n.settingsAdminTools,
+                    subtitle: l10n.settingsAdminToolsHint,
+                    icon: AppIcons.safe,
+                    onTap: onOpenAdmin,
+                  ),
+                ],
+              ),
             MxSection(
               title: l10n.settingsReset,
               note: l10n.settingsResetNote,

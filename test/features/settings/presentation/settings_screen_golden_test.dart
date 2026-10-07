@@ -27,6 +27,7 @@ final _en = lookupAppLocalizations(const Locale('en'));
 
 final _screen = SettingsScreen(
   onOpenStudyDefaults: () {},
+  onOpenAdmin: () {},
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},

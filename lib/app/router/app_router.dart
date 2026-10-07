@@ -261,7 +261,7 @@ GoRouter buildAppRouter({
                   onOpenReminder: () =>
                       context.push(AppRoutes.settingsReminder),
                   onOpenSync: () => context.push(AppRoutes.settingsSync),
-                  adminRows: adminSettingsRows(context),
+                  onOpenAdmin: () => context.push(AppRoutes.settingsAdmin),
                   // The reminders feature owns the reset's consequence: the
                   // alarm follows in the same turn of the gate (DEV-218).
                   resetAppOptions: () =>
@@ -300,6 +300,7 @@ GoRouter buildAppRouter({
                   signInRoute(rootNavigator),
                   accountRoute(rootNavigator),
                   usersRoute(rootNavigator),
+                  adminRoute(rootNavigator),
                   GoRoute(
                     path: AppRoutes.settingsMonitoringChild,
                     parentNavigatorKey: rootNavigator,

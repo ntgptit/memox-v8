@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
+import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/network/di/network_providers.dart';
+import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
@@ -23,6 +27,7 @@ import 'package:memox/shared/widgets/mx_card.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/monitoring_fakes.dart';
 import '../../../support/sync_fakes.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -31,6 +36,8 @@ const _valueKey = ValueKey('mx-stepper-value');
 
 SettingsScreen _screen({
   VoidCallback? onOpenStudyDefaults,
+  VoidCallback? onOpenAdmin,
+  Widget? accountRow,
   VoidCallback? onOpenTheme,
   VoidCallback? onOpenLanguage,
   VoidCallback? onOpenReminder,
@@ -42,6 +49,8 @@ SettingsScreen _screen({
   onOpenReminder: onOpenReminder ?? () {},
   resetAppOptions: resetAppOptions ?? () async => const Ok(null),
   onOpenSync: () {},
+  onOpenAdmin: onOpenAdmin ?? () {},
+  accountRow: accountRow,
 );
 
 Future<int> _storedLimit(LibraryEnv env) async => (await SettingsRepositoryImpl(
@@ -286,6 +295,7 @@ void main() {
       env,
       SettingsScreen(
         onOpenStudyDefaults: () {},
+        onOpenAdmin: () {},
         onOpenTheme: () {},
         onOpenLanguage: () {},
         onOpenReminder: () {},
@@ -307,5 +317,71 @@ void main() {
       tester.getTopLeft(find.text('account row')).dy,
       lessThan(tester.getTopLeft(find.text(_en.settingsSync)).dy),
     );
+  });
+
+  // Settings hub spec D4; users spec U2; ADR-018 §7.
+
+  libraryTest('a non-admin sees no Admin section at all', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(accountRow: const SizedBox.shrink()),
+    );
+
+    expect(find.text(_en.settingsAdmin.toUpperCase()), findsNothing);
+    expect(find.text(_en.settingsAdminTools), findsNothing);
+  });
+
+  libraryTest('an admin sees one Admin tools row, and it opens screen 23b', (
+    tester,
+    env,
+  ) async {
+    var opened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(accountRow: const SizedBox.shrink(), onOpenAdmin: () => opened++),
+      overrides: [isAdminProvider.overrideWithValue(true)],
+    );
+
+    expect(find.text(_en.settingsAdmin.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.settingsAdminToolsHint), findsOneWidget);
+    await tester.tap(find.text(_en.settingsAdminTools));
+    expect(opened, 1);
+  });
+
+  // Review focus: a token refresh that adds the admin role while the hub
+  // is open.
+  libraryTest('an account confirmed as admin shows the row without a '
+      'restart, and a lost confirmation hides it', (tester, env) async {
+    final states = StreamController<AuthState>();
+    addTearDown(states.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(accountRow: const SizedBox.shrink()),
+      overrides: [
+        supabaseConfigProvider.overrideWithValue(
+          const SupabaseConfig(
+            url: 'https://x.supabase.co',
+            publishableKey: 'key',
+          ),
+        ),
+        authStateProvider.overrideWith((ref) => states.stream),
+      ],
+    );
+    states.add(const Ready(userAccount));
+    await tester.pump();
+    expect(find.text(_en.settingsAdminTools), findsNothing);
+
+    states.add(const Ready(adminAccount));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text(_en.settingsAdminTools), findsOneWidget);
+
+    states.add(const Validating(null));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text(_en.settingsAdminTools), findsNothing);
   });
 }
