@@ -68,7 +68,7 @@ void main() {
     expect(find.text(_en.settingsReset.toUpperCase()), findsOneWidget);
     expect(
       find.text(
-        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'true'),
+        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
       ),
       findsOneWidget,
     );
@@ -83,7 +83,7 @@ void main() {
     // The summary may wrap, never clip (review focus 4).
     final summary = tester.widget<Text>(
       find.text(
-        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'true'),
+        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
       ),
     );
     expect(summary.maxLines, isNull);
@@ -107,7 +107,7 @@ void main() {
 
     expect(
       find.text(
-        _en.settingsStudyDefaultsSummary(35, _en.settingsOrderRandom, 'false'),
+        _en.settingsStudyDefaultsSummary(35, _en.settingsOrderRandom, 'off'),
       ),
       findsOneWidget,
     );
@@ -185,14 +185,15 @@ void main() {
       overrides: [appSettingsProvider.overrideWith((ref) => never.stream)],
     );
 
-    // Shaped as its sections (critique 2026-09-30 part 3d-2, E12).
+    // Shaped as its sections (critique 2026-09-30 part 3d-2, E12): without
+    // an account slot, no Account & sync card (audit 2026-10-07, P2-4).
     expect(find.byType(SettingsSkeletonWidget), findsOneWidget);
     expect(
       find.descendant(
         of: find.byType(SettingsSkeletonWidget),
         matching: find.byType(MxCard),
       ),
-      findsNWidgets(4),
+      findsNWidgets(3),
     );
   });
 
@@ -336,7 +337,7 @@ void main() {
     await pumpLibraryScreen(
       tester,
       env,
-      _screen(accountRow: const SizedBox.shrink(), onOpenAdmin: () => opened++),
+      _screen(onOpenAdmin: () => opened++),
       overrides: [isAdminProvider.overrideWithValue(true)],
     );
 
@@ -379,5 +380,62 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(find.text(_en.settingsAdminTools), findsNothing);
+  });
+
+  libraryTest('the hub\'s skeleton draws the Account & sync card when the '
+      'build has an account (audit 2026-10-07, P2-4)', (tester, env) async {
+    final never = StreamController<AppSettingsEntity>();
+    addTearDown(never.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(accountRow: const SizedBox.shrink()),
+      overrides: [appSettingsProvider.overrideWith((ref) => never.stream)],
+    );
+
+    expect(
+      find.descendant(
+        of: find.byType(SettingsSkeletonWidget),
+        matching: find.byType(MxCard),
+      ),
+      findsNWidgets(4),
+    );
+  });
+
+  libraryTest('a card limit of one reads "1 card" (review 2026-10-07)', (
+    tester,
+    env,
+  ) async {
+    await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db)
+          .saveStudyDefaults(cardLimit: 1, newCardOrder: NewCardOrder.created),
+    );
+    await pumpLibraryScreen(tester, env, _screen());
+
+    expect(
+      find.text(
+        _en.settingsStudyDefaultsSummary(1, _en.settingsOrderCreated, 'on'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.textContaining('1 cards'), findsNothing);
+    expect(find.textContaining('Read aloud on'), findsOneWidget);
+  });
+
+  libraryTest('in Vietnamese at 360×800 the hub still fits and the Study '
+      'summary takes two lines at most (spec §1)', (tester, env) async {
+    final vi = lookupAppLocalizations(const Locale('vi'));
+    await pumpLibraryScreen(tester, env, _screen(), locale: const Locale('vi'));
+
+    final summary = find.text(
+      vi.settingsStudyDefaultsSummary(20, vi.settingsOrderCreated, 'on'),
+    );
+    expect(summary, findsOneWidget);
+    // rowDescription is 14 px at 1.5 line height: two lines are 42 px.
+    expect(tester.getSize(summary).height, lessThanOrEqualTo(43));
+    expect(
+      tester.getBottomLeft(find.text(vi.settingsResetRow)).dy,
+      lessThanOrEqualTo(800),
+    );
   });
 }

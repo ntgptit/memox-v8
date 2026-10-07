@@ -5133,13 +5133,13 @@
   },
   "settingsStudyDefaults": "Study defaults",
   "@settingsStudyDefaults": {
-    "description": "Screen 23 section title (UC-SETTINGS-001 step 1)."
+    "description": "Settings hub (screen 23): the Study row's label, and the title of screen 23a it opens (settings hub spec D1)."
   },
   "settingsStudySection": "Study",
   "@settingsStudySection": {
     "description": "Settings hub (screen 23): the overline of the group whose one row opens Study defaults (settings hub spec §5.1)."
   },
-  "settingsStudyDefaultsSummary": "{count} cards · {order} · Read aloud {isAutoPlay, select, true{on} other{off}}",
+  "settingsStudyDefaultsSummary": "{count, plural, =1{1 card} other{{count} cards}} · {order} · Read aloud {isAutoPlay, select, on{on} other{off}}",
   "@settingsStudyDefaultsSummary": {
     "placeholders": {
       "count": {
@@ -5152,13 +5152,13 @@
         "type": "String"
       }
     },
-    "description": "Settings hub: the Study defaults row's subtitle, the stored defaults in one line (settings hub spec D8). order is the rendered In order / Random."
+    "description": "Settings hub: the Study defaults row's subtitle, the stored defaults in one line (settings hub spec D8). order is the rendered In order / Random; isAutoPlay is on or off."
   },
   "settingsSessionSection": "Session",
   "@settingsSessionSection": {
     "description": "Study defaults (screen 23a): the overline over Cards per session and New-card order."
   },
-  "settingsSessionNote": "Apply to sessions started from now on. A deck with its own study options keeps them.",
+  "settingsSessionNote": "Changes apply to sessions you start from now on. A deck with its own study options keeps them.",
   "@settingsSessionNote": {
     "description": "Study defaults (screen 23a): the note under the Session section (BR-SETTINGS-004)."
   },
@@ -5166,7 +5166,7 @@
   "@settingsSpeechSection": {
     "description": "Study defaults (screen 23a): the overline over Read the term aloud and Speech language."
   },
-  "settingsSpeechNote": "Changes at once. A deck with its own speech language keeps it.",
+  "settingsSpeechNote": "Changes apply at once. A deck with its own speech language keeps it.",
   "@settingsSpeechNote": {
     "description": "Study defaults (screen 23a): the note under the Speech section (BR-STUDY-080, BR-SETTINGS-009)."
   },

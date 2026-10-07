@@ -13,7 +13,7 @@ Theme, Sync and Reset sit below the fold. The owner's words: "như một bãi r�
 
 This spec regroups the area as a **hub and group pages**:
 
-- **Screen 23 "Settings"** becomes a hub that fits one screen: five groups of navigation
+- **Screen 23 "Settings"** becomes a short hub: five groups of navigation
   rows and one action row, no wide control.
 - **Screen 23a "Study defaults"** (new, `/settings/study`) holds the four study rows
   that were inline on the tab.
@@ -24,7 +24,8 @@ This spec regroups the area as a **hub and group pages**:
   sheet, page), so the next setting lands in the right place without a debate.
 
 Success means: the hub's loaded state fits a 360×800 phone in English and Vietnamese
-at the default text scale; every setting is at most two taps from the tab; every
+at the default text scale when no account is composed, and scrolls by at most a few
+rows with one (§5.1); every setting is at most two taps from the tab; every
 existing UC-SETTINGS-001 flow and every test of screens 24–33 still passes; the
 rule set is in `DESIGN.md` and the three handoff files.
 
@@ -99,14 +100,15 @@ rule set is in `DESIGN.md` and the three handoff files.
 | App | `MxSection` + `MxSettingsRow` × 3 | Title "App". Theme, Language, Daily reminder, unchanged. |
 | Admin | `MxSection` + `MxSettingsRow` | Title "Admin", only while `isAdminProvider` is true and a build has Supabase. "Admin tools" / "Monitoring, users, SQL log", `AppIcons.safe` (shield) tile, → 23b. |
 | Reset | `MxSection` + `MxSettingsRow` (`isAction`) | Unchanged: "Reset app options" / "Theme, language, study defaults, read-aloud, reminder", the note, the dialog. |
-| Loading | `SettingsSkeletonWidget` | Section-shaped cards of 2·1·3·1 rows (the hub's shape). |
+| Loading | `SettingsSkeletonWidget` | Section-shaped cards of 2·1·3·1 rows (the hub's shape), 1·3·1 when `app/` composes no account. |
 | Read error | `MxErrorState` | Unchanged (UC E3). |
 | Toasts | `MxSnackbar` | The reset's only: "App options reset to defaults"; "Couldn't reset the app options. Nothing changed." · Retry (D9). |
 
-Height check at 360×800 (3 px = 1 dp): app bar 56 + 5 overlines + 8 rows of 72 (two
-lines each) + the reset note ≈ 56 + 5·36 + 576 + 56 ≈ 870 with the signed-in account
-row and the admin row; the hub scrolls by less than one row for an admin, and fits for
-everyone else. The two-line subtitles ("{n} cards · In order · Read aloud on",
+Height check at 360×800, measured on the goldens (audit 2026-10-07 corrected the first
+estimate): the tab shows ≈696 dp between the app bar and the bottom bar. Without an
+account (a build without Supabase) the hub fits. With a signed-in account and the Sync
+row it is ≈774 dp, so it scrolls by about one row; an admin's is ≈885 dp, about two and
+a half rows. The Reset group is the one below the fold, and it is the rarest action. The two-line subtitles ("{n} cards · In order · Read aloud on",
 "a@example.com · Your decks sync to this account") are the longest lines; the plan
 verifies both languages in the goldens.
 
@@ -115,9 +117,9 @@ verifies both languages in the goldens.
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` (content density) + Back | "Study defaults". |
-| Session | `MxSection` + `MxSettingsRow` × 2, note | Title "Session". "Cards per session" / "1 to 200 · default 20" with the `MxStepper` (D6 of FE-A3, unchanged); "New-card order" / "How new cards enter a learning session" with the `MxSegmentedTray`. Note: "Apply to sessions started from now on. A deck with its own study options keeps them." (BR-SETTINGS-004). |
+| Session | `MxSection` + `MxSettingsRow` × 2, note | Title "Session". "Cards per session" / "1 to 200 · default 20" with the `MxStepper` (D6 of FE-A3, unchanged); "New-card order" / "How new cards enter a learning session" with the `MxSegmentedTray`. Note: "Changes apply to sessions you start from now on. A deck with its own study options keeps them." (BR-SETTINGS-004). |
 | Card limit message | `MxFieldMessage` | Unchanged (UC E1). |
-| Speech | `MxSection` + `MxSettingsRow` × 2, note | Title "Speech". "Read the term aloud" / "When a new card comes up while learning" with the `MxToggle`; "Speech language" / "{language} · Used by decks that follow the defaults" with a chevron, opening the speech language sheet (study speech spec §6). Note: "Changes at once. A deck with its own speech language keeps it." (BR-STUDY-080, BR-SETTINGS-009). |
+| Speech | `MxSection` + `MxSettingsRow` × 2, note | Title "Speech". "Read the term aloud" / "When a new card comes up while learning" with the `MxToggle`; "Speech language" / "{language} · Used by decks that follow the defaults" with a chevron, opening the speech language sheet (study speech spec §6). Note: "Changes apply at once. A deck with its own speech language keeps it." (BR-STUDY-080, BR-SETTINGS-009). |
 | Loading | `SettingsSkeletonWidget` | Two section-shaped cards of 2·2 rows. |
 | Read error | `MxErrorState` | As the hub's (UC E3), retrying the same provider. |
 | Toasts | `MxSnackbar` | "Saved"; "Couldn't save cards per session. Still {n}." · Retry; "Couldn't save the new-card order." · Retry; "Couldn't save the read-aloud switch." · Retry; "Couldn't save the speech language." · Retry (D9). |
@@ -156,15 +158,15 @@ New keys, English / Vietnamese:
 |---|---|---|
 | `settingsAccountSync` | Account & sync | Tài khoản & đồng bộ |
 | `settingsStudySection` | Study | Học |
-| `settingsStudyDefaultsSummary(count, order, isAutoPlay)` | {count} cards · {order} · Read aloud on / off | {count} thẻ · {order} · Đọc to bật / tắt |
+| `settingsStudyDefaultsSummary(count, order, isAutoPlay)` | 1 card / {count} cards · {order} · Read aloud on / off (isAutoPlay is `on` or `off`) | {count} thẻ · {order} · Đọc to bật / tắt |
 | `settingsSessionSection` | Session | Phiên học |
-| `settingsSessionNote` | Apply to sessions started from now on. A deck with its own study options keeps them. | Áp dụng cho các phiên bắt đầu từ bây giờ. Bộ thẻ có tuỳ chọn học riêng vẫn giữ tuỳ chọn đó. |
+| `settingsSessionNote` | Changes apply to sessions you start from now on. A deck with its own study options keeps them. | Áp dụng cho các phiên bắt đầu từ bây giờ. Bộ thẻ có tuỳ chọn học riêng vẫn giữ tuỳ chọn đó. |
 | `settingsSpeechSection` | Speech | Đọc to |
-| `settingsSpeechNote` | Changes at once. A deck with its own speech language keeps it. | Đổi ngay. Bộ thẻ có ngôn ngữ đọc riêng vẫn giữ ngôn ngữ đó. |
+| `settingsSpeechNote` | Changes apply at once. A deck with its own speech language keeps it. | Có hiệu lực ngay. Bộ thẻ có ngôn ngữ đọc riêng vẫn giữ ngôn ngữ đó. |
 | `settingsAdminTools` | Admin tools | Công cụ quản trị |
 | `settingsAdminToolsHint` | Monitoring, users, SQL log | Giám sát, người dùng, log SQL |
 | `settingsAdminLogs` | Logs | Nhật ký |
-| `settingsAdminPeople` | People | Người dùng |
+| `settingsAdminPeople` | People | Thành viên |
 
 `settingsStudyDefaultsNote` is removed (its two halves are the section notes above).
 `settingsStudyDefaults` ("Study defaults") titles the hub row and 23a; `settingsAdmin`
@@ -229,9 +231,9 @@ goldens; docs and `DESIGN.md`.
 
 ## 12. Risks and rollback
 
-- **Risk:** the hub still overflows for an admin with a signed-in account (§5.1
-  estimate ≈ 870dp). Accepted: the owner is the only admin; the hub fits for everyone
-  else, and the goldens show the exact height.
+- **Risk:** with a signed-in account the hub scrolls (§5.1, measured ≈774 dp, ≈885 dp
+  for an admin, against ≈696 dp visible). Accepted: only the Reset group falls below
+  the fold, every group is still one tap away, and the goldens show the exact height.
 - **Risk:** a deep link to Monitoring now returns to the hub, not to 23b. Accepted (D5);
   recorded in 23b's handoff.
 - **Risk:** the many moved tests and goldens hide a regression in a flow that did not

@@ -13,5 +13,5 @@ String studyDefaultsSummary(
     NewCardOrder.created => l10n.settingsOrderCreated,
     NewCardOrder.random => l10n.settingsOrderRandom,
   },
-  isAutoPlay.toString(),
+  isAutoPlay ? 'on' : 'off',
 );

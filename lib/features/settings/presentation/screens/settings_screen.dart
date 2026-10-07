@@ -181,7 +181,14 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
         _ => MxScreenScroll(
-          children: [SettingsSkeletonWidget(semanticLabel: l10n.commonLoading)],
+          children: [
+            SettingsSkeletonWidget(
+              semanticLabel: l10n.commonLoading,
+              rowsPerSection: accountRow == null
+                  ? SettingsSkeletonWidget.hubRowsWithoutAccount
+                  : SettingsSkeletonWidget.hubRows,
+            ),
+          ],
         ),
       },
     );

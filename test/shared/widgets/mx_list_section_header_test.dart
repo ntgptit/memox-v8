@@ -25,6 +25,19 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('the label is a heading for screen readers (audit 2026-10-07)', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _width(const MxListSectionHeader(label: 'Decks')));
+
+    expect(
+      tester.getSemantics(find.text('DECKS')),
+      isSemantics(label: 'Decks', isHeader: true),
+    );
+    handle.dispose();
+  });
+
   testWidgets('padding 0 4 8, or 2 4 8 after a filter band', (tester) async {
     await pumpMx(tester, _width(const MxListSectionHeader(label: 'Decks')));
     final header = tester.getTopLeft(find.byType(MxListSectionHeader));

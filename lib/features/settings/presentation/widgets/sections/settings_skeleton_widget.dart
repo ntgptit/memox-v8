@@ -20,6 +20,9 @@ class SettingsSkeletonWidget extends StatelessWidget {
   /// The hub's shape: Account & sync, Study, App, Reset (spec §5.1).
   static const List<int> hubRows = [2, 1, 3, 1];
 
+  /// The hub's shape in a build without an account: Study, App, Reset.
+  static const List<int> hubRowsWithoutAccount = [1, 3, 1];
+
   /// Screen 23a's shape: Session, Speech (spec §5.2).
   static const List<int> studyRows = [2, 2];
   static const double _headerWidth = 96;
