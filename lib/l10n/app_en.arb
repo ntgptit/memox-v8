@@ -5137,7 +5137,7 @@
   },
   "settingsStudySection": "Study",
   "@settingsStudySection": {
-    "description": "Settings hub (screen 23): the overline of the group whose one row opens Study defaults (settings hub spec §5.1)."
+    "description": "Settings hub (screen 23): the overline of the group whose one row opens Study options (settings hub spec §5.1)."
   },
   "settingsStudyDefaultsSummary": "{count, plural, =1{1 card} other{{count} cards}} · {order} · Read aloud {isAutoPlay, select, on{on} other{off}}",
   "@settingsStudyDefaultsSummary": {
@@ -5152,23 +5152,23 @@
         "type": "String"
       }
     },
-    "description": "Settings hub: the Study defaults row's subtitle, the stored defaults in one line (settings hub spec D8). order is the rendered In order / Random; isAutoPlay is on or off."
+    "description": "Settings hub: the Study options row's subtitle, the stored defaults in one line (settings hub spec D8). order is the rendered In order / Random; isAutoPlay is on or off."
   },
   "settingsSessionSection": "Session",
   "@settingsSessionSection": {
-    "description": "Study defaults (screen 23a): the overline over Cards per session and New-card order."
+    "description": "Study options (screen 23a): the overline over Cards and New-card order."
   },
   "settingsSessionNote": "Changes apply to sessions you start from now on. A deck with its own study options keeps them.",
   "@settingsSessionNote": {
-    "description": "Study defaults (screen 23a): the note under the Session section (BR-SETTINGS-004)."
+    "description": "Study options (screen 23a): the note under the Session section (BR-SETTINGS-004)."
   },
   "settingsSpeechSection": "Speech",
   "@settingsSpeechSection": {
-    "description": "Study defaults (screen 23a): the overline over Read the term aloud and Speech language."
+    "description": "Study options (screen 23a): the overline over Read the term aloud and Speech language."
   },
   "settingsSpeechNote": "Changes apply at once. A deck with its own speech language keeps it.",
   "@settingsSpeechNote": {
-    "description": "Study defaults (screen 23a): the note under the Speech section (BR-STUDY-080, BR-SETTINGS-009)."
+    "description": "Study options (screen 23a): the note under the Speech section (BR-STUDY-080, BR-SETTINGS-009)."
   },
   "settingsCardLimit": "Cards per session",
   "@settingsCardLimit": {
@@ -5220,7 +5220,7 @@
   },
   "settingsSpeechAutoPlay": "Read the term aloud",
   "@settingsSpeechAutoPlay": {
-    "description": "Settings › Study defaults: the read-aloud switch (BR-SETTINGS-010)."
+    "description": "Settings › Study options (23a): the read-aloud switch (BR-SETTINGS-010)."
   },
   "settingsSpeechAutoPlayHint": "When a new card comes up while learning",
   "@settingsSpeechAutoPlayHint": {
@@ -5228,7 +5228,7 @@
   },
   "settingsSpeechLanguage": "Speech language",
   "@settingsSpeechLanguage": {
-    "description": "Settings › Study defaults and Study options: the row that opens the language sheet (BR-SETTINGS-009)."
+    "description": "Settings › Study options (23a) and a deck's Study options (15): the row that opens the language sheet (BR-SETTINGS-009)."
   },
   "settingsSpeechLanguageValue": "{language} · Used by decks that follow the defaults",
   "@settingsSpeechLanguageValue": {
@@ -5237,7 +5237,7 @@
         "type": "String"
       }
     },
-    "description": "Settings › Study defaults: subtitle of the speech language row, the value first as the Theme and Language rows do (critique 2026-10-07)."
+    "description": "Settings › Study options (23a): subtitle of the speech language row, the value first as the Theme and Language rows do (critique 2026-10-07)."
   },
   "settingsSpeechLanguageMissing": "No voice on this device · nothing is read",
   "@settingsSpeechLanguageMissing": {
@@ -5294,7 +5294,7 @@
   "@settingsResetRow": {
     "description": "The row that opens the reset confirmation (UC-SETTINGS-001 A3)."
   },
-  "settingsResetRowHint": "Theme, language, study defaults, read-aloud, reminder",
+  "settingsResetRowHint": "Theme, language, study options, read-aloud, reminder",
   "@settingsResetRowHint": {
     "description": "Line under Reset app options; names the reminder (register row 123, closed by FE-B5)."
   },

@@ -1009,7 +1009,7 @@
   "settingsReset": "Đặt lại",
   "settingsResetNote": "Chỉ các tuỳ chọn ứng dụng này trở về mặc định. Bộ thẻ, thẻ, tuỳ chọn học của từng bộ thẻ và tiến độ học không bị đụng tới.",
   "settingsResetRow": "Đặt lại tuỳ chọn ứng dụng",
-  "settingsResetRowHint": "Giao diện, ngôn ngữ, mặc định khi học, đọc to, nhắc học",
+  "settingsResetRowHint": "Giao diện, ngôn ngữ, tuỳ chọn học, đọc to, nhắc học",
   "settingsResetTitle": "Đặt lại tuỳ chọn ứng dụng?",
   "settingsResetBody": "Giao diện, ngôn ngữ, số thẻ mỗi phiên, thứ tự thẻ mới, cài đặt đọc to và nhắc học hằng ngày (tắt, 20:00) trở về mặc định.",
   "settingsResetSafe": "Bộ thẻ, thẻ, lịch ôn và lịch sử học của bạn giữ nguyên. Đây không phải là “Đặt lại tiến độ học”.",

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -370,5 +371,29 @@ void main() {
     expect(message.right, greaterThanOrEqualTo(control.right));
     expect(message.top, greaterThanOrEqualTo(control.bottom));
     expect(message.top, greaterThanOrEqualTo(label.bottom));
+  });
+
+  testWidgets('a field message\'s glyph lines up with the label (audit '
+      '2026-10-07)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Cards',
+          icon: AppIcons.library,
+          trailing: SizedBox(key: _controlKey, width: 140, height: 44),
+          message: MxFieldMessage(message: 'Enter a number from 1 to 200'),
+        ),
+      ),
+    );
+    final glyph = find.descendant(
+      of: find.byType(MxFieldMessage),
+      matching: find.byType(Icon),
+    );
+
+    expect(
+      tester.getTopLeft(glyph).dx,
+      tester.getTopLeft(find.text('Cards')).dx,
+    );
   });
 }

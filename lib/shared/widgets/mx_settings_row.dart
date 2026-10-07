@@ -6,6 +6,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
@@ -162,7 +163,12 @@ class MxSettingsRow extends StatelessWidget {
   Widget _withMessage(Widget row) {
     final line = message;
     if (line == null) return row;
-    final indent = icon == null ? 0.0 : _leadColumn + AppSpacing.gutter;
+    final labelStart = icon == null ? 0.0 : _leadColumn + AppSpacing.gutter;
+    // MxFieldMessage insets its glyph by micro, as under a field: pulled
+    // back so the glyph lines up with the label (audit 2026-10-07).
+    final indent = line is MxFieldMessage
+        ? labelStart - AppSpacing.micro
+        : labelStart;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
