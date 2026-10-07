@@ -42,7 +42,44 @@
 
 ## [account](../features/account/README.md)
 
-Chưa có tài liệu.
+### Rules
+
+| ID | Title | Status | Summary | Used by |
+|---|---|---|---|---|
+| [BR-ACCOUNT-001](../features/account/rules/BR-ACCOUNT-001-welcome-hien-mot-lan-tren-moi-thiet-bi.md) | Welcome hiện một lần trên mỗi thiết bị | active | Màn Welcome (29) hiện đúng một lần trên mỗi thiết bị của bản build có thể đăng nhập; cờ `welcome_seen` chỉ của máy, mọi lối ra đều trả lời Welcome. | UC-ACCOUNT-001 |
+| [BR-ACCOUNT-002](../features/account/rules/BR-ACCOUNT-002-dang-nhap-la-tuy-chon.md) | Đăng nhập là tuỳ chọn | active | App dùng đầy đủ trên phiên ẩn danh; không màn hình nào bị chặn hay chuyển hướng để buộc đăng nhập ngoài Welcome lần đầu. | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| [BR-ACCOUNT-003](../features/account/rules/BR-ACCOUNT-003-man-gan-va-man-quan-ly-theo-tai-khoan-cua-thiet-bi.md) | Màn gắn và màn quản lý tài khoản theo tài khoản của thiết bị | active | Thiết bị đã giữ tài khoản thì luồng gắn chuyển sang màn 32; thiết bị còn ẩn danh thì màn 32 chuyển về Settings. | UC-ACCOUNT-001, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-004](../features/account/rules/BR-ACCOUNT-004-luong-ket-thuc-o-dau-va-from-chi-tro-vao-trong-app.md) | Luồng kết thúc ở đâu và from chỉ trỏ vào trong app | active | Luồng gắn kết thúc ở màn 32, đăng nhập lại quay về nơi nó được mở; tham số `from` chỉ nhận vị trí trong app. | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| [BR-ACCOUNT-005](../features/account/rules/BR-ACCOUNT-005-email-hop-le-va-cach-so-sanh-email.md) | Email hợp lệ và cách so sánh email | active | Email hợp lệ khi sau trim khớp `^[^@\s]+@[^@\s]+\.[^@\s]+$`, chỉ kiểm ở form đăng nhập; hai email so sánh bằng trim và chữ thường. | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| [BR-ACCOUNT-006](../features/account/rules/BR-ACCOUNT-006-ma-xac-nhan-sau-chu-so-kiem-ngay-khi-du.md) | Mã xác nhận sáu chữ số, kiểm ngay khi đủ sáu | active | Mã gồm đúng sáu chữ số, kiểm ngay ở chữ số thứ sáu không cần nút; mã sai và mã hết hạn là một trạng thái và xoá ô mã. | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| [BR-ACCOUNT-007](../features/account/rules/BR-ACCOUNT-007-gui-lai-ma-sau-60-giay.md) | Gửi lại mã sau 60 giây | active | "Resend code" chỉ dùng được sau 60 giây kể từ lần gửi trước; trong lúc chờ là một dòng chú thích, không phải nút. | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| [BR-ACCOUNT-008](../features/account/rules/BR-ACCOUNT-008-chi-hoi-gop-khi-may-co-deck-song-trash-khong-tinh.md) | Chỉ hỏi gộp hay bỏ khi máy có deck sống; Trash không tính là dữ liệu cần giữ | active | Khi đăng nhập trùng một tài khoản đã có, app chỉ hỏi gộp hay bỏ khi máy có deck ngoài Trash; không có thì tự chọn bỏ, không hỏi. | UC-ACCOUNT-002 |
+| [BR-ACCOUNT-009](../features/account/rules/BR-ACCOUNT-009-khi-hoi-gop-la-mac-dinh-bo-di-can-hai-thao-tac-co-chu-y.md) | Khi hỏi, gộp là mặc định; bỏ dữ liệu cần hai thao tác có chủ ý | active | Sheet gộp chọn sẵn "Merge into the account"; chọn "Discard this phone's data" hiện cảnh báo và đổi nút xác nhận sang destructive. | UC-ACCOUNT-002 |
+| [BR-ACCOUNT-010](../features/account/rules/BR-ACCOUNT-010-mat-thay-doi-chua-gui-luon-duoc-neu-so-va-xac-nhan.md) | Mất thay đổi chưa gửi luôn được nêu số và xác nhận | active | Mọi bước làm mất thay đổi chưa gửi lên server phải nói rõ bao nhiêu thay đổi và cần một xác nhận tường minh; cùng email thì không hỏi. | UC-ACCOUNT-002, UC-ACCOUNT-003, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-011](../features/account/rules/BR-ACCOUNT-011-lop-chuyen-tiep-chan-moi-thao-tac-ghi.md) | Lớp chuyển tiếp chặn mọi thao tác ghi | active | Khi chuyển tài khoản, đăng xuất, xoá hoặc dọn về ẩn danh đang chạy, cổng ghi đóng và một lớp phủ toàn app chặn giao diện. | UC-ACCOUNT-002, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-012](../features/account/rules/BR-ACCOUNT-012-mat-mang-giua-chung-dung-lai-giu-ban-ghi-va-cho-thu-lai.md) | Mất mạng giữa chừng dừng lại, giữ bản ghi và cho thử lại | active | Một chuyển tiếp gặp lỗi mạng dừng tại bước đó, giữ bản ghi và dữ liệu, rồi chạy tiếp cùng thao tác khi có mạng hoặc khi Retry. | UC-ACCOUNT-002, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-013](../features/account/rules/BR-ACCOUNT-013-du-lieu-tren-may-chi-bi-xoa-theo-nhung-duong-da-liet-ke.md) | Dữ liệu trên máy chỉ bị xoá theo những đường đã được liệt kê | active | Dữ liệu nghiệp vụ trên máy chỉ bị `LocalDataReset` xoá qua sáu đường; mất mạng, phiên bị từ chối hay người dùng ẩn danh bị dọn không xoá gì. | UC-ACCOUNT-002, UC-ACCOUNT-003, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-014](../features/account/rules/BR-ACCOUNT-014-dang-xuat-gui-thay-doi-truoc-roi-moi-xoa-du-lieu-may.md) | Đăng xuất gửi thay đổi trước rồi mới xoá dữ liệu máy | active | Đăng xuất gửi thay đổi và log lên server trước, rồi xoá dữ liệu máy và bắt đầu người dùng ẩn danh mới; offline thì phải nhận mất thay đổi mới đi tiếp. | UC-ACCOUNT-004 |
+| [BR-ACCOUNT-015](../features/account/rules/BR-ACCOUNT-015-xoa-tai-khoan-can-mang-va-neu-ro-cai-gi-bi-xoa.md) | Xoá tài khoản cần mạng và nêu rõ cái gì bị xoá | active | Xoá tài khoản chỉ online, nêu rõ tài khoản và dữ liệu máy bị xoá không hoàn tác, và bị từ chối với admin cuối cùng. | UC-ACCOUNT-004 |
+| [BR-ACCOUNT-016](../features/account/rules/BR-ACCOUNT-016-doi-tai-khoan-tu-man-32-luon-la-bo-va-luon-hoi.md) | Đổi tài khoản từ màn 32 luôn là bỏ dữ liệu máy và luôn hỏi | active | "Switch account" từ một tài khoản vĩnh viễn luôn là `discard` sau một hộp thoại xác nhận, không đếm thư viện và không có người dùng ẩn danh ở giữa. | UC-ACCOUNT-002 |
+| [BR-ACCOUNT-017](../features/account/rules/BR-ACCOUNT-017-phien-bi-tu-choi-giu-du-lieu-bao-bang-banner-va-cho-dang-nhap-lai.md) | Phiên bị từ chối giữ dữ liệu, báo bằng banner và chờ đăng nhập lại | active | Khi phiên của tài khoản vĩnh viễn bị từ chối, app giữ dữ liệu, tạm dừng đồng bộ và nhắc đăng nhập lại ở Settings, màn 32 và Study home, không chuyển hướng. | UC-ACCOUNT-003 |
+| [BR-ACCOUNT-018](../features/account/rules/BR-ACCOUNT-018-lenh-o-man-32-can-tai-khoan-da-xac-nhan-va-chay-mot-lan-mot-lenh.md) | Lệnh ở màn 32 cần tài khoản đã xác nhận và chạy một lần một lệnh | active | Đổi tài khoản, đăng xuất và xoá chỉ dùng được khi tài khoản đã được xác nhận; mỗi lúc chỉ một lệnh hỏi hoặc chạy. | UC-ACCOUNT-003, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-019](../features/account/rules/BR-ACCOUNT-019-chi-admin-thay-va-mo-duoc-man-admin-server-quyet-dinh.md) | Chỉ admin thấy và mở được màn admin, server quyết định quyền | active | Mục Admin của Settings và các route Monitoring, Users chỉ mở cho tài khoản admin đã được `me()` xác nhận; app chỉ ẩn hiện, server từ chối bằng `FORBIDDEN`. | UC-ACCOUNT-005, UC-MONITORING-001, UC-MONITORING-002 |
+| [BR-ACCOUNT-020](../features/account/rules/BR-ACCOUNT-020-users-liet-ke-tai-khoan-co-email-va-tim-theo-email.md) | Users liệt kê tài khoản có email và tìm theo email | active | Màn Users chỉ liệt kê tài khoản không ẩn danh có email, sắp theo email, 50 dòng một trang, tìm theo email sau 400 ms. | UC-ACCOUNT-005 |
+| [BR-ACCOUNT-021](../features/account/rules/BR-ACCOUNT-021-hang-cua-chinh-admin-chi-doc.md) | Hàng của chính admin chỉ đọc | active | Trên màn Users, hàng của tài khoản đang đăng nhập có nhãn "You" và không mở sheet đổi role; người khác phải hạ quyền bạn. | UC-ACCOUNT-005 |
+| [BR-ACCOUNT-022](../features/account/rules/BR-ACCOUNT-022-doi-role-server-tu-choi-thi-sheet-giu-nguyen-va-noi-ngay-trong-sheet.md) | Đổi role bị từ chối thì sheet ở lại và nói ngay trong sheet | active | Sheet role lưu qua `role_set`; server từ chối admin cuối, tài khoản ẩn danh, hoặc không phải admin, và mỗi từ chối có cách nói riêng. | UC-ACCOUNT-005 |
+| [BR-ACCOUNT-023](../features/account/rules/BR-ACCOUNT-023-huy-chuyen-tai-khoan-chi-truoc-khi-tai-khoan-dich-dang-nhap.md) | Huỷ chuyển tài khoản chỉ được trước khi tài khoản đích đăng nhập | active | Cancel của lớp chuyển tiếp trả máy về tài khoản nguồn nguyên vẹn, nhưng chỉ cho tới lúc tài khoản đích đăng nhập xong. | UC-ACCOUNT-002 |
+| [BR-ACCOUNT-024](../features/account/rules/BR-ACCOUNT-024-merge-bi-server-tu-choi-thi-quay-ve-nguon-nguyen-ven.md) | Merge bị server từ chối thì quay về tài khoản nguồn nguyên vẹn | active | Khi server từ chối claim của merge, app khôi phục tài khoản nguồn với dữ liệu máy nguyên vẹn và nói "Couldn't merge"; không có gì bị xoá. | UC-ACCOUNT-002 |
+
+### Use cases
+
+| ID | Title | Status | Summary |
+|---|---|---|---|
+| [UC-ACCOUNT-001](../features/account/usecases/UC-ACCOUNT-001-mo-app-lan-dau-va-gan-tai-khoan-vao-thiet-bi.md) | Mở app lần đầu và gắn tài khoản vào thiết bị | draft | — |
+| [UC-ACCOUNT-002](../features/account/usecases/UC-ACCOUNT-002-gop-hoac-chuyen-thiet-bi-sang-tai-khoan-khac.md) | Gộp hoặc chuyển thiết bị sang tài khoản khác | draft | — |
+| [UC-ACCOUNT-003](../features/account/usecases/UC-ACCOUNT-003-dang-nhap-lai-khi-phien-het-hieu-luc.md) | Đăng nhập lại khi phiên hết hiệu lực | draft | — |
+| [UC-ACCOUNT-004](../features/account/usecases/UC-ACCOUNT-004-dang-xuat-hoac-xoa-tai-khoan.md) | Đăng xuất hoặc xoá tài khoản | draft | — |
+| [UC-ACCOUNT-005](../features/account/usecases/UC-ACCOUNT-005-admin-cap-quyen-admin-hoac-user-cho-tai-khoan.md) | Admin cấp quyền admin hoặc user cho tài khoản | draft | — |
 
 ## [card](../features/card/README.md)
 
@@ -126,7 +163,27 @@ Chưa có tài liệu.
 
 ## [monitoring](../features/monitoring/README.md)
 
-Chưa có tài liệu.
+### Rules
+
+| ID | Title | Status | Summary | Used by |
+|---|---|---|---|---|
+| [BR-MONITORING-001](../features/monitoring/rules/BR-MONITORING-001-mac-dinh-mo-vao-van-de-dang-mo.md) | Mặc định mở vào các vấn đề đang mở | active | Tab Server mở với bộ lọc mặc định là warning và error ở trạng thái open, mới nhất trước; rỗng ở mặc định là "No open problems". | UC-MONITORING-001 |
+| [BR-MONITORING-002](../features/monitoring/rules/BR-MONITORING-002-chon-debug-info-hoac-khong-muc-nao-thi-xoa-loc-trang-thai.md) | Chọn debug, info hoặc không mức nào thì bỏ lọc trạng thái | active | Hàng debug và info không có trạng thái, nên chọn chúng (hoặc không chọn mức nào) xoá bộ lọc Status để không giấu chúng. | UC-MONITORING-001 |
+| [BR-MONITORING-003](../features/monitoring/rules/BR-MONITORING-003-doi-bo-loc-tim-kiem-hoac-keo-lam-moi-tai-lai-tu-trang-dau.md) | Đổi bộ lọc, tìm kiếm hoặc kéo làm mới thì tải lại từ trang đầu | active | Mọi thay đổi bộ lọc, tìm kiếm hay kéo làm mới tải lại từ trang đầu; câu trả lời của lần hỏi cũ không bao giờ ghi đè lần mới. | UC-MONITORING-001 |
+| [BR-MONITORING-004](../features/monitoring/rules/BR-MONITORING-004-tim-kiem-khop-event-va-message-nguyen-van-sau-400-ms.md) | Tìm kiếm khớp event và message nguyên văn, hỏi sau 400 ms | active | Ô tìm kiếm khớp `event` và `message` không phân biệt hoa thường, coi `%`, `_` và `\` là chữ, và chỉ hỏi server 400 ms sau lần gõ cuối. | UC-MONITORING-001 |
+| [BR-MONITORING-005](../features/monitoring/rules/BR-MONITORING-005-trang-100-dong-theo-con-tro-tai-khi-gan-cuoi.md) | Trang 100 dòng theo con trỏ, tải khi gần cuối | active | Tab Server tải 100 dòng một trang theo con trỏ (thời gian, id), trang kế tải khi mười dòng cuối vào tầm nhìn và kết thúc ở "No more logs". | UC-MONITORING-001 |
+| [BR-MONITORING-006](../features/monitoring/rules/BR-MONITORING-006-chi-warning-va-error-cua-server-co-trang-thai-open-fixed.md) | Chỉ warning và error của server có trạng thái open hoặc fixed | active | Admin đánh dấu fixed hoặc mở lại một log warning hoặc error của server, kèm ghi chú tuỳ chọn; debug, info và log chưa gửi không có trạng thái. | UC-MONITORING-002 |
+| [BR-MONITORING-007](../features/monitoring/rules/BR-MONITORING-007-doi-trang-thai-mot-lan-mot-thay-doi-cap-nhat-tai-cho.md) | Đổi trạng thái một lần một thay đổi và cập nhật tại chỗ | active | Đổi trạng thái chạy một lần một thay đổi, cập nhật dòng ở chi tiết và danh sách, bỏ dòng khỏi danh sách nếu bộ lọc không còn khớp, và lỗi không đổi gì. | UC-MONITORING-002 |
+| [BR-MONITORING-008](../features/monitoring/rules/BR-MONITORING-008-tab-not-sent-doc-bo-dem-tren-may-va-chay-duoc-khi-offline.md) | Tab Not sent đọc bộ đệm trên máy và chạy được khi offline | active | Tab "Not sent" đọc bộ đệm log của máy (`LogDatabase`), được theo dõi, chỉ lọc theo mức, không có trạng thái, và dùng được khi offline. | UC-MONITORING-001, UC-MONITORING-002 |
+| [BR-MONITORING-009](../features/monitoring/rules/BR-MONITORING-009-gio-hien-theo-gio-may-dinh-dang-24-gio.md) | Giờ hiện theo giờ máy, định dạng 24 giờ | active | Log lưu giờ UTC và hiện theo giờ máy: `HH:mm` trong ngày, "Sep 26" ngày trước, và đủ ngày với `HH:mm:ss` ở chi tiết. | UC-MONITORING-001, UC-MONITORING-002 |
+| [BR-MONITORING-010](../features/monitoring/rules/BR-MONITORING-010-danh-sach-chi-tai-hang-gon-chi-tiet-tai-ca-hang.md) | Danh sách chỉ tải hàng gọn, chi tiết tải cả hàng | active | Danh sách không tải `context` và `stack_trace` và cắt message ở 300 ký tự; mở một dòng mới gọi `log_get` lấy cả hàng. | UC-MONITORING-001, UC-MONITORING-002 |
+
+### Use cases
+
+| ID | Title | Status | Summary |
+|---|---|---|---|
+| [UC-MONITORING-001](../features/monitoring/usecases/UC-MONITORING-001-duyet-va-loc-log-cua-server-va-cua-may.md) | Duyệt và lọc log của server và của máy | draft | — |
+| [UC-MONITORING-002](../features/monitoring/usecases/UC-MONITORING-002-doc-mot-log-va-danh-dau-da-sua.md) | Đọc một log và đánh dấu đã sửa | draft | — |
 
 ## [progress](../features/progress/README.md)
 
