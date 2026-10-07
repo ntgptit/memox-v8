@@ -182,7 +182,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text(_en.studyOptionsSaveFailed(20, _en.studyOptionsOrderCreatedShort)),
+      find.text(
+        _en.studyOptionsSaveFailed(20, _en.studyOptionsOrderCreatedShort),
+      ),
       findsOneWidget,
     );
     expect(find.textContaining('memox.sqlite'), findsNothing);

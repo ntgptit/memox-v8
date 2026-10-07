@@ -165,7 +165,7 @@ Settings rules, numbered after BR-SETTINGS-008:
 
 One place: `StudySessionScreen`. It already listens to `studySessionProvider`
 (`_onView`). A new feature-local helper, `StudySpeechCue` (pure, in
-`lib/features/study/presentation/states/study_speech_cue.dart`), decides from
+`lib/features/study/presentation/states/study_speech_cue_state.dart`), decides from
 `(previousView, nextView, turn)` whether a reading is due and of what:
 
 ```dart

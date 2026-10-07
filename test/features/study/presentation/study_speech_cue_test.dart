@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
-import 'package:memox/features/study/presentation/states/study_speech_cue.dart';
+import 'package:memox/features/study/presentation/states/study_speech_cue_state.dart';
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';

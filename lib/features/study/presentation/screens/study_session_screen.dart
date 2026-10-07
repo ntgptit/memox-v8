@@ -18,7 +18,7 @@ import 'package:memox/features/study/presentation/providers/speech_settings_prov
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
 import 'package:memox/features/study/presentation/states/session_context_state.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
-import 'package:memox/features/study/presentation/states/study_speech_cue.dart';
+import 'package:memox/features/study/presentation/states/study_speech_cue_state.dart';
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';

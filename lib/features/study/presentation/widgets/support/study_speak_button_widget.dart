@@ -24,16 +24,14 @@ class StudySpeakButtonWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final language = this.language;
+    // Kept alive for the app's life, so watching it never rebuilds the button.
+    final speech = ref.watch(speechSynthesizerProvider);
     return MxIconButton(
       icon: AppIcons.speak,
       semanticLabel: context.l10n.studySpeakTerm,
       onPressed: language == null
           ? null
-          : () => unawaited(
-              ref
-                  .read(speechSynthesizerProvider)
-                  .speak(text, language: language),
-            ),
+          : () => unawaited(speech.speak(text, language: language)),
     );
   }
 }

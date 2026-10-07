@@ -17,7 +17,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | Top bar | `MxStudyTopBar` | Indigo, as every mode (3c-2 R8). |
 | Context line | `SessionContextLine` | "{deck} · Review · round {n}". |
 | Turn clock | new: `RecallCountdownBar` (feature-local; distinct from `MxStudyTopBar`'s session-wide track — this one measures the current turn, pauses in the background, and stops for good once revealed or timed out, BR-STUDY-031, BR-STUDY-036) | Caption + "{s}s / 20s", a 4dp fill that drains to 0. |
-| Term face | `StudyFaceCard` (label "Term") | The prompt; always visible. |
+| Term face | `StudyFaceCard` (label "Term") | The prompt; always visible, with the speaker ("Read aloud") under the term (BR-STUDY-079). |
 | Meaning face | `StudyFaceCard` (`role: answer`) | Blurred placeholder before reveal; the meaning once revealed or timed out, with a "Counted as forgot" tag when timed out. |
 | CTA row | new: `StudyCtaRow` (feature-local) | `countingDown`: one "Show the meaning" button. `revealed`: "Forgot" and "Remembered", both secondary so neither grade is the loud one (critique 2026-09-30) — the only recorded input, at most once a turn (BR-STUDY-032, BR-STUDY-065). `timedOut`: one "Continue" button that only advances, records nothing (BR-STUDY-033, BR-STUDY-066). |
 | Footer hint | `SessionFooterHint` | Varies by state; see Copy. |

@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-`Reset to defaults` MUST là hành động tường minh có xác nhận, MUST đưa sáu giá trị người dùng chọn trong `app_settings` về mặc định trong một transaction — `card_limit`, `new_card_order`, `theme_mode`, `language`, `reminder_enabled`, `reminder_minute_of_day` — và MUST giữ nguyên hai giá trị chỉ của máy, không phải lựa chọn của người dùng: `reminder_last_delivered_at` (bookkeeping của nhắc học, BR-REMINDER-004) và `welcome_seen` (màn 29). Reset MUST NOT đụng `deck.study_config`, tiến độ học, `card_schedule`, `review_log`, session, scheduler hay nội dung card. Copy MUST nói rõ phạm vi đó trước khi thực hiện — MUST NOT dùng từ ngữ khiến hành động này bị hiểu là Reset learning progress (BR-SRS-022).
+`Reset to defaults` MUST là hành động tường minh có xác nhận, MUST đưa tám giá trị người dùng chọn trong `app_settings` về mặc định trong một transaction — `card_limit`, `new_card_order`, `theme_mode`, `language`, `reminder_enabled`, `reminder_minute_of_day`, `tts_language`, `tts_auto_play` (BR-SETTINGS-010) — và MUST giữ nguyên hai giá trị chỉ của máy, không phải lựa chọn của người dùng: `reminder_last_delivered_at` (bookkeeping của nhắc học, BR-REMINDER-004) và `welcome_seen` (màn 29). Reset MUST NOT đụng `deck.study_config`, tiến độ học, `card_schedule`, `review_log`, session, scheduler hay nội dung card. Copy MUST nói rõ phạm vi đó trước khi thực hiện — MUST NOT dùng từ ngữ khiến hành động này bị hiểu là Reset learning progress (BR-SRS-022).
 
 **Enforced by:** store + UI
 **Liên quan:** BR-SRS-022, BR-SETTINGS-001, BR-SETTINGS-003

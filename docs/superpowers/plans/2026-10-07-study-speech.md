@@ -999,7 +999,7 @@ defaults returns both."
 
 **Files:**
 - Modify: `lib/features/study_mode/domain/models/study_mode.dart` (`StudyModeHandler`), `lib/features/study_mode/domain/models/fill_mode.dart` (`FillModeHandler`), `lib/features/study_mode/domain/models/match_mode.dart` (`MatchModeHandler`)
-- Create: `lib/features/study/presentation/states/study_speech_cue.dart`
+- Create: `lib/features/study/presentation/states/study_speech_cue_state.dart`
 - Test: `test/features/study_mode/reads_term_aloud_test.dart`, `test/features/study/presentation/study_speech_cue_test.dart`
 
 **Interfaces:**
@@ -1042,7 +1042,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
-import 'package:memox/features/study/presentation/states/study_speech_cue.dart';
+import 'package:memox/features/study/presentation/states/study_speech_cue_state.dart';
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -1182,7 +1182,7 @@ In `FillModeHandler` and `MatchModeHandler`:
 
 - [ ] **Step 4: Write the cue**
 
-`lib/features/study/presentation/states/study_speech_cue.dart`:
+`lib/features/study/presentation/states/study_speech_cue_state.dart`:
 
 ```dart
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
@@ -1239,7 +1239,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add lib/features/study_mode lib/features/study/presentation/states/study_speech_cue.dart test/features/study_mode/reads_term_aloud_test.dart test/features/study/presentation/study_speech_cue_test.dart
+git add lib/features/study_mode lib/features/study/presentation/states/study_speech_cue_state.dart test/features/study_mode/reads_term_aloud_test.dart test/features/study/presentation/study_speech_cue_test.dart
 git commit -m "feat(study): readsTermAloud per mode and the pure speech cue
 
 The handler says whether its prompt is the term (fill and match say no);
@@ -1581,7 +1581,7 @@ import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/speech/speech_synthesizer.dart';
 import 'package:memox/features/settings/domain/models/speech_settings_model.dart';
 import 'package:memox/features/study/presentation/providers/speech_settings_provider.dart';
-import 'package:memox/features/study/presentation/states/study_speech_cue.dart';
+import 'package:memox/features/study/presentation/states/study_speech_cue_state.dart';
 ```
 
 State fields and lifecycle:

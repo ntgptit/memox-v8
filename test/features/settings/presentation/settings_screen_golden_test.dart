@@ -146,6 +146,8 @@ void main() {
     libraryTest('settings, reset confirm, $theme', (tester, env) async {
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, _screen, brightness);
+        // Below the fold since the speech rows (study speech spec §6).
+        await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
         await tester.tap(find.text(_en.settingsResetRow));
         await _settle(tester);
         await expectBoundaryGolden(
@@ -158,6 +160,8 @@ void main() {
     libraryTest('settings, reset done, $theme', (tester, env) async {
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, _screen, brightness);
+        // Below the fold since the speech rows (study speech spec §6).
+        await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
         await tester.tap(find.text(_en.settingsResetRow));
         await _settle(tester);
         await tester.tap(find.text(_en.settingsResetConfirm));

@@ -80,7 +80,7 @@ void main() {
       raw.execute('DROP TRIGGER deck_sync_insert');
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 14);
+      await verifier.migrateAndValidate(db, 15);
       final queued = await db
           .customSelect(
             "SELECT entity_id FROM sync_outbox WHERE entity_type = 'deck'",
@@ -138,7 +138,7 @@ void main() {
       raw.execute("DELETE FROM sync_outbox WHERE op_id = 'planted'");
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 14);
+      await verifier.migrateAndValidate(db, 15);
       final queued = await db
           .customSelect(
             'SELECT entity_type, entity_id FROM sync_outbox ORDER BY rowid',
