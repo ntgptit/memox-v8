@@ -470,14 +470,6 @@ void main() {
 
     expect(marked - plain, 18 + 4);
   });
-}
-
-double _ratio(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
-  return (hi + 0.05) / (lo + 0.05);
-
   // SW-REV-005: a caller that needs TalkBack to read more than the painted
   // label names it here, and the button keeps its tap and its state.
   testWidgets('semanticLabel: one node with the label, the tap and the state', (
@@ -518,4 +510,11 @@ double _ratio(Color a, Color b) {
     );
     handle.dispose();
   });
+}
+
+double _ratio(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
+  return (hi + 0.05) / (lo + 0.05);
 }
