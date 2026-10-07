@@ -5131,7 +5131,7 @@
   "@settingsLanguageSaveFailed": {
     "description": "Toast when saving the language failed (E2); offers Retry."
   },
-  "settingsStudyDefaults": "Study defaults",
+  "settingsStudyDefaults": "Study options",
   "@settingsStudyDefaults": {
     "description": "Settings hub (screen 23): the Study row's label, and the title of screen 23a it opens (settings hub spec D1)."
   },
@@ -5174,17 +5174,13 @@
   "@settingsCardLimit": {
     "description": "The app-wide card limit row, and its number for TalkBack (BR-SETTINGS-002)."
   },
-  "settingsCardLimitRange": "1 to {max} · default {count}",
-  "@settingsCardLimitRange": {
-    "placeholders": {
-      "max": {
-        "type": "int"
-      },
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Line under Cards per session."
+  "settingsCardLimitShort": "Cards",
+  "@settingsCardLimitShort": {
+    "description": "Study options (screen 23a): the card-limit row's label beside its stepper, under the Session overline (owner 2026-10-07). The stepper keeps settingsCardLimit as its spoken name."
+  },
+  "settingsCardLimitPerSession": "Per session",
+  "@settingsCardLimitPerSession": {
+    "description": "Study options (screen 23a): the card-limit row's subtitle under Cards, so the row reads Cards per session (owner 2026-10-07)."
   },
   "settingsCardLimitInvalid": "Enter a number from {min} to {max}",
   "@settingsCardLimitInvalid": {

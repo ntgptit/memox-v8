@@ -341,4 +341,34 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('a message sits under the text and the trailing control, from '
+      'the label\'s start to the row\'s end (Study options compaction)', (
+    tester,
+  ) async {
+    const messageKey = ValueKey('message');
+    await pumpMx(
+      tester,
+      _width(
+        const MxSettingsRow(
+          label: 'Cards per session',
+          icon: AppIcons.library,
+          trailing: SizedBox(key: _controlKey, width: 140, height: 44),
+          message: SizedBox(key: messageKey, height: 20),
+        ),
+      ),
+    );
+    final label = tester.getRect(find.text('Cards per session'));
+    final control = tester.getRect(find.byKey(_controlKey));
+    final message = tester.getRect(find.byKey(messageKey));
+
+    // The control stays beside the label.
+    expect(control.left, greaterThan(label.left));
+    expect(control.top, lessThan(label.bottom));
+    // The message starts under the label and runs under the control.
+    expect(message.left, label.left);
+    expect(message.right, greaterThanOrEqualTo(control.right));
+    expect(message.top, greaterThanOrEqualTo(control.bottom));
+    expect(message.top, greaterThanOrEqualTo(label.bottom));
+  });
 }

@@ -32,7 +32,7 @@ abstract final class AppRoutes {
   static const String settingsSyncChild = 'sync';
   static const String settingsSync = '$settings/$settingsSyncChild';
 
-  /// Study defaults (screen 23a, settings hub spec D1), relative to
+  /// Study options (screen 23a, settings hub spec D1), relative to
   /// [settings], on the root navigator like Theme.
   static const String settingsStudyChild = 'study';
   static const String settingsStudy = '$settings/$settingsStudyChild';

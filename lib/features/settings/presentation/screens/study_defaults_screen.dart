@@ -17,7 +17,7 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
-/// Screen 23a, Study defaults (settings hub spec §5.2; UC-SETTINGS-001
+/// Screen 23a, Study options (settings hub spec §5.2; UC-SETTINGS-001
 /// step 2): the app-wide study defaults in two sections, each saved on
 /// change (FE-A3 D1). Every value shown is the persisted one, or the card
 /// limit being changed (BR-SETTINGS-001).

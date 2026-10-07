@@ -42,7 +42,7 @@ their goldens, its rulings and its copy. The visual system is in
 | 21 | Session summary | 10 | FE-A6 | built | [21-session-summary.md](21-session-summary.md) |
 | 22 | Progress | 12 | FE-A9 | built | [22-progress.md](22-progress.md) |
 | 23 | Settings | 12 | FE-A3, SB-U1, FE-B8, FE-B9, SQL log switch (2026-10-07), study speech (2026-10-07), settings hub (2026-10-07) | built | [23-settings.md](23-settings.md) |
-| 23a | Settings · Study defaults | 8 | FE-A3, study speech (2026-10-07), settings hub (2026-10-07) | built | [23a-study-defaults.md](23a-study-defaults.md) |
+| 23a | Settings · Study options | 9 | FE-A3, study speech (2026-10-07), settings hub (2026-10-07), owner compaction (2026-10-07) | built | [23a-study-defaults.md](23a-study-defaults.md) |
 | 23b | Settings · Admin (admin only) | 2 | FE-B8, FE-B11, SQL log switch (2026-10-07), settings hub (2026-10-07) | built | [23b-admin.md](23b-admin.md) |
 | 24 | Daily reminder | 10 | FE-B5, FE-B6 | built | [24-daily-reminder.md](24-daily-reminder.md) |
 | 25 | Theme | 4 | FE-A3 | built | [25-theme.md](25-theme.md) |

@@ -13,6 +13,8 @@ import 'package:memox/features/settings/presentation/screens/study_defaults_scre
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_segmented_tray.dart';
+import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -284,5 +286,112 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.settingsSaved), findsOneWidget);
+  });
+
+  test('the page is named Study options (owner 2026-10-07)', () {
+    expect(_en.settingsStudyDefaults, 'Study options');
+    expect(
+      lookupAppLocalizations(const Locale('vi')).settingsStudyDefaults,
+      'Tuỳ chọn học',
+    );
+  });
+
+  libraryTest('the card-limit stepper sits on its label\'s line, with no '
+      'range line (owner 2026-10-07)', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _screen());
+    final label = tester.getRect(find.text(_en.settingsCardLimitShort));
+    final stepper = tester.getRect(find.byType(MxStepper));
+
+    expect(stepper.left, greaterThan(label.right));
+    expect(stepper.top, lessThan(label.bottom));
+    expect(find.textContaining('default 20'), findsNothing);
+  });
+
+  libraryTest('a typed 250 is refused across the row, under the label '
+      '(owner 2026-10-07)', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _screen());
+    await tester.tap(find.byKey(_valueKey));
+    await tester.pump();
+    await tester.enterText(find.byType(TextField), '250');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    final message = tester.getRect(
+      find.text(
+        _en.settingsCardLimitInvalid(
+          StudyOptions.minCardLimit,
+          StudyOptions.maxCardLimit,
+        ),
+      ),
+    );
+
+    expect(
+      message.top,
+      greaterThan(tester.getRect(find.byType(MxStepper)).bottom),
+    );
+    // One line at 360 dp: it is not squeezed into the stepper's width.
+    expect(
+      message.width,
+      greaterThan(tester.getSize(find.byType(MxStepper)).width),
+    );
+  });
+
+  libraryTest('the new-card order row names the order and opens a sheet; a '
+      'pick saves it (owner 2026-10-07)', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _screen());
+
+    expect(find.byType(MxSegmentedTray<NewCardOrder>), findsNothing);
+    expect(find.text(_en.settingsNewCardOrderHint), findsNothing);
+    expect(find.text(_en.settingsOrderCreated), findsOneWidget);
+
+    await tester.tap(find.text(_en.settingsNewCardOrder));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBottomSheet), findsOneWidget);
+
+    await tester.tap(find.text(_en.settingsOrderRandom));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxBottomSheet), findsNothing);
+    expect(find.text(_en.settingsOrderRandom), findsOneWidget);
+    final stored = await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
+    );
+    expect(stored!.studyDefaults.newCardOrder, NewCardOrder.random);
+  });
+
+  libraryTest('the card-limit label fits one line beside the stepper, in '
+      'English and Vietnamese (owner 2026-10-07)', (tester, env) async {
+    for (final locale in const [Locale('en'), Locale('vi')]) {
+      final l10n = lookupAppLocalizations(locale);
+      await pumpLibraryScreen(tester, env, _screen(), locale: locale);
+      final label = find.text(l10n.settingsCardLimitShort);
+
+      expect(label, findsOneWidget);
+      // settingsLabel is one line of at most 17 × 1.5.
+      expect(tester.getSize(label).height, lessThan(30));
+      // The stepper still says what it counts.
+      final stepper = tester.widget<MxStepper>(find.byType(MxStepper));
+      expect(stepper.valueLabel, l10n.settingsCardLimit);
+    }
+  });
+
+  libraryTest('the card-limit row reads "Cards · Per session" and stands as '
+      'tall as the order row (owner 2026-10-07)', (tester, env) async {
+    for (final locale in const [Locale('en'), Locale('vi')]) {
+      final l10n = lookupAppLocalizations(locale);
+      await pumpLibraryScreen(tester, env, _screen(), locale: locale);
+      final perSession = find.text(l10n.settingsCardLimitPerSession);
+
+      expect(perSession, findsOneWidget);
+      // rowDescription is one line of 14 × 1.5.
+      expect(tester.getSize(perSession).height, lessThan(24));
+      Finder rowOf(String label) => find.ancestor(
+        of: find.text(label),
+        matching: find.byType(MxSettingsRow),
+      );
+      expect(
+        tester.getSize(rowOf(l10n.settingsCardLimitShort)).height,
+        tester.getSize(rowOf(l10n.settingsNewCardOrder)).height,
+      );
+    }
   });
 }

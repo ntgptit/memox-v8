@@ -4,7 +4,7 @@
 
 The Settings tab, a hub (settings hub spec 2026-10-07, D1): five groups of rows that
 name their value and open their page, and one action row. The study rows live on
-[23a Study defaults](23a-study-defaults.md), the admin rows on [23b Admin](23b-admin.md);
+[23a Study options](23a-study-defaults.md), the admin rows on [23b Admin](23b-admin.md);
 Theme, Language, Daily reminder, Sync and the account keep their pages. UC-SETTINGS-001;
 specs [2026-09-26-settings-ui-design.md](../../../superpowers/specs/2026-09-26-settings-ui-design.md)
 §5.2 (the rows' behaviour) and
@@ -25,7 +25,7 @@ Every row opens its page on the root navigator, with no bottom bar (FE-A3 D2): 2
 |---|---|---|
 | App bar | `MxAppBar` | "Settings"; the gallery icon in debug builds. |
 | Account & sync | `MxSection` + `MxSettingsRow` × 2 | "Account & sync" (D2, D7). The account row as the account feature draws it (FE-B9, FE-B10): an anonymous device gets "Sign in" / "Keep your decks if you reinstall or change phones" with the person tile, opening screen 30; while the account cannot link yet (offline) the row is disabled with "Available when you're online"; an attached account shows its email / "Your decks sync to this account" with a chevron to screen 32. Then "Sync" (SB-U1) with the cloud-sync tile toned by state and its sub-line, the first that applies of "{n} changes weren't accepted", "Couldn't sync · no connection" (or "· couldn't sign in", "· server error", "· something went wrong"), "Synced {Today, 14:32}", "Not synced yet" (sync status spec §5.1), opening screen 27. An expired sign-in puts a warning `MxInlineBanner` above the overline: "Your sign-in expired. Your decks are still on this phone." · "Sign in" → 30 `reauth` (account UI spec §5.5; P3b plan ruling 1). `app/` composes the row and the banner as slots and passes none in a build without Supabase, where the Sync row has no status either, so the section is hidden whole. |
-| Study | `MxSection` + `MxSettingsRow` | "Study". "Study defaults" / "{n} cards · {order} · Read aloud on\|off", "1 card" for one (D8), library tile, opens 23a. |
+| Study | `MxSection` + `MxSettingsRow` | "Study". "Study options" / "{n} cards · {order} · Read aloud on\|off", "1 card" for one (D8), library tile, opens 23a. |
 | App | `MxSection` + `MxSettingsRow` × 3 | "App". "Theme" with the choice ("Follows the system setting", "Light" or "Dark"); "Language" with "System · {language}", "English" or "Tiếng Việt"; "Daily reminder" with "Off" or "On · {HH:mm}" (FE-B5). Each opens its page. |
 | Admin | `MxSection` + `MxSettingsRow` | "Admin", only while the session's account is an admin (users spec U2, ADR-018 §7). "Admin tools" / "Monitoring, users, SQL log" with the shield tile (`AppIcons.safe`), opens 23b (D4). |
 | Reset | `MxSection` + `MxSettingsRow` (`isAction`: it opens a dialog, so no chevron; critique 2026-09-30 part 1) | "Reset app options" / "Theme, language, study defaults, read-aloud, reminder". The note: "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." |
@@ -68,7 +68,7 @@ Goldens: `test/features/settings/presentation/goldens/settings_{loaded,loading,a
 
 ## Copy
 
-- Groups: "Account & sync" · "Study" · "Study defaults" · "1 card" / "{count} cards · {order} · Read aloud on" / "… off" · "App" · "Admin" · "Admin tools" · "Monitoring, users, SQL log" · "Reset".
+- Groups: "Account & sync" · "Study" · "Study options" · "1 card" / "{count} cards · {order} · Read aloud on" / "… off" · "App" · "Admin" · "Admin tools" · "Monitoring, users, SQL log" · "Reset".
 - App: "App" · "Theme" · "Follows the system setting" · "Light" · "Dark" · "Language" · "System · {language}" · "English" · "Tiếng Việt" · "Daily reminder" · "Off" · "On · {time}".
 - Reset: "Reset" · "Reset app options" · "Theme, language, study defaults, read-aloud, reminder" · "Only these app options return to their defaults. Decks, cards, per-deck study options and learning progress are not touched." · "Reset app options?" · "Theme, language, cards per session, new-card order, read-aloud settings and the daily reminder (off, 20:00) go back to their defaults." · "Your decks, cards, schedules and study history stay exactly as they are. This is not “Reset learning progress”." · "Cancel" · "Reset".
 - Sync (SB-U1): "Sync" · "{n} changes weren't accepted" · "Couldn't sync · no connection" · "Couldn't sync · couldn't sign in" · "Couldn't sync · server error" · "Couldn't sync · something went wrong" · "Synced {time}" · "Not synced yet"; times "Today, {HH:mm}" · "Yesterday, {HH:mm}" · "{MMM d}, {HH:mm}".

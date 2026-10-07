@@ -194,7 +194,7 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  /// The reset's toasts (settings hub spec D9); Study defaults, Theme and
+  /// The reset's toasts (settings hub spec D9); Study options, Theme and
   /// Language say their own.
   void _say(BuildContext context, WidgetRef ref, SettingsNotice? notice) {
     if (notice == null) return;

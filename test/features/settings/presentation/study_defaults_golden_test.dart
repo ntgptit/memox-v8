@@ -122,6 +122,22 @@ void main() {
       });
     });
 
+    // Owner 2026-10-07: the new-card order opens its sheet.
+    libraryTest('study defaults, new-card order sheet, $theme', (
+      tester,
+      env,
+    ) async {
+      await withRealShadows(() async {
+        await pumpLibraryGolden(tester, env, _screen, brightness);
+        await tester.tap(find.text(_en.settingsNewCardOrder));
+        await tester.pumpAndSettle();
+        await expectBoundaryGolden(
+          tester,
+          'goldens/study_defaults_order_sheet_$theme.png',
+        );
+      });
+    });
+
     libraryTest('study defaults, saved, $theme', (tester, env) async {
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, _screen, brightness);

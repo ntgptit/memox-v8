@@ -1,7 +1,7 @@
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
-/// The hub's Study defaults row in one line (settings hub spec D8):
+/// The hub's Study options row in one line (settings hub spec D8):
 /// "20 cards · In order · Read aloud on".
 String studyDefaultsSummary(
   AppLocalizations l10n,
