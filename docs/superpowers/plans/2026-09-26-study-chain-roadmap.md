@@ -1,5 +1,7 @@
 # Study screen chain — roadmap for the phases left (P3 → P6)
 
+> **Historical (ADR-019).** Written against the "Mobile UI Kit v3", retired on 2026-09-30; its kit references and screen captures are history, not authority. The app, `DESIGN.md` and the goldens decide the UI; each screen's current state is in its detail file under `docs/shared/ui/screen-handoff/`.
+
 Status: approved by the owner (2026-09-26): run P3 → P6 back to back, merging each phase's PR once green. Done: P3 (#76), P4 (#80), P5 (#82), P6 ([plan](2026-09-26-study-p6-study-home.md)).
 
 > **For agentic workers:** this roadmap does not replace the per-phase plans.
