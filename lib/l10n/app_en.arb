@@ -3143,9 +3143,9 @@
   "@studyEntryReasonTooFewPairs": {
     "description": "Screen handoff 14 (FE-A6): why Match is not available (BR-MODE-009)."
   },
-  "studyEntryReasonTooFewMeanings": "Needs five different meanings among the due cards",
+  "studyEntryReasonTooFewMeanings": "Needs five different meanings among learned cards",
   "@studyEntryReasonTooFewMeanings": {
-    "description": "Screen handoff 14 (FE-A6): why Guess is not available (BR-MODE-009)."
+    "description": "Screen handoff 14 (FE-A6): why Guess is not available (BR-MODE-009). Its options come from the learned cards of the whole tree (BR-STUDY-038), not the due cards."
   },
   "studyEntryDeckGone": "This deck no longer exists",
   "@studyEntryDeckGone": {

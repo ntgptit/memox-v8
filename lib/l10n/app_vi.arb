@@ -606,7 +606,7 @@
   "studyEntryUnavailableNote": "Chế độ chưa dùng được là vì thiếu thẻ phù hợp cho lần ôn này — nó sẽ có lại khi thẻ đủ điều kiện.",
   "studyEntryReasonNoExample": "Cần ví dụ trên các thẻ đến hạn",
   "studyEntryReasonTooFewPairs": "Cần ít nhất hai thẻ đến hạn",
-  "studyEntryReasonTooFewMeanings": "Cần năm nghĩa khác nhau trong các thẻ đến hạn",
+  "studyEntryReasonTooFewMeanings": "Cần năm nghĩa khác nhau trong các thẻ đã học",
   "studyEntryDeckGone": "Bộ thẻ này không còn nữa",
   "studyEntryErrorTitle": "Không đọc được bộ thẻ này",
   "studyEntryErrorBody": "Thẻ của bạn vẫn an toàn trên máy. Hãy thử lại sau giây lát.",
