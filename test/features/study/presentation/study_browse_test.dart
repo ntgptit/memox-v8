@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/controllers/study_session_controller.dart';
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
@@ -42,6 +43,7 @@ class _Host extends ConsumerWidget {
             item: value.currentItem!,
             isBusy: turn.isBusy,
             onAdvance: () => _advance(ref, value.currentItem!),
+            speechLanguage: SpeechLanguage.enUs,
           ),
         ),
       _ => const SizedBox.shrink(),

@@ -786,6 +786,7 @@
   "studyKindLearning": "Học mới",
   "studyContextLearning": "{deck} · {kind} · giai đoạn {stage}/{stages}",
   "studyBrowseTerm": "Thuật ngữ",
+  "studySpeakTerm": "Đọc to",
   "studyBrowseMeaning": "Nghĩa",
   "studyBrowseHint": "Vuốt để sang hoặc quay lại · không chấm điểm",
   "studyBrowseLookingBack": "Đang xem lại",

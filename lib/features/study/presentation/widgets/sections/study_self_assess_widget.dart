@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -6,10 +7,11 @@ import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_appearing_widget.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_grade_row_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -27,9 +29,13 @@ class StudySelfAssessWidget extends StatefulWidget {
     required this.intervals,
     required this.isBusy,
     required this.onGrade,
+    required this.speechLanguage,
   });
 
   final StudyItem item;
+
+  /// The language the term is read in; null until the session knows it.
+  final SpeechLanguage? speechLanguage;
 
   /// The preview of this turn; null while it loads and on a turn without one.
   final Map<Object, int>? intervals;
@@ -59,6 +65,7 @@ class _StudySelfAssessWidgetState extends State<StudySelfAssessWidget> {
       child: _TermFace(
         item: widget.item,
         isShown: !_isMeaningFirst || _isRevealed,
+        speechLanguage: widget.speechLanguage,
       ),
     );
     final meaningFace = StudyFaceCardWidget(
@@ -123,10 +130,15 @@ class _StudySelfAssessWidgetState extends State<StudySelfAssessWidget> {
 
 /// The term, with its pronunciation.
 class _TermFace extends StatelessWidget {
-  const _TermFace({required this.item, required this.isShown});
+  const _TermFace({
+    required this.item,
+    required this.isShown,
+    required this.speechLanguage,
+  });
 
   final StudyItem item;
   final bool isShown;
+  final SpeechLanguage? speechLanguage;
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +161,7 @@ class _TermFace extends StatelessWidget {
               textAlign: TextAlign.center,
               style: styles.studyDetail,
             ),
+          StudySpeakButtonWidget(text: item.front, language: speechLanguage),
         ],
       ),
     );

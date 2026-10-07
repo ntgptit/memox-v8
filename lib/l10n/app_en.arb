@@ -4078,6 +4078,10 @@
   "@studyBrowseTerm": {
     "description": "Screen handoff 16 (FE-A6 P1c): the term half's label."
   },
+  "studySpeakTerm": "Read aloud",
+  "@studySpeakTerm": {
+    "description": "Study session: the speaker button under the term; reads it through the device's TTS (BR-STUDY-079)."
+  },
   "studyBrowseMeaning": "Meaning",
   "@studyBrowseMeaning": {
     "description": "Screen handoff 16 (FE-A6 P1c): the meaning half's label."

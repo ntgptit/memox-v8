@@ -113,6 +113,7 @@ abstract final class AppIcons {
   static const IconData studySelected = Icons.play_circle;
   static const IconData progress = Icons.bar_chart_outlined;
   static const IconData progressSelected = Icons.bar_chart;
+  static const IconData speak = Icons.volume_up_outlined; // volume-2
   static const IconData settings = Icons.settings_outlined;
   static const IconData settingsSelected = Icons.settings;
 }

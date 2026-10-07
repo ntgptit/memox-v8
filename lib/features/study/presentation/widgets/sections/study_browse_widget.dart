@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
 import 'package:flutter/semantics.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
-import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
+import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -25,9 +27,13 @@ class StudyBrowseWidget extends StatefulWidget {
     required this.item,
     required this.isBusy,
     required this.onAdvance,
+    required this.speechLanguage,
   });
 
   final StudySessionView view;
+
+  /// The language the term is read in; null until the session knows it.
+  final SpeechLanguage? speechLanguage;
 
   /// The live card, the one the session serves.
   final StudyItem item;
@@ -117,7 +123,11 @@ class _StudyBrowseWidgetState extends State<StudyBrowseWidget> {
                 child: Transform.translate(
                   // The card follows the finger, unless motion is reduced.
                   offset: Offset(isStill ? 0 : _dragDx, 0),
-                  child: _Card(face: _shown, isLookingBack: _lookBack > 0),
+                  child: _Card(
+                    face: _shown,
+                    isLookingBack: _lookBack > 0,
+                    speechLanguage: widget.speechLanguage,
+                  ),
                 ),
               ),
             ),
@@ -175,10 +185,15 @@ final class _Face {
 
 /// The split card: the term half, a hairline, the meaning half (kit).
 class _Card extends StatelessWidget {
-  const _Card({required this.face, required this.isLookingBack});
+  const _Card({
+    required this.face,
+    required this.isLookingBack,
+    required this.speechLanguage,
+  });
 
   final _Face face;
   final bool isLookingBack;
+  final SpeechLanguage? speechLanguage;
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +215,12 @@ class _Card extends StatelessWidget {
                     style: styles.studyTerm,
                   ),
                   detail: face.pronunciation,
+                  // Reads the face shown, the looked-back one included
+                  // (BR-STUDY-079; D11 is about auto-play).
+                  trailing: StudySpeakButtonWidget(
+                    text: face.front,
+                    language: speechLanguage,
+                  ),
                 ),
               ),
               Padding(
@@ -220,6 +241,7 @@ class _Card extends StatelessWidget {
                     style: styles.studyMeaning,
                   ),
                   detail: face.example,
+                  trailing: null,
                 ),
               ),
             ],
@@ -242,11 +264,19 @@ class _Card extends StatelessWidget {
 /// One half of the card: its label in the corner, its face centred, and a
 /// detail line under it. The face wraps and never ellipsizes (FE-A6 D19).
 class _Half extends StatelessWidget {
-  const _Half({required this.label, required this.main, required this.detail});
+  const _Half({
+    required this.label,
+    required this.main,
+    required this.detail,
+    required this.trailing,
+  });
 
   final String label;
   final Widget main;
   final String? detail;
+
+  /// Under the detail line: the term half's speaker.
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -285,6 +315,7 @@ class _Half extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: styles.studyDetail,
                       ),
+                    ?trailing,
                   ],
                 ),
               ),
