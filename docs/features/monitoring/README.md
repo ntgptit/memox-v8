@@ -13,8 +13,9 @@ Cửa sổ của admin trên log của app (FE-B8, [ADR-018](../../shared/decisi
 
 | Màn hình | UC |
 |---|---|
-| Monitoring, danh sách và chi tiết (màn 28) | Chưa có UC; hành vi theo ADR-018 §6 đến §8 và spec §3 |
-| Mục Admin trong tab Settings (màn 23) | Lối vào; widget `MonitoringEntryRowWidget` do router chèn vào màn 23 |
+| Monitoring, danh sách (màn 28) | UC-MONITORING-001 |
+| Monitoring, chi tiết một log và đánh dấu đã sửa (màn 28) | UC-MONITORING-002 |
+| Mục Admin trong tab Settings (màn 23) | Lối vào; widget `MonitoringEntryRowWidget` do router chèn vào màn 23; ai thấy và mở được: BR-ACCOUNT-019 |
 
 ## Không thuộc phạm vi
 
