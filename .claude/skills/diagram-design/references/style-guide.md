@@ -2,7 +2,7 @@
 
 **The single source of truth for colors, typography, and tokens.** Every diagram draws from this — not from hex values inlined in other reference files. If you want to change the visual skin of Diagram Design, change this file.
 
-Default skin is a cool editorial palette — white-smoke paper, jet-black ink, atomic-tangerine accent, blue-slate muted. It's designed to look good out of the box; swap these values (or run [`onboarding.md`](onboarding.md)) and every new diagram inherits the new skin without touching any type-specific logic.
+**MemoX skin.** The tokens below come from MemoX's `DESIGN.md` (Tokyo Pure Light, Tokyo Nebula for dark), not from the shipped defaults — a repo deviation recorded in `docs/agent/vendored-diagram-design.md`. The shipped defaults were white-smoke paper `#f5f5f5`, jet-black ink `#2d3142`, atomic-tangerine accent `#eb6c36`; restore them from the upstream file when needed. Swap these values (or run [`onboarding.md`](onboarding.md)) and every new diagram inherits the new skin without touching any type-specific logic.
 
 To generate your own from a website URL, see [`onboarding.md`](onboarding.md).
 
@@ -16,21 +16,21 @@ Every token is referred to by **semantic role**, not by its hex value. Type refe
 
 | Role | Purpose | Default (light) | Default (dark) |
 |---|---|---|---|
-| `paper` | Page background, default node fill | `#f5f5f5` (white-smoke) | `#2d3142` (jet-black) |
-| `paper-2` | Diagram container bg, secondary fill | `#ececec` | `#393e53` |
-| `ink` | Primary text, primary stroke | `#2d3142` (jet-black) | `#f5f5f5` (white-smoke) |
-| `ink-strong` | High-contrast text on warm accent fills | `#111111` | `#111111` |
-| `muted` | Secondary text, default arrow stroke | `#4f5d75` (blue-slate) | `#bfc0c0` (silver) |
-| `soft` | Sublabels, boundary labels | `#7a8399` | `#8e98ac` |
-| `rule` | Hairline borders | `rgba(45,49,66,0.12)` | `rgba(245,245,245,0.12)` |
-| `rule-solid` | Stronger borders, baselines | `#bfc0c0` (silver) | `rgba(191,192,192,0.25)` |
-| `accent` | Focal / 1–2 max per diagram | `#eb6c36` (atomic-tangerine) | `#f08a59` |
-| `accent-tint` | Fill for accent-bordered boxes | `rgba(235,108,54,0.08)` | `rgba(240,138,89,0.10)` |
-| `link` | HTTP/API calls, external arrows | `#2e5aa8` | `#6a95d8` |
+| `paper` | Page background, default node fill | `#f7f9fe` (surface) | `#0a0e27` (Nebula Night) |
+| `paper-2` | Diagram container bg, secondary fill | `#f1f4fb` (surface-container-low) | `#131a3a` |
+| `ink` | Primary text, primary stroke | `#0f1638` (on-surface) | `#e4e8fa` |
+| `ink-strong` | High-contrast text on warm accent fills | `#0a0e27` | `#0a0e27` |
+| `muted` | Secondary text, default arrow stroke | `#4a5278` (on-surface-variant) | `#a4acd0` |
+| `soft` | Sublabels, boundary labels | `#7c85ab` (outline) | `#7684bd` |
+| `rule` | Hairline borders | `rgba(82,101,245,0.14)` (ghost border) | `rgba(82,101,245,0.16)` |
+| `rule-solid` | Stronger borders, baselines | `#c5cbe3` (outline-variant) | `#2c356e` |
+| `accent` | Focal / 1–2 max per diagram | `#4151c6` (indigo ink) | `#94a0f7` |
+| `accent-tint` | Fill for accent-bordered boxes | `rgba(82,101,245,0.08)` | `rgba(82,101,245,0.16)` |
+| `link` | HTTP/API calls, external arrows | `#6c59c6` (violet ink) | `#b3a5f7` |
 
-> **Brand palette source:** this skin maps to a five-color brand palette — `jet-black #2d3142`, `silver #bfc0c0`, `white-smoke #f5f5f5`, `atomic-tangerine #eb6c36`, `blue-slate #4f5d75`. The `soft`, `rule`, and `link` tokens are derived (lighter slate, ink-at-opacity, and a saturated variant in the blue-slate hue family) to cover roles the brand palette doesn't name directly.
+> **Brand palette source:** MemoX `DESIGN.md`. `accent` is Indigo Ink, brand indigo `primary` `#5265F5` pulled toward `on-surface` (25% light, 45% dark), the colour DESIGN.md gives primary as text, edge or focus ring; `accent-tint` is `primary` itself at low alpha. `link` is the reserved violet `tertiary` `#8B6FF5` pulled toward `on-surface` the same way. Contrast on `paper`: ink 16.7:1, muted 7.2:1, accent 6.2:1, link 5.1:1 (light); ink 15.6:1, muted 8.5:1, accent 7.8:1, link 8.7:1 (dark). `paper` is DESIGN.md's cool indigo-tinted white, on purpose, not the warm-neutral the constraints below ask for.
 
-> **Note:** The pre-baked example HTML files in `assets/` were built under an earlier skin. Regenerating them against the current `style-guide.md` is a v5.1 task. New diagrams the skill produces will use the tokens above.
+> **Note:** The pre-baked example HTML files in `assets/` use the shipped default skin. New diagrams use the tokens above.
 
 ### Inversion rule (light → dark)
 
@@ -74,17 +74,19 @@ A self-contained palette for the terminal-window primitive (see [primitive-termi
 
 | Role | Family | Size | Weight | Usage |
 |---|---|---|---|---|
-| `title` | Instrument Serif | 1.75rem | 400 | Page H1 |
-| `node-name` | Geist (sans) | 12px | 600 | Human-readable labels |
+| `title` | Plus Jakarta Sans | 1.75rem | 700, tracked -0.02em | Page H1 |
+| `node-name` | Plus Jakarta Sans | 12px | 600 | Human-readable labels |
 | `sublabel` | Geist Mono | 9px | 400 | Port, protocol, URL, field type |
 | `eyebrow` | Geist Mono | 7–8px | 500, tracked 0.18em, uppercase | Type tags, axis labels |
 | `arrow-label` | Geist Mono | 8px | 400, tracked 0.06em | Arrow annotations |
-| `callout` | Instrument Serif *italic* | 14px | 400 | Editorial asides only |
+| `callout` | Plus Jakarta Sans *italic* | 14px | 500 | Editorial asides only |
+
+MemoX's labels are Vietnamese. Instrument Serif has no Vietnamese subset, so the MemoX skin sets the title and callouts in Plus Jakarta Sans, MemoX's only family (DESIGN.md), instead of keeping the serif the constraints below ask for. Geist Mono ships Vietnamese and stays for technical content. Wherever a reference says Geist for a name or Instrument Serif for a title or callout, read the family from this table.
 
 ### Font stack
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Serif:ital@0;1&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&family=Noto+Sans+TC:wght@400;500;600&family=Noto+Serif+TC:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Serif:ital@0;1&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Serif+KR:wght@400&family=Noto+Sans+TC:wght@400;500;600&family=Noto+Serif+TC:wght@400&display=swap" rel="stylesheet">
 ```
 
 ### Korean labels
