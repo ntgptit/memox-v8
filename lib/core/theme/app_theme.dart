@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/app_typography.dart';
@@ -31,5 +32,11 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
     dialogTheme: AppComponentThemes.dialogs(scheme, texts),
     bottomSheetTheme: AppComponentThemes.sheets(scheme),
     snackBarTheme: AppComponentThemes.snackbars(scheme, texts),
+    tooltipTheme: AppComponentThemes.tooltips(scheme, texts),
+    // InkWell rows (MxRowInk, MxOptionRow, the tray, the nav) press in the
+    // theme's ink at the buttons' 12% overlay, not Material's grey
+    // (SW-REV-007).
+    splashColor: scheme.onSurface.withValues(alpha: AppOpacity.pressed),
+    highlightColor: scheme.onSurface.withValues(alpha: AppOpacity.pressed),
   );
 }

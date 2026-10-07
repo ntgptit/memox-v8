@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/app_typography.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -44,6 +46,31 @@ void main() {
           style.fontVariations,
           contains(FontVariation.weight(weight.value.toDouble())),
         );
+      });
+
+      // SW-REV-007: the slots Material paints through when no component
+      // theme says otherwise; left at their defaults they drew grey ripples,
+      // a raised snackbar and a grey tooltip in both themes.
+      test('$name rows press in onSurface at the 12% pressed overlay', () {
+        final pressed = scheme.onSurface.withValues(alpha: AppOpacity.pressed);
+        expect(theme.splashColor, pressed);
+        expect(theme.highlightColor, pressed);
+      });
+
+      test('$name snackbar is flat: the inverse surface carries it', () {
+        expect(theme.snackBarTheme.elevation, 0);
+      });
+
+      test('$name tooltip: the caption on the inverse surface, radius 8', () {
+        expect(
+          theme.tooltipTheme.decoration,
+          BoxDecoration(
+            color: scheme.inverseSurface,
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+          ),
+        );
+        expect(theme.tooltipTheme.textStyle!.color, scheme.onInverseSurface);
+        expect(theme.tooltipTheme.textStyle!.fontSize, 12);
       });
 
       test('$name text ink is onSurface', () {
