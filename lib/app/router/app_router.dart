@@ -15,6 +15,7 @@ import 'package:memox/app/router/study_route_screens.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_admin_gate_widget.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_screen.dart';
+import 'package:memox/features/settings/presentation/widgets/items/sql_log_row_widget.dart';
 import 'package:memox/features/reminders/presentation/providers/reset_app_options_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
@@ -297,6 +298,7 @@ GoRouter buildAppRouter({
                     // only an admin in (Codex review on PR #160).
                     builder: (context, state) => MonitoringAdminGateWidget(
                       child: MonitoringScreen(
+                        pendingHeader: const SqlLogRowWidget(),
                         onOpenServerLog: (id) => unawaited(
                           context.push(AppRoutes.settingsMonitoringLog(id)),
                         ),

@@ -5,8 +5,8 @@ import 'package:memox/features/settings/domain/models/study_options_model.dart';
 
 part 'account_settings_sync_dao.g.dart';
 
-/// Syncs the study and display settings of `app_settings` row 1 as the one
-/// account row the server keeps per user (library and study sync spec §3.5).
+/// Syncs the study and display settings and the SQL log switch of
+/// `app_settings` row 1 as the one account row the server keeps per user (library and study sync spec §3.5).
 /// Reminders never leave the device. The row has no server version and is
 /// never deleted, so acknowledgements and deletes do nothing.
 @DriftAccessor(
@@ -32,6 +32,7 @@ class AccountSettingsSyncDao extends DatabaseAccessor<AppDatabase>
       'newCardOrder': row.newCardOrder,
       'themeMode': row.themeMode,
       'language': row.language,
+      'logSqlStatements': row.logSqlStatements == 1,
       'updatedAt': toWireTime(row.updatedAt)!
           .replaceFirst(RegExp(r'\.\d+Z$'), 'Z'),
     };
@@ -49,6 +50,9 @@ class AccountSettingsSyncDao extends DatabaseAccessor<AppDatabase>
           newCardOrder: Value.absentIfNull(row['newCardOrder'] as String?),
           themeMode: Value.absentIfNull(row['themeMode'] as String?),
           language: Value.absentIfNull(row['language'] as String?),
+          logSqlStatements: Value.absentIfNull(
+            _flagOf(row['logSqlStatements'] as bool?),
+          ),
           updatedAt: Value(fromWireTime(row['updatedAt'])!),
         ),
         appSettingsRowId,
@@ -61,6 +65,9 @@ class AccountSettingsSyncDao extends DatabaseAccessor<AppDatabase>
     if (cardLimit > StudyOptions.maxCardLimit) return null;
     return cardLimit;
   }
+
+  /// A wire boolean as the column stores it; null when the row has no key.
+  static int? _flagOf(bool? value) => value == null ? null : (value ? 1 : 0);
 
   @override
   Future<void> deleteFromServer(String id) async {}

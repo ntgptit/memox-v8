@@ -144,14 +144,16 @@ server applies later wins, tombstones for deletes, pending local rows skipped on
 
 ### 3.5 Account settings
 
-- Synced: `card_limit`, `new_card_order`, `theme_mode`, `language`, and
+- Synced: `card_limit`, `new_card_order`, `theme_mode`, `language`,
+  `log_sql_statements` (schema 15, SQL log switch spec 2026-10-07) and
   `updated_at`. Not synced: `reminder_*` (device settings, server-sync spec §5).
 - Wire: entity type `account_settings`, entity id the nil UUID
   `00000000-0000-0000-0000-000000000000` (D2); row `cardLimit`, `newCardOrder`,
-  `themeMode`, `language`, `updatedAt`.
+  `themeMode`, `language`, `logSqlStatements` (a boolean; absent from an older
+  app, and the server then stores `true`), `updatedAt`.
 - Server: `public.account_settings(user_id PK, …, server_version, deleted_at)`; the
   functions map the nil id to the caller's row. There is no delete.
-- Local: an update trigger on `app_settings` queues the row only when one of the four
+- Local: an update trigger on `app_settings` queues the row only when one of the five
   synced columns changes, so a fresh install's defaults never overwrite the account.
   The adapter's pull writes those columns into `id = 1`; its acknowledgement is a
   no-op.

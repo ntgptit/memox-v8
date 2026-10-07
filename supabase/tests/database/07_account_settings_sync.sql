@@ -31,7 +31,8 @@ select is(public.t_push(jsonb_build_array(public.t_op(1, public.t_nil(), 'upsert
 select is(public.t_changes()->0,
   jsonb_build_object('entityType', 'account_settings', 'entityId', public.t_nil(), 'serverVersion', 1,
     'deleted', false, 'row', jsonb_build_object('cardLimit', 30, 'newCardOrder', 'random',
-      'themeMode', 'dark', 'language', 'vi', 'updatedAt', '2026-09-28T00:00:00.000000Z')),
+      'themeMode', 'dark', 'language', 'vi', 'logSqlStatements', true,
+      'updatedAt', '2026-09-28T00:00:00.000000Z')),
   'settings read back in the wire shape, under the nil id');
 select is(public.t_push(jsonb_build_array(public.t_op(2, public.t_nil(), 'upsert', public.t_settings('light'))))->0->>'status',
   'applied', 'a second upsert is applied');

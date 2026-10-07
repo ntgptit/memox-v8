@@ -13,6 +13,7 @@ import 'package:memox/features/account/presentation/screens/users_screen.dart';
 import 'package:memox/features/account/presentation/widgets/items/users_entry_row_widget.dart';
 import 'package:memox/features/monitoring/presentation/widgets/items/monitoring_entry_row_widget.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
+import 'package:memox/features/settings/presentation/widgets/items/sql_log_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/golden_harness.dart';
@@ -48,6 +49,7 @@ Widget _settings() => SettingsScreen(
   adminRows: [
     MonitoringEntryRowWidget(onOpen: () {}),
     UsersEntryRowWidget(onOpen: () {}),
+    const SqlLogRowWidget(),
   ],
 );
 

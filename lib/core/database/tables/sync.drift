@@ -166,13 +166,14 @@ BEGIN
   ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
 END;
 
--- SB-S5: the study and display settings sync per account; reminders and a
--- write that changes none of the four columns queue nothing (library and study
--- sync spec §3.5). The entity id is the nil UUID (D2).
+-- SB-S5: the study and display settings and the SQL log switch sync per
+-- account; reminders and a write that changes none of the five columns queue
+-- nothing (library and study sync spec §3.5). The entity id is the nil UUID (D2).
 CREATE TRIGGER app_settings_sync_update AFTER UPDATE ON app_settings
 WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
   AND (old.card_limit IS NOT new.card_limit OR old.new_card_order IS NOT new.new_card_order
-    OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language)
+    OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language
+    OR old.log_sql_statements IS NOT new.log_sql_statements)
 BEGIN
   INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
