@@ -5,6 +5,7 @@ import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/console_sink.dart';
 import 'package:memox/core/logging/log_api.dart';
 import 'package:memox/core/logging/log_shipper.dart';
+import 'package:memox/core/logging/sql_log_switch.dart';
 import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/core/network/supabase_client.dart';
 import 'package:memox/core/sync/sync_scheduler.dart';
@@ -18,6 +19,16 @@ LogDatabase logDatabase(Ref ref) {
   final db = openLogDatabase();
   ref.onDispose(db.close);
   return db;
+}
+
+/// The tracer's SQL log switch (SQL log switch spec §4.1). The database
+/// provider hands it to the tracer; the feeder keeps it equal to the
+/// account's row.
+@Riverpod(keepAlive: true)
+SqlLogSwitch sqlLogSwitch(Ref ref) {
+  final sqlLog = SqlLogSwitch();
+  ref.onDispose(sqlLog.dispose);
+  return sqlLog;
 }
 
 /// `log_push` through the Supabase project; `startApp` has initialized it.
