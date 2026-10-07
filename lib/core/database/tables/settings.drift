@@ -14,5 +14,10 @@ CREATE TABLE app_settings (
   -- Auth spec §7: the first-launch welcome was answered. Device-only: not in
   -- the account settings that sync, kept by LocalDataReset.
   welcome_seen INTEGER NOT NULL DEFAULT 0 CHECK (welcome_seen IN (0, 1)),
+  -- Study speech spec §4: the default speech language and the read-aloud
+  -- switch. Device-only: not in the account settings that sync; Reset to
+  -- defaults returns both (BR-SETTINGS-008, BR-SETTINGS-010).
+  tts_language TEXT NOT NULL DEFAULT 'en-US' CHECK (tts_language IN ('en-US', 'en-GB', 'vi-VN', 'ko-KR', 'ja-JP', 'zh-CN', 'zh-TW', 'fr-FR', 'de-DE', 'es-ES')),
+  tts_auto_play INTEGER NOT NULL DEFAULT 1 CHECK (tts_auto_play IN (0, 1)),
   updated_at DATETIME NOT NULL
 ) AS AppSetting;

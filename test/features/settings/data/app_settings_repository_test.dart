@@ -5,10 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
+import 'package:memox/features/settings/domain/models/speech_settings_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 
@@ -29,6 +31,13 @@ Future<void> _insertRootWithOverride(AppDatabase db) => db.customStatement(
   'study_config, created_at, updated_at) '
   "VALUES ('r', 'r', NULL, 'r', 1, 'deck', 'eight_box', 1, 1, 0, ?, 0, 0)",
   [_rootOverride],
+);
+
+/// A sub-deck `s` under the root `r`, written as SQL for the same reason.
+Future<void> _insertSubDeck(AppDatabase db) => db.customStatement(
+  'INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, '
+  'sibling_position, created_at, updated_at) '
+  "VALUES ('s', 's', 'r', 'r', 2, 'card', 0, 0, 0)",
 );
 
 Future<String?> _rootStudyConfig(AppDatabase db) async =>
@@ -256,5 +265,85 @@ void main() {
 
     expect(current.studyDefaults.cardLimit, 7);
     expect(current.studyDefaults.newCardOrder, NewCardOrder.random);
+  });
+
+  // Study speech spec §4; BR-SETTINGS-009, BR-SETTINGS-010, BR-STUDY-080.
+
+  test(
+    'a fresh row reads aloud by default, in en-US (BR-SETTINGS-010)',
+    () async {
+      final current = await settings.watchAppSettings().first;
+
+      expect(current.isSpeechAutoPlay, isTrue);
+      expect(current.studyDefaults.speechLanguage, SpeechLanguage.enUs);
+    },
+  );
+
+  test('the speech language is a study default of its own column '
+      '(BR-SETTINGS-007, BR-SETTINGS-009)', () async {
+    await settings.saveStudyDefaults(speechLanguage: SpeechLanguage.jaJp);
+
+    final current = await settings.watchAppSettings().first;
+    expect(current.studyDefaults.speechLanguage, SpeechLanguage.jaJp);
+    expect(current.studyDefaults.cardLimit, StudyOptions.defaultCardLimit);
+  });
+
+  test('the read-aloud switch is written alone (BR-SETTINGS-010)', () async {
+    await settings.setSpeechAutoPlay(isOn: false);
+
+    final current = await settings.watchAppSettings().first;
+    expect(current.isSpeechAutoPlay, isFalse);
+    expect(current.studyDefaults.speechLanguage, SpeechLanguage.enUs);
+  });
+
+  test(
+    'Reset to defaults returns both speech values (BR-SETTINGS-008)',
+    () async {
+      await settings.saveStudyDefaults(speechLanguage: SpeechLanguage.viVn);
+      await settings.setSpeechAutoPlay(isOn: false);
+
+      await settings.resetToDefaults();
+
+      final current = await settings.watchAppSettings().first;
+      expect(current.isSpeechAutoPlay, isTrue);
+      expect(current.studyDefaults.speechLanguage, SpeechLanguage.enUs);
+    },
+  );
+
+  test('watchSpeechSettings joins the switch with the root language, and '
+      'follows both (BR-STUDY-080)', () async {
+    await _insertRootWithOverride(db);
+    await _insertSubDeck(db);
+    final seen = <SpeechSettings?>[];
+    final watching = settings.watchSpeechSettings(deckId: 's').listen(seen.add);
+    await pumpEventQueue();
+    // The override predates speech: the default language (spec D6).
+    expect(
+      seen.last,
+      const SpeechSettings(isAutoPlay: true, language: SpeechLanguage.enUs),
+    );
+
+    await settings.saveRootStudyOptions(
+      rootDeckId: 'r',
+      options: const StudyOptions(
+        cardLimit: 30,
+        newCardOrder: NewCardOrder.created,
+        speechLanguage: SpeechLanguage.koKr,
+      ),
+    );
+    await pumpEventQueue();
+    expect(seen.last?.language, SpeechLanguage.koKr);
+
+    await settings.setSpeechAutoPlay(isOn: false);
+    await pumpEventQueue();
+    expect(
+      seen.last,
+      const SpeechSettings(isAutoPlay: false, language: SpeechLanguage.koKr),
+    );
+    await watching.cancel();
+  });
+
+  test('watchSpeechSettings is null for a deck that is not there', () async {
+    expect(await settings.watchSpeechSettings(deckId: 'nope').first, isNull);
   });
 }

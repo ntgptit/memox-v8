@@ -7706,6 +7706,629 @@ final class Schema14 extends i0.VersionedSchema {
   );
 }
 
+final class Schema15 extends i0.VersionedSchema {
+  Schema15({required super.database}) : super(version: 15);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    accountState,
+    accountTransition,
+    dismissedNote,
+    syncOutbox,
+    idxSyncOutboxTypeCreated,
+    syncState,
+    deleteBatches,
+    deck,
+    deckSyncInsert,
+    deckSyncUpdate,
+    deckSyncDelete,
+    deleteBatchesSyncInsert,
+    deleteBatchesSyncUpdate,
+    deleteBatchesSyncDelete,
+    card,
+    cardSyncInsert,
+    cardSyncUpdate,
+    cardSyncDelete,
+    tags,
+    tagsSyncInsert,
+    tagsSyncUpdate,
+    tagsSyncDelete,
+    cardTags,
+    cardTagsSyncInsert,
+    cardTagsSyncDelete,
+    appSettings,
+    appSettingsSyncUpdate,
+    reviewLog,
+    reviewLogSyncInsert,
+    cardSchedule,
+    cardScheduleSyncInsert,
+    cardScheduleSyncUpdate,
+    syncRejection,
+    idxDeleteBatchesDeleted,
+    studySession,
+    studyQueueItems,
+    idxStudyQueuePending,
+    studyGuessOptions,
+    idxStudyGuessOptionsOption,
+    idxCardScheduleDue,
+    idxReviewLogCard,
+    idxReviewLogSession,
+    idxReviewLogAnswered,
+    reviewLogAppendOnly,
+    reviewLogNoDelete,
+    idxTagsOwnerNameFolded,
+    idxCardTagsTag,
+    idxCardDeckCreated,
+    idxCardDeleteBatch,
+    idxDeckParentPosition,
+    idxDeckRootPosition,
+    idxDeckDeleteBatch,
+  ];
+  late final Shape19 accountState = Shape19(
+    source: i0.VersionedTable(
+      entityName: 'account_state',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_60,
+        _column_107,
+        _column_108,
+        _column_109,
+        _column_110,
+        _column_111,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape20 accountTransition = Shape20(
+    source: i0.VersionedTable(
+      entityName: 'account_transition',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_60,
+        _column_112,
+        _column_113,
+        _column_114,
+        _column_115,
+        _column_116,
+        _column_117,
+        _column_118,
+        _column_119,
+        _column_17,
+        _column_18,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape18 dismissedNote = Shape18(
+    source: i0.VersionedTable(
+      entityName: 'dismissed_note',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_105, _column_106],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape22 syncOutbox = Shape22(
+    source: i0.VersionedTable(
+      entityName: 'sync_outbox',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['UNIQUE(entity_type, entity_id)'],
+      columns: [
+        _column_96,
+        _column_97,
+        _column_98,
+        _column_99,
+        _column_17,
+        _column_100,
+        _column_121,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxSyncOutboxTypeCreated = i1.Index(
+    'idx_sync_outbox_type_created',
+    'CREATE INDEX idx_sync_outbox_type_created ON sync_outbox (entity_type, created_at)',
+  );
+  late final Shape14 syncState = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'sync_state',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_101, _column_102],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape11 deleteBatches = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'delete_batches',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_91,
+        _column_92,
+        _column_93,
+        _column_6,
+        _column_95,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape12 deck = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'deck',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'CHECK((parent_id IS NULL)=(root_id = id))',
+        'CHECK(parent_id IS NOT NULL OR content_type = \'deck\')',
+        'CHECK((parent_id IS NULL)=(scheduler_type IS NOT NULL))',
+        'CHECK((parent_id IS NULL)=(generation IS NOT NULL))',
+        'CHECK((parent_id IS NULL)=(scheduler_version IS NOT NULL))',
+        'CHECK(parent_id IS NULL OR scheduler_config IS NULL)',
+        'CHECK(parent_id IS NULL OR study_config IS NULL)',
+        'CHECK(parent_id IS NULL OR generation IS NULL)',
+      ],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_11,
+        _column_12,
+        _column_13,
+        _column_14,
+        _column_94,
+        _column_95,
+        _column_16,
+        _column_17,
+        _column_18,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger deckSyncInsert = i1.Trigger(
+    'CREATE TRIGGER deck_sync_insert AFTER INSERT ON deck WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'deck\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER), NULL) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END',
+    'deck_sync_insert',
+  );
+  final i1.Trigger deckSyncUpdate = i1.Trigger(
+    'CREATE TRIGGER deck_sync_update AFTER UPDATE ON deck WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'deck\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER), NULL) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END',
+    'deck_sync_update',
+  );
+  final i1.Trigger deckSyncDelete = i1.Trigger(
+    'CREATE TRIGGER deck_sync_delete AFTER DELETE ON deck WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'deck\', old.id, \'delete\', CAST(strftime(\'%s\', \'now\') AS INTEGER), CASE WHEN old.delete_batch_id IS NULL THEN NULL ELSE json_object(\'deleteBatchId\', old.delete_batch_id, \'serverVersion\', old.server_version) END) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END',
+    'deck_sync_delete',
+  );
+  final i1.Trigger deleteBatchesSyncInsert = i1.Trigger(
+    'CREATE TRIGGER delete_batches_sync_insert AFTER INSERT ON delete_batches WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'delete_batch\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'delete_batches_sync_insert',
+  );
+  final i1.Trigger deleteBatchesSyncUpdate = i1.Trigger(
+    'CREATE TRIGGER delete_batches_sync_update AFTER UPDATE ON delete_batches WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'delete_batch\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'delete_batches_sync_update',
+  );
+  final i1.Trigger deleteBatchesSyncDelete = i1.Trigger(
+    'CREATE TRIGGER delete_batches_sync_delete AFTER DELETE ON delete_batches WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'delete_batch\', old.id, \'delete\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'delete_batches_sync_delete',
+  );
+  late final Shape16 card = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'card',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_94,
+        _column_17,
+        _column_18,
+        _column_95,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger cardSyncInsert = i1.Trigger(
+    'CREATE TRIGGER card_sync_insert AFTER INSERT ON card WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'card\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER), NULL) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END',
+    'card_sync_insert',
+  );
+  final i1.Trigger cardSyncUpdate = i1.Trigger(
+    'CREATE TRIGGER card_sync_update AFTER UPDATE ON card WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'card\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER), NULL) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END',
+    'card_sync_update',
+  );
+  final i1.Trigger cardSyncDelete = i1.Trigger(
+    'CREATE TRIGGER card_sync_delete AFTER DELETE ON card WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'card\', old.id, \'delete\', CAST(strftime(\'%s\', \'now\') AS INTEGER), CASE WHEN old.delete_batch_id IS NULL THEN NULL ELSE json_object(\'deleteBatchId\', old.delete_batch_id, \'serverVersion\', old.server_version) END) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END',
+    'card_sync_delete',
+  );
+  late final Shape17 tags = Shape17(
+    source: i0.VersionedTable(
+      entityName: 'tags',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_41,
+        _column_6,
+        _column_17,
+        _column_95,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger tagsSyncInsert = i1.Trigger(
+    'CREATE TRIGGER tags_sync_insert AFTER INSERT ON tags WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'tag\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'tags_sync_insert',
+  );
+  final i1.Trigger tagsSyncUpdate = i1.Trigger(
+    'CREATE TRIGGER tags_sync_update AFTER UPDATE ON tags WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'tag\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'tags_sync_update',
+  );
+  final i1.Trigger tagsSyncDelete = i1.Trigger(
+    'CREATE TRIGGER tags_sync_delete AFTER DELETE ON tags WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'tag\', old.id, \'delete\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'tags_sync_delete',
+  );
+  late final Shape4 cardTags = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'card_tags',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(card_id, tag_id)'],
+      columns: [_column_42, _column_43],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger cardTagsSyncInsert = i1.Trigger(
+    'CREATE TRIGGER card_tags_sync_insert AFTER INSERT ON card_tags WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'card\', new.card_id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'card_tags_sync_insert',
+  );
+  final i1.Trigger cardTagsSyncDelete = i1.Trigger(
+    'CREATE TRIGGER card_tags_sync_delete AFTER DELETE ON card_tags WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL AND EXISTS (SELECT 1 FROM card WHERE id = old.card_id) BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'card\', old.card_id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'card_tags_sync_delete',
+  );
+  late final Shape23 appSettings = Shape23(
+    source: i0.VersionedTable(
+      entityName: 'app_settings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_60,
+        _column_61,
+        _column_62,
+        _column_63,
+        _column_64,
+        _column_65,
+        _column_66,
+        _column_67,
+        _column_120,
+        _column_122,
+        _column_123,
+        _column_18,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger appSettingsSyncUpdate = i1.Trigger(
+    'CREATE TRIGGER app_settings_sync_update AFTER UPDATE ON app_settings WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL AND(old.card_limit IS NOT new.card_limit OR old.new_card_order IS NOT new.new_card_order OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language)BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'account_settings\', \'00000000-0000-0000-0000-000000000000\', \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'app_settings_sync_update',
+  );
+  late final Shape5 reviewLog = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'review_log',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'CHECK(mode = \'fill\' OR(comparison_version IS NULL AND used_hint IS NULL))',
+        'CHECK(outcome_reason IS NULL OR mode = \'recall\')',
+      ],
+      columns: [
+        _column_0,
+        _column_42,
+        _column_44,
+        _column_29,
+        _column_31,
+        _column_45,
+        _column_46,
+        _column_47,
+        _column_48,
+        _column_49,
+        _column_50,
+        _column_51,
+        _column_52,
+        _column_53,
+        _column_54,
+        _column_55,
+        _column_56,
+        _column_57,
+        _column_58,
+        _column_59,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger reviewLogSyncInsert = i1.Trigger(
+    'CREATE TRIGGER review_log_sync_insert AFTER INSERT ON review_log WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'review_log\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'review_log_sync_insert',
+  );
+  late final Shape2 cardSchedule = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'card_schedule',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'CHECK((scheduler_type = \'eight_box\')=(current_box IS NOT NULL))',
+        'CHECK((scheduler_type = \'sm2\')=(ease_factor IS NOT NULL))',
+        'CHECK((ease_factor IS NULL)=(interval_days IS NULL))',
+        'CHECK((ease_factor IS NULL)=(repetitions IS NULL))',
+        'CHECK(learned_at IS NOT NULL OR due_at IS NULL)',
+      ],
+      columns: [
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger cardScheduleSyncInsert = i1.Trigger(
+    'CREATE TRIGGER card_schedule_sync_insert AFTER INSERT ON card_schedule WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'card_schedule\', new.card_id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'card_schedule_sync_insert',
+  );
+  final i1.Trigger cardScheduleSyncUpdate = i1.Trigger(
+    'CREATE TRIGGER card_schedule_sync_update AFTER UPDATE ON card_schedule WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'card_schedule\', new.card_id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'card_schedule_sync_update',
+  );
+  late final Shape15 syncRejection = Shape15(
+    source: i0.VersionedTable(
+      entityName: 'sync_rejection',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(entity_type, entity_id)'],
+      columns: [_column_97, _column_98, _column_103, _column_104],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxDeleteBatchesDeleted = i1.Index(
+    'idx_delete_batches_deleted',
+    'CREATE INDEX idx_delete_batches_deleted ON delete_batches (deleted_at, id)',
+  );
+  late final Shape7 studySession = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'study_session',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'CHECK((status IN (\'in_progress\', \'completed\') AND end_reason IS NULL)OR(status = \'abandoned\' AND end_reason IN (\'user_exit\', \'interrupted\'))OR(status = \'invalidated\' AND end_reason IN (\'scheduler_reset\', \'scheduler_changed\', \'stale_generation\', \'content_deleted\'))OR(status = \'failed\' AND end_reason = \'persistence_error\'))',
+        'CHECK((status = \'in_progress\')=(ended_at IS NULL))',
+        'CHECK(direction IS NULL OR(session_kind = \'reviewing\' AND current_mode = \'self_assess\'))',
+      ],
+      columns: [
+        _column_0,
+        _column_19,
+        _column_3,
+        _column_31,
+        _column_68,
+        _column_69,
+        _column_70,
+        _column_71,
+        _column_72,
+        _column_61,
+        _column_73,
+        _column_74,
+        _column_75,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 studyQueueItems = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'study_queue_items',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(session_id, mode, round, card_id)',
+        'CHECK(mode <> \'self_assess\' OR answers_in_session <= 4)',
+        'CHECK(mode = \'recall\' OR(remaining_ms IS NULL AND is_revealed = 0))',
+        'CHECK(mode = \'self_assess\' OR direction IS NULL)',
+      ],
+      columns: [
+        _column_76,
+        _column_46,
+        _column_77,
+        _column_42,
+        _column_78,
+        _column_79,
+        _column_80,
+        _column_81,
+        _column_82,
+        _column_83,
+        _column_50,
+        _column_84,
+        _column_85,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxStudyQueuePending = i1.Index(
+    'idx_study_queue_pending',
+    'CREATE INDEX idx_study_queue_pending ON study_queue_items (session_id, status, available_at, position)',
+  );
+  late final Shape9 studyGuessOptions = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'study_guess_options',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(session_id, mode, round, card_id, slot)',
+        'UNIQUE(session_id, mode, round, card_id, option_card_id)',
+        'FOREIGN KEY(session_id, mode, round, card_id)REFERENCES study_queue_items(session_id, mode, round, card_id)ON DELETE CASCADE',
+      ],
+      columns: [
+        _column_44,
+        _column_86,
+        _column_87,
+        _column_88,
+        _column_89,
+        _column_90,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxStudyGuessOptionsOption = i1.Index(
+    'idx_study_guess_options_option',
+    'CREATE INDEX idx_study_guess_options_option ON study_guess_options (option_card_id)',
+  );
+  final i1.Index idxCardScheduleDue = i1.Index(
+    'idx_card_schedule_due',
+    'CREATE INDEX idx_card_schedule_due ON card_schedule (due_at)',
+  );
+  final i1.Index idxReviewLogCard = i1.Index(
+    'idx_review_log_card',
+    'CREATE INDEX idx_review_log_card ON review_log (card_id, answered_at)',
+  );
+  final i1.Index idxReviewLogSession = i1.Index(
+    'idx_review_log_session',
+    'CREATE INDEX idx_review_log_session ON review_log (session_id)',
+  );
+  final i1.Index idxReviewLogAnswered = i1.Index(
+    'idx_review_log_answered',
+    'CREATE INDEX idx_review_log_answered ON review_log (answered_at)',
+  );
+  final i1.Trigger reviewLogAppendOnly = i1.Trigger(
+    'CREATE TRIGGER review_log_append_only BEFORE UPDATE ON review_log BEGIN SELECT RAISE (ABORT, \'review_log is append-only\');END',
+    'review_log_append_only',
+  );
+  final i1.Trigger reviewLogNoDelete = i1.Trigger(
+    'CREATE TRIGGER review_log_no_delete BEFORE DELETE ON review_log WHEN OLD.card_id IN (SELECT id FROM card) BEGIN SELECT RAISE (ABORT, \'review_log rows are only removed by a card cascade\');END',
+    'review_log_no_delete',
+  );
+  final i1.Index idxTagsOwnerNameFolded = i1.Index(
+    'idx_tags_owner_name_folded',
+    'CREATE UNIQUE INDEX idx_tags_owner_name_folded ON tags (COALESCE(owner_id, \'\'), name_folded)',
+  );
+  final i1.Index idxCardTagsTag = i1.Index(
+    'idx_card_tags_tag',
+    'CREATE INDEX idx_card_tags_tag ON card_tags (tag_id, card_id)',
+  );
+  final i1.Index idxCardDeckCreated = i1.Index(
+    'idx_card_deck_created',
+    'CREATE INDEX idx_card_deck_created ON card (deck_id, created_at, id)',
+  );
+  final i1.Index idxCardDeleteBatch = i1.Index(
+    'idx_card_delete_batch',
+    'CREATE INDEX idx_card_delete_batch ON card (delete_batch_id)',
+  );
+  final i1.Index idxDeckParentPosition = i1.Index(
+    'idx_deck_parent_position',
+    'CREATE INDEX idx_deck_parent_position ON deck (parent_id, sibling_position, id)',
+  );
+  final i1.Index idxDeckRootPosition = i1.Index(
+    'idx_deck_root_position',
+    'CREATE INDEX idx_deck_root_position ON deck (root_id, sibling_position, id)',
+  );
+  final i1.Index idxDeckDeleteBatch = i1.Index(
+    'idx_deck_delete_batch',
+    'CREATE INDEX idx_deck_delete_batch ON deck (delete_batch_id)',
+  );
+}
+
+class Shape23 extends i0.VersionedTable {
+  Shape23({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get cardLimit =>
+      columnsByName['card_limit']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get newCardOrder =>
+      columnsByName['new_card_order']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get themeMode =>
+      columnsByName['theme_mode']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get language =>
+      columnsByName['language']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get reminderEnabled =>
+      columnsByName['reminder_enabled']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get reminderMinuteOfDay =>
+      columnsByName['reminder_minute_of_day']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get reminderLastDeliveredAt =>
+      columnsByName['reminder_last_delivered_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get welcomeSeen =>
+      columnsByName['welcome_seen']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get ttsLanguage =>
+      columnsByName['tts_language']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get ttsAutoPlay =>
+      columnsByName['tts_auto_play']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_122(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'tts_language',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL DEFAULT \'en-US\' CHECK (tts_language IN (\'en-US\', \'en-GB\', \'vi-VN\', \'ko-KR\', \'ja-JP\', \'zh-CN\', \'zh-TW\', \'fr-FR\', \'de-DE\', \'es-ES\'))',
+      defaultValue: const i1.CustomExpression('\'en-US\''),
+    );
+i1.GeneratedColumn<int> _column_123(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'tts_auto_play',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 1 CHECK (tts_auto_play IN (0, 1))',
+      defaultValue: const i1.CustomExpression('1'),
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
@@ -7720,6 +8343,7 @@ i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
   required Future<void> Function(i1.Migrator m, Schema13 schema) from12To13,
   required Future<void> Function(i1.Migrator m, Schema14 schema) from13To14,
+  required Future<void> Function(i1.Migrator m, Schema15 schema) from14To15,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -7788,6 +8412,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from13To14(migrator, schema);
         return 14;
+      case 14:
+        final schema = Schema15(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from14To15(migrator, schema);
+        return 15;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -7808,6 +8437,7 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
   required Future<void> Function(i1.Migrator m, Schema13 schema) from12To13,
   required Future<void> Function(i1.Migrator m, Schema14 schema) from13To14,
+  required Future<void> Function(i1.Migrator m, Schema15 schema) from14To15,
 }) => i0.VersionedSchema.stepByStepHelper(
   step: migrationSteps(
     from1To2: from1To2,
@@ -7823,5 +8453,6 @@ i1.OnUpgrade stepByStep({
     from11To12: from11To12,
     from12To13: from12To13,
     from13To14: from13To14,
+    from14To15: from14To15,
   ),
 );

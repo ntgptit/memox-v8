@@ -59,7 +59,7 @@ class AppDatabase extends _$AppDatabase {
   Future<void> ensureOpened() => executor.ensureOpen(this);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -275,6 +275,12 @@ class AppDatabase extends _$AppDatabase {
       // answered_at instead of folding the whole history. No row changes.
       await m.createIndex(schema.idxSyncOutboxTypeCreated);
       await m.createIndex(schema.idxReviewLogAnswered);
+    },
+    from14To15: (m, schema) async {
+      // Study speech spec §4: the speech language default and the read-aloud
+      // switch, each with its default. No row changes.
+      await m.addColumn(schema.appSettings, schema.appSettings.ttsLanguage);
+      await m.addColumn(schema.appSettings, schema.appSettings.ttsAutoPlay);
     },
   );
 }

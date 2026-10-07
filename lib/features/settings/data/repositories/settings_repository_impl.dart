@@ -3,6 +3,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/mapped_transaction.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/datasources/settings_dao.dart';
 import 'package:memox/features/settings/data/mappers/app_settings_mapper.dart';
 import 'package:memox/features/settings/data/mappers/study_config_mapper.dart';
@@ -12,6 +13,7 @@ import 'package:memox/features/settings/domain/models/effective_study_options_mo
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
 import 'package:memox/features/settings/domain/models/reminder_snapshot_model.dart';
+import 'package:memox/features/settings/domain/models/speech_settings_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/domain/repositories/settings_repository.dart';
@@ -35,9 +37,12 @@ final class SettingsRepositoryImpl implements SettingsRepository {
   Future<Outcome<void, SettingsRejection>> saveStudyDefaults({
     int? cardLimit,
     NewCardOrder? newCardOrder,
+    SpeechLanguage? speechLanguage,
   }) {
-    if (cardLimit == null && newCardOrder == null) {
-      throw ArgumentError('saveStudyDefaults needs a limit or an order');
+    if (cardLimit == null && newCardOrder == null && speechLanguage == null) {
+      throw ArgumentError(
+        'saveStudyDefaults needs a limit, an order or a language',
+      );
     }
     final at = _now();
     return _db.mappedTransaction(() async {
@@ -52,12 +57,18 @@ final class SettingsRepositoryImpl implements SettingsRepository {
         AppSettingsCompanion(
           cardLimit: Value.absentIfNull(cardLimit),
           newCardOrder: Value.absentIfNull(newCardOrder?.name),
+          ttsLanguage: Value.absentIfNull(speechLanguage?.tag),
           updatedAt: Value(at),
         ),
       );
       return const Ok(null);
     });
   }
+
+  @override
+  Future<Outcome<void, SettingsRejection>> setSpeechAutoPlay({
+    required bool isOn,
+  }) => _save(AppSettingsCompanion(ttsAutoPlay: Value(isOn ? 1 : 0)));
 
   @override
   Future<Outcome<void, SettingsRejection>> setTheme({
@@ -78,6 +89,8 @@ final class SettingsRepositoryImpl implements SettingsRepository {
         newCardOrder: Value(defaults.studyDefaults.newCardOrder.name),
         themeMode: Value(defaults.theme.name),
         language: Value(defaults.language.name),
+        ttsLanguage: Value(defaults.studyDefaults.speechLanguage.tag),
+        ttsAutoPlay: Value(defaults.isSpeechAutoPlay ? 1 : 0),
       ),
     );
   }
@@ -118,6 +131,10 @@ final class SettingsRepositoryImpl implements SettingsRepository {
       guardDatabase(
         () async => _effectiveOf(await _dao.rootAndSettings(deckId)),
       );
+
+  @override
+  Stream<SpeechSettings?> watchSpeechSettings({required String deckId}) =>
+      _dao.watchRootAndSettings(deckId).map(_speechOf).mapDatabaseErrors();
 
   @override
   Future<Outcome<void, SettingsRejection>> saveRootStudyOptions({
@@ -166,6 +183,14 @@ final class SettingsRepositoryImpl implements SettingsRepository {
 
 EffectiveStudyOptions? _effectiveOf((Deck, AppSetting)? rows) => switch (rows) {
   (final Deck root, final AppSetting settings) => effectiveStudyOptionsOf(
+    root,
+    settings,
+  ),
+  null => null,
+};
+
+SpeechSettings? _speechOf((Deck, AppSetting)? rows) => switch (rows) {
+  (final Deck root, final AppSetting settings) => speechSettingsOf(
     root,
     settings,
   ),

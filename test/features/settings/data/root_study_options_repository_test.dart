@@ -238,7 +238,10 @@ void main() {
 
     expect(result, isA<Ok<void, SettingsRejection>>());
     final root = await _root(db);
-    expect(root.studyConfig, '{"card_limit":30,"new_card_order":"random"}');
+    expect(
+      root.studyConfig,
+      '{"card_limit":30,"new_card_order":"random","tts_language":"en-US"}',
+    );
     expect(root.updatedAt, _t0());
     // The root row, plus the sync_outbox entry its trigger writes (ADR-013).
     expect(await totalChanges(db), before + 2);
