@@ -94,6 +94,8 @@ class _MxToggleState extends State<MxToggle> {
     final control = MergeSemantics(
       child: Semantics(
         toggled: widget.isOn,
+        // A toggle that cannot change says so (SW-REV-006).
+        enabled: onChanged != null,
         label: widget.semanticLabel,
         child: InkWell(
           onTap: onChanged == null ? null : () => onChanged(!widget.isOn),

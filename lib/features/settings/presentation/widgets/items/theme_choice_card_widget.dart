@@ -95,6 +95,8 @@ class ThemeChoiceCardWidget extends StatelessWidget {
         button: true,
         selected: isSelected,
         label: l10n.settingsThemeCard(name, hint),
+        // The excluded card's tap, kept on this one node (SW-REV-005).
+        onTap: onSelected,
         child: MxRowInk(
           onTap: onSelected,
           child: Padding(

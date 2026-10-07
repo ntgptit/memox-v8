@@ -316,4 +316,20 @@ void main() {
     expect(opacityOf('Basics'), closeTo(0.38, 0.001));
     expect(opacityOf('meokda · eat'), 1);
   });
+
+  // SW-REV-005: the entry's one TalkBack node keeps the tap and the
+  // long-press that starts a selection.
+  libraryTest('TalkBack keeps the entry tap and its long-press', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    expect(
+      tester.getSemantics(find.bySemanticsLabel(RegExp('^Places')).first),
+      isSemantics(hasTapAction: true, hasLongPressAction: true),
+    );
+    handle.dispose();
+  });
 }

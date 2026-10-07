@@ -53,6 +53,7 @@ class MxButton extends StatelessWidget {
     this.isAutofocused = false,
     this.isSingleLine = false,
     this.detail,
+    this.semanticLabel,
   }) : assert(
          detail == null ||
              size == MxButtonSize.regular ||
@@ -90,6 +91,11 @@ class MxButton extends StatelessWidget {
   /// a grade gives (screen 16a). It grows the button instead of clipping.
   final String? detail;
 
+  /// What TalkBack reads in place of [label], when the painted label alone
+  /// does not say it (the reminder's bare time). The button keeps its tap
+  /// and its enabled state on that one node (SW-REV-005).
+  final String? semanticLabel;
+
   /// Keeps the label on one line whatever the size: a caller that has
   /// checked [naturalWidth] (MxActionPair) never lets it wrap.
   final bool isSingleLine;
@@ -125,9 +131,24 @@ class MxButton extends StatelessWidget {
       ),
       child: _content(paint.ink, geometry, context.textStyles.buttonDetail),
     );
-    final sized = isBlock
+    final block = isBlock
         ? SizedBox(width: double.infinity, child: button)
         : button;
+    final canPress = onPressed != null && !isLoading;
+    final sized = switch (semanticLabel) {
+      null => block,
+      // Its own node: without one, the label melts into the row's and its
+      // siblings' (as the reminder's time did).
+      final label => Semantics(
+        container: true,
+        label: label,
+        button: true,
+        enabled: canPress,
+        onTap: canPress ? onPressed : null,
+        excludeSemantics: true,
+        child: block,
+      ),
+    };
     // Work in progress is not a control that cannot be used: loading wins
     // over the disabled dim, whatever the caller passes as onPressed
     // (SW-REV-003).

@@ -151,4 +151,20 @@ void main() {
       0.38,
     );
   });
+
+  // SW-REV-006: a toggle that cannot change is announced as disabled.
+  testWidgets('a toggle that cannot change is disabled to TalkBack', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxToggle(isOn: false, onChanged: null, semanticLabel: 'Reminders'),
+    );
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Reminders')),
+      isSemantics(hasEnabledState: true, isEnabled: false),
+    );
+    handle.dispose();
+  });
 }

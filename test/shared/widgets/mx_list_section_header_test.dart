@@ -88,4 +88,16 @@ void main() {
       greaterThanOrEqualTo(tester.getBottomLeft(find.text('DECKS')).dy),
     );
   });
+
+  // SW-REV-006: the label that introduces a list is a heading, so TalkBack
+  // can move between sections.
+  testWidgets('the label is a heading to TalkBack', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, const MxListSectionHeader(label: 'Decks'));
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Decks')),
+      isSemantics(isHeader: true),
+    );
+    handle.dispose();
+  });
 }

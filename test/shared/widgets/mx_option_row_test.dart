@@ -208,4 +208,20 @@ void main() {
       findsNothing,
     );
   });
+
+  // SW-REV-006: a row that cannot be picked is announced as disabled.
+  testWidgets('a row that cannot be picked is a disabled radio to TalkBack', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxOptionRow(title: 'SM-2', isSelected: false, onSelected: null),
+    );
+    expect(
+      tester.getSemantics(find.text('SM-2')),
+      isSemantics(hasEnabledState: true, isEnabled: false),
+    );
+    handle.dispose();
+  });
 }

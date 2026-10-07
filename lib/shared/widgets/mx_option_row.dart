@@ -53,6 +53,8 @@ class MxOptionRow extends StatelessWidget {
       child: Semantics(
         checked: isSelected,
         inMutuallyExclusiveGroup: true,
+        // A row that cannot be picked says so (SW-REV-006).
+        enabled: onSelected != null,
         child: InkWell(
           onTap: onSelected,
           child: DecoratedBox(

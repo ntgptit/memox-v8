@@ -63,19 +63,13 @@ class ReminderSettingsSectionWidget extends StatelessWidget {
           icon: AppIcons.clock,
           isEnabled: isOn,
           subtitle: isOn ? l10n.reminderTimeOnHint : l10n.reminderTimeOffHint,
-          trailing: Semantics(
-            label: l10n.reminderTimeButton(time),
-            excludeSemantics: true,
-            button: true,
-            child: MxButton(
-              label: time,
-              size: MxButtonSize.compact,
-              tone: isPickingTime
-                  ? MxButtonTone.outline
-                  : MxButtonTone.secondary,
-              isLoading: action.running == ReminderOperation.changeTime,
-              onPressed: isOn && !action.isBusy ? onPickTime : null,
-            ),
+          trailing: MxButton(
+            label: time,
+            semanticLabel: l10n.reminderTimeButton(time),
+            size: MxButtonSize.compact,
+            tone: isPickingTime ? MxButtonTone.outline : MxButtonTone.secondary,
+            isLoading: action.running == ReminderOperation.changeTime,
+            onPressed: isOn && !action.isBusy ? onPickTime : null,
           ),
         ),
       ],

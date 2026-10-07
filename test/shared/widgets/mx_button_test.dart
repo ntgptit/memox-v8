@@ -477,4 +477,45 @@ double _ratio(Color a, Color b) {
   final lb = b.computeLuminance();
   final (hi, lo) = la > lb ? (la, lb) : (lb, la);
   return (hi + 0.05) / (lo + 0.05);
+
+  // SW-REV-005: a caller that needs TalkBack to read more than the painted
+  // label names it here, and the button keeps its tap and its state.
+  testWidgets('semanticLabel: one node with the label, the tap and the state', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      MxButton(
+        label: '20:00',
+        semanticLabel: 'Reminder time, 20:00',
+        size: MxButtonSize.compact,
+        onPressed: () {},
+      ),
+    );
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Reminder time, 20:00')),
+      isSemantics(
+        isButton: true,
+        hasTapAction: true,
+        hasEnabledState: true,
+        isEnabled: true,
+      ),
+    );
+
+    await pumpMx(
+      tester,
+      const MxButton(
+        label: '20:00',
+        semanticLabel: 'Reminder time, 20:00',
+        size: MxButtonSize.compact,
+        onPressed: null,
+      ),
+    );
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Reminder time, 20:00')),
+      isSemantics(isButton: true, hasEnabledState: true, isEnabled: false),
+    );
+    handle.dispose();
+  });
 }

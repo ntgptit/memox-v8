@@ -79,10 +79,14 @@ class MxErrorState extends StatelessWidget {
             ),
             // Ruling O4: the tile → title gap is UNSPECIFIED; EmptyState's.
             const SizedBox(height: AppSpacing.gutter),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: styles.compactTitle,
+            // It swaps in for the skeleton in place: announce it (SW-REV-006).
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: styles.compactTitle,
+              ),
             ),
             const SizedBox(height: _titleGap),
             Text(body, textAlign: TextAlign.center, style: styles.emptyBody),

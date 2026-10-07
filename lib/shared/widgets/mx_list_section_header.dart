@@ -42,10 +42,14 @@ class MxListSectionHeader extends StatelessWidget {
       spacing: AppSpacing.control,
       overflowSpacing: AppSpacing.control,
       children: [
-        Text(
-          label.toUpperCase(),
-          semanticsLabel: label,
-          style: context.textStyles.overline,
+        // A heading, so TalkBack can move between sections (SW-REV-006).
+        Semantics(
+          header: true,
+          child: Text(
+            label.toUpperCase(),
+            semanticsLabel: label,
+            style: context.textStyles.overline,
+          ),
         ),
         ?trailing,
       ],
