@@ -242,6 +242,27 @@ void main() {
     expect(opacity.opacity, 0.38);
   });
 
+  // Work in progress is not a control that cannot be used: a caller that
+  // also nulls onPressed while loading still gets the full-strength spinner
+  // (shared widgets review 2026-10-07, SW-REV-003).
+  testWidgets('loading is never dimmed, even with onPressed null', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxButton(label: 'Save', isLoading: true, onPressed: null),
+    );
+
+    expect(find.byType(MxSpinner), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byType(TextButton),
+        matching: find.byType(Opacity),
+      ),
+      findsNothing,
+    );
+  });
+
   testWidgets('loading keeps the width, shows a spinner and ignores taps', (
     tester,
   ) async {

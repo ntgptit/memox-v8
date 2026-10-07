@@ -79,6 +79,7 @@ class MxButton extends StatelessWidget {
   final bool isBlock;
 
   /// Replaces the label with a spinner, keeps the width and blocks presses.
+  /// A loading button is never dimmed, even when [onPressed] is null.
   final bool isLoading;
 
   /// Takes the focus when it first shows: the safe choice of a destructive
@@ -127,7 +128,10 @@ class MxButton extends StatelessWidget {
     final sized = isBlock
         ? SizedBox(width: double.infinity, child: button)
         : button;
-    if (onPressed != null) return sized;
+    // Work in progress is not a control that cannot be used: loading wins
+    // over the disabled dim, whatever the caller passes as onPressed
+    // (SW-REV-003).
+    if (onPressed != null || isLoading) return sized;
     return Opacity(opacity: AppOpacity.disabled, child: sized);
   }
 
