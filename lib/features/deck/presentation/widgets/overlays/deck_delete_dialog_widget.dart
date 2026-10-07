@@ -105,6 +105,7 @@ class _DeckDeleteDialogWidgetState
       _ => null,
     };
     return MxDialog(
+      isHeld: _isDeleting,
       title: l10n.deckDeleteTitle,
       body: body,
       content: counted == null
@@ -112,7 +113,7 @@ class _DeckDeleteDialogWidgetState
           : MxNote(icon: AppIcons.history, text: l10n.deckDeleteNote),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(),
+        onCancel: _isDeleting ? null : () => Navigator.of(context).pop(),
         confirmLabel: l10n.trashMoveConfirm,
         isConfirmLoading: _isDeleting,
         onConfirm: switch (counted) {

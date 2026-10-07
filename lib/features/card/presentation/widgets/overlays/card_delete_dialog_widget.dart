@@ -97,6 +97,9 @@ class _CardDeleteDialogWidgetState
     final l10n = context.l10n;
     final count = widget.cardIds.length;
     return MxDialog(
+      // The cards move whatever the dialog does: it waits for them, so the
+      // Undo toast lands (SW-REV-004).
+      isHeld: _isDeleting,
       title: l10n.cardDeleteTitle(count),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -108,7 +111,7 @@ class _CardDeleteDialogWidgetState
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(false),
+        onCancel: _isDeleting ? null : () => Navigator.of(context).pop(false),
         confirmLabel: l10n.trashMoveConfirm,
         isConfirmLoading: _isDeleting,
         onConfirm: _isDeleting ? null : _delete,

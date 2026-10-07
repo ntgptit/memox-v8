@@ -55,7 +55,9 @@ class MxSheetActions extends StatelessWidget {
   final bool isWarning;
 
   /// The confirm's work is running: it spins and cannot be pressed; Cancel
-  /// stays live.
+  /// stays live, since some work can be cancelled (Export's preparing). Work
+  /// that cannot be stopped nulls [onCancel] and holds its popup
+  /// (MxDialog.isHeld, MxBottomSheet.isHeld), so Back and the scrim wait too.
   final bool isConfirmLoading;
 
   /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of

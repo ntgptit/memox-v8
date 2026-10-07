@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
@@ -301,6 +302,36 @@ void main() {
     await tester.pump();
 
     expect(find.byType(MxSpinner), findsOneWidget);
+    await tester.pumpAndSettle();
+  });
+
+  // SW-REV-004: closing the dialog while the cards move dropped the Undo
+  // toast (the dialog was gone when the move came back); it holds instead.
+  libraryTest('while the cards move, Back and Cancel leave the dialog', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong']);
+    await _bulk(tester, _en.cardDelete);
+    await tester.tap(_inDialog(_en.trashMoveConfirm));
+    await tester.pump();
+
+    expect(
+      tester
+          .widget<MxButton>(
+            find.ancestor(
+              of: _inDialog(_en.commonCancel),
+              matching: find.byType(MxButton),
+            ),
+          )
+          .onPressed,
+      isNull,
+    );
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    expect(find.byType(MxDialog), findsOneWidget);
     await tester.pumpAndSettle();
   });
 

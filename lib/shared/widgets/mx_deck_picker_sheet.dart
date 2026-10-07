@@ -46,6 +46,7 @@ class MxDeckPickerSheet extends StatelessWidget {
     required this.onDismiss,
     required this.emptyTitle,
     this.emptyBody,
+    this.isHeld = false,
   });
 
   final String title;
@@ -58,12 +59,16 @@ class MxDeckPickerSheet extends StatelessWidget {
   final String dismissLabel;
   final VoidCallback onDismiss;
   final String emptyTitle;
+
+  /// The sheet stays while the pick's work runs (MxBottomSheet.isHeld).
+  final bool isHeld;
   final String? emptyBody;
 
   @override
   Widget build(BuildContext context) {
     final isEmpty = candidates.isEmpty;
     return MxBottomSheet(
+      isHeld: isHeld,
       header: _PickerHead(title: title, rule: rule),
       footer: MxSheetActions.custom(
         isInSheet: true,

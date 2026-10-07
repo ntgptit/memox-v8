@@ -84,6 +84,7 @@ class _CardMoveSheetWidgetState extends ConsumerState<CardMoveSheetWidget> {
     final provider = cardMoveTargetsProvider(widget.sourceDeckId);
     return switch (ref.watch(provider)) {
       AsyncData(:final value) => MxDeckPickerSheet(
+        isHeld: _isMoving,
         title: l10n.cardMoveTitle,
         rule: l10n.cardMoveRule,
         candidates: [

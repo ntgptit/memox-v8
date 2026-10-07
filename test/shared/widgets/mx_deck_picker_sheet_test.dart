@@ -130,4 +130,25 @@ void main() {
       const Offset(20, 20),
     );
   });
+
+  // SW-REV-004: a move or restore that runs holds the picker.
+  testWidgets('isHeld holds its sheet', (tester) async {
+    await pumpMx(
+      tester,
+      MxDeckPickerSheet(
+        title: 'Move to deck',
+        rule: 'Cards keep their progress.',
+        candidates: [MxPickerCandidate(label: 'Kana', onTap: () {})],
+        dismissLabel: 'Cancel',
+        onDismiss: () {},
+        emptyTitle: 'Nowhere to move',
+        isHeld: true,
+      ),
+    );
+
+    expect(
+      tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).isHeld,
+      isTrue,
+    );
+  });
 }

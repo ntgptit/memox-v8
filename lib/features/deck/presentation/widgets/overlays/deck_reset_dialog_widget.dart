@@ -110,6 +110,7 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
       _ => null,
     };
     return MxDialog(
+      isHeld: _isResetting,
       title: l10n.resetDialogTitle,
       body: body,
       content: Column(

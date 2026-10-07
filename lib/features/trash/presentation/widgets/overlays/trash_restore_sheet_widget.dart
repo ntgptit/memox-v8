@@ -143,6 +143,7 @@ class _TrashRestoreSheetWidgetState
               );
     return switch (targets) {
       AsyncData(:final value) => MxDeckPickerSheet(
+        isHeld: _isRestoring,
         title: _title(l10n),
         rule: _rule(l10n, value),
         candidates: [
