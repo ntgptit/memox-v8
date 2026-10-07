@@ -106,8 +106,9 @@ the switch and hands it to the tracer; `database_provider.dart` reads it from
 ### 4.3 The row feeds the switch
 
 The row in `app_settings` is the only source of truth. A keep-alive provider in
-`core/logging/di` listens to the settings DAO's watch of the column (a stream, as
-`watchAppSettings` is) and sets the switch; the UI writes the row and never the switch.
+`core/logging/di` listens to its own `.drift` query (`sql_log_queries.drift`,
+`SqlLogDao` in `core/logging`), as `core/auth` reads its device flags, because
+`core` never imports a feature (ADR-011; plan ruling), and sets the switch; the UI writes the row and never the switch.
 The same stream drives the toggle in both screens, so they agree with the tracer.
 
 When the value changes, the logger writes one `info logging.sql_statements_changed`
@@ -123,8 +124,10 @@ start on a device.
 
 ## 5. UI
 
-One widget in the monitoring feature, `MonitoringSqlLogRowWidget`: an `MxSettingsRow`
-with the database tile, label "Log SQL statements", a one-line subtitle, and a trailing
+One widget in the settings feature, `SqlLogRowWidget` (it reads the settings stream
+and a settings use case, which ADR-011 keeps out of another feature; `MonitoringScreen`
+takes it through a `pendingHeader` slot and `app/` passes it, as it passes the Admin
+rows; plan ruling): an `MxSettingsRow` with the debug-level tile, label "Log SQL statements", a one-line subtitle, and a trailing
 `MxToggle`; the toggle is disabled while a save is in flight; a failed save shows the
 settings error snackbar and the toggle returns to the row's value. The widget reads the
 settings stream and calls the use case.
