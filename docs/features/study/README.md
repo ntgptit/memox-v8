@@ -13,9 +13,9 @@ Vòng đời phiên học, hàng đợi, round, Study Home (V8.0): mở, giữ v
 |---|---|
 | Tab Study (Study Home) | UC-STUDY-002 |
 | Study Entry của một deck | UC-STUDY-001, UC-STUDY-003 |
-| Phiên học / phiên ôn tập | UC-STUDY-001 |
+| Phiên học / phiên ôn tập | UC-STUDY-001, UC-STUDY-004, UC-STUDY-005, UC-STUDY-006, UC-STUDY-007, UC-STUDY-008 |
 
-Nguồn: trigger của UC-STUDY-001 ("bấm Study trên một deck"), UC-STUDY-002 ("Chạm tab Study, deep link `/study`"), UC-STUDY-003 ("Bấm `Review` ở Study Entry của một deck chạy `sm2`"); sơ đồ ở [`ui.md`](ui.md).
+Nguồn: trigger của UC-STUDY-001 ("bấm Study trên một deck"), UC-STUDY-002 ("Chạm tab Study, deep link `/study`"), UC-STUDY-003 ("Bấm `Review` ở Study Entry của một deck chạy `sm2`"), UC-STUDY-004…008 (stage `browse`, `match`, `guess`, `recall`, `fill` đến lượt trong phiên, hoặc mode đó được chọn ở màn ôn tập); sơ đồ ở [`ui.md`](ui.md).
 
 ## Không thuộc phạm vi
 
