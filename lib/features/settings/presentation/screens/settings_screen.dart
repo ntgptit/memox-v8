@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
@@ -12,7 +13,7 @@ import 'package:memox/features/settings/presentation/states/settings_state.dart'
 import 'package:memox/features/settings/presentation/widgets/overlays/settings_reset_dialog_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_app_section_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_skeleton_widget.dart';
-import 'package:memox/features/settings/presentation/widgets/sections/settings_sync_section_widget.dart';
+import 'package:memox/features/settings/presentation/widgets/items/settings_sync_row_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/items/settings_study_summary_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -36,7 +37,8 @@ class SettingsScreen extends ConsumerWidget {
     required this.onOpenReminder,
     required this.resetAppOptions,
     required this.onOpenSync,
-    this.accountSection,
+    this.accountRow,
+    this.accountBanner,
     this.adminRows = const [],
     this.onOpenGallery,
   });
@@ -56,9 +58,13 @@ class SettingsScreen extends ConsumerWidget {
   /// Opens screen 27 (SB-U1).
   final VoidCallback onOpenSync;
 
-  /// The Account section, which `app/` composes from the account feature
-  /// (account UI spec §5.5); first in the list.
-  final Widget? accountSection;
+  /// The account row, which `app/` composes from the account feature
+  /// (settings hub spec D7); null in a test without an account.
+  final Widget? accountRow;
+
+  /// The expired sign-in banner, above the Account & sync overline
+  /// (P3b plan ruling 1); null in a test without an account.
+  final Widget? accountBanner;
 
   /// The rows features supply for the Admin section (Monitoring, Users),
   /// which `app/` composes; the section shows only to an admin (users spec
@@ -76,6 +82,10 @@ class SettingsScreen extends ConsumerWidget {
       (_, notice) => _say(context, ref, notice),
     );
     final settings = ref.watch(appSettingsProvider);
+    // Hidden on a stream error too (sync status spec §6).
+    final sync = ref.watch(syncStatusProvider);
+    final syncStatus = sync is AsyncData<SyncStatus?> ? sync.value : null;
+    final hasAccountSync = accountRow != null || syncStatus != null;
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.navSettings,
@@ -91,7 +101,20 @@ class SettingsScreen extends ConsumerWidget {
       body: switch (settings) {
         AsyncData(:final value) => MxScreenScroll(
           children: [
-            ?accountSection,
+            ?accountBanner,
+            if (hasAccountSync)
+              MxSection(
+                title: l10n.settingsAccountSync,
+                children: [
+                  ?accountRow,
+                  if (syncStatus case final status?)
+                    SettingsSyncRowWidget(
+                      status: status,
+                      now: ref.watch(dayClockProvider).now(),
+                      onOpenSync: onOpenSync,
+                    ),
+                ],
+              ),
             MxSection(
               title: l10n.settingsStudySection,
               children: [
@@ -113,15 +136,6 @@ class SettingsScreen extends ConsumerWidget {
               onOpenLanguage: onOpenLanguage,
               onOpenReminder: onOpenReminder,
             ),
-            // Hidden on a stream error too (sync status spec §6).
-            if (ref.watch(syncStatusProvider) case AsyncData(
-              value: final status?,
-            ))
-              SettingsSyncSectionWidget(
-                status: status,
-                now: ref.watch(dayClockProvider).now(),
-                onOpenSync: onOpenSync,
-              ),
             if (adminRows.isNotEmpty && ref.watch(isAdminProvider))
               MxSection(title: l10n.settingsAdmin, children: adminRows),
             MxSection(

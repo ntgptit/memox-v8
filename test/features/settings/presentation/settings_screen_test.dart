@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
@@ -22,6 +23,7 @@ import 'package:memox/shared/widgets/mx_card.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/sync_fakes.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -275,5 +277,35 @@ void main() {
     await tester.tap(find.text(_en.settingsLanguage));
 
     expect(opened, ['theme', 'language']);
+  });
+
+  libraryTest('the account row and the Sync row share one section, the '
+      'banner above its overline (settings hub spec D7)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      SettingsScreen(
+        onOpenStudyDefaults: () {},
+        onOpenTheme: () {},
+        onOpenLanguage: () {},
+        onOpenReminder: () {},
+        resetAppOptions: () async => const Ok(null),
+        onOpenSync: () {},
+        accountBanner: const Text('banner'),
+        accountRow: const Text('account row'),
+      ),
+      overrides: syncOverrides(const SyncStatus()),
+    );
+
+    final overline = find.text(_en.settingsAccountSync.toUpperCase());
+    expect(overline, findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('banner')).dy,
+      lessThan(tester.getTopLeft(overline).dy),
+    );
+    expect(
+      tester.getTopLeft(find.text('account row')).dy,
+      lessThan(tester.getTopLeft(find.text(_en.settingsSync)).dy),
+    );
   });
 }

@@ -251,7 +251,8 @@ GoRouter buildAppRouter({
               GoRoute(
                 path: AppRoutes.settings,
                 builder: (context, state) => SettingsScreen(
-                  accountSection: accountSettingsSection(context),
+                  accountRow: accountSettingsRow(context),
+                  accountBanner: accountSettingsBanner(context),
                   onOpenStudyDefaults: () =>
                       context.push(AppRoutes.settingsStudy),
                   onOpenTheme: () => context.push(AppRoutes.settingsTheme),

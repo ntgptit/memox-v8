@@ -41,6 +41,7 @@ FakeUserRoleRepository _roles() => FakeUserRoleRepository([
 ]);
 
 Widget _settings() => SettingsScreen(
+  onOpenStudyDefaults: () {},
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},

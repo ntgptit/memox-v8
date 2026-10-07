@@ -22,9 +22,11 @@ SettingsScreen _screen({void Function()? onOpenSync}) => SettingsScreen(
 );
 
 void main() {
-  libraryTest('no Sync section without Supabase', (tester, env) async {
+  libraryTest('no Account & sync section without Supabase (settings hub '
+      'spec §5.1)', (tester, env) async {
     await pumpLibraryScreen(tester, env, _screen());
-    await tester.scrollUntilVisible(find.text('Reset app options'), 200);
+
+    expect(find.text('ACCOUNT & SYNC'), findsNothing);
     expect(find.text('Sync'), findsNothing);
   });
 

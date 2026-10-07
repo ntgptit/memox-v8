@@ -19,6 +19,7 @@ SettingsScreen _screen({
   required void Function() onOpen,
   void Function()? onOpenUsers,
 }) => SettingsScreen(
+  onOpenStudyDefaults: () {},
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},

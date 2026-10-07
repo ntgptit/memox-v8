@@ -5265,6 +5265,10 @@
     },
     "description": "The display name of a SpeechLanguage, by its enum name."
   },
+  "settingsAccountSync": "Account & sync",
+  "@settingsAccountSync": {
+    "description": "Settings hub (screen 23): the overline over the account row and the Sync row (settings hub spec D2)."
+  },
   "settingsApp": "App",
   "@settingsApp": {
     "description": "Screen 23 section title for theme and language."

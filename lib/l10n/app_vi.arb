@@ -1001,6 +1001,7 @@
   "settingsSpeechLanguageMissing": "Máy chưa có giọng đọc · sẽ không đọc",
   "studyOptionsSpeechLanguageValue": "{language} · Ngôn ngữ đọc thuật ngữ",
   "speechLanguageName": "{language, select, enUs{Tiếng Anh (Mỹ)} enGb{Tiếng Anh (Anh)} viVn{Tiếng Việt} koKr{Tiếng Hàn} jaJp{Tiếng Nhật} zhCn{Tiếng Trung (giản thể)} zhTw{Tiếng Trung (phồn thể)} frFr{Tiếng Pháp} deDe{Tiếng Đức} esEs{Tiếng Tây Ban Nha} other{{language}}}",
+  "settingsAccountSync": "Tài khoản & đồng bộ",
   "settingsApp": "Ứng dụng",
   "settingsThemeFollowsSystem": "Theo cài đặt của hệ thống",
   "settingsLanguageSystemHint": "Hệ thống · {language}",

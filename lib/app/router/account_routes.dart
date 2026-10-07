@@ -9,7 +9,8 @@ import 'package:memox/features/account/presentation/screens/sign_in_screen.dart'
 import 'package:memox/features/account/presentation/screens/welcome_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_reauth_notice_widget.dart';
-import 'package:memox/features/account/presentation/widgets/sections/account_settings_section_widget.dart';
+import 'package:memox/features/account/presentation/widgets/items/account_settings_row_widget.dart';
+import 'package:memox/features/account/presentation/widgets/sections/account_settings_banner_widget.dart';
 
 /// Screen 29 (account UI spec §5.1): the first launch, over everything.
 /// Its exits go on to where the launch was headed; email opens screen 30
@@ -105,12 +106,16 @@ final class _SignInFlow {
       : AppRoutes.settingsSignInCodeLink(email);
 }
 
-/// Screen 23's Account section (spec §5.5).
-Widget accountSettingsSection(BuildContext context) =>
-    AccountSettingsSectionWidget(
-      onSignIn: () => unawaited(context.push(AppRoutes.settingsSignInLink)),
-      onOpenAccount: () => unawaited(context.push(AppRoutes.settingsAccount)),
-      onSignInAgain: () => unawaited(
+/// The hub's account row (settings hub spec D7).
+Widget accountSettingsRow(BuildContext context) => AccountSettingsRowWidget(
+  onSignIn: () => unawaited(context.push(AppRoutes.settingsSignInLink)),
+  onOpenAccount: () => unawaited(context.push(AppRoutes.settingsAccount)),
+);
+
+/// The expired sign-in banner above the hub's Account & sync section.
+Widget accountSettingsBanner(BuildContext context) =>
+    AccountSettingsBannerWidget(
+      onSignIn: () => unawaited(
         context.push(AppRoutes.settingsSignInReauth(from: AppRoutes.settings)),
       ),
     );
