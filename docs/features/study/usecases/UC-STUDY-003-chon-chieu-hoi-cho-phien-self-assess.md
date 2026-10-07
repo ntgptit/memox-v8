@@ -2,7 +2,7 @@
 id: UC-STUDY-003
 title: Chọn chiều hỏi cho một phiên self-assess
 status: ready
-rules: [BR-DECK-025, BR-MODE-013, BR-MODE-014, BR-MODE-015, BR-MODE-016, BR-MODE-017, BR-MODE-018, BR-MODE-019, BR-SRS-003, BR-STUDY-004, BR-STUDY-005, BR-STUDY-009, BR-STUDY-015, BR-STUDY-020, BR-STUDY-051, BR-STUDY-054, BR-STUDY-055, BR-STUDY-072]
+rules: [BR-DECK-025, BR-MODE-013, BR-MODE-014, BR-MODE-015, BR-MODE-016, BR-MODE-017, BR-MODE-018, BR-MODE-019, BR-SRS-003, BR-STUDY-005, BR-STUDY-009, BR-STUDY-015, BR-STUDY-020, BR-STUDY-051, BR-STUDY-054, BR-STUDY-055, BR-STUDY-072]
 code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/features/study/domain/usecases/open_review_session_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -19,14 +19,15 @@ nhất một thẻ đến hạn (BR-STUDY-054), và mode ôn duy nhất thuật 
 1. Người dùng bấm `Review`. Vì `sm2` chỉ offer một mode, hệ thống bỏ qua màn chọn
    mode (BR-STUDY-055) và mở sheet chọn **chiều hỏi**.
 2. Hệ thống hiển thị ba lựa chọn — `Term first` (gắn nhãn Recommended; nhãn không
-   gọi tên một ngôn ngữ vì thẻ không phụ thuộc ngôn ngữ, BR-CARD-002),
+   gọi tên một ngôn ngữ vì thẻ không có trường ngôn ngữ — bảng `card` trong
+   `docs/shared/data/schema.md`),
    `Meaning first`, `Mixed` — mỗi lựa chọn kèm một dòng mô tả bằng lời của bài
    tập, và một dòng nói lựa chọn không đổi được sau khi phiên bắt đầu (BR-MODE-017).
 3. Người dùng chạm một lựa chọn. Chạm chỉ **chọn**, không mở phiên: lựa chọn bị
    khoá suốt phiên nên một cú chạm nhầm không được phép tiêu mất một phiên
    (BR-MODE-017).
 4. Người dùng bấm `Start review`. Hệ thống khoá sheet trong lúc mở phiên — cú
-   chạm thứ hai không sinh phiên thứ hai (BR-STUDY-004).
+   chạm thứ hai không sinh phiên thứ hai (BR-STUDY-072).
 5. Hệ thống mở phiên với chiều đã chọn, materialize hàng đợi trong cùng
    transaction, và gán chiều cho từng dòng: một chiều duy nhất với hai lựa chọn
    cố định, hoặc chia gần đều một lần cho `mixed` (BR-MODE-015).
@@ -85,7 +86,7 @@ Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng b�
 - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng chọn `Meaning first` rồi bấm Start review, **then** phiên mở với đúng chiều đó, lưu ở `study_session.direction` (BR-MODE-016, BR-MODE-017).
 - [ ] **Given** phiên mở với `Term first` hoặc `Meaning first`, **when** hệ thống dựng hàng đợi, **then** mọi dòng có cùng chiều đó; với `Mixed`, mỗi dòng nhận một trong hai chiều, chia gần đều một lần lúc mở phiên (BR-MODE-015, BR-MODE-016).
 - [ ] **Given** một thẻ hỏi theo `Meaning first`, **when** thẻ hiện ra, **then** đề là mặt nghĩa, mặt thuật ngữ và ví dụ chỉ hiện sau khi lật, và vẫn là 4 action của `sm2` với lịch chạy như thường (BR-MODE-014, BR-MODE-019, BR-STUDY-009).
-- [ ] **Given** Start review đang mở phiên, **when** người dùng bấm thêm lần nữa, **then** chỉ một phiên được tạo (BR-STUDY-004).
+- [ ] **Given** Start review đang mở phiên, **when** người dùng bấm thêm lần nữa, **then** chỉ một phiên được tạo (BR-STUDY-072).
 - [ ] **Given** sheet chọn chiều đang mở, **when** người dùng đóng sheet mà không bấm Start review, **then** không có gì được ghi và Study Entry giữ nguyên (BR-STUDY-020, A1).
 - [ ] **Given** deck chạy `eight_box`, **when** người dùng bấm Review, **then** không có sheet chọn chiều, chỉ có màn chọn mode (BR-MODE-013, A2).
 - [ ] **Given** còn một phiên `self_assess` bỏ dở, **when** người dùng chọn Continue, **then** phiên tiếp tục với chiều đã lưu ở `study_session.direction` và sheet chọn chiều không mở lại (BR-MODE-017, A3).
