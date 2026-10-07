@@ -74,6 +74,21 @@ void main() {
     },
   );
 
+  test('a write past the cap prunes the buffer at once, oldest debug rows '
+      'first (DEV-207)', () async {
+    final db = _CountingDatabase();
+    final sink = BufferSink(db, cap: 3);
+    for (var n = 0; n < 5; n++) {
+      sink.write(_entry(n));
+    }
+    await sink.flush();
+
+    expect(await db.count(), 3);
+    expect((await db.oldest(10)).map((e) => e.id), ['id-2', 'id-3', 'id-4']);
+    sink.dispose();
+    await db.close();
+  });
+
   test('after a failed write, logging does not retry at once; the retry '
       'waits, then writes everything', () {
     fakeAsync((async) {
