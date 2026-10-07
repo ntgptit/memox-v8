@@ -314,13 +314,14 @@ void main() {
       'follows both (BR-STUDY-080)', () async {
     await _insertRootWithOverride(db);
     await _insertSubDeck(db);
+    await settings.saveStudyDefaults(speechLanguage: SpeechLanguage.jaJp);
     final seen = <SpeechSettings?>[];
     final watching = settings.watchSpeechSettings(deckId: 's').listen(seen.add);
     await pumpEventQueue();
-    // The override predates speech: the default language (spec D6).
+    // The override predates speech: it follows the app default (spec D6).
     expect(
       seen.last,
-      const SpeechSettings(isAutoPlay: true, language: SpeechLanguage.enUs),
+      const SpeechSettings(isAutoPlay: true, language: SpeechLanguage.jaJp),
     );
 
     await settings.saveRootStudyOptions(

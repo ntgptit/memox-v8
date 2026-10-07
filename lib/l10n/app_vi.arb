@@ -1019,6 +1019,8 @@
   "settingsSaved": "Đã lưu",
   "settingsCardLimitSaveFailed": "Không lưu được số thẻ mỗi phiên. Vẫn là {count}.",
   "settingsOrderSaveFailed": "Không lưu được thứ tự thẻ mới.",
+  "settingsSpeechLanguageSaveFailed": "Không lưu được ngôn ngữ phát âm.",
+  "settingsSpeechAutoPlaySaveFailed": "Không lưu được tự động đọc.",
   "studyOptionsBelongTo": "Các tuỳ chọn này thuộc về {root} và mọi bộ thẻ con trong đó. Thay đổi áp dụng cho các phiên bắt đầu từ bây giờ; phiên đang mở giữ tuỳ chọn của nó.",
   "studyOptionsUnreadable": "Không đọc được tuỳ chọn của bộ thẻ này. Lưu sẽ thay chúng.",
   "studyOptionsUseAppDefaults": "Dùng mặc định của ứng dụng",

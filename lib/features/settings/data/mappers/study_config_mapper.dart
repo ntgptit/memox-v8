@@ -23,9 +23,13 @@ String studyConfigOf(StudyOptions options) => jsonEncode({
 /// The options [studyConfig] holds, or null when it cannot be read: not a
 /// JSON object, a key missing, a value of the wrong type, an unknown order,
 /// a card limit out of bounds or an unknown speech language (D5). A key the
-/// app does not know is ignored; a missing `tts_language` is the default
-/// (study speech spec D6).
-StudyOptions? studyOptionsOf(String studyConfig) {
+/// app does not know is ignored; a missing `tts_language` (an override
+/// written before speech) reads as [fallbackLanguage], the app default in
+/// force (study speech spec D6).
+StudyOptions? studyOptionsOf(
+  String studyConfig, {
+  SpeechLanguage fallbackLanguage = SpeechLanguage.defaultLanguage,
+}) {
   final Object? decoded;
   try {
     decoded = jsonDecode(studyConfig);
@@ -36,7 +40,10 @@ StudyOptions? studyOptionsOf(String studyConfig) {
   final cardLimit = decoded[_cardLimitKey];
   final newCardOrder = NewCardOrder.values
       .asNameMap()[decoded[_newCardOrderKey]];
-  final speechLanguage = _speechLanguageOf(decoded[_speechLanguageKey]);
+  final speechLanguage = _speechLanguageOf(
+    decoded[_speechLanguageKey],
+    fallbackLanguage,
+  );
   if (cardLimit is! int || newCardOrder == null || speechLanguage == null) {
     return null;
   }
@@ -63,7 +70,10 @@ EffectiveStudyOptions effectiveStudyOptionsOf(Deck root, AppSetting settings) {
       source: StudyOptionsSource.appDefaults,
     );
   }
-  final override = studyOptionsOf(studyConfig);
+  final override = studyOptionsOf(
+    studyConfig,
+    fallbackLanguage: appDefaults.speechLanguage,
+  );
   if (override == null) {
     return EffectiveStudyOptions(
       rootDeckId: root.id,
@@ -97,10 +107,10 @@ StudyOptions _checkedAppDefaults(AppSetting settings) {
 }
 
 /// Study speech spec D6: an override written before speech has no key and
-/// reads in the default language; a key of another type or a tag the app
-/// does not know makes the override unreadable, as the other keys do.
-SpeechLanguage? _speechLanguageOf(Object? value) {
-  if (value == null) return SpeechLanguage.defaultLanguage;
+/// reads in [fallback], the app default; a key of another type or a tag the
+/// app does not know makes the override unreadable, as the other keys do.
+SpeechLanguage? _speechLanguageOf(Object? value, SpeechLanguage fallback) {
+  if (value == null) return fallback;
   if (value is! String) return null;
   return SpeechLanguage.fromTag(value);
 }

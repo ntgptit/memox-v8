@@ -25,11 +25,18 @@ void main() {
     expect(read?.speechLanguage, SpeechLanguage.koKr);
   });
 
-  test('an override written before speech reads in the default language '
-      '(spec D6)', () {
-    final read = studyOptionsOf('{"card_limit":20,"new_card_order":"created"}');
+  test('an override written before speech reads in the language the caller '
+      'falls back to: the app default (spec D6)', () {
+    const legacy = '{"card_limit":20,"new_card_order":"created"}';
 
-    expect(read?.speechLanguage, SpeechLanguage.defaultLanguage);
+    expect(studyOptionsOf(legacy)?.speechLanguage, SpeechLanguage.enUs);
+    expect(
+      studyOptionsOf(
+        legacy,
+        fallbackLanguage: SpeechLanguage.koKr,
+      )?.speechLanguage,
+      SpeechLanguage.koKr,
+    );
   });
 
   for (final (shape, studyConfig) in [

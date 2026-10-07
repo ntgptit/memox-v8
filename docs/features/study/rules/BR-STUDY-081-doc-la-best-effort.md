@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-Một lần đọc thất bại (không có engine, ngôn ngữ chưa cài, plugin lỗi) MUST được ghi log mức warning (`speech.*`, category `ui`, ADR-018) và MUST NOT hiện banner, MUST NOT thử lại, MUST NOT đổi kết quả hay trạng thái của lượt. Log MUST NOT chứa nội dung thẻ (BR-CORE-001).
+Một lần đọc thất bại (không có engine, plugin lỗi) MUST được ghi log mức warning (`speech.*`, category `ui`, ADR-018); ngôn ngữ máy chưa cài MUST được log (`speech.language_unavailable`) và MUST NOT đọc bằng giọng khác và MUST NOT hiện banner, MUST NOT thử lại, MUST NOT đổi kết quả hay trạng thái của lượt. Log MUST NOT chứa nội dung thẻ (BR-CORE-001).
 
 **Enforced by:** UI (cửa `lib/core/speech/`)
 **Liên quan:** BR-CORE-001, BR-STUDY-078

@@ -5308,6 +5308,14 @@
     "description": "Toast when saving the card limit failed (E2); names the value that stands, and offers Retry."
   },
   "settingsOrderSaveFailed": "Couldn't save the new-card order.",
+  "settingsSpeechLanguageSaveFailed": "Couldn't save the speech language.",
+  "@settingsSpeechLanguageSaveFailed": {
+    "description": "Settings toast after a failed save of the speech language; Retry follows (UC-SETTINGS-001 E2)."
+  },
+  "settingsSpeechAutoPlaySaveFailed": "Couldn't save read-aloud.",
+  "@settingsSpeechAutoPlaySaveFailed": {
+    "description": "Settings toast after a failed save of the read-aloud switch; Retry follows (UC-SETTINGS-001 E2)."
+  },
   "@settingsOrderSaveFailed": {
     "description": "Toast when saving the new-card order failed (E2); offers Retry."
   },

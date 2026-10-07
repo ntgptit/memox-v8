@@ -424,4 +424,46 @@ void main() {
     );
     expect(stored!.isSpeechAutoPlay, isFalse);
   });
+
+  libraryTest('a failed speech save says so, and Retry writes it '
+      '(UC-SETTINGS-001 E2)', (tester, env) async {
+    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
+      ..isFailing = true;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(),
+      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
+    );
+    await tester.tap(
+      find.descendant(
+        of: find.widgetWithText(MxSettingsRow, _en.settingsSpeechAutoPlay),
+        matching: find.byType(MxToggle),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text(_en.settingsSpeechAutoPlaySaveFailed), findsOneWidget);
+
+    store.isFailing = false;
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pumpAndSettle();
+
+    final stored = await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
+    );
+    expect(stored!.isSpeechAutoPlay, isFalse);
+  });
+
+  libraryTest('a saved speech language says "Saved", as the other rows do', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _screen());
+    await tester.tap(find.text(_en.settingsSpeechLanguage));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.speechLanguageJaJp));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.settingsSaved), findsOneWidget);
+  });
 }

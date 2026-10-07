@@ -161,11 +161,17 @@ class SettingsScreen extends ConsumerWidget {
     final message = switch ((notice, notice.kind)) {
       (SettingsSaved(), SettingsSubmit.cardLimit) => l10n.settingsSaved,
       (SettingsSaved(), SettingsSubmit.newCardOrder) => l10n.settingsSaved,
+      (SettingsSaved(), SettingsSubmit.speechLanguage) => l10n.settingsSaved,
+      (SettingsSaved(), SettingsSubmit.speechAutoPlay) => l10n.settingsSaved,
       (SettingsSaved(), SettingsSubmit.reset) => l10n.settingsResetDone,
       (SettingsSaveFailed(), SettingsSubmit.cardLimit) when stored != null =>
         l10n.settingsCardLimitSaveFailed(stored.cardLimit),
       (SettingsSaveFailed(), SettingsSubmit.newCardOrder) =>
         l10n.settingsOrderSaveFailed,
+      (SettingsSaveFailed(), SettingsSubmit.speechLanguage) =>
+        l10n.settingsSpeechLanguageSaveFailed,
+      (SettingsSaveFailed(), SettingsSubmit.speechAutoPlay) =>
+        l10n.settingsSpeechAutoPlaySaveFailed,
       (SettingsSaveFailed(), SettingsSubmit.reset) => l10n.settingsResetFailed,
       _ => null,
     };

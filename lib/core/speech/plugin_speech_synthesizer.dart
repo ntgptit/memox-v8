@@ -12,8 +12,9 @@ final class PluginSpeechSynthesizer implements SpeechSynthesizer {
 
   final FlutterTts _tts;
 
-  /// The language the engine was last set to; set again after a failure.
-  SpeechLanguage? _language;
+  /// What Android's `setLanguage` answers when the engine has the language
+  /// (`TextToSpeech.LANG_AVAILABLE` and above); 0 when it does not.
+  static const _languageAvailable = 1;
 
   @override
   Future<void> speak(String text, {required SpeechLanguage language}) async {
@@ -21,13 +22,21 @@ final class PluginSpeechSynthesizer implements SpeechSynthesizer {
     if (toRead == null) return;
     try {
       await _tts.stop();
-      if (_language != language) {
-        await _tts.setLanguage(language.tag);
-        _language = language;
+      // Before every reading (spec §7): the plugin may rebind its engine,
+      // which starts in its default locale.
+      final answer = await _tts.setLanguage(language.tag);
+      if (answer != _languageAvailable) {
+        // D5 offers languages the device lacks: read nothing rather than the
+        // term in another voice, and say so (BR-STUDY-081).
+        appLogger.warning(
+          'speech.language_unavailable',
+          category: LogCategory.ui,
+          context: {'language': language.tag, 'answer': answer},
+        );
+        return;
       }
       await _tts.speak(toRead);
     } on Object catch (error, stackTrace) {
-      _language = null;
       appLogger.warning(
         'speech.speak_failed',
         category: LogCategory.ui,

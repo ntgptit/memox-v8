@@ -89,6 +89,11 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   /// The last turn read aloud (BR-STUDY-078).
   String? _lastSpokenKey;
 
+  /// The last turn drawn: a new one stops the voice of the last even when it
+  /// reads nothing itself, so a term never plays into a `fill` turn or past
+  /// the switch (BR-STUDY-082, D10).
+  String? _lastTurnKey;
+
   @override
   void initState() {
     super.initState();
@@ -119,8 +124,14 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   void _cueSpeech() {
     final current = ref.read(studySessionProvider(widget.sessionId));
     if (current case AsyncData(value: Ok(:final value))) {
+      final turnKey = speechTurnKeyOf(value);
+      final isNewTurn = turnKey != _lastTurnKey;
+      _lastTurnKey = turnKey;
       final settings = _speechSettingsOf(value);
-      if (settings == null) return;
+      if (settings == null) {
+        if (isNewTurn) unawaited(_speech.stop());
+        return;
+      }
       final cue = speechCueOf(
         value,
         ref.read(studySessionControllerProvider(widget.sessionId)),
@@ -128,7 +139,10 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
         isAutoPlay: settings.isAutoPlay,
         isAccessibleNavigation: MediaQuery.accessibleNavigationOf(context),
       );
-      if (cue == null) return;
+      if (cue == null) {
+        if (isNewTurn) unawaited(_speech.stop());
+        return;
+      }
       _lastSpokenKey = cue.key;
       unawaited(_speech.speak(cue.text, language: settings.language));
     }

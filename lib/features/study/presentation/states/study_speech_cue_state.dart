@@ -16,6 +16,14 @@ final class SpeechCue {
   final String text;
 }
 
+/// The turn [view] serves, as the reading is keyed: `card#mode#round#turn`;
+/// null while no card is served.
+String? speechTurnKeyOf(StudySessionView view) {
+  final item = view.currentItem;
+  if (item == null) return null;
+  return '${item.cardId}#${view.currentMode.code}#${item.round}#${item.answersInSession}';
+}
+
 /// The reading due for [view] under [turn], or null (study speech spec §5):
 /// a learning session serving a card in a mode that reads the term, no
 /// write running and no turn held (the next card is read when it is drawn,
@@ -35,10 +43,9 @@ SpeechCue? speechCueOf(
   if (turn.isBusy || turn.held != null) return null;
   if (sessionEndingOf(view) != null) return null;
   final item = view.currentItem;
-  if (item == null) return null;
+  final key = speechTurnKeyOf(view);
+  if (item == null || key == null) return null;
   if (!view.currentMode.handler.readsTermAloud) return null;
-  final key =
-      '${item.cardId}#${view.currentMode.code}#${item.round}#${item.answersInSession}';
   if (key == lastKey) return null;
   return SpeechCue(key: key, text: item.front);
 }

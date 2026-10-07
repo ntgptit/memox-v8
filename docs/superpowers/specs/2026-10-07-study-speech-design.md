@@ -66,7 +66,7 @@ a review session, and a speech rate or voice choice.
 | D3 | The speech language is a **study option of the root deck** with an **app-wide default**: `StudyOptions.speechLanguage`, key `tts_language` in `deck.study_config`, column `tts_language` in `app_settings` | Owner 2026-10-07. A person learns more than one language; the root deck already carries the other study options (BR-STUDY-056) |
 | D4 | Automatic reading is on by default, with an app-wide device-only switch `tts_auto_play` on screen 23, and a speaker button on the term in every mode that shows it as the prompt | Owner 2026-10-07. Hearing the word is the point; a public place needs a way off; the button serves whoever turned it off |
 | D5 | The languages offered are a fixed list, `SpeechLanguage` (§4), not what the engine reports | Owner 2026-10-07. The engine's list is long, its tags vary by vendor, and Flutter has no display names for them; a fixed list has translated names and a CHECK. A language the device lacks is still offered, marked, so a choice survives a change of device |
-| D6 | A `study_config` without `tts_language` reads as the default language; a key of the wrong type or an unknown tag makes the override unreadable, as today | Every root with an override today lacks the key; none of them may turn "unreadable" (IT-STUDY-013) on update |
+| D6 | A `study_config` without `tts_language` reads in the **app default in force** (`app_settings.tts_language`), not a constant; a key of the wrong type or an unknown tag makes the override unreadable, as today | Every root with an override today lacks the key; none of them may turn "unreadable" (IT-STUDY-013) on update, and a person who never chose a language for a root expects the default they set on screen 23 (final review 2026-10-07) |
 | D7 | The two new columns are device-only: not in `AccountSettingsSyncDao`, not on the server. The root override syncs with the deck row as it does today | Keeps Supabase and its migrations out of this change; a root's language reaches the other device through the deck |
 | D8 | The session reads the language and the switch **live**, through `SettingsRepository.watchSpeechSettings(view.deckId)` (D14) | Unlike the card limit and the order, nothing of the session is written from them; a change applies to the next card without a restart (BR-STUDY-080) |
 | D9 | Speech is best-effort: an engine failure is logged (`LogCategory.ui`) and swallowed; nothing waits on it, nothing is retried | A turn never depends on sound (BR-STUDY-081) |
@@ -108,8 +108,9 @@ Gains `speechLanguage` (`SpeechLanguage`, a named parameter defaulted to `enUs`,
 ### `deck.study_config`
 
 Gains the key `tts_language` with the tag. `studyConfigOf` writes it; `studyOptionsOf`
-reads it per D6: absent → `SpeechLanguage.enUs`; present but not a string, or a string
-`fromTag` does not know → null (unreadable).
+reads it per D6: absent → the caller's `fallbackLanguage` (`effectiveStudyOptionsOf`
+passes the app default); present but not a string, or a string `fromTag` does not know →
+null (unreadable).
 
 ### `app_settings` (schema 14 → 15)
 
@@ -150,8 +151,9 @@ New business rules, numbered after BR-STUDY-077:
 - **BR-STUDY-081 — Best-effort.** A failure to speak (no engine, language not installed,
   plugin error) is logged and changes nothing in the session: no banner, no retry, no
   effect on the turn.
-- **BR-STUDY-082 — One voice.** A new reading stops the one in progress; leaving the
-  session body (summary, abandon, leave, dispose) stops it too.
+- **BR-STUDY-082 — One voice.** A new reading stops the one in progress; a new turn that
+  reads nothing (`fill`, `match`, the switch off) stops it too, as does leaving the
+  session body (summary, abandon, leave, dispose).
 
 Settings rules, numbered after BR-SETTINGS-008:
 
@@ -257,8 +259,10 @@ abstract interface class SpeechSynthesizer {
 ```
 
 `PluginSpeechSynthesizer` holds one `FlutterTts`, sets the language before each `speak`
-(`setLanguage`, then `speak`), awaits nothing beyond the plugin's own future, and
-catches `Object` around every plugin call to log it. It is the only file that imports
+(`setLanguage`, then `speak`), reads nothing when the engine answers that it lacks the
+language (Android returns 0; logged as `speech.language_unavailable`, D5), awaits
+nothing beyond the plugin's own future, and catches `Object` around every plugin call
+to log it. It is the only file that imports
 `package:flutter_tts`; the guard rule `tts_plugin_has_one_door` and its test in
 `code-verification-guard-v2/tests/test_memox_v8_architecture_guard_rules.py` hold that.
 Tests use `FakeSpeechSynthesizer` (`test/support/`), which records calls.

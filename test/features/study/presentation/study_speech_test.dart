@@ -128,6 +128,12 @@ void main() {
 
     expect(speech.spoken, [(_front(tester), SpeechLanguage.enUs)]);
     expect(find.byTooltip(_en.studySpeakTerm), findsOneWidget);
+
+    // The next turn reads nothing, but the voice of this one stops (D10).
+    final stopsBefore = speech.stops;
+    await _swipeLeft(tester);
+    expect(speech.stops, greaterThan(stopsBefore));
+    expect(speech.spoken, hasLength(1));
   });
 
   libraryTest('a review session reads nothing (BR-STUDY-078)', (
