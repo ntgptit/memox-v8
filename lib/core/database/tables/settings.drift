@@ -14,5 +14,9 @@ CREATE TABLE app_settings (
   -- Auth spec §7: the first-launch welcome was answered. Device-only: not in
   -- the account settings that sync, kept by LocalDataReset.
   welcome_seen INTEGER NOT NULL DEFAULT 0 CHECK (welcome_seen IN (0, 1)),
+  -- SQL log switch (spec 2026-10-07-sql-log-switch-design.md §3): 1 logs
+  -- every statement at debug. Synced with the account, the fifth synced
+  -- column (SB-S5); on by default while the app is under test.
+  log_sql_statements INTEGER NOT NULL DEFAULT 1 CHECK (log_sql_statements IN (0, 1)),
   updated_at DATETIME NOT NULL
 ) AS AppSetting;
