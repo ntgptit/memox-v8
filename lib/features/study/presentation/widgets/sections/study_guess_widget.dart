@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -10,11 +11,12 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_whole_word_text_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -37,7 +39,11 @@ class StudyGuessWidget extends StatefulWidget {
     required this.onPick,
     required this.onContinue,
     required this.onClose,
+    required this.speechLanguage,
   });
+
+  /// The language the term is read in; null until the session knows it.
+  final SpeechLanguage? speechLanguage;
 
   final StudyItem item;
 
@@ -141,9 +147,19 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
                   Expanded(
                     child: StudyFaceCardWidget(
                       label: l10n.studyGuessPrompt,
-                      child: StudyWholeWordTextWidget(
-                        widget.item.front,
-                        style: context.textStyles.studyTerm,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: AppSpacing.control,
+                        children: [
+                          StudyWholeWordTextWidget(
+                            widget.item.front,
+                            style: context.textStyles.studyTerm,
+                          ),
+                          StudySpeakButtonWidget(
+                            text: widget.item.front,
+                            language: widget.speechLanguage,
+                          ),
+                        ],
                       ),
                     ),
                   ),

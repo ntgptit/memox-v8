@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
@@ -10,6 +11,7 @@ import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/providers/save_study_defaults_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/providers/set_language_use_case_provider.dart';
+import 'package:memox/features/settings/presentation/providers/set_speech_auto_play_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/providers/set_theme_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/states/settings_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -96,9 +98,40 @@ class SettingsController extends _$SettingsController {
         retry: () async => chooseNewCardOrder(order),
       ).then(
         (hasSaved) => _afterStudyDefaults(
-          StudyOptions(cardLimit: persisted.cardLimit, newCardOrder: order),
+          StudyOptions(
+            cardLimit: persisted.cardLimit,
+            newCardOrder: order,
+            speechLanguage: persisted.speechLanguage,
+          ),
           hasSaved: hasSaved,
         ),
+      ),
+    );
+  }
+
+  /// The default speech language, written alone (BR-SETTINGS-007,
+  /// BR-SETTINGS-009).
+  void chooseSpeechLanguage(SpeechLanguage language) {
+    if (language == _studyDefaults?.speechLanguage) return;
+    unawaited(
+      _submit(
+        SettingsSubmit.speechLanguage,
+        () => ref.read(saveStudyDefaultsUseCaseProvider)(
+          speechLanguage: language,
+        ),
+        retry: () async => chooseSpeechLanguage(language),
+      ),
+    );
+  }
+
+  /// The read-aloud switch, saved on the toggle (BR-SETTINGS-010).
+  void setSpeechAutoPlay({required bool isOn}) {
+    if (isOn == _persisted?.isSpeechAutoPlay) return;
+    unawaited(
+      _submit(
+        SettingsSubmit.speechAutoPlay,
+        () => ref.read(setSpeechAutoPlayUseCaseProvider)(isOn: isOn),
+        retry: () async => setSpeechAutoPlay(isOn: isOn),
       ),
     );
   }
@@ -162,6 +195,7 @@ class SettingsController extends _$SettingsController {
     final options = StudyOptions(
       cardLimit: draft,
       newCardOrder: persisted.newCardOrder,
+      speechLanguage: persisted.speechLanguage,
     );
     final hasSaved = await _submit(
       SettingsSubmit.cardLimit,

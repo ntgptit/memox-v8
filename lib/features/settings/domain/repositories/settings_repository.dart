@@ -1,10 +1,12 @@
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
 import 'package:memox/features/settings/domain/models/reminder_snapshot_model.dart';
+import 'package:memox/features/settings/domain/models/speech_settings_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 
@@ -23,6 +25,13 @@ abstract interface class SettingsRepository {
   Future<Outcome<void, SettingsRejection>> saveStudyDefaults({
     int? cardLimit,
     NewCardOrder? newCardOrder,
+    SpeechLanguage? speechLanguage,
+  });
+
+  /// Whether a learning session reads a new card aloud (BR-SETTINGS-010);
+  /// one column, device-only.
+  Future<Outcome<void, SettingsRejection>> setSpeechAutoPlay({
+    required bool isOn,
   });
 
   Future<Outcome<void, SettingsRejection>> setTheme({
@@ -39,7 +48,7 @@ abstract interface class SettingsRepository {
     required bool enabled,
   });
 
-  /// The six values a person can set back to their defaults, in one
+  /// The eight values a person can set back to their defaults, in one
   /// transaction, and nothing else: not the last delivery of the reminder,
   /// which is bookkeeping (BR-SETTINGS-008; reminders spec D3).
   Future<Outcome<void, SettingsRejection>> resetToDefaults();
@@ -76,6 +85,11 @@ abstract interface class SettingsRepository {
     required String rootDeckId,
     required StudyOptions options,
   });
+
+  /// The switch and the language [deckId]'s root reads in, in one
+  /// statement, again when either changes (BR-STUDY-080); null when the
+  /// deck does not exist or is in the Trash.
+  Stream<SpeechSettings?> watchSpeechSettings({required String deckId});
 
   /// Removes the root's override, readable or not, so the app-wide defaults
   /// apply again (UC-SETTINGS-001 A1). A root without one is `Ok` and

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
@@ -55,6 +56,18 @@ void main() {
   }
 
   group('Drift CHECKs', () {
+    test('app_settings.tts_language lists SpeechLanguage.values (study '
+        'speech spec §4)', () {
+      final sql = tableSql['app_settings']!;
+      final match = RegExp(r'tts_language[^,]*IN \(([^)]*)\)').firstMatch(sql);
+      expect(match, isNotNull, reason: 'one tts_language CHECK');
+      final tags = {
+        for (final m in RegExp("'([A-Za-z-]+)'").allMatches(match!.group(1)!))
+          m.group(1)!,
+      };
+      expect(tags, SpeechLanguage.values.map((l) => l.tag).toSet());
+    });
+
     test('deck.depth is capped at DeckEntity.maxDepth (BR-DECK-001)', () {
       expect(
         literalOf(tableSql['deck']!, r'depth BETWEEN 1 AND (\d+)'),

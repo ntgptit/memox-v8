@@ -1,5 +1,6 @@
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
@@ -68,6 +69,12 @@ class StudyOptionsController extends _$StudyOptionsController {
   void chooseNewCardOrder(NewCardOrder order) {
     if (state.isSaving) return;
     state = state.edited(newCardOrder: order);
+  }
+
+  /// The root's speech language (BR-SETTINGS-009), saved with the rest.
+  void chooseSpeechLanguage(SpeechLanguage language) {
+    if (state.isSaving) return;
+    state = state.edited(speechLanguage: language);
   }
 
   /// Save, or Retry save: Use app defaults clears the root's override;

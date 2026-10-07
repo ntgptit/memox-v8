@@ -42,6 +42,9 @@ Future<void> _onThemePage(
     ),
   );
   await tester.pumpAndSettle();
+  // Below the fold since the speech rows of Study defaults: scrolling to
+  // the Reset row puts the Theme row above the bottom bar.
+  await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
   await tester.tap(find.text(_en.settingsTheme));
   await _settle(tester);
   expect(find.byType(ThemeScreen), findsOneWidget);

@@ -4078,6 +4078,28 @@
   "@studyBrowseTerm": {
     "description": "Screen handoff 16 (FE-A6 P1c): the term half's label."
   },
+  "studySpeakTerm": "Read aloud",
+  "@studySpeakTerm": {
+    "description": "Study session: the speaker button under the term while the session's language is not known yet (BR-STUDY-079)."
+  },
+  "studySpeakTermIn": "Read aloud · {language}",
+  "@studySpeakTermIn": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Study session: the speaker button under the term, naming the language it reads in, so a wrong voice is explained (critique 2026-10-07)."
+  },
+  "studySpeakVoiceMissing": "No {language} voice on this device",
+  "@studySpeakVoiceMissing": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Study session: the disabled speaker button when the device's engine lacks the session's language (BR-STUDY-081, critique 2026-10-07)."
+  },
   "studyBrowseMeaning": "Meaning",
   "@studyBrowseMeaning": {
     "description": "Screen handoff 16 (FE-A6 P1c): the meaning half's label."
@@ -5113,7 +5135,7 @@
   "@settingsStudyDefaults": {
     "description": "Screen 23 section title (UC-SETTINGS-001 step 1)."
   },
-  "settingsStudyDefaultsNote": "Applies to sessions started from now on. A deck with its own study options keeps them.",
+  "settingsStudyDefaultsNote": "The card limit and order apply to sessions started from now on; reading aloud changes at once. A deck with its own study options keeps them.",
   "@settingsStudyDefaultsNote": {
     "description": "Note under Study defaults (BR-SETTINGS-003, BR-SETTINGS-004)."
   },
@@ -5169,6 +5191,49 @@
   "@settingsOrderRandom": {
     "description": "New-card order: shuffled."
   },
+  "settingsSpeechAutoPlay": "Read the term aloud",
+  "@settingsSpeechAutoPlay": {
+    "description": "Settings › Study defaults: the read-aloud switch (BR-SETTINGS-010)."
+  },
+  "settingsSpeechAutoPlayHint": "When a new card comes up while learning",
+  "@settingsSpeechAutoPlayHint": {
+    "description": "Subtitle of the read-aloud switch."
+  },
+  "settingsSpeechLanguage": "Speech language",
+  "@settingsSpeechLanguage": {
+    "description": "Settings › Study defaults and Study options: the row that opens the language sheet (BR-SETTINGS-009)."
+  },
+  "settingsSpeechLanguageValue": "{language} · Used by decks that follow the defaults",
+  "@settingsSpeechLanguageValue": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Settings › Study defaults: subtitle of the speech language row, the value first as the Theme and Language rows do (critique 2026-10-07)."
+  },
+  "settingsSpeechLanguageMissing": "No voice on this device · nothing is read",
+  "@settingsSpeechLanguageMissing": {
+    "description": "Speech language sheet: the device's engine lacks this language; it stays selectable and the term is not read in another voice (study speech spec D5, BR-STUDY-081)."
+  },
+  "studyOptionsSpeechLanguageValue": "{language} · The language the term is read in",
+  "@studyOptionsSpeechLanguageValue": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Study options (screen 15): subtitle of the speech language row, the value first."
+  },
+  "speechLanguageName": "{language, select, enUs{English (US)} enGb{English (UK)} viVn{Vietnamese} koKr{Korean} jaJp{Japanese} zhCn{Chinese (Simplified)} zhTw{Chinese (Traditional)} frFr{French} deDe{German} esEs{Spanish} other{{language}}}",
+  "@speechLanguageName": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "The display name of a SpeechLanguage, by its enum name."
+  },
   "settingsApp": "App",
   "@settingsApp": {
     "description": "Screen 23 section title for theme and language."
@@ -5198,7 +5263,7 @@
   "@settingsResetRow": {
     "description": "The row that opens the reset confirmation (UC-SETTINGS-001 A3)."
   },
-  "settingsResetRowHint": "Theme, language, study defaults, reminder",
+  "settingsResetRowHint": "Theme, language, study defaults, read-aloud, reminder",
   "@settingsResetRowHint": {
     "description": "Line under Reset app options; names the reminder (register row 123, closed by FE-B5)."
   },
@@ -5206,7 +5271,7 @@
   "@settingsResetTitle": {
     "description": "Reset confirmation title."
   },
-  "settingsResetBody": "Theme, language, cards per session, new-card order and the daily reminder (off, 20:00) go back to their defaults.",
+  "settingsResetBody": "Theme, language, cards per session, new-card order, read-aloud settings and the daily reminder (off, 20:00) go back to their defaults.",
   "@settingsResetBody": {
     "description": "Reset confirmation body; names what the app shows, the reminder included (FE-A3 D4; register row 123, closed by FE-B5)."
   },
@@ -5243,7 +5308,15 @@
   "@settingsOrderSaveFailed": {
     "description": "Toast when saving the new-card order failed (E2); offers Retry."
   },
-  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it. Changes apply to sessions started from now on; a session already open keeps its options.",
+  "settingsSpeechLanguageSaveFailed": "Couldn't save the speech language.",
+  "@settingsSpeechLanguageSaveFailed": {
+    "description": "Settings toast after a failed save of the speech language; Retry follows (UC-SETTINGS-001 E2)."
+  },
+  "settingsSpeechAutoPlaySaveFailed": "Couldn't save the read-aloud switch.",
+  "@settingsSpeechAutoPlaySaveFailed": {
+    "description": "Settings toast after a failed save of the read-aloud switch; Retry follows (UC-SETTINGS-001 E2)."
+  },
+  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it. The card limit and order apply to sessions started from now on; the speech language changes at once.",
   "@studyOptionsBelongTo": {
     "placeholders": {
       "root": {

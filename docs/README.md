@@ -71,7 +71,7 @@ Hai trục độc lập (thuật toán SRS và StudyMode) và hai loại phiên:
 |---|---|---|
 | iOS | Ổn định Android trước để tránh sửa lỗi trên hai nền tảng cùng lúc | Sau khi Android ổn định về UX + migration + test |
 | Chia sẻ deck giữa người dùng | Server chỉ giữ dữ liệu của chính mỗi user (ADR-015) | Khi được chọn để đặc tả |
-| Audio / hình ảnh trong card | Kéo theo lưu trữ file, đồng bộ file, nén ảnh — một khối lượng riêng | Sau MVP |
+| Audio / hình ảnh trong card | Kéo theo lưu trữ file, đồng bộ file, nén ảnh — một khối lượng riêng. Riêng việc **đọc term bằng TTS của máy** đã làm ([spec](superpowers/specs/2026-10-07-study-speech-design.md)); audio lưu trong card vẫn ngoài phạm vi | Sau MVP |
 
 #### Làm sau V8.0
 

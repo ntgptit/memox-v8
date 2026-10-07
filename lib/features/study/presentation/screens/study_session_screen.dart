@@ -4,15 +4,21 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/di/speech_providers.dart';
+import 'package:memox/core/speech/speech_language.dart';
+import 'package:memox/core/speech/speech_synthesizer.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/features/settings/domain/models/speech_settings_model.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_session_controller.dart';
 import 'package:memox/features/study/presentation/providers/self_assess_preview_provider.dart';
+import 'package:memox/features/study/presentation/providers/speech_settings_provider.dart';
 import 'package:memox/features/study/presentation/providers/study_session_provider.dart';
 import 'package:memox/features/study/presentation/states/session_context_state.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
+import 'package:memox/features/study/presentation/states/study_speech_cue_state.dart';
 import 'package:memox/features/study/presentation/states/study_turn_state.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_browse_widget.dart';
@@ -76,12 +82,72 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
   /// the tree is being torn down, when no ancestor can be looked up.
   late final StudySessionController _controller;
 
+  /// Read once, as the controller is: `dispose` stops the voice when no
+  /// ancestor can be looked up (BR-STUDY-082).
+  late final SpeechSynthesizer _speech;
+
+  /// The last turn read aloud (BR-STUDY-078).
+  String? _lastSpokenKey;
+
+  /// The last turn drawn: a new one stops the voice of the last even when it
+  /// reads nothing itself, so a term never plays into a `fill` turn or past
+  /// the switch (BR-STUDY-082, D10).
+  String? _lastTurnKey;
+
   @override
   void initState() {
     super.initState();
     _controller = ref.read(
       studySessionControllerProvider(widget.sessionId).notifier,
     );
+    _speech = ref.read(speechSynthesizerProvider);
+    // The device's voices, asked once per session for the speaker button.
+    ref.invalidate(speechVoiceAvailableProvider);
+    // The view may already be there when the screen opens (a resume).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _cueSpeech();
+    });
+  }
+
+  @override
+  void dispose() {
+    unawaited(_speech.stop());
+    super.dispose();
+  }
+
+  /// The settings the session reads with; null while they load.
+  SpeechSettings? _speechSettingsOf(StudySessionView view) =>
+      ref.read(speechSettingsProvider(view.deckId)).value;
+
+  /// Reads the card now drawn when it is a new turn (BR-STUDY-078). Called
+  /// on every change of the view, the turn and the settings, so the first
+  /// card waits for its language and a released hold reads the card the
+  /// stream moved to meanwhile (spec §5).
+  void _cueSpeech() {
+    final current = ref.read(studySessionProvider(widget.sessionId));
+    if (current case AsyncData(value: Ok(:final value))) {
+      final turnKey = speechTurnKeyOf(value);
+      final isNewTurn = turnKey != _lastTurnKey;
+      _lastTurnKey = turnKey;
+      final settings = _speechSettingsOf(value);
+      if (settings == null) {
+        if (isNewTurn) unawaited(_speech.stop());
+        return;
+      }
+      final cue = speechCueOf(
+        value,
+        ref.read(studySessionControllerProvider(widget.sessionId)),
+        lastKey: _lastSpokenKey,
+        isAutoPlay: settings.isAutoPlay,
+        isAccessibleNavigation: MediaQuery.accessibleNavigationOf(context),
+      );
+      if (cue == null) {
+        if (isNewTurn) unawaited(_speech.stop());
+        return;
+      }
+      _lastSpokenKey = cue.key;
+      unawaited(_speech.speak(cue.text, language: settings.language));
+    }
   }
 
   /// The ✕ and system Back ask first (spec D8, owner ruling 2026-09-27);
@@ -172,6 +238,11 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     AsyncValue<Outcome<StudySessionView, StudyRejection>> next,
   ) {
     final l10n = context.l10n;
+    // An ended session is silent (BR-STUDY-082).
+    if (next case AsyncData(value: Ok(:final value))
+        when sessionEndingOf(value) != null) {
+      unawaited(_speech.stop());
+    }
     switch (next) {
       case AsyncData(value: Rejected()):
         _leave(l10n.studyEntryDeckGone, null);
@@ -185,6 +256,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       default:
         break;
     }
+    _cueSpeech();
   }
 
   bool get _isHolding =>
@@ -192,6 +264,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
 
   /// A released hold lets a round stalled meanwhile settle (spec D5, D12).
   void _onTurn(StudyTurnState? previous, StudyTurnState next) {
+    _cueSpeech();
     if (previous?.held == null || next.held != null) return;
     final current = ref.read(studySessionProvider(widget.sessionId));
     if (current case AsyncData(value: Ok(:final value)) when value.isStalled) {
@@ -224,7 +297,13 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       ..listen(studySessionProvider(widget.sessionId), _onView)
       ..listen(studySessionControllerProvider(widget.sessionId), _onTurn);
     final turn = ref.watch(studySessionControllerProvider(widget.sessionId));
-    final page = switch (ref.watch(studySessionProvider(widget.sessionId))) {
+    final viewAsync = ref.watch(studySessionProvider(widget.sessionId));
+    // A `WidgetRef.listen` in build may be conditional: the listeners not
+    // re-registered on a build are dropped. The deck is known with the view.
+    if (viewAsync case AsyncData(value: Ok(:final value))) {
+      ref.listen(speechSettingsProvider(value.deckId), (_, _) => _cueSpeech());
+    }
+    final page = switch (viewAsync) {
       AsyncData(value: Ok(:final value)) => _pageOf(value, turn),
       // The deck is gone: the listener leaves.
       AsyncData() => const MxAppShell(body: SizedBox.shrink()),
@@ -283,6 +362,10 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       return const StudySessionLoadingWidget();
     }
     final mode = l10n.studyMode(view.currentMode);
+    final speechLanguage = ref
+        .watch(speechSettingsProvider(view.deckId))
+        .value
+        ?.language;
     return MxAppShell(
       appBar: MxStudyTopBar(
         modeLabel: mode,
@@ -323,7 +406,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
                 ],
               ),
             ),
-          Expanded(child: _modeBody(view, item, turn)),
+          Expanded(child: _modeBody(view, item, turn, speechLanguage)),
         ],
       ),
     );
@@ -334,12 +417,14 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     StudySessionView view,
     StudyItem item,
     StudyTurnState turn,
+    SpeechLanguage? speechLanguage,
   ) => switch (view.currentMode) {
     StudyMode.browse => StudyBrowseWidget(
       view: view,
       item: item,
       isBusy: turn.isBusy,
       onAdvance: () => _advance(item),
+      speechLanguage: speechLanguage,
     ),
     StudyMode.selfAssess => StudySelfAssessWidget(
       key: ValueKey('${item.cardId}#${item.answersInSession}'),
@@ -347,6 +432,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       intervals: _previewOf(view, item),
       isBusy: turn.isBusy,
       onGrade: (action) => _grade(item, action),
+      speechLanguage: speechLanguage,
     ),
     StudyMode.guess => StudyGuessWidget(
       key: ValueKey('guess#${item.cardId}#${item.round}'),
@@ -357,6 +443,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
       onPick: (optionCardId) => _pick(item, optionCardId),
       onContinue: _release,
       onClose: _abandon,
+      speechLanguage: speechLanguage,
     ),
     StudyMode.match => StudyMatchWidget(
       key: ValueKey('match#${item.round}#${view.board!.terms.first.cardId}'),
@@ -378,6 +465,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
           unawaited(_controller.answer(item, RecallAnswer(outcome))),
       onTimeUp: () => _timeUp(item),
       onContinue: _release,
+      speechLanguage: speechLanguage,
     ),
     StudyMode.fill => StudyFillWidget(
       key: ValueKey('fill#${item.cardId}#${item.answersInSession}'),

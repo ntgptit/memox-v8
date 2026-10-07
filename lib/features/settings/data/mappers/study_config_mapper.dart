@@ -3,24 +3,33 @@ import 'dart:convert';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/logging/app_logger.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/mappers/app_settings_mapper.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 
-// The keys of `deck.study_config` (spec D5).
+// The keys of `deck.study_config` (spec D5; study speech spec §4).
 const _cardLimitKey = 'card_limit';
 const _newCardOrderKey = 'new_card_order';
+const _speechLanguageKey = 'tts_language';
 
 /// The JSON a root keeps [options] in (spec D5).
 String studyConfigOf(StudyOptions options) => jsonEncode({
   _cardLimitKey: options.cardLimit,
   _newCardOrderKey: options.newCardOrder.name,
+  _speechLanguageKey: options.speechLanguage.tag,
 });
 
 /// The options [studyConfig] holds, or null when it cannot be read: not a
-/// JSON object, a key missing, a value of the wrong type, an unknown order or
-/// a card limit out of bounds (D5). A key the app does not know is ignored.
-StudyOptions? studyOptionsOf(String studyConfig) {
+/// JSON object, a key missing, a value of the wrong type, an unknown order,
+/// a card limit out of bounds or an unknown speech language (D5). A key the
+/// app does not know is ignored; a missing `tts_language` (an override
+/// written before speech) reads as [fallbackLanguage], the app default in
+/// force (study speech spec D6).
+StudyOptions? studyOptionsOf(
+  String studyConfig, {
+  SpeechLanguage fallbackLanguage = SpeechLanguage.defaultLanguage,
+}) {
   final Object? decoded;
   try {
     decoded = jsonDecode(studyConfig);
@@ -31,10 +40,17 @@ StudyOptions? studyOptionsOf(String studyConfig) {
   final cardLimit = decoded[_cardLimitKey];
   final newCardOrder = NewCardOrder.values
       .asNameMap()[decoded[_newCardOrderKey]];
-  if (cardLimit is! int || newCardOrder == null) return null;
+  final speechLanguage = _speechLanguageOf(
+    decoded[_speechLanguageKey],
+    fallbackLanguage,
+  );
+  if (cardLimit is! int || newCardOrder == null || speechLanguage == null) {
+    return null;
+  }
   final options = StudyOptions(
     cardLimit: cardLimit,
     newCardOrder: newCardOrder,
+    speechLanguage: speechLanguage,
   );
   if (options.check() case Rejected()) return null;
   return options;
@@ -54,7 +70,10 @@ EffectiveStudyOptions effectiveStudyOptionsOf(Deck root, AppSetting settings) {
       source: StudyOptionsSource.appDefaults,
     );
   }
-  final override = studyOptionsOf(studyConfig);
+  final override = studyOptionsOf(
+    studyConfig,
+    fallbackLanguage: appDefaults.speechLanguage,
+  );
   if (override == null) {
     return EffectiveStudyOptions(
       rootDeckId: root.id,
@@ -85,4 +104,15 @@ StudyOptions _checkedAppDefaults(AppSetting settings) {
     context: {'cardLimit': appDefaults.cardLimit},
   );
   return StudyOptions.defaults;
+}
+
+/// Study speech spec D6: an override written before speech has no key, and
+/// one written by a later build may carry a tag this build does not know
+/// (the list grows, and `study_config` syncs with the deck); both read in
+/// [fallback], the app default, so the limit and the order stay readable. A
+/// key of another type makes the override unreadable, as the other keys do.
+SpeechLanguage? _speechLanguageOf(Object? value, SpeechLanguage fallback) {
+  if (value == null) return fallback;
+  if (value is! String) return null;
+  return SpeechLanguage.fromTag(value) ?? fallback;
 }

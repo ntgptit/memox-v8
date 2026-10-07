@@ -59,7 +59,7 @@ class AppDatabase extends _$AppDatabase {
   Future<void> ensureOpened() => executor.ensureOpen(this);
 
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 16;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -288,6 +288,12 @@ class AppDatabase extends _$AppDatabase {
       );
       await customStatement('DROP TRIGGER IF EXISTS app_settings_sync_update');
       await m.createTrigger(schema.appSettingsSyncUpdate);
+    },
+    from15To16: (m, schema) async {
+      // Study speech spec §4: the speech language default and the read-aloud
+      // switch, each with its default. No row changes.
+      await m.addColumn(schema.appSettings, schema.appSettings.ttsLanguage);
+      await m.addColumn(schema.appSettings, schema.appSettings.ttsAutoPlay);
     },
   );
 }

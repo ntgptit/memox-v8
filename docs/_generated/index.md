@@ -278,6 +278,8 @@
 | [BR-SETTINGS-006](../features/settings/rules/BR-SETTINGS-006-ngon-ngu.md) | Ngôn ngữ | active | Ngôn ngữ là `system`, `en` hoặc `vi`, mặc định `system`, fallback `en`. | UC-SETTINGS-001 |
 | [BR-SETTINGS-007](../features/settings/rules/BR-SETTINGS-007-moi-lan-luu-mot-transaction.md) | Mỗi lần lưu một transaction | active | Mỗi lần lưu một tuỳ chọn là một transaction độc lập; lỗi là `Failure` có kiểu. | UC-SETTINGS-001 |
 | [BR-SETTINGS-008](../features/settings/rules/BR-SETTINGS-008-reset-to-defaults.md) | Reset to defaults | active | `Reset to defaults` có xác nhận, đưa `app_settings` về mặc định, không đụng dữ liệu học. | UC-SETTINGS-001 |
+| [BR-SETTINGS-009](../features/settings/rules/BR-SETTINGS-009-ngon-ngu-phat-am-la-study-option.md) | Ngôn ngữ phát âm là study option | active | Ngôn ngữ phát âm theo BR-STUDY-056: override của root deck (`study_config.tts_language`) khi có, mặc định app (`app_settings.tts_language`) khi không. | UC-SETTINGS-001 |
+| [BR-SETTINGS-010](../features/settings/rules/BR-SETTINGS-010-tu-dong-doc-toan-app.md) | Tự động đọc là tuỳ chọn toàn app, chỉ của máy | active | `tts_auto_play` toàn app, mặc định bật, không sync; Reset to defaults đưa về bật. | UC-SETTINGS-001 |
 
 ### Use cases
 
@@ -434,6 +436,11 @@
 | [BR-STUDY-075](../features/study/rules/BR-STUDY-075-tab-study-doc-thu-vien-that.md) | Tab Study đọc thư viện thật | active | Tab Study đọc thư viện thật, không phụ thuộc deck id cố định, và không ghi database. | UC-STUDY-002 |
 | [BR-STUDY-076](../features/study/rules/BR-STUDY-076-study-home-liet-ke-root-deck.md) | Study Home liệt kê root deck | active | Study Home liệt kê root deck với workload toàn subtree, xếp theo ba khoá. | UC-STUDY-002 |
 | [BR-STUDY-077](../features/study/rules/BR-STUDY-077-study-home-ba-trang-thai.md) | Study Home ba trạng thái | active | Study Home phân biệt ba trạng thái đã tải, mỗi trạng thái một bước tiếp theo. | UC-STARTER-001, UC-STUDY-002 |
+| [BR-STUDY-078](../features/study/rules/BR-STUDY-078-doc-term-khi-the-moi.md) | Đọc term khi thẻ mới xuất hiện | active | Trong phiên `learning`, mỗi lượt mới ở `browse`, `self_assess`, `guess`, `recall` đọc to `front` một lần bằng ngôn ngữ phát âm của root deck. | UC-STUDY-001 |
+| [BR-STUDY-079](../features/study/rules/BR-STUDY-079-cong-tac-tu-dong-doc.md) | Công tắc tự động đọc | active | Tự động đọc chỉ chạy khi `tts_auto_play` bật; nút loa đọc khi chạm bất kể công tắc. | UC-STUDY-001 |
+| [BR-STUDY-080](../features/study/rules/BR-STUDY-080-tuy-chon-doc-theo-thoi-gian-thuc.md) | Tuỳ chọn đọc áp dụng theo thời gian thực | active | Ngôn ngữ phát âm và công tắc đọc được lấy tại thời điểm đọc; đổi áp dụng cho thẻ kế tiếp, không cần phiên mới. | UC-STUDY-001 |
+| [BR-STUDY-081](../features/study/rules/BR-STUDY-081-doc-la-best-effort.md) | Đọc là best-effort | active | Lỗi engine TTS chỉ được log; không banner, không retry, không đổi lượt; không log nội dung thẻ. | UC-STUDY-001 |
+| [BR-STUDY-082](../features/study/rules/BR-STUDY-082-mot-giong.md) | Một giọng | active | Lần đọc mới dừng lần trước; rời body phiên (summary, abandon, leave, dispose) dừng đọc. | UC-STUDY-001 |
 
 ### Use cases
 

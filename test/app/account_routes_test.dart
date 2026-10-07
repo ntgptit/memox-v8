@@ -344,6 +344,9 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(find.text(_en.usersTitle), 200);
+    // Then to the top of the viewport, clear of the bottom bar.
+    await tester.ensureVisible(find.text(_en.usersTitle));
+    await tester.pumpAndSettle();
     await tester.tap(find.text(_en.usersTitle));
     await tester.pumpAndSettle();
     expect(find.byType(UsersScreen), findsOneWidget);

@@ -89,7 +89,10 @@ class SettingsScreen extends ConsumerWidget {
         AsyncData(:final value) => MxScreenScroll(
           children: [
             ?accountSection,
-            SettingsStudyDefaultsSectionWidget(stored: value.studyDefaults),
+            SettingsStudyDefaultsSectionWidget(
+              stored: value.studyDefaults,
+              isSpeechAutoPlay: value.isSpeechAutoPlay,
+            ),
             SettingsAppSectionWidget(
               stored: value,
               onOpenTheme: onOpenTheme,
@@ -158,11 +161,17 @@ class SettingsScreen extends ConsumerWidget {
     final message = switch ((notice, notice.kind)) {
       (SettingsSaved(), SettingsSubmit.cardLimit) => l10n.settingsSaved,
       (SettingsSaved(), SettingsSubmit.newCardOrder) => l10n.settingsSaved,
+      (SettingsSaved(), SettingsSubmit.speechLanguage) => l10n.settingsSaved,
+      (SettingsSaved(), SettingsSubmit.speechAutoPlay) => l10n.settingsSaved,
       (SettingsSaved(), SettingsSubmit.reset) => l10n.settingsResetDone,
       (SettingsSaveFailed(), SettingsSubmit.cardLimit) when stored != null =>
         l10n.settingsCardLimitSaveFailed(stored.cardLimit),
       (SettingsSaveFailed(), SettingsSubmit.newCardOrder) =>
         l10n.settingsOrderSaveFailed,
+      (SettingsSaveFailed(), SettingsSubmit.speechLanguage) =>
+        l10n.settingsSpeechLanguageSaveFailed,
+      (SettingsSaveFailed(), SettingsSubmit.speechAutoPlay) =>
+        l10n.settingsSpeechAutoPlaySaveFailed,
       (SettingsSaveFailed(), SettingsSubmit.reset) => l10n.settingsResetFailed,
       _ => null,
     };

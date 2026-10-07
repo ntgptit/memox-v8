@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
 import 'package:memox/features/settings/domain/models/reminder_snapshot_model.dart';
+import 'package:memox/features/settings/domain/models/speech_settings_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/domain/repositories/settings_repository.dart';
@@ -43,12 +45,23 @@ final class FlakySettingsRepository implements SettingsRepository {
   Future<Outcome<void, SettingsRejection>> saveStudyDefaults({
     int? cardLimit,
     NewCardOrder? newCardOrder,
+    SpeechLanguage? speechLanguage,
   }) => _write(
     () => _inner.saveStudyDefaults(
       cardLimit: cardLimit,
       newCardOrder: newCardOrder,
+      speechLanguage: speechLanguage,
     ),
   );
+
+  @override
+  Future<Outcome<void, SettingsRejection>> setSpeechAutoPlay({
+    required bool isOn,
+  }) => _write(() => _inner.setSpeechAutoPlay(isOn: isOn));
+
+  @override
+  Stream<SpeechSettings?> watchSpeechSettings({required String deckId}) =>
+      _inner.watchSpeechSettings(deckId: deckId);
 
   @override
   Future<Outcome<void, SettingsRejection>> setTheme({

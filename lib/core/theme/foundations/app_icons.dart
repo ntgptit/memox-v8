@@ -39,6 +39,8 @@ abstract final class AppIcons {
   static const IconData example = Icons.chat_bubble_outline; // message-square
   static const IconData hint = Icons.lightbulb_outline; // lightbulb
   static const IconData pronunciation = Icons.text_fields; // type
+  static const IconData speak = Icons.volume_up_outlined; // volume-2
+  static const IconData voice = Icons.record_voice_over_outlined; // speech
   static const IconData clock = Icons.schedule; // clock
   static const IconData searchOff = Icons.search_off; // search-x
   static const IconData history = Icons.history; // history

@@ -28,6 +28,8 @@ sub-deck the screen shows its root's options (BR-STUDY-056).
 | Unreadable override | `MxInlineBanner` (warning) | "This deck's options could not be read. Saving replaces them." |
 | Toggle | `MxSection` + `MxSettingsRow` + `MxToggle` | "Use app defaults"; on: "Following Settings · {n} cards, {order}", off: "Off · this deck has its own options". |
 | Options | `MxSection` | "App defaults (read-only here)" or "This deck"; "Cards per session" / "1 to 200" with an `MxStepper` (−/+, hold, typed entry); "New-card order" as an `MxSettingsRow` with an `MxSegmentedTray` ("In order" · "Random"; critique 2026-09-30 part 3a, R2), as screen 23 draws it; each row carries its icon, as on screen 23. While the toggle is on, the two rows show their values as plain text at full contrast, with no stepper or tray (critique 2026-09-30); turning it off brings the controls back with the same values. |
+| Speech language | `MxSettingsRow` (voice icon), tap opens the speech language sheet | "Speech language" / "{language} · The language the term is read in", the value first in the subtitle at full contrast, as the two rows above; inert and without the chevron while the toggle is on, a row with a chevron when off (study speech spec §6, BR-SETTINGS-009; critique 2026-10-07). |
+| Speech language sheet | `MxBottomSheet` + `MxOptionRow` × 10 | One row per `SpeechLanguage`, the current one selected and scrolled into view; a language the device's engine answers it lacks says "No voice on this device · nothing is read" and stays selectable (spec D5, D12). The engine is asked before the sheet opens (300 ms at most, then nothing is marked), so no row changes once shown; a second tap meanwhile opens nothing. Golden `settings_speech_language_sheet_{light,dark}` on screen 23. |
 | Card limit message | `MxFieldMessage` (error) | "Enter a number from 1 to 200", under the stepper (UC E1). |
 | Footer | `MxFooterBar` + `MxButton` | "Save", enabled only for a valid change (D9); spinning while it runs; "Retry save" after a failure. The caption: "Saved to this device only." or "Fix the limit to enable save."; a failed save is the danger banner "Not saved" at the top of the page (critique 2026-09-30 part 3d-1); the banner and "Retry save" stay through edits until a save succeeds (part 3d-2). |
 | Toast | `MxSnackbar` | "Saved · applies to the next session". |
@@ -69,8 +71,10 @@ deck's options could not be read. Saving replaces them." · "Use app defaults" �
 deck has its own options" · "App defaults (read-only here)" · "This deck" · "Cards per
 session" · "1 to {max}" · "Enter a number from {min} to {max}" · "New-card order" ·
 "In order" · "Oldest cards first — the order you added or imported them" ·
-"Random" · "Shuffled each learning session" · "Changes apply to sessions started from now
-on. A session already open keeps the options it started with." · "Save" · "Retry save" ·
+"Random" · "Shuffled each learning session" · "The card limit and order apply to sessions
+started from now on; the speech language changes at once." · "Save" · "Retry save" ·
 "Saved to this device only." · "Fix the limit to enable save." · "Couldn't save. The deck
 still uses {n} cards, {order}." · "Saved · applies to the next session" · "Cards per
-session · new-card order".
+session · new-card order" · "Speech language" · "{language} · The language the term is
+read in" · "No voice on this device · nothing is read" · the ten language names
+("English (US)" … "Spanish").

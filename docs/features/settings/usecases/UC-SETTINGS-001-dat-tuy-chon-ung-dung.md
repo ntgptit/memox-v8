@@ -2,7 +2,7 @@
 id: UC-SETTINGS-001
 title: Đặt tuỳ chọn ứng dụng
 status: ready
-rules: [BR-SETTINGS-001, BR-SETTINGS-002, BR-SETTINGS-003, BR-SETTINGS-004, BR-SETTINGS-005, BR-SETTINGS-006, BR-SETTINGS-007, BR-SETTINGS-008, BR-SRS-022, BR-STUDY-003, BR-STUDY-024, BR-STUDY-035, BR-STUDY-056, BR-STUDY-057]
+rules: [BR-SETTINGS-001, BR-SETTINGS-002, BR-SETTINGS-003, BR-SETTINGS-004, BR-SETTINGS-005, BR-SETTINGS-006, BR-SETTINGS-007, BR-SETTINGS-008, BR-SETTINGS-009, BR-SETTINGS-010, BR-SRS-022, BR-STUDY-003, BR-STUDY-024, BR-STUDY-035, BR-STUDY-056, BR-STUDY-057]
 code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, lib/features/settings/domain/usecases/save_study_defaults_use_case.dart, lib/features/settings/domain/usecases/set_theme_use_case.dart, lib/features/settings/domain/usecases/set_language_use_case.dart, lib/features/settings/domain/usecases/reset_app_settings_use_case.dart, lib/features/settings/domain/usecases/watch_study_options_use_case.dart, lib/features/settings/domain/usecases/save_root_study_options_use_case.dart, lib/features/settings/domain/usecases/use_app_defaults_use_case.dart, lib/features/settings/presentation/screens/settings_screen.dart, lib/features/settings/presentation/screens/theme_screen.dart, lib/features/settings/presentation/screens/language_screen.dart, lib/features/settings/presentation/controllers/settings_controller.dart, lib/features/settings/presentation/screens/study_options_screen.dart, lib/features/settings/presentation/controllers/study_options_controller.dart, lib/app/startup_settings.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -18,7 +18,8 @@ code: [lib/features/settings/domain/usecases/watch_app_settings_use_case.dart, l
 1. Người dùng mở tab Settings. Hệ thống đọc dòng `app_settings` qua stream và
    hiển thị ba nhóm: `Study defaults`, `Appearance`, `Language` — mỗi control
    hiển thị **giá trị đang có hiệu lực**, không phải placeholder (BR-SETTINGS-001).
-2. Người dùng đổi trần thẻ mỗi phiên và/hoặc thứ tự thẻ mới. Không có nút lưu: mỗi
+2. Người dùng đổi trần thẻ mỗi phiên, thứ tự thẻ mới, công tắc tự động đọc hoặc
+   ngôn ngữ phát âm mặc định (BR-SETTINGS-009, BR-SETTINGS-010). Không có nút lưu: mỗi
    thay đổi đã dừng là một submit (trần thẻ dừng 600 ms sau bước cuối, kể cả khi giữ
    −/+; số gõ vào và thứ tự thẻ mới lưu ngay). Hệ thống validate trần thẻ bằng đúng
    ràng buộc của tùy chọn deck (BR-SETTINGS-002), ghi một transaction, và stream đẩy

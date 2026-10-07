@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
@@ -225,5 +226,56 @@ void main() {
     );
     expect((await _stored(rig)).theme, ThemeChoice.dark);
     expect(_state(rig).notice, isA<SettingsSaveFailed>());
+  });
+
+  // Study speech spec §6; BR-SETTINGS-009, BR-SETTINGS-010.
+
+  _settingsTest('chooseSpeechLanguage writes the language alone '
+      '(BR-SETTINGS-007, BR-SETTINGS-009)', (rig) async {
+    _controller(rig).chooseSpeechLanguage(SpeechLanguage.jaJp);
+    await _settled();
+
+    final stored = await _stored(rig);
+    expect(stored.studyDefaults.speechLanguage, SpeechLanguage.jaJp);
+    expect(stored.studyDefaults.cardLimit, 20);
+    expect(
+      _state(rig).notice,
+      isA<SettingsSaved>().having(
+        (n) => n.kind,
+        'kind',
+        SettingsSubmit.speechLanguage,
+      ),
+    );
+  });
+
+  _settingsTest('the same language again writes nothing', (rig) async {
+    _controller(rig).chooseSpeechLanguage(SpeechLanguage.enUs);
+    await _settled();
+
+    expect(rig.store.writes, 0);
+  });
+
+  _settingsTest('setSpeechAutoPlay writes the switch (BR-SETTINGS-010)', (
+    rig,
+  ) async {
+    _controller(rig).setSpeechAutoPlay(isOn: false);
+    await _settled();
+
+    expect((await _stored(rig)).isSpeechAutoPlay, isFalse);
+  });
+
+  _settingsTest('a failed speech write leaves a Retry that writes it (E2)', (
+    rig,
+  ) async {
+    rig.store.isFailing = true;
+    _controller(rig).setSpeechAutoPlay(isOn: false);
+    await _settled();
+    expect(_state(rig).notice, isA<SettingsSaveFailed>());
+
+    rig.store.isFailing = false;
+    await _controller(rig).retry(SettingsSubmit.speechAutoPlay);
+    await _settled();
+
+    expect((await _stored(rig)).isSpeechAutoPlay, isFalse);
   });
 }

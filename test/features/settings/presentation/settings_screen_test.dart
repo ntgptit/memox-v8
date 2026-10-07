@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/di/speech_providers.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
@@ -14,13 +16,17 @@ import 'package:memox/features/settings/presentation/controllers/settings_contro
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_skeleton_widget.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
+import 'package:memox/shared/widgets/mx_toggle.dart';
 
+import '../../../support/fake_speech_synthesizer.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
 
@@ -53,6 +59,8 @@ void main() {
     // Section titles show in capitals; their semantics keep the words.
     expect(find.text(_en.settingsStudyDefaults.toUpperCase()), findsOneWidget);
     expect(find.text(_en.settingsApp.toUpperCase()), findsOneWidget);
+    // Below the fold since the speech rows (study speech spec §6).
+    await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
     expect(find.text(_en.settingsResetRow), findsOneWidget);
     expect(
       find.descendant(of: find.byKey(_valueKey), matching: find.text('20')),
@@ -100,6 +108,7 @@ void main() {
     );
 
     store.isFailing = true;
+    await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
     // M3-B3: the dialog's footer is the stock MxSheetActions pair.
@@ -116,6 +125,7 @@ void main() {
     // The failure's toast sits over the bottom row: bring the row above it.
     await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.settingsResetConfirm));
@@ -288,6 +298,7 @@ void main() {
       _screen(resetAppOptions: ResetAppSettingsUseCase(repository).call),
     );
 
+    await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
     expect(find.byType(MxDialog), findsOneWidget);
@@ -298,6 +309,7 @@ void main() {
     expect(find.byType(MxDialog), findsNothing);
     expect(await tester.runAsync(() => _storedLimit(env)), 50);
 
+    await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.settingsResetConfirm));
@@ -348,5 +360,120 @@ void main() {
     await tester.tap(find.text(_en.settingsLanguage));
 
     expect(opened, ['theme', 'language']);
+  });
+
+  // Study speech spec §6; BR-SETTINGS-009, BR-SETTINGS-010.
+
+  libraryTest('Study defaults show the read-aloud switch and the default '
+      'language', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _screen());
+
+    expect(find.text(_en.settingsSpeechAutoPlay), findsOneWidget);
+    expect(find.text(_en.settingsSpeechLanguage), findsOneWidget);
+    expect(
+      find.text(
+        _en.settingsSpeechLanguageValue(_en.speechLanguageName('enUs')),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('the speech language row opens the sheet; a pick saves and '
+      'shows its name (BR-SETTINGS-009)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(),
+      overrides: [
+        speechSynthesizerProvider.overrideWithValue(
+          FakeSpeechSynthesizer(available: {'en-US', 'vi-VN'}),
+        ),
+      ],
+    );
+
+    await tester.tap(find.text(_en.settingsSpeechLanguage));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxBottomSheet), findsOneWidget);
+    // A language the device lacks says so and stays selectable (D5).
+    expect(find.text(_en.settingsSpeechLanguageMissing), findsNWidgets(8));
+
+    await tester.tap(find.text(_en.speechLanguageName('viVn')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxBottomSheet), findsNothing);
+    expect(
+      find.text(
+        _en.settingsSpeechLanguageValue(_en.speechLanguageName('viVn')),
+      ),
+      findsOneWidget,
+    );
+    // The store answers on the real event loop (as `_storedLimit` is read).
+    final stored = await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
+    );
+    expect(stored!.studyDefaults.speechLanguage, SpeechLanguage.viVn);
+  });
+
+  libraryTest('the read-aloud toggle saves on change (BR-SETTINGS-010)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _screen());
+
+    await tester.tap(
+      find.descendant(
+        of: find.widgetWithText(MxSettingsRow, _en.settingsSpeechAutoPlay),
+        matching: find.byType(MxToggle),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // The store answers on the real event loop (as `_storedLimit` is read).
+    final stored = await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
+    );
+    expect(stored!.isSpeechAutoPlay, isFalse);
+  });
+
+  libraryTest('a failed speech save says so, and Retry writes it '
+      '(UC-SETTINGS-001 E2)', (tester, env) async {
+    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
+      ..isFailing = true;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(),
+      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
+    );
+    await tester.tap(
+      find.descendant(
+        of: find.widgetWithText(MxSettingsRow, _en.settingsSpeechAutoPlay),
+        matching: find.byType(MxToggle),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text(_en.settingsSpeechAutoPlaySaveFailed), findsOneWidget);
+
+    store.isFailing = false;
+    await tester.tap(find.text(_en.commonRetry));
+    await tester.pumpAndSettle();
+
+    final stored = await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db).watchAppSettings().first,
+    );
+    expect(stored!.isSpeechAutoPlay, isFalse);
+  });
+
+  libraryTest('a saved speech language says "Saved", as the other rows do', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _screen());
+    await tester.tap(find.text(_en.settingsSpeechLanguage));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.speechLanguageName('jaJp')));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.settingsSaved), findsOneWidget);
   });
 }

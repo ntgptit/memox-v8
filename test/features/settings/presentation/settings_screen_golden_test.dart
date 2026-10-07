@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/di/speech_providers.dart';
 import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
@@ -16,6 +17,7 @@ import 'package:memox/features/settings/presentation/providers/app_settings_prov
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
+import '../../../support/fake_speech_synthesizer.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
@@ -101,6 +103,30 @@ void main() {
       await _settle(tester);
     });
 
+    // Study speech spec D5, D12: the sheet with three voices on the device.
+    libraryTest('settings, speech language sheet, $theme', (tester, env) async {
+      await withRealShadows(() async {
+        await pumpLibraryGolden(
+          tester,
+          env,
+          _screen,
+          brightness,
+          overrides: [
+            speechSynthesizerProvider.overrideWithValue(
+              FakeSpeechSynthesizer(available: {'en-US', 'vi-VN', 'ko-KR'}),
+            ),
+          ],
+        );
+        await tester.ensureVisible(find.text(_en.settingsSpeechLanguage));
+        await tester.tap(find.text(_en.settingsSpeechLanguage));
+        await tester.pumpAndSettle();
+        await expectBoundaryGolden(
+          tester,
+          'goldens/settings_speech_language_sheet_$theme.png',
+        );
+      });
+    });
+
     libraryTest('settings, saved, $theme', (tester, env) async {
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, _screen, brightness);
@@ -146,6 +172,8 @@ void main() {
     libraryTest('settings, reset confirm, $theme', (tester, env) async {
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, _screen, brightness);
+        // Below the fold since the speech rows (study speech spec §6).
+        await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
         await tester.tap(find.text(_en.settingsResetRow));
         await _settle(tester);
         await expectBoundaryGolden(
@@ -158,6 +186,8 @@ void main() {
     libraryTest('settings, reset done, $theme', (tester, env) async {
       await withRealShadows(() async {
         await pumpLibraryGolden(tester, env, _screen, brightness);
+        // Below the fold since the speech rows (study speech spec §6).
+        await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
         await tester.tap(find.text(_en.settingsResetRow));
         await _settle(tester);
         await tester.tap(find.text(_en.settingsResetConfirm));

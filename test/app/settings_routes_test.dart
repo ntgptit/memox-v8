@@ -45,6 +45,9 @@ void main() {
       await pumpMemoxApp(tester, env);
       await _tap(tester, _tab(_en.navSettings));
 
+      // The App rows sit under the bottom bar on a 800 dp phone.
+      await tester.ensureVisible(find.text(row));
+      await tester.pumpAndSettle();
       await _tap(tester, find.text(row));
       expect(_barTitle(title), findsOneWidget);
       expect(find.byType(MxBottomNav), findsNothing);
