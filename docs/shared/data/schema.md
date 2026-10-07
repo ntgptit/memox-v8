@@ -594,6 +594,11 @@ Hàng đợi đồng bộ và trạng thái sync
 Bản trên server nằm ở Supabase (`supabase/migrations/`), đọc và ghi qua
 `sync_push`/`sync_changes` ([ADR-015](../decisions/ADR-015-supabase-lam-backend.md)).
 
+![Sync offline-first: Drift, sync_outbox, SyncCoordinator và RPC Supabase](sync-architecture.png)
+
+Sơ đồ vẽ bằng skill `diagram-design`; nguồn sửa được là
+[`sync-architecture.html`](sync-architecture.html).
+
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
 | `op_id` | TEXT PK | UUID mới ở **mỗi** lần ghi; idempotency key khi push |

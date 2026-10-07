@@ -12,7 +12,7 @@ Each layer answers one question; none takes over another's.
 | Superpowers | What happens next, and is it done? | brainstorming, specs, architecture, plans, worktrees, TDD, debugging, implementation, code review, verification, branch completion |
 | Impeccable | Is the UI right? | product definition, UX, UI design, design system, accessibility, adaptive/responsive behaviour, visual quality |
 | Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, `spring-boot-mybatis-review`, this file |
-| ECC skills | What does good practice look like here? | reference knowledge only (see [docs/agent/vendored-ecc.md](docs/agent/vendored-ecc.md)) |
+| ECC skills | What does good practice look like here? | reference knowledge only (see [docs/agent/vendored-ecc.md](docs/agent/vendored-ecc.md); `diagram-design`: [docs/agent/vendored-diagram-design.md](docs/agent/vendored-diagram-design.md)) |
 
 - **Superpowers is the sole process controller.** Nothing else plans,
   sequences or gates work, and no other layer repeats its methodology.
