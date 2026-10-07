@@ -81,6 +81,11 @@ final class SettingsRepositoryImpl implements SettingsRepository {
   }) => _save(AppSettingsCompanion(language: Value(language.name)));
 
   @override
+  Future<Outcome<void, SettingsRejection>> setLogSqlStatements({
+    required bool enabled,
+  }) => _save(AppSettingsCompanion(logSqlStatements: Value(enabled ? 1 : 0)));
+
+  @override
   Future<Outcome<void, SettingsRejection>> resetToDefaults() {
     const defaults = AppSettingsEntity.defaults;
     return _save(

@@ -6,6 +6,7 @@ import 'package:memox/core/database/log/log_database.dart';
 import 'package:memox/core/database/tracing_interceptor.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/buffer_sink.dart';
+import 'package:memox/core/logging/sql_log_switch.dart';
 
 import '../../support/recording_log_sink.dart';
 
@@ -298,6 +299,52 @@ void main() {
     expect(entry.event, 'db.slow_query');
     expect(entry.context['duration_ms'], greaterThanOrEqualTo(50));
   });
+
+  test(
+    'with the switch off a statement logs no db.query; slow, failed and '
+    'transaction rows stay, and flipping it on logs the next statement',
+    () async {
+      final sqlLog = SqlLogSwitch();
+      addTearDown(sqlLog.dispose);
+      final takes = _Takes();
+      final db = AppDatabase(
+        NativeDatabase.memory()
+            .interceptWith(takes)
+            .interceptWith(
+              TracingInterceptor(
+                logger: logger,
+                micros: () => takes.micros,
+                sqlLog: sqlLog,
+              ),
+            ),
+      );
+      addTearDown(db.close);
+      await db.customSelect('SELECT 1').get();
+      sink.entries.clear();
+
+      sqlLog.value = false;
+      takes.durations.addAll([0, 60]);
+      await db.customSelect('SELECT 1').get();
+      await db.customSelect('SELECT 2').get();
+      await expectLater(
+        db.customSelect('SELECT * FROM no_such_table').get(),
+        throwsA(anything),
+      );
+      await db.transaction(() async {
+        await db.customSelect('SELECT 3').get();
+      });
+      expect(sink.events, [
+        'db.slow_query',
+        'db.query_failed',
+        'db.transaction',
+      ]);
+
+      sink.entries.clear();
+      sqlLog.value = true;
+      await db.customSelect('SELECT 4').get();
+      expect(sink.events, ['db.query']);
+    },
+  );
 }
 
 /// Makes each commit take [ms] on the tracer's clock.

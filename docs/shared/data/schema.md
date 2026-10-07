@@ -531,6 +531,7 @@ tuỳ chọn trình bày (BR-SETTINGS-005, BR-SETTINGS-006).
 | `reminder_minute_of_day` | INTEGER NOT NULL DEFAULT 1200 | phút trong ngày **theo giờ địa phương**, `1200` = 20:00 (BR-REMINDER-002). `CHECK (reminder_minute_of_day BETWEEN 0 AND 1439)` |
 | `reminder_last_delivered_at` | DATETIME NULL | lúc notification tóm tắt gần nhất được hiện; NULL nghĩa là chưa lần nào (BR-REMINDER-004). UTC |
 | `welcome_seen` | INTEGER NOT NULL DEFAULT 0 | `0` \| `1`; Welcome lần đầu đã được trả lời (màn 29). Chỉ trên máy: không đồng bộ, giữ khi xoá dữ liệu của máy |
+| `log_sql_statements` | INTEGER NOT NULL DEFAULT 1 | `0` \| `1`; tracer ghi từng câu SQL ở `debug` hay không (spec `2026-10-07-sql-log-switch-design.md`). Đồng bộ theo tài khoản như bốn cột học/trình bày (SB-S5, schema 15); mặc định bật trong giai đoạn test. `CHECK (log_sql_statements IN (0, 1))` |
 | `updated_at` | DATETIME NOT NULL | UTC |
 
 **`reminder_last_delivered_at` là bookkeeping của hệ thống, không phải lựa chọn
@@ -594,6 +595,11 @@ Hàng đợi đồng bộ và trạng thái sync
 Bản trên server nằm ở Supabase (`supabase/migrations/`), đọc và ghi qua
 `sync_push`/`sync_changes` ([ADR-015](../decisions/ADR-015-supabase-lam-backend.md)).
 
+![Sync offline-first: Drift, sync_outbox, SyncCoordinator và RPC Supabase](sync-architecture.png)
+
+Sơ đồ vẽ bằng skill `diagram-design`; nguồn sửa được là
+[`sync-architecture.html`](sync-architecture.html).
+
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
 | `op_id` | TEXT PK | UUID mới ở **mỗi** lần ghi; idempotency key khi push |
@@ -626,8 +632,8 @@ Dòng bị xoá khi entity đó được `applied` ở lần push sau, hoặc kh
 
 Trigger `AFTER INSERT/UPDATE/DELETE` trên `deck`, `delete_batches`, từ schema 7
 `card` (SB-S2), từ schema 8 `tags` (SB-S3) và từ schema 9 `app_settings` (SB-S5, chỉ
-khi đổi `card_limit`, `new_card_order`, `theme_mode` hoặc `language`; nhắc học ở lại
-trên máy), từ schema 10 `review_log` (chỉ khi thêm) và `card_schedule` (khi thêm hoặc sửa;
+khi đổi `card_limit`, `new_card_order`, `theme_mode`, `language` hoặc, từ schema 15,
+`log_sql_statements`; nhắc học ở lại trên máy), từ schema 10 `review_log` (chỉ khi thêm) và `card_schedule` (khi thêm hoặc sửa;
 không bao giờ xếp lệnh xoá, vì lịch và review đi theo card) ghi outbox trong cùng transaction với mọi
 lần ghi, kể cả CTE, cascade và purge, trừ khi có `applying_remote` (dữ liệu từ server).
 Liên kết card–tag đi cùng card (trường `tagIds`), nên trigger trên `card_tags` xếp

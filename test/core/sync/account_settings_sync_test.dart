@@ -67,6 +67,7 @@ void main() {
         'newCardOrder': 'created',
         'themeMode': 'dark',
         'language': 'system',
+        'logSqlStatements': true,
         'updatedAt': '2026-09-28T00:00:00Z',
       },
     );

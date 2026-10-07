@@ -31,8 +31,9 @@ final class SettingsDao extends DatabaseAccessor<AppDatabase>
     await updateAppSettings(values, appSettingsRowId);
   }
 
-  /// The synced settings back to [AppSettingsEntity.defaults]; the device's
-  /// own columns (reminder, welcome, speech) are left alone. The account reset runs
+  /// The synced settings, the SQL log switch included, back to
+  /// [AppSettingsEntity.defaults]; the device's own columns (reminder,
+  /// welcome, speech) are left alone. The account reset runs
   /// it inside its transaction (auth spec §4, DEV-173).
   Future<void> resetSyncedDefaults(DateTime at) {
     const defaults = AppSettingsEntity.defaults;
@@ -42,6 +43,7 @@ final class SettingsDao extends DatabaseAccessor<AppDatabase>
         newCardOrder: Value(defaults.studyDefaults.newCardOrder.name),
         themeMode: Value(defaults.theme.name),
         language: Value(defaults.language.name),
+        logSqlStatements: Value(defaults.shouldLogSqlStatements ? 1 : 0),
         updatedAt: Value(at),
       ),
     );

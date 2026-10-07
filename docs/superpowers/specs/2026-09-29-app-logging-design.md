@@ -101,7 +101,10 @@ AppLogger ──► ConsoleSink (dart:developer, every level; debug builds only)
   `SyncScheduler`; the failure goes to the console only.
 - **Every level is persisted and pushed, `debug` included** (owner ruling 2026-09-29).
   The tracer logs every statement, and watch streams re-run their queries on each write,
-  so study produces many `debug` rows. Three things keep this affordable: the
+  so study produces many `debug` rows. An admin's switch, stored with the account
+  (`app_settings.log_sql_statements`, SQL log switch spec 2026-10-07), turns the
+  per-statement `debug db.query` row off on every device of the account;
+  `db.slow_query`, `db.query_failed` and `db.transaction` always log. Three things keep this affordable: the
   `BufferSink` batches, the log database is separate, and `debug` lives 7 days. When
   the local cap bites, `debug` rows go first.
 
@@ -224,6 +227,9 @@ Two plans, each a PR:
 - **D-dep (2026-09-29):** add `package_info_plus` to stamp `app_version` and
   `build_number`.
 - **Persisted level (2026-09-29):** `debug` and above, not `info` and above.
+- **SQL log switch (2026-10-07):** an admin turns statement logging off per account
+  from screens 23 and 28; default on while under test (spec
+  `2026-10-07-sql-log-switch-design.md`).
 - **Bulk sync (2026-10-07, DEV-207):** the tracer keeps logging every statement with its
   SQL text during a bulk apply and a migration, so an admin can follow performance and
   check the data while the app is under test; no summary entry replaces them, and

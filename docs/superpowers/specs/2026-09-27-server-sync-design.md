@@ -213,7 +213,7 @@ every build and never dropped; an adapter reads them `as T`:
 
 Every other key is optional: nullable columns read `as T?`, defaulted ones
 read `as T?` with the default (`deck.contentType`, `card.isFlagged`,
-`card_schedule.answerCount` and `lapseCount`), and the four settings of
+`card_schedule.answerCount` and `lapseCount`), and the five settings of
 `account_settings` are left as they are when the row leaves them out.
 
 ## 5. Conflict rules by data class

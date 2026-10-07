@@ -12,6 +12,7 @@ final class AppSettingsEntity {
     required this.theme,
     required this.language,
     required this.reminder,
+    this.shouldLogSqlStatements = true,
     required this.isSpeechAutoPlay,
   });
 
@@ -29,6 +30,11 @@ final class AppSettingsEntity {
   final ThemeChoice theme;
   final LanguageChoice language;
   final ReminderSettings reminder;
+
+  /// Whether the tracer logs every statement at `debug` (SQL log switch
+  /// spec §1): an admin's tool, synced with the account, on by default while
+  /// the app is under test.
+  final bool shouldLogSqlStatements;
 
   /// Whether a learning session reads a new card's term aloud
   /// (BR-SETTINGS-010); device-only.

@@ -90,6 +90,9 @@ Future<StartupResult> retryStartApp(ProviderContainer container) {
 Future<StartupResult> _startFromDatabase(ProviderContainer container) async {
   final unavailable = await _openDatabase(container);
   if (unavailable != null) return unavailable;
+  // The tracer follows the account's SQL log switch from here on (SQL log
+  // switch spec §4.3); until this read it logs every statement.
+  container.read(sqlLogSwitchFeederProvider);
   final settings = await readStartupSettings(container);
   final accounts = await _prepareAccounts(container);
   await showWelcomeIfDue(container);

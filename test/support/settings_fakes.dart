@@ -69,6 +69,11 @@ final class FlakySettingsRepository implements SettingsRepository {
   }) => _write(() => _inner.setTheme(theme: theme));
 
   @override
+  Future<Outcome<void, SettingsRejection>> setLogSqlStatements({
+    required bool enabled,
+  }) => _write(() => _inner.setLogSqlStatements(enabled: enabled));
+
+  @override
   Future<Outcome<void, SettingsRejection>> setLanguage({
     required LanguageChoice language,
   }) => _write(() => _inner.setLanguage(language: language));

@@ -1080,22 +1080,14 @@ class AppSettings extends Table with TableInfo {
     $customConstraints: 'NOT NULL DEFAULT 0 CHECK (welcome_seen IN (0, 1))',
     defaultValue: const CustomExpression('0'),
   );
-  late final GeneratedColumn<String> ttsLanguage = GeneratedColumn<String>(
-    'tts_language',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT \'en-US\' CHECK (tts_language IN (\'en-US\', \'en-GB\', \'vi-VN\', \'ko-KR\', \'ja-JP\', \'zh-CN\', \'zh-TW\', \'fr-FR\', \'de-DE\', \'es-ES\'))',
-    defaultValue: const CustomExpression('\'en-US\''),
-  );
-  late final GeneratedColumn<int> ttsAutoPlay = GeneratedColumn<int>(
-    'tts_auto_play',
+  late final GeneratedColumn<int> logSqlStatements = GeneratedColumn<int>(
+    'log_sql_statements',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (tts_auto_play IN (0, 1))',
+    $customConstraints:
+        'NOT NULL DEFAULT 1 CHECK (log_sql_statements IN (0, 1))',
     defaultValue: const CustomExpression('1'),
   );
   late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
@@ -1117,8 +1109,7 @@ class AppSettings extends Table with TableInfo {
     reminderMinuteOfDay,
     reminderLastDeliveredAt,
     welcomeSeen,
-    ttsLanguage,
-    ttsAutoPlay,
+    logSqlStatements,
     updatedAt,
   ];
   @override
@@ -2076,7 +2067,7 @@ class DatabaseAtV15 extends GeneratedDatabase {
   );
   late final AppSettings appSettings = AppSettings(this);
   late final Trigger appSettingsSyncUpdate = Trigger(
-    'CREATE TRIGGER app_settings_sync_update AFTER UPDATE ON app_settings WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL AND(old.card_limit IS NOT new.card_limit OR old.new_card_order IS NOT new.new_card_order OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language)BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'account_settings\', \'00000000-0000-0000-0000-000000000000\', \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'CREATE TRIGGER app_settings_sync_update AFTER UPDATE ON app_settings WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL AND(old.card_limit IS NOT new.card_limit OR old.new_card_order IS NOT new.new_card_order OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language OR old.log_sql_statements IS NOT new.log_sql_statements)BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'account_settings\', \'00000000-0000-0000-0000-000000000000\', \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
     'app_settings_sync_update',
   );
   late final ReviewLog reviewLog = ReviewLog(this);

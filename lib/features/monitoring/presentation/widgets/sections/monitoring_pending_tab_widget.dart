@@ -23,9 +23,16 @@ import 'package:memox/shared/widgets/mx_skeleton.dart';
 /// The Not sent tab (monitoring spec §3.2): the device buffer, read-only, so
 /// it works offline. Only the level can be filtered.
 class MonitoringPendingTabWidget extends ConsumerWidget {
-  const MonitoringPendingTabWidget({super.key, required this.onOpenLog});
+  const MonitoringPendingTabWidget({
+    super.key,
+    required this.onOpenLog,
+    this.header,
+  });
 
   final ValueChanged<String> onOpenLog;
+
+  /// Drawn first, above the note (SQL log switch spec §5).
+  final Widget? header;
 
   static const int _skeletonRows = 6;
 
@@ -39,6 +46,7 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
     ];
     return Column(
       children: [
+        ?header,
         // Only while logs wait: an empty buffer says so below.
         if (state.logs.value case final logs? when logs.total > 0)
           Padding(

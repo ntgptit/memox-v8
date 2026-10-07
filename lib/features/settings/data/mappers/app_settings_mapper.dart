@@ -21,6 +21,7 @@ AppSettingsEntity appSettingsOf(AppSetting row) => AppSettingsEntity(
   theme: ThemeChoice.values.byName(row.themeMode),
   language: LanguageChoice.values.byName(row.language),
   reminder: _reminderOf(row),
+  shouldLogSqlStatements: row.logSqlStatements == 1,
   isSpeechAutoPlay: row.ttsAutoPlay == 1,
 );
 
