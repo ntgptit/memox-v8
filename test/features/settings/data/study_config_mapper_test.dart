@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/mappers/study_config_mapper.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 
@@ -9,15 +10,42 @@ void main() {
     const options = StudyOptions(
       cardLimit: 35,
       newCardOrder: NewCardOrder.random,
+      speechLanguage: SpeechLanguage.koKr,
     );
 
     final studyConfig = studyConfigOf(options);
     final read = studyOptionsOf(studyConfig);
 
-    expect(studyConfig, '{"card_limit":35,"new_card_order":"random"}');
+    expect(
+      studyConfig,
+      '{"card_limit":35,"new_card_order":"random","tts_language":"ko-KR"}',
+    );
     expect(read?.cardLimit, 35);
     expect(read?.newCardOrder, NewCardOrder.random);
+    expect(read?.speechLanguage, SpeechLanguage.koKr);
   });
+
+  test('an override written before speech reads in the default language '
+      '(spec D6)', () {
+    final read = studyOptionsOf('{"card_limit":20,"new_card_order":"created"}');
+
+    expect(read?.speechLanguage, SpeechLanguage.defaultLanguage);
+  });
+
+  for (final (shape, studyConfig) in [
+    (
+      'a tts_language that is a number',
+      '{"card_limit":20,"new_card_order":"created","tts_language":7}',
+    ),
+    (
+      'a tts_language the app does not know',
+      '{"card_limit":20,"new_card_order":"created","tts_language":"xx-XX"}',
+    ),
+  ]) {
+    test('$shape cannot be read (spec D6)', () {
+      expect(studyOptionsOf(studyConfig), isNull);
+    });
+  }
 
   test('both bounds of the card limit read back (BR-STUDY-003)', () {
     expect(
