@@ -45,6 +45,17 @@
             "statusMessage": "Installing guard dependencies…"
           }
         ]
+      },
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/start-docker.sh",
+            "timeout": 60,
+            "statusMessage": "Starting Docker…"
+          }
+        ]
       }
     ],
     "PreToolUse": [

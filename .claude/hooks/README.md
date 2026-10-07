@@ -8,6 +8,7 @@ suite and the whole-tree guard run at the gate (`dod_check.sh`), never here.
 | SessionStart | `session-start.sh` | Warms the vendored Impeccable engine and loads the vendored `using-superpowers` skill into the session. |
 | SessionStart | `install-flutter.sh` | Installs the Flutter version in `.fvmrc` when the container lacks it. |
 | SessionStart | `install-guard-deps.sh` | Installs the guard's Python dependencies. |
+| SessionStart | `start-docker.sh` | Starts the Docker daemon in cloud sessions (the image ships `dockerd` but no running daemon), for `npx supabase db start` / `test db` and `run_auth_it.sh`; never fails the session. Image pulls still need the environment's network policy to allow the registries' blob hosts. |
 | PreToolUse (Bash) | `check_test_command.py` | Notes, beside the result and without blocking, a `flutter test` run over a directory, the whole suite or many files, and points at `run_tests.sh` (or `run_goldens.sh`). |
 | PreToolUse (Agent, Workflow) | `enforce_subagent_model.py` | Pins every subagent to Sonnet (the final whole-branch review excepted) and refuses a workflow script whose `agent()` calls do not pin a model and an effort. |
 | PostToolUse (Write, Edit) | `check_design_tokens.py` | Runs the guard's design-token rules on the Dart file just edited. |
