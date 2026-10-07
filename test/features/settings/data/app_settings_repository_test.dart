@@ -139,7 +139,10 @@ void main() {
     expect(outcome, isA<Ok<void, SettingsRejection>>());
     expect((await settingsRow(db))['log_sql_statements'], 0);
     expect((await db.select(db.appSettings).getSingle()).updatedAt, _t0());
-    expect((await settings.watchAppSettings().first).logSqlStatements, false);
+    expect(
+      (await settings.watchAppSettings().first).shouldLogSqlStatements,
+      false,
+    );
   });
 
   test('Use app defaults leaves the SQL log switch alone', () async {

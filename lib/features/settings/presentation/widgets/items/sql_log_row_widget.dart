@@ -18,11 +18,15 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 class SqlLogRowWidget extends ConsumerWidget {
   const SqlLogRowWidget({super.key});
 
+  /// Read in callbacks only, never while building.
+  static SqlLogController _controller(WidgetRef ref) =>
+      ref.read(sqlLogControllerProvider.notifier);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final enabled = ref.watch(
-      appSettingsProvider.select((s) => s.value?.logSqlStatements),
+      appSettingsProvider.select((s) => s.value?.shouldLogSqlStatements),
     );
     final isSaving = ref.watch(
       sqlLogControllerProvider.select((s) => s.isSaving),
@@ -33,7 +37,7 @@ class SqlLogRowWidget extends ConsumerWidget {
     ) {
       if (!hasFailure) return;
       showMxSnackbar(context, message: l10n.settingsLogSqlSaveFailed);
-      ref.read(sqlLogControllerProvider.notifier).dismissFailure();
+      _controller(ref).dismissFailure();
     });
     return MxSettingsRow(
       label: l10n.settingsLogSql,
@@ -44,9 +48,7 @@ class SqlLogRowWidget extends ConsumerWidget {
         semanticLabel: l10n.settingsLogSql,
         onChanged: enabled == null || isSaving
             ? null
-            : (value) => unawaited(
-                ref.read(sqlLogControllerProvider.notifier).set(enabled: value),
-              ),
+            : (value) => unawaited(_controller(ref).set(enabled: value)),
       ),
     );
   }

@@ -17,8 +17,10 @@ class SqlLogController extends _$SqlLogController {
     state = const SqlLogState(isSaving: true);
     try {
       await ref.read(setLogSqlStatementsUseCaseProvider)(enabled: enabled);
+      if (!ref.mounted) return;
       state = const SqlLogState();
     } on Failure {
+      if (!ref.mounted) return;
       state = const SqlLogState(hasFailure: true);
     }
   }

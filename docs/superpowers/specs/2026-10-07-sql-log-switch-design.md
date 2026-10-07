@@ -117,7 +117,7 @@ start on a device.
 
 ### 4.4 Settings feature
 
-- `AppSettingsEntity` gains `logSqlStatements`; the mapper reads the column.
+- `AppSettingsEntity` gains `shouldLogSqlStatements` (a predicate name, the guard's naming rule); the mapper reads the column.
 - `SettingsRepository.setLogSqlStatements({required bool enabled})`, one transaction
   like `setTheme`; a use case `SetLogSqlStatementsUseCase`.
 - `AccountSettingsSyncDao.readRow` and `upsertFromServer` carry the key (3.2).

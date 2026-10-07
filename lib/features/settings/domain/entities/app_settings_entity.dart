@@ -12,7 +12,7 @@ final class AppSettingsEntity {
     required this.theme,
     required this.language,
     required this.reminder,
-    this.logSqlStatements = true,
+    this.shouldLogSqlStatements = true,
   });
 
   /// What a fresh database holds and what `Reset to defaults` returns to
@@ -32,5 +32,5 @@ final class AppSettingsEntity {
   /// Whether the tracer logs every statement at `debug` (SQL log switch
   /// spec §1): an admin's tool, synced with the account, on by default while
   /// the app is under test.
-  final bool logSqlStatements;
+  final bool shouldLogSqlStatements;
 }

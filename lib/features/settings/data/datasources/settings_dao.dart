@@ -43,7 +43,7 @@ final class SettingsDao extends DatabaseAccessor<AppDatabase>
         newCardOrder: Value(defaults.studyDefaults.newCardOrder.name),
         themeMode: Value(defaults.theme.name),
         language: Value(defaults.language.name),
-        logSqlStatements: Value(defaults.logSqlStatements ? 1 : 0),
+        logSqlStatements: Value(defaults.shouldLogSqlStatements ? 1 : 0),
         updatedAt: Value(at),
       ),
     );

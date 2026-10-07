@@ -252,6 +252,39 @@ void main() {
     expect(opens, 2);
   });
 
+  test("after the start the tracer's switch follows the account's row, and "
+      'again after Retry (SQL log switch spec §4.3)', () async {
+    var db = openTestDatabase();
+    addTearDown(() => db.close());
+    final c = container([
+      databaseProvider.overrideWith((ref) => db),
+      accountCoordinatorProvider.overrideWithValue(null),
+      syncSchedulerProvider.overrideWithValue(null),
+      logSchedulerProvider.overrideWithValue(null),
+    ]);
+
+    expect(
+      await startApp(c, initializeSupabase: recordSupabase),
+      isA<StartupReady>(),
+    );
+    final sqlLog = c.read(sqlLogSwitchProvider);
+    expect(sqlLog.value, isTrue);
+    await db.customUpdate(
+      'UPDATE app_settings SET log_sql_statements = 0 WHERE id = 1',
+      updates: {db.appSettings},
+    );
+    await pumpEventQueue();
+    expect(sqlLog.value, isFalse);
+
+    // Retry opens a new database: the switch follows the new row.
+    final old = db;
+    db = openTestDatabase();
+    expect(await retryStartApp(c), isA<StartupReady>());
+    await pumpEventQueue();
+    expect(sqlLog.value, isTrue);
+    await old.close();
+  });
+
   test('the reminder reconciles through one path: the lifecycle hooks', () {
     final readers = Directory('lib/app')
         .listSync(recursive: true)
