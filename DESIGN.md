@@ -286,7 +286,7 @@ Component styles (row title, field term, study term, banner title) override the 
 
 ## Layout
 
-Phone-first, single column, 16dp screen gutter (`gutter`). Vertical rhythm: 4 icon-to-label, 8 tight stacks, 12 related rows, 16 between list items, 20 card and sheet interior, 24 between sections, 32 between major groups, and a 48 scroll tail so the last item is never trapped under pinned chrome.
+Phone-first, single column, 16dp screen gutter (`gutter`). Vertical rhythm: 4 icon-to-label, 8 tight stacks, 12 related rows, 16 between list items, 20 card and sheet interior, 24 between sections, 32 between major groups, and a 24 scroll tail (`MxScreenScroll`; under a FAB it also clears the FAB, The Clear Tail Rule) so the last item is never trapped under pinned chrome.
 
 Every screen is a column in `MxAppShell`: top chrome, one scroll body, in-flow footer, with the FAB layered above (never over a footer). System insets (status bar, cutout, gesture bar, keyboard) are supplied by the platform, never hard-coded.
 

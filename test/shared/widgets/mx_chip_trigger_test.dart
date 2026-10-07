@@ -46,14 +46,21 @@ void main() {
         width: 200,
         child: Align(
           alignment: AlignmentDirectional.centerStart,
-          child: MxChipTrigger(label: 'Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)', onPressed: () {}),
+          child: MxChipTrigger(
+            label: 'Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)',
+            onPressed: () {},
+          ),
         ),
       ),
     );
 
     expect(tester.takeException(), isNull);
     expect(
-      tester.widget<Text>(find.text('Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)')).overflow,
+      tester
+          .widget<Text>(
+            find.text('Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)'),
+          )
+          .overflow,
       TextOverflow.ellipsis,
     );
   });

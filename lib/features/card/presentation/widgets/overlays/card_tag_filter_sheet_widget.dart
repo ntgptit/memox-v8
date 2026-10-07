@@ -119,7 +119,7 @@ class _CardTagFilterSheetWidgetState
         Expanded(
           child: MxButton(
             label: l10n.cardTagFilterClose,
-            tone: MxButtonTone.outline,
+            // A lone Close stays primary (The One Indigo Rule, R8).
             isBlock: true,
             onPressed: () => Navigator.of(context).pop(),
           ),

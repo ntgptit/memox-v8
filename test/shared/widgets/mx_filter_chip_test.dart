@@ -162,7 +162,11 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(
-      tester.widget<Text>(find.text('Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)')).overflow,
+      tester
+          .widget<Text>(
+            find.text('Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)'),
+          )
+          .overflow,
       TextOverflow.ellipsis,
     );
   });

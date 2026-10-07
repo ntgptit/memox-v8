@@ -235,6 +235,15 @@ void main() {
     await _openSheet(tester);
 
     expect(find.text(_en.cardTagFilterEmpty), findsOneWidget);
+    // A lone Close stays primary (The One Indigo Rule, R8; SW-REV-011).
+    expect(
+      tester
+          .widget<MxButton>(
+            find.widgetWithText(MxButton, _en.cardTagFilterClose),
+          )
+          .tone,
+      MxButtonTone.primary,
+    );
     await tester.tap(find.text(_en.cardTagFilterClose));
     await tester.pumpAndSettle();
     expect(find.text(_en.cardTagFilterTitle), findsNothing);

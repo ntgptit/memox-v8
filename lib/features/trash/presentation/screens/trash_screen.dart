@@ -6,6 +6,7 @@ import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
 import 'package:memox/core/notes/note_keys.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
@@ -173,12 +174,24 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
       );
     }
     final count = state.countIn(entries);
+    final title = switch (state.kindIn(entries)) {
+      null => l10n.trashSelectTitle,
+      TrashKind.card => l10n.trashCardsSelected(count),
+      TrashKind.deck => l10n.trashDecksSelected(count),
+    };
     return MxAppBar(
-      title: switch (state.kindIn(entries)) {
-        null => l10n.trashSelectTitle,
-        TrashKind.card => l10n.trashCardsSelected(count),
-        TrashKind.deck => l10n.trashDecksSelected(count),
-      },
+      // TalkBack reads the new count as it changes, as on Card list; the
+      // look is the content bar's own title (SW-REV-011).
+      titleWidget: Semantics(
+        header: true,
+        liveRegion: true,
+        child: Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.textStyles.contentTitle,
+        ),
+      ),
       density: MxAppBarDensity.content,
       leading: MxIconButton(
         icon: AppIcons.close,

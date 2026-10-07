@@ -332,4 +332,22 @@ void main() {
     );
     handle.dispose();
   });
+
+  // SW-REV-011: TalkBack reads the new count as it changes, as on Card list.
+  libraryTest('the selected count in the bar is a live region', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _tap(tester, _button(_en.trashSelect));
+    await _tap(tester, find.text('meokda · eat'));
+
+    expect(
+      tester.getSemantics(find.text(_en.trashCardsSelected(1))),
+      isSemantics(isLiveRegion: true, isHeader: true),
+    );
+    handle.dispose();
+  });
 }
