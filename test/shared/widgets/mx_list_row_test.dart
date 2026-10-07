@@ -229,6 +229,71 @@ void main() {
     );
   });
 
+  testWidgets('a disabled row keeps its subtitle at full ink and dims its '
+      'leading, title and chevron (DEV-230)', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxListRow(
+          title: 'Grammar',
+          subtitle: 'Holds other decks',
+          leading: const MxIconTile(icon: AppIcons.library),
+          hasChevron: true,
+          isEnabled: false,
+          onTap: () {},
+        ),
+      ),
+    );
+    expect(
+      find.ancestor(
+        of: find.text('Holds other decks'),
+        matching: find.byType(Opacity),
+      ),
+      findsNothing,
+    );
+    for (final dimmed in [
+      find.text('Grammar'),
+      find.byType(MxIconTile),
+      find.byIcon(AppIcons.chevronRight),
+    ]) {
+      expect(
+        tester
+            .widget<Opacity>(
+              find.ancestor(of: dimmed, matching: find.byType(Opacity)),
+            )
+            .opacity,
+        0.38,
+      );
+    }
+  });
+
+  testWidgets('a disabled row keeps its meta at full ink (DEV-230)', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxListRow(
+          title: 'Kana',
+          meta: const Text('No cards yet', key: ValueKey('meta')),
+          isEnabled: false,
+          onTap: () {},
+        ),
+      ),
+    );
+    expect(
+      find.ancestor(
+        of: find.byKey(const ValueKey('meta')),
+        matching: find.byType(Opacity),
+      ),
+      findsNothing,
+    );
+    expect(
+      find.ancestor(of: find.text('Kana'), matching: find.byType(Opacity)),
+      findsOneWidget,
+    );
+  });
+
   test('subtitle or meta, trailing or chevron', () {
     expect(
       () => MxListRow(title: 'a', subtitle: 'b', meta: const SizedBox()),
