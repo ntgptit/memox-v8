@@ -41,7 +41,8 @@ class _MxToggleState extends State<MxToggle> {
       return _edge(context.derivedColors.primaryInk, AppStroke.focus);
     }
     if (widget.isOn) return null;
-    return _edge(context.colors.outline, AppStroke.control);
+    // A control edge: 3:1 on every ground, a sheet included (SW-REV-001).
+    return _edge(context.derivedColors.outlineEdge, AppStroke.control);
   }
 
   BoxDecoration _edge(Color color, double width) => BoxDecoration(

@@ -56,14 +56,17 @@ void main() {
     expect(_thumbOffset(tester), 21);
   });
 
-  testWidgets('off: a 2 outline edge, 3:1 on the row, and a variant-ink '
+  testWidgets('off: a 2 Outline Edge, 3:1 on every ground, and a variant-ink '
       'thumb, 3:1 on the track; '
       'on: no edge, a bright thumb (FE-C1)', (tester) async {
     await pumpMx(
       tester,
       MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
     );
-    expect(_ring(tester), Border.all(color: scheme.outline, width: 2));
+    expect(
+      _ring(tester),
+      Border.all(color: MxDerivedColors.outlineEdgeOf(scheme), width: 2),
+    );
     // The thumb sits on the track's fill: variant ink, 3:1 there.
     expect(_thumbColor(tester), scheme.onSurfaceVariant);
 

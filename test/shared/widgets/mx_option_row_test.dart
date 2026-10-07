@@ -17,14 +17,17 @@ Border _ring(WidgetTester tester) =>
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('unselected 2px outline ring; selected 6px primaryInk', (
+  testWidgets('unselected 2px Outline Edge ring; selected 6px primaryInk', (
     tester,
   ) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
     );
-    expect(_ring(tester).top, BorderSide(color: scheme.outline, width: 2));
+    expect(
+      _ring(tester).top,
+      BorderSide(color: MxDerivedColors.outlineEdgeOf(scheme), width: 2),
+    );
     expect(tester.getSize(find.byKey(_radioKey)), const Size.square(20));
 
     await pumpMx(

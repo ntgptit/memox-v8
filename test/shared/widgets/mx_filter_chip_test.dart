@@ -53,7 +53,9 @@ void main() {
     expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
   });
 
-  testWidgets('the count sits at 60% resting and 75% selected', (tester) async {
+  testWidgets('the count sits at 60% resting and at full ink selected', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxFilterChip(
@@ -77,10 +79,7 @@ void main() {
         onSelected: (_) {},
       ),
     );
-    expect(
-      tester.widget<Text>(find.text('12')).style!.color,
-      scheme.onPrimary.withValues(alpha: 0.75),
-    );
+    expect(tester.widget<Text>(find.text('12')).style!.color, scheme.onPrimary);
   });
 
   testWidgets('a tap reports the flipped selection', (tester) async {

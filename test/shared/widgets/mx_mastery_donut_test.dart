@@ -21,13 +21,13 @@ void main() {
   final semantic = MxSemanticColors.light;
   final derived = MxDerivedColors.resolve(scheme, semantic);
 
-  testWidgets('56 box; the label is the percentage in the ramp colour', (
+  testWidgets('56 box; the arc in the ramp fill, the label in its ink', (
     tester,
   ) async {
-    for (final (fraction, text, color) in [
-      (0.2, '20%', derived.statusLearningInk),
-      (0.42, '42%', semantic.statusReviewing),
-      (0.9, '90%', semantic.statusMastered),
+    for (final (fraction, text, color, ink) in [
+      (0.2, '20%', derived.statusLearningInk, derived.statusLearningInk),
+      (0.42, '42%', semantic.statusReviewing, derived.statusReviewingInk),
+      (0.9, '90%', semantic.statusMastered, derived.statusMasteredInk),
     ]) {
       await pumpMx(tester, MxMasteryDonut(fraction: fraction));
 
@@ -35,7 +35,8 @@ void main() {
         tester.getSize(find.byType(MxMasteryDonut)),
         const Size.square(56),
       );
-      expect(tester.widget<Text>(find.text(text)).style!.color, color);
+      // The arc is the fill; the label is text, so it takes the ink.
+      expect(tester.widget<Text>(find.text(text)).style!.color, ink);
       expect(
         _ring(tester),
         paints
@@ -63,7 +64,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text('100%')).style!.color,
-      semantic.statusMastered,
+      derived.statusMasteredInk,
     );
     expect(_ring(tester), paints..arc(color: semantic.statusMastered));
   });

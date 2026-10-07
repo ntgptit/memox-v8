@@ -53,7 +53,8 @@ class MxFloatingNotice extends StatelessWidget {
           child: Icon(
             AppIcons.alert,
             size: AppIconSize.inline,
-            color: context.semanticColors.warning,
+            // A glyph is ink, never the amber fill (T1, SW-REV-001).
+            color: context.derivedColors.warningInk,
           ),
         ),
         Expanded(child: Text(message, style: messageStyle)),
