@@ -68,11 +68,14 @@ a review session, and a speech rate or voice choice.
 | D5 | The languages offered are a fixed list, `SpeechLanguage` (§4), not what the engine reports | Owner 2026-10-07. The engine's list is long, its tags vary by vendor, and Flutter has no display names for them; a fixed list has translated names and a CHECK. A language the device lacks is still offered, marked, so a choice survives a change of device |
 | D6 | A `study_config` without `tts_language` reads as the default language; a key of the wrong type or an unknown tag makes the override unreadable, as today | Every root with an override today lacks the key; none of them may turn "unreadable" (IT-STUDY-013) on update |
 | D7 | The two new columns are device-only: not in `AccountSettingsSyncDao`, not on the server. The root override syncs with the deck row as it does today | Keeps Supabase and its migrations out of this change; a root's language reaches the other device through the deck |
-| D8 | The session reads the language and the switch **live**, from `studyOptionsProvider(view.deckId)` and `appSettingsProvider` | Unlike the card limit and the order, nothing of the session is written from them; a change applies to the next card without a restart (BR-STUDY-080) |
+| D8 | The session reads the language and the switch **live**, through `SettingsRepository.watchSpeechSettings(view.deckId)` (D14) | Unlike the card limit and the order, nothing of the session is written from them; a change applies to the next card without a restart (BR-STUDY-080) |
 | D9 | Speech is best-effort: an engine failure is logged (`LogCategory.ui`) and swallowed; nothing waits on it, nothing is retried | A turn never depends on sound (BR-STUDY-081) |
 | D10 | Speaking stops before every new `speak` and when the session body leaves (summary, abandon, leave, dispose) | Two cards read over each other, or a word read on the summary, are defects |
 | D11 | Looking back in Browse does not read the older card; the live card's speaker button is the way to hear a card again | "A new card" is the live one; the look-back is a glance (BR-STUDY-048) |
 | D12 | The language picker on screens 15 and 23 is an `MxBottomSheet` of `MxOptionRow`s, one per `SpeechLanguage`, with the device's missing ones marked in the description | No new component, no new route; ten rows fit a sheet. Screen 26's full-screen pattern is for a setting that re-renders the whole app |
+| D13 | While a screen reader is on (`MediaQuery.accessibleNavigationOf`), nothing is read automatically; the speaker button still reads on tap | TalkBack reads the card itself; two voices at once is noise. Planning ruling 2026-10-07 |
+| D14 | The session's switch and language come from one new repository stream, `SettingsRepository.watchSpeechSettings(deckId)` → `SpeechSettings?`, over the existing `rootAndSettingsOf` statement; the study feature wraps it in its own use case | A feature imports another's `domain/{entities,models,repositories,failures}` and `di/` only (`boundary_rules.dart`): `study` cannot reach `settings`' providers or use cases. One statement already joins the two rows (BR-STUDY-080) |
+| D15 | `StudyOptions.speechLanguage` is a named parameter defaulted to `en-US`; the sites that write a root's override or the defaults pass it | 67 constructions in tests set only the two options a session opens with; a required field would churn them for nothing. The writing sites are few and named in the plan |
 
 ## 4. Data
 
@@ -99,8 +102,8 @@ schema migration (the CHECK) and two ARB lines.
 
 ### `StudyOptions`
 
-Gains `speechLanguage` (`SpeechLanguage`, default `enUs`). `defaults` carries it.
-`check()` is unchanged: an enum needs no range check.
+Gains `speechLanguage` (`SpeechLanguage`, a named parameter defaulted to `enUs`, D15).
+`defaults` carries it. `check()` is unchanged: an enum needs no range check.
 
 ### `deck.study_config`
 
@@ -133,13 +136,15 @@ is unchanged: the settings row is reset by the settings feature as today.
 
 New business rules, numbered after BR-STUDY-077:
 
-- **BR-STUDY-078 — What is read.** In a learning session, when the card the session
-  serves changes (a different `cardId`, or the same card in a different mode), the app
-  reads the card's `front` once, in the root deck's speech language, when the mode is
-  `browse`, `self_assess`, `guess` or `recall`. It never reads in `fill` (the term is the
-  answer), `match` (no single card is served) or a review session.
-- **BR-STUDY-079 — The switch.** Automatic reading runs only while `tts_auto_play` is on.
-  The speaker button reads the term on tap whatever the switch says.
+- **BR-STUDY-078 — What is read.** In a learning session, when the turn the session
+  serves changes (a different `cardId`, or the same card in a different mode, round or
+  turn of its row), the app reads the card's `front` once, in the root deck's speech
+  language, when the mode is `browse`, `self_assess`, `guess` or `recall`. It never
+  reads in `fill` (the term is the answer), `match` (no single card is served) or a
+  review session.
+- **BR-STUDY-079 — The switch.** Automatic reading runs only while `tts_auto_play` is on
+  and no screen reader is on (D13). The speaker button reads the term on tap whatever
+  the switch says.
 - **BR-STUDY-080 — Live options.** The language and the switch are read as they are at
   the moment of reading; a change applies to the next card, with no new session.
 - **BR-STUDY-081 — Best-effort.** A failure to speak (no engine, language not installed,
@@ -165,15 +170,22 @@ One place: `StudySessionScreen`. It already listens to `studySessionProvider`
 
 ```dart
 /// What the session should read now, if anything (BR-STUDY-078).
-SpeechCue? speechCueOf(StudySessionView? previous, StudySessionView next, StudyTurnState turn);
+SpeechCue? speechCueOf(
+  StudySessionView view,
+  StudyTurnState turn, {
+  required String? lastKey,
+  required bool isAutoPlay,
+  required bool isAccessibleNavigation,
+});
 ```
 
-It returns a cue when `next.kind == learning`, `next.currentItem != null`,
-`sessionEndingOf(next) == null`, `!turn.isBusy && turn.held == null`,
-`next.currentMode.handler.readsTermAloud` (below), and `(cardId, mode)` differs from the
-previous view's. The screen then reads the switch and the language and calls
-`SpeechSynthesizer.speak`. Keeping the decision pure keeps it unit-tested without a
-widget.
+It returns a cue when `isAutoPlay && !isAccessibleNavigation`, `view.kind == learning`,
+`view.currentItem != null`, `sessionEndingOf(view) == null`,
+`!turn.isBusy && turn.held == null`, `view.currentMode.handler.readsTermAloud` (below),
+and the key `cardId#mode#round#answersInSession` differs from `lastKey`, the last key
+read. The screen calls it on every change of the view, the turn and the speech settings
+(D14), and speaks the cue through `SpeechSynthesizer.speak`. Keeping the decision pure
+keeps it unit-tested without a widget.
 
 `StudyModeHandler` gains `bool get readsTermAloud` (default `true`), overridden to
 `false` in `fill` and `match`: the one place a mode is told apart (guard
@@ -279,7 +291,9 @@ Tests use `FakeSpeechSynthesizer` (`test/support/`), which records calls.
 - `.claude/skills/flutter-architecture` or the architecture docs that list `lib/core/`
   folders: `speech/` added where the list is.
 - Linear: epic "Phát âm thẻ bằng TTS khi học" in milestone `Sau V8.0`; the plan's tasks
-  as its sub-issues.
+  as its sub-issues. **Blocked on 2026-10-07:** the workspace is over its free issue
+  limit and refuses every create; progress is recorded in the PR only until the owner
+  lifts it.
 
 ## 10. Rollback
 
