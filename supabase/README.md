@@ -170,6 +170,11 @@ there.
   `UNAUTHORIZED`, never a row-by-row rejection (DEV-192).
   Tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
+- A new synced entity type changes four functions in one migration:
+  `private.push_one` (its accepted list), `private.apply_operation` (upsert,
+  and delete unless the type is never deleted), `private.current_change` and
+  `public.sync_changes`. `tests/database/15_sync_entity_dispatch.sql` holds
+  their type sets equal and pins the list (DEV-199).
 - A new migration never edits one already pushed to the project.
 - The schema changes only through `migrations/`, never in the dashboard's SQL
   Editor or Table Editor: the migrations workflow fails on any other change.
