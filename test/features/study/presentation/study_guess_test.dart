@@ -17,7 +17,7 @@ import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
 
-// Screen 18, Guess: BR-STUDY-037, BR-STUDY-040, BR-STUDY-041,
+// Screen 18, Guess (UC-STUDY-006): BR-STUDY-037, BR-STUDY-040, BR-STUDY-041,
 // BR-STUDY-042, BR-STUDY-063; FE-A6 P3 rulings G1–G3, C1–C4, C6.
 
 final _en = lookupAppLocalizations(const Locale('en'));

@@ -2,7 +2,7 @@
 id: UC-STUDY-003
 title: Chọn chiều hỏi cho một phiên self-assess
 status: ready
-rules: [BR-DECK-025, BR-MODE-013, BR-MODE-014, BR-MODE-015, BR-MODE-016, BR-MODE-017, BR-MODE-018, BR-MODE-019, BR-SRS-003, BR-STUDY-005, BR-STUDY-009, BR-STUDY-015, BR-STUDY-020, BR-STUDY-051, BR-STUDY-054, BR-STUDY-055, BR-STUDY-072]
+rules: [BR-DECK-025, BR-MODE-010, BR-MODE-013, BR-MODE-014, BR-MODE-015, BR-MODE-016, BR-MODE-017, BR-MODE-018, BR-MODE-019, BR-SRS-003, BR-STUDY-005, BR-STUDY-009, BR-STUDY-015, BR-STUDY-020, BR-STUDY-051, BR-STUDY-054, BR-STUDY-055, BR-STUDY-072]
 code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/features/study/domain/usecases/open_review_session_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -55,7 +55,9 @@ nhất một thẻ đến hạn (BR-STUDY-054), và mode ôn duy nhất thuật 
   lại trước khi mở phiên; nếu `self_assess` không còn được offer thì phiên bị từ
   chối như một thay đổi giữa chừng, không ghi gì, và màn vào học hiện banner cảnh
   báo riêng ("Self-check is no longer offered for this deck."), như E2
-  (BR-SRS-003, BR-STUDY-015; quyết định của chủ dự án 2026-09-28).
+  (BR-SRS-003, BR-STUDY-015; quyết định của chủ dự án 2026-09-28). Banner nói mode
+  không còn khả dụng cho deck này và mời chọn lại mode ôn; nó không gợi ý Reset
+  learning progress để mở lại (BR-MODE-010).
 - **E2 — Không còn thẻ đến hạn tại thời điểm bấm Start:** phiên bị từ chối và
   không ghi dòng nào (BR-STUDY-020, BR-STUDY-054); sheet báo lỗi như E1.
 - **E3 — Yêu cầu thiếu chiều:** không thể tạo từ UI này; use case vẫn từ chối là
@@ -93,4 +95,4 @@ Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng b�
 - [ ] **Given** một phiên `Mixed` đang chạy, **when** một thẻ quay lại hàng đợi, **then** chiều của thẻ vẫn là chiều đã gán lúc mở phiên (BR-STUDY-005, BR-MODE-015, A4).
 - [ ] **Given** không còn thẻ nào đến hạn lúc bấm Start review, **when** người dùng bấm Start, **then** phiên bị từ chối kèm banner cảnh báo, không ghi gì, và footer theo số mới (BR-STUDY-054, E2).
 - [ ] **Given** yêu cầu mở phiên `self_assess` không kèm chiều, hoặc kèm chiều cho một mode không dùng chiều, **when** hệ thống xử lý, **then** yêu cầu bị từ chối và không ghi gì (BR-MODE-013, BR-MODE-018, E3).
-- [ ] **Given** sheet chọn chiều đang mở và scheduler của root đổi sang `eight_box`, **when** người dùng bấm Start review, **then** phiên bị từ chối với `modeNotOffered`, không ghi gì, và màn vào học hiện banner cảnh báo riêng thay cho lỗi mở phiên chung (E1).
+- [ ] **Given** sheet chọn chiều đang mở và scheduler của root đổi sang `eight_box`, **when** người dùng bấm Start review, **then** phiên bị từ chối với `modeNotOffered`, không ghi gì, và màn vào học hiện banner cảnh báo riêng thay cho lỗi mở phiên chung, không gợi ý Reset learning progress (BR-MODE-010, E1).

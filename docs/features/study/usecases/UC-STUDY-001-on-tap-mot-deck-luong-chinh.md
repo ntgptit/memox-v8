@@ -2,7 +2,7 @@
 id: UC-STUDY-001
 title: Ôn tập một deck — luồng chính
 status: ready
-rules: [BR-CARD-009, BR-DECK-024, BR-MODE-002, BR-MODE-003, BR-MODE-004, BR-MODE-006, BR-MODE-009, BR-MODE-011, BR-MODE-012, BR-SRS-003, BR-SRS-008, BR-SRS-009, BR-SRS-010, BR-SRS-011, BR-SRS-012, BR-SRS-014, BR-SRS-015, BR-SRS-016, BR-SRS-017, BR-SRS-018, BR-SRS-019, BR-SRS-025, BR-SRS-026, BR-STUDY-002, BR-STUDY-003, BR-STUDY-004, BR-STUDY-005, BR-STUDY-006, BR-STUDY-007, BR-STUDY-008, BR-STUDY-009, BR-STUDY-010, BR-STUDY-012, BR-STUDY-013, BR-STUDY-014, BR-STUDY-015, BR-STUDY-017, BR-STUDY-018, BR-STUDY-019, BR-STUDY-020, BR-STUDY-021, BR-STUDY-022, BR-STUDY-023, BR-STUDY-024, BR-STUDY-044, BR-STUDY-045, BR-STUDY-051, BR-STUDY-052, BR-STUDY-053, BR-STUDY-054, BR-STUDY-055, BR-STUDY-056, BR-STUDY-057, BR-STUDY-059, BR-STUDY-060, BR-STUDY-061, BR-STUDY-069, BR-STUDY-071, BR-STUDY-072, BR-STUDY-073, BR-STUDY-074, BR-STUDY-078, BR-STUDY-079, BR-STUDY-080, BR-STUDY-081, BR-STUDY-082]
+rules: [BR-CARD-009, BR-DECK-024, BR-MODE-002, BR-MODE-003, BR-MODE-004, BR-MODE-006, BR-MODE-007, BR-MODE-009, BR-MODE-011, BR-MODE-012, BR-SRS-003, BR-SRS-008, BR-SRS-009, BR-SRS-010, BR-SRS-011, BR-SRS-012, BR-SRS-014, BR-SRS-015, BR-SRS-016, BR-SRS-017, BR-SRS-018, BR-SRS-019, BR-SRS-025, BR-SRS-026, BR-STUDY-002, BR-STUDY-003, BR-STUDY-004, BR-STUDY-005, BR-STUDY-006, BR-STUDY-007, BR-STUDY-008, BR-STUDY-009, BR-STUDY-010, BR-STUDY-012, BR-STUDY-013, BR-STUDY-014, BR-STUDY-015, BR-STUDY-017, BR-STUDY-018, BR-STUDY-019, BR-STUDY-020, BR-STUDY-021, BR-STUDY-022, BR-STUDY-023, BR-STUDY-024, BR-STUDY-044, BR-STUDY-045, BR-STUDY-051, BR-STUDY-052, BR-STUDY-053, BR-STUDY-054, BR-STUDY-055, BR-STUDY-056, BR-STUDY-057, BR-STUDY-058, BR-STUDY-059, BR-STUDY-060, BR-STUDY-061, BR-STUDY-069, BR-STUDY-071, BR-STUDY-072, BR-STUDY-073, BR-STUDY-074, BR-STUDY-078, BR-STUDY-079, BR-STUDY-080, BR-STUDY-081, BR-STUDY-082]
 code: [lib/features/study/domain/usecases/watch_study_entry_use_case.dart, lib/features/study/domain/usecases/open_learning_session_use_case.dart, lib/features/study/domain/usecases/open_review_session_use_case.dart, lib/features/study/domain/usecases/watch_study_session_use_case.dart, lib/features/study/domain/usecases/answer_study_turn_use_case.dart, lib/features/study/domain/usecases/reveal_recall_answer_use_case.dart, lib/features/study/domain/usecases/save_recall_time_use_case.dart, lib/features/study/domain/usecases/show_fill_hint_use_case.dart, lib/features/study/domain/usecases/abandon_study_session_use_case.dart, lib/features/study/domain/usecases/resume_study_session_use_case.dart, lib/features/study/domain/usecases/abandon_stale_sessions_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -30,7 +30,8 @@ do người dùng chọn và cập nhật lịch. Chúng không bao giờ trộn
 3. **Chọn Học mới** — hệ thống lấy tối đa `card_limit` thẻ chưa học, theo
    `new_card_order` của tùy chọn hiệu lực (BR-STUDY-056, BR-STUDY-057), rồi tạo
    `study_session` với `session_kind = 'learning'` và chuỗi stage của thuật toán
-   (BR-MODE-003, BR-MODE-004). Người dùng **không chọn** stage.
+   (BR-MODE-003, BR-MODE-004) — chuỗi do thuật toán khai báo qua `stageSequence`,
+   UI không hardcode (BR-MODE-007). Người dùng **không chọn** stage.
 4. **Chọn Ôn tập** — hệ thống hiện các mode chấm điểm của thuật toán: `eight_box`
    → `match`, `guess`, `recall`, `fill`; `sm2` → `self_assess` (BR-STUDY-055). `browse`
    không có mặt. Mỗi mode hiện **số thẻ của riêng nó** (BR-STUDY-044) — `fill` chỉ nhận
@@ -58,7 +59,9 @@ do người dùng chọn và cập nhật lịch. Chúng không bao giờ trộn
 10. **Chỉ ở phiên `learning`:** thẻ đi hết **stage cuối mà chính nó tham gia** — stage
     bỏ qua nó theo BR-STUDY-071 không được tính — ⇒ hệ thống đặt `learned_at`
     và khởi tạo lịch ở mức thấp nhất — `eight_box` box 1, `sm2` interval 1 — với
-    `due_at` là đầu ngày học kế tiếp (BR-STUDY-053, BR-STUDY-074). Đây là **một sự kiện,
+    `due_at` là đầu ngày học kế tiếp (BR-STUDY-053, BR-STUDY-074). Thẻ có
+    `learned_at` luôn có `due_at`, và thẻ chưa có `learned_at` không có lượt
+    `scheduled` nào (BR-STUDY-058). Đây là **một sự kiện,
     không phải một lượt đánh giá**, nên không có `action` nào được ghi.
 11. Nếu đây là thẻ **đầu tiên hoàn tất chuỗi học mới** của root ở generation này,
     hệ thống đặt `first_answered_at` → thuật toán bị khoá từ đây (BR-SRS-003).
