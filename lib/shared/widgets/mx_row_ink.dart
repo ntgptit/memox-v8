@@ -24,7 +24,8 @@ class MxRowInk extends StatefulWidget {
   final bool isEnabled;
 
   /// False leaves the dim to the child, which dims only what is unavailable
-  /// (MxSettingsRow keeps its reason readable); taps stay blocked.
+  /// (MxSettingsRow and MxListRow keep their reason readable); taps stay
+  /// blocked.
   final bool shouldDimWhenDisabled;
 
   @override
