@@ -84,6 +84,9 @@ void main() {
     );
 
     expect(find.text(_en.importDeckClashNote), findsOneWidget);
+    // Undecided is neither New nor Existing: only the default deck is New.
+    expect(find.text(_en.importDeckNew), findsOneWidget);
+    expect(find.text(_en.importDeckExisting), findsNothing);
     await tester.tap(find.text(_en.importDeckAddToExisting));
     expect(chosen, [(1, ImportSectionChoice.addToExisting)]);
   });
@@ -100,7 +103,7 @@ void main() {
       'error (U4)', (tester, env) async {
     await _pump(tester, env, _preview(defaultName: 'part 1'));
 
-    expect(find.bySemanticsLabel(_en.importDeckNameLabel), findsOneWidget);
+    expect(find.text(_en.importDeckNameLabel), findsOneWidget);
     expect(find.text(_en.importDeckNameTaken), findsOneWidget);
   });
 

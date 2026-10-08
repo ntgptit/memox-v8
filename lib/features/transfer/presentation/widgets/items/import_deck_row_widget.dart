@@ -51,6 +51,7 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
     final group = widget.group;
     final clash = group.clash;
     final isExisting = group.destination is IntoExistingDeck;
+    final isUndecided = group.destination is Undecided;
     final problem = group.nameProblem;
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -61,7 +62,15 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: AppSpacing.control,
         children: [
-          if (group.isDefault)
+          if (group.isDefault) ...[
+            // MxTextField's label is for TalkBack; the caller shows its own
+            // (critique 2026-10-08, F2).
+            ExcludeSemantics(
+              child: Text(
+                l10n.importDeckNameLabel,
+                style: styles.rowDescription,
+              ),
+            ),
             MxTextField(
               controller: _name,
               label: l10n.importDeckNameLabel,
@@ -69,18 +78,21 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
                   ? null
                   : l10n.importNameProblem(problem),
               onChanged: widget.onRename,
-            )
-          else
+            ),
+          ] else
             Text(group.name, style: styles.contentTitle),
           Row(
             spacing: AppSpacing.control,
             children: [
-              MxBadge(
-                label: isExisting
-                    ? l10n.importDeckExisting
-                    : l10n.importDeckNew,
-                tone: isExisting ? MxBadgeTone.neutral : MxBadgeTone.primary,
-              ),
+              // Undecided is neither New nor Existing until the user
+              // chooses (critique 2026-10-08, F1).
+              if (!isUndecided)
+                MxBadge(
+                  label: isExisting
+                      ? l10n.importDeckExisting
+                      : l10n.importDeckNew,
+                  tone: isExisting ? MxBadgeTone.neutral : MxBadgeTone.primary,
+                ),
               Expanded(
                 child: Text(
                   widget.willWrite == 0
