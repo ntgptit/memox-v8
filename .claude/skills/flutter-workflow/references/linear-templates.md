@@ -54,7 +54,7 @@ Priority is the order of work (ADR-021), so it is never left empty.
 |---|---|---|
 | Task | `Feature` | one task of a plan, or new behaviour backed by a BR/UC |
 | Bug | `Bug` | behaviour that contradicts a BR, UC, `DESIGN.md` or a test |
-| Chore/Docs | `Improvement` | documentation, tooling, clean-up, test infrastructure |
+| Chore/Docs | `Improvement` | an improvement to existing behaviour or UI, documentation, tooling, clean-up, test infrastructure |
 
 The `WBS` label says which layer; the kind label says what sort of work.
 
@@ -195,15 +195,57 @@ những gì đã loại trừ và giả thuyết còn lại>
 
 **Chore/Docs**
 
+An improvement carries sections II to V of the Bug template, numbered the same
+so that "mục II" means check similar on every issue (owner, 2026-10-08,
+DEV-316). It has no section I: the reason for the work is under Bằng chứng.
+The sections are never dropped; one that cannot be filled yet says why.
+
 ```markdown
 ## Việc cần làm
-<làm gì>
+<làm gì, ở đâu>
 
 ## Bằng chứng
-- `<đường dẫn>`: <vì sao cần làm>
+- `<đường dẫn>`: <vì sao cần làm; hiện trạng và kết quả mong muốn>
+
+## II. Check similar
+1. Quan điểm define đối tượng check: <điều được cải tiến, dùng làm tiêu chí:
+   pattern, component, quy ước; chỗ nào có cùng điều đó thì cần cùng cải tiến>
+2. Đối tượng check: <phạm vi đã quét (thư mục, symbol, widget, query, tài
+   liệu) và cách tìm, theo symbol và theo hành vi>
+3. Nội dung check: <với mỗi đối tượng, kiểm điều gì để biết nó cần cùng cải
+   tiến>
+4. Kết quả check:
+
+| Chỗ | Loại | Xử lý |
+|---|---|---|
+| `<file:line>` | cùng vấn đề / giống nhưng không cần / đáng ngờ, đã kiểm / không liên quan | làm trong PR này / DEV-<n> / không cần |
+
+## III. Corrective action
+- Chỗ làm: <chủ sở hữu dùng chung thấp nhất; nếu làm cục bộ thì vì sao tầng
+  dùng chung không phải chủ sở hữu>
+- Thay đổi: <làm gì>
+- Test: <test nào chứng minh cải tiến>
+
+## IV. Check non degrade
+- Nơi dùng phần đã đổi: <caller, màn hình, widget, query, RPC, tài liệu>
+- Bằng chứng: <test của từng nơi, `dod_check.sh`, goldens khi đổi UI>
+- Kết quả: <không có hồi quy; không test nào bị làm yếu hay xoá>
+- Chạy lại: <có/không; làm thêm sau khi check thì chạy lại cả II và IV>
+
+## V. Output
+- PR, commit: <pull request số n của `ntgptit/memox-v8`, `<sha7>`>
+- Kiểm chứng: <`dod_check.sh` và số test, test riêng, golden review>
+- Trạng thái cuối: <`VERIFIED` / `BLOCKED` / `UNRESOLVED`, kèm lý do nếu không
+  phải `VERIFIED`>
+- Rủi ro còn lại: <hoặc "không có">
 
 ## Điều kiện xong
-- [ ] <kết quả kiểm được, ví dụ `python3 tools/docs/check.py` PASS>
+- [ ] II: mọi chỗ tìm được đã phân loại; chỗ cùng vấn đề đã làm, chỗ khác đã
+  mở sub-issue
+- [ ] III: làm ở chủ sở hữu dùng chung thấp nhất, có test chứng minh
+- [ ] IV: mọi nơi dùng phần đã đổi vẫn đúng, đã chạy lại nếu làm thêm
+- [ ] V: trạng thái cuối `VERIFIED`, `dod_check.sh` PASS
+- [ ] <kết quả kiểm được riêng của việc này, ví dụ `python3 tools/docs/check.py` PASS>
 ```
 
 ## Read
@@ -223,9 +265,9 @@ is a comment; edit the description only to correct it, never to log progress.
 
 **Done** (after the merge into `master`). A bug fix or an improvement always
 carries the two check lines and the final state (CLAUDE.md, "Fixing bugs and
-improving"); only the root-cause line is dropped when the work is not a bug. A
-bug's lines point at sections I to V of its description, which hold the
-detail.
+improving"); only the root-cause line is dropped when the work is not a bug.
+The lines point at the description's sections, which hold the detail: I to V
+on a bug, II to V on an improvement.
 An issue whose state is `BLOCKED` or `UNRESOLVED` is not Done: it stays open
 with a Bị chặn comment.
 

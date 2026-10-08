@@ -35,7 +35,8 @@ without re-checking.
 - [ ] Both checks, with their consumer and hit lists, and the final state
       (`VERIFIED`, `BLOCKED` or `UNRESOLVED`) written in the PR and in the
       issue's Done comment; a bug's issue has sections I to V of the Bug
-      template filled ([linear-templates.md](linear-templates.md)).
+      template filled, an improvement's issue sections II to V of the
+      Chore/Docs template ([linear-templates.md](linear-templates.md)).
       `VERIFIED` only when every line above holds.
 
 ## Code
