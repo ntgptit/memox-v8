@@ -1,6 +1,6 @@
 # MemoX V8 — Import from the Library
 
-Status: design approved in chat 2026-10-08, spec in owner review · Path: architectural
+Status: approved 2026-10-08 · Impeccable critique rulings added (§4.1) · Path: architectural
 
 ## 1. Intent
 
@@ -44,7 +44,7 @@ Success means:
 | # | Decision | Source |
 |---|---|---|
 | D1 | The target deck is created **before** the wizard opens, then the existing wizard opens on it. If the person cancels the wizard, the created decks stay, just as if they had been made by hand | owner 2026-10-08 |
-| D2 | Two entry points: the empty Library's tertiary action "Import cards from a file", and an Import icon in the Library app bar when it holds decks (Starter decks · Tags · Trash · Import) | owner 2026-10-08 |
+| D2 | Two entry points: the empty Library's tertiary action "Import cards from a file", and an Import icon in the Library app bar, shown whether or not it holds decks (Starter decks · Import · Tags · Trash; critique C3) | owner 2026-10-08 |
 | D3 | One dialog, "Import target", serves both entry points. **Deck** is "New deck" or an existing root deck. **Sub-deck** is "New" (a name) or "Existing" (an eligible sub-deck of that root) | owner 2026-10-08 |
 | D4 | With "New deck", or an empty Library, or a root with no eligible sub-deck, the sub-deck is "New" only, and the segmented control is hidden | owner 2026-10-08 |
 | D5 | A new sub-deck sits directly under the chosen root (level 2). Creating one deeper is out of scope | this spec |
@@ -54,25 +54,29 @@ Success means:
 
 ## 4. The dialog
 
-`MxDialog`, title "Import cards", subtitle "Cards go into a sub-deck. Pick one, or name a
-new one." Its content, top to bottom:
+`MxDialog`, title "Import cards", body "Cards go into a sub-deck." (`MxDialog` has a title
+and a body, no subtitle). Its content, top to bottom:
 
-1. **Deck.** An `MxChipTrigger` labelled "Deck", reading "New deck" or the root's name.
-   It opens a bottom sheet of options: "New deck" first, then the root decks in Library
-   order. The empty Library has no roots, so the chip is hidden and the dialog is in
-   "New deck" mode.
+1. **Deck.** An `MxSettingsRow` value row: title "Deck", the current value as its
+   subtitle ("New deck" or the root's name), a chevron. A tap opens an
+   `MxDeckPickerSheet`: "New deck" first, then the root decks in the Library's current
+   order. The first root is chosen when the dialog opens. The empty Library has no roots,
+   so the row is hidden and the dialog is in "New deck" mode.
 2. **With "New deck":** the name field ("Deck name") and the review algorithm
    `MxSegmentedTray` with its note, exactly as in the Create deck dialog. Nothing is
    chosen up front (BR-SRS-001); Continue without an algorithm says "Choose how the cards
    are reviewed."
-3. **Sub-deck.** When the root has eligible sub-decks, an `MxSegmentedTray` offers
-   "New sub-deck" · "Existing".
-   - **New:** the name field "Sub-deck name". While the person has not edited it, it
-     follows the deck name in "New deck" mode. With an existing root it starts empty.
-   - **Existing:** an `MxChipTrigger` "Choose a sub-deck" opening the eligible sub-decks
-     of the chosen root (`unset` or `card`, any level, BR-TRANSFER-001), each named by its
-     path below the root (BR-DECK-021). Continue with none chosen says "Choose a
-     sub-deck."
+3. **Sub-deck.** When the chosen root has eligible sub-decks, a field label "Sub-deck"
+   over an `MxSegmentedTray` "New" · "Existing", whose group is labelled "Sub-deck" to
+   TalkBack. The tray starts on "Existing".
+   - **New:** the name field "Sub-deck name", empty and required. It never copies the deck
+     name.
+   - **Existing:** an `MxSettingsRow` value row, title "Sub-deck", subtitle the chosen
+     sub-deck's name or "Choose a sub-deck". It opens an `MxDeckPickerSheet` of the root's
+     eligible sub-decks (`unset` or `card`, any level, BR-TRANSFER-001), each named by its
+     path below the root (BR-DECK-021). A single eligible sub-deck is chosen when the
+     dialog opens. The row's semantics label reads the full path. Continue with none
+     chosen says "Choose a sub-deck."
 4. **Actions:** `MxSheetActions`, Cancel · Continue. Continue is disabled while the write
    runs (one at a time, as in Create deck).
 
@@ -83,6 +87,21 @@ Validation and leaving:
 - Cancel, Back or a tap outside, once something is typed or chosen, asks the Create deck
   dialog's "Discard this deck?" (UC-DECK-001 A1).
 - A write failure (`Failure`) shows the usual snackbar, and the dialog stays.
+- When a picker sheet closes, focus returns to the row that opened it.
+
+### 4.1 Impeccable critique rulings (2026-10-08)
+
+The critique scored the planned design 25/40, with two P1s
+(`.impeccable/critique/2026-10-08T04-22-07Z__…`). The owner adopted every ruling:
+
+| # | Ruling |
+|---|---|
+| C1 | Deck and existing sub-deck are picked through `MxSettingsRow` value rows, not `MxChipTrigger`, which is the ghost chip for sort and filter menus (DESIGN.md: a row that opens a sheet names the current value in its subtitle) |
+| C2 | The new sub-deck's name starts empty and is required. It never follows the deck name, which would be a silent coupling hidden under the keyboard |
+| C3 | The app bar reads Starter decks · Import · Tags · Trash, so Trash stays at the edge. Import shows in the empty and the populated Library alike, so the bar never shifts |
+| C4 | Defaults: the first root in Library order; the tray on "Existing" when an eligible sub-deck exists; a single eligible sub-deck chosen |
+| C5 | TalkBack: the tray's group is labelled "Sub-deck"; the sub-deck row reads the full path; focus returns to the row after a sheet |
+| C6 | The dialog body is one line, "Cards go into a sub-deck." The empty Library's body copy does not change: three labelled buttons and the footnote already cover import |
 
 ## 5. Data
 
@@ -107,7 +126,7 @@ Validation and leaving:
 | Where | What | Copy |
 |---|---|---|
 | Library, `rootEmpty` | `MxEmptyState` tertiary action, after "Create deck" and "Browse starter decks" | "Import cards from a file" (`deckUnsetImport`) |
-| Library with decks | 4th app bar `MxIconButton`, after Trash; hidden in reorder mode, as the others are | icon `AppIcons.fileUp` (the import glyph of screen 11), semantic label "Import cards" |
+| Library app bar, empty or with decks | `MxIconButton` between Starter decks and Tags (C3); hidden in reorder mode, as the others are | icon `AppIcons.fileUp` (the import glyph of screen 11), semantic label "Import cards" |
 
 The FAB, the deck rows and their action sheets do not change.
 
@@ -130,10 +149,11 @@ The FAB, the deck rows and their action sheets do not change.
   every tree, with paths.
 - Use cases: the three branches of `CreateImportTargetUseCase`.
 - Widget: the dialog in each mode (empty Library, new deck, existing root with and
-  without eligible sub-decks, existing sub-deck); the sub-deck name following the deck
-  name until edited; the missing-algorithm and missing-sub-deck messages; discard on
-  leave; the empty Library's tertiary action and the app bar icon calling
-  `onImportCards` with the right id.
+  without eligible sub-decks, existing sub-deck); the C4 defaults; the empty required
+  sub-deck name; the missing-algorithm and missing-sub-deck messages; discard on leave;
+  the C5 semantics (tray group label, full-path row label, focus back on the row); the
+  empty Library's tertiary action and the app bar icon calling `onImportCards` with the
+  right id.
 - Goldens (light, dark): `library_import_target_new` (empty Library mode) and
   `library_import_target_existing` (existing root, Existing chosen). `library_empty_*`
   and `library_decks_*` are updated, so the owner gets the golden review page.
@@ -149,6 +169,6 @@ The FAB, the deck rows and their action sheets do not change.
 
 | Risk | Mitigation | Rollback |
 |---|---|---|
-| A 4th app bar icon crowds the large app bar at 360 dp or large text | Golden at 360 dp. The Impeccable critique before the plan rules on the placement | Move Import into the empty state only, and drop the icon |
+| A 4th app bar icon crowds the app bar at 360 dp | Measured by the critique: about 120 dp stays for the title, which needs about 78 ("Thư viện" fits). Goldens at 360 dp | Move Import into the empty state only, and drop the icon |
 | The dialog grows too tall at large text scale | It scrolls inside `MxDialog`, as Create deck does. The text-scale widget test covers it | — |
 | Empty decks pile up when people cancel the wizard | Accepted (D1). They are visible and deletable like any deck | Switch to creating the target at commit time (a later spec) |
