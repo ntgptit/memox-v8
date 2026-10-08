@@ -103,7 +103,7 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
               ),
             ],
           ),
-          if (clash != null && clash.canHoldCards) ...[
+          if (clash != null && clash.canHoldCards && group.hasCards) ...[
             MxNote.hint(text: l10n.importDeckClashNote),
             MxSegmentedTray<ImportSectionChoice>(
               segments: [

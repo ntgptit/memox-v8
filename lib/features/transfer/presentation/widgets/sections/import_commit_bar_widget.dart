@@ -59,7 +59,9 @@ class ImportCommitBarWidget extends StatelessWidget {
       CardImportStep.preview => (
         l10n.importCommitAction(draft.willWrite),
         AppIcons.download,
-        draft.canCommit ? onCommit : null,
+        draft.canCommit && !isStalePreviewProblem(draft.problem)
+            ? onCommit
+            : null,
         // The button states the count; the caption only says why it is
         // locked (critique 2026-09-30 part 3b; spec 2026-10-08 U6).
         switch (draft.preview) {

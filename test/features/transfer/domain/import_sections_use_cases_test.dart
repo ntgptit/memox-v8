@@ -172,4 +172,27 @@ void main() {
       [('Uncategorized', 1)],
     );
   });
+
+  test(
+    'sections into a deck at level 10 are refused at preview (E8)',
+    () async {
+      var deepest = leaf;
+      for (var level = 3; level <= DeckEntity.maxDepth; level++) {
+        deepest = await decks.sub(deepest.id, 'L$level');
+      }
+      final table = _ok(await read(const PastedSource(sheet)));
+
+      expect(
+        _reason(
+          await preview(
+            deckId: deepest.id,
+            table: table,
+            mapping: faces,
+            hasHeaderRow: true,
+          ),
+        ),
+        TransferRejection.depthExceeded,
+      );
+    },
+  );
 }

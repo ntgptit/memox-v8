@@ -1,12 +1,14 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_import_section_model.dart';
+import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
@@ -41,6 +43,28 @@ List<CardImportSectionResult> _ok(
 CardRejection _reason(
   Outcome<List<CardImportSectionResult>, CardRejection> result,
 ) => (result as Rejected<List<CardImportSectionResult>, CardRejection>).reason;
+
+/// Fails the second insertCards call, after a first section is written.
+final class _SecondInsertFails implements CardRepository {
+  _SecondInsertFails(this._inner);
+
+  final CardRepository _inner;
+  var _calls = 0;
+
+  @override
+  Future<Outcome<List<String>, CardRejection>> insertCards({
+    required String deckId,
+    required List<CardDraft> drafts,
+    required DateTime now,
+  }) async {
+    _calls++;
+    if (_calls == 2) throw StateError('second section not written');
+    return _inner.insertCards(deckId: deckId, drafts: drafts, now: now);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 void main() {
   late AppDatabase db;
@@ -212,5 +236,73 @@ void main() {
         .map((row) => row.read<String>('front'))
         .get();
     expect(fronts, ['a1', 'a2', 'a3']);
+  });
+
+  test('a write that fails in a later section rolls every section back '
+      '(BR-TRANSFER-004)', () async {
+    final failing = CardTransferRepositoryImpl(
+      db,
+      _SecondInsertFails(
+        CardRepositoryImpl(
+          db,
+          ScheduleRepositoryImpl(db, now: _now),
+          TagRepositoryImpl(db, now: _now),
+          DeckTreeDataSource(db),
+          now: _now,
+        ),
+      ),
+      decks,
+    );
+
+    await expectLater(
+      failing.importSections(
+        targetDeckId: root.id,
+        sections: [
+          _section('A', ['a']),
+          _section('B', ['b']),
+        ],
+        includeDuplicates: false,
+      ),
+      throwsA(isA<Failure>()),
+    );
+    expect(await _count(db, 'card'), 0);
+    expect(await children(root.id), isEmpty);
+  });
+
+  test('a target at level 10 cannot take sections (BR-DECK-001)', () async {
+    var deepest = root;
+    for (var level = 2; level <= DeckEntity.maxDepth; level++) {
+      deepest = await decks.sub(deepest.id, 'L$level');
+    }
+
+    final result = await cards.importSections(
+      targetDeckId: deepest.id,
+      sections: [
+        _section('A', ['x']),
+      ],
+      includeDuplicates: false,
+    );
+
+    expect(_reason(result), CardRejection.depthExceeded);
+  });
+
+  test('an existing deck that went to the Trash or now holds decks refuses '
+      'the import (BR-TRANSFER-001)', () async {
+    final trashed = await decks.sub(root.id, 'Gone');
+    await decks.deleteDeck(deckId: trashed.id);
+    final grown = await decks.sub(root.id, 'Grown');
+    await decks.sub(grown.id, 'Child');
+
+    for (final id in [trashed.id, grown.id]) {
+      final result = await cards.importSections(
+        targetDeckId: root.id,
+        sections: [
+          _section('X', ['a'], into: id),
+        ],
+        includeDuplicates: false,
+      );
+      expect(_reason(result), CardRejection.sectionTargetChanged);
+    }
+    expect(await _count(db, 'card'), 0);
   });
 }

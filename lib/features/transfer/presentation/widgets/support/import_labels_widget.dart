@@ -12,6 +12,14 @@ bool isImportTargetProblem(TransferRejection? problem) =>
     problem == TransferRejection.sectionsNeedDeckContainer ||
     problem == TransferRejection.depthExceeded;
 
+/// Whether a refusal that comes back to the preview, from the commit or
+/// from Preview again, leaves it stale: it says why and locks Import until
+/// the preview is read again (E8, E9, final review of DEV-289).
+bool isStalePreviewProblem(TransferRejection? problem) =>
+    isImportTargetProblem(problem) ||
+    problem == TransferRejection.sectionTargetChanged ||
+    problem == TransferRejection.emptySource;
+
 /// The import screen's copy for its domain values (kit 11).
 extension ImportLabels on AppLocalizations {
   String importStepName(CardImportStep step) => switch (step) {

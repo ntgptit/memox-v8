@@ -183,4 +183,27 @@ void main() {
       [('Uncategorized', true, const IntoNewDeck())],
     );
   });
+
+  test('a clash with nothing to write needs no choice (final review)', () {
+    final preview = _plan(
+      [
+        ['Term', 'Meaning'],
+        ['*Part 1', ''],
+        ['*Part 2', ''],
+        ['a', 'b'],
+      ],
+      _root(
+        children: [
+          const CardImportChild(
+            id: 'p1',
+            name: 'Part 1',
+            canHoldCards: true,
+            pairs: {},
+          ),
+        ],
+      ),
+    ).preview(defaultDeckName: 'Uncategorized', choices: const {});
+
+    expect((preview.undecided, preview.canCommit), (0, true));
+  });
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
@@ -51,10 +50,10 @@ class ImportPreviewSectionWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (problem == TransferRejection.sectionTargetChanged) ...[
+        if (problem != null && isStalePreviewProblem(problem)) ...[
           MxInlineBanner(
             tone: MxBannerTone.warning,
-            title: l10n.importProblem(problem!).title,
+            title: l10n.importProblem(problem).title,
             message: l10n.importProblem(problem).body,
             actions: [
               MxButton(

@@ -141,6 +141,14 @@ final class ImportGroup {
 
   int willWrite({required bool includeDuplicates}) =>
       rowsToWrite(includeDuplicates: includeDuplicates).length;
+
+  /// Whether a row could be written here, under either duplicate policy: a
+  /// group without one makes no deck, so its clash needs no choice.
+  bool get hasCards =>
+      rows.any((row) => row.kind == ImportRowKind.ready || row.isDuplicate);
+
+  /// A clash still to be decided for a group that may write (U3, U6).
+  bool get needsChoice => destination is Undecided && hasCards;
 }
 
 /// Every data row with its status, grouped by the deck it goes to, and the
@@ -179,8 +187,7 @@ final class ImportPreview {
   bool get isEmpty => blank == total;
 
   /// Groups whose clash is still to be decided (spec 2026-10-08 U6).
-  int get undecided =>
-      groups.where((group) => group.destination is Undecided).length;
+  int get undecided => groups.where((group) => group.needsChoice).length;
 
   bool get hasNameProblem => groups.any((group) => group.nameProblem != null);
 

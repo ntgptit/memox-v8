@@ -38,14 +38,14 @@ void main() {
   });
   tearDown(() => db.close());
 
-  ProviderContainer container() {
+  ProviderContainer container({String sheet = _sheet}) {
     final result = ProviderContainer(
       overrides: [
         databaseProvider.overrideWithValue(db),
         importFilePickerProvider.overrideWithValue(
           () async => (
             name: 'vocab.csv',
-            bytes: Uint8List.fromList(utf8.encode(_sheet)),
+            bytes: Uint8List.fromList(utf8.encode(sheet)),
           ),
         ),
       ],
@@ -129,4 +129,21 @@ void main() {
       );
     },
   );
+
+  test('renaming the default deck clears its choice and finds its new clash '
+      '(U4)', () async {
+    await decks.sub(root.id, 'Uncategorized');
+    final c = container(sheet: 'Term,Meaning\nloose,x\n*New,\na,b\n');
+    final wizard = await toPreview(c);
+    expect(draftOf(c).preview!.undecided, 1);
+
+    wizard
+      ..chooseSection(0, ImportSectionChoice.addToExisting)
+      ..renameDefaultDeck('Misc');
+    expect(draftOf(c).sectionChoices, isEmpty);
+    expect(draftOf(c).preview!.undecided, 0);
+
+    wizard.renameDefaultDeck('uncategorized');
+    expect(draftOf(c).preview!.undecided, 1);
+  });
 }
