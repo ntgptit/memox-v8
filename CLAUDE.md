@@ -84,7 +84,8 @@ project goes into the repo through a PR.
   on their own are not a review.
 - Hooks are repo-owned. [.claude/hooks/README.md](.claude/hooks/README.md)
   lists them and holds the subagent rules they enforce: every subagent on
-  Sonnet except the final whole-branch review, which runs on Opus, and a
+  Sonnet except the final whole-branch review and a root-cause investigation,
+  which run on Opus, and a
   `Workflow` whose token floor reaches 300k offered to the owner first. CI is paused and runs by hand; the local gate is what counts.
 
 ## Progress on Linear
@@ -153,6 +154,46 @@ asked. Without the connector, tell the owner and record progress nowhere else.
 - **No speculative structure.** No layers or folders "for later", no
   pass-through layers, no single-implementation interfaces without a concrete
   architectural reason.
+
+## Fixing bugs and improving
+
+The app is built; the work now is fixing and improving it. A fix that silences
+the symptom where it was reported is not a fix. These bars hold for every bug
+fix and every improvement, whoever reports it and however small it looks.
+
+- **Root cause, proven.** Every bug goes through
+  `superpowers:systematic-debugging`. A fix lands only on a root cause stated
+  as a mechanism: where (`file:line`), why it happens, why the change removes
+  it, and which reported symptoms it explains. A test that fails before the
+  fix and passes after pins it.
+  - Cost never ends the search: tokens and time are spent freely. Reproduce,
+    instrument, read the code underneath, try hypothesis after hypothesis, and
+    stop only when the cause is proven and the explanation leaves nothing
+    unexplained.
+  - An investigation may run in an Opus subagent whose description starts
+    `Root-cause investigation` ([hooks](.claude/hooks/README.md)).
+  - If the cause cannot be proven, tell the owner what was ruled out and what
+    is left. Never ship a guess, a retry, a guard or a delay that hides it.
+- **Fix at the lowest shared owner.** When the cause lives, or belongs, in
+  shared code (`lib/core/`, `lib/shared/`, an `Mx*` widget, a theme slot, a
+  `.drift` query, an RPC, a base class), fix it there so every consumer
+  inherits the fix. A per-screen patch over a shared defect is not accepted.
+  Adding or promoting code into `lib/core/` or `lib/shared/` still goes to
+  the owner ([below](#asking-the-owner)), with the shared fix as the
+  recommended option.
+- **Check degrade and check similar, every time.** Both run after every fix
+  and every improvement, and both are written into the PR and the issue's
+  Done comment ([linear-templates.md](.claude/skills/flutter-workflow/references/linear-templates.md)):
+  - **Check degrade:** list every consumer of what changed (callers, screens,
+    widgets, queries, RPCs) and prove each still behaves: its tests, the gate,
+    and the goldens when UI changed. Nothing that worked before may break.
+  - **Check similar:** search the codebase for the same mechanism, not the
+    same symptom: the pattern, call or misuse that caused it. A hit with the
+    same root cause is fixed in the same PR (the shared fix usually covers
+    it); a hit with a different root cause becomes a sub-issue, named in the
+    PR.
+- Moving a fix down to its shared owner and fixing same-cause hits are in
+  scope, never scope creep.
 
 ## Asking the owner
 

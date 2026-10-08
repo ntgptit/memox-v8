@@ -9,9 +9,24 @@ without re-checking.
 - [ ] Acceptance criteria from the Linear issue all pass.
 - [ ] No refactoring outside the stated scope leaked in. If you found something
       that needs fixing, open a separate Linear issue (`DEV-n`) rather than
-      widening this one.
+      widening this one. Moving a fix down to its shared owner and fixing the
+      same-cause hits of check similar are in scope (below).
 - [ ] Existing architecture was not broken to make this fit. If the architecture
       genuinely blocked the task, that is a design conversation, not a workaround.
+
+## Bug fix or improvement (CLAUDE.md, "Fixing bugs and improving")
+- [ ] Root cause proven through `superpowers:systematic-debugging` and written
+      as a mechanism: `file:line`, why it happens, why the change removes it,
+      which symptoms it explains. No guess, retry, guard or delay that hides it.
+- [ ] A regression test fails before the fix and passes after it.
+- [ ] The fix sits at the lowest shared owner of the cause, so every consumer
+      inherits it; no per-screen patch over a shared defect.
+- [ ] **Check degrade** done: every consumer of what changed listed, and each
+      proven unchanged (its tests, the gate, goldens when UI changed).
+- [ ] **Check similar** done: the codebase searched for the same mechanism;
+      same-cause hits fixed in this PR, other-cause hits filed as sub-issues.
+- [ ] Both checks, with their consumer and hit lists, written in the PR and in
+      the issue's Done comment.
 
 ## Code
 - [ ] `dart format` produces no changes — run `check_format.sh`, not

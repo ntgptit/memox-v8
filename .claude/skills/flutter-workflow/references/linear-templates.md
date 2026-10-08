@@ -138,8 +138,16 @@ section with nothing to say is deleted, not left empty, except
 ## Bằng chứng
 - <log, ảnh, `file:line`, test đang fail>
 
+## Nguyên nhân gốc
+<điền khi đã chứng minh, qua `superpowers:systematic-debugging`: cơ chế ở
+`file:line`, vì sao xảy ra, vì sao bản sửa loại bỏ nó, chủ sở hữu dùng chung
+nơi sửa; chưa chứng minh thì ghi "chưa rõ" và những gì đã loại trừ>
+
 ## Điều kiện xong
+- [ ] Nguyên nhân gốc đã chứng minh và sửa ở chủ sở hữu dùng chung thấp nhất
 - [ ] Có test hồi quy fail trước khi sửa, pass sau khi sửa
+- [ ] Check degrade: mọi nơi dùng phần đã đổi vẫn đúng
+- [ ] Check similar: chỗ cùng gốc đã sửa, chỗ khác gốc đã mở sub-issue
 - [ ] `dod_check.sh` PASS
 ```
 
@@ -171,7 +179,9 @@ PR drives it: Backlog when blocked, Canceled, Duplicate, and Done for an epic
 once every sub-issue is Done or Canceled (an epic has no PR). Every update below
 is a comment; edit the description only to correct it, never to log progress.
 
-**Done** (after the merge into `master`)
+**Done** (after the merge into `master`). A bug fix or an improvement always
+carries the two check lines (CLAUDE.md, "Fixing bugs and improving"); only the
+root-cause line is dropped when the work is not a bug.
 
 ```markdown
 Done: đã merge vào `master`.
@@ -182,6 +192,10 @@ Done: đã merge vào `master`.
   - `dod_check.sh`: <kết quả, số test>
   - <test riêng, `run_auth_it.sh`, `check.py`…>
   - Golden review: <link trang review, hoặc "không đổi golden">
+- Nguyên nhân gốc: <cơ chế, `file:line`; bỏ dòng nếu không phải bug>
+- Check degrade: <những nơi dùng phần đã đổi và bằng chứng mỗi nơi vẫn đúng>
+- Check similar: <đã tìm theo cơ chế nào; chỗ cùng gốc đã sửa; chỗ khác gốc
+  thành DEV-<n>; hoặc "không có chỗ nào khác">
 - Bị cắt: <phần, lý do> (bỏ dòng nếu không có)
 - Làm sau: DEV-<n>, DEV-<m> (bỏ dòng nếu không có)
 ```
