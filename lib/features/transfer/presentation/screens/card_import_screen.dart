@@ -168,6 +168,12 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
         (l10n.importAnother, _wizard.startOver),
         (l10n.importBackToDeck, widget.onClose, AppIcons.back),
       ),
+      // The deck now holds the decks the file named: it has no card list
+      // to open (spec 2026-10-08 U8).
+      CardImportDone(summary: final summary) when summary.decks.isNotEmpty => (
+        (l10n.importAnother, _wizard.startOver),
+        (l10n.importBackToDeck, widget.onClose, AppIcons.back),
+      ),
       CardImportDone() => (
         (l10n.importAnother, _wizard.startOver),
         (l10n.importViewCards, widget.onViewCards, AppIcons.cardDeck),
