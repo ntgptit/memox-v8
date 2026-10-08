@@ -3,6 +3,7 @@ import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
+import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/domain/models/source_table_model.dart';
 import 'package:memox/features/transfer/domain/models/tags_cell_model.dart';
@@ -17,6 +18,7 @@ final class ImportRow {
     this.draft,
     this.reason,
     this.firstRowNumber,
+    this.deckNameReason,
   });
 
   /// The row's number in the source, the header row counted.
@@ -31,6 +33,10 @@ final class ImportRow {
 
   /// For a duplicate within the source: the row it repeats.
   final int? firstRowNumber;
+
+  /// Why the deck this row's section names is refused (BR-TRANSFER-015,
+  /// BR-DECK-020); such a row is invalid whatever its cells hold.
+  final DeckRejection? deckNameReason;
 
   bool get isDuplicate =>
       kind == ImportRowKind.duplicateInDeck ||
@@ -77,21 +83,35 @@ ImportPreview buildImportPreview({
   required ColumnMapping mapping,
   required bool hasHeaderRow,
   required Set<CardFoldedPair> existing,
+}) => ImportPreview(
+  classifyRows(
+    table: table,
+    rowIndexes: [
+      for (var index = hasHeaderRow ? 1 : 0; index < table.rows.length; index++)
+        index,
+    ],
+    mapping: mapping,
+    existing: existing,
+  ),
+);
+
+/// Each row of [rowIndexes] (indexes into [table]), in order: blank,
+/// invalid, duplicate of [existing], duplicate of an earlier row given here,
+/// ready (BR-TRANSFER-002, BR-TRANSFER-003). The mapping must be complete.
+List<ImportRow> classifyRows({
+  required SourceTable table,
+  required Iterable<int> rowIndexes,
+  required ColumnMapping mapping,
+  required Set<CardFoldedPair> existing,
 }) {
   final firstRowOf = <CardFoldedPair, int>{};
   final rows = <ImportRow>[];
-  final firstDataRow = hasHeaderRow ? 1 : 0;
-  for (var index = firstDataRow; index < table.rows.length; index++) {
+  for (final index in rowIndexes) {
     final rowNumber = index + 1;
     final cells = table.rows[index];
-    String? cell(TransferField field) {
-      final column = mapping.columnOf(field);
-      if (column == null || column >= cells.length) return null;
-      return cells[column];
-    }
+    String? cell(TransferField field) => _cellOf(cells, mapping, field);
 
-    final mapped = [for (final field in TransferField.values) cell(field)];
-    if (mapped.every((value) => value == null || value.trim().isEmpty)) {
+    if (isBlankRow(cells, mapping)) {
       rows.add(ImportRow(rowNumber: rowNumber, kind: ImportRowKind.blank));
       continue;
     }
@@ -142,5 +162,21 @@ ImportPreview buildImportPreview({
       ImportRow(rowNumber: rowNumber, kind: ImportRowKind.ready, draft: draft),
     );
   }
-  return ImportPreview(rows);
+  return rows;
+}
+
+/// Whether every mapped cell of [cells] is empty after trim
+/// (BR-TRANSFER-002).
+bool isBlankRow(List<String> cells, ColumnMapping mapping) =>
+    [for (final field in TransferField.values) _cellOf(cells, mapping, field)]
+        .every((value) => value == null || value.trim().isEmpty);
+
+String? _cellOf(
+  List<String> cells,
+  ColumnMapping mapping,
+  TransferField field,
+) {
+  final column = mapping.columnOf(field);
+  if (column == null || column >= cells.length) return null;
+  return cells[column];
 }
