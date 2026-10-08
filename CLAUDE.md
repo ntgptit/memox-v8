@@ -31,7 +31,8 @@ Each layer answers one question; none takes over another's.
 
 ### A screen's workflow
 
-1. Read the screen's detail file, its goldens and `DESIGN.md`.
+1. Read the screen's detail file (its States and Transitions tables), its
+   goldens and `DESIGN.md`.
 2. Run `superpowers:brainstorming`: goal, scope, business rules (BR/UC),
    constraints.
 3. Run Impeccable before the plan:
@@ -40,8 +41,10 @@ Each layer answers one question; none takes over another's.
    - use `shape` only for a screen or state not built yet.
 4. Run `superpowers:writing-plans`, then execute it, subagent-driven or
    native, as the user chooses.
-5. Run Impeccable after the build: critique and audit the goldens against
-   `DESIGN.md`.
+5. Run Impeccable after the build: critique and audit every state of the
+   screen's States table against `DESIGN.md`, not only the ones with a golden.
+   A state without a golden is rendered for the audit (a widget test or a
+   throwaway golden) or reported `UNVERIFIED`.
    - Fix everything found in one batch; that fix ends with its one
      `impeccable audit`, as above. Never loop on polish.
 6. Run the final whole-branch review, then complete the branch. If goldens
@@ -53,7 +56,7 @@ Each layer answers one question; none takes over another's.
 |---|---|
 | Architecture and product decisions | an ADR in `docs/shared/decisions/` (read its `status:`) |
 | The visual system | `DESIGN.md` |
-| A screen's layout, states, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
+| A screen's layout, states, transitions, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
 | Known UI debt | the UI-base register (§9 of `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`) |
 | Work progress | the Linear project MemoX, team `DEV`: epics (label `Epic`) and their sub-issues (label group `WBS`: `BE`, `FE`, `Supabase`) ([ADR-021](docs/shared/decisions/ADR-021-linear-theo-doi-tien-do.md), `flutter-workflow`); the `docs/wbs_*.md` files are frozen history |
 | Plan-time rulings | the plan and its execution ledger, then the PR |
@@ -157,9 +160,10 @@ asked. Without the connector, tell the owner and record progress nowhere else.
 
 ## Fixing bugs and improving
 
-The app is built; the work now is fixing and improving it. A fix that silences
-the symptom where it was reported is not a fix. These bars hold for every bug
-fix and every improvement, whoever reports it and however small it looks.
+The app is built; the work now is fixing, improving and auditing it. A fix
+that silences the symptom where it was reported is not a fix. These bars hold
+for every bug fix and every improvement, whoever reports it and however small
+it looks.
 Their order is the order of priority: a proven root cause, then one consistent
 fix at the shared owner, then no regression, then the similar defects, then
 maintainability. Speed and tokens come last and never buy back a higher bar.
@@ -210,13 +214,40 @@ maintainability. Speed and tokens come last and never buy back a higher bar.
     becomes a sub-issue, named in the PR.
   - A change made after the checks, such as a fix for a hit, reruns both on
     the final diff.
+- **A screen is a state machine, not a screenshot.** This bar holds for every
+  fix or improvement that touches a screen and for every UI audit.
+  - The screen's detail file is its inventory: the States table and the
+    Transitions table (from, event, to, evidence). Both are reconciled with
+    the code (the controller's state type, its branches, async callbacks,
+    dialogs and sheets): a state or transition in the code but not in the
+    tables, or in the tables but not in the code, is a finding.
+  - Check degrade covers every state and transition the change touches, not
+    only the one reported; check similar also looks for the same state or
+    transition pattern on other screens.
+  - An audit judges each applicable state and the transitions that matter:
+    error to retry to content, empty to content, Back or a second tap while
+    loading or submitting, an async result arriving after the screen is gone,
+    the shown data deleted, the account switched, offline or a sync mid-way.
+  - Each state or transition is `VERIFIED`, `FAILED`, `UNVERIFIED` or
+    `N/A` (with the reason), and names its evidence: an executed widget or
+    integration test, a golden, a run on a device, or a reading of the code.
+    A reading of the code is never reported as a run. An audit with a
+    material `UNVERIFIED` row is not `VERIFIED`, and `VERIFIED` means the
+    coverage is proven, not that nothing was found.
+  - Coverage is by risk, not by every combination: data loss, dead ends,
+    broken primary actions, async races and stale state, navigation and
+    account errors, then layout and accessibility. Environments are light and
+    dark, a 360dp phone, the keyboard and system insets, at the default text
+    scale only (`PRODUCT.md`).
 - **Report one final state.** `VERIFIED` when the cause is proven and both
   checks pass; `BLOCKED` when a named limit (access, device, owner decision)
   stops verification; `UNRESOLVED` when the cause or the fix is not proven. An
   unproven fix is never reported as fixed.
 - **The final whole-branch review checks these bars** against the diff, the
   tests and the commands actually run, never against the agent's own account
-  of them.
+  of them. When the change touches a screen or its state, the reviewer
+  rebuilds the states and transitions from the code and compares them with
+  the screen's tables.
 - Moving a fix down to its shared owner and fixing same-cause hits are in
   scope, never scope creep.
 

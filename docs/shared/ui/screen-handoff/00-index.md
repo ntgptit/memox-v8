@@ -3,7 +3,10 @@
 # MemoX screen index
 
 Every screen of the app. Each detail file records the screen's layout, its states with
-their goldens, its rulings and its copy. The visual system is in
+their goldens, its transitions, its rulings and its copy. A screen is a state machine
+(CLAUDE.md, "Fixing bugs and improving"): its `## Transitions` table lists each
+transition that matters as from, event, to and evidence, and is filled when work or an
+audit reaches the screen. The visual system is in
 [`DESIGN.md`](../../../../DESIGN.md); the authority order is
 [ADR-019](../../decisions/ADR-019-app-la-chuan-ui.md).
 

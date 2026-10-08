@@ -122,8 +122,10 @@ section with nothing to say is deleted, not left empty, except
 
 Sections I to V are the owner's minimum (2026-10-08, DEV-315) and are never
 dropped; a section that cannot be filled yet says why. They are filled as the
-work goes, in this order, and section V closes the issue. "Check non degrade"
-is CLAUDE.md's check degrade.
+work goes, and section V closes the issue. "Check non degrade" is CLAUDE.md's
+check degrade. Section VI, check state & transition (owner, 2026-10-08,
+DEV-317), sits before V and keeps the owner's numbering of I to V; it applies
+when a screen or its state is touched and otherwise says why not.
 
 ```markdown
 ## Hiện tượng
@@ -176,6 +178,19 @@ những gì đã loại trừ và giả thuyết còn lại>
 - Kết quả: <không có hồi quy; không test nào bị làm yếu hay xoá>
 - Chạy lại: <có/không; sửa thêm sau khi check thì chạy lại cả II và IV>
 
+## VI. Check state & transition
+<khi việc đụng một màn hình hay state của nó; không thì ghi "không áp dụng,
+vì …". Đối chiếu bảng States và Transitions trong file chi tiết của màn với
+code>
+
+| Màn | Trạng thái / chuyển trạng thái | Bằng chứng | Kết quả |
+|---|---|---|---|
+| `<NN>` | `<state>` hoặc `<from> → <event> → <to>` | test đã chạy / golden / chạy trên máy / đọc code | VERIFIED / FAILED / UNVERIFIED / N/A, vì … |
+
+- Lệch giữa bảng và code: <trạng thái hay chuyển trạng thái có trong code mà
+  thiếu trong bảng, hoặc ngược lại; hoặc "không có">
+- Bảng đã cập nhật: <file chi tiết màn đã sửa trong PR này>
+
 ## V. Output
 - PR, commit: <pull request số n của `ntgptit/memox-v8`, `<sha7>`>
 - Kiểm chứng: <`dod_check.sh` và số test, test riêng, golden review>
@@ -190,6 +205,8 @@ những gì đã loại trừ và giả thuyết còn lại>
 - [ ] III: sửa ở chủ sở hữu dùng chung thấp nhất, có test hồi quy fail trước
   pass sau
 - [ ] IV: mọi nơi dùng phần đã đổi vẫn đúng, đã chạy lại nếu sửa thêm
+- [ ] VI: mọi trạng thái và chuyển trạng thái bị đụng đã kiểm, bảng của màn
+  khớp code (hoặc ghi rõ không áp dụng)
 - [ ] V: trạng thái cuối `VERIFIED`, `dod_check.sh` PASS
 ```
 
@@ -197,7 +214,8 @@ những gì đã loại trừ và giả thuyết còn lại>
 
 An improvement carries sections II to V of the Bug template, numbered the same
 so that "mục II" means check similar on every issue (owner, 2026-10-08,
-DEV-316). It has no section I: the reason for the work is under Bằng chứng.
+DEV-316), and section VI when a screen or its state is touched. It has no
+section I: the reason for the work is under Bằng chứng.
 The sections are never dropped; one that cannot be filled yet says why.
 
 ```markdown
@@ -232,6 +250,19 @@ The sections are never dropped; one that cannot be filled yet says why.
 - Kết quả: <không có hồi quy; không test nào bị làm yếu hay xoá>
 - Chạy lại: <có/không; làm thêm sau khi check thì chạy lại cả II và IV>
 
+## VI. Check state & transition
+<khi việc đụng một màn hình hay state của nó; không thì ghi "không áp dụng,
+vì …". Đối chiếu bảng States và Transitions trong file chi tiết của màn với
+code>
+
+| Màn | Trạng thái / chuyển trạng thái | Bằng chứng | Kết quả |
+|---|---|---|---|
+| `<NN>` | `<state>` hoặc `<from> → <event> → <to>` | test đã chạy / golden / chạy trên máy / đọc code | VERIFIED / FAILED / UNVERIFIED / N/A, vì … |
+
+- Lệch giữa bảng và code: <trạng thái hay chuyển trạng thái có trong code mà
+  thiếu trong bảng, hoặc ngược lại; hoặc "không có">
+- Bảng đã cập nhật: <file chi tiết màn đã sửa trong PR này>
+
 ## V. Output
 - PR, commit: <pull request số n của `ntgptit/memox-v8`, `<sha7>`>
 - Kiểm chứng: <`dod_check.sh` và số test, test riêng, golden review>
@@ -244,6 +275,8 @@ The sections are never dropped; one that cannot be filled yet says why.
   mở sub-issue
 - [ ] III: làm ở chủ sở hữu dùng chung thấp nhất, có test chứng minh
 - [ ] IV: mọi nơi dùng phần đã đổi vẫn đúng, đã chạy lại nếu làm thêm
+- [ ] VI: mọi trạng thái và chuyển trạng thái bị đụng đã kiểm, bảng của màn
+  khớp code (hoặc ghi rõ không áp dụng)
 - [ ] V: trạng thái cuối `VERIFIED`, `dod_check.sh` PASS
 - [ ] <kết quả kiểm được riêng của việc này, ví dụ `python3 tools/docs/check.py` PASS>
 ```
@@ -267,7 +300,8 @@ is a comment; edit the description only to correct it, never to log progress.
 carries the two check lines and the final state (CLAUDE.md, "Fixing bugs and
 improving"); only the root-cause line is dropped when the work is not a bug.
 The lines point at the description's sections, which hold the detail: I to V
-on a bug, II to V on an improvement.
+on a bug, II to V on an improvement, and VI on both when a screen or its state
+was touched.
 An issue whose state is `BLOCKED` or `UNRESOLVED` is not Done: it stays open
 with a Bị chặn comment.
 
@@ -284,6 +318,8 @@ Done: đã merge vào `master`.
   không phải bug>
 - Check non degrade (mục IV): <những nơi dùng phần đã đổi và bằng chứng mỗi
   nơi vẫn đúng>
+- Check state & transition (mục VI): <số trạng thái và chuyển trạng thái đã
+  kiểm theo kết quả; bảng của màn đã cập nhật; hoặc "không áp dụng">
 - Check similar (mục II): <đã tìm theo cơ chế nào; mỗi chỗ tìm được và loại của nó
   (cùng gốc, giống nhưng không bị, đáng ngờ đã kiểm, không liên quan); chỗ
   cùng gốc đã sửa; chỗ khác gốc thành DEV-<n>; hoặc "không có chỗ nào khác">
