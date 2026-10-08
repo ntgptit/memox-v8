@@ -1,6 +1,6 @@
 # MemoX V8 — Card import: deck sections (`*` rows)
 
-Status: draft for owner review 2026-10-08 · design approved in chat 2026-10-08 · Path: architectural
+Status: approved by the owner 2026-10-08 · epic DEV-289 · Path: architectural
 
 ## 1. Intent
 
@@ -258,7 +258,23 @@ another (A2).
 | Controller | Clash choices required before Continue; editing the default name clears its choice |
 | Widget + goldens | Sectioned preview (clash undecided/decided), confirm, result; light and dark |
 
-## 8. Out of scope
+## 8. Relation to "Import from the Library"
+
+The spec `2026-10-08-library-import-entry-design.md` (epic DEV-288, branch
+`claude/intelligent-mccarthy-ytn8tx`, in owner review) adds Library entry points whose
+dialog always ends on a sub-deck that is `unset` or holds cards, then opens this wizard.
+The two are separate epics (owner, 2026-10-08):
+
+- Its out-of-scope line ("Import cards" in a root's action sheet, no change to
+  BR-TRANSFER-001) is exactly what this spec does; neither contradicts the other.
+- A sectioned file imported through its dialog lands its section decks **under the chosen
+  sub-deck**: a new `unset` sub-deck becomes a deck of decks; an existing deck of cards
+  is refused (S7). To put sections directly under a root, Import opens from the root's
+  `⋮` sheet (§4.2).
+- Both change UC-TRANSFER-001 and screen 11's detail file; whichever branch merges second
+  merges those documents.
+
+## 9. Out of scope
 
 - Nested sections (`**`), section markers other than `*`, or a marker in a column other
   than the one mapped to `front`.
