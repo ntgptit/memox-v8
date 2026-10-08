@@ -24,6 +24,7 @@ import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/shared/widgets/mx_empty_state.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
@@ -212,6 +213,11 @@ void main() {
 
     expect(find.text(_en.deckGoneTitle), findsOneWidget);
     expect(find.text(_en.commonBack), findsOneWidget);
+    // A gone item reads in the neutral tone (owner 2026-10-08).
+    expect(
+      tester.widget<MxEmptyState>(find.byType(MxEmptyState)).tone,
+      MxEmptyStateTone.neutral,
+    );
   });
 
   libraryTest('a failed read shows the error with Retry and no invented '

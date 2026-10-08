@@ -332,7 +332,7 @@
   "trashDecksSelected": "{count, plural, other{Đã chọn {count} bộ thẻ}}",
   "trashCardsHeader": "{count} thẻ",
   "trashDecksHeader": "{count} bộ thẻ",
-  "trashSelectionClose": "Bỏ chọn",
+  "trashSelectionClose": "Đóng chế độ chọn",
   "trashKindLock": "Không thể chọn thẻ và bộ thẻ cùng lúc.",
   "trashRestoreSelected": "Khôi phục ({count})",
   "trashPurgeSelected": "Xoá ({count})",

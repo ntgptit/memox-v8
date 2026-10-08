@@ -1705,7 +1705,7 @@
     },
     "description": "Screen 06: the list header while decks are selected; the title states how many are selected (critique 2026-09-30 part 3b)."
   },
-  "trashSelectionClose": "Clear selection",
+  "trashSelectionClose": "Close selection",
   "@trashSelectionClose": {
     "description": "Screen 06: the close control while selecting."
   },

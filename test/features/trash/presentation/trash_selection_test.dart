@@ -68,6 +68,8 @@ void main() {
     await _tap(tester, find.text('Basics'));
     expect(find.text(_en.trashCardsSelected(1)), findsOneWidget);
 
+    // One label for one action, as on Card list (owner 2026-10-08).
+    expect(_en.trashSelectionClose, _en.cardSelectionClose);
     await _tap(tester, find.byTooltip(_en.trashSelectionClose));
     expect(find.text(_en.libraryTrash), findsOneWidget);
     expect(find.byType(MxFilterChip), findsNWidgets(3));
