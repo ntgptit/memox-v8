@@ -243,8 +243,38 @@ void main() {
 
     await tester.tap(find.text(_en.accountContinue));
     await _settle(tester);
+    await tester.pumpAndSettle();
 
     expect(dones, 1);
-    expect(world.state, isA<Transitioning>());
+    // The Google account picked on Welcome signs in to its account at once:
+    // no second sign-in page (owner 2026-10-08).
+    expect(world.state, _signedInAs('g@example.com'));
+  });
+
+  accountTest("an empty phone whose Google account is another account's "
+      'signs in to it at once, without asking (owner 2026-10-08)', (
+    tester,
+    env,
+    world,
+  ) async {
+    world.server.addUser(email: 'g@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await _settle(tester);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MergeChoiceSheetWidget), findsNothing);
+    expect(dones, 1);
+    expect(world.state, _signedInAs('g@example.com'));
   });
 }
+
+Matcher _signedInAs(String email) => isA<Ready>()
+    .having((s) => s.user.email, 'email', email)
+    .having((s) => s.user.isAnonymous, 'anonymous', isFalse);

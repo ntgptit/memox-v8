@@ -298,10 +298,9 @@ void main() {
 
     await tester.tap(find.text(_en.accountContinueGoogle));
     await tester.pumpAndSettle();
-    // The phone holds no library: no merge sheet, straight to the target
-    // sign-in of the transition layer.
-    await tester.tap(find.text(_en.accountContinueGoogle).last);
-    await tester.pumpAndSettle();
+    // The phone holds no library: no merge sheet, and the Google account
+    // just picked signs in to the target at once, with no second sign-in
+    // page (owner 2026-10-08).
 
     expect(world.state, isA<Ready>());
     expect(find.byType(SignInScreen), findsNothing);

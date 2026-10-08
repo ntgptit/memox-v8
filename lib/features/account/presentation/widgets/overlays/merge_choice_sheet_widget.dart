@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
+import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/domain/models/local_library_model.dart';
+import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/providers/count_local_library_use_case_provider.dart';
+import 'package:memox/features/account/presentation/states/sign_in_state.dart';
+import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
@@ -20,7 +24,8 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 /// account. A phone with decks asks, merging by default; an empty one
 /// moves without asking. [email] is the address typed, null for Google.
 /// Returns whether the switch started; the transition layer takes over
-/// from there.
+/// from there. For Google, the account already picked signs in to the
+/// target at once, so no second sign-in page shows (owner 2026-10-08).
 Future<bool> startLinkSwitch(
   BuildContext context,
   WidgetRef ref, {
@@ -45,7 +50,6 @@ Future<bool> startLinkSwitch(
   if (choice == null || !context.mounted) return false;
   try {
     await accounts.beginSwitch(choice: choice, targetHint: email);
-    return true;
   } on Failure catch (error) {
     if (context.mounted) {
       showMxSnackbar(context, message: context.l10n.failure(error));
@@ -57,6 +61,34 @@ Future<bool> startLinkSwitch(
       showMxSnackbar(context, message: context.l10n.failureAccount);
     }
     return false;
+  }
+  if (email == null && context.mounted) {
+    await _signInPickedGoogle(context, ref, accounts);
+  }
+  return true;
+}
+
+/// The switch waits for its target: the Google account picked a moment ago
+/// signs in to it (the coordinator keeps that credential, #17). A failure
+/// leaves the layer's target sign-in to try again, and says why.
+Future<void> _signInPickedGoogle(
+  BuildContext context,
+  WidgetRef ref,
+  AccountCoordinator accounts,
+) async {
+  final state = accounts.state;
+  if (state is! Transitioning || !state.isAwaitingTargetSignIn) return;
+  final target = signInControllerProvider(SignInPurpose.target);
+  // Held while it runs, so the layer's form shows it and the problem stays.
+  final hold = ref.listenManual(target, (_, _) {});
+  try {
+    final outcome = await ref.read(target.notifier).continueWithGoogle();
+    final problem = ref.read(target).problem;
+    if (outcome != SignInOutcome.failed || problem == null) return;
+    if (!context.mounted) return;
+    showMxSnackbar(context, message: signInProblemText(context.l10n, problem));
+  } finally {
+    hold.close();
   }
 }
 

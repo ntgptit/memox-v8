@@ -27,7 +27,9 @@ spec [2026-09-30-account-ui-design.md](../../../superpowers/specs/2026-09-30-acc
 
 Every exit answers Welcome first, then goes on: Google and "without" to `from`, email
 to Sign-in with Settings under it (P3a plan ruling 4). A Google account that belongs
-to another account opens the merge sheet (30); its choice also leaves Welcome.
+to another account opens the merge sheet (30) when the phone has decks; its choice also
+leaves Welcome. Then, or at once on an empty phone, that Google account signs in to its
+account with no second sign-in page (owner 2026-10-08).
 
 ## States
 

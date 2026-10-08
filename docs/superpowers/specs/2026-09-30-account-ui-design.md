@@ -124,6 +124,11 @@ then goes to `from ?? /decks`. Email opens 30 (`link`) above the welcome.
   started and shows "Signed in as {email}".
 - **Identity taken** (`IdentityTakenFailure`, #17): local has decks → the
   merge sheet (§5.3); empty → `beginSwitch(discard, targetHint: email)`.
+  For Google, the account just picked then signs in to the target at once
+  (the coordinator keeps its credential), so the layer's target sign-in
+  never asks twice; if that sign-in fails, the layer's target sign-in stays
+  to try again and a toast says why. An email still needs its code (owner
+  2026-10-08, after the device check of build 18).
 - **Re-auth as another account** (`UnsentChangesFailure(n)`, P3b): a dialog
   "{n} changes on this phone aren't sent and will be lost." → the same
   command with `confirmedLoss: true`. `reauth` also offers "Continue without
