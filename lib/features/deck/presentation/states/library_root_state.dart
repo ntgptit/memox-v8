@@ -37,19 +37,24 @@ final class LibraryRootDecks extends LibraryRootState {
 
 /// Derived from the same level stream the body reads, so both change in
 /// one frame. A refresh that still has data keeps its state; a failure is
-/// Failed even over a stale value, as the body's error state is.
+/// Failed even over a stale value, as the body's error state is; a changed
+/// sort or filter starts a new stream instance with no value yet, and the
+/// chrome keeps what it showed until that stream speaks (final review).
 @riverpod
-LibraryRootState libraryRootState(Ref ref) {
-  final query = ref.watch(deckLevelQueryProvider(null));
-  final level = ref.watch(
-    deckLevelProvider(parentId: null, sort: query.sort, filter: query.filter),
-  );
-  // Object patterns on the getters: a refresh keeps its previous value
-  // (hasValue), a failure over a stale value is still an error.
-  return switch (level) {
-    AsyncValue(hasError: true) => const LibraryRootFailed(),
-    AsyncValue(hasValue: true, :final value?) =>
-      value.hasDecks ? LibraryRootDecks(value) : const LibraryRootEmpty(),
-    _ => const LibraryRootLoading(),
-  };
+class LibraryRoot extends _$LibraryRoot {
+  @override
+  LibraryRootState build() {
+    final query = ref.watch(deckLevelQueryProvider(null));
+    final level = ref.watch(
+      deckLevelProvider(parentId: null, sort: query.sort, filter: query.filter),
+    );
+    // Object patterns on the getters: a refresh keeps its previous value
+    // (hasValue), a failure over a stale value is still an error.
+    return switch (level) {
+      AsyncValue(hasError: true) => const LibraryRootFailed(),
+      AsyncValue(hasValue: true, :final value?) =>
+        value.hasDecks ? LibraryRootDecks(value) : const LibraryRootEmpty(),
+      _ => stateOrNull ?? const LibraryRootLoading(),
+    };
+  }
 }

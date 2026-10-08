@@ -18,7 +18,7 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
 /// The roots with today's work first (UC-DECK-003). Its chrome follows
-/// `libraryRootStateProvider` (The Content Gate Rule, DESIGN.md).
+/// `libraryRootProvider` (The Content Gate Rule, DESIGN.md).
 class DeckLibraryRootWidget extends ConsumerWidget {
   const DeckLibraryRootWidget({
     super.key,
@@ -63,7 +63,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
     // One state for the chrome and the body (The Content Gate Rule): the
     // search trigger, Tags and the FAB exist only with decks; Starter decks
     // and the Trash, the ways in and back, always do.
-    final hasDecks = ref.watch(libraryRootStateProvider).hasDecks;
+    final hasDecks = ref.watch(libraryRootProvider).hasDecks;
     void createDeck() => unawaited(showCreateRootDeckDialog(context));
     return MxAppShell(
       appBar: MxAppBar(

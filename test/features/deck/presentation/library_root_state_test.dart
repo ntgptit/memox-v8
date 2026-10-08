@@ -23,7 +23,7 @@ void main() {
   List<LibraryRootState> watch(ProviderContainer container) {
     final seen = <LibraryRootState>[];
     container.listen(
-      libraryRootStateProvider,
+      libraryRootProvider,
       (_, next) => seen.add(next),
       fireImmediately: true,
     );
@@ -80,6 +80,25 @@ void main() {
       expect((last as LibraryRootDecks).level.tiles, isEmpty);
     },
   );
+
+  test('a sort or filter change never blinks the chrome: no Loading between '
+      'two Decks (final review)', () async {
+    await env.decks.root('Korean');
+    final container = libraryContainer(env);
+    final seen = watch(container);
+    await pumpEventQueue();
+    final query = container.read(deckLevelQueryProvider(null).notifier);
+
+    query.show(DeckLevelFilter.due);
+    await pumpEventQueue();
+    query.sortBy(DeckLevelSort.name);
+    await pumpEventQueue();
+    query.show(DeckLevelFilter.all);
+    await pumpEventQueue();
+
+    expect(seen.last, isA<LibraryRootDecks>());
+    expect(seen.skip(1).whereType<LibraryRootLoading>(), isEmpty);
+  });
 
   test('a refresh with data stays Decks: the chrome never blinks (Review '
       'Focus 2)', () async {

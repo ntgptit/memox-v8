@@ -110,17 +110,20 @@ final class LibraryRootDecks extends LibraryRootState {
 }
 
 @riverpod
-LibraryRootState libraryRootState(Ref ref) {
-  final query = ref.watch(deckLevelQueryProvider(null));
-  final level = ref.watch(
-    deckLevelProvider(parentId: null, sort: query.sort, filter: query.filter),
-  );
-  return switch (level) {
-    AsyncData(:final value) when value.hasDecks => LibraryRootDecks(value),
-    AsyncData() => const LibraryRootEmpty(),
-    AsyncError() => const LibraryRootFailed(),
-    _ => const LibraryRootLoading(),
-  };
+class LibraryRoot extends _$LibraryRoot {
+  @override
+  LibraryRootState build() {
+    final query = ref.watch(deckLevelQueryProvider(null));
+    final level = ref.watch(
+      deckLevelProvider(parentId: null, sort: query.sort, filter: query.filter),
+    );
+    return switch (level) {
+      AsyncValue(hasError: true) => const LibraryRootFailed(),
+      AsyncValue(hasValue: true, :final value?) =>
+        value.hasDecks ? LibraryRootDecks(value) : const LibraryRootEmpty(),
+      _ => stateOrNull ?? const LibraryRootLoading(),
+    };
+  }
 }
 ```
 
@@ -130,9 +133,12 @@ Rules of the mapping:
   the chrome does not flicker while the stream re-emits (every change, each local midnight).
 - A failure maps to `Failed` even when a stale value exists, as the body does
   (`level.when(error:)` shows `MxErrorState`): nothing on the screen pretends to be live.
-- The provider is derived: it watches the same family instance the body watches, so one
-  stream emission rebuilds both in the same frame. It holds no copy of the data and no
-  side effect.
+- A changed sort or filter is a new family instance that starts with no value; the
+  notifier keeps what it showed (`stateOrNull`) until that stream speaks, so the chrome
+  never blinks on a query change (final review 2026-10-08).
+- The provider (`libraryRootProvider`) is derived: it watches the same family instance the
+  body watches, so one stream emission rebuilds both in the same frame. It holds no copy
+  of the data beyond its last state and no side effect.
 
 ### 4.3 The chrome, per state
 
@@ -146,7 +152,7 @@ Rules of the mapping:
 | FAB "New deck" | no | no | no | yes | no (as today) |
 | Body | skeleton | `MxErrorState` + Retry | `MxEmptyState` | strip, header, rows | reorder list |
 
-`DeckLibraryRootWidget` watches `libraryRootStateProvider` and `deckReorderModeProvider(null)`
+`DeckLibraryRootWidget` watches `libraryRootProvider` and `deckReorderModeProvider(null)`
 and builds the app bar, the search trigger and the FAB from that table. It no longer
 watches `deckLevelProvider` directly. The body stays `DeckLevelBodyWidget`: it serves the
 open deck too, and its own `AsyncValue` switch agrees with the state by construction (same
@@ -214,7 +220,7 @@ one row closing the Library's two gaps with this spec.
   overridden): loading → `Loading`; a level with one deck → `Decks` carrying it; a level
   with none → `Empty`; a failure → `Failed`; "Due only" with decks and no due tile → `Decks`;
   a stream that goes 1 → 0 → 1 yields `Decks`, `Empty`, `Decks` in order.
-- **Widget, `deck_level_screen_test.dart`:**
+- **Widget, `library_content_gate_test.dart` (split from `deck_level_screen_test.dart`, which the guard caps at 400 lines):**
   - Scenario A, first run: the app bar holds Starter decks and the Trash and not Tags; no
     search trigger; no FAB; the body offers Create deck and Browse starter decks with the
     new copy.
