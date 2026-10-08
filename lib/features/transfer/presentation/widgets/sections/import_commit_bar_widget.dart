@@ -48,7 +48,9 @@ class ImportCommitBarWidget extends StatelessWidget {
       CardImportStep.columns => (
         l10n.importPreviewAction,
         AppIcons.preview,
-        draft.mapping.isComplete ? onPreview : null,
+        draft.mapping.isComplete && !(draft.table?.isBlank ?? false)
+            ? onPreview
+            : null,
         l10n.importCaptionColumns,
       ),
       CardImportStep.preview => (

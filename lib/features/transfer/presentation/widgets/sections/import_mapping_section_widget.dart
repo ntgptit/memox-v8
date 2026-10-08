@@ -12,7 +12,8 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 
 /// Step 2 of the import (kit 11): whether the first row is a header, and the
 /// field each column feeds. An unmapped face says so on its own row, above
-/// the note (BR-TRANSFER-002; kit deviation K3).
+/// the note (BR-TRANSFER-002; kit deviation K3). A blank sheet says so
+/// instead (E2).
 class ImportMappingSectionWidget extends StatelessWidget {
   const ImportMappingSectionWidget({
     super.key,
@@ -29,6 +30,15 @@ class ImportMappingSectionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final table = draft.table!;
+    // A blank sheet of a workbook with others: nothing to map, and the
+    // sheet chip above offers another sheet (A2, spec 2026-10-08 S6).
+    if (table.isBlank) {
+      return MxInlineBanner(
+        tone: MxBannerTone.warning,
+        title: l10n.importProblemEmptyTitle,
+        message: l10n.importProblemEmptyBody,
+      );
+    }
     final header = draft.hasHeaderRow && table.rows.isNotEmpty
         ? table.rows.first
         : null;
