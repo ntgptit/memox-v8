@@ -48,7 +48,7 @@ saves the root's options otherwise. A second Save while one runs is ignored (A4)
 | saved | `study_options_saved_light.png` | `study_options_saved_dark.png` | — |
 | saveFailed | `study_options_save_failed_light.png` | `study_options_save_failed_dark.png` | "Not saved" banner and "Retry save"; both stay through edits until a save succeeds. |
 | loading | `study_options_loading_light.png` | `study_options_loading_dark.png` | Skeleton rows, no footer (UI-base row 125). |
-| gone | — | — | (spec §6) a deck gone to the Trash shows "This deck is no longer here" with Back (UI-base row 129). |
+| gone | — | — | (spec §6) a deck gone to the Trash shows "This deck is no longer here" with Back, in the neutral tone (UI-base row 129; owner 2026-10-08). |
 | read error | — | — | `MxErrorState` with Retry and no invented value. |
 
 Goldens: `test/features/settings/presentation/goldens/study_options_{override,defaults,invalid,saving,saved,save_failed,loading}_{light,dark}.png`.
