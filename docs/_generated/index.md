@@ -121,7 +121,7 @@
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | UC-DECK-004, UC-DECK-005, UC-DECK-006, UC-PROGRESS-002, UC-SEARCH-001, UC-TRASH-001 |
+| [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | UC-DECK-004, UC-DECK-005, UC-DECK-006, UC-PROGRESS-002, UC-SEARCH-001, UC-TRANSFER-001, UC-TRASH-001 |
 | [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | UC-DECK-001, UC-DECK-003, UC-DECK-004, UC-DECK-005, UC-DECK-006, UC-PROGRESS-002, UC-SEARCH-001, UC-STARTER-001 |
 | [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | UC-DECK-003, UC-DECK-006, UC-PROGRESS-002, UC-REMINDER-001, UC-SEARCH-001 |
 | [BR-DECK-004](../features/deck/rules/BR-DECK-004-root-deck-chi-chua-deck-con.md) | Root deck chỉ chứa deck con | active | Root deck chỉ chứa deck con, không chứa card trực tiếp. | UC-DECK-001, UC-DECK-002, UC-DECK-004, UC-DECK-006, UC-TRANSFER-001 |
@@ -140,7 +140,7 @@
 | [BR-DECK-017](../features/deck/rules/BR-DECK-017-khong-di-chuyen-deck-vao-chinh-no-hoac-descendant.md) | Không di chuyển deck vào chính nó hoặc descendant | active | Không di chuyển một deck vào chính nó hoặc vào descendant của nó. | UC-DECK-005, UC-TRASH-001 |
 | [BR-DECK-018](../features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md) | Di chuyển subtree cập nhật root_id và depth | active | Di chuyển subtree cập nhật `root_id` và `depth` cho toàn bộ subtree trong một transaction. | UC-DECK-005, UC-TRASH-001 |
 | [BR-DECK-019](../features/deck/rules/BR-DECK-019-khong-descendant-nao-tro-sai-root.md) | Không descendant nào trỏ sai root | active | Không có descendant trỏ sai root. | UC-DECK-004, UC-DECK-005 |
-| [BR-DECK-020](../features/deck/rules/BR-DECK-020-ten-deck-khong-rong-toi-da-200-ky-tu.md) | Tên deck không rỗng, tối đa 200 ký tự | active | Tên deck không rỗng sau trim, tối đa 200 ký tự. | UC-DECK-001, UC-DECK-002 |
+| [BR-DECK-020](../features/deck/rules/BR-DECK-020-ten-deck-khong-rong-toi-da-200-ky-tu.md) | Tên deck không rỗng, tối đa 200 ký tự | active | Tên deck không rỗng sau trim, tối đa 200 ký tự. | UC-DECK-001, UC-DECK-002, UC-TRANSFER-001 |
 | [BR-DECK-021](../features/deck/rules/BR-DECK-021-ten-deck-duoc-phep-trung.md) | Tên deck được phép trùng | active | Tên deck được phép trùng nhau. | UC-DECK-001 |
 | [BR-DECK-022](../features/deck/rules/BR-DECK-022-xoa-deck-dua-ca-cay-vao-trash.md) | Xoá deck đưa cả cây vào Trash | active | Xoá deck chuyển deck cùng mọi deck con và card còn active bên dưới vào Trash thành một batch; chỉ purge mới xoá hẳn, theo cascade. | UC-CARD-001, UC-DECK-002 |
 | [BR-DECK-023](../features/deck/rules/BR-DECK-023-xoa-deck-can-xac-nhan-kem-so-luong.md) | Xoá deck cần xác nhận kèm số lượng | active | Xoá deck cần xác nhận, kèm số deck con và số card sẽ vào Trash cùng nó. | UC-CARD-001, UC-DECK-002 |
@@ -511,7 +511,7 @@
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-TRANSFER-001](../features/transfer/rules/BR-TRANSFER-001-dieu-kien-deck-dich-import.md) | Điều kiện deck đích của import | active | Deck đích import thoả cùng điều kiện tạo card: sub-deck `unset` hoặc `card`. | UC-TRANSFER-001 |
+| [BR-TRANSFER-001](../features/transfer/rules/BR-TRANSFER-001-dieu-kien-deck-dich-import.md) | Điều kiện deck đích của import | active | Nguồn phẳng ghi vào deck card/unset hoặc một deck con mặc định; nguồn có dòng sao cần deck đích chứa được deck con. | UC-TRANSFER-001 |
 | [BR-TRANSFER-002](../features/transfer/rules/BR-TRANSFER-002-hang-import-can-ca-hai-mat.md) | Hàng import cần cả hai mặt | active | Mỗi hàng import cần `front` và `back` sau trim; hàng trống toàn bộ được bỏ qua. | UC-TRANSFER-001 |
 | [BR-TRANSFER-003](../features/transfer/rules/BR-TRANSFER-003-khoa-trung-lap-khi-import.md) | Khoá trùng lặp khi import | active | Trùng lặp đo bằng `front_folded + back_folded` trong deck đích và trong cùng nguồn import. | UC-TRANSFER-001 |
 | [BR-TRANSFER-004](../features/transfer/rules/BR-TRANSFER-004-import-mot-transaction.md) | Import trong một transaction | active | Một lần import ghi toàn bộ card, study state và tag trong đúng một transaction. | UC-TRANSFER-001 |
@@ -525,6 +525,7 @@
 | [BR-TRANSFER-012](../features/transfer/rules/BR-TRANSFER-012-sau-header-canonical.md) | Sáu header canonical | active | File export mở đầu bằng sáu header canonical, chữ thường tiếng Anh, không localize. | UC-TRANSFER-002 |
 | [BR-TRANSFER-013](../features/transfer/rules/BR-TRANSFER-013-ten-file-export.md) | Tên file export | active | Tên file export dẫn xuất từ tên deck đã sanitize. | UC-TRANSFER-002 |
 | [BR-TRANSFER-014](../features/transfer/rules/BR-TRANSFER-014-file-export-la-du-lieu-rieng-tu.md) | File export là dữ liệu riêng tư | active | File export là dữ liệu riêng tư, chỉ tạo khi người dùng chủ động yêu cầu. | UC-TRANSFER-002 |
+| [BR-TRANSFER-015](../features/transfer/rules/BR-TRANSFER-015-dong-sao-la-ten-deck.md) | Dòng sao là tên deck | active | Dòng dữ liệu có ô `front` bắt đầu bằng `*` đặt tên một deck con; các dòng dưới nó là card của deck đó. | UC-TRANSFER-001 |
 
 ### Use cases
 

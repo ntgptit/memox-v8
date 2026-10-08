@@ -34,11 +34,13 @@ subtitles (ruling C-L6):
 
 - **Root deck:** Open deck · Study this deck → screen 14 · Rename · Study options
   ("Cards per session · new-card order") → screen 15 · Review algorithm
-  ("{algorithm} · locked · reset to start over" when locked) → screen 02 · Reorder ·
-  Move to Trash ("Recoverable for 30 days").
+  ("{algorithm} · locked · reset to start over" when locked) → screen 02 · Import cards
+  → screen 11 (spec 2026-10-08 U1) · Reorder · Move to Trash ("Recoverable for 30
+  days").
 - **Sub-deck:** Open · Study this deck → screen 14 · Rename ·
   Study options → screen 15 (its root's options) ·
-  Move to another deck · Reorder ("Move before or after a sibling") · Move to Trash
+  Move to another deck · Import cards → screen 11 (every sub-deck, spec 2026-10-08 U1) ·
+  Reorder ("Move before or after a sibling") · Move to Trash
   ("Recoverable for 30 days").
 
 ## Sort & filter sheet

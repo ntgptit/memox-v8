@@ -29,6 +29,7 @@ void main() {
         TagRepositoryImpl(db),
         DeckTreeDataSource(db),
       ),
+      DeckRepositoryImpl(db),
     );
   });
   tearDown(() => db.close());

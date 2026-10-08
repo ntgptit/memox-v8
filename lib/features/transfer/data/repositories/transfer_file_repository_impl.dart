@@ -54,7 +54,10 @@ Outcome<SourceTable, TransferRejection> _read((TransferSource, int?) request) {
     ),
     FileSource(:final bytes, :final format) => _delimitedFile(bytes, format),
   };
-  if (table case Ok(:final value) when value.isBlank) {
+  // A blank sheet of a workbook with others is read, so its sheet chip
+  // stays and another sheet can be chosen (A2, spec 2026-10-08 S6).
+  if (table case Ok(:final value)
+      when value.isBlank && value.sheetNames.length <= 1) {
     return const Rejected(TransferRejection.emptySource);
   }
   return table;

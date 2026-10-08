@@ -3354,6 +3354,159 @@
   "@studyThisDeck": {
     "description": "Screen handoff 01/07 (FE-A6 D10): the deck summary's button to the Study Entry when only new cards wait."
   },
+  "importDefaultDeckName": "Uncategorized",
+  "@importDefaultDeckName": {
+    "description": "The name a default deck starts with in an import split by * rows (BR-TRANSFER-015)."
+  },
+  "importDecksHeader": "Decks",
+  "@importDecksHeader": {
+    "description": "Header of the list of decks a sectioned import writes to (spec 2026-10-08 U2, U8)."
+  },
+  "importDeckNew": "New",
+  "@importDeckNew": {
+    "description": "Badge: the import makes this deck."
+  },
+  "importDeckExisting": "Existing",
+  "@importDeckExisting": {
+    "description": "Badge: the import adds to this deck that already exists."
+  },
+  "importDeckCards": "{count, plural, =1{1 card} other{{count} cards}}",
+  "@importDeckCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "How many cards an import writes to one deck."
+  },
+  "importDeckNothing": "No cards to add · no deck made",
+  "@importDeckNothing": {
+    "description": "A section of the file with no card to write (BR-TRANSFER-015)."
+  },
+  "importDeckAddToExisting": "Add to existing",
+  "@importDeckAddToExisting": {
+    "description": "Choice for a section whose name a sub-deck already has: add its cards to that deck."
+  },
+  "importDeckCreateNew": "Create new",
+  "@importDeckCreateNew": {
+    "description": "Choice for a section whose name a sub-deck already has: make another deck."
+  },
+  "importDeckClashNote": "{count, plural, =0{{name} is already here, with no cards.} =1{{name} already has 1 card.} other{{name} already has {count} cards.}}",
+  "@importDeckClashNote": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Shown above the clash choice: the existing deck and how many cards it holds (spec 2026-10-08 C4)."
+  },
+  "importDeckHoldsDecksNote": "The deck with this name holds decks, so a new one is made.",
+  "@importDeckHoldsDecksNote": {
+    "description": "A clash with a deck of decks needs no choice (spec 2026-10-08 §4.3)."
+  },
+  "importDeckNameLabel": "Deck name",
+  "@importDeckNameLabel": {
+    "description": "Label of the default deck name field (spec 2026-10-08 U4)."
+  },
+  "importDeckNameTaken": "Another deck in this file has this name.",
+  "@importDeckNameTaken": {
+    "description": "The default deck name equals a * section of the same file."
+  },
+  "importRowDeckNameBlank": "Deck name after * is empty",
+  "@importRowDeckNameBlank": {
+    "description": "Why a row is not imported: its section has no name (BR-TRANSFER-015)."
+  },
+  "importRowDeckNameTooLong": "Deck name over 200 characters",
+  "@importRowDeckNameTooLong": {
+    "description": "Why a row is not imported: its section name is too long (BR-DECK-020)."
+  },
+  "importCaptionChooseDecks": "{count, plural, =1{Choose how to import 1 deck with a taken name.} other{Choose how to import {count} decks with taken names.}}",
+  "@importCaptionChooseDecks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Footer caption while clashes are undecided (spec 2026-10-08 U6)."
+  },
+  "importCaptionFixDeckName": "Fix the deck name to continue.",
+  "@importCaptionFixDeckName": {
+    "description": "Footer caption while the default deck name is refused (U6)."
+  },
+  "importProblemSectionsTitle": "This file is split into decks",
+  "@importProblemSectionsTitle": {
+    "description": "Title: a file with * rows imported into a deck of cards (UC-TRANSFER-001 E7)."
+  },
+  "importProblemSectionsBody": "A deck of cards can’t hold decks. Import from its parent deck instead. Nothing was added.",
+  "@importProblemSectionsBody": {
+    "description": "Guidance for E7."
+  },
+  "importProblemDepthTitle": "No room for another level",
+  "@importProblemDepthTitle": {
+    "description": "Title: the target is at level 10 (UC-TRANSFER-001 E8)."
+  },
+  "importProblemDepthBody": "Decks go at most 10 levels deep. Import from a higher deck. Nothing was added.",
+  "@importProblemDepthBody": {
+    "description": "Guidance for E8."
+  },
+  "importProblemChangedTitle": "A deck changed meanwhile",
+  "@importProblemChangedTitle": {
+    "description": "Title: a deck chosen for Add to existing changed before Import (UC-TRANSFER-001 E9)."
+  },
+  "importProblemChangedBody": "Nothing was added. Preview again to see the decks as they are now.",
+  "@importProblemChangedBody": {
+    "description": "Guidance for E9."
+  },
+  "importPreviewAgain": "Preview again",
+  "@importPreviewAgain": {
+    "description": "Action of the E9 banner: read the decks again."
+  },
+  "importDeckAddConsequence": "Cards already in it are skipped.",
+  "@importDeckAddConsequence": {
+    "description": "After Add to existing: what happens to rows already in that deck (C4)."
+  },
+  "importDeckCreateConsequence": "A second deck named {name} is made.",
+  "@importDeckCreateConsequence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "After Create new: the import makes a deck with the same name (C4)."
+  },
+  "importDecksTakenNames": "{count, plural, =1{1 deck with a taken name} other{{count} decks with taken names}}",
+  "@importDecksTakenNames": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Label of the row that decides every clash at once (spec 2026-10-08 C2)."
+  },
+  "importDeckAddAll": "Add all to existing",
+  "@importDeckAddAll": {
+    "description": "Choice for every clash at once: add each deck to the existing deck of its name (C2)."
+  },
+  "importDeckCreateAll": "Create all new",
+  "@importDeckCreateAll": {
+    "description": "Choice for every clash at once: make a new deck for each (C2)."
+  },
+  "importRowsMore": "{count, plural, =1{1 more row in this deck} other{{count} more rows in this deck}}",
+  "@importRowsMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Under a deck’s first rows on a sectioned preview: rows not shown (C3)."
+  },
+  "importIncludeDuplicatesSectionsBody": "Off: rows already in their deck or repeated within it are skipped.",
+  "@importIncludeDuplicatesSectionsBody": {
+    "description": "Include duplicates on a file split by * rows: duplicates are measured per deck (C5)."
+  },
   "importTitle": "Import cards",
   "@importTitle": {
     "description": "Import screen: the app bar title while importing."

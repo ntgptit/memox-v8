@@ -55,6 +55,7 @@ void main() {
         DeckTreeDataSource(db),
         now: _now,
       ),
+      decks,
     );
     root = await decks.root('r');
     leaf = await decks.sub(root.id, 'Nhà hàng');
@@ -73,7 +74,7 @@ void main() {
         mapping: ColumnMapping.fromHeader(table.rows.first),
         hasHeaderRow: true,
       ),
-    );
+    ).preview(defaultDeckName: 'Uncategorized', choices: const {});
   }
 
   test('pasted rows become cards; the summary counts what was skipped (UC-TRANSFER-001)', () async {

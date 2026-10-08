@@ -57,6 +57,7 @@ void main() {
         DeckTreeDataSource(db),
         now: _now,
       ),
+      decks,
     );
     root = await decks.root('r');
     leaf = await decks.sub(root.id, 'Nhà hàng');
@@ -112,7 +113,7 @@ void main() {
             mapping: ColumnMapping.fromHeader(table.rows.first),
             hasHeaderRow: true,
           ),
-        );
+        ).preview(defaultDeckName: 'Uncategorized', choices: const {});
         expect(rows.rows.first.draft!.tagNames, ['a;b', r'c\d']);
       }
     });

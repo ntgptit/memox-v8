@@ -27,7 +27,7 @@ const allowedFeatureImports = <String, Set<String>>{
   'progress': {},
   'search': {'deck'},
   'trash': {'deck', 'card'},
-  'transfer': {'card'},
+  'transfer': {'card', 'deck'},
   'starter_decks': {'deck', 'card', 'srs'},
   'reminders': {'settings', 'deck', 'srs'},
   'monitoring': {},

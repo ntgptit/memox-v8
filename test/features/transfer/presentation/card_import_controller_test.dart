@@ -105,6 +105,7 @@ void main() {
         DeckTreeDataSource(db),
         now: _now,
       ),
+      DeckRepositoryImpl(db, now: _now),
     );
     final result = ProviderContainer(
       overrides: [
@@ -138,7 +139,7 @@ void main() {
       expect(draftOf(c).step, CardImportStep.columns);
       expect(draftOf(c).mapping.isComplete, isTrue);
 
-      await wizard.previewRows();
+      await wizard.previewRows(defaultDeckName: 'Uncategorized');
       expect(draftOf(c).step, CardImportStep.preview);
       expect(draftOf(c).willWrite, 1);
 
@@ -234,13 +235,13 @@ void main() {
     await wizard.chooseFile();
     await wizard.readSource();
 
-    await wizard.previewRows();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
     expect(draftOf(c).problem, TransferRejection.mappingIncomplete);
 
     wizard
       ..assignColumn(0, TransferField.front)
       ..assignColumn(1, TransferField.back);
-    await wizard.previewRows();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
     expect(draftOf(c).step, CardImportStep.preview);
   });
 
@@ -251,7 +252,7 @@ void main() {
     await wizard.chooseFile();
     await wizard.readSource();
     wizard.assignColumn(2, null);
-    await wizard.previewRows();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
 
     expect(wizard.stepBack(), isTrue);
     expect(draftOf(c).step, CardImportStep.columns);
@@ -278,7 +279,7 @@ void main() {
       c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
       await wizard.chooseFile();
       await wizard.readSource();
-      await wizard.previewRows();
+      await wizard.previewRows(defaultDeckName: 'Uncategorized');
 
       final writing = wizard.commit();
       await pumpEventQueue();
@@ -308,7 +309,7 @@ void main() {
     c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
     await wizard.chooseFile();
     await wizard.readSource();
-    await wizard.previewRows();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
     expect(draftOf(c).willWrite, 0);
 
     wizard.setIncludingDuplicates(isIncluding: true);
@@ -329,7 +330,7 @@ void main() {
       c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
       await wizard.chooseFile();
       await wizard.readSource();
-      await wizard.previewRows();
+      await wizard.previewRows(defaultDeckName: 'Uncategorized');
       await decks.sub(leaf.id, 'child');
 
       await wizard.commit();
@@ -349,7 +350,7 @@ void main() {
       c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
       await wizard.chooseFile();
       await wizard.readSource();
-      await wizard.previewRows();
+      await wizard.previewRows(defaultDeckName: 'Uncategorized');
 
       await wizard.commit();
       final failed =
@@ -382,7 +383,7 @@ void main() {
     c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
     await wizard.chooseFile();
     await wizard.readSource();
-    await wizard.previewRows();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
     expect(draftOf(c).willWrite, 0);
 
     await wizard.commit();

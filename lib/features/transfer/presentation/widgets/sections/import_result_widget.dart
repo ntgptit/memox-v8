@@ -7,6 +7,7 @@ import 'package:memox/features/transfer/domain/models/import_summary_model.dart'
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_preview_row_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -55,6 +56,10 @@ class ImportResultWidget extends StatelessWidget {
             const SizedBox(height: AppSpacing.gutter),
             _Counts(summary: summary),
           ],
+          if (summary.decks.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.gutter),
+            _Decks(decks: summary.decks),
+          ],
           if (summary.skipped.isNotEmpty) _SkippedRows(rows: summary.skipped),
           // The rule explains the duplicate rows only (final review).
           if (summary.duplicatesSkipped > 0) MxNote(text: l10n.importSkipNote),
@@ -101,6 +106,33 @@ class _Counts extends StatelessWidget {
           ),
         if (summary.invalid > 0)
           row(AppIcons.alert, l10n.importCountInvalid, summary.invalid),
+      ],
+    );
+  }
+}
+
+/// The decks a sectioned import wrote to, New or Existing, with the cards
+/// each received (spec 2026-10-08 U8).
+class _Decks extends StatelessWidget {
+  const _Decks({required this.decks});
+
+  final List<ImportDeckResult> decks;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return MxSection(
+      title: l10n.importDecksHeader,
+      children: [
+        for (final deck in decks)
+          MxListRow(
+            title: deck.name,
+            subtitle: l10n.importDeckCards(deck.written),
+            trailing: MxBadge(
+              label: deck.isNew ? l10n.importDeckNew : l10n.importDeckExisting,
+              tone: deck.isNew ? MxBadgeTone.primary : MxBadgeTone.neutral,
+            ),
+          ),
       ],
     );
   }
