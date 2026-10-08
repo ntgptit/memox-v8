@@ -147,6 +147,13 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
             draft: draft,
             onIncludeDuplicates: (isOn) =>
                 _wizard.setIncludingDuplicates(isIncluding: isOn),
+            onChooseSection: _wizard.chooseSection,
+            onRenameDefault: _wizard.renameDefaultDeck,
+            onPreviewAgain: () => unawaited(
+              _wizard.previewRows(
+                defaultDeckName: context.l10n.importDefaultDeckName,
+              ),
+            ),
           ),
         if (step == CardImportStep.importing)
           _ImportingCard(count: draft.willWrite),

@@ -148,6 +148,66 @@ void main() {
   );
 
   libraryTest(
+    'a sectioned file from a root: decks first, a clash locks Import until '
+    'chosen (spec 2026-10-08 U2, U3, U6)',
+    (tester, env) async {
+      final root = await env.decks.root('Korean');
+      await env.decks.sub(root.id, 'Part 1');
+      await _pump(
+        tester,
+        env,
+        root.id,
+        file: _file('front,back\n*Part 1,\nmul,water\n*Idioms,\nbul,fire\n'),
+      );
+      await _tap(tester, _en.importSourceFile);
+      await _tap(tester, _en.importReadAction);
+      await _tap(tester, _en.importPreviewAction);
+
+      expect(find.text(_en.importDecksHeader.toUpperCase()), findsOneWidget);
+      expect(find.text(_en.importCaptionChooseDecks(1)), findsOneWidget);
+      MxButton commit() => tester.widget<MxButton>(
+        find.widgetWithText(MxButton, _en.importCommitAction(2)),
+      );
+      expect(commit().onPressed, isNull);
+
+      await _tap(tester, _en.importDeckAddToExisting);
+      expect(find.text(_en.importCaptionChooseDecks(1)), findsNothing);
+      expect(commit().onPressed, isNotNull);
+
+      await _tap(tester, _en.importCommitAction(2));
+      expect(await _cards(env), 2);
+    },
+  );
+
+  libraryTest(
+    'a sectioned file into a deck of cards says so and locks Preview (E7)',
+    (tester, env) async {
+      final root = await env.decks.root('Korean');
+      final deck = await env.decks.sub(root.id, 'Words');
+      await insertCard(env.db, id: 'c', deckId: deck.id, front: 'a');
+      await _pump(
+        tester,
+        env,
+        deck.id,
+        file: _file('front,back\n*Part 1,\nmul,water\n'),
+      );
+      await _tap(tester, _en.importSourceFile);
+      await _tap(tester, _en.importReadAction);
+      await _tap(tester, _en.importPreviewAction);
+
+      expect(find.text(_en.importProblemSectionsTitle), findsOneWidget);
+      expect(
+        tester
+            .widget<MxButton>(
+              find.widgetWithText(MxButton, _en.importPreviewAction),
+            )
+            .onPressed,
+        isNull,
+      );
+    },
+  );
+
+  libraryTest(
     'Back steps back one step; at step 1 it closes (IT-NAV-012 step 4)',
     (tester, env) async {
       final root = await env.decks.root('Korean');

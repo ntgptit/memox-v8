@@ -3,6 +3,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
+import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -88,6 +89,17 @@ class ImportMappingSectionWidget extends StatelessWidget {
           MxInlineBanner(
             tone: MxBannerTone.warning,
             message: l10n.importMappingIncomplete,
+          ),
+          const SizedBox(height: AppSpacing.grouped),
+        ],
+        // The target cannot take the decks the file names (E7, E8): the
+        // same source and mapping would be refused again.
+        if (draft.problem case final problem?
+            when isImportTargetProblem(problem)) ...[
+          MxInlineBanner(
+            tone: MxBannerTone.warning,
+            title: l10n.importProblem(problem).title,
+            message: l10n.importProblem(problem).body,
           ),
           const SizedBox(height: AppSpacing.grouped),
         ],

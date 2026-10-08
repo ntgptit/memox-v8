@@ -1,9 +1,16 @@
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+
+/// Whether a preview was refused because the target cannot take the decks
+/// the file names (UC-TRANSFER-001 E7, E8).
+bool isImportTargetProblem(TransferRejection? problem) =>
+    problem == TransferRejection.sectionsNeedDeckContainer ||
+    problem == TransferRejection.depthExceeded;
 
 /// The import screen's copy for its domain values (kit 11).
 extension ImportLabels on AppLocalizations {
@@ -32,7 +39,18 @@ extension ImportLabels on AppLocalizations {
     ImportRowKind.duplicateInSource => importRowDuplicateInSource(
       row.firstRowNumber!,
     ),
-    ImportRowKind.invalid => _invalid(row),
+    ImportRowKind.invalid => switch (row.deckNameReason) {
+      null => _invalid(row),
+      DeckRejection.blankName => importRowDeckNameBlank,
+      _ => importRowDeckNameTooLong,
+    },
+  };
+
+  /// The error under the default deck's name field (spec 2026-10-08 U4).
+  String importNameProblem(ImportNameProblem problem) => switch (problem) {
+    ImportNameProblem.blank => deckRejectionBlankName,
+    ImportNameProblem.tooLong => deckRejectionNameTooLong,
+    ImportNameProblem.takenInFile => importDeckNameTaken,
   };
 
   String _invalid(ImportRow row) => switch (row.reason) {
@@ -57,6 +75,18 @@ extension ImportLabels on AppLocalizations {
         TransferRejection.emptySource => (
           title: importProblemEmptyTitle,
           body: importProblemEmptyBody,
+        ),
+        TransferRejection.sectionsNeedDeckContainer => (
+          title: importProblemSectionsTitle,
+          body: importProblemSectionsBody,
+        ),
+        TransferRejection.depthExceeded => (
+          title: importProblemDepthTitle,
+          body: importProblemDepthBody,
+        ),
+        TransferRejection.sectionTargetChanged => (
+          title: importProblemChangedTitle,
+          body: importProblemChangedBody,
         ),
         _ => (
           title: importProblemUnreadableTitle,

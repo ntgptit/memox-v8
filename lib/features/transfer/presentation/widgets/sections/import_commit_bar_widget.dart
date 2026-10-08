@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
+import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -48,7 +49,9 @@ class ImportCommitBarWidget extends StatelessWidget {
       CardImportStep.columns => (
         l10n.importPreviewAction,
         AppIcons.preview,
-        draft.mapping.isComplete && !(draft.table?.isBlank ?? false)
+        draft.mapping.isComplete &&
+                !(draft.table?.isBlank ?? false) &&
+                !isImportTargetProblem(draft.problem)
             ? onPreview
             : null,
         l10n.importCaptionColumns,
@@ -56,10 +59,17 @@ class ImportCommitBarWidget extends StatelessWidget {
       CardImportStep.preview => (
         l10n.importCommitAction(draft.willWrite),
         AppIcons.download,
-        draft.willWrite > 0 ? onCommit : null,
+        draft.canCommit ? onCommit : null,
         // The button states the count; the caption only says why it is
-        // locked (critique 2026-09-30 part 3b).
-        draft.willWrite > 0 ? null : l10n.importCaptionNothingToImport,
+        // locked (critique 2026-09-30 part 3b; spec 2026-10-08 U6).
+        switch (draft.preview) {
+          final preview? when preview.undecided > 0 =>
+            l10n.importCaptionChooseDecks(preview.undecided),
+          final preview? when preview.hasNameProblem =>
+            l10n.importCaptionFixDeckName,
+          _ when draft.willWrite == 0 => l10n.importCaptionNothingToImport,
+          _ => null,
+        },
       ),
       CardImportStep.importing => (
         l10n.importCommitting,
