@@ -83,9 +83,11 @@ Future<void> _signInPickedGoogle(
   final hold = ref.listenManual(target, (_, _) {});
   try {
     final outcome = await ref.read(target.notifier).continueWithGoogle();
+    // A switch that succeeded may have taken screen 30 away meanwhile (its
+    // link ends on screen 32): nothing here is read from it then.
+    if (outcome != SignInOutcome.failed || !context.mounted) return;
     final problem = ref.read(target).problem;
-    if (outcome != SignInOutcome.failed || problem == null) return;
-    if (!context.mounted) return;
+    if (problem == null) return;
     showMxSnackbar(context, message: signInProblemText(context.l10n, problem));
   } finally {
     hold.close();

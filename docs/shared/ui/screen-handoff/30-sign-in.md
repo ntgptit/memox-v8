@@ -15,8 +15,9 @@ this phone's data when the sign-in already has an account. SB-A2; spec
   root navigator like Sync; Back returns to 23 (P3a plan ruling 1).
 - Screen 29, "Continue with email" (`go`, so Settings sits under it).
 - The transition layer, while a switch waits for its target sign-in. A switch started by
-  Google does not wait there: the Google account just picked signs in to the target at
-  once; the layer's sign-in shows only if that fails (owner 2026-10-08).
+  Google does not ask there: the Google account just picked signs in to the target at
+  once, the layer's form showing Google running without taking the keyboard, then the
+  progress; if that sign-in fails, the form stays to try again (owner 2026-10-08).
 - A device that already holds an account is sent from `mode=link` to screen 32 (P3b B9).
 - `reauth`: the re-auth banner's "Sign in" on 23 and 32, and the notice on 13
   (`/settings/sign-in?mode=reauth&from=…`; from 13 it opens under Settings, P3b plan

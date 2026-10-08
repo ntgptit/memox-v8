@@ -166,9 +166,13 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
         !state.isRunning &&
         widget.purpose == SignInPurpose.link;
     // A re-auth and a prefilled target already hold their address: only an
-    // empty one takes the keyboard.
+    // empty one takes the keyboard, and not while Google signs in, as the
+    // picked account does for a switch (final review 2026-10-08, M2).
     final isAutofocused =
-        widget.isEnabled && !isReauth && (widget.initialEmail ?? '').isEmpty;
+        widget.isEnabled &&
+        !state.isRunning &&
+        !isReauth &&
+        (widget.initialEmail ?? '').isEmpty;
     return MxAppShell(
       appBar: widget.appBar,
       body: MxScreenScroll(

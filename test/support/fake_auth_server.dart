@@ -134,6 +134,9 @@ class FakeAuthGateway implements AuthGateway {
   /// The next Google sign-in fails with this, as a dropped network does.
   Failure? failNextGoogleSignIn;
 
+  /// While set, a Google sign-in waits on it, as a slow network does.
+  Completer<void>? holdGoogleSignIn;
+
   void _set(String? userId) {
     _userId = userId;
     _refreshToken = userId == null ? null : server.issueToken(userId);
@@ -251,6 +254,7 @@ class FakeAuthGateway implements AuthGateway {
 
   @override
   Future<void> signInGoogle(GoogleCredential credential) async {
+    await holdGoogleSignIn?.future;
     kill?.step();
     server.checkOnline();
     final failure = failNextGoogleSignIn;
