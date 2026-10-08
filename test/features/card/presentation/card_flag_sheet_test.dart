@@ -20,9 +20,10 @@ void main() {
       ),
     );
 
+    // The sheet's own head (SW-REV-008), not one drawn by hand.
     expect(
-      tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).header,
-      isNotNull,
+      tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).title,
+      _en.cardFlag,
     );
     expect(find.text(_en.cardFlag), findsOneWidget);
   });

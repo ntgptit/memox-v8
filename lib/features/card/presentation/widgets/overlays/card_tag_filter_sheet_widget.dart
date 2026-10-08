@@ -80,7 +80,8 @@ class _CardTagFilterSheetWidgetState
         ),
       ),
       _ => MxBottomSheet(
-        header: _header(l10n, l10n.cardTagFilterNone),
+        title: l10n.cardTagFilterTitle,
+        subtitle: l10n.cardTagFilterNone,
         child: MxSkeletonList(
           semanticLabel: l10n.commonLoading,
           rows: _skeletonRows,
@@ -89,29 +90,10 @@ class _CardTagFilterSheetWidgetState
     };
   }
 
-  Widget _header(AppLocalizations l10n, String subLine) {
-    final styles = context.textStyles;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.card,
-        AppSpacing.micro,
-        AppSpacing.card,
-        AppSpacing.grouped,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.micro,
-        children: [
-          Text(l10n.cardTagFilterTitle, style: styles.compactTitle),
-          Text(subLine, style: styles.rowDescription),
-        ],
-      ),
-    );
-  }
-
   /// No tag in the library: where tags come from, and Close.
   Widget _none(AppLocalizations l10n) => MxBottomSheet(
-    header: _header(l10n, l10n.cardTagFilterEmpty),
+    title: l10n.cardTagFilterTitle,
+    subtitle: l10n.cardTagFilterEmpty,
     // A lone Close stays primary (The One Indigo Rule, R8).
     footer: MxSheetActions.single(
       isInSheet: true,
@@ -126,12 +108,10 @@ class _CardTagFilterSheetWidgetState
     _draft.retainAll({for (final tag in tags) tag.id});
     final shown = tags.matching(_search.text);
     return MxBottomSheet(
-      header: _header(
-        l10n,
-        _draft.isEmpty
-            ? l10n.cardTagFilterNone
-            : l10n.cardTagFilterChosen(_draft.length),
-      ),
+      title: l10n.cardTagFilterTitle,
+      subtitle: _draft.isEmpty
+          ? l10n.cardTagFilterNone
+          : l10n.cardTagFilterChosen(_draft.length),
       footer: MxSheetActions(
         isInSheet: true,
         cancelLabel: l10n.cardTagFilterClear,

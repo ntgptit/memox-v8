@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_level_query_label_widget.dart';
@@ -50,18 +49,9 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final query = ref.watch(deckLevelQueryProvider(parentId));
     return MxBottomSheet(
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(l10n.deckSortFilterTitle, style: styles.compactTitle),
-      ),
+      title: l10n.deckSortFilterTitle,
       footer: MxSheetActions.single(
         isInSheet: true,
         label: l10n.commonDone,

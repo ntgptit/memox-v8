@@ -4,6 +4,7 @@ import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
@@ -158,5 +159,34 @@ void main() {
           .onPressed,
       isNull,
     );
+  });
+
+  // SW-REV-008: a picker that fails to load keeps its head and a way out,
+  // as its loading sheet keeps the head.
+  testWidgets('the error sheet: the head, the error with Retry, a dismiss', (
+    tester,
+  ) async {
+    var retries = 0;
+    var dismissed = 0;
+    await pumpMx(
+      tester,
+      MxDeckPickerErrorSheet(
+        title: 'Move to deck',
+        rule: 'Cards keep their progress.',
+        errorTitle: "Couldn't load your decks",
+        errorBody: 'Nothing was lost.',
+        retryLabel: 'Retry',
+        onRetry: () => retries++,
+        dismissLabel: 'Cancel',
+        onDismiss: () => dismissed++,
+      ),
+    );
+
+    expect(find.text('Move to deck'), findsOneWidget);
+    expect(find.text('Cards keep their progress.'), findsOneWidget);
+    expect(find.byType(MxErrorState), findsOneWidget);
+    await tester.tap(find.widgetWithText(MxButton, 'Retry'));
+    await tester.tap(find.widgetWithText(MxButton, 'Cancel'));
+    expect((retries, dismissed), (1, 1));
   });
 }

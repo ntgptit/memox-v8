@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
@@ -46,15 +45,7 @@ class _MonitoringStatusSheetWidgetState
       LogStatus.open => l10n.monitoringReopen,
     };
     return MxBottomSheet(
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(title, style: context.textStyles.compactTitle),
-      ),
+      title: title,
       footer: MxSheetActions(
         isInSheet: true,
         cancelLabel: l10n.commonCancel,

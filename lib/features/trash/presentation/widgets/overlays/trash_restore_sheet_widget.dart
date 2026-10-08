@@ -18,7 +18,6 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
-import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Asks where [entries], all of one kind, go back to, then restores them
@@ -160,18 +159,20 @@ class _TrashRestoreSheetWidgetState
         emptyTitle: l10n.trashRestoreEmptyTitle,
         emptyBody: _emptyBody(l10n),
       ),
-      AsyncError(:final isLoading) => MxBottomSheet(
-        child: MxErrorState(
-          title: l10n.trashLoadErrorTitle,
-          body: l10n.libraryLoadErrorBody,
-          retryLabel: l10n.commonRetry,
-          onRetry: () => ref.invalidate(
-            _isCards
-                ? cardRestoreTargetsProvider(_batchIds)
-                : deckRestoreTargetsProvider(_batchIds),
-          ),
-          isRetrying: isLoading,
+      // The rule names the targets, unknown until they load.
+      AsyncError(:final isLoading) => MxDeckPickerErrorSheet(
+        title: _title(l10n),
+        errorTitle: l10n.trashLoadErrorTitle,
+        errorBody: l10n.libraryLoadErrorBody,
+        retryLabel: l10n.commonRetry,
+        onRetry: () => ref.invalidate(
+          _isCards
+              ? cardRestoreTargetsProvider(_batchIds)
+              : deckRestoreTargetsProvider(_batchIds),
         ),
+        isRetrying: isLoading,
+        dismissLabel: l10n.commonCancel,
+        onDismiss: () => Navigator.of(context).pop(false),
       ),
       _ => MxDeckPickerLoadingSheet(
         title: _title(l10n),

@@ -263,4 +263,70 @@ void main() {
       lessThanOrEqualTo(screen.height - 300),
     );
   });
+
+  // SW-REV-008: the head every sheet drew by hand, now the sheet's own.
+  group('title and subtitle (SW-REV-008)', () {
+    testWidgets('the title 16/700 20 in and 4 below the grabber; the subtitle '
+        '12 under it, 4 apart; 12 above the content', (tester) async {
+      await pumpMx(
+        tester,
+        const MxBottomSheet(
+          title: 'Move to deck',
+          subtitle: 'Cards keep their progress.',
+          child: SizedBox(height: 40, child: Text('Content')),
+        ),
+      );
+      final sheet = tester.getTopLeft(find.byType(MxBottomSheet));
+      final title = tester.widget<Text>(find.text('Move to deck'));
+      final subtitle = tester.widget<Text>(
+        find.text('Cards keep their progress.'),
+      );
+
+      expect(title.style!.fontSize, 16);
+      expect(title.style!.fontWeight, FontWeight.w700);
+      expect(subtitle.style!.fontSize, 12);
+      // The grabber block is 8 + 4 + 4 = 16, then the head's 4.
+      expect(
+        tester.getTopLeft(find.text('Move to deck')) - sheet,
+        const Offset(20, 20),
+      );
+      expect(
+        tester.getTopLeft(find.text('Cards keep their progress.')).dy -
+            tester.getBottomLeft(find.text('Move to deck')).dy,
+        4,
+      );
+      expect(
+        tester.getTopLeft(find.text('Content')).dy -
+            tester.getBottomLeft(find.text('Cards keep their progress.')).dy,
+        12,
+      );
+    });
+
+    testWidgets('a long title stops at two lines with an ellipsis', (
+      tester,
+    ) async {
+      final long = List.filled(12, 'Korean vocabulary').join(' ');
+      await pumpMx(
+        tester,
+        MxBottomSheet(title: long, child: const SizedBox(height: 40)),
+      );
+      final title = tester.widget<Text>(find.text(long));
+      expect((title.maxLines, title.overflow), (2, TextOverflow.ellipsis));
+    });
+
+    testWidgets('the title names the route and is a heading to TalkBack', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpMx(
+        tester,
+        const MxBottomSheet(title: 'Sort', child: SizedBox(height: 40)),
+      );
+      expect(
+        tester.getSemantics(find.text('Sort')),
+        isSemantics(namesRoute: true, isHeader: true),
+      );
+      handle.dispose();
+    });
+  });
 }

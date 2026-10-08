@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
@@ -21,15 +20,7 @@ class CardFlagSheetWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxBottomSheet(
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(l10n.cardFlag, style: context.textStyles.compactTitle),
-      ),
+      title: l10n.cardFlag,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
         child: Column(

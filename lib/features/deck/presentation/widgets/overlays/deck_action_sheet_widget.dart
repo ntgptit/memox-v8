@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -71,20 +70,7 @@ class DeckActionSheetWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final deck = view.deck;
     return MxBottomSheet(
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(
-          deck.name,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: context.textStyles.compactTitle,
-        ),
-      ),
+      title: deck.name,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
         child: Column(children: _rows(context)),
