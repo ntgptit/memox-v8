@@ -43,11 +43,130 @@ final class ImportRow {
       kind == ImportRowKind.duplicateInSource;
 }
 
-/// Every data row with its status, and the counts the preview shows. It
-/// writes nothing (BR-TRANSFER-006).
-final class ImportPreview {
-  const ImportPreview(this.rows);
+/// Where a group's cards go (spec 2026-10-08 §4.2, §4.3).
+sealed class ImportDestination {
+  const ImportDestination();
+}
 
+/// A flat import into the deck it was opened from.
+final class IntoTarget extends ImportDestination {
+  const IntoTarget();
+
+  @override
+  bool operator ==(Object other) => other is IntoTarget;
+
+  @override
+  int get hashCode => (IntoTarget).hashCode;
+}
+
+/// A new sub-deck of the target, made at commit when a card is kept.
+final class IntoNewDeck extends ImportDestination {
+  const IntoNewDeck();
+
+  @override
+  bool operator ==(Object other) => other is IntoNewDeck;
+
+  @override
+  int get hashCode => (IntoNewDeck).hashCode;
+}
+
+/// "Add to existing": a live direct sub-deck that takes cards.
+final class IntoExistingDeck extends ImportDestination {
+  const IntoExistingDeck(this.deckId);
+
+  final String deckId;
+
+  @override
+  bool operator ==(Object other) =>
+      other is IntoExistingDeck && other.deckId == deckId;
+
+  @override
+  int get hashCode => deckId.hashCode;
+}
+
+/// A clash the user has not decided (spec 2026-10-08 U3): nothing can be
+/// written yet.
+final class Undecided extends ImportDestination {
+  const Undecided();
+
+  @override
+  bool operator ==(Object other) => other is Undecided;
+
+  @override
+  int get hashCode => (Undecided).hashCode;
+}
+
+/// A direct sub-deck of the target whose name folds equal to a group's
+/// (spec 2026-10-08 §4.3).
+final class ImportClash {
+  const ImportClash({
+    required this.deckId,
+    required this.name,
+    required this.canHoldCards,
+  });
+
+  final String deckId;
+  final String name;
+  final bool canHoldCards;
+}
+
+/// Why the default deck's name cannot be used (spec 2026-10-08 U4).
+enum ImportNameProblem { blank, tooLong, takenInFile }
+
+/// The rows bound for one deck.
+final class ImportGroup {
+  const ImportGroup({
+    required this.name,
+    required this.isDefault,
+    required this.destination,
+    required this.rows,
+    this.clash,
+    this.nameProblem,
+  });
+
+  final String name;
+  final bool isDefault;
+  final ImportDestination destination;
+  final ImportClash? clash;
+  final ImportNameProblem? nameProblem;
+  final List<ImportRow> rows;
+
+  /// The rows a commit writes into this group's deck, in source order (A4).
+  List<ImportRow> rowsToWrite({required bool includeDuplicates}) => [
+    for (final row in rows)
+      if (row.kind == ImportRowKind.ready ||
+          (includeDuplicates && row.isDuplicate))
+        row,
+  ];
+
+  int willWrite({required bool includeDuplicates}) =>
+      rowsToWrite(includeDuplicates: includeDuplicates).length;
+}
+
+/// Every data row with its status, grouped by the deck it goes to, and the
+/// counts the preview shows. It writes nothing (BR-TRANSFER-006).
+final class ImportPreview {
+  /// A flat preview into the target (UC-TRANSFER-001 as before).
+  ImportPreview(this.rows)
+    : groups = [
+        ImportGroup(
+          name: '',
+          isDefault: false,
+          destination: const IntoTarget(),
+          rows: rows,
+        ),
+      ],
+      isSectioned = false;
+
+  /// A preview whose groups become sub-decks (BR-TRANSFER-015).
+  ImportPreview.sectioned(this.groups)
+    : rows = [for (final group in groups) ...group.rows],
+      isSectioned = true;
+
+  final List<ImportGroup> groups;
+  final bool isSectioned;
+
+  /// Every row of every group, in group order.
   final List<ImportRow> rows;
 
   int get total => rows.length;
@@ -59,16 +178,23 @@ final class ImportPreview {
   /// Whether no data row holds anything (UC-TRANSFER-001 E2).
   bool get isEmpty => blank == total;
 
+  /// Groups whose clash is still to be decided (spec 2026-10-08 U6).
+  int get undecided =>
+      groups.where((group) => group.destination is Undecided).length;
+
+  bool get hasNameProblem => groups.any((group) => group.nameProblem != null);
+
+  /// Whether Import may run once something is to be written (U6).
+  bool get canCommit => undecided == 0 && !hasNameProblem;
+
   /// "Include duplicates" writes both duplicate kinds as new cards (A4).
   int willWrite({required bool includeDuplicates}) =>
       ready + (includeDuplicates ? duplicates : 0);
 
   /// The rows a commit writes, in source order (A4).
   List<ImportRow> rowsToWrite({required bool includeDuplicates}) => [
-    for (final row in rows)
-      if (row.kind == ImportRowKind.ready ||
-          (includeDuplicates && row.isDuplicate))
-        row,
+    for (final group in groups)
+      ...group.rowsToWrite(includeDuplicates: includeDuplicates),
   ];
 
   int _count(ImportRowKind kind) =>
