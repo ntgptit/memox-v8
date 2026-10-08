@@ -13,6 +13,7 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_due_strip_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_reorder_done_widget.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
@@ -282,6 +283,7 @@ void main() {
     tester,
     env,
   ) async {
+    await _seed(env);
     final opened = <String>[];
     await pumpLibraryScreen(
       tester,
@@ -373,6 +375,56 @@ void main() {
     await env.decks.root('Korean');
     await tester.pumpAndSettle();
     expect(find.byType(MxFab), findsOneWidget);
+  });
+
+  libraryTest('scenario A: a first run shows Starter decks and the Trash, '
+      'no Tags, no search, no FAB (The Content Gate)', (tester, env) async {
+    await pumpLibraryScreen(tester, env, deckScreen());
+
+    expect(
+      [
+        for (final button in tester.widgetList<MxIconButton>(
+          find.descendant(
+            of: find.byType(MxAppBar),
+            matching: find.byType(MxIconButton),
+          ),
+        ))
+          button.semanticLabel,
+      ],
+      [_en.libraryStarterDecks, _en.libraryTrash],
+    );
+    expect(find.text(_en.searchFieldHint), findsNothing);
+    expect(find.byType(MxFab), findsNothing);
+    expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
+  });
+
+  libraryTest('scenario C: the first deck brings the search field, Tags and '
+      'the FAB in the same frame as its row', (tester, env) async {
+    await pumpLibraryScreen(tester, env, deckScreen());
+    expect(find.byTooltip(_en.libraryTags), findsNothing);
+
+    await env.decks.root('Korean');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Korean'), findsOneWidget);
+    expect(find.text(_en.searchFieldHint), findsOneWidget);
+    expect(find.byTooltip(_en.libraryTags), findsOneWidget);
+    expect(find.byType(MxFab), findsOneWidget);
+  });
+
+  libraryTest('reorder keeps its chrome: Done replaces the actions, no search '
+      'field, no FAB (critique 2026-09-30 part 3d-2)', (tester, env) async {
+    await _seed(env);
+    await pumpLibraryScreen(tester, env, deckScreen());
+    await tester.tap(find.byTooltip(_en.deckMoreActions('Korean')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.deckReorder));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(DeckReorderDoneWidget), findsOneWidget);
+    expect(find.byTooltip(_en.libraryTags), findsNothing);
+    expect(find.text(_en.searchFieldHint), findsNothing);
+    expect(find.byType(MxFab), findsNothing);
   });
 
   libraryTest('the sort sheet offers the five sorts of the kit, Progress last '
