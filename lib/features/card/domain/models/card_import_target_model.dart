@@ -22,7 +22,7 @@ final class CardImportChild {
 /// What an import preview knows of its target (spec 2026-10-08 §4.2).
 final class CardImportTarget {
   const CardImportTarget({
-    required this.holdsCards,
+    required this.isDeckOfCards,
     required this.canHoldCards,
     required this.hasRoomBelow,
     required this.pairs,
@@ -30,7 +30,7 @@ final class CardImportTarget {
   });
 
   /// A deck of cards (BR-DECK-009).
-  final bool holdsCards;
+  final bool isDeckOfCards;
 
   /// `unset` or a deck of cards: a flat import writes into it.
   final bool canHoldCards;
@@ -45,5 +45,5 @@ final class CardImportTarget {
   final List<CardImportChild> children;
 
   /// Whether a section may become a sub-deck of it (BR-TRANSFER-001).
-  bool get canHoldDecks => !holdsCards && hasRoomBelow;
+  bool get canHoldDecks => !isDeckOfCards && hasRoomBelow;
 }

@@ -33,7 +33,7 @@ final class PreviewImportUseCase {
     // Sections, or a flat source into a deck that cannot take cards, need
     // sub-decks of the target (BR-TRANSFER-001).
     final needsDecks = sections != null || !target.canHoldCards;
-    if (needsDecks && target.holdsCards) {
+    if (needsDecks && target.isDeckOfCards) {
       return const Rejected(TransferRejection.sectionsNeedDeckContainer);
     }
     if (needsDecks && !target.hasRoomBelow) {

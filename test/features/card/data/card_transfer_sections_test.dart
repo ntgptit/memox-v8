@@ -87,7 +87,7 @@ void main() {
     final target = (await cards.importTarget(root.id))!;
 
     expect(
-      (target.holdsCards, target.canHoldCards, target.canHoldDecks),
+      (target.isDeckOfCards, target.canHoldCards, target.canHoldDecks),
       (false, false, true),
     );
     expect(

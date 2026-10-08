@@ -35,7 +35,7 @@ ImportPreview _preview({
     mapping: _faces,
     hasHeaderRow: true,
     target: CardImportTarget(
-      holdsCards: false,
+      isDeckOfCards: false,
       canHoldCards: false,
       hasRoomBelow: true,
       pairs: const {},

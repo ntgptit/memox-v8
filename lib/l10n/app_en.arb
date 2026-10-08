@@ -3372,12 +3372,12 @@
   },
   "importDeckCards": "{count, plural, =1{1 card} other{{count} cards}}",
   "@importDeckCards": {
-    "description": "How many cards an import writes to one deck.",
     "placeholders": {
       "count": {
         "type": "int"
       }
-    }
+    },
+    "description": "How many cards an import writes to one deck."
   },
   "importDeckNothing": "No cards to add · no deck made",
   "@importDeckNothing": {
@@ -3417,12 +3417,12 @@
   },
   "importCaptionChooseDecks": "{count, plural, =1{Choose how to import 1 deck with a taken name.} other{Choose how to import {count} decks with taken names.}}",
   "@importCaptionChooseDecks": {
-    "description": "Footer caption while clashes are undecided (spec 2026-10-08 U6).",
     "placeholders": {
       "count": {
         "type": "int"
       }
-    }
+    },
+    "description": "Footer caption while clashes are undecided (spec 2026-10-08 U6)."
   },
   "importCaptionFixDeckName": "Fix the deck name to continue.",
   "@importCaptionFixDeckName": {

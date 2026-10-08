@@ -30,6 +30,30 @@ const _csv =
     ',,\n'
     'mul,water,\n';
 
+/// A file split by * rows (spec 2026-10-08), romanized for the test font.
+const _sectionsCsv =
+    'front,back\n'
+    'loose,word\n'
+    '*Part 1,\n'
+    'mul,water\n'
+    'bul,fire\n'
+    '*Idioms,\n'
+    'nun-i nopda,picky\n';
+
+/// A root whose sub-deck "Part 1" already holds one card of the file.
+Future<String> _seedSections(LibraryEnv env) async {
+  final root = await env.decks.root('Korean');
+  final part = await env.decks.sub(root.id, 'Part 1');
+  await insertCard(
+    env.db,
+    id: 'x',
+    deckId: part.id,
+    front: 'mul',
+    back: 'water',
+  );
+  return root.id;
+}
+
 Widget _context(String deckId, String label) =>
     DeckContextHeaderWidget(deckId: deckId, currentLabel: label);
 
@@ -56,26 +80,28 @@ void main() {
   for (final brightness in Brightness.values) {
     final theme = brightness.name;
 
-    Future<void> pump(WidgetTester tester, LibraryEnv env, String deckId) =>
-        pumpLibraryGolden(
-          tester,
-          env,
-          CardImportScreen(
-            deckId: deckId,
-            deckContext: _context,
-            onClose: () {},
-            onViewCards: () {},
-          ),
-          brightness,
-          overrides: [
-            importFilePickerProvider.overrideWithValue(
-              () async => (
-                name: 'words.csv',
-                bytes: Uint8List.fromList(utf8.encode(_csv)),
-              ),
-            ),
-          ],
-        );
+    Future<void> pump(
+      WidgetTester tester,
+      LibraryEnv env,
+      String deckId, {
+      String csv = _csv,
+    }) => pumpLibraryGolden(
+      tester,
+      env,
+      CardImportScreen(
+        deckId: deckId,
+        deckContext: _context,
+        onClose: () {},
+        onViewCards: () {},
+      ),
+      brightness,
+      overrides: [
+        importFilePickerProvider.overrideWithValue(
+          () async =>
+              (name: 'words.csv', bytes: Uint8List.fromList(utf8.encode(csv))),
+        ),
+      ],
+    );
 
     libraryTest('import source, $theme', (tester, env) async {
       final deckId = await _seed(env);
@@ -131,6 +157,52 @@ void main() {
         await _tap(tester, _en.importPreviewAction);
         await _tap(tester, _en.importCommitAction(1));
         await expectBoundaryGolden(tester, 'goldens/import_partial_$theme.png');
+      });
+    });
+    // Spec 2026-10-08 U2–U6: the decks first, a clash to choose.
+    libraryTest('import sections undecided, $theme', (tester, env) async {
+      final rootId = await _seedSections(env);
+      await withRealShadows(() async {
+        await pump(tester, env, rootId, csv: _sectionsCsv);
+        await _tap(tester, _en.importSourceFile);
+        await _tap(tester, _en.importReadAction);
+        await _tap(tester, _en.importPreviewAction);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/import_sections_undecided_$theme.png',
+        );
+      });
+    });
+
+    libraryTest('import sections decided, $theme', (tester, env) async {
+      final rootId = await _seedSections(env);
+      await withRealShadows(() async {
+        await pump(tester, env, rootId, csv: _sectionsCsv);
+        await _tap(tester, _en.importSourceFile);
+        await _tap(tester, _en.importReadAction);
+        await _tap(tester, _en.importPreviewAction);
+        await _tap(tester, _en.importDeckAddToExisting);
+        await expectBoundaryGolden(
+          tester,
+          'goldens/import_sections_decided_$theme.png',
+        );
+      });
+    });
+
+    // Spec 2026-10-08 U8: the decks an import wrote to.
+    libraryTest('import sections result, $theme', (tester, env) async {
+      final rootId = await _seedSections(env);
+      await withRealShadows(() async {
+        await pump(tester, env, rootId, csv: _sectionsCsv);
+        await _tap(tester, _en.importSourceFile);
+        await _tap(tester, _en.importReadAction);
+        await _tap(tester, _en.importPreviewAction);
+        await _tap(tester, _en.importDeckAddToExisting);
+        await _tap(tester, _en.importCommitAction(3));
+        await expectBoundaryGolden(
+          tester,
+          'goldens/import_sections_result_$theme.png',
+        );
       });
     });
   }

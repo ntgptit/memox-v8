@@ -9,8 +9,9 @@ XLSX file or from pasted text (IT-NAV-012). UC-TRANSFER-001; spec
 
 ## Entry points
 
-- The open deck's `⋮` sheet, "Import cards": a deck that holds cards or is unset. A root
-  deck and a deck that holds sub-decks do not offer it (BR-TRANSFER-008).
+- The open deck's `⋮` sheet, "Import cards": every deck. A deck of cards or an unset
+  deck takes cards; a root or a deck of decks takes a file split by `*` rows, or a flat
+  file into one default deck (spec 2026-10-08 U1, BR-TRANSFER-001).
 - The unset deck's third action, "Import cards from a file".
 
 Route: `/decks/deck/<id>/cards/import`, on the root navigator, so the bottom navigation
@@ -27,7 +28,8 @@ bar is gone while it is open.
 | Source chip | `MxCard` + `MxIconTile` | File name, then "{format} · UTF-8 · ready to read" or "{format} · {rows} · {columns}" once read, counting data rows (a header row is not one, as the preview skips it; critique 2026-09-30 part 3b); remove action. A workbook with several sheets adds a "Sheet: {name} ({i} of {n})" `MxChipTrigger` (ruling 2). |
 | 2 · Map columns | `MxSection` of `ImportMappingRowWidget` | "First row is a header" `MxSettingsRow` with an `MxToggle` and the header sample; one row per column: "Column {A}", its header cell, its first value (the first data row's cell, one line; none when empty; critique 2026-09-30 part 1), and an `MxChipTrigger` for the field, the chips ending on one edge with no arrow between (critique 2026-09-30) (six fields or "Not imported") in a bottom sheet. |
 | Mapping error | `MxInlineBanner` (warning) | Its own row when Term or Meaning is unmapped (K3). Preview is locked. |
-| 3 · Preview | `MxListSectionHeader` + `MxBadge` + `MxSection` | The title alone (the badges carry the counts; critique 2026-09-30 part 3b); Ready, Invalid, Duplicate and Blank badges, only for counts above 0; the "Include duplicates" toggle when there is one (after the badges, before the rows); one row per source row with its number, front and back (two lines each), its reason, and a status icon with a semantic label (K3); the first 50 rows and "Showing the first {n} of {m} rows" (K2). |
+| Decks (sectioned) | `MxSection` of `ImportDeckRowWidget` | A file split by `*` rows (BR-TRANSFER-015): one row per destination deck with its name (the default deck's is an `MxTextField`), a New / Existing `MxBadge` and its cards; a taken name adds a note and an `MxSegmentedTray` "Add to existing" · "Create new" with nothing chosen; a deck of decks of that name shows only a note (spec 2026-10-08 U2–U4). It sits after "Include duplicates", before the rows. |
+| 3 · Preview | `MxListSectionHeader` + `MxBadge` + `MxSection` | The title alone (the badges carry the counts; critique 2026-09-30 part 3b); Ready, Invalid, Duplicate and Blank badges, only for counts above 0; the "Include duplicates" toggle when there is one (after the badges, before the rows); one row per source row with its number, front and back (two lines each), its reason, and a status icon with a semantic label (K3); the first 50 rows and "Showing the first {n} of {m} rows" (K2), counted across the whole import; a sectioned file groups its rows under one `MxSection` per deck (U5). |
 | Importing | `MxCard` + `MxSpinner` | "Adding {n} cards…". Close and Back do nothing until the write ends. |
 | Footer | `MxFooterBar`, `MxActionPair` 1 : 1 | Cancel + the step action (Map columns · Preview rows · Import {n}), side by side at every step in English and Vietnamese (The Short Label Rule, DEV-169), and a caption; at Preview the caption shows only when nothing can be imported, since the button states the count (critique 2026-09-30 part 3b). |
 | Result | `MxEmptyState` in the outcome's tone + `MxSection` counts + `MxNote` | By outcome (K4); see States. |
@@ -50,11 +52,16 @@ bar is gone while it is open.
 | importing | no golden | no golden | Navigation is inert (IT-NAV-012 step 5). |
 | success | no golden | no golden | `MxEmptyState`, success tone; no deck name in the body. Import another file · View the cards (UC step 8). |
 | partial | `import_partial_light.png` | `import_partial_dark.png` | As success, with the skipped counts and the skip note. |
+| sectionsUndecided | `import_sections_undecided_light.png` | `import_sections_undecided_dark.png` | The Decks block with a taken name undecided; Import is locked and the caption says how many decks to choose for (U6). |
+| sectionsDecided | `import_sections_decided_light.png` | `import_sections_decided_dark.png` | "Add to existing" chosen; rows grouped by deck. |
+| sectionsResult | `import_sections_result_light.png` | `import_sections_result_dark.png` | The counts, then a Decks section (New / Existing, cards); the primary action is Back to deck (U8). |
+| sectionsRefused | no golden | no golden | A file split by `*` rows into a deck of cards (E7) or at level 10 (E8): a warning banner at Columns, Preview locked (U7). |
+| sectionTargetChanged | no golden | no golden | A deck chosen for "Add to existing" changed before Import (E9): a warning banner with "Preview again" on the preview. |
 | none | no golden | no golden | Neutral tone; Import another file · Back to deck (ruling 1). |
 | failed | no golden | no golden | `MxEmptyState`, danger tone; Close · Try again, which returns to the preview. |
 | rejects | no golden | no golden | `MxEmptyState`, warning tone; Close only. |
 
-Goldens: `test/features/transfer/presentation/goldens/import_{source,mapping,preview,partial}_{light,dark}.png`.
+Goldens: `test/features/transfer/presentation/goldens/import_{source,mapping,preview,partial}_{light,dark}.png` and `import_sections_{undecided,decided,result}_{light,dark}.png`.
 
 ## Back
 
@@ -79,6 +86,8 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 - **Critique 2026-09-30 tone pass, T6:** Ready (chip and row mark) is success; the step tracker's finished steps stay mastery (progress through the flow).
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** in the preview "Include duplicates" sits after the badges and before the preview rows; the source step's "Pick a spreadsheet or text file" empty state has no wrapping card, its body reads "Nothing is added until you confirm.", and the formats are stated only by the "Choose a file" option's hint.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the result lists each skipped row (its number, term, meaning, why and mark, drawn as in the preview) under "Skipped rows", five first and then "Show all {n}"; rows the commit's re-check dropped read "Already in this deck"; the skip note keeps only the duplicate rule (F4). Tapping the "Choose a file" card opens the picker, selected or not; the empty state below has no button (F9).
+- **Spec 2026-10-08 (DEV-289), deck sections:** a row whose Term cell starts with `*` names a sub-deck (BR-TRANSFER-015). U1 Import on every deck · U2 the Decks block is the confirmation, no extra step · U3 a taken name needs a choice, none pre-selected; a deck of decks of that name means a new deck · U4 the default deck's name is editable · U5 rows grouped by deck, 50 across the import · U6 Import locked with a caption until every choice is made · U7 E7/E8 as a banner at Columns · U8 the result lists the decks and leads Back to deck · U9 a flat file looks as before.
+- **Spec 2026-10-08 S6:** a workbook opens on its first sheet, even an empty one, which then says there are no rows; the sheet chip still offers the others.
 
 ## Copy
 
@@ -89,3 +98,4 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 - Preview: "3 · Preview" · "Ready · {n}" · "Invalid · {n}" · "Duplicate · {n}" · "Blank · {n}" · "Already in this deck" · "Repeated in the file (row {row})" · "Showing the first {shown} of {total} rows" · "Include duplicates".
 - Footer: "Map columns" · "Preview rows" · "Import {n}" · "Importing…" (Vietnamese "Ghép cột" · "Xem trước" · "Nhập {n}" · "Đang nhập…"); each fits half the 360 dp footer row (The Short Label Rule).
 - Result: "Imported" · "Imported with skips" · "Nothing added" · "Import didn’t finish" · "This deck no longer accepts cards" · "Added as new cards" · "Skipped — duplicates" · "Skipped — invalid rows" · "View the cards" · "Import another file" · "Back to deck" · "Try again".
+- Decks (spec 2026-10-08): "Decks" · "New" · "Existing" · "{n} cards" · "No cards to add · no deck made" · "A deck with this name is already here." · "Add to existing" · "Create new" · "The deck with this name holds decks, so a new one is made." · "Uncategorized" · "Another deck in this file has this name." · "Deck name after * is empty" · "Deck name over 200 characters" · "Choose how to import {n} decks with taken names." · "Fix the deck name to continue." · "This file is split into decks" · "No room for another level" · "A deck changed meanwhile" · "Preview again".

@@ -14,7 +14,7 @@ const _faces = ColumnMapping({0: TransferField.front, 1: TransferField.back});
 
 CardImportTarget _root({List<CardImportChild> children = const []}) =>
     CardImportTarget(
-      holdsCards: false,
+      isDeckOfCards: false,
       canHoldCards: false,
       hasRoomBelow: true,
       pairs: const {},
@@ -161,7 +161,7 @@ void main() {
         ['a', 'b'],
       ],
       const CardImportTarget(
-        holdsCards: true,
+        isDeckOfCards: true,
         canHoldCards: true,
         hasRoomBelow: true,
         pairs: {},

@@ -112,7 +112,7 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
       if (deck == null) return null;
       final pairsByChild = await _dao.foldedPairsUnder(deckId);
       return CardImportTarget(
-        holdsCards: deck.contentType == DeckContentType.card.name,
+        isDeckOfCards: deck.contentType == DeckContentType.card.name,
         canHoldCards: _takesCards(deck.contentType),
         hasRoomBelow: deck.depth < DeckEntity.maxDepth,
         pairs: await _dao.foldedPairs(deckId),
