@@ -20,7 +20,7 @@
   "commonLoading": "Đang tải",
   "libraryCreateDeck": "Tạo bộ thẻ",
   "libraryEmptyTitle": "Bắt đầu thư viện của bạn",
-  "libraryEmptyBody": "Một bộ thẻ gom các bộ thẻ con chứa thẻ của bạn. Hãy tạo một bộ, hoặc sao chép một bộ thẻ mẫu để bắt đầu với nội dung có sẵn.",
+  "libraryEmptyBody": "Sắp xếp thẻ thành bộ thẻ. Tạo bộ của riêng bạn hoặc bắt đầu với một bộ mẫu có sẵn.",
   "libraryBrowseStarterDecks": "Xem bộ thẻ mẫu",
   "libraryNothingDueTitle": "Hiện không có gì đến hạn",
   "libraryNothingDueBody": "Không bộ thẻ nào có thẻ đang chờ.",

@@ -305,6 +305,8 @@ Touch targets are 48dp minimum for every interactive control, whatever the paint
 
 **The Clear Tail Rule.** A list under a FAB ends clear of it (`MxScrollClearance.fab` or `fabAboveNav`); when the FAB hides (selection), the clearance goes with it.
 
+**The Content Gate Rule.** A control that acts on a screen's content (search, filter, select, tag, the FAB that adds a sibling to a list) exists only once that content exists, and is absent, not dimmed, until then; loading and failure count as no content. A control that creates the first content or recovers it (Create, Starter decks, Import, the Trash, Back) stays in every state. Trash › Select, Tags › search, the Library's FAB, search field and Tags follow it (DEV-309); the 0.38 dim is for a control that exists but cannot act right now.
+
 ## Elevation & Depth
 
 Hybrid, tonal first. Depth is conveyed by stepping through the surface-container ramp and a 1px ghost hairline; shadows are neutral (built on the scheme's `shadow` role, never brand-tinted) and appear only on cards, dialogs, sheets and the FAB. Dark has almost no shadow on cards and draws the hairline instead.

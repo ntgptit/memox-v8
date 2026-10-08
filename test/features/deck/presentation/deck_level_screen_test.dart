@@ -427,6 +427,50 @@ void main() {
     expect(find.byType(MxFab), findsNothing);
   });
 
+  libraryTest(
+    'scenario B: the last deck goes to the Trash; the same frame drops the '
+    'search field, Tags and the FAB and keeps the Trash and Undo',
+    (tester, env) async {
+      await env.decks.root('Korean');
+      await pumpLibraryScreen(tester, env, deckScreen());
+      expect(find.byTooltip(_en.libraryTags), findsOneWidget);
+
+      await tester.tap(find.byTooltip(_en.deckMoreActions('Korean')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(_en.deckDelete));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(_en.trashMoveConfirm));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text(_en.libraryEmptyTitle), findsOneWidget);
+      expect(find.text(_en.searchFieldHint), findsNothing);
+      expect(find.byTooltip(_en.libraryTags), findsNothing);
+      expect(find.byType(MxFab), findsNothing);
+      expect(find.byTooltip(_en.libraryTrash), findsOneWidget);
+      expect(find.text(_en.commonUndo), findsOneWidget);
+    },
+  );
+
+  libraryTest('the empty state reads as an action, in both languages (R4)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, deckScreen());
+    expect(
+      find.text(
+        'Organize your cards into decks. Create your own or start with a '
+        'ready-made collection.',
+      ),
+      findsOneWidget,
+    );
+    expect(
+      _vi.libraryEmptyBody,
+      'Sắp xếp thẻ thành bộ thẻ. Tạo bộ của riêng bạn hoặc bắt đầu với một '
+      'bộ mẫu có sẵn.',
+    );
+  });
+
   libraryTest('the sort sheet offers the five sorts of the kit, Progress last '
       '(BR-DECK-027)', (tester, env) async {
     await _seed(env);
