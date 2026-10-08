@@ -314,7 +314,7 @@ role as glyph. Measured text on container · glyph on container, light / dark:
 
 | Today | Consumers | New ground | Text | Glyph |
 |---|---|---|---|---|
-| `surfaceHero` (`MxCard.isHero`) | deck summary, deck due strip, card deck summary, gallery | `primaryContainer` | `onPrimaryContainer` 10.37 / 8.81; supporting text may be `onSurfaceVariant` 6.07 / 5.19 | `primaryForeground` 5.18 / 6.79 |
+| `surfaceHero` (`MxCard.isHero`) | deck summary, deck due strip, card deck summary, gallery | `surfaceContainerLow` with an `outlineVariant` hairline in both themes and the raised shadow in light (V4b, §4.13 round 2); not `primaryContainer` (R18) | `onSurface` 16.00 / 12.56, `onSurfaceVariant` 6.89 / 6.85 | `primaryForeground` 5.88 / 8.97; the donut label in its band (`warning` 5.90 / 9.01, `mastery` 5.83 / 9.00) |
 | `dangerSoft` (+ `dangerBorder`) | danger card, inline banner danger, `MxErrorState` tile, action sheet destructive tile, `MxIconTile.danger`, `MxButtonTone.dangerSoft` | `errorContainer` | `onErrorContainer` 8.73 / 7.78 | `error` 4.62 / 4.65 |
 | `warningSoft` (+ `warningBorder`) | warning card, `MxDialog` warning, floating notice, inline banner warning, `MxIconTile.caution`, outcome tile lost, lock strip, tag rename note, sync keep dialog | `warningContainer` | `onWarningContainer` 13.34 / 7.26 | `warning` 5.04 / 5.51 |
 | `successSoft` (+ `successBorder`), `success` at 8 % | success card, session summary hero, outcome tile kept, `MxIconTile.success` | `successContainer` | `onSuccessContainer` 13.33 / 7.22 | `success` 5.02 / 5.47 |
@@ -327,18 +327,13 @@ role as glyph. Measured text on container · glyph on container, light / dark:
 | `MxFilterChip` resting count (`ink` at `_countOpacityResting`) | chip rows | — | `onSurfaceVariant` (7.20 / 8.50) | — |
 | study choice idle | same | raised or recessed ground, `outline` edge (a tappable card is a control, R9: 3.89 / 5.03 on the raised ground) | `onSurface` | — |
 
-On the dark hero the primary button's fill is 2.51:1 against `primaryContainer`. The hero
-keeps its filled action, not by a rule but by the judgement R14 asked for: the Impeccable
-critique of §4.13 rendered the proposal and found the CTA still the loudest object (hue and
-chroma against a muted ground, the label, the glyph, the block shape) with the hierarchy
-intact. `DESIGN.md` records this one pair as a measured exemption to the 3:1 non-text floor,
-with the critique as its evidence; it is not a general licence for filled controls (R7). The
-hero's supporting text in `onSurfaceVariant` (6.07 / 5.19) is the one exception to "a
-container's text is its on-container"; every other container reads in its on-container
-only, because `onSurfaceVariant` is 4.19 on the dark `warningContainer` and 4.17 on the dark
-`successContainer`. The hero's title and body reach `onPrimaryContainer` through the text
-styles' `…In(color)` variants (`rowTitleIn`, `captionIn`, as `statusNote(color)` already
-does), never through a `DefaultTextStyle`, since the styles set their colour explicitly.
+The hero is a tonal step above the page and the list cards, not a brand wash: its CTA keeps
+the primary fill at 4.20 / 3.31 against the ground (R7 holds, no exemption needed), the
+indigo stays one mass per decision, and the hero leads by position, the mastery ring and
+the full-width CTA (§4.13 round 2). Every container reads in its on-container only
+(`onSurfaceVariant` is 4.19 on the dark `warningContainer` and 4.17 on the dark
+`successContainer`); the hero, being a neutral surface, reads in `onSurface` /
+`onSurfaceVariant` as any card.
 
 The alpha constants that mixed these grounds (`_tint`, `_tileTint`, `_badgeTint`,
 `_pillTint*`, `_primaryTint*`, `_seedTint`, `_keptTint`) are deleted. `MxIconTile.seed`
@@ -385,7 +380,7 @@ light / dark on the worst ground the consumer uses.
 | `MasteryRamp.fill / ink` (derived argument) | `mx_linear_progress`, `mx_mastery_donut`, deck rows | F/T | the ramp takes the scheme and the extension; §4.7 | §4.7 |
 | `semantic.mastery` seed | `gallery_surfaces_section` `MxIconTile(seed:)` | ground | `MxIconTileTone.mastery` | 13.29 / 7.23 |
 | `semantic.success` solid | `mx_badge` solid success tone | F | `success` / `onSuccess` | 6.48 / 7.69 |
-| `surfaceHero` | `app_decorations.heroCard` | ground | `primaryContainer` | §4.6 |
+| `surfaceHero` | `app_decorations.heroCard` | ground | `surfaceContainerLow` + `outlineVariant` hairline | §4.6 |
 | `dangerSoft` / `dangerBorder` | `app_decorations.dangerCard`, `studyChoice.wrong`; `mx_button.dangerSoft`; `mx_error_state`; `mx_action_sheet_command_row` destructive tile; `mx_icon_tile.danger`; `mx_inline_banner` danger | ground | `errorContainer`, text `onErrorContainer`, glyph `error` | 8.73 / 7.78 · 4.62 / 4.65 |
 | `dangerInk` | `mx_inline_banner` danger title | T | `onErrorContainer` | 8.73 / 7.78 |
 | `warningSoft` / `warningBorder` | `app_decorations.warningCard`; `mx_inline_banner` warning; `mx_icon_tile.caution`; `mx_outcome_tile` lost; `mx_floating_notice` | ground | `warningContainer`, text `onWarningContainer`, glyph `warning` | 13.34 / 7.26 · 5.04 / 5.51 |
@@ -407,10 +402,10 @@ Every pair in the "New" and "Measured" columns is an assertion of
 
 | Widget | Default | Selected / on | Focused | Pressed | Disabled | Error | Other |
 |---|---|---|---|---|---|---|---|
-| `MxButton` primary | `primary` / `onPrimary` | — | ring `primaryForeground` | `onSurface` 12 % layer | 0.38 | — | — |
+| `MxButton` primary | `primary` / `onPrimary` | — | ring `primaryForeground` | `shadow` 12 % layer (label stays 5.42 / 5.68; §4.13 round 2) | 0.38 | — | — |
 | `MxButton` outline / text | ink `primaryForeground`, edge `outline` / none | — | ring | layer | 0.38 | — | — |
 | `MxButton` ghost | `surfaceContainerLowest` / `onSurface`, edge `outline` | — | ring | layer | 0.38 | — | — |
-| `MxButton` destructive / dangerSoft / warning | `error`/`onError` · `errorContainer`/`onErrorContainer` · `warning`/`onWarning` | — | ring | layer | 0.38 | — | — |
+| `MxButton` destructive / dangerSoft / warning | `error`/`onError` · `errorContainer`/`onErrorContainer` · `warning`/`onWarning` | — | ring | `shadow` 12 % layer on the filled tones, ink 12 % on the others | 0.38 | — | — |
 | Text field | fill `surfaceContainerLow`, edge `outline`, hint `onSurfaceVariant` | — | fill `surfaceContainerLowest`, edge `primaryForeground` | — | edge `outlineVariant`, 0.38 | edge `error`, message `error` | — |
 | `MxCodeField` | slot edge `outline` | next slot `primaryForeground` | same | — | `outlineVariant` | `error` | — |
 | `MxToggle` | off: `surfaceContainerHighest`, edge `outline` | on: `primary`, thumb `onPrimary` | ring | — | 0.38 | — | — |
@@ -420,7 +415,7 @@ Every pair in the "New" and "Measured" columns is an assertion of
 | `MxStepper` | edge `primaryForeground` | — | ring | layer | 0.38 | edge `error` | — |
 | `MxRowInk` / list rows | — | — | ring | layer | 0.38 | — | — |
 | `MxNavRail` / `MxBottomNav` | icon `onSurfaceVariant` | pill `primaryContainer`, icon `onPrimaryContainer` | ring | layer | — | — | top edge `outlineVariant` |
-| `MxCard` | raised: lowest (+ `outlineVariant` edge in dark) · recessed: low + edge | edge `primaryForeground` 2 dp | — | — | — | danger: `errorContainer` | hero `primaryContainer` · warning `warningContainer` · success `successContainer` |
+| `MxCard` | raised: lowest (+ `outlineVariant` edge in dark) · recessed: low + edge | edge `primaryForeground` 2 dp | — | — | — | danger: `errorContainer` | hero `surfaceContainerLow` + edge in both themes · warning `warningContainer` · success `successContainer` |
 | `MxBadge` tonal / solid | container + on-container label, role dot / role + on-role | — | — | — | — | danger: `errorContainer` / `onErrorContainer` | — |
 | `MxStatusBadge` | §4.7 | — | — | — | — | — | — |
 | `MxIconTile` | tinted: `primaryContainer` / `primaryForeground` | — | — | — | — | danger: `errorContainer` / `error` | primary · warning · success · caution per §4.6 |
@@ -428,14 +423,16 @@ Every pair in the "New" and "Measured" columns is an assertion of
 | `MxEmptyState` | neutral `onSurfaceVariant` | — | — | — | — | danger `error` | primary `primaryForeground`, success `success`, warning `warning` |
 | `MxErrorState` | tile `errorContainer`, glyph `error` | — | — | — | — | — | — |
 | `MxSpinner` | fill `primary` on `onPrimary`; off-fill `primaryForeground` | — | — | — | — | — | loading |
-| `MxLinearProgress`, `MxMasteryDonut` | track `surfaceContainerLow`, fill §4.7 | — | — | — | — | — | empty: track only |
+| `MxLinearProgress`, `MxMasteryDonut` | bar track `surfaceContainerLow`; donut track `outlineVariant` (1.46 / 1.28 on the hero, 1.61 / 1.42 on a card; the arc 4.0 / 7.0 on it), fill §4.7 | — | — | — | — | — | empty: track only |
 | `MxOutcomeTile` | kept `successContainer`, lost `warningContainer` | — | — | — | — | — | — |
 | `MxSnackbar` | inverse roles, unchanged | — | `inversePrimary` | — | — | — | — |
 | Study choice | idle: ground + `outline` edge | `primary` / `onPrimary` | ring | layer | — | wrong `errorContainer` | right `successContainer` |
 
 "Ring" is the focus ring: `primaryForeground`, drawn outside the control with
-`AppStroke.focusOffset` by one shared painter (§4.13 P1), so it is always measured against
-the ground, never against the control's fill. Each row is a widget test per state, on the
+`AppStroke.focusOffset` by one shared painter (§4.13 P1) where the control has room (buttons,
+chips, the toggle, the stepper, the code slots), and inside the row with the same offset as
+an inset for a full-bleed `MxRowInk` under a clipping card (§4.13 round 2 P1); either way it
+is measured against the ground, never against the control's fill. Each row is a widget test per state, on the
 ground the widget sits on, in both themes (CHECK STATE COVERAGE).
 
 ### 4.10 Files
@@ -490,7 +487,7 @@ CTA or a control edge that stops reading), then stale or async state, then layou
 
 | # | Screen | States n / g | Widgets and roles that move | Grounds and overlays | Transitions that repaint | Evidence plan |
 |---|---|---|---|---|---|---|
-| 01 | Deck list · recursive | 22 / 8 | due strip and summary hero (`primaryContainer`, CTA), deck rows (mastery bar fill, due badge on `primaryContainer`, row hairline), breadcrumb chevron (`outline`), FAB, `MxEmptyState`, `MxErrorState`, actions sheet (command tiles `primaryContainer`), create / rename dialog (field `outline` → `primaryForeground` focus, `error`), reorder (selected edge `primaryForeground`), sort chip (`outline`) | page, card, sheet, dialog, keyboard | loading → loaded; loaded ↔ empty (content gate); error → retry; dialog open / field focus / error; reorder enter / exit; delete → trashed (inverse snackbar) | goldens for 8 states; 14 rendered in the audit (rootCreate, rootRename, deckMove and the loading / error / notFound ones are the risk rows); focus state by widget test |
+| 01 | Deck list · recursive | 22 / 8 | due strip and summary hero (`surfaceContainerLow` + hairline, CTA), deck rows (mastery bar fill, due badge on `primaryContainer`, row hairline), breadcrumb chevron (`outline`), FAB, `MxEmptyState`, `MxErrorState`, actions sheet (command tiles `primaryContainer`), create / rename dialog (field `outline` → `primaryForeground` focus, `error`), reorder (selected edge `primaryForeground`), sort chip (`outline`) | page, card, sheet, dialog, keyboard | loading → loaded; loaded ↔ empty (content gate); error → retry; dialog open / field focus / error; reorder enter / exit; delete → trashed (inverse snackbar) | goldens for 8 states; 14 rendered in the audit (rootCreate, rootRename, deckMove and the loading / error / notFound ones are the risk rows); focus state by widget test |
 | 02 | Review algorithm & reset | 9 / 3 | option rows (radio `outline` / `primaryForeground`), lock strip (`warningContainer`), reset dialog (`warningContainer`, destructive `error` / `onError`), spinner | page, card, dialog | locked ↔ unlocked; switching → switched / switchFailed; resetConfirm → resetting → resetDone | 3 goldens; switching / resetting by widget test (spinner off-fill); the rest rendered |
 | 03 | Starter decks | 10 / 10 | rows, `MxBadge` (tonal containers), choose sheet, `MxInlineBanner` (alreadyPresent, addFailed), `MxEmptyState`, `MxErrorState` | page, card, sheet | list → choose → adding → added; addFailed → retry | goldens for all; banner text on container by contrast test |
 | 04 | Library search | 6 / 6 | search field (`outline`, focus), result rows, tag chips, `MxEmptyState`, `MxErrorState`, load-more failure banner | page, card, keyboard | emptyQuery → results / noResults; error → retry; loadMoreFailed | goldens for all; focused field by widget test |
@@ -546,7 +543,7 @@ scored it; Assessment B audited the hero's reachable states from the source
 `mx_workload_breakdown_line.dart`) and computed every pair the spec had not measured. Both
 sets of numbers were re-computed by the author; they agree.
 
-**Verdict: keep the filled CTA on `primaryContainer`.** In dark the button stays the obvious
+**Round-1 verdict (superseded by round 2 below): keep the filled CTA on `primaryContainer`.** In dark the button stays the obvious
 primary action (saturated fill on a muted violet ground; label 4.63:1, play glyph, full-width
 block), the hierarchy is button → title (8.81) → eyebrow → workload line, and the ground
 reads as a card without an edge (1.64:1 against the page, against 1.20 today). The
@@ -558,17 +555,62 @@ Findings and rulings (each a row of the plan; severities are the critique's):
 | # | Finding | Measured | Ruling |
 |---|---|---|---|
 | P1 | The focus ring is drawn on the button's own edge, so against a filled button it is a ring-vs-fill pair: `primaryForeground` 2.71 dark / 1.40 light against `primary`; today's `primaryInk` fails the same way (1.90 / 1.41) on every filled button. `onSurface` as the ring passes on `primary` (3.79 / 3.81) but not on the other fills (`error` dark 1.77, `warning` 2.71 / 1.39). | ring vs fill | **COMMON FIRST:** the ring moves outside the control, separated by `AppStroke.focusOffset` (declared, unused today), in one shared painter used by buttons, `MxRowInk`, chips, the toggle and the stepper; it is then always a ring-vs-ground pair, `primaryForeground` ≥ 5.01 light / ≥ 5.46 dark on every ground including the containers (§4.3). A pre-existing same-cause defect, fixed by the migration; a widget test pins the ring colour over each filled tone and a golden shows the offset ring. |
-| P2 | The donut track (`surfaceContainer`) is 1.16 dark / 1.07 light on `primaryContainer`; at 0 % only the track and the "0 %" label paint. No neutral role does better than 1.64 on the dark container or 1.25 on the light one. | decoration | The track is decoration (R7, no floor) and the label carries the value, as on today's cards (1.17 / 1.27). Role unchanged; recorded, no change. |
-| P2 | The pressed state layer is the ink at 12 % over the fill (M3's own state layer), so the label is 3.79:1 while held; identical today and global to every filled button. | transient text | Out of this migration's scope: a Material 3 state layer, transient, unchanged. A UI-base register row records it with the measured alternative (black at 12 %: label 5.68, fill 2.04 against the dark container). |
+| P2 | The donut track (`surfaceContainer`) is 1.16 dark / 1.07 light on `primaryContainer`; at 0 % only the track and the "0 %" label paint. | decoration | Superseded by round 2: the track becomes `outlineVariant`. |
+| P2 | The pressed state layer is the ink at 12 % over the fill (M3's own state layer), so the label is 3.79:1 while held; identical today and global to every filled button. | transient text | Round 1 left it as a register row; round 2 fixes it with a role (`shadow` at 12 %, below). |
 | P2 | The donut's label must stay the ramp band's foreground (SW-REV-001), not `primaryForeground`. | — | §4.7 names the band foreground for the donut label; measured on `primaryContainer`: `warning` 5.20 / 6.82, `mastery` 5.14 / 6.82, `primaryForeground` 5.18 / 6.79. |
 | P2 | The tappable due strip's pressed layer (`onSurface` 12 % over the container) drops small text to 3.37–4.07 for the touch's duration. | transient text | Transient, M3 state layer, unchanged; the status term in question becomes `onSurfaceVariant` (§4.7) and is 3.75 dark while pressed. Recorded, no change. |
 | P2 | The hero text styles are `onSurface` / `onSurfaceVariant` by construction; `onPrimaryContainer` needs a path. | — | §4.6: the `…In(color)` variants. |
-| P3 | The dark fill-vs-container 2.51:1. | non-text | Exemption recorded in `DESIGN.md` (§4.6). |
+| P3 | The dark fill-vs-container 2.51:1. | non-text | Moot after round 2: the hero ground is `surfaceContainerLow` and the CTA is 3.31 / 4.20. |
 | P3 | `MxRowInk`'s focus ring is rectangular inside the card's rounded clip, so its corners thin; the due strip's tap has no destination label. | — | Not colour: two small defects found along the way, each filed as a sub-issue of this epic; the ring corners are closed by the shared ring painter's task, the label by its own one-line task. |
 
 Not verified by the critique: real pressed, focus and disabled renders (computed from the
 code), device perception, the card-list variant (same widget shape, not rendered). The plan's
 phase-6 audit renders both heroes in both themes with the focus ring.
+
+#### Round 2: V4 on the real screens (R18)
+
+Method: the same dual-agent critique, this time on 64 renders of the real Korean (open
+deck) and Words (card list) screens with the real fixtures and fonts, light and dark, made
+in a throwaway worktree by editing only `AppDecorations.heroCard` between runs (worktree
+discarded, tree clean): V1 (today), V2 (`primaryContainer`), V4a
+(`surfaceContainerLowest` + `outlineVariant` hairline), V4b (`surfaceContainerLow` +
+hairline), V4c (exactly a normal card); V1 and V4b also with a 60-character deck name and
+3-digit counts, at 320 dp, at text scale 1.3, with the CTA focused and mid-press, with the
+Words list scrolled to its end under the FAB, and the loading and empty states (which show
+no hero). Assessment A judged the images; Assessment B audited V4b from the source and
+measured every pair; the author viewed the key images and re-computed the numbers.
+
+| Variant | Hierarchy | CTA vs ground | Indigo once per decision | Hero vs page / vs card | Verdict |
+|---|---|---|---|---|---|
+| V1 light / dark | weak in light (ground 1.01 from the page, the hairline alone holds the shape); fair in dark | 4.39 / 3.51 | holds | 1.01 / 1.20 · tinted versus the cards | retired (not a role) |
+| V2 light / dark | best in light; in dark the card glows indigo and the CTA is a brighter patch of the same family | 3.70 / **2.51** | bends in dark: two indigo masses | 1.19 / 1.64 | rejected (R18) |
+| V4a, V4c | in dark indistinguishable from the list cards (same ground, same hairline) | 4.63 / 3.67 | holds | 1.05 / 1.12 · 1.00 / 1.00 vs the cards | rejected: no hero step |
+| **V4b** light / dark | good: a cool grey-blue panel with a visible hairline, then the CTA, then the white rows; in dark a navy panel one tone above the rows, led by position, the ring and the CTA | 4.20 / 3.31 | holds: the CTA is the only indigo mass | 1.05 / 1.24 · 1.10 / 1.11 vs the cards, hairline 1.53 / 1.58 on the page | **chosen, both themes** |
+
+"V2 light + V4b dark" was rejected: the hero would be a different kind of surface in each
+theme, and V2 light already leans toward the indigo-mass pattern V2 dark shows. V4b shares
+its decoration with `recessedCard` (study answer faces, the streak tile); the two never
+meet on a screen, and on the hero the full-width CTA makes the panel read as a summary, not
+a pit. Heuristics 1 / 4 / 6 / 8 for V4b: 3 / 3 / 3 / 3. Long content, 320 dp and text scale
+1.3 leave the hero intact (counts, the CTA on one line, the stats wrapping between whole
+terms); the loading and empty states draw no hero and do not change.
+
+Findings and rulings of round 2:
+
+| # | Finding | Measured | Ruling |
+|---|---|---|---|
+| P1 | The due strip is a full-bleed `MxRowInk` inside the card's anti-aliased clip, so a focus ring drawn outside the control would be cut off. | — | The shared ring painter draws outside where the control has room (the CTA sits in 20 dp of padding and needs 4) and inside, with the offset as an inset, for a full-bleed row; both are `primaryForeground` on the ground (5.88 / 8.97 on the hero). §4.9 updated. |
+| P2 | FAB clearance on Words and on the deck list is 4 dp, not 24: the list picks `MxScrollClearance.fabAboveNav` (tail 4 + 52 + 24 = 80) assuming a bottom bar, but the FAB's shell (`deck_level_screen.dart:364-381`) never has one, so `_MxFabLocation` (`mx_app_shell.dart:151`) places the FAB 24 above the content bottom and the branch "4 above the nav" never runs; the scroll-end render shows the last row a few dp above the FAB, nothing covered, the FAB's shadow bleeding over it. | 80 − 76 = 4 dp | Not colour: a defect found by the owner's audit (R18), filed as a sub-issue of this epic and fixed at its one owner: the lists take `MxScrollClearance.fab` (24 dp clear) and `fabAboveNav` is deleted with its test. |
+| P2 | The pressed state layer lightens the fill (white 12 %), so the label is 3.77:1 while held, on every filled button. Round 1 left it as a register row. | 3.77 | **Fixed in this migration, role-only:** the state layer of a filled tone is `shadow` at `AppOpacity.pressed`, which darkens the fill (label 5.42 light / 5.68 dark on `primary`; every filled tone ≥ 5.39 while pressed); edged and text tones keep the ink layer. §4.9 updated; a widget test pins both. |
+| P2 | The dark CTA is 3.31 against the hero, 0.31 of margin. | 3.31 | Accepted: measured, pinned by the contrast test; the label carries 4.63. |
+| P3 | The donut track (`surfaceContainer`) is 1.06 / 1.14 on the hero and only it paints at 0 %. | — | Round 1 kept it; round 2 found a better role: the track becomes `outlineVariant` (1.46 / 1.28 on the hero, 1.61 / 1.42 on a card; arc vs track 4.0 / 7.0). §4.9 updated. |
+| P3 | The hero is one tone from a list card (1.10 / 1.11). | — | Accepted by design (R18: a hierarchy close to V1); the golden review judges it. |
+| P3 | Pre-existing, in every variant: the stats line can end in an orphan "·"; the breadcrumb clips at the screen's left edge on a long name; the donut label is 9 sp. | — | Not colour: the first two filed as sub-issues of this epic; the label size is typography, out of scope. |
+
+Not verified in round 2: the mid-press render came back identical to the default (the
+ripple needs a further pump), so the pressed layer is proven by computation and by the
+widget test the plan adds, and the phase-6 audit renders it; TalkBack, motion and device
+brightness were not assessed.
 
 ### 4.14 Selected filled controls on dark sheets (R17)
 
@@ -590,8 +632,9 @@ measured:
 | `MxToggle` on, Monitoring level sheet (`monitoring_choice_sheet_widget.dart:109`) | `MxSection` card #131A3A inside the sheet | 3.67 | as above | as above | as above | Passes 3:1 on its real ground; the `onPrimary` thumb applies all the same. |
 
 `DESIGN.md` records the one granted exception (the checked `MxSelectionCheckbox` on a dark
-sheet) beside the hero CTA's, as a deliberate exception for a selected filled control on a
-dark surface, and nothing else inherits it. The phase-6 audit renders the three contexts
+sheet) as a deliberate exception for a selected filled control on a dark surface; it is the
+only exception the system carries (the hero CTA needs none under V4b), and nothing else
+inherits it. The phase-6 audit renders the three contexts
 again after the migration (outline value, `onPrimary` thumb, outer focus ring) and the
 widget tests of §4.9 pin the thumb and the check colours.
 
@@ -676,8 +719,8 @@ The rule catches the three ways a derived colour was built here, and nothing els
   and diffed against the baseline with the `golden-compare` skill's renderer. A difference
   that is not in §4.8 is a regression and stops the phase.
 - **After phase 6:** every changed golden is classified on the review page as **expected**
-  (the diff is a §4.8 mapping, or the focus ring's offset of §4.13 P1, and nothing else
-  moved), **unexpected** (anything else:
+  (the diff is a §4.8 or §4.9 mapping, or the focus ring's offset of §4.13 P1, and nothing
+  else moved), **unexpected** (anything else:
   layout, a missing edge, a wrong role) or **unresolved** (the reviewer cannot tell from the
   image; rendered larger or re-tested). Unexpected diffs are fixed before the review goes
   to the owner; the page lists each image with its class; the owner approves image by image,
@@ -719,7 +762,11 @@ The rule catches the three ways a derived colour was built here, and nothing els
   stays, hence `primaryForeground`.
 - **`surfaceTint` elevation overlay for the hero** (Flutter's `ElevationOverlay`): it
   reproduces today's 5 % tint with an M3 role, but Material 3 retired tint overlays for the
-  surface-container roles, and the hero's content would still have no on-colour.
+  surface-container roles.
+- **`primaryContainer` as the hero ground (V2)**: rejected by the owner for dark (R18) and
+  by the round-2 critique (CTA 2.51, two indigo masses); V4a and V4c rejected as
+  indistinguishable from a list card in dark; "V2 light + V4b dark" rejected for making the
+  hero a different surface per theme (§4.13).
 - **Keeping the saturated amber / teal as a fifth member** of each set: that is the derived
   layer under a new name (R4); the sets use M3 tones and the dark theme already did.
 - **Splitting the guard rule, the focus-ring owner and the Transitions reconciliation into
@@ -730,7 +777,8 @@ The rule catches the three ways a derived colour was built here, and nothing els
 - **Neutral text + coloured dot for status** (no coloured status text): possible, but the
   status foregrounds pass as roles (§4.7) and the approved design reads status in colour.
 - Out of scope: `inversePrimary`'s dark value, `secondary` / `tertiary` usage, typography,
-  layout, the `memox-api-services` reference, the pressed state layer's transient label
-  contrast (§4.13, a register row).
+  layout, the `memox-api-services` reference, the donut label's 9 sp size.
 - Found along the way (§4.13), filed as sub-issues of this epic: the rectangular `MxRowInk`
-  ring inside a rounded card, the due strip's missing destination label.
+  ring inside a rounded card, the due strip's missing destination label, the 4 dp FAB
+  clearance (`fabAboveNav`), the orphan "·" at the end of a wrapped stats line, the
+  breadcrumb clipping on a long deck name.
