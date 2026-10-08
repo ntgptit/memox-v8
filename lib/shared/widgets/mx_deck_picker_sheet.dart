@@ -70,20 +70,13 @@ class MxDeckPickerSheet extends StatelessWidget {
     return MxBottomSheet(
       isHeld: isHeld,
       header: _PickerHead(title: title, rule: rule),
-      footer: MxSheetActions.custom(
+      footer: MxSheetActions.single(
         isInSheet: true,
-        children: [
-          Expanded(
-            child: MxButton(
-              label: dismissLabel,
-              // Held, its own dismiss waits too: Navigator.pop skips the
-              // sheet's PopScope.
-              onPressed: isHeld ? null : onDismiss,
-              tone: isEmpty ? MxButtonTone.primary : MxButtonTone.outline,
-              isBlock: true,
-            ),
-          ),
-        ],
+        label: dismissLabel,
+        // Held, its own dismiss waits too: Navigator.pop skips the sheet's
+        // PopScope.
+        onPressed: isHeld ? null : onDismiss,
+        tone: isEmpty ? MxButtonTone.primary : MxButtonTone.outline,
       ),
       child: Padding(
         padding: const EdgeInsetsDirectional.only(

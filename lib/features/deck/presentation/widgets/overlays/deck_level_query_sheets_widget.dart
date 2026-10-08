@@ -8,7 +8,6 @@ import 'package:memox/features/deck/presentation/widgets/support/deck_level_quer
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
@@ -63,17 +62,10 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
         ),
         child: Text(l10n.deckSortFilterTitle, style: styles.compactTitle),
       ),
-      footer: MxSheetActions.custom(
+      footer: MxSheetActions.single(
         isInSheet: true,
-        children: [
-          Expanded(
-            child: MxButton(
-              label: l10n.commonDone,
-              isBlock: true,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-        ],
+        label: l10n.commonDone,
+        onPressed: () => Navigator.of(context).pop(),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

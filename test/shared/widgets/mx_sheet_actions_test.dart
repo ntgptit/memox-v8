@@ -273,4 +273,49 @@ void main() {
     expect(cancel.width, confirm.width);
     expect(cancel.top, lessThan(confirm.top));
   });
+
+  // SW-REV-008: one action (a lone Close, Done, OK) spans the row in the
+  // footer's own padding, without each caller rebuilding the row.
+  testWidgets('single: one block button in its tone, the sheet form kept', (
+    tester,
+  ) async {
+    var taps = 0;
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions.single(
+          label: 'Done',
+          onPressed: () => taps++,
+          isInSheet: true,
+        ),
+      ),
+    );
+    final button = tester.widget<MxButton>(_button('Done'));
+    expect(button.tone, MxButtonTone.primary);
+    expect(button.isBlock, isTrue);
+    expect(tester.getSize(_button('Done')).width, 340 - 2 * 16);
+    expect(
+      tester.getTopLeft(_button('Done')) -
+          tester.getTopLeft(find.byType(MxSheetActions)),
+      const Offset(16, 8),
+    );
+    await tester.tap(_button('Done'));
+    expect(taps, 1);
+
+    await pumpMx(
+      tester,
+      _width(
+        const MxSheetActions.single(
+          label: 'Cancel',
+          onPressed: null,
+          tone: MxButtonTone.outline,
+        ),
+      ),
+    );
+    expect(tester.widget<MxButton>(_button('Cancel')).onPressed, isNull);
+    expect(
+      tester.widget<MxButton>(_button('Cancel')).tone,
+      MxButtonTone.outline,
+    );
+  });
 }

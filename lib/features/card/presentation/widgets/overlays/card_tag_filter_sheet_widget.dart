@@ -7,7 +7,6 @@ import 'package:memox/features/card/presentation/providers/card_tag_filter_provi
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
@@ -113,18 +112,11 @@ class _CardTagFilterSheetWidgetState
   /// No tag in the library: where tags come from, and Close.
   Widget _none(AppLocalizations l10n) => MxBottomSheet(
     header: _header(l10n, l10n.cardTagFilterEmpty),
-    footer: MxSheetActions.custom(
+    // A lone Close stays primary (The One Indigo Rule, R8).
+    footer: MxSheetActions.single(
       isInSheet: true,
-      children: [
-        Expanded(
-          child: MxButton(
-            label: l10n.cardTagFilterClose,
-            // A lone Close stays primary (The One Indigo Rule, R8).
-            isBlock: true,
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
-      ],
+      label: l10n.cardTagFilterClose,
+      onPressed: () => Navigator.of(context).pop(),
     ),
     child: const SizedBox.shrink(),
   );

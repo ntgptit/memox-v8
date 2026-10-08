@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
@@ -56,16 +55,9 @@ Future<void> showLastAdminDialog(BuildContext context) => showMxDialog<void>(
     return MxDialog(
       title: l10n.accountLastAdminTitle,
       body: l10n.accountLastAdmin,
-      actions: MxSheetActions.custom(
-        children: [
-          Expanded(
-            child: MxButton(
-              label: l10n.commonOk,
-              isBlock: true,
-              onPressed: () => Navigator.of(dialogContext).pop(),
-            ),
-          ),
-        ],
+      actions: MxSheetActions.single(
+        label: l10n.commonOk,
+        onPressed: () => Navigator.of(dialogContext).pop(),
       ),
     );
   },
