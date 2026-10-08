@@ -124,6 +124,9 @@ void main() {
           tester.getBottomLeft(find.byType(MxButton)).dy,
       20,
     );
+    // The footnote form, with no fill and no edge: a boxed note inside the
+    // raised card was two ghost edges in dark (audit 2026-10-08 F-02).
+    expect(tester.widget<MxNote>(find.byType(MxNote)).isHint, isTrue);
   });
 
   testWidgets('a secondary action sits between the action and the footnote', (
