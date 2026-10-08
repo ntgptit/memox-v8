@@ -103,13 +103,31 @@ by the owner, never auto-accepted.
   CHECK STATE TRANSITIONS, CHECK DEGRADE, CHECK SIMILAR and an independent verification each
   leave an executed artefact (a test run, a rendered image, a grep output, a review from a
   fresh context), never a self-ticked checklist (§6.3).
-- **R17 · Selected fills on dark sheets (open, for the owner).** `primary` as the fill of a
-  selected chip, a checked box or an on toggle is 2.46:1 against the dark sheet and 2.90
-  against `surfaceContainer` (§4.2). The spec recommends accepting these as measured
-  exemptions identified by their on-colour mark (the white check, thumb or label, 4.63:1),
-  recorded in `DESIGN.md` beside the hero's, because the alternatives either change the
-  brand fill (R1) or add a `primaryForeground` edge to every selected control; the owner
-  decides at approval.
+- **R17 · Selected fills on dark sheets: a conditional exception, per control** (owner,
+  spec review 2026-10-08). `primary` as the fill of a selected control is 2.46:1 against
+  the dark sheet and 2.90 against `surfaceContainer` (§4.2). No blanket exemption and no
+  blanket `primaryForeground` edge. The exception applies to one control only when: the fill
+  is the brand fill; the control stays recognisable through its on-colour, an internal
+  indicator or its label; and the selected state has a cue besides the ground colour. Each
+  affected control (selected chip, checked box, toggle on, a selected segment or pill) is
+  checked on its own, in the real screen, on the dark sheet, with proof that the on-colour
+  passes, the shape still reads, selected and unselected differ in context, and focused /
+  pressed / disabled / error do not degrade (§4.14). A control that still reads poorly gets
+  its own visual treatment, not the same edge as the others. `DESIGN.md` records the
+  exception as deliberate for selected filled controls on dark surfaces, like the hero CTA's,
+  and extends it to nothing else.
+- **R18 · The hero: V3 rejected, V2 dark rejected, V4 required** (owner, after viewing the
+  V1 / V2 / V3 renders). The Study CTA stays a primary filled button. V2 (`primaryContainer`)
+  may stand as the light candidate, but in dark it makes the hero ground too loud and
+  flattens the hierarchy between the hero and its CTA. A V4 is built from approved M3 roles
+  only, `surfaceContainer*` for the ground and `outlineVariant` where a hairline is needed,
+  with a hierarchy close to V1; `surfaceHero` is not recreated and no derived token is
+  added. V1 / V2 / V4 are compared under the same content and layout, light and dark, on the
+  real Korean (open deck) and Words (card list) screens, on visual hierarchy, CTA prominence
+  and affordance, brand consistency, text and non-text contrast, card separation and the
+  consistency between the hero and the normal cards; with previews of the affected states
+  (default, loading, empty, disabled, focused, pressed, error), long content, text scaling
+  and a narrow screen; and an audit of the FAB and scroll clearance on Words (§4.13).
 
 ## 3. Root cause analysis
 
