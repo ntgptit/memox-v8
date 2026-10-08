@@ -74,7 +74,7 @@ One `MxBottomSheet`, "Sort & filter":
 | deckMaxDepth | no golden | no golden | No FAB. |
 | deckLoading | no golden | no golden | Skeletons under the summary card. |
 | deckError | no golden | no golden | Error state with Retry. |
-| deckNotFound | no golden | no golden | "This deck is no longer here", Back to Library and Open Trash (FE-B1 D11); replaces ruling P2-L7. |
+| deckNotFound | no golden | no golden | "This deck is no longer here", Back to Library and Open Trash (FE-B1 D11), a neutral `MxEmptyState` like the card's (owner 2026-10-08); replaces ruling P2-L7. |
 | deckOverflow | no golden | no golden | The sub-deck action sheet. |
 | deckMove | no golden | no golden | The deck picker; only decks with the same review algorithm receive it (UC-DECK-005). |
 | deckDelete | no golden | no golden | As rootDelete. |

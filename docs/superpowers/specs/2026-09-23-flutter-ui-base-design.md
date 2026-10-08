@@ -485,7 +485,7 @@ item names where it comes from.
 | 75 | The card list's selection header (count and close) sits inside the card section, under the deck app bar, not in it: the deck screen may not import `card` (D8) — closed by library alignment phase E | library phase 3 P3-L1 |
 | 76 | Bulk Tag only adds a tag. Removing one from a selection needs a read of the tags the selection carries, which the backend lacks (finding) | library phase 3 P3-L2 |
 | 77 | A card row's tap opens nothing, and the empty deck offers no "Add card", until the detail and the editor arrive in phase 4 — "Add card" closed by library phase 4a — row tap closed by library phase 4b | library phase 3 P3-L3 |
-| 78 | The bulk tag input is a dialog, not a sheet, because MxBottomSheet does not pad for the keyboard (row 64) | library phase 3 P3-L9 |
+| 78 | The bulk tag input is a dialog, not a sheet, because MxBottomSheet did not pad for the keyboard (row 64). Both pad now: the sheet since FE-C6 (row 64) and MxDialog since the shared widgets review (2026-10-07, SW-REV-002) | library phase 3 P3-L9 |
 | 79 | The card editor follows the V3 kit (08, 09) over library spec §6.5: live validation with Save disabled until valid, failures inside the form (inline banner, warning banner, gone state), and a discard confirm | library phase 4a P4a-L1…L5 |
 | 80 | A new card has no flag control; the flag toggles from the edit app bar, and its glyph changes but does not recolour (`Icon(color:)` is banned) | library phase 4a P4a-L6 |
 | 81 | The editor's deck context drops the kit's pill border, and Add tag is an outline chip, not dashed: no `BorderSide`, and no dashed-border token | library phase 4a P4a-L7, P4a-L8 |

@@ -7,13 +7,13 @@ import 'package:memox/features/card/presentation/providers/card_tag_filter_provi
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 
 /// Picks the tags [deckId]'s card list shows (UC-TAG-001 steps 6-7; FE-B2
 /// spec D3). Completes with the set to apply, or null when dismissed, which
@@ -71,17 +71,34 @@ class _CardTagFilterSheetWidgetState
     return switch (tags) {
       AsyncData(:final value) when value.isEmpty => _none(l10n),
       AsyncData(:final value) => _picker(l10n, value),
+      // The head stays, so TalkBack names the sheet; Retry is the one
+      // primary, and Close beside it is outline (The One Indigo Rule).
       AsyncError(:final isLoading) => MxBottomSheet(
-        child: MxErrorState(
-          title: l10n.cardTagFilterLoadError,
-          body: l10n.libraryLoadErrorBody,
-          retryLabel: l10n.commonRetry,
-          onRetry: () => ref.invalidate(cardTagFilterProvider(widget.deckId)),
-          isRetrying: isLoading,
+        title: l10n.cardTagFilterTitle,
+        footer: MxSheetActions.single(
+          isInSheet: true,
+          label: l10n.cardTagFilterClose,
+          onPressed: () => Navigator.of(context).pop(),
+          tone: MxButtonTone.outline,
+        ),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.only(
+            start: AppSpacing.control,
+            end: AppSpacing.control,
+            bottom: AppSpacing.control,
+          ),
+          child: MxErrorState(
+            title: l10n.cardTagFilterLoadError,
+            body: l10n.libraryLoadErrorBody,
+            retryLabel: l10n.commonRetry,
+            onRetry: () => ref.invalidate(cardTagFilterProvider(widget.deckId)),
+            isRetrying: isLoading,
+          ),
         ),
       ),
       _ => MxBottomSheet(
-        header: _header(l10n, l10n.cardTagFilterNone),
+        title: l10n.cardTagFilterTitle,
+        subtitle: l10n.cardTagFilterNone,
         child: MxSkeletonList(
           semanticLabel: l10n.commonLoading,
           rows: _skeletonRows,
@@ -90,41 +107,15 @@ class _CardTagFilterSheetWidgetState
     };
   }
 
-  Widget _header(AppLocalizations l10n, String subLine) {
-    final styles = context.textStyles;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.card,
-        AppSpacing.micro,
-        AppSpacing.card,
-        AppSpacing.grouped,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.micro,
-        children: [
-          Text(l10n.cardTagFilterTitle, style: styles.compactTitle),
-          Text(subLine, style: styles.rowDescription),
-        ],
-      ),
-    );
-  }
-
   /// No tag in the library: where tags come from, and Close.
   Widget _none(AppLocalizations l10n) => MxBottomSheet(
-    header: _header(l10n, l10n.cardTagFilterEmpty),
-    footer: MxSheetActions.custom(
+    title: l10n.cardTagFilterTitle,
+    subtitle: l10n.cardTagFilterEmpty,
+    // A lone Close stays primary (The One Indigo Rule, R8).
+    footer: MxSheetActions.single(
       isInSheet: true,
-      children: [
-        Expanded(
-          child: MxButton(
-            label: l10n.cardTagFilterClose,
-            tone: MxButtonTone.outline,
-            isBlock: true,
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ),
-      ],
+      label: l10n.cardTagFilterClose,
+      onPressed: () => Navigator.of(context).pop(),
     ),
     child: const SizedBox.shrink(),
   );
@@ -134,12 +125,10 @@ class _CardTagFilterSheetWidgetState
     _draft.retainAll({for (final tag in tags) tag.id});
     final shown = tags.matching(_search.text);
     return MxBottomSheet(
-      header: _header(
-        l10n,
-        _draft.isEmpty
-            ? l10n.cardTagFilterNone
-            : l10n.cardTagFilterChosen(_draft.length),
-      ),
+      title: l10n.cardTagFilterTitle,
+      subtitle: _draft.isEmpty
+          ? l10n.cardTagFilterNone
+          : l10n.cardTagFilterChosen(_draft.length),
       footer: MxSheetActions(
         isInSheet: true,
         cancelLabel: l10n.cardTagFilterClear,

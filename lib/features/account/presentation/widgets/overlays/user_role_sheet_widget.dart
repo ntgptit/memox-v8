@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/domain/models/managed_user_model.dart';
 import 'package:memox/features/account/presentation/controllers/users_controller.dart';
 import 'package:memox/features/account/presentation/states/users_state.dart';
@@ -94,15 +93,7 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
     // always has a sheet to be said in (P4 minor M3).
     return MxBottomSheet(
       isHeld: _isSaving,
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(widget.user.email, style: context.textStyles.compactTitle),
-      ),
+      title: widget.user.email,
       footer: MxSheetActions(
         isInSheet: true,
         cancelLabel: l10n.commonCancel,

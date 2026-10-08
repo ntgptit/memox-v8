@@ -52,7 +52,7 @@ every local midnight with no skeleton once shown (BR-PROGRESS-018, D8).
 | quiet range | — | — | (UC-PROGRESS-002 A3) the note under the list. |
 | no decks | — | — | (A2) only "No decks yet · Create a deck in the Library and its progress appears here". No range, no total, no button. |
 | no sub-decks | — | — | (A1) the total row and its note. |
-| deck gone | — | — | (E2) "This deck is no longer here" with Back, no Retry (UI-base row 129). |
+| deck gone | — | — | (E2) "This deck is no longer here" with Back, no Retry, in the neutral tone (UI-base row 129; owner 2026-10-08). |
 Other goldens: `deck_progress_leaf_light.png` / `deck_progress_leaf_dark.png` (a deck's progress, leaf deck); `deck_progress_gone_light.png` / `deck_progress_gone_dark.png` (a deck's progress, deck gone); `progress_no_decks_light.png` / `progress_no_decks_dark.png` (no decks); `progress_quiet_light.png` / `progress_quiet_dark.png` (a quiet range).
 
 

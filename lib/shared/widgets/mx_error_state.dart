@@ -9,9 +9,10 @@ import 'package:memox/shared/widgets/mx_card.dart';
 
 /// An inline load failure with a Retry. It has EmptyState's anatomy at a
 /// smaller scale and a danger tone. The body says first that nothing was
-/// lost, then offers the retry. Without [onRetry] it is the "not found" form;
-/// [actionIcon] swaps Retry's glyph when the action is not a retry; null
-/// draws none.
+/// lost, then offers the retry. A gone item is not a failure: it is an
+/// MxEmptyState in the neutral tone (owner 2026-10-08). [actionIcon] swaps
+/// Retry's glyph when the action is not a retry, such as Close where
+/// nothing can be retried; null draws none.
 class MxErrorState extends StatelessWidget {
   const MxErrorState({
     super.key,
@@ -79,10 +80,14 @@ class MxErrorState extends StatelessWidget {
             ),
             // Ruling O4: the tile → title gap is UNSPECIFIED; EmptyState's.
             const SizedBox(height: AppSpacing.gutter),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: styles.compactTitle,
+            // It swaps in for the skeleton in place: announce it (SW-REV-006).
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: styles.compactTitle,
+              ),
             ),
             const SizedBox(height: _titleGap),
             Text(body, textAlign: TextAlign.center, style: styles.emptyBody),

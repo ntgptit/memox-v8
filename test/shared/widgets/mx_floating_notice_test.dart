@@ -47,7 +47,7 @@ void main() {
         derived,
       ).copyWith(boxShadow: AppShadows.overlay(scheme)),
     );
-    expect((glyph.size, glyph.color), (16, semantic.warning));
+    expect((glyph.size, glyph.color), (16, derived.warningInk));
   });
 
   testWidgets('one action sits on the message line, at the end', (

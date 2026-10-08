@@ -122,7 +122,10 @@ asked. Without the connector, tell the owner and record progress nowhere else.
     the evidence (PR, commit, tests) and anything descoped with its reason.
   - Blockers and open questions are comments on the issue; the order of work
     is priority.
-  - An epic is Done when all its sub-issues are Done or Canceled.
+  - An epic is Done when all its sub-issues are Done or Canceled. It then
+    moves, with its sub-issues, to the Completed project `MemoX · Lưu trữ`,
+    where it auto-archives: Linear archives nothing by hand, and nothing in
+    an open project such as MemoX.
   - After saving, check any PR link Linear made: the workspace's GitHub
     integration may point `#n` at `memox-v6`; if it does, write
     "pull request số n của `ntgptit/memox-v8`" without `#`.

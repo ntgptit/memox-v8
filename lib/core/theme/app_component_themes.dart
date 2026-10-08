@@ -236,5 +236,19 @@ abstract final class AppComponentThemes {
           AppSpacing.gutter,
         ),
         contentTextStyle: MxTextStyles(texts, scheme).snackbarMessage,
+        // Flat: the inverse surface sets it apart; DESIGN.md gives shadows
+        // to cards, dialogs, sheets and the FAB only (SW-REV-007).
+        elevation: 0,
+      );
+
+  /// Tooltip (MxIconButton's long-press name): the caption on the inverse
+  /// surface, as the snackbar, radius 8 (SW-REV-007).
+  static TooltipThemeData tooltips(ColorScheme scheme, TextTheme texts) =>
+      TooltipThemeData(
+        decoration: BoxDecoration(
+          color: scheme.inverseSurface,
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
+        textStyle: texts.labelSmall!.copyWith(color: scheme.onInverseSurface),
       );
 }

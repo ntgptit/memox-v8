@@ -92,17 +92,19 @@ class TrashEntryRowWidget extends StatelessWidget {
               checked: isSelecting ? isSelected : null,
               enabled: onTap != null,
               label: l10n.trashEntrySemantics(name, meta, timeLeft, origin),
-              child: GestureDetector(
+              // The excluded row's actions, kept on this one node
+              // (SW-REV-005).
+              onTap: onTap,
+              onLongPress: onLongPress,
+              child: MxRowInk(
+                onTap: onTap,
                 onLongPress: onLongPress,
-                child: MxRowInk(
-                  onTap: onTap,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.gutter,
-                      vertical: AppSpacing.grouped,
-                    ),
-                    child: lines,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.gutter,
+                    vertical: AppSpacing.grouped,
                   ),
+                  child: lines,
                 ),
               ),
             ),

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_level_query_label_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
@@ -51,29 +49,13 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final query = ref.watch(deckLevelQueryProvider(parentId));
     return MxBottomSheet(
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(l10n.deckSortFilterTitle, style: styles.compactTitle),
-      ),
-      footer: MxSheetActions.custom(
+      title: l10n.deckSortFilterTitle,
+      footer: MxSheetActions.single(
         isInSheet: true,
-        children: [
-          Expanded(
-            child: MxButton(
-              label: l10n.commonDone,
-              isBlock: true,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-        ],
+        label: l10n.commonDone,
+        onPressed: () => Navigator.of(context).pop(),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -27,11 +27,11 @@ void main() {
         ),
       ),
     );
-    final header =
-        tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).header!
-            as Padding;
-
-    expect((header.padding as EdgeInsets).bottom, AppSpacing.grouped);
+    // The sheet's own head (SW-REV-008): 12 under the title.
+    expect(
+      tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).title,
+      _en.deckSortFilterTitle,
+    );
     expect(
       tester
           .widget<MxListSectionHeader>(find.byType(MxListSectionHeader))

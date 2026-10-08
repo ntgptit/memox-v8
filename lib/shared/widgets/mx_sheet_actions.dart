@@ -22,7 +22,27 @@ class MxSheetActions extends StatelessWidget {
     this.isInSheet = false,
     this.isConfirmLoading = false,
   }) : assert(!(isDestructive && isWarning), 'a confirm has one tone'),
-       children = const [];
+       children = const [],
+       _singleTone = null;
+
+  /// One action across the row: a lone Close, Done or OK (SW-REV-008). A
+  /// lone Close stays primary (The One Indigo Rule, R8); a dismiss beside
+  /// choices is outline.
+  const MxSheetActions.single({
+    super.key,
+    required String label,
+    required VoidCallback? onPressed,
+    MxButtonTone tone = MxButtonTone.primary,
+    this.isInSheet = false,
+  }) : confirmLabel = label,
+       onConfirm = onPressed,
+       _singleTone = tone,
+       children = const [],
+       cancelLabel = null,
+       onCancel = null,
+       isDestructive = false,
+       isWarning = false,
+       isConfirmLoading = false;
 
   /// A custom footer (Trash restore / delete-forever, a single OK) in place
   /// of the pair (ruling O10).
@@ -37,7 +57,8 @@ class MxSheetActions extends StatelessWidget {
        onConfirm = null,
        isDestructive = false,
        isWarning = false,
-       isConfirmLoading = false;
+       isConfirmLoading = false,
+       _singleTone = null;
 
   final String? cancelLabel;
 
@@ -55,7 +76,9 @@ class MxSheetActions extends StatelessWidget {
   final bool isWarning;
 
   /// The confirm's work is running: it spins and cannot be pressed; Cancel
-  /// stays live.
+  /// stays live, since some work can be cancelled (Export's preparing). Work
+  /// that cannot be stopped nulls [onCancel] and holds its popup
+  /// (MxDialog.isHeld, MxBottomSheet.isHeld), so Back and the scrim wait too.
   final bool isConfirmLoading;
 
   /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of
@@ -63,9 +86,26 @@ class MxSheetActions extends StatelessWidget {
   final bool isInSheet;
   final List<Widget> children;
 
+  /// Set only by [MxSheetActions.single]: the one button's tone.
+  final MxButtonTone? _singleTone;
+
   @override
   Widget build(BuildContext context) {
-    final Widget row = children.isNotEmpty
+    final singleTone = _singleTone;
+    final Widget row = singleTone != null
+        ? Row(
+            children: [
+              Expanded(
+                child: MxButton(
+                  label: confirmLabel!,
+                  onPressed: onConfirm,
+                  tone: singleTone,
+                  isBlock: true,
+                ),
+              ),
+            ],
+          )
+        : children.isNotEmpty
         ? Row(spacing: AppSpacing.control, children: children)
         : MxActionPair(
             leading: MxButton(

@@ -41,7 +41,8 @@ class _MxToggleState extends State<MxToggle> {
       return _edge(context.derivedColors.primaryInk, AppStroke.focus);
     }
     if (widget.isOn) return null;
-    return _edge(context.colors.outline, AppStroke.control);
+    // A control edge: 3:1 on every ground, a sheet included (SW-REV-001).
+    return _edge(context.derivedColors.outlineEdge, AppStroke.control);
   }
 
   BoxDecoration _edge(Color color, double width) => BoxDecoration(
@@ -93,6 +94,8 @@ class _MxToggleState extends State<MxToggle> {
     final control = MergeSemantics(
       child: Semantics(
         toggled: widget.isOn,
+        // A toggle that cannot change says so (SW-REV-006).
+        enabled: onChanged != null,
         label: widget.semanticLabel,
         child: InkWell(
           onTap: onChanged == null ? null : () => onChanged(!widget.isOn),

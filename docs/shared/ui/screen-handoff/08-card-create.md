@@ -18,7 +18,7 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 | Optional details | `CardAddDetailsWidget` disclosure → `CardOptionalFieldsWidget` (3 × `CardFieldWidget`, `MxTextFieldVariant.detail`) | "Add details · example · hint · pronunciation"; opens example, hint, pronunciation, each "· optional", "{count} / 240". |
 | Tags | `CardTagEditorWidget` (`CardRemovableTagChipWidget` × n, `MxButton` "Add tag", `MxFieldMessage`) | "Tags · optional · {n} / 10"; removable chips, an inline add input with an "Add" button beside it (enabled while the field holds text; Done adds too). At 10 tags, Add tag is withdrawn and a warning message shows (BR-TAG-002). |
 | Footer | `CardEditorFooterWidget` (`MxFooterBar`, `MxActionPair` 1 : 1) | Caption line; Cancel (`MxButton` outline) + a primary "Save card" / "Retry save", sharing the row equally (DEV-169); a danger `MxInlineBanner` after a failed save. |
-| Discard dialog | `CardDiscardDialogWidget` (`MxDialog`, `MxSheetActions`) | "Discard this card?" / "What you typed is not saved."; Keep editing / Discard. Guards leaving a dirty new-card form (ruling P4a-L5). |
+| Discard dialog | `showCardDiscardDialog` (`showMxConfirm`) | "Discard this card?" / "What you typed is not saved."; Keep editing / Discard. Guards leaving a dirty new-card form (ruling P4a-L5). |
 | Gone state | `CardGoneWidget` (`MxEmptyState`) | "This deck is no longer here" / "It was moved to Trash or deleted while you were adding cards. This card was not saved."; Back to deck + Open Trash (FE-B1 D11). |
 
 ## States

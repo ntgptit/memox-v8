@@ -185,4 +185,20 @@ void main() {
     expect(label.style!.fontSize, 12);
     expect(label.style!.fontWeight, FontWeight.w600);
   });
+
+  // SW-REV-011: a hero statement wraps between whole terms, never "…",
+  // as the Deck level hero's does (MxWorkloadBreakdownLine's contract).
+  libraryTest('the workload line wraps, as a hero line does', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _host());
+
+    expect(
+      tester
+          .widget<MxWorkloadBreakdownLine>(find.byType(MxWorkloadBreakdownLine))
+          .canWrap,
+      isTrue,
+    );
+  });
 }

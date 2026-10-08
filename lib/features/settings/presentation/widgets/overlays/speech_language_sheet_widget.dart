@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/speech/speech_synthesizer.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
@@ -92,18 +90,7 @@ class _SpeechLanguageSheetWidgetState extends State<SpeechLanguageSheetWidget> {
     final l10n = context.l10n;
     return MxBottomSheet(
       // The head of the deck picker sheet: the title in the card inset.
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(
-          l10n.settingsSpeechLanguage,
-          style: context.textStyles.compactTitle,
-        ),
-      ),
+      title: l10n.settingsSpeechLanguage,
       // A plain column: the sheet scrolls its child itself, and a nested
       // scroll view would fight it while the sheet slides up.
       child: Column(
