@@ -812,6 +812,7 @@
   "exportEmptyTitle": "Không có gì để xuất",
   "exportEmptyBody": "Bộ thẻ này chưa có thẻ. Hãy thêm hoặc nhập thẻ trước.",
   "deckActionExport": "Xuất thẻ",
+  "deckActionSelectCards": "Chọn thẻ",
   "cardExport": "Xuất",
   "studySessionClose": "Đóng phiên",
   "studySessionCounter": "{current} / {total}",

@@ -62,7 +62,7 @@ void main() {
     );
   });
 
-  libraryTest('a tap toggles; the last one off leaves selection', (
+  libraryTest('a tap toggles; unticking the last one keeps selection', (
     tester,
     env,
   ) async {
@@ -79,7 +79,9 @@ void main() {
     expect(_checked, findsNWidgets(1));
     await tester.tap(find.text('annyeong'));
     await tester.pump();
-    expect(find.byType(MxSelectionCheckbox), findsNothing);
+    // DEV-307: selection ends with Close, as in the Trash.
+    expect(_checked, findsNothing);
+    expect(find.byType(MxSelectionCheckbox), findsNWidgets(2));
   });
 
   libraryTest('system Back leaves selection first (RF5)', (tester, env) async {

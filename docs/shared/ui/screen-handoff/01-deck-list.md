@@ -38,6 +38,7 @@ subtitles (ruling C-L6):
   → screen 11 (spec 2026-10-08 U1) · Reorder · Move to Trash ("Recoverable for 30
   days").
 - **Sub-deck:** Open · Study this deck → screen 14 · Rename ·
+  Select cards (an open deck of cards only, DEV-307) → selection on screen 07 ·
   Study options → screen 15 (its root's options) ·
   Move to another deck · Import cards → screen 11 (every sub-deck, spec 2026-10-08 U1) ·
   Reorder ("Move before or after a sibling") · Move to Trash

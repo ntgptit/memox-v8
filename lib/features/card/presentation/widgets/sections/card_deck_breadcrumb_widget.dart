@@ -16,7 +16,7 @@ class CardDeckBreadcrumbWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isSelecting = ref.watch(cardSelectionProvider(deckId)).isNotEmpty;
+    final isSelecting = ref.watch(cardSelectionProvider(deckId)).isSelecting;
     if (isSelecting) return const SizedBox.shrink();
     return child;
   }

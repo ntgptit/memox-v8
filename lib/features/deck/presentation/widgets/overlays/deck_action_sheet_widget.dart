@@ -12,6 +12,7 @@ enum DeckAction {
   open,
   study,
   rename,
+  selectCards,
   studyOptions,
   move,
   reviewAlgorithm,
@@ -31,6 +32,7 @@ Future<DeckAction?> showDeckActionSheet(
   required bool hasOpen,
   bool canImport = false,
   bool canExport = false,
+  bool canSelect = false,
 }) => showMxBottomSheet<DeckAction>(
   context,
   builder: (_) => DeckActionSheetWidget(
@@ -39,6 +41,7 @@ Future<DeckAction?> showDeckActionSheet(
     hasOpen: hasOpen,
     canImport: canImport,
     canExport: canExport,
+    canSelect: canSelect,
   ),
 );
 
@@ -50,6 +53,7 @@ class DeckActionSheetWidget extends StatelessWidget {
     required this.hasOpen,
     this.canImport = false,
     this.canExport = false,
+    this.canSelect = false,
   });
 
   final DeckView view;
@@ -62,6 +66,10 @@ class DeckActionSheetWidget extends StatelessWidget {
   /// The deck holds cards: Export opens the export sheet (kit 12,
   /// UC-TRANSFER-002).
   final bool canExport;
+
+  /// The open deck holds cards: Select cards enters the list's selection
+  /// (DEV-307).
+  final bool canSelect;
 
   /// From a row, the deck is not open yet; Open leads.
   final bool hasOpen;
@@ -104,6 +112,12 @@ class DeckActionSheetWidget extends StatelessWidget {
         label: l10n.deckRename,
         onTap: () => choose(DeckAction.rename),
       ),
+      if (canSelect)
+        MxActionSheetCommandRow(
+          icon: AppIcons.select,
+          label: l10n.deckActionSelectCards,
+          onTap: () => choose(DeckAction.selectCards),
+        ),
       MxActionSheetCommandRow(
         icon: AppIcons.studyOptions,
         label: l10n.deckStudyOptions,

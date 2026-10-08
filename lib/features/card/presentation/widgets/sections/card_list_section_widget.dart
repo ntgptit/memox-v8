@@ -273,8 +273,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       if (_failedFlag != null) setState(() => _failedFlag = null);
     });
     final request = ref.watch(cardListRequestProvider(widget.deckId));
-    final selected = ref.watch(cardSelectionProvider(widget.deckId));
-    final isSelecting = selected.isNotEmpty;
+    final selection = ref.watch(cardSelectionProvider(widget.deckId));
+    final selected = selection.ids;
+    final isSelecting = selection.isSelecting;
     final isSearchOpen = ref.watch(cardSearchOpenProvider(widget.deckId));
     // The FAB shows unless cards are selected; the list's end clears it.
     final clearance = isSelecting
@@ -339,7 +340,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
               // E-L5: each row is its own child, built only in view.
               child: MxScreenScroll(
                 clearance: clearance,
-                children: _children(view, request, selected, isSearchOpen),
+                children: _children(view, request, selection, isSearchOpen),
               ),
             ),
           ),
@@ -384,11 +385,12 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   List<Widget> _children(
     CardListView view,
     CardListRequestState request,
-    Set<String> selected,
+    CardSelectionState selection,
     bool isSearchOpen,
   ) {
     final l10n = context.l10n;
-    final isSelecting = selected.isNotEmpty;
+    final selected = selection.ids;
+    final isSelecting = selection.isSelecting;
     final total = view.counts.of(request.filter);
     return [
       const SizedBox(height: AppSpacing.control),

@@ -1,7 +1,10 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/features/card/presentation/states/card_selection_state.dart';
+import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
@@ -405,5 +408,43 @@ void main() {
 
     expect(find.text(_en.deckOpen), findsNothing);
     expect(find.text(_en.deckGoneTitle), findsOneWidget);
+  });
+
+  libraryTest('Select cards shows only from an open deck of cards and enters '
+      'selection with nothing picked (DEV-307)', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    final words = await env.decks.sub(korean.id, 'Words');
+    await insertCard(
+      env.db,
+      id: 'c1',
+      deckId: words.id,
+      front: 'annyeong',
+      back: 'hello',
+    );
+    await pumpLibraryScreen(
+      tester,
+      env,
+      cardDeckScreen(
+        words.id,
+        // As the router wires it: the card feature's selection, through
+        // the scope.
+        onSelectCards: (id) => ProviderScope.containerOf(
+          tester.element(find.byType(DeckLevelScreen)),
+        ).read(cardSelectionProvider(id).notifier).start(),
+      ),
+    );
+    await _choose(tester, _en.deckActionSelectCards);
+
+    expect(find.text(_en.cardSelectedCount(0)), findsOneWidget);
+    expect(find.text(_en.cardSelectAllCount(1)), findsOneWidget);
+  });
+
+  libraryTest('a deck of decks offers no Select cards', (tester, env) async {
+    final korean = await env.decks.root('Korean');
+    await env.decks.sub(korean.id, 'Words');
+    await pumpLibraryScreen(tester, env, deckScreen(deckId: korean.id));
+    await _openSheet(tester);
+
+    expect(find.text(_en.deckActionSelectCards), findsNothing);
   });
 }

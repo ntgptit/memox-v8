@@ -213,6 +213,7 @@ DeckLevelScreen deckScreen({
   ValueChanged<String>? onOpenAlgorithm,
   ValueChanged<String>? onImportCards,
   ValueChanged<DeckEntity>? onExportCards,
+  ValueChanged<String>? onSelectCards,
   ValueChanged<String>? onOpenStudy,
   ValueChanged<String>? onOpenStudyOptions,
   VoidCallback? onOpenTrash,
@@ -230,6 +231,7 @@ DeckLevelScreen deckScreen({
   onAddCard: onAddCard ?? (_) {},
   onImportCards: onImportCards ?? (_) {},
   onExportCards: onExportCards ?? (_) {},
+  onSelectCards: onSelectCards ?? (_) {},
   onOpenTrash: onOpenTrash ?? () {},
   onOpenStarterDecks: onOpenStarterDecks ?? () {},
   onOpenTags: onOpenTags ?? () {},
@@ -247,9 +249,14 @@ DeckLevelScreen deckScreen({
   cardFab: cardFab ?? (_) => const SizedBox.shrink(),
 );
 
-/// Screen 07: the open deck as `app/` composes it (A14).
-DeckLevelScreen cardDeckScreen(String deckId) => deckScreen(
+/// Screen 07: the open deck as `app/` composes it (A14). [onSelectCards]
+/// is the router's: the test reaches the scope's container (DEV-307).
+DeckLevelScreen cardDeckScreen(
+  String deckId, {
+  ValueChanged<String>? onSelectCards,
+}) => deckScreen(
   deckId: deckId,
+  onSelectCards: onSelectCards,
   cardContent: (view) => CardListSectionWidget(
     deckId: view.deck.id,
     algorithm: 'Eight boxes',
