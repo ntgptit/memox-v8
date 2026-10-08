@@ -2,6 +2,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
+import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_source_model.dart';
 import 'package:memox/features/transfer/presentation/providers/commit_import_use_case_provider.dart';
@@ -107,6 +108,7 @@ class CardImportController extends _$CardImportController {
         mapping: ColumnMapping.fromHeader(
           value.rows.isEmpty ? const [] : value.rows.first,
         ),
+        defaultDeckName: draft.defaultDeckName,
       ),
       Rejected(:final reason) => draft.copyWith(isBusy: false, problem: reason),
     };
@@ -133,7 +135,8 @@ class CardImportController extends _$CardImportController {
 
   /// Step 2 → 3 ("Preview rows"): what the import would do against the deck
   /// as it is now (UC-TRANSFER-001 step 5, A6). [defaultDeckName] is the
-  /// localized name a default deck starts with (spec 2026-10-08 S4).
+  /// localized name a default deck starts with (spec 2026-10-08 S4); a name
+  /// the user typed before stays.
   Future<void> previewRows({required String defaultDeckName}) async {
     final draft = _draft;
     final table = draft?.table;
@@ -146,13 +149,15 @@ class CardImportController extends _$CardImportController {
       hasHeaderRow: draft.hasHeaderRow,
     );
     if (!ref.mounted) return;
+    // A name the user typed before Back stays (U4).
+    final name = draft.defaultDeckName ?? defaultDeckName;
     state = switch (result) {
       Ok(:final value) => draft.copyWith(
         step: CardImportStep.preview,
-        preview: value.preview(
-          defaultDeckName: defaultDeckName,
-          choices: const {},
-        ),
+        plan: value,
+        sectionChoices: const {},
+        defaultDeckName: name,
+        preview: value.preview(defaultDeckName: name, choices: const {}),
         isBusy: false,
       ),
       Rejected(:final reason) => draft.copyWith(isBusy: false, problem: reason),
@@ -166,12 +171,44 @@ class CardImportController extends _$CardImportController {
     state = draft.copyWith(isIncludingDuplicates: isIncluding);
   }
 
+  /// Step 3 (U3): how a group whose name is taken is imported.
+  void chooseSection(int index, ImportSectionChoice choice) {
+    final draft = _draft;
+    final plan = draft?.plan;
+    if (draft == null || plan == null) return;
+    final choices = {...draft.sectionChoices, index: choice};
+    state = draft.copyWith(
+      sectionChoices: choices,
+      preview: plan.preview(
+        defaultDeckName: draft.defaultDeckName ?? '',
+        choices: choices,
+      ),
+    );
+  }
+
+  /// Step 3 (U4): the default deck's name. A choice made for its old name
+  /// is cleared, since its clash may have changed.
+  void renameDefaultDeck(String name) {
+    final draft = _draft;
+    final plan = draft?.plan;
+    if (draft == null || plan == null) return;
+    final defaultIndex = draft.preview?.groups.indexWhere(
+      (group) => group.isDefault,
+    );
+    final choices = {...draft.sectionChoices}..remove(defaultIndex);
+    state = draft.copyWith(
+      defaultDeckName: name,
+      sectionChoices: choices,
+      preview: plan.preview(defaultDeckName: name, choices: choices),
+    );
+  }
+
   /// Step 3 → 4 → a result (UC-TRANSFER-001 steps 6–8, E3–E5).
   Future<void> commit() async {
     final draft = _draft;
     final preview = draft?.preview;
     if (draft == null || preview == null || draft.isBusy) return;
-    if (draft.willWrite == 0) return;
+    if (!draft.canCommit) return;
     state = draft.copyWith(step: CardImportStep.importing, isBusy: true);
     try {
       final result = await ref.read(commitImportUseCaseProvider)(
@@ -223,6 +260,7 @@ class CardImportController extends _$CardImportController {
           sourceKind: draft.sourceKind,
           fileName: draft.fileName,
           source: draft.source,
+          defaultDeckName: draft.defaultDeckName,
         );
         return true;
       case CardImportStep.preview:
@@ -234,6 +272,7 @@ class CardImportController extends _$CardImportController {
           table: draft.table,
           mapping: draft.mapping,
           hasHeaderRow: draft.hasHeaderRow,
+          defaultDeckName: draft.defaultDeckName,
         );
         return true;
     }
