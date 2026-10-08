@@ -17,6 +17,11 @@ bảng dài, hai file có thể cùng ghi một hạng mục (BE-E1 và BE-E8 c�
 
 - Tiến độ công việc nằm trong project **MemoX** của team **DevelopmentTool**
   (key `DEV`) trên Linear. Mỗi hạng mục là một issue.
+- Bổ sung ngày 2026-10-08 (quyết định của chủ dự án): epic đã Done cùng mọi
+  sub-issue của nó chuyển sang project **MemoX · Lưu trữ** (trạng thái
+  Completed). Linear không cho archive thủ công và không archive issue của một
+  project còn mở; ở project đã Completed, issue tự archive sau thời gian
+  auto-archive của team, nên không còn tính vào hạn mức 250 issue của gói Free.
 - Project có hai cấp issue, không hơn:
   - **Epic**: issue cha mang label `Epic`, gom một tính năng hoặc một chủ đề
     (ví dụ "Học và SRS", "Sync với Supabase"), không mang label `WBS`. Epic
