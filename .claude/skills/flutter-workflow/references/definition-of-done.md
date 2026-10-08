@@ -36,7 +36,8 @@ without re-checking.
       (`VERIFIED`, `BLOCKED` or `UNRESOLVED`) written in the PR and in the
       issue's Done comment; a bug's issue has sections I to V of the Bug
       template filled, an improvement's issue sections II to V of the
-      Chore/Docs template ([linear-templates.md](linear-templates.md)).
+      Chore/Docs template, and both section VI when a screen or its state
+      is touched ([linear-templates.md](linear-templates.md)).
       `VERIFIED` only when every line above holds.
 
 ## Code
@@ -61,6 +62,11 @@ without re-checking.
 - [ ] Default text scale checked; large text is not a design target (PRODUCT.md, 2026-09-30).
 - [ ] Loading, empty, error and success states all render correctly. An
       unhandled empty state is the single most common gap here.
+- [ ] Every state and transition the work touches is checked (CLAUDE.md, "A
+      screen is a state machine"): the screen's States and Transitions tables
+      match the code, each touched row is `VERIFIED`, `FAILED`, `UNVERIFIED`
+      or `N/A` with its evidence, and a state without a golden was rendered
+      for the audit or is reported `UNVERIFIED`.
 - [ ] Icon-only controls have semantic labels; touch targets are at least 48dp.
 - [ ] The screen's geometry contract identifies its content gutters, alignment
       groups, relative widths/heights and important baselines. Every material
