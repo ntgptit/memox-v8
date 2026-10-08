@@ -24,24 +24,21 @@ void main() {
     expect(state().ids, isEmpty);
   });
 
-  test(
-    'a long-press toggle enters selection with its card; unticking the '
-    'last card keeps the mode until Close',
-    () {
-      notifier().toggle('c1');
-      expect(
-        state(),
-        isA<CardSelectionState>()
-            .having((s) => s.isSelecting, 'isSelecting', isTrue)
-            .having((s) => s.ids, 'ids', {'c1'}),
-      );
-      notifier().toggle('c1');
-      expect(state().isSelecting, isTrue);
-      expect(state().ids, isEmpty);
-      notifier().clear();
-      expect(state().isSelecting, isFalse);
-    },
-  );
+  test('a long-press toggle enters selection with its card; unticking the '
+      'last card keeps the mode until Close', () {
+    notifier().toggle('c1');
+    expect(
+      state(),
+      isA<CardSelectionState>()
+          .having((s) => s.isSelecting, 'isSelecting', isTrue)
+          .having((s) => s.ids, 'ids', {'c1'}),
+    );
+    notifier().toggle('c1');
+    expect(state().isSelecting, isTrue);
+    expect(state().ids, isEmpty);
+    notifier().clear();
+    expect(state().isSelecting, isFalse);
+  });
 
   test('select all replaces the picks and stays selecting', () {
     notifier().toggle('c1');

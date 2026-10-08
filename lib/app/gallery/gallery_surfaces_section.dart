@@ -8,6 +8,7 @@ import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
@@ -135,7 +136,7 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
       ),
       MxCard(
         isFullBleed: true,
-        child: Column(
+        child: MxDividedColumn(
           children: [
             MxListRow(
               title: context.l10n.galleryKanjiN5,
@@ -168,7 +169,6 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
               leading: const MxIconTile(icon: AppIcons.folder),
               isEnabled: false,
               onTap: () {},
-              hasDivider: false,
             ),
           ],
         ),

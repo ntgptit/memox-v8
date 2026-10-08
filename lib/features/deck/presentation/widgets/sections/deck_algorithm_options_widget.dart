@@ -4,6 +4,7 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
@@ -39,9 +40,9 @@ class DeckAlgorithmOptionsWidget extends StatelessWidget {
     final isChoosable = !isLocked && switchingTo == null;
     return MxCard(
       isFullBleed: true,
-      child: Column(
+      child: MxDividedColumn(
         children: [
-          for (final (index, type) in types.indexed)
+          for (final type in types)
             MxOptionRow(
               title: l10n.schedulerType(type),
               description: _description(l10n, type),
@@ -50,7 +51,6 @@ class DeckAlgorithmOptionsWidget extends StatelessWidget {
               trailing: type == switchingTo
                   ? MxSpinner(semanticLabel: context.l10n.commonLoading)
                   : null,
-              hasDivider: index < types.length - 1,
             ),
         ],
       ),

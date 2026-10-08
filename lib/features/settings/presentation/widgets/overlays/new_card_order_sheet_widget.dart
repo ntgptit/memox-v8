@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
 /// The new-card order picker of screen 23a (owner 2026-10-07): one row per
@@ -31,15 +32,13 @@ class NewCardOrderSheetWidget extends StatelessWidget {
   Widget build(BuildContext context) => MxBottomSheet(
     // The head of the speech language sheet: the title in the card inset.
     title: context.l10n.settingsNewCardOrder,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
+    child: MxDividedColumn(
       children: [
-        for (final (index, order) in NewCardOrder.values.indexed)
+        for (final order in NewCardOrder.values)
           MxOptionRow(
             title: newCardOrderLabel(context, order),
             isSelected: order == selected,
             isDimmed: false,
-            hasDivider: index < NewCardOrder.values.length - 1,
             onSelected: () => Navigator.of(context).pop(order),
           ),
       ],

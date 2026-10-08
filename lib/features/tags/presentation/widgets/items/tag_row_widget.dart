@@ -36,7 +36,6 @@ class TagRowWidget extends StatelessWidget {
         semanticLabel: l10n.tagsRowActions(tag.name),
         onPressed: onActions,
       ),
-      hasDivider: false,
     );
   }
 }

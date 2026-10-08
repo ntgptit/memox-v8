@@ -8,6 +8,7 @@ import 'package:memox/features/search/presentation/widgets/items/search_load_mor
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 
@@ -52,14 +53,13 @@ class SearchResultsWidget extends StatelessWidget {
           ),
           MxCard(
             isFullBleed: true,
-            child: Column(
+            child: MxDividedColumn(
               children: [
-                for (final (index, hit) in decks.indexed)
+                for (final hit in decks)
                   SearchDeckHitRowWidget(
                     hit: hit,
                     term: results.term,
                     onTap: () => onOpenDeck(hit.deckId),
-                    hasDivider: index < decks.length - 1,
                   ),
               ],
             ),
@@ -76,14 +76,13 @@ class SearchResultsWidget extends StatelessWidget {
           ),
           MxCard(
             isFullBleed: true,
-            child: Column(
+            child: MxDividedColumn(
               children: [
-                for (final (index, hit) in cards.indexed)
+                for (final hit in cards)
                   SearchCardHitRowWidget(
                     hit: hit,
                     term: results.term,
                     onTap: () => onOpenCard(hit.cardId),
-                    hasDivider: index < cards.length - 1,
                   ),
               ],
             ),

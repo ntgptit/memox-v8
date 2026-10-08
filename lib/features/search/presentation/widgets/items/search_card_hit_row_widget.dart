@@ -19,13 +19,11 @@ class SearchCardHitRowWidget extends StatelessWidget {
     required this.hit,
     required this.term,
     required this.onTap,
-    required this.hasDivider,
   });
 
   final SearchCardHit hit;
   final String term;
   final VoidCallback onTap;
-  final bool hasDivider;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +62,6 @@ class SearchCardHitRowWidget extends StatelessWidget {
         leading: const MxIconTile(icon: AppIcons.cardDeck),
         hasChevron: true,
         onTap: onTap,
-        hasDivider: hasDivider,
       ),
     );
   }

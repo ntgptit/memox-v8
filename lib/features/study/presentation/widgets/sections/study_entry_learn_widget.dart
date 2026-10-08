@@ -42,7 +42,6 @@ class StudyEntryLearnWidget extends StatelessWidget {
         // The kit wraps the line; the row's own subtitle is one line.
         meta: Text(line, style: context.textStyles.noteText),
         trailing: _trailing(context),
-        hasDivider: false,
       ),
     );
   }

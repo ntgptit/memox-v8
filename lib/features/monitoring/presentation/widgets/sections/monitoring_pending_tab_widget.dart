@@ -13,6 +13,7 @@ import 'package:memox/features/monitoring/presentation/widgets/overlays/monitori
 import 'package:memox/features/monitoring/presentation/widgets/support/monitoring_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
@@ -131,13 +132,12 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
         MxListSectionHeader(
           label: l10n.monitoringPendingCount(logs.items.length),
         ),
-        for (final (index, log) in logs.items.indexed)
-          LogRowWidget(
-            log: log,
-            now: now,
-            onTap: () => onOpenLog(log.id),
-            hasDivider: index < logs.items.length - 1,
-          ),
+        MxDividedColumn(
+          children: [
+            for (final log in logs.items)
+              LogRowWidget(log: log, now: now, onTap: () => onOpenLog(log.id)),
+          ],
+        ),
       ],
     );
   }

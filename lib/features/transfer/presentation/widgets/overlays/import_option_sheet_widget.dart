@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
 /// A one-choice sheet of the import (kit 11): the field a column feeds, or
@@ -44,14 +45,13 @@ class ImportOptionSheetWidget<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MxBottomSheet(
     title: title,
-    child: Column(
+    child: MxDividedColumn(
       children: [
-        for (final (index, option) in options.indexed)
+        for (final option in options)
           MxOptionRow(
             title: label(option),
             isSelected: option == selected,
             onSelected: () => onSelected(option),
-            hasDivider: index < options.length - 1,
           ),
       ],
     ),

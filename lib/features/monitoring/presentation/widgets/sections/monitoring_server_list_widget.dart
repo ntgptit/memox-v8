@@ -14,6 +14,7 @@ import 'package:memox/features/monitoring/presentation/states/monitoring_load_fa
 import 'package:memox/features/monitoring/presentation/widgets/items/log_row_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -179,14 +180,17 @@ class _Rows extends ConsumerWidget {
           children: [
             const SizedBox(height: AppSpacing.control),
             MxListSectionHeader(label: header),
-            for (final (index, log) in loaded.items.indexed)
-              LogRowWidget(
-                log: log,
-                now: now,
-                onTap: () => onOpenLog(log.id),
-                hasDivider: index < count - 1,
-                statusShownByFilter: statusShownByFilter,
-              ),
+            MxDividedColumn(
+              children: [
+                for (final log in loaded.items)
+                  LogRowWidget(
+                    log: log,
+                    now: now,
+                    onTap: () => onOpenLog(log.id),
+                    statusShownByFilter: statusShownByFilter,
+                  ),
+              ],
+            ),
             const SizedBox(height: AppSpacing.grouped),
             _End(loaded: loaded, onRetry: controller.loadMore),
           ],

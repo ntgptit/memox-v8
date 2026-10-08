@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
@@ -70,7 +71,7 @@ void main() {
       expect(rows.map((row) => row.hasChevron), [true, true]);
       expect(rows.last.isEnabled, isFalse);
       expect(rows.last.subtitle, 'Holds other decks');
-      expect(rows.map((row) => row.hasDivider), [true, false]);
+      expect(find.byType(MxDividedColumn), findsOneWidget);
       await tester.tap(find.text('Kana'));
       expect(picked, 'Kana');
       expect(

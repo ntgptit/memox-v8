@@ -48,7 +48,6 @@ class DeckReorderRowWidget extends StatelessWidget {
           child: Icon(AppIcons.dragHandle),
         ),
       ),
-      hasDivider: false,
     ),
   );
 }

@@ -3,6 +3,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
@@ -115,14 +116,13 @@ class _MonitoringChoiceSheetWidgetState<T>
     ),
   );
 
-  Widget _options() => Column(
+  Widget _options() => MxDividedColumn(
     children: [
       for (final choice in widget.choices)
         MxOptionRow(
           title: choice.label,
           isSelected: _picked.contains(choice.value),
           onSelected: () => setState(() => _picked = {choice.value}),
-          hasDivider: choice != widget.choices.last,
         ),
     ],
   );

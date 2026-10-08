@@ -16,6 +16,7 @@ import 'package:memox/features/account/presentation/widgets/support/account_labe
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -165,20 +166,23 @@ class _MergeChoiceSheetWidgetState extends State<MergeChoiceSheetWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          MxOptionRow(
-            title: l10n.accountMerge,
-            description: library == null
-                ? l10n.accountMergePlain
-                : l10n.accountMergeCounts(library.decks, library.cards),
-            isSelected: !_isDiscarding,
-            onSelected: () => _choose(TransitionChoice.merge),
-          ),
-          MxOptionRow(
-            title: l10n.accountDiscard,
-            description: l10n.accountDiscardBody,
-            isSelected: _isDiscarding,
-            onSelected: () => _choose(TransitionChoice.discard),
-            hasDivider: false,
+          MxDividedColumn(
+            children: [
+              MxOptionRow(
+                title: l10n.accountMerge,
+                description: library == null
+                    ? l10n.accountMergePlain
+                    : l10n.accountMergeCounts(library.decks, library.cards),
+                isSelected: !_isDiscarding,
+                onSelected: () => _choose(TransitionChoice.merge),
+              ),
+              MxOptionRow(
+                title: l10n.accountDiscard,
+                description: l10n.accountDiscardBody,
+                isSelected: _isDiscarding,
+                onSelected: () => _choose(TransitionChoice.discard),
+              ),
+            ],
           ),
           if (_isDiscarding)
             Padding(

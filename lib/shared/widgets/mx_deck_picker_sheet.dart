@@ -3,6 +3,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -93,9 +94,9 @@ class MxDeckPickerSheet extends StatelessWidget {
                 tone: MxEmptyStateTone.neutral,
                 isCompact: true,
               )
-            : Column(
+            : MxDividedColumn(
                 children: [
-                  for (final (index, candidate) in candidates.indexed)
+                  for (final candidate in candidates)
                     MxListRow(
                       title: candidate.label,
                       subtitle: candidate.reason,
@@ -103,7 +104,6 @@ class MxDeckPickerSheet extends StatelessWidget {
                       hasChevron: true,
                       onTap: candidate.onTap,
                       isEnabled: candidate.isEnabled,
-                      hasDivider: index < candidates.length - 1,
                     ),
                 ],
               ),

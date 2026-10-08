@@ -9,6 +9,7 @@ import 'package:memox/features/account/presentation/controllers/users_controller
 import 'package:memox/features/account/presentation/states/users_state.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -105,18 +106,21 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          MxOptionRow(
-            title: l10n.usersRoleUser,
-            description: l10n.usersRoleUserHint,
-            isSelected: _choice == AccountRole.user,
-            onSelected: () => _choose(AccountRole.user),
-          ),
-          MxOptionRow(
-            title: l10n.usersRoleAdmin,
-            description: l10n.usersRoleAdminHint,
-            isSelected: _choice == AccountRole.admin,
-            onSelected: () => _choose(AccountRole.admin),
-            hasDivider: false,
+          MxDividedColumn(
+            children: [
+              MxOptionRow(
+                title: l10n.usersRoleUser,
+                description: l10n.usersRoleUserHint,
+                isSelected: _choice == AccountRole.user,
+                onSelected: () => _choose(AccountRole.user),
+              ),
+              MxOptionRow(
+                title: l10n.usersRoleAdmin,
+                description: l10n.usersRoleAdminHint,
+                isSelected: _choice == AccountRole.admin,
+                onSelected: () => _choose(AccountRole.admin),
+              ),
+            ],
           ),
           if (_problem case final text?)
             Padding(

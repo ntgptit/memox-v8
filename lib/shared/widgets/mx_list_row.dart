@@ -4,7 +4,6 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
@@ -15,7 +14,8 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 ///
 /// A disabled row dims its leading, title and end (chevron, trailing or
 /// spinner), never the subtitle or meta that says why, as MxSettingsRow and
-/// MxOptionRow do (critique 2026-09-30 part 3a, DEV-230).
+/// MxOptionRow do (critique 2026-09-30 part 3a, DEV-230). Dividers are the
+/// list's (`MxDividedColumn`, DEV-305).
 class MxListRow extends StatelessWidget {
   const MxListRow({
     super.key,
@@ -29,7 +29,6 @@ class MxListRow extends StatelessWidget {
     this.onTap,
     this.isEnabled = true,
     this.isBusy = false,
-    this.hasDivider = true,
     this.titleMaxLines = 1,
   }) : assert(subtitle == null || meta == null, 'a subtitle or meta'),
        assert(trailing == null || !hasChevron, 'a trailing or the chevron');
@@ -61,10 +60,6 @@ class MxListRow extends StatelessWidget {
 
   /// A spinner takes the trailing slot while the row's action runs.
   final bool isBusy;
-
-  /// The ghost rule under the row. The caller turns it off on the last row
-  /// and inside an MxSection, which draws its own.
-  final bool hasDivider;
 
   /// 2 for a name the person chose (tag, deck), which must stay
   /// recognisable; content lists keep 1 so rows are one height (audit
@@ -103,71 +98,59 @@ class MxListRow extends StatelessWidget {
       ),
       (false, false) => trailing,
     };
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: hasDivider
-            ? Border(
-                bottom: BorderSide(
-                  color: context.derivedColors.ghostBorder,
-                  width: AppStroke.hairline,
-                ),
-              )
-            : null,
-      ),
-      child: MxRowInk(
-        onTap: onTap,
-        isEnabled: isEnabled,
-        shouldDimWhenDisabled: false,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-            child: Row(
-              spacing: AppSpacing.grouped,
-              children: [
-                if (leading case final lead?) _dim(lead),
-                // Only the text carries the 12/12 inset, so a 48 trailing
-                // control sits inside the text height instead of growing the
-                // row: every row in a list stays one height.
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppSpacing.grouped,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _dim(
-                          Text.rich(
-                            _titleSpan(styles.rowTitleMatch),
-                            maxLines: titleMaxLines,
-                            softWrap: titleMaxLines > 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: styles.listRowTitle,
-                          ),
+    return MxRowInk(
+      onTap: onTap,
+      isEnabled: isEnabled,
+      shouldDimWhenDisabled: false,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+          child: Row(
+            spacing: AppSpacing.grouped,
+            children: [
+              if (leading case final lead?) _dim(lead),
+              // Only the text carries the 12/12 inset, so a 48 trailing
+              // control sits inside the text height instead of growing the
+              // row: every row in a list stays one height.
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.grouped,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _dim(
+                        Text.rich(
+                          _titleSpan(styles.rowTitleMatch),
+                          maxLines: titleMaxLines,
+                          softWrap: titleMaxLines > 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: styles.listRowTitle,
                         ),
-                        if (subtitle case final text?) ...[
-                          const SizedBox(height: _subtitleGap),
-                          Text(
-                            text,
-                            maxLines: 1,
-                            softWrap: false,
-                            overflow: TextOverflow.ellipsis,
-                            style: styles.rowSubtitle,
-                          ),
-                        ],
-                        if (meta case final slot?) ...[
-                          const SizedBox(height: _subtitleGap),
-                          slot,
-                        ],
+                      ),
+                      if (subtitle case final text?) ...[
+                        const SizedBox(height: _subtitleGap),
+                        Text(
+                          text,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                          style: styles.rowSubtitle,
+                        ),
                       ],
-                    ),
+                      if (meta case final slot?) ...[
+                        const SizedBox(height: _subtitleGap),
+                        slot,
+                      ],
+                    ],
                   ),
                 ),
-                if (end case final slot?) _dim(slot),
-              ],
-            ),
+              ),
+              if (end case final slot?) _dim(slot),
+            ],
           ),
         ),
       ),

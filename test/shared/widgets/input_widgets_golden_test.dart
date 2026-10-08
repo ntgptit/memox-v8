@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
@@ -163,7 +164,7 @@ void main() {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 16,
         children: [
-          Column(
+          MxDividedColumn(
             children: [
               MxOptionRow(
                 title: 'Eight box',
@@ -176,7 +177,6 @@ void main() {
                 title: 'Disabled',
                 isSelected: false,
                 onSelected: null,
-                hasDivider: false,
               ),
             ],
           ),

@@ -153,7 +153,6 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
         description: phoneLine,
         isSelected: selected == LanguageChoice.system,
         onSelected: () => _choose(LanguageChoice.system),
-        hasDivider: false,
       ),
       MxOptionRow(
         title: l10n.languageEnglish,
@@ -163,7 +162,6 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
         ),
         isSelected: selected == LanguageChoice.en,
         onSelected: () => _choose(LanguageChoice.en),
-        hasDivider: false,
       ),
       MxOptionRow(
         title: l10n.languageVietnamese,
@@ -173,7 +171,6 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
         ),
         isSelected: selected == LanguageChoice.vi,
         onSelected: () => _choose(LanguageChoice.vi),
-        hasDivider: false,
       ),
     ];
   }

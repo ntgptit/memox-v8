@@ -18,13 +18,11 @@ class UserRowWidget extends StatelessWidget {
     required this.user,
     required this.isSelf,
     required this.onTap,
-    this.hasDivider = true,
   });
 
   final ManagedUser user;
   final bool isSelf;
   final VoidCallback onTap;
-  final bool hasDivider;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +41,6 @@ class UserRowWidget extends StatelessWidget {
         tone: isAdmin ? MxBadgeTone.primary : MxBadgeTone.neutral,
       ),
       onTap: isSelf ? null : onTap,
-      hasDivider: hasDivider,
     );
   }
 }
