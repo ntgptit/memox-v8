@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
@@ -162,5 +163,28 @@ void main() {
   testWidgets('by default a value keeps its digits', (tester) async {
     await pumpMx(tester, _stepper(value: 5));
     expect(find.text('5'), findsOneWidget);
+  });
+
+  testWidgets('an invalid value reads as invalid each time TalkBack visits '
+      'it (audit 2026-10-07)', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _stepper(value: 250, isInvalid: true));
+    expect(
+      tester.getSemantics(find.byKey(_valueKey)),
+      isSemantics(
+        value: '250',
+        validationResult: SemanticsValidationResult.invalid,
+      ),
+    );
+
+    await pumpMx(tester, _stepper());
+    expect(
+      tester.getSemantics(find.byKey(_valueKey)),
+      isSemantics(
+        value: '20',
+        validationResult: SemanticsValidationResult.none,
+      ),
+    );
+    handle.dispose();
   });
 }

@@ -3,8 +3,9 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 
-/// Screen 23's Monitoring row (monitoring spec §3.1), in the Admin section
-/// that Settings shows only to an admin (users spec U2); `app/` hands it in.
+/// The Monitoring row (monitoring spec §3.1), in screen 23b's Logs section,
+/// which only an admin reaches (users spec U2, settings hub spec D4);
+/// `app/` hands it in.
 class MonitoringEntryRowWidget extends StatelessWidget {
   const MonitoringEntryRowWidget({super.key, required this.onOpen});
 

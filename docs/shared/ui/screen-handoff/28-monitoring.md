@@ -13,7 +13,7 @@ FE-B8; ADR-018 §6 to §8; spec
 
 ## Entry points
 
-- Screen 23, Admin section, row "Monitoring". Route `/settings/monitoring`, on the root
+- Screen 23b (Admin, admin only), Logs, row "Monitoring" (settings hub spec D4). Route `/settings/monitoring`, on the root
   navigator like Sync; Back returns to 23.
 - A row opens its detail at `/settings/monitoring/:id` (`?local=1` for a row of the device
   buffer), nested under the list, so Back climbs one page at a time and the list keeps its

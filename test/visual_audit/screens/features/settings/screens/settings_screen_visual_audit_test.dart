@@ -13,6 +13,8 @@ void main() {
         tester,
         env,
         SettingsScreen(
+          onOpenStudyDefaults: () {},
+          onOpenAdmin: () {},
           onOpenTheme: () {},
           onOpenLanguage: () {},
           onOpenReminder: () {},

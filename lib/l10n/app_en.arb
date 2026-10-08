@@ -5131,29 +5131,56 @@
   "@settingsLanguageSaveFailed": {
     "description": "Toast when saving the language failed (E2); offers Retry."
   },
-  "settingsStudyDefaults": "Study defaults",
+  "settingsStudyDefaults": "Study options",
   "@settingsStudyDefaults": {
-    "description": "Screen 23 section title (UC-SETTINGS-001 step 1)."
+    "description": "Settings hub (screen 23): the Study row's label, and the title of screen 23a it opens (settings hub spec D1)."
   },
-  "settingsStudyDefaultsNote": "The card limit and order apply to sessions started from now on; reading aloud changes at once. A deck with its own study options keeps them.",
-  "@settingsStudyDefaultsNote": {
-    "description": "Note under Study defaults (BR-SETTINGS-003, BR-SETTINGS-004)."
+  "settingsStudySection": "Study",
+  "@settingsStudySection": {
+    "description": "Settings hub (screen 23): the overline of the group whose one row opens Study options (settings hub spec §5.1)."
+  },
+  "settingsStudyDefaultsSummary": "{count, plural, =1{1 card} other{{count} cards}} · {order} · Read aloud {isAutoPlay, select, on{on} other{off}}",
+  "@settingsStudyDefaultsSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "order": {
+        "type": "String"
+      },
+      "isAutoPlay": {
+        "type": "String"
+      }
+    },
+    "description": "Settings hub: the Study options row's subtitle, the stored defaults in one line (settings hub spec D8). order is the rendered In order / Random; isAutoPlay is on or off."
+  },
+  "settingsSessionSection": "Session",
+  "@settingsSessionSection": {
+    "description": "Study options (screen 23a): the overline over Cards and New-card order."
+  },
+  "settingsSessionNote": "Changes apply to sessions you start from now on. A deck with its own study options keeps them.",
+  "@settingsSessionNote": {
+    "description": "Study options (screen 23a): the note under the Session section (BR-SETTINGS-004)."
+  },
+  "settingsSpeechSection": "Speech",
+  "@settingsSpeechSection": {
+    "description": "Study options (screen 23a): the overline over Read the term aloud and Speech language."
+  },
+  "settingsSpeechNote": "Changes apply at once. A deck with its own speech language keeps it.",
+  "@settingsSpeechNote": {
+    "description": "Study options (screen 23a): the note under the Speech section (BR-STUDY-080, BR-SETTINGS-009)."
   },
   "settingsCardLimit": "Cards per session",
   "@settingsCardLimit": {
     "description": "The app-wide card limit row, and its number for TalkBack (BR-SETTINGS-002)."
   },
-  "settingsCardLimitRange": "1 to {max} · default {count}",
-  "@settingsCardLimitRange": {
-    "placeholders": {
-      "max": {
-        "type": "int"
-      },
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Line under Cards per session."
+  "settingsCardLimitShort": "Cards",
+  "@settingsCardLimitShort": {
+    "description": "Study options (screen 23a): the card-limit row's label beside its stepper, under the Session overline (owner 2026-10-07). The stepper keeps settingsCardLimit as its spoken name."
+  },
+  "settingsCardLimitPerSession": "Per session",
+  "@settingsCardLimitPerSession": {
+    "description": "Study options (screen 23a): the card-limit row's subtitle under Cards, so the row reads Cards per session (owner 2026-10-07)."
   },
   "settingsCardLimitInvalid": "Enter a number from {min} to {max}",
   "@settingsCardLimitInvalid": {
@@ -5193,7 +5220,7 @@
   },
   "settingsSpeechAutoPlay": "Read the term aloud",
   "@settingsSpeechAutoPlay": {
-    "description": "Settings › Study defaults: the read-aloud switch (BR-SETTINGS-010)."
+    "description": "Settings › Study options (23a): the read-aloud switch (BR-SETTINGS-010)."
   },
   "settingsSpeechAutoPlayHint": "When a new card comes up while learning",
   "@settingsSpeechAutoPlayHint": {
@@ -5201,7 +5228,7 @@
   },
   "settingsSpeechLanguage": "Speech language",
   "@settingsSpeechLanguage": {
-    "description": "Settings › Study defaults and Study options: the row that opens the language sheet (BR-SETTINGS-009)."
+    "description": "Settings › Study options (23a) and a deck's Study options (15): the row that opens the language sheet (BR-SETTINGS-009)."
   },
   "settingsSpeechLanguageValue": "{language} · Used by decks that follow the defaults",
   "@settingsSpeechLanguageValue": {
@@ -5210,7 +5237,7 @@
         "type": "String"
       }
     },
-    "description": "Settings › Study defaults: subtitle of the speech language row, the value first as the Theme and Language rows do (critique 2026-10-07)."
+    "description": "Settings › Study options (23a): subtitle of the speech language row, the value first as the Theme and Language rows do (critique 2026-10-07)."
   },
   "settingsSpeechLanguageMissing": "No voice on this device · nothing is read",
   "@settingsSpeechLanguageMissing": {
@@ -5233,6 +5260,10 @@
       }
     },
     "description": "The display name of a SpeechLanguage, by its enum name."
+  },
+  "settingsAccountSync": "Account & sync",
+  "@settingsAccountSync": {
+    "description": "Settings hub (screen 23): the overline over the account row and the Sync row (settings hub spec D2)."
   },
   "settingsApp": "App",
   "@settingsApp": {
@@ -5263,7 +5294,7 @@
   "@settingsResetRow": {
     "description": "The row that opens the reset confirmation (UC-SETTINGS-001 A3)."
   },
-  "settingsResetRowHint": "Theme, language, study defaults, read-aloud, reminder",
+  "settingsResetRowHint": "Theme, language, study options, read-aloud, reminder",
   "@settingsResetRowHint": {
     "description": "Line under Reset app options; names the reminder (register row 123, closed by FE-B5)."
   },
@@ -6464,7 +6495,23 @@
   },
   "settingsAdmin": "Admin",
   "@settingsAdmin": {
-    "description": "Screen 23 (Monitoring): the section title of the admin-only entry."
+    "description": "Settings hub (screen 23): the admin-only group's overline, and the title of the Admin page (screen 23b)."
+  },
+  "settingsAdminTools": "Admin tools",
+  "@settingsAdminTools": {
+    "description": "Settings hub (screen 23): the one Admin row, for an admin only; opens screen 23b (settings hub spec D4)."
+  },
+  "settingsAdminToolsHint": "Monitoring, users, SQL log",
+  "@settingsAdminToolsHint": {
+    "description": "Subtitle of the Admin tools row."
+  },
+  "settingsAdminLogs": "Logs",
+  "@settingsAdminLogs": {
+    "description": "Admin (screen 23b): the overline over Monitoring and Log SQL statements."
+  },
+  "settingsAdminPeople": "People",
+  "@settingsAdminPeople": {
+    "description": "Admin (screen 23b): the overline over Users."
   },
   "settingsMonitoring": "Monitoring",
   "@settingsMonitoring": {

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
@@ -12,8 +13,8 @@ import 'package:memox/features/settings/presentation/states/settings_state.dart'
 import 'package:memox/features/settings/presentation/widgets/overlays/settings_reset_dialog_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_app_section_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_skeleton_widget.dart';
-import 'package:memox/features/settings/presentation/widgets/sections/settings_sync_section_widget.dart';
-import 'package:memox/features/settings/presentation/widgets/sections/settings_study_defaults_section_widget.dart';
+import 'package:memox/features/settings/presentation/widgets/items/settings_sync_row_widget.dart';
+import 'package:memox/features/settings/presentation/widgets/items/settings_study_summary_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -24,22 +25,26 @@ import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
-/// Screen 23, the Settings tab (UC-SETTINGS-001): the app-wide study
-/// defaults, the Theme and Language pages, and Reset app options. Every
-/// value shown is the persisted one, or the card limit being changed
-/// (BR-SETTINGS-001).
+/// Screen 23, the Settings tab (UC-SETTINGS-001): the hub of the Settings
+/// area (settings hub spec §5.1): Account & sync, Study, App, Admin and
+/// Reset, each row naming its stored value and opening its page.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({
     super.key,
+    required this.onOpenStudyDefaults,
     required this.onOpenTheme,
     required this.onOpenLanguage,
     required this.onOpenReminder,
     required this.resetAppOptions,
     required this.onOpenSync,
-    this.accountSection,
-    this.adminRows = const [],
+    required this.onOpenAdmin,
+    this.accountRow,
+    this.accountBanner,
     this.onOpenGallery,
   });
+
+  /// Opens screen 23a (settings hub spec D2).
+  final VoidCallback onOpenStudyDefaults;
 
   final VoidCallback onOpenTheme;
   final VoidCallback onOpenLanguage;
@@ -53,14 +58,17 @@ class SettingsScreen extends ConsumerWidget {
   /// Opens screen 27 (SB-U1).
   final VoidCallback onOpenSync;
 
-  /// The Account section, which `app/` composes from the account feature
-  /// (account UI spec §5.5); first in the list.
-  final Widget? accountSection;
+  /// The account row, which `app/` composes from the account feature
+  /// (settings hub spec D7); null in a test without an account.
+  final Widget? accountRow;
 
-  /// The rows features supply for the Admin section (Monitoring, Users),
-  /// which `app/` composes; the section shows only to an admin (users spec
-  /// U2).
-  final List<Widget> adminRows;
+  /// The expired sign-in banner, above the Account & sync overline
+  /// (P3b plan ruling 1); null in a test without an account.
+  final Widget? accountBanner;
+
+  /// Opens screen 23b (settings hub spec D4); the row shows only to an
+  /// admin.
+  final VoidCallback onOpenAdmin;
 
   /// Debug builds only: opens the component gallery.
   final VoidCallback? onOpenGallery;
@@ -73,6 +81,10 @@ class SettingsScreen extends ConsumerWidget {
       (_, notice) => _say(context, ref, notice),
     );
     final settings = ref.watch(appSettingsProvider);
+    // Hidden on a stream error too (sync status spec §6).
+    final sync = ref.watch(syncStatusProvider);
+    final syncStatus = sync is AsyncData<SyncStatus?> ? sync.value : null;
+    final hasAccountSync = accountRow != null || syncStatus != null;
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.navSettings,
@@ -88,10 +100,34 @@ class SettingsScreen extends ConsumerWidget {
       body: switch (settings) {
         AsyncData(:final value) => MxScreenScroll(
           children: [
-            ?accountSection,
-            SettingsStudyDefaultsSectionWidget(
-              stored: value.studyDefaults,
-              isSpeechAutoPlay: value.isSpeechAutoPlay,
+            ?accountBanner,
+            if (hasAccountSync)
+              MxSection(
+                title: l10n.settingsAccountSync,
+                children: [
+                  ?accountRow,
+                  if (syncStatus case final status?)
+                    SettingsSyncRowWidget(
+                      status: status,
+                      now: ref.watch(dayClockProvider).now(),
+                      onOpenSync: onOpenSync,
+                    ),
+                ],
+              ),
+            MxSection(
+              title: l10n.settingsStudySection,
+              children: [
+                MxSettingsRow(
+                  label: l10n.settingsStudyDefaults,
+                  subtitle: studyDefaultsSummary(
+                    l10n,
+                    value.studyDefaults,
+                    isAutoPlay: value.isSpeechAutoPlay,
+                  ),
+                  icon: AppIcons.library,
+                  onTap: onOpenStudyDefaults,
+                ),
+              ],
             ),
             SettingsAppSectionWidget(
               stored: value,
@@ -99,17 +135,19 @@ class SettingsScreen extends ConsumerWidget {
               onOpenLanguage: onOpenLanguage,
               onOpenReminder: onOpenReminder,
             ),
-            // Hidden on a stream error too (sync status spec §6).
-            if (ref.watch(syncStatusProvider) case AsyncData(
-              value: final status?,
-            ))
-              SettingsSyncSectionWidget(
-                status: status,
-                now: ref.watch(dayClockProvider).now(),
-                onOpenSync: onOpenSync,
+            // isAdmin is false without an account, so no slot check is needed.
+            if (ref.watch(isAdminProvider))
+              MxSection(
+                title: l10n.settingsAdmin,
+                children: [
+                  MxSettingsRow(
+                    label: l10n.settingsAdminTools,
+                    subtitle: l10n.settingsAdminToolsHint,
+                    icon: AppIcons.safe,
+                    onTap: onOpenAdmin,
+                  ),
+                ],
               ),
-            if (adminRows.isNotEmpty && ref.watch(isAdminProvider))
-              MxSection(title: l10n.settingsAdmin, children: adminRows),
             MxSection(
               title: l10n.settingsReset,
               note: l10n.settingsResetNote,
@@ -143,35 +181,29 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
         _ => MxScreenScroll(
-          children: [SettingsSkeletonWidget(semanticLabel: l10n.commonLoading)],
+          children: [
+            SettingsSkeletonWidget(
+              semanticLabel: l10n.commonLoading,
+              rowsPerSection: accountRow == null
+                  ? SettingsSkeletonWidget.hubRowsWithoutAccount
+                  : SettingsSkeletonWidget.hubRows,
+            ),
+          ],
         ),
       },
     );
   }
 
-  /// The toasts of the study defaults and the reset; the Theme and
-  /// Language pages say their own.
+  /// The reset's toasts (settings hub spec D9); Study options, Theme and
+  /// Language say their own.
   void _say(BuildContext context, WidgetRef ref, SettingsNotice? notice) {
     if (notice == null) return;
     final l10n = context.l10n;
     void retry() => unawaited(
       ref.read(settingsControllerProvider.notifier).retry(notice.kind),
     );
-    final stored = ref.read(appSettingsProvider).value?.studyDefaults;
     final message = switch ((notice, notice.kind)) {
-      (SettingsSaved(), SettingsSubmit.cardLimit) => l10n.settingsSaved,
-      (SettingsSaved(), SettingsSubmit.newCardOrder) => l10n.settingsSaved,
-      (SettingsSaved(), SettingsSubmit.speechLanguage) => l10n.settingsSaved,
-      (SettingsSaved(), SettingsSubmit.speechAutoPlay) => l10n.settingsSaved,
       (SettingsSaved(), SettingsSubmit.reset) => l10n.settingsResetDone,
-      (SettingsSaveFailed(), SettingsSubmit.cardLimit) when stored != null =>
-        l10n.settingsCardLimitSaveFailed(stored.cardLimit),
-      (SettingsSaveFailed(), SettingsSubmit.newCardOrder) =>
-        l10n.settingsOrderSaveFailed,
-      (SettingsSaveFailed(), SettingsSubmit.speechLanguage) =>
-        l10n.settingsSpeechLanguageSaveFailed,
-      (SettingsSaveFailed(), SettingsSubmit.speechAutoPlay) =>
-        l10n.settingsSpeechAutoPlaySaveFailed,
       (SettingsSaveFailed(), SettingsSubmit.reset) => l10n.settingsResetFailed,
       _ => null,
     };

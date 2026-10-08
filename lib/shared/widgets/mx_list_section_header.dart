@@ -42,7 +42,8 @@ class MxListSectionHeader extends StatelessWidget {
       spacing: AppSpacing.control,
       overflowSpacing: AppSpacing.control,
       children: [
-        // A heading, so TalkBack can move between sections (SW-REV-006).
+        // A heading for screen readers, so a list of sections can be
+        // skimmed by its overlines.
         Semantics(
           header: true,
           child: Text(
