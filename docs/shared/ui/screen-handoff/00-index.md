@@ -28,7 +28,7 @@ their goldens, its rulings and its copy. The visual system is in
 | 08 | Card create | 9 | FE-A2 | built | [08-card-create.md](08-card-create.md) |
 | 09 | Card edit | 9 | FE-A2 | built | [09-card-edit.md](09-card-edit.md) |
 | 10 | Card detail | 7 | FE-A2 | built | [10-card-detail.md](10-card-detail.md) |
-| 11 | Card import | 22 | FE-B3 | built | [11-card-import.md](11-card-import.md) |
+| 11 | Card import | 23 | FE-B3 | built | [11-card-import.md](11-card-import.md) |
 | 12 | Card export | 9 | FE-B3 | built | [12-card-export.md](12-card-export.md) |
 | 13 | Study home | 10 | FE-A8, SB-U1 | built | [13-study-home.md](13-study-home.md) |
 | 14 | Study entry | 9 | FE-A6, FE-A7 | built | [14-study-entry.md](14-study-entry.md) |

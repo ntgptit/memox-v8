@@ -6,6 +6,7 @@ final class CardImportChild {
     required this.id,
     required this.name,
     required this.canHoldCards,
+    required this.cardCount,
     required this.pairs,
   });
 
@@ -14,6 +15,9 @@ final class CardImportChild {
 
   /// `unset` or a deck of cards (BR-DECK-009, BR-DECK-010).
   final bool canHoldCards;
+
+  /// How many live cards it holds (spec 2026-10-08 C4).
+  final int cardCount;
 
   /// The folded faces of its live cards (BR-TRANSFER-003).
   final Set<CardFoldedPair> pairs;

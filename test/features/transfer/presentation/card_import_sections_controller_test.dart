@@ -146,4 +146,24 @@ void main() {
     wizard.renameDefaultDeck('uncategorized');
     expect(draftOf(c).preview!.undecided, 1);
   });
+
+  test(
+    'one choice decides every clash; a row still overrides it (C2)',
+    () async {
+      await decks.sub(root.id, 'New');
+      final c = container();
+      final wizard = await toPreview(c);
+      expect(draftOf(c).preview!.undecided, 2);
+
+      wizard.chooseAllSections(ImportSectionChoice.addToExisting);
+      expect(draftOf(c).preview!.undecided, 0);
+      expect(draftOf(c).sectionChoices, {
+        0: ImportSectionChoice.addToExisting,
+        1: ImportSectionChoice.addToExisting,
+      });
+
+      wizard.chooseSection(1, ImportSectionChoice.createNew);
+      expect(draftOf(c).sectionChoices[1], ImportSectionChoice.createNew);
+    },
+  );
 }

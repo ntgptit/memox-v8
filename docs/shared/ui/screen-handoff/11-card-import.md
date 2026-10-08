@@ -53,7 +53,8 @@ bar is gone while it is open.
 | success | no golden | no golden | `MxEmptyState`, success tone; no deck name in the body. Import another file · View the cards (UC step 8). |
 | partial | `import_partial_light.png` | `import_partial_dark.png` | As success, with the skipped counts and the skip note. |
 | sectionsUndecided | `import_sections_undecided_light.png` | `import_sections_undecided_dark.png` | The Decks block with a taken name undecided; Import is locked and the caption says how many decks to choose for (U6). |
-| sectionsDecided | `import_sections_decided_light.png` | `import_sections_decided_dark.png` | "Add to existing" chosen; rows grouped by deck. |
+| sectionsDecided | `import_sections_decided_light.png` | `import_sections_decided_dark.png` | "Add to existing" chosen and its consequence; rows grouped under each deck's name as typed with its cards, 3 rows per deck (C1, C3, C4). |
+| sectionsChooseAll | `import_sections_choose_all_light.png` | `import_sections_choose_all_dark.png` | Two taken names: a first row "{n} decks with taken names" with "Add all to existing" · "Create all new", nothing chosen (C2). |
 | sectionsResult | `import_sections_result_light.png` | `import_sections_result_dark.png` | The counts, then a Decks section (New / Existing, cards); the primary action is Back to deck (U8). |
 | sectionsRefused | no golden | no golden | A file split by `*` rows into a deck of cards (E7) or at level 10 (E8): a warning banner at Columns, Preview locked (U7). |
 | sectionTargetChanged | no golden | no golden | A deck chosen for "Add to existing" changed before Import (E9): a warning banner with "Preview again" on the preview. |
@@ -61,7 +62,7 @@ bar is gone while it is open.
 | failed | no golden | no golden | `MxEmptyState`, danger tone; Close · Try again, which returns to the preview. |
 | rejects | no golden | no golden | `MxEmptyState`, warning tone; Close only. |
 
-Goldens: `test/features/transfer/presentation/goldens/import_{source,mapping,preview,partial}_{light,dark}.png` and `import_sections_{undecided,decided,result}_{light,dark}.png`.
+Goldens: `test/features/transfer/presentation/goldens/import_{source,mapping,preview,partial}_{light,dark}.png` and `import_sections_{undecided,decided,choose_all,result}_{light,dark}.png`.
 
 ## Back
 
@@ -88,6 +89,7 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the result lists each skipped row (its number, term, meaning, why and mark, drawn as in the preview) under "Skipped rows", five first and then "Show all {n}"; rows the commit's re-check dropped read "Already in this deck"; the skip note keeps only the duplicate rule (F4). Tapping the "Choose a file" card opens the picker, selected or not; the empty state below has no button (F9).
 - **Spec 2026-10-08 (DEV-289), deck sections:** a row whose Term cell starts with `*` names a sub-deck (BR-TRANSFER-015). U1 Import on every deck · U2 the Decks block is the confirmation, no extra step · U3 a taken name needs a choice, none pre-selected; a deck of decks of that name means a new deck · U4 the default deck's name is editable · U5 rows grouped by deck, 50 across the import · U6 Import locked with a caption until every choice is made · U7 E7/E8 as a banner at Columns · U8 the result lists the decks and leads Back to deck · U9 a flat file looks as before.
 - **Critique 2026-10-08 (DEV-289, after the build):** F1 an undecided deck shows no New or Existing badge until its choice is made; F2 the default deck's name field has a visible "Deck name" label above it (the field's own label is for TalkBack). One audit confirmed both.
+- **Critique 2026-10-08 (owner-requested, PR 270), spec C1–C5:** group titles are the deck name as typed with its cards, never upper-cased; two or more taken names add a choose-all row; a sectioned preview shows 3 rows per deck and "{n} more rows in this deck"; a clash names the existing deck's cards and, once chosen, its consequence; "Include duplicates" speaks of each deck. Its one audit reworded an empty existing deck ("{name} is already here, with no cards.").
 - **Spec 2026-10-08 S6:** a workbook opens on its first sheet, even an empty one, which then says there are no rows; the sheet chip still offers the others.
 
 ## Copy
@@ -99,4 +101,4 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 - Preview: "3 · Preview" · "Ready · {n}" · "Invalid · {n}" · "Duplicate · {n}" · "Blank · {n}" · "Already in this deck" · "Repeated in the file (row {row})" · "Showing the first {shown} of {total} rows" · "Include duplicates".
 - Footer: "Map columns" · "Preview rows" · "Import {n}" · "Importing…" (Vietnamese "Ghép cột" · "Xem trước" · "Nhập {n}" · "Đang nhập…"); each fits half the 360 dp footer row (The Short Label Rule).
 - Result: "Imported" · "Imported with skips" · "Nothing added" · "Import didn’t finish" · "This deck no longer accepts cards" · "Added as new cards" · "Skipped — duplicates" · "Skipped — invalid rows" · "View the cards" · "Import another file" · "Back to deck" · "Try again".
-- Decks (spec 2026-10-08): "Decks" · "New" · "Existing" · "{n} cards" · "No cards to add · no deck made" · "A deck with this name is already here." · "Add to existing" · "Create new" · "The deck with this name holds decks, so a new one is made." · "Uncategorized" · "Another deck in this file has this name." · "Deck name after * is empty" · "Deck name over 200 characters" · "Choose how to import {n} decks with taken names." · "Fix the deck name to continue." · "This file is split into decks" · "No room for another level" · "A deck changed meanwhile" · "Preview again".
+- Decks (spec 2026-10-08): "Decks" · "New" · "Existing" · "{n} cards" · "No cards to add · no deck made" · "Add to existing" · "Create new" · "The deck with this name holds decks, so a new one is made." · "Uncategorized" · "Another deck in this file has this name." · "Deck name after * is empty" · "Deck name over 200 characters" · "Choose how to import {n} decks with taken names." · "{n} decks with taken names" · "Add all to existing" · "Create all new" · "{name} already has {n} cards." · "{name} is already here, with no cards." · "Cards already in it are skipped." · "A second deck named {name} is made." · "{n} more rows in this deck" · "Off: rows already in their deck or repeated within it are skipped." · "Fix the deck name to continue." · "This file is split into decks" · "No room for another level" · "A deck changed meanwhile" · "Preview again".

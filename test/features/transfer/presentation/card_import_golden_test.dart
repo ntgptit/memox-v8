@@ -54,6 +54,14 @@ Future<String> _seedSections(LibraryEnv env) async {
   return root.id;
 }
 
+/// A root where both named decks already exist, so one row decides both
+/// (spec 2026-10-08 C2).
+Future<String> _seedTwoClashes(LibraryEnv env) async {
+  final rootId = await _seedSections(env);
+  await env.decks.sub(rootId, 'Idioms');
+  return rootId;
+}
+
 Widget _context(String deckId, String label) =>
     DeckContextHeaderWidget(deckId: deckId, currentLabel: label);
 
@@ -202,6 +210,21 @@ void main() {
         await expectBoundaryGolden(
           tester,
           'goldens/import_sections_result_$theme.png',
+        );
+      });
+    });
+    libraryTest('import sections choose all, $theme', (tester, env) async {
+      final rootId = await _seedTwoClashes(env);
+      await withRealShadows(() async {
+        await pump(tester, env, rootId, csv: _sectionsCsv);
+        await _tap(tester, _en.importSourceFile);
+        await _tap(tester, _en.importReadAction);
+        await _tap(tester, _en.importPreviewAction);
+        await tester.ensureVisible(find.text(_en.importDecksTakenNames(2)));
+        await tester.pumpAndSettle();
+        await expectBoundaryGolden(
+          tester,
+          'goldens/import_sections_choose_all_$theme.png',
         );
       });
     });

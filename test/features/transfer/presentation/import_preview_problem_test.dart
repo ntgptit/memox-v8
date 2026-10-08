@@ -74,6 +74,7 @@ void main() {
               draft: draft,
               onIncludeDuplicates: (_) {},
               onChooseSection: (_, _) {},
+              onChooseAllSections: (_) {},
               onRenameDefault: (_) {},
               onPreviewAgain: () {},
             ),

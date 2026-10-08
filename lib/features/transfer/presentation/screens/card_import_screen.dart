@@ -148,6 +148,7 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
             onIncludeDuplicates: (isOn) =>
                 _wizard.setIncludingDuplicates(isIncluding: isOn),
             onChooseSection: _wizard.chooseSection,
+            onChooseAllSections: _wizard.chooseAllSections,
             onRenameDefault: _wizard.renameDefaultDeck,
             onPreviewAgain: () => unawaited(
               _wizard.previewRows(

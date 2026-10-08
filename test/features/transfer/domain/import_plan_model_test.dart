@@ -74,6 +74,7 @@ void main() {
             id: 'p1',
             name: 'part 1',
             canHoldCards: true,
+            cardCount: 1,
             pairs: {(front: 'a', back: 'b')},
           ),
         ],
@@ -85,6 +86,7 @@ void main() {
       choices: const {},
     );
     expect(undecided.groups[1].destination, const Undecided());
+    expect(undecided.groups[1].clash!.cardCount, 1);
     expect((undecided.undecided, undecided.canCommit), (1, false));
     // Shown against the existing deck, as "Add" would see it.
     expect(undecided.groups[1].rows.first.kind, ImportRowKind.duplicateInDeck);
@@ -112,6 +114,7 @@ void main() {
             id: 'g',
             name: 'Part 1',
             canHoldCards: false,
+            cardCount: 0,
             pairs: {},
           ),
         ],
@@ -198,6 +201,7 @@ void main() {
             id: 'p1',
             name: 'Part 1',
             canHoldCards: true,
+            cardCount: 0,
             pairs: {},
           ),
         ],

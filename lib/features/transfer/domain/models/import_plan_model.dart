@@ -117,6 +117,7 @@ final class ImportPlan {
               deckId: child.id,
               name: child.name,
               canHoldCards: child.canHoldCards,
+              cardCount: child.cardCount,
             ),
       nameProblem: section.isDefault
           ? _problemOf(nameCheck, isTakenInFile: isTakenInFile)

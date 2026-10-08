@@ -246,6 +246,19 @@ widget; the four-step tracker stays Source · Columns · Preview · Import.
   target now holds decks, so "View the cards" has no list to open); a flat import keeps
   "View the cards".
 - **U9 Flat imports** look exactly as today; no Decks block.
+- **Critique 2026-10-08 (owner-requested, after PR 270 opened), all five fixed:**
+  - **C1** a group's rows are titled with the deck name as the user typed it, never
+    upper-cased (DESIGN.md "user data is never upper-cased"), with its card count.
+  - **C2** two or more clashes that need a choice add a first row to the Decks block,
+    "{n} decks with taken names", with an `MxSegmentedTray` "Add all to existing" ·
+    "Create all new", nothing chosen; it sets every such deck and each row still
+    overrides it (S2 holds: no pre-selection).
+  - **C3** a sectioned preview shows at most 3 rows per deck and "{n} more rows in this
+    deck" under each; the 50-row ceiling of K2 still holds across the import.
+  - **C4** a clash row names the facts: "{name} already has {n} cards."; once chosen it
+    states the consequence ("Cards already in it are skipped." / "A second deck named
+    {name} is made.").
+  - **C5** "Include duplicates" explains the per-deck measure on a sectioned preview.
 - Goldens (light and dark): `import_sections_undecided`, `import_sections_decided`,
   `import_sections_result`. After the build: Impeccable critique and one audit of these
   goldens against `DESIGN.md`, then the golden review page.

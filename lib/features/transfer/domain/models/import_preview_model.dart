@@ -103,11 +103,15 @@ final class ImportClash {
     required this.deckId,
     required this.name,
     required this.canHoldCards,
+    required this.cardCount,
   });
 
   final String deckId;
   final String name;
   final bool canHoldCards;
+
+  /// How many cards the existing deck holds (spec 2026-10-08 C4).
+  final int cardCount;
 }
 
 /// Why the default deck's name cannot be used (spec 2026-10-08 U4).
@@ -146,6 +150,10 @@ final class ImportGroup {
   /// group without one makes no deck, so its clash needs no choice.
   bool get hasCards =>
       rows.any((row) => row.kind == ImportRowKind.ready || row.isDuplicate);
+
+  /// Whether the user chooses how this group is imported: its name is taken
+  /// by a deck that takes cards, and it may write (U3, C2).
+  bool get isChoosable => (clash?.canHoldCards ?? false) && hasCards;
 
   /// A clash still to be decided for a group that may write (U3, U6).
   bool get needsChoice => destination is Undecided && hasCards;

@@ -110,7 +110,7 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
     () => _db.transaction(() async {
       final deck = await _dao.deckRow(deckId);
       if (deck == null) return null;
-      final pairsByChild = await _dao.foldedPairsUnder(deckId);
+      final facesByChild = await _dao.foldedFacesUnder(deckId);
       return CardImportTarget(
         isDeckOfCards: deck.contentType == DeckContentType.card.name,
         canHoldCards: _takesCards(deck.contentType),
@@ -122,7 +122,8 @@ final class CardTransferRepositoryImpl implements CardTransferRepository {
               id: child.id,
               name: child.name,
               canHoldCards: _takesCards(child.contentType),
-              pairs: pairsByChild[child.id] ?? {},
+              cardCount: facesByChild[child.id]?.length ?? 0,
+              pairs: {...?facesByChild[child.id]},
             ),
         ],
       );

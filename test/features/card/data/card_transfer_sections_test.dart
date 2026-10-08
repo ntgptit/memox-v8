@@ -119,6 +119,7 @@ void main() {
       [('Words', true), ('Grammar', false)],
     );
     expect(target.children.first.pairs, {(front: 'menu', back: 'x')});
+    expect([for (final c in target.children) c.cardCount], [1, 0]);
     expect(await cards.importTarget('gone'), isNull);
   });
 

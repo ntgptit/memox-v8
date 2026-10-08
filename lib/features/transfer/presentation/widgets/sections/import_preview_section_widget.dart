@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
@@ -27,6 +28,7 @@ class ImportPreviewSectionWidget extends StatelessWidget {
     required this.draft,
     required this.onIncludeDuplicates,
     required this.onChooseSection,
+    required this.onChooseAllSections,
     required this.onRenameDefault,
     required this.onPreviewAgain,
   });
@@ -34,6 +36,7 @@ class ImportPreviewSectionWidget extends StatelessWidget {
   final CardImportDraft draft;
   final ValueChanged<bool> onIncludeDuplicates;
   final void Function(int index, ImportSectionChoice choice) onChooseSection;
+  final ValueChanged<ImportSectionChoice> onChooseAllSections;
   final ValueChanged<String> onRenameDefault;
 
   /// Reads the decks again after one changed before Import (E9).
@@ -41,6 +44,9 @@ class ImportPreviewSectionWidget extends StatelessWidget {
 
   /// The rows the table shows before "Showing the first …" (K2).
   static const int shownRows = 50;
+
+  /// The rows a sectioned preview shows per deck (critique 2026-10-08, C3).
+  static const int rowsPerDeck = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +112,10 @@ class ImportPreviewSectionWidget extends StatelessWidget {
             children: [
               MxSettingsRow(
                 label: l10n.importIncludeDuplicates,
-                subtitle: l10n.importIncludeDuplicatesBody,
+                // Measured per deck on a sectioned file (C5).
+                subtitle: preview.isSectioned
+                    ? l10n.importIncludeDuplicatesSectionsBody
+                    : l10n.importIncludeDuplicatesBody,
                 onTap: () => onIncludeDuplicates(!draft.isIncludingDuplicates),
                 trailing: MxToggle(
                   isOn: draft.isIncludingDuplicates,
@@ -121,6 +130,7 @@ class ImportPreviewSectionWidget extends StatelessWidget {
             preview: preview,
             isIncludingDuplicates: draft.isIncludingDuplicates,
             onChoose: onChooseSection,
+            onChooseAll: onChooseAllSections,
             onRename: onRenameDefault,
           ),
           const SizedBox(height: AppSpacing.grouped),
@@ -131,28 +141,90 @@ class ImportPreviewSectionWidget extends StatelessWidget {
   }
 
   /// One section of rows per group, the first [shownRows] across the whole
-  /// import (K2, U5); the note goes under the last section shown.
+  /// import (K2, U5). A sectioned preview shows each deck's first
+  /// [rowsPerDeck] rows under its name as typed, and how many more (C1, C3).
   List<Widget> _rowSections(BuildContext context, ImportPreview preview) {
     final l10n = context.l10n;
+    final perGroup = preview.isSectioned ? rowsPerDeck : shownRows;
     final shown = <(ImportGroup, List<ImportRow>)>[];
     var left = shownRows;
     for (final group in preview.groups) {
       if (left == 0) break;
-      final rows = group.rows.take(left).toList();
+      final rows = group.rows.take(left < perGroup ? left : perGroup).toList();
       if (rows.isEmpty) continue;
       left -= rows.length;
       shown.add((group, rows));
     }
     final shownCount = shownRows - left;
+    String? noteOf(int index, ImportGroup group, List<ImportRow> rows) {
+      if (preview.isSectioned) {
+        final more = group.rows.length - rows.length;
+        return more > 0 ? l10n.importRowsMore(more) : null;
+      }
+      final isLast = index == shown.length - 1;
+      return isLast && preview.total > shownCount
+          ? l10n.importShowingFirst(shownCount, preview.total)
+          : null;
+    }
+
     return [
-      for (final (index, (group, rows)) in shown.indexed)
+      for (final (index, (group, rows)) in shown.indexed) ...[
+        if (preview.isSectioned)
+          _GroupHeader(
+            name: group.name,
+            cards: group.willWrite(
+              includeDuplicates: draft.isIncludingDuplicates,
+            ),
+          ),
         MxSection(
-          title: preview.isSectioned ? group.name : null,
-          note: index == shown.length - 1 && preview.total > shownCount
-              ? l10n.importShowingFirst(shownCount, preview.total)
-              : null,
+          note: noteOf(index, group, rows),
           children: [for (final row in rows) ImportPreviewRowWidget(row: row)],
         ),
+      ],
     ];
+  }
+}
+
+/// A group's deck name as the user typed it, never upper-cased
+/// (DESIGN.md: user data is never upper-cased; critique 2026-10-08, C1),
+/// and the cards it will receive.
+class _GroupHeader extends StatelessWidget {
+  const _GroupHeader({required this.name, required this.cards});
+
+  final String name;
+  final int cards;
+
+  static const int _maxNameLines = 2;
+
+  @override
+  Widget build(BuildContext context) {
+    final styles = context.textStyles;
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(
+        start: AppSpacing.micro,
+        end: AppSpacing.micro,
+        bottom: AppSpacing.control,
+      ),
+      child: Semantics(
+        header: true,
+        child: OverflowBar(
+          alignment: MainAxisAlignment.spaceBetween,
+          spacing: AppSpacing.control,
+          overflowSpacing: AppSpacing.micro,
+          children: [
+            Text(
+              name,
+              maxLines: _maxNameLines,
+              overflow: TextOverflow.ellipsis,
+              style: styles.rowTitle,
+            ),
+            Text(
+              context.l10n.importDeckCards(cards),
+              style: styles.rowDescription,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

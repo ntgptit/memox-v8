@@ -4,6 +4,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -32,6 +33,17 @@ class ImportDeckRowWidget extends StatefulWidget {
 }
 
 class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
+  /// A deck name of up to 200 characters stays within two lines.
+  static const int _maxNameLines = 2;
+
+  /// What a chosen clash does (C4); null while undecided.
+  static String? _consequenceOf(ImportGroup group, AppLocalizations l10n) =>
+      switch (group.destination) {
+        IntoExistingDeck() => l10n.importDeckAddConsequence,
+        IntoNewDeck() => l10n.importDeckCreateConsequence(group.name),
+        _ => null,
+      };
+
   /// Owns the default name's text, so a rebuild with the edited name does
   /// not move the caret.
   late final TextEditingController _name = TextEditingController(
@@ -80,7 +92,12 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
               onChanged: widget.onRename,
             ),
           ] else
-            Text(group.name, style: styles.contentTitle),
+            Text(
+              group.name,
+              maxLines: _maxNameLines,
+              overflow: TextOverflow.ellipsis,
+              style: styles.contentTitle,
+            ),
           Row(
             spacing: AppSpacing.control,
             children: [
@@ -103,8 +120,11 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
               ),
             ],
           ),
-          if (clash != null && clash.canHoldCards && group.hasCards) ...[
-            MxNote.hint(text: l10n.importDeckClashNote),
+          if (clash != null && group.isChoosable) ...[
+            // The facts the choice needs (critique 2026-10-08, C4).
+            MxNote.hint(
+              text: l10n.importDeckClashNote(clash.name, clash.cardCount),
+            ),
             MxSegmentedTray<ImportSectionChoice>(
               segments: [
                 MxSegment(
@@ -123,6 +143,8 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
               },
               onSelected: widget.onChoose,
             ),
+            if (_consequenceOf(group, l10n) case final consequence?)
+              Text(consequence, style: styles.rowDescription),
           ],
           if (clash != null && !clash.canHoldCards)
             MxNote.hint(text: l10n.importDeckHoldsDecksNote),

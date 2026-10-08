@@ -186,6 +186,27 @@ class CardImportController extends _$CardImportController {
     );
   }
 
+  /// Step 3 (spec 2026-10-08 C2): one choice for every clash that needs
+  /// one; each row can still override it.
+  void chooseAllSections(ImportSectionChoice choice) {
+    final draft = _draft;
+    final plan = draft?.plan;
+    final preview = draft?.preview;
+    if (draft == null || plan == null || preview == null) return;
+    final choices = {
+      ...draft.sectionChoices,
+      for (final (index, group) in preview.groups.indexed)
+        if (group.isChoosable) index: choice,
+    };
+    state = draft.copyWith(
+      sectionChoices: choices,
+      preview: plan.preview(
+        defaultDeckName: draft.defaultDeckName ?? '',
+        choices: choices,
+      ),
+    );
+  }
+
   /// Step 3 (U4): the default deck's name. A choice made for its old name
   /// is cleared, since its clash may have changed.
   void renameDefaultDeck(String name) {

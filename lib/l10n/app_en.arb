@@ -3391,9 +3391,17 @@
   "@importDeckCreateNew": {
     "description": "Choice for a section whose name a sub-deck already has: make another deck."
   },
-  "importDeckClashNote": "A deck with this name is already here.",
+  "importDeckClashNote": "{count, plural, =0{{name} is already here, with no cards.} =1{{name} already has 1 card.} other{{name} already has {count} cards.}}",
   "@importDeckClashNote": {
-    "description": "Shown above the clash choice (spec 2026-10-08 U3)."
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Shown above the clash choice: the existing deck and how many cards it holds (spec 2026-10-08 C4)."
   },
   "importDeckHoldsDecksNote": "The deck with this name holds decks, so a new one is made.",
   "@importDeckHoldsDecksNote": {
@@ -3455,6 +3463,49 @@
   "importPreviewAgain": "Preview again",
   "@importPreviewAgain": {
     "description": "Action of the E9 banner: read the decks again."
+  },
+  "importDeckAddConsequence": "Cards already in it are skipped.",
+  "@importDeckAddConsequence": {
+    "description": "After Add to existing: what happens to rows already in that deck (C4)."
+  },
+  "importDeckCreateConsequence": "A second deck named {name} is made.",
+  "@importDeckCreateConsequence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "After Create new: the import makes a deck with the same name (C4)."
+  },
+  "importDecksTakenNames": "{count, plural, =1{1 deck with a taken name} other{{count} decks with taken names}}",
+  "@importDecksTakenNames": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Label of the row that decides every clash at once (spec 2026-10-08 C2)."
+  },
+  "importDeckAddAll": "Add all to existing",
+  "@importDeckAddAll": {
+    "description": "Choice for every clash at once: add each deck to the existing deck of its name (C2)."
+  },
+  "importDeckCreateAll": "Create all new",
+  "@importDeckCreateAll": {
+    "description": "Choice for every clash at once: make a new deck for each (C2)."
+  },
+  "importRowsMore": "{count, plural, =1{1 more row in this deck} other{{count} more rows in this deck}}",
+  "@importRowsMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Under a deck’s first rows on a sectioned preview: rows not shown (C3)."
+  },
+  "importIncludeDuplicatesSectionsBody": "Off: rows already in their deck or repeated within it are skipped.",
+  "@importIncludeDuplicatesSectionsBody": {
+    "description": "Include duplicates on a file split by * rows: duplicates are measured per deck (C5)."
   },
   "importTitle": "Import cards",
   "@importTitle": {
