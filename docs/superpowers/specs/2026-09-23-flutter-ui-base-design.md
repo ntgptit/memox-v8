@@ -129,8 +129,8 @@ nine `BIND_NOW` `MEMOX_SEMANTIC_COLOR` entries:
 `mastery · warning · onWarning · statusNew · statusLearning · statusReviewing ·
 statusMastered · errorFill · onErrorFill`
 
-- The five `DERIVED_COLOR` entries (`dangerSoft`, `dangerBorder`, `warningSoft`,
-  `surfaceHero`, `chromeGlass`) and the `border-ghost` edge colour live in
+- The four `DERIVED_COLOR` entries (`dangerSoft`, `dangerBorder`, `warningSoft`,
+  `surfaceHero`; `chromeGlass` went with the glass, DEV-302) and the `border-ghost` edge colour live in
   `MxDerivedColors`, built from the `ColorScheme`, the extension and the
   brightness at the mix ratios in the foundations, and read as
   `context.derivedColors`. They are not extension fields.

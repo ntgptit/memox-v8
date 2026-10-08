@@ -137,16 +137,15 @@ class _Rows extends ConsumerWidget {
           children: [
             const SizedBox(height: AppSpacing.control),
             MxListSectionHeader(label: context.l10n.usersSection),
-            MxDividedColumn(
-              children: [
-                for (final user in loaded.users)
-                  UserRowWidget(
-                    user: user,
-                    isSelf: user.id == selfId,
-                    onTap: () => onOpenUser(user),
-                  ),
-              ],
-            ),
+            // Lazy, as the list grows with every load-more.
+            ...MxDividedColumn.divided([
+              for (final user in loaded.users)
+                UserRowWidget(
+                  user: user,
+                  isSelf: user.id == selfId,
+                  onTap: () => onOpenUser(user),
+                ),
+            ]),
             const SizedBox(height: AppSpacing.grouped),
             _End(loaded: loaded, onRetry: controller.loadMore),
           ],

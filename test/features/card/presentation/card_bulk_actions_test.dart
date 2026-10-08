@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -382,4 +383,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(MxDialog), findsNothing);
   });
+
+  libraryTest(
+    'with nothing picked the bulk commands are disabled, as in the Trash '
+    '(DEV-307)',
+    (tester, env) async {
+      final ids = await _seed(env);
+      await pumpLibraryScreen(tester, env, _section(ids.words));
+      await _select(tester, ['annyeong']);
+      // Untick the last card: the mode stays, with nothing to act on.
+      await tester.tap(find.text('annyeong'));
+      await tester.pump();
+      expect(find.byType(MxSelectionCheckbox), findsNWidgets(3));
+
+      await _bulk(tester, _en.cardDelete);
+      expect(find.byType(MxDialog), findsNothing);
+      final delete = tester.getSemantics(find.text(_en.cardDelete));
+      expect(delete.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(delete.hasFlag(SemanticsFlag.isEnabled), isFalse);
+
+      await tester.tap(find.text('annyeong'));
+      await tester.pump();
+      expect(
+        tester
+            .getSemantics(find.text(_en.cardDelete))
+            .hasFlag(SemanticsFlag.isEnabled),
+        isTrue,
+      );
+    },
+  );
 }

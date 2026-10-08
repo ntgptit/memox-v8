@@ -132,12 +132,11 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
         MxListSectionHeader(
           label: l10n.monitoringPendingCount(logs.items.length),
         ),
-        MxDividedColumn(
-          children: [
-            for (final log in logs.items)
-              LogRowWidget(log: log, now: now, onTap: () => onOpenLog(log.id)),
-          ],
-        ),
+        // Lazy: the buffer can hold many rows.
+        ...MxDividedColumn.divided([
+          for (final log in logs.items)
+            LogRowWidget(log: log, now: now, onTap: () => onOpenLog(log.id)),
+        ]),
       ],
     );
   }

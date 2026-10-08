@@ -48,4 +48,38 @@ void main() {
 
     expect(_hairlines(tester), isEmpty);
   });
+
+  testWidgets('divided rows inside a lazy list keep n - 1 hairlines and stay '
+      'lazy (final review)', (tester) async {
+    await pumpMx(
+      tester,
+      ListView(
+        children: MxDividedColumn.divided([
+          for (var i = 0; i < 200; i++)
+            SizedBox(key: ValueKey('row-$i'), height: 48),
+        ]),
+      ),
+    );
+
+    // Only the rows in view and the cache extent are built.
+    expect(find.byKey(const ValueKey('row-0')), findsOneWidget);
+    expect(find.byKey(const ValueKey('row-199')), findsNothing);
+    final rows = tester
+        .widgetList(
+          find.byWidgetPredicate(
+            (widget) => switch (widget.key) {
+              ValueKey<String>(:final value) => value.startsWith('row-'),
+              _ => false,
+            },
+          ),
+        )
+        .length;
+    expect(rows, lessThan(100));
+    expect(
+      tester.getTopLeft(find.byKey(const ValueKey('row-1'))).dy -
+          tester.getBottomLeft(find.byKey(const ValueKey('row-0'))).dy,
+      1,
+    );
+    expect(_hairlines(tester).length, rows - 1);
+  });
 }

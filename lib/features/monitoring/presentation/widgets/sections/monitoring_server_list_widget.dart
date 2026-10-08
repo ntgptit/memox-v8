@@ -180,17 +180,16 @@ class _Rows extends ConsumerWidget {
           children: [
             const SizedBox(height: AppSpacing.control),
             MxListSectionHeader(label: header),
-            MxDividedColumn(
-              children: [
-                for (final log in loaded.items)
-                  LogRowWidget(
-                    log: log,
-                    now: now,
-                    onTap: () => onOpenLog(log.id),
-                    statusShownByFilter: statusShownByFilter,
-                  ),
-              ],
-            ),
+            // Lazy, as the list grows with every load-more.
+            ...MxDividedColumn.divided([
+              for (final log in loaded.items)
+                LogRowWidget(
+                  log: log,
+                  now: now,
+                  onTap: () => onOpenLog(log.id),
+                  statusShownByFilter: statusShownByFilter,
+                ),
+            ]),
             const SizedBox(height: AppSpacing.grouped),
             _End(loaded: loaded, onRetry: controller.loadMore),
           ],
