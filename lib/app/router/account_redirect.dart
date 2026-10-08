@@ -24,7 +24,12 @@ String? accountRedirect(
       location.path.startsWith(AppRoutes.settingsSignIn) &&
       mode == AppRoutes.accountLinkMode;
   if (isAttach && deviceAccountOf(account) != null) {
-    return AppRoutes.settingsAccount;
+    // A link begun on Welcome ends where it was headed (login navigation
+    // review 2026-10-08); from Settings it ends on screen 32.
+    final from = location.queryParameters[AppRoutes.accountFromParam];
+    return from == null
+        ? AppRoutes.settingsAccount
+        : AppRoutes.inAppOr(from, AppRoutes.settingsAccount);
   }
   if (location.path == AppRoutes.settingsAccount && _isAnonymous(account)) {
     return AppRoutes.settings;

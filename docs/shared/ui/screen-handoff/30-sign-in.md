@@ -13,7 +13,9 @@ this phone's data when the sign-in already has an account. SB-A2; spec
 
 - Screen 23, Account section, row "Sign in". Route `/settings/sign-in?mode=link`, on the
   root navigator like Sync; Back returns to 23 (P3a plan ruling 1).
-- Screen 29, "Continue with email" (`go`, so Settings sits under it).
+- Screen 29, "Continue with email": pushed over where the launch was headed
+  (`/settings/sign-in?mode=link&from=…`), so Back returns there and the link, its code
+  and a switch it starts end there too, not on 32 (login navigation review 2026-10-08).
 - The transition layer, while a switch waits for its target sign-in. A switch started by
   Google does not ask there: the Google account just picked signs in to the target at
   once, the layer's form showing Google running without taking the keyboard, then the
@@ -72,7 +74,10 @@ Over the whole app while a switch, sign-out, deletion or clear runs. It is not a
 a host above the router shows it, hides the app from TalkBack, and takes the system Back
 with priority over the router (plan ruling 9), so Back never reaches the app beneath: it
 steps from the code to the form, and at the layer's root it does what "Cancel" does while
-Cancel shows; otherwise it is swallowed (DEV-167). The running, error and stuck states are
+Cancel shows; otherwise it is swallowed (DEV-167). While the target signs in (a Google
+sign-in or a code being sent), Cancel stays but is disabled and Back is swallowed: a cancel
+queued behind a sign-in that succeeds would be refused while the switch goes on (login
+navigation review 2026-10-08). The running, error and stuck states are
 centred in the page; the target sign-in follows the sign-in frame (F1 below).
 
 | Condition | Design |
