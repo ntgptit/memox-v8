@@ -12,6 +12,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/providers/unsent_count_provider.dart';
+import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/states/account_step_state.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
@@ -64,9 +65,16 @@ class _LayerPage extends ConsumerWidget {
     final isStopped = view.error != null || view.isStuck;
     // A sign-out cancels only once it has stopped: one queued behind a
     // running push would land after it moved on (critique 2026-10-02, R4).
-    final canCancel =
+    final hasCancel =
         (canCancelSwitch(transition) && !view.isStuck) ||
         (canCancelSignOut(transition) && isStopped);
+    // A target sign-in that runs, as the picked Google account's does, ends
+    // before a Cancel could: it would be refused behind it while the switch
+    // goes on, so Cancel waits (login navigation review 2026-10-08).
+    final isTargetSigningIn = ref
+        .watch(signInControllerProvider(SignInPurpose.target))
+        .isRunning;
+    final canCancel = hasCancel && !isTargetSigningIn;
     void cancel() => unawaited(_cancel(context, ref, transition.kind));
     return PopScope(
       canPop: false,
@@ -79,8 +87,8 @@ class _LayerPage extends ConsumerWidget {
         context,
         view,
         isStopped: isStopped,
-        canCancel: canCancel,
-        cancel: cancel,
+        hasCancel: hasCancel,
+        cancel: canCancel ? cancel : null,
       ),
     );
   }
@@ -89,11 +97,11 @@ class _LayerPage extends ConsumerWidget {
     BuildContext context,
     BlockingView view, {
     required bool isStopped,
-    required bool canCancel,
-    required VoidCallback cancel,
+    required bool hasCancel,
+    required VoidCallback? cancel,
   }) {
     final isSigningIn = view.isAwaitingTargetSignIn && !view.isStuck;
-    final appBar = canCancel
+    final appBar = hasCancel
         ? MxAppBar(
             titleWidget: const SizedBox.shrink(),
             density: MxAppBarDensity.content,

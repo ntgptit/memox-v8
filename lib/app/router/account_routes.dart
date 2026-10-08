@@ -16,7 +16,8 @@ import 'package:memox/features/account/presentation/widgets/sections/account_set
 
 /// Screen 29 (account UI spec §5.1): the first launch, over everything.
 /// Its exits go on to where the launch was headed; email opens screen 30
-/// with Settings under it (P3a plan ruling 4).
+/// over it, and that flow ends there too (login navigation review
+/// 2026-10-08; it was Settings under it, P3a plan ruling 4).
 GoRoute welcomeRoute() => GoRoute(
   path: AppRoutes.welcome,
   builder: (context, state) {
@@ -26,7 +27,13 @@ GoRoute welcomeRoute() => GoRoute(
     );
     return WelcomeScreen(
       onDone: () => context.go(from),
-      onEmail: () => context.go(AppRoutes.settingsSignInLink),
+      // Over where the launch was headed, so Back and the end of the flow
+      // return there, as Google does (login navigation review 2026-10-08).
+      onEmail: () {
+        final router = GoRouter.of(context);
+        router.go(from);
+        unawaited(router.push(AppRoutes.settingsSignInLinkFrom(from)));
+      },
     );
   },
 );
@@ -83,7 +90,8 @@ Widget accountReauthNotice(BuildContext context) => AccountReauthNoticeWidget(
 );
 
 /// Where a sign-in flow began and ends (spec §9 B9): the link ends on
-/// screen 32; a re-auth returns to where it was opened.
+/// screen 32, or where Welcome was headed when it began there; a re-auth
+/// returns to where it was opened.
 final class _SignInFlow {
   const _SignInFlow(this.purpose, this.from);
 
@@ -91,21 +99,29 @@ final class _SignInFlow {
     final query = uri.queryParameters;
     final isReauth =
         query[AppRoutes.accountModeParam] == AppRoutes.accountReauthMode;
+    final from = query[AppRoutes.accountFromParam];
     return _SignInFlow(
       isReauth ? SignInPurpose.reauth : SignInPurpose.link,
-      AppRoutes.inAppOr(query[AppRoutes.accountFromParam], AppRoutes.settings),
+      from == null ? null : AppRoutes.inAppOr(from, AppRoutes.settings),
     );
   }
 
   final SignInPurpose purpose;
-  final String from;
 
-  String get end =>
-      purpose == SignInPurpose.reauth ? from : AppRoutes.settingsAccount;
+  /// Where the flow was opened from; none for the link from Settings.
+  final String? from;
+
+  String get end => switch (purpose) {
+    SignInPurpose.reauth => from ?? AppRoutes.settings,
+    _ => from ?? AppRoutes.settingsAccount,
+  };
 
   String codeLocation(String email) => purpose == SignInPurpose.reauth
-      ? AppRoutes.settingsSignInCodeReauth(email, from: from)
-      : AppRoutes.settingsSignInCodeLink(email);
+      ? AppRoutes.settingsSignInCodeReauth(
+          email,
+          from: from ?? AppRoutes.settings,
+        )
+      : AppRoutes.settingsSignInCodeLink(email, from: from);
 }
 
 /// Whether this build can have an account at all: the hub draws its

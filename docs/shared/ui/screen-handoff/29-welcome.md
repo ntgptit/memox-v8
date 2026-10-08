@@ -25,9 +25,14 @@ spec [2026-09-30-account-ui-design.md](../../../superpowers/specs/2026-09-30-acc
 | Actions, can link | `MxFooterBar` + `MxButton` × 3, 12 apart | "Continue with Google" (primary, the G mark: the one fill); "Continue with email" (outline); "Continue without an account" (text). |
 | Actions, cannot link | `MxFooterBar` + `MxButton`, caption | "Continue without an account" (primary, block) alone, and the footer caption "Signing in needs a connection. Try later in Settings." When linking becomes possible the footer returns to the three buttons. There is no mid-page note. |
 
-Every exit answers Welcome first, then goes on: Google and "without" to `from`, email
-to Sign-in with Settings under it (P3a plan ruling 4). A Google account that belongs
-to another account opens the merge sheet (30); its choice also leaves Welcome.
+Every exit answers Welcome first, then goes on: Google and "without" to `from`; email
+to Sign-in pushed over `from`, so Back returns there and the email flow also ends at `from`
+with "Signed in as {email}" (login navigation review 2026-10-08; it was Sign-in with
+Settings under it, ending on 32, P3a plan ruling 4). A Google account that belongs
+to another account opens the merge sheet (30) when the phone has decks; its choice also
+leaves Welcome. Then, or at once on an empty phone, that Google account signs in to its
+account with no second sign-in page; Welcome is answered as soon as that switch starts,
+so a phone closed while it runs does not show Welcome again (owner 2026-10-08).
 
 ## States
 

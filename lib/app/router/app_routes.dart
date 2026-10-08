@@ -103,11 +103,22 @@ abstract final class AppRoutes {
   static const String settingsSignInLink =
       '$settingsSignIn?$accountModeParam=$accountLinkMode';
 
-  static String settingsSignInCodeLink(String email) => Uri(
+  /// The link begun on Welcome: it ends at [from], where the launch was
+  /// headed, as Welcome's Google does (login navigation review 2026-10-08).
+  static String settingsSignInLinkFrom(String from) => Uri(
+    path: settingsSignIn,
+    queryParameters: {
+      accountModeParam: accountLinkMode,
+      accountFromParam: from,
+    },
+  ).toString();
+
+  static String settingsSignInCodeLink(String email, {String? from}) => Uri(
     path: settingsSignInCode,
     queryParameters: {
       accountModeParam: accountLinkMode,
       accountEmailParam: email,
+      accountFromParam: ?from,
     },
   ).toString();
 
