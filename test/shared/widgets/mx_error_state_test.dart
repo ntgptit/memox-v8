@@ -158,4 +158,19 @@ void main() {
       findsNothing,
     );
   });
+
+  // SW-REV-006: a load failure swaps in for the skeleton in place, so its
+  // title is announced when it appears.
+  testWidgets('the title is a live region', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxErrorState(title: "Couldn't load", body: 'Nothing was lost.'),
+    );
+    expect(
+      tester.getSemantics(find.text("Couldn't load")),
+      isSemantics(isLiveRegion: true),
+    );
+    handle.dispose();
+  });
 }

@@ -117,4 +117,29 @@ void main() {
       );
     },
   );
+
+  // SW-REV-005: a row that selects on a long-press (Card list, Trash) says
+  // so through the row, not through a GestureDetector bolted around it.
+  testWidgets('onLongPress: a long-press runs it, and TalkBack offers it', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    var held = 0;
+    await pumpMx(
+      tester,
+      MxRowInk(
+        onTap: () {},
+        onLongPress: () => held++,
+        child: const SizedBox(width: 200, height: 56, child: Text('Row')),
+      ),
+    );
+    await tester.longPress(find.text('Row'));
+
+    expect(held, 1);
+    expect(
+      tester.getSemantics(find.text('Row')),
+      isSemantics(hasTapAction: true, hasLongPressAction: true),
+    );
+    handle.dispose();
+  });
 }

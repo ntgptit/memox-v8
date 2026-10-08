@@ -13,7 +13,6 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -260,17 +259,10 @@ class _Actions extends StatelessWidget {
     void close() => Navigator.of(context).pop(false);
     final problem = state.problem;
     if (problem != null && problem.isFinal) {
-      return MxSheetActions.custom(
+      return MxSheetActions.single(
         isInSheet: true,
-        children: [
-          Expanded(
-            child: MxButton(
-              label: l10n.exportClose,
-              onPressed: close,
-              isBlock: true,
-            ),
-          ),
-        ],
+        label: l10n.exportClose,
+        onPressed: close,
       );
     }
     final isRetry = problem != null;

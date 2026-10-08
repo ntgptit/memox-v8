@@ -1,9 +1,13 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
@@ -75,6 +79,14 @@ Future<void> _bulk(WidgetTester tester, String label) async {
 
 Finder _inDialog(String text) =>
     find.descendant(of: find.byType(MxDialog), matching: find.text(text));
+
+/// A move that dies on a bug, not a Failure (ADR-016 says it should not).
+final class _BrokenActions extends CardActionsController {
+  @override
+  Future<Outcome<List<String>, CardRejection>> deleteCards({
+    required Set<String> cardIds,
+  }) async => throw StateError('a bug, not a Failure');
+}
 
 void main() {
   libraryTest(
@@ -304,11 +316,70 @@ void main() {
     await tester.pumpAndSettle();
   });
 
+  // SW-REV-004: closing the dialog while the cards move dropped the Undo
+  // toast (the dialog was gone when the move came back); it holds instead.
+  libraryTest('while the cards move, Back and Cancel leave the dialog', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(ids.words));
+    await _select(tester, ['annyeong']);
+    await _bulk(tester, _en.cardDelete);
+    await tester.tap(_inDialog(_en.trashMoveConfirm));
+    await tester.pump();
+
+    expect(
+      tester
+          .widget<MxButton>(
+            find.ancestor(
+              of: _inDialog(_en.commonCancel),
+              matching: find.byType(MxButton),
+            ),
+          )
+          .onPressed,
+      isNull,
+    );
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    expect(find.byType(MxDialog), findsOneWidget);
+    await tester.pumpAndSettle();
+  });
+
   libraryTest('the bulk bar meets the target guidelines', (tester, env) async {
     final ids = await _seed(env);
     await pumpLibraryScreen(tester, env, _section(ids.words));
     await _select(tester, ['annyeong']);
 
     await expectAccessibleTargets(tester);
+  });
+
+  // Final review: a held dialog must not trap the user when its work dies on
+  // something other than a Failure; the hold lifts and Back closes it.
+  libraryTest('a move that dies on a bug releases the dialog', (
+    tester,
+    env,
+  ) async {
+    final ids = await _seed(env);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _section(ids.words),
+      overrides: [
+        cardActionsControllerProvider.overrideWith(_BrokenActions.new),
+      ],
+    );
+    await _select(tester, ['annyeong']);
+    await _bulk(tester, _en.cardDelete);
+    await tester.tap(_inDialog(_en.trashMoveConfirm));
+    await tester.pump();
+    // Reported to the logger as a Flutter error, and said as an unknown
+    // failure.
+    expect(tester.takeException(), isA<StateError>());
+    expect(find.text(_en.failureUnknown), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(MxDialog), findsNothing);
   });
 }

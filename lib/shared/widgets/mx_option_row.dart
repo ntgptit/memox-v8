@@ -47,13 +47,14 @@ class MxOptionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     final styles = context.textStyles;
     final isDim = isDimmed ?? (onSelected == null && !isSelected);
     return MergeSemantics(
       child: Semantics(
         checked: isSelected,
         inMutuallyExclusiveGroup: true,
+        // A row that cannot be picked says so (SW-REV-006).
+        enabled: onSelected != null,
         child: InkWell(
           onTap: onSelected,
           child: DecoratedBox(
@@ -89,10 +90,12 @@ class MxOptionRow extends StatelessWidget {
                               shape: BoxShape.circle,
                               border: Border.all(
                                 // A stroke glyph, so primaryInk (spec
-                                // 2026-09-27): it reads 3:1 on a sheet.
+                                // 2026-09-27): it reads 3:1 on a sheet. The
+                                // empty ring is a control edge: Outline Edge,
+                                // 3:1 on every ground (SW-REV-001).
                                 color: isSelected
                                     ? context.derivedColors.primaryInk
-                                    : colors.outline,
+                                    : context.derivedColors.outlineEdge,
                                 width: isSelected
                                     ? AppStroke.selectedRing
                                     : AppStroke.control,

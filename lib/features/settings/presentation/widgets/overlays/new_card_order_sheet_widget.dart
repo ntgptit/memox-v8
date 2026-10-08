@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
@@ -32,18 +30,7 @@ class NewCardOrderSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MxBottomSheet(
     // The head of the speech language sheet: the title in the card inset.
-    header: Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.card,
-        AppSpacing.micro,
-        AppSpacing.card,
-        AppSpacing.grouped,
-      ),
-      child: Text(
-        context.l10n.settingsNewCardOrder,
-        style: context.textStyles.compactTitle,
-      ),
-    ),
+    title: context.l10n.settingsNewCardOrder,
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [

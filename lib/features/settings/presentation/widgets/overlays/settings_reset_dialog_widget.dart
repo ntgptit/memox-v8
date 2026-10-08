@@ -48,19 +48,17 @@ class _SettingsResetDialogWidgetState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return PopScope(
-      canPop: !_isResetting,
-      child: MxDialog(
-        title: l10n.settingsResetTitle,
-        body: l10n.settingsResetBody,
-        content: MxNote(icon: AppIcons.safe, text: l10n.settingsResetSafe),
-        actions: MxSheetActions(
-          cancelLabel: l10n.commonCancel,
-          onCancel: _isResetting ? null : () => Navigator.of(context).pop(),
-          confirmLabel: l10n.settingsResetConfirm,
-          onConfirm: () => unawaited(_reset()),
-          isConfirmLoading: _isResetting,
-        ),
+    return MxDialog(
+      isHeld: _isResetting,
+      title: l10n.settingsResetTitle,
+      body: l10n.settingsResetBody,
+      content: MxNote(icon: AppIcons.safe, text: l10n.settingsResetSafe),
+      actions: MxSheetActions(
+        cancelLabel: l10n.commonCancel,
+        onCancel: _isResetting ? null : () => Navigator.of(context).pop(),
+        confirmLabel: l10n.settingsResetConfirm,
+        onConfirm: () => unawaited(_reset()),
+        isConfirmLoading: _isResetting,
       ),
     );
   }

@@ -82,6 +82,15 @@ class _DeckDeleteDialogWidgetState
       if (!mounted) return;
       setState(() => _isDeleting = false);
       showMxSnackbar(context, message: context.l10n.failure(failure));
+    } on Object catch (error, stackTrace) {
+      // A bug, not a Failure (ADR-016): log it, and never leave the held
+      // dialog without a way out (final review 2026-10-08).
+      FlutterError.reportError(
+        FlutterErrorDetails(exception: error, stack: stackTrace),
+      );
+      if (!mounted) return;
+      setState(() => _isDeleting = false);
+      showMxSnackbar(context, message: context.l10n.failureUnknown);
     }
   }
 
@@ -105,6 +114,7 @@ class _DeckDeleteDialogWidgetState
       _ => null,
     };
     return MxDialog(
+      isHeld: _isDeleting,
       title: l10n.deckDeleteTitle,
       body: body,
       content: counted == null
@@ -112,7 +122,7 @@ class _DeckDeleteDialogWidgetState
           : MxNote(icon: AppIcons.history, text: l10n.deckDeleteNote),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(),
+        onCancel: _isDeleting ? null : () => Navigator.of(context).pop(),
         confirmLabel: l10n.trashMoveConfirm,
         isConfirmLoading: _isDeleting,
         onConfirm: switch (counted) {

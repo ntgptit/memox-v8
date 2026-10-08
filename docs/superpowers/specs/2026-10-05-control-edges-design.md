@@ -111,10 +111,11 @@ Ghost Border stays the everyday hairline:
 
 None of these is a control boundary that 1.4.11 asks to hold 3:1.
 
-Out of scope, each on `outline` with a 2 dp stroke against its own ground:
-- toggles;
-- checkboxes;
-- option rows.
+Out of scope at first, each on `outline` with a 2 dp stroke against its own
+ground: toggles, checkboxes and option rows. The shared widgets review of
+2026-10-07 (SW-REV-001) measured `outline` at 2.92:1 (light) and 2.25:1
+(dark) on the sheet, where most of them sit; all three now take Outline
+Edge.
 
 ## 4. Documents
 

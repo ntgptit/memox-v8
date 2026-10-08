@@ -268,6 +268,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(_en.deckGoneTitle), findsOneWidget);
+    // A gone item reads in the neutral tone (owner 2026-10-08).
+    expect(
+      tester.widget<MxEmptyState>(find.byType(MxEmptyState)).tone,
+      MxEmptyStateTone.neutral,
+    );
     expect(find.byType(SnackBar), findsNothing);
     expect(find.byType(MxButton), findsNWidgets(2));
     await tester.tap(find.text(_en.commonOpenTrash));

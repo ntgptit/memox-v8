@@ -27,7 +27,11 @@ class MxSelectionCheckbox extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.xs),
           border: isChecked
               ? null
-              : Border.all(color: colors.outline, width: AppStroke.control),
+              : Border.all(
+                  // A control edge: 3:1 on every ground (SW-REV-001).
+                  color: context.derivedColors.outlineEdge,
+                  width: AppStroke.control,
+                ),
         ),
         child: isChecked
             ? Center(

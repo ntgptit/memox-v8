@@ -75,7 +75,7 @@ The images are the goldens.
 | list, no match | — | — | `MxEmptyState` "Nothing matches" with Clear filters. |
 | list, error | — | — | `MxErrorState` "Couldn't load logs" with the local-first body and Retry. |
 | list, not an admin | — | — | `MxEmptyState` "Only an admin can see this" (the server's `FORBIDDEN`). |
-| detail, loading / error / offline / gone | — | — | Skeleton; `MxErrorState` with Retry; offline with Retry; "This log is gone" / "It may have been cleaned up." |
+| detail, loading / error / offline / gone | — | — | Skeleton; `MxErrorState` with Retry; offline with Retry; gone: a neutral `MxEmptyState`, "This log is gone" / "It may have been cleaned up." (owner 2026-10-08) |
 
 Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,list_all_levels,list_empty,list_offline,not_sent,level_sheet}_{light,dark}.png` and `monitoring_detail_{open,open_trace,fixed,local}_{light,dark}.png`.
 

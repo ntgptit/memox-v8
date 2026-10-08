@@ -58,20 +58,18 @@ class CardRowWidget extends StatelessWidget {
         checked: isSelecting ? isSelected : null,
         child: Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.control),
-          child: GestureDetector(
-            onLongPress: onLongPress,
-            child: MxCard(
-              isFullBleed: true,
-              isSelected: isSelected,
-              child: MxRowInk(
-                onTap: onTap,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                    vertical: AppSpacing.grouped,
-                  ),
-                  child: row,
+          child: MxCard(
+            isFullBleed: true,
+            isSelected: isSelected,
+            child: MxRowInk(
+              onTap: onTap,
+              onLongPress: onLongPress,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.gutter,
+                  vertical: AppSpacing.grouped,
                 ),
+                child: row,
               ),
             ),
           ),

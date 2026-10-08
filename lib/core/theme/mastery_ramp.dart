@@ -30,6 +30,22 @@ abstract final class MasteryRamp {
     return semantic.statusMastered;
   }
 
+  /// The status ink of [fraction]'s band, for text such as a percentage
+  /// beside or inside the fill: the fill colours fail 4.5:1 as text (The Ink
+  /// Is Not The Fill Rule, SW-REV-001). 0 reads in the lowest band.
+  static Color ink(
+    MxSemanticColors semantic,
+    MxDerivedColors derived,
+    double fraction,
+  ) {
+    if (fraction.isNaN || fraction < 0 || fraction > 1) {
+      throw ArgumentError.value(fraction, 'fraction', 'must be within [0, 1]');
+    }
+    if (fraction < _reviewingFrom) return derived.statusLearningInk;
+    if (fraction < _masteredFrom) return derived.statusReviewingInk;
+    return derived.statusMasteredInk;
+  }
+
   /// [fraction] as a whole percent that never rounds to a lie: 0 only at 0,
   /// 100 only at 1, and 1…99 between (deck mastery spec D13).
   static int percent(double fraction) {

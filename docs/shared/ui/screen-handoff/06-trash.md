@@ -79,6 +79,6 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 - Row: "Card · deleted {ago}" · "Deck · {n} sub-decks · {m} cards · deleted {ago}" · "just now" / "{n} minutes ago" / "{n} hours ago" / "yesterday" / "{n} days ago" · "{n} days left" · "{n}h left" · "Was in {path}" · "Top level" · "Actions for {name}".
 - Actions: "Restore…" · "Choose which deck it goes to" · "Delete permanently" · "Cannot be undone · history lost".
 - Restore: "Restore “{name}” to…" · "Its schedule, history, flag and tags come back with it. Only decks in the same tree that hold cards or are empty are offered." · "Nowhere to restore right now" · "No deck in “{root}” can hold cards at the moment. Create an empty sub-deck there, then restore." · "“{name}” restored to {deck}".
-- Selection: "Select entries" · "{n} cards selected" · "{m} cards" · "{m} decks" · "Cards and decks can't be selected together." · "Restore ({n})" · "Delete ({n})" · "Clear selection".
+- Selection: "Select entries" · "{n} cards selected" · "{m} cards" · "{m} decks" · "Cards and decks can't be selected together." · "Restore ({n})" · "Delete ({n})" · "Close selection" (Card list's label, owner 2026-10-08).
 - Delete for good: "Delete {n} cards permanently?" · "They disappear for good, together with their study history. This cannot be undone." · "Keep in Trash" · "Delete" · "{n} cards deleted permanently".
 - Empty and error: "Trash is empty" · "Decks and cards you delete stay here for 30 days before they are removed for good." · "Couldn't open Trash".

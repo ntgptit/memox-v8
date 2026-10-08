@@ -75,7 +75,19 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       Color.alphaBlend(derived.warningSoft, page),
       _nonText,
     ),
-    ('toggle off edge on a row', scheme.outline, row, _nonText),
+    // The off toggle's edge, the unselected radio and the unchecked box are
+    // control edges too: they take Outline Edge, held on every ground by the
+    // loop at the end (shared widgets review 2026-10-07, SW-REV-001).
+    // The donut's 9px label is text: the ramp's ink, never its fill, on the
+    // hero card it sits on.
+    for (final fraction in [0.2, 0.5, 0.9])
+      (
+        'donut label at $fraction on the hero',
+        MasteryRamp.ink(semantic, derived, fraction),
+        derived.surfaceHero,
+        _text,
+      ),
+    ('selected filter chip count', scheme.onPrimary, scheme.primary, _text),
     (
       'toggle off thumb on its track',
       scheme.onSurfaceVariant,

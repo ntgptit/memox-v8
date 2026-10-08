@@ -74,4 +74,17 @@ void main() {
       expect(MasteryRamp.track(scheme), scheme.surfaceContainerLow);
     }
   });
+
+  test('ink: the band\'s status ink for text, the learning ink at 0', () {
+    for (final (fraction, ink) in [
+      (0.0, derived.statusLearningInk),
+      (0.2, derived.statusLearningInk),
+      (0.34, derived.statusReviewingInk),
+      (0.66, derived.statusReviewingInk),
+      (0.67, derived.statusMasteredInk),
+      (1.0, derived.statusMasteredInk),
+    ]) {
+      expect(MasteryRamp.ink(semantic, derived, fraction), ink);
+    }
+  });
 }

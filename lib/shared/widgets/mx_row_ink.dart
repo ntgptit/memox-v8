@@ -15,11 +15,16 @@ class MxRowInk extends StatefulWidget {
     super.key,
     required this.onTap,
     required this.child,
+    this.onLongPress,
     this.isEnabled = true,
     this.shouldDimWhenDisabled = true,
   });
 
   final VoidCallback? onTap;
+
+  /// A long-press, such as starting a selection (Card list, Trash): on the
+  /// row's own ink and in its TalkBack node (SW-REV-005).
+  final VoidCallback? onLongPress;
   final Widget child;
   final bool isEnabled;
 
@@ -63,6 +68,7 @@ class _MxRowInkState extends State<MxRowInk> {
       button: true,
       child: InkWell(
         onTap: onTap,
+        onLongPress: widget.onLongPress,
         onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
         child: DecoratedBox(
           position: DecorationPosition.foreground,

@@ -34,7 +34,6 @@ class MxFilterChip extends StatelessWidget {
   final IconData? icon;
 
   static const double _countOpacityResting = 0.6;
-  static const double _countOpacitySelected = 0.75;
 
   @override
   Widget build(BuildContext context) {
@@ -67,16 +66,25 @@ class MxFilterChip extends StatelessWidget {
             spacing: AppSpacing.micro,
             children: [
               if (icon case final glyph?) Icon(glyph, size: AppIconSize.inline),
-              Text(label, maxLines: 1, softWrap: false),
+              // A label wider than the column ends in an ellipsis, as
+              // MxTagChip's does (SW-REV-010).
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
               if (count case final value?)
                 Text(
                   value.toString(),
+                  // On the primary fill even full white is only 4.77:1, so
+                  // the selected count keeps the label's ink (SW-REV-001).
                   style: styles.chipCount(
-                    ink.withValues(
-                      alpha: isSelected
-                          ? _countOpacitySelected
-                          : _countOpacityResting,
-                    ),
+                    isSelected
+                        ? ink
+                        : ink.withValues(alpha: _countOpacityResting),
                   ),
                 ),
             ],
