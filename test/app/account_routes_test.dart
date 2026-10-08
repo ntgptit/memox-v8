@@ -15,6 +15,7 @@ import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/screens/welcome_screen.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_transition_layer_widget.dart';
+import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/features/settings/presentation/screens/admin_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
@@ -370,6 +371,41 @@ void main() {
     held.complete();
     await tester.pumpAndSettle();
     expect(world.state, isA<Ready>());
+  });
+
+  accountTest('an email that already has an account gets its sign-in code at '
+      'once, and the layer opens on the code (owner 2026-10-08)', (
+    tester,
+    env,
+    world,
+  ) async {
+    world.server.addUser(email: 'b@example.com');
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+    _router(tester).go(AppRoutes.settings);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.accountSignIn));
+    await _settle(tester);
+
+    await tester.enterText(find.byType(TextField), 'b@example.com');
+    await tester.tap(find.text(_en.accountSendCode));
+    await tester.pumpAndSettle();
+
+    // One request, made for the person: no second "Send code" on the layer.
+    expect(world.gateway.signInCodeRequests, ['b@example.com']);
+    final layer = find.byType(AccountTransitionLayerWidget);
+    expect(
+      find.descendant(of: layer, matching: find.byType(CodeFormWidget)),
+      findsOneWidget,
+    );
+
+    await tester.enterText(
+      find.descendant(of: layer, matching: find.byType(TextField)),
+      FakeAuthGateway.code,
+    );
+    await tester.pumpAndSettle();
+
+    expect(world.state, isA<Ready>());
+    expect(find.byType(AccountScreen), findsOneWidget);
   });
 
   libraryTest('a build that cannot sign in has no Account section and no '

@@ -137,6 +137,9 @@ class FakeAuthGateway implements AuthGateway {
   /// While set, a Google sign-in waits on it, as a slow network does.
   Completer<void>? holdGoogleSignIn;
 
+  /// Every address a sign-in code was asked for, in order.
+  final signInCodeRequests = <String>[];
+
   void _set(String? userId) {
     _userId = userId;
     _refreshToken = userId == null ? null : server.issueToken(userId);
@@ -215,6 +218,7 @@ class FakeAuthGateway implements AuthGateway {
     server.checkOnline();
     _failIfAsked();
     await _waitIfHeld();
+    signInCodeRequests.add(email);
     server.sentCodes[email] = code;
   }
 

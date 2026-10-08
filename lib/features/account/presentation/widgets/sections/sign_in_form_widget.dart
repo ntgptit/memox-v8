@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
+import 'package:memox/features/account/presentation/providers/switch_code_request_provider.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/account_confirm_dialog_widget.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/merge_choice_sheet_widget.dart';
@@ -65,6 +66,21 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
 
   SignInController get _controller =>
       ref.read(signInControllerProvider(widget.purpose).notifier);
+
+  /// The layer's target sign-in for an address whose code the person
+  /// already asked for (#17) sends it itself, once (owner 2026-10-08).
+  @override
+  void initState() {
+    super.initState();
+    final email = widget.initialEmail;
+    if (widget.purpose != SignInPurpose.target || email == null) return;
+    // After the first frame: a provider is not changed while building.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final asked = ref.read(switchCodeRequestProvider.notifier).take();
+      if (asked == email) unawaited(_send());
+    });
+  }
 
   /// A re-auth's address arrives with the account state, which may come a
   /// frame after the form: it fills the field while nothing is typed.

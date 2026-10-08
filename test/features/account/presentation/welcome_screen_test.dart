@@ -273,6 +273,33 @@ void main() {
     expect(dones, 1);
     expect(world.state, _signedInAs('g@example.com'));
   });
+  accountTest('Welcome is answered as soon as the switch starts, so a phone '
+      'closed meanwhile does not show it again (owner 2026-10-08)', (
+    tester,
+    env,
+    world,
+  ) async {
+    world.server.addUser(email: 'g@example.com');
+    final held = world.gateway.holdGoogleSignIn = Completer<void>();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await _settle(tester);
+
+    expect(world.state, isA<Transitioning>());
+    expect(isDue(tester), isFalse);
+    expect(await AccountDeviceRepositoryImpl(env.db).isWelcomeSeen(), isTrue);
+
+    world.gateway.holdGoogleSignIn = null;
+    held.complete();
+    await tester.pumpAndSettle();
+    expect(world.state, _signedInAs('g@example.com'));
+  });
 }
 
 Matcher _signedInAs(String email) => isA<Ready>()

@@ -10,6 +10,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/domain/models/local_library_model.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/providers/count_local_library_use_case_provider.dart';
+import 'package:memox/features/account/presentation/providers/switch_code_request_provider.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
@@ -25,11 +26,14 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 /// moves without asking. [email] is the address typed, null for Google.
 /// Returns whether the switch started; the transition layer takes over
 /// from there. For Google, the account already picked signs in to the
-/// target at once, so no second sign-in page shows (owner 2026-10-08).
+/// target at once; for an email, the layer sends its code at once, so
+/// nothing is asked twice (owner 2026-10-08). [onSwitchStarted] runs once
+/// the switch is recorded, before its target signs in.
 Future<bool> startLinkSwitch(
   BuildContext context,
   WidgetRef ref, {
   String? email,
+  VoidCallback? onSwitchStarted,
 }) async {
   final accounts = ref.read(accountCoordinatorProvider);
   if (accounts == null) return false;
@@ -48,20 +52,27 @@ Future<bool> startLinkSwitch(
               MergeChoiceSheetWidget(email: email, library: library),
         );
   if (choice == null || !context.mounted) return false;
+  final codeRequest = ref.read(switchCodeRequestProvider.notifier);
+  // Asked before the switch starts: the layer's form may be built as soon
+  // as the switch waits for its target.
+  if (email != null) codeRequest.ask(email);
   try {
     await accounts.beginSwitch(choice: choice, targetHint: email);
   } on Failure catch (error) {
+    codeRequest.forget();
     if (context.mounted) {
       showMxSnackbar(context, message: context.l10n.failure(error));
     }
     return false;
   } on StateError {
+    codeRequest.forget();
     // The account moved on meanwhile: it takes a switch only in Ready.
     if (context.mounted) {
       showMxSnackbar(context, message: context.l10n.failureAccount);
     }
     return false;
   }
+  onSwitchStarted?.call();
   if (email == null && context.mounted) {
     await _signInPickedGoogle(context, ref, accounts);
   }

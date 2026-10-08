@@ -56,7 +56,14 @@ class WelcomeScreen extends ConsumerWidget {
         saySignedIn(context, stateAfterCommand(ref));
         _leave(ref, onDone);
       case SignInOutcome.identityTaken:
-        final isSwitching = await startLinkSwitch(context, ref);
+        // Answered as the switch starts, so a phone closed while it runs
+        // does not show Welcome again (owner 2026-10-08).
+        final isSwitching = await startLinkSwitch(
+          context,
+          ref,
+          onSwitchStarted: () =>
+              unawaited(ref.read(welcomeDueProvider.notifier).dismiss()),
+        );
         if (isSwitching && context.mounted) _leave(ref, onDone);
       case SignInOutcome.failed:
         final problem = ref.read(signInControllerProvider(_link)).problem;

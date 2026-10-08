@@ -17,7 +17,9 @@ this phone's data when the sign-in already has an account. SB-A2; spec
 - The transition layer, while a switch waits for its target sign-in. A switch started by
   Google does not ask there: the Google account just picked signs in to the target at
   once, the layer's form showing Google running without taking the keyboard, then the
-  progress; if that sign-in fails, the form stays to try again (owner 2026-10-08).
+  progress; if that sign-in fails, the form stays to try again. A switch started by an
+  email opens the layer on the code: the form sends that address's code itself, once
+  (owner 2026-10-08).
 - A device that already holds an account is sent from `mode=link` to screen 32 (P3b B9).
 - `reauth`: the re-auth banner's "Sign in" on 23 and 32, and the notice on 13
   (`/settings/sign-in?mode=reauth&from=…`; from 13 it opens under Settings, P3b plan
@@ -111,7 +113,7 @@ The images are the goldens.
 ## Rulings
 
 - **R1:** no `mode=switch`: "Switch account" (32, P3b) signs in the target inside the layer.
-- **Owner 2026-10-08 (device check of build 18):** a Google account that already has an account signs in to it at once, after the merge sheet when the phone has decks; asking for Google a second time on the layer read as "the sign-in did nothing". A failure leaves the layer's target sign-in and a toast with the problem. Email keeps its code.
+- **Owner 2026-10-08 (device check of build 18):** a Google account that already has an account signs in to it at once, after the merge sheet when the phone has decks; asking for Google a second time on the layer read as "the sign-in did nothing". A failure leaves the layer's target sign-in and a toast with the problem. Email keeps its code, but its "Send code" is not asked twice: the layer sends the code to the address already typed and opens on the code (login navigation review 2026-10-08).
 - **R3:** a wrong and an expired code read alike; a rate limit asks to wait a minute.
 - **B8, B9 and P3b plan rulings 3, 10:** the re-auth's loss and way out; where flows end; 13 through Settings; the way out under the form. Plan ruling 8 (no loss question on a resend) is retired by P3b minor M7.
 - **P3a plan rulings 1, 2, 7–10, 12, 14:** routes under Settings; the flow ended on Settings (now 32, B9); text keyboard; notices as toasts; Back held by the layer (at its root, Back is Cancel while Cancel shows, DEV-167); a failed count still asks; Google's title; the danger banner on Discard.
