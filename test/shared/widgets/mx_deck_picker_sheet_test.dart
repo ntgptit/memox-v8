@@ -150,5 +150,13 @@ void main() {
       tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).isHeld,
       isTrue,
     );
+    // Its own dismiss cannot close it either: Navigator.pop skips PopScope
+    // (impeccable audit 2026-10-08).
+    expect(
+      tester
+          .widget<MxButton>(find.widgetWithText(MxButton, 'Cancel'))
+          .onPressed,
+      isNull,
+    );
   });
 }

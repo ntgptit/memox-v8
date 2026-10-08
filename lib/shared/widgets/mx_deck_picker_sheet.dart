@@ -76,7 +76,9 @@ class MxDeckPickerSheet extends StatelessWidget {
           Expanded(
             child: MxButton(
               label: dismissLabel,
-              onPressed: onDismiss,
+              // Held, its own dismiss waits too: Navigator.pop skips the
+              // sheet's PopScope.
+              onPressed: isHeld ? null : onDismiss,
               tone: isEmpty ? MxButtonTone.primary : MxButtonTone.outline,
               isBlock: true,
             ),
