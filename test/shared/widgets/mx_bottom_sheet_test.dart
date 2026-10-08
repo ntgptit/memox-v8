@@ -314,17 +314,34 @@ void main() {
       expect((title.maxLines, title.overflow), (2, TextOverflow.ellipsis));
     });
 
-    testWidgets('the title names the route and is a heading to TalkBack', (
+    // Through the real modal route: the title is a heading. Android names
+    // the route by the route's own label, so no route name is claimed here
+    // (final review 2026-10-08).
+    testWidgets('opened as a sheet, the title is a heading to TalkBack', (
       tester,
     ) async {
       final handle = tester.ensureSemantics();
       await pumpMx(
         tester,
-        const MxBottomSheet(title: 'Sort', child: SizedBox(height: 40)),
+        Builder(
+          builder: (context) => MxButton(
+            label: 'Open',
+            onPressed: () => showMxBottomSheet<void>(
+              context,
+              builder: (_) => const MxBottomSheet(
+                title: 'Sort',
+                child: SizedBox(height: 40),
+              ),
+            ),
+          ),
+        ),
       );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
       expect(
         tester.getSemantics(find.text('Sort')),
-        isSemantics(namesRoute: true, isHeader: true),
+        isSemantics(isHeader: true),
       );
       handle.dispose();
     });

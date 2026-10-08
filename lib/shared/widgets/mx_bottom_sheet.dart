@@ -54,8 +54,9 @@ class MxBottomSheet extends StatelessWidget {
   final Widget? header;
 
   /// The sheet's head: the compact title 20 in, at most two lines, and
-  /// [subtitle] under it in the note role (SW-REV-008). It names the route
-  /// for TalkBack.
+  /// [subtitle] under it in the note role (SW-REV-008). The title is a
+  /// heading to TalkBack; it names the route on iOS only, since on Android
+  /// the modal route's own "Dialog" label wins.
   final String? title;
   final String? subtitle;
 
@@ -190,7 +191,8 @@ class _SheetHead extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: AppSpacing.micro,
         children: [
-          // A user's name (a deck, an entry) stops at two lines.
+          // A user's name (a deck, an entry) stops at two lines. A heading;
+          // the route's name on iOS (Android keeps the route's own label).
           Semantics(
             namesRoute: true,
             header: true,
