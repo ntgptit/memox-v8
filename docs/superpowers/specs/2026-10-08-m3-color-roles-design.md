@@ -570,6 +570,31 @@ Not verified by the critique: real pressed, focus and disabled renders (computed
 code), device perception, the card-list variant (same widget shape, not rendered). The plan's
 phase-6 audit renders both heroes in both themes with the focus ring.
 
+### 4.14 Selected filled controls on dark sheets (R17)
+
+Inventory from the code (every `MxFilterChip`, `MxChipTrigger`, `MxSelectionCheckbox`,
+`MxToggle`, `MxSegment` and `MxOptionRow` use, read up to its sheet or dialog): the brand
+fill sits on a dark sheet or sheet card in three places only. The filter chips (card list
+toolbar, Trash) are on the page (4.11); `MxChipTrigger` has no selected fill;
+`MxSegmentedTray`'s selected thumb is `surfaceContainerLowest` on a `surfaceContainer` tray;
+the option row's selected mark is the ring (`primaryForeground`, 6.68 on the sheet); the
+nav pills become `primaryContainer` (§4.6). Nothing in `lib/` puts a primary-filled control
+on `surfaceContainer`. Each hit was rendered in its real screen, dark and light, default,
+focused and pressed (throwaway tests, deleted; images in the session scratchpad), and
+measured:
+
+| Control, screen | Ground | Fill vs ground | Cue besides the ground | Unselected neighbour | Focus / pressed / disabled | Ruling |
+|---|---|---|---|---|---|---|
+| `MxSelectionCheckbox` checked, card tag filter sheet (`card_tag_filter_sheet_widget.dart:193`) | sheet #2C356E | 2.46 | the white check, `onPrimary` on the fill 4.63; the box shape | hollow box with the `outline` edge, 3.38 on the sheet (3.15 today) | focus: the row's ring, the box unchanged; pressed: the row's 12 % layer under the box, the box stays; disabled: not a state of this control (paint-only, the row carries it); error: none | **Exception granted** for this control: in the render the checked box is obvious next to its hollow neighbours, by the check and the fill together. |
+| `MxToggle` on, Library sort & filter sheet (`deck_level_query_sheets_widget.dart:84`) | sheet #2C356E | 2.46 | thumb position at the far end; today's thumb is `surfaceBright` #232B5A, **2.90 on the fill**, so the on state is carried by position alone | off track `surfaceContainerHighest` with the `outline` ring (3.38 on the sheet), thumb `onSurfaceVariant` 4.43 on the track | focus: `primaryForeground` ring on the track edge, 6.68 on the sheet; pressed: the 48 dp touch highlight, track unchanged; disabled: 0.38 (fill 1.41 on the sheet, thumb 1.50 on the fill, exempt); error: none | **Own treatment, not the exception:** the on thumb becomes `onPrimary` (4.63 on the fill), as Material 3's switch paints it; the on state then has a high-contrast internal mark in every theme and on every ground. Already in §4.9. |
+| `MxToggle` on, Monitoring level sheet (`monitoring_choice_sheet_widget.dart:109`) | `MxSection` card #131A3A inside the sheet | 3.67 | as above | as above | as above | Passes 3:1 on its real ground; the `onPrimary` thumb applies all the same. |
+
+`DESIGN.md` records the one granted exception (the checked `MxSelectionCheckbox` on a dark
+sheet) beside the hero CTA's, as a deliberate exception for a selected filled control on a
+dark surface, and nothing else inherits it. The phase-6 audit renders the three contexts
+again after the migration (outline value, `onPrimary` thumb, outer focus ring) and the
+widget tests of §4.9 pin the thumb and the check colours.
+
 ## 5. Impact assessment
 
 | Area | Size | Nature |
