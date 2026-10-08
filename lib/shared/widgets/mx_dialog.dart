@@ -3,6 +3,7 @@ import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 /// The width cap: 340, 320 or 300, never wider than the column.
 enum MxDialogWidth { small, medium, large }
@@ -36,6 +37,43 @@ Future<T?> showMxDialog<T>(
     );
   },
 );
+
+/// Asks one yes/no question: [title], [body], an optional [content] (a
+/// note: the reassurance, or why the confirm cannot go), Cancel and the
+/// confirm. True only on the confirm; Cancel, Back and the scrim are a no.
+/// The tone sits on the confirm alone; [canConfirm] false disables it, as
+/// a deletion offline. A confirm whose work runs before it closes is not
+/// this: it is its own MxDialog, held while it works (SW-REV-009).
+Future<bool> showMxConfirm(
+  BuildContext context, {
+  required String title,
+  required String body,
+  required String cancelLabel,
+  required String confirmLabel,
+  Widget? content,
+  bool isDestructive = false,
+  bool isWarning = false,
+  bool canConfirm = true,
+}) async =>
+    await showMxDialog<bool>(
+      context,
+      builder: (dialogContext) => MxDialog(
+        title: title,
+        body: body,
+        content: content,
+        actions: MxSheetActions(
+          cancelLabel: cancelLabel,
+          onCancel: () => Navigator.of(dialogContext).pop(false),
+          confirmLabel: confirmLabel,
+          isDestructive: isDestructive,
+          isWarning: isWarning,
+          onConfirm: canConfirm
+              ? () => Navigator.of(dialogContext).pop(true)
+              : null,
+        ),
+      ),
+    ) ??
+    false;
 
 /// The centred modal for confirmations and short forms. The text sits 20 in
 /// (ruling O5) and scrolls if it outgrows the screen; [actions], usually

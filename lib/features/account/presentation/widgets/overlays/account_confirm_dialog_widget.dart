@@ -17,20 +17,20 @@ Future<bool> confirmAccountStep(
   bool isDestructive = false,
   bool isWarning = false,
   bool canConfirm = true,
-}) async =>
-    await showMxDialog<bool>(
-      context,
-      builder: (_) => AccountConfirmDialogWidget(
-        title: title,
-        body: body,
-        confirmLabel: confirmLabel,
-        note: note,
-        isDestructive: isDestructive,
-        isWarning: isWarning,
-        canConfirm: canConfirm,
-      ),
-    ) ??
-    false;
+}) => showMxConfirm(
+  context,
+  title: title,
+  body: body,
+  cancelLabel: context.l10n.commonCancel,
+  confirmLabel: confirmLabel,
+  // An MxNote: the reassurance, or why the confirm cannot go. A confirm
+  // that changes a lot but loses nothing is a warning (critique
+  // 2026-10-02); a deletion offline cannot confirm (spec §9 B6).
+  content: note,
+  isDestructive: isDestructive,
+  isWarning: isWarning,
+  canConfirm: canConfirm,
+);
 
 /// Auth spec ruling 6: signing in as another account replaces this
 /// phone's data, so its [count] unsent changes are named first (screens 30
@@ -70,45 +70,3 @@ Future<void> showLastAdminDialog(BuildContext context) => showMxDialog<void>(
     );
   },
 );
-
-class AccountConfirmDialogWidget extends StatelessWidget {
-  const AccountConfirmDialogWidget({
-    super.key,
-    required this.title,
-    required this.body,
-    required this.confirmLabel,
-    this.note,
-    this.isDestructive = false,
-    this.isWarning = false,
-    this.canConfirm = true,
-  });
-
-  final String title;
-  final String body;
-  final String confirmLabel;
-
-  /// An `MxNote`: the reassurance, or why the confirm cannot go.
-  final Widget? note;
-  final bool isDestructive;
-
-  /// A confirm that changes a lot but loses nothing (critique 2026-10-02).
-  final bool isWarning;
-
-  /// False disables the confirm, as a deletion offline (spec §9 B6).
-  final bool canConfirm;
-
-  @override
-  Widget build(BuildContext context) => MxDialog(
-    title: title,
-    body: body,
-    content: note,
-    actions: MxSheetActions(
-      cancelLabel: context.l10n.commonCancel,
-      onCancel: () => Navigator.of(context).pop(false),
-      confirmLabel: confirmLabel,
-      isDestructive: isDestructive,
-      isWarning: isWarning,
-      onConfirm: canConfirm ? () => Navigator.of(context).pop(true) : null,
-    ),
-  );
-}
