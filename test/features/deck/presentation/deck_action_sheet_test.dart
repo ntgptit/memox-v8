@@ -100,7 +100,8 @@ void main() {
   });
 
   libraryTest(
-    'a deck that takes cards offers Import; a root and a deck of decks do not (BR-TRANSFER-008)',
+    'every deck that takes cards or decks offers Import (BR-TRANSFER-001, '
+    'spec 2026-10-08 U1)',
     (tester, env) async {
       final korean = await env.decks.root('Korean');
       final words = await env.decks.sub(korean.id, 'Words');
@@ -109,27 +110,19 @@ void main() {
       await insertCard(env.db, id: 'c1', deckId: words.id, front: 'mul');
       final imported = <String>[];
 
-      for (final (deckId, isOffered) in [
-        (korean.id, false),
-        (grammar.id, false),
-        (words.id, true),
-      ]) {
+      for (final deckId in [korean.id, grammar.id, words.id]) {
         await pumpLibraryScreen(
           tester,
           env,
           deckScreen(deckId: deckId, onImportCards: imported.add),
         );
         await _openSheet(tester);
-        expect(
-          find.text(_en.deckActionImport),
-          isOffered ? findsOneWidget : findsNothing,
-        );
-        await tester.tapAt(Offset.zero);
+        expect(find.text(_en.deckActionImport), findsOneWidget);
+        await tester.tap(find.text(_en.deckActionImport));
         await tester.pumpAndSettle();
       }
 
-      await _choose(tester, _en.deckActionImport);
-      expect(imported, [words.id]);
+      expect(imported, [korean.id, grammar.id, words.id]);
     },
   );
 

@@ -313,7 +313,12 @@ class _OpenDeckContent extends ConsumerWidget {
           parentId: deck.parentId,
           onOpenDeck: onOpenDeck,
           onOpenAlgorithm: onOpenAlgorithm,
-          onImportCards: canCreateCard ? () => onImportCards(deck.id) : null,
+          // Every deck takes an import: cards into a deck that holds or may
+          // hold cards, sections into one that may hold decks (spec
+          // 2026-10-08 §4.2, U1).
+          onImportCards: view.createOptions.isNotEmpty
+              ? () => onImportCards(deck.id)
+              : null,
           // A deck of cards holds at least one (E-L1); an empty one has
           // nothing to export (UC-TRANSFER-002 E5).
           onExportCards: deck.contentType == DeckContentType.card
