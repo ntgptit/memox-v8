@@ -92,7 +92,7 @@ class DeckLevelListWidget extends ConsumerWidget {
     final filter = ref.watch(deckLevelQueryProvider(parentId)).filter;
     final tiles = level.tiles;
     // Ruling L4: an empty level is the first run; an empty filter is not.
-    if (tiles.isEmpty && filter == DeckLevelFilter.all) {
+    if (!level.hasDecks) {
       return MxScreenScroll(
         clearance: MxScrollClearance.fabAboveNav,
         children: [

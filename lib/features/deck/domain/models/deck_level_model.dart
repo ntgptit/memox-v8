@@ -127,4 +127,9 @@ final class DeckLevel {
 
   /// The level's mastery for the open deck's donut; 0 with no card.
   double get masteryFraction => cardCount == 0 ? 0 : masteredCount / cardCount;
+
+  /// The level holds at least one deck, whatever the filter shows: the one
+  /// definition of an empty level (ruling L4; The Content Gate Rule,
+  /// DESIGN.md).
+  bool get hasDecks => deckCount > 0;
 }

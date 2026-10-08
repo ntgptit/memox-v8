@@ -88,9 +88,9 @@
   "@libraryEmptyTitle": {
     "description": "First-run empty state title: the Library has no deck."
   },
-  "libraryEmptyBody": "A deck groups the sub-decks that hold your cards. Create one, or copy a starter deck to begin with content.",
+  "libraryEmptyBody": "Organize your cards into decks. Create your own or start with a ready-made collection.",
   "@libraryEmptyBody": {
-    "description": "First-run empty state body."
+    "description": "First-run empty state body, action-first (spec 2026-10-08 library empty state, R4)."
   },
   "libraryBrowseStarterDecks": "Browse starter decks",
   "@libraryBrowseStarterDecks": {

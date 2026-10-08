@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
-import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
+import 'package:memox/features/deck/presentation/states/library_root_state.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_level_body_widget.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_reorder_done_widget.dart';
@@ -18,7 +17,8 @@ import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
-/// The roots with today's work first (UC-DECK-003).
+/// The roots with today's work first (UC-DECK-003). Its chrome follows
+/// `libraryRootProvider` (The Content Gate Rule, DESIGN.md).
 class DeckLibraryRootWidget extends ConsumerWidget {
   const DeckLibraryRootWidget({
     super.key,
@@ -60,22 +60,10 @@ class DeckLibraryRootWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final isReordering = ref.watch(deckReorderModeProvider(null));
-    final query = ref.watch(deckLevelQueryProvider(null));
-    // Kit 01: no FAB while the Library loads, fails or is empty; the body
-    // then offers its own action.
-    final hasDecks =
-        (ref
-                .watch(
-                  deckLevelProvider(
-                    parentId: null,
-                    sort: query.sort,
-                    filter: query.filter,
-                  ),
-                )
-                .value
-                ?.deckCount ??
-            0) >
-        0;
+    // One state for the chrome and the body (The Content Gate Rule): the
+    // search trigger, Tags and the FAB exist only with decks; Starter decks
+    // and the Trash, the ways in and back, always do.
+    final hasDecks = ref.watch(libraryRootProvider).hasDecks;
     void createDeck() => unawaited(showCreateRootDeckDialog(context));
     return MxAppShell(
       appBar: MxAppBar(
@@ -89,11 +77,12 @@ class DeckLibraryRootWidget extends ConsumerWidget {
                   semanticLabel: l10n.libraryStarterDecks,
                   onPressed: onOpenStarterDecks,
                 ),
-                MxIconButton(
-                  icon: AppIcons.tag,
-                  semanticLabel: l10n.libraryTags,
-                  onPressed: onOpenTags,
-                ),
+                if (hasDecks)
+                  MxIconButton(
+                    icon: AppIcons.tag,
+                    semanticLabel: l10n.libraryTags,
+                    onPressed: onOpenTags,
+                  ),
                 MxIconButton(
                   icon: AppIcons.delete,
                   semanticLabel: l10n.libraryTrash,
@@ -113,7 +102,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
         children: [
           // Reorder mode leaves the deck list alone, as it leaves out the
           // summary and the sort pill (critique 2026-09-30 part 3d-2, E3).
-          if (!isReordering)
+          if (hasDecks && !isReordering)
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.gutter,

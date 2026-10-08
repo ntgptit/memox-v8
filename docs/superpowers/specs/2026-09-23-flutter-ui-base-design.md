@@ -582,6 +582,7 @@ item names where it comes from.
 | 170 | Dividers had two owners: `MxListRow` and `MxOptionRow` drew their own bottom edge while `MxSection` drew between rows, so callers turned rows off by hand and the last row's edge touched the card radius — closed by DEV-305 (spec §3.4): `MxDividedColumn` owns list dividers, rows draw no edge, the hairline takes its 1 | audit 2026-10-08 F-04 |
 | 171 | The breadcrumb and the chip rows cut their overflow flat, with no sign of more, while the study faces had their own fade — closed by DEV-306 (spec §3.5): `MxScrollFade` is shared, horizontal or vertical, over the page, raised or recessed ground | audit 2026-10-08 F-05 |
 | 172 | The card list entered selection only through a long-press, with no entry from the deck's ⋮ as the Trash has — closed by DEV-307 (spec §3.6): Select cards from the open deck's actions enters selection with nothing picked; Close ends it, unticking the last card does not | audit 2026-10-08 F-06 |
+| 173 | The empty Library kept its search field and Tags, two controls over content that did not exist, while the FAB alone waited for a deck — closed by DEV-309 (spec `2026-10-08-library-empty-state-content-gate-design.md`): one derived `LibraryRootState` gates the search trigger, Tags and the FAB; The Content Gate Rule names the convention Trash and Tags already followed | owner 2026-10-08 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
