@@ -77,9 +77,9 @@ Success means:
   `*`. Its other cells are ignored. A section row is neither a card nor a blank row and
   is not counted as either.
 - The section's **name** is the text after the `*`, trimmed. It must pass BR-DECK-020
-  (`DeckEntity.checkName`). A section whose name fails makes its section row and every
-  card row under it **invalid**, with the deck-name reason; they are listed as skipped and
-  never written.
+  (`DeckEntity.checkName`). A section whose name fails makes every card row under it
+  **invalid**, with the deck-name reason; they are listed as skipped and never written.
+  Section rows themselves are never listed as rows: their group header stands for them.
 - Two section rows whose names fold equal (`foldText`: trim, NFC, lower case) are **one
   section**: rows under the second continue the first. The section keeps the spelling of
   its first section row.
@@ -113,7 +113,9 @@ target condition is checked again inside the commit transaction, as today.
   in sibling order is the clash.
 - A clashing section shows a required choice: **Add to existing** or **Create new**.
   Add to existing is offered only when the existing deck is a deck of cards or `unset`;
-  when it is a deck of decks only Create new is offered, still as an explicit choice.
+  when it is a deck of decks the section is **Create new** without a choice, and its row
+  says why (`MxSegmentedTray` has no per-option disable; the Decks block, U2, is the
+  confirmation the owner asked for).
 - Editing the default section's name re-evaluates its clash and clears a choice made for
   the old name.
 - Continue stays locked while any clashing section is undecided.
@@ -193,6 +195,10 @@ Future<Outcome<SectionedImportResult, CardRejection>> importSections({
 });
 ```
 
+The boundary map (`test/architecture/boundary_rules.dart`) gains `transfer → deck`
+(`transfer → {card, deck}`, still acyclic) so the preview reuses `DeckEntity.checkName`
+(BR-DECK-020) instead of a second copy of the name rule.
+
 `CardTransferRepositoryImpl` gets the `DeckRepository` injected, as it already gets
 `CardRepository`, and calls `createSubDeck` and the same per-deck path `importCards`
 uses inside its own `mappedTransaction` (nested calls become savepoints of it). The
@@ -221,8 +227,8 @@ widget; the four-step tracker stays Source · Columns · Preview · Import.
   stays "Import {n}".
 - **U3 Clash choice.** A clashing destination's row holds an `MxSegmentedTray` "Add to
   existing" · "Create new" with `selected: null` until the user taps one. When the
-  existing deck holds decks, "Add to existing" is disabled and an `MxNote` says why. An
-  undecided row is not tinted; the empty tray is the cue.
+  existing deck holds decks, the row shows no tray: it is New, and an `MxNote` says why
+  (§4.3). An undecided row is not tinted; the empty tray is the cue.
 - **U4 Default deck name.** The default destination's row holds an `MxTextField` with
   the localized default; a blank or over-long name shows the deck-name error under it
   (`MxFieldMessage`) and locks Import.
@@ -236,8 +242,9 @@ widget; the four-step tracker stays Source · Columns · Preview · Import.
   `MxInlineBanner` (warning) on the Preview step with their guidance, Preview rows locked
   — the mapping-error pattern (K3), not the full-screen rejects state.
 - **U8 Result.** The counts stay; a "Decks" `MxSection` lists each destination with its
-  badge and the cards added. One destination keeps "View the cards"; several make the
-  primary action "Back to deck" (the target).
+  badge and the cards added. A sectioned import's primary action is "Back to deck" (the
+  target now holds decks, so "View the cards" has no list to open); a flat import keeps
+  "View the cards".
 - **U9 Flat imports** look exactly as today; no Decks block.
 - Goldens (light and dark): `import_sections_undecided`, `import_sections_decided`,
   `import_sections_result`. After the build: Impeccable critique and one audit of these
