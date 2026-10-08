@@ -217,7 +217,16 @@ Câu hỏi: <câu hỏi>
 
 ## Close
 
-An issue is never deleted.
+An issue is never deleted. The one exception was the owner's own: the 42
+coordination issues (execution groups and `[REF]`, DEV-234…DEV-275), deleted on
+2026-10-08 to get back under the free plan's 250-issue cap.
+
+**Epic Done**: once every sub-issue is Done or Canceled, set the epic Done,
+then move the epic and all its sub-issues to the project `MemoX · Lưu trữ`
+(status Completed) with `save_issue` (`project`). Parent links stay; the
+milestone goes with the old project. Linear archives an issue only by itself,
+and never while its project is open, so this is what keeps closed work from
+counting against the cap.
 
 **Canceled**: only on the owner's decision, asked through `AskUserQuestion`.
 
