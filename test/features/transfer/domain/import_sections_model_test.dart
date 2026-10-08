@@ -113,7 +113,7 @@ void main() {
   });
 
   test('classifyRows measures duplicates within the rows it is given only', () {
-    final table = SourceTable(
+    final table = const SourceTable(
       rows: [
         ['Term', 'Meaning'],
         ['a', 'b'],
