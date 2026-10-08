@@ -7,15 +7,15 @@ import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_tile_signs_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
-import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
-import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
 
 /// One deck of a level (screen 01): a card with the deck's tile, its name,
 /// "N due" when cards wait, what it holds, its mastery bar (BR-DECK-026),
-/// and ⋮ for its commands. A tap anywhere else opens it.
+/// and ⋮ for its commands, outside the row's ink (DEV-304). A tap anywhere
+/// else opens it.
 class DeckRowWidget extends StatelessWidget {
   const DeckRowWidget({
     super.key,
@@ -31,63 +31,52 @@ class DeckRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return MxCard(
-      isFullBleed: true,
-      child: MxRowInk(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(
-            AppSpacing.gutter,
-            AppSpacing.gutter,
-            AppSpacing.micro,
-            AppSpacing.gutter,
-          ),
-          child: Row(
-            spacing: AppSpacing.gutter,
-            children: [
-              MxIconTile(icon: deckTileGlyph(tile), size: MxIconTileSize.large),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  spacing: AppSpacing.grouped,
+    return MxSelectableCardRow(
+      onTap: onTap,
+      trailing: MxIconButton(
+        icon: AppIcons.more,
+        semanticLabel: l10n.deckMoreActions(tile.name),
+        onPressed: onMore,
+      ),
+      child: Row(
+        spacing: AppSpacing.gutter,
+        children: [
+          MxIconTile(icon: deckTileGlyph(tile), size: MxIconTileSize.large),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: AppSpacing.grouped,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: AppSpacing.micro,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: AppSpacing.micro,
+                    Row(
+                      spacing: AppSpacing.control,
                       children: [
-                        Row(
-                          spacing: AppSpacing.control,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                tile.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: context.textStyles.rowTitle,
-                              ),
-                            ),
-                            if (tile.dueCount > 0)
-                              MxBadge(label: l10n.deckDueBadge(tile.dueCount)),
-                          ],
+                        Expanded(
+                          child: Text(
+                            tile.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.textStyles.rowTitle,
+                          ),
                         ),
-                        Text(
-                          deckTileMeta(tile, l10n),
-                          style: context.textStyles.rowSubtitle,
-                        ),
+                        if (tile.dueCount > 0)
+                          MxBadge(label: l10n.deckDueBadge(tile.dueCount)),
                       ],
                     ),
-                    _MasteryBar(fraction: tile.masteryFraction),
+                    Text(
+                      deckTileMeta(tile, l10n),
+                      style: context.textStyles.rowSubtitle,
+                    ),
                   ],
                 ),
-              ),
-              MxIconButton(
-                icon: AppIcons.more,
-                semanticLabel: l10n.deckMoreActions(tile.name),
-                onPressed: onMore,
-              ),
-            ],
+                _MasteryBar(fraction: tile.masteryFraction),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

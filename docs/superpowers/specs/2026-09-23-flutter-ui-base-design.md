@@ -129,8 +129,8 @@ nine `BIND_NOW` `MEMOX_SEMANTIC_COLOR` entries:
 `mastery · warning · onWarning · statusNew · statusLearning · statusReviewing ·
 statusMastered · errorFill · onErrorFill`
 
-- The five `DERIVED_COLOR` entries (`dangerSoft`, `dangerBorder`, `warningSoft`,
-  `surfaceHero`, `chromeGlass`) and the `border-ghost` edge colour live in
+- The four `DERIVED_COLOR` entries (`dangerSoft`, `dangerBorder`, `warningSoft`,
+  `surfaceHero`; `chromeGlass` went with the glass, DEV-302) and the `border-ghost` edge colour live in
   `MxDerivedColors`, built from the `ColorScheme`, the extension and the
   brightness at the mix ratios in the foundations, and read as
   `context.derivedColors`. They are not extension fields.
@@ -171,14 +171,14 @@ Static `abstract final class` holders in `core/theme/foundations/`:
 | `AppIconSize` | 16 · 20 · 24 · 32 · 40 |
 | `AppStroke` | hairline 1 · focus 2, plus each width a component contract states |
 | `AppOpacity` | disabled 0.38 · pressed 0.12 (state tokens) |
-| `AppEffects` | glassOpacity 0.84 · glassBlur 18 (effect tokens, kept out of the state layer) |
+| `AppEffects` | scrimOpacity 0.45 (effect token, kept out of the state layer); glassOpacity and glassBlur went with DEV-302 |
 | `AppDurations` | toggle 160 · standard 200 · scrimFade 220 · sheet 260 · spinnerCycle 800 · skeletonPulse 1400 ms — every duration the widget contracts state |
 | `AppShadows` | whisper · overlay · chrome · fab, named by the handoff's semantic (the `shadow-card` token is the overlay shadow). Functions of the `ColorScheme` and brightness, because the values differ per theme and dark has no whisper shadow |
 
-The glass effect on the bottom nav is translucent `chromeGlass` plus
-`BackdropFilter` blur 18. The saturate(180%) part of the CSS filter is dropped:
-Flutter has no cheap equivalent and the handoff allows a plain surface in its
-place.
+The bottom nav was translucent `chromeGlass` plus a `BackdropFilter` blur 18
+until DEV-302 (audit 2026-10-08): the bar is an in-flow sibling of the body, so
+the blur had nothing under it, and the bar is now the page surface with the
+ghost edge.
 
 ### 4.5 Global state policy
 
@@ -576,6 +576,12 @@ item names where it comes from.
 | 164 | 11: with the file option picking from its card, the inert "Pick a spreadsheet or text file" empty state below still reads like a drop zone | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 | 165 | 27 dark: after a network failure the bare "syncs on its own" section note and the filled offline `MxNote` sit stacked with two treatments | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 | 166 | 22 light: the learning bars and legend dot in the learning ink (brown) differ from the amber learning fill used elsewhere; chosen for 3:1 (F5/R3) | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
+| 167 | The bottom bar's glass blur blurred nothing (the body ends where the bar starts) — closed by DEV-302 (spec `2026-10-08-shared-widgets-mobile-native-fixes-design.md` §3.1): the bar is the page surface with the ghost edge; `AppEffects.glassOpacity`, `glassBlur` and `MxDerivedColors.chromeGlass` removed | audit 2026-10-08 F-01 |
+| 168 | The empty state's footnote drew as a boxed `MxNote`, a second surface under the card's actions — closed by DEV-303 (spec `2026-10-08-shared-widgets-mobile-native-fixes-design.md` §3.2): the footnote is `MxNote.hint`, the one footnote form | audit 2026-10-08 F-02 |
+| 169 | The deck, card and Trash rows each rebuilt the selectable card (ink, checkbox, padding, TalkBack node) on their own, with three paddings and two semantics shapes — closed by DEV-304 (spec §3.3): `MxSelectableCardRow` is the one frame, 16 in and 12 down, the ⋮ outside the ink | audit 2026-10-08 F-03 |
+| 170 | Dividers had two owners: `MxListRow` and `MxOptionRow` drew their own bottom edge while `MxSection` drew between rows, so callers turned rows off by hand and the last row's edge touched the card radius — closed by DEV-305 (spec §3.4): `MxDividedColumn` owns list dividers, rows draw no edge, the hairline takes its 1 | audit 2026-10-08 F-04 |
+| 171 | The breadcrumb and the chip rows cut their overflow flat, with no sign of more, while the study faces had their own fade — closed by DEV-306 (spec §3.5): `MxScrollFade` is shared, horizontal or vertical, over the page, raised or recessed ground | audit 2026-10-08 F-05 |
+| 172 | The card list entered selection only through a long-press, with no entry from the deck's ⋮ as the Trash has — closed by DEV-307 (spec §3.6): Select cards from the open deck's actions enters selection with nothing picked; Close ends it, unticking the last card does not | audit 2026-10-08 F-06 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

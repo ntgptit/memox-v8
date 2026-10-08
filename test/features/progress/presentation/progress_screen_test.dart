@@ -51,6 +51,9 @@ Future<void> _settle(WidgetTester tester) async {
 Future<Finder> _row(WidgetTester tester, String name) async {
   final row = find.widgetWithText(MxListRow, name);
   await tester.scrollUntilVisible(row, 200);
+  // The reveal jumps the offset; the frame catches up before a tap reads
+  // the row's place (DEV-305: hairlines take their 1).
+  await tester.pump();
   return row;
 }
 

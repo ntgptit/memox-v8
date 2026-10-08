@@ -101,11 +101,6 @@ void main() {
     );
   });
 
-  test('chromeGlass is surface at the glass opacity, not pre-flattened', () {
-    expect(light.chromeGlass, isColorCloseTo(0xD6F7F9FE));
-    expect(dark.chromeGlass, isColorCloseTo(0xD60A0E27));
-  });
-
   test('ghostBorder is primary at 14% light, 16% dark', () {
     expect(light.ghostBorder, isColorCloseTo(0x245265F5));
     expect(dark.ghostBorder, isColorCloseTo(0x295265F5));

@@ -11,6 +11,7 @@ abstract final class AppIcons {
   static const IconData search = Icons.search; // search
   static const IconData chevronRight = Icons.chevron_right; // chevron-right
   static const IconData check = Icons.check; // check
+  static const IconData select = Icons.checklist; // list-checks
   static const IconData delete = Icons.delete_outline; // trash-2
   static const IconData retry = Icons.refresh; // refresh-cw
   static const IconData play = Icons.play_arrow; // play

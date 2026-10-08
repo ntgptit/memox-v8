@@ -6,6 +6,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -64,14 +65,17 @@ class _StudyDirectionSheetWidgetState extends State<StudyDirectionSheetWidget> {
             ),
             child: MxNote(text: l10n.studyDirectionNote),
           ),
-          for (final (index, choice) in choices.indexed)
-            MxOptionRow(
-              title: _title(l10n, choice),
-              description: _body(l10n, choice),
-              isSelected: choice == _choice,
-              onSelected: () => setState(() => _choice = choice),
-              hasDivider: index < choices.length - 1,
-            ),
+          MxDividedColumn(
+            children: [
+              for (final choice in choices)
+                MxOptionRow(
+                  title: _title(l10n, choice),
+                  description: _body(l10n, choice),
+                  isSelected: choice == _choice,
+                  onSelected: () => setState(() => _choice = choice),
+                ),
+            ],
+          ),
         ],
       ),
     );

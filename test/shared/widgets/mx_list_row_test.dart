@@ -177,31 +177,7 @@ void main() {
     expect(find.byIcon(AppIcons.chevronRight), findsNothing);
   });
 
-  testWidgets('divider unless last; disabled dims and ignores taps', (
-    tester,
-  ) async {
-    BoxBorder? edge() =>
-        (tester
-                    .widget<DecoratedBox>(
-                      find
-                          .descendant(
-                            of: find.byType(MxListRow),
-                            matching: find.byType(DecoratedBox),
-                          )
-                          .first,
-                    )
-                    .decoration
-                as BoxDecoration)
-            .border;
-
-    await pumpMx(tester, _width(const MxListRow(title: 'Kana')));
-    expect(edge(), isNotNull);
-    await pumpMx(
-      tester,
-      _width(const MxListRow(title: 'Kana', hasDivider: false)),
-    );
-    expect(edge(), isNull);
-
+  testWidgets('disabled dims and ignores taps', (tester) async {
     var taps = 0;
     await pumpMx(
       tester,

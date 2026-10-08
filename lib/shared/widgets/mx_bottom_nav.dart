@@ -1,7 +1,4 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
@@ -23,8 +20,9 @@ final class MxNavDestination {
   final String label;
 }
 
-/// The top-level destinations on a translucent glass bar, with a tinted pill
-/// behind the current glyph. It is in-flow, never over the scroll, and adds
+/// The top-level destinations on a bar of the page surface with the ghost
+/// edge, a tinted pill behind the current glyph. It is in-flow, never over
+/// the scroll (so a backdrop blur had nothing to blur, DEV-302), and adds
 /// the gesture inset below itself.
 class MxBottomNav extends StatelessWidget {
   const MxBottomNav({
@@ -64,40 +62,32 @@ class MxBottomNav extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: radius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: AppEffects.glassBlur,
-            sigmaY: AppEffects.glassBlur,
-          ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: derived.chromeGlass,
-              borderRadius: radius,
-              border: Border.all(
-                color: derived.ghostBorder,
-                width: AppStroke.hairline,
-              ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: radius,
+            border: Border.all(
+              color: derived.ghostBorder,
+              width: AppStroke.hairline,
             ),
-            // Ruling R3: 64 at minimum, grows with text scaling.
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minHeight: AppSize.bottomNavBar,
-              ),
-              child: Material(
-                type: MaterialType.transparency,
-                child: Row(
-                  children: [
-                    for (final (index, destination) in destinations.indexed)
-                      Expanded(
-                        child: _Item(
-                          destination: destination,
-                          isSelected: index == selectedIndex,
-                          pillTint: pillTint,
-                          onTap: () => onSelected(index),
-                        ),
+          ),
+          // Ruling R3: 64 at minimum, grows with text scaling.
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: AppSize.bottomNavBar),
+            child: Material(
+              type: MaterialType.transparency,
+              child: Row(
+                children: [
+                  for (final (index, destination) in destinations.indexed)
+                    Expanded(
+                      child: _Item(
+                        destination: destination,
+                        isSelected: index == selectedIndex,
+                        pillTint: pillTint,
+                        onTap: () => onSelected(index),
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
             ),
           ),

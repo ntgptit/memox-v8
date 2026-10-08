@@ -4,8 +4,9 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 
-/// One command of the bulk bar.
-typedef CardBulkAction = ({IconData icon, String label, VoidCallback onTap});
+/// One command of the bulk bar; a null [onTap] draws it disabled, as while
+/// nothing is picked (DEV-307, as the Trash's bar).
+typedef CardBulkAction = ({IconData icon, String label, VoidCallback? onTap});
 
 /// The card list's bulk bar: the handoff's 5-up icon grid, one icon and
 /// label per equal column (ruling P3-L7).
@@ -34,8 +35,10 @@ class _BulkCommand extends StatelessWidget {
   Widget build(BuildContext context) => MergeSemantics(
     child: Semantics(
       button: true,
+      enabled: action.onTap != null,
       child: MxRowInk(
         onTap: action.onTap,
+        isEnabled: action.onTap != null,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.control),
           child: Column(

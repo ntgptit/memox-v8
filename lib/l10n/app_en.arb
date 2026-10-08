@@ -2902,6 +2902,14 @@
   "@gallerySelectedCard": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "gallerySelectableRow": "Selectable card row",
+  "@gallerySelectableRow": {
+    "description": "Gallery: the shared card row at rest."
+  },
+  "gallerySelectableRowPicked": "Picked while selecting",
+  "@gallerySelectableRowPicked": {
+    "description": "Gallery: the shared card row ticked."
+  },
   "galleryKanjiN5": "Kanji N5",
   "@galleryKanjiN5": {
     "description": "Debug gallery: sample copy in the component showcase."
@@ -4184,6 +4192,10 @@
   "deckActionExport": "Export cards",
   "@deckActionExport": {
     "description": "Deck action sheet: opens the export sheet over the whole deck (UC-TRANSFER-002)."
+  },
+  "deckActionSelectCards": "Select cards",
+  "@deckActionSelectCards": {
+    "description": "Deck action sheet, open deck of cards only: enters the card list's selection with nothing picked (BR-CARD-020, DEV-307)."
   },
   "cardExport": "Export",
   "@cardExport": {

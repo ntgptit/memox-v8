@@ -15,13 +15,11 @@ class ProgressDeckRowWidget extends StatelessWidget {
     super.key,
     required this.name,
     required this.numbers,
-    required this.hasDivider,
     this.onOpen,
   });
 
   final String name;
   final ProgressNumbers numbers;
-  final bool hasDivider;
 
   /// Null for the total row.
   final VoidCallback? onOpen;
@@ -77,7 +75,6 @@ class ProgressDeckRowWidget extends StatelessWidget {
       // A deck opens its level; the total opens nothing (D3, FE-A9 D2).
       hasChevron: onOpen != null,
       onTap: onOpen,
-      hasDivider: hasDivider,
     );
   }
 }

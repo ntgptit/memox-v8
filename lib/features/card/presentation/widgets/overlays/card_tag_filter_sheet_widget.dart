@@ -14,6 +14,7 @@ import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 
 /// Picks the tags [deckId]'s card list shows (UC-TAG-001 steps 6-7; FE-B2
 /// spec D3). Completes with the set to apply, or null when dismissed, which
@@ -153,14 +154,17 @@ class _CardTagFilterSheetWidgetState
                 onChanged: (_) => setState(() {}),
               ),
             ),
-          for (final (index, tag) in shown.indexed)
-            _TagRow(
-              key: ValueKey(tag.id),
-              tag: tag,
-              isChecked: _draft.contains(tag.id),
-              onTap: () => _toggle(tag.id),
-              hasDivider: index < shown.length - 1,
-            ),
+          MxDividedColumn(
+            children: [
+              for (final tag in shown)
+                _TagRow(
+                  key: ValueKey(tag.id),
+                  tag: tag,
+                  isChecked: _draft.contains(tag.id),
+                  onTap: () => _toggle(tag.id),
+                ),
+            ],
+          ),
         ],
       ),
     );
@@ -175,13 +179,11 @@ class _TagRow extends StatelessWidget {
     required this.tag,
     required this.isChecked,
     required this.onTap,
-    required this.hasDivider,
   });
 
   final TagCount tag;
   final bool isChecked;
   final VoidCallback onTap;
-  final bool hasDivider;
 
   @override
   Widget build(BuildContext context) => MergeSemantics(
@@ -195,7 +197,6 @@ class _TagRow extends StatelessWidget {
           style: context.textStyles.counter,
         ),
         onTap: onTap,
-        hasDivider: hasDivider,
       ),
     ),
   );

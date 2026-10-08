@@ -13,6 +13,7 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -110,17 +111,20 @@ class CardExportSheetWidget extends ConsumerWidget {
                 label: context.l10n.exportFormatSection,
               ),
             ),
-            for (final (index, format) in TransferFormat.values.indexed)
-              _FormatRow(
-                format: format,
-                isSelected: state.format == format,
-                isLast: index == TransferFormat.values.length - 1,
-                // A final problem leaves nothing to choose (critique
-                // 2026-09-30 part 1).
-                onSelected: state.isPreparing || (problem?.isFinal ?? false)
-                    ? null
-                    : () => _sheet(ref).chooseFormat(format),
-              ),
+            MxDividedColumn(
+              children: [
+                for (final format in TransferFormat.values)
+                  _FormatRow(
+                    format: format,
+                    isSelected: state.format == format,
+                    // A final problem leaves nothing to choose (critique
+                    // 2026-09-30 part 1).
+                    onSelected: state.isPreparing || (problem?.isFinal ?? false)
+                        ? null
+                        : () => _sheet(ref).chooseFormat(format),
+                  ),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.grouped,
@@ -216,13 +220,11 @@ class _FormatRow extends StatelessWidget {
   const _FormatRow({
     required this.format,
     required this.isSelected,
-    required this.isLast,
     required this.onSelected,
   });
 
   final TransferFormat format;
   final bool isSelected;
-  final bool isLast;
   final VoidCallback? onSelected;
 
   @override
@@ -234,7 +236,6 @@ class _FormatRow extends StatelessWidget {
       description: body,
       isSelected: isSelected,
       onSelected: onSelected,
-      hasDivider: !isLast,
       trailing: format == TransferFormat.csv
           ? MxBadge(label: l10n.exportRecommended, tone: MxBadgeTone.primary)
           : null,

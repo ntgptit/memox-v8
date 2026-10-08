@@ -8,7 +8,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -299,8 +299,8 @@ class _Half extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: StudyScrollFadeWidget(
-            ground: context.colors.surfaceContainerLowest,
+          child: MxScrollFade(
+            ground: MxScrollFadeGround.raised,
             child: Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(AppSpacing.gutter),

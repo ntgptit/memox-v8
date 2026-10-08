@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/card/presentation/widgets/items/card_row_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_list_section_widget.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 
@@ -56,13 +55,14 @@ void main() {
 
     expect(_checked, findsNWidgets(1));
     expect(find.byType(MxSelectionCheckbox), findsNWidgets(2));
+    // The front's node is the row's merged node (DEV-304).
     expect(
-      tester.getSemantics(find.byType(CardRowWidget).last),
+      tester.getSemantics(find.text('annyeong')),
       isSemantics(isChecked: true),
     );
   });
 
-  libraryTest('a tap toggles; the last one off leaves selection', (
+  libraryTest('a tap toggles; unticking the last one keeps selection', (
     tester,
     env,
   ) async {
@@ -79,7 +79,9 @@ void main() {
     expect(_checked, findsNWidgets(1));
     await tester.tap(find.text('annyeong'));
     await tester.pump();
-    expect(find.byType(MxSelectionCheckbox), findsNothing);
+    // DEV-307: selection ends with Close, as in the Trash.
+    expect(_checked, findsNothing);
+    expect(find.byType(MxSelectionCheckbox), findsNWidgets(2));
   });
 
   libraryTest('system Back leaves selection first (RF5)', (tester, env) async {

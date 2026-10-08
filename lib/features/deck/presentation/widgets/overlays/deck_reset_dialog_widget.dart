@@ -17,6 +17,7 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
@@ -219,7 +220,7 @@ class _AlgorithmChoice extends StatelessWidget {
     final onChosen = this.onChosen;
     return MxCard(
       isFullBleed: true,
-      child: Column(
+      child: MxDividedColumn(
         children: [
           MxOptionRow(
             title: l10n.resetKeep(l10n.schedulerType(current)),
@@ -230,7 +231,6 @@ class _AlgorithmChoice extends StatelessWidget {
             title: l10n.resetSwitchTo(l10n.schedulerType(other)),
             isSelected: choice == other,
             onSelected: onChosen == null ? null : () => onChosen(other),
-            hasDivider: false,
           ),
         ],
       ),

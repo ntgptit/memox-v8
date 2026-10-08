@@ -9,20 +9,20 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar`, injected by `app/` (spec A14) | Back, deck name, search action, `⋮`. Selecting: close, "{n} selected", "Select all {count}". |
+| App bar | `MxAppBar`, injected by `app/` (spec A14) | Back, deck name, search action, `⋮` (the deck's action sheet, with Select cards). Selecting: close, "{n} selected", "Select all {count}". |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck; hidden while selecting. |
 | Search | `MxSearchField` | Revealed by the search action; closing it clears the term. Hidden while selecting; its term stays and returns with it. |
 | Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new; mastery is stated once, with no four-state bar or legend (critique 2026-09-30, R2). "Study this deck · {n} due" (primary block `MxButton`; "Study this deck" when only new cards wait) opens the Study Entry, screen 14 (FE-A6 D10); hidden when the deck holds no card to study. Hidden while selecting, and while search is open, so the first results sit above the keyboard (critique 2026-09-30 part 1). |
 | Filters | `MxFilterChip` | All · Due · New · Flagged with counts, then Tags with the tag glyph: selected with the count of tags applied, and its tap opens the tag filter (FE-B2 D14). |
 | Header | `MxListSectionHeader` + `MxChipTrigger` | "Cards" while every card of the deck shows; "Showing {n} of {total}" (matches of the deck's cards) while a filter, a tag or search narrows it; none while selecting, when the app bar holds the count (critique 2026-09-30 part 3b); sort "Newest ⇅" / "Due first ⇅" (the sort glyph, not a chevron). |
-| Rows | card surface per row, 8 apart | The checkbox while selecting (no status dot: the label states the status once, critique 2026-09-30 part 3b, R3); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in plain ink (critique 2026-10-02, F6) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
+| Rows | `MxSelectableCardRow` per row, 8 apart (DEV-304) | The checkbox while selecting (no status dot: the label states the status once, critique 2026-09-30 part 3b, R3); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in plain ink (critique 2026-10-02, F6) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
 | Bulk bar | `MxFooterBar` with five icon buttons | Move · Flag · Tag · Export (screen 12; the selection stays) · Trash. |
 | FAB | `MxFab` | "New card" (#33); hidden while selecting and while search is open (critique 2026-09-30 part 3d-1). The list ends clear of it (`MxScrollClearance.fabAboveNav`), and drops that clearance while selecting (critique 2026-09-30). |
 
 ## Deck action sheet (`⋮`)
 
-Study this deck · Rename · Move to another deck · Import cards (screen 11) · Export cards
-(screen 12) · Move to Trash. Study this deck opens the Study Entry, screen 14 (FE-A6 D10).
+Study this deck · Rename · Select cards (enters selection with nothing picked, DEV-307) ·
+Move to another deck · Import cards (screen 11) · Export cards (screen 12) · Move to Trash. Study this deck opens the Study Entry, screen 14 (FE-A6 D10).
 
 ## States
 
@@ -36,7 +36,7 @@ Study this deck · Rename · Move to another deck · Import cards (screen 11) ·
 | error | no golden | no golden | — |
 | notFound | no golden | no golden | As screen 01 deckNotFound. |
 | deckActions | no golden | no golden | — |
-| selection | `card_selection_light.png` | `card_selection_dark.png` | Long-press selects (BR-CARD-020). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
+| selection | `card_selection_light.png` | `card_selection_dark.png` | Long-press selects (BR-CARD-020), or Select cards from `⋮` enters selection with nothing picked; Close ends it, unticking the last card does not (DEV-307). The app bar carries close, "{n} selected" and "Select all {n}" (A14). |
 | moveTargets | no golden | no golden | — |
 | noMoveTarget | no golden | no golden | — |
 | bulkFailed | `card_list_bulk_failed_light.png` | `card_list_bulk_failed_dark.png` | Flag: an inline banner above the bulk bar (E-L6). Move, Tag and Trash keep their sheet or dialog open and say it there. The selection stays. Retry shows the button's loading state while it runs, the banner stays and the bulk bar ignores taps meanwhile. |

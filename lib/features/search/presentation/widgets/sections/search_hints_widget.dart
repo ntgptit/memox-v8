@@ -3,6 +3,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
@@ -23,7 +24,7 @@ class SearchHintsWidget extends StatelessWidget {
         MxListSectionHeader(label: l10n.searchFinds),
         MxCard(
           isFullBleed: true,
-          child: Column(
+          child: MxDividedColumn(
             children: [
               MxListRow(
                 title: l10n.searchHintDeckName,
@@ -39,7 +40,6 @@ class SearchHintsWidget extends StatelessWidget {
                 title: l10n.searchHintTagName,
                 subtitle: l10n.searchHintTagExample,
                 leading: const MxIconTile(icon: AppIcons.tag),
-                hasDivider: false,
               ),
             ],
           ),

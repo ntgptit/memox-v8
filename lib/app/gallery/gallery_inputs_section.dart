@@ -11,6 +11,7 @@ import 'package:memox/shared/widgets/mx_text_field.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 /// Group C: fields, messages and selection controls, live where they have
@@ -93,7 +94,7 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
           const MxSelectionCheckbox(isChecked: true),
         ],
       ),
-      Column(
+      MxDividedColumn(
         children: [
           MxOptionRow(
             title: context.l10n.galleryEightBox,
@@ -106,7 +107,6 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
             description: context.l10n.galleryIntervalsFromFourAnswersAnd,
             isSelected: _scheduler == 1,
             onSelected: () => setState(() => _scheduler = 1),
-            hasDivider: false,
           ),
         ],
       ),

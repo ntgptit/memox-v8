@@ -3,6 +3,7 @@ import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/speech/speech_synthesizer.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
 /// How long the engine gets to say which languages it lacks before the
@@ -93,10 +94,9 @@ class _SpeechLanguageSheetWidgetState extends State<SpeechLanguageSheetWidget> {
       title: l10n.settingsSpeechLanguage,
       // A plain column: the sheet scrolls its child itself, and a nested
       // scroll view would fight it while the sheet slides up.
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: MxDividedColumn(
         children: [
-          for (final (index, language) in SpeechLanguage.values.indexed)
+          for (final language in SpeechLanguage.values)
             MxOptionRow(
               key: language == widget.selected ? _selectedRow : null,
               title: l10n.speechLanguageName(language.name),
@@ -105,7 +105,6 @@ class _SpeechLanguageSheetWidgetState extends State<SpeechLanguageSheetWidget> {
                   : null,
               isSelected: language == widget.selected,
               isDimmed: false,
-              hasDivider: index < SpeechLanguage.values.length - 1,
               onSelected: () => Navigator.of(context).pop(language),
             ),
         ],

@@ -7,6 +7,7 @@ import 'package:memox/features/progress/presentation/providers/progress_range_pr
 import 'package:memox/features/progress/presentation/widgets/items/progress_deck_row_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 
@@ -49,20 +50,18 @@ class ProgressLevelListWidget extends ConsumerWidget {
         MxListSectionHeader(label: header),
         MxCard(
           isFullBleed: true,
-          child: Column(
+          child: MxDividedColumn(
             children: [
               ProgressDeckRowWidget(
                 name: isDeckLevel
                     ? l10n.progressWholeDeck
                     : l10n.progressAllDecks,
                 numbers: total,
-                hasDivider: decks.isNotEmpty,
               ),
-              for (final (index, deck) in decks.indexed)
+              for (final deck in decks)
                 ProgressDeckRowWidget(
                   name: deck.name,
                   numbers: deck.progress.of(range),
-                  hasDivider: index < decks.length - 1,
                   onOpen: () => onOpenDeck(deck.deckId),
                 ),
             ],

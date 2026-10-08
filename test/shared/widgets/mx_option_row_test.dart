@@ -113,32 +113,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('divider unless last; disabled at 0.38', (tester) async {
-    await pumpMx(
-      tester,
-      MxOptionRow(
-        title: 'A',
-        isSelected: false,
-        onSelected: () {},
-        hasDivider: false,
-      ),
-    );
-    expect(
-      tester
-          .widgetList<DecoratedBox>(
-            find.descendant(
-              of: find.byType(MxOptionRow),
-              matching: find.byType(DecoratedBox),
-            ),
-          )
-          .where(
-            (box) =>
-                (box.decoration as BoxDecoration).border is Border &&
-                box.key != _radioKey,
-          ),
-      isEmpty,
-    );
-
+  testWidgets('disabled at 0.38', (tester) async {
     await pumpMx(
       tester,
       const MxOptionRow(title: 'A', isSelected: false, onSelected: null),

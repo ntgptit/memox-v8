@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 
@@ -14,8 +13,8 @@ class MxSection extends StatelessWidget {
 
   final String? title;
 
-  /// The rows. The section draws the ghost dividers between them (ruling
-  /// S8), so a row here carries none of its own.
+  /// The rows. They sit in an `MxDividedColumn` (ruling S8, DEV-305), so a
+  /// row here carries no edge of its own.
   final List<Widget> children;
 
   /// A product rule under the card, drawn as an MxNote.
@@ -23,10 +22,6 @@ class MxSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final divider = SizedBox(
-      height: AppStroke.hairline,
-      child: ColoredBox(color: context.derivedColors.ghostBorder),
-    );
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
       child: Column(
@@ -34,19 +29,7 @@ class MxSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (title case final text?) MxListSectionHeader(label: text),
-          MxCard(
-            isFullBleed: true,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (final (index, row) in children.indexed) ...[
-                  if (index > 0) divider,
-                  row,
-                ],
-              ],
-            ),
-          ),
+          MxCard(isFullBleed: true, child: MxDividedColumn(children: children)),
           if (note case final text?)
             Padding(
               padding: const EdgeInsetsDirectional.only(

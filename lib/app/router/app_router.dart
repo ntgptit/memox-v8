@@ -20,6 +20,7 @@ import 'package:memox/features/reminders/presentation/providers/reset_app_option
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
+import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
@@ -386,6 +387,12 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onExportCards: (deck) => unawaited(
       showDeckExportSheet(context, deckId: deck.id, deckName: deck.name),
     ),
+    // Select cards from the deck's ⋮ (DEV-307): the card feature's
+    // selection, reached through the scope as the deck never imports it.
+    onSelectCards: (id) =>
+        ProviderScope.containerOf(context)
+            .read(cardSelectionProvider(id).notifier)
+            .start(),
     onOpenTrash: openTrash,
     onOpenStudyHome: () => context.go(AppRoutes.study),
     onOpenStarterDecks: _opener(context, AppRoutes.starterDecks),

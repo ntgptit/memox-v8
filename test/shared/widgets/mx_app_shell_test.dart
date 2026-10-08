@@ -5,6 +5,7 @@ import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
+import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_floating_notice.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
@@ -14,6 +15,7 @@ import '../../support/widget_harness.dart';
 const _bodyKey = Key('body');
 const _barKey = Key('bar');
 const _footerKey = Key('footer');
+const _navKey = Key('nav');
 
 Widget _fab() =>
     MxFab(icon: AppIcons.add, semanticLabel: 'New', onPressed: () {});
@@ -253,5 +255,38 @@ void main() {
     final notice = tester.getRect(find.byType(MxFloatingNotice));
 
     expect(bottomPadding, 800 - notice.top);
+  });
+
+  testWidgets('the bottom bar sits below the body, never over it (DEV-302)', (
+    tester,
+  ) async {
+    await pumpMxPage(
+      tester,
+      MxAppShell(
+        body: const SizedBox.expand(key: _bodyKey),
+        bottomBar: MxBottomNav(
+          key: _navKey,
+          destinations: const [
+            MxNavDestination(
+              icon: AppIcons.library,
+              selectedIcon: AppIcons.librarySelected,
+              label: 'Library',
+            ),
+            MxNavDestination(
+              icon: AppIcons.study,
+              selectedIcon: AppIcons.studySelected,
+              label: 'Study',
+            ),
+          ],
+          selectedIndex: 0,
+          onSelected: (_) {},
+        ),
+      ),
+    );
+
+    expect(
+      tester.getBottomLeft(find.byKey(_bodyKey)).dy,
+      tester.getTopLeft(find.byKey(_navKey)).dy,
+    );
   });
 }

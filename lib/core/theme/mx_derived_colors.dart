@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 /// Colours derived from a role at a percentage (02-theme-binding
@@ -18,7 +17,6 @@ final class MxDerivedColors {
     required this.successBorder,
     required this.successInk,
     required this.surfaceHero,
-    required this.chromeGlass,
     required this.ghostBorder,
     required this.warningInk,
     required this.dangerInk,
@@ -70,8 +68,6 @@ final class MxDerivedColors {
         ),
         isDark ? scheme.surface : scheme.surfaceBright,
       ),
-      // Composited over the runtime backdrop at paint time, never flattened.
-      chromeGlass: scheme.surface.withValues(alpha: AppEffects.glassOpacity),
       ghostBorder: scheme.primary.withValues(
         alpha: isDark ? _ghostBorderDark : _ghostBorderLight,
       ),
@@ -210,9 +206,6 @@ final class MxDerivedColors {
 
   /// Tinted hero card fill.
   final Color surfaceHero;
-
-  /// Bottom-nav glass surface.
-  final Color chromeGlass;
 
   /// The 1px primary-tinted hairline on cards, chips, dividers and chrome.
   final Color ghostBorder;
