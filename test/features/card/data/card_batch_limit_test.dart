@@ -106,7 +106,11 @@ void main() {
 
   test('a whole-deck and a selected export of more cards than SQLite binds '
       'carry every card with its tags (BR-TRANSFER-010)', () async {
-    final transfer = CardTransferRepositoryImpl(db, cards);
+    final transfer = CardTransferRepositoryImpl(
+      db,
+      cards,
+      DeckRepositoryImpl(db, now: _now),
+    );
     await db.customStatement(
       "INSERT INTO tags (id, name, name_folded, created_at) "
       "VALUES ('t', 'Noun', 'noun', 0)",

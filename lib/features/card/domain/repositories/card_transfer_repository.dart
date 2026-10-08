@@ -4,6 +4,8 @@ import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_export_snapshot_model.dart';
 import 'package:memox/features/card/domain/models/card_folded_pair_model.dart';
 import 'package:memox/features/card/domain/models/card_import_result_model.dart';
+import 'package:memox/features/card/domain/models/card_import_section_model.dart';
+import 'package:memox/features/card/domain/models/card_import_target_model.dart';
 
 /// The card feature's half of Card Transfer (UC-TRANSFER-001,
 /// UC-TRANSFER-002): the duplicate key, the batch write of an import, and
@@ -24,6 +26,25 @@ abstract interface class CardTransferRepository {
   Future<Outcome<CardImportResult, CardRejection>> importCards({
     required String deckId,
     required List<CardDraft> drafts,
+    required bool includeDuplicates,
+    DateTime? now,
+  });
+
+  /// Spec 2026-10-08 §4.2: [deckId] as an import target, with its direct
+  /// sub-decks and the faces of their cards, in one read; null when it is
+  /// gone.
+  Future<CardImportTarget?> importTarget(String deckId);
+
+  /// Spec 2026-10-08 §4.5, in one transaction: the target and every
+  /// "Add to existing" deck are checked before the first write
+  /// (BR-TRANSFER-001); then, section by section in order, the duplicate
+  /// policy is applied against the section's deck as it is now and within
+  /// the section (BR-TRANSFER-003), a new sub-deck is made only when a
+  /// draft is kept (BR-TRANSFER-015), and the drafts are written as
+  /// [importCards] writes them (BR-TRANSFER-004, BR-TRANSFER-005).
+  Future<Outcome<List<CardImportSectionResult>, CardRejection>> importSections({
+    required String targetDeckId,
+    required List<CardImportSection> sections,
     required bool includeDuplicates,
     DateTime? now,
   });

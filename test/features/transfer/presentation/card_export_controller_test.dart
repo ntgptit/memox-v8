@@ -114,6 +114,7 @@ void main() {
         TagRepositoryImpl(db),
         DeckTreeDataSource(db),
       ),
+      DeckRepositoryImpl(db),
     );
     final result = ProviderContainer(
       overrides: [

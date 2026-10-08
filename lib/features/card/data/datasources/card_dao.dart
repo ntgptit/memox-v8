@@ -43,6 +43,25 @@ final class CardDao extends DatabaseAccessor<AppDatabase> with _$CardDaoMixin {
       (front: row.frontFolded, back: row.backFolded),
   };
 
+  /// The live direct sub-decks of [parentId], in sibling order.
+  Future<List<LiveChildDecksResult>> childDecks(String parentId) =>
+      liveChildDecks(parentId).get();
+
+  /// The folded faces of the live cards of each live direct sub-deck of
+  /// [parentId] (BR-TRANSFER-003), keyed by deck id.
+  Future<Map<String, Set<CardFoldedPair>>> foldedPairsUnder(
+    String parentId,
+  ) async {
+    final byDeck = <String, Set<CardFoldedPair>>{};
+    for (final row in await liveCardFacesUnder(parentId).get()) {
+      (byDeck[row.deckId] ??= {}).add((
+        front: row.frontFolded,
+        back: row.backFolded,
+      ));
+    }
+    return byDeck;
+  }
+
   /// How many live cards [deckId] holds.
   Future<int> liveCount(String deckId) =>
       liveCardCountOfDeck(deckId).getSingle();

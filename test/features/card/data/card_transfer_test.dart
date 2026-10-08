@@ -70,7 +70,7 @@ void main() {
       DeckTreeDataSource(db),
       now: _now,
     );
-    cards = CardTransferRepositoryImpl(db, list);
+    cards = CardTransferRepositoryImpl(db, list, decks);
     root = await decks.root('r');
     leaf = await decks.sub(root.id, 'l');
   });
@@ -326,6 +326,7 @@ void main() {
             DeckTreeDataSource(db),
             now: _now,
           ),
+          decks,
         );
 
         await expectLater(

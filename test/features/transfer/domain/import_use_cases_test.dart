@@ -55,6 +55,7 @@ void main() {
         DeckTreeDataSource(db),
         now: _now,
       ),
+      decks,
     );
     root = await decks.root('r');
     leaf = await decks.sub(root.id, 'Nhà hàng');

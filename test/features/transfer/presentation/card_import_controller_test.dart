@@ -105,6 +105,7 @@ void main() {
         DeckTreeDataSource(db),
         now: _now,
       ),
+      DeckRepositoryImpl(db, now: _now),
     );
     final result = ProviderContainer(
       overrides: [
