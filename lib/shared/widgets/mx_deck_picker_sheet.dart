@@ -172,11 +172,13 @@ class MxDeckPickerErrorSheet extends StatelessWidget {
   Widget build(BuildContext context) => MxBottomSheet(
     title: title,
     subtitle: rule,
-    // The lone way out stays primary (The One Indigo Rule, R8).
+    // Retry is the decision's one primary; the way out beside it is outline
+    // (The One Indigo Rule).
     footer: MxSheetActions.single(
       isInSheet: true,
       label: dismissLabel,
       onPressed: onDismiss,
+      tone: MxButtonTone.outline,
     ),
     child: Padding(
       padding: const EdgeInsetsDirectional.only(

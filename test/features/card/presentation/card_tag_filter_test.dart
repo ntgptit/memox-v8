@@ -9,6 +9,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
+import 'package:memox/features/card/presentation/providers/card_tag_filter_provider.dart';
+import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -270,5 +272,39 @@ void main() {
     expect(find.text(vi.cardTagFilterChosen(1)), findsOneWidget);
     expect(tester.takeException(), isNull);
     await expectAccessibleTargets(tester);
+  });
+
+  // SW-REV-008 (impeccable audit 2026-10-08): a filter that fails to load
+  // keeps its head, so TalkBack names the sheet, and offers a way out.
+  libraryTest('a failed load keeps the sheet head, Retry and a dismiss', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const Scaffold(
+        body: CardTagFilterSheetWidget(deckId: 'words', applied: {}),
+      ),
+      overrides: [
+        cardTagFilterProvider('words')
+            .overrideWith((ref) => Stream.error(StateError('locked'))),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.cardTagFilterLoadError), findsOneWidget);
+    expect(
+      tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).title,
+      _en.cardTagFilterTitle,
+    );
+    expect(
+      tester
+          .widget<MxButton>(
+            find.widgetWithText(MxButton, _en.cardTagFilterClose),
+          )
+          .tone,
+      MxButtonTone.outline,
+    );
   });
 }

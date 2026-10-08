@@ -13,6 +13,7 @@ import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 
 /// Picks the tags [deckId]'s card list shows (UC-TAG-001 steps 6-7; FE-B2
 /// spec D3). Completes with the set to apply, or null when dismissed, which
@@ -70,13 +71,29 @@ class _CardTagFilterSheetWidgetState
     return switch (tags) {
       AsyncData(:final value) when value.isEmpty => _none(l10n),
       AsyncData(:final value) => _picker(l10n, value),
+      // The head stays, so TalkBack names the sheet; Retry is the one
+      // primary, and Close beside it is outline (The One Indigo Rule).
       AsyncError(:final isLoading) => MxBottomSheet(
-        child: MxErrorState(
-          title: l10n.cardTagFilterLoadError,
-          body: l10n.libraryLoadErrorBody,
-          retryLabel: l10n.commonRetry,
-          onRetry: () => ref.invalidate(cardTagFilterProvider(widget.deckId)),
-          isRetrying: isLoading,
+        title: l10n.cardTagFilterTitle,
+        footer: MxSheetActions.single(
+          isInSheet: true,
+          label: l10n.cardTagFilterClose,
+          onPressed: () => Navigator.of(context).pop(),
+          tone: MxButtonTone.outline,
+        ),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.only(
+            start: AppSpacing.control,
+            end: AppSpacing.control,
+            bottom: AppSpacing.control,
+          ),
+          child: MxErrorState(
+            title: l10n.cardTagFilterLoadError,
+            body: l10n.libraryLoadErrorBody,
+            retryLabel: l10n.commonRetry,
+            onRetry: () => ref.invalidate(cardTagFilterProvider(widget.deckId)),
+            isRetrying: isLoading,
+          ),
         ),
       ),
       _ => MxBottomSheet(

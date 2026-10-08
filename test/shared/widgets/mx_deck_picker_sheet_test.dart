@@ -185,6 +185,12 @@ void main() {
     expect(find.text('Move to deck'), findsOneWidget);
     expect(find.text('Cards keep their progress.'), findsOneWidget);
     expect(find.byType(MxErrorState), findsOneWidget);
+    // Retry is the decision's one primary; the dismiss beside it is
+    // outline (The One Indigo Rule; impeccable audit 2026-10-08).
+    expect(
+      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Cancel')).tone,
+      MxButtonTone.outline,
+    );
     await tester.tap(find.widgetWithText(MxButton, 'Retry'));
     await tester.tap(find.widgetWithText(MxButton, 'Cancel'));
     expect((retries, dismissed), (1, 1));
