@@ -1,6 +1,7 @@
 # Colour roles: Material 3 roles only, the derived ink layer removed — design
 
-Status: owner rulings 2026-10-08 (chat), spec awaiting review ·
+Status: owner rulings 2026-10-08 (chat), revised after the owner's spec review of the same
+day (R12–R16, §4.12, §4.13, §6.1–6.3), awaiting review ·
 Path: architectural (one theme layer deleted, one extension reshaped, every colour consumer
 remapped, `DESIGN.md` rewritten) ·
 Linear: a new epic once this spec is approved; its plan's tasks become the sub-issues.
@@ -78,6 +79,30 @@ by the owner, never auto-accepted.
   accepted without its visual diff being reviewed.
 - **R11 · No implementation before approval.** This spec, the mapping, the impact assessment
   and the migration plan come first; code follows the approved plan.
+- **R12 · The guard forbids the layer, not colour maths** (owner, spec review 2026-10-08).
+  `Color.lerp`, `HSLColor` and `HSVColor` are banned only where they would rebuild a
+  semantic or derived colour outside the approved theme architecture; `ThemeExtension.lerp`,
+  animation, state-layer composition and other legitimate colour handling stay allowed, and
+  the rule ships with positive and negative fixtures (§6.1).
+- **R13 · Screen-level state coverage.** Shared-widget states are not enough: every affected
+  screen is listed with the states its detail file and its code really have, the widgets and
+  roles that move, the grounds and overlays, the transitions that repaint, light and dark,
+  and the evidence or the reason it cannot be verified (§4.12). Widgets are checked in the
+  screen they live on.
+- **R14 · The dark hero CTA is judged, not assumed.** 2.51:1 between the button fill and the
+  dark `primaryContainer` is neither declared a WCAG failure nor excused by the label's
+  contrast; an Impeccable critique and native audit judge affordance, hierarchy and the
+  interaction states, and the role or the presentation changes if they fail, with the brand
+  #5265F5 kept (§4.6).
+- **R15 · Incremental visual verification.** The goldens regenerate once at the end, but the
+  pre-migration baseline is kept; after each shared-widget group, targeted widget and state
+  tests run and representative previews and diffs are produced; the final golden diff is
+  classified expected / unexpected / unresolved, and no golden is approved automatically
+  (§6.2).
+- **R16 · Gates with evidence.** ROOT CAUSE FIRST, COMMON FIRST, CHECK STATE COVERAGE,
+  CHECK STATE TRANSITIONS, CHECK DEGRADE, CHECK SIMILAR and an independent verification each
+  leave an executed artefact (a test run, a rendered image, a grep output, a review from a
+  fresh context), never a self-ticked checklist (§6.3).
 
 ## 3. Root cause analysis
 
@@ -260,14 +285,22 @@ role as glyph. Measured text on container · glyph on container, light / dark:
 | `primary` at 14 / 20 % | the nav rail and bottom nav selected pill | `primaryContainer` | `onPrimaryContainer` icon and label 10.37 / 8.81 | — |
 | `mastery` / `warning` / `success` at 12 % | `MxBadge` tonal tones | the role's container | its on-container | the role |
 | study choice right / wrong | `AppDecorations.studyChoice` | `successContainer` / `errorContainer`, no edge | `onSuccessContainer` / `onErrorContainer` | — |
+| `MxEmptyState` tile at `_tileTint` | every empty state | the tone's container (`primaryContainer`, `successContainer`, `warningContainer`, `errorContainer`, neutral `surfaceContainerHigh`) | — | the tone's foreground (§4.4, §4.3; `error` 4.62 / 4.65) |
+| `card_schedule` past boxes (`primary` at `_pastAlpha`) | Card detail schedule | `primaryContainer` (current box `primary`, future `surfaceContainerHigh`) | — | — |
+| `MxFilterChip` resting count (`ink` at `_countOpacityResting`) | chip rows | — | `onSurfaceVariant` (7.20 / 8.50) | — |
 | study choice idle | same | raised or recessed ground, `outlineVariant` edge | `onSurface` | — |
 
-On the dark hero the primary button's fill is 2.51:1 against `primaryContainer`; a filled
-button is identified by its label (`onPrimary` 4.63), so no floor applies and the hero keeps
-its filled action (The One Indigo Rule). The hero's supporting text in `onSurfaceVariant`
-(6.07 / 5.19) is the one exception to "a container's text is its on-container"; every other
-container reads in its on-container only, because `onSurfaceVariant` is 4.19 on the dark
-`warningContainer` and 4.17 on the dark `successContainer`.
+On the dark hero the primary button's fill is 2.51:1 against `primaryContainer`. The hero
+keeps its filled action: the Impeccable critique of §4.13 judged the proposal (R14) and
+found the CTA still the loudest object, carried by hue and chroma, the label, the glyph and
+the block shape, with the hierarchy intact; the exemption is recorded in `DESIGN.md` under
+The Role Pair Rule (a filled button is identified by its label, never by its edge). The
+hero's supporting text in `onSurfaceVariant` (6.07 / 5.19) is the one exception to "a
+container's text is its on-container"; every other container reads in its on-container
+only, because `onSurfaceVariant` is 4.19 on the dark `warningContainer` and 4.17 on the dark
+`successContainer`. The hero's title and body reach `onPrimaryContainer` through the text
+styles' `…In(color)` variants (`rowTitleIn`, `captionIn`, as `statusNote(color)` already
+does), never through a `DefaultTextStyle`, since the styles set their colour explicitly.
 
 The alpha constants that mixed these grounds (`_tint`, `_tileTint`, `_badgeTint`,
 `_pillTint*`, `_primaryTint*`, `_seedTint`, `_keptTint`) are deleted. `MxIconTile.seed`
@@ -358,14 +391,17 @@ Every pair in the "New" and "Measured" columns is an assertion of
 | `MxSnackbar` | inverse roles, unchanged | — | `inversePrimary` | — | — | — | — |
 | Study choice | idle: ground + `outlineVariant` | `primary` / `onPrimary` | ring | layer | — | wrong `errorContainer` | right `successContainer` |
 
-Each row is a widget test per state, on the ground the widget sits on, in both themes
-(CHECK STATE COVERAGE).
+"Ring" is the focus ring: `primaryForeground`, drawn outside the control with
+`AppStroke.focusOffset` by one shared painter (§4.13 P1), so it is always measured against
+the ground, never against the control's fill. Each row is a widget test per state, on the
+ground the widget sits on, in both themes (CHECK STATE COVERAGE).
 
 ### 4.10 Files
 
 Core: `mx_semantic_colors.dart` (new shape), `app_color_schemes.dart` (`outline`),
-`app_component_themes.dart`, `app_decorations.dart`, `mastery_ramp.dart`,
-`mx_text_styles.dart` (takes the extension), `theme_context.dart`; `mx_derived_colors.dart`
+`app_component_themes.dart`, `app_button_style.dart` (the outer focus ring, §4.13),
+`app_decorations.dart`, `mastery_ramp.dart`, `mx_text_styles.dart` (takes the extension;
+`…In(color)` variants for the hero), `theme_context.dart`; `mx_derived_colors.dart`
 deleted. Shared: the 27 widgets in §4.8 plus `mx_status_badge.dart` (resolver) and the
 seven tint owners in §4.6. Features: the 19 files in §4.8 and
 `card_display_status_model.dart`. Tests: `token_contrast_test.dart` (the table),
@@ -396,6 +432,100 @@ colours are named.
 - Detail files in `docs/shared/ui/screen-handoff/` that name a derived colour are updated
   in the task that touches their screen.
 
+### 4.12 Screen-level state coverage (R13)
+
+The migration repaints every screen, so the screen's detail file (its States table) and
+its code are the inventory, as CLAUDE.md's "A screen is a state machine" requires. The
+table lists, per screen: the states the detail file records and how many have both goldens
+today (`n / g`); the widgets and roles that move on that screen; the grounds the colours sit
+on (page = `surface`, card = `surfaceContainerLowest`, field = `surfaceContainerLow`, sheet
+or dialog = `surfaceContainerHigh`, keyboard = the field's ground with insets); the
+transitions that repaint; and the evidence plan. Every state is checked in light and dark at
+360 dp, default text scale. A state without a golden is rendered as a throwaway image in
+the audit (phase 6) or reported `UNVERIFIED` with its reason; `N/A` where the state paints
+no migrated role. The risk order is CLAUDE.md's: broken primary actions and dead ends (a
+CTA or a control edge that stops reading), then stale or async state, then layout.
+
+| # | Screen | States n / g | Widgets and roles that move | Grounds and overlays | Transitions that repaint | Evidence plan |
+|---|---|---|---|---|---|---|
+| 01 | Deck list · recursive | 22 / 8 | due strip and summary hero (`primaryContainer`, CTA), deck rows (mastery bar fill, due badge on `primaryContainer`, row hairline), breadcrumb chevron (`outline`), FAB, `MxEmptyState`, `MxErrorState`, actions sheet (command tiles `primaryContainer`), create / rename dialog (field `outline` → `primaryForeground` focus, `error`), reorder (selected edge `primaryForeground`), sort chip (`outline`) | page, card, sheet, dialog, keyboard | loading → loaded; loaded ↔ empty (content gate); error → retry; dialog open / field focus / error; reorder enter / exit; delete → trashed (inverse snackbar) | goldens for 8 states; 14 rendered in the audit (rootCreate, rootRename, deckMove and the loading / error / notFound ones are the risk rows); focus state by widget test |
+| 02 | Review algorithm & reset | 9 / 3 | option rows (radio `outline` / `primaryForeground`), lock strip (`warningContainer`), reset dialog (`warningContainer`, destructive `error` / `onError`), spinner | page, card, dialog | locked ↔ unlocked; switching → switched / switchFailed; resetConfirm → resetting → resetDone | 3 goldens; switching / resetting by widget test (spinner off-fill); the rest rendered |
+| 03 | Starter decks | 10 / 10 | rows, `MxBadge` (tonal containers), choose sheet, `MxInlineBanner` (alreadyPresent, addFailed), `MxEmptyState`, `MxErrorState` | page, card, sheet | list → choose → adding → added; addFailed → retry | goldens for all; banner text on container by contrast test |
+| 04 | Library search | 6 / 6 | search field (`outline`, focus), result rows, tag chips, `MxEmptyState`, `MxErrorState`, load-more failure banner | page, card, keyboard | emptyQuery → results / noResults; error → retry; loadMoreFailed | goldens for all; focused field by widget test |
+| 05 | Tags | 13 / 12 | tag rows, search field, rename dialog (field on sheet, merge note `warningContainer`), delete confirm (`error`), busy spinner, `MxEmptyState` | page, card, dialog, keyboard | loaded ↔ empty / searchEmpty; rename → renameMerge / nameTooLong; del → busy → opError | 12 goldens; read error rendered; field focus and error on the dialog by widget test |
+| 06 | Trash | 15 / 9 | filter chips (`outline` / `primary`), selectable rows (checkbox `outline` / `primary`, selected edge `primaryForeground`), actions sheet, deck picker sheet, purge confirm (`error`), `MxEmptyState`, snackbar (inverse, unchanged) | page, card, sheet, dialog | all ↔ cards / decks; selection enter / exit; restoreTarget → restored / undoRefused; purgeConfirm → purged | 9 goldens; cards / decks / restored / undoRefused / purged / loading rendered; checkbox states by widget test |
+| 07 | Card list | 15 / 7 | deck summary hero + CTA, filter chips, card rows (`MxStatusBadge` §4.7, flag glyph, due badge), selection (checkbox, selected edge), actions sheet, move picker, `MxInlineBanner` bulkFailed, delete confirms | page, card, sheet, dialog | loaded ↔ empty / search; selection enter / exit; moveTargets → noMoveTarget; bulkFailed; delCard / delDeck → trashed | 7 goldens; empty / loading / error / notFound / deckActions / moveTargets / noMoveTarget / delDeck rendered; status badge four states by widget test |
+| 08 | Card create | 9 / 2 | text fields (`outline`, focus `primaryForeground`, `error`), add-details tile (`outline`, glyph `primaryForeground`), tag chips (`primaryContainer`), `MxFieldMessage` (`warning`), footer bar hairline, save button, `MxInlineBanner` saveFailed | page, field, keyboard | emptyForm → valid → saving → saveFailed; validationErr / frontTooLong / tagLimit / deckRejects | 2 goldens; every validation state rendered (the error edge on the field ground is a risk row); keyboard state by the existing keyboard golden |
+| 09 | Card edit | 9 / 3 | as 08 plus discard dialog, delete confirm, loading skeleton, `MxErrorState` | page, field, dialog, keyboard | loaded → dirtySaving → saveFailed; discard; delConfirm; loadError / notFound | 3 goldens; the rest rendered; dialog destructive button by contrast test |
+| 10 | Card detail | 7 / 1 | schedule boxes (`primary` / `primaryContainer`), history rail (`outline`), history events (`warning` / `success` glyphs on badges), status badge, load-more banner, `MxEmptyState`, `MxErrorState` | page, card | loaded → loadMore → loadMoreFailed; empty; error / notFound | 1 golden; six rendered; history glyphs by contrast test |
+| 11 | Card import | 23 / 9 | step tracker (`mastery`, `outlineVariant` track), preview rows (`success` / `warning` glyphs and notes), section rows, option rows, `MxInlineBanner` (badEncoding, refused, failed), footer / commit bar, toggles (`outline`) | page, card, sheet, keyboard (paste) | source → parsing → mapping → preview → importing → success / partial / failed; sections undecided → decided → result / refused | 9 goldens; 14 rendered; the preview row invalid note and the step tracker are contrast-test rows |
+| 12 | Card export | 9 / 3 | option rows, preparing spinner, `MxInlineBanner` failed / noShareTarget / staleSelection, `MxEmptyState` nothingToExport | page, card | wholeDeck ↔ selection; preparing → handedOver / failed; shareClosed | 3 goldens; six rendered |
+| 13 | Study home | 10 / 10 | deck rows, resume banner (`primaryContainer`, dot `primary`), sync banner (outline action), `MxEmptyState` (noDecks, noCards, zero), `MxErrorState`, reauth banner | page, card | loaded ↔ noResume / zero; syncRejected / syncStale / reauth; error → retry | goldens for all; banner text on container by contrast test |
+| 14 | Study entry | 9 / 9 | stat tiles (`primaryForeground` emphasis), overdue note (`warning`), mode option rows (radio), resume banner, footer (primary / outline, spinner), `MxInlineBanner` refused (`warningContainer`) / startFailed (`errorContainer`), direction sheet, skeleton | page, card, sheet | sm2 / eightBox / onlyNew / nothing; resume; starting → refused / startFailed → retry | goldens for all; the starting spinner off-fill and the refused banner are contrast-test rows |
+| 15 | Study options | 9 / 7 | option rows, stepper (`primaryForeground` edge, `error`), toggles, field message, save footer, `MxInlineBanner` saveFailed | page, card, keyboard | override ↔ defaults; invalid; saving → saved / saveFailed; gone | 7 goldens; gone and read error rendered; stepper states by widget test |
+| 16 | Study · Browse | 1 / 1 | Study top bar (badge `primaryContainer` / `onPrimaryContainer`, track `primary`), face cards (raised / recessed edges), browse hairline (`outlineVariant`), footer | page, card | page turn; scroll fade | golden; top bar by widget test |
+| 16a | Study · Self-assess | 6 / 0 | top bar, face card, reveal, answer buttons (primary / outline / dangerSoft `errorContainer`), relearning note (`warning`), `MxInlineBanner` saveFailed, stale state | page, card | prompt → revealed → saving → saveFailed; relearning; stale | no goldens today: all six rendered in the audit (risk: the answer buttons are the primary action) |
+| 17 | Study · Match | 1 / 1 | choice cards (idle `outlineVariant`, selected `primary`, right `successContainer`, wrong `errorContainer`), top bar | page, card | idle → selected → right / wrong (animated `ColorTween`) | golden; the four choice tones by `app_decorations_study_choice_test.dart` |
+| 18 | Study · Guess | 1 / 1 | as 17 | page, card | same | golden; same test |
+| 19 | Study · Recall | 3 / 3 | countdown bar (`warning` fill and ink when timed out), status label (`warning`), outcome tile (`successContainer` / `warningContainer`), text field | page, card, keyboard | countingDown → revealed / timedOut | goldens; the timed-out bar fill on its track is a contrast-test row |
+| 20 | Study · Fill | 3 / 3 | text field (focus), hint, wrong label (`warning`), outline button | page, card, keyboard | input → hint → wrong | goldens; field focus by widget test |
+| 21 | Session summary | 10 / 9 | summary hero (`successContainer` / `warningContainer` / `errorContainer`), facts (`warning` wrong count), outcome tiles, `MxInlineBanner` saveError, buttons | page, card | loaded / learning / large; leftEarly / interrupted / reset / schedulerChanged; saveError; contentDeleted | 9 goldens; loading rendered; the three hero tones are contrast-test rows |
+| 22 | Progress | 12 / 8 | streak tile (`streak`), today bars (`primary` / `warning` on the track), deck rows (status captions), dashed note (`outlineVariant`), breadcrumb, `MxEmptyState`, `MxErrorState` | page, card | 7 days ↔ 30 days; held / lost / never; loading / error; deck → no sub-decks / deck gone | 8 goldens; quiet range / no decks / no sub-decks / deck gone rendered |
+| 23 | Settings | 12 / 11 | settings rows (hairlines), sync row glyph (`success`), admin row, reset dialog (`warningContainer`), account rows, `MxInlineBanner` syncFailed / syncRejected / re-auth | page, card, dialog | loaded; resetConfirm → resetDone; sync states; account states | 11 goldens; read error rendered |
+| 23a | Settings · Study options | 9 / 8 | as 15 plus two sheets (option rows on the sheet ground) | page, card, sheet, keyboard | loaded → saving → saved / saveFailed; invalidLimit; sheets open | 8 goldens; read error rendered; radio ring on the sheet is a contrast-test row |
+| 23b | Settings · Admin | 2 / 1 | settings rows, toggle, gate `MxEmptyState` | page, card | loaded ↔ gate | 1 golden; gate rendered |
+| 24 | Daily reminder | 10 / 10 | toggle (`outline` off / `primary` on), time row, `MxInlineBanner` permDenied / couldNotSchedule / offMayShow / unavailable, stepper | page, card, dialog | off → turningOn → on; changingTime; permDenied / couldNotSchedule | goldens for all; the toggle states by widget test |
+| 25 | Theme | 4 / 3 | theme choice cards (preview blocks `outlineVariant`, check `primaryForeground`, selected edge) | page, card | system ↔ light ↔ dark | 3 goldens; read error rendered |
+| 26 | Language | 4 / 3 | option rows (radio) | page, card | pick | 3 goldens; read error rendered |
+| 27 | Sync | 10 / 8 | status rows, notice banners (`warningContainer`, `errorContainer`), keep dialog (`warningContainer`), outline / primary actions, spinner | page, card, dialog | synced / pending / failed / rejected; keepDialog; syncing | 8 goldens; loading / read error rendered |
+| 28 | Monitoring | 15 / 10 | search field, level chips, log rows, badges, code card (frame `primaryForeground`), sheets, `MxEmptyState`, `MxErrorState`, offline banner | page, card, sheet, keyboard | list ↔ detail; filters; offline; loading / error / not an admin | 10 goldens; five rendered; code frame is a contrast-test row |
+| 29 | Welcome | 2 / 2 | primary and outline buttons, offline banner | page | ready ↔ offline | goldens |
+| 30 | Sign-in, merge sheet, layer | 13 / 13 | text field (focus, `error`), buttons, merge sheet (option rows on the sheet), transition layer (spinner), banners | page, sheet, keyboard | link → invalid; sending → merging / offline; merge → discard; reauth; stuck | goldens for all; field states on the sheet by widget test |
+| 31 | Code | 3 / 2 | code field (slots `outline`, next `primaryForeground`, `error`, disabled `outlineVariant`), resend text button | page, keyboard | waiting → wrong → verifying | 2 goldens; verifying rendered; slot states by widget test |
+| 32 | Account | 9 / 9 | rows, badges, dialogs (switch, sign-out, delete: `error` / `onError`, `warningContainer`), banners (offline, last admin) | page, card, dialog | ready → validating → reauth; dialogs; loss | goldens for all |
+| 33 | Users | 10 / 6 | search field, user rows, role sheet (option rows), badges, `MxEmptyState`, `MxErrorState`, offline banner | page, card, sheet, keyboard | loaded ↔ no match; role sheet → changed / refused; loading / error / not an admin | 6 goldens; four rendered |
+| — | App shell, gallery | — | nav rail and bottom nav (pill `primaryContainer`, top hairline), snackbar (unchanged), the debug gallery (every tone) | page, sheet | tab change; snackbar | shell goldens; the gallery renders every shared-widget tone in both themes and is the first image reviewed |
+
+Totals: 315 states over 36 screens; 211 rows have a light and a dark golden, and the other
+104 (DEV-317 counts 74 with no golden at all; this table asks for both themes) are rendered
+as throwaway images in the phase-6 audit or reported `UNVERIFIED` by name. The detail files'
+Transitions tables are reconciled with the code in the same audit; a transition found in
+the code and missing from a table is a finding written into that table.
+
+### 4.13 Critique of the dark hero CTA (R14)
+
+Method: dual-agent, run on the spec's proposal before any code: Assessment A rendered the
+deck summary hero in both themes with a throwaway golden test (current, proposal, and an
+outline-CTA alternative; images in the session scratchpad, test deleted, tree clean) and
+scored it; Assessment B audited the hero's reachable states from the source
+(`mx_button.dart`, `app_button_style.dart`, `mx_row_ink.dart`, `mx_mastery_donut.dart`,
+`mx_workload_breakdown_line.dart`) and computed every pair the spec had not measured. Both
+sets of numbers were re-computed by the author; they agree.
+
+**Verdict: keep the filled CTA on `primaryContainer`.** In dark the button stays the obvious
+primary action (saturated fill on a muted violet ground; label 4.63:1, play glyph, full-width
+block), the hierarchy is button → title (8.81) → eyebrow → workload line, and the ground
+reads as a card without an edge (1.64:1 against the page, against 1.20 today). The
+outline-CTA alternative collapses the hierarchy (the ink is the title's family) and breaks
+R1. Heuristics 1 / 4 / 6 / 8 scored 3 / 3 / 3 / 3.
+
+Findings and rulings (each a row of the plan; severities are the critique's):
+
+| # | Finding | Measured | Ruling |
+|---|---|---|---|
+| P1 | The focus ring is drawn on the button's own edge, so against a filled button it is a ring-vs-fill pair: `primaryForeground` 2.71 dark / 1.40 light against `primary`; today's `primaryInk` fails the same way (1.90 / 1.41) on every filled button. `onSurface` as the ring passes on `primary` (3.79 / 3.81) but not on the other fills (`error` dark 1.77, `warning` 2.71 / 1.39). | ring vs fill | **COMMON FIRST:** the ring moves outside the control, separated by `AppStroke.focusOffset` (declared, unused today), in one shared painter used by buttons, `MxRowInk`, chips, the toggle and the stepper; it is then always a ring-vs-ground pair, `primaryForeground` ≥ 5.18 on every ground including the containers. A pre-existing same-cause defect, fixed by the migration; a widget test pins the ring colour over each filled tone and a golden shows the offset ring. |
+| P2 | The donut track (`surfaceContainer`) is 1.16 dark / 1.07 light on `primaryContainer`; at 0 % only the track and the "0 %" label paint. No neutral role does better than 1.64 on the dark container or 1.25 on the light one. | decoration | The track is decoration (R7, no floor) and the label carries the value, as on today's cards (1.17 / 1.27). Role unchanged; recorded, no change. |
+| P2 | The pressed state layer is the ink at 12 % over the fill (M3's own state layer), so the label is 3.79:1 while held; identical today and global to every filled button. | transient text | Out of this migration's scope: a Material 3 state layer, transient, unchanged. A UI-base register row records it with the measured alternative (black at 12 %: label 5.68, fill 2.04 against the dark container). |
+| P2 | The donut's label must stay the ramp band's foreground (SW-REV-001), not `primaryForeground`. | — | §4.6 names the band foreground for the donut label; measured on `primaryContainer`: `warning` 5.20 / 6.82, `mastery` 5.14 / 6.82, `primaryForeground` 5.18 / 6.79. |
+| P2 | The tappable due strip's pressed layer (`onSurface` 12 % over the container) drops small text to 3.37–4.07 for the touch's duration. | transient text | Transient, M3 state layer, unchanged; the status term in question becomes `onSurfaceVariant` (§4.7) and is 3.75 dark while pressed. Recorded, no change. |
+| P2 | The hero text styles are `onSurface` / `onSurfaceVariant` by construction; `onPrimaryContainer` needs a path. | — | §4.6: the `…In(color)` variants. |
+| P3 | The dark fill-vs-container 2.51:1. | non-text | Exemption recorded in `DESIGN.md` (§4.6). |
+| P3 | `MxRowInk`'s focus ring is rectangular inside the card's rounded clip, so its corners thin; the due strip's tap has no destination label. | — | Not colour: two small defects found along the way, filed as sub-issues of the nearest epic (the migration's), fixed with the shared ring painter above. |
+
+Not verified by the critique: real pressed, focus and disabled renders (computed from the
+code), device perception, the card-list variant (same widget shape, not rendered). The plan's
+phase-6 audit renders both heroes in both themes with the focus ring.
+
 ## 5. Impact assessment
 
 | Area | Size | Nature |
@@ -417,26 +547,69 @@ colours are named.
 2. **Core consumers.** `AppComponentThemes`, `AppDecorations`, `MasteryRamp`,
    `MxTextStyles`, the status resolver; their tests. `MxDerivedColors` still compiles,
    unused by core.
-3. **Shared widgets**, in three groups with their state tests (§4.9): edges and hairlines;
-   brand foreground and focus; containers and the alpha tints.
-4. **Features** (19 files, the card status model).
+3. **Shared widgets**, in three groups with their state tests (§4.9) and a preview after
+   each group (§6.2): edges and hairlines; brand foreground and focus; containers and the
+   alpha tints.
+4. **Features** (19 files, the card status model), screen by screen in the order of §4.12's
+   risk rows, each with its screen-level check (§6.3).
 5. **Delete** `MxDerivedColors`, `derivedColors`, its test, the old extension members and
-   the status / errorFill tokens; a `code-verification` guard rule then forbids
-   `Color.lerp`, `HSLColor` and `HSVColor` in `lib/` (so the layer cannot grow back), and
-   `withValues(alpha:)` is held to `AppOpacity` state layers and the disabled dim by the
-   CHECK SIMILAR grep below and by review.
-6. **Goldens and documents.** One `run_goldens.sh --update`, the `golden-compare` page,
-   `DESIGN.md`, `design.json`, the UI-base spec, the detail files; one `impeccable audit` of
-   the changed system.
+   the status / errorFill tokens; the guard rule of §6.1 lands with its fixtures.
+6. **Goldens and documents.** One `run_goldens.sh --update`, the classified golden review
+   (§6.2), `DESIGN.md`, `design.json`, the UI-base spec, the detail files (States and
+   Transitions reconciled, §4.12); one `impeccable audit` of the changed system.
 
-After phases 3, 4 and 6: **CHECK STATE COVERAGE** (every §4.9 cell has a test that paints
-the role), **CHECK DEGRADE** (the direct consumers of `outline`, `onPrimaryContainer`,
-`errorContainer` and `inversePrimary` that did not change still read as before; the
-snackbar, the breadcrumb and the history rail are the named ones), **CHECK SIMILAR** (a
-`grep` for `withValues(alpha:`, `Color.lerp`, `HSLColor` and literal `Color(0x` outside
-`lib/core/theme` finds nothing new; the hits found at spec time, `mx_empty_state`'s
-`warning` and `success` glyphs at 2.04 and 2.82:1, are closed by §4.3). The PR and the
-Done comment carry all three.
+### 6.1 The guard rule (R12)
+
+- `memox.design_token.no_derived_color` (`code-verification-guard-v2/registries/projects/memox-v8/rules/memox-design-token-rules.yaml`),
+  `type: regex`, `severity: error`, scope `color_role_surfaces` =
+  `lib/features/*/presentation/**`, `lib/shared/**`, `lib/app/**`, `lib/core/theme/**`,
+  excluding `lib/core/theme/mx_semantic_colors.dart` (the `ThemeExtension.lerp`
+  implementation) and generated files.
+- Patterns: `\bColor\.lerp\s*\(`, `\bColor\.alphaBlend\s*\(`, `\bHSLColor\b`,
+  `\bHSVColor\b`. Message: a colour is a `ColorScheme` or `MxSemanticColors` role; a
+  foreground or ground is never mixed from another role.
+- Not matched, by design: `ColorTween` and `AnimatedContainer` (animation between two roles,
+  as `study_choice_widget.dart:78` does), `withValues(alpha:)` (state layers over `onSurface`
+  / the button ink, the 0.38 dim, the scrim, the scroll-fade gradient, shadows), `Color(0x…)`
+  literals inside `lib/core/theme` (the token definitions, already scoped by
+  `memox.design_token.no_raw_color`).
+- Fixtures under `code-verification-guard-v2/tests/fixtures/derived_color/`: `valid.dart`
+  (a `ColorTween` animation, a pressed state layer `ink.withValues(alpha: AppOpacity.pressed)`,
+  a scrim, a `ThemeExtension.lerp` body placed at the excluded path) and `invalid.dart`
+  (`Color.lerp(scheme.primary, scheme.onSurface, 0.25)`, `HSLColor.fromColor(scheme.outline)`,
+  `Color.alphaBlend(error.withValues(alpha: 0.08), surface)`); a pytest beside the existing
+  `test_memox_v8_design_token_guard_rules.py` asserts zero findings on the valid fixture and
+  one per line on the invalid one, and the rule is in the ruleset-contract test.
+
+### 6.2 Incremental visual verification (R15)
+
+- **Baseline.** The merge base's goldens are the pre-migration baseline; before phase 1
+  they are copied to `.superpowers/sdd/<plan>/baseline/` (git-ignored) so a diff is possible
+  while the branch's own goldens are stale.
+- **After each shared-widget group (phase 3)** and after each feature (phase 4): the
+  group's widget and state tests run (`run_tests.sh` on the named files); a representative
+  preview is rendered (the debug gallery section for the group, plus the §4.12 risk rows the
+  group touches, light and dark) with a throwaway golden test writing into the workspace,
+  and diffed against the baseline with the `golden-compare` skill's renderer. A difference
+  that is not in §4.8 is a regression and stops the phase.
+- **After phase 6:** every changed golden is classified on the review page as **expected**
+  (the diff is a §4.8 mapping and nothing else moved), **unexpected** (anything else:
+  layout, a missing edge, a wrong role) or **unresolved** (the reviewer cannot tell from the
+  image; rendered larger or re-tested). Unexpected diffs are fixed before the review goes
+  to the owner; the page lists each image with its class; the owner approves image by image,
+  never a batch, and no `--update` run is accepted without that page.
+
+### 6.3 The gates and their evidence (R16)
+
+| Gate | When | Evidence that must exist |
+|---|---|---|
+| ROOT CAUSE FIRST | this spec (§3) and any defect met during migration | §3; for a defect, a `systematic-debugging` note with mechanism, `file:line`, the contract broken and the lowest shared owner, in the plan's ledger |
+| COMMON FIRST | every task | the fix lives in `lib/core/theme` or the shared widget, never per screen; the status resolver and the containers in `AppDecorations` are the proof; a per-screen colour is a finding |
+| CHECK STATE COVERAGE | after phases 3, 4, 6 | a test run per §4.9 cell (`run_tests.sh` output in the ledger) and, per §4.12 row, the golden or the rendered image or the `UNVERIFIED` line |
+| CHECK STATE TRANSITIONS | after phases 4 and 6 | the §4.12 transitions exercised by widget tests where a repaint is a risk row (loading → content, error → retry, selection enter / exit, field focus / error, dialog open) and the detail files' Transitions tables reconciled with the code |
+| CHECK DEGRADE | after phases 3, 4, 6 | the unchanged consumers of `outline`, `onPrimaryContainer`, `errorContainer` and `inversePrimary` (snackbar, breadcrumb, history rail, dashed note, theme preview) rendered and read; the contrast test green |
+| CHECK SIMILAR | after phases 4 and 6 | the grep for `Color.lerp`, `HSLColor`, `withValues(alpha:` and `Color(0x` outside `lib/core/theme` pasted into the ledger with each hit classed (state layer, scrim, fade, shadow, or a finding fixed); the `MxEmptyState` warning / success glyphs are the hits known today |
+| Independent verification | end of branch | the final whole-branch review on a fresh context (Opus, per the hooks) rebuilds the states and transitions from the code and the test runs, not from this spec; the owner's golden review |
 
 ## 7. Tests
 
@@ -450,7 +623,10 @@ Done comment carry all three.
   containers, edges `outlineVariant` or none.
 - `mastery_ramp_test.dart`, the status resolver test: §4.7.
 - Widget state tests per §4.9 row, light and dark, `pumpWidget` on the widget's real ground.
-- The guard rule from phase 5, with its own fixture.
+- The guard rule of §6.1, with its valid and invalid fixtures and its pytest.
+- The screen-level checks of §4.12: a widget test per risk row (focus and error on the
+  field in a dialog, the selected edge, the four status badges, the three summary heroes,
+  the choice tones), light and dark.
 - Goldens: regenerated once, reviewed once.
 
 ## 8. Rejected and out of scope
@@ -465,4 +641,7 @@ Done comment carry all three.
 - **Neutral text + coloured dot for status** (no coloured status text): possible, but the
   status foregrounds pass as roles (§4.7) and the approved design reads status in colour.
 - Out of scope: `inversePrimary`'s dark value, `secondary` / `tertiary` usage, typography,
-  layout, the `memox-api-services` reference.
+  layout, the `memox-api-services` reference, the pressed state layer's transient label
+  contrast (§4.13, a register row).
+- Found along the way (§4.13), filed as sub-issues of this epic: the rectangular `MxRowInk`
+  ring inside a rounded card, the due strip's missing destination label.
