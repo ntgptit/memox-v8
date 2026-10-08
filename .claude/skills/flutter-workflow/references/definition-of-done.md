@@ -34,7 +34,9 @@ without re-checking.
 - [ ] Any change made after the checks reran both on the final diff.
 - [ ] Both checks, with their consumer and hit lists, and the final state
       (`VERIFIED`, `BLOCKED` or `UNRESOLVED`) written in the PR and in the
-      issue's Done comment. `VERIFIED` only when every line above holds.
+      issue's Done comment; a bug's issue has sections I to V of the Bug
+      template filled ([linear-templates.md](linear-templates.md)).
+      `VERIFIED` only when every line above holds.
 
 ## Code
 - [ ] `dart format` produces no changes — run `check_format.sh`, not

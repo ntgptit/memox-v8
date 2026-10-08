@@ -120,6 +120,11 @@ section with nothing to say is deleted, not left empty, except
 
 **Bug**
 
+Sections I to V are the owner's minimum (2026-10-08, DEV-315) and are never
+dropped; a section that cannot be filled yet says why. They are filled as the
+work goes, in this order, and section V closes the issue. "Check non degrade"
+is CLAUDE.md's check degrade.
+
 ```markdown
 ## Hiện tượng
 <một câu: sai ở đâu>
@@ -138,24 +143,54 @@ section with nothing to say is deleted, not left empty, except
 ## Bằng chứng
 - <log, ảnh, `file:line`, test đang fail>
 
-## Nguyên nhân gốc
-<điền khi đã chứng minh, qua `superpowers:systematic-debugging`; chưa chứng
-minh thì ghi "chưa rõ" và những gì đã loại trừ>
-- Cơ chế: <`file:line`, vì sao xảy ra, vì sao bản sửa loại bỏ nó>
-- Hợp đồng bị vi phạm: <invariant, BR hoặc contract của API/widget nào>
-- Chỗ sửa: <chủ sở hữu dùng chung nào; nếu sửa cục bộ thì vì sao tầng dùng
-  chung không phải chủ sở hữu>
+## I. Phân tích nguyên nhân
+<qua `superpowers:systematic-debugging`; chưa chứng minh thì ghi "chưa rõ",
+những gì đã loại trừ và giả thuyết còn lại>
+1. Nguyên nhân trực tiếp: <dòng code, giá trị hay sự kiện trực tiếp gây ra
+   triệu chứng, ở `file:line`>
+2. Nguyên nhân cốt lõi: <vì sao nguyên nhân trực tiếp tồn tại được: hợp đồng
+   hoặc invariant nào bị vi phạm, chủ sở hữu dùng chung nào thiếu gì; nó giải
+   thích những triệu chứng nào>
+
+## II. Check similar
+1. Quan điểm define đối tượng check: <cơ chế làm tiêu chí (pattern, lời gọi,
+   cách dùng sai) và vì sao chọn nó, không theo triệu chứng>
+2. Đối tượng check: <phạm vi đã quét (thư mục, symbol, widget, query, RPC) và
+   cách tìm, theo symbol và theo hành vi>
+3. Nội dung check: <với mỗi đối tượng, kiểm điều gì để biết có cùng gốc>
+4. Kết quả check:
+
+| Chỗ | Loại | Xử lý |
+|---|---|---|
+| `<file:line>` | cùng gốc / giống nhưng không bị / đáng ngờ, đã kiểm / không liên quan | sửa trong PR này / DEV-<n> / không cần |
+
+## III. Corrective action
+- Chỗ sửa: <chủ sở hữu dùng chung thấp nhất; nếu sửa cục bộ thì vì sao tầng
+  dùng chung không phải chủ sở hữu>
+- Thay đổi: <sửa gì và vì sao nó loại bỏ nguyên nhân cốt lõi>
+- Test hồi quy: <test nào; fail trước khi sửa, pass sau khi sửa>
+
+## IV. Check non degrade
+- Nơi dùng phần đã đổi: <caller, màn hình, widget, query, RPC>
+- Bằng chứng: <test của từng nơi, `dod_check.sh`, goldens khi đổi UI>
+- Kết quả: <không có hồi quy; không test nào bị làm yếu hay xoá>
+- Chạy lại: <có/không; sửa thêm sau khi check thì chạy lại cả II và IV>
+
+## V. Output
+- PR, commit: <pull request số n của `ntgptit/memox-v8`, `<sha7>`>
+- Kiểm chứng: <`dod_check.sh` và số test, test riêng, golden review>
+- Trạng thái cuối: <`VERIFIED` / `BLOCKED` / `UNRESOLVED`, kèm lý do nếu không
+  phải `VERIFIED`>
+- Rủi ro còn lại: <hoặc "không có">
 
 ## Điều kiện xong
-- [ ] Nguyên nhân gốc đã chứng minh và sửa ở chủ sở hữu dùng chung thấp nhất
-- [ ] Có test hồi quy fail trước khi sửa, pass sau khi sửa
-- [ ] Check degrade: mọi nơi dùng phần đã đổi vẫn đúng, không test nào bị
-  làm yếu hay xoá
-- [ ] Check similar: mọi chỗ tìm được đã phân loại; chỗ cùng gốc đã sửa, chỗ
-  khác gốc đã mở sub-issue
-- [ ] Sửa thêm sau khi check thì đã chạy lại cả hai check
-- [ ] Trạng thái cuối `VERIFIED`
-- [ ] `dod_check.sh` PASS
+- [ ] I: nguyên nhân trực tiếp và cốt lõi đã chứng minh
+- [ ] II: mọi chỗ tìm được đã phân loại; chỗ cùng gốc đã sửa, chỗ khác gốc
+  đã mở sub-issue
+- [ ] III: sửa ở chủ sở hữu dùng chung thấp nhất, có test hồi quy fail trước
+  pass sau
+- [ ] IV: mọi nơi dùng phần đã đổi vẫn đúng, đã chạy lại nếu sửa thêm
+- [ ] V: trạng thái cuối `VERIFIED`, `dod_check.sh` PASS
 ```
 
 **Chore/Docs**
@@ -188,7 +223,9 @@ is a comment; edit the description only to correct it, never to log progress.
 
 **Done** (after the merge into `master`). A bug fix or an improvement always
 carries the two check lines and the final state (CLAUDE.md, "Fixing bugs and
-improving"); only the root-cause line is dropped when the work is not a bug.
+improving"); only the root-cause line is dropped when the work is not a bug. A
+bug's lines point at sections I to V of its description, which hold the
+detail.
 An issue whose state is `BLOCKED` or `UNRESOLVED` is not Done: it stays open
 with a Bị chặn comment.
 
@@ -201,9 +238,11 @@ Done: đã merge vào `master`.
   - `dod_check.sh`: <kết quả, số test>
   - <test riêng, `run_auth_it.sh`, `check.py`…>
   - Golden review: <link trang review, hoặc "không đổi golden">
-- Nguyên nhân gốc: <cơ chế, `file:line`; bỏ dòng nếu không phải bug>
-- Check degrade: <những nơi dùng phần đã đổi và bằng chứng mỗi nơi vẫn đúng>
-- Check similar: <đã tìm theo cơ chế nào; mỗi chỗ tìm được và loại của nó
+- Nguyên nhân gốc (mục I): <trực tiếp và cốt lõi, `file:line`; bỏ dòng nếu
+  không phải bug>
+- Check non degrade (mục IV): <những nơi dùng phần đã đổi và bằng chứng mỗi
+  nơi vẫn đúng>
+- Check similar (mục II): <đã tìm theo cơ chế nào; mỗi chỗ tìm được và loại của nó
   (cùng gốc, giống nhưng không bị, đáng ngờ đã kiểm, không liên quan); chỗ
   cùng gốc đã sửa; chỗ khác gốc thành DEV-<n>; hoặc "không có chỗ nào khác">
 - Trạng thái cuối: `VERIFIED`
