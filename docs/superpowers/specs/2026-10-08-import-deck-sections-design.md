@@ -207,22 +207,43 @@ already serves it (checked at plan time; reuse first).
 empty first sheet is `emptySource` (E2) and the sheet switch still lets the user pick
 another (A2).
 
-### 5.4 UI (screen 11)
+### 5.4 UI (screen 11) — Impeccable `shape` rulings, owner 2026-10-08
 
-- Entry: the deck's `⋮` sheet offers "Import cards" on a root and on a deck of decks too
-  (`deck_level_screen.dart` gating, §4.2).
-- Preview: rows grouped by section. Each section header shows the deck name, a New /
-  Existing badge, its counts, and — for a clash — the required choice; the default
-  section's header holds an editable name field. The first-50-rows cap (K2) applies per
-  import, not per section. Refusals S7 and `depthExceeded` show as the preview's error
-  state with their guidance copy.
-- Import (confirm) step: the list of decks to create or add to, each with its card count.
-- Result: written / skipped per deck, then the skipped rows as today.
-- Copy is localized (EN and VI ARB); the new strings are listed in the plan.
-- Built and reviewed per CLAUDE.md's screen workflow: Impeccable critique against
-  `DESIGN.md` and `shape` for the new section states before the plan's UI tasks; goldens
-  added for the sectioned preview (with a clash, decided and undecided), the confirm step
-  and the result, light and dark; then the golden review page.
+Thesis: **decide the decks first, read the rows second.** No new step and no new shared
+widget; the four-step tracker stays Source · Columns · Preview · Import.
+
+- **U1 Entry.** The deck's `⋮` sheet offers "Import cards" on a root and on a deck of
+  decks too (`deck_level_screen.dart` gating, §4.2).
+- **U2 Decks block.** On a sectioned preview, under the global badges and the "Include
+  duplicates" toggle, an `MxSection` "Decks" lists one row per destination: its name, an
+  `MxBadge` New / Existing, and the cards it will receive. This block **is** the
+  confirmation (owner: replaces the separate confirm step of the first draft); the footer
+  stays "Import {n}".
+- **U3 Clash choice.** A clashing destination's row holds an `MxSegmentedTray` "Add to
+  existing" · "Create new" with `selected: null` until the user taps one. When the
+  existing deck holds decks, "Add to existing" is disabled and an `MxNote` says why. An
+  undecided row is not tinted; the empty tray is the cue.
+- **U4 Default deck name.** The default destination's row holds an `MxTextField` with
+  the localized default; a blank or over-long name shows the deck-name error under it
+  (`MxFieldMessage`) and locks Import.
+- **U5 Rows.** Below the Decks block the rows are grouped by an `MxListSectionHeader`
+  per destination; section rows are not listed as rows (their header stands for them).
+  The 50-row cap (K2) counts across the whole import.
+- **U6 Locked footer.** While a clash is undecided or the default name is invalid,
+  "Import {n}" is disabled and the footer caption says what is missing (e.g. "Choose how
+  to import {k} decks with taken names").
+- **U7 Refusals.** `sectionsNeedDeckContainer` and `depthExceeded` show as an
+  `MxInlineBanner` (warning) on the Preview step with their guidance, Preview rows locked
+  — the mapping-error pattern (K3), not the full-screen rejects state.
+- **U8 Result.** The counts stay; a "Decks" `MxSection` lists each destination with its
+  badge and the cards added. One destination keeps "View the cards"; several make the
+  primary action "Back to deck" (the target).
+- **U9 Flat imports** look exactly as today; no Decks block.
+- Goldens (light and dark): `import_sections_undecided`, `import_sections_decided`,
+  `import_sections_result`. After the build: Impeccable critique and one audit of these
+  goldens against `DESIGN.md`, then the golden review page.
+- Copy is localized (EN and VI ARB); the new strings are listed in the plan and must
+  fit the 360 dp tray (The Short Label Rule).
 
 ### 5.5 Error flows (UC-TRANSFER-001, amended)
 
