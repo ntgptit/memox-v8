@@ -10,6 +10,7 @@ import 'package:memox/features/study/presentation/widgets/sections/study_guess_w
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../../support/fake_day_clock.dart';
 import '../../../support/library_harness.dart';
@@ -195,7 +196,7 @@ void main() {
     final id = await _guess(env);
     await pumpLibraryScreen(tester, env, _screen(id));
 
-    expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
+    expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
   });
 
   testWidgets('a blocked question shows the notice, and Close ends the '

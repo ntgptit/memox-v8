@@ -15,7 +15,7 @@ import 'package:memox/features/study/presentation/widgets/support/session_footer
 import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_whole_word_text_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -131,7 +131,7 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
         ],
       );
     }
-    final body = StudyScrollFadeWidget(
+    final body = MxScrollFade(
       child: CustomScrollView(
         slivers: [
           SliverFillRemaining(
