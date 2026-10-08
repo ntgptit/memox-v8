@@ -2902,6 +2902,14 @@
   "@gallerySelectedCard": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "gallerySelectableRow": "Selectable card row",
+  "@gallerySelectableRow": {
+    "description": "Gallery: the shared card row at rest."
+  },
+  "gallerySelectableRowPicked": "Picked while selecting",
+  "@gallerySelectableRowPicked": {
+    "description": "Gallery: the shared card row ticked."
+  },
   "galleryKanjiN5": "Kanji N5",
   "@galleryKanjiN5": {
     "description": "Debug gallery: sample copy in the component showcase."

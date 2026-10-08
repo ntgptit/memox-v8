@@ -561,6 +561,8 @@
   "galleryDangerCard": "Thẻ lỗi",
   "galleryRecessedCard": "Thẻ chìm",
   "gallerySelectedCard": "Thẻ đã chọn",
+  "gallerySelectableRow": "Hàng card chọn được",
+  "gallerySelectableRowPicked": "Đã chọn khi đang chọn",
   "galleryKanjiN5": "Kanji N5",
   "gallery42Cards12Due": "42 thẻ · 12 đến hạn",
   "galleryADeckNameLongEnough": "Một tên bộ thẻ đủ dài để bị cắt bằng dấu ba chấm",

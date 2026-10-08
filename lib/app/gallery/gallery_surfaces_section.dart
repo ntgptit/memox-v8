@@ -13,6 +13,7 @@ import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
+import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -63,6 +64,21 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
       MxCard(
         isSelected: true,
         child: MxListSectionHeader(label: context.l10n.gallerySelectedCard),
+      ),
+      MxSelectableCardRow(
+        onTap: () {},
+        trailing: MxIconButton(
+          icon: AppIcons.more,
+          semanticLabel: context.l10n.galleryDeckActions,
+          onPressed: () {},
+        ),
+        child: Text(context.l10n.gallerySelectableRow),
+      ),
+      MxSelectableCardRow(
+        onTap: () {},
+        isSelecting: true,
+        isSelected: true,
+        child: Text(context.l10n.gallerySelectableRowPicked),
       ),
       Row(
         spacing: AppSpacing.grouped,

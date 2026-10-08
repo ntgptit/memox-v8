@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -13,11 +14,37 @@ import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
+import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../support/golden_harness.dart';
+
+/// A deck-like content for the shared card row's golden.
+class _RowContent extends StatelessWidget {
+  const _RowContent(this.title, this.subtitle);
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    spacing: 12,
+    children: [
+      const MxIconTile(icon: AppIcons.library),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: context.textStyles.rowTitle),
+            Text(subtitle, style: context.textStyles.rowSubtitle),
+          ],
+        ),
+      ),
+    ],
+  );
+}
 
 void main() {
   testWidgets('MxCard and MxIconTile', (tester) async {
@@ -237,6 +264,45 @@ void main() {
             text:
                 'Deleted decks stay recoverable for 30 days, then they are '
                 'removed for good together with their cards.',
+          ),
+        ],
+      ),
+    );
+  });
+
+  testWidgets('MxSelectableCardRow resting, selecting, selected, locked', (
+    tester,
+  ) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_selectable_card_row',
+      Column(
+        spacing: 8,
+        children: [
+          MxSelectableCardRow(
+            onTap: () {},
+            trailing: MxIconButton(
+              icon: AppIcons.more,
+              semanticLabel: 'Deck actions',
+              onPressed: () {},
+            ),
+            child: const _RowContent('Korean', '1 sub-deck · 6 cards'),
+          ),
+          MxSelectableCardRow(
+            onTap: () {},
+            isSelecting: true,
+            child: const _RowContent('Kanji N5', '2 cards'),
+          ),
+          MxSelectableCardRow(
+            onTap: () {},
+            isSelecting: true,
+            isSelected: true,
+            child: const _RowContent('Hanja', '1 card'),
+          ),
+          const MxSelectableCardRow(
+            isSelecting: true,
+            isEnabled: false,
+            child: _RowContent('Basics', 'Deck · cannot join a card pick'),
           ),
         ],
       ),
