@@ -139,15 +139,22 @@ section with nothing to say is deleted, not left empty, except
 - <log, ảnh, `file:line`, test đang fail>
 
 ## Nguyên nhân gốc
-<điền khi đã chứng minh, qua `superpowers:systematic-debugging`: cơ chế ở
-`file:line`, vì sao xảy ra, vì sao bản sửa loại bỏ nó, chủ sở hữu dùng chung
-nơi sửa; chưa chứng minh thì ghi "chưa rõ" và những gì đã loại trừ>
+<điền khi đã chứng minh, qua `superpowers:systematic-debugging`; chưa chứng
+minh thì ghi "chưa rõ" và những gì đã loại trừ>
+- Cơ chế: <`file:line`, vì sao xảy ra, vì sao bản sửa loại bỏ nó>
+- Hợp đồng bị vi phạm: <invariant, BR hoặc contract của API/widget nào>
+- Chỗ sửa: <chủ sở hữu dùng chung nào; nếu sửa cục bộ thì vì sao tầng dùng
+  chung không phải chủ sở hữu>
 
 ## Điều kiện xong
 - [ ] Nguyên nhân gốc đã chứng minh và sửa ở chủ sở hữu dùng chung thấp nhất
 - [ ] Có test hồi quy fail trước khi sửa, pass sau khi sửa
-- [ ] Check degrade: mọi nơi dùng phần đã đổi vẫn đúng
-- [ ] Check similar: chỗ cùng gốc đã sửa, chỗ khác gốc đã mở sub-issue
+- [ ] Check degrade: mọi nơi dùng phần đã đổi vẫn đúng, không test nào bị
+  làm yếu hay xoá
+- [ ] Check similar: mọi chỗ tìm được đã phân loại; chỗ cùng gốc đã sửa, chỗ
+  khác gốc đã mở sub-issue
+- [ ] Sửa thêm sau khi check thì đã chạy lại cả hai check
+- [ ] Trạng thái cuối `VERIFIED`
 - [ ] `dod_check.sh` PASS
 ```
 
@@ -180,8 +187,10 @@ once every sub-issue is Done or Canceled (an epic has no PR). Every update below
 is a comment; edit the description only to correct it, never to log progress.
 
 **Done** (after the merge into `master`). A bug fix or an improvement always
-carries the two check lines (CLAUDE.md, "Fixing bugs and improving"); only the
-root-cause line is dropped when the work is not a bug.
+carries the two check lines and the final state (CLAUDE.md, "Fixing bugs and
+improving"); only the root-cause line is dropped when the work is not a bug.
+An issue whose state is `BLOCKED` or `UNRESOLVED` is not Done: it stays open
+with a Bị chặn comment.
 
 ```markdown
 Done: đã merge vào `master`.
@@ -194,8 +203,10 @@ Done: đã merge vào `master`.
   - Golden review: <link trang review, hoặc "không đổi golden">
 - Nguyên nhân gốc: <cơ chế, `file:line`; bỏ dòng nếu không phải bug>
 - Check degrade: <những nơi dùng phần đã đổi và bằng chứng mỗi nơi vẫn đúng>
-- Check similar: <đã tìm theo cơ chế nào; chỗ cùng gốc đã sửa; chỗ khác gốc
-  thành DEV-<n>; hoặc "không có chỗ nào khác">
+- Check similar: <đã tìm theo cơ chế nào; mỗi chỗ tìm được và loại của nó
+  (cùng gốc, giống nhưng không bị, đáng ngờ đã kiểm, không liên quan); chỗ
+  cùng gốc đã sửa; chỗ khác gốc thành DEV-<n>; hoặc "không có chỗ nào khác">
+- Trạng thái cuối: `VERIFIED`
 - Bị cắt: <phần, lý do> (bỏ dòng nếu không có)
 - Làm sau: DEV-<n>, DEV-<m> (bỏ dòng nếu không có)
 ```

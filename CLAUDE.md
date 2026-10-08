@@ -160,16 +160,22 @@ asked. Without the connector, tell the owner and record progress nowhere else.
 The app is built; the work now is fixing and improving it. A fix that silences
 the symptom where it was reported is not a fix. These bars hold for every bug
 fix and every improvement, whoever reports it and however small it looks.
+Their order is the order of priority: a proven root cause, then one consistent
+fix at the shared owner, then no regression, then the similar defects, then
+maintainability. Speed and tokens come last and never buy back a higher bar.
 
 - **Root cause, proven.** Every bug goes through
   `superpowers:systematic-debugging`. A fix lands only on a root cause stated
-  as a mechanism: where (`file:line`), why it happens, why the change removes
-  it, and which reported symptoms it explains. A test that fails before the
-  fix and passes after pins it.
+  as a mechanism: where (`file:line`), why it happens, which invariant or
+  contract it breaks, why the change removes it, and which reported symptoms
+  it explains. A test that fails before the fix and passes after pins it.
+  - The reported screen, widget or stack frame is where the investigation
+    starts, not where the fix belongs.
   - Cost never ends the search: tokens and time are spent freely. Reproduce,
     instrument, read the code underneath, try hypothesis after hypothesis, and
     stop only when the cause is proven and the explanation leaves nothing
-    unexplained.
+    unexplained. Never rerun the same experiment without a new hypothesis or
+    new evidence.
   - An investigation may run in an Opus subagent whose description starts
     `Root-cause investigation` ([hooks](.claude/hooks/README.md)).
   - If the cause cannot be proven, tell the owner what was ruled out and what
@@ -178,20 +184,39 @@ fix and every improvement, whoever reports it and however small it looks.
   shared code (`lib/core/`, `lib/shared/`, an `Mx*` widget, a theme slot, a
   `.drift` query, an RPC, a base class), fix it there so every consumer
   inherits the fix. A per-screen patch over a shared defect is not accepted.
-  Adding or promoting code into `lib/core/` or `lib/shared/` still goes to
-  the owner ([below](#asking-the-owner)), with the shared fix as the
-  recommended option.
+  - Look from the shared layers down: tokens and theme, shared widgets,
+    shared state, services, repositories and queries, feature-level
+    abstractions, and the screen last. That is the order to look in, not a
+    licence to move into shared code what it does not own.
+  - A local fix says why the shared layer is not the owner and whether other
+    callers have the same defect. It never adds a local override, magic value
+    or conditional that hides a shared defect.
+  - Adding or promoting code into `lib/core/` or `lib/shared/` still goes to
+    the owner ([below](#asking-the-owner)), with the shared fix as the
+    recommended option.
 - **Check degrade and check similar, every time.** Both run after every fix
-  and every improvement, and both are written into the PR and the issue's
-  Done comment ([linear-templates.md](.claude/skills/flutter-workflow/references/linear-templates.md)):
+  and every improvement; neither stands in for the other, and both are written
+  into the PR and the issue's Done comment
+  ([linear-templates.md](.claude/skills/flutter-workflow/references/linear-templates.md)):
   - **Check degrade:** list every consumer of what changed (callers, screens,
     widgets, queries, RPCs) and prove each still behaves: its tests, the gate,
-    and the goldens when UI changed. Nothing that worked before may break.
+    and the goldens when UI changed. Nothing that worked before may break, and
+    no test or assertion is weakened or removed to get there.
   - **Check similar:** search the codebase for the same mechanism, not the
-    same symptom: the pattern, call or misuse that caused it. A hit with the
-    same root cause is fixed in the same PR (the shared fix usually covers
-    it); a hit with a different root cause becomes a sub-issue, named in the
-    PR.
+    same symptom: the pattern, call or misuse that caused it, by symbol and by
+    behaviour. Each hit is classed as same root cause, similar but unaffected,
+    suspect (verify it), or unrelated. A same-cause hit is fixed in the same
+    PR (the shared fix usually covers it); a hit with a different root cause
+    becomes a sub-issue, named in the PR.
+  - A change made after the checks, such as a fix for a hit, reruns both on
+    the final diff.
+- **Report one final state.** `VERIFIED` when the cause is proven and both
+  checks pass; `BLOCKED` when a named limit (access, device, owner decision)
+  stops verification; `UNRESOLVED` when the cause or the fix is not proven. An
+  unproven fix is never reported as fixed.
+- **The final whole-branch review checks these bars** against the diff, the
+  tests and the commands actually run, never against the agent's own account
+  of them.
 - Moving a fix down to its shared owner and fixing same-cause hits are in
   scope, never scope creep.
 

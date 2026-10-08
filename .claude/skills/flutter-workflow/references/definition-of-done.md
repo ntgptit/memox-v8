@@ -16,17 +16,25 @@ without re-checking.
 
 ## Bug fix or improvement (CLAUDE.md, "Fixing bugs and improving")
 - [ ] Root cause proven through `superpowers:systematic-debugging` and written
-      as a mechanism: `file:line`, why it happens, why the change removes it,
-      which symptoms it explains. No guess, retry, guard or delay that hides it.
+      as a mechanism: `file:line`, why it happens, the invariant or contract it
+      breaks, why the change removes it, which symptoms it explains. No guess,
+      retry, guard or delay that hides it.
 - [ ] A regression test fails before the fix and passes after it.
 - [ ] The fix sits at the lowest shared owner of the cause, so every consumer
-      inherits it; no per-screen patch over a shared defect.
+      inherits it; no per-screen patch over a shared defect. A local fix states
+      why the shared layer is not the owner, and adds no override, magic value
+      or conditional that hides a shared defect.
 - [ ] **Check degrade** done: every consumer of what changed listed, and each
-      proven unchanged (its tests, the gate, goldens when UI changed).
-- [ ] **Check similar** done: the codebase searched for the same mechanism;
-      same-cause hits fixed in this PR, other-cause hits filed as sub-issues.
-- [ ] Both checks, with their consumer and hit lists, written in the PR and in
-      the issue's Done comment.
+      proven unchanged (its tests, the gate, goldens when UI changed). No test
+      or assertion weakened or removed to get green.
+- [ ] **Check similar** done: the codebase searched for the same mechanism, by
+      symbol and by behaviour; each hit classed as same root cause, similar
+      but unaffected, suspect (then verified) or unrelated; same-cause hits
+      fixed in this PR, other-cause hits filed as sub-issues.
+- [ ] Any change made after the checks reran both on the final diff.
+- [ ] Both checks, with their consumer and hit lists, and the final state
+      (`VERIFIED`, `BLOCKED` or `UNRESOLVED`) written in the PR and in the
+      issue's Done comment. `VERIFIED` only when every line above holds.
 
 ## Code
 - [ ] `dart format` produces no changes — run `check_format.sh`, not
