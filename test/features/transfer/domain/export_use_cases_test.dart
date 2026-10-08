@@ -113,7 +113,7 @@ void main() {
             mapping: ColumnMapping.fromHeader(table.rows.first),
             hasHeaderRow: true,
           ),
-        );
+        ).preview(defaultDeckName: 'Uncategorized', choices: const {});
         expect(rows.rows.first.draft!.tagNames, ['a;b', r'c\d']);
       }
     });

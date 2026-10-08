@@ -111,7 +111,9 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
         draft: draft,
         onCancel: _close,
         onRead: () => unawaited(_wizard.readSource()),
-        onPreview: () => unawaited(_wizard.previewRows()),
+        onPreview: () => unawaited(
+          _wizard.previewRows(defaultDeckName: l10n.importDefaultDeckName),
+        ),
         onCommit: () => unawaited(_wizard.commit()),
       ),
     );

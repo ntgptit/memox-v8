@@ -645,6 +645,7 @@
   "studyCount": "{count}",
   "studyThisDeckDue": "Học bộ thẻ này · {due} đến hạn",
   "studyThisDeck": "Học bộ thẻ này",
+  "importDefaultDeckName": "Chưa phân loại",
   "importTitle": "Nhập thẻ",
   "importResultsTitle": "Kết quả nhập",
   "importBreadcrumb": "Nhập",

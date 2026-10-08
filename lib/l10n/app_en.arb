@@ -3354,6 +3354,10 @@
   "@studyThisDeck": {
     "description": "Screen handoff 01/07 (FE-A6 D10): the deck summary's button to the Study Entry when only new cards wait."
   },
+  "importDefaultDeckName": "Uncategorized",
+  "@importDefaultDeckName": {
+    "description": "The name a default deck starts with in an import split by * rows (BR-TRANSFER-015)."
+  },
   "importTitle": "Import cards",
   "@importTitle": {
     "description": "Import screen: the app bar title while importing."

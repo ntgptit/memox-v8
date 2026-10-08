@@ -131,9 +131,10 @@ class CardImportController extends _$CardImportController {
     );
   }
 
-  /// Step 2 → 3 ("Preview rows"): every row's status against the deck as it
-  /// is now.
-  Future<void> previewRows() async {
+  /// Step 2 → 3 ("Preview rows"): what the import would do against the deck
+  /// as it is now (UC-TRANSFER-001 step 5, A6). [defaultDeckName] is the
+  /// localized name a default deck starts with (spec 2026-10-08 S4).
+  Future<void> previewRows({required String defaultDeckName}) async {
     final draft = _draft;
     final table = draft?.table;
     if (draft == null || table == null || draft.isBusy) return;
@@ -148,7 +149,10 @@ class CardImportController extends _$CardImportController {
     state = switch (result) {
       Ok(:final value) => draft.copyWith(
         step: CardImportStep.preview,
-        preview: value,
+        preview: value.preview(
+          defaultDeckName: defaultDeckName,
+          choices: const {},
+        ),
         isBusy: false,
       ),
       Rejected(:final reason) => draft.copyWith(isBusy: false, problem: reason),
