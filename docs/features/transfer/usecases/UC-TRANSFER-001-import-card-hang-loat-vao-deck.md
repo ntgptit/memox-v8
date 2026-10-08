@@ -2,7 +2,7 @@
 id: UC-TRANSFER-001
 title: Import card hàng loạt vào một deck
 status: ready
-rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-DECK-004, BR-DECK-008, BR-DECK-010, BR-TAG-001, BR-TAG-002, BR-TRANSFER-001, BR-TRANSFER-002, BR-TRANSFER-003, BR-TRANSFER-004, BR-TRANSFER-005, BR-TRANSFER-006, BR-TRANSFER-009]
+rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-DECK-004, BR-DECK-008, BR-DECK-010, BR-TAG-001, BR-TAG-002, BR-TRANSFER-001, BR-TRANSFER-002, BR-TRANSFER-003, BR-TRANSFER-004, BR-TRANSFER-005, BR-TRANSFER-006, BR-TRANSFER-009, BR-TRANSFER-015, BR-DECK-001, BR-DECK-020]
 code: [lib/features/transfer/domain/usecases/read_import_source_use_case.dart, lib/features/transfer/domain/usecases/preview_import_use_case.dart, lib/features/transfer/domain/usecases/commit_import_use_case.dart, lib/features/transfer/presentation/controllers/card_import_controller.dart, lib/features/transfer/presentation/screens/card_import_screen.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -11,8 +11,9 @@ code: [lib/features/transfer/domain/usecases/read_import_source_use_case.dart, l
 
 **Actor:** Người dùng
 **Trigger:** Chọn "Import cards" từ card list của một deck loại card, từ empty
-state của card list, hoặc từ lựa chọn tạo phần tử con của một deck `unset`
-**Preconditions:** Deck đích tồn tại và là sub-deck `unset` hoặc `card` (BR-TRANSFER-001)
+state của card list, từ lựa chọn tạo phần tử con của một deck `unset`, hoặc từ
+action sheet của root deck hoặc deck loại `deck` (spec 2026-10-08 U1)
+**Preconditions:** Deck đích tồn tại (BR-TRANSFER-001)
 
 ## Main flow
 
@@ -50,13 +51,20 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
   nhập; parse chỉ chạy khi bấm Preview, và văn bản giữ nguyên khi parse lỗi. Văn bản là
   TSV khi hàng không trống đầu tiên có tab nằm ngoài dấu nháy kép; nếu không, nó được
   đọc như một file CSV, kể cả phân cách `;` của bước 3.
-- **A2 — XLSX nhiều sheet:** hệ thống mặc định chọn sheet không rỗng đầu tiên
-  và cho người dùng đổi sheet; đổi sheet chạy lại bước 4–5.
+- **A2 — XLSX nhiều sheet:** hệ thống mặc định chọn sheet đầu tiên theo thứ tự
+  workbook, kể cả khi nó rỗng (khi đó bước Columns báo không có dòng, E2), và cho
+  người dùng đổi sheet; đổi sheet chạy lại bước 4–5.
 - **A3 — Không có header:** người dùng tắt "First row contains headers"; các
   cột hiển thị tên vị trí ổn định (Column A, Column B, …) và hàng đầu được
   validate như dữ liệu.
 - **A4 — Bao gồm trùng lặp:** người dùng bật "Include duplicates"; số sẵn sàng
   gồm cả các hàng trùng, và commit ghi chúng như card mới (BR-TRANSFER-003).
+- **A6 — Nguồn chia deck:** có dòng sao (BR-TRANSFER-015): Preview hiện khối
+  Decks liệt kê từng deck đích (Mới/Có sẵn, số card) và các dòng nhóm theo deck.
+  Deck trùng tên với deck con có sẵn bắt buộc chọn Thêm vào có sẵn hoặc Tạo mới;
+  deck có sẵn loại `deck` thì tự Tạo mới và có ghi chú. Deck mặc định sửa được
+  tên. Import bị khoá tới khi mọi lựa chọn xong và tên hợp lệ. Đổi mapping hoặc
+  header xoá các lựa chọn. Kết quả liệt kê từng deck đã ghi và đưa về deck đích.
 - **A5 — Đổi file:** người dùng thay file đã chọn; hủy hộp chọn file không
   phải lỗi và không xoá lựa chọn trước đó.
 
@@ -73,6 +81,13 @@ state của card list, hoặc từ lựa chọn tạo phần tử con của mộ
   ghi gì; preview và mapping giữ nguyên.
 - **E5 — Commit thất bại giữa chừng:** một write lỗi → rollback toàn bộ
   (BR-TRANSFER-004); màn import giữ nguyên nguồn, mapping và preview, hiện Try again.
+- **E7 — Nguồn chia deck từ deck loại `card`:** Preview báo lý do có kiểu và
+  hướng dẫn import từ deck cha; không đi tiếp được (BR-TRANSFER-001).
+- **E8 — Deck đích ở cấp 10 mà cần deck con:** Preview báo lý do có kiểu
+  (BR-DECK-001).
+- **E9 — Deck có sẵn đổi giữa Preview và Import:** deck được chọn "Thêm vào có
+  sẵn" bị xoá, chuyển đi hoặc đã chứa deck con → transaction từ chối, không ghi
+  gì; Preview giữ nguyên với banner và "Preview again" (BR-TRANSFER-001).
 - **E6 — Mọi hàng đã thành trùng lúc ghi:** giữa Preview và Import, deck nhận
   các card trùng với mọi hàng sẽ ghi; kiểm tra trùng chạy lại trong transaction
   (BR-TRANSFER-003) nên không ghi card nào → màn kết quả "Nothing added", deck
@@ -103,3 +118,6 @@ Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng b�
 - [ ] **Given** một file UTF-16 hoặc Latin-1, **when** chọn file, **then** hệ thống từ chối bằng lý do encoding kèm hướng dẫn và không ghi gì (BR-TRANSFER-006).
 - [ ] **Given** preview đã xong và deck vừa nhận deck con, **when** commit, **then** transaction từ chối bằng lý do có kiểu và không ghi gì (BR-TRANSFER-001, E4).
 - [ ] **Given** một write lỗi giữa batch, **when** commit, **then** không card, study state, tag hay `content_type` nào đổi (BR-TRANSFER-004, E5).
+- [ ] **Given** root `Korean` và sheet đầu có `*Part 1` (2 card) và `*관용어` (1 card), **when** import từ root, **then** root có hai deck con mới `Part 1` (2 card) và `관용어` (1 card), mỗi card một study state mới (BR-TRANSFER-015, BR-TRANSFER-004).
+- [ ] **Given** deck đích đã có deck con `Part 1` loại `card` và file có `*Part 1`, **when** preview, **then** Import khoá tới khi chọn; chọn Thêm vào có sẵn thì card trùng với `Part 1` bị bỏ (BR-TRANSFER-003).
+- [ ] **Given** file có dòng sao và deck đích loại `card`, **when** preview, **then** hiện lý do có kiểu và không ghi gì (BR-TRANSFER-001).
