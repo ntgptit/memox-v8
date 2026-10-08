@@ -171,14 +171,14 @@ Static `abstract final class` holders in `core/theme/foundations/`:
 | `AppIconSize` | 16 · 20 · 24 · 32 · 40 |
 | `AppStroke` | hairline 1 · focus 2, plus each width a component contract states |
 | `AppOpacity` | disabled 0.38 · pressed 0.12 (state tokens) |
-| `AppEffects` | glassOpacity 0.84 · glassBlur 18 (effect tokens, kept out of the state layer) |
+| `AppEffects` | scrimOpacity 0.45 (effect token, kept out of the state layer); glassOpacity and glassBlur went with DEV-302 |
 | `AppDurations` | toggle 160 · standard 200 · scrimFade 220 · sheet 260 · spinnerCycle 800 · skeletonPulse 1400 ms — every duration the widget contracts state |
 | `AppShadows` | whisper · overlay · chrome · fab, named by the handoff's semantic (the `shadow-card` token is the overlay shadow). Functions of the `ColorScheme` and brightness, because the values differ per theme and dark has no whisper shadow |
 
-The glass effect on the bottom nav is translucent `chromeGlass` plus
-`BackdropFilter` blur 18. The saturate(180%) part of the CSS filter is dropped:
-Flutter has no cheap equivalent and the handoff allows a plain surface in its
-place.
+The bottom nav was translucent `chromeGlass` plus a `BackdropFilter` blur 18
+until DEV-302 (audit 2026-10-08): the bar is an in-flow sibling of the body, so
+the blur had nothing under it, and the bar is now the page surface with the
+ghost edge.
 
 ### 4.5 Global state policy
 
@@ -576,6 +576,7 @@ item names where it comes from.
 | 164 | 11: with the file option picking from its card, the inert "Pick a spreadsheet or text file" empty state below still reads like a drop zone | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 | 165 | 27 dark: after a network failure the bare "syncs on its own" section note and the filled offline `MxNote` sit stacked with two treatments | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 | 166 | 22 light: the learning bars and legend dot in the learning ink (brown) differ from the amber learning fill used elsewhere; chosen for 3:1 (F5/R3) | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
+| 167 | The bottom bar's glass blur blurred nothing (the body ends where the bar starts) — closed by DEV-302 (spec `2026-10-08-shared-widgets-mobile-native-fixes-design.md` §3.1): the bar is the page surface with the ghost edge; `AppEffects.glassOpacity`, `glassBlur` and `MxDerivedColors.chromeGlass` removed | audit 2026-10-08 F-01 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not
