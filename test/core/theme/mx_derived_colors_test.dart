@@ -22,18 +22,19 @@ void main() {
 
   test('outlineEdge: light raises outline\'s saturation to 30% alone; dark '
       'pulls outline 20% toward onSurface (DEV-179)', () {
-    final lightOutline = HSLColor.fromColor(AppColorSchemes.light.outline);
+    // The derived layer reads the frozen pre-migration outline (task 1), not
+    // the live scheme.
+    const frozenLightOutline = Color(0xFF7C85AB);
+    const frozenDarkOutline = Color(0xFF5A6BAE);
+    const frozenDarkOnSurface = Color(0xFFE4E8FA);
+    final lightOutline = HSLColor.fromColor(frozenLightOutline);
     final lightEdge = HSLColor.fromColor(light.outlineEdge);
     expect(lightEdge.hue, closeTo(lightOutline.hue, 1));
     expect(lightEdge.lightness, closeTo(lightOutline.lightness, 0.005));
     expect(lightEdge.saturation, closeTo(0.30, 0.005));
     expect(
       dark.outlineEdge,
-      Color.lerp(
-        AppColorSchemes.dark.outline,
-        AppColorSchemes.dark.onSurface,
-        0.20,
-      ),
+      Color.lerp(frozenDarkOutline, frozenDarkOnSurface, 0.20),
     );
     expect(
       MxDerivedColors.outlineEdgeOf(AppColorSchemes.light),
@@ -176,11 +177,14 @@ void main() {
       (AppColorSchemes.dark, MxSemanticColors.dark),
     ]) {
       final derived = MxDerivedColors.resolve(scheme, semantic);
+      final dark = scheme.brightness == Brightness.dark;
+      // The derived layer reads the frozen pre-migration statuses (task 1),
+      // not the live extension.
       for (final (status, ink) in [
-        (semantic.statusNew, derived.statusNewInk),
-        (semantic.statusLearning, derived.statusLearningInk),
-        (semantic.statusReviewing, derived.statusReviewingInk),
-        (semantic.statusMastered, derived.statusMasteredInk),
+        (Color(dark ? 0xFF6B75A3 : 0xFF8C95B8), derived.statusNewInk),
+        (Color(dark ? 0xFFFFC658 : 0xFFF59E0B), derived.statusLearningInk),
+        (Color(dark ? 0xFF8B9AFF : 0xFF5265F5), derived.statusReviewingInk),
+        (Color(dark ? 0xFF6FE0BD : 0xFF1F8A5B), derived.statusMasteredInk),
       ]) {
         for (final ground in [
           scheme.surface,
@@ -248,7 +252,8 @@ void main() {
         for (final ground in tinted) {
           for (final alpha in [0.08, 0.10, 0.12, 0.16, 0.20]) {
             final tint = Color.alphaBlend(
-              scheme.primary.withValues(alpha: alpha),
+              // The frozen pre-migration primary (task 1), same in both themes.
+              const Color(0xFF5265F5).withValues(alpha: alpha),
               ground,
             );
             expect(_ratio(derived.primaryInk, tint), greaterThanOrEqualTo(4.5));
