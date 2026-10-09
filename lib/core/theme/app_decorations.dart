@@ -2,140 +2,111 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 
-/// Surface treatments shared by more than one component contract.
+/// Surface treatments shared by more than one component contract. Every
+/// ground and edge is a role (spec 2026-10-08 §4.5–§4.6): a container has no
+/// coloured edge; the decorative hairline is outlineVariant; a tappable
+/// surface's edge is outline.
 abstract final class AppDecorations {
-  /// The Card surface: surface-raised fill and radius 12, the one radius of
-  /// every in-flow surface (spec 2026-09-26 D2; kit: 20, register row 115);
-  /// the whisper shadow in light and a 1px ghost border in dark, which has no
+  static Border _hairline(Color color) =>
+      Border.all(color: color, width: AppStroke.hairline);
+
+  /// The Card surface: the lowest container and radius 12; the whisper
+  /// shadow in light and the outlineVariant hairline in dark, which has no
   /// shadow.
-  static BoxDecoration raisedCard(
-    ColorScheme scheme,
-    MxDerivedColors derived,
-  ) => BoxDecoration(
+  static BoxDecoration raisedCard(ColorScheme scheme) => BoxDecoration(
     color: scheme.surfaceContainerLowest,
     borderRadius: BorderRadius.circular(AppRadius.md),
     border: scheme.brightness == Brightness.dark
-        ? Border.all(color: derived.ghostBorder, width: AppStroke.hairline)
+        ? _hairline(scheme.outlineVariant)
         : null,
     boxShadow: AppShadows.whisper(scheme),
   );
 
-  /// The answer face of a study card (kit StudyFaceCard role answer, screen
-  /// 16a): the container-low ground with the ghost edge in both themes, and
-  /// flat, so it reads as recessed under the raised prompt.
-  static BoxDecoration recessedCard(
-    ColorScheme scheme,
-    MxDerivedColors derived,
-  ) => raisedCard(scheme, derived).copyWith(
-    color: scheme.surfaceContainerLow,
-    border: Border.all(color: derived.ghostBorder, width: AppStroke.hairline),
-    boxShadow: const [],
-  );
-
-  /// The tinted hero Card: the surface-hero fill, with the ghost edge in both
-  /// themes, because a borderless hero dissolves into the light page.
-  static BoxDecoration heroCard(ColorScheme scheme, MxDerivedColors derived) =>
-      raisedCard(scheme, derived).copyWith(
-        color: derived.surfaceHero,
-        border: Border.all(
-          color: derived.ghostBorder,
-          width: AppStroke.hairline,
-        ),
+  /// The answer face of a study card (screen 16a): the low container with
+  /// the hairline in both themes, flat, so it reads as recessed under the
+  /// raised prompt.
+  static BoxDecoration recessedCard(ColorScheme scheme) =>
+      raisedCard(scheme).copyWith(
+        color: scheme.surfaceContainerLow,
+        border: _hairline(scheme.outlineVariant),
+        boxShadow: const [],
       );
 
-  /// The warning Card: the warning-soft ground over the raised fill, edged
-  /// with the warning border, for a state that asks for care such as a
-  /// locked review algorithm (screen 02, owner decision D-O1).
+  /// The hero Card (owner 2026-10-09, V4b): the low container with the
+  /// hairline in both themes and the raised shadow in light: one tonal step
+  /// above the page and the list cards, so the primary CTA inside it is the
+  /// one indigo mass (3.31 / 4.20 against this ground).
+  static BoxDecoration heroCard(ColorScheme scheme) => raisedCard(scheme)
+      .copyWith(
+        color: scheme.surfaceContainerLow,
+        border: _hairline(scheme.outlineVariant),
+      );
+
+  /// A container has no edge in either theme; `copyWith(border: null)` would
+  /// keep the dark raised card's hairline, so it is built directly.
+  static BoxDecoration _container(ColorScheme scheme, Color color) =>
+      BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        boxShadow: AppShadows.whisper(scheme),
+      );
+
+  /// The warning Card: the warning container, for a state that asks for
+  /// care such as a locked review algorithm (screen 02).
   static BoxDecoration warningCard(
     ColorScheme scheme,
-    MxDerivedColors derived,
-  ) {
-    final raised = raisedCard(scheme, derived);
-    return raised.copyWith(
-      color: Color.alphaBlend(derived.warningSoft, raised.color!),
-      border: Border.all(
-        color: derived.warningBorder,
-        width: AppStroke.hairline,
-      ),
-    );
-  }
+    MxSemanticColors semantic,
+  ) => _container(scheme, semantic.warningContainer);
 
-  /// The success Card: the success-soft ground over the raised fill, edged
-  /// with the success border, for a finished session (FE-A6 D14).
+  /// The success Card: the success container, a finished session (FE-A6 D14).
   static BoxDecoration successCard(
     ColorScheme scheme,
-    MxDerivedColors derived,
-  ) {
-    final raised = raisedCard(scheme, derived);
-    return raised.copyWith(
-      color: Color.alphaBlend(derived.successSoft, raised.color!),
-      border: Border.all(
-        color: derived.successBorder,
-        width: AppStroke.hairline,
-      ),
-    );
-  }
+    MxSemanticColors semantic,
+  ) => _container(scheme, semantic.successContainer);
 
-  /// The danger Card: the danger-soft ground over the raised fill, edged
-  /// with the destructive border, for a session stopped by an error.
-  static BoxDecoration dangerCard(ColorScheme scheme, MxDerivedColors derived) {
-    final raised = raisedCard(scheme, derived);
-    return raised.copyWith(
-      color: Color.alphaBlend(derived.dangerSoft, raised.color!),
-      border: Border.all(
-        color: derived.dangerBorder,
-        width: AppStroke.hairline,
-      ),
-    );
-  }
+  /// The danger Card: the error container, a session stopped by an error.
+  static BoxDecoration dangerCard(ColorScheme scheme) =>
+      _container(scheme, scheme.errorContainer);
 
   /// The toned surface of a guess option and a match tile (screens 17 and
-  /// 18): idle on the raised fill with the ghost edge, selected in primary,
-  /// right in the success tint and wrong in the danger tint (FE-A6 P3; a
-  /// right outcome is success, never mastery — spec D14). [isRecessed] gives
-  /// an idle tile the answer face's recessed ground (Match's meanings,
-  /// critique 2026-09-30 part 3c-2, R3); the other tones keep their surfaces.
+  /// 18): idle on the raised fill with the outline edge (a tappable card is a
+  /// control), selected in primary, right in the success container and wrong
+  /// in the error container, both without an edge. [isRecessed] gives an idle
+  /// tile the answer face's recessed ground.
   static BoxDecoration studyChoice(
     ColorScheme scheme,
-    MxDerivedColors derived,
+    MxSemanticColors semantic,
     StudyChoiceTone tone, {
     bool isRecessed = false,
   }) {
-    final raised = scheme.surfaceContainerLowest;
-    final (Color fill, Color edge) = switch (tone) {
+    final (Color fill, Color? edge) = switch (tone) {
       StudyChoiceTone.idle => (
-        isRecessed ? scheme.surfaceContainerLow : raised,
-        derived.ghostBorder,
+        isRecessed ? scheme.surfaceContainerLow : scheme.surfaceContainerLowest,
+        scheme.outline,
       ),
       StudyChoiceTone.selected => (scheme.primary, scheme.primary),
-      StudyChoiceTone.right => (
-        Color.alphaBlend(derived.successSoft, raised),
-        derived.successBorder,
-      ),
-      StudyChoiceTone.wrong => (
-        Color.alphaBlend(derived.dangerSoft, raised),
-        derived.dangerBorder,
-      ),
+      StudyChoiceTone.right => (semantic.successContainer, null),
+      StudyChoiceTone.wrong => (scheme.errorContainer, null),
     };
     return BoxDecoration(
       color: fill,
       borderRadius: BorderRadius.circular(AppRadius.md),
-      border: Border.all(color: edge, width: AppStroke.hairline),
+      border: edge == null ? null : _hairline(edge),
     );
   }
 
-  /// The ink on a [studyChoice] surface.
+  /// The ink on a [studyChoice] surface: a container's on-container.
   static Color studyChoiceInk(
     ColorScheme scheme,
-    MxDerivedColors derived,
+    MxSemanticColors semantic,
     StudyChoiceTone tone,
   ) => switch (tone) {
     StudyChoiceTone.idle => scheme.onSurface,
     StudyChoiceTone.selected => scheme.onPrimary,
-    StudyChoiceTone.right => derived.successInk,
-    StudyChoiceTone.wrong => scheme.error,
+    StudyChoiceTone.right => semantic.onSuccessContainer,
+    StudyChoiceTone.wrong => scheme.onErrorContainer,
   };
 }
 

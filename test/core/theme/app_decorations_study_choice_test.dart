@@ -2,43 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
-// Screens 17 and 18's toned surface (FE-A6 P3, ruling C1: a right outcome is
-// success, never mastery — spec D14).
 void main() {
-  final scheme = AppColorSchemes.light;
-  final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+  for (final (scheme, semantic, name) in [
+    (AppColorSchemes.light, MxSemanticColors.light, 'light'),
+    (AppColorSchemes.dark, MxSemanticColors.dark, 'dark'),
+  ]) {
+    Color? edge(BoxDecoration d) => (d.border as Border?)?.top.color;
+    BoxDecoration tone(StudyChoiceTone t, {bool isRecessed = false}) =>
+        AppDecorations.studyChoice(scheme, semantic, t, isRecessed: isRecessed);
+    Color ink(StudyChoiceTone t) =>
+        AppDecorations.studyChoiceInk(scheme, semantic, t);
 
-  BoxDecoration of(StudyChoiceTone tone) =>
-      AppDecorations.studyChoice(scheme, derived, tone);
+    test('$name idle: raised or recessed ground with the outline edge', () {
+      expect(tone(StudyChoiceTone.idle).color, scheme.surfaceContainerLowest);
+      expect(edge(tone(StudyChoiceTone.idle)), scheme.outline);
+      expect(
+        tone(StudyChoiceTone.idle, isRecessed: true).color,
+        scheme.surfaceContainerLow,
+      );
+      expect(ink(StudyChoiceTone.idle), scheme.onSurface);
+    });
 
-  Color inkOf(StudyChoiceTone tone) =>
-      AppDecorations.studyChoiceInk(scheme, derived, tone);
+    test('$name selected: primary on primary, onPrimary ink', () {
+      expect(tone(StudyChoiceTone.selected).color, scheme.primary);
+      expect(ink(StudyChoiceTone.selected), scheme.onPrimary);
+    });
 
-  test('each tone paints its ground and edge', () {
-    expect(of(StudyChoiceTone.idle).color, scheme.surfaceContainerLowest);
-    expect(
-      (of(StudyChoiceTone.idle).border! as Border).top.color,
-      derived.ghostBorder,
-    );
-    expect(of(StudyChoiceTone.selected).color, scheme.primary);
-    expect(
-      (of(StudyChoiceTone.right).border! as Border).top.color,
-      derived.successBorder,
-    );
-    expect(
-      (of(StudyChoiceTone.wrong).border! as Border).top.color,
-      derived.dangerBorder,
-    );
-  });
-
-  test('each tone has its ink; right is success, never mastery', () {
-    expect(inkOf(StudyChoiceTone.idle), scheme.onSurface);
-    expect(inkOf(StudyChoiceTone.selected), scheme.onPrimary);
-    expect(inkOf(StudyChoiceTone.right), derived.successInk);
-    expect(inkOf(StudyChoiceTone.right), isNot(MxSemanticColors.light.mastery));
-    expect(inkOf(StudyChoiceTone.wrong), scheme.error);
-  });
+    test('$name right / wrong: containers, no edge, on-container ink', () {
+      expect(tone(StudyChoiceTone.right).color, semantic.successContainer);
+      expect(edge(tone(StudyChoiceTone.right)), null);
+      expect(ink(StudyChoiceTone.right), semantic.onSuccessContainer);
+      expect(tone(StudyChoiceTone.wrong).color, scheme.errorContainer);
+      expect(edge(tone(StudyChoiceTone.wrong)), null);
+      expect(ink(StudyChoiceTone.wrong), scheme.onErrorContainer);
+    });
+  }
 }
