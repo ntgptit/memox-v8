@@ -158,3 +158,30 @@ rules:
     tags:
       - memox-v8
       - design-token
+
+  # The derived colour layer (MxDerivedColors, deleted 2026-10) was built three
+  # ways: a lerp with a constant factor, an HSL rewrite of a role, a tint at a
+  # literal or private alpha. Each is banned where colour is painted; the
+  # animation lerp, ColorTween, AppOpacity state layers, the disabled dim, the
+  # scrim and a fade's clear end are not matched (spec 2026-10-08 §6.1).
+  - id: memox.design_token.no_derived_color
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      A colour is a ColorScheme or MxSemanticColors role; a foreground or a
+      ground is never mixed from another role, and an overlay's alpha is an
+      AppOpacity token. Add a measured role to MxSemanticColors instead.
+    scopes:
+      - color_role_surfaces
+    patterns:
+      - '\bColor\.lerp\s*\([^;]*,\s*(?:0?\.\d+|1(?:\.0)?|0)\s*\)'
+      - '\bHS[LV]Color\s*\.\s*fromColor\s*\('
+      - '\bColor\.alphaBlend\s*\('
+      - '\.withValues\(\s*alpha:\s*(?!\s|AppOpacity\.|[A-Za-z_][A-Za-z0-9_]*\.a\s*\*\s*AppOpacity\.|AppEffects\.|0\s*[,)])'
+    tags:
+      - memox-v8
+      - design-token
+      - ui
+    fix:
+      hint: Use a role from ColorScheme or MxSemanticColors; alpha only through AppOpacity.

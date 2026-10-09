@@ -9,6 +9,9 @@ analyzer:
     - "**/*.g.dart"
     # drift's migration test helpers (`schema generate`), which nobody edits.
     - test/drift/generated/**
+    # The guard's Dart fixtures are snippets a rule reads as text, not code to
+    # compile (e.g. derived_color/invalid.dart names identifiers it never defines).
+    - code-verification-guard-v2/tests/fixtures/**
     - build/**
     - android/**
 

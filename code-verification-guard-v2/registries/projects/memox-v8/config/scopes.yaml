@@ -257,6 +257,20 @@ scopes:
       - '**/*.g.dart'
       - '**/*.freezed.dart'
 
+  # Where a colour is painted or defined: the derived-colour rule reads it.
+  color_role_surfaces:
+    include:
+      - lib/features/*/presentation/**/*.dart
+      - lib/shared/**/*.dart
+      - lib/app/**/*.dart
+      - lib/core/theme/**/*.dart
+    exclude:
+      - lib/core/theme/mx_semantic_colors.dart
+      # The foundations define the alphas (shadows, opacity, effects).
+      - lib/core/theme/foundations/**
+      - '**/*.g.dart'
+      - '**/*.freezed.dart'
+
   # **Typography only, plus `lib/app/`.** The composition root and the
   # debug-only gallery set text too (`placeholder_screen.dart`, the gallery's
   # sections), and a text style there comes from the theme like anywhere else;
