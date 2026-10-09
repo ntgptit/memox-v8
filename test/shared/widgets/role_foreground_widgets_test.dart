@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -19,13 +18,9 @@ import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 import '../../support/widget_harness.dart';
 
 // Spec 2026-10-08 §4.1: the brand as text, glyph or ring is
-// primaryForeground, in both themes; fills and edges keep primary. The
-// badge and the icon tile still read the derived ink until Task 13 moves
-// them.
+// primaryForeground, in both themes; fills and edges keep primary.
 void main() {
   final scheme = AppColorSchemes.dark;
-  // The derived ink the badge and the icon tile still read (Task 13).
-  final ink = MxDerivedColors.primaryInkOf(scheme);
 
   Future<void> pumpDark(WidgetTester tester, Widget child) =>
       pumpMx(tester, child, brightness: Brightness.dark);
@@ -95,18 +90,13 @@ void main() {
     });
   });
 
-  testWidgets('MxBadge: a tinted primary badge inks in primaryInk', (
-    tester,
-  ) async {
+  testWidgets('MxBadge: a tinted primary badge is onPrimaryContainer on '
+      'primaryContainer; a solid one is onPrimary on primary', (tester) async {
     await pumpDark(tester, const MxBadge(label: '23 due'));
-    expect(textColor(tester, '23 due'), ink);
-  });
+    expect(textColor(tester, '23 due'), scheme.onPrimaryContainer);
 
-  test('MxBadge: a solid badge is primary only (D5)', () {
-    expect(
-      () => MxBadge(label: 'x', tone: MxBadgeTone.mastery, isSolid: true),
-      throwsAssertionError,
-    );
+    await pumpDark(tester, const MxBadge(label: '23 due', isSolid: true));
+    expect(textColor(tester, '23 due'), scheme.onPrimary);
   });
 
   testWidgets('MxActionSheetCommandRow: a non-destructive glyph and verb ink '
@@ -201,11 +191,14 @@ void main() {
     expect(textColor(tester, '20'), MxSemanticColors.dark.primaryForeground);
   });
 
-  testWidgets('MxIconTile: the tinted glyph is primaryInk without a seed', (
+  testWidgets('MxIconTile: the tinted glyph is primaryForeground', (
     tester,
   ) async {
     await pumpDark(tester, const MxIconTile(icon: AppIcons.library));
-    expect(tester.widget<Icon>(find.byIcon(AppIcons.library)).color, ink);
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
+      MxSemanticColors.dark.primaryForeground,
+    );
   });
 
   testWidgets('MxStudyTopBar: the badge text is onPrimaryContainer', (

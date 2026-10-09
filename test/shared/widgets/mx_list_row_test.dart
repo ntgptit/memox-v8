@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -293,7 +293,7 @@ void main() {
 
     expect([for (final span in spans) span.text], ['Academic ', 'words', '']);
     expect(spans[1].style!.fontWeight, FontWeight.w700);
-    expect(spans[1].style!.color, MxDerivedColors.primaryInkOf(scheme));
+    expect(spans[1].style!.color, MxSemanticColors.light.primaryForeground);
     expect((title.maxLines, title.overflow), (1, TextOverflow.ellipsis));
   });
 

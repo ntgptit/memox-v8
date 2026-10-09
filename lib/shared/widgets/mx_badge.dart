@@ -18,10 +18,7 @@ class MxBadge extends StatelessWidget {
     this.tone = MxBadgeTone.primary,
     this.isSolid = false,
     this.icon,
-  }) : assert(
-         !isSolid || tone == MxBadgeTone.primary,
-         'a solid badge is primary: only onPrimary is guaranteed on its fill',
-       );
+  });
 
   final String label;
   final MxBadgeTone tone;
@@ -35,34 +32,46 @@ class MxBadge extends StatelessWidget {
   /// A minimum: text scaling grows the pill (ruling S11).
   static const double _height = 22;
   static const double _glyphSize = 12;
-  static const double _tint = 0.12;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final toneColor = switch (tone) {
-      MxBadgeTone.primary => colors.primary,
-      MxBadgeTone.mastery => context.semanticColors.mastery,
-      MxBadgeTone.success => context.semanticColors.success,
-      MxBadgeTone.warning => context.semanticColors.warning,
-      MxBadgeTone.danger => colors.error,
-      // Ruling S2: the contract names no neutral colour.
-      MxBadgeTone.neutral => colors.onSurfaceVariant,
-    };
-    // Ruling S3: tonal warning text reads in warning-ink, because the amber
-    // fails as 12px text on a light surface; the mastery green likewise
-    // reads in its ink (3.56:1 on its tint in light, FE-C1).
-    final ink = switch ((isSolid, tone)) {
-      (true, _) => colors.onPrimary,
-      (false, MxBadgeTone.warning) => context.derivedColors.warningInk,
-      (false, MxBadgeTone.primary) => context.derivedColors.primaryInk,
-      (false, MxBadgeTone.mastery) => context.derivedColors.statusMasteredInk,
-      (false, MxBadgeTone.success) => context.derivedColors.successInk,
-      (false, _) => toneColor,
+    final semantic = context.semanticColors;
+    final (fill, ink) = switch ((isSolid, tone)) {
+      (true, MxBadgeTone.primary) => (colors.primary, colors.onPrimary),
+      (true, MxBadgeTone.mastery) => (semantic.mastery, semantic.onMastery),
+      (true, MxBadgeTone.success) => (semantic.success, semantic.onSuccess),
+      (true, MxBadgeTone.warning) => (semantic.warning, semantic.onWarning),
+      (true, MxBadgeTone.danger) => (colors.error, colors.onError),
+      (true, MxBadgeTone.neutral) => (colors.onSurfaceVariant, colors.surface),
+      (false, MxBadgeTone.primary) => (
+        colors.primaryContainer,
+        colors.onPrimaryContainer,
+      ),
+      (false, MxBadgeTone.mastery) => (
+        semantic.masteryContainer,
+        semantic.onMasteryContainer,
+      ),
+      (false, MxBadgeTone.success) => (
+        semantic.successContainer,
+        semantic.onSuccessContainer,
+      ),
+      (false, MxBadgeTone.warning) => (
+        semantic.warningContainer,
+        semantic.onWarningContainer,
+      ),
+      (false, MxBadgeTone.danger) => (
+        colors.errorContainer,
+        colors.onErrorContainer,
+      ),
+      (false, MxBadgeTone.neutral) => (
+        colors.surfaceContainerHigh,
+        colors.onSurfaceVariant,
+      ),
     };
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: isSolid ? toneColor : toneColor.withValues(alpha: _tint),
+        color: fill,
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
       child: ConstrainedBox(

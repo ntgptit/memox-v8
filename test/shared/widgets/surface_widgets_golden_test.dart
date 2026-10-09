@@ -65,7 +65,7 @@ void main() {
               MxIconTile(icon: AppIcons.library),
               MxIconTile(icon: AppIcons.reminder, size: MxIconTileSize.medium),
               MxIconTile(icon: AppIcons.library, size: MxIconTileSize.large),
-              MxIconTile(icon: AppIcons.folder, seed: Color(0xFF0E9F6E)),
+              MxIconTile(icon: AppIcons.folder, tone: MxIconTileTone.mastery),
             ],
           ),
           Row(
@@ -113,7 +113,7 @@ void main() {
               subtitle: 'Nested three levels deep under Japanese',
               leading: const MxIconTile(
                 icon: AppIcons.folder,
-                seed: Color(0xFF0E9F6E),
+                tone: MxIconTileTone.mastery,
               ),
               trailing: MxIconButton(
                 icon: AppIcons.more,

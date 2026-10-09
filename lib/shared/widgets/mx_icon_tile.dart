@@ -7,11 +7,22 @@ import 'package:memox/core/theme/theme_context.dart';
 /// leads settings rows, large leads deck rows.
 enum MxIconTileSize { small, medium, large }
 
-/// The fill: the primary or seed tint (default), or a solid primary or
-/// warning square whose glyph takes the matching on-colour (screen 02's lock
-/// strip, owner decision D-O1). [success], [caution] and [danger] are soft
-/// tints with a legible glyph: the session summary's outcomes (FE-A6 D14).
-enum MxIconTileTone { tinted, primary, warning, success, caution, danger }
+/// The fill: the primary container (default), or a solid primary or warning
+/// square whose glyph takes the matching on-colour (screen 02's lock strip,
+/// owner decision D-O1). [mastery], [success], [caution] and [danger] are
+/// container grounds with their role as the glyph: the session summary's
+/// outcomes (FE-A6 D14). [streak] and [neutral] sit on the sheet's ground.
+enum MxIconTileTone {
+  tinted,
+  primary,
+  mastery,
+  warning,
+  success,
+  caution,
+  danger,
+  streak,
+  neutral,
+}
 
 /// The tinted square that leads a row. It never shrinks; the text beside it
 /// gives up space first.
@@ -21,23 +32,14 @@ class MxIconTile extends StatelessWidget {
     this.icon,
     this.child,
     this.size = MxIconTileSize.small,
-    this.seed,
     this.tone = MxIconTileTone.tinted,
-  }) : assert((icon == null) != (child == null), 'an icon or a child'),
-       assert(
-         seed == null || tone == MxIconTileTone.tinted,
-         'a seed only tints',
-       );
+  }) : assert((icon == null) != (child == null), 'an icon or a child');
 
   final IconData? icon;
 
   /// Replaces the glyph: a letter, a count, a donut.
   final Widget? child;
   final MxIconTileSize size;
-
-  /// A per-deck colour from the caller's data (ruling S16). Null tints with
-  /// primary.
-  final Color? seed;
   final MxIconTileTone tone;
 
   /// The small step's side, for a caller that sizes the row around it.
@@ -46,19 +48,11 @@ class MxIconTile extends StatelessWidget {
   /// The medium step's side, for a caller that indents past it.
   static const double mediumBox = 36;
   static const double _largeBox = 44;
-  static const double _primaryTintLight = 0.10;
-  static const double _primaryTintDark = 0.16;
-  static const double _seedTint = 0.12;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final tinted = seed ?? colors.primary;
-    final tint = switch ((seed, colors.brightness)) {
-      (_?, _) => _seedTint,
-      (null, Brightness.light) => _primaryTintLight,
-      (null, Brightness.dark) => _primaryTintDark,
-    };
+    final semantic = context.semanticColors;
     final (box, radius, glyph) = switch (size) {
       MxIconTileSize.small => (smallBox, AppRadius.sm, AppIconSize.inline),
       MxIconTileSize.medium => (mediumBox, AppRadius.md, AppIconSize.compact),
@@ -66,25 +60,19 @@ class MxIconTile extends StatelessWidget {
     };
     final (fill, ink) = switch (tone) {
       MxIconTileTone.tinted => (
-        tinted.withValues(alpha: tint),
-        seed ?? context.derivedColors.primaryInk,
+        colors.primaryContainer,
+        semantic.primaryForeground,
       ),
       MxIconTileTone.primary => (colors.primary, colors.onPrimary),
-      MxIconTileTone.warning => (
-        context.semanticColors.warning,
-        context.semanticColors.onWarning,
-      ),
-      MxIconTileTone.success => (
-        context.derivedColors.successSoft,
-        context.derivedColors.successInk,
-      ),
-      MxIconTileTone.caution => (
-        context.derivedColors.warningSoft,
-        context.derivedColors.warningInk,
-      ),
-      MxIconTileTone.danger => (
-        context.derivedColors.dangerSoft,
-        context.colors.error,
+      MxIconTileTone.mastery => (semantic.masteryContainer, semantic.mastery),
+      MxIconTileTone.warning => (semantic.warning, semantic.onWarning),
+      MxIconTileTone.success => (semantic.successContainer, semantic.success),
+      MxIconTileTone.caution => (semantic.warningContainer, semantic.warning),
+      MxIconTileTone.danger => (colors.errorContainer, colors.error),
+      MxIconTileTone.streak => (colors.surfaceContainerHigh, semantic.streak),
+      MxIconTileTone.neutral => (
+        colors.surfaceContainerHigh,
+        colors.onSurfaceVariant,
       ),
     };
     return SizedBox.square(

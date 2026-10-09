@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 
@@ -24,17 +23,14 @@ Color? _ink(WidgetTester tester, String label) =>
 
 void main() {
   final scheme = AppColorSchemes.light;
-  final semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(scheme, semantic);
 
-  testWidgets('tonal: tone @12% under a tone label; a 22 pill, 8 inset', (
-    tester,
-  ) async {
+  testWidgets('tonal: primaryContainer under onPrimaryContainer; a 22 pill, '
+      '8 inset', (tester) async {
     await pumpMx(tester, const MxBadge(label: '23 due'));
 
-    expect(_pill(tester).color, scheme.primary.withValues(alpha: 0.12));
+    expect(_pill(tester).color, scheme.primaryContainer);
     expect(_pill(tester).borderRadius, BorderRadius.circular(999));
-    expect(_ink(tester, '23 due'), MxDerivedColors.primaryInkOf(scheme));
+    expect(_ink(tester, '23 due'), scheme.onPrimaryContainer);
     expect(tester.getSize(find.byType(MxBadge)).height, 22);
     expect(
       tester.getTopLeft(find.text('23 due')).dx -
@@ -43,27 +39,56 @@ void main() {
     );
   });
 
-  testWidgets('solid: tone fill under an onPrimary label', (tester) async {
-    await pumpMx(tester, const MxBadge(label: '23 due', isSolid: true));
+  for (final brightness in Brightness.values) {
+    final isLight = brightness == Brightness.light;
+    final colors = isLight ? AppColorSchemes.light : AppColorSchemes.dark;
+    final semantic = isLight ? MxSemanticColors.light : MxSemanticColors.dark;
+    // Per tone: (tonal ground, tonal label), (solid fill, solid label).
+    final roles = <MxBadgeTone, ((Color, Color), (Color, Color))>{
+      MxBadgeTone.primary: (
+        (colors.primaryContainer, colors.onPrimaryContainer),
+        (colors.primary, colors.onPrimary),
+      ),
+      MxBadgeTone.mastery: (
+        (semantic.masteryContainer, semantic.onMasteryContainer),
+        (semantic.mastery, semantic.onMastery),
+      ),
+      MxBadgeTone.success: (
+        (semantic.successContainer, semantic.onSuccessContainer),
+        (semantic.success, semantic.onSuccess),
+      ),
+      MxBadgeTone.warning: (
+        (semantic.warningContainer, semantic.onWarningContainer),
+        (semantic.warning, semantic.onWarning),
+      ),
+      MxBadgeTone.danger: (
+        (colors.errorContainer, colors.onErrorContainer),
+        (colors.error, colors.onError),
+      ),
+      MxBadgeTone.neutral: (
+        (colors.surfaceContainerHigh, colors.onSurfaceVariant),
+        (colors.onSurfaceVariant, colors.surface),
+      ),
+    };
+    for (final MapEntry(key: tone, value: (tonal, solid)) in roles.entries) {
+      for (final isSolid in [false, true]) {
+        final (fill, ink) = isSolid ? solid : tonal;
+        testWidgets('${tone.name} ${isSolid ? 'solid' : 'tonal'}, '
+            '${brightness.name}: the role pair', (tester) async {
+          await pumpMx(
+            tester,
+            MxBadge(label: '4 due', tone: tone, isSolid: isSolid),
+            brightness: brightness,
+          );
+          // The theme change animates.
+          await tester.pumpAndSettle();
 
-    expect(_pill(tester).color, scheme.primary);
-    expect(_ink(tester, '23 due'), scheme.onPrimary);
-  });
-
-  testWidgets('each tone; a tonal warning reads in warning-ink (S3), a '
-      'tonal mastery in the mastered ink (FE-C1)', (tester) async {
-    for (final (tone, fill, ink) in [
-      (MxBadgeTone.mastery, semantic.mastery, derived.statusMasteredInk),
-      (MxBadgeTone.danger, scheme.error, scheme.error),
-      (MxBadgeTone.neutral, scheme.onSurfaceVariant, scheme.onSurfaceVariant),
-      (MxBadgeTone.warning, semantic.warning, derived.warningInk),
-    ]) {
-      await pumpMx(tester, MxBadge(label: '4 due', tone: tone));
-
-      expect(_pill(tester).color, fill.withValues(alpha: 0.12));
-      expect(_ink(tester, '4 due'), ink);
+          expect(_pill(tester).color, fill);
+          expect(_ink(tester, '4 due'), ink);
+        });
+      }
     }
-  });
+  }
 
   testWidgets('a 12 glyph 4 before the label; the pill grows, never clips', (
     tester,
@@ -82,30 +107,5 @@ void main() {
     await pumpMx(tester, const MxBadge(label: '12345 due'));
     expect(tester.getSize(find.byType(MxBadge)).width, greaterThan(short));
     expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('success: the success tint under a success-ink label, in both '
-      'themes (critique 2026-09-30 tone pass, T6)', (tester) async {
-    await pumpMx(
-      tester,
-      const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),
-    );
-    expect(_pill(tester).color, semantic.success.withValues(alpha: 0.12));
-    expect(_ink(tester, 'Ready · 2'), derived.successInk);
-
-    final darkSemantic = MxSemanticColors.dark;
-    final darkDerived = MxDerivedColors.resolve(
-      AppColorSchemes.dark,
-      darkSemantic,
-    );
-    await pumpMx(
-      tester,
-      const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),
-      brightness: Brightness.dark,
-    );
-    // The theme change animates.
-    await tester.pumpAndSettle();
-    expect(_pill(tester).color, darkSemantic.success.withValues(alpha: 0.12));
-    expect(_ink(tester, 'Ready · 2'), darkDerived.successInk);
   });
 }
