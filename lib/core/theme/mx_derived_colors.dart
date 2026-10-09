@@ -1,6 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
+/// Phase 0 of the M3 colour-roles migration (spec 2026-10-08 §6, task 1):
+/// the roles this layer derived from, frozen at their pre-migration values,
+/// so a role's new value moves no consumer this layer still paints. The
+/// layer and this record go in phase 5.
+final class _FrozenRoles {
+  const _FrozenRoles({
+    required this.primary,
+    required this.onSurface,
+    required this.outline,
+    required this.error,
+    required this.surface,
+    required this.surfaceBright,
+    required this.warning,
+    required this.success,
+    required this.statusNew,
+    required this.statusLearning,
+    required this.statusReviewing,
+    required this.statusMastered,
+  });
+
+  static const light = _FrozenRoles(
+    primary: Color(0xFF5265F5),
+    onSurface: Color(0xFF0F1638),
+    outline: Color(0xFF7C85AB),
+    error: Color(0xFFC02447),
+    surface: Color(0xFFF7F9FE),
+    surfaceBright: Color(0xFFFFFFFF),
+    warning: Color(0xFFF59E0B),
+    success: Color(0xFF2BA88B),
+    statusNew: Color(0xFF8C95B8),
+    statusLearning: Color(0xFFF59E0B),
+    statusReviewing: Color(0xFF5265F5),
+    statusMastered: Color(0xFF1F8A5B),
+  );
+
+  static const dark = _FrozenRoles(
+    primary: Color(0xFF5265F5),
+    onSurface: Color(0xFFE4E8FA),
+    outline: Color(0xFF5A6BAE),
+    error: Color(0xFFFF8FA3),
+    surface: Color(0xFF0A0E27),
+    surfaceBright: Color(0xFF232B5A),
+    warning: Color(0xFFFFC658),
+    success: Color(0xFF6FE0BD),
+    statusNew: Color(0xFF6B75A3),
+    statusLearning: Color(0xFFFFC658),
+    statusReviewing: Color(0xFF8B9AFF),
+    statusMastered: Color(0xFF6FE0BD),
+  );
+
+  static _FrozenRoles of(ColorScheme scheme) =>
+      scheme.brightness == Brightness.dark ? dark : light;
+
+  final Color primary;
+  final Color onSurface;
+  final Color outline;
+  final Color error;
+  final Color surface;
+  final Color surfaceBright;
+  final Color warning;
+  final Color success;
+  final Color statusNew;
+  final Color statusLearning;
+  final Color statusReviewing;
+  final Color statusMastered;
+}
+
 /// Colours derived from a role at a percentage (02-theme-binding
 /// DERIVED_COLOR, BIND_NOW), plus the border-ghost edge colour.
 ///
@@ -32,43 +99,44 @@ final class MxDerivedColors {
     ColorScheme scheme,
     MxSemanticColors semantic,
   ) {
+    final roles = _FrozenRoles.of(scheme);
     final isDark = scheme.brightness == Brightness.dark;
     return MxDerivedColors._(
-      dangerSoft: scheme.error.withValues(
+      dangerSoft: roles.error.withValues(
         alpha: isDark ? _dangerSoftDark : _dangerSoftLight,
       ),
-      dangerBorder: scheme.error.withValues(
+      dangerBorder: roles.error.withValues(
         alpha: isDark ? _dangerBorderDark : _dangerBorderLight,
       ),
-      warningSoft: semantic.warning.withValues(
+      warningSoft: roles.warning.withValues(
         alpha: isDark ? _warningSoftDark : _warningSoftLight,
       ),
       // The theme gap the InlineBanner contract reports: warning-border is
       // not in the derived registry. Its ratios come from that contract (O6).
-      warningBorder: semantic.warning.withValues(
+      warningBorder: roles.warning.withValues(
         alpha: isDark ? _warningBorderDark : _warningBorderLight,
       ),
-      successSoft: semantic.success.withValues(
+      successSoft: roles.success.withValues(
         alpha: isDark ? _successSoftDark : _successSoftLight,
       ),
-      successBorder: semantic.success.withValues(
+      successBorder: roles.success.withValues(
         alpha: isDark ? _successBorderDark : _successBorderLight,
       ),
       // Success TEXT and glyphs: the kit's green fails 4.5:1 on light
       // surfaces, so it is pulled toward onSurface as the status inks are.
       successInk: _ink(
-        semantic.success,
-        scheme,
+        roles.success,
+        roles.onSurface,
         isDark ? _successInkDark : _successInkLight,
       ),
       // The one derivation whose base changes with the theme.
       surfaceHero: Color.alphaBlend(
-        scheme.primary.withValues(
+        roles.primary.withValues(
           alpha: isDark ? _surfaceHeroDark : _surfaceHeroLight,
         ),
-        isDark ? scheme.surface : scheme.surfaceBright,
+        isDark ? roles.surface : roles.surfaceBright,
       ),
-      ghostBorder: scheme.primary.withValues(
+      ghostBorder: roles.primary.withValues(
         alpha: isDark ? _ghostBorderDark : _ghostBorderLight,
       ),
       // Warning TEXT and glyphs. The amber fill fails as 12px text on light
@@ -76,14 +144,14 @@ final class MxDerivedColors {
       // text, so light uses the amber's hue at 28% lightness: 4.5:1 or more
       // on every ground and tint, the sheet included (critique 2026-09-30 tone pass, T1). Dark
       // inks with the amber itself.
-      warningInk: isDark ? semantic.warning : _warningInkLight,
+      warningInk: isDark ? roles.warning : _warningInkLight,
       // Danger TEXT on the danger ground (a banner title). Error alone is
       // 4.20:1 (light) and 4.05:1 (dark) on that ground inside a sheet, so
       // it is pulled toward onSurface: 10% light, 30% dark, 4.5:1 or more on
       // every surface (critique 2026-09-30 tone pass, final review).
       dangerInk: _ink(
-        scheme.error,
-        scheme,
+        roles.error,
+        roles.onSurface,
         isDark ? _dangerInkDark : _dangerInkLight,
       ),
       // Status TEXT (StatusBadge label, the workload "new" term): the
@@ -91,23 +159,23 @@ final class MxDerivedColors {
       // every ground and on its own 12% tint (library spec §7, ruling L6).
       // Dots, fills and tints keep the status colour itself.
       statusNewInk: _ink(
-        semantic.statusNew,
-        scheme,
+        roles.statusNew,
+        roles.onSurface,
         isDark ? _newInkDark : _newInkLight,
       ),
       statusLearningInk: _ink(
-        semantic.statusLearning,
-        scheme,
+        roles.statusLearning,
+        roles.onSurface,
         isDark ? _learningInkDark : _learningInkLight,
       ),
       statusReviewingInk: _ink(
-        semantic.statusReviewing,
-        scheme,
+        roles.statusReviewing,
+        roles.onSurface,
         isDark ? _reviewingInkDark : _reviewingInkLight,
       ),
       statusMasteredInk: _ink(
-        semantic.statusMastered,
-        scheme,
+        roles.statusMastered,
+        roles.onSurface,
         isDark ? _masteredInkDark : _masteredInkLight,
       ),
       primaryInk: primaryInkOf(scheme),
@@ -159,10 +227,11 @@ final class MxDerivedColors {
   /// dark, where saturation alone cannot reach 3:1, pulls outline toward
   /// onSurface.
   static Color outlineEdgeOf(ColorScheme scheme) {
+    final roles = _FrozenRoles.of(scheme);
     if (scheme.brightness == Brightness.dark) {
-      return Color.lerp(scheme.outline, scheme.onSurface, _outlineEdgeDark)!;
+      return Color.lerp(roles.outline, roles.onSurface, _outlineEdgeDark)!;
     }
-    return HSLColor.fromColor(scheme.outline)
+    return HSLColor.fromColor(roles.outline)
         .withSaturation(_outlineEdgeSaturationLight)
         .toColor();
   }
@@ -171,14 +240,17 @@ final class MxDerivedColors {
   /// toward onSurface until it reads at 4.5:1 on every ground and primary
   /// tint (spec 2026-09-27 D2). Fills, edges and tints keep primary. The
   /// one source for MxTextStyles and the component themes too.
-  static Color primaryInkOf(ColorScheme scheme) => _ink(
-    scheme.primary,
-    scheme,
-    scheme.brightness == Brightness.dark ? _primaryInkDark : _primaryInkLight,
-  );
+  static Color primaryInkOf(ColorScheme scheme) {
+    final roles = _FrozenRoles.of(scheme);
+    return _ink(
+      roles.primary,
+      roles.onSurface,
+      scheme.brightness == Brightness.dark ? _primaryInkDark : _primaryInkLight,
+    );
+  }
 
-  static Color _ink(Color status, ColorScheme scheme, double mix) =>
-      Color.lerp(status, scheme.onSurface, mix)!;
+  static Color _ink(Color status, Color onSurface, double mix) =>
+      Color.lerp(status, onSurface, mix)!;
 
   /// ErrorState tile tint.
   final Color dangerSoft;

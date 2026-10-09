@@ -260,6 +260,26 @@ void main() {
       });
     }
   });
+
+  test('phase 0 freeze: a changed role moves no derived colour', () {
+    final moved = AppColorSchemes.light.copyWith(
+      outline: const Color(0xFFFF0000),
+      primary: const Color(0xFF00FF00),
+      error: const Color(0xFF0000FF),
+    );
+    final movedSemantic = MxSemanticColors.light.copyWith(
+      warning: const Color(0xFF123456),
+      success: const Color(0xFF654321),
+    );
+    final frozen = MxDerivedColors.resolve(moved, movedSemantic);
+    expect(frozen.outlineEdge, light.outlineEdge);
+    expect(frozen.primaryInk, light.primaryInk);
+    expect(frozen.dangerSoft, light.dangerSoft);
+    expect(frozen.warningSoft, light.warningSoft);
+    expect(frozen.successInk, light.successInk);
+    expect(MxDerivedColors.primaryInkOf(moved), light.primaryInk);
+    expect(MxDerivedColors.outlineEdgeOf(moved), light.outlineEdge);
+  });
 }
 
 double _ratio(Color a, Color b) {
