@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
@@ -117,12 +117,11 @@ void main() {
       expect(context.colors, AppColorSchemes.dark);
       expect(context.texts.displayMedium!.fontSize, 40);
       expect(context.semanticColors, MxSemanticColors.dark);
+      final hero = AppDecorations.heroCard(context.colors);
+      expect(hero.color, AppColorSchemes.dark.surfaceContainerLow);
       expect(
-        context.derivedColors.surfaceHero,
-        MxDerivedColors.resolve(
-          AppColorSchemes.dark,
-          MxSemanticColors.dark,
-        ).surfaceHero,
+        (hero.border! as Border).top.color,
+        AppColorSchemes.dark.outlineVariant,
       );
     });
 

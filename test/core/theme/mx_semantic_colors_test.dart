@@ -4,7 +4,6 @@ import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 // Spec 2026-10-08 §4.3: Material 3 custom-colour sets at HCT tones 40 / 100 /
 // 90 / 10 (light) and 80 / 20 / 30 / 90 (dark), plus the one brand foreground.
-// The six legacy members keep their old values until task 17 deletes them.
 final _expected = <String, (Color Function(MxSemanticColors), int, int)>{
   'primaryForeground': ((c) => c.primaryForeground, 0xFF384CDD, 0xFFBCC2FF),
   'warning': ((c) => c.warning, 0xFF855300, 0xFFFFB95F),
@@ -20,12 +19,6 @@ final _expected = <String, (Color Function(MxSemanticColors), int, int)>{
   'masteryContainer': ((c) => c.masteryContainer, 0xFF93F7BE, 0xFF005232),
   'onMasteryContainer': ((c) => c.onMasteryContainer, 0xFF002111, 0xFF93F7BE),
   'streak': ((c) => c.streak, 0xFF9D4300, 0xFFFFB690),
-  'statusNew': ((c) => c.statusNew, 0xFF8C95B8, 0xFF6B75A3),
-  'statusLearning': ((c) => c.statusLearning, 0xFFF59E0B, 0xFFFFC658),
-  'statusReviewing': ((c) => c.statusReviewing, 0xFF5265F5, 0xFF8B9AFF),
-  'statusMastered': ((c) => c.statusMastered, 0xFF1F8A5B, 0xFF6FE0BD),
-  'errorFill': ((c) => c.errorFill, 0xFFDC2D4E, 0xFFB0485C),
-  'onErrorFill': ((c) => c.onErrorFill, 0xFFFFFFFF, 0xFFFFFFFF),
 };
 
 void main() {
@@ -53,7 +46,7 @@ void main() {
 
     expect(copy.mastery, replacement);
     expect(copy.warning, MxSemanticColors.light.warning);
-    expect(copy.onErrorFill, MxSemanticColors.light.onErrorFill);
+    expect(copy.onSuccess, MxSemanticColors.light.onSuccess);
   });
 
   test('lerp reaches each end and blends in between', () {
@@ -63,9 +56,31 @@ void main() {
     expect(light.lerp(dark, 0).mastery, light.mastery);
     expect(light.lerp(dark, 1).mastery, dark.mastery);
     expect(
-      light.lerp(dark, 0.5).statusNew,
-      Color.lerp(light.statusNew, dark.statusNew, 0.5),
+      light.lerp(dark, 0.5).warning,
+      Color.lerp(light.warning, dark.warning, 0.5),
     );
+  });
+
+  test('no legacy member survives', () {
+    // Names are split so a repo-wide grep for the retired members stays empty.
+    const retired = [
+      'status'
+          'New',
+      'status'
+          'Learning',
+      'status'
+          'Reviewing',
+      'status'
+          'Mastered',
+      'error'
+          'Fill',
+      'onError'
+          'Fill',
+    ];
+    final text = MxSemanticColors.light.toString();
+    for (final name in retired) {
+      expect(text, isNot(contains(name)), reason: name);
+    }
   });
 
   test('lerp against a foreign extension keeps this one', () {

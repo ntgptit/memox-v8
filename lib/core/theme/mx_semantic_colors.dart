@@ -23,12 +23,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     required this.masteryContainer,
     required this.onMasteryContainer,
     required this.streak,
-    required this.statusNew,
-    required this.statusLearning,
-    required this.statusReviewing,
-    required this.statusMastered,
-    required this.errorFill,
-    required this.onErrorFill,
   });
 
   static const MxSemanticColors light = MxSemanticColors(
@@ -46,12 +40,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     masteryContainer: Color(0xFF93F7BE),
     onMasteryContainer: Color(0xFF002111),
     streak: Color(0xFF9D4300),
-    statusNew: Color(0xFF8C95B8),
-    statusLearning: Color(0xFFF59E0B),
-    statusReviewing: Color(0xFF5265F5),
-    statusMastered: Color(0xFF1F8A5B),
-    errorFill: Color(0xFFDC2D4E),
-    onErrorFill: Color(0xFFFFFFFF),
   );
 
   static const MxSemanticColors dark = MxSemanticColors(
@@ -69,12 +57,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     masteryContainer: Color(0xFF005232),
     onMasteryContainer: Color(0xFF93F7BE),
     streak: Color(0xFFFFB690),
-    statusNew: Color(0xFF6B75A3),
-    statusLearning: Color(0xFFFFC658),
-    statusReviewing: Color(0xFF8B9AFF),
-    statusMastered: Color(0xFF6FE0BD),
-    errorFill: Color(0xFFB0485C),
-    onErrorFill: Color(0xFFFFFFFF),
   );
 
   /// The brand hue as text, icon, focus ring or selected mark on a neutral
@@ -104,14 +86,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   /// The Progress flame (FE-A9 D7); its one consumed member.
   final Color streak;
 
-  /// Legacy members (deleted in the migration's phase 5, task 17).
-  final Color statusNew;
-  final Color statusLearning;
-  final Color statusReviewing;
-  final Color statusMastered;
-  final Color errorFill;
-  final Color onErrorFill;
-
   @override
   MxSemanticColors copyWith({
     Color? primaryForeground,
@@ -128,12 +102,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     Color? masteryContainer,
     Color? onMasteryContainer,
     Color? streak,
-    Color? statusNew,
-    Color? statusLearning,
-    Color? statusReviewing,
-    Color? statusMastered,
-    Color? errorFill,
-    Color? onErrorFill,
   }) => MxSemanticColors(
     primaryForeground: primaryForeground ?? this.primaryForeground,
     warning: warning ?? this.warning,
@@ -149,12 +117,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     masteryContainer: masteryContainer ?? this.masteryContainer,
     onMasteryContainer: onMasteryContainer ?? this.onMasteryContainer,
     streak: streak ?? this.streak,
-    statusNew: statusNew ?? this.statusNew,
-    statusLearning: statusLearning ?? this.statusLearning,
-    statusReviewing: statusReviewing ?? this.statusReviewing,
-    statusMastered: statusMastered ?? this.statusMastered,
-    errorFill: errorFill ?? this.errorFill,
-    onErrorFill: onErrorFill ?? this.onErrorFill,
   );
 
   @override
@@ -179,12 +141,6 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
       masteryContainer: mix(masteryContainer, other.masteryContainer),
       onMasteryContainer: mix(onMasteryContainer, other.onMasteryContainer),
       streak: mix(streak, other.streak),
-      statusNew: mix(statusNew, other.statusNew),
-      statusLearning: mix(statusLearning, other.statusLearning),
-      statusReviewing: mix(statusReviewing, other.statusReviewing),
-      statusMastered: mix(statusMastered, other.statusMastered),
-      errorFill: mix(errorFill, other.errorFill),
-      onErrorFill: mix(onErrorFill, other.onErrorFill),
     );
   }
 }
