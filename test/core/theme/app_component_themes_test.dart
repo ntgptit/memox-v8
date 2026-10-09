@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
@@ -14,10 +16,9 @@ void main() {
     ('dark', buildDarkTheme()),
   ]) {
     final scheme = theme.colorScheme;
-    final ghost = MxDerivedColors.resolve(
-      scheme,
-      theme.extension<MxSemanticColors>()!,
-    ).ghostBorder;
+    final semantic = name == 'light'
+        ? MxSemanticColors.light
+        : MxSemanticColors.dark;
 
     Future<void> pump(WidgetTester tester, Widget child) => tester.pumpWidget(
       MaterialApp(
@@ -27,9 +28,9 @@ void main() {
     );
 
     group(name, () {
-      test('outlined and text buttons ink and focus in primaryInk; the '
+      test('outlined and text buttons ink and focus in primaryForeground; the '
           'filled fill keeps primary (spec 2026-09-27 D2)', () {
-        final ink = MxDerivedColors.primaryInkOf(scheme);
+        final ink = semantic.primaryForeground;
         const focused = {WidgetState.focused};
         for (final style in [
           theme.outlinedButtonTheme.style!,
@@ -43,7 +44,7 @@ void main() {
         expect(filled.side!.resolve(focused)!.color, ink);
       });
 
-      test('fields: filled, outline edge at rest, ghost when disabled, '
+      test('fields: filled, outline at rest, outlineVariant when disabled, '
           'radius 12, no label gap (DEV-166)', () {
         final fields = theme.inputDecorationTheme;
         expect(fields.filled, isTrue);
@@ -57,19 +58,19 @@ void main() {
           }),
           scheme.surfaceContainerLowest,
         );
-        final rest = MxDerivedColors.outlineEdgeOf(scheme);
+        final rest = scheme.outline;
         final edge = fields.enabledBorder! as OutlineInputBorder;
         expect(edge.borderSide.color, rest);
         expect((fields.border! as OutlineInputBorder).borderSide.color, rest);
         expect(
           (fields.disabledBorder! as OutlineInputBorder).borderSide.color,
-          ghost,
+          scheme.outlineVariant,
         );
         expect(edge.gapPadding, 0);
         expect(edge.borderRadius, BorderRadius.circular(12));
         expect(
           (fields.focusedBorder! as OutlineInputBorder).borderSide.color,
-          MxDerivedColors.primaryInkOf(scheme),
+          semantic.primaryForeground,
         );
         expect(
           (fields.errorBorder! as OutlineInputBorder).borderSide.color,
@@ -115,7 +116,7 @@ void main() {
         expect(paintOf('Text').color, anyOf(isNull, Colors.transparent));
         expect(
           (paintOf('Outlined').shape! as RoundedRectangleBorder).side.color,
-          MxDerivedColors.outlineEdgeOf(scheme),
+          scheme.outline,
         );
       });
 
@@ -261,10 +262,7 @@ void main() {
         );
         final edge =
             (paintOf('Outlined').shape! as RoundedRectangleBorder).side;
-        expect(
-          edge.color.a,
-          closeTo(MxDerivedColors.outlineEdgeOf(scheme).a * 0.38, 0.01),
-        );
+        expect(edge.color.a, closeTo(scheme.outline.a * 0.38, 0.01));
       });
 
       testWidgets('a raw TextField takes the V3 field', (tester) async {
@@ -282,11 +280,64 @@ void main() {
         expect(applied.filled, isTrue);
         expect(
           (applied.enabledBorder! as OutlineInputBorder).borderSide.color,
-          MxDerivedColors.outlineEdgeOf(scheme),
+          scheme.outline,
         );
       });
     });
   }
+
+  group('spec 2026-10-08 roles', () {
+    final scheme = AppColorSchemes.light;
+    final semantic = MxSemanticColors.light;
+    final texts = ThemeData(colorScheme: scheme).textTheme;
+
+    test('a field rests on outline, disables to outlineVariant, focuses in '
+        'primaryForeground and errs in error', () {
+      final fields = AppComponentThemes.fields(scheme, semantic, texts);
+      Color edge(InputBorder? b) => (b! as OutlineInputBorder).borderSide.color;
+      expect(edge(fields.enabledBorder), scheme.outline);
+      expect(edge(fields.disabledBorder), scheme.outlineVariant);
+      expect(edge(fields.focusedBorder), semantic.primaryForeground);
+      expect(edge(fields.errorBorder), scheme.error);
+    });
+
+    test('outlined and text buttons ink in primaryForeground; the outline '
+        'edge is outline', () {
+      final outlined = AppComponentThemes.outlinedButtons(
+        scheme,
+        semantic,
+        texts,
+      ).style!;
+      final text = AppComponentThemes.textButtons(
+        scheme,
+        semantic,
+        texts,
+      ).style!;
+      expect(outlined.foregroundColor!.resolve({}), semantic.primaryForeground);
+      expect(outlined.side!.resolve({})!.color, scheme.outline);
+      expect(text.foregroundColor!.resolve({}), semantic.primaryForeground);
+    });
+
+    test('the filled button presses through the shadow layer', () {
+      final filled = AppComponentThemes.filledButtons(
+        scheme,
+        semantic,
+        texts,
+      ).style!;
+      expect(
+        filled.overlayColor!.resolve({WidgetState.pressed}),
+        scheme.shadow.withValues(alpha: AppOpacity.pressed),
+      );
+    });
+
+    test('the icon button focus ring is primaryForeground', () {
+      final icon = AppComponentThemes.iconButtons(scheme, semantic).style!;
+      expect(
+        icon.side!.resolve({WidgetState.focused})!.color,
+        semantic.primaryForeground,
+      );
+    });
+  });
 
   testWidgets('an Mx field outside the MemoX theme names the fix', (
     tester,

@@ -7,7 +7,6 @@ import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/mx_text_styles.dart';
 
@@ -26,44 +25,38 @@ abstract final class AppComponentThemes {
   );
 
   /// Every form field (TextField contract): the muted fill that lightens on
-  /// focus, the Outline Edge at rest (ghost when disabled), primary on focus,
-  /// error in error, the 14 hint.
+  /// focus, the outline edge at rest, outlineVariant when disabled (SC 1.4.11
+  /// exempts it), primaryForeground on focus, error in error, the 14 hint.
   static InputDecorationTheme fields(
     ColorScheme scheme,
     MxSemanticColors semantic,
     TextTheme texts,
-  ) {
-    final derived = MxDerivedColors.resolve(scheme, semantic);
-    final ghost = derived.ghostBorder;
-    // Every edged field rests on the one control edge (3:1, DEV-166); a
-    // disabled one keeps the ghost hairline, as SC 1.4.11 exempts it.
-    final rest = derived.outlineEdge;
-    return InputDecorationTheme(
-      filled: true,
-      isDense: true,
-      fillColor: WidgetStateColor.resolveWith(
-        (states) => states.contains(WidgetState.focused)
-            ? scheme.surfaceContainerLowest
-            : scheme.surfaceContainerLow,
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.grouped,
-      ),
-      hintStyle: MxTextStyles(texts, scheme).inputHint,
-      border: fieldEdge(rest),
-      enabledBorder: fieldEdge(rest),
-      disabledBorder: fieldEdge(ghost),
-      focusedBorder: fieldEdge(MxDerivedColors.primaryInkOf(scheme)),
-      errorBorder: fieldEdge(scheme.error),
-      focusedErrorBorder: fieldEdge(scheme.error),
-    );
-  }
+  ) => InputDecorationTheme(
+    filled: true,
+    isDense: true,
+    fillColor: WidgetStateColor.resolveWith(
+      (states) => states.contains(WidgetState.focused)
+          ? scheme.surfaceContainerLowest
+          : scheme.surfaceContainerLow,
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.grouped),
+    hintStyle: MxTextStyles(texts, scheme).inputHint,
+    border: fieldEdge(scheme.outline),
+    enabledBorder: fieldEdge(scheme.outline),
+    disabledBorder: fieldEdge(scheme.outlineVariant),
+    focusedBorder: fieldEdge(semantic.primaryForeground),
+    errorBorder: fieldEdge(scheme.error),
+    focusedErrorBorder: fieldEdge(scheme.error),
+  );
 
   /// A Material button at the regular V3 size in [fill] and [ink]: 48 tall,
-  /// radius 12, gutter padding, the 14/600 label, the pressed overlay and
-  /// the focus ring. A disabled one dims under the global 0.38 rule.
+  /// radius 12, gutter padding, the 14/600 label, the pressed layer (shadow
+  /// over a fill, the ink otherwise) and, for these raw Material buttons, the
+  /// inside focus ring in primaryForeground. A disabled one dims under the
+  /// global 0.38 rule.
   static ButtonStyle _button(
     ColorScheme scheme,
+    MxSemanticColors semantic,
     TextTheme texts, {
     required Color? fill,
     required Color ink,
@@ -74,7 +67,7 @@ abstract final class AppComponentThemes {
       ink: ink,
       edge: edge,
       pressedLayer: fill == null ? ink : scheme.shadow,
-      focusColor: MxDerivedColors.primaryInkOf(scheme),
+      focusColor: semantic.primaryForeground,
       height: AppSize.buttonRegular,
       radius: AppRadius.md,
       padding: AppSpacing.gutter,
@@ -103,10 +96,12 @@ abstract final class AppComponentThemes {
   /// FilledButton: the primary tone.
   static FilledButtonThemeData filledButtons(
     ColorScheme scheme,
+    MxSemanticColors semantic,
     TextTheme texts,
   ) => FilledButtonThemeData(
     style: _button(
       scheme,
+      semantic,
       texts,
       fill: scheme.primary,
       ink: scheme.onPrimary,
@@ -117,69 +112,73 @@ abstract final class AppComponentThemes {
   /// OutlinedButton: the outline tone.
   static OutlinedButtonThemeData outlinedButtons(
     ColorScheme scheme,
+    MxSemanticColors semantic,
     TextTheme texts,
   ) => OutlinedButtonThemeData(
     style: _button(
       scheme,
+      semantic,
       texts,
       fill: null,
-      ink: MxDerivedColors.primaryInkOf(scheme),
-      edge: BorderSide(
-        color: MxDerivedColors.outlineEdgeOf(scheme),
-        width: AppStroke.hairline,
-      ),
+      ink: semantic.primaryForeground,
+      edge: BorderSide(color: scheme.outline, width: AppStroke.hairline),
     ),
   );
 
-  /// TextButton: primary ink, no fill — the framework's dialog actions.
-  static TextButtonThemeData textButtons(ColorScheme scheme, TextTheme texts) =>
-      TextButtonThemeData(
-        style: _button(
-          scheme,
-          texts,
-          fill: null,
-          ink: MxDerivedColors.primaryInkOf(scheme),
-          edge: BorderSide.none,
-        ),
-      );
+  /// TextButton: primaryForeground, no fill — the framework's dialog actions.
+  static TextButtonThemeData textButtons(
+    ColorScheme scheme,
+    MxSemanticColors semantic,
+    TextTheme texts,
+  ) => TextButtonThemeData(
+    style: _button(
+      scheme,
+      semantic,
+      texts,
+      fill: null,
+      ink: semantic.primaryForeground,
+      edge: BorderSide.none,
+    ),
+  );
 
   /// IconButton (IconButton contract): a 20 glyph in a 36 round ink box with
   /// a 48 touch area, the pressed overlay, and the focus ring on the
-  /// circle's edge (ruling R5).
-  static IconButtonThemeData iconButtons(ColorScheme scheme) =>
-      IconButtonThemeData(
-        style: ButtonStyle(
-          iconSize: const WidgetStatePropertyAll(AppIconSize.compact),
-          // A disabled one dims under the global 0.38 rule.
-          foregroundColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.disabled)
-                ? scheme.onSurface.withValues(alpha: AppOpacity.disabled)
-                : scheme.onSurface,
-          ),
-          overlayColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.pressed)
-                ? scheme.onSurface.withValues(alpha: AppOpacity.pressed)
-                : null,
-          ),
-          side: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.focused)
-                ? BorderSide(
-                    color: MxDerivedColors.primaryInkOf(scheme),
-                    width: AppStroke.focus,
-                  )
-                : null,
-          ),
-          shape: const WidgetStatePropertyAll(CircleBorder()),
-          fixedSize: const WidgetStatePropertyAll(
-            Size.square(AppSize.iconButtonInk),
-          ),
-          minimumSize: const WidgetStatePropertyAll(
-            Size.square(AppSize.iconButtonInk),
-          ),
-          padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-          tapTargetSize: MaterialTapTargetSize.padded,
-        ),
-      );
+  /// circle's edge, which has no fill, so the ring borders the ground.
+  static IconButtonThemeData iconButtons(
+    ColorScheme scheme,
+    MxSemanticColors semantic,
+  ) => IconButtonThemeData(
+    style: ButtonStyle(
+      iconSize: const WidgetStatePropertyAll(AppIconSize.compact),
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled)
+            ? scheme.onSurface.withValues(alpha: AppOpacity.disabled)
+            : scheme.onSurface,
+      ),
+      overlayColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.pressed)
+            ? scheme.onSurface.withValues(alpha: AppOpacity.pressed)
+            : null,
+      ),
+      side: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.focused)
+            ? BorderSide(
+                color: semantic.primaryForeground,
+                width: AppStroke.focus,
+              )
+            : null,
+      ),
+      shape: const WidgetStatePropertyAll(CircleBorder()),
+      fixedSize: const WidgetStatePropertyAll(
+        Size.square(AppSize.iconButtonInk),
+      ),
+      minimumSize: const WidgetStatePropertyAll(
+        Size.square(AppSize.iconButtonInk),
+      ),
+      padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+      tapTargetSize: MaterialTapTargetSize.padded,
+    ),
+  );
 
   static Color _scrim(ColorScheme scheme) =>
       scheme.scrim.withValues(alpha: AppEffects.scrimOpacity);
