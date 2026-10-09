@@ -17,6 +17,9 @@ enum MxFocusRingPlacement {
 /// `primaryForeground`, drawn around [child] while focus is inside it. The
 /// ring always borders the ground, never the control's fill, so it is one
 /// measured pair on every ground (`token_contrast_test.dart`).
+///
+/// Shown only in keyboard (traditional) highlight mode, as Material's focus
+/// highlight is; a touch tap or an autofocus on a phone draws nothing.
 class MxFocusRing extends StatefulWidget {
   const MxFocusRing({
     super.key,
@@ -36,6 +39,25 @@ class MxFocusRing extends StatefulWidget {
 
 class _MxFocusRingState extends State<MxFocusRing> {
   var _hasFocus = false;
+  var _showsHighlight =
+      FocusManager.instance.highlightMode == FocusHighlightMode.traditional;
+
+  @override
+  void initState() {
+    super.initState();
+    FocusManager.instance.addHighlightModeListener(_handleHighlightMode);
+  }
+
+  @override
+  void dispose() {
+    FocusManager.instance.removeHighlightModeListener(_handleHighlightMode);
+    super.dispose();
+  }
+
+  void _handleHighlightMode(FocusHighlightMode mode) {
+    if (!mounted) return;
+    setState(() => _showsHighlight = mode == FocusHighlightMode.traditional);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +71,7 @@ class _MxFocusRingState extends State<MxFocusRing> {
     // The tree stays the same with and without the ring, or the control's
     // own focus node would be disposed the moment the ring appears.
     return CustomPaint(
-      foregroundPainter: _hasFocus
+      foregroundPainter: _hasFocus && _showsHighlight
           ? MxFocusRingPainter(
               color: context.semanticColors.primaryForeground,
               radius: widget.radius,

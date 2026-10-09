@@ -58,6 +58,27 @@ void main() {
     expect(painter.ringRect(const Size(100, 40)).right, 103);
   });
 
+  testWidgets('touch highlight mode: focus paints no ring', (tester) async {
+    final node = FocusNode();
+    addTearDown(node.dispose);
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic,
+    );
+    await pumpMx(tester, host(focusNode: node));
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTouch;
+    node.requestFocus();
+    await tester.pump();
+    expect(node.hasPrimaryFocus, isTrue);
+    expect(ring, findsNothing);
+    // The ring listens to the mode: it appears once the mode turns keyboard.
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    await tester.pump();
+    expect(ring, findsOneWidget);
+  });
+
   testWidgets('inside placement inset the ring by the same offset', (
     tester,
   ) async {
