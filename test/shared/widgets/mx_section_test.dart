@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -52,13 +50,10 @@ void main() {
     );
   });
 
-  testWidgets('ghost dividers between rows, none after the last', (
+  testWidgets('outlineVariant dividers between rows, none after the last', (
     tester,
   ) async {
-    final ghost = MxDerivedColors.resolve(
-      AppColorSchemes.light,
-      MxSemanticColors.light,
-    ).ghostBorder;
+    final ghost = AppColorSchemes.light.outlineVariant;
     await pumpMx(tester, _width(MxSection(children: _rows(3))));
     final dividers = tester
         .widgetList<ColoredBox>(

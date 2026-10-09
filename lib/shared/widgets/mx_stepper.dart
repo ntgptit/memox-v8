@@ -14,6 +14,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_button_style.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 /// The bounded integer input (cards per session). It owns the invalid ring,
@@ -172,7 +173,7 @@ class _MxStepperState extends State<MxStepper> {
               ? Border.all(
                   color: widget.isInvalid
                       ? colors.error
-                      : context.derivedColors.primaryInk,
+                      : context.semanticColors.primaryForeground,
                   width: AppStroke.hairline,
                 )
               : null,
@@ -330,28 +331,30 @@ class _StepButtonState extends State<_StepButton> {
         // The icon carries the name into the button node; announcing the
         // tooltip too would read it twice.
         excludeFromSemantics: true,
-        child: TextButton(
-          onPressed: widget.onPressed == null ? null : _tap,
-          style:
-              appButtonStyle(
-                fill: colors.surfaceContainer,
-                ink: colors.onSurface,
-                edge: BorderSide.none,
-                pressedLayer: colors.onSurface,
-                focusColor: context.derivedColors.primaryInk,
-                height: AppSize.buttonSmall,
-                radius: AppRadius.md,
-                padding: MxStepper._buttonPadding,
-                label: context.textStyles.buttonLabel,
-              ).copyWith(
-                fixedSize: const WidgetStatePropertyAll(
-                  Size.square(AppSize.buttonSmall),
+        child: MxFocusRing(
+          radius: BorderRadius.circular(AppRadius.md),
+          child: TextButton(
+            onPressed: widget.onPressed == null ? null : _tap,
+            style:
+                appButtonStyle(
+                  fill: colors.surfaceContainer,
+                  ink: colors.onSurface,
+                  edge: BorderSide.none,
+                  pressedLayer: colors.onSurface,
+                  height: AppSize.buttonSmall,
+                  radius: AppRadius.md,
+                  padding: MxStepper._buttonPadding,
+                  label: context.textStyles.buttonLabel,
+                ).copyWith(
+                  fixedSize: const WidgetStatePropertyAll(
+                    Size.square(AppSize.buttonSmall),
+                  ),
                 ),
-              ),
-          child: Icon(
-            widget.icon,
-            size: AppIconSize.compact,
-            semanticLabel: widget.label,
+            child: Icon(
+              widget.icon,
+              size: AppIconSize.compact,
+              semanticLabel: widget.label,
+            ),
           ),
         ),
       ),

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 
 /// What the tappable rows share (spec §4.5, ruling S13):
 /// - the platform ripple across the whole row;
-/// - a 2px primary ring when focused;
+/// - the shared focus ring, inside the row, when focused;
 /// - the global 0.38 dim when disabled.
 ///
 /// A row without [onTap] is static: no ripple, and not focusable. A control
 /// inside the row keeps its own semantics node and its own tap.
-class MxRowInk extends StatefulWidget {
+class MxRowInk extends StatelessWidget {
   const MxRowInk({
     super.key,
     required this.onTap,
@@ -18,6 +18,7 @@ class MxRowInk extends StatefulWidget {
     this.onLongPress,
     this.isEnabled = true,
     this.shouldDimWhenDisabled = true,
+    this.semanticLabel,
   });
 
   final VoidCallback? onTap;
@@ -33,55 +34,37 @@ class MxRowInk extends StatefulWidget {
   /// blocked.
   final bool shouldDimWhenDisabled;
 
-  @override
-  State<MxRowInk> createState() => _MxRowInkState();
-}
-
-class _MxRowInkState extends State<MxRowInk> {
-  var _hasFocus = false;
-
-  @override
-  void didUpdateWidget(MxRowInk oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // A row that stops being tappable drops out of focus without a callback.
-    if (widget.onTap == null || !widget.isEnabled) _hasFocus = false;
-  }
+  /// What TalkBack reads for the tappable row in place of its children's
+  /// text; null merges the children's text as before.
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
-    final onTap = widget.onTap;
-    if (!widget.isEnabled) {
+    final onTap = this.onTap;
+    if (!isEnabled) {
       final disabled = onTap == null
-          ? widget.child
+          ? child
           : Semantics(
               container: true,
               button: true,
               enabled: false,
-              child: widget.child,
+              label: semanticLabel,
+              child: child,
             );
-      if (!widget.shouldDimWhenDisabled) return disabled;
+      if (!shouldDimWhenDisabled) return disabled;
       return Opacity(opacity: AppOpacity.disabled, child: disabled);
     }
-    if (onTap == null) return widget.child;
-    return Semantics(
-      container: true,
-      button: true,
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: widget.onLongPress,
-        onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
-        child: DecoratedBox(
-          position: DecorationPosition.foreground,
-          decoration: BoxDecoration(
-            border: _hasFocus
-                ? Border.all(
-                    color: context.derivedColors.primaryInk,
-                    width: AppStroke.focus,
-                  )
-                : null,
-          ),
-          child: widget.child,
-        ),
+    if (onTap == null) return child;
+    // The ring wraps the InkWell, whose node takes the focus: it hears only
+    // its descendants'.
+    return MxFocusRing(
+      radius: BorderRadius.circular(AppRadius.md),
+      placement: MxFocusRingPlacement.inside,
+      child: Semantics(
+        container: true,
+        button: true,
+        label: semanticLabel,
+        child: InkWell(onTap: onTap, onLongPress: onLongPress, child: child),
       ),
     );
   }

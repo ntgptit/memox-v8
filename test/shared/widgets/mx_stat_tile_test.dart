@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -44,7 +44,7 @@ void main() {
         tester.widget<Text>(find.text(value)).style?.color;
     final scheme = AppColorSchemes.light;
 
-    expect(ink('1'), MxDerivedColors.primaryInkOf(scheme));
+    expect(ink('1'), MxSemanticColors.light.primaryForeground);
     expect(ink('2'), scheme.onSurface);
     expect(ink('3'), scheme.onSurfaceVariant);
   });

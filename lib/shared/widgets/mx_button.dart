@@ -7,6 +7,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_button_style.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 /// Colour role of a button: the contract's four shipped tones, the soft
@@ -114,23 +115,25 @@ class MxButton extends StatelessWidget {
       hasIcon: icon != null || mark != null,
       isBlock: isBlock,
     );
-    final button = TextButton(
-      onPressed: isLoading ? null : onPressed,
-      autofocus: isAutofocused,
-      style: appButtonStyle(
-        fill: paint.fill,
-        ink: paint.ink,
-        edge: paint.edge,
-        pressedLayer: paint.fill == null ? paint.ink : context.colors.shadow,
-        focusColor: context.derivedColors.primaryInk,
-        height: geometry.height,
-        radius: geometry.radius,
-        padding: geometry.padding,
-        label: geometry.isSmallType
-            ? context.textStyles.buttonLabelSmall
-            : context.textStyles.buttonLabel,
+    final button = MxFocusRing(
+      radius: BorderRadius.circular(geometry.radius),
+      child: TextButton(
+        onPressed: isLoading ? null : onPressed,
+        autofocus: isAutofocused,
+        style: appButtonStyle(
+          fill: paint.fill,
+          ink: paint.ink,
+          edge: paint.edge,
+          pressedLayer: paint.fill == null ? paint.ink : context.colors.shadow,
+          height: geometry.height,
+          radius: geometry.radius,
+          padding: geometry.padding,
+          label: geometry.isSmallType
+              ? context.textStyles.buttonLabelSmall
+              : context.textStyles.buttonLabel,
+        ),
+        child: _content(paint.ink, geometry, context.textStyles.buttonDetail),
       ),
-      child: _content(paint.ink, geometry, context.textStyles.buttonDetail),
     );
     final block = isBlock
         ? SizedBox(width: double.infinity, child: button)
@@ -192,10 +195,7 @@ class MxButton extends StatelessWidget {
       return (
         fill: colors.surfaceContainerLowest,
         ink: colors.onSurface,
-        edge: BorderSide(
-          color: context.derivedColors.ghostBorder,
-          width: AppStroke.hairline,
-        ),
+        edge: BorderSide(color: colors.outline, width: AppStroke.hairline),
       );
     }
     return switch (tone) {
@@ -211,33 +211,27 @@ class MxButton extends StatelessWidget {
       ),
       MxButtonTone.outline => (
         fill: null,
-        ink: context.derivedColors.primaryInk,
-        edge: BorderSide(
-          color: context.derivedColors.outlineEdge,
-          width: AppStroke.hairline,
-        ),
+        ink: context.semanticColors.primaryForeground,
+        edge: BorderSide(color: colors.outline, width: AppStroke.hairline),
       ),
       // The quiet action beside a decision's fill (account UI spec U2): the
       // outline's ink without its edge.
       MxButtonTone.text => (
         fill: null,
-        ink: context.derivedColors.primaryInk,
+        ink: context.semanticColors.primaryForeground,
         edge: BorderSide.none,
       ),
       MxButtonTone.destructive => (
-        fill: context.semanticColors.errorFill,
-        ink: context.semanticColors.onErrorFill,
+        fill: colors.error,
+        ink: colors.onError,
         edge: BorderSide.none,
       ),
-      // The soft danger tint MxInlineBanner and MxCard.isDanger draw
-      // (FE-A6 D14); the solid pair above stays the destructive action's.
+      // The soft danger container, no edge (FE-A6 D14); the solid pair above
+      // stays the destructive action's.
       MxButtonTone.dangerSoft => (
-        fill: context.derivedColors.dangerSoft,
-        ink: colors.error,
-        edge: BorderSide(
-          color: context.derivedColors.dangerBorder,
-          width: AppStroke.hairline,
-        ),
+        fill: colors.errorContainer,
+        ink: colors.onErrorContainer,
+        edge: BorderSide.none,
       ),
       // The warning role and its ink, not the kit's orange and white, which
       // is about 2.8:1 (FE-B2 spec D15).

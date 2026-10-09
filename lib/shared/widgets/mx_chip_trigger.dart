@@ -6,6 +6,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_button_style.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 
 /// A ghost chip that opens a menu (sort, filters). No fill and no border,
 /// which sets it apart from MxFilterChip; it never reads as selected. The
@@ -27,35 +28,37 @@ class MxChipTrigger extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return TextButton(
-      onPressed: onPressed,
-      style: appButtonStyle(
-        fill: null,
-        ink: colors.onSurfaceVariant,
-        edge: BorderSide.none,
-        pressedLayer: colors.onSurfaceVariant,
-        focusColor: context.derivedColors.primaryInk,
-        height: AppSize.chip,
-        radius: AppRadius.full,
-        padding: AppSpacing.control,
-        label: context.textStyles.buttonLabelSmall,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        spacing: AppSpacing.micro,
-        children: [
-          // A label wider than the column ends in an ellipsis, as
-          // MxTagChip's does (SW-REV-010).
-          Flexible(
-            child: Text(
-              label,
-              maxLines: 1,
-              softWrap: false,
-              overflow: TextOverflow.ellipsis,
+    return MxFocusRing(
+      radius: BorderRadius.circular(AppRadius.full),
+      child: TextButton(
+        onPressed: onPressed,
+        style: appButtonStyle(
+          fill: null,
+          ink: colors.onSurfaceVariant,
+          edge: BorderSide.none,
+          pressedLayer: colors.onSurfaceVariant,
+          height: AppSize.chip,
+          radius: AppRadius.full,
+          padding: AppSpacing.control,
+          label: context.textStyles.buttonLabelSmall,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: AppSpacing.micro,
+          children: [
+            // A label wider than the column ends in an ellipsis, as
+            // MxTagChip's does (SW-REV-010).
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                softWrap: false,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-          Icon(icon, size: AppIconSize.inline),
-        ],
+            Icon(icon, size: AppIconSize.inline),
+          ],
+        ),
       ),
     );
   }

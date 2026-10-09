@@ -3,10 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
@@ -16,47 +18,81 @@ import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 import '../../support/widget_harness.dart';
 
-// Spec 2026-09-27 D2: in dark, primary as text, icon or focus ring reads in
-// primaryInk; fills, edges and tints keep primary.
+// Spec 2026-10-08 §4.1: the brand as text, glyph or ring is
+// primaryForeground, in both themes; fills and edges keep primary. The
+// widgets of the second block (badge, command row, empty state, icon tile,
+// study bar) still read the derived ink until their own groups move.
 void main() {
   final scheme = AppColorSchemes.dark;
+  // The derived ink the second block still reads (Tasks 12-13).
   final ink = MxDerivedColors.primaryInkOf(scheme);
 
   Future<void> pumpDark(WidgetTester tester, Widget child) =>
       pumpMx(tester, child, brightness: Brightness.dark);
 
+  /// Runs [body] in each theme with that theme's schemes.
+  Future<void> inBothThemes(
+    WidgetTester tester,
+    Future<void> Function(Brightness, ColorScheme, MxSemanticColors) body,
+  ) async {
+    for (final brightness in Brightness.values) {
+      final isLight = brightness == Brightness.light;
+      await body(
+        brightness,
+        isLight ? AppColorSchemes.light : AppColorSchemes.dark,
+        isLight ? MxSemanticColors.light : MxSemanticColors.dark,
+      );
+    }
+  }
+
   Color? textColor(WidgetTester tester, String text) =>
       tester.widget<Text>(find.text(text)).style?.color;
 
-  testWidgets('MxButton: outline ink and every focus ring are primaryInk; '
-      'the primary fill keeps primary', (tester) async {
-    await pumpDark(
-      tester,
-      Column(
-        children: [
-          MxButton(
-            label: 'Outline',
-            tone: MxButtonTone.outline,
-            onPressed: () {},
-          ),
-          MxButton(label: 'Fill', onPressed: () {}),
-        ],
-      ),
-    );
-    ButtonStyle style(String label) => tester
-        .widget<TextButton>(
-          find.descendant(
-            of: find.widgetWithText(MxButton, label),
-            matching: find.byType(TextButton),
-          ),
-        )
-        .style!;
-    const focused = {WidgetState.focused};
-    expect(style('Outline').foregroundColor!.resolve({}), ink);
-    expect(style('Outline').side!.resolve(focused)!.color, ink);
-    expect(style('Fill').backgroundColor!.resolve({}), scheme.primary);
-    expect(style('Fill').foregroundColor!.resolve({}), scheme.onPrimary);
-    expect(style('Fill').side!.resolve(focused)!.color, ink);
+  testWidgets('MxButton: outline and text ink are primaryForeground; the '
+      'primary fill keeps primary and its ring is the shared one', (
+    tester,
+  ) async {
+    await inBothThemes(tester, (brightness, colors, semantic) async {
+      await pumpMx(
+        tester,
+        Column(
+          children: [
+            MxButton(
+              label: 'Outline',
+              tone: MxButtonTone.outline,
+              onPressed: () {},
+            ),
+            MxButton(label: 'Text', tone: MxButtonTone.text, onPressed: () {}),
+            MxButton(label: 'Fill', onPressed: () {}),
+          ],
+        ),
+        brightness: brightness,
+      );
+      await tester.pumpAndSettle();
+      ButtonStyle style(String label) => tester
+          .widget<TextButton>(
+            find.descendant(
+              of: find.widgetWithText(MxButton, label),
+              matching: find.byType(TextButton),
+            ),
+          )
+          .style!;
+      const focused = {WidgetState.focused};
+      expect(
+        style('Outline').foregroundColor!.resolve({}),
+        semantic.primaryForeground,
+      );
+      expect(
+        style('Text').foregroundColor!.resolve({}),
+        semantic.primaryForeground,
+      );
+      expect(style('Fill').backgroundColor!.resolve({}), colors.primary);
+      expect(style('Fill').foregroundColor!.resolve({}), colors.onPrimary);
+      // No Material ring: MxFocusRing draws it outside the control.
+      expect(style('Fill').side!.resolve(focused), BorderSide.none);
+      expect(style('Outline').side!.resolve(focused)!.color, colors.outline);
+      expect(find.byType(MxFocusRing), findsNWidgets(3));
+    });
   });
 
   testWidgets('MxBadge: a tinted primary badge inks in primaryInk', (
@@ -88,7 +124,7 @@ void main() {
     expect(tester.widget<Icon>(find.byIcon(AppIcons.restore)).color, ink);
   });
 
-  testWidgets('MxWorkloadBreakdownLine: the today term is primaryInk', (
+  testWidgets('MxWorkloadBreakdownLine: the today term is primaryForeground', (
     tester,
   ) async {
     await pumpDark(
@@ -110,10 +146,10 @@ void main() {
         return span == null;
       });
     }
-    expect(span?.style?.color, ink);
+    expect(span?.style?.color, MxSemanticColors.dark.primaryForeground);
   });
 
-  testWidgets('MxSearchField: the focused search glyph is primaryInk', (
+  testWidgets('MxSearchField: the focused search glyph is primaryForeground', (
     tester,
   ) async {
     final controller = TextEditingController();
@@ -128,7 +164,10 @@ void main() {
     );
     await tester.tap(find.byType(TextField));
     await tester.pump();
-    expect(tester.widget<Icon>(find.byIcon(AppIcons.search)).color, ink);
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
+      MxSemanticColors.dark.primaryForeground,
+    );
   });
 
   testWidgets('MxEmptyState: the primary glyph is primaryInk; its tile tint '
@@ -140,7 +179,7 @@ void main() {
     expect(tester.widget<Icon>(find.byIcon(AppIcons.library)).color, ink);
   });
 
-  testWidgets('MxStatTile: the primary emphasis reads in primaryInk', (
+  testWidgets('MxStatTile: the primary emphasis reads in primaryForeground', (
     tester,
   ) async {
     await pumpDark(
@@ -151,7 +190,7 @@ void main() {
         emphasis: MxStatTileEmphasis.primary,
       ),
     );
-    expect(textColor(tester, '20'), ink);
+    expect(textColor(tester, '20'), MxSemanticColors.dark.primaryForeground);
   });
 
   testWidgets('MxIconTile: the tinted glyph is primaryInk without a seed', (
@@ -176,21 +215,27 @@ void main() {
     expect(textColor(tester, 'MATCH'), ink);
   });
 
-  testWidgets('MxSpinner: off a fill the arc is primaryInk; on a fill it is '
-      'onPrimary', (tester) async {
-    RenderObject ring() => tester.renderObject(
-      find
-          .descendant(
-            of: find.byType(MxSpinner),
-            matching: find.byType(CustomPaint),
-          )
-          .first,
-    );
-    await pumpDark(tester, const MxSpinner());
-    expect(ring(), paints..arc(color: ink));
-    await pumpDark(tester, const MxSpinner(isOnFill: true));
-    expect(ring(), paints..arc(color: scheme.onPrimary));
-  });
+  testWidgets(
+    'MxSpinner: off a fill the arc is primaryForeground; on a fill it is '
+    'onPrimary',
+    (tester) async {
+      RenderObject ring() => tester.renderObject(
+        find
+            .descendant(
+              of: find.byType(MxSpinner),
+              matching: find.byType(CustomPaint),
+            )
+            .first,
+      );
+      await pumpDark(tester, const MxSpinner());
+      expect(
+        ring(),
+        paints..arc(color: MxSemanticColors.dark.primaryForeground),
+      );
+      await pumpDark(tester, const MxSpinner(isOnFill: true));
+      expect(ring(), paints..arc(color: AppColorSchemes.dark.onPrimary));
+    },
+  );
 }
 
 String _count(int count) => '$count';

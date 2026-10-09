@@ -29,7 +29,7 @@ class MxSelectionCheckbox extends StatelessWidget {
               ? null
               : Border.all(
                   // A control edge: 3:1 on every ground (SW-REV-001).
-                  color: context.derivedColors.outlineEdge,
+                  color: colors.outline,
                   width: AppStroke.control,
                 ),
         ),

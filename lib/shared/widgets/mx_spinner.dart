@@ -65,7 +65,7 @@ class _MxSpinnerState extends State<MxSpinner>
           painter: _RingPainter(
             color: widget.isOnFill
                 ? colors.onPrimary
-                : context.derivedColors.primaryInk,
+                : context.semanticColors.primaryForeground,
           ),
         ),
       ),

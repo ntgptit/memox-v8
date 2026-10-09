@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -16,7 +18,7 @@ final _painted = find.descendant(
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('unselected: lowest fill, ghost edge, onSurface label', (
+  testWidgets('unselected: lowest fill, outline edge, onSurface label', (
     tester,
   ) async {
     await pumpMx(
@@ -30,12 +32,7 @@ void main() {
     expect(material.textStyle!.color, scheme.onSurface);
     expect(
       (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(
-        color: MxDerivedColors.resolve(
-          scheme,
-          MxSemanticColors.light,
-        ).ghostBorder,
-      ),
+      BorderSide(color: scheme.outline),
     );
   });
 
@@ -53,7 +50,7 @@ void main() {
     expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
   });
 
-  testWidgets('the count sits at 60% resting and at full ink selected', (
+  testWidgets('the count rests in onSurfaceVariant and is full ink selected', (
     tester,
   ) async {
     await pumpMx(
@@ -67,7 +64,7 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text('12')).style!.color,
-      scheme.onSurface.withValues(alpha: 0.6),
+      scheme.onSurfaceVariant,
     );
 
     await pumpMx(
@@ -168,6 +165,40 @@ void main() {
           )
           .overflow,
       TextOverflow.ellipsis,
+    );
+  });
+
+  testWidgets('the chip edge is outline; focus draws the shared MxFocusRing '
+      'in primaryForeground', (tester) async {
+    await pumpMx(
+      tester,
+      MxFilterChip(label: 'Due', isSelected: false, onSelected: (_) {}),
+    );
+    final style = tester.widget<TextButton>(find.byType(TextButton)).style!;
+    expect(style.side!.resolve({})!.color, scheme.outline);
+    // The ring is the shared one, not the Material side.
+    expect(style.side!.resolve({WidgetState.focused})!.color, scheme.outline);
+    expect(
+      tester.widget<MxFocusRing>(find.byType(MxFocusRing)).radius,
+      BorderRadius.circular(AppRadius.full),
+    );
+
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    final ring = tester.widget<CustomPaint>(
+      find.byWidgetPredicate(
+        (w) => w is CustomPaint && w.foregroundPainter is MxFocusRingPainter,
+      ),
+    );
+    expect(
+      (ring.foregroundPainter! as MxFocusRingPainter).color,
+      MxSemanticColors.light.primaryForeground,
     );
   });
 }

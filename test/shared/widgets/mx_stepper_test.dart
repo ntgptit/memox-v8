@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 
@@ -186,5 +189,38 @@ void main() {
       ),
     );
     handle.dispose();
+  });
+
+  testWidgets('each step button wears the shared ring in primaryForeground '
+      'when focused, not a Material side', (tester) async {
+    await pumpMx(tester, _stepper(onDecrement: () {}, onIncrement: () {}));
+    expect(find.byType(MxFocusRing), findsNWidgets(2));
+    expect(
+      tester
+          .widgetList<TextButton>(find.byType(TextButton))
+          .map((b) => b.style!.side!.resolve({WidgetState.focused})),
+      everyElement(BorderSide.none),
+    );
+
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    final painter =
+        tester
+                .widget<CustomPaint>(
+                  find.byWidgetPredicate(
+                    (w) =>
+                        w is CustomPaint &&
+                        w.foregroundPainter is MxFocusRingPainter,
+                  ),
+                )
+                .foregroundPainter!
+            as MxFocusRingPainter;
+    expect(painter.color, MxSemanticColors.light.primaryForeground);
   });
 }

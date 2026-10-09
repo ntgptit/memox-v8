@@ -89,7 +89,7 @@ class MxNote extends StatelessWidget {
         color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
-          color: context.derivedColors.ghostBorder,
+          color: colors.outlineVariant,
           width: AppStroke.hairline,
         ),
       ),

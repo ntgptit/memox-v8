@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 
 import '../../support/widget_harness.dart';
@@ -166,5 +167,17 @@ void main() {
 
     await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
     handle.dispose();
+  });
+
+  testWidgets('typing rings the number in primaryForeground', (tester) async {
+    await pumpMx(tester, _Bounded(onSubmitted: (_) {}));
+    await tester.tap(find.byKey(_valueKey));
+    await tester.pump();
+
+    final ring =
+        (tester.widget<DecoratedBox>(find.byKey(_valueKey)).decoration
+                as BoxDecoration)
+            .border!;
+    expect(ring, Border.all(color: MxSemanticColors.light.primaryForeground));
   });
 }

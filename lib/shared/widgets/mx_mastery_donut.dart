@@ -36,10 +36,10 @@ class MxMasteryDonut extends StatelessWidget {
     final semantic = context.semanticColors;
     final colors = context.colors;
     // The arc is the ramp's fill; the label is text, so it takes the band's
-    // foreground (SW-REV-001). Ruling S10: 0% falls in the lowest band.
+    // foreground. Ruling S10: 0% falls in the lowest band.
     final fill =
         MasteryRamp.fill(semantic, colors, fraction) ?? semantic.warning;
-    final ink = MasteryRamp.foreground(semantic, colors, fraction);
+    final foreground = MasteryRamp.foreground(semantic, colors, fraction);
     final percent = NumberFormat.percentPattern(
       Localizations.localeOf(context).toString(),
     ).format(MasteryRamp.percent(fraction) / 100);
@@ -50,14 +50,17 @@ class MxMasteryDonut extends StatelessWidget {
           fraction: fraction,
           arc: fill,
           // Ruling S10: the contract's track, not the ramp's progress-track.
-          track: context.colors.surfaceContainer,
+          track: colors.outlineVariant,
         ),
         child: Center(
           child: SizedBox.square(
             dimension: _innerDiameter,
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text(percent, style: context.textStyles.donutLabel(ink)),
+              child: Text(
+                percent,
+                style: context.textStyles.donutLabel(foreground),
+              ),
             ),
           ),
         ),

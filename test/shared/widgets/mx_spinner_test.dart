@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -50,22 +50,23 @@ void main() {
     expect(tester.getSize(find.byType(MxSpinner)), const Size.square(16));
   });
 
-  testWidgets('a 2px ring: primaryInk on a surface, onPrimary on a fill', (
-    tester,
-  ) async {
-    await pumpMx(tester, const MxSpinner());
-    expect(
-      _ring(tester),
-      paints..arc(
-        color: MxDerivedColors.primaryInkOf(scheme),
-        strokeWidth: 2,
-        style: PaintingStyle.stroke,
-      ),
-    );
+  testWidgets(
+    'a 2px ring: primaryForeground on a surface, onPrimary on a fill',
+    (tester) async {
+      await pumpMx(tester, const MxSpinner());
+      expect(
+        _ring(tester),
+        paints..arc(
+          color: MxSemanticColors.light.primaryForeground,
+          strokeWidth: 2,
+          style: PaintingStyle.stroke,
+        ),
+      );
 
-    await pumpMx(tester, const MxSpinner(isOnFill: true));
-    expect(_ring(tester), paints..arc(color: scheme.onPrimary));
-  });
+      await pumpMx(tester, const MxSpinner(isOnFill: true));
+      expect(_ring(tester), paints..arc(color: scheme.onPrimary));
+    },
+  );
 
   testWidgets('a quarter turn every 0.2s, also under reduced motion (O1)', (
     tester,

@@ -20,8 +20,8 @@ final class MxNavDestination {
   final String label;
 }
 
-/// The top-level destinations on a bar of the page surface with the ghost
-/// edge, a tinted pill behind the current glyph. It is in-flow, never over
+/// The top-level destinations on a bar of the page surface with the
+/// outlineVariant edge, a primaryContainer pill behind the current glyph. It is in-flow, never over
 /// the scroll (so a backdrop blur had nothing to blur, DEV-302), and adds
 /// the gesture inset below itself.
 class MxBottomNav extends StatelessWidget {
@@ -39,19 +39,10 @@ class MxBottomNav extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
-  static const double _pillTintLight = 0.14;
-  static const double _pillTintDark = 0.20;
-
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final derived = context.derivedColors;
     final inset = MediaQuery.paddingOf(context).bottom;
-    final pillTint = colors.primary.withValues(
-      alpha: colors.brightness == Brightness.dark
-          ? _pillTintDark
-          : _pillTintLight,
-    );
     final radius = BorderRadius.circular(AppRadius.lg);
     return Padding(
       padding: EdgeInsets.fromLTRB(
@@ -67,7 +58,7 @@ class MxBottomNav extends StatelessWidget {
             color: colors.surface,
             borderRadius: radius,
             border: Border.all(
-              color: derived.ghostBorder,
+              color: colors.outlineVariant,
               width: AppStroke.hairline,
             ),
           ),
@@ -83,7 +74,6 @@ class MxBottomNav extends StatelessWidget {
                       child: _Item(
                         destination: destination,
                         isSelected: index == selectedIndex,
-                        pillTint: pillTint,
                         onTap: () => onSelected(index),
                       ),
                     ),
@@ -101,13 +91,11 @@ class _Item extends StatelessWidget {
   const _Item({
     required this.destination,
     required this.isSelected,
-    required this.pillTint,
     required this.onTap,
   });
 
   final MxNavDestination destination;
   final bool isSelected;
-  final Color pillTint;
   final VoidCallback onTap;
 
   @override
@@ -126,7 +114,7 @@ class _Item extends StatelessWidget {
           children: [
             DecoratedBox(
               decoration: BoxDecoration(
-                color: isSelected ? pillTint : null,
+                color: isSelected ? colors.primaryContainer : null,
                 borderRadius: BorderRadius.circular(AppRadius.full),
               ),
               child: Padding(
@@ -138,7 +126,7 @@ class _Item extends StatelessWidget {
                   isSelected ? destination.selectedIcon : destination.icon,
                   size: AppIconSize.compact,
                   color: isSelected
-                      ? context.derivedColors.primaryInk
+                      ? colors.onPrimaryContainer
                       : colors.onSurfaceVariant,
                 ),
               ),

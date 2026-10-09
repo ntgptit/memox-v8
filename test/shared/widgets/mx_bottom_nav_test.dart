@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -65,28 +65,30 @@ void main() {
     expect(widths.toSet(), hasLength(1));
   });
 
-  testWidgets('the selected destination is primaryInk with its filled glyph', (
-    tester,
-  ) async {
-    await pumpMx(tester, _nav(selected: 1));
+  testWidgets(
+    'the selected destination is a filled onPrimaryContainer glyph with its label in primaryForeground on the bar',
+    (tester) async {
+      await pumpMx(tester, _nav(selected: 1));
 
-    expect(find.byIcon(AppIcons.studySelected), findsOneWidget);
-    expect(find.byIcon(AppIcons.study), findsNothing);
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      MxDerivedColors.primaryInkOf(scheme),
-    );
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
-      scheme.onSurfaceVariant,
-    );
-    expect(
-      tester.widget<Text>(find.text('Study')).style!.color,
-      MxDerivedColors.primaryInkOf(scheme),
-    );
-  });
+      expect(find.byIcon(AppIcons.studySelected), findsOneWidget);
+      expect(find.byIcon(AppIcons.study), findsNothing);
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
+        scheme.onPrimaryContainer,
+      );
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
+        scheme.onSurfaceVariant,
+      );
+      // The label sits on the bar's ground, not on the pill: the brand as text.
+      expect(
+        tester.widget<Text>(find.text('Study')).style!.color,
+        MxSemanticColors.light.primaryForeground,
+      );
+    },
+  );
 
-  testWidgets('the pill tints primary at 14% in light', (tester) async {
+  testWidgets('the pill is primaryContainer, in both themes', (tester) async {
     await pumpMx(tester, _nav());
     final pill = tester.widget<DecoratedBox>(
       find
@@ -97,10 +99,7 @@ void main() {
           .first,
     );
 
-    expect(
-      (pill.decoration as BoxDecoration).color,
-      scheme.primary.withValues(alpha: 0.14),
-    );
+    expect((pill.decoration as BoxDecoration).color, scheme.primaryContainer);
   });
 
   testWidgets('a tap reports the index; the selected item is marked', (
@@ -119,21 +118,55 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('the bar is the page surface with the ghost edge, no backdrop '
-      'blur: nothing scrolls under it (DEV-302)', (tester) async {
-    await pumpMx(tester, _nav());
+  testWidgets(
+    'the bar is the page surface with the outlineVariant edge, no backdrop '
+    'blur: nothing scrolls under it (DEV-302)',
+    (tester) async {
+      await pumpMx(tester, _nav());
 
-    expect(find.byType(BackdropFilter), findsNothing);
-    final bar = tester.widget<DecoratedBox>(
-      find
-          .descendant(
-            of: find.byType(MxBottomNav),
-            matching: find.byType(DecoratedBox),
-          )
-          .first,
-    );
-    expect((bar.decoration as BoxDecoration).color, scheme.surface);
-  });
+      expect(find.byType(BackdropFilter), findsNothing);
+      final bar = tester.widget<DecoratedBox>(
+        find
+            .descendant(
+              of: find.byType(MxBottomNav),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      );
+      expect((bar.decoration as BoxDecoration).color, scheme.surface);
+      expect(
+        (bar.decoration as BoxDecoration).border,
+        Border.all(color: scheme.outlineVariant),
+      );
+    },
+  );
+
+  testWidgets(
+    'dark: the pill is primaryContainer, the glyph onPrimaryContainer, the label primaryForeground',
+    (tester) async {
+      final dark = AppColorSchemes.dark;
+      await pumpMx(tester, _nav(selected: 1), brightness: Brightness.dark);
+      await tester.pumpAndSettle();
+      final pill = tester.widget<DecoratedBox>(
+        find
+            .ancestor(
+              of: find.byIcon(AppIcons.studySelected),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      );
+
+      expect((pill.decoration as BoxDecoration).color, dark.primaryContainer);
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
+        dark.onPrimaryContainer,
+      );
+      expect(
+        tester.widget<Text>(find.text('Study')).style!.color,
+        MxSemanticColors.dark.primaryForeground,
+      );
+    },
+  );
 
   test('selectedIndex outside the destinations is rejected', () {
     expect(() => _nav(selected: 4), throwsAssertionError);

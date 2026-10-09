@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../support/widget_harness.dart';
@@ -14,7 +15,7 @@ double _thumbOffset(WidgetTester tester) =>
     tester.getTopLeft(find.byKey(_thumbKey)).dx -
     tester.getTopLeft(find.byKey(_trackKey)).dx;
 
-/// The ring over the track: the off edge or the focus ring.
+/// The off edge over the track; the focus ring is MxFocusRing's.
 Border? _ring(WidgetTester tester) =>
     (tester
                     .widget<AnimatedContainer>(find.byKey(_trackKey))
@@ -56,17 +57,14 @@ void main() {
     expect(_thumbOffset(tester), 21);
   });
 
-  testWidgets('off: a 2 Outline Edge, 3:1 on every ground, and a variant-ink '
+  testWidgets('off: a 2 outline edge, 3:1 on every ground, and a variant-ink '
       'thumb, 3:1 on the track; '
-      'on: no edge, a bright thumb (FE-C1)', (tester) async {
+      'on: no edge, an onPrimary thumb (FE-C1, R17)', (tester) async {
     await pumpMx(
       tester,
       MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
     );
-    expect(
-      _ring(tester),
-      Border.all(color: MxDerivedColors.outlineEdgeOf(scheme), width: 2),
-    );
+    expect(_ring(tester), Border.all(color: scheme.outline, width: 2));
     // The thumb sits on the track's fill: variant ink, 3:1 there.
     expect(_thumbColor(tester), scheme.onSurfaceVariant);
 
@@ -76,7 +74,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(_ring(tester), isNull);
-    expect(_thumbColor(tester), scheme.surfaceBright);
+    expect(_thumbColor(tester), scheme.onPrimary);
   });
 
   testWidgets('a tap reports the flipped value', (tester) async {
@@ -111,12 +109,62 @@ void main() {
     await expectAccessibleTargets(tester);
   });
 
-  testWidgets('focus draws the ring without moving the thumb', (tester) async {
+  testWidgets(
+    'focus draws the ring outside the track without moving the thumb',
+    (tester) async {
+      await pumpMx(
+        tester,
+        MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
+      );
+      final before = _thumbOffset(tester);
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+      addTearDown(
+        () => FocusManager.instance.highlightStrategy =
+            FocusHighlightStrategy.automatic,
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MxFocusRing), findsOneWidget);
+      // The ring is drawn outside the track; the track's own edge is unchanged.
+      expect(_ring(tester), Border.all(color: scheme.outline, width: 2));
+      expect(_thumbOffset(tester), before);
+    },
+  );
+
+  testWidgets('on: the thumb is onPrimary (R17: the internal mark carries '
+      'the state); off: the edge is outline', (tester) async {
+    for (final brightness in Brightness.values) {
+      final scheme = brightness == Brightness.light
+          ? AppColorSchemes.light
+          : AppColorSchemes.dark;
+      await pumpMx(
+        tester,
+        MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Reminders'),
+        brightness: brightness,
+      );
+      await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
+      expect(_thumbColor(tester), scheme.onPrimary);
+      await pumpMx(
+        tester,
+        MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
+        brightness: brightness,
+      );
+      await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
+      expect(_ring(tester)!.top.color, scheme.outline);
+    }
+  });
+
+  testWidgets('focus: a ring outside the track in primaryForeground', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
     );
-    final before = _thumbOffset(tester);
     FocusManager.instance.highlightStrategy =
         FocusHighlightStrategy.alwaysTraditional;
     addTearDown(
@@ -124,13 +172,69 @@ void main() {
           FocusHighlightStrategy.automatic,
     );
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-    await tester.pumpAndSettle();
+    await tester.pump();
+    expect(find.byType(MxFocusRing), findsOneWidget);
+    final painter =
+        tester
+                .widget<CustomPaint>(
+                  find.byWidgetPredicate(
+                    (w) =>
+                        w is CustomPaint &&
+                        w.foregroundPainter is MxFocusRingPainter,
+                  ),
+                )
+                .foregroundPainter!
+            as MxFocusRingPainter;
+    expect(painter.color, MxSemanticColors.light.primaryForeground);
+    // Focus adds the outside ring and leaves the off edge as it was.
+    expect(_ring(tester)!.top.color, AppColorSchemes.light.outline);
+  });
+
+  testWidgets('keyboard: the focused toggle flips on Space and reports once', (
+    tester,
+  ) async {
+    final reported = <bool>[];
+    await pumpMx(
+      tester,
+      MxToggle(
+        isOn: false,
+        onChanged: reported.add,
+        semanticLabel: 'Reminders',
+      ),
+    );
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pump();
+
+    expect(reported, [true]);
+  });
+
+  testWidgets('disabled takes no focus and draws no ring', (tester) async {
+    await pumpMx(
+      tester,
+      const MxToggle(isOn: false, onChanged: null, semanticLabel: 'Reminders'),
+    );
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
 
     expect(
-      _ring(tester),
-      Border.all(color: MxDerivedColors.primaryInkOf(scheme), width: 2),
+      find.byWidgetPredicate(
+        (w) => w is CustomPaint && w.foregroundPainter is MxFocusRingPainter,
+      ),
+      findsNothing,
     );
-    expect(_thumbOffset(tester), before);
   });
 
   testWidgets('disabled dims to 0.38 and ignores taps', (tester) async {

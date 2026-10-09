@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 
 import '../../support/widget_harness.dart';
@@ -63,5 +68,43 @@ void main() {
           .overflow,
       TextOverflow.ellipsis,
     );
+  });
+
+  testWidgets('pressed lays onSurfaceVariant; focus draws the shared ring in '
+      'primaryForeground, not a Material side', (tester) async {
+    await pumpMx(tester, MxChipTrigger(label: 'Sort', onPressed: () {}));
+    final style = tester.widget<TextButton>(find.byType(TextButton)).style!;
+    expect(
+      style.overlayColor!.resolve({WidgetState.pressed}),
+      AppColorSchemes.light.onSurfaceVariant.withValues(
+        alpha: AppOpacity.pressed,
+      ),
+    );
+    expect(style.side!.resolve({WidgetState.focused}), BorderSide.none);
+    expect(
+      tester.widget<MxFocusRing>(find.byType(MxFocusRing)).radius,
+      BorderRadius.circular(AppRadius.full),
+    );
+
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    final painter =
+        tester
+                .widget<CustomPaint>(
+                  find.byWidgetPredicate(
+                    (w) =>
+                        w is CustomPaint &&
+                        w.foregroundPainter is MxFocusRingPainter,
+                  ),
+                )
+                .foregroundPainter!
+            as MxFocusRingPainter;
+    expect(painter.color, MxSemanticColors.light.primaryForeground);
   });
 }

@@ -99,21 +99,16 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
       (
         overdueCount,
         overdueLabel,
-        context.derivedColors.warningInk,
+        context.semanticColors.warning,
         AppIcons.overdue,
       ),
       (
         todayCount,
         todayLabel,
-        context.derivedColors.primaryInk,
+        context.semanticColors.primaryForeground,
         AppIcons.dueNow,
       ),
-      (
-        newCount,
-        newLabel,
-        context.derivedColors.statusNewInk,
-        AppIcons.newCards,
-      ),
+      (newCount, newLabel, context.colors.onSurfaceVariant, AppIcons.newCards),
       if (scheduledLabel case final label?)
         (scheduledCount, label, muted, null),
     ].where((term) => shouldKeepZeroTerms || term.$1 > 0).toList();

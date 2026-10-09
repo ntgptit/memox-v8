@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -17,46 +18,57 @@ void main() {
     expect(find.byType(InkWell), findsNothing);
   });
 
-  testWidgets('tappable: fires, and focus draws the 2px primaryInk ring', (
-    tester,
-  ) async {
-    var taps = 0;
+  testWidgets(
+    'tappable: fires, and focus draws the shared ring inside the row in primaryForeground',
+    (tester) async {
+      var taps = 0;
+      await pumpMx(
+        tester,
+        MxRowInk(
+          onTap: () => taps++,
+          child: const SizedBox(width: 200, height: 48),
+        ),
+      );
+      await tester.tap(find.byType(MxRowInk));
+      expect(taps, 1);
+
+      FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+      addTearDown(
+        () => FocusManager.instance.highlightStrategy =
+            FocusHighlightStrategy.automatic,
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      final ring = tester.widget<CustomPaint>(
+        find.byWidgetPredicate(
+          (w) => w is CustomPaint && w.foregroundPainter is MxFocusRingPainter,
+        ),
+      );
+      final painter = ring.foregroundPainter! as MxFocusRingPainter;
+
+      expect(painter.color, MxSemanticColors.light.primaryForeground);
+      expect(painter.placement, MxFocusRingPlacement.inside);
+      expect(painter.radius, BorderRadius.circular(AppRadius.md));
+    },
+  );
+
+  testWidgets('a semanticLabel names the row on its own node', (tester) async {
+    final handle = tester.ensureSemantics();
     await pumpMx(
       tester,
       MxRowInk(
-        onTap: () => taps++,
+        onTap: () {},
+        semanticLabel: 'Open deck',
         child: const SizedBox(width: 200, height: 48),
       ),
     );
-    await tester.tap(find.byType(MxRowInk));
-    expect(taps, 1);
-
-    FocusManager.instance.highlightStrategy =
-        FocusHighlightStrategy.alwaysTraditional;
-    addTearDown(
-      () => FocusManager.instance.highlightStrategy =
-          FocusHighlightStrategy.automatic,
-    );
-    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-    await tester.pump();
-    final ring =
-        tester
-                .widget<DecoratedBox>(
-                  find.descendant(
-                    of: find.byType(MxRowInk),
-                    matching: find.byType(DecoratedBox),
-                  ),
-                )
-                .decoration
-            as BoxDecoration;
 
     expect(
-      ring.border,
-      Border.all(
-        color: MxDerivedColors.primaryInkOf(AppColorSchemes.light),
-        width: 2,
-      ),
+      tester.getSemantics(find.byType(InkWell)),
+      isSemantics(label: 'Open deck', isButton: true, hasTapAction: true),
     );
+    handle.dispose();
   });
 
   testWidgets('disabled: 0.38, no tap, a disabled button', (tester) async {

@@ -4,7 +4,7 @@ import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -82,7 +82,9 @@ void main() {
     );
   }, variant: TargetPlatformVariant.all());
 
-  testWidgets('focus lightens the fill and tints the glyph', (tester) async {
+  testWidgets('focus lightens the fill and the glyph reads primaryForeground', (
+    tester,
+  ) async {
     await pump(tester);
     await tester.tap(find.byType(TextField));
     await tester.pump();
@@ -91,7 +93,7 @@ void main() {
     expect(field.decoration!.fillColor, scheme.surfaceContainerLowest);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
-      MxDerivedColors.primaryInkOf(scheme),
+      MxSemanticColors.light.primaryForeground,
     );
   });
 

@@ -140,7 +140,7 @@ class MxSheetActions extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: context.derivedColors.ghostBorder,
+            color: context.colors.outlineVariant,
             width: AppStroke.hairline,
           ),
         ),

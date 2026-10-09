@@ -85,15 +85,13 @@ class _MxCodeFieldState extends State<MxCodeField> {
     }
     if (isNext) {
       return BorderSide(
-        color: context.derivedColors.primaryInk,
+        color: context.semanticColors.primaryForeground,
         width: AppStroke.focus,
       );
     }
-    // A disabled code rests on the ghost edge, as a disabled field does.
+    // A disabled code rests on outlineVariant, as a disabled field does.
     return BorderSide(
-      color: widget.field.isEnabled
-          ? context.derivedColors.outlineEdge
-          : context.derivedColors.ghostBorder,
+      color: widget.field.isEnabled ? colors.outline : colors.outlineVariant,
       width: AppStroke.hairline,
     );
   }

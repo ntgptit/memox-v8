@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_nav_rail.dart';
 
@@ -79,32 +78,32 @@ void main() {
     }
   });
 
-  testWidgets('the selected item: filled glyph in primaryInk on the pill; '
-      'the rest outlined in onSurfaceVariant', (tester) async {
-    await pumpMx(tester, _rail(selected: 1));
+  testWidgets(
+    'the selected item: filled glyph in onPrimaryContainer on the pill; '
+    'the rest outlined in onSurfaceVariant',
+    (tester) async {
+      await pumpMx(tester, _rail(selected: 1));
 
-    expect(find.byIcon(AppIcons.study), findsNothing);
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      MxDerivedColors.primaryInkOf(scheme),
-    );
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
-      scheme.onSurfaceVariant,
-    );
-    final pill = tester.widget<DecoratedBox>(
-      find
-          .ancestor(
-            of: find.byIcon(AppIcons.studySelected),
-            matching: find.byType(DecoratedBox),
-          )
-          .first,
-    );
-    expect(
-      (pill.decoration as BoxDecoration).color,
-      scheme.primary.withValues(alpha: 0.14),
-    );
-  });
+      expect(find.byIcon(AppIcons.study), findsNothing);
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
+        scheme.onPrimaryContainer,
+      );
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
+        scheme.onSurfaceVariant,
+      );
+      final pill = tester.widget<DecoratedBox>(
+        find
+            .ancestor(
+              of: find.byIcon(AppIcons.studySelected),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      );
+      expect((pill.decoration as BoxDecoration).color, scheme.primaryContainer);
+    },
+  );
 
   testWidgets('a tap reports its index, a re-tap of the current one too', (
     tester,
