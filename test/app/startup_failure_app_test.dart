@@ -87,6 +87,7 @@ void main() {
     // it is removed.
     final blocker = File('${root.path}/blocker')..createSync();
     final file = File('${blocker.path}/app.db');
+    final closing = <Future<void>>[];
     var opens = 0;
     final container = ProviderContainer(
       overrides: [
@@ -96,7 +97,7 @@ void main() {
         databaseProvider.overrideWith((ref) {
           opens++;
           final db = AppDatabase(NativeDatabase(file));
-          ref.onDispose(db.close);
+          ref.onDispose(() => closing.add(db.close()));
           return db;
         }),
       ],
@@ -133,5 +134,14 @@ void main() {
     expect(find.byType(MemoxApp), findsOneWidget);
     expect(find.byType(StartupFailureApp), findsNothing);
     expect(opens, 2);
+
+    // Windows will not delete an open file. A close ends once the database's
+    // streams lose their listeners and its timers run, so the app and the
+    // container go first, and the close is awaited before the temp root goes.
+    await tester.pumpWidget(const SizedBox.shrink());
+    container.dispose();
+    final closed = Future.wait(closing);
+    await tester.pump(const Duration(seconds: 1));
+    await closed;
   });
 }

@@ -229,12 +229,16 @@ void main() {
   test('Retry opens the database again from a fresh connection and, once the '
       'file opens, finishes the start (DEV-195)', () async {
     final file = _blockedFile('busy');
+    // Windows will not delete an open file, and dispose does not wait for a
+    // close: the temp root goes only once every close has finished.
+    final closing = <Future<void>>[];
+    addTearDown(() => Future.wait(closing));
     var opens = 0;
     final c = container([
       databaseProvider.overrideWith((ref) {
         opens++;
         final db = AppDatabase(NativeDatabase(file));
-        ref.onDispose(db.close);
+        ref.onDispose(() => closing.add(db.close()));
         return db;
       }),
       accountCoordinatorProvider.overrideWithValue(null),
