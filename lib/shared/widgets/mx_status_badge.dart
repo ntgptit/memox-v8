@@ -6,6 +6,40 @@ import 'package:memox/core/theme/theme_context.dart';
 /// The card lifecycle, in order.
 enum MxCardStatus { newCard, learning, reviewing, mastered }
 
+/// The one place a card status becomes colour (spec 2026-10-08 §4.7): the
+/// fill of a dot or a bar, the foreground of text on a neutral ground, the
+/// tonal ground of a pill and the text on it. The status badge, the card
+/// row, the workload line and the Progress rows all read these.
+extension MxCardStatusColors on MxCardStatus {
+  Color fill(BuildContext context) => switch (this) {
+    MxCardStatus.newCard => context.colors.outline,
+    MxCardStatus.learning => context.semanticColors.warning,
+    MxCardStatus.reviewing => context.colors.primary,
+    MxCardStatus.mastered => context.semanticColors.mastery,
+  };
+
+  Color foreground(BuildContext context) => switch (this) {
+    MxCardStatus.newCard => context.colors.onSurfaceVariant,
+    MxCardStatus.learning => context.semanticColors.warning,
+    MxCardStatus.reviewing => context.semanticColors.primaryForeground,
+    MxCardStatus.mastered => context.semanticColors.mastery,
+  };
+
+  Color container(BuildContext context) => switch (this) {
+    MxCardStatus.newCard => context.colors.surfaceContainerHigh,
+    MxCardStatus.learning => context.semanticColors.warningContainer,
+    MxCardStatus.reviewing => context.colors.primaryContainer,
+    MxCardStatus.mastered => context.semanticColors.masteryContainer,
+  };
+
+  Color onContainer(BuildContext context) => switch (this) {
+    MxCardStatus.newCard => context.colors.onSurfaceVariant,
+    MxCardStatus.learning => context.semanticColors.onWarningContainer,
+    MxCardStatus.reviewing => context.colors.onPrimaryContainer,
+    MxCardStatus.mastered => context.semanticColors.onMasteryContainer,
+  };
+}
+
 /// Names a card's lifecycle state; a Badge counts things. The status fixes
 /// the colour. The caller passes the localized name (ruling S6), which the
 /// bare dot uses as its semantics label.
@@ -30,35 +64,19 @@ class MxStatusBadge extends StatelessWidget {
 
   /// The dot sits closer to the start edge than the label to the end edge.
   static const double _startPadding = 6;
-  static const double _tint = 0.12;
 
   @override
   Widget build(BuildContext context) {
-    final semantic = context.semanticColors;
-    final color = switch (status) {
-      MxCardStatus.newCard => semantic.statusNew,
-      MxCardStatus.learning => semantic.statusLearning,
-      MxCardStatus.reviewing => semantic.statusReviewing,
-      MxCardStatus.mastered => semantic.statusMastered,
-    };
-    final derived = context.derivedColors;
-    // The label reads in the status ink (AA); dot and fill keep the colour.
-    final ink = switch (status) {
-      MxCardStatus.newCard => derived.statusNewInk,
-      MxCardStatus.learning => derived.statusLearningInk,
-      MxCardStatus.reviewing => derived.statusReviewingInk,
-      MxCardStatus.mastered => derived.statusMasteredInk,
-    };
     if (isDot) {
       return Semantics(
         container: true,
         label: label,
-        child: _Dot(color: color, size: _bareDot),
+        child: _Dot(color: status.fill(context), size: _bareDot),
       );
     }
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: color.withValues(alpha: _tint),
+        color: status.container(context),
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
       child: ConstrainedBox(
@@ -72,12 +90,14 @@ class MxStatusBadge extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             spacing: AppSpacing.micro,
             children: [
-              _Dot(color: color, size: _pillDot),
+              _Dot(color: status.fill(context), size: _pillDot),
               Text(
                 label,
                 maxLines: 1,
                 softWrap: false,
-                style: context.textStyles.badgeLabel(ink),
+                style: context.textStyles.badgeLabel(
+                  status.onContainer(context),
+                ),
               ),
             ],
           ),
