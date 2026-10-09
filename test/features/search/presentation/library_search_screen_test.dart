@@ -155,7 +155,14 @@ void main() {
     expect(decks, findsOneWidget);
     expect(cards, findsOneWidget);
     expect(tester.getTopLeft(decks).dy, lessThan(tester.getTopLeft(cards).dy));
-    expect(find.widgetWithText(MxBadge, '1'), findsNWidgets(2));
+    final counts = find.widgetWithText(MxBadge, '1');
+    expect(counts, findsNWidgets(2));
+    // The counts sit on the page ground, where a neutral tonal fill is
+    // invisible (1.18:1), so both draw outlined (DEV-359).
+    for (final badge in tester.widgetList<MxBadge>(counts)) {
+      expect(badge.isOutlined, isTrue);
+      expect(badge.tone, MxBadgeTone.neutral);
+    }
     expect(find.byType(SearchDeckHitRowWidget), findsOneWidget);
     expect(find.byType(SearchCardHitRowWidget), findsOneWidget);
     expect(find.text(_en.searchFooter), findsOneWidget);
