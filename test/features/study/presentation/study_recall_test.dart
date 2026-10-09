@@ -6,7 +6,6 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -249,31 +248,34 @@ void main() {
     expect(await _rowOf(env.db, id), (17000, false));
   });
 
-  libraryTest('the top bar is Indigo, as in every mode (critique 2026-09-30 '
-      'part 3c-2, R8)', (tester, env) async {
-    final id = await _recall(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
-    final bar = find.byType(MxStudyTopBar);
-    final fill = tester.widget<ColoredBox>(
-      find.descendant(
-        of: find.descendant(
-          of: bar,
-          matching: find.byType(FractionallySizedBox),
+  libraryTest(
+    'the top bar is Indigo and its badge reads on the primary container, as '
+    'in every mode (critique 2026-09-30 part 3c-2, R8)',
+    (tester, env) async {
+      final id = await _recall(env);
+      await pumpLibraryScreen(tester, env, _screen(id));
+      final bar = find.byType(MxStudyTopBar);
+      final fill = tester.widget<ColoredBox>(
+        find.descendant(
+          of: find.descendant(
+            of: bar,
+            matching: find.byType(FractionallySizedBox),
+          ),
+          matching: find.byType(ColoredBox),
         ),
-        matching: find.byType(ColoredBox),
-      ),
-    );
-    final chip = find.descendant(
-      of: bar,
-      matching: find.text(_en.studyMode(StudyMode.recall).toUpperCase()),
-    );
+      );
+      final chip = find.descendant(
+        of: bar,
+        matching: find.text(_en.studyMode(StudyMode.recall).toUpperCase()),
+      );
 
-    expect(fill.color, AppColorSchemes.light.primary);
-    expect(
-      tester.widget<Text>(chip).style?.color,
-      tester.element(chip).derivedColors.primaryInk,
-    );
-  });
+      expect(fill.color, AppColorSchemes.light.primary);
+      expect(
+        tester.widget<Text>(chip).style?.color,
+        AppColorSchemes.light.onPrimaryContainer,
+      );
+    },
+  );
 
   libraryTest('the self-check labels show whole at normal size (Impeccable '
       'after P4)', (tester, env) async {

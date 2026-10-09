@@ -318,7 +318,7 @@ class _Meaning extends StatelessWidget {
             tag.toUpperCase(),
             semanticsLabel: tag,
             textAlign: TextAlign.center,
-            style: styles.statusLabel(context.derivedColors.warningInk),
+            style: styles.statusLabel(context.semanticColors.warning),
           ),
       ],
     );

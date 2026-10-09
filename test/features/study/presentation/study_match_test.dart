@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -104,6 +105,14 @@ void main() {
 
     expect(_tile(tester, 'term 1').tone, StudyChoiceTone.right);
     expect(_tile(tester, 'apple').tone, StudyChoiceTone.right);
+    // The matched pair reads in the success container's ink (task 14.3).
+    for (final text in ['term 1', 'apple']) {
+      expect(
+        tester.widget<Text>(find.text(text)).style?.color,
+        tester.element(find.text(text)).semanticColors.onSuccessContainer,
+        reason: text,
+      );
+    }
     expect(
       find.bySemanticsLabel(
         _en.studyMatchTileMatched(_en.studyMatchTerm('term 1')),

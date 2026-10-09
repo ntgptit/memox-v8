@@ -81,7 +81,7 @@ class StudyEntryHeroWidget extends StatelessWidget {
           if (entry.overdueCardCount > 0)
             Text(
               l10n.studyEntryOverdue(entry.overdueCardCount),
-              style: styles.statusNote(context.derivedColors.warningInk),
+              style: styles.statusNote(context.semanticColors.warning),
             ),
         ],
       ),

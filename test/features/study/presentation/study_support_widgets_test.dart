@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
@@ -13,6 +14,8 @@ import 'package:memox/features/study/presentation/widgets/support/recall_countdo
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
@@ -241,6 +244,93 @@ void main() {
 
     final fade = tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity));
     expect(fade.opacity, AppOpacity.muted);
+  });
+
+  libraryTest('a choice draws its content in the tone\'s on-container ink '
+      '(task 14.3: idle onSurface, selected onPrimary, right '
+      'onSuccessContainer, wrong onErrorContainer)', (tester, env) async {
+    for (final tone in StudyChoiceTone.values) {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _host(
+          isStill: true,
+          StudyChoiceWidget(
+            tone: tone,
+            semanticsLabel: 'a',
+            builder: (ink) => Text('a', style: TextStyle(color: ink)),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final context = tester.element(find.byType(StudyChoiceWidget));
+      final expected = switch (tone) {
+        StudyChoiceTone.idle => context.colors.onSurface,
+        StudyChoiceTone.selected => context.colors.onPrimary,
+        StudyChoiceTone.right => context.semanticColors.onSuccessContainer,
+        StudyChoiceTone.wrong => context.colors.onErrorContainer,
+      };
+      expect(
+        tester.widget<Text>(find.text('a')).style?.color,
+        expected,
+        reason: '$tone',
+      );
+    }
+  });
+
+  libraryTest('a choice with a tap takes keyboard focus and paints the inside '
+      'focus ring; an inert one paints none (spec 4.9, task 14.3)', (
+    tester,
+    env,
+  ) async {
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    final ring = find.byWidgetPredicate(
+      (w) => w is CustomPaint && w.foregroundPainter is MxFocusRingPainter,
+    );
+    var taps = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        StudyChoiceWidget(
+          tone: StudyChoiceTone.idle,
+          semanticsLabel: 'a',
+          builder: (ink) => const Text('a'),
+          onTap: () => taps++,
+        ),
+      ),
+    );
+    expect(ring, findsNothing);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+
+    final painter =
+        tester.widget<CustomPaint>(ring).foregroundPainter!
+            as MxFocusRingPainter;
+    expect(painter.color, MxSemanticColors.light.primaryForeground);
+    expect(painter.placement, MxFocusRingPlacement.inside);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    expect(taps, 1);
+
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        StudyChoiceWidget(
+          tone: StudyChoiceTone.idle,
+          semanticsLabel: 'a',
+          builder: (ink) => const Text('a'),
+        ),
+      ),
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(ring, findsNothing);
   });
 
   libraryTest('one action spans the width of a two-action row, not its own '

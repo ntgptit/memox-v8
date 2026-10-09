@@ -182,31 +182,34 @@ void main() {
     expect(find.text(_en.studyFillCheck), findsOneWidget);
   });
 
-  libraryTest('the top bar is Indigo, as in every mode (critique 2026-09-30 '
-      'part 3c-2, R8)', (tester, env) async {
-    final id = await _fill(env);
-    await pumpLibraryScreen(tester, env, _screen(id));
-    final bar = find.byType(MxStudyTopBar);
-    final fill = tester.widget<ColoredBox>(
-      find.descendant(
-        of: find.descendant(
-          of: bar,
-          matching: find.byType(FractionallySizedBox),
+  libraryTest(
+    'the top bar is Indigo and its badge reads on the primary container, as '
+    'in every mode (critique 2026-09-30 part 3c-2, R8)',
+    (tester, env) async {
+      final id = await _fill(env);
+      await pumpLibraryScreen(tester, env, _screen(id));
+      final bar = find.byType(MxStudyTopBar);
+      final fill = tester.widget<ColoredBox>(
+        find.descendant(
+          of: find.descendant(
+            of: bar,
+            matching: find.byType(FractionallySizedBox),
+          ),
+          matching: find.byType(ColoredBox),
         ),
-        matching: find.byType(ColoredBox),
-      ),
-    );
-    final chip = find.descendant(
-      of: bar,
-      matching: find.text(_en.studyMode(StudyMode.fill).toUpperCase()),
-    );
+      );
+      final chip = find.descendant(
+        of: bar,
+        matching: find.text(_en.studyMode(StudyMode.fill).toUpperCase()),
+      );
 
-    expect(fill.color, AppColorSchemes.light.primary);
-    expect(
-      tester.widget<Text>(chip).style?.color,
-      tester.element(chip).derivedColors.primaryInk,
-    );
-  });
+      expect(fill.color, AppColorSchemes.light.primary);
+      expect(
+        tester.widget<Text>(chip).style?.color,
+        AppColorSchemes.light.onPrimaryContainer,
+      );
+    },
+  );
 
   libraryTest('a wrong answer the busy database refused shows what was typed '
       'once Retry commits it (UC-STUDY-001 E2; P4 final review)', (

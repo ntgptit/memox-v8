@@ -77,7 +77,7 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                   l10n.summaryWrongOf(wrong, turns),
                   style: styles.factValue(
                     wrong > 0
-                        ? context.derivedColors.warningInk
+                        ? context.semanticColors.warning
                         : colors.onSurface,
                   ),
                 ),

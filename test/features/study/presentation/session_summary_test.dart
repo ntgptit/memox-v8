@@ -198,6 +198,48 @@ void main() {
     );
   });
 
+  libraryTest('the facts card names the wrong count in the warning role, '
+      'the card being a surface and not the hero\'s container; a clean run '
+      'reads in onSurface (task 14.3)', (tester, env) async {
+    Color? wrongCountColor() {
+      final text = find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == _en.summaryWrongOf(3, 23) ||
+                w.data == _en.summaryWrongOf(0, 23)),
+      );
+      return tester.widget<Text>(text).style?.color;
+    }
+
+    await _pump(
+      tester,
+      env,
+      summaryView(status: SessionStatus.abandoned),
+      SummaryOutcome.reset,
+    );
+    final context = tester.element(find.byType(SessionSummaryWidget));
+    expect(find.byType(MxStatTile), findsNothing);
+    expect(wrongCountColor(), context.semanticColors.warning);
+
+    await _pump(
+      tester,
+      env,
+      summaryView(
+        status: SessionStatus.abandoned,
+        summary: const SessionSummary(
+          cardCount: 20,
+          learnedCardCount: null,
+          wrongTurnCount: 0,
+          answeredCardCount: 20,
+          turnCount: 23,
+          cardLimit: 50,
+        ),
+      ),
+      SummaryOutcome.reset,
+    );
+    expect(wrongCountColor(), context.colors.onSurface);
+  });
+
   libraryTest('a session that ended before its first turn draws neither '
       'stats nor facts (FE-A6 D18)', (tester, env) async {
     await _pump(

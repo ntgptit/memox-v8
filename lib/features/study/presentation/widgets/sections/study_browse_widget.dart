@@ -229,7 +229,7 @@ class _Card extends StatelessWidget {
                 ),
                 child: SizedBox(
                   height: AppStroke.hairline,
-                  child: ColoredBox(color: context.derivedColors.ghostBorder),
+                  child: ColoredBox(color: context.colors.outlineVariant),
                 ),
               ),
               Expanded(

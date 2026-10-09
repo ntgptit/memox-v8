@@ -42,7 +42,7 @@ class RecallCountdownBarWidget extends StatelessWidget {
         ? seconds * _msPerSecond / recallTurnMs
         : left / recallTurnMs;
     final ink = isTimedOut
-        ? context.derivedColors.warningInk
+        ? context.semanticColors.warning
         : colors.onSurfaceVariant;
     final fill = isTimedOut
         ? context.semanticColors.warning
