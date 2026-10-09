@@ -38,7 +38,6 @@ class MxActionSheetCommandRow extends StatelessWidget {
 
   static const double _leadColumn = 32;
   static const double _tileSize = 30;
-  static const double _tileTint = 0.08;
 
   /// Ruling S7: UNSPECIFIED; the ListRow gap.
   static const double _subtitleGap = 2;
@@ -47,7 +46,9 @@ class MxActionSheetCommandRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final styles = context.textStyles;
-    final ink = isDestructive ? colors.error : context.derivedColors.primaryInk;
+    final ink = isDestructive
+        ? colors.error
+        : context.semanticColors.primaryForeground;
     return MxRowInk(
       onTap: onTap,
       isEnabled: isEnabled,
@@ -71,8 +72,8 @@ class MxActionSheetCommandRow extends StatelessWidget {
                       key: const ValueKey('mx-command-tile'),
                       decoration: BoxDecoration(
                         color: isDestructive
-                            ? context.derivedColors.dangerSoft
-                            : colors.primary.withValues(alpha: _tileTint),
+                            ? colors.errorContainer
+                            : colors.primaryContainer,
                         borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       // Ruling S7: the glyph size is UNSPECIFIED; the small
@@ -91,7 +92,9 @@ class MxActionSheetCommandRow extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: styles.commandLabel(isDestructive: isDestructive),
+                      style: styles
+                          .commandLabel(isDestructive: isDestructive)
+                          .copyWith(color: ink),
                     ),
                     if (subtitle case final text?) ...[
                       const SizedBox(height: _subtitleGap),

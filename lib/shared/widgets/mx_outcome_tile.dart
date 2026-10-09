@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// What an outcome keeps or loses (the reset dialog of screen 02, D-O2).
 enum MxOutcomeTone { kept, lost }
 
-/// A labelled consequence: the label in its tone's ink over its tint, and
-/// the body under it. "Kept" uses the mastered ink (spec A10), "Lost" the
-/// warning ink; both reach 4.5:1 on their ground.
+/// A labelled consequence: the label and the body in the on-colour of the
+/// tone's container. "Kept" is the success container, "Lost" the warning
+/// container; both read 4.5:1 on their ground.
 class MxOutcomeTile extends StatelessWidget {
   const MxOutcomeTile({
     super.key,
@@ -22,32 +21,25 @@ class MxOutcomeTile extends StatelessWidget {
   final String body;
   final MxOutcomeTone tone;
 
-  /// Lighter than the 12% status tint: on the dialog's surface the success
-  /// ink reaches 4.53:1 over 8% (light). Kept is a fine state, so success,
-  /// not mastery (critique 2026-09-30 tone pass, final review).
-  static const double _keptTint = 0.08;
-
   @override
   Widget build(BuildContext context) {
-    final derived = context.derivedColors;
+    final semantic = context.semanticColors;
     final styles = context.textStyles;
-    final (ground, edge, ink) = switch (tone) {
+    // A container, no edge; every line reads in its on-container.
+    final (ground, ink) = switch (tone) {
       MxOutcomeTone.kept => (
-        context.semanticColors.success.withValues(alpha: _keptTint),
-        derived.ghostBorder,
-        derived.successInk,
+        semantic.successContainer,
+        semantic.onSuccessContainer,
       ),
       MxOutcomeTone.lost => (
-        derived.warningSoft,
-        derived.warningBorder,
-        derived.warningInk,
+        semantic.warningContainer,
+        semantic.onWarningContainer,
       ),
     };
     return DecoratedBox(
       decoration: BoxDecoration(
         color: ground,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: edge, width: AppStroke.hairline),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.grouped),
@@ -56,7 +48,7 @@ class MxOutcomeTile extends StatelessWidget {
           spacing: AppSpacing.micro,
           children: [
             Text(label, style: styles.badgeLabel(ink)),
-            Text(body, style: styles.rowDescription),
+            Text(body, style: styles.rowDescription.copyWith(color: ink)),
           ],
         ),
       ),

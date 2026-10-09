@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 
@@ -18,41 +17,40 @@ BoxDecoration _tile(WidgetTester tester) =>
 
 void main() {
   final scheme = AppColorSchemes.light;
+  final semantic = MxSemanticColors.light;
 
-  testWidgets('a 30 tile at primary 8%, 16 glyph, 14/600 verb; 48 target', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      _width(
-        MxActionSheetCommandRow(
-          icon: AppIcons.edit,
-          label: 'Rename',
-          subtitle: 'Change the deck name',
-          onTap: () {},
+  testWidgets(
+    'a 30 primaryContainer tile, 16 glyph and verb in primaryForeground; 48 target',
+    (tester) async {
+      await pumpMx(
+        tester,
+        _width(
+          MxActionSheetCommandRow(
+            icon: AppIcons.edit,
+            label: 'Rename',
+            subtitle: 'Change the deck name',
+            onTap: () {},
+          ),
         ),
-      ),
-    );
-    final row = tester.getTopLeft(find.byType(MxActionSheetCommandRow));
+      );
+      final row = tester.getTopLeft(find.byType(MxActionSheetCommandRow));
 
-    expect(tester.getSize(find.byKey(_tileKey)), const Size.square(30));
-    expect(tester.getTopLeft(find.byKey(_tileKey)).dx - row.dx, 9);
-    expect(_tile(tester).color, scheme.primary.withValues(alpha: 0.08));
-    expect(_tile(tester).borderRadius, BorderRadius.circular(8));
-    final glyph = tester.widget<Icon>(find.byIcon(AppIcons.edit));
-    expect(
-      (glyph.size, glyph.color),
-      (16, MxDerivedColors.primaryInkOf(scheme)),
-    );
-    expect(tester.widget<Text>(find.text('Rename')).style!.fontSize, 14);
-    expect(tester.getTopLeft(find.text('Rename')).dx - row.dx, 52);
-    await expectAccessibleTargets(tester);
-  });
+      expect(tester.getSize(find.byKey(_tileKey)), const Size.square(30));
+      expect(tester.getTopLeft(find.byKey(_tileKey)).dx - row.dx, 9);
+      expect(_tile(tester).color, scheme.primaryContainer);
+      expect(_tile(tester).borderRadius, BorderRadius.circular(8));
+      final glyph = tester.widget<Icon>(find.byIcon(AppIcons.edit));
+      expect((glyph.size, glyph.color), (16, semantic.primaryForeground));
+      final verb = tester.widget<Text>(find.text('Rename')).style!;
+      expect((verb.fontSize, verb.color), (14, semantic.primaryForeground));
+      expect(tester.getTopLeft(find.text('Rename')).dx - row.dx, 52);
+      await expectAccessibleTargets(tester);
+    },
+  );
 
-  testWidgets('destructive: danger-soft tile, error glyph and verb', (
+  testWidgets('destructive: errorContainer tile, error glyph and verb', (
     tester,
   ) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
     await pumpMx(
       tester,
       _width(
@@ -65,7 +63,7 @@ void main() {
       ),
     );
 
-    expect(_tile(tester).color, derived.dangerSoft);
+    expect(_tile(tester).color, scheme.errorContainer);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.delete)).color,
       scheme.error,

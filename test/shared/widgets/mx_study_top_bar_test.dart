@@ -35,6 +35,35 @@ void main() {
     expect(find.text('REVIEW'), findsOneWidget);
   });
 
+  testWidgets('the badge is primaryContainer with onPrimaryContainer text, in '
+      'both themes', (tester) async {
+    for (final brightness in Brightness.values) {
+      final scheme = brightness == Brightness.light
+          ? AppColorSchemes.light
+          : AppColorSchemes.dark;
+      await pumpMx(tester, _bar(), brightness: brightness);
+      // The theme animates from the previous brightness.
+      await tester.pumpAndSettle();
+      final badge = tester.widget<DecoratedBox>(
+        find
+            .ancestor(
+              of: find.text('REVIEW'),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      );
+
+      expect(
+        (badge.decoration as BoxDecoration).color,
+        scheme.primaryContainer,
+      );
+      expect(
+        tester.widget<Text>(find.text('REVIEW')).style!.color,
+        scheme.onPrimaryContainer,
+      );
+    }
+  });
+
   testWidgets(
     'the fill is primary, in every mode (critique 2026-09-30 part 3c-2, R8)',
     (tester) async {

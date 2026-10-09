@@ -180,6 +180,41 @@ void main() {
     expect(tester.getTopLeft(find.widgetWithText(MxButton, 'Cancel')).dx, edge);
   });
 
+  testWidgets('a warning dialog cancels with a text button; any other keeps '
+      'the outline (primaryForeground reads 5.02 / 5.48 on the warning '
+      'container)', (tester) async {
+    Future<void> pumpActions(bool isWarning) => pumpMx(
+      tester,
+      MxDialog(
+        title: 'Merge tags?',
+        body: 'The two tags become one.',
+        actions: MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: () {},
+          confirmLabel: 'Merge',
+          onConfirm: () {},
+          isWarning: isWarning,
+        ),
+      ),
+    );
+
+    await pumpActions(true);
+    expect(
+      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Cancel')).tone,
+      MxButtonTone.text,
+    );
+    expect(
+      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Merge')).tone,
+      MxButtonTone.warning,
+    );
+
+    await pumpActions(false);
+    expect(
+      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Cancel')).tone,
+      MxButtonTone.outline,
+    );
+  });
+
   // SW-REV-002: showGeneralDialog does not pad for the keyboard, as
   // Material's Dialog does; the dialog must, or its actions sit under it.
   group('the keyboard (SW-REV-002)', () {

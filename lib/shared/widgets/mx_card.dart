@@ -81,7 +81,10 @@ class MxCard extends StatelessWidget {
     };
     final radius = surface.borderRadius!;
     final edge = isSelected
-        ? Border.all(color: context.colors.primary, width: AppStroke.control)
+        ? Border.all(
+            color: context.semanticColors.primaryForeground,
+            width: AppStroke.control,
+          )
         : surface.border as Border?;
     return SizedBox(
       width: double.infinity,

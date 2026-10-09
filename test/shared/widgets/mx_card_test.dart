@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 
@@ -56,31 +55,35 @@ void main() {
     expect(tester.getSize(find.byType(MxCard)).width, 360);
   });
 
-  testWidgets('dark: a 1px ghost edge and no shadow', (tester) async {
+  testWidgets('dark: a 1px outlineVariant edge and no shadow', (tester) async {
     final scheme = AppColorSchemes.dark;
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.dark);
     await pumpMx(
       tester,
       const MxCard(child: SizedBox(height: 40)),
       brightness: Brightness.dark,
     );
 
-    expect(_shape(tester).side, BorderSide(color: derived.ghostBorder));
+    expect(_shape(tester).side, BorderSide(color: scheme.outlineVariant));
     expect(_shadow(tester), isEmpty);
   });
 
-  testWidgets('hero: surface-hero fill keeps the ghost edge in light', (
-    tester,
-  ) async {
-    final scheme = AppColorSchemes.light;
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
-    await pumpMx(
-      tester,
-      const MxCard(isHero: true, child: SizedBox(height: 40)),
-    );
+  testWidgets('hero: the low container with the outlineVariant hairline, in '
+      'both themes', (tester) async {
+    for (final brightness in Brightness.values) {
+      final scheme = brightness == Brightness.light
+          ? AppColorSchemes.light
+          : AppColorSchemes.dark;
+      await pumpMx(
+        tester,
+        const MxCard(isHero: true, child: SizedBox(height: 40)),
+        brightness: brightness,
+      );
+      // The theme animates from the previous brightness.
+      await tester.pumpAndSettle();
 
-    expect(_surface(tester).color, derived.surfaceHero);
-    expect(_shape(tester).side, BorderSide(color: derived.ghostBorder));
+      expect(_surface(tester).color, scheme.surfaceContainerLow);
+      expect(_shape(tester).side, BorderSide(color: scheme.outlineVariant));
+    }
   });
 
   testWidgets('full bleed: no padding, clipped, the row ripple on the card', (
@@ -115,26 +118,25 @@ void main() {
     );
   });
 
-  testWidgets(
-    'a warning card fills with warning-soft and edges with the warning border',
-    (tester) async {
+  testWidgets('a warning card is the warning container and carries no edge', (
+    tester,
+  ) async {
+    for (final brightness in Brightness.values) {
+      final semantic = brightness == Brightness.light
+          ? MxSemanticColors.light
+          : MxSemanticColors.dark;
       await pumpMx(
         tester,
         const MxCard(isWarning: true, child: SizedBox(height: 40)),
+        brightness: brightness,
       );
-      final derived = MxDerivedColors.resolve(
-        AppColorSchemes.light,
-        MxSemanticColors.light,
-      );
-      final raised = AppDecorations.raisedCard(AppColorSchemes.light).color!;
+      // The theme animates from the previous brightness.
+      await tester.pumpAndSettle();
 
-      expect(
-        _surface(tester).color,
-        Color.alphaBlend(derived.warningSoft, raised),
-      );
-      expect(_shape(tester).side.color, derived.warningBorder);
-    },
-  );
+      expect(_surface(tester).color, semantic.warningContainer);
+      expect(_shape(tester).side, BorderSide.none);
+    }
+  });
 
   test('a card is hero or warning, not both', () {
     expect(
@@ -143,16 +145,18 @@ void main() {
     );
   });
 
-  testWidgets('selected: a primary control-weight edge (screen 07 rows)', (
-    tester,
-  ) async {
+  testWidgets('selected: a primaryForeground control-weight edge (screen 07 '
+      'rows)', (tester) async {
     final scheme = AppColorSchemes.light;
     await pumpMx(
       tester,
       const MxCard(isSelected: true, child: SizedBox(height: 40)),
     );
 
-    expect(_shape(tester).side, BorderSide(color: scheme.primary, width: 2));
+    expect(
+      _shape(tester).side,
+      BorderSide(color: MxSemanticColors.light.primaryForeground, width: 2),
+    );
     expect(_surface(tester).color, scheme.surfaceContainerLowest);
   });
 
@@ -185,17 +189,13 @@ void main() {
   });
 
   testWidgets('recessed: the answer face of a study card, container-low, '
-      'the ghost edge in both themes, flat (FE-A6 P2)', (tester) async {
+      'the outlineVariant edge in both themes, flat (FE-A6 P2)', (
+    tester,
+  ) async {
     for (final brightness in Brightness.values) {
       final scheme = brightness == Brightness.light
           ? AppColorSchemes.light
           : AppColorSchemes.dark;
-      final derived = MxDerivedColors.resolve(
-        scheme,
-        brightness == Brightness.light
-            ? MxSemanticColors.light
-            : MxSemanticColors.dark,
-      );
       await pumpMx(
         tester,
         const MxCard(isRecessed: true, child: SizedBox(height: 40)),
@@ -205,7 +205,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(_surface(tester).color, scheme.surfaceContainerLow);
-      expect(_shape(tester).side, BorderSide(color: derived.ghostBorder));
+      expect(_shape(tester).side, BorderSide(color: scheme.outlineVariant));
       expect(_shadow(tester), isEmpty);
     }
   });

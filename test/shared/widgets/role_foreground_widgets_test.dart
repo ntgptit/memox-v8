@@ -20,11 +20,11 @@ import '../../support/widget_harness.dart';
 
 // Spec 2026-10-08 §4.1: the brand as text, glyph or ring is
 // primaryForeground, in both themes; fills and edges keep primary. The
-// widgets of the second block (badge, command row, empty state, icon tile,
-// study bar) still read the derived ink until their own groups move.
+// badge and the icon tile still read the derived ink until Task 13 moves
+// them.
 void main() {
   final scheme = AppColorSchemes.dark;
-  // The derived ink the second block still reads (Tasks 12-13).
+  // The derived ink the badge and the icon tile still read (Task 13).
   final ink = MxDerivedColors.primaryInkOf(scheme);
 
   Future<void> pumpDark(WidgetTester tester, Widget child) =>
@@ -109,8 +109,8 @@ void main() {
     );
   });
 
-  testWidgets('MxActionSheetCommandRow: a non-destructive glyph inks in '
-      'primaryInk', (tester) async {
+  testWidgets('MxActionSheetCommandRow: a non-destructive glyph and verb ink '
+      'in primaryForeground', (tester) async {
     await pumpDark(
       tester,
       MxActionSheetCommandRow(
@@ -119,9 +119,14 @@ void main() {
         onTap: () {},
       ),
     );
-    // The verb stays onSurface (commandLabel); the glyph is the ink.
-    expect(textColor(tester, 'Restore…'), scheme.onSurface);
-    expect(tester.widget<Icon>(find.byIcon(AppIcons.restore)).color, ink);
+    expect(
+      textColor(tester, 'Restore…'),
+      MxSemanticColors.dark.primaryForeground,
+    );
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.restore)).color,
+      MxSemanticColors.dark.primaryForeground,
+    );
   });
 
   testWidgets('MxWorkloadBreakdownLine: the today term is primaryForeground', (
@@ -170,13 +175,16 @@ void main() {
     );
   });
 
-  testWidgets('MxEmptyState: the primary glyph is primaryInk; its tile tint '
-      'stays primary', (tester) async {
+  testWidgets('MxEmptyState: the primary glyph is primaryForeground on its '
+      'primaryContainer tile', (tester) async {
     await pumpDark(
       tester,
       const MxEmptyState(icon: AppIcons.library, title: 'Empty'),
     );
-    expect(tester.widget<Icon>(find.byIcon(AppIcons.library)).color, ink);
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
+      MxSemanticColors.dark.primaryForeground,
+    );
   });
 
   testWidgets('MxStatTile: the primary emphasis reads in primaryForeground', (
@@ -200,7 +208,9 @@ void main() {
     expect(tester.widget<Icon>(find.byIcon(AppIcons.library)).color, ink);
   });
 
-  testWidgets('MxStudyTopBar: the badge text is primaryInk', (tester) async {
+  testWidgets('MxStudyTopBar: the badge text is onPrimaryContainer', (
+    tester,
+  ) async {
     await pumpDark(
       tester,
       MxStudyTopBar(
@@ -212,7 +222,7 @@ void main() {
         onClose: () {},
       ),
     );
-    expect(textColor(tester, 'MATCH'), ink);
+    expect(textColor(tester, 'MATCH'), scheme.onPrimaryContainer);
   });
 
   testWidgets(

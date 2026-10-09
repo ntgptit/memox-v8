@@ -5,7 +5,6 @@ import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// Warning is a refusal or a limit, and nothing was lost. Danger means an
@@ -48,41 +47,38 @@ class MxInlineBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final derived = context.derivedColors;
+    final semantic = context.semanticColors;
     final styles = context.textStyles;
-    final (ground, edge, ink, titleInk) = switch (tone) {
+    // A container has no edge; the glyph is the role, the text its
+    // on-container (spec 2026-10-08 §4.5).
+    final (ground, glyphInk, textInk) = switch (tone) {
       MxBannerTone.warning => (
-        derived.warningSoft,
-        derived.warningBorder,
-        // The kit's amber glyph is 1.87:1 on the soft ground (FE-C1).
-        derived.warningInk,
-        derived.warningInk,
+        semantic.warningContainer,
+        semantic.warning,
+        semantic.onWarningContainer,
       ),
-      // The glyph needs 3:1 and keeps error; the title is text and reads in
-      // the danger ink, 4.5:1 even inside a sheet (tone pass, final review).
       MxBannerTone.danger => (
-        derived.dangerSoft,
-        derived.dangerBorder,
+        colors.errorContainer,
         colors.error,
-        derived.dangerInk,
+        colors.onErrorContainer,
       ),
     };
-    final messageStyle = styles.bannerMessage(isLead: title == null);
+    final messageStyle = styles
+        .bannerMessage(isLead: title == null)
+        .copyWith(color: textInk);
     // The glyph centres on the first line at any text scale.
     final firstLine =
         MediaQuery.textScalerOf(context).scale(messageStyle.fontSize!) *
         messageStyle.height!;
     final glyphInset = math.max(0.0, (firstLine - AppIconSize.inline) / 2);
-    // A DecoratedBox border does not inset its child: the padding starts
-    // after the hairline, as in the kit's CSS box (and MxNote).
     final padding = isInCommitBar
         ? const EdgeInsets.symmetric(
-            horizontal: AppSpacing.grouped + AppStroke.hairline,
-            vertical: AppSpacing.control + AppStroke.hairline,
+            horizontal: AppSpacing.grouped,
+            vertical: AppSpacing.control,
           )
         : const EdgeInsets.symmetric(
-            horizontal: AppSpacing.gutter + AppStroke.hairline,
-            vertical: AppSpacing.grouped + AppStroke.hairline,
+            horizontal: AppSpacing.gutter,
+            vertical: AppSpacing.grouped,
           );
     return Padding(
       padding: isInCommitBar || !hasBottomMargin
@@ -94,7 +90,6 @@ class MxInlineBanner extends StatelessWidget {
           decoration: BoxDecoration(
             color: ground,
             borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: edge, width: AppStroke.hairline),
           ),
           child: Padding(
             padding: padding,
@@ -108,7 +103,7 @@ class MxInlineBanner extends StatelessWidget {
                   child: Icon(
                     AppIcons.alert,
                     size: AppIconSize.inline,
-                    color: ink,
+                    color: glyphInk,
                   ),
                 ),
                 Expanded(
@@ -116,13 +111,12 @@ class MxInlineBanner extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // The title carries the tone, as the glyph does; the
-                      // message stays neutral (critique 2026-09-30 tone
-                      // pass, T2).
+                      // The title and the message read in the same
+                      // on-container.
                       if (title case final lead?) ...[
                         Text(
                           lead,
-                          style: styles.bannerTitle.copyWith(color: titleInk),
+                          style: styles.bannerTitle.copyWith(color: textInk),
                         ),
                         const SizedBox(height: _titleGap),
                       ],

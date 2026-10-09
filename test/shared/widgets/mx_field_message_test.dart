@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
@@ -22,9 +21,7 @@ void main() {
     );
   });
 
-  testWidgets('warning in dark: the amber is its own ink (I1, T1)', (
-    tester,
-  ) async {
+  testWidgets('warning in dark: the warning role (I1, T1)', (tester) async {
     await pumpMx(
       tester,
       const MxFieldMessage(
@@ -44,11 +41,10 @@ void main() {
     );
   });
 
-  // The tone pass (T1, critique 2026-09-30): a warning glyph is ink, never
-  // the amber fill, which is about 2:1 on the light page.
-  testWidgets('warning: the glyph in warning ink on the light page', (
-    tester,
-  ) async {
+  // The tone pass (T1, critique 2026-09-30): a warning glyph is the warning
+  // role (5.24 on the light page), never the amber fill.
+  testWidgets('warning: the glyph and the text are the warning role on the '
+      'light page', (tester) async {
     await pumpMx(
       tester,
       const MxFieldMessage(
@@ -59,10 +55,11 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxDerivedColors.resolve(
-        AppColorSchemes.light,
-        MxSemanticColors.light,
-      ).warningInk,
+      MxSemanticColors.light.warning,
+    );
+    expect(
+      tester.widget<Text>(find.text('Ten tags at most')).style!.color,
+      MxSemanticColors.light.warning,
     );
   });
 

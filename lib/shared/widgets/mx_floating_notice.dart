@@ -7,7 +7,6 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A standing notice that floats over the page, above its content: one
@@ -32,7 +31,10 @@ class MxFloatingNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = context.colors;
-    final messageStyle = context.textStyles.bannerMessage(isLead: true);
+    final semantic = context.semanticColors;
+    final messageStyle = context.textStyles
+        .bannerMessage(isLead: true)
+        .copyWith(color: semantic.onWarningContainer);
     // The glyph centres on the first line at any text scale.
     final firstLine =
         MediaQuery.textScalerOf(context).scale(messageStyle.fontSize!) *
@@ -53,8 +55,7 @@ class MxFloatingNotice extends StatelessWidget {
           child: Icon(
             AppIcons.alert,
             size: AppIconSize.inline,
-            // A glyph is ink, never the amber fill (T1, SW-REV-001).
-            color: context.derivedColors.warningInk,
+            color: semantic.warning,
           ),
         ),
         Expanded(child: Text(message, style: messageStyle)),
@@ -67,15 +68,14 @@ class MxFloatingNotice extends StatelessWidget {
       child: DecoratedBox(
         decoration: AppDecorations.warningCard(
           scheme,
-          context.semanticColors,
+          semantic,
         ).copyWith(boxShadow: AppShadows.overlay(scheme)),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
           child: Padding(
-            // A DecoratedBox border does not inset its child.
             padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.gutter + AppStroke.hairline,
-              vertical: AppSpacing.control + AppStroke.hairline,
+              horizontal: AppSpacing.gutter,
+              vertical: AppSpacing.control,
             ),
             child: actions.length < 2
                 ? line

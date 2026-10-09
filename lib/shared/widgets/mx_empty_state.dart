@@ -65,7 +65,6 @@ class MxEmptyState extends StatelessWidget {
   /// 2026-10-08 F-02, DEV-303).
   final String? footnote;
 
-  static const double _tileTint = 0.10;
   static const double _tileSize = 64;
   static const double _compactTileSize = 52;
 
@@ -74,7 +73,7 @@ class MxEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final toneColor = _toneColor(context);
+    final (ground, ink) = _toneRoles(context);
     final styles = context.textStyles;
     final padding = isCompact
         ? const EdgeInsets.symmetric(
@@ -96,19 +95,7 @@ class MxEmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _Tile(
-                icon: icon,
-                color: toneColor,
-                ink: switch (tone) {
-                  MxEmptyStateTone.primary => context.derivedColors.primaryInk,
-                  MxEmptyStateTone.success => context.derivedColors.successInk,
-                  // As the caution tile and the warning banner (critique
-                  // 2026-09-30 part 3d-2, E14).
-                  MxEmptyStateTone.warning => context.derivedColors.warningInk,
-                  _ => toneColor,
-                },
-                isCompact: isCompact,
-              ),
+              _Tile(icon: icon, ground: ground, ink: ink, isCompact: isCompact),
               // Ruling R7: the tile→title and title→body gaps are
               // UNSPECIFIED in the contract.
               const SizedBox(height: AppSpacing.gutter),
@@ -164,31 +151,40 @@ class MxEmptyState extends StatelessWidget {
     );
   }
 
-  Color _toneColor(BuildContext context) => switch (tone) {
-    MxEmptyStateTone.primary => context.colors.primary,
-    MxEmptyStateTone.neutral => context.colors.onSurfaceVariant,
-    MxEmptyStateTone.success => context.semanticColors.success,
-    MxEmptyStateTone.warning => context.semanticColors.warning,
-    MxEmptyStateTone.danger => context.colors.error,
-  };
+  /// The tile's container and the glyph on it (spec 2026-10-08 §4.4).
+  (Color, Color) _toneRoles(BuildContext context) {
+    final colors = context.colors;
+    final semantic = context.semanticColors;
+    return switch (tone) {
+      MxEmptyStateTone.primary => (
+        colors.primaryContainer,
+        semantic.primaryForeground,
+      ),
+      MxEmptyStateTone.neutral => (
+        colors.surfaceContainerHigh,
+        colors.onSurfaceVariant,
+      ),
+      MxEmptyStateTone.success => (semantic.successContainer, semantic.success),
+      MxEmptyStateTone.warning => (semantic.warningContainer, semantic.warning),
+      MxEmptyStateTone.danger => (colors.errorContainer, colors.error),
+    };
+  }
 }
 
 class _Tile extends StatelessWidget {
   const _Tile({
     required this.icon,
-    required this.color,
+    required this.ground,
     required this.ink,
     required this.isCompact,
   });
 
   final IconData icon;
 
-  /// The tint's base.
-  final Color color;
+  /// The tone's container.
+  final Color ground;
 
-  /// The glyph: primaryInk for the primary tone (spec 2026-09-27 D2),
-  /// successInk for success (critique 2026-09-30 tone pass, T7), warningInk
-  /// for warning (part 3d-2, E14).
+  /// The glyph on the container.
   final Color ink;
   final bool isCompact;
 
@@ -199,7 +195,7 @@ class _Tile extends StatelessWidget {
         : MxEmptyState._tileSize,
     child: DecoratedBox(
       decoration: BoxDecoration(
-        color: color.withValues(alpha: MxEmptyState._tileTint),
+        color: ground,
         borderRadius: BorderRadius.circular(
           isCompact ? AppRadius.lg : AppRadius.xl,
         ),

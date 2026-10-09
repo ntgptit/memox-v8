@@ -4,7 +4,6 @@ import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_floating_notice.dart';
@@ -34,7 +33,6 @@ BoxDecoration _ground(WidgetTester tester) =>
 void main() {
   final scheme = AppColorSchemes.light;
   final semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(scheme, semantic);
 
   testWidgets('the warning card, lifted by the overlay shadow', (tester) async {
     await pumpMx(tester, _width(const MxFloatingNotice(message: _message)));
@@ -47,7 +45,32 @@ void main() {
         semantic,
       ).copyWith(boxShadow: AppShadows.overlay(scheme)),
     );
-    expect((glyph.size, glyph.color), (16, derived.warningInk));
+    expect((glyph.size, glyph.color), (16, semantic.warning));
+    expect(
+      tester.widget<Text>(find.text(_message)).style!.color,
+      semantic.onWarningContainer,
+    );
+    expect(_ground(tester).border, isNull);
+  });
+
+  testWidgets('the padding is 16 across and 12 down: the container has no '
+      'edge to inset', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxFloatingNotice(message: _message, actions: [_action('Details')]),
+      ),
+    );
+    final notice = tester.getTopLeft(find.byType(MxFloatingNotice));
+
+    expect(tester.getTopLeft(find.byType(Icon)).dx - notice.dx, 16);
+    // 16 in, the 16 glyph and the 8 gap; the line is centred in the card.
+    expect(tester.getTopLeft(find.text(_message)).dx - notice.dx, 40);
+    expect(
+      tester.getTopRight(find.byType(MxFloatingNotice)).dx -
+          tester.getTopRight(find.byType(MxButton)).dx,
+      16,
+    );
   });
 
   testWidgets('one action sits on the message line, at the end', (

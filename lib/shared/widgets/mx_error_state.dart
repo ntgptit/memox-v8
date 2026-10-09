@@ -66,7 +66,7 @@ class MxErrorState extends StatelessWidget {
               dimension: _tileSize,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: context.derivedColors.dangerSoft,
+                  color: colors.errorContainer,
                   borderRadius: BorderRadius.circular(AppRadius.lg),
                 ),
                 child: Center(

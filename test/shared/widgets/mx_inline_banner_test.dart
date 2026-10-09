@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -29,43 +28,66 @@ BoxDecoration _ground(WidgetTester tester) =>
 void main() {
   final scheme = AppColorSchemes.light;
   final semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(scheme, semantic);
 
-  testWidgets('warning: amber ground, warning border, warning-ink 16 glyph '
-      '(FE-C1)', (tester) async {
+  testWidgets('warning: the warning container, no edge, an onWarningContainer '
+      'title and message, a warning 16 glyph (FE-C1)', (tester) async {
     await pumpMx(
       tester,
       _width(
-        const MxInlineBanner(tone: MxBannerTone.warning, message: _message),
+        const MxInlineBanner(
+          tone: MxBannerTone.warning,
+          title: 'Title',
+          message: _message,
+        ),
       ),
     );
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
 
-    expect(_ground(tester).color, derived.warningSoft);
-    expect(_ground(tester).border, Border.all(color: derived.warningBorder));
+    expect(_ground(tester).color, semantic.warningContainer);
+    expect(_ground(tester).border, isNull);
     expect(_ground(tester).borderRadius, BorderRadius.circular(12));
-    expect((glyph.size, glyph.color), (16, derived.warningInk));
+    expect((glyph.size, glyph.color), (16, semantic.warning));
+    expect(
+      tester.widget<Text>(find.text('Title')).style!.color,
+      semantic.onWarningContainer,
+    );
+    expect(
+      tester.widget<Text>(find.text(_message)).style!.color,
+      semantic.onWarningContainer,
+    );
   });
 
-  testWidgets('danger: red ground, danger border, error glyph', (tester) async {
+  testWidgets('danger: the error container, no edge, an onErrorContainer title '
+      'and message, an error glyph', (tester) async {
     await pumpMx(
       tester,
       _width(
-        const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
+        const MxInlineBanner(
+          tone: MxBannerTone.danger,
+          title: 'Title',
+          message: _message,
+        ),
       ),
     );
 
-    expect(_ground(tester).color, derived.dangerSoft);
-    expect(_ground(tester).border, Border.all(color: derived.dangerBorder));
+    expect(_ground(tester).color, scheme.errorContainer);
+    expect(_ground(tester).border, isNull);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
       scheme.error,
     );
+    expect(
+      tester.widget<Text>(find.text('Title')).style!.color,
+      scheme.onErrorContainer,
+    );
+    expect(
+      tester.widget<Text>(find.text(_message)).style!.color,
+      scheme.onErrorContainer,
+    );
   });
 
-  testWidgets('titled: a 700 title 2 above the detail; untitled: the lead', (
-    tester,
-  ) async {
+  testWidgets('titled: a 700 title 2 above the detail; the message reads in the on-colour '
+      'either way', (tester) async {
     await pumpMx(
       tester,
       _width(
@@ -82,7 +104,7 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text(_message)).style!.color,
-      scheme.onSurfaceVariant,
+      scheme.onErrorContainer,
     );
     expect(
       tester.getTopLeft(find.text(_message)).dy -
@@ -98,12 +120,12 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text(_message)).style!.color,
-      scheme.onSurface,
+      scheme.onErrorContainer,
     );
   });
 
   testWidgets(
-    'padding 12 16 after the hairline, 16 below; 8 12 and 0 in a bar',
+    'padding 12 16, 16 below; 8 12 and 0 in a bar (no edge to inset)',
     (tester) async {
       await pumpMx(
         tester,
@@ -112,10 +134,10 @@ void main() {
         ),
       );
       final banner = tester.getTopLeft(find.byType(MxInlineBanner));
-      expect(tester.getTopLeft(find.byType(Icon)).dx - banner.dx, 17);
+      expect(tester.getTopLeft(find.byType(Icon)).dx - banner.dx, 16);
       expect(
         tester.getTopLeft(find.text(_message)) - banner,
-        const Offset(41, 13),
+        const Offset(40, 12),
       );
       expect(
         tester.getSize(find.byType(MxInlineBanner)).height -
@@ -143,7 +165,7 @@ void main() {
         ),
       );
       final bar = tester.getTopLeft(find.byType(MxInlineBanner));
-      expect(tester.getTopLeft(find.text(_message)) - bar, const Offset(37, 9));
+      expect(tester.getTopLeft(find.text(_message)) - bar, const Offset(36, 8));
       expect(
         tester.getBottomLeft(find.byType(MxInlineBanner)).dy,
         tester
@@ -204,53 +226,38 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('the title reads in its tone ink; an untitled lead stays '
-      'onSurface (critique 2026-09-30 tone pass, T2)', (tester) async {
-    for (final (tone, ink) in [
-      (MxBannerTone.warning, derived.warningInk),
-      (MxBannerTone.danger, derived.dangerInk),
-    ]) {
-      await pumpMx(
-        tester,
-        _width(MxInlineBanner(tone: tone, title: 'Title', message: _message)),
-      );
-      expect(
-        tester.widget<Text>(find.text('Title')).style!.color,
-        ink,
-        reason: '$tone',
-      );
-      await pumpMx(
-        tester,
-        _width(MxInlineBanner(tone: tone, message: _message)),
-      );
-      expect(
-        tester.widget<Text>(find.text(_message)).style!.color,
-        scheme.onSurface,
-        reason: '$tone untitled',
-      );
+  testWidgets('the title and the message read in the container on-colour, in '
+      'both themes (critique 2026-09-30 tone pass, T2)', (tester) async {
+    for (final brightness in Brightness.values) {
+      final colors = brightness == Brightness.light
+          ? AppColorSchemes.light
+          : AppColorSchemes.dark;
+      final roles = brightness == Brightness.light
+          ? MxSemanticColors.light
+          : MxSemanticColors.dark;
+      for (final (tone, ink) in [
+        (MxBannerTone.warning, roles.onWarningContainer),
+        (MxBannerTone.danger, colors.onErrorContainer),
+      ]) {
+        await pumpMx(
+          tester,
+          _width(MxInlineBanner(tone: tone, title: 'Title', message: _message)),
+          brightness: brightness,
+        );
+        // The theme change animates.
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<Text>(find.text('Title')).style!.color,
+          ink,
+          reason: '$tone ${brightness.name}',
+        );
+        expect(
+          tester.widget<Text>(find.text(_message)).style!.color,
+          ink,
+          reason: '$tone ${brightness.name} message',
+        );
+      }
     }
-
-    final darkDerived = MxDerivedColors.resolve(
-      AppColorSchemes.dark,
-      MxSemanticColors.dark,
-    );
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(
-          tone: MxBannerTone.warning,
-          title: 'Title',
-          message: _message,
-        ),
-      ),
-      brightness: Brightness.dark,
-    );
-    // The theme change animates.
-    await tester.pumpAndSettle();
-    expect(
-      tester.widget<Text>(find.text('Title')).style!.color,
-      darkDerived.warningInk,
-    );
   });
 
   testWidgets('without a bottom margin the banner ends at its painted edge; '
