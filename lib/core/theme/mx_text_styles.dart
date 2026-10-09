@@ -121,6 +121,10 @@ final class MxTextStyles {
     color: _scheme.onSurfaceVariant,
   );
 
+  /// The empty-state body on a container, in its on-container [ink];
+  /// a null [ink] keeps the rung's own.
+  TextStyle emptyBodyIn(Color? ink) => emptyBody.copyWith(color: ink);
+
   /// The part of a lead the reader must check, such as the address a code
   /// went to: the lead at 600 in on-surface ink.
   TextStyle get emptyBodyStrong => AppTypography.withWeight(
@@ -283,6 +287,10 @@ final class MxTextStyles {
         color: _scheme.onSurfaceVariant,
       );
 
+  /// The eyebrow on a container, in its on-container [ink];
+  /// a null [ink] keeps the rung's own.
+  TextStyle eyebrowIn(Color? ink) => eyebrow.copyWith(color: ink);
+
   /// Field label: names an input or a read-only field, in sentence case
   /// (critique 2026-09-30 part 2, P3).
   TextStyle get fieldLabel => AppTypography.withWeight(
@@ -364,6 +372,10 @@ final class MxTextStyles {
     color: _scheme.onSurfaceVariant,
   );
 
+  /// The note text on a container, in its on-container [ink];
+  /// a null [ink] keeps the rung's own.
+  TextStyle noteTextIn(Color? ink) => noteText.copyWith(color: ink);
+
   /// Note text carrying a status in [ink], such as the Study Entry's
   /// overdue note in the warning ink (screen 14): the note role at 600.
   TextStyle statusNote(Color ink) =>
@@ -410,11 +422,20 @@ final class MxTextStyles {
         color: _scheme.onSurface,
       );
 
+  /// The summary title on a container, in its on-container [ink];
+  /// a null [ink] keeps the rung's own.
+  TextStyle summaryTitleIn(Color? ink) => summaryTitle.copyWith(color: ink);
+
   /// The bold run of the summary's body, such as "20 cards" (kit).
   TextStyle get summaryBodyStrong => AppTypography.withWeight(
     emptyBody,
     FontWeight.w700,
   ).copyWith(color: _scheme.onSurface);
+
+  /// The summary's bold run on a container, in its on-container [ink];
+  /// a null [ink] keeps the rung's own.
+  TextStyle summaryBodyStrongIn(Color? ink) =>
+      summaryBodyStrong.copyWith(color: ink);
 
   /// A caption run in [ink], such as a Progress row's learning and
   /// reviewing counts (kit 22): 12/600.

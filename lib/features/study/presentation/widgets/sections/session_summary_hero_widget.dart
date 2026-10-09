@@ -72,7 +72,7 @@ class SessionSummaryHeroWidget extends StatelessWidget {
             shown,
             semanticsLabel: overline,
             textAlign: TextAlign.center,
-            style: styles.eyebrow.copyWith(color: ink),
+            style: styles.eyebrowIn(ink),
           ),
           const SizedBox(height: AppSpacing.micro),
           Semantics(
@@ -80,7 +80,7 @@ class SessionSummaryHeroWidget extends StatelessWidget {
             child: Text(
               _titleOf(l10n),
               textAlign: TextAlign.center,
-              style: styles.summaryTitle.copyWith(color: ink),
+              style: styles.summaryTitleIn(ink),
             ),
           ),
           const SizedBox(height: AppSpacing.micro),
@@ -189,18 +189,15 @@ class _BodyText extends StatelessWidget {
       return Text(
         body,
         textAlign: TextAlign.center,
-        style: styles.emptyBody.copyWith(color: ink),
+        style: styles.emptyBodyIn(ink),
       );
     }
     return Text.rich(
       TextSpan(
-        style: styles.emptyBody.copyWith(color: ink),
+        style: styles.emptyBodyIn(ink),
         children: [
           TextSpan(text: body.substring(0, start)),
-          TextSpan(
-            text: run,
-            style: styles.summaryBodyStrong.copyWith(color: ink),
-          ),
+          TextSpan(text: run, style: styles.summaryBodyStrongIn(ink)),
           TextSpan(text: body.substring(start + run.length)),
         ],
       ),
@@ -278,7 +275,7 @@ class _Stats extends StatelessWidget {
           Text(
             l10n.summaryWrongExplained,
             textAlign: TextAlign.center,
-            style: context.textStyles.emptyBody.copyWith(color: ink),
+            style: context.textStyles.emptyBodyIn(ink),
           ),
       ],
     );

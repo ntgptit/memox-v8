@@ -154,4 +154,35 @@ void main() {
     );
     handle.dispose();
   });
+
+  testWidgets('placement outside puts the ring around the row, not in it', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxRowInk(
+        onTap: () {},
+        placement: MxFocusRingPlacement.outside,
+        child: const SizedBox(width: 200, height: 48),
+      ),
+    );
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    final ring = tester.widget<CustomPaint>(
+      find.byWidgetPredicate(
+        (w) => w is CustomPaint && w.foregroundPainter is MxFocusRingPainter,
+      ),
+    );
+
+    expect(
+      (ring.foregroundPainter! as MxFocusRingPainter).placement,
+      MxFocusRingPlacement.outside,
+    );
+  });
 }

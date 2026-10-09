@@ -211,7 +211,7 @@ class _MergePanel extends StatelessWidget {
     final l10n = context.l10n;
     final ink = context.semanticColors.onWarningContainer;
     // Text on a container reads its on-container, spec 4.6.
-    final note = context.textStyles.noteText.copyWith(color: ink);
+    final note = context.textStyles.noteTextIn(ink);
     return MxCard(
       isWarning: true,
       // The panel's glyphs take the same on-container ink.

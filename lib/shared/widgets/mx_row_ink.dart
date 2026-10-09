@@ -19,6 +19,7 @@ class MxRowInk extends StatelessWidget {
     this.isEnabled = true,
     this.shouldDimWhenDisabled = true,
     this.semanticLabel,
+    this.placement = MxFocusRingPlacement.inside,
   });
 
   final VoidCallback? onTap;
@@ -37,6 +38,10 @@ class MxRowInk extends StatelessWidget {
   /// What TalkBack reads first for the tappable row, before its children's
   /// merged text (the action, then the content); null reads the text alone.
   final String? semanticLabel;
+
+  /// A full-bleed row keeps the ring inside; a card with room around it puts
+  /// it outside.
+  final MxFocusRingPlacement placement;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +64,7 @@ class MxRowInk extends StatelessWidget {
     // its descendants'.
     return MxFocusRing(
       radius: BorderRadius.circular(AppRadius.md),
-      placement: MxFocusRingPlacement.inside,
+      placement: placement,
       child: Semantics(
         container: true,
         button: true,
