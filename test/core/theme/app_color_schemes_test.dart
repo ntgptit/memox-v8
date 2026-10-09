@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
@@ -32,7 +34,7 @@ const _v3Roles = <String, (int, int)>{
   'surfaceContainerHighest': (0xFFDAE0EF, 0xFF353D7E),
   'onSurface': (0xFF0F1638, 0xFFE4E8FA),
   'onSurfaceVariant': (0xFF4A5278, 0xFFA4ACD0),
-  'outline': (0xFF7C85AB, 0xFF5A6BAE),
+  'outline': (0xFF7580A6, 0xFF7A89C6),
   'outlineVariant': (0xFFC5CBE3, 0xFF2A3267),
   'inverseSurface': (0xFF34395D, 0xFF34395D),
   'onInverseSurface': (0xFFE8EAFC, 0xFFE8EAFC),
@@ -127,4 +129,22 @@ void main() {
       }
     },
   );
+
+  test('outline is a 3:1 control edge on page, card, low, container and '
+      'sheet in both themes (spec 2026-10-08 §4.2)', () {
+    for (final scheme in [AppColorSchemes.light, AppColorSchemes.dark]) {
+      for (final ground in [
+        scheme.surface,
+        scheme.surfaceContainerLowest,
+        scheme.surfaceContainerLow,
+        scheme.surfaceContainer,
+        scheme.surfaceContainerHigh,
+      ]) {
+        final la = scheme.outline.computeLuminance();
+        final lb = ground.computeLuminance();
+        final ratio = (math.max(la, lb) + 0.05) / (math.min(la, lb) + 0.05);
+        expect(ratio, greaterThanOrEqualTo(3), reason: '$ground');
+      }
+    }
+  });
 }

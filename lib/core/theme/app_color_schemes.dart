@@ -49,7 +49,9 @@ abstract final class AppColorSchemes {
         surfaceContainerHighest: const Color(0xFFDAE0EF),
         onSurface: const Color(0xFF0F1638),
         onSurfaceVariant: const Color(0xFF4A5278),
-        outline: const Color(0xFF7C85AB),
+        // The control edge: 3:1 on every ground up to the sheet
+        // (spec 2026-10-08 §4.2).
+        outline: const Color(0xFF7580A6),
         outlineVariant: const Color(0xFFC5CBE3),
         inverseSurface: _inverseSurface,
         onInverseSurface: _onInverseSurface,
@@ -91,7 +93,9 @@ abstract final class AppColorSchemes {
         surfaceContainerHighest: const Color(0xFF353D7E),
         onSurface: const Color(0xFFE4E8FA),
         onSurfaceVariant: const Color(0xFFA4ACD0),
-        outline: const Color(0xFF5A6BAE),
+        // The control edge: 3:1 on every ground up to the sheet
+        // (spec 2026-10-08 §4.2).
+        outline: const Color(0xFF7A89C6),
         outlineVariant: const Color(0xFF2A3267),
         inverseSurface: _inverseSurface,
         onInverseSurface: _onInverseSurface,
