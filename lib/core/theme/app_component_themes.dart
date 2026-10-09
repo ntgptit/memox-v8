@@ -73,6 +73,7 @@ abstract final class AppComponentThemes {
       fill: fill,
       ink: ink,
       edge: edge,
+      pressedLayer: fill == null ? ink : scheme.shadow,
       focusColor: MxDerivedColors.primaryInkOf(scheme),
       height: AppSize.buttonRegular,
       radius: AppRadius.md,
