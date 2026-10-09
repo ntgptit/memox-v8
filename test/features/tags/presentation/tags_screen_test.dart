@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
 import 'package:memox/features/tags/presentation/widgets/overlays/tag_rename_dialog_widget.dart';
@@ -183,6 +184,16 @@ void main() {
     expect(await tagRowsOf(env.db), hasLength(15));
     expect(find.text(_en.tagsCardCount(77)), findsOneWidget);
     expect(find.text('động từ'), findsNothing);
+  });
+
+  libraryTest('renameMerge: the merge panel inks its glyphs in '
+      'onWarningContainer, the role for the warning card', (tester, env) async {
+    await _pump(tester, env);
+    await _openRename(tester, 'động từ');
+    await _type(tester, 'NGỮ PHÁP');
+
+    final glyph = tester.element(find.byIcon(AppIcons.merge));
+    expect(IconTheme.of(glyph).color, glyph.semanticColors.onWarningContainer);
   });
 
   libraryTest('nameTooLong: the counter and the field say so, and Rename is '

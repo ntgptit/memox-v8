@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
@@ -31,6 +32,24 @@ void main() {
       expect(IconTheme.of(tester.element(check)).color, semantic.onMastery);
     });
   }
+
+  libraryTest('an undone step\'s track is the outlineVariant hairline', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const Scaffold(
+        body: ImportStepTrackerWidget(current: CardImportStep.source),
+      ),
+    );
+
+    final track = find.byWidgetPredicate(
+      (w) => w is ColoredBox && w.color == AppColorSchemes.light.outlineVariant,
+    );
+    expect(track, findsWidgets);
+  });
 
   test('onMastery reads 3:1 on the mastery fill in both themes', () {
     for (final semantic in [MxSemanticColors.light, MxSemanticColors.dark]) {

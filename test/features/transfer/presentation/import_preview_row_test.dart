@@ -99,7 +99,45 @@ void main() {
     // The mark takes its colour from an IconTheme around the glyph.
     expect(
       IconTheme.of(tester.element(mark)).color,
-      tester.element(mark).derivedColors.successInk,
+      tester.element(mark).semanticColors.success,
     );
+  });
+
+  libraryTest('an invalid row inks its note and glyph in the warning role', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const Scaffold(
+        body: Column(
+          children: [
+            ImportPreviewRowWidget(
+              row: ImportRow(
+                rowNumber: 3,
+                kind: ImportRowKind.invalid,
+                draft: CardDraft(front: 'bul', back: ''),
+                reason: CardRejection.blankContent,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final row = find.byType(ImportPreviewRowWidget);
+    final warning = tester.element(row).semanticColors.warning;
+    expect(
+      find.descendant(
+        of: row,
+        matching: find.byWidgetPredicate(
+          (w) => w is Text && w.style?.color == warning,
+        ),
+      ),
+      findsOneWidget,
+    );
+    final mark = find.byIcon(AppIcons.alert);
+    expect(IconTheme.of(tester.element(mark)).color, warning);
   });
 }

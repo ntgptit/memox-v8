@@ -171,7 +171,7 @@ class _Line extends StatelessWidget {
     child: ColoredBox(
       color: isDone
           ? context.semanticColors.mastery
-          : context.derivedColors.ghostBorder,
+          : context.colors.outlineVariant,
     ),
   );
 }
