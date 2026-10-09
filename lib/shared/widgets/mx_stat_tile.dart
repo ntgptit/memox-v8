@@ -23,6 +23,7 @@ class MxStatTile extends StatelessWidget {
     required this.label,
     this.emphasis = MxStatTileEmphasis.plain,
     this.layout = MxStatTileLayout.inline,
+    this.ink,
   });
 
   /// Already formatted by the caller: "12", "3 / 23".
@@ -31,15 +32,27 @@ class MxStatTile extends StatelessWidget {
   final MxStatTileEmphasis emphasis;
   final MxStatTileLayout layout;
 
+  /// The foreground for both the value and the label when the tile sits on a
+  /// container: its on-container. Null keeps the emphasis colours of a tile
+  /// on a plain surface. When set it wins over [emphasis].
+  final Color? ink;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final styles = context.textStyles;
-    final ink = switch (emphasis) {
-      MxStatTileEmphasis.primary => context.semanticColors.primaryForeground,
-      MxStatTileEmphasis.plain => colors.onSurface,
-      MxStatTileEmphasis.muted => colors.onSurfaceVariant,
-    };
+    final container = ink;
+    final valueInk =
+        container ??
+        switch (emphasis) {
+          MxStatTileEmphasis.primary =>
+            context.semanticColors.primaryForeground,
+          MxStatTileEmphasis.plain => colors.onSurface,
+          MxStatTileEmphasis.muted => colors.onSurfaceVariant,
+        };
+    final labelStyle = container == null
+        ? styles.statLabel
+        : styles.statLabelIn(container);
     final isBoxed = layout == MxStatTileLayout.boxed;
     final figure = Column(
       mainAxisSize: MainAxisSize.min,
@@ -55,9 +68,9 @@ class MxStatTile extends StatelessWidget {
           alignment: isBoxed
               ? AlignmentDirectional.centerStart
               : Alignment.center,
-          child: Text(value, maxLines: 1, style: styles.statValue(ink)),
+          child: Text(value, maxLines: 1, style: styles.statValue(valueInk)),
         ),
-        Text(label.toUpperCase(), style: styles.statLabel),
+        Text(label.toUpperCase(), style: labelStyle),
       ],
     );
     final body = isBoxed

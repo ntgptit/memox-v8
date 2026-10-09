@@ -49,6 +49,57 @@ void main() {
     expect(ink('3'), scheme.onSurfaceVariant);
   });
 
+  // DEV-359: on a container the tile reads that container's on-container,
+  // value and label alike (spec 4.6).
+  testWidgets('ink paints the value and the label on a container', (
+    tester,
+  ) async {
+    final ink = MxSemanticColors.light.onSuccessContainer;
+    await pumpMx(
+      tester,
+      MxStatTile(
+        value: '12',
+        label: 'Due',
+        emphasis: MxStatTileEmphasis.primary,
+        ink: ink,
+      ),
+    );
+
+    expect(tester.widget<Text>(find.text('12')).style?.color, ink);
+    expect(tester.widget<Text>(find.text('DUE')).style?.color, ink);
+  });
+
+  testWidgets('without ink the emphasis colours stand', (tester) async {
+    await pumpMx(
+      tester,
+      const Column(
+        children: [
+          MxStatTile(
+            value: '1',
+            label: 'a',
+            emphasis: MxStatTileEmphasis.primary,
+          ),
+          MxStatTile(value: '2', label: 'b'),
+          MxStatTile(
+            value: '3',
+            label: 'c',
+            emphasis: MxStatTileEmphasis.muted,
+          ),
+        ],
+      ),
+    );
+    Color? ink(String text) =>
+        tester.widget<Text>(find.text(text)).style?.color;
+    final scheme = AppColorSchemes.light;
+
+    expect(ink('1'), MxSemanticColors.light.primaryForeground);
+    expect(ink('2'), scheme.onSurface);
+    expect(ink('3'), scheme.onSurfaceVariant);
+    for (final label in ['A', 'B', 'C']) {
+      expect(ink(label), scheme.onSurfaceVariant);
+    }
+  });
+
   testWidgets('the label is upper-cased and a boxed tile does not clip', (
     tester,
   ) async {

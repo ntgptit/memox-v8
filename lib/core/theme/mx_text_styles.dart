@@ -227,6 +227,10 @@ final class MxTextStyles {
     FontWeight.w600,
   ).copyWith(letterSpacing: _rowTitleTracking, color: _scheme.onSurface);
 
+  /// The row title on a container, in its on-container [ink];
+  /// a null [ink] keeps the rung's own.
+  TextStyle rowTitleIn(Color? ink) => rowTitle.copyWith(color: ink);
+
   /// The matched part of a search hit's name (screen 04): the list row
   /// title, bold, in primaryForeground, so it sits on the title's line
   /// unchanged.
@@ -241,6 +245,10 @@ final class MxTextStyles {
     height: _rowDescriptionHeight,
     color: _scheme.onSurfaceVariant,
   );
+
+  /// The row description on a container, in its on-container [ink];
+  /// a null [ink] keeps the rung's own.
+  TextStyle rowDescriptionIn(Color? ink) => rowDescription.copyWith(color: ink);
 
   /// ListRow title: the row title at the single-line height, so every row in
   /// a list is one height.
@@ -307,6 +315,9 @@ final class MxTextStyles {
 
   /// A stat's label: the eyebrow. The widget upper-cases it.
   TextStyle get statLabel => eyebrow;
+
+  /// A stat's label on a container, in its on-container [ink].
+  TextStyle statLabelIn(Color ink) => statLabel.copyWith(color: ink);
 
   /// A card row's status label (screen 07): the overline's 12/700 and 0.6
   /// tracking, in its status ink. The widget upper-cases the text.

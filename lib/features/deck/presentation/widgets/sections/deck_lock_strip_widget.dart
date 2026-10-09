@@ -27,6 +27,9 @@ class DeckLockStripWidget extends StatelessWidget {
             l10n.algorithmLockedBody(_lockDate(context)),
           )
         : (l10n.algorithmUnlockedTitle, l10n.algorithmUnlockedBody);
+    // Text on the warning container reads its on-container, spec 4.6; the
+    // unlocked strip is a plain card and keeps its neutral roles.
+    final ink = isLocked ? context.semanticColors.onWarningContainer : null;
     return Semantics(
       container: true,
       child: MxCard(
@@ -47,8 +50,8 @@ class DeckLockStripWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: AppSpacing.micro,
                 children: [
-                  Text(title, style: styles.rowTitle),
-                  Text(body, style: styles.rowDescription),
+                  Text(title, style: styles.rowTitleIn(ink)),
+                  Text(body, style: styles.rowDescriptionIn(ink)),
                 ],
               ),
             ),

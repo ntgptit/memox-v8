@@ -251,6 +251,7 @@ class _Stats extends StatelessWidget {
                   label: view.kind == SessionKind.learning
                       ? l10n.summaryStatLearned
                       : l10n.summaryStatReviewed,
+                  ink: ink,
                 ),
               ),
             if (answered != finished)
@@ -258,6 +259,7 @@ class _Stats extends StatelessWidget {
                 child: MxStatTile(
                   value: l10n.studyCount(answered),
                   label: l10n.summaryStatAnswered,
+                  ink: ink,
                 ),
               ),
             Expanded(
@@ -267,6 +269,7 @@ class _Stats extends StatelessWidget {
                   summary.turnCount,
                 ),
                 label: l10n.summaryStatWrong,
+                ink: ink,
               ),
             ),
           ],
