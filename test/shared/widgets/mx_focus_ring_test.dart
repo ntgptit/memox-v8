@@ -10,13 +10,18 @@ import '../../support/widget_harness.dart';
 void main() {
   Widget host({
     MxFocusRingPlacement placement = MxFocusRingPlacement.outside,
+    FocusNode? focusNode,
   }) => MxFocusRing(
     radius: BorderRadius.circular(AppRadius.md),
     placement: placement,
     child: SizedBox(
       width: 100,
       height: 40,
-      child: TextButton(onPressed: () {}, child: const Text('Go')),
+      child: TextButton(
+        focusNode: focusNode,
+        onPressed: () {},
+        child: const Text('Go'),
+      ),
     ),
   );
 
@@ -35,11 +40,15 @@ void main() {
   testWidgets('paints a primaryForeground ring outside the child on focus', (
     tester,
   ) async {
-    await pumpMx(tester, host());
+    final node = FocusNode();
+    addTearDown(node.dispose);
+    await pumpMx(tester, host(focusNode: node));
     FocusManager.instance.highlightStrategy =
         FocusHighlightStrategy.alwaysTraditional;
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pump();
+    expect(node.hasPrimaryFocus, isTrue);
+    expect(ring, findsOneWidget);
     final paint = tester.widget<CustomPaint>(ring);
     final painter = paint.foregroundPainter! as MxFocusRingPainter;
     expect(painter.color, MxSemanticColors.light.primaryForeground);
@@ -62,5 +71,49 @@ void main() {
             as MxFocusRingPainter;
     expect(painter.ringRect(const Size(100, 40)).left, 3);
     expect(painter.ringRect(const Size(100, 40)).right, 97);
+  });
+
+  testWidgets('the ring leaves when focus moves to a sibling', (tester) async {
+    final first = FocusNode();
+    final second = FocusNode();
+    addTearDown(first.dispose);
+    addTearDown(second.dispose);
+    await pumpMx(
+      tester,
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          host(focusNode: first),
+          TextButton(
+            focusNode: second,
+            onPressed: () {},
+            child: const Text('Other'),
+          ),
+        ],
+      ),
+    );
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(first.hasPrimaryFocus, isTrue);
+    expect(ring, findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(second.hasPrimaryFocus, isTrue);
+    expect(ring, findsNothing);
+  });
+
+  testWidgets('the control keeps primary focus once the ring appears', (
+    tester,
+  ) async {
+    // No explicit FocusNode: the button's own node must survive the ring.
+    await pumpMx(tester, host());
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(ring, findsOneWidget);
+    expect(Focus.of(tester.element(find.text('Go'))).hasPrimaryFocus, isTrue);
   });
 }

@@ -40,20 +40,23 @@ class _MxFocusRingState extends State<MxFocusRing> {
   @override
   Widget build(BuildContext context) {
     // Not a focus target itself: it only hears its descendants' focus.
-    final child = Focus(
+    final focus = Focus(
       canRequestFocus: false,
       skipTraversal: true,
       onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
       child: widget.child,
     );
-    if (!_hasFocus) return child;
+    // The tree stays the same with and without the ring, or the control's
+    // own focus node would be disposed the moment the ring appears.
     return CustomPaint(
-      foregroundPainter: MxFocusRingPainter(
-        color: context.semanticColors.primaryForeground,
-        radius: widget.radius,
-        placement: widget.placement,
-      ),
-      child: child,
+      foregroundPainter: _hasFocus
+          ? MxFocusRingPainter(
+              color: context.semanticColors.primaryForeground,
+              radius: widget.radius,
+              placement: widget.placement,
+            )
+          : null,
+      child: focus,
     );
   }
 }
