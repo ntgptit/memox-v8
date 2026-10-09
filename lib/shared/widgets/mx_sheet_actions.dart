@@ -111,8 +111,7 @@ class MxSheetActions extends StatelessWidget {
             leading: MxButton(
               label: cancelLabel!,
               onPressed: onCancel,
-              // The outline tone never sits on a warning container.
-              tone: isWarning ? MxButtonTone.text : MxButtonTone.outline,
+              tone: MxButtonTone.outline,
               isBlock: true,
               isSingleLine: true,
             ),

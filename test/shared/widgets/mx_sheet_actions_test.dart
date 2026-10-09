@@ -102,9 +102,12 @@ void main() {
       tester.widget<MxButton>(_button('Merge tags')).tone,
       MxButtonTone.warning,
     );
-    // The outline tone never sits on a warning container; the text tone
-    // reads primaryForeground on it.
-    expect(tester.widget<MxButton>(_button('Cancel')).tone, MxButtonTone.text);
+    // isWarning tones the confirm only; Cancel keeps the outline (DEV-359:
+    // a dialog's ground is surfaceContainerHigh, no warning container).
+    expect(
+      tester.widget<MxButton>(_button('Cancel')).tone,
+      MxButtonTone.outline,
+    );
   });
 
   testWidgets('a null Cancel is disabled while the confirm runs', (

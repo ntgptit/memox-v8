@@ -180,9 +180,10 @@ void main() {
     expect(tester.getTopLeft(find.widgetWithText(MxButton, 'Cancel')).dx, edge);
   });
 
-  testWidgets('a warning dialog cancels with a text button; any other keeps '
-      'the outline (primaryForeground reads 5.02 / 5.48 on the warning '
-      'container)', (tester) async {
+  testWidgets('a warning dialog keeps the outline Cancel and tones only its '
+      'confirm (the ground is surfaceContainerHigh, no warning container)', (
+    tester,
+  ) async {
     Future<void> pumpActions(bool isWarning) => pumpMx(
       tester,
       MxDialog(
@@ -201,7 +202,7 @@ void main() {
     await pumpActions(true);
     expect(
       tester.widget<MxButton>(find.widgetWithText(MxButton, 'Cancel')).tone,
-      MxButtonTone.text,
+      MxButtonTone.outline,
     );
     expect(
       tester.widget<MxButton>(find.widgetWithText(MxButton, 'Merge')).tone,
