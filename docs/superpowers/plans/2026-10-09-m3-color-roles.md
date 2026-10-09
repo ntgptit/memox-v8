@@ -10,6 +10,22 @@
 
 **Spec:** `docs/superpowers/specs/2026-10-08-m3-color-roles-design.md` (approved 2026-10-09). The plan argues from it; §4.3 and §4.8 are the colour oracle, §4.9 and §4.12 the state oracle, §6.3 the gates.
 
+**Execution (owner 2026-10-09):** subagent-driven. The orchestrator keeps the shared ledger (`.superpowers/sdd/2026-10-09-m3-color-roles/progress.md`) and the dependency order below; each task is implemented by a fresh Sonnet implementer from its brief and reviewed by a fresh Sonnet reviewer before the next task starts; the whole branch is reviewed once more on Opus at the end. Linear: epic DEV-324; tasks 1–5 are DEV-325…DEV-329, tasks 6–21 are DEV-346…DEV-361 in task order.
+
+## Review and verification policy
+
+- **Independent review after every task** (and after every checkpoint of Task 14), not only at the end of the branch. The reviewer reads the actual diff, never the implementer's account, and checks: the task's Interfaces block against the code (contracts); the §4.9 / §4.12 rows the task owns against the tests that exist (state coverage); the RED→GREEN evidence in the ledger (the failing run and the passing run, pasted); the regression risks the task names (preview classification, the gates of its phase). A finding is fixed in the same task (RED→GREEN) before the next task starts; a reviewer's "declined to judge" is a ruling in the ledger.
+- **Investigation is not rationed.** An Impeccable audit, a `systematic-debugging` investigation or an independent review is repeated whenever a defect, a regression or new evidence appears; no task caps the number of rounds. What is bounded is scope, not count: each round covers the changed scope and the finding that triggered it, and a round with no finding ends the loop. (This replaces, for this plan, the one-audit rule the owner relaxed on 2026-10-09.)
+- **`UNVERIFIED` is never a pass.** A state or transition on a §4.12 risk row (a CTA, a control edge, a focus ring, a selected mark, a container's text, a dialog or sheet, a FAB clearance) is `VERIFIED` with named evidence (an executed test, a rendered image that was viewed, a run on a device) or `BLOCKED` with the named limit; `UNVERIFIED` is allowed only for a row that is not a risk row, and a screen with a material `UNVERIFIED` or `BLOCKED` row is reported as such, never as `VERIFIED`. The final state of the epic follows CLAUDE.md: `VERIFIED` / `BLOCKED` / `UNRESOLVED`.
+
+## Ordering and dependencies
+
+- Phases 0–2 (Tasks 1–10) are strictly serial: every task changes `lib/core/theme` or a shared widget other tasks consume.
+- Phase 3 (Tasks 11–13) is serial: each group touches shared widgets and the gallery.
+- Phase 4: Task 14's four checkpoints run one after another (each ends with its tests, its checks and its review); Tasks 15 and 16 follow Task 14 (16 needs 11's `semanticLabel`).
+- Phase 5 (Tasks 17–18) and phase 6 (Tasks 19–21) are serial; Task 19 runs only after 17 and 18; Task 21 after 19 and 20.
+- No two in-flight tasks touch `lib/core/theme`, `lib/shared/widgets` or the gallery at the same time.
+
 ## Global Constraints
 
 - `primary` stays `#5265F5` in both themes (spec R1). No fill role is used as text where the table says under 4.5:1; no mix, lerp or alpha makes a ground or a foreground (The Role Pair Rule, §4.1).
@@ -1674,7 +1690,7 @@ git add lib/shared/widgets/mx_status_badge.dart test/shared/widgets/mx_status_ba
 git commit -m "feat(shared): one resolver from a card status to its roles; the status badge paints it"
 ```
 
-**Phase 2 gate (evidence in the ledger):** `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/core/theme/ test/shared/widgets/mx_status_badge_test.dart test/shared/widgets/mx_focus_ring_test.dart` → PASS pasted; `flutter analyze lib/core/theme` → 0 issues. The shared widgets that call the changed signatures do not compile yet; that is phase 3's RED.
+**Phase 2 gate (evidence in the ledger; each of Tasks 1–10 also passed its own reviewer):** `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/core/theme/ test/shared/widgets/mx_status_badge_test.dart test/shared/widgets/mx_focus_ring_test.dart` → PASS pasted; `flutter analyze lib/core/theme` → 0 issues. The shared widgets that call the changed signatures do not compile yet; that is phase 3's RED.
 
 ## Phase 3 · Shared widgets
 
@@ -1898,29 +1914,35 @@ git add lib/shared/widgets lib/app/gallery test/shared/widgets
 git commit -m "feat(shared): badges and icon tiles paint M3 custom-colour sets (group C)"
 ```
 
-**Phase 3 gates (evidence in the ledger):**
+**Phase 3 gates (evidence in the ledger; each of Tasks 11–13 also passed its own reviewer):**
 - CHECK STATE COVERAGE: `run_tests.sh test/shared/` output pasted; every §4.9 row has a named test in Tasks 5, 10–13.
 - CHECK DEGRADE: `grep -rn "derivedColors" lib/shared` → empty; the unchanged consumers of `outline` (breadcrumb, history rail), `inversePrimary` (snackbar) and `outlineVariant` (dashed note, theme preview) rendered in the previews and read.
 - CHECK SIMILAR: `grep -rn "withValues(alpha" lib/shared lib/core/theme` → only `AppOpacity.*`, `color.a * AppOpacity.disabled`, the scrim, `alpha: 0` in `mx_scroll_fade.dart`; pasted and classed.
 
 ## Phase 4 · Features
 
-### Task 14: Feature consumers on roles
+### Task 14: Feature consumers on roles (four checkpoints)
 
 **Files:**
-- Modify (20): `lib/features/monitoring/presentation/widgets/sections/monitoring_code_card_widget.dart`, `progress/…/progress_today_widget.dart`, `progress/…/progress_deck_row_widget.dart`, `progress/…/progress_streak_widget.dart`, `card/…/card_row_widget.dart`, `card/…/card_add_details_widget.dart`, `card/…/card_history_event_widget.dart`, `card/…/card_removable_tag_chip_widget.dart`, `card/…/card_schedule_widget.dart`, `settings/…/sync_status_section_widget.dart`, `settings/…/theme_choice_card_widget.dart`, `study/…/study_entry_hero_widget.dart`, `study/…/study_fill_widget.dart`, `study/…/study_recall_widget.dart`, `study/…/session_summary_facts_widget.dart`, `study/…/study_browse_widget.dart`, `study/…/recall_countdown_bar_widget.dart`, `study/…/study_choice_widget.dart`, `tags/…/tag_rename_dialog_widget.dart`, `transfer/…/import_step_tracker_widget.dart`, `transfer/…/import_preview_row_widget.dart`
-- Test: the feature tests that assert a colour (`grep -rln "derivedColors\|MxDerivedColors\|statusLearningInk\|warningInk" test/features`)
+- Modify (20), by checkpoint:
+  - 14.1 progress · monitoring · settings: `lib/features/progress/presentation/widgets/sections/progress_today_widget.dart`, `progress/…/items/progress_deck_row_widget.dart`, `progress/…/sections/progress_streak_widget.dart`, `monitoring/…/sections/monitoring_code_card_widget.dart`, `settings/…/sections/sync_status_section_widget.dart`, `settings/…/items/theme_choice_card_widget.dart`
+  - 14.2 card: `card/…/items/card_row_widget.dart`, `card/…/items/card_add_details_widget.dart`, `card/…/items/card_history_event_widget.dart`, `card/…/items/card_removable_tag_chip_widget.dart`, `card/…/sections/card_schedule_widget.dart`
+  - 14.3 study: `study/…/sections/study_entry_hero_widget.dart`, `study/…/sections/study_fill_widget.dart`, `study/…/sections/study_recall_widget.dart`, `study/…/sections/session_summary_facts_widget.dart`, `study/…/sections/study_browse_widget.dart`, `study/…/support/recall_countdown_bar_widget.dart`, `study/…/support/study_choice_widget.dart`
+  - 14.4 tags · transfer: `tags/…/overlays/tag_rename_dialog_widget.dart`, `transfer/…/sections/import_step_tracker_widget.dart`, `transfer/…/items/import_preview_row_widget.dart`
+- Test: the feature tests that assert a colour (`grep -rln "derivedColors\|MxDerivedColors\|statusLearningInk\|warningInk" test/features`), by the same groups
 
-- [ ] **Step 1: Write the failing tests**
+Each checkpoint is its own RED → GREEN → checks → review cycle; the next checkpoint starts only after its reviewer passes it. The replacement table below is split by checkpoint; the commit is one per checkpoint.
 
-For each feature test found by the grep, change the expected colour to the role from the table below (same assertion, new expectation). Add to `test/features/card/presentation/card_row_test.dart` (or the nearest widget test): the four status labels read `MxCardStatus.<status>.foreground(context)`; add to `test/features/study/presentation/study_choice_test.dart` (or the match/guess widget test): right tone ink `onSuccessContainer`, wrong `onErrorContainer`.
+- [ ] **Step 1 (per checkpoint): Write the failing tests**
 
-- [ ] **Step 2: Run them to verify they fail**
+For each feature test of the checkpoint found by the grep, change the expected colour to the role from the table (same assertion, new expectation). 14.2 adds to `test/features/card/presentation/card_row_test.dart` (or the nearest widget test): the four status labels read `MxCardStatus.<status>.foreground(context)`. 14.3 adds to the match/guess widget test: right tone ink `onSuccessContainer`, wrong `onErrorContainer`, and to the session summary test: the wrong count reads in the hero tone's on-container.
 
-Run: `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/features/`
-Expected: FAIL (compile errors in the feature widgets, then the assertions).
+- [ ] **Step 2 (per checkpoint): Run them to verify they fail**
 
-- [ ] **Step 3: Migrate**
+Run: `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/features/<group>/`
+Expected: FAIL (compile errors in the group's widgets, then the assertions).
+
+- [ ] **Step 3 (per checkpoint): Migrate the group's files**
 
 | File | Old | New |
 |---|---|---|
@@ -1942,19 +1964,25 @@ Expected: FAIL (compile errors in the feature widgets, then the assertions).
 | `import_preview_row_widget.dart` (glyphs) | `derivedColors.successInk` / `warningInk` | `semanticColors.success` / `warning` |
 | `session_summary_facts_widget.dart` | wrong count on the summary hero (a container) | `semantic.onSuccessContainer` / `onWarningContainer` / `onErrorContainer` per the hero's tone (the widget receives the tone; the count keeps its weight) |
 
-After the table: `grep -rn "derivedColors\|MxDerivedColors" lib/features` → empty.
+Rows belong to the checkpoint that owns the file (14.1 progress / monitoring / settings; 14.2 card; 14.3 study; 14.4 tags / transfer). After 14.4: `grep -rn "derivedColors\|MxDerivedColors" lib/features` → empty.
 
-- [ ] **Step 4: Run the feature tests**
+- [ ] **Step 4 (per checkpoint): Run the group's tests**
 
-Run: `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/features/`
+Run: `bash .claude/skills/flutter-workflow/scripts/run_tests.sh test/features/<group>/`
 Expected: PASS except goldens (stale until phase 6; recorded).
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5 (per checkpoint): The checks**
+
+CHECK DEGRADE: every consumer of the files the checkpoint touched (`grep -rn "<WidgetName>(" lib`) runs its tests; the screens in §4.12 the group owns (14.1: 22, 28, 23, 25; 14.2: 07, 08, 10; 14.3: 14, 16–21; 14.4: 05, 11) have their risk-row widget tests green. CHECK SIMILAR: `grep -rn "withValues(alpha\|Color\.lerp\|HSLColor\|Color(0x" lib/features/<group>` pasted and classed. Both outputs go in the ledger under `Task 14.<n>`.
+
+- [ ] **Step 6 (per checkpoint): Commit and review**
 
 ```bash
-git add lib/features test/features
-git commit -m "feat(features): every screen paints colour roles"
+git add lib/features/<group> test/features/<group>
+git commit -m "feat(<group>): the <group> screens paint colour roles (task 14.<n>)"
 ```
+
+The checkpoint's reviewer (fresh Sonnet) reads the diff, the Interfaces of Tasks 7–10 it consumes, the §4.12 rows above and the ledger's RED/GREEN output; its PASS is written to the ledger before 14.<n+1> starts.
 
 ### Task 15: FAB clearance at its one owner
 
@@ -2026,7 +2054,7 @@ git add lib/features/deck lib/l10n test/features/deck
 git commit -m "fix(deck): the due strip names where its tap goes"
 ```
 
-**Phase 4 gates (evidence in the ledger):**
+**Phase 4 gates (evidence in the ledger; each checkpoint of Task 14 and Tasks 15–16 also passed its own reviewer):**
 - CHECK STATE COVERAGE / TRANSITIONS: for the §4.12 risk rows (01 rename dialog field focus and error, 07 status badges, 08 validation edges, 16a answer buttons, 21 summary hero tones, 23a radio on the sheet, 30 field on the sheet) a widget test exists and ran; its name and result pasted.
 - CHECK DEGRADE: `run_tests.sh test/features/` output; the three unchanged `outline` / `outlineVariant` consumers read.
 - CHECK SIMILAR: `grep -rn "withValues(alpha\|Color\.lerp\|HSLColor\|Color(0x" lib/features lib/shared lib/app` pasted; every hit classed (state layer / scrim / fade / shadow / a finding fixed in this phase).
@@ -2278,11 +2306,11 @@ git commit -m "docs(design): DESIGN.md names the roles; The Role Pair Rule; the 
 
 - [ ] **Step 1: Render the states without a golden**
 
-For each §4.12 row's "rendered" states (104 states), one throwaway test per screen under `test/_audit_tmp/` renders the state in both themes into `.superpowers/sdd/2026-10-09-m3-color-roles/audit/<screen>_<state>_<theme>.png`; view each; write the row's verdict (`VERIFIED` / `FAILED` / `UNVERIFIED` with the reason) and its evidence into the detail file's States table and the Transitions table rows the §4.12 column names. The three R17 contexts (tag filter sheet checkbox, Library sort toggle, Monitoring level toggle) and the two heroes with the focus ring are rendered the same way. Delete `test/_audit_tmp/`.
+For each §4.12 row's "rendered" states (104 states), one throwaway test per screen under `test/_audit_tmp/` renders the state in both themes into `.superpowers/sdd/2026-10-09-m3-color-roles/audit/<screen>_<state>_<theme>.png`; view each; write the row's verdict and its evidence into the detail file's States table and the Transitions table rows the §4.12 column names. A risk row (a CTA, a control edge, a focus ring, a selected mark, a container's text, a dialog or sheet, a FAB clearance) is `VERIFIED` with the evidence named or `BLOCKED` with the limit named; `UNVERIFIED` is never a pass and never stands on a risk row. A screen with a material `BLOCKED` row is reported as `BLOCKED`, not `VERIFIED`; a `FAILED` row is a defect fixed in this task (RED→GREEN) and re-rendered. The three R17 contexts (tag filter sheet checkbox, Library sort toggle, Monitoring level toggle) and the two heroes with the focus ring are rendered the same way. Delete `test/_audit_tmp/`.
 
-- [ ] **Step 2: One `impeccable audit`**
+- [ ] **Step 2: The Impeccable audit, repeated while findings remain**
 
-Run the Impeccable `audit` (native) on the changed system: `DESIGN.md` Colors, the gallery, the five audit screens of highest risk (01, 07, 14, 21, 30). Fix everything it finds in one batch (each fix RED→GREEN, goldens of the touched screens regenerated and reclassified on the review page); never a second audit.
+Run the Impeccable `audit` (native) on the changed system: `DESIGN.md` Colors, the gallery, the five audit screens of highest risk (01, 07, 14, 21, 30). Fix everything it finds (each fix RED→GREEN, goldens of the touched screens regenerated and reclassified on the review page), then audit the changed scope again; repeat while a round finds a defect, a regression or new evidence (owner 2026-10-09: investigation is not rationed). A round that finds nothing ends the loop. Each round and its findings are ledger lines.
 
 - [ ] **Step 3: The gate**
 
@@ -2296,9 +2324,11 @@ git add docs test
 git commit -m "docs(screens): states and transitions verified after the colour-role migration"
 ```
 
-**Phase 6 gates (evidence in the ledger):** CHECK STATE COVERAGE and CHECK STATE TRANSITIONS: the §4.12 table with every row's verdict and evidence type; CHECK DEGRADE: the gate and the goldens green, the unchanged consumers listed and read; CHECK SIMILAR: the phase-5 grep rerun on the final diff, empty of new hits; the classified golden page approved by the owner image by image; the final whole-branch review (Opus) rebuilds the states and transitions from the code and compares them with the tables.
+**Phase 6 gates (evidence in the ledger):** CHECK STATE COVERAGE and CHECK STATE TRANSITIONS: the §4.12 table with every row's verdict and evidence type, no risk row `UNVERIFIED`; CHECK DEGRADE: the gate and the goldens green, the unchanged consumers listed and read; CHECK SIMILAR: the phase-5 grep rerun on the final diff, empty of new hits; the classified golden page approved by the owner image by image; the final whole-branch review (Opus) rebuilds the states and transitions from the code and compares them with the tables, and is repeated after any fix it causes until a round finds nothing. The epic's final state is `VERIFIED` only when every gate holds; otherwise `BLOCKED` (named limit) or `UNRESOLVED`.
 
 ## Execution notes
+
+- Subagent-driven (owner 2026-10-09): the orchestrator dispatches one implementer and one reviewer per task (per checkpoint for Task 14), both fresh Sonnet contexts, serially in the order above; it never implements a task itself and never skips a reviewer. The final whole-branch review runs on Opus.
 
 - The ledger (`.superpowers/sdd/2026-10-09-m3-color-roles/progress.md`) carries every gate's pasted output, every `Ruling:` and every preview classification; the PR body and the Done comments quote it.
 - Golden comparison tests fail from Task 7 to Task 19 by design; `run_tests.sh` is always given explicit non-golden files or directories, and the ledger says "goldens: stale, phase 6" at each task until Task 19.
