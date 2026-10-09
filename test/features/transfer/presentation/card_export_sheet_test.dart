@@ -16,6 +16,8 @@ import 'package:memox/features/transfer/presentation/providers/build_export_use_
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
@@ -126,6 +128,20 @@ void main() {
       expect(share.shared.single.fileName, startsWith('Words-'));
     },
   );
+
+  libraryTest('the Recommended badge is outlined on the sheet', (
+    tester,
+    env,
+  ) async {
+    await _seed(tester, env, isWholeDeckEntry: true);
+
+    final badge = find.widgetWithText(MxBadge, _en.exportRecommended);
+    expect(tester.widget<MxBadge>(badge).isOutlined, isTrue);
+    expect(
+      tester.widget<Text>(find.text(_en.exportRecommended)).style!.color,
+      MxSemanticColors.light.primaryForeground,
+    );
+  });
 
   libraryTest(
     'a selection names its count; XLSX is written when chosen (A1, A2)',

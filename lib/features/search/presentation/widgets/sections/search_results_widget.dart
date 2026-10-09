@@ -49,6 +49,7 @@ class SearchResultsWidget extends StatelessWidget {
             trailing: MxBadge(
               label: count(decks.length, isMore: isMoreOnDecks),
               tone: MxBadgeTone.neutral,
+              isOutlined: true,
             ),
           ),
           MxCard(
@@ -72,6 +73,7 @@ class SearchResultsWidget extends StatelessWidget {
             trailing: MxBadge(
               label: count(cards.length, isMore: isMoreOnCards),
               tone: MxBadgeTone.neutral,
+              isOutlined: true,
             ),
           ),
           MxCard(

@@ -37,6 +37,7 @@ class GalleryStatusSection extends StatelessWidget {
             tone: MxBadgeTone.neutral,
           ),
           MxBadge(label: context.l10n.gallery23Due, isSolid: true),
+          MxBadge(label: context.l10n.gallery23Due, isOutlined: true),
           MxBadge(
             label: context.l10n.gallery12Ready,
             tone: MxBadgeTone.success,

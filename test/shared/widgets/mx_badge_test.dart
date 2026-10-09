@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 
@@ -89,6 +90,46 @@ void main() {
       }
     }
   }
+
+  for (final brightness in Brightness.values) {
+    final isLight = brightness == Brightness.light;
+    final colors = isLight ? AppColorSchemes.light : AppColorSchemes.dark;
+    final semantic = isLight ? MxSemanticColors.light : MxSemanticColors.dark;
+    final foregrounds = <MxBadgeTone, Color>{
+      MxBadgeTone.primary: semantic.primaryForeground,
+      MxBadgeTone.mastery: semantic.mastery,
+      MxBadgeTone.success: semantic.success,
+      MxBadgeTone.warning: semantic.warning,
+      MxBadgeTone.danger: colors.error,
+      MxBadgeTone.neutral: colors.onSurfaceVariant,
+    };
+    for (final MapEntry(key: tone, value: foreground) in foregrounds.entries) {
+      testWidgets('outlined ${tone.name}, ${brightness.name}: no fill, '
+          'outline hairline, the tone\'s foreground', (tester) async {
+        await pumpMx(
+          tester,
+          MxBadge(label: '4 due', tone: tone, isOutlined: true),
+          brightness: brightness,
+        );
+        await tester.pumpAndSettle();
+
+        final pill = _pill(tester);
+        final edge = (pill.border! as Border).top;
+        expect(pill.color, isNull);
+        expect(edge.color, colors.outline);
+        expect(edge.width, AppStroke.hairline);
+        expect(_ink(tester, '4 due'), foreground);
+        expect(tester.getSize(find.byType(MxBadge)).height, 22);
+      });
+    }
+  }
+
+  test('a badge is never solid and outlined at once', () {
+    expect(
+      () => MxBadge(label: 'x', isSolid: true, isOutlined: true),
+      throwsAssertionError,
+    );
+  });
 
   testWidgets('a 12 glyph 4 before the label; the pill grows, never clips', (
     tester,

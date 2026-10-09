@@ -237,7 +237,11 @@ class _FormatRow extends StatelessWidget {
       isSelected: isSelected,
       onSelected: onSelected,
       trailing: format == TransferFormat.csv
-          ? MxBadge(label: l10n.exportRecommended, tone: MxBadgeTone.primary)
+          ? MxBadge(
+              label: l10n.exportRecommended,
+              tone: MxBadgeTone.primary,
+              isOutlined: true,
+            )
           : null,
     );
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The tone a count carries. There is no streak tone (ruling S1). Mastery is
@@ -17,14 +19,21 @@ class MxBadge extends StatelessWidget {
     required this.label,
     this.tone = MxBadgeTone.primary,
     this.isSolid = false,
+    this.isOutlined = false,
     this.icon,
-  });
+  }) : assert(!(isSolid && isOutlined), 'A badge is solid or outlined.');
 
   final String label;
   final MxBadgeTone tone;
 
   /// Emphasis inside a tinted or hero surface.
   final bool isSolid;
+
+  /// Outlined: a label on a ground the tonal pill cannot separate from (a
+  /// sheet or a neutral tile; spec 2026-10-08 §4.6 sets no floor for a
+  /// container on its ground); the edge is `outline`, the label the tone's
+  /// foreground.
+  final bool isOutlined;
 
   /// A 12 glyph before the label, for a counted status (ruling S18).
   final IconData? icon;
@@ -35,43 +44,13 @@ class MxBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final semantic = context.semanticColors;
-    final (fill, ink) = switch ((isSolid, tone)) {
-      (true, MxBadgeTone.primary) => (colors.primary, colors.onPrimary),
-      (true, MxBadgeTone.mastery) => (semantic.mastery, semantic.onMastery),
-      (true, MxBadgeTone.success) => (semantic.success, semantic.onSuccess),
-      (true, MxBadgeTone.warning) => (semantic.warning, semantic.onWarning),
-      (true, MxBadgeTone.danger) => (colors.error, colors.onError),
-      (true, MxBadgeTone.neutral) => (colors.onSurfaceVariant, colors.surface),
-      (false, MxBadgeTone.primary) => (
-        colors.primaryContainer,
-        colors.onPrimaryContainer,
-      ),
-      (false, MxBadgeTone.mastery) => (
-        semantic.masteryContainer,
-        semantic.onMasteryContainer,
-      ),
-      (false, MxBadgeTone.success) => (
-        semantic.successContainer,
-        semantic.onSuccessContainer,
-      ),
-      (false, MxBadgeTone.warning) => (
-        semantic.warningContainer,
-        semantic.onWarningContainer,
-      ),
-      (false, MxBadgeTone.danger) => (
-        colors.errorContainer,
-        colors.onErrorContainer,
-      ),
-      (false, MxBadgeTone.neutral) => (
-        colors.surfaceContainerHigh,
-        colors.onSurfaceVariant,
-      ),
-    };
+    final (fill, edge, ink) = _roles(context.colors, context.semanticColors);
     return DecoratedBox(
       decoration: BoxDecoration(
         color: fill,
+        border: edge == null
+            ? null
+            : Border.all(color: edge, width: AppStroke.hairline),
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
       child: ConstrainedBox(
@@ -95,5 +74,97 @@ class MxBadge extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// The (fill, edge, label) of the variant and tone: outlined has an edge
+  /// and no fill.
+  (Color?, Color?, Color) _roles(
+    ColorScheme colors,
+    MxSemanticColors semantic,
+  ) {
+    return switch ((isOutlined, isSolid, tone)) {
+      (false, true, MxBadgeTone.primary) => (
+        colors.primary,
+        null,
+        colors.onPrimary,
+      ),
+      (false, true, MxBadgeTone.mastery) => (
+        semantic.mastery,
+        null,
+        semantic.onMastery,
+      ),
+      (false, true, MxBadgeTone.success) => (
+        semantic.success,
+        null,
+        semantic.onSuccess,
+      ),
+      (false, true, MxBadgeTone.warning) => (
+        semantic.warning,
+        null,
+        semantic.onWarning,
+      ),
+      (false, true, MxBadgeTone.danger) => (colors.error, null, colors.onError),
+      (false, true, MxBadgeTone.neutral) => (
+        colors.onSurfaceVariant,
+        null,
+        colors.surface,
+      ),
+      (false, false, MxBadgeTone.primary) => (
+        colors.primaryContainer,
+        null,
+        colors.onPrimaryContainer,
+      ),
+      (false, false, MxBadgeTone.mastery) => (
+        semantic.masteryContainer,
+        null,
+        semantic.onMasteryContainer,
+      ),
+      (false, false, MxBadgeTone.success) => (
+        semantic.successContainer,
+        null,
+        semantic.onSuccessContainer,
+      ),
+      (false, false, MxBadgeTone.warning) => (
+        semantic.warningContainer,
+        null,
+        semantic.onWarningContainer,
+      ),
+      (false, false, MxBadgeTone.danger) => (
+        colors.errorContainer,
+        null,
+        colors.onErrorContainer,
+      ),
+      (false, false, MxBadgeTone.neutral) => (
+        colors.surfaceContainerHigh,
+        null,
+        colors.onSurfaceVariant,
+      ),
+      (true, _, MxBadgeTone.primary) => (
+        null,
+        colors.outline,
+        semantic.primaryForeground,
+      ),
+      (true, _, MxBadgeTone.mastery) => (
+        null,
+        colors.outline,
+        semantic.mastery,
+      ),
+      (true, _, MxBadgeTone.success) => (
+        null,
+        colors.outline,
+        semantic.success,
+      ),
+      (true, _, MxBadgeTone.warning) => (
+        null,
+        colors.outline,
+        semantic.warning,
+      ),
+      (true, _, MxBadgeTone.danger) => (null, colors.outline, colors.error),
+      (true, _, MxBadgeTone.neutral) => (
+        null,
+        colors.outline,
+        colors.onSurfaceVariant,
+      ),
+    };
   }
 }
