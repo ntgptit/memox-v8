@@ -2,21 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
-// The ten BIND_NOW MEMOX_SEMANTIC_COLOR entries plus onMastery (spec
-// 2026-09-27) and streak (FE-A9 D7), light then dark.
+// Spec 2026-10-08 §4.3: Material 3 custom-colour sets at HCT tones 40 / 100 /
+// 90 / 10 (light) and 80 / 20 / 30 / 90 (dark), plus the one brand foreground.
+// The six legacy members keep their old values until task 17 deletes them.
 final _expected = <String, (Color Function(MxSemanticColors), int, int)>{
-  'mastery': ((c) => c.mastery, 0xFF1F8A5B, 0xFF6FE0BD),
-  'warning': ((c) => c.warning, 0xFFF59E0B, 0xFFFFC658),
-  'onWarning': ((c) => c.onWarning, 0xFF3A2A00, 0xFF2A1E00),
+  'primaryForeground': ((c) => c.primaryForeground, 0xFF384CDD, 0xFFBCC2FF),
+  'warning': ((c) => c.warning, 0xFF855300, 0xFFFFB95F),
+  'onWarning': ((c) => c.onWarning, 0xFFFFFFFF, 0xFF472A00),
+  'warningContainer': ((c) => c.warningContainer, 0xFFFFDDB8, 0xFF653E00),
+  'onWarningContainer': ((c) => c.onWarningContainer, 0xFF2A1700, 0xFFFFDDB8),
+  'success': ((c) => c.success, 0xFF006B57, 0xFF67DABB),
+  'onSuccess': ((c) => c.onSuccess, 0xFFFFFFFF, 0xFF00382C),
+  'successContainer': ((c) => c.successContainer, 0xFF85F7D6, 0xFF005141),
+  'onSuccessContainer': ((c) => c.onSuccessContainer, 0xFF002019, 0xFF85F7D6),
+  'mastery': ((c) => c.mastery, 0xFF006D44, 0xFF77DAA4),
+  'onMastery': ((c) => c.onMastery, 0xFFFFFFFF, 0xFF003921),
+  'masteryContainer': ((c) => c.masteryContainer, 0xFF93F7BE, 0xFF005232),
+  'onMasteryContainer': ((c) => c.onMasteryContainer, 0xFF002111, 0xFF93F7BE),
+  'streak': ((c) => c.streak, 0xFF9D4300, 0xFFFFB690),
   'statusNew': ((c) => c.statusNew, 0xFF8C95B8, 0xFF6B75A3),
   'statusLearning': ((c) => c.statusLearning, 0xFFF59E0B, 0xFFFFC658),
   'statusReviewing': ((c) => c.statusReviewing, 0xFF5265F5, 0xFF8B9AFF),
   'statusMastered': ((c) => c.statusMastered, 0xFF1F8A5B, 0xFF6FE0BD),
   'errorFill': ((c) => c.errorFill, 0xFFDC2D4E, 0xFFB0485C),
   'onErrorFill': ((c) => c.onErrorFill, 0xFFFFFFFF, 0xFFFFFFFF),
-  'onMastery': ((c) => c.onMastery, 0xFFFFFFFF, 0xFF11173A),
-  'success': ((c) => c.success, 0xFF2BA88B, 0xFF6FE0BD),
-  'streak': ((c) => c.streak, 0xFFF97316, 0xFFFFAE6E),
 };
 
 void main() {
@@ -27,6 +36,16 @@ void main() {
       expect(read(MxSemanticColors.dark).toARGB32(), dark);
     });
   }
+
+  test('lerp at 0 and 1 returns each end for every member', () {
+    final at0 = MxSemanticColors.light.lerp(MxSemanticColors.dark, 0);
+    final at1 = MxSemanticColors.light.lerp(MxSemanticColors.dark, 1);
+    for (final MapEntry(key: name, value: (read, light, dark))
+        in _expected.entries) {
+      expect(read(at0).toARGB32(), light, reason: name);
+      expect(read(at1).toARGB32(), dark, reason: name);
+    }
+  });
 
   test('copyWith replaces only the named field', () {
     const replacement = Color(0xFF000001);
