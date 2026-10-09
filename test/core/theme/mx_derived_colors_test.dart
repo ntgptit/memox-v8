@@ -109,7 +109,8 @@ void main() {
   test('warningInk is #895806 in light and the amber in dark (critique '
       '2026-09-30 tone pass, T1)', () {
     expect(light.warningInk, isColorCloseTo(0xFF895806));
-    expect(dark.warningInk, MxSemanticColors.dark.warning);
+    // The derived layer reads the frozen pre-migration amber (task 1), not the live extension.
+    expect(dark.warningInk, const Color(0xFFFFC658));
   });
 
   test('warningInk reads at 4.5:1 on every ground, the amber tint and the '
@@ -126,10 +127,11 @@ void main() {
         // The sheet and dialog ground.
         scheme.surfaceContainerHigh,
       ]) {
-        final tint = Color.alphaBlend(
-          semantic.warning.withValues(alpha: 0.12),
-          ground,
-        );
+        // The derived layer reads the frozen pre-migration amber (task 1), not the live extension.
+        final amber = scheme.brightness == Brightness.dark
+            ? const Color(0xFFFFC658)
+            : const Color(0xFFF59E0B);
+        final tint = Color.alphaBlend(amber.withValues(alpha: 0.12), ground);
         final soft = Color.alphaBlend(derived.warningSoft, ground);
         expect(_ratio(derived.warningInk, ground), greaterThanOrEqualTo(4.5));
         expect(_ratio(derived.warningInk, tint), greaterThanOrEqualTo(4.5));
