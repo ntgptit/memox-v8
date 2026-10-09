@@ -22,10 +22,11 @@ void main() {
       ),
     );
 
-    expect(
-      tester.getSemantics(find.byType(InkWell)),
-      isSemantics(isButton: true, label: 'Open Study'),
-    );
+    final node = tester.getSemantics(find.byType(InkWell));
+    // The action first, then the content the strip shows.
+    expect(node, isSemantics(isButton: true));
+    expect(node.label, startsWith('Open Study'));
+    expect(node.label, contains('0 cards due'));
     handle.dispose();
   });
 

@@ -34,8 +34,8 @@ class MxRowInk extends StatelessWidget {
   /// blocked.
   final bool shouldDimWhenDisabled;
 
-  /// What TalkBack reads for the tappable row in place of its children's
-  /// text; null merges the children's text as before.
+  /// What TalkBack reads first for the tappable row, before its children's
+  /// merged text (the action, then the content); null reads the text alone.
   final String? semanticLabel;
 
   @override
