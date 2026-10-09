@@ -346,6 +346,7 @@
   "trashPurgeBlocked": "“{deck}” vẫn chứa một mục đã xoá trước đó (“{entries}”). Có thể xoá hẳn khi mục đó không còn.",
   "libraryDueTitle": "{count} thẻ đến hạn",
   "libraryDecksCount": "{count} bộ thẻ",
+  "libraryDueOpen": "Mở trang Học",
   "libraryDueDecksHeader": "Bộ thẻ có thẻ đến hạn",
   "libraryEmptyFootnote": "Mọi thứ nằm trên máy này. Không gì được thêm cho tới khi bạn chọn.",
   "deckSubDeckCount": "{count} bộ thẻ con",

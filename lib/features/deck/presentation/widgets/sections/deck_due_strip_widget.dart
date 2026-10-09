@@ -30,46 +30,52 @@ class DeckDueStripWidget extends StatelessWidget {
       isFullBleed: true,
       child: MxRowInk(
         onTap: onOpen,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.card),
-          child: Row(
-            spacing: AppSpacing.grouped,
-            children: [
-              const MxIconTile(
-                icon: AppIcons.dueNow,
-                size: MxIconTileSize.medium,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.micro,
-                  children: [
-                    Text(
-                      l10n.libraryDueTitle(due),
-                      style: context.textStyles.rowTitle,
-                    ),
-                    DeckWorkloadLineWidget(
-                      overdueCount: level.overdueCount,
-                      todayCount: level.dueTodayCount,
-                      // The two halves of the total; New stays on each deck
-                      // row (BR-STUDY-068; critique 2026-10-02).
-                      newCount: 0,
-                      cardCount: due + level.newCount + level.scheduledCount,
-                    ),
-                  ],
+        semanticLabel: l10n.libraryDueOpen,
+        // The label replaces the texts, which MxRowInk does not mute itself;
+        // a display-only strip keeps them.
+        child: ExcludeSemantics(
+          excluding: onOpen != null,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.card),
+            child: Row(
+              spacing: AppSpacing.grouped,
+              children: [
+                const MxIconTile(
+                  icon: AppIcons.dueNow,
+                  size: MxIconTileSize.medium,
                 ),
-              ),
-              if (onOpen != null)
-                IconTheme(
-                  data: IconThemeData(
-                    color: context.colors.onSurfaceVariant,
-                    size: AppIconSize.compact,
-                  ),
-                  child: const ExcludeSemantics(
-                    child: Icon(AppIcons.chevronRight),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: AppSpacing.micro,
+                    children: [
+                      Text(
+                        l10n.libraryDueTitle(due),
+                        style: context.textStyles.rowTitle,
+                      ),
+                      DeckWorkloadLineWidget(
+                        overdueCount: level.overdueCount,
+                        todayCount: level.dueTodayCount,
+                        // The two halves of the total; New stays on each deck
+                        // row (BR-STUDY-068; critique 2026-10-02).
+                        newCount: 0,
+                        cardCount: due + level.newCount + level.scheduledCount,
+                      ),
+                    ],
                   ),
                 ),
-            ],
+                if (onOpen != null)
+                  IconTheme(
+                    data: IconThemeData(
+                      color: context.colors.onSurfaceVariant,
+                      size: AppIconSize.compact,
+                    ),
+                    child: const ExcludeSemantics(
+                      child: Icon(AppIcons.chevronRight),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

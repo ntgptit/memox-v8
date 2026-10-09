@@ -1814,6 +1814,10 @@
     },
     "description": "Screen handoff 01/04 (library alignment phase C): libraryDecksCount."
   },
+  "libraryDueOpen": "Open Study",
+  "@libraryDueOpen": {
+    "description": "The due strip's tap, read by a screen reader"
+  },
   "libraryDueDecksHeader": "Decks with due cards",
   "@libraryDueDecksHeader": {
     "description": "Screen handoff 01/04 (library alignment phase C): libraryDueDecksHeader."
