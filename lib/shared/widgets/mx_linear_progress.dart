@@ -43,7 +43,7 @@ class MxLinearProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final fill = isMastery
-        ? MasteryRamp.fill(context.semanticColors, context.derivedColors, value)
+        ? MasteryRamp.fill(context.semanticColors, colors, value)
         : colors.primary;
     return ExcludeSemantics(
       child: ClipRRect(
