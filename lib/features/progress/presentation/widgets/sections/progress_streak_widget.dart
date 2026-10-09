@@ -123,10 +123,7 @@ class _StreakTile extends StatelessWidget {
     // The kit's tile: the recessed ground at a 12 inset, tighter than a card,
     // so two fit side by side on a phone.
     return DecoratedBox(
-      decoration: AppDecorations.recessedCard(
-        context.colors,
-        context.derivedColors,
-      ),
+      decoration: AppDecorations.recessedCard(context.colors),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.grouped),
         child: Row(

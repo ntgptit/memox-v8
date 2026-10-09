@@ -67,7 +67,7 @@ class MxFloatingNotice extends StatelessWidget {
       child: DecoratedBox(
         decoration: AppDecorations.warningCard(
           scheme,
-          context.derivedColors,
+          context.semanticColors,
         ).copyWith(boxShadow: AppShadows.overlay(scheme)),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: AppSize.touchTarget),

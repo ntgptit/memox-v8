@@ -49,21 +49,21 @@ class StudyChoiceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final derived = context.derivedColors;
+    final semantic = context.semanticColors;
     final motion = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : AppDurations.standard;
     // The tone eases in, surface and ink together, so the content never
     // sits on a surface it was not drawn for (Impeccable after P3). Not an
     // AnimatedContainer: it would inset the content by the border.
-    final ink = AppDecorations.studyChoiceInk(colors, derived, tone);
+    final ink = AppDecorations.studyChoiceInk(colors, semantic, tone);
     final surface = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
       child: TweenAnimationBuilder<Decoration>(
         tween: DecorationTween(
           end: AppDecorations.studyChoice(
             colors,
-            derived,
+            semantic,
             tone,
             isRecessed: isRecessed,
           ),

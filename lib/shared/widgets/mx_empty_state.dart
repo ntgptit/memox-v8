@@ -90,10 +90,7 @@ class MxEmptyState extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: DecoratedBox(
-        decoration: AppDecorations.raisedCard(
-          context.colors,
-          context.derivedColors,
-        ),
+        decoration: AppDecorations.raisedCard(context.colors),
         child: Padding(
           padding: padding,
           child: Column(

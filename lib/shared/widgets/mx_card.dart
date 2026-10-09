@@ -66,27 +66,18 @@ class MxCard extends StatelessWidget {
       isDanger,
       isRecessed,
     )) {
-      (true, _, _, _, _) => AppDecorations.heroCard(
-        context.colors,
-        context.derivedColors,
-      ),
+      (true, _, _, _, _) => AppDecorations.heroCard(context.colors),
       (_, true, _, _, _) => AppDecorations.warningCard(
         context.colors,
-        context.derivedColors,
+        context.semanticColors,
       ),
       (_, _, true, _, _) => AppDecorations.successCard(
         context.colors,
-        context.derivedColors,
+        context.semanticColors,
       ),
-      (_, _, _, true, _) => AppDecorations.dangerCard(
-        context.colors,
-        context.derivedColors,
-      ),
-      (_, _, _, _, true) => AppDecorations.recessedCard(
-        context.colors,
-        context.derivedColors,
-      ),
-      _ => AppDecorations.raisedCard(context.colors, context.derivedColors),
+      (_, _, _, true, _) => AppDecorations.dangerCard(context.colors),
+      (_, _, _, _, true) => AppDecorations.recessedCard(context.colors),
+      _ => AppDecorations.raisedCard(context.colors),
     };
     final radius = surface.borderRadius!;
     final edge = isSelected
