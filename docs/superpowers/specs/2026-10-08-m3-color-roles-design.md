@@ -1,7 +1,7 @@
 # Colour roles: Material 3 roles only, the derived ink layer removed — design
 
-Status: owner rulings 2026-10-08 (chat), revised after the owner's spec review of the same
-day (R12–R16, §4.12, §4.13, §6.1–6.3), awaiting review ·
+Status: approved by the owner 2026-10-09 (hero V4b in both themes, R17 per control, the
+round-2 rulings), after the rulings of 2026-10-08 (R1–R18) ·
 Path: architectural (one theme layer deleted, one extension reshaped, every colour consumer
 remapped, `DESIGN.md` rewritten) ·
 Linear: a new epic once this spec is approved; its plan's tasks become the sub-issues.
