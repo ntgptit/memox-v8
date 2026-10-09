@@ -95,12 +95,14 @@ class ImportPreviewSectionWidget extends StatelessWidget {
               MxBadge(
                 label: l10n.importBadgeDuplicate(preview.duplicates),
                 tone: MxBadgeTone.neutral,
+                isOutlined: true,
                 icon: AppIcons.cardDeck,
               ),
             if (preview.blank > 0)
               MxBadge(
                 label: l10n.importBadgeBlank(preview.blank),
                 tone: MxBadgeTone.neutral,
+                isOutlined: true,
                 icon: AppIcons.remove,
               ),
           ],

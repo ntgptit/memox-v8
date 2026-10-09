@@ -8,6 +8,7 @@ import 'package:memox/features/transfer/domain/models/source_table_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/sections/import_preview_section_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_badge.dart';
 
 import '../../../support/library_harness.dart';
 
@@ -18,8 +19,8 @@ final _en = lookupAppLocalizations(const Locale('en'));
 
 const _faces = ColumnMapping({0: TransferField.front, 1: TransferField.back});
 
-CardImportDraft _draft() {
-  const table = SourceTable(
+CardImportDraft _draft({bool hasBlankRow = false}) {
+  final table = SourceTable(
     rows: [
       ['Term', 'Meaning'],
       ['*Part 1', ''],
@@ -31,6 +32,7 @@ CardImportDraft _draft() {
       ['a', '1'],
       ['*관용어', ''],
       ['f', '6'],
+      if (hasBlankRow) ['', ''],
     ],
   );
   final plan = ImportPlan(
@@ -55,13 +57,17 @@ CardImportDraft _draft() {
   );
 }
 
-Future<void> _pump(WidgetTester tester, LibraryEnv env) => pumpLibraryScreen(
+Future<void> _pump(
+  WidgetTester tester,
+  LibraryEnv env, {
+  bool hasBlankRow = false,
+}) => pumpLibraryScreen(
   tester,
   env,
   Scaffold(
     body: SingleChildScrollView(
       child: ImportPreviewSectionWidget(
-        draft: _draft(),
+        draft: _draft(hasBlankRow: hasBlankRow),
         onIncludeDuplicates: (_) {},
         onChooseSection: (_, _) {},
         onChooseAllSections: (_) {},
@@ -105,5 +111,24 @@ void main() {
 
     expect(find.text(_en.importIncludeDuplicatesSectionsBody), findsOneWidget);
     expect(find.text(_en.importIncludeDuplicatesBody), findsNothing);
+  });
+
+  // The page surface is 1.18:1 to the tonal neutral pill, under the 1.2 the
+  // badge fix holds (DEV-359): the two neutral counts are outlined.
+  libraryTest('the duplicate and blank chips are outlined on the page', (
+    tester,
+    env,
+  ) async {
+    await _pump(tester, env, hasBlankRow: true);
+
+    final neutral = tester
+        .widgetList<MxBadge>(find.byType(MxBadge))
+        .where((badge) => badge.tone == MxBadgeTone.neutral)
+        .toList();
+    expect(neutral.map((badge) => badge.label), [
+      _en.importBadgeDuplicate(1),
+      _en.importBadgeBlank(1),
+    ]);
+    expect(neutral.every((badge) => badge.isOutlined), isTrue);
   });
 }
