@@ -1,51 +1,48 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 void main() {
-  const semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(AppColorSchemes.light, semantic);
+  for (final (scheme, semantic, name) in [
+    (AppColorSchemes.light, MxSemanticColors.light, 'light'),
+    (AppColorSchemes.dark, MxSemanticColors.dark, 'dark'),
+  ]) {
+    test('$name fill: null at 0, warning under 0.34, primary under 0.67, '
+        'mastery from 0.67', () {
+      expect(MasteryRamp.fill(semantic, scheme, 0), isNull);
+      expect(MasteryRamp.fill(semantic, scheme, 0.01), semantic.warning);
+      expect(MasteryRamp.fill(semantic, scheme, 0.3399), semantic.warning);
+      expect(MasteryRamp.fill(semantic, scheme, 0.34), scheme.primary);
+      expect(MasteryRamp.fill(semantic, scheme, 0.6699), scheme.primary);
+      expect(MasteryRamp.fill(semantic, scheme, 0.67), semantic.mastery);
+      expect(MasteryRamp.fill(semantic, scheme, 1), semantic.mastery);
+    });
 
-  test('0% paints no fill, only the track', () {
-    expect(MasteryRamp.fill(semantic, derived, 0), isNull);
-  });
-
-  test('below 34% is the learning ink (deck mastery spec R4)', () {
-    expect(
-      MasteryRamp.fill(semantic, derived, 0.01),
-      derived.statusLearningInk,
+    test(
+      '$name foreground: the band role, primaryForeground for reviewing',
+      () {
+        expect(MasteryRamp.foreground(semantic, scheme, 0), semantic.warning);
+        expect(
+          MasteryRamp.foreground(semantic, scheme, 0.5),
+          semantic.primaryForeground,
+        );
+        expect(MasteryRamp.foreground(semantic, scheme, 0.9), semantic.mastery);
+      },
     );
-    expect(
-      MasteryRamp.fill(semantic, derived, 0.3399),
-      derived.statusLearningInk,
-    );
-  });
-
-  test('in dark the learning ink is the kit amber itself', () {
-    const dark = MxSemanticColors.dark;
-    final darkDerived = MxDerivedColors.resolve(AppColorSchemes.dark, dark);
-    expect(MasteryRamp.fill(dark, darkDerived, 0.2), dark.statusLearning);
-  });
-
-  test('34% up to 67% is reviewing', () {
-    expect(MasteryRamp.fill(semantic, derived, 0.34), semantic.statusReviewing);
-    expect(
-      MasteryRamp.fill(semantic, derived, 0.6699),
-      semantic.statusReviewing,
-    );
-  });
-
-  test('67% and above is mastered', () {
-    expect(MasteryRamp.fill(semantic, derived, 0.67), semantic.statusMastered);
-    expect(MasteryRamp.fill(semantic, derived, 1), semantic.statusMastered);
-  });
+  }
 
   test('a fraction outside [0, 1] or NaN is rejected, not painted', () {
+    const semantic = MxSemanticColors.light;
+    final scheme = AppColorSchemes.light;
     for (final bad in [-0.01, 1.01, double.nan, double.infinity]) {
       expect(
-        () => MasteryRamp.fill(semantic, derived, bad),
+        () => MasteryRamp.fill(semantic, scheme, bad),
+        throwsArgumentError,
+        reason: '$bad',
+      );
+      expect(
+        () => MasteryRamp.foreground(semantic, scheme, bad),
         throwsArgumentError,
         reason: '$bad',
       );
@@ -72,19 +69,6 @@ void main() {
       'in dark (FE-C1)', () {
     for (final scheme in [AppColorSchemes.light, AppColorSchemes.dark]) {
       expect(MasteryRamp.track(scheme), scheme.surfaceContainerLow);
-    }
-  });
-
-  test('ink: the band\'s status ink for text, the learning ink at 0', () {
-    for (final (fraction, ink) in [
-      (0.0, derived.statusLearningInk),
-      (0.2, derived.statusLearningInk),
-      (0.34, derived.statusReviewingInk),
-      (0.66, derived.statusReviewingInk),
-      (0.67, derived.statusMasteredInk),
-      (1.0, derived.statusMasteredInk),
-    ]) {
-      expect(MasteryRamp.ink(semantic, derived, fraction), ink);
     }
   });
 }

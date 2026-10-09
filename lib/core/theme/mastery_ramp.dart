@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 /// The single-colour mastery ramp (V3 MasteryRamp utility). One threshold
@@ -12,52 +11,53 @@ abstract final class MasteryRamp {
   /// First fraction painted as mastered (67%).
   static const double _masteredFrom = 0.67;
 
-  /// The flat fill for [fraction] in `[0, 1]`, or null at 0, where only the
-  /// track is painted. Never a gradient. The learning band is the learning
-  /// ink: the kit's amber is 1.73:1 on the track in light (deck mastery
-  /// spec R4); in dark the ink is the amber itself.
-  static Color? fill(
-    MxSemanticColors semantic,
-    MxDerivedColors derived,
-    double fraction,
-  ) {
+  static void _check(double fraction) {
     if (fraction.isNaN || fraction < 0 || fraction > 1) {
       throw ArgumentError.value(fraction, 'fraction', 'must be within [0, 1]');
     }
-    if (fraction == 0) return null;
-    if (fraction < _reviewingFrom) return derived.statusLearningInk;
-    if (fraction < _masteredFrom) return semantic.statusReviewing;
-    return semantic.statusMastered;
   }
 
-  /// The status ink of [fraction]'s band, for text such as a percentage
-  /// beside or inside the fill: the fill colours fail 4.5:1 as text (The Ink
-  /// Is Not The Fill Rule, SW-REV-001). 0 reads in the lowest band.
-  static Color ink(
+  /// The flat fill for [fraction] in `[0, 1]`, or null at 0, where only the
+  /// track is painted. Never a gradient. Learning is the warning role (tone
+  /// 40 / 80, 5.90 / 9.01 on the track), reviewing the brand fill (4.20 /
+  /// 3.31), mastered the mastery role (spec 2026-10-08 §4.7).
+  static Color? fill(
     MxSemanticColors semantic,
-    MxDerivedColors derived,
+    ColorScheme scheme,
     double fraction,
   ) {
-    if (fraction.isNaN || fraction < 0 || fraction > 1) {
-      throw ArgumentError.value(fraction, 'fraction', 'must be within [0, 1]');
-    }
-    if (fraction < _reviewingFrom) return derived.statusLearningInk;
-    if (fraction < _masteredFrom) return derived.statusReviewingInk;
-    return derived.statusMasteredInk;
+    _check(fraction);
+    if (fraction == 0) return null;
+    if (fraction < _reviewingFrom) return semantic.warning;
+    if (fraction < _masteredFrom) return scheme.primary;
+    return semantic.mastery;
+  }
+
+  /// The band's foreground for text beside or inside the fill, such as the
+  /// donut's percentage: the role itself, except reviewing, whose fill is
+  /// the brand and whose text is primaryForeground (The Role Pair Rule).
+  /// 0 reads in the lowest band.
+  static Color foreground(
+    MxSemanticColors semantic,
+    ColorScheme scheme,
+    double fraction,
+  ) {
+    _check(fraction);
+    if (fraction < _reviewingFrom) return semantic.warning;
+    if (fraction < _masteredFrom) return semantic.primaryForeground;
+    return semantic.mastery;
   }
 
   /// [fraction] as a whole percent that never rounds to a lie: 0 only at 0,
   /// 100 only at 1, and 1…99 between (deck mastery spec D13).
   static int percent(double fraction) {
-    if (fraction.isNaN || fraction < 0 || fraction > 1) {
-      throw ArgumentError.value(fraction, 'fraction', 'must be within [0, 1]');
-    }
+    _check(fraction);
     if (fraction == 0) return 0;
     if (fraction == 1) return 100;
     return (fraction * 100).round().clamp(1, 99);
   }
 
   /// The unfilled track: surfaceContainerLow, so the primary fill keeps 3:1
-  /// against it in dark too (FE-C1; the kit's surfaceContainerHigh gave 2.46).
+  /// against it in dark too (FE-C1).
   static Color track(ColorScheme scheme) => scheme.surfaceContainerLow;
 }
