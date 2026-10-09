@@ -101,7 +101,7 @@ void main() {
         semantic.onWarningContainer,
       );
       // The body reads in the on-colour too: onSurfaceVariant is 4.19 / 4.17
-      // on the dark warning / success container (spec 2026-10-08 §4.5).
+      // on the dark warning / success container (spec 2026-10-08 §4.6).
       expect(
         tester.widget<Text>(find.text('a')).style!.color,
         semantic.onSuccessContainer,

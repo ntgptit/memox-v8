@@ -253,9 +253,10 @@ final class MxTextStyles {
     FontWeight.w600,
   ).copyWith(letterSpacing: _rowTitleTracking, color: _scheme.onSurface);
 
-  /// ActionSheetCommandRow verb: the row title, error when destructive.
+  /// ActionSheetCommandRow verb: the row title in primaryForeground, error
+  /// when destructive.
   TextStyle commandLabel({required bool isDestructive}) => rowTitle.copyWith(
-    color: isDestructive ? _scheme.error : _scheme.onSurface,
+    color: isDestructive ? _scheme.error : _primaryForeground,
   );
 
   /// Section label: the overline that introduces a list or settings group,

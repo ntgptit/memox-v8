@@ -92,9 +92,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: styles
-                          .commandLabel(isDestructive: isDestructive)
-                          .copyWith(color: ink),
+                      style: styles.commandLabel(isDestructive: isDestructive),
                     ),
                     if (subtitle case final text?) ...[
                       const SizedBox(height: _subtitleGap),

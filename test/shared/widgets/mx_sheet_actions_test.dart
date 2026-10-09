@@ -102,8 +102,8 @@ void main() {
       tester.widget<MxButton>(_button('Merge tags')).tone,
       MxButtonTone.warning,
     );
-    // The outline tone never sits on a container; the text tone reads
-    // primaryForeground on the warning container.
+    // The outline tone never sits on a warning container; the text tone
+    // reads primaryForeground on it.
     expect(tester.widget<MxButton>(_button('Cancel')).tone, MxButtonTone.text);
   });
 

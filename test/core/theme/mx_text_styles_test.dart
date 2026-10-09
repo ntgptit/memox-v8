@@ -221,7 +221,7 @@ void main() {
     );
   });
 
-  test('settings label 16/600/-0.1; a destructive command label is error', () {
+  test('settings label 16/600/-0.1', () {
     expectStyle(
       styles.settingsLabel,
       size: 16,
@@ -229,13 +229,35 @@ void main() {
       tracking: -0.1,
       color: scheme.onSurface,
     );
-    expect(styles.commandLabel(isDestructive: false).color, scheme.onSurface);
-    expectStyle(
-      styles.commandLabel(isDestructive: true),
-      size: 14,
-      weight: FontWeight.w600,
-      color: scheme.error,
-    );
+  });
+
+  test('the command label is primaryForeground, error when destructive, in '
+      'both themes (spec 2026-10-08 §4.4)', () {
+    for (final (colors, semantic) in [
+      (AppColorSchemes.light, MxSemanticColors.light),
+      (AppColorSchemes.dark, MxSemanticColors.dark),
+    ]) {
+      final themed = MxTextStyles(
+        (colors.brightness == Brightness.light
+                ? buildLightTheme()
+                : buildDarkTheme())
+            .textTheme,
+        colors,
+        semantic,
+      );
+      expectStyle(
+        themed.commandLabel(isDestructive: false),
+        size: 14,
+        weight: FontWeight.w600,
+        color: semantic.primaryForeground,
+      );
+      expectStyle(
+        themed.commandLabel(isDestructive: true),
+        size: 14,
+        weight: FontWeight.w600,
+        color: colors.error,
+      );
+    }
   });
 
   test('overline 13/700 at 0.6, tabular, onSurface (spec 2026-09-26 D5)', () {
