@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_focus_ring.dart';
 
@@ -25,6 +26,10 @@ class StudyChoiceWidget extends StatelessWidget {
     this.sortKey,
     this.onTap,
   });
+
+  /// What the outside focus ring needs around a choice (the gap and the
+  /// stroke): the columns of choices leave it inside their viewport.
+  static const double ringRoom = AppStroke.focusOffset + AppStroke.focus;
 
   final StudyChoiceTone tone;
 
@@ -105,10 +110,9 @@ class StudyChoiceWidget extends StatelessWidget {
       onTap: onTap,
       excludeSemantics: true,
       // The ring wraps the InkWell, whose node takes the focus: it hears
-      // only its descendants'.
+      // only its descendants'. It borders the ground, outside the card.
       child: MxFocusRing(
         radius: radius,
-        placement: MxFocusRingPlacement.inside,
         // The fade eases in with the tones, at once under Remove animations.
         child: AnimatedOpacity(
           opacity: isFaded ? AppOpacity.muted : 1,

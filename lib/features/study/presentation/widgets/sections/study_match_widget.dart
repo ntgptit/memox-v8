@@ -143,8 +143,10 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
                 SliverFillRemaining(
                   hasScrollBody: false,
                   child: Padding(
+                    // The outside focus ring needs this room inside the viewport.
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.gutter,
+                      vertical: StudyChoiceWidget.ringRoom,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,

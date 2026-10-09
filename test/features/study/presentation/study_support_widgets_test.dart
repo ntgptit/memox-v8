@@ -311,7 +311,7 @@ void main() {
         tester.widget<CustomPaint>(ring).foregroundPainter!
             as MxFocusRingPainter;
     expect(painter.color, MxSemanticColors.light.primaryForeground);
-    expect(painter.placement, MxFocusRingPlacement.inside);
+    expect(painter.placement, MxFocusRingPlacement.outside);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();

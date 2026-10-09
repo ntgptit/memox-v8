@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -34,6 +37,38 @@ StudySessionScreen _screen(String id) => StudySessionScreen(
 Future<String> _guess(LibraryEnv env) =>
     openFiveDueReview(env.db, env.decks, libraryToday, StudyMode.guess);
 
+/// Tabs through the screen and checks that every choice's outside focus ring
+/// lies inside the scroll viewport, the first and the last choice included
+/// (task 14.3: the columns leave the ring its room).
+Future<void> _expectRingsInViewport(WidgetTester tester) async {
+  FocusManager.instance.highlightStrategy =
+      FocusHighlightStrategy.alwaysTraditional;
+  final choices = find.byType(StudyChoiceWidget);
+  final viewport = tester.getRect(find.byType(CustomScrollView).first);
+  final ringed = <Rect>{};
+  final ring = find.byWidgetPredicate(
+    (w) => w is CustomPaint && w.foregroundPainter is MxFocusRingPainter,
+  );
+  for (var i = 0; i < 40; i++) {
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    if (ring.evaluate().isEmpty) continue;
+    final painter =
+        tester.widget<CustomPaint>(ring).foregroundPainter!
+            as MxFocusRingPainter;
+    expect(painter.placement, MxFocusRingPlacement.outside);
+    final rect = tester.getRect(ring);
+    ringed.add(rect);
+    // The stroke reaches the gap plus the stroke past the card.
+    final painted = rect.inflate(StudyChoiceWidget.ringRoom);
+    expect(painted.top, greaterThanOrEqualTo(viewport.top));
+    expect(painted.bottom, lessThanOrEqualTo(viewport.bottom));
+    expect(painted.left, greaterThanOrEqualTo(viewport.left));
+    expect(painted.right, lessThanOrEqualTo(viewport.right));
+  }
+  expect(ringed.length, choices.evaluate().length);
+}
+
 String _option(String letter, String meaning) =>
     _en.studyGuessOption(letter, meaning);
 
@@ -53,6 +88,14 @@ IconData _hintIcon(WidgetTester tester) => tester
     .icon;
 
 void main() {
+  libraryTest('every option\'s outside focus ring fits inside the scroll '
+      'viewport, the last option included (task 14.3)', (tester, env) async {
+    final id = await _guess(env);
+    await pumpLibraryScreen(tester, env, _screen(id));
+
+    await _expectRingsInViewport(tester);
+  });
+
   libraryTest('the term is asked under "What is this?" with five lettered '
       'options (BR-STUDY-037)', (tester, env) async {
     final id = await _guess(env);
