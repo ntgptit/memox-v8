@@ -50,14 +50,14 @@ StudyChoiceWidget _tile(WidgetTester tester, String text) =>
 
 Color? _groundOf(WidgetTester tester, String text) =>
     (tester
-                .widget<Ink>(
+                .widget<DecoratedBox>(
                   find
                       .descendant(
                         of: find.ancestor(
                           of: find.text(text),
                           matching: find.byType(StudyChoiceWidget),
                         ),
-                        matching: find.byType(Ink),
+                        matching: find.byType(DecoratedBox),
                       )
                       .first,
                 )

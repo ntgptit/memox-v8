@@ -65,34 +65,40 @@ class StudyChoiceWidget extends StatelessWidget {
     // sits on a surface it was not drawn for (Impeccable after P3). Not an
     // AnimatedContainer: it would inset the content by the border.
     final ink = AppDecorations.studyChoiceInk(colors, semantic, tone);
-    // `Ink` paints the tone on the Material, under the ripple that MxRowInk's
-    // InkWell lays on it. No tap, no focus: MxRowInk returns the child bare.
+    // The tone is a DecoratedBox below a transparent Material, so the fade
+    // takes the card with it (an `Ink` would paint on the page's Material,
+    // outside the fade) and MxRowInk's ripple lands above the fill. No tap,
+    // no focus: MxRowInk returns the child bare.
     final surface = ConstrainedBox(
       constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
-      child: MxRowInk(
-        onTap: onTap,
-        placement: MxFocusRingPlacement.outside,
-        inkRadius: BorderRadius.circular(AppRadius.md),
-        child: TweenAnimationBuilder<Decoration>(
-          tween: DecorationTween(
-            end: AppDecorations.studyChoice(
-              colors,
-              semantic,
-              tone,
-              isRecessed: isRecessed,
-            ),
+      child: TweenAnimationBuilder<Decoration>(
+        tween: DecorationTween(
+          end: AppDecorations.studyChoice(
+            colors,
+            semantic,
+            tone,
+            isRecessed: isRecessed,
           ),
-          duration: motion,
-          curve: Easing.standard,
-          builder: (context, decoration, child) =>
-              Ink(decoration: decoration, child: child),
-          child: Padding(
-            padding: padding,
-            child: TweenAnimationBuilder<Color?>(
-              tween: ColorTween(end: ink),
-              duration: motion,
-              curve: Easing.standard,
-              builder: (context, color, _) => builder(color ?? ink),
+        ),
+        duration: motion,
+        curve: Easing.standard,
+        builder: (context, decoration, child) =>
+            DecoratedBox(decoration: decoration, child: child),
+        child: Material(
+          type: MaterialType.transparency,
+          child: MxRowInk(
+            onTap: onTap,
+            placement: MxFocusRingPlacement.outside,
+            inkRadius: BorderRadius.circular(AppRadius.md),
+            semanticLabel: semanticsLabel,
+            child: Padding(
+              padding: padding,
+              child: TweenAnimationBuilder<Color?>(
+                tween: ColorTween(end: ink),
+                duration: motion,
+                curve: Easing.standard,
+                builder: (context, color, _) => builder(color ?? ink),
+              ),
             ),
           ),
         ),
