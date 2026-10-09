@@ -185,4 +185,28 @@ void main() {
       MxFocusRingPlacement.outside,
     );
   });
+
+  testWidgets('inkRadius rounds the ripple; a row without it ripples square', (
+    tester,
+  ) async {
+    final radius = BorderRadius.circular(AppRadius.md);
+    BorderRadius? rippleOf() =>
+        tester.widget<InkWell>(find.byType(InkWell)).borderRadius;
+
+    await pumpMx(
+      tester,
+      MxRowInk(onTap: () {}, child: const SizedBox(width: 200, height: 48)),
+    );
+    expect(rippleOf(), isNull);
+
+    await pumpMx(
+      tester,
+      MxRowInk(
+        onTap: () {},
+        inkRadius: radius,
+        child: const SizedBox(width: 200, height: 48),
+      ),
+    );
+    expect(rippleOf(), radius);
+  });
 }

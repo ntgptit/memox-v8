@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -71,6 +72,7 @@ class StudyChoiceWidget extends StatelessWidget {
       child: MxRowInk(
         onTap: onTap,
         placement: MxFocusRingPlacement.outside,
+        inkRadius: BorderRadius.circular(AppRadius.md),
         child: TweenAnimationBuilder<Decoration>(
           tween: DecorationTween(
             end: AppDecorations.studyChoice(

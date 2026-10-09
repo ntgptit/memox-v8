@@ -20,6 +20,7 @@ class MxRowInk extends StatelessWidget {
     this.shouldDimWhenDisabled = true,
     this.semanticLabel,
     this.placement = MxFocusRingPlacement.inside,
+    this.inkRadius,
   });
 
   final VoidCallback? onTap;
@@ -42,6 +43,10 @@ class MxRowInk extends StatelessWidget {
   /// A full-bleed row keeps the ring inside; a card with room around it puts
   /// it outside.
   final MxFocusRingPlacement placement;
+
+  /// Rounds the ripple to a card's corners; null keeps the square ripple a
+  /// full-bleed row's card clips.
+  final BorderRadius? inkRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +74,12 @@ class MxRowInk extends StatelessWidget {
         container: true,
         button: true,
         label: semanticLabel,
-        child: InkWell(onTap: onTap, onLongPress: onLongPress, child: child),
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          borderRadius: inkRadius,
+          child: child,
+        ),
       ),
     );
   }
