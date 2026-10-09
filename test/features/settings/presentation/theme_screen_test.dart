@@ -103,4 +103,19 @@ void main() {
       findsOneWidget,
     );
   });
+
+  // SW-REV-005: the card's one TalkBack node keeps the tap its excluded
+  // child offered.
+  libraryTest('TalkBack can choose a theme: the card keeps its tap', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(tester, env, const ThemeScreen());
+    expect(
+      tester.getSemantics(find.bySemanticsLabel(_dark)),
+      isSemantics(hasTapAction: true),
+    );
+    handle.dispose();
+  });
 }

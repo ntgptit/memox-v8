@@ -2,20 +2,25 @@ import 'dart:async';
 
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
-import 'package:memox/features/settings/presentation/providers/reset_app_settings_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/providers/save_study_defaults_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/providers/set_language_use_case_provider.dart';
+import 'package:memox/features/settings/presentation/providers/set_speech_auto_play_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/providers/set_theme_use_case_provider.dart';
 import 'package:memox/features/settings/presentation/states/settings_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'settings_controller.g.dart';
+
+/// Reset app options as `app/` composes it: the settings' reset and what
+/// another feature must do right after it (DEV-218).
+typedef ResetAppOptions = Future<Outcome<void, SettingsRejection>> Function();
 
 /// How long the card limit stays still before it is saved (spec §5.2): a
 /// hold or a run of taps is one write.
@@ -75,10 +80,7 @@ class SettingsController extends _$SettingsController {
   void typeCardLimit(String text) {
     _settle?.cancel();
     final value = int.tryParse(text);
-    final isValid =
-        value != null &&
-        value >= StudyOptions.minCardLimit &&
-        value <= StudyOptions.maxCardLimit;
+    final isValid = StudyOptions.isValidCardLimit(value);
     state = state.withDraft(value, isInvalid: !isValid);
     if (isValid) unawaited(_saveCardLimit());
   }
@@ -87,16 +89,50 @@ class SettingsController extends _$SettingsController {
     final persisted = _studyDefaults;
     if (persisted == null || order == persisted.newCardOrder) return;
     if (state.isStudyDefaultsBusy) return;
-    final options = StudyOptions(
-      cardLimit: persisted.cardLimit,
-      newCardOrder: order,
-    );
+    // Only the order is written: a limit that arrived meanwhile stays
+    // (BR-SETTINGS-007, DEV-217).
     unawaited(
       _submit(
         SettingsSubmit.newCardOrder,
-        () => ref.read(saveStudyDefaultsUseCaseProvider)(options: options),
+        () => ref.read(saveStudyDefaultsUseCaseProvider)(newCardOrder: order),
         retry: () async => chooseNewCardOrder(order),
-      ).then((hasSaved) => _afterStudyDefaults(options, hasSaved: hasSaved)),
+      ).then(
+        (hasSaved) => _afterStudyDefaults(
+          StudyOptions(
+            cardLimit: persisted.cardLimit,
+            newCardOrder: order,
+            speechLanguage: persisted.speechLanguage,
+          ),
+          hasSaved: hasSaved,
+        ),
+      ),
+    );
+  }
+
+  /// The default speech language, written alone (BR-SETTINGS-007,
+  /// BR-SETTINGS-009).
+  void chooseSpeechLanguage(SpeechLanguage language) {
+    if (language == _studyDefaults?.speechLanguage) return;
+    unawaited(
+      _submit(
+        SettingsSubmit.speechLanguage,
+        () => ref.read(saveStudyDefaultsUseCaseProvider)(
+          speechLanguage: language,
+        ),
+        retry: () async => chooseSpeechLanguage(language),
+      ),
+    );
+  }
+
+  /// The read-aloud switch, saved on the toggle (BR-SETTINGS-010).
+  void setSpeechAutoPlay({required bool isOn}) {
+    if (isOn == _persisted?.isSpeechAutoPlay) return;
+    unawaited(
+      _submit(
+        SettingsSubmit.speechAutoPlay,
+        () => ref.read(setSpeechAutoPlayUseCaseProvider)(isOn: isOn),
+        retry: () async => setSpeechAutoPlay(isOn: isOn),
+      ),
     );
   }
 
@@ -122,14 +158,15 @@ class SettingsController extends _$SettingsController {
     );
   }
 
-  /// A3: every app option back to its default in one write; completes true
-  /// once it landed, so the dialog can close.
-  Future<bool> reset() async {
+  /// A3: every app option back to its default in one write, through [run],
+  /// the reset as `app/` composes it; completes true once it landed, so the
+  /// dialog can close.
+  Future<bool> reset(ResetAppOptions run) async {
     _settle?.cancel();
     final hasReset = await _submit(
       SettingsSubmit.reset,
-      () => ref.read(resetAppSettingsUseCaseProvider)(),
-      retry: () async => unawaited(reset()),
+      run,
+      retry: () async => unawaited(reset(run)),
     );
     if (hasReset && ref.mounted) {
       _written = null;
@@ -154,13 +191,15 @@ class SettingsController extends _$SettingsController {
       _isCardLimitQueued = true;
       return;
     }
+    // Only the limit is written (BR-SETTINGS-007, DEV-217).
     final options = StudyOptions(
       cardLimit: draft,
       newCardOrder: persisted.newCardOrder,
+      speechLanguage: persisted.speechLanguage,
     );
     final hasSaved = await _submit(
       SettingsSubmit.cardLimit,
-      () => ref.read(saveStudyDefaultsUseCaseProvider)(options: options),
+      () => ref.read(saveStudyDefaultsUseCaseProvider)(cardLimit: draft),
       retry: () async {
         state = state.withDraft(draft);
         await _saveCardLimit();

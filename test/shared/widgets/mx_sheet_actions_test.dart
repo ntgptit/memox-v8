@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -28,12 +27,9 @@ void main() {
         ),
       ),
     );
-    // 340 − 16 − 16 − 8 = 300, split 10 : 13.
-    expect(
-      tester.getSize(_button('Cancel')).width,
-      closeTo(300 * 10 / 23, 0.01),
-    );
-    expect(tester.getSize(_button('Move')).width, closeTo(300 * 13 / 23, 0.01));
+    // 340 − 16 − 16 − 8 = 300, split 1 : 1 (DEV-179).
+    expect(tester.getSize(_button('Cancel')).width, closeTo(150, 0.01));
+    expect(tester.getSize(_button('Move')).width, closeTo(150, 0.01));
     expect(
       tester.widget<MxButton>(_button('Cancel')).tone,
       MxButtonTone.outline,
@@ -69,7 +65,7 @@ void main() {
     },
   );
 
-  testWidgets('a destructive confirm, with its glyph passed through', (
+  testWidgets('a destructive confirm, without a glyph (DEV-179)', (
     tester,
   ) async {
     await pumpMx(
@@ -80,17 +76,14 @@ void main() {
           onCancel: () {},
           confirmLabel: 'Delete',
           onConfirm: () {},
-          confirmIcon: AppIcons.delete,
           isDestructive: true,
         ),
       ),
     );
     final confirm = tester.widget<MxButton>(_button('Delete'));
 
-    expect(
-      (confirm.tone, confirm.icon),
-      (MxButtonTone.destructive, AppIcons.delete),
-    );
+    // A popup's buttons carry no icon; the tone tells the weight (DEV-179).
+    expect((confirm.tone, confirm.icon), (MxButtonTone.destructive, null));
   });
 
   testWidgets('a warning confirm, for a merge (spec D15)', (tester) async {
@@ -214,9 +207,8 @@ void main() {
     expect(find.text('Cancel'), findsNothing);
   });
 
-  testWidgets('labels too long for their shares stack the pair', (
-    tester,
-  ) async {
+  testWidgets('at a larger text scale labels too long for their shares '
+      'stack the pair', (tester) async {
     await pumpMx(
       tester,
       _width(
@@ -224,11 +216,11 @@ void main() {
           cancelLabel: 'Giữ lại tất cả',
           onCancel: () {},
           confirmLabel: 'Xoá vĩnh viễn 12 thẻ',
-          confirmIcon: Icons.delete,
           isDestructive: true,
           onConfirm: () {},
         ),
       ),
+      textScale: 1.3,
     );
     final cancel = tester.getRect(_button('Giữ lại tất cả'));
     final confirm = tester.getRect(_button('Xoá vĩnh viễn 12 thẻ'));
@@ -236,5 +228,94 @@ void main() {
     expect(confirm.top, greaterThan(cancel.bottom));
     expect(cancel.width, confirm.width);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Cancel and the confirm share one width and one height '
+      '(DEV-179)', (tester) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 328,
+        child: MxSheetActions(
+          cancelLabel: 'Cancel',
+          onCancel: () {},
+          confirmLabel: 'Continue',
+          onConfirm: () {},
+        ),
+      ),
+    );
+    final cancel = tester.getSize(_button('Cancel'));
+    final confirm = tester.getSize(_button('Continue'));
+    expect(cancel.width, confirm.width);
+    expect(cancel.height, confirm.height);
+  });
+
+  testWidgets('at a larger text scale the pair stacks a label too long '
+      'for its half, both full width (The Short Label Rule)', (tester) async {
+    const long = 'Discard and continue with everything';
+    await pumpMx(
+      tester,
+      MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
+        child: SizedBox(
+          width: 328,
+          child: MxSheetActions(
+            cancelLabel: 'Cancel',
+            onCancel: () {},
+            confirmLabel: long,
+            onConfirm: () {},
+          ),
+        ),
+      ),
+    );
+    final cancel = tester.getRect(_button('Cancel'));
+    final confirm = tester.getRect(_button(long));
+    expect(cancel.width, confirm.width);
+    expect(cancel.top, lessThan(confirm.top));
+  });
+
+  // SW-REV-008: one action (a lone Close, Done, OK) spans the row in the
+  // footer's own padding, without each caller rebuilding the row.
+  testWidgets('single: one block button in its tone, the sheet form kept', (
+    tester,
+  ) async {
+    var taps = 0;
+    await pumpMx(
+      tester,
+      _width(
+        MxSheetActions.single(
+          label: 'Done',
+          onPressed: () => taps++,
+          isInSheet: true,
+        ),
+      ),
+    );
+    final button = tester.widget<MxButton>(_button('Done'));
+    expect(button.tone, MxButtonTone.primary);
+    expect(button.isBlock, isTrue);
+    expect(tester.getSize(_button('Done')).width, 340 - 2 * 16);
+    expect(
+      tester.getTopLeft(_button('Done')) -
+          tester.getTopLeft(find.byType(MxSheetActions)),
+      const Offset(16, 8),
+    );
+    await tester.tap(_button('Done'));
+    expect(taps, 1);
+
+    await pumpMx(
+      tester,
+      _width(
+        const MxSheetActions.single(
+          label: 'Cancel',
+          onPressed: null,
+          tone: MxButtonTone.outline,
+        ),
+      ),
+    );
+    expect(tester.widget<MxButton>(_button('Cancel')).onPressed, isNull);
+    expect(
+      tester.widget<MxButton>(_button('Cancel')).tone,
+      MxButtonTone.outline,
+    );
   });
 }

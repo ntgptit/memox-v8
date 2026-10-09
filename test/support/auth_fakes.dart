@@ -68,8 +68,23 @@ class FakeSyncControl implements SyncControl {
   var paused = true;
   var resumes = 0;
 
+  /// While set and not completed, a run is in progress: [pause] completes
+  /// only once it is completed, and a push, pull or mark throws, as the run
+  /// would be using the session (auth spec R3, DEV-227).
+  Completer<void>? pauseGate;
+
   @override
-  Future<void> pause() async => paused = true;
+  Future<void> pause() async {
+    paused = true;
+    await pauseGate?.future;
+  }
+
+  void _noRunInProgress() {
+    final gate = pauseGate;
+    if (gate != null && !gate.isCompleted) {
+      throw StateError('run in progress');
+    }
+  }
 
   @override
   void resume() {
@@ -82,6 +97,7 @@ class FakeSyncControl implements SyncControl {
 
   @override
   Future<void> pushPending() async {
+    _noRunInProgress();
     kill?.step();
     server.checkOnline();
     device.pushes.add((signedIn: gateway.currentUserId, owner: device.owner));
@@ -93,6 +109,7 @@ class FakeSyncControl implements SyncControl {
 
   @override
   Future<void> pullAll() async {
+    _noRunInProgress();
     kill?.step();
     server.checkOnline();
     device.pulls.add(gateway.currentUserId);
@@ -101,6 +118,7 @@ class FakeSyncControl implements SyncControl {
 
   @override
   Future<void> markAllPending() async {
+    _noRunInProgress();
     kill?.step();
     device
       ..markAllPendingCalls += 1
@@ -217,7 +235,9 @@ class AuthWorld {
   /// A store that is not killable, for the test's own reads and setup.
   AccountStore get store => AccountStore(db);
 
-  AccountCoordinator boot() {
+  /// Launches the app. [subscribeNotices] false leaves [notices] unlistened,
+  /// as the layer host is before the first frame (DEV-202).
+  AccountCoordinator boot({bool subscribeNotices = true}) {
     final previous = _coordinator;
     if (previous != null) unawaited(previous.dispose());
     gate = MutationGate();
@@ -236,7 +256,7 @@ class AuthWorld {
       retryDelay: (_) => Duration.zero,
       logger: AppLogger(sinks: const []),
     );
-    coordinator.notices.listen(notices.add);
+    if (subscribeNotices) coordinator.notices.listen(notices.add);
     return _coordinator = coordinator;
   }
 

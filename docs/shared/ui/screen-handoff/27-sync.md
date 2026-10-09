@@ -10,7 +10,7 @@ last failed run, and the rows the server refused. Shaped by Impeccable before th
 
 ## Entry points
 
-- Screen 23, Sync section, row "Sync". Route `/settings/sync`, on the root navigator like
+- Screen 23, the Account & sync section, row "Sync" (settings hub spec D2). Route `/settings/sync`, on the root navigator like
   Theme and Language; Back returns to 23.
 - Screen 13's sync banner, "Details" (`context.go`, as Study home opens the Library);
   Back lands on Settings.
@@ -21,13 +21,13 @@ last failed run, and the rows the server refused. Shaped by Impeccable before th
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` (content density) + back `MxIconButton` | "Sync". |
-| Problem | `MxInlineBanner` (warning); a network failure is an `MxNote` (critique 2026-10-02) | Under the status card, above Sync now (critique 2026-09-30; it was a floating notice). Refused rows win: the title "{n} changes weren't accepted" (critique 2026-09-30 part 3a, R3) over the message "The server didn't accept them. They're safe here. Try again, or keep them on this device only; they won't sync to your other devices.", then Keep on this device (outline) · Try again (primary, the screen's one primary) under it. Keep opens the Keep dialog first (critique 2026-09-30 part 1, R4). Otherwise the last failed run's sentence (spec §5.4), local-first, with no code, id or message. None when all is well. |
+| Problem | `MxInlineBanner` (warning); a network failure is an `MxNote` (critique 2026-10-02) | Under the status card, above Sync now (critique 2026-09-30; it was a floating notice). Refused rows win: the title "{n} changes weren't accepted" (critique 2026-09-30 part 3a, R3) over the message "The server didn't accept them. They're safe here. Try again, or keep them on this device only; they won't sync to your other devices.", then Keep on device (outline) · Try again (primary, the screen's one primary) under it. Keep opens the Keep dialog first (critique 2026-09-30 part 1, R4). Otherwise the last failed run's sentence (spec §5.4), local-first, with no code, id or message. None when all is well. |
 | Status | `MxSection` + two `MxSettingsRow`s + note | "Last synced" · "{Today, 14:32}" or "Not yet"; "Waiting to sync" · "{n} changes" or "Nothing waiting", or "No other changes waiting" when only refused rows remain (critique 2026-09-30 part 1); the note "MemoX syncs on its own when you're online. Your study never waits for it." |
 | Sync now | `MxButton` (block, cloud-sync glyph): primary while changes wait or a run failed and no row was refused; outline otherwise, since sync is automatic (critique 2026-09-30) and, with refused rows, the banner's Try again is the one primary (critique 2026-09-30 part 1) | While a run it started is going, a spinner and "Syncing…" take its place, in a row of the button's height (`AppSize.buttonRegular`; critique 2026-09-30 part 3d-1, D5, part 3d-2). |
-| Keep dialog | `MxDialog` + `MxSheetActions` | "Keep {n} changes on this device only?" · "They won't sync to your other devices. You can't undo this." · Cancel · Keep on this device. Only the confirm keeps; Cancel, Back or the scrim write nothing (critique 2026-09-30 part 1, R4). |
+| Keep dialog | `MxDialog` + `MxSheetActions` | "Keep {n} changes on this device only?" · "They won't sync to your other devices. You can't undo this." · Cancel · "Keep" (the title names what it keeps, DEV-179). Only the confirm keeps; Cancel, Back or the scrim write nothing (critique 2026-09-30 part 1, R4). |
 | Toasts | `MxSnackbar` | "Synced"; "Couldn't sync. Nothing was lost."; "Kept on this device"; "Couldn't change that. Nothing was lost." · Retry. |
 
-Only one of Sync now, Try again and Keep on this device runs at a time; the other two
+Only one of Sync now, Try again and Keep on device runs at a time; the other two
 are disabled meanwhile.
 
 ## States
@@ -60,8 +60,8 @@ The images are the goldens.
 ## Copy
 
 - App bar: "Sync".
-- Refused rows: "{n} changes weren't accepted" · "1 change wasn't accepted" · "The server didn't accept them. They're safe here. Try again, or keep them on this device only; they won't sync to your other devices." · "Keep on this device" · "Try again".
-- Keep dialog: "Keep {n} changes on this device only?" · "They won't sync to your other devices. You can't undo this." · "Cancel" · "Keep on this device".
+- Refused rows: "{n} changes weren't accepted" · "1 change wasn't accepted" · "The server didn't accept them. They're safe here. Try again, or keep them on this device only; they won't sync to your other devices." · "Keep on device" · "Try again".
+- Keep dialog: "Keep {n} changes on this device only?" · "They won't sync to your other devices. You can't undo this." · "Cancel" · "Keep".
 - Failures: "No connection. Your changes are safe on this device and will sync when you're back online." · "Couldn't sign in to sync. Your changes are safe on this device. MemoX will try again." · "The server couldn't take the changes. They're safe on this device. MemoX will try again." · "Sync stopped with an error. Your changes are safe on this device. MemoX will try again."
 - Status: "Status" · "Last synced" · "Not yet" · "Waiting to sync" · "{n} changes" · "Nothing waiting" · "No other changes waiting" · "MemoX syncs on its own when you're online. Your study never waits for it." · "Sync now".
 - Toasts: "Synced" · "Couldn't sync. Nothing was lost." · "Kept on this device" · "Couldn't change that. Nothing was lost." · "Retry".

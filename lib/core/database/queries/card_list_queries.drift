@@ -39,10 +39,21 @@ WHERE c.delete_batch_id IS NULL AND $predicate AND (:tag_count = 0 OR EXISTS (
   SELECT 1 FROM card_tags ct
   WHERE ct.card_id = c.id AND ct.tag_id IN :tag_ids));
 
--- BR-CARD-008: the schedule rows of every active card of :deck_id, outside
--- any search or filter.
-activeSchedulesOfDeck(:deck_id AS TEXT):
-SELECT s.* FROM card_schedule s INNER JOIN card c ON c.id = s.card_id
+-- BR-CARD-008, BR-STUDY-068 (DEV-211): the display-state counts and the
+-- workload of every active card of :deck_id, outside any search or filter,
+-- in one statement, so the list never reads the deck's schedule rows. New,
+-- Overdue and Due today come in from CardDueSql; beginning, reviewing and
+-- mastered from CardStatusSql, the SQL copy of CardDisplayStatus's
+-- thresholds, which a parity test pins.
+deckStatusCounts(:deck_id AS TEXT) AS DeckStatusCountsRow:
+SELECT
+  COUNT(*) FILTER (WHERE $is_new) AS new_count,
+  COUNT(*) FILTER (WHERE $is_beginning) AS beginning_count,
+  COUNT(*) FILTER (WHERE $is_reviewing) AS reviewing_count,
+  COUNT(*) FILTER (WHERE $is_mastered) AS mastered_count,
+  COUNT(*) FILTER (WHERE $is_overdue) AS overdue_count,
+  COUNT(*) FILTER (WHERE $is_due_today) AS due_today_count
+FROM card_schedule s INNER JOIN card c ON c.id = s.card_id
 WHERE c.deck_id = :deck_id AND c.delete_batch_id IS NULL;
 
 -- BR-TAG-001, BE-C2: the tags of :card_ids, each card's by folded name then

@@ -60,7 +60,9 @@ class MxEmptyState extends StatelessWidget {
   final String? tertiaryActionLabel;
   final VoidCallback? onTertiaryAction;
 
-  /// A product rule under the action, drawn as an MxNote (ruling S19).
+  /// A product rule under the action, in the footnote form (`MxNote.hint`,
+  /// ruling S19; a boxed note inside the card was two edges in dark, audit
+  /// 2026-10-08 F-02, DEV-303).
   final String? footnote;
 
   static const double _tileTint = 0.10;
@@ -156,7 +158,7 @@ class MxEmptyState extends StatelessWidget {
               ],
               if (footnote case final rule?) ...[
                 const SizedBox(height: AppSpacing.card),
-                MxNote(text: rule),
+                MxNote.hint(text: rule),
               ],
             ],
           ),

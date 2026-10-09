@@ -8,9 +8,7 @@ import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_due_chip_widget.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_card.dart';
-import 'package:memox/shared/widgets/mx_row_ink.dart';
-import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 
 /// Tags a row names before "+N" (screen 07, spec A15).
@@ -39,46 +37,26 @@ class CardRowWidget extends StatelessWidget {
   final VoidCallback? onLongPress;
 
   @override
-  Widget build(BuildContext context) {
-    // The checkbox, while selecting, and the trailing column centre on the
-    // row (spec 2026-09-26 D4, extended by the owner 2026-09-26). No status
-    // dot: the status line states it once (critique 2026-09-30 part 3b, R3).
-    final row = Row(
-      spacing: AppSpacing.grouped,
-      children: [
-        if (isSelecting) MxSelectionCheckbox(isChecked: isSelected),
-        Expanded(child: _Content(item: item)),
-        _Trailing(item: item),
-      ],
-    );
-    // One node carries the label, the checked state, the tap and the
-    // long-press; the box is only painted (ruling I6).
-    return MergeSemantics(
-      child: Semantics(
-        checked: isSelecting ? isSelected : null,
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.control),
-          child: GestureDetector(
-            onLongPress: onLongPress,
-            child: MxCard(
-              isFullBleed: true,
-              isSelected: isSelected,
-              child: MxRowInk(
-                onTap: onTap,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                    vertical: AppSpacing.grouped,
-                  ),
-                  child: row,
-                ),
-              ),
-            ),
-          ),
-        ),
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: AppSpacing.control),
+    // The frame is the shared card row (DEV-304): the checkbox while
+    // selecting, the ink, 16/12 and one node with the checked state. No
+    // status dot: the status line states it once (critique 2026-09-30 part
+    // 3b, R3).
+    child: MxSelectableCardRow(
+      onTap: onTap,
+      onLongPress: onLongPress,
+      isSelecting: isSelecting,
+      isSelected: isSelected,
+      child: Row(
+        spacing: AppSpacing.grouped,
+        children: [
+          Expanded(child: _Content(item: item)),
+          _Trailing(item: item),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
 
 class _Content extends StatelessWidget {

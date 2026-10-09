@@ -19,18 +19,22 @@ import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
+import 'package:memox/features/deck/domain/repositories/deck_content_repository.dart';
 import 'package:memox/features/srs/domain/models/due_date_model.dart';
 import 'package:memox/features/srs/domain/repositories/schedule_repository.dart';
 import 'package:memox/features/tags/domain/repositories/tag_repository.dart';
 
 /// Every write reads the rows its rules need and writes inside one
 /// transaction, which the schedule row (BR-CARD-004) and the tag links join.
-/// A refusal writes nothing.
+/// A refusal writes nothing. A deck's content type is the deck feature's to
+/// set: a write that changes what a deck holds asks [DeckContentRepository]
+/// for a refresh (DEV-215).
 final class CardRepositoryImpl implements CardRepository {
   CardRepositoryImpl(
     this._db,
     this._schedules,
-    this._tags, {
+    this._tags,
+    this._deckContent, {
     DateTime Function()? now,
   }) : _dao = CardDao(_db),
        _listDao = CardListDao(_db),
@@ -40,6 +44,7 @@ final class CardRepositoryImpl implements CardRepository {
   final AppDatabase _db;
   final ScheduleRepository _schedules;
   final TagRepository _tags;
+  final DeckContentRepository _deckContent;
   final CardDao _dao;
   final CardListDao _listDao;
   final CardDetailDao _detailDao;
@@ -53,23 +58,38 @@ final class CardRepositoryImpl implements CardRepository {
   }) {
     final at = now ?? _now();
     return _db.mappedTransaction(() async {
-      if (draft.check() case Rejected(:final reason)) return Rejected(reason);
-      final deck = await _dao.deckRow(deckId);
-      if (deck == null) return const Rejected(CardRejection.notFound);
-      final contentType = DeckContentType.values.byName(deck.contentType);
-      final container = DeckEntity.checkCreateCard(
-        parentContentType: contentType,
-      );
-      if (container case Rejected()) {
-        return const Rejected(CardRejection.notACardContainer);
-      }
-
-      final id = await insertCard(deckId, draft, at);
-      if (contentType == DeckContentType.unset) {
-        await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
-      }
-      return Ok(cardEntityOf((await _dao.findRow(id))!));
+      final ids = await insertCards(deckId: deckId, drafts: [draft], now: at);
+      return switch (ids) {
+        Rejected(:final reason) => Rejected(reason),
+        Ok(:final value) => Ok(
+          cardEntityOf((await _dao.findRow(value.single))!),
+        ),
+      };
     });
+  }
+
+  @override
+  Future<Outcome<List<String>, CardRejection>> insertCards({
+    required String deckId,
+    required List<CardDraft> drafts,
+    required DateTime now,
+  }) async {
+    for (final draft in drafts) {
+      if (draft.check() case Rejected(:final reason)) return Rejected(reason);
+    }
+    final deck = await _dao.deckRow(deckId);
+    if (deck == null) return const Rejected(CardRejection.notFound);
+    final container = DeckEntity.checkCreateCard(
+      parentContentType: DeckContentType.values.byName(deck.contentType),
+    );
+    if (container case Rejected()) {
+      return const Rejected(CardRejection.notACardContainer);
+    }
+    final ids = [
+      for (final draft in drafts) await _insertCard(deckId, draft, now),
+    ];
+    await _deckContent.refresh(deckId, now);
+    return Ok(ids);
   }
 
   @override
@@ -110,7 +130,7 @@ final class CardRepositoryImpl implements CardRepository {
         await _dao.moveToTrash(cardId, batchId, at);
         batchIds.add(batchId);
       }
-      await _unsetEmptied({for (final row in rows) row.deckId}, at);
+      await _refreshDecks({for (final row in rows) row.deckId}, at);
       for (final batchId in batchIds) {
         await _dao.closeSessionsTouching(batchId, at);
       }
@@ -186,14 +206,7 @@ final class CardRepositoryImpl implements CardRepository {
       if (rule case Rejected(:final reason)) return Rejected(reason);
 
       await _dao.moveCards(cardIds, targetDeckId, at);
-      await _unsetEmptied(sourceDeckIds, at);
-      if (targetContentType == DeckContentType.unset) {
-        await _dao.setDeckContentType(
-          targetDeckId,
-          DeckContentType.card.name,
-          at,
-        );
-      }
+      await _refreshDecks({...sourceDeckIds, targetDeckId}, at);
       return const Ok(null);
     });
   }
@@ -267,12 +280,16 @@ final class CardRepositoryImpl implements CardRepository {
       tagIds: query.tagIds,
       now: now,
     );
-    final schedules = await _listDao.activeSchedules(deckId);
+    final startOfToday = startOfLocalDay(now);
+    final status = await _listDao.statusCounts(
+      deckId,
+      now: now,
+      startOfToday: startOfToday,
+    );
     final shown = rows.take(windowSize).toList();
     final tags = await _listDao.tagsOf([
       for (final (card, _) in shown) card.id,
     ]);
-    final startOfToday = startOfLocalDay(now);
     return CardListView(
       items: [
         for (final (card, schedule) in shown)
@@ -280,6 +297,7 @@ final class CardRepositoryImpl implements CardRepository {
             card,
             schedule,
             tags: tags[card.id] ?? const [],
+            now: now,
             startOfToday: startOfToday,
           ),
       ],
@@ -290,8 +308,8 @@ final class CardRepositoryImpl implements CardRepository {
         newCards: counts.newCards,
         flagged: counts.flagged,
       ),
-      statusCounts: statusCountsOf(schedules),
-      workload: workloadOf(schedules, startOfToday),
+      statusCounts: statusCountsOf(status),
+      workload: workloadOf(status),
     );
   }
 
@@ -347,9 +365,12 @@ final class CardRepositoryImpl implements CardRepository {
           .mapDatabaseErrors();
 
   /// One card, its schedule row (BR-CARD-004) and its tags, inside the
-  /// caller's transaction; the new card's id. An import writes each card
-  /// through it too (`CardTransferRepositoryImpl`, BR-TRANSFER-004).
-  Future<String> insertCard(String deckId, CardDraft draft, DateTime at) async {
+  /// caller's transaction; the new card's id.
+  Future<String> _insertCard(
+    String deckId,
+    CardDraft draft,
+    DateTime at,
+  ) async {
     final id = newId();
     await _dao.insertCard(id: id, deckId: deckId, draft: draft, now: at);
     await _schedules.initializeCard(cardId: id);
@@ -426,17 +447,16 @@ final class CardRepositoryImpl implements CardRepository {
         updatedAt: updatedAt,
       );
     }
-    if (targetContentType == DeckContentType.unset) {
-      await _dao.setDeckContentType(deckId, DeckContentType.card.name, at);
-    }
+    await _deckContent.refresh(deckId, at);
     return const Ok(null);
   }
 
-  /// A card deck left with no card is unset again (BR-DECK-015, invariant 29).
-  Future<void> _unsetEmptied(Set<String> deckIds, DateTime at) async {
+  /// The content type of each deck follows what it holds now: a deck of
+  /// cards left with none is unset again, an unset one that took cards is a
+  /// deck of cards (BR-DECK-008, BR-DECK-015).
+  Future<void> _refreshDecks(Set<String> deckIds, DateTime at) async {
     for (final deckId in deckIds) {
-      if (await _dao.holdsCards(deckId)) continue;
-      await _dao.setDeckContentType(deckId, DeckContentType.unset.name, at);
+      await _deckContent.refresh(deckId, at);
     }
   }
 }

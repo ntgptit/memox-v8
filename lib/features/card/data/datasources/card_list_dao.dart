@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/card_due_sql.dart';
+import 'package:memox/core/database/card_status_sql.dart';
 import 'package:memox/core/database/id_chunks.dart';
 import 'package:memox/core/text/folded_text.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
@@ -75,10 +77,22 @@ final class CardListDao extends DatabaseAccessor<AppDatabase>
     ).get()).toSet();
   }
 
-  /// The schedule rows of every active card of [deckId], outside any search
-  /// or filter, for the display-state counts (BR-CARD-008).
-  Future<List<CardSchedule>> activeSchedules(String deckId) =>
-      activeSchedulesOfDeck(deckId).get();
+  /// The display-state counts (BR-CARD-008) and the workload (BR-STUDY-068)
+  /// of every active card of [deckId], outside any search or filter, in one
+  /// statement (DEV-211): the list never reads the deck's schedule rows.
+  Future<DeckStatusCountsRow> statusCounts(
+    String deckId, {
+    required DateTime now,
+    required DateTime startOfToday,
+  }) => deckStatusCounts(
+    (s, c) => CardDueSql.isNew(s),
+    (s, c) => CardStatusSql.isBeginning(s),
+    (s, c) => CardStatusSql.isReviewing(s),
+    (s, c) => CardStatusSql.isMastered(s),
+    (s, c) => CardDueSql.isOverdue(s, startOfToday),
+    (s, c) => CardDueSql.isDueToday(s, now: now, startOfToday: startOfToday),
+    deckId,
+  ).getSingle();
 
   /// The tags of [cardIds], each card's by folded name then id (BR-TAG-001).
   /// One statement per chunk of cards (BE-C2): a card's tags all come from
@@ -132,9 +146,8 @@ final class CardListDao extends DatabaseAccessor<AppDatabase>
     DateTime now,
   ) => switch (filter) {
     CardListFilter.all => const Constant(true),
-    CardListFilter.due =>
-      s.learnedAt.isNotNull() & s.dueAt.isSmallerOrEqualValue(now),
-    CardListFilter.newCards => s.learnedAt.isNull(),
+    CardListFilter.due => CardDueSql.isDue(s, now),
+    CardListFilter.newCards => CardDueSql.isNew(s),
     CardListFilter.flagged => c.isFlagged.equals(1),
   };
 

@@ -13,6 +13,7 @@ import 'package:memox/features/monitoring/presentation/widgets/overlays/monitori
 import 'package:memox/features/monitoring/presentation/widgets/support/monitoring_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
@@ -23,9 +24,16 @@ import 'package:memox/shared/widgets/mx_skeleton.dart';
 /// The Not sent tab (monitoring spec §3.2): the device buffer, read-only, so
 /// it works offline. Only the level can be filtered.
 class MonitoringPendingTabWidget extends ConsumerWidget {
-  const MonitoringPendingTabWidget({super.key, required this.onOpenLog});
+  const MonitoringPendingTabWidget({
+    super.key,
+    required this.onOpenLog,
+    this.header,
+  });
 
   final ValueChanged<String> onOpenLog;
+
+  /// Drawn first, above the note (SQL log switch spec §5).
+  final Widget? header;
 
   static const int _skeletonRows = 6;
 
@@ -39,6 +47,7 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
     ];
     return Column(
       children: [
+        ?header,
         // Only while logs wait: an empty buffer says so below.
         if (state.logs.value case final logs? when logs.total > 0)
           Padding(
@@ -123,13 +132,11 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
         MxListSectionHeader(
           label: l10n.monitoringPendingCount(logs.items.length),
         ),
-        for (final (index, log) in logs.items.indexed)
-          LogRowWidget(
-            log: log,
-            now: now,
-            onTap: () => onOpenLog(log.id),
-            hasDivider: index < logs.items.length - 1,
-          ),
+        // Lazy: the buffer can hold many rows.
+        ...MxDividedColumn.divided([
+          for (final log in logs.items)
+            LogRowWidget(log: log, now: now, onTap: () => onOpenLog(log.id)),
+        ]),
       ],
     );
   }

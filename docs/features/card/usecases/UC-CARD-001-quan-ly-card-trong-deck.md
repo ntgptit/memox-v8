@@ -2,7 +2,7 @@
 id: UC-CARD-001
 title: Quản lý card trong deck
 status: ready
-rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-CARD-005, BR-CARD-006, BR-CARD-009, BR-CARD-010, BR-CARD-011, BR-CARD-012, BR-CARD-020, BR-DECK-009, BR-DECK-015, BR-DECK-022, BR-DECK-023, BR-TAG-001, BR-TAG-002, BR-TAG-004, BR-TRASH-001, BR-TRASH-004, BR-TRASH-005, BR-TRASH-008]
+rules: [BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004, BR-CARD-005, BR-CARD-006, BR-CARD-009, BR-CARD-010, BR-CARD-011, BR-CARD-012, BR-CARD-020, BR-DECK-009, BR-DECK-015, BR-DECK-022, BR-DECK-023, BR-STUDY-047, BR-STUDY-051, BR-TAG-001, BR-TAG-002, BR-TAG-004, BR-TRASH-001, BR-TRASH-004, BR-TRASH-005, BR-TRASH-008]
 code: [lib/features/card/domain/usecases/watch_card_list_use_case.dart, lib/features/card/domain/usecases/select_all_card_ids_use_case.dart, lib/features/card/domain/usecases/create_card_use_case.dart, lib/features/card/domain/usecases/edit_card_use_case.dart, lib/features/card/domain/usecases/delete_cards_use_case.dart, lib/features/card/domain/usecases/move_cards_use_case.dart, lib/features/card/domain/usecases/watch_card_move_targets_use_case.dart, lib/features/card/domain/usecases/set_cards_flagged_use_case.dart, lib/features/card/domain/usecases/add_tag_to_cards_use_case.dart, lib/features/card/domain/usecases/remove_tag_from_cards_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -28,7 +28,7 @@ Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và c
 ## Alternative / Error flow
 
 **Alternative flows:**
-- **A1 — Sửa card:** nội dung đổi; study state và history **không** đổi (BR-CARD-005).
+- **A1 — Sửa card:** nội dung và tag đổi; study state, history và cờ **không** đổi (BR-CARD-005, BR-CARD-009). Nút cờ trong editor là A7, ghi riêng sau khi nội dung được lưu.
 - **A2 — Xoá card:** hỏi xác nhận; xác nhận thì card vào Trash trong một
   transaction, mỗi card là **một** batch của riêng nó, cùng một `deleted_at`
   (BR-TRASH-001). Nội dung, study state và history giữ nguyên tới khi purge
@@ -57,6 +57,10 @@ Card đầu tiên của một deck `unset` được tạo qua UC-DECK-004, và c
   mới nếu chưa có — hoặc gỡ tag khỏi thẻ (BR-TAG-001, BR-TAG-002).
 - **A9 — Mở chi tiết:** chạm một thẻ ở chế độ thường mở chi tiết chỉ đọc (UC-CARD-002);
   sửa là action riêng (BR-CARD-020).
+- **A10 — Lọc bằng chip:** người dùng chọn một chip `All`, `Due`, `New` hoặc
+  `Flagged`, mỗi chip kèm số thẻ của nó. `New` là thẻ `learned_at IS NULL` và `Due`
+  là thẻ `learned_at IS NOT NULL AND due_at <= now`, đúng hai tập của phiên học, nên
+  hai chip không bao giờ chứa chung một thẻ (BR-STUDY-047, BR-STUDY-051).
 
 **Error flows:**
 - **E1 — Mặt trước hoặc mặt sau rỗng:** lỗi inline ở đúng ô đó.
@@ -89,7 +93,7 @@ Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng b�
 ## Acceptance criteria
 
 - [ ] **Given** một deck `unset` và một draft hợp lệ, **when** người dùng thêm card, **then** card và study state mới của nó (theo scheduler và generation của root) được ghi trong một transaction, và deck thành `content_type = card` (BR-CARD-001, BR-CARD-002, BR-CARD-003, BR-CARD-004).
-- [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa nội dung, **then** nội dung, cờ và tag đổi nhưng study state và `review_log` không đổi (BR-CARD-005, A1).
+- [ ] **Given** một card đã có study state và lịch sử, **when** người dùng sửa nội dung, **then** nội dung và tag đổi nhưng study state, `review_log` và cờ không đổi — kể cả khi cờ được bật trong lúc editor đang mở (BR-CARD-005, BR-CARD-009, A1).
 - [ ] **Given** người dùng xoá đúng một card, **when** xác nhận, **then** card vào Trash, nội dung, study state và lịch sử giữ nguyên tới khi purge, và có Undo ngay tại chỗ (BR-TRASH-001, BR-TRASH-004, BR-TRASH-008, A2).
 - [ ] **Given** người dùng xoá nhiều card, **when** xác nhận, **then** tất cả vào Trash cùng lúc và không có Undo (BR-TRASH-001, A2).
 - [ ] **Given** card bị xoá là card active cuối cùng của deck, **when** xoá thành công, **then** deck về `content_type = unset` trong cùng transaction (BR-DECK-015, BR-TRASH-005, A2).
@@ -104,3 +108,4 @@ Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng b�
 - [ ] **Given** ghi card mới thất bại, **when** người dùng thấy lỗi, **then** nội dung form được giữ, lỗi kèm Retry, và không có card nào được tạo mà thiếu study state (BR-CARD-004, E3).
 - [ ] **Given** deck đích không còn hợp lệ (mất, là root, giữ deck con, hoặc chính deck nguồn), **when** move chạy, **then** bị từ chối với lý do có kiểu và không ghi gì (BR-CARD-010, E5).
 - [ ] **Given** một card trong lô vi phạm luật (ví dụ đã đủ 10 tag), **when** thao tác hàng loạt chạy, **then** cả lô không ghi gì, danh sách và lựa chọn giữ nguyên, lỗi nói rõ lý do (BR-CARD-011, E6, E7).
+- [ ] **Given** một deck có thẻ chưa học, thẻ đã học đến hạn và thẻ đã học chưa đến hạn, **when** người dùng chọn chip `New` rồi chip `Due`, **then** `New` chỉ liệt kê thẻ `learned_at IS NULL`, `Due` chỉ liệt kê thẻ đã học có `due_at <= now`, không thẻ nào nằm ở cả hai, và số trên mỗi chip bằng số hàng nó liệt kê (BR-STUDY-047, A10).

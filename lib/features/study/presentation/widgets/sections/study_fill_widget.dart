@@ -21,7 +21,7 @@ import 'package:memox/shared/widgets/mx_text_field.dart';
 /// wrong one stays on screen, the typed text struck through beside the
 /// right term, until Continue (BR-STUDY-059, BR-STUDY-063, BR-STUDY-064).
 /// The typed text lives only here and in the one answer sent; it is never
-/// kept (BR-STUDY-027). The screen keys it per turn. Its actions settle
+/// kept (BR-STUDY-030). The screen keys it per turn. Its actions settle
 /// after a swap (critique 2026-09-30 part 3c-2, R1).
 class StudyFillWidget extends StatefulWidget {
   const StudyFillWidget({

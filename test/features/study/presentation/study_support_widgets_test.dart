@@ -15,6 +15,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_face_car
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../../support/library_harness.dart';
 
@@ -111,7 +112,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byKey(const ValueKey('study-scroll-fade')), findsOneWidget);
+    expect(find.byKey(MxScrollFade.trailingKey), findsOneWidget);
   });
 
   libraryTest('a face that fits shows no fade', (tester, env) async {
@@ -127,7 +128,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
+    expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
   });
   libraryTest('the context line holds two lines at most, ends in an '
       'ellipsis, and is heard whole (critique 2026-09-30 part 3c-2, R9)', (

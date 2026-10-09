@@ -9,7 +9,7 @@ delete. FE-B10, SB-A5; spec
 
 ## Entry points
 
-- Screen 23, the Account section's row once the device holds an account (its chevron).
+- Screen 23, the Account & sync section's account row once the device holds an account (its chevron; settings hub spec D7).
   Route `/settings/account`, on the root navigator; Back returns to 23.
 - The link flow (29, 30, 31) ends here (B9).
 - On a plainly anonymous device the route redirects to 23; during a transition it stays
@@ -34,9 +34,9 @@ the transition layer shows what follows.
 
 | Dialog | Design |
 |---|---|
-| Switch | "Switch account?" · "This phone's data is replaced by the other account's after your changes are sent." · shield note "Your changes are sent first." · Cancel · "Switch account" (primary). Then `beginSwitch(discard)`; the layer's target sign-in (R1). |
+| Switch | "Switch account?" · "This phone's data is replaced by the other account's after your changes are sent." · shield note "Your changes are sent first." · Cancel · "Switch" (primary; the title names the account, DEV-179). Then `beginSwitch(discard)`; the layer's target sign-in (R1). |
 | Sign out | Online, or nothing unsent: "Sign out?" · "Your changes are sent first, then this phone's data is removed. Sign in again to get it back." · "Sign out" (warning, critique 2026-10-02). Offline with n unsent: "Sign out and lose changes?" · "{n} changes aren't sent yet and will be lost." · "Sign out" (destructive), `discardUnsent` (B4). The network is read once as the dialog opens (B2). |
-| Delete | "Delete your account?" · "Your account and its decks, cards and progress are deleted from the server, and this phone's data is removed. This can't be undone." · "Delete account" (destructive, trash icon). Offline: note "Deleting your account needs a connection." and the confirm disabled (B6). |
+| Delete | "Delete your account?" · "Your account and its decks, cards and progress are deleted from the server, and this phone's data is removed. This can't be undone." · "Delete" (destructive, no icon; the title already names the account, so the confirm is the verb alone and shares the row 1 : 1 with Cancel, owner 2026-10-06, DEV-179). Offline: note "Deleting your account needs a connection." and the confirm disabled (B6). |
 | Last admin | "An admin must remain" · "Give another person the admin role first, then delete the account." · OK. Opened by the app root on a refused deletion (B7, P3b plan ruling 7). |
 
 A command refused before anything changed toasts "No connection. Nothing changed; try again

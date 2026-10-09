@@ -196,20 +196,25 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   }
 
   /// The bulk bar's commands over [selected]: Move, Flag, Tag, Export,
-  /// Delete (kit 07). Select all is in the app bar (spec A14).
+  /// Delete (kit 07). Select all is in the app bar (spec A14). With nothing
+  /// picked the commands are disabled, as the Trash's are (DEV-307).
   List<CardBulkAction> _bulkActions(Set<String> selected) {
     final l10n = context.l10n;
     final onExport = widget.onExport;
+    VoidCallback? armed(VoidCallback command) =>
+        selected.isEmpty ? null : command;
     return [
       (
         icon: AppIcons.folder,
         label: l10n.cardMove,
-        onTap: () => unawaited(
-          _clearAfter(
-            showCardMoveSheet(
-              context,
-              sourceDeckId: widget.deckId,
-              cardIds: selected,
+        onTap: armed(
+          () => unawaited(
+            _clearAfter(
+              showCardMoveSheet(
+                context,
+                sourceDeckId: widget.deckId,
+                cardIds: selected,
+              ),
             ),
           ),
         ),
@@ -217,31 +222,35 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       (
         icon: AppIcons.flag,
         label: l10n.cardFlag,
-        onTap: () => unawaited(_flag(selected)),
+        onTap: armed(() => unawaited(_flag(selected))),
       ),
       (
         icon: AppIcons.tag,
         label: l10n.cardTag,
-        onTap: () => unawaited(
-          _clearAfter(showCardTagDialog(context, cardIds: selected)),
+        onTap: armed(
+          () => unawaited(
+            _clearAfter(showCardTagDialog(context, cardIds: selected)),
+          ),
         ),
       ),
       if (onExport != null)
         (
           icon: AppIcons.fileDown,
           label: l10n.cardExport,
-          onTap: () => onExport(selected),
+          onTap: armed(() => onExport(selected)),
         ),
       (
         icon: AppIcons.delete,
         label: l10n.cardDelete,
-        onTap: () => unawaited(
-          _clearAfter(
-            showDeleteCardsDialog(
-              context,
-              cardIds: selected,
-              preview: _previewOf(selected),
-              onOpenTrash: widget.onOpenTrash,
+        onTap: armed(
+          () => unawaited(
+            _clearAfter(
+              showDeleteCardsDialog(
+                context,
+                cardIds: selected,
+                preview: _previewOf(selected),
+                onOpenTrash: widget.onOpenTrash,
+              ),
             ),
           ),
         ),
@@ -273,8 +282,9 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
       if (_failedFlag != null) setState(() => _failedFlag = null);
     });
     final request = ref.watch(cardListRequestProvider(widget.deckId));
-    final selected = ref.watch(cardSelectionProvider(widget.deckId));
-    final isSelecting = selected.isNotEmpty;
+    final selection = ref.watch(cardSelectionProvider(widget.deckId));
+    final selected = selection.ids;
+    final isSelecting = selection.isSelecting;
     final isSearchOpen = ref.watch(cardSearchOpenProvider(widget.deckId));
     // The FAB shows unless cards are selected; the list's end clears it.
     final clearance = isSelecting
@@ -339,7 +349,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
               // E-L5: each row is its own child, built only in view.
               child: MxScreenScroll(
                 clearance: clearance,
-                children: _children(view, request, selected, isSearchOpen),
+                children: _children(view, request, selection, isSearchOpen),
               ),
             ),
           ),
@@ -384,11 +394,12 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   List<Widget> _children(
     CardListView view,
     CardListRequestState request,
-    Set<String> selected,
+    CardSelectionState selection,
     bool isSearchOpen,
   ) {
     final l10n = context.l10n;
-    final isSelecting = selected.isNotEmpty;
+    final selected = selection.ids;
+    final isSelecting = selection.isSelecting;
     final total = view.counts.of(request.filter);
     return [
       const SizedBox(height: AppSpacing.control),

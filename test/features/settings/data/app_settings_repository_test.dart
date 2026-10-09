@@ -5,10 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
+import 'package:memox/features/settings/domain/models/speech_settings_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 
@@ -18,11 +20,6 @@ import '../../../support/test_database.dart';
 // transaction and every watcher sees it (BR-SETTINGS-001, BR-SETTINGS-007).
 
 DateTime _t0() => DateTime(2026, 9, 24, 9);
-
-const _sevenRandom = StudyOptions(
-  cardLimit: 7,
-  newCardOrder: NewCardOrder.random,
-);
 
 const _rootOverride = '{"card_limit":30,"new_card_order":"created"}';
 
@@ -34,6 +31,13 @@ Future<void> _insertRootWithOverride(AppDatabase db) => db.customStatement(
   'study_config, created_at, updated_at) '
   "VALUES ('r', 'r', NULL, 'r', 1, 'deck', 'eight_box', 1, 1, 0, ?, 0, 0)",
   [_rootOverride],
+);
+
+/// A sub-deck `s` under the root `r`, written as SQL for the same reason.
+Future<void> _insertSubDeck(AppDatabase db) => db.customStatement(
+  'INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, '
+  'sibling_position, created_at, updated_at) '
+  "VALUES ('s', 's', 'r', 'r', 2, 'card', 0, 0, 0)",
 );
 
 Future<String?> _rootStudyConfig(AppDatabase db) async =>
@@ -77,7 +81,10 @@ void main() {
     );
     await pumpEventQueue();
 
-    final result = await settings.saveStudyDefaults(options: _sevenRandom);
+    final result = await settings.saveStudyDefaults(
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.random,
+    );
     await pumpEventQueue();
     await subscription.cancel();
 
@@ -86,16 +93,42 @@ void main() {
     expect((await settingsRow(db))['updated_at'], isNotNull);
   });
 
+  test(
+    'a save writes only the columns it is given: a limit a pull changed '
+    'meanwhile survives a save of the order (BR-SETTINGS-007, DEV-217)',
+    () async {
+      await settings.saveStudyDefaults(
+        cardLimit: 7,
+        newCardOrder: NewCardOrder.random,
+      );
+      // A pull brought another device's limit between the form's snapshot and
+      // its save.
+      await db.customStatement('UPDATE app_settings SET card_limit = 55');
+
+      final order = await settings.saveStudyDefaults(
+        newCardOrder: NewCardOrder.created,
+      );
+      expect(order, isA<Ok<void, SettingsRejection>>());
+      var row = await settingsRow(db);
+      expect((row['card_limit'], row['new_card_order']), (55, 'created'));
+
+      final limit = await settings.saveStudyDefaults(cardLimit: 9);
+      expect(limit, isA<Ok<void, SettingsRejection>>());
+      row = await settingsRow(db);
+      expect((row['card_limit'], row['new_card_order']), (9, 'created'));
+
+      expect(() => settings.saveStudyDefaults(), throwsArgumentError);
+    },
+  );
+
   test('a card limit out of bounds is refused and writes nothing '
       '(UC-SETTINGS-001 E1, BR-SETTINGS-002)', () async {
     await settings.watchAppSettings().first;
     final before = await totalChanges(db);
 
     final result = await settings.saveStudyDefaults(
-      options: const StudyOptions(
-        cardLimit: 201,
-        newCardOrder: NewCardOrder.random,
-      ),
+      cardLimit: 201,
+      newCardOrder: NewCardOrder.random,
     );
 
     expect(
@@ -107,6 +140,24 @@ void main() {
       ),
     );
     expect(await totalChanges(db), before);
+  });
+
+  test('setLogSqlStatements writes the column and updated_at', () async {
+    await db.customStatement('UPDATE app_settings SET updated_at = 0');
+    final outcome = await settings.setLogSqlStatements(enabled: false);
+    expect(outcome, isA<Ok<void, SettingsRejection>>());
+    expect((await settingsRow(db))['log_sql_statements'], 0);
+    expect((await db.select(db.appSettings).getSingle()).updatedAt, _t0());
+    expect(
+      (await settings.watchAppSettings().first).shouldLogSqlStatements,
+      false,
+    );
+  });
+
+  test('Use app defaults leaves the SQL log switch alone', () async {
+    await settings.setLogSqlStatements(enabled: false);
+    await settings.resetToDefaults();
+    expect((await settingsRow(db))['log_sql_statements'], 0);
   });
 
   test('each save changes only its own value (BR-SETTINGS-007)', () async {
@@ -129,7 +180,10 @@ void main() {
       "'in_progress', 0, 20, 0)",
     );
 
-    await settings.saveStudyDefaults(options: _sevenRandom);
+    await settings.saveStudyDefaults(
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.random,
+    );
 
     final session = await db
         .customSelect("SELECT card_limit FROM study_session WHERE id = 's'")
@@ -142,7 +196,10 @@ void main() {
       'else: not the last delivery, not a root override '
       '(UC-SETTINGS-001 A3, BR-SETTINGS-008, reminders spec D3)', () async {
     await _insertRootWithOverride(db);
-    await settings.saveStudyDefaults(options: _sevenRandom);
+    await settings.saveStudyDefaults(
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.random,
+    );
     await settings.setTheme(theme: ThemeChoice.light);
     await settings.setLanguage(language: LanguageChoice.en);
     await db.customStatement(
@@ -214,7 +271,7 @@ void main() {
     await SettingsRepositoryImpl(
       first,
       now: _t0,
-    ).saveStudyDefaults(options: _sevenRandom);
+    ).saveStudyDefaults(cardLimit: 7, newCardOrder: NewCardOrder.random);
     await first.close();
 
     final second = AppDatabase(NativeDatabase(file));
@@ -226,5 +283,86 @@ void main() {
 
     expect(current.studyDefaults.cardLimit, 7);
     expect(current.studyDefaults.newCardOrder, NewCardOrder.random);
+  });
+
+  // Study speech spec §4; BR-SETTINGS-009, BR-SETTINGS-010, BR-STUDY-080.
+
+  test(
+    'a fresh row reads aloud by default, in en-US (BR-SETTINGS-010)',
+    () async {
+      final current = await settings.watchAppSettings().first;
+
+      expect(current.isSpeechAutoPlay, isTrue);
+      expect(current.studyDefaults.speechLanguage, SpeechLanguage.enUs);
+    },
+  );
+
+  test('the speech language is a study default of its own column '
+      '(BR-SETTINGS-007, BR-SETTINGS-009)', () async {
+    await settings.saveStudyDefaults(speechLanguage: SpeechLanguage.jaJp);
+
+    final current = await settings.watchAppSettings().first;
+    expect(current.studyDefaults.speechLanguage, SpeechLanguage.jaJp);
+    expect(current.studyDefaults.cardLimit, StudyOptions.defaultCardLimit);
+  });
+
+  test('the read-aloud switch is written alone (BR-SETTINGS-010)', () async {
+    await settings.setSpeechAutoPlay(isOn: false);
+
+    final current = await settings.watchAppSettings().first;
+    expect(current.isSpeechAutoPlay, isFalse);
+    expect(current.studyDefaults.speechLanguage, SpeechLanguage.enUs);
+  });
+
+  test(
+    'Reset to defaults returns both speech values (BR-SETTINGS-008)',
+    () async {
+      await settings.saveStudyDefaults(speechLanguage: SpeechLanguage.viVn);
+      await settings.setSpeechAutoPlay(isOn: false);
+
+      await settings.resetToDefaults();
+
+      final current = await settings.watchAppSettings().first;
+      expect(current.isSpeechAutoPlay, isTrue);
+      expect(current.studyDefaults.speechLanguage, SpeechLanguage.enUs);
+    },
+  );
+
+  test('watchSpeechSettings joins the switch with the root language, and '
+      'follows both (BR-STUDY-080)', () async {
+    await _insertRootWithOverride(db);
+    await _insertSubDeck(db);
+    await settings.saveStudyDefaults(speechLanguage: SpeechLanguage.jaJp);
+    final seen = <SpeechSettings?>[];
+    final watching = settings.watchSpeechSettings(deckId: 's').listen(seen.add);
+    await pumpEventQueue();
+    // The override predates speech: it follows the app default (spec D6).
+    expect(
+      seen.last,
+      const SpeechSettings(isAutoPlay: true, language: SpeechLanguage.jaJp),
+    );
+
+    await settings.saveRootStudyOptions(
+      rootDeckId: 'r',
+      options: const StudyOptions(
+        cardLimit: 30,
+        newCardOrder: NewCardOrder.created,
+        speechLanguage: SpeechLanguage.koKr,
+      ),
+    );
+    await pumpEventQueue();
+    expect(seen.last?.language, SpeechLanguage.koKr);
+
+    await settings.setSpeechAutoPlay(isOn: false);
+    await pumpEventQueue();
+    expect(
+      seen.last,
+      const SpeechSettings(isAutoPlay: false, language: SpeechLanguage.koKr),
+    );
+    await watching.cancel();
+  });
+
+  test('watchSpeechSettings is null for a deck that is not there', () async {
+    expect(await settings.watchSpeechSettings(deckId: 'nope').first, isNull);
   });
 }

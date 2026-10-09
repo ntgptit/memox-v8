@@ -31,7 +31,7 @@ void main() {
     expect(tester.getSize(find.byType(TextField)).height, 52);
   });
 
-  testWidgets('detail starts at the 48 touch minimum and grows with the text', (
+  testWidgets('detail starts at the form field\'s 52 and grows with the text', (
     tester,
   ) async {
     final controller = TextEditingController();
@@ -46,7 +46,7 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(TextField)).height, 48);
+    expect(tester.getSize(find.byType(TextField)).height, 52);
 
     controller.text = 'one\ntwo\nthree\nfour';
     await tester.pump();
@@ -69,14 +69,41 @@ void main() {
     );
   });
 
-  testWidgets('edges: ghost at rest, primaryInk focused', (tester) async {
+  testWidgets('edges: outline edge at rest, primaryInk focused, ghost '
+      'disabled (DEV-166)', (tester) async {
+    final rest = MxDerivedColors.outlineEdgeOf(scheme);
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));
-
-    expect(_edge(_decoration(tester).enabledBorder), ghost);
+    expect(_edge(_decoration(tester).enabledBorder), rest);
     expect(
       _edge(_decoration(tester).focusedBorder),
       MxDerivedColors.primaryInkOf(scheme),
     );
+
+    await pumpMx(
+      tester,
+      const SizedBox(width: 300, child: MxTextField(isEnabled: false)),
+    );
+    expect(_edge(_decoration(tester).disabledBorder), ghost);
+  });
+
+  testWidgets('every edged variant rests on the outline edge (DEV-166)', (
+    tester,
+  ) async {
+    for (final variant in [
+      MxTextFieldVariant.form,
+      MxTextFieldVariant.detail,
+      MxTextFieldVariant.term,
+    ]) {
+      await pumpMx(
+        tester,
+        SizedBox(width: 300, child: MxTextField(variant: variant)),
+      );
+      expect(
+        _edge(_decoration(tester).enabledBorder),
+        MxDerivedColors.outlineEdgeOf(scheme),
+        reason: '$variant',
+      );
+    }
   });
 
   testWidgets('an error colours the edge and pushes a message below', (
@@ -153,13 +180,15 @@ void main() {
     handle.dispose();
   });
 
-  for (final (variant, floor) in [
-    (MxTextFieldVariant.form, 52.0),
-    (MxTextFieldVariant.detail, 48.0),
-    (MxTextFieldVariant.meaning, 76.0),
-    (MxTextFieldVariant.term, 66.0),
+  // Every boxed variant is the form field's box and type (DEV-169).
+  for (final variant in [
+    MxTextFieldVariant.form,
+    MxTextFieldVariant.detail,
+    MxTextFieldVariant.term,
   ]) {
-    testWidgets('${variant.name}: its kit floor', (tester) async {
+    testWidgets('${variant.name}: the form box, fill, edge and type', (
+      tester,
+    ) async {
       await pumpMx(
         tester,
         SizedBox(
@@ -168,32 +197,28 @@ void main() {
         ),
       );
 
-      expect(tester.getSize(find.byType(TextField)).height, floor);
+      expect(tester.getSize(find.byType(TextField)).height, 52);
+      final decoration = _decoration(tester);
+      expect(
+        WidgetStateProperty.resolveAs(decoration.fillColor!, <WidgetState>{}),
+        scheme.surfaceContainerLow,
+      );
+      expect(
+        WidgetStateProperty.resolveAs(decoration.fillColor!, {
+          WidgetState.focused,
+        }),
+        scheme.surfaceContainerLowest,
+      );
+      final edge = decoration.enabledBorder! as OutlineInputBorder;
+      expect(edge.borderSide.color, MxDerivedColors.outlineEdgeOf(scheme));
+      expect(edge.borderRadius, BorderRadius.circular(12));
+      final style = tester.widget<EditableText>(find.byType(EditableText));
+      expect(style.style.fontSize, 14);
+      expect(style.style.fontWeight, FontWeight.w400);
     });
   }
 
-  testWidgets('the editor variants rest on the lowest fill', (tester) async {
-    for (final variant in [
-      MxTextFieldVariant.detail,
-      MxTextFieldVariant.meaning,
-      MxTextFieldVariant.term,
-    ]) {
-      await pumpMx(
-        tester,
-        SizedBox(width: 300, child: MxTextField(variant: variant)),
-      );
-      expect(
-        WidgetStateProperty.resolveAs(
-          _decoration(tester).fillColor!,
-          <WidgetState>{},
-        ),
-        scheme.surfaceContainerLowest,
-        reason: variant.name,
-      );
-    }
-  });
-
-  testWidgets('term: wraps, and a long term steps down to 18', (tester) async {
+  testWidgets('term: wraps and grows, in the body role', (tester) async {
     final controller = TextEditingController(text: 'a' * 60);
     addTearDown(controller.dispose);
     await pumpMx(
@@ -207,15 +232,10 @@ void main() {
       ),
     );
 
-    EditableText text() =>
-        tester.widget<EditableText>(find.byType(EditableText));
-    expect(text().maxLines, isNull);
-    expect(text().style.fontSize, 18);
-    expect(tester.getSize(find.byType(TextField)).height, greaterThan(66));
-
-    controller.text = 'gamsa';
-    await tester.pump();
-    expect(text().style.fontSize, 24);
+    final text = tester.widget<EditableText>(find.byType(EditableText));
+    expect(text.maxLines, isNull);
+    expect(text.style.fontSize, 14);
+    expect(tester.getSize(find.byType(TextField)).height, greaterThan(52));
   });
 
   testWidgets('term: Enter moves on and adds no newline', (tester) async {
@@ -260,11 +280,11 @@ void main() {
     }
   });
 
-  testWidgets('a long hint never pads a filled or a short field', (
+  testWidgets('a wrapping hint holds its room only while the box is empty', (
     tester,
   ) async {
-    const hint = 'The meaning; separate several with commas';
-    final controller = TextEditingController(text: 'thank you');
+    const hint = 'A clue that jogs memory without giving the answer';
+    final controller = TextEditingController(text: hint);
     addTearDown(controller.dispose);
     await pumpMx(
       tester,
@@ -273,19 +293,23 @@ void main() {
         child: MxTextField(
           controller: controller,
           hintText: hint,
-          variant: MxTextFieldVariant.meaning,
+          variant: MxTextFieldVariant.detail,
         ),
       ),
     );
-    expect(tester.getSize(find.byType(TextField)).height, 76);
+    final typed = tester.getSize(find.byType(TextField)).height;
+    expect(typed, greaterThan(52));
 
     controller.clear();
     await tester.pump();
-    // Two lines of hint fit the 76 floor inside the kit's 12 padding.
-    expect(tester.getSize(find.byType(TextField)).height, 76);
+    expect(tester.getSize(find.byType(TextField)).height, typed);
+
+    controller.text = 'nunchi';
+    await tester.pump();
+    expect(tester.getSize(find.byType(TextField)).height, 52);
   });
 
-  testWidgets('a long meaning grows past its floor on the kit padding', (
+  testWidgets('a long detail grows past its floor on the 12 padding', (
     tester,
   ) async {
     final controller = TextEditingController(text: 'one\ntwo\nthree\nfour');
@@ -296,7 +320,7 @@ void main() {
         width: 300,
         child: MxTextField(
           controller: controller,
-          variant: MxTextFieldVariant.meaning,
+          variant: MxTextFieldVariant.detail,
         ),
       ),
     );
@@ -305,7 +329,7 @@ void main() {
     expect(tester.getSize(find.byType(TextField)).height, text + 24);
   });
 
-  testWidgets('an editor box follows typing without a caller controller', (
+  testWidgets('a multi-line box follows typing without a caller controller', (
     tester,
   ) async {
     await pumpMx(
@@ -315,19 +339,16 @@ void main() {
         child: MxTextField(variant: MxTextFieldVariant.term),
       ),
     );
-    await tester.enterText(find.byType(EditableText), 'a' * 40);
+    await tester.enterText(find.byType(EditableText), 'a' * 80);
     await tester.pump();
 
-    expect(
-      tester.widget<EditableText>(find.byType(EditableText)).style.fontSize,
-      18,
-    );
+    expect(tester.getSize(find.byType(TextField)).height, greaterThan(52));
   });
 
   test('only a form field takes leading and trailing slots', () {
     expect(
       () => MxTextField(
-        variant: MxTextFieldVariant.meaning,
+        variant: MxTextFieldVariant.detail,
         leading: const SizedBox(),
       ),
       throwsAssertionError,
@@ -365,35 +386,5 @@ void main() {
       tester.getSize(find.byType(TextField)).height,
       greaterThanOrEqualTo(48),
     );
-  });
-
-  testWidgets('the code variant asks for digits, offers the one-time code '
-      'and centres them', (tester) async {
-    await pumpMx(
-      tester,
-      const MxTextField(label: 'Code', variant: MxTextFieldVariant.code),
-    );
-    final field = tester.widget<TextField>(find.byType(TextField));
-
-    expect(field.keyboardType, TextInputType.number);
-    expect(field.autofillHints, [AutofillHints.oneTimeCode]);
-    expect(field.textAlign, TextAlign.center);
-    expect(field.maxLines, 1);
-  });
-
-  testWidgets('the code variant keeps six digits and nothing else', (
-    tester,
-  ) async {
-    final controller = TextEditingController();
-    addTearDown(controller.dispose);
-    await pumpMx(
-      tester,
-      MxTextField(controller: controller, variant: MxTextFieldVariant.code),
-    );
-
-    await tester.enterText(find.byType(TextField), '12a3456789');
-
-    expect(controller.text, '123456');
-    expect(MxTextField.codeLength, 6);
   });
 }

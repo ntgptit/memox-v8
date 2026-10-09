@@ -7,6 +7,7 @@ import 'package:memox/features/card/data/repositories/card_repository_impl.dart'
 import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
 import 'package:memox/features/card/domain/models/card_export_snapshot_model.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
@@ -49,6 +50,7 @@ void main() {
       db,
       ScheduleRepositoryImpl(db, now: _now),
       TagRepositoryImpl(db, now: _now),
+      DeckTreeDataSource(db),
       now: _now,
     );
     dao = CardDao(db);
@@ -104,7 +106,11 @@ void main() {
 
   test('a whole-deck and a selected export of more cards than SQLite binds '
       'carry every card with its tags (BR-TRANSFER-010)', () async {
-    final transfer = CardTransferRepositoryImpl(db, cards);
+    final transfer = CardTransferRepositoryImpl(
+      db,
+      cards,
+      DeckRepositoryImpl(db, now: _now),
+    );
     await db.customStatement(
       "INSERT INTO tags (id, name, name_folded, created_at) "
       "VALUES ('t', 'Noun', 'noun', 0)",

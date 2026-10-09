@@ -5,12 +5,10 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/l10n/relative_time.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
-import 'package:memox/shared/widgets/mx_row_ink.dart';
-import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 
 /// One Trash entry (kit 06): its kind, its name and time left, what went
@@ -48,87 +46,57 @@ class TrashEntryRowWidget extends StatelessWidget {
     final meta = _meta(context);
     final timeLeft = trashTimeLeft(l10n, entry, now);
     final origin = l10n.trashWasIn(trashOrigin(l10n, entry));
-    // The tile or the checkbox centres on the lines (spec 2026-09-26 D4,
-    // extended by the owner 2026-09-26).
-    final lines = Row(
-      spacing: AppSpacing.grouped,
-      children: [
-        if (isSelecting)
-          MxSelectionCheckbox(isChecked: isSelected)
-        else
-          MxIconTile(
-            icon: entry is TrashDeckEntry
-                ? AppIcons.library
-                : AppIcons.cardDeck,
-          ),
-        Expanded(
-          child: _Lines(
-            name: name,
-            timeLeft: timeLeft,
-            isExpiringSoon: isTrashExpiringSoon(entry, now),
-            meta: meta,
-            origin: origin,
-          ),
-        ),
-      ],
-    );
     // While selecting, an entry of the other kind cannot be picked
-    // (BR-TRASH-011): it is dimmed under the global disabled rule.
+    // (BR-TRASH-011): the shared row dims it and blocks its taps.
     final isLocked = isSelecting && onTap == null;
-    final card = MxCard(
-      isFullBleed: true,
-      isSelected: isSelected,
-      // ⋮ centres on the entry, as its tile does.
-      child: Row(
-        children: [
-          Expanded(
-            // One TalkBack node with every fact, whatever the ellipsis
-            // hides (spec D15); the ⋮ stays its own control.
-            child: Semantics(
-              container: true,
-              excludeSemantics: true,
-              button: !isSelecting,
-              checked: isSelecting ? isSelected : null,
-              enabled: onTap != null,
-              label: l10n.trashEntrySemantics(name, meta, timeLeft, origin),
-              child: GestureDetector(
-                onLongPress: onLongPress,
-                child: MxRowInk(
-                  onTap: onTap,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.gutter,
-                      vertical: AppSpacing.grouped,
-                    ),
-                    child: lines,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          if (onActions case final onActions? when !isSelecting)
-            Padding(
-              padding: const EdgeInsets.only(right: AppSpacing.micro),
-              child: MxIconButton(
+    final onActions = this.onActions;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.control),
+      child: MxSelectableCardRow(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        isSelecting: isSelecting,
+        isSelected: isSelected,
+        isEnabled: !isLocked,
+        // One TalkBack node with every fact, whatever the ellipsis hides
+        // (spec D15); the ⋮ stays its own control.
+        semanticLabel: l10n.trashEntrySemantics(name, meta, timeLeft, origin),
+        trailing: onActions == null || isSelecting
+            ? null
+            : MxIconButton(
                 icon: AppIcons.more,
                 semanticLabel: l10n.trashEntryActions(name),
                 onPressed: onActions,
               ),
+        child: Row(
+          spacing: AppSpacing.grouped,
+          children: [
+            // The kind's tile; while selecting the shared row's checkbox
+            // takes its place (spec 2026-09-26 D4).
+            if (!isSelecting)
+              MxIconTile(
+                icon: entry is TrashDeckEntry
+                    ? AppIcons.library
+                    : AppIcons.cardDeck,
+              ),
+            Expanded(
+              child: _Lines(
+                name: name,
+                timeLeft: timeLeft,
+                isExpiringSoon: isTrashExpiringSoon(entry, now),
+                meta: meta,
+                origin: origin,
+              ),
             ),
-        ],
+          ],
+        ),
       ),
-    );
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.control),
-      child: isLocked
-          ? Opacity(opacity: AppOpacity.disabled, child: card)
-          : card,
     );
   }
 
   String _meta(BuildContext context) {
     final l10n = context.l10n;
-    final ago = trashDeletedAgo(l10n, entry.deletedAt, now);
+    final ago = l10n.ago(entry.deletedAt, now);
     return switch (entry) {
       TrashCardEntry() => l10n.trashCardMeta(ago),
       TrashDeckEntry(:final subDeckCount, :final cardCount) =>

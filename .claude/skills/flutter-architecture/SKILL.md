@@ -42,7 +42,7 @@ lib/
 | `data/datasources/` | `_dao`, `_data_source` | a DAO per bounded context |
 | `data/mappers/` | `_mapper` | row to entity, when the mapping is not trivial |
 | `data/repositories/` | `_repository_impl` | contract implementations; every write in one transaction |
-| `data/models/` | `_model` | DTOs, `json_serializable` (ADR-012); none in a feature yet, sync's are in `core/sync/` |
+| `data/models/` | `_model` | DTOs, `json_serializable` (ADR-012); none in a feature yet, sync's wire DTOs are in `core/sync/`; a table's sync adapter is a `_sync_dao` in its feature's `data/datasources/` (DEV-173) |
 | `di/` | `_provider` | repository providers; each constructs its implementation |
 | `presentation/screens/`, `controllers/`, `states/` | `_screen`, `_controller`, `_state` | a screen, its controllers, its state classes |
 | `presentation/providers/` | `_provider` | use-case providers |
@@ -53,7 +53,7 @@ sits directly in `domain/`, `data/`, `presentation/` or `widgets/`, or at the
 feature root, and there are no barrels: another feature imports the bucket file
 it needs. The folder never replaces the suffix: `entities/deck_entity.dart`, not
 `entities/deck.dart`. `core/network/` holds the one shared Dio client
-(ADR-012) and the Supabase settings, and `core/sync/` the sync (ADR-013, ADR-015). These
+(ADR-012) and the Supabase settings, and `core/sync/` the sync infrastructure (ADR-013, ADR-015); each table's adapter lives in the feature that owns the table and is listed in `lib/app/sync_tables.dart` (DEV-173). These
 wait for an ADR that opens the need: `core/storage/`, `core/utils/`,
 `app/config/` and flavors, `app/di/`, `shared/models/`, `shared/extensions/`.
 

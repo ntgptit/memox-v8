@@ -111,7 +111,7 @@ void main() {
     await _openVerbs(tester);
     await _tap(tester, find.byTooltip(_en.deckActions));
     await _tap(tester, find.text(_en.deckDelete));
-    await _tap(tester, find.text(_en.deckDelete));
+    await _tap(tester, find.text(_en.trashMoveConfirm));
 
     expect(_barTitle('Words'), findsOneWidget);
     // The toast with Undo survives the step back (FE-B1 D3).

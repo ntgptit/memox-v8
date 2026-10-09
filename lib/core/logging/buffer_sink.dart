@@ -11,6 +11,9 @@ import 'package:memox/core/logging/log_entry.dart';
 /// must not take along. A failed write keeps the batch, never logs itself, and
 /// backs off: until a write succeeds, only a timer (doubling up to
 /// [maxBackoff]) or an explicit [flush] retries, never the next log call.
+/// Every write that lands keeps the buffer at [cap] (DEV-207): a bulk sync
+/// logs every statement at `debug` (owner ruling 2026-10-07), and the cap,
+/// not the push every 5 minutes, bounds the file.
 final class BufferSink implements LogSink {
   BufferSink(
     this._db, {
@@ -19,6 +22,7 @@ final class BufferSink implements LogSink {
     this.maxQueued = 5000,
     this.maxBackoff = const Duration(minutes: 1),
     this.config = const LogConfig(),
+    this.cap = logBufferCap,
   });
 
   final LogDatabase _db;
@@ -30,6 +34,10 @@ final class BufferSink implements LogSink {
   final int maxQueued;
   final Duration maxBackoff;
   final LogConfig config;
+
+  /// The most rows the buffer keeps after a write; the oldest `debug` rows go
+  /// first ([LogDatabase.pruneExcess]).
+  final int cap;
 
   final _queue = <LogEntry>[];
   Timer? _timer;
@@ -88,6 +96,14 @@ final class BufferSink implements LogSink {
       _timer?.cancel();
       _timer = Timer(_delay, () => unawaited(flush()));
       developer.log('Log buffer write failed: $error', name: 'memox.logging');
+      return;
+    }
+    // The batch is in; a prune that fails leaves it there and is not a
+    // write failure, so it neither re-queues the batch nor backs off.
+    try {
+      await _db.pruneExcess(cap: cap);
+    } on Object catch (error) {
+      developer.log('Log buffer prune failed: $error', name: 'memox.logging');
     }
   }
 

@@ -23,7 +23,7 @@ sheet as a CSV, TSV or XLSX file. UC-TRANSFER-002; spec
 | Problem | `MxInlineBanner` | One banner per problem, above the formats. Danger for a file that could not be prepared, warning otherwise. |
 | Formats | `MxListSectionHeader` + `MxOptionRow` × 3 | CSV (default, "Recommended" badge), TSV, XLSX, each with what it is for. Locked while a file is prepared. |
 | Content note | `MxNote` (file icon) | The six columns; no schedule, no history. |
-| Footer | `MxSheetActions` (sheet form) | Cancel · "Export {n} cards" with the share icon; "Preparing…" spinning while the file is built and shared (A4); "Try again" after a failure it can fix; Close alone when it cannot. |
+| Footer | `MxSheetActions` (sheet form) | Cancel · "Export", no icon (the title names the cards, DEV-179); "Preparing…" spinning while the file is built and shared (A4); "Try again" after a failure it can fix; Close alone when it cannot. |
 | Toast | `MxSnackbar` | "Handed {n} cards to the system." once the share sheet took the file. |
 
 The overline, the banner and the note line up with the title (20 dp).
@@ -54,6 +54,7 @@ Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}
 - **UC-TRANSFER-002 E2–E4 (E4):** read and encode failures share "Couldn't prepare the file"; a share failure has its own copy; both offer Try again.
 - **UC-TRANSFER-002 E5 (E5):** "Export cards" appears on a deck of cards only.
 - **UC-TRANSFER-002 step 3 (owner 2026-09-26):** the action reads "Export {n} cards".
+- **DEV-179 (owner 2026-10-06):** the header already names the cards, so the action reads "Export" alone.
 - **BR-TRANSFER-013, backend plan C5:** the file name keeps the deck's own letters (`Nhà-hàng-2026-09-26.csv`).
 - Banners use their tone glyph; `MxInlineBanner` has no glyph slot.
 
@@ -62,6 +63,6 @@ Goldens: `test/features/transfer/presentation/goldens/export_{deck,failed,stale}
 - Header: "Export all {n} cards" · "Every card in {deck}, whatever filter or search is active." · "Export {n} selected cards" · "Only the cards you selected."
 - Formats: "Format" · "CSV" · "Comma-separated · opens anywhere" · "TSV" · "Tab-separated · safest for commas in text" · "XLSX" · "Excel workbook" · "Recommended".
 - Note: "Six columns: front, back, example, hint, pronunciation, tags. No schedule, no history — this is content, not a backup."
-- Actions: "Cancel" · "Export {n} cards" · "Preparing…" · "Try again" · "Close".
+- Actions: "Cancel" · "Export" · "Preparing…" · "Try again" · "Close".
 - Problems: "Couldn’t prepare the file" · "Couldn’t hand the file over" · "No app on this device can receive a file" · "A selected card is no longer in this deck" · "It was moved to another deck or sent to Trash meanwhile. Nothing was exported. Close this sheet, check your selection and export again." · "There is nothing to export".
 - Toast: "Handed {n} cards to the system."

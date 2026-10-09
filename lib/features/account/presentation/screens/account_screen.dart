@@ -143,7 +143,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       title: l10n.accountSwitchTitle,
       body: l10n.accountSwitchBody,
       note: MxNote(icon: AppIcons.safe, text: l10n.accountChangesSentFirst),
-      confirmLabel: l10n.accountSwitch,
+      confirmLabel: l10n.accountSwitchConfirm,
     );
     if (!isSure || !context.mounted) return;
     final result = await controller.switchAccount();
@@ -187,8 +187,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       note: canDelete
           ? null
           : MxNote(icon: AppIcons.offline, text: l10n.accountDeleteOffline),
-      confirmLabel: l10n.accountDelete,
-      confirmIcon: AppIcons.delete,
+      confirmLabel: l10n.accountDeleteConfirm,
       isDestructive: true,
       canConfirm: canDelete,
     );

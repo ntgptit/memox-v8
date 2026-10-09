@@ -5,6 +5,7 @@ import 'package:memox/features/card/domain/models/card_display_status_model.dart
 import 'package:memox/features/card/domain/models/card_due_model.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -35,6 +36,7 @@ void main() {
       db,
       ScheduleRepositoryImpl(db, now: clock),
       tags,
+      DeckTreeDataSource(db),
       now: clock,
     );
     final root = await decks.root('Due library');
@@ -368,5 +370,19 @@ void main() {
       (view.workload.overdue, view.workload.today, view.workload.newCards),
       (1, 1, 1),
     );
+  });
+
+  test('a read never pulls the deck\'s schedule rows: card_schedule is read '
+      'only within the window or under an aggregate (DEV-211)', () async {
+    counter.statements.clear();
+    await list();
+
+    final rowReads = counter.statements.where(
+      (sql) =>
+          sql.contains('card_schedule') &&
+          !sql.contains('LIMIT') &&
+          !sql.contains('COUNT('),
+    );
+    expect(rowReads, isEmpty, reason: 'reads every schedule row of the deck');
   });
 }

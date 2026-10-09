@@ -32,6 +32,16 @@ abstract final class AppRoutes {
   static const String settingsSyncChild = 'sync';
   static const String settingsSync = '$settings/$settingsSyncChild';
 
+  /// Study options (screen 23a, settings hub spec D1), relative to
+  /// [settings], on the root navigator like Theme.
+  static const String settingsStudyChild = 'study';
+  static const String settingsStudy = '$settings/$settingsStudyChild';
+
+  /// Admin (screen 23b, settings hub spec D4), relative to [settings], on
+  /// the root navigator, behind the admin gate.
+  static const String settingsAdminChild = 'admin';
+  static const String settingsAdmin = '$settings/$settingsAdminChild';
+
   /// Monitoring (screen 28, ADR-018 §8), relative to [settings]: an admin's
   /// page on the root navigator like Sync, and one log's detail under it.
   static const String settingsMonitoringChild = 'monitoring';
@@ -93,11 +103,22 @@ abstract final class AppRoutes {
   static const String settingsSignInLink =
       '$settingsSignIn?$accountModeParam=$accountLinkMode';
 
-  static String settingsSignInCodeLink(String email) => Uri(
+  /// The link begun on Welcome: it ends at [from], where the launch was
+  /// headed, as Welcome's Google does (login navigation review 2026-10-08).
+  static String settingsSignInLinkFrom(String from) => Uri(
+    path: settingsSignIn,
+    queryParameters: {
+      accountModeParam: accountLinkMode,
+      accountFromParam: from,
+    },
+  ).toString();
+
+  static String settingsSignInCodeLink(String email, {String? from}) => Uri(
     path: settingsSignInCode,
     queryParameters: {
       accountModeParam: accountLinkMode,
       accountEmailParam: email,
+      accountFromParam: ?from,
     },
   ).toString();
 

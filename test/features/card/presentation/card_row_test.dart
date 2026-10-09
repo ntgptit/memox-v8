@@ -127,8 +127,9 @@ void main() {
     );
 
     expect(find.byType(MxSelectionCheckbox), findsOneWidget);
+    // The front's node is the row's merged node (DEV-304).
     expect(
-      tester.getSemantics(find.byType(CardRowWidget)),
+      tester.getSemantics(find.text('gongbuhada')),
       isSemantics(isChecked: true),
     );
   });

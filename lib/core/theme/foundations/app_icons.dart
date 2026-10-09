@@ -11,6 +11,7 @@ abstract final class AppIcons {
   static const IconData search = Icons.search; // search
   static const IconData chevronRight = Icons.chevron_right; // chevron-right
   static const IconData check = Icons.check; // check
+  static const IconData select = Icons.checklist; // list-checks
   static const IconData delete = Icons.delete_outline; // trash-2
   static const IconData retry = Icons.refresh; // refresh-cw
   static const IconData play = Icons.play_arrow; // play
@@ -39,6 +40,8 @@ abstract final class AppIcons {
   static const IconData example = Icons.chat_bubble_outline; // message-square
   static const IconData hint = Icons.lightbulb_outline; // lightbulb
   static const IconData pronunciation = Icons.text_fields; // type
+  static const IconData speak = Icons.volume_up_outlined; // volume-2
+  static const IconData voice = Icons.record_voice_over_outlined; // speech
   static const IconData clock = Icons.schedule; // clock
   static const IconData searchOff = Icons.search_off; // search-x
   static const IconData history = Icons.history; // history
@@ -53,6 +56,7 @@ abstract final class AppIcons {
   static const IconData lock = Icons.lock_outline; // lock
   static const IconData lockOpen = Icons.lock_open_outlined; // lock-open
   static const IconData timeout = Icons.timer_off_outlined; // timer-off
+  static const IconData studyMode = Icons.layers_outlined; // layers
   static const IconData calendar = Icons.event; // calendar
   // Monitoring (screen 28): one glyph per log level, so colour is never the
   // only cue; info and error are [info] and [alert].

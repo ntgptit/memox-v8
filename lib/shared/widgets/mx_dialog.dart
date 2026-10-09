@@ -3,6 +3,7 @@ import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 /// The width cap: 340, 320 or 300, never wider than the column.
 enum MxDialogWidth { small, medium, large }
@@ -11,7 +12,8 @@ const double _enterScale = 0.94;
 
 /// Opens [builder] (usually an MxDialog) over a 45% scrim. The dialog fades
 /// in and scales from 0.94 over 200ms; it opens instantly under reduced
-/// motion (ruling O7). A scrim tap dismisses it with null.
+/// motion (ruling O7). A scrim tap dismisses it with null, unless the dialog
+/// is held (MxDialog.isHeld).
 Future<T?> showMxDialog<T>(
   BuildContext context, {
   required WidgetBuilder builder,
@@ -36,6 +38,43 @@ Future<T?> showMxDialog<T>(
   },
 );
 
+/// Asks one yes/no question: [title], [body], an optional [content] (a
+/// note: the reassurance, or why the confirm cannot go), Cancel and the
+/// confirm. True only on the confirm; Cancel, Back and the scrim are a no.
+/// The tone sits on the confirm alone; [canConfirm] false disables it, as
+/// a deletion offline. A confirm whose work runs before it closes is not
+/// this: it is its own MxDialog, held while it works (SW-REV-009).
+Future<bool> showMxConfirm(
+  BuildContext context, {
+  required String title,
+  required String body,
+  required String cancelLabel,
+  required String confirmLabel,
+  Widget? content,
+  bool isDestructive = false,
+  bool isWarning = false,
+  bool canConfirm = true,
+}) async =>
+    await showMxDialog<bool>(
+      context,
+      builder: (dialogContext) => MxDialog(
+        title: title,
+        body: body,
+        content: content,
+        actions: MxSheetActions(
+          cancelLabel: cancelLabel,
+          onCancel: () => Navigator.of(dialogContext).pop(false),
+          confirmLabel: confirmLabel,
+          isDestructive: isDestructive,
+          isWarning: isWarning,
+          onConfirm: canConfirm
+              ? () => Navigator.of(dialogContext).pop(true)
+              : null,
+        ),
+      ),
+    ) ??
+    false;
+
 /// The centred modal for confirmations and short forms. The text sits 20 in
 /// (ruling O5) and scrolls if it outgrows the screen; [actions], usually
 /// MxSheetActions, stay below it.
@@ -47,6 +86,7 @@ class MxDialog extends StatelessWidget {
     this.content,
     this.actions,
     this.width = MxDialogWidth.large,
+    this.isHeld = false,
   });
 
   final String? title;
@@ -56,6 +96,10 @@ class MxDialog extends StatelessWidget {
   final Widget? content;
   final Widget? actions;
   final MxDialogWidth width;
+
+  /// The dialog stays while its work runs: Back and a scrim tap are refused
+  /// (the scrim pops through maybePop), as MxBottomSheet.isHeld does.
+  final bool isHeld;
 
   static const double _largeWidth = 340;
   static const double _mediumWidth = 320;
@@ -69,68 +113,91 @@ class MxDialog extends StatelessWidget {
     final dialogs = DialogTheme.of(context);
     final shape = context.dialogShape;
     final hasText = title != null || body != null || content != null;
-    return Semantics(
-      scopesRoute: true,
-      namesRoute: true,
-      explicitChildNodes: true,
-      label: title,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.card,
-            vertical: AppSpacing.section,
+    final centred = Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.card,
+          vertical: AppSpacing.section,
+        ),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: switch (width) {
+              MxDialogWidth.large => _largeWidth,
+              MxDialogWidth.medium => _mediumWidth,
+              MxDialogWidth.small => _smallWidth,
+            },
           ),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: switch (width) {
-                MxDialogWidth.large => _largeWidth,
-                MxDialogWidth.medium => _mediumWidth,
-                MxDialogWidth.small => _smallWidth,
-              },
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: shape.borderRadius,
+              boxShadow: AppShadows.overlay(colors),
             ),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: shape.borderRadius,
-                boxShadow: AppShadows.overlay(colors),
-              ),
-              child: Material(
-                color: dialogs.backgroundColor,
-                shape: shape,
-                clipBehavior: Clip.antiAlias,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (hasText)
-                      Flexible(
-                        child: SingleChildScrollView(
-                          padding: actions == null
-                              ? const EdgeInsets.all(AppSpacing.card)
-                              : const EdgeInsetsDirectional.only(
-                                  start: AppSpacing.card,
-                                  end: AppSpacing.card,
-                                  top: AppSpacing.card,
-                                ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: AppSpacing.control,
-                            children: [
-                              if (title case final text?)
-                                Text(text, style: styles.compactTitle),
-                              if (body case final text?)
-                                Text(text, style: styles.dialogBody),
-                              ?content,
-                            ],
-                          ),
+            child: Material(
+              color: dialogs.backgroundColor,
+              shape: shape,
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (hasText)
+                    Flexible(
+                      child: SingleChildScrollView(
+                        // The text sits on the action pair's 16 edge, so
+                        // the pair keeps its width (DEV-166, The Short
+                        // Label Rule).
+                        padding: actions == null
+                            ? const EdgeInsets.fromLTRB(
+                                AppSpacing.gutter,
+                                AppSpacing.card,
+                                AppSpacing.gutter,
+                                AppSpacing.card,
+                              )
+                            : const EdgeInsetsDirectional.only(
+                                start: AppSpacing.gutter,
+                                end: AppSpacing.gutter,
+                                top: AppSpacing.card,
+                              ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: AppSpacing.control,
+                          children: [
+                            if (title case final text?)
+                              Text(text, style: styles.compactTitle),
+                            if (body case final text?)
+                              Text(text, style: styles.dialogBody),
+                            ?content,
+                          ],
                         ),
                       ),
-                    ?actions,
-                  ],
-                ),
+                    ),
+                  ?actions,
+                ],
               ),
             ),
           ),
+        ),
+      ),
+    );
+    return PopScope(
+      canPop: !isHeld,
+      child: Semantics(
+        scopesRoute: true,
+        namesRoute: true,
+        explicitChildNodes: true,
+        label: title,
+        // showGeneralDialog does not pad for the keyboard, as Material's
+        // Dialog does: the dialog centres in the room the keyboard leaves,
+        // and its text scrolls when that room is short, so the actions stay
+        // in view (SW-REV-002).
+        child: AnimatedPadding(
+          padding: MediaQuery.viewInsetsOf(context),
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : AppDurations.standard,
+          curve: Easing.standard,
+          child: centred,
         ),
       ),
     );

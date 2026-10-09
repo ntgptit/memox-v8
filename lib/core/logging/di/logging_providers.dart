@@ -1,13 +1,16 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/database/connection.dart';
+import 'package:memox/core/database/di/database_provider.dart';
 import 'package:memox/core/database/log/log_database.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/console_sink.dart';
 import 'package:memox/core/logging/log_api.dart';
 import 'package:memox/core/logging/log_shipper.dart';
+import 'package:memox/core/logging/sql_log_dao.dart';
+import 'package:memox/core/logging/sql_log_switch.dart';
+import 'package:memox/core/logging/sql_log_switch_feeder.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/core/network/supabase_client.dart';
-import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_scheduler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -21,7 +24,31 @@ LogDatabase logDatabase(Ref ref) {
   return db;
 }
 
-/// `log_push` through the Supabase project; main.dart has initialized it.
+/// The tracer's SQL log switch (SQL log switch spec §4.1). The database
+/// provider hands it to the tracer; the feeder keeps it equal to the
+/// account's row.
+@Riverpod(keepAlive: true)
+SqlLogSwitch sqlLogSwitch(Ref ref) {
+  final sqlLog = SqlLogSwitch();
+  ref.onDispose(sqlLog.dispose);
+  return sqlLog;
+}
+
+/// Keeps [sqlLogSwitch] equal to the account's row (SQL log switch spec
+/// §4.3). `startApp` reads it once the database has opened; it lives as long
+/// as the container, and a new database (Retry on the recovery screen)
+/// rebuilds it.
+@Riverpod(keepAlive: true)
+SqlLogSwitchFeeder sqlLogSwitchFeeder(Ref ref) {
+  final feeder = SqlLogSwitchFeeder(
+    target: ref.watch(sqlLogSwitchProvider),
+    flags: SqlLogDao(ref.watch(databaseProvider)).watchLogSqlStatements(),
+  );
+  ref.onDispose(feeder.dispose);
+  return feeder;
+}
+
+/// `log_push` through the Supabase project; `startApp` has initialized it.
 /// It waits for sync's session instead of signing in.
 @Riverpod(keepAlive: true)
 LogApi logApi(Ref ref) => LogApi(
@@ -43,6 +70,8 @@ bool isForegroundState(AppLifecycleState? state) =>
 
 /// Pushes the buffer at start, every [_every] and when the network returns,
 /// backing off like sync; null when this build names no Supabase project.
+/// It starts here; `startApp` (app_bootstrap.dart) is its only reader and
+/// reads it before the account coordinator starts (DEV-176).
 @Riverpod(keepAlive: true)
 SyncScheduler? logScheduler(Ref ref) {
   if (!ref.watch(supabaseConfigProvider).isEnabled) return null;
@@ -50,13 +79,11 @@ SyncScheduler? logScheduler(Ref ref) {
     ref.watch(logDatabaseProvider),
     ref.watch(logApiProvider),
   );
-  final online = Connectivity().onConnectivityChanged
-      .where((results) => !results.contains(ConnectivityResult.none))
-      .map((_) {});
   final scheduler = startLogScheduler(
     run: shipper.runOnce,
     periodic: Stream<void>.periodic(_every),
-    reconnects: online,
+    // The one reconnect signal, the coordinator's too (DEV-203).
+    reconnects: ref.watch(networkStatusProvider).reconnects,
     isForeground: ref.watch(isForegroundProvider),
   );
   ref.onDispose(scheduler.dispose);

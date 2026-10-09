@@ -17,14 +17,17 @@ Border _ring(WidgetTester tester) =>
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('unselected 2px outline ring; selected 6px primaryInk', (
+  testWidgets('unselected 2px Outline Edge ring; selected 6px primaryInk', (
     tester,
   ) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
     );
-    expect(_ring(tester).top, BorderSide(color: scheme.outline, width: 2));
+    expect(
+      _ring(tester).top,
+      BorderSide(color: MxDerivedColors.outlineEdgeOf(scheme), width: 2),
+    );
     expect(tester.getSize(find.byKey(_radioKey)), const Size.square(20));
 
     await pumpMx(
@@ -110,32 +113,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('divider unless last; disabled at 0.38', (tester) async {
-    await pumpMx(
-      tester,
-      MxOptionRow(
-        title: 'A',
-        isSelected: false,
-        onSelected: () {},
-        hasDivider: false,
-      ),
-    );
-    expect(
-      tester
-          .widgetList<DecoratedBox>(
-            find.descendant(
-              of: find.byType(MxOptionRow),
-              matching: find.byType(DecoratedBox),
-            ),
-          )
-          .where(
-            (box) =>
-                (box.decoration as BoxDecoration).border is Border &&
-                box.key != _radioKey,
-          ),
-      isEmpty,
-    );
-
+  testWidgets('disabled at 0.38', (tester) async {
     await pumpMx(
       tester,
       const MxOptionRow(title: 'A', isSelected: false, onSelected: null),
@@ -204,5 +182,21 @@ void main() {
       ),
       findsNothing,
     );
+  });
+
+  // SW-REV-006: a row that cannot be picked is announced as disabled.
+  testWidgets('a row that cannot be picked is a disabled radio to TalkBack', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxOptionRow(title: 'SM-2', isSelected: false, onSelected: null),
+    );
+    expect(
+      tester.getSemantics(find.text('SM-2')),
+      isSemantics(hasEnabledState: true, isEnabled: false),
+    );
+    handle.dispose();
   });
 }

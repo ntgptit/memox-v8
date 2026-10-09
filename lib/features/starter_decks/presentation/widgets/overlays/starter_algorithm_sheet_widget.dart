@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -12,6 +11,7 @@ import 'package:memox/features/starter_decks/presentation/states/starter_add_sta
 import 'package:memox/features/starter_decks/presentation/widgets/support/starter_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -113,22 +113,24 @@ class _StarterAlgorithmSheetWidgetState
         confirmLabel: state.hasFailed
             ? l10n.starterTryAgain
             : l10n.starterAddDeck,
-        confirmIcon: state.hasFailed ? null : AppIcons.add,
         isConfirmLoading: isAdding,
         onConfirm: () => unawaited(_add()),
       ),
       child: Column(
         children: [
-          for (final (index, scheduler) in schedulers.indexed)
-            MxOptionRow(
-              title: starterSchedulerName(l10n, scheduler),
-              description: _description(scheduler),
-              isSelected: scheduler == _scheduler,
-              onSelected: isAdding
-                  ? null
-                  : () => setState(() => _scheduler = scheduler),
-              hasDivider: index < schedulers.length - 1,
-            ),
+          MxDividedColumn(
+            children: [
+              for (final scheduler in schedulers)
+                MxOptionRow(
+                  title: starterSchedulerName(l10n, scheduler),
+                  description: _description(scheduler),
+                  isSelected: scheduler == _scheduler,
+                  onSelected: isAdding
+                      ? null
+                      : () => setState(() => _scheduler = scheduler),
+                ),
+            ],
+          ),
           if (state.hasFailed)
             Padding(
               padding: const EdgeInsets.fromLTRB(

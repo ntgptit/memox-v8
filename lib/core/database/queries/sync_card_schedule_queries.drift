@@ -30,3 +30,24 @@ SELECT r.scheduler_type FROM card c
 JOIN deck d ON d.id = c.deck_id
 JOIN deck r ON r.id = d.root_id
 WHERE c.id = :card_id;
+
+-- BR-CARD-004: the cards without a schedule, each with its root's scheduler
+-- and generation; CardScheduleSyncDao.afterPull gives each the initial row.
+-- A card in the Trash is included, as a local card keeps its row when trashed.
+cardsWithoutSchedule:
+SELECT c.id AS card_id, r.scheduler_type, r.scheduler_version, r.generation
+FROM card c JOIN deck d ON d.id = c.deck_id JOIN deck r ON r.id = d.root_id
+WHERE NOT EXISTS (SELECT 1 FROM card_schedule s WHERE s.card_id = c.id);
+
+-- The initial row of a card the pull left without one (afterPull).
+createInitialSchedule: INSERT INTO card_schedule $row;
+
+-- Invariant 9 (BR-SRS-028, BR-SRS-029): the schedules not at their root's
+-- scheduler and generation, each with the root's; afterPull reseeds them
+-- (DEV-224). A pull skips a schedule pending here, so a reset or a scheduler
+-- change pulled from another device can move the root past it.
+cardsWithStaleSchedule:
+SELECT s.card_id, r.scheduler_type, r.scheduler_version, r.generation
+FROM card_schedule s
+JOIN card c ON c.id = s.card_id JOIN deck d ON d.id = c.deck_id JOIN deck r ON r.id = d.root_id
+WHERE s.generation <> r.generation OR s.scheduler_type <> r.scheduler_type;

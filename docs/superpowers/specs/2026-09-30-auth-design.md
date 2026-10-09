@@ -76,7 +76,9 @@ One new migration (after `20261009000000`), pgTAP in
   `expires_at` (15 minutes); one live token per anonymous user.
 - **`public.account_merge_receipt`**: `operation_id` (PK), `source_user_id`,
   `target_user_id` (no cascade on the source), `merged_at`,
-  `acknowledged_at`, `expires_at` (7 days).
+  `acknowledged_at`, `expires_at` (7 days; no longer read since DEV-188: a
+  receipt stays until acknowledged, so a device that merged and comes back
+  months later still gets MERGED).
 - **Foreign keys added**: `user_id → auth.users(id) on delete cascade` on
   every table with a `user_id` (`deck`, `card`, `tags`, `delete_batch`,
   `review_log`, `card_schedule`, `account_settings`, `user_sync_version`,
@@ -97,7 +99,7 @@ One new migration (after `20261009000000`), pgTAP in
 | Function | Who | Does |
 |---|---|---|
 | `private.is_admin()` | internal | now reads `profiles.role` (immediate effect; Monitoring's RPCs keep calling it) |
-| `private.require_current_profile()` | internal | raises `UNAUTHORIZED` when the caller has no profile (a deleted user with an old JWT) |
+| `private.require_current_profile()` | internal | raises `UNAUTHORIZED` when the caller has no profile (a deleted user with an old JWT); called by every account RPC and, since DEV-192, by `sync_push` and `sync_changes` |
 | `private.touch_user_activity()` | internal | sets `last_active_at = now()` when it is older than 1 day |
 | `public.me()` | authenticated | touches activity; returns `{id, email, isAnonymous, role}` |
 | `public.role_list(query, cursor)` | admin | searches non-anonymous users by email: id, email, role, created, last sign-in |
@@ -106,7 +108,7 @@ One new migration (after `20261009000000`), pgTAP in
 | `public.account_merge(token, operation_id)` | non-anonymous | if a receipt for `operation_id` with `target = auth.uid()` exists → `MERGED`. Else consumes the token atomically (`delete … where token_hash = … and expires_at > now() returning`); none → `CLAIM_INVALID`. In one transaction: moves every source row to the caller with **new `server_version`s** from the caller's counter, merges tags with the same `name_folded` (re-pointing `card_tags`), keeps the caller's `account_settings`, writes the receipt, deletes the source user (its profile and role go with it) |
 | `public.account_merge_ack(operation_id)` | non-anonymous | sets `acknowledged_at` on the caller's receipt; idempotent |
 | `public.account_delete()` | authenticated | refuses the last admin (`LAST_ADMIN`); `private.delete_user_data(uid)` = delete from `auth.users` (cascades). Later, Storage objects would have to go first |
-| cron `account-cleanup` (daily) | — | deletes users with `is_anonymous` and `last_active_at < now() - 90 days`; deletes receipts acknowledged or expired |
+| cron `account-cleanup` (daily) | — | deletes users with `is_anonymous` and `last_active_at < now() - 90 days`; deletes acknowledged receipts (an unacknowledged one stays whatever its age, DEV-188) and expired claims; forgets `sync_applied_op` rows older than 90 days (DEV-200: every operation is idempotent by content, so a forgotten op id resent is applied again as the same upsert or delete) |
 
 ### 2.4 Owner setup (SB-A4)
 
@@ -153,7 +155,7 @@ Error classes (data layer only): `NETWORK`, `SESSION_INVALID`
 | # | State | Event / guard | Action | Next |
 |---|---|---|---|---|
 | 1 | BOOTING | record exists | — | RECOVERING(t) |
-| 2 | BOOTING | no record, SDK has a session | snapshot = `lastKnownAccount` | VALIDATING |
+| 2 | BOOTING | no record, SDK has a session | snapshot = `lastKnownAccount`. SDK uid ≠ `lastKnownAccount` (plan ruling 7): outbox empty → record Switch{discard, source = last, target = SDK uid, targetSignedIn} → #27; outbox not empty → keep local, pause sync, log `auth.account_mismatch_unsent` → REAUTH_REQUIRED(last), so the loss goes through #37 or #38 (DEV-189) | VALIDATING |
 | 3 | BOOTING | no record, no session | — | BOOTSTRAPPING (online) / LOCAL_ONLY |
 | 4 | LOCAL_ONLY | online | — | BOOTSTRAPPING |
 | 5 | BOOTSTRAPPING | SDK already has a session | no second anonymous user | VALIDATING |
@@ -164,13 +166,13 @@ Error classes (data layer only): `NETWORK`, `SESSION_INVALID`
 | 10 | VALIDATING / READY | anonymous + SESSION_INVALID or PROFILE_GONE | record AnonRecovery{started}; `signOut(local)` | TRANSITIONING(AnonRecovery) |
 | 11 | AnonRecovery | R1: no session → `signInAnonymously()`; session → reuse | stage = newAnon(uid) | — |
 | 12 | AnonRecovery | newAnon | `markAllPending` + cursor 0 (idempotent); clear record | VALIDATING |
-| 13 | VALIDATING / READY | account + PROFILE_GONE | record ClearToAnon | TRANSITIONING |
+| 13 | VALIDATING / READY | account + PROFILE_GONE (`me()`; or, while READY, a sync run refused with `UNAUTHORIZED`, which validates again first, DEV-192) | record ClearToAnon | TRANSITIONING |
 | 14 | VALIDATING / READY | account + SESSION_INVALID | keep local, pause sync | REAUTH_REQUIRED(X) |
 | 15 | READY | NETWORK | keep | READY |
 | 16 | READY(anon) | email or Google link OK (same uid) | `me()` | READY(account) |
 | 17 | READY(anon) | IDENTITY_TAKEN | local has data → ask Merge (default) / Discard; empty → skip | (choice) |
 | 18 | READY(anon A) | chosen | record Switch{op, choice, source A}; **gate closed** | TRANSITIONING(Switch) |
-| 19 | Switch | started, online | push outbox under A until empty; stage = sourcePushed | — |
+| 19 | Switch | started, online | push outbox under A until empty, then ship the logs under A (DEV-190); stage = sourcePushed. Rows the server refused (`sync_rejection`, no copy of its own) stop a merge here with `UnsentChangesFailure`: Retry repeats it, the layer's "Continue and lose n changes" keeps them on the device first; a discard goes on, those rows go with the device at #27 (DEV-191) | — |
 | 20 | Switch | sourcePushed, merge | A's refresh token and the claim token → Secure Storage; stage = claimed | — |
 | 21 | Switch | sign-in to B OK | R1 reads B; stage = targetSignedIn(B) | — |
 | 22 | Switch | cancelled before the target sign-in | drop secrets and record; open gate | READY(A) |
@@ -185,7 +187,7 @@ Error classes (data layer only): `NETWORK`, `SESSION_INVALID`
 | 31 | RECOVERING(Switch) | R1: SDK uid = A | stage ≤ claimed → drop secrets and record, open gate; stage ≥ merged cannot happen → error, gate stays shut | VALIDATING |
 | 32 | RECOVERING(Switch) | R1: SDK uid = U ≠ A (even if killed before saving targetSignedIn) | target = U; stage = max(stage, targetSignedIn); continue #23 or #27 with the same op | TRANSITIONING |
 | 33 | RECOVERING(Switch) | R1: no session | stage < merged + A backup → `setSession(A)` → #31; stage ≥ merged → ask to sign in to the target again, gate shut | RECOVERING |
-| 34 | READY(account X) | "Switch account" | record Switch{source X, permanent, discard}; gate; push under X (#19) | TRANSITIONING(Switch) |
+| 34 | READY(account X) | "Switch account" | record Switch{source X, permanent, discard}; gate; push under X and ship the logs (#19); rows the server refused do not stop it (discard, DEV-191) | TRANSITIONING(Switch) |
 | 35 | Switch (permanent source) | sign-in to Y OK (R1) | #27 → #28 → #30; **no anonymous in between** | READY(Y) |
 | 36 | REAUTH_REQUIRED(X) | sign-in, SDK uid = X | `me()` | VALIDATING → READY(X) |
 | 37 | REAUTH_REQUIRED(X) | sign-in, uid Y ≠ X; user confirmed losing N unsent changes | record Switch{source X, discard, targetSignedIn(Y)} → #27 | READY(Y) |
@@ -194,9 +196,9 @@ Error classes (data layer only): `NETWORK`, `SESSION_INVALID`
 | 39a | SignOut, stage started (nothing local removed) | "Cancel" (critique 2026-10-02) | drop record; open gate; `me()` (#8/#9) | VALIDATING → READY(X) |
 | 40 | SignOut / ClearToAnon | pushed | `signOut(local)`; stage = signedOut | — |
 | 41 | SignOut / ClearToAnon | signedOut (R1: no session) | `LocalDataReset`; clear `lastKnownAccount` and record; open gate | BOOTSTRAPPING |
-| 42 | READY(account) | delete (online) | record Delete; gate; `account_delete()` | — |
+| 42 | READY(account) | delete (online) | record Delete; gate; `account_delete()`. NETWORK during the call: whether the server took it is unknown, so the record stays and Retry sends it again (#43 if it was taken, DEV-192) | — |
 | 43 | Delete | OK, or PROFILE_GONE on a retry (the record proves the request) | stage = serverDeleted → #40 → #41 | BOOTSTRAPPING |
-| 44 | Delete | LAST_ADMIN, or NETWORK before the server took it | clear record; open gate | READY |
+| 44 | Delete | LAST_ADMIN (offline before the call, `deleteAccount()` refuses without a record) | clear record; open gate; `DeleteRefused` | READY |
 | 45 | RECOVERING(SignOut / Delete / ClearToAnon / AnonRecovery) | launch | reconcile by R1, continue the stage (every step idempotent) | as above |
 
 ### 3.4 Invariants
@@ -395,8 +397,10 @@ Future<void> _recoverSignOut(AccountTransition t) async {         // #39–#45
 }
 ```
 
-`beginSwitch` records Switch{started}, closes the gate, pushes under A
-(#19) and, for a merge, stores the backup and the claim token (#20); the
+`beginSwitch` records Switch{started}, closes the gate, pushes under A and
+ships A's logs (#19; `app_log.user_id` is the shipping session's, so they
+go before the SDK moves to B, as a sign-out ships them at #39) and, for a
+merge, stores the backup and the claim token (#20); the
 target sign-in then calls `_recover`, which R1 routes. Every
 `on Network { return; }` keeps the record; the connectivity listener calls
 `_recover` again. Each stage is saved before the next step, so a rerun is a
@@ -500,8 +504,10 @@ stays a device check, and D9 (Back) belongs to the widget tests.
   has been deleted so far, and the migration checks first. pgTAP deletes a
   user owning decks, cards, tags with links, reviews and schedules, and
   expects every row gone and no error.
-- **A 1-hour access JWT survives deletion**; the FKs stop it from writing
-  data, and `require_current_profile` stops the new RPCs.
+- **A 1-hour access JWT survives deletion**; `require_current_profile`
+  stops the account RPCs and, since DEV-192, `sync_push` and `sync_changes`
+  too (`UNAUTHORIZED`, which the app answers by validating the account
+  again, #13); the FKs remain the last line.
 - **Rollback:** the client work is behind the account UI; the server
   migration only adds tables, functions and constraints; reverting the app
   leaves anonymous sign-in working as today.

@@ -6,6 +6,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
@@ -24,6 +25,7 @@ class MxSettingsRow extends StatelessWidget {
     this.iconTone = MxIconTileTone.tinted,
     this.trailing,
     this.wideControl,
+    this.message,
     this.onTap,
     this.isEnabled = true,
     this.isAction = false,
@@ -46,6 +48,11 @@ class MxSettingsRow extends StatelessWidget {
   /// A stepper or a segmented tray, on its own line under the label. It
   /// keeps its own width (ruling S17).
   final Widget? wideControl;
+
+  /// A line under the row, such as a field error, from the label's start to
+  /// the row's end, so a trailing control does not squeeze it (Study options
+  /// compaction, owner 2026-10-07).
+  final Widget? message;
 
   /// Navigates. The row then shows the chevron, unless it holds a control.
   final VoidCallback? onTap;
@@ -84,69 +91,97 @@ class MxSettingsRow extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-          child: Row(
-            spacing: AppSpacing.gutter,
-            // Kit 23: beside a wide control the tile stays with the label.
-            crossAxisAlignment: below == null
-                ? CrossAxisAlignment.center
-                : CrossAxisAlignment.start,
-            children: [
-              if (icon case final glyph?)
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: below == null ? 0 : AppSpacing.grouped,
-                  ),
-                  child: SizedBox(
-                    width: _leadColumn,
-                    child: Center(
-                      heightFactor: 1,
-                      child: _dim(
-                        MxIconTile(
-                          icon: glyph,
-                          size: MxIconTileSize.medium,
-                          tone: iconTone,
+          child: _withMessage(
+            Row(
+              spacing: AppSpacing.gutter,
+              // Kit 23: beside a wide control the tile stays with the label.
+              crossAxisAlignment: below == null
+                  ? CrossAxisAlignment.center
+                  : CrossAxisAlignment.start,
+              children: [
+                if (icon case final glyph?)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: below == null ? 0 : AppSpacing.grouped,
+                    ),
+                    child: SizedBox(
+                      width: _leadColumn,
+                      child: Center(
+                        heightFactor: 1,
+                        child: _dim(
+                          MxIconTile(
+                            icon: glyph,
+                            size: MxIconTileSize.medium,
+                            tone: iconTone,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              // As in MxListRow, only the text carries the 12/12 inset, so a
-              // 48 toggle target sits inside the row instead of growing it.
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.grouped,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _dim(Text(label, style: styles.settingsLabel)),
-                      if (subtitle case final text?) ...[
-                        const SizedBox(height: _subtitleGap),
-                        Text(text, style: styles.rowDescription),
+                // As in MxListRow, only the text carries the 12/12 inset, so a
+                // 48 toggle target sits inside the row instead of growing it.
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.grouped,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _dim(Text(label, style: styles.settingsLabel)),
+                        if (subtitle case final text?) ...[
+                          const SizedBox(height: _subtitleGap),
+                          Text(text, style: styles.rowDescription),
+                        ],
+                        if (below case final control?) ...[
+                          const SizedBox(height: AppSpacing.grouped),
+                          _dimControl(control),
+                        ],
                       ],
-                      if (below case final control?) ...[
-                        const SizedBox(height: AppSpacing.grouped),
-                        _dimControl(control),
-                      ],
-                    ],
+                    ),
                   ),
                 ),
-              ),
-              if (!isStacked && trailing != null) _dimControl(trailing!),
-              if (isNavigable)
-                _dim(
-                  Icon(
-                    AppIcons.chevronRight,
-                    size: AppIconSize.compact,
-                    color: context.colors.onSurfaceVariant,
+                if (!isStacked && trailing != null) _dimControl(trailing!),
+                if (isNavigable)
+                  _dim(
+                    Icon(
+                      AppIcons.chevronRight,
+                      size: AppIconSize.compact,
+                      color: context.colors.onSurfaceVariant,
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  /// The row, then [message] under it, indented to the label's start.
+  Widget _withMessage(Widget row) {
+    final line = message;
+    if (line == null) return row;
+    final labelStart = icon == null ? 0.0 : _leadColumn + AppSpacing.gutter;
+    // MxFieldMessage insets its glyph by micro, as under a field: pulled
+    // back so the glyph lines up with the label (audit 2026-10-07).
+    final indent = line is MxFieldMessage
+        ? labelStart - AppSpacing.micro
+        : labelStart;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        row,
+        Padding(
+          padding: EdgeInsetsDirectional.only(
+            start: indent,
+            bottom: AppSpacing.grouped,
+          ),
+          child: line,
+        ),
+      ],
     );
   }
 

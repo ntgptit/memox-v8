@@ -12,7 +12,7 @@ Each layer answers one question; none takes over another's.
 | Superpowers | What happens next, and is it done? | brainstorming, specs, architecture, plans, worktrees, TDD, debugging, implementation, code review, verification, branch completion |
 | Impeccable | Is the UI right? | product definition, UX, UI design, design system, accessibility, adaptive/responsive behaviour, visual quality |
 | Repo rules | What must always hold? | the guard (`memox-v8` ruleset), the ADRs, the `flutter-*` skills, `spring-boot-mybatis-review`, this file |
-| ECC skills | What does good practice look like here? | reference knowledge only (see [docs/agent/vendored-ecc.md](docs/agent/vendored-ecc.md)) |
+| ECC skills | What does good practice look like here? | reference knowledge only (see [docs/agent/vendored-ecc.md](docs/agent/vendored-ecc.md); `diagram-design`: [docs/agent/vendored-diagram-design.md](docs/agent/vendored-diagram-design.md)) |
 
 - **Superpowers is the sole process controller.** Nothing else plans,
   sequences or gates work, and no other layer repeats its methodology.
@@ -31,7 +31,8 @@ Each layer answers one question; none takes over another's.
 
 ### A screen's workflow
 
-1. Read the screen's detail file, its goldens and `DESIGN.md`.
+1. Read the screen's detail file (its States and Transitions tables), its
+   goldens and `DESIGN.md`.
 2. Run `superpowers:brainstorming`: goal, scope, business rules (BR/UC),
    constraints.
 3. Run Impeccable before the plan:
@@ -40,8 +41,10 @@ Each layer answers one question; none takes over another's.
    - use `shape` only for a screen or state not built yet.
 4. Run `superpowers:writing-plans`, then execute it, subagent-driven or
    native, as the user chooses.
-5. Run Impeccable after the build: critique and audit the goldens against
-   `DESIGN.md`.
+5. Run Impeccable after the build: critique and audit every state of the
+   screen's States table against `DESIGN.md`, not only the ones with a golden.
+   A state without a golden is rendered for the audit (a widget test or a
+   throwaway golden) or reported `UNVERIFIED`.
    - Fix everything found in one batch; that fix ends with its one
      `impeccable audit`, as above. Never loop on polish.
 6. Run the final whole-branch review, then complete the branch. If goldens
@@ -53,7 +56,7 @@ Each layer answers one question; none takes over another's.
 |---|---|
 | Architecture and product decisions | an ADR in `docs/shared/decisions/` (read its `status:`) |
 | The visual system | `DESIGN.md` |
-| A screen's layout, states, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
+| A screen's layout, states, transitions, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
 | Known UI debt | the UI-base register (§9 of `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`) |
 | Work progress | the Linear project MemoX, team `DEV`: epics (label `Epic`) and their sub-issues (label group `WBS`: `BE`, `FE`, `Supabase`) ([ADR-021](docs/shared/decisions/ADR-021-linear-theo-doi-tien-do.md), `flutter-workflow`); the `docs/wbs_*.md` files are frozen history |
 | Plan-time rulings | the plan and its execution ledger, then the PR |
@@ -84,7 +87,8 @@ project goes into the repo through a PR.
   on their own are not a review.
 - Hooks are repo-owned. [.claude/hooks/README.md](.claude/hooks/README.md)
   lists them and holds the subagent rules they enforce: every subagent on
-  Sonnet except the final whole-branch review, which runs on Opus, and a
+  Sonnet except the final whole-branch review and a root-cause investigation,
+  which run on Opus, and a
   `Workflow` whose token floor reaches 300k offered to the owner first. CI is paused and runs by hand; the local gate is what counts.
 
 ## Progress on Linear
@@ -122,7 +126,10 @@ asked. Without the connector, tell the owner and record progress nowhere else.
     the evidence (PR, commit, tests) and anything descoped with its reason.
   - Blockers and open questions are comments on the issue; the order of work
     is priority.
-  - An epic is Done when all its sub-issues are Done or Canceled.
+  - An epic is Done when all its sub-issues are Done or Canceled. It then
+    moves, with its sub-issues, to the Completed project `MemoX · Lưu trữ`,
+    where it auto-archives: Linear archives nothing by hand, and nothing in
+    an open project such as MemoX.
   - After saving, check any PR link Linear made: the workspace's GitHub
     integration may point `#n` at `memox-v6`; if it does, write
     "pull request số n của `ntgptit/memox-v8`" without `#`.
@@ -150,6 +157,99 @@ asked. Without the connector, tell the owner and record progress nowhere else.
 - **No speculative structure.** No layers or folders "for later", no
   pass-through layers, no single-implementation interfaces without a concrete
   architectural reason.
+
+## Fixing bugs and improving
+
+The app is built; the work now is fixing, improving and auditing it. A fix
+that silences the symptom where it was reported is not a fix. These bars hold
+for every bug fix and every improvement, whoever reports it and however small
+it looks.
+Their order is the order of priority: a proven root cause, then one consistent
+fix at the shared owner, then no regression, then the similar defects, then
+maintainability. Speed and tokens come last and never buy back a higher bar.
+
+- **Root cause, proven.** Every bug goes through
+  `superpowers:systematic-debugging`. A fix lands only on a root cause stated
+  as a mechanism: where (`file:line`), why it happens, which invariant or
+  contract it breaks, why the change removes it, and which reported symptoms
+  it explains. A test that fails before the fix and passes after pins it.
+  - The reported screen, widget or stack frame is where the investigation
+    starts, not where the fix belongs.
+  - Cost never ends the search: tokens and time are spent freely. Reproduce,
+    instrument, read the code underneath, try hypothesis after hypothesis, and
+    stop only when the cause is proven and the explanation leaves nothing
+    unexplained. Never rerun the same experiment without a new hypothesis or
+    new evidence.
+  - An investigation may run in an Opus subagent whose description starts
+    `Root-cause investigation` ([hooks](.claude/hooks/README.md)).
+  - If the cause cannot be proven, tell the owner what was ruled out and what
+    is left. Never ship a guess, a retry, a guard or a delay that hides it.
+- **Fix at the lowest shared owner.** When the cause lives, or belongs, in
+  shared code (`lib/core/`, `lib/shared/`, an `Mx*` widget, a theme slot, a
+  `.drift` query, an RPC, a base class), fix it there so every consumer
+  inherits the fix. A per-screen patch over a shared defect is not accepted.
+  - Look from the shared layers down: tokens and theme, shared widgets,
+    shared state, services, repositories and queries, feature-level
+    abstractions, and the screen last. That is the order to look in, not a
+    licence to move into shared code what it does not own.
+  - A local fix says why the shared layer is not the owner and whether other
+    callers have the same defect. It never adds a local override, magic value
+    or conditional that hides a shared defect.
+  - Adding or promoting code into `lib/core/` or `lib/shared/` still goes to
+    the owner ([below](#asking-the-owner)), with the shared fix as the
+    recommended option.
+- **Check degrade and check similar, every time.** Both run after every fix
+  and every improvement; neither stands in for the other, and both are written
+  into the PR and the issue's Done comment
+  ([linear-templates.md](.claude/skills/flutter-workflow/references/linear-templates.md)):
+  - **Check degrade:** list every consumer of what changed (callers, screens,
+    widgets, queries, RPCs) and prove each still behaves: its tests, the gate,
+    and the goldens when UI changed. Nothing that worked before may break, and
+    no test or assertion is weakened or removed to get there.
+  - **Check similar:** search the codebase for the same mechanism, not the
+    same symptom: the pattern, call or misuse that caused it, by symbol and by
+    behaviour. Each hit is classed as same root cause, similar but unaffected,
+    suspect (verify it), or unrelated. A same-cause hit is fixed in the same
+    PR (the shared fix usually covers it); a hit with a different root cause
+    becomes a sub-issue, named in the PR.
+  - A change made after the checks, such as a fix for a hit, reruns both on
+    the final diff.
+- **A screen is a state machine, not a screenshot.** This bar holds for every
+  fix or improvement that touches a screen and for every UI audit.
+  - The screen's detail file is its inventory: the States table and the
+    Transitions table (from, event, to, evidence). Both are reconciled with
+    the code (the controller's state type, its branches, async callbacks,
+    dialogs and sheets): a state or transition in the code but not in the
+    tables, or in the tables but not in the code, is a finding.
+  - Check degrade covers every state and transition the change touches, not
+    only the one reported; check similar also looks for the same state or
+    transition pattern on other screens.
+  - An audit judges each applicable state and the transitions that matter:
+    error to retry to content, empty to content, Back or a second tap while
+    loading or submitting, an async result arriving after the screen is gone,
+    the shown data deleted, the account switched, offline or a sync mid-way.
+  - Each state or transition is `VERIFIED`, `FAILED`, `UNVERIFIED` or
+    `N/A` (with the reason), and names its evidence: an executed widget or
+    integration test, a golden, a run on a device, or a reading of the code.
+    A reading of the code is never reported as a run. An audit with a
+    material `UNVERIFIED` row is not `VERIFIED`, and `VERIFIED` means the
+    coverage is proven, not that nothing was found.
+  - Coverage is by risk, not by every combination: data loss, dead ends,
+    broken primary actions, async races and stale state, navigation and
+    account errors, then layout and accessibility. Environments are light and
+    dark, a 360dp phone, the keyboard and system insets, at the default text
+    scale only (`PRODUCT.md`).
+- **Report one final state.** `VERIFIED` when the cause is proven and both
+  checks pass; `BLOCKED` when a named limit (access, device, owner decision)
+  stops verification; `UNRESOLVED` when the cause or the fix is not proven. An
+  unproven fix is never reported as fixed.
+- **The final whole-branch review checks these bars** against the diff, the
+  tests and the commands actually run, never against the agent's own account
+  of them. When the change touches a screen or its state, the reviewer
+  rebuilds the states and transitions from the code and compares them with
+  the screen's tables.
+- Moving a fix down to its shared owner and fixing same-cause hits are in
+  scope, never scope creep.
 
 ## Asking the owner
 

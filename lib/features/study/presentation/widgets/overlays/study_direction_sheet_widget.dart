@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -37,18 +37,7 @@ class _StudyDirectionSheetWidgetState extends State<StudyDirectionSheetWidget> {
     final l10n = context.l10n;
     const choices = DirectionChoice.values;
     return MxBottomSheet(
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(
-          l10n.studyDirectionTitle,
-          style: context.textStyles.compactTitle,
-        ),
-      ),
+      title: l10n.studyDirectionTitle,
       footer: MxSheetActions.custom(
         isInSheet: true,
         children: [
@@ -76,14 +65,17 @@ class _StudyDirectionSheetWidgetState extends State<StudyDirectionSheetWidget> {
             ),
             child: MxNote(text: l10n.studyDirectionNote),
           ),
-          for (final (index, choice) in choices.indexed)
-            MxOptionRow(
-              title: _title(l10n, choice),
-              description: _body(l10n, choice),
-              isSelected: choice == _choice,
-              onSelected: () => setState(() => _choice = choice),
-              hasDivider: index < choices.length - 1,
-            ),
+          MxDividedColumn(
+            children: [
+              for (final choice in choices)
+                MxOptionRow(
+                  title: _title(l10n, choice),
+                  description: _body(l10n, choice),
+                  isSelected: choice == _choice,
+                  onSelected: () => setState(() => _choice = choice),
+                ),
+            ],
+          ),
         ],
       ),
     );

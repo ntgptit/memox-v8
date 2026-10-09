@@ -4,6 +4,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
@@ -78,6 +79,7 @@ void main() {
           db,
           ScheduleRepositoryImpl(db, now: _clock),
           TagRepositoryImpl(db, now: _clock),
+          DeckTreeDataSource(db),
           now: _clock,
         ),
         templates: () async => templates,
@@ -205,6 +207,30 @@ void main() {
         in invariantQueries.entries) {
       expect(await rows(query), isEmpty, reason: 'invariant $number');
     }
+  });
+
+  test('the cards of a copy keep the template order under one created_at '
+      '(DEV-216, ADR-007)', () async {
+    final fronts = List.generate(12, (i) => 'word ${i + 1}');
+    final repo = library([
+      _template(
+        decks: [
+          StarterDeck(
+            name: 'Ordered',
+            cards: [for (final f in fronts) StarterCard(front: f, back: 'b')],
+          ),
+        ],
+      ),
+    ]);
+
+    await added(repo);
+
+    expect([
+      for (final row in await rows(
+        'SELECT front FROM card ORDER BY created_at, id',
+      ))
+        row['front'],
+    ], fronts);
   });
 
   test('the deepest template the library lists copies whole: ten levels '

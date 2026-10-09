@@ -21,8 +21,36 @@ void main() {
     expect(crossFeatureViolations(sources), isEmpty);
   });
 
+  test('no di/ reaches a use case (DEV-174)', () {
+    expect(diUseCaseViolations(sources), isEmpty);
+  });
+
   test('core imports no feature, app/ or shared/', () {
     expect(coreViolations(sources), isEmpty);
+  });
+
+  // DEV-173: a table's sync adapter lives in the feature that owns the
+  // table, so core/sync names none of the feature tables.
+  test('core/sync names no feature table', () {
+    const companions = [
+      'DeckCompanion',
+      'CardCompanion',
+      'TagsCompanion',
+      'CardScheduleCompanion',
+      'ReviewLogCompanion',
+      'AppSettingsCompanion',
+      'DeleteBatchesCompanion',
+    ];
+    final offenders = <String>[];
+    for (final file in Directory('lib/core/sync').listSync(recursive: true)) {
+      if (file is! File || !file.path.endsWith('.dart')) continue;
+      if (file.path.endsWith('.g.dart')) continue;
+      final source = file.readAsStringSync();
+      for (final name in companions) {
+        if (source.contains(name)) offenders.add('${file.path}: $name');
+      }
+    }
+    expect(offenders, isEmpty);
   });
 
   test('the feature import map is acyclic', () {

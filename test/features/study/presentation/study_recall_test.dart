@@ -19,7 +19,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_settle_g
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 
-// Screen 19, Recall: BR-STUDY-031 to BR-STUDY-036, BR-STUDY-063,
+// Screen 19, Recall (UC-STUDY-007): BR-STUDY-031 to BR-STUDY-036, BR-STUDY-063,
 // BR-STUDY-065, BR-STUDY-066; spec D5, D12; FE-A6 P4 rulings R1–R3, V2–V5.
 // A Recall screen is never pumped with pumpAndSettle: its clock would run
 // out.

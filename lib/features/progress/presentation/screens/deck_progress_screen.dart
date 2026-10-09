@@ -129,6 +129,8 @@ class DeckProgressScreen extends ConsumerWidget {
       children: [
         MxEmptyState(
           icon: AppIcons.searchOff,
+          // A gone item reads in the neutral tone (owner 2026-10-08).
+          tone: MxEmptyStateTone.neutral,
           title: l10n.deckGoneTitle,
           body: l10n.deckGoneBody,
           actionLabel: l10n.commonBack,

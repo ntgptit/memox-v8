@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
+import 'package:memox/features/card/presentation/widgets/sections/card_optional_fields_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_tag_editor_widget.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
@@ -18,6 +21,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../../support/deck_fixtures.dart';
@@ -319,6 +323,31 @@ void main() {
     handle.dispose();
   });
 
+  libraryTest('the details disclosure is edged in the control edge, as the '
+      'fields beside it are (DEV-166)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(CardAddDetailsWidget(onPressed: () {})),
+    );
+    final box =
+        tester
+                .widget<Container>(
+                  find
+                      .descendant(
+                        of: find.byType(CardAddDetailsWidget),
+                        matching: find.byType(Container),
+                      )
+                      .first,
+                )
+                .decoration!
+            as BoxDecoration;
+    expect(
+      (box.border! as Border).top.color,
+      MxDerivedColors.outlineEdgeOf(AppColorSchemes.light),
+    );
+  });
+
   libraryTest('field labels are sentence case; Required is a caption '
       '(critique 2026-09-30 part 2, P3)', (tester, env) async {
     final controller = TextEditingController();
@@ -357,4 +386,44 @@ void main() {
     }
     expect(find.text(_en.cardFieldFront.toUpperCase()), findsNothing);
   });
+
+  // SW-REV-011: the edit form names its optional group with the shared
+  // section header, a heading to TalkBack like every other.
+  libraryTest(
+    'the optional details group is introduced by the section header',
+    (tester, env) async {
+      final handle = tester.ensureSemantics();
+      final inputs = [for (var i = 0; i < 3; i++) TextEditingController()];
+      addTearDown(() {
+        for (final input in inputs) {
+          input.dispose();
+        }
+      });
+      CardOptionalInput input(TextEditingController controller) =>
+          (controller: controller, errorText: null, onChanged: () {});
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _host(
+          CardOptionalFieldsWidget(
+            isOpen: true,
+            hasHeader: true,
+            onOpen: () {},
+            example: input(inputs[0]),
+            hint: input(inputs[1]),
+            pronunciation: input(inputs[2]),
+          ),
+        ),
+      );
+
+      expect(
+        find.widgetWithText(
+          MxListSectionHeader,
+          _en.cardOptionalDetails.toUpperCase(),
+        ),
+        findsOneWidget,
+      );
+      handle.dispose();
+    },
+  );
 }

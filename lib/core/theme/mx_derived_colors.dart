@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 /// Colours derived from a role at a percentage (02-theme-binding
@@ -18,7 +17,6 @@ final class MxDerivedColors {
     required this.successBorder,
     required this.successInk,
     required this.surfaceHero,
-    required this.chromeGlass,
     required this.ghostBorder,
     required this.warningInk,
     required this.dangerInk,
@@ -70,8 +68,6 @@ final class MxDerivedColors {
         ),
         isDark ? scheme.surface : scheme.surfaceBright,
       ),
-      // Composited over the runtime backdrop at paint time, never flattened.
-      chromeGlass: scheme.surface.withValues(alpha: AppEffects.glassOpacity),
       ghostBorder: scheme.primary.withValues(
         alpha: isDark ? _ghostBorderDark : _ghostBorderLight,
       ),
@@ -115,13 +111,7 @@ final class MxDerivedColors {
         isDark ? _masteredInkDark : _masteredInkLight,
       ),
       primaryInk: primaryInkOf(scheme),
-      // The outline button's edge. Dark pulls outline toward onSurface so it
-      // holds 3:1 on the page, the sheet and the warning ground (3.41 on the
-      // sheet); light keeps outlineVariant (owner ruling R7, critique
-      // 2026-09-30 part 1).
-      outlineEdge: isDark
-          ? Color.lerp(scheme.outline, scheme.onSurface, _outlineEdgeDark)!
-          : scheme.outlineVariant,
+      outlineEdge: outlineEdgeOf(scheme),
     );
   }
 
@@ -159,7 +149,23 @@ final class MxDerivedColors {
   static const double _dangerInkDark = 0.30;
   static const double _primaryInkLight = 0.25;
   static const double _primaryInkDark = 0.45;
-  static const double _outlineEdgeDark = 0.25;
+  static const double _outlineEdgeSaturationLight = 0.30;
+  static const double _outlineEdgeDark = 0.20;
+
+  /// The one control edge: fields at rest, the outline button, the code
+  /// slots. It holds 3:1 on the page, the field fill, the sheet and the
+  /// warning ground in both themes, as lightly as it can (DEV-166, DEV-179):
+  /// light keeps outline's hue and lightness and only raises its saturation;
+  /// dark, where saturation alone cannot reach 3:1, pulls outline toward
+  /// onSurface.
+  static Color outlineEdgeOf(ColorScheme scheme) {
+    if (scheme.brightness == Brightness.dark) {
+      return Color.lerp(scheme.outline, scheme.onSurface, _outlineEdgeDark)!;
+    }
+    return HSLColor.fromColor(scheme.outline)
+        .withSaturation(_outlineEdgeSaturationLight)
+        .toColor();
+  }
 
   /// Primary as TEXT, icon, focus ring or off-fill spinner: primary pulled
   /// toward onSurface until it reads at 4.5:1 on every ground and primary
@@ -200,9 +206,6 @@ final class MxDerivedColors {
 
   /// Tinted hero card fill.
   final Color surfaceHero;
-
-  /// Bottom-nav glass surface.
-  final Color chromeGlass;
 
   /// The 1px primary-tinted hairline on cards, chips, dividers and chrome.
   final Color ghostBorder;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -13,6 +12,7 @@ enum DeckAction {
   open,
   study,
   rename,
+  selectCards,
   studyOptions,
   move,
   reviewAlgorithm,
@@ -32,6 +32,7 @@ Future<DeckAction?> showDeckActionSheet(
   required bool hasOpen,
   bool canImport = false,
   bool canExport = false,
+  bool canSelect = false,
 }) => showMxBottomSheet<DeckAction>(
   context,
   builder: (_) => DeckActionSheetWidget(
@@ -40,6 +41,7 @@ Future<DeckAction?> showDeckActionSheet(
     hasOpen: hasOpen,
     canImport: canImport,
     canExport: canExport,
+    canSelect: canSelect,
   ),
 );
 
@@ -51,6 +53,7 @@ class DeckActionSheetWidget extends StatelessWidget {
     required this.hasOpen,
     this.canImport = false,
     this.canExport = false,
+    this.canSelect = false,
   });
 
   final DeckView view;
@@ -64,6 +67,10 @@ class DeckActionSheetWidget extends StatelessWidget {
   /// UC-TRANSFER-002).
   final bool canExport;
 
+  /// The open deck holds cards: Select cards enters the list's selection
+  /// (DEV-307).
+  final bool canSelect;
+
   /// From a row, the deck is not open yet; Open leads.
   final bool hasOpen;
 
@@ -71,20 +78,7 @@ class DeckActionSheetWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final deck = view.deck;
     return MxBottomSheet(
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(
-          deck.name,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: context.textStyles.compactTitle,
-        ),
-      ),
+      title: deck.name,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
         child: Column(children: _rows(context)),
@@ -118,6 +112,12 @@ class DeckActionSheetWidget extends StatelessWidget {
         label: l10n.deckRename,
         onTap: () => choose(DeckAction.rename),
       ),
+      if (canSelect)
+        MxActionSheetCommandRow(
+          icon: AppIcons.select,
+          label: l10n.deckActionSelectCards,
+          onTap: () => choose(DeckAction.selectCards),
+        ),
       MxActionSheetCommandRow(
         icon: AppIcons.studyOptions,
         label: l10n.deckStudyOptions,

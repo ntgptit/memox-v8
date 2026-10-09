@@ -1,6 +1,6 @@
 /// How one synced table is read for push and written from the server. The
 /// coordinator never names a table (app deck-sync spec §5).
-abstract class EntitySyncAdapter {
+abstract mixin class EntitySyncAdapter {
   String get entityType;
 
   /// The row in wire shape (camelCase keys, ISO-8601 UTC times), or null when
@@ -15,6 +15,13 @@ abstract class EntitySyncAdapter {
 
   /// Records the version the server gave to the pushed state.
   Future<void> markAcknowledged(String id, int serverVersion);
+
+  /// Runs once at the end of a pull that applied at least one change, in
+  /// list order, still under `applying_remote`: the place for a rule that
+  /// needs every pulled row, such as giving new cards their schedule
+  /// (BR-CARD-004). A pull with nothing to apply skips it (DEV-210). None
+  /// by default.
+  Future<void> afterPull() async {}
 }
 
 /// Wire time: ISO-8601 in UTC (ADR-008).

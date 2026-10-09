@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/account_screen.dart';
@@ -13,7 +14,8 @@ import 'package:memox/features/account/presentation/screens/sign_in_screen.dart'
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/account_confirm_dialog_widget.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_reauth_notice_widget.dart';
-import 'package:memox/features/account/presentation/widgets/sections/account_settings_section_widget.dart';
+import 'package:memox/features/account/presentation/widgets/items/account_settings_row_widget.dart';
+import 'package:memox/features/account/presentation/widgets/sections/account_settings_banner_widget.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -41,16 +43,15 @@ final Override _refused = authStateOf(const ReauthRequired(_account));
 Widget _account32() => AccountScreen(onSignInAgain: () {});
 
 Widget _settings() => SettingsScreen(
+  onOpenStudyDefaults: () {},
+  onOpenAdmin: () {},
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},
-  onAppOptionsReset: () {},
+  resetAppOptions: () async => const Ok(null),
   onOpenSync: () {},
-  accountSection: AccountSettingsSectionWidget(
-    onSignIn: () {},
-    onOpenAccount: () {},
-    onSignInAgain: () {},
-  ),
+  accountRow: AccountSettingsRowWidget(onSignIn: () {}, onOpenAccount: () {}),
+  accountBanner: AccountSettingsBannerWidget(onSignIn: () {}),
 );
 
 Widget _reauth30() => SignInScreen(
@@ -282,7 +283,7 @@ void main() {
         hasMark: true,
         before: () async {
           await _settle(tester);
-          await tapping(tester, _en.accountContinueWithout)();
+          await tapping(tester, _en.accountContinueWithoutThis)();
         },
       );
     });

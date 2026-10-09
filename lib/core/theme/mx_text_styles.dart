@@ -40,15 +40,12 @@ final class MxTextStyles {
   static const double _bannerHeight = 1.55;
   static const double _snackbarHeight = 1.4;
   static const String _codeFamily = 'monospace';
-  static const double _codeTracking = 6;
   static const List<String> _codeFallback = ['Menlo', 'Courier New'];
   static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
   static const double _termTracking = -0.4;
   static const double _badgeTracking = 1.2;
   static const double _countTracking = 0.2;
-  static const double _termHeight = 1.25;
   static const double _termLongSize = 18;
-  static const double _fieldBodyHeight = 1.45;
   static const double _studyTermSize = 32;
   static const double _studyTermTracking = -0.5;
   static const double _studyTermHeight = 1.15;
@@ -122,6 +119,13 @@ final class MxTextStyles {
     color: _scheme.onSurfaceVariant,
   );
 
+  /// The part of a lead the reader must check, such as the address a code
+  /// went to: the lead at 600 in on-surface ink.
+  TextStyle get emptyBodyStrong => AppTypography.withWeight(
+    _texts.bodyMedium!,
+    FontWeight.w600,
+  ).copyWith(height: _emptyBodyHeight, color: _scheme.onSurface);
+
   /// Tappable breadcrumb level: 12/500, 0.1 tracking.
   TextStyle get breadcrumbAncestor => AppTypography.withWeight(
     _texts.labelSmall!,
@@ -189,50 +193,15 @@ final class MxTextStyles {
   TextStyle get inputHint =>
       _texts.bodyMedium!.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// Card editor term (kit 08/09 Front): 24/700 at 1.25, -0.4 tracking.
-  TextStyle get fieldTerm => _texts.headlineSmall!.copyWith(
-    height: _termHeight,
-    letterSpacing: _termTracking,
-    color: _scheme.onSurface,
-  );
-
-  /// A term past 30 characters: 18/700, so it still fits the box (kit).
-  TextStyle get fieldTermLong =>
-      AppTypography.withWeight(
-        _texts.bodyLarge!.copyWith(fontSize: _termLongSize),
-        FontWeight.w700,
-      ).copyWith(
-        height: _termHeight,
-        letterSpacing: _termTracking,
-        color: _scheme.onSurface,
-      );
-
   /// A disclosure's label (kit card editor "Add details"): 12/600
   /// primaryInk.
   TextStyle get disclosureLabel =>
       _texts.labelSmall!.copyWith(color: _primaryInk);
 
-  /// The term's placeholder: 16/500, onSurfaceVariant.
-  TextStyle get fieldTermHint =>
-      _texts.bodyLarge!.copyWith(color: _scheme.onSurfaceVariant);
-
-  /// A sign-in code (account UI spec §6): the headline role, tabular
-  /// figures and wide tracking, so six digits read as one code.
+  /// A code slot's digit: the headline role with tabular figures. Each slot
+  /// holds one digit, so the line needs no wide tracking.
   TextStyle get fieldCode => _texts.headlineSmall!.copyWith(
-    letterSpacing: _codeTracking,
     fontFeatures: _tabular,
-    color: _scheme.onSurface,
-  );
-
-  /// Card editor meaning (kit Back): 16/500 at 1.45.
-  TextStyle get fieldMeaning => _texts.bodyLarge!.copyWith(
-    height: _fieldBodyHeight,
-    color: _scheme.onSurface,
-  );
-
-  /// An optional detail's value (kit OptionalField): 14/400 at 1.45.
-  TextStyle get fieldDetail => _texts.bodyMedium!.copyWith(
-    height: _fieldBodyHeight,
     color: _scheme.onSurface,
   );
 
@@ -341,6 +310,17 @@ final class MxTextStyles {
     letterSpacing: _countTracking,
     color: isOver ? _scheme.error : null,
   );
+
+  /// A card history move ("Box 4 → 5"): the row description at 700 in the
+  /// outcome's ink (DEV-170).
+  TextStyle historyMove(Color ink) => AppTypography.withWeight(
+    rowDescription,
+    FontWeight.w700,
+  ).copyWith(color: ink);
+
+  /// How long ago an answer was, over its date: the counter in on-surface
+  /// (DEV-170).
+  TextStyle get historyAgo => counter.copyWith(color: _scheme.onSurface);
 
   /// A removable tag's label: the tag label in primary, on its tint.
   TextStyle get removableTagLabel => tagLabel.copyWith(color: _primaryInk);

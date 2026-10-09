@@ -15,7 +15,8 @@ import 'package:memox/shared/widgets/mx_snackbar.dart';
 /// Opens a deck's action sheet and then the chosen command's own dialog or
 /// sheet (spec §6.2): from a row's ⋮, or from the open deck's ⋮.
 /// [onImportCards] offers Import on a deck that takes cards (UC-TRANSFER-001),
-/// [onExportCards] Export on a deck of cards (UC-TRANSFER-002);
+/// [onExportCards] Export on a deck of cards (UC-TRANSFER-002),
+/// [onSelectCards] Select cards on the open deck of cards (DEV-307);
 /// [onOpenTrash] rides on a refused Undo's toast (FE-B1). It reads
 /// the deck's view once first, so a deck gone meanwhile says so instead
 /// (ruling C-L6).
@@ -31,6 +32,7 @@ Future<void> openDeckActions(
   required bool isOpenDeck,
   VoidCallback? onImportCards,
   VoidCallback? onExportCards,
+  VoidCallback? onSelectCards,
   VoidCallback? onOpenTrash,
 }) async {
   // A row's deck has no listener yet: keep its view alive until it emits,
@@ -62,6 +64,7 @@ Future<void> openDeckActions(
     hasOpen: !isOpenDeck,
     canImport: onImportCards != null,
     canExport: onExportCards != null,
+    canSelect: onSelectCards != null,
   );
   if (action == null || !context.mounted) return;
   switch (action) {
@@ -81,6 +84,8 @@ Future<void> openDeckActions(
       onImportCards?.call();
     case DeckAction.exportCards:
       onExportCards?.call();
+    case DeckAction.selectCards:
+      onSelectCards?.call();
     case DeckAction.reorder:
       ref.read(deckReorderModeProvider(reorderLevel).notifier).start();
     case DeckAction.delete:

@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-Tìm kiếm MUST bao phủ đúng bốn trường: tên deck, mặt trước card, mặt sau card và tên tag. MUST NOT tìm trong `example`, `hint`, `pronunciation`, dữ liệu scheduler, study state hay review history. Deck và card đã bị xoá MUST NOT xuất hiện; khi Trash tồn tại (feature riêng), nội dung soft-deleted MUST bị loại bằng cùng một predicate đặt ở một chỗ duy nhất.
+Tìm kiếm MUST bao phủ đúng bốn trường: tên deck, mặt trước card, mặt sau card và tên tag. MUST NOT tìm trong `example`, `hint`, `pronunciation`, dữ liệu scheduler, study state hay review history. Deck và card đã bị xoá MUST NOT xuất hiện: nội dung trong Thùng rác (soft-deleted, BR-TRASH-002) MUST bị loại bằng **cùng một điều kiện** — `delete_batch_id IS NULL` trên deck và trên card — viết trong **từng** câu đọc của `search_queries.drift` (rừng deck và hit card), và test MUST giữ điều đó cho cả hai câu (`search_decks_test`, `search_cards_test`).
 
 **Enforced by:** rule + store
 **Liên quan:** BR-TAG-001

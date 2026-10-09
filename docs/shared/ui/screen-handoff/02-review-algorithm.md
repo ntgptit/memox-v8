@@ -48,7 +48,7 @@ Beyond the states above:
   - Lost: "Every card's schedule, due date and progress; the open session. All {count} cards become new"
 - Nothing to lose: "Nothing has been studied in this cycle yet, so there is nothing to lose. A new cycle starts with the algorithm you pick."
 - "Algorithm for the new cycle": "Keep {current}" · "Switch to {other}"
-- Buttons: "Cancel" · "Reset and start cycle {n+1}" (warning tone); while it runs the confirm spins and Cancel is off
+- Buttons: "Cancel" · "Reset" (warning tone; the intro names the cycle it starts, DEV-179); while it runs the confirm spins and Cancel is off
 - Done: "Cycle {n+1} started · {count} cards are new again"
 - Switch failed: "Couldn’t switch." "The deck still uses {algorithm}." · "Retry"
 

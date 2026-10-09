@@ -1,5 +1,6 @@
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
@@ -61,16 +62,19 @@ class StudyOptionsController extends _$StudyOptionsController {
   void typeCardLimit(String text) {
     if (state.isSaving) return;
     final value = int.tryParse(text);
-    final isValid =
-        value != null &&
-        value >= StudyOptions.minCardLimit &&
-        value <= StudyOptions.maxCardLimit;
+    final isValid = StudyOptions.isValidCardLimit(value);
     state = state.edited(cardLimit: value, isCardLimitInvalid: !isValid);
   }
 
   void chooseNewCardOrder(NewCardOrder order) {
     if (state.isSaving) return;
     state = state.edited(newCardOrder: order);
+  }
+
+  /// The root's speech language (BR-SETTINGS-009), saved with the rest.
+  void chooseSpeechLanguage(SpeechLanguage language) {
+    if (state.isSaving) return;
+    state = state.edited(speechLanguage: language);
   }
 
   /// Save, or Retry save: Use app defaults clears the root's override;

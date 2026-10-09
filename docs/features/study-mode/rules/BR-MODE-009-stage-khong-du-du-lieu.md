@@ -22,7 +22,8 @@ Không đoán ở đây — mỗi câu trả lời khác nhau cho ra một thi�
 
 Hai mục từng nằm trong danh sách này đã đóng: `guess` so "khác nghĩa" bằng
 `back_folded` (BR-STUDY-039), và ngưỡng của chính `guess` là **năm nghĩa khác nhau
-trong tập thẻ của phiên** (BR-STUDY-037, BR-STUDY-040). Ngưỡng đó khác `match` và `recall` ở
+trong nguồn distractor** — thẻ đã học xong trong cây deck hoặc thẻ của phiên
+(BR-STUDY-037, BR-STUDY-038, BR-STUDY-040). Ngưỡng đó khác `match` và `recall` ở
 một điểm đáng chú ý: nó là điều kiện của **cả stage**, không phải của từng thẻ,
 vì một question mượn bốn thẻ khác để dựng.
 

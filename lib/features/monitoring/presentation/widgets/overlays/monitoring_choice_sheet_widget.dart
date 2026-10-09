@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
@@ -74,15 +74,7 @@ class _MonitoringChoiceSheetWidgetState<T>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxBottomSheet(
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(widget.title, style: context.textStyles.compactTitle),
-      ),
+      title: widget.title,
       footer: MxSheetActions.custom(
         isInSheet: true,
         children: [
@@ -124,14 +116,13 @@ class _MonitoringChoiceSheetWidgetState<T>
     ),
   );
 
-  Widget _options() => Column(
+  Widget _options() => MxDividedColumn(
     children: [
       for (final choice in widget.choices)
         MxOptionRow(
           title: choice.label,
           isSelected: _picked.contains(choice.value),
           onSelected: () => setState(() => _picked = {choice.value}),
-          hasDivider: choice != widget.choices.last,
         ),
     ],
   );

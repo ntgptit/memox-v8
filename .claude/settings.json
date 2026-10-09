@@ -1,18 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "mcp__Linear__save_issue",
-      "mcp__Linear__save_comment",
-      "mcp__Linear__list_issues",
-      "mcp__Linear__get_issue",
-      "mcp__Linear__list_issue_labels",
-      "mcp__Linear__list_issue_statuses",
-      "mcp__Linear__list_milestones",
-      "mcp__Linear__list_projects",
-      "mcp__Linear__get_project"
+      "mcp__Linear"
     ],
     "ask": [
-      "Workflow"
+      "Workflow",
+      "mcp__Linear__delete_attachment",
+      "mcp__Linear__delete_comment",
+      "mcp__Linear__delete_diff_comment",
+      "mcp__Linear__delete_status_update"
     ]
   },
   "hooks": {
@@ -47,6 +43,17 @@
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/install-guard-deps.sh",
             "timeout": 300,
             "statusMessage": "Installing guard dependencies…"
+          }
+        ]
+      },
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/start-docker.sh",
+            "timeout": 60,
+            "statusMessage": "Starting Docker…"
           }
         ]
       }

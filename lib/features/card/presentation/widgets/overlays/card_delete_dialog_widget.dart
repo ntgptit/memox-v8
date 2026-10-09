@@ -89,6 +89,15 @@ class _CardDeleteDialogWidgetState
       if (!mounted) return;
       setState(() => _isDeleting = false);
       showMxSnackbar(context, message: context.l10n.failure(failure));
+    } on Object catch (error, stackTrace) {
+      // A bug, not a Failure (ADR-016): log it, and never leave the held
+      // dialog without a way out (final review 2026-10-08).
+      FlutterError.reportError(
+        FlutterErrorDetails(exception: error, stack: stackTrace),
+      );
+      if (!mounted) return;
+      setState(() => _isDeleting = false);
+      showMxSnackbar(context, message: context.l10n.failureUnknown);
     }
   }
 
@@ -97,6 +106,9 @@ class _CardDeleteDialogWidgetState
     final l10n = context.l10n;
     final count = widget.cardIds.length;
     return MxDialog(
+      // The cards move whatever the dialog does: it waits for them, so the
+      // Undo toast lands (SW-REV-004).
+      isHeld: _isDeleting,
       title: l10n.cardDeleteTitle(count),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -108,9 +120,8 @@ class _CardDeleteDialogWidgetState
       ),
       actions: MxSheetActions(
         cancelLabel: l10n.commonCancel,
-        onCancel: () => Navigator.of(context).pop(false),
-        confirmLabel: l10n.cardMoveToTrash,
-        confirmIcon: AppIcons.delete,
+        onCancel: _isDeleting ? null : () => Navigator.of(context).pop(false),
+        confirmLabel: l10n.trashMoveConfirm,
         isConfirmLoading: _isDeleting,
         onConfirm: _isDeleting ? null : _delete,
       ),

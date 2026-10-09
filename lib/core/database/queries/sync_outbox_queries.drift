@@ -18,13 +18,23 @@ ON CONFLICT (name) DO UPDATE SET value = excluded.value;
 deleteSyncState(:name AS TEXT):
 DELETE FROM sync_state WHERE name = :name;
 
--- Pending operations of :types, parents before children: by $rank, the
--- position of the entity type in the coordinator's adapter order, then by
--- first queued. A card queued before the deck it moved into still follows
--- that deck.
-pendingOutbox(:limit AS INTEGER):
-SELECT * FROM sync_outbox WHERE entity_type IN :types
-ORDER BY $rank, created_at, rowid LIMIT :limit;
+-- The pending operations of one entity type, first queued first. SyncStore
+-- asks type by type in the coordinator's adapter order and sends the first
+-- type that has any, so parents go before children: a card queued before
+-- the deck it moved into still follows that deck. The filter and the order
+-- are those of idx_sync_outbox_type_created (DEV-205).
+pendingOutboxOfType(:entity_type AS TEXT, :limit AS INTEGER):
+SELECT * FROM sync_outbox WHERE entity_type = :entity_type
+ORDER BY created_at, rowid LIMIT :limit;
+
+-- Decks, shallower first (DEV-182): a child pending since before its new
+-- parent was made still follows it, and Try again sends a refused parent
+-- before its refused child. A delete has no row and goes first, as a purge
+-- must. The subquery runs for the deck entries only.
+pendingDeckOutbox(:limit AS INTEGER):
+SELECT * FROM sync_outbox WHERE entity_type = 'deck'
+ORDER BY COALESCE((SELECT depth FROM deck WHERE id = entity_id), 0),
+  created_at, rowid LIMIT :limit;
 
 isEntityPending(:entity_type AS TEXT, :entity_id AS TEXT):
 SELECT EXISTS (SELECT 1 FROM sync_outbox

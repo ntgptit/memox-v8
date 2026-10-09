@@ -46,6 +46,7 @@ class DeckLevelScreen extends StatelessWidget {
     required this.onAddCard,
     required this.onImportCards,
     required this.onExportCards,
+    required this.onSelectCards,
     required this.onOpenTrash,
     this.onOpenStudyHome,
     required this.onOpenStarterDecks,
@@ -94,6 +95,10 @@ class DeckLevelScreen extends StatelessWidget {
   /// sheet over the whole deck.
   final ValueChanged<DeckEntity> onExportCards;
 
+  /// Enters the card list's selection with nothing picked (DEV-307): the
+  /// router reaches the card feature.
+  final ValueChanged<String> onSelectCards;
+
   /// Opens the Trash (screen 06): the Library's app bar, a gone deck, a
   /// refused Undo (FE-B1).
   final VoidCallback onOpenTrash;
@@ -138,6 +143,7 @@ class DeckLevelScreen extends StatelessWidget {
       onAddCard: onAddCard,
       onImportCards: onImportCards,
       onExportCards: onExportCards,
+      onSelectCards: onSelectCards,
       onOpenTrash: onOpenTrash,
       cardFab: cardFab,
     ),
@@ -159,6 +165,7 @@ class _OpenDeck extends ConsumerWidget {
     required this.onAddCard,
     required this.onImportCards,
     required this.onExportCards,
+    required this.onSelectCards,
     required this.onOpenTrash,
     required this.cardFab,
   });
@@ -180,6 +187,7 @@ class _OpenDeck extends ConsumerWidget {
   final ValueChanged<String> onAddCard;
   final ValueChanged<String> onImportCards;
   final ValueChanged<DeckEntity> onExportCards;
+  final ValueChanged<String> onSelectCards;
 
   /// Opens the Trash (screen 06): the Library's app bar, a gone deck, a
   /// refused Undo (FE-B1).
@@ -211,6 +219,7 @@ class _OpenDeck extends ConsumerWidget {
         onAddCard: onAddCard,
         onImportCards: onImportCards,
         onExportCards: onExportCards,
+        onSelectCards: onSelectCards,
         onOpenTrash: onOpenTrash,
         cardFab: cardFab,
       ),
@@ -266,6 +275,7 @@ class _OpenDeckContent extends ConsumerWidget {
     required this.onAddCard,
     required this.onImportCards,
     required this.onExportCards,
+    required this.onSelectCards,
     required this.onOpenTrash,
     required this.cardFab,
   });
@@ -287,6 +297,7 @@ class _OpenDeckContent extends ConsumerWidget {
   final ValueChanged<String> onAddCard;
   final ValueChanged<String> onImportCards;
   final ValueChanged<DeckEntity> onExportCards;
+  final ValueChanged<String> onSelectCards;
 
   /// Opens the Trash (screen 06): the Library's app bar, a gone deck, a
   /// refused Undo (FE-B1).
@@ -313,11 +324,19 @@ class _OpenDeckContent extends ConsumerWidget {
           parentId: deck.parentId,
           onOpenDeck: onOpenDeck,
           onOpenAlgorithm: onOpenAlgorithm,
-          onImportCards: canCreateCard ? () => onImportCards(deck.id) : null,
+          // Every deck takes an import: cards into a deck that holds or may
+          // hold cards, sections into one that may hold decks (spec
+          // 2026-10-08 §4.2, U1).
+          onImportCards: view.createOptions.isNotEmpty
+              ? () => onImportCards(deck.id)
+              : null,
           // A deck of cards holds at least one (E-L1); an empty one has
           // nothing to export (UC-TRANSFER-002 E5).
           onExportCards: deck.contentType == DeckContentType.card
               ? () => onExportCards(deck)
+              : null,
+          onSelectCards: deck.contentType == DeckContentType.card
+              ? () => onSelectCards(deck.id)
               : null,
           onOpenStudy: onOpenStudy,
           onOpenStudyOptions: onOpenStudyOptions,

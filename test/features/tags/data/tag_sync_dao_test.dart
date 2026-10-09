@@ -1,0 +1,131 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/sync/sync_store.dart';
+import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
+
+import '../../../support/test_database.dart';
+
+Map<String, Object?> _wire(String id, String name) => {
+  'id': id,
+  'name': name,
+  'nameFolded': name.toLowerCase(),
+  'createdAt': '2026-09-28T01:02:03Z',
+};
+
+void main() {
+  late AppDatabase db;
+  late SyncStore store;
+  late TagSyncDao adapter;
+  setUp(() {
+    db = openTestDatabase();
+    store = SyncStore(db);
+    adapter = TagSyncDao(db, store, now: () => DateTime.utc(2026, 9, 28));
+  });
+  tearDown(() => db.close());
+
+  Future<void> remote(Future<void> Function() body) =>
+      store.applyingRemote(deferForeignKeys: true, body);
+
+  test('a pulled tag reads back as the same wire row', () async {
+    await remote(() => adapter.upsertFromServer(_wire('T', 'Verb'), 4));
+    expect(await adapter.readRow('T'), _wire('T', 'Verb'));
+    await adapter.markAcknowledged('T', 9);
+    final row = await (db.select(
+      db.tags,
+    )..where((t) => t.id.equals('T'))).getSingle();
+    expect(row.serverVersion, 9);
+    await remote(() => adapter.deleteFromServer('T'));
+    expect(await adapter.readRow('T'), isNull);
+  });
+
+  test('a pulled tag with a local tag\'s name absorbs it', () async {
+    await db.customStatement(
+      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+      "scheduler_version, generation, sibling_position, created_at, updated_at) "
+      "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES ('K', 'R', 'f', 'b', 0, 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('L', 'verb', 'verb', 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 'L')",
+    );
+    await store.recordRejection(
+      'tag',
+      'L',
+      'TAG_NAME_TAKEN',
+      DateTime.utc(2026),
+    );
+    await db.customStatement('DELETE FROM sync_outbox');
+
+    await remote(() => adapter.upsertFromServer(_wire('P', 'Verb'), 5));
+
+    expect(await db.select(db.tags).get(), hasLength(1));
+    final links = await db.select(db.cardTags).get();
+    expect(links.single.tagId, 'P');
+    final queued = {
+      for (final e in await db.select(db.syncOutbox).get())
+        '${e.entityType}/${e.entityId}': e.op,
+    };
+    expect(queued, {'card/K': 'upsert', 'tag/L': 'delete'});
+    expect(await store.rejections(), isEmpty);
+  });
+
+  // DEV-201 (BR-REV-010): the folded name is this build's foldText of the
+  // wire's name, never the wire's own nameFolded, so a client that folds
+  // differently still lands on the one local tag of that name (BR-TAG-001)
+  // and search's instr(name_folded, :term) finds it.
+  test('a pulled tag is folded here, not by the wire, and absorbs the local '
+      'tag that folds alike', () async {
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, created_at) "
+      "VALUES ('L', 'động từ', 'động từ', 0)",
+    );
+    final wire = {
+      'id': 'P',
+      'name': ' Động Từ ',
+      'nameFolded': 'Động Từ',
+      'createdAt': '2026-09-28T01:02:03Z',
+    };
+
+    await remote(() => adapter.upsertFromServer(wire, 5));
+
+    final rows = await db.select(db.tags).get();
+    expect(rows.single.id, 'P');
+    expect(rows.single.nameFolded, 'động từ');
+    expect((await adapter.readRow('P'))!['nameFolded'], 'động từ');
+  });
+
+  // Review focus 5 (DEV-173, plan ruling P1): the card already carries the
+  // pulled tag, so the relink must not trip the card_tags primary key.
+  test('a renamed tag absorbs a local one on a card that has both', () async {
+    await db.customStatement(
+      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+      "scheduler_version, generation, sibling_position, created_at, updated_at) "
+      "VALUES ('R', 'r', NULL, 'R', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO card (id, deck_id, front, back, created_at, updated_at) VALUES ('K', 'R', 'f', 'b', 0, 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('P', 'noun', 'noun', 0), ('L', 'verb', 'verb', 0)",
+    );
+    await db.customStatement(
+      "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 'P'), ('K', 'L')",
+    );
+    await db.customStatement('DELETE FROM sync_outbox');
+
+    await remote(() => adapter.upsertFromServer(_wire('P', 'Verb'), 6));
+
+    final links = await db.select(db.cardTags).get();
+    expect(links.map((l) => '${l.cardId}/${l.tagId}'), ['K/P']);
+    final queued = {
+      for (final e in await db.select(db.syncOutbox).get())
+        '${e.entityType}/${e.entityId}': e.op,
+    };
+    expect(queued, {'card/K': 'upsert', 'tag/L': 'delete'});
+  });
+}

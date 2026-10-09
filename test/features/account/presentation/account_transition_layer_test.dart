@@ -6,6 +6,7 @@ import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/account/presentation/providers/unsent_count_provider.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_transition_layer_widget.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
@@ -13,10 +14,12 @@ import 'package:memox/features/account/presentation/widgets/sections/sign_in_for
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
+import 'package:memox/shared/widgets/mx_footer_bar.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/auth_fakes.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/sync_fakes.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -39,6 +42,9 @@ Future<void> _onThemePage(
     ),
   );
   await tester.pumpAndSettle();
+  // Below the fold since the speech rows of Study defaults: scrolling to
+  // the Reset row puts the Theme row above the bottom bar.
+  await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
   await tester.tap(find.text(_en.settingsTheme));
   await _settle(tester);
   expect(find.byType(ThemeScreen), findsOneWidget);
@@ -65,8 +71,9 @@ Future<void> _backSwipe(WidgetTester tester) async {
 }
 
 void main() {
-  accountTest('a switch covers the app, keeps Back inside, and Cancel puts '
-      'the page back (Review Focus 2)', (tester, env, world) async {
+  accountTest('a switch covers the app; Back steps from the code to the '
+      'form, then acts as Cancel and puts the page back (Review Focus 2, '
+      'DEV-167)', (tester, env, world) async {
     await _onThemePage(tester, env, world);
 
     await world.coordinator.beginSwitch(
@@ -77,10 +84,6 @@ void main() {
     expect(find.byType(SignInFormWidget), findsOneWidget);
     expect(find.text(_en.accountTargetLine), findsOneWidget);
 
-    await tester.binding.handlePopRoute();
-    await _settle(tester);
-    expect(find.byType(SignInFormWidget), findsOneWidget);
-
     await tester.tap(find.text(_en.accountSendCode));
     await _settle(tester);
     expect(find.byType(CodeFormWidget), findsOneWidget);
@@ -90,19 +93,16 @@ void main() {
     expect(find.byType(CodeFormWidget), findsNothing);
     expect(find.byType(SignInFormWidget), findsOneWidget);
 
-    await tester.tap(find.text(_en.commonCancel));
+    await tester.binding.handlePopRoute();
     await _settle(tester);
     expect(find.byType(AccountTransitionLayerWidget), findsNothing);
     expect(find.byType(ThemeScreen), findsOneWidget);
     expect(world.state, isA<Ready>());
   });
 
-  accountTest('a system back swipe under the layer never pops the page '
-      'beneath, and Back works again once the layer closes', (
-    tester,
-    env,
-    world,
-  ) async {
+  accountTest('a system back swipe at the layer root cancels it and never '
+      'pops the page beneath; Back works again once the layer closes '
+      '(DEV-167)', (tester, env, world) async {
     await _onThemePage(tester, env, world);
     await world.coordinator.beginSwitch(
       choice: TransitionChoice.discard,
@@ -111,12 +111,9 @@ void main() {
     await _settle(tester);
 
     await _backSwipe(tester);
-    expect(find.byType(SignInFormWidget), findsOneWidget);
-    expect(find.byType(ThemeScreen, skipOffstage: false), findsOneWidget);
-
-    await tester.tap(find.text(_en.commonCancel));
-    await _settle(tester);
     expect(find.byType(AccountTransitionLayerWidget), findsNothing);
+    expect(find.byType(ThemeScreen), findsOneWidget);
+    expect(world.state, isA<Ready>());
 
     await tester.binding.handlePopRoute();
     await _settle(tester);
@@ -165,6 +162,14 @@ void main() {
     );
     await _settle(tester);
 
+    expect(find.text(_en.commonCancel), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byType(MxFooterBar),
+        matching: find.text(_en.accountSendCode),
+      ),
+      findsOneWidget,
+    );
     await tester.tap(find.text(_en.accountSendCode));
     await _settle(tester);
     await tester.enterText(
@@ -288,6 +293,53 @@ void main() {
     expect(find.text(_en.accountLayerOffline), findsNothing);
     expect(find.text(_en.accountSignOutLosing(2)), findsOneWidget);
     expect(find.text(_en.commonCancel), findsOneWidget);
+    // L5: the stopped layer's actions sit in the footer, once.
+    Finder inFooter(String text) => find.descendant(
+      of: find.byType(MxFooterBar),
+      matching: find.text(text),
+    );
+    expect(inFooter(_en.commonRetry), findsOneWidget);
+    expect(find.text(_en.commonRetry), findsOneWidget);
+    expect(inFooter(_en.accountSignOutLosing(2)), findsOneWidget);
+  });
+
+  libraryTest('a merge stopped on rows the server refused names them, and '
+      'offers to lose them and go on (DEV-191)', (tester, env) async {
+    final commands = FakeSyncCommands();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
+      overrides: [
+        authStateOf(
+          Transitioning(
+            transitionOf(
+              TransitionKind.switchAccount,
+              TransitionStage.started,
+              choice: TransitionChoice.merge,
+            ),
+            error: const UnsentChangesFailure(count: 2),
+          ),
+        ),
+        ...syncOverrides(const SyncStatus(), commands),
+      ],
+    );
+    await tester.pump();
+
+    expect(find.text(_en.accountSwitchRefused(2)), findsOneWidget);
+    expect(find.text(_en.accountLayerFailed), findsNothing);
+    expect(find.text(_en.commonCancel), findsOneWidget);
+    Finder inFooter(String text) => find.descendant(
+      of: find.byType(MxFooterBar),
+      matching: find.text(text),
+    );
+    expect(inFooter(_en.commonRetry), findsOneWidget);
+    expect(inFooter(_en.accountSwitchLosing(2)), findsOneWidget);
+
+    await tester.tap(find.text(_en.accountSwitchLosing(2)));
+    await _settle(tester);
+
+    expect(commands.keeps, 1);
   });
 
   libraryTest('a sign-out still sending offers no Cancel (R4)', (
@@ -337,6 +389,13 @@ void main() {
     expect(find.text(_en.accountLayerStuck), findsOneWidget);
     expect(find.text(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.commonCancel), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(MxFooterBar),
+        matching: find.text(_en.commonRetry),
+      ),
+      findsOneWidget,
+    );
   });
 
   libraryTest('running, it names the step and says closing loses nothing', (
@@ -363,5 +422,7 @@ void main() {
 
     expect(find.text(_en.accountStepMerging), findsWidgets);
     expect(find.text(_en.accountSafeToClose), findsOneWidget);
+    // L5: running, the layer has no footer.
+    expect(find.byType(MxFooterBar), findsNothing);
   });
 }

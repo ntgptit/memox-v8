@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -61,18 +60,7 @@ class _MonitoringDeviceUserSheetWidgetState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxBottomSheet(
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(
-          l10n.monitoringChipDevice,
-          style: context.textStyles.compactTitle,
-        ),
-      ),
+      title: l10n.monitoringChipDevice,
       footer: MxSheetActions.custom(
         isInSheet: true,
         children: [

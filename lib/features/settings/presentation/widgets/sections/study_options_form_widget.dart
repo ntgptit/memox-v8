@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memox/core/speech/di/speech_providers.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -7,6 +8,7 @@ import 'package:memox/features/settings/domain/models/effective_study_options_mo
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/presentation/controllers/study_options_controller.dart';
 import 'package:memox/features/settings/presentation/states/study_options_state.dart';
+import 'package:memox/features/settings/presentation/widgets/overlays/speech_language_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
@@ -26,9 +28,9 @@ String studyOptionsOrderName(AppLocalizations l10n, NewCardOrder order) =>
       NewCardOrder.random => l10n.studyOptionsOrderRandomShort,
     };
 
-/// Screen 15's options: Use app defaults, then the card limit and the
-/// new-card order, drawn as Settings draws them (ruling M3-E1), read-only
-/// while the deck follows Settings (A1).
+/// Screen 15's options: Use app defaults, then the card limit, the
+/// new-card order and the speech language, drawn as Settings draws them
+/// (ruling M3-E1), read-only while the deck follows Settings (A1).
 class StudyOptionsFormWidget extends ConsumerWidget {
   const StudyOptionsFormWidget({
     super.key,
@@ -202,6 +204,28 @@ class StudyOptionsFormWidget extends ConsumerWidget {
                                 _controller(ref).chooseNewCardOrder(order)
                           : null,
                     ),
+            ),
+            // The value first in the subtitle, at full contrast like the two
+            // rows above; only the editable row carries the chevron (critique
+            // 2026-10-07).
+            MxSettingsRow(
+              label: l10n.settingsSpeechLanguage,
+              subtitle: l10n.studyOptionsSpeechLanguageValue(
+                l10n.speechLanguageName(options.speechLanguage.name),
+              ),
+              icon: AppIcons.voice,
+              onTap: !isEditable
+                  ? null
+                  : () async {
+                      final picked = await showSpeechLanguageSheet(
+                        context,
+                        selected: options.speechLanguage,
+                        speech: ref.read(speechSynthesizerProvider),
+                      );
+                      if (picked != null && context.mounted) {
+                        _controller(ref).chooseSpeechLanguage(picked);
+                      }
+                    },
             ),
           ],
         ),

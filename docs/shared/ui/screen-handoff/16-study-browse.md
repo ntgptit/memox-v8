@@ -13,7 +13,7 @@ against the schedule (BR-MODE-005, BR-MODE-006). FE-A6; UC-STUDY-001 (steps
 |---|---|---|
 | Top bar | `MxStudyTopBar` | See [Shared by the session screens](#shared-by-the-session-screens). |
 | Context line | new: `SessionContextLine` (feature-local, deliberately not a shared widget) | Centred overline: "{deck} · Learning · stage {n} of {total}" (BR-MODE-004 orders the stage). |
-| Card | `MxCard`, full-bleed, feature-local two-pane layout (`StudyFaceCard` is a different composition from this one) | Term half on top with its label and pronunciation, a hairline divider, meaning half below with its label and example when the card has one; both halves always visible (BR-MODE-006). |
+| Card | `MxCard`, full-bleed, feature-local two-pane layout (`StudyFaceCard` is a different composition from this one) | Term half on top with its label, pronunciation and a speaker (`MxIconButton`, volume-2, "Read aloud · {language}"; disabled with "No {language} voice on this device" when the device lacks the voice) that reads the face shown (BR-STUDY-079), a hairline divider, meaning half below with its label and example when the card has one; both halves always visible (BR-MODE-006). |
 | Navigation | swipe on the card, and a "Next card" button (`StudyCtaRow`, critique 2026-09-30) | Left advances, right looks back one card already shown in this round (BR-STUDY-048); looking back does not re-record the card or move `cursor`. |
 | Footer hint | new: `SessionFooterHint` (feature-local) | "Swipe for next or back · nothing is graded" (BR-MODE-005); one line in both languages (owner, 3c-2 golden review). |
 
@@ -32,7 +32,7 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
   shrinks to fit, so the track stays at least 48 wide at large text
   (FE-A6 P3 ruling T1 and its final review).
 - **Exit / abandon.** The close icon, system Back and Guess's blocked-question
-  Close open one confirm dialog (owner ruling 2026-09-27). "Keep studying" changes nothing;
+  Close open one confirm dialog (owner ruling 2026-09-27). "Keep going" changes nothing;
   "Stop" ends the session. Every turn already committed stays recorded
   (BR-STUDY-004, BR-STUDY-019); the session becomes `abandoned` with
   `end_reason = user_exit` (BR-STUDY-014).
@@ -56,6 +56,15 @@ Common to Browse, Match, Guess, Recall and Fill (17–20).
   swapped for a loading state mid-session. Full-body loading is only for a
   session that has no turn yet (BR-STUDY-064). Each mode declares its own
   outcome-display duration.
+- **Speech (study speech spec 2026-10-07).** In a learning session a new turn in
+  Browse, Self-assess, Guess and Recall reads the term aloud once in the root deck's
+  speech language, never in Fill, Match or a review (BR-STUDY-078); the switch on
+  screen 23 turns it off and a screen reader suppresses it, while the speaker under the
+  term reads on tap whatever the switch says (BR-STUDY-079). The speaker's label names
+  the language ("Read aloud · Korean"); when the device has no voice for it the speaker
+  is disabled and says so ("No Korean voice on this device"), and automatic reading
+  reads nothing (critique 2026-10-07). A failing engine is logged and changes nothing
+  (BR-STUDY-081); a new reading or leaving the session stops the voice (BR-STUDY-082).
 - **Keyboard / IME.** Only `fill` (20-study-fill.md) takes typed input; every
   other screen here is tap-only and never raises a keyboard.
 - **`self_assess`.** See
@@ -90,7 +99,7 @@ look-back order is the order served, which the stage shuffles (BR-STUDY-022). Go
 
 ## Rulings
 
-- **Owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004:** the close icon and system Back open a confirm dialog first: Keep studying or Stop.
+- **Owner ruling 2026-09-27; IT-NAV-010, IT-CONT-004:** the close icon and system Back open a confirm dialog first: Keep going or Stop.
 - The card follows the finger without a tilt while dragged, and stays still with reduced motion.
 - Pronunciation uses the detail role of the body face; V8's typography has one family.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face label and the session context line are eyebrows; the deck name keeps its case.

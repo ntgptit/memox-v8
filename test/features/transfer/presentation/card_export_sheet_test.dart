@@ -118,7 +118,7 @@ void main() {
       final csv = find.widgetWithText(MxOptionRow, _en.exportFormatCsv);
       expect(tester.widget<MxOptionRow>(csv).isSelected, isTrue);
 
-      await _tap(tester, _button(_en.exportAction(2)));
+      await _tap(tester, _button(_en.exportAction));
 
       expect(find.byType(CardExportSheetWidget), findsNothing);
       expect(find.text(_en.exportHandedOver(2)), findsOneWidget);
@@ -140,7 +140,7 @@ void main() {
       expect(find.text(_en.exportBodySelection), findsOneWidget);
 
       await _tap(tester, find.text(_en.exportFormatXlsx));
-      await _tap(tester, _button(_en.exportAction(1)));
+      await _tap(tester, _button(_en.exportAction));
 
       expect(share.shared.single.format, TransferFormat.xlsx);
     },
@@ -157,7 +157,7 @@ void main() {
       ).then((seeded) async {
         seeded.share.answer = const Ok(ExportShareResult.dismissed);
         await _tap(tester, find.text(_en.exportFormatTsv));
-        await _tap(tester, _button(_en.exportAction(1)));
+        await _tap(tester, _button(_en.exportAction));
       });
 
       expect(find.byType(CardExportSheetWidget), findsOneWidget);
@@ -177,7 +177,7 @@ void main() {
             CardExportScope.selection(deckId: deckId, ids: {'a'}),
       );
       share.answer = const Rejected(TransferRejection.shareFailed);
-      await _tap(tester, _button(_en.exportAction(1)));
+      await _tap(tester, _button(_en.exportAction));
       expect(find.text(_en.exportShareFailedTitle), findsOneWidget);
 
       share.answer = const Rejected(TransferRejection.shareUnavailable);
@@ -201,7 +201,7 @@ void main() {
           CardExportScope.selection(deckId: deckId, ids: {'a', 'gone'}),
     );
 
-    await _tap(tester, _button(_en.exportAction(2)));
+    await _tap(tester, _button(_en.exportAction));
 
     expect(find.text(_en.exportStaleTitle), findsOneWidget);
     expect(_button(_en.exportClose), findsOneWidget);
@@ -252,7 +252,7 @@ void main() {
         );
         await _tap(tester, _button(_open));
 
-        await tester.tap(_button(_en.exportAction(1)));
+        await tester.tap(_button(_en.exportAction));
         await tester.pump();
         expect(find.text(_en.exportPreparing), findsOneWidget);
         await dismiss(tester);

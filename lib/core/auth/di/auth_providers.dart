@@ -19,8 +19,16 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_providers.g.dart';
 
+/// Returns the synced settings to their defaults inside LocalDataReset's
+/// transaction; the device's own columns (reminder, welcome) stay. Overridden
+/// at the composition root by the settings feature (DEV-173).
+@Riverpod(keepAlive: true)
+Future<void> Function() syncedSettingsReset(Ref ref) => throw StateError(
+  'override syncedSettingsResetProvider at the root (lib/app/sync_tables.dart)',
+);
+
 /// The account's one owner (auth spec §5). Null when this build names no
-/// Supabase project (plan ruling 20). main.dart prepares and starts it.
+/// Supabase project (plan ruling 20). `startApp` (app_bootstrap.dart) prepares and starts it.
 @Riverpod(keepAlive: true)
 AccountCoordinator? accountCoordinator(Ref ref) {
   if (!ref.watch(supabaseConfigProvider).isEnabled) return null;
@@ -33,7 +41,10 @@ AccountCoordinator? accountCoordinator(Ref ref) {
     store: AccountStore(db),
     secrets: SecureSecretStore(),
     sync: ref.watch(syncControlProvider),
-    localReset: LocalDataReset(db, now: clock.now),
+    localReset: LocalDataReset(
+      db,
+      resetSyncedSettings: ref.watch(syncedSettingsResetProvider),
+    ),
     gate: db.mutationGate,
     network: ref.watch(networkStatusProvider),
     flushLogs: () async {

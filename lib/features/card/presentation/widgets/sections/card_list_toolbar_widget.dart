@@ -14,6 +14,7 @@ import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/card/presentation/providers/card_tag_filter_provider.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 /// The four filters with their counts, then Tags (screen 07). The search
 /// shows above them once the app bar asks for it; the sort sits in the
@@ -70,27 +71,31 @@ class CardListToolbarWidget extends ConsumerWidget {
     );
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.control),
-      // The chips never shrink or wrap, so their row scrolls.
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          spacing: AppSpacing.micro,
-          children: [
-            for (final filter in CardListFilter.values)
+      // The chips never shrink or wrap, so their row scrolls, and a cut
+      // chip fades at the edge (DEV-306).
+      child: MxScrollFade(
+        axis: Axis.horizontal,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            spacing: AppSpacing.micro,
+            children: [
+              for (final filter in CardListFilter.values)
+                MxFilterChip(
+                  label: l10n.cardFilter(filter),
+                  count: counts.of(filter),
+                  isSelected: filter == request.filter,
+                  onSelected: (_) => onFilter(filter),
+                ),
               MxFilterChip(
-                label: l10n.cardFilter(filter),
-                count: counts.of(filter),
-                isSelected: filter == request.filter,
-                onSelected: (_) => onFilter(filter),
+                label: l10n.cardFilterTags,
+                icon: AppIcons.tag,
+                count: applied == 0 ? null : applied,
+                isSelected: applied > 0,
+                onSelected: (_) => unawaited(_openTags(context, ref)),
               ),
-            MxFilterChip(
-              label: l10n.cardFilterTags,
-              icon: AppIcons.tag,
-              count: applied == 0 ? null : applied,
-              isSelected: applied > 0,
-              onSelected: (_) => unawaited(_openTags(context, ref)),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

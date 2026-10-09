@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
+import 'package:memox/features/settings/domain/usecases/reset_app_settings_use_case.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/providers/watch_app_settings_use_case_provider.dart';
@@ -102,6 +104,19 @@ void main() {
     expect(_state(rig).isCardLimitInvalid, isFalse);
   });
 
+  _settingsTest('choosing the order writes only the order: a limit a pull '
+      'changed meanwhile stays (BR-SETTINGS-007, DEV-217)', (rig) async {
+    // The row changes under the controller's snapshot, as a pull does.
+    await rig.store.saveStudyDefaults(cardLimit: 55);
+
+    _controller(rig).chooseNewCardOrder(NewCardOrder.random);
+    await pumpEventQueue();
+
+    final stored = await _stored(rig);
+    expect(stored.studyDefaults.newCardOrder, NewCardOrder.random);
+    expect(stored.studyDefaults.cardLimit, 55);
+  });
+
   _settingsTest('a second submit of a kind in flight is ignored (A4)', (
     rig,
   ) async {
@@ -188,7 +203,10 @@ void main() {
     await pumpEventQueue();
     rig.store.writes = 0;
 
-    expect(await _controller(rig).reset(), isTrue);
+    expect(
+      await _controller(rig).reset(ResetAppSettingsUseCase(rig.store).call),
+      isTrue,
+    );
     final stored = await _stored(rig);
     expect(stored.theme, AppSettingsEntity.defaults.theme);
     expect(stored.language, AppSettingsEntity.defaults.language);
@@ -202,8 +220,62 @@ void main() {
     await pumpEventQueue();
     rig.store.isFailing = true;
 
-    expect(await _controller(rig).reset(), isFalse);
+    expect(
+      await _controller(rig).reset(ResetAppSettingsUseCase(rig.store).call),
+      isFalse,
+    );
     expect((await _stored(rig)).theme, ThemeChoice.dark);
     expect(_state(rig).notice, isA<SettingsSaveFailed>());
+  });
+
+  // Study speech spec §6; BR-SETTINGS-009, BR-SETTINGS-010.
+
+  _settingsTest('chooseSpeechLanguage writes the language alone '
+      '(BR-SETTINGS-007, BR-SETTINGS-009)', (rig) async {
+    _controller(rig).chooseSpeechLanguage(SpeechLanguage.jaJp);
+    await _settled();
+
+    final stored = await _stored(rig);
+    expect(stored.studyDefaults.speechLanguage, SpeechLanguage.jaJp);
+    expect(stored.studyDefaults.cardLimit, 20);
+    expect(
+      _state(rig).notice,
+      isA<SettingsSaved>().having(
+        (n) => n.kind,
+        'kind',
+        SettingsSubmit.speechLanguage,
+      ),
+    );
+  });
+
+  _settingsTest('the same language again writes nothing', (rig) async {
+    _controller(rig).chooseSpeechLanguage(SpeechLanguage.enUs);
+    await _settled();
+
+    expect(rig.store.writes, 0);
+  });
+
+  _settingsTest('setSpeechAutoPlay writes the switch (BR-SETTINGS-010)', (
+    rig,
+  ) async {
+    _controller(rig).setSpeechAutoPlay(isOn: false);
+    await _settled();
+
+    expect((await _stored(rig)).isSpeechAutoPlay, isFalse);
+  });
+
+  _settingsTest('a failed speech write leaves a Retry that writes it (E2)', (
+    rig,
+  ) async {
+    rig.store.isFailing = true;
+    _controller(rig).setSpeechAutoPlay(isOn: false);
+    await _settled();
+    expect(_state(rig).notice, isA<SettingsSaveFailed>());
+
+    rig.store.isFailing = false;
+    await _controller(rig).retry(SettingsSubmit.speechAutoPlay);
+    await _settled();
+
+    expect((await _stored(rig)).isSpeechAutoPlay, isFalse);
   });
 }

@@ -3,7 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
@@ -69,7 +71,7 @@ void main() {
       expect(rows.map((row) => row.hasChevron), [true, true]);
       expect(rows.last.isEnabled, isFalse);
       expect(rows.last.subtitle, 'Holds other decks');
-      expect(rows.map((row) => row.hasDivider), [true, false]);
+      expect(find.byType(MxDividedColumn), findsOneWidget);
       await tester.tap(find.text('Kana'));
       expect(picked, 'Kana');
       expect(
@@ -129,5 +131,69 @@ void main() {
       tester.getTopLeft(find.text('Move to deck')) - sheet,
       const Offset(20, 20),
     );
+  });
+
+  // SW-REV-004: a move or restore that runs holds the picker.
+  testWidgets('isHeld holds its sheet', (tester) async {
+    await pumpMx(
+      tester,
+      MxDeckPickerSheet(
+        title: 'Move to deck',
+        rule: 'Cards keep their progress.',
+        candidates: [MxPickerCandidate(label: 'Kana', onTap: () {})],
+        dismissLabel: 'Cancel',
+        onDismiss: () {},
+        emptyTitle: 'Nowhere to move',
+        isHeld: true,
+      ),
+    );
+
+    expect(
+      tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).isHeld,
+      isTrue,
+    );
+    // Its own dismiss cannot close it either: Navigator.pop skips PopScope
+    // (impeccable audit 2026-10-08).
+    expect(
+      tester
+          .widget<MxButton>(find.widgetWithText(MxButton, 'Cancel'))
+          .onPressed,
+      isNull,
+    );
+  });
+
+  // SW-REV-008: a picker that fails to load keeps its head and a way out,
+  // as its loading sheet keeps the head.
+  testWidgets('the error sheet: the head, the error with Retry, a dismiss', (
+    tester,
+  ) async {
+    var retries = 0;
+    var dismissed = 0;
+    await pumpMx(
+      tester,
+      MxDeckPickerErrorSheet(
+        title: 'Move to deck',
+        rule: 'Cards keep their progress.',
+        errorTitle: "Couldn't load your decks",
+        errorBody: 'Nothing was lost.',
+        retryLabel: 'Retry',
+        onRetry: () => retries++,
+        dismissLabel: 'Cancel',
+        onDismiss: () => dismissed++,
+      ),
+    );
+
+    expect(find.text('Move to deck'), findsOneWidget);
+    expect(find.text('Cards keep their progress.'), findsOneWidget);
+    expect(find.byType(MxErrorState), findsOneWidget);
+    // Retry is the decision's one primary; the dismiss beside it is
+    // outline (The One Indigo Rule; impeccable audit 2026-10-08).
+    expect(
+      tester.widget<MxButton>(find.widgetWithText(MxButton, 'Cancel')).tone,
+      MxButtonTone.outline,
+    );
+    await tester.tap(find.widgetWithText(MxButton, 'Retry'));
+    await tester.tap(find.widgetWithText(MxButton, 'Cancel'));
+    expect((retries, dismissed), (1, 1));
   });
 }

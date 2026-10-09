@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -46,6 +47,7 @@ class MxDeckPickerSheet extends StatelessWidget {
     required this.onDismiss,
     required this.emptyTitle,
     this.emptyBody,
+    this.isHeld = false,
   });
 
   final String title;
@@ -58,25 +60,25 @@ class MxDeckPickerSheet extends StatelessWidget {
   final String dismissLabel;
   final VoidCallback onDismiss;
   final String emptyTitle;
+
+  /// The sheet stays while the pick's work runs (MxBottomSheet.isHeld).
+  final bool isHeld;
   final String? emptyBody;
 
   @override
   Widget build(BuildContext context) {
     final isEmpty = candidates.isEmpty;
     return MxBottomSheet(
-      header: _PickerHead(title: title, rule: rule),
-      footer: MxSheetActions.custom(
+      isHeld: isHeld,
+      title: title,
+      subtitle: rule,
+      footer: MxSheetActions.single(
         isInSheet: true,
-        children: [
-          Expanded(
-            child: MxButton(
-              label: dismissLabel,
-              onPressed: onDismiss,
-              tone: isEmpty ? MxButtonTone.primary : MxButtonTone.outline,
-              isBlock: true,
-            ),
-          ),
-        ],
+        label: dismissLabel,
+        // Held, its own dismiss waits too: Navigator.pop skips the sheet's
+        // PopScope.
+        onPressed: isHeld ? null : onDismiss,
+        tone: isEmpty ? MxButtonTone.primary : MxButtonTone.outline,
       ),
       child: Padding(
         padding: const EdgeInsetsDirectional.only(
@@ -92,9 +94,9 @@ class MxDeckPickerSheet extends StatelessWidget {
                 tone: MxEmptyStateTone.neutral,
                 isCompact: true,
               )
-            : Column(
+            : MxDividedColumn(
                 children: [
-                  for (final (index, candidate) in candidates.indexed)
+                  for (final candidate in candidates)
                     MxListRow(
                       title: candidate.label,
                       subtitle: candidate.reason,
@@ -102,7 +104,6 @@ class MxDeckPickerSheet extends StatelessWidget {
                       hasChevron: true,
                       onTap: candidate.onTap,
                       isEnabled: candidate.isEnabled,
-                      hasDivider: index < candidates.length - 1,
                     ),
                 ],
               ),
@@ -134,40 +135,64 @@ class MxDeckPickerLoadingSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MxBottomSheet(
-    header: _PickerHead(title: title, rule: rule),
+    title: title,
+    subtitle: rule,
     child: MxSkeletonList(semanticLabel: semanticLabel, rows: rows),
   );
 }
 
-/// The picker's head: the title and, when known, the rule under it.
-class _PickerHead extends StatelessWidget {
-  const _PickerHead({required this.title, this.rule});
+/// MxDeckPickerSheet when its candidates failed to load: the same head, the
+/// load failure with Retry, and a way out (SW-REV-008), as the loading sheet
+/// keeps the head.
+class MxDeckPickerErrorSheet extends StatelessWidget {
+  const MxDeckPickerErrorSheet({
+    super.key,
+    required this.title,
+    this.rule,
+    required this.errorTitle,
+    required this.errorBody,
+    required this.retryLabel,
+    required this.onRetry,
+    this.isRetrying = false,
+    required this.dismissLabel,
+    required this.onDismiss,
+  });
 
   final String title;
   final String? rule;
-
-  /// Ruling O11: the title → rule gap is UNSPECIFIED.
-  static const double _ruleGap = 4;
+  final String errorTitle;
+  final String errorBody;
+  final String retryLabel;
+  final VoidCallback onRetry;
+  final bool isRetrying;
+  final String dismissLabel;
+  final VoidCallback onDismiss;
 
   @override
-  Widget build(BuildContext context) {
-    final styles = context.textStyles;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.card,
-        AppSpacing.micro,
-        AppSpacing.card,
-        AppSpacing.grouped,
+  Widget build(BuildContext context) => MxBottomSheet(
+    title: title,
+    subtitle: rule,
+    // Retry is the decision's one primary; the way out beside it is outline
+    // (The One Indigo Rule).
+    footer: MxSheetActions.single(
+      isInSheet: true,
+      label: dismissLabel,
+      onPressed: onDismiss,
+      tone: MxButtonTone.outline,
+    ),
+    child: Padding(
+      padding: const EdgeInsetsDirectional.only(
+        start: AppSpacing.control,
+        end: AppSpacing.control,
+        bottom: AppSpacing.control,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: _ruleGap,
-        children: [
-          Text(title, style: styles.compactTitle),
-          if (rule case final text?) Text(text, style: styles.noteText),
-        ],
+      child: MxErrorState(
+        title: errorTitle,
+        body: errorBody,
+        retryLabel: retryLabel,
+        onRetry: onRetry,
+        isRetrying: isRetrying,
       ),
-    );
-  }
+    ),
+  );
 }

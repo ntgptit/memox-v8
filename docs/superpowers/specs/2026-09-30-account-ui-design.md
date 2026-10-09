@@ -93,6 +93,8 @@ the same meaning. Copy is local-first: what is kept before what is asked.
 
 ### 5.1 Welcome (29)
 
+> Layout amended by `2026-10-05-sign-in-flow-redesign-design.md`.
+
 Top: the icon tile (U5) and "MemoX", three `MxIconTile` benefit rows (keep
 your decks when you reinstall · study on several phones · still works
 offline). Bottom, in the thumb zone: "Continue with Google" (primary, G
@@ -102,6 +104,8 @@ leaves the app as on any root. Every exit sets `welcome_seen = 1` first,
 then goes to `from ?? /decks`. Email opens 30 (`link`) above the welcome.
 
 ### 5.2 Sign-in (30) and code (31)
+
+> Layout amended by `2026-10-05-sign-in-flow-redesign-design.md`.
 
 - The **sign-in form** (a presentation widget used by 30 and by the layer):
   a mode line, "Continue with Google" (outline, G mark), an "or" divider,
@@ -120,6 +124,15 @@ then goes to `from ?? /decks`. Email opens 30 (`link`) above the welcome.
   started and shows "Signed in as {email}".
 - **Identity taken** (`IdentityTakenFailure`, #17): local has decks → the
   merge sheet (§5.3); empty → `beginSwitch(discard, targetHint: email)`.
+  For Google, the account just picked then signs in to the target at once
+  (the coordinator keeps its credential), so the layer's target sign-in
+  never asks twice; if that sign-in fails, the layer's target sign-in stays
+  to try again and a toast says why. For an email, the layer's target
+  sign-in sends that address's sign-in code itself, once, and opens on the
+  code: "Send code" is never asked twice (an in-memory request, so a
+  recovered switch never resends). Welcome is answered as soon as the
+  switch starts (owner 2026-10-08, after the device check of build 18 and
+  the login navigation review).
 - **Re-auth as another account** (`UnsentChangesFailure(n)`, P3b): a dialog
   "{n} changes on this phone aren't sent and will be lost." → the same
   command with `confirmedLoss: true`. `reauth` also offers "Continue without
@@ -140,17 +153,21 @@ takes two deliberate taps; the default stays merge (O4).
 
 Over the whole app while `Transitioning`/`Recovering` holds a Switch,
 SignOut, Delete or ClearToAnon (AnonRecovery stays silent: writes are
-allowed). `PopScope` swallows Back; the status line is a live region.
+allowed). `PopScope` keeps Back inside the layer: at its root, Back does what
+Cancel does while Cancel shows, and is swallowed otherwise (DEV-167); the
+status line is a live region.
 
 | Condition | Shows |
 |---|---|
 | running | `MxSpinner`, the step ("Sending your changes…", "Merging…", "Downloading your decks…", "Signing out…", "Deleting your account…"), "Nothing is lost if you close the app." |
 | `error` is a network failure | "No connection. Your data is safe on this phone." + Retry (`retry()`) |
 | SignOut stopped on unsent changes offline | the above + "Sign out now and lose {n} changes" (`signOut(discardUnsent: true)`) |
+| Switch (merge) stopped on rows the server refused (`UnsentChangesFailure`, DEV-191) | "{n} changes on this phone were refused by the server and can't be merged." + Retry + "Continue and lose {n} changes" (`dangerSoft`: `keepRejectedOnDevice()`, then `retry()`); Cancel at the top as before the target sign-in. A discard switch never stops here. |
 | `isAwaitingTargetSignIn` | the sign-in form (target line) then the code form, inside the layer's own `Navigator`; Google reuses the account already picked; Cancel → `cancelSwitch()` |
 | `Recovering.isStuck` | "Something went wrong while moving your account. Your data is safe on this phone." + Retry |
 
-Notices (`MergeNotDone`, `DeleteRefused`) are read at the app root:
+Notices (`MergeNotDone`, `DeleteRefused`) are read at the app root (one raised
+before the host listens, during `start()`, waits for it, DEV-202):
 `MergeNotDone` → snackbar "Couldn't merge. Your decks are still on this
 phone."; `DeleteRefused(LastAdmin)` → dialog "An admin must remain. Give
 another person the admin role first."; any other `DeleteRefused` → snackbar
@@ -186,6 +203,8 @@ P3b states and wiring are in §9.
 action as §5.5. The notice comes from the router as a slot (§9 B5).
 
 ## 6. Shape (Impeccable, 2026-09-30)
+
+> Layout amended by `2026-10-05-sign-in-flow-redesign-design.md`.
 
 Critiqued against `DESIGN.md` and the goldens of 23, 27 and 13; the rulings
 above already carry the outcome. Layout notes for the builder:

@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
@@ -159,7 +160,12 @@ void main() {
           tester,
           'goldens/card_list_trash_dialog_$theme.png',
         );
-        await tester.tap(find.text(_en.cardMoveToTrash));
+        await tester.tap(
+          find.descendant(
+            of: find.byType(MxDialog),
+            matching: find.text(_en.trashMoveConfirm),
+          ),
+        );
         await _settle(tester);
         await expectBoundaryGolden(
           tester,

@@ -164,9 +164,17 @@ there.
   for an admin, ADR-018) and the account RPCs (`me`, `account_claim_begin`,
   `account_merge`, `account_merge_ack`, `account_delete` for everyone,
   `role_list` and `role_set` for an admin, auth spec 2026-09-30). Every owned
-  row references `auth.users`, so deleting a user deletes their data.
+  row references `auth.users`, so deleting a user deletes their data. Every
+  RPC that reads or writes a user's data starts with
+  `private.require_current_profile()`: a deleted user's live JWT gets
+  `UNAUTHORIZED`, never a row-by-row rejection (DEV-192).
   Tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
+- A new synced entity type changes four functions in one migration:
+  `private.push_one` (its accepted list), `private.apply_operation` (upsert,
+  and delete unless the type is never deleted), `private.current_change` and
+  `public.sync_changes`. `tests/database/15_sync_entity_dispatch.sql` holds
+  their type sets equal and pins the list (DEV-199).
 - A new migration never edits one already pushed to the project.
 - The schema changes only through `migrations/`, never in the dashboard's SQL
   Editor or Table Editor: the migrations workflow fails on any other change.

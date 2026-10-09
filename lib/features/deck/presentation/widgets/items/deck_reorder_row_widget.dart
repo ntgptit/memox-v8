@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
-import 'package:memox/features/deck/presentation/widgets/support/deck_workload_line_widget.dart';
+import 'package:memox/features/deck/presentation/widgets/support/deck_tile_signs_widget.dart';
+import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 
 /// A deck in reorder mode, in the browse row's shape: one MxCard per deck
-/// (handoff 01, ruling M3-D2). Its drag handle takes the chevron's place
-/// (spec §6.1). The list around it gives TalkBack its move actions.
+/// with the same glyph and structure line as the browse row (handoff 01,
+/// ruling M3-D2; DEV-232). Its drag handle takes the chevron's place (spec
+/// §6.1). The list around it gives TalkBack its move actions.
 class DeckReorderRowWidget extends StatelessWidget {
   const DeckReorderRowWidget({
     super.key,
@@ -27,15 +30,16 @@ class DeckReorderRowWidget extends StatelessWidget {
     isFullBleed: true,
     child: MxListRow(
       title: tile.name,
-      leading: const MxIconTile(
-        icon: AppIcons.library,
-        size: MxIconTileSize.large,
+      // The meta slot, not the one-line subtitle: the structure line wraps
+      // between whole terms at large text, as the browse row's does
+      // (critique 2026-09-30).
+      meta: Text(
+        deckTileMeta(tile, context.l10n),
+        style: context.textStyles.rowSubtitle,
       ),
-      meta: DeckWorkloadLineWidget(
-        overdueCount: tile.overdueCount,
-        todayCount: tile.dueTodayCount,
-        newCount: tile.newCount,
-        cardCount: tile.cardCount,
+      leading: MxIconTile(
+        icon: deckTileGlyph(tile),
+        size: MxIconTileSize.large,
       ),
       trailing: ReorderableDragStartListener(
         index: index,
@@ -44,7 +48,6 @@ class DeckReorderRowWidget extends StatelessWidget {
           child: Icon(AppIcons.dragHandle),
         ),
       ),
-      hasDivider: false,
     ),
   );
 }

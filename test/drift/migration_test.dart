@@ -13,7 +13,9 @@ import 'generated/schema.dart';
 // records refused sync rows (SB-U1, sync status spec §4); v7 syncs cards (SB-S2); v8
 // syncs tags and card links (SB-S3); v9 syncs the account settings (SB-S5); v10 syncs reviews
 // and schedules (SB-S4); v11 keeps dismissed notes on the device (critique 2026-09-30); v12 adds
-// the account state, the account transition and the welcome flag (auth spec §4).
+// the account state, the account transition and the welcome flag (auth spec §4); v13 adds the
+// outbox payload and recreates the deck and card triggers (DEV-181); v14 indexes the outbox by
+// type and time for the push batch (DEV-205).
 
 /// A v1 database a person could have: two trees, learned and new cards, three
 /// ended sessions and one open in `guess`, and turns of every kind, the
@@ -92,10 +94,24 @@ const _v4Columns = {'server_version'};
 /// migrated row, checked by account_migration_test.dart, so left out here.
 const _v12Columns = {'welcome_seen'};
 
+/// The column v15 adds to `app_settings` (SQL log switch spec §3.1): its
+/// default on every migrated row, checked by
+/// sql_log_switch_migration_test.dart, so left out here.
+const _v15Columns = {'log_sql_statements'};
+
+/// The columns v16 adds to `app_settings` (study speech spec §4): their
+/// defaults on every migrated row, checked by the v15 → v16 test, so left
+/// out here.
+const _v16Columns = {'tts_language', 'tts_auto_play'};
+
 /// A row as text, its columns in name order, so two reads compare as sets.
 String _canonical(Map<String, Object?> row) => ([
   ...row.keys.where(
-    (column) => !_v4Columns.contains(column) && !_v12Columns.contains(column),
+    (column) =>
+        !_v4Columns.contains(column) &&
+        !_v12Columns.contains(column) &&
+        !_v15Columns.contains(column) &&
+        !_v16Columns.contains(column),
   ),
 ]..sort()).map((column) => '$column=${row[column]}').join('|');
 
@@ -119,70 +135,97 @@ void main() {
   late SchemaVerifier verifier;
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('v1 upgrades to the schema of v12', () async {
+  test('v1 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(1));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
   });
 
-  test('v2 upgrades to the schema of v12', () async {
+  test('v2 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(2));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
   });
 
-  test('v3 upgrades to the schema of v12', () async {
+  test('v3 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(3));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
   });
 
-  test('v4 upgrades to the schema of v12', () async {
+  test('v4 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(4));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
   });
 
-  test('v5 upgrades to the schema of v12', () async {
+  test('v5 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(5));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
   });
 
-  test('v6 upgrades to the schema of v12', () async {
+  test('v6 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(6));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
   });
 
-  test('v7 upgrades to the schema of v12', () async {
+  test('v7 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(7));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
   });
 
-  test('v8 upgrades to the schema of v12', () async {
+  test('v8 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(8));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
   });
 
-  test('v9 upgrades to the schema of v12', () async {
+  test('v9 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(9));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
   });
 
-  test('v10 upgrades to the schema of v12', () async {
+  test('v10 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(10));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
   });
 
-  test('v11 upgrades to the schema of v12', () async {
+  test('v11 upgrades to the schema of v16', () async {
     final db = AppDatabase(await verifier.startAt(11));
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 12);
+    await verifier.migrateAndValidate(db, 16);
+  });
+
+  test('v12 upgrades to the schema of v16', () async {
+    final db = AppDatabase(await verifier.startAt(12));
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 16);
+  });
+
+  test('v13 upgrades to the schema of v16', () async {
+    final db = AppDatabase(await verifier.startAt(13));
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 16);
+  });
+
+  test('v14 upgrades to the schema of v16', () async {
+    final db = AppDatabase(await verifier.startAt(14));
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 16);
+  });
+
+  test('v15 upgrades to the schema of v16 (study speech spec §4)', () async {
+    final db = AppDatabase(await verifier.startAt(15));
+    addTearDown(db.close);
+    await verifier.migrateAndValidate(db, 16);
+    final row = await db.select(db.appSettings).getSingle();
+    expect(row.ttsLanguage, 'en-US');
+    expect(row.ttsAutoPlay, 1);
   });
 
   test(
@@ -199,7 +242,7 @@ void main() {
       );
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 12);
+      await verifier.migrateAndValidate(db, 16);
 
       final queued = await db
           .customSelect(
@@ -216,11 +259,11 @@ void main() {
   );
 
   test(
-    'a new database has the schema of v10, the one an upgrade ends at',
+    'a new database has the schema of v16, the one an upgrade ends at',
     () async {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
-      await verifier.migrateAndValidate(db, 12);
+      await verifier.migrateAndValidate(db, 16);
     },
   );
 
@@ -238,7 +281,7 @@ void main() {
           table: _v1Values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 12);
+      await verifier.migrateAndValidate(db, 16);
     });
     tearDown(() => db.close());
 
@@ -301,7 +344,7 @@ void main() {
           table: _values(schema.rawDatabase.select('SELECT * FROM $table')),
       };
       db = AppDatabase(schema.newConnection());
-      await verifier.migrateAndValidate(db, 12);
+      await verifier.migrateAndValidate(db, 16);
     });
     tearDown(() => db.close());
 

@@ -44,4 +44,29 @@ void main() {
     );
     expect(glyphColor(tester, CardRemovableTagChipWidget), ink);
   });
+
+  // SW-REV-005: the chip's one TalkBack node keeps the tap that removes it.
+  libraryTest('a removable tag chip: TalkBack keeps its tap', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    var removed = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: CardRemovableTagChipWidget(
+          name: 'verb',
+          onRemove: () => removed++,
+        ),
+      ),
+    );
+    final node = tester.getSemantics(find.bySemanticsLabel(RegExp('verb')));
+    expect(node, isSemantics(hasTapAction: true));
+    tester.semantics.tap(find.semantics.byLabel(RegExp('verb')));
+    await tester.pump();
+    expect(removed, 1);
+    handle.dispose();
+  });
 }

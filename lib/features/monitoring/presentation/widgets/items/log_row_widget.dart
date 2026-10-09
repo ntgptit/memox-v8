@@ -19,14 +19,12 @@ class LogRowWidget extends StatelessWidget {
     required this.log,
     required this.now,
     required this.onTap,
-    this.hasDivider = true,
     this.statusShownByFilter,
   });
 
   final LogSummaryEntity log;
   final DateTime now;
   final VoidCallback onTap;
-  final bool hasDivider;
 
   /// The one status the Status filter holds, if it holds one: a row with it
   /// leaves it to the chip and the header (critique 2026-09-30 part 3b).
@@ -76,7 +74,6 @@ class LogRowWidget extends StatelessWidget {
           ],
         ),
         onTap: onTap,
-        hasDivider: hasDivider,
       ),
     );
   }

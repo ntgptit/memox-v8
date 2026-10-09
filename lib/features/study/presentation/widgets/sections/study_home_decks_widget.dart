@@ -4,6 +4,7 @@ import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
@@ -42,14 +43,10 @@ class StudyHomeDecksWidget extends StatelessWidget {
         ),
         MxCard(
           isFullBleed: true,
-          child: Column(
+          child: MxDividedColumn(
             children: [
-              for (final (index, deck) in decks.indexed)
-                _Row(
-                  deck: deck,
-                  hasDivider: index < decks.length - 1,
-                  onOpen: () => onOpenDeck(deck.deckId),
-                ),
+              for (final deck in decks)
+                _Row(deck: deck, onOpen: () => onOpenDeck(deck.deckId)),
             ],
           ),
         ),
@@ -59,14 +56,9 @@ class StudyHomeDecksWidget extends StatelessWidget {
 }
 
 class _Row extends StatelessWidget {
-  const _Row({
-    required this.deck,
-    required this.hasDivider,
-    required this.onOpen,
-  });
+  const _Row({required this.deck, required this.onOpen});
 
   final StudyHomeDeck deck;
-  final bool hasDivider;
   final VoidCallback onOpen;
 
   @override
@@ -98,7 +90,6 @@ class _Row extends StatelessWidget {
       // dimmed and read as a disabled button, not silently inert (S4).
       onTap: onOpen,
       isEnabled: deck.canStudy,
-      hasDivider: hasDivider,
     );
   }
 }

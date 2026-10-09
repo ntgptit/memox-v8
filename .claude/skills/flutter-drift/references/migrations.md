@@ -49,12 +49,68 @@ run, and it cannot be regenerated once the `.drift` files have moved on.
   oldest supported and the current one must have a snapshot.
 - **Never delete user data to make a migration simpler.** If the migration is
   hard, the migration is hard.
+- **A dead column goes with its table's next rebuild, never in a rebuild of its
+  own.** Dropping a column is the twelve-step rebuild of the whole table, paid
+  by every installed device, for no behaviour. A column nobody reads is marked
+  retired or diagnostic in `schema.md` and here, kept nullable or defaulted,
+  and dropped the day that table is rebuilt for another reason. Today:
+  `owner_id` on `deck`, `tags` and `delete_batches` (retired, always `NULL`),
+  `sync_outbox.attempts` and `server_version` on `tags` and `delete_batches`
+  (written, never read) (DEV-198).
 - **Never call current application queries inside a migration.** The generated
   API always expects the *latest* schema; running it against a half-upgraded
   database throws or, worse, reads a column that does not exist yet. Use
   `customStatement` / raw SQL for data movement inside a step.
 - **Seed data only in `onCreate`** (or gated on `details.wasCreated`). Seeding in
-  `onUpgrade` duplicates rows on every existing device.
+  `onUpgrade` duplicates rows on every existing device. The one exception is
+  queueing rows a device already holds for sync (the `seedOutboxSql` steps);
+  from v13 on such a seed ends in `ON CONFLICT (entity_type, entity_id) DO
+  NOTHING`, so a row already queued is never a reason for the step to fail.
+- **An upgrade is one transaction.** `onUpgrade` wraps
+  `VersionedSchema.runMigrationSteps` in `transaction(...)` (DEV-194): Drift
+  writes `user_version` only after a whole step, so a step stopped halfway (the
+  app killed, a statement refused) would otherwise leave the new version's
+  tables, columns and seeded rows under the old version, and every later open
+  would fail on them. A step therefore never opens a transaction of its own
+  beyond the savepoint `TableMigration` takes, never commits, and never relies
+  on `PRAGMA foreign_keys` inside it (a no-op in a transaction; foreign keys
+  are off until `beforeOpen`). `test/drift/interrupted_migration_test.dart`
+  is the proof: it plants the cause of a mid-step failure, opens, and expects
+  the old version whole.
+- **An upgrade keeps the sync state whole.** The outbox (every entry with its
+  `op_id`, `created_at` and `attempts`), the acknowledged `server_version` of
+  every row, `sync_rejection` and `sync_state` come out of an upgrade exactly
+  as they went in, and the outbox gains no entry (a step never seeds rows the
+  server already acknowledged). `test/drift/sync_state_migration_test.dart`
+  (DEV-228) holds that fixture at the last released version and upgrades it
+  to the current one: every new step runs through it, and a step that
+  rebuilds a table (`TableMigration` keeps `server_version` only if the
+  column is in its schema), updates a synced table (the sync triggers queue
+  the rows) or seeds the outbox again fails there. At every release, raise
+  `_releasedVersion` in that file to the version shipped.
+
+## Wire evolution
+
+A Drift migration ships with a build; the server and the other devices may be
+ahead of it or behind it for weeks. The sync wire (the `row` of a push
+operation and of a pulled change) therefore evolves by addition only, per
+`docs/superpowers/specs/2026-09-27-server-sync-design.md` §4.4:
+
+- A new key is nullable or has a default; absent means the old behaviour (the
+  column's default, or unchanged for a collection key such as `tagIds`).
+- A key is never renamed or dropped without the old key kept for at least one
+  release.
+- The adapter reads a new key `as T?` with its default, never `as T`; only
+  the contract keys the spec lists are read `as T`.
+- A new entity type is ignored by older builds; `pull_entity_types` brings it
+  down once the build that knows it runs.
+- A slice that changes the wire adds one pgTAP test: a push in the previous
+  slice's wire is still `applied`.
+
+So a column added by a migration is a new optional key on the wire, with its
+`DEFAULT` in the `.drift` file and the same default in the adapter; and a
+`NOT NULL` column without a default is a new contract key only when every
+build that pushes already writes it.
 
 ## Changing a column safely
 

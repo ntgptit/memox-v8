@@ -119,12 +119,20 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('glass: a backdrop blur behind the chrome surface', (
-    tester,
-  ) async {
+  testWidgets('the bar is the page surface with the ghost edge, no backdrop '
+      'blur: nothing scrolls under it (DEV-302)', (tester) async {
     await pumpMx(tester, _nav());
 
-    expect(find.byType(BackdropFilter), findsOneWidget);
+    expect(find.byType(BackdropFilter), findsNothing);
+    final bar = tester.widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byType(MxBottomNav),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    expect((bar.decoration as BoxDecoration).color, scheme.surface);
   });
 
   test('selectedIndex outside the destinations is rejected', () {

@@ -2,12 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
+import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/network/di/network_providers.dart';
+import 'package:memox/core/network/supabase_config.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
+import 'package:memox/features/settings/domain/usecases/reset_app_settings_use_case.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
@@ -17,26 +24,33 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/features/settings/presentation/widgets/sections/settings_skeleton_widget.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
-import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/settings_fakes.dart';
+import '../../../support/monitoring_fakes.dart';
+import '../../../support/sync_fakes.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
 const _valueKey = ValueKey('mx-stepper-value');
 
 SettingsScreen _screen({
+  VoidCallback? onOpenStudyDefaults,
+  VoidCallback? onOpenAdmin,
+  Widget? accountRow,
   VoidCallback? onOpenTheme,
   VoidCallback? onOpenLanguage,
   VoidCallback? onOpenReminder,
-  VoidCallback? onAppOptionsReset,
+  ResetAppOptions? resetAppOptions,
 }) => SettingsScreen(
+  onOpenStudyDefaults: onOpenStudyDefaults ?? () {},
   onOpenTheme: onOpenTheme ?? () {},
   onOpenLanguage: onOpenLanguage ?? () {},
   onOpenReminder: onOpenReminder ?? () {},
-  onAppOptionsReset: onAppOptionsReset ?? () {},
+  resetAppOptions: resetAppOptions ?? () async => const Ok(null),
   onOpenSync: () {},
+  onOpenAdmin: onOpenAdmin ?? () {},
+  accountRow: accountRow,
 );
 
 Future<int> _storedLimit(LibraryEnv env) async => (await SettingsRepositoryImpl(
@@ -44,21 +58,61 @@ Future<int> _storedLimit(LibraryEnv env) async => (await SettingsRepositoryImpl(
 ).watchAppSettings().first).studyDefaults.cardLimit;
 
 void main() {
-  libraryTest('the three sections show the stored values, the reminder row '
-      'included', (tester, env) async {
+  libraryTest('the hub names every group and value: Study summary, Theme, '
+      'reminder, Reset (settings hub spec §5.1)', (tester, env) async {
     await pumpLibraryScreen(tester, env, _screen());
 
     // Section titles show in capitals; their semantics keep the words.
-    expect(find.text(_en.settingsStudyDefaults.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.settingsStudySection.toUpperCase()), findsOneWidget);
     expect(find.text(_en.settingsApp.toUpperCase()), findsOneWidget);
-    expect(find.text(_en.settingsResetRow), findsOneWidget);
+    expect(find.text(_en.settingsReset.toUpperCase()), findsOneWidget);
     expect(
-      find.descendant(of: find.byKey(_valueKey), matching: find.text('20')),
+      find.text(
+        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
+      ),
       findsOneWidget,
     );
     expect(find.text(_en.settingsThemeFollowsSystem), findsOneWidget);
-    expect(find.text(_en.settingsReminder), findsOneWidget);
     expect(find.text(_en.settingsReminderOff), findsOneWidget);
+    expect(find.text(_en.settingsResetRow), findsOneWidget);
+    expect(
+      find.byKey(_valueKey),
+      findsNothing,
+      reason: 'no stepper on the hub',
+    );
+    // The summary may wrap, never clip (review focus 4).
+    final summary = tester.widget<Text>(
+      find.text(
+        _en.settingsStudyDefaultsSummary(20, _en.settingsOrderCreated, 'on'),
+      ),
+    );
+    expect(summary.maxLines, isNull);
+  });
+
+  libraryTest('the Study defaults row opens screen 23a and reflects a '
+      'stored change (D8)', (tester, env) async {
+    await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db)
+          .saveStudyDefaults(cardLimit: 35, newCardOrder: NewCardOrder.random),
+    );
+    await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db).setSpeechAutoPlay(isOn: false),
+    );
+    var opened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(onOpenStudyDefaults: () => opened++),
+    );
+
+    expect(
+      find.text(
+        _en.settingsStudyDefaultsSummary(35, _en.settingsOrderRandom, 'off'),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.text(_en.settingsStudyDefaults));
+    expect(opened, 1);
   });
 
   libraryTest('the reminder row names the time when on, and opens screen 24', (
@@ -80,14 +134,20 @@ void main() {
     expect(opened, 1);
   });
 
-  libraryTest('reset: onAppOptionsReset runs once on success, never on '
-      'failure', (tester, env) async {
+  libraryTest('reset runs the reset app/ composed; a failure says so and '
+      'the next confirm runs it again', (tester, env) async {
     final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db));
+    final reset = ResetAppSettingsUseCase(store);
     var resets = 0;
     await pumpLibraryScreen(
       tester,
       env,
-      _screen(onAppOptionsReset: () => resets++),
+      _screen(
+        resetAppOptions: () {
+          resets++;
+          return reset();
+        },
+      ),
       overrides: [settingsRepositoryProvider.overrideWithValue(store)],
     );
 
@@ -101,76 +161,17 @@ void main() {
     );
     await tester.tap(find.text(_en.settingsResetConfirm));
     await tester.pumpAndSettle();
-    expect(resets, 0);
+    expect(resets, 1);
+    expect(find.text(_en.settingsResetFailed), findsOneWidget);
 
     store.isFailing = false;
-    // The failure's toast sits over the bottom row: bring the row above it.
-    await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
-    await tester.pumpAndSettle();
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
     await tester.tap(find.text(_en.settingsResetConfirm));
     await tester.pumpAndSettle();
-    expect(resets, 1);
+    expect(resets, 2);
     expect(find.text(_en.settingsResetBody), findsNothing, reason: 'closed');
-  });
-
-  libraryTest('steps settle into one save, then "Saved" (D1)', (
-    tester,
-    env,
-  ) async {
-    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db));
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
-    );
-    for (var i = 0; i < 3; i++) {
-      await tester.tap(find.byTooltip(_en.settingsMoreCards));
-      await tester.pump();
-    }
-    expect(store.writes, 0);
-
-    await tester.pump(cardLimitSettle);
-    await tester.pumpAndSettle();
-
-    expect(store.writes, 1);
-    expect(find.text(_en.settingsSaved), findsOneWidget);
-    expect(
-      find.descendant(of: find.byKey(_valueKey), matching: find.text('23')),
-      findsOneWidget,
-    );
-  });
-
-  libraryTest('while the limit writes, the stepper spins and the order '
-      'stays usable (saving)', (tester, env) async {
-    final gate = Completer<void>();
-    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
-      ..hold = gate;
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
-    );
-    await tester.tap(find.byTooltip(_en.settingsMoreCards));
-    await tester.pump(cardLimitSettle);
-    await tester.pump();
-
-    expect(
-      find.descendant(
-        of: find.byKey(_valueKey),
-        matching: find.byType(MxSpinner),
-      ),
-      findsOneWidget,
-    );
-    expect(find.text(_en.settingsSaved), findsNothing);
-
-    store.hold = null;
-    gate.complete();
-    await tester.pumpAndSettle();
-    expect(find.text(_en.settingsSaved), findsOneWidget);
+    expect(find.text(_en.settingsResetDone), findsOneWidget);
   });
 
   libraryTest('before the first read the screen shows skeleton rows and no '
@@ -184,7 +185,8 @@ void main() {
       overrides: [appSettingsProvider.overrideWith((ref) => never.stream)],
     );
 
-    // Shaped as its sections (critique 2026-09-30 part 3d-2, E12).
+    // Shaped as its sections (critique 2026-09-30 part 3d-2, E12): without
+    // an account slot, no Account & sync card (audit 2026-10-07, P2-4).
     expect(find.byType(SettingsSkeletonWidget), findsOneWidget);
     expect(
       find.descendant(
@@ -193,59 +195,6 @@ void main() {
       ),
       findsNWidgets(3),
     );
-    expect(find.byKey(_valueKey), findsNothing);
-  });
-
-  libraryTest('a typed 250 is refused under the stepper and saves nothing '
-      '(E1)', (tester, env) async {
-    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db));
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
-    );
-    await tester.tap(find.byKey(_valueKey));
-    await tester.pump();
-    await tester.enterText(find.byType(TextField), '250');
-    await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pumpAndSettle();
-
-    expect(
-      find.text(
-        _en.settingsCardLimitInvalid(
-          StudyOptions.minCardLimit,
-          StudyOptions.maxCardLimit,
-        ),
-      ),
-      findsOneWidget,
-    );
-    expect(store.writes, 0);
-  });
-
-  libraryTest('a failed save names the kept value and Retry saves it (E2)', (
-    tester,
-    env,
-  ) async {
-    final store = FlakySettingsRepository(SettingsRepositoryImpl(env.db))
-      ..isFailing = true;
-    await pumpLibraryScreen(
-      tester,
-      env,
-      _screen(),
-      overrides: [settingsRepositoryProvider.overrideWithValue(store)],
-    );
-    await tester.tap(find.byTooltip(_en.settingsMoreCards));
-    await tester.pump(cardLimitSettle);
-    await tester.pumpAndSettle();
-
-    expect(find.text(_en.settingsCardLimitSaveFailed(20)), findsOneWidget);
-    expect(find.textContaining('memox.sqlite'), findsNothing);
-
-    store.isFailing = false;
-    await tester.tap(find.text(_en.commonRetry));
-    await tester.pumpAndSettle();
-    expect(await tester.runAsync(() => _storedLimit(env)), 21);
   });
 
   libraryTest('the Theme row names a fixed choice by its name (§5.2)', (
@@ -268,13 +217,15 @@ void main() {
     await tester.runAsync(() async {
       await repository.setTheme(theme: ThemeChoice.dark);
       await repository.saveStudyDefaults(
-        options: const StudyOptions(
-          cardLimit: 50,
-          newCardOrder: NewCardOrder.random,
-        ),
+        cardLimit: 50,
+        newCardOrder: NewCardOrder.random,
       );
     });
-    await pumpLibraryScreen(tester, env, _screen());
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(resetAppOptions: ResetAppSettingsUseCase(repository).call),
+    );
 
     await tester.tap(find.text(_en.settingsResetRow));
     await tester.pumpAndSettle();
@@ -336,5 +287,155 @@ void main() {
     await tester.tap(find.text(_en.settingsLanguage));
 
     expect(opened, ['theme', 'language']);
+  });
+
+  libraryTest('the account row and the Sync row share one section, the '
+      'banner above its overline (settings hub spec D7)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      SettingsScreen(
+        onOpenStudyDefaults: () {},
+        onOpenAdmin: () {},
+        onOpenTheme: () {},
+        onOpenLanguage: () {},
+        onOpenReminder: () {},
+        resetAppOptions: () async => const Ok(null),
+        onOpenSync: () {},
+        accountBanner: const Text('banner'),
+        accountRow: const Text('account row'),
+      ),
+      overrides: syncOverrides(const SyncStatus()),
+    );
+
+    final overline = find.text(_en.settingsAccountSync.toUpperCase());
+    expect(overline, findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text('banner')).dy,
+      lessThan(tester.getTopLeft(overline).dy),
+    );
+    expect(
+      tester.getTopLeft(find.text('account row')).dy,
+      lessThan(tester.getTopLeft(find.text(_en.settingsSync)).dy),
+    );
+  });
+
+  // Settings hub spec D4; users spec U2; ADR-018 §7.
+
+  libraryTest('a non-admin sees no Admin section at all', (tester, env) async {
+    await pumpLibraryScreen(tester, env, _screen());
+
+    expect(find.text(_en.settingsAdmin.toUpperCase()), findsNothing);
+    expect(find.text(_en.settingsAdminTools), findsNothing);
+  });
+
+  libraryTest('an admin sees one Admin tools row, and it opens screen 23b', (
+    tester,
+    env,
+  ) async {
+    var opened = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(onOpenAdmin: () => opened++),
+      overrides: [isAdminProvider.overrideWithValue(true)],
+    );
+
+    expect(find.text(_en.settingsAdmin.toUpperCase()), findsOneWidget);
+    expect(find.text(_en.settingsAdminToolsHint), findsOneWidget);
+    await tester.tap(find.text(_en.settingsAdminTools));
+    expect(opened, 1);
+  });
+
+  // Review focus: a token refresh that adds the admin role while the hub
+  // is open.
+  libraryTest('an account confirmed as admin shows the row without a '
+      'restart, and a lost confirmation hides it', (tester, env) async {
+    final states = StreamController<AuthState>();
+    addTearDown(states.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(),
+      overrides: [
+        supabaseConfigProvider.overrideWithValue(
+          const SupabaseConfig(
+            url: 'https://x.supabase.co',
+            publishableKey: 'key',
+          ),
+        ),
+        authStateProvider.overrideWith((ref) => states.stream),
+      ],
+    );
+    states.add(const Ready(userAccount));
+    await tester.pump();
+    expect(find.text(_en.settingsAdminTools), findsNothing);
+
+    states.add(const Ready(adminAccount));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text(_en.settingsAdminTools), findsOneWidget);
+
+    states.add(const Validating(null));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text(_en.settingsAdminTools), findsNothing);
+  });
+
+  libraryTest('the hub\'s skeleton draws the Account & sync card when the '
+      'build has an account (audit 2026-10-07, P2-4)', (tester, env) async {
+    final never = StreamController<AppSettingsEntity>();
+    addTearDown(never.close);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _screen(accountRow: const SizedBox.shrink()),
+      overrides: [appSettingsProvider.overrideWith((ref) => never.stream)],
+    );
+
+    expect(
+      find.descendant(
+        of: find.byType(SettingsSkeletonWidget),
+        matching: find.byType(MxCard),
+      ),
+      findsNWidgets(4),
+    );
+  });
+
+  libraryTest('a card limit of one reads "1 card" (review 2026-10-07)', (
+    tester,
+    env,
+  ) async {
+    await tester.runAsync(
+      () => SettingsRepositoryImpl(env.db)
+          .saveStudyDefaults(cardLimit: 1, newCardOrder: NewCardOrder.created),
+    );
+    await pumpLibraryScreen(tester, env, _screen());
+
+    expect(
+      find.text(
+        _en.settingsStudyDefaultsSummary(1, _en.settingsOrderCreated, 'on'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.textContaining('1 cards'), findsNothing);
+    expect(find.textContaining('Read aloud on'), findsOneWidget);
+  });
+
+  libraryTest('in Vietnamese at 360×800 the hub still fits and the Study '
+      'summary takes two lines at most (spec §1)', (tester, env) async {
+    final vi = lookupAppLocalizations(const Locale('vi'));
+    await pumpLibraryScreen(tester, env, _screen(), locale: const Locale('vi'));
+
+    final summary = find.text(
+      vi.settingsStudyDefaultsSummary(20, vi.settingsOrderCreated, 'on'),
+    );
+    expect(summary, findsOneWidget);
+    // rowDescription is 14 px at 1.5 line height: two lines are 42 px.
+    expect(tester.getSize(summary).height, lessThanOrEqualTo(43));
+    expect(
+      tester.getBottomLeft(find.text(vi.settingsResetRow)).dy,
+      lessThanOrEqualTo(800),
+    );
   });
 }

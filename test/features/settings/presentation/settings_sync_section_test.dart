@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,17 +13,21 @@ import '../../../support/library_harness.dart';
 import '../../../support/sync_fakes.dart';
 
 SettingsScreen _screen({void Function()? onOpenSync}) => SettingsScreen(
+  onOpenStudyDefaults: () {},
+  onOpenAdmin: () {},
   onOpenTheme: () {},
   onOpenLanguage: () {},
   onOpenReminder: () {},
-  onAppOptionsReset: () {},
+  resetAppOptions: () async => const Ok(null),
   onOpenSync: onOpenSync ?? () {},
 );
 
 void main() {
-  libraryTest('no Sync section without Supabase', (tester, env) async {
+  libraryTest('no Account & sync section without Supabase (settings hub '
+      'spec §5.1)', (tester, env) async {
     await pumpLibraryScreen(tester, env, _screen());
-    await tester.scrollUntilVisible(find.text('Reset app options'), 200);
+
+    expect(find.text('ACCOUNT & SYNC'), findsNothing);
     expect(find.text('Sync'), findsNothing);
   });
 

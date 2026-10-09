@@ -1,10 +1,19 @@
+import 'dart:collection';
+
 import 'package:memox/core/sync/sync_api.dart';
 import 'package:memox/core/sync/sync_models.dart';
 
 /// An in-memory server with the wire semantics the coordinator relies on:
 /// idempotent op ids, one version per write, tombstones, rejections by rule.
+/// Deletes and upserts follow the Trash rules of the migrations (DEV-181,
+/// DEV-184): a purge tombstones a row only while it is as the device last
+/// saw it (the version in the delete's row), and a tombstone is final.
 class FakeSyncServer implements SyncApi {
   final _rows = <String, SyncChangeModel>{};
+
+  /// The same rows by version, so a page is a range read whatever the size
+  /// of the data set (DEV-206's bulk case).
+  final _byVersion = SplayTreeMap<int, SyncChangeModel>();
   final _applied = <String, int>{};
   var _version = 0;
   var pushCalls = 0;
@@ -23,17 +32,33 @@ class FakeSyncServer implements SyncApi {
   /// cursor: simulates the network dropping in the middle of a pull.
   int? failChangesAfter;
 
+  /// Runs after push has recorded every result, before the response goes
+  /// out: throwing here is the server's commit with the response lost on
+  /// the way back (DEV-225).
+  Future<void> Function()? afterPushCommit;
+
+  /// Runs as `changes` is asked for a page, with the cursor asked for: a
+  /// test can look at what the device did with the pages before it.
+  Future<void> Function(int since)? beforeChanges;
+
   SyncChangeModel? row(String type, String id) => _rows['$type/$id'];
 
   void seed(String type, String id, Map<String, Object?>? row) {
+    final key = '$type/$id';
+    final previous = _rows[key];
+    if (previous != null) {
+      _byVersion.remove(previous.serverVersion);
+    }
     _version++;
-    _rows['$type/$id'] = SyncChangeModel(
+    final change = SyncChangeModel(
       entityType: type,
       entityId: id,
       serverVersion: _version,
       isDeleted: row == null,
       row: row,
     );
+    _rows[key] = change;
+    _byVersion[_version] = change;
   }
 
   @override
@@ -49,7 +74,7 @@ class FakeSyncServer implements SyncApi {
         results.add(_applied_(op.opId, already));
         continue;
       }
-      final rejection = rejectNext.remove(key);
+      final rejection = rejectNext.remove(key) ?? _refusal(op);
       if (rejection != null) {
         results.add(
           OperationResultModel(
@@ -66,22 +91,48 @@ class FakeSyncServer implements SyncApi {
       _applied[op.opId] = _version;
       results.add(_applied_(op.opId, _version));
     }
+    await afterPushCommit?.call();
     return PushResponseModel(results: results);
+  }
+
+  /// The code the migrations' rules refuse [op] with, or null.
+  String? _refusal(SyncOperationModel op) {
+    final existing = _rows['${op.entityType}/${op.entityId}'];
+    if (existing == null) {
+      return null;
+    }
+    if (op.op == 'upsert') {
+      return existing.isDeleted ? 'ENTITY_TOMBSTONED' : null;
+    }
+    if (existing.isDeleted) {
+      return null;
+    }
+    // A purge carries the version the device last saw; a row changed on
+    // this server since (restored elsewhere) is not the device's to purge.
+    final seen = op.row?['serverVersion'] as int?;
+    if (seen == null || seen == existing.serverVersion) {
+      return null;
+    }
+    return 'ENTITY_NOT_IN_TRASH';
   }
 
   @override
   Future<ChangesResponseModel> changes(int since, int limit) async {
+    await beforeChanges?.call(since);
     final failAfter = failChangesAfter;
     if (failAfter != null && since >= failAfter) {
       throw StateError('network dropped');
     }
-    final sorted = _rows.values.where((c) => c.serverVersion > since).toList()
-      ..sort((a, b) => a.serverVersion.compareTo(b.serverVersion));
-    final page = sorted.take(limit).toList();
+    final page = <SyncChangeModel>[];
+    var key = _byVersion.firstKeyAfter(since);
+    while (key != null && page.length < limit) {
+      page.add(_byVersion[key]!);
+      key = _byVersion.firstKeyAfter(key);
+    }
     return ChangesResponseModel(
       changes: page,
       nextSince: page.isEmpty ? since : page.last.serverVersion,
-      hasMore: sorted.length > limit,
+      hasMore: key != null,
     );
   }
 

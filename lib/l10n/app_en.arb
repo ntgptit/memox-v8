@@ -40,6 +40,34 @@
   "@commonRetry": {
     "description": "Generic retry action after a failure."
   },
+  "startupDatabaseErrorTitle": "Couldn't open your data",
+  "@startupDatabaseErrorTitle": {
+    "description": "Recovery screen title when the database does not open at start (DEV-195)."
+  },
+  "startupDatabaseErrorBody": "Nothing was deleted. Try again; if it keeps failing, send a report so it can be looked into.",
+  "@startupDatabaseErrorBody": {
+    "description": "Recovery screen body; says first that nothing was deleted, then the two actions."
+  },
+  "startupDatabaseMigrationHint": "The update of your data from version {from} to {to} stopped before it finished. Nothing was changed; Retry runs it again.",
+  "@startupDatabaseMigrationHint": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      }
+    },
+    "description": "Guidance line on the recovery screen when the open stopped inside a schema migration step (DEV-194: a stopped step is rolled back)."
+  },
+  "startupSendReport": "Send report",
+  "@startupSendReport": {
+    "description": "Recovery screen action that ships the log buffer, where the open's error was written."
+  },
+  "startupReportQueued": "Report queued; it goes up with the logs.",
+  "@startupReportQueued": {
+    "description": "Confirmation after Send report; the logs ship once a session exists."
+  },
   "commonDismissNote": "Hide this note",
   "@commonDismissNote": {
     "description": "The close button of a one-time note that can be hidden for good (critique 2026-09-30)."
@@ -60,9 +88,9 @@
   "@libraryEmptyTitle": {
     "description": "First-run empty state title: the Library has no deck."
   },
-  "libraryEmptyBody": "A deck groups the sub-decks that hold your cards. Create one, or copy a starter deck to begin with content.",
+  "libraryEmptyBody": "Organize your cards into decks. Create your own or start with a ready-made collection.",
   "@libraryEmptyBody": {
-    "description": "First-run empty state body."
+    "description": "First-run empty state body, action-first (spec 2026-10-08 library empty state, R4)."
   },
   "libraryBrowseStarterDecks": "Browse starter decks",
   "@libraryBrowseStarterDecks": {
@@ -630,6 +658,10 @@
   "cardMoveToTrash": "Move to Trash",
   "@cardMoveToTrash": {
     "description": "The Move to Trash dialog's confirm (kit 07, 09)."
+  },
+  "trashMoveConfirm": "Move",
+  "@trashMoveConfirm": {
+    "description": "Move-to-Trash dialogs (card, deck): the confirm (DEV-179: the title names the object, so the confirm is the verb alone). The Short Label Rule in DESIGN.md: it must fit its half of the footer pair."
   },
   "cardTrashedToast": "“{front}” moved to Trash",
   "@cardTrashedToast": {
@@ -1377,7 +1409,7 @@
         "type": "String"
       }
     },
-    "description": "Screen 06: a card row's meta line; ago is a trashDeleted* phrase."
+    "description": "Screen 06: a card row's meta line; ago is a commonAgo* phrase (RelativeTime.ago)."
   },
   "trashDeckMeta": "Deck · {subDeckCount, plural, =1{1 sub-deck} other{{subDeckCount} sub-decks}} · {cardCount, plural, =1{1 card} other{{cardCount} cards}} · deleted {ago}",
   "@trashDeckMeta": {
@@ -1392,38 +1424,56 @@
         "type": "String"
       }
     },
-    "description": "Screen 06: a deck row's meta line; ago is a trashDeleted* phrase."
+    "description": "Screen 06: a deck row's meta line; ago is a commonAgo* phrase (RelativeTime.ago)."
   },
-  "trashDeletedMinutes": "{count, plural, =0{just now} =1{1 minute ago} other{{count} minutes ago}}",
-  "@trashDeletedMinutes": {
+  "commonAgoMinutes": "{count, plural, =0{just now} =1{1 minute ago} other{{count} minutes ago}}",
+  "@commonAgoMinutes": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Screen 06: when an entry was deleted, under an hour ago."
+    "description": "How long ago, under an hour (Trash, card history)."
   },
-  "trashDeletedHours": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
-  "@trashDeletedHours": {
+  "commonAgoHours": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@commonAgoHours": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Screen 06: when an entry was deleted, under a day ago."
+    "description": "How long ago, under a day."
   },
-  "trashDeletedYesterday": "yesterday",
-  "@trashDeletedYesterday": {
-    "description": "Screen 06: when an entry was deleted, a day ago."
+  "commonAgoYesterday": "yesterday",
+  "@commonAgoYesterday": {
+    "description": "How long ago, one day."
   },
-  "trashDeletedDays": "{count} days ago",
-  "@trashDeletedDays": {
+  "commonAgoDays": "{count} days ago",
+  "@commonAgoDays": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Screen 06: when an entry was deleted, two days ago or more."
+    "description": "How long ago, two to 29 days."
+  },
+  "commonAgoMonths": "{count, plural, =1{1 month ago} other{{count} months ago}}",
+  "@commonAgoMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "How long ago, 30 days to a year, in 30-day months."
+  },
+  "commonAgoYears": "{count, plural, =1{1 year ago} other{{count} years ago}}",
+  "@commonAgoYears": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "How long ago, a year or more."
   },
   "trashWasIn": "Was in {path}",
   "@trashWasIn": {
@@ -1655,7 +1705,7 @@
     },
     "description": "Screen 06: the list header while decks are selected; the title states how many are selected (critique 2026-09-30 part 3b)."
   },
-  "trashSelectionClose": "Clear selection",
+  "trashSelectionClose": "Close selection",
   "@trashSelectionClose": {
     "description": "Screen 06: the close control while selecting."
   },
@@ -1712,14 +1762,9 @@
   "@trashPurgeKeep": {
     "description": "Screen 06 purge dialog: the safe choice, focused by default (BR-TRASH-011)."
   },
-  "trashPurgeConfirm": "Delete {count}",
+  "trashPurgeConfirm": "Delete",
   "@trashPurgeConfirm": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen 06 purge dialog: the destructive confirm."
+    "description": "Screen 06 purge dialog: the destructive confirm (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "trashPurgedCards": "{count, plural, =1{1 card deleted permanently} other{{count} cards deleted permanently}}",
   "@trashPurgedCards": {
@@ -2299,14 +2344,9 @@
     },
     "description": "Screen handoff 02 (library alignment phase D): resetSwitchTo."
   },
-  "resetConfirm": "Reset and start cycle {cycle}",
+  "resetConfirm": "Reset",
   "@resetConfirm": {
-    "placeholders": {
-      "cycle": {
-        "type": "int"
-      }
-    },
-    "description": "Screen handoff 02 (library alignment phase D): resetConfirm."
+    "description": "Screen handoff 02 (library alignment phase D): resetConfirm. The intro names the cycle it starts, so the confirm is the verb alone (DEV-179)."
   },
   "resetDoneToast": "Cycle {cycle} started · {count, plural, =1{1 card is new again} other{{count} cards are new again}}",
   "@resetDoneToast": {
@@ -2542,10 +2582,6 @@
   "@galleryAnExampleSentence": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
-  "galleryTheMeaning": "The meaning",
-  "@galleryTheMeaning": {
-    "description": "Debug gallery: sample copy in the component showcase."
-  },
   "galleryTheTerm": "The term",
   "@galleryTheTerm": {
     "description": "Debug gallery: sample copy in the component showcase."
@@ -2610,7 +2646,7 @@
   "@galleryFOverlaysFeedback": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
-  "galleryMoveToTrash": "Move to Trash",
+  "galleryMoveToTrash": "Move",
   "@galleryMoveToTrash": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
@@ -2866,6 +2902,14 @@
   "@gallerySelectedCard": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "gallerySelectableRow": "Selectable card row",
+  "@gallerySelectableRow": {
+    "description": "Gallery: the shared card row at rest."
+  },
+  "gallerySelectableRowPicked": "Picked while selecting",
+  "@gallerySelectableRowPicked": {
+    "description": "Gallery: the shared card row ticked."
+  },
   "galleryKanjiN5": "Kanji N5",
   "@galleryKanjiN5": {
     "description": "Debug gallery: sample copy in the component showcase."
@@ -3107,9 +3151,9 @@
   "@studyEntryReasonTooFewPairs": {
     "description": "Screen handoff 14 (FE-A6): why Match is not available (BR-MODE-009)."
   },
-  "studyEntryReasonTooFewMeanings": "Needs five different meanings among the due cards",
+  "studyEntryReasonTooFewMeanings": "Needs five different meanings among learned cards",
   "@studyEntryReasonTooFewMeanings": {
-    "description": "Screen handoff 14 (FE-A6): why Guess is not available (BR-MODE-009)."
+    "description": "Screen handoff 14 (FE-A6): why Guess is not available (BR-MODE-009). Its options come from the learned cards of the whole tree (BR-STUDY-038), not the due cards."
   },
   "studyEntryDeckGone": "This deck no longer exists",
   "@studyEntryDeckGone": {
@@ -3165,7 +3209,7 @@
     },
     "description": "Screen handoff 14 (FE-A6 P2): footer caption under Review."
   },
-  "studyEntryNothingDueCaption": "Nothing is due — review is available once cards come due.",
+  "studyEntryNothingDueCaption": "Nothing is due. Review opens once cards come due.",
   "@studyEntryNothingDueCaption": {
     "description": "Screen handoff 14 (FE-A6 P2): footer caption under Learn with nothing due."
   },
@@ -3317,6 +3361,159 @@
   "studyThisDeck": "Study this deck",
   "@studyThisDeck": {
     "description": "Screen handoff 01/07 (FE-A6 D10): the deck summary's button to the Study Entry when only new cards wait."
+  },
+  "importDefaultDeckName": "Uncategorized",
+  "@importDefaultDeckName": {
+    "description": "The name a default deck starts with in an import split by * rows (BR-TRANSFER-015)."
+  },
+  "importDecksHeader": "Decks",
+  "@importDecksHeader": {
+    "description": "Header of the list of decks a sectioned import writes to (spec 2026-10-08 U2, U8)."
+  },
+  "importDeckNew": "New",
+  "@importDeckNew": {
+    "description": "Badge: the import makes this deck."
+  },
+  "importDeckExisting": "Existing",
+  "@importDeckExisting": {
+    "description": "Badge: the import adds to this deck that already exists."
+  },
+  "importDeckCards": "{count, plural, =1{1 card} other{{count} cards}}",
+  "@importDeckCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "How many cards an import writes to one deck."
+  },
+  "importDeckNothing": "No cards to add · no deck made",
+  "@importDeckNothing": {
+    "description": "A section of the file with no card to write (BR-TRANSFER-015)."
+  },
+  "importDeckAddToExisting": "Add to existing",
+  "@importDeckAddToExisting": {
+    "description": "Choice for a section whose name a sub-deck already has: add its cards to that deck."
+  },
+  "importDeckCreateNew": "Create new",
+  "@importDeckCreateNew": {
+    "description": "Choice for a section whose name a sub-deck already has: make another deck."
+  },
+  "importDeckClashNote": "{count, plural, =0{{name} is already here, with no cards.} =1{{name} already has 1 card.} other{{name} already has {count} cards.}}",
+  "@importDeckClashNote": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Shown above the clash choice: the existing deck and how many cards it holds (spec 2026-10-08 C4)."
+  },
+  "importDeckHoldsDecksNote": "The deck with this name holds decks, so a new one is made.",
+  "@importDeckHoldsDecksNote": {
+    "description": "A clash with a deck of decks needs no choice (spec 2026-10-08 §4.3)."
+  },
+  "importDeckNameLabel": "Deck name",
+  "@importDeckNameLabel": {
+    "description": "Label of the default deck name field (spec 2026-10-08 U4)."
+  },
+  "importDeckNameTaken": "Another deck in this file has this name.",
+  "@importDeckNameTaken": {
+    "description": "The default deck name equals a * section of the same file."
+  },
+  "importRowDeckNameBlank": "Deck name after * is empty",
+  "@importRowDeckNameBlank": {
+    "description": "Why a row is not imported: its section has no name (BR-TRANSFER-015)."
+  },
+  "importRowDeckNameTooLong": "Deck name over 200 characters",
+  "@importRowDeckNameTooLong": {
+    "description": "Why a row is not imported: its section name is too long (BR-DECK-020)."
+  },
+  "importCaptionChooseDecks": "{count, plural, =1{Choose how to import 1 deck with a taken name.} other{Choose how to import {count} decks with taken names.}}",
+  "@importCaptionChooseDecks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Footer caption while clashes are undecided (spec 2026-10-08 U6)."
+  },
+  "importCaptionFixDeckName": "Fix the deck name to continue.",
+  "@importCaptionFixDeckName": {
+    "description": "Footer caption while the default deck name is refused (U6)."
+  },
+  "importProblemSectionsTitle": "This file is split into decks",
+  "@importProblemSectionsTitle": {
+    "description": "Title: a file with * rows imported into a deck of cards (UC-TRANSFER-001 E7)."
+  },
+  "importProblemSectionsBody": "A deck of cards can’t hold decks. Import from its parent deck instead. Nothing was added.",
+  "@importProblemSectionsBody": {
+    "description": "Guidance for E7."
+  },
+  "importProblemDepthTitle": "No room for another level",
+  "@importProblemDepthTitle": {
+    "description": "Title: the target is at level 10 (UC-TRANSFER-001 E8)."
+  },
+  "importProblemDepthBody": "Decks go at most 10 levels deep. Import from a higher deck. Nothing was added.",
+  "@importProblemDepthBody": {
+    "description": "Guidance for E8."
+  },
+  "importProblemChangedTitle": "A deck changed meanwhile",
+  "@importProblemChangedTitle": {
+    "description": "Title: a deck chosen for Add to existing changed before Import (UC-TRANSFER-001 E9)."
+  },
+  "importProblemChangedBody": "Nothing was added. Preview again to see the decks as they are now.",
+  "@importProblemChangedBody": {
+    "description": "Guidance for E9."
+  },
+  "importPreviewAgain": "Preview again",
+  "@importPreviewAgain": {
+    "description": "Action of the E9 banner: read the decks again."
+  },
+  "importDeckAddConsequence": "Cards already in it are skipped.",
+  "@importDeckAddConsequence": {
+    "description": "After Add to existing: what happens to rows already in that deck (C4)."
+  },
+  "importDeckCreateConsequence": "A second deck named {name} is made.",
+  "@importDeckCreateConsequence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "After Create new: the import makes a deck with the same name (C4)."
+  },
+  "importDecksTakenNames": "{count, plural, =1{1 deck with a taken name} other{{count} decks with taken names}}",
+  "@importDecksTakenNames": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Label of the row that decides every clash at once (spec 2026-10-08 C2)."
+  },
+  "importDeckAddAll": "Add all to existing",
+  "@importDeckAddAll": {
+    "description": "Choice for every clash at once: add each deck to the existing deck of its name (C2)."
+  },
+  "importDeckCreateAll": "Create all new",
+  "@importDeckCreateAll": {
+    "description": "Choice for every clash at once: make a new deck for each (C2)."
+  },
+  "importRowsMore": "{count, plural, =1{1 more row in this deck} other{{count} more rows in this deck}}",
+  "@importRowsMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Under a deck’s first rows on a sectioned preview: rows not shown (C3)."
+  },
+  "importIncludeDuplicatesSectionsBody": "Off: rows already in their deck or repeated within it are skipped.",
+  "@importIncludeDuplicatesSectionsBody": {
+    "description": "Include duplicates on a file split by * rows: duplicates are measured per deck (C5)."
   },
   "importTitle": "Import cards",
   "@importTitle": {
@@ -3668,7 +3865,7 @@
   "@importIncludeDuplicatesBody": {
     "description": "Import preview: what the duplicate toggle does."
   },
-  "importReadAction": "Read and map columns",
+  "importReadAction": "Map columns",
   "@importReadAction": {
     "description": "Import commit bar: step 1 → 2."
   },
@@ -3676,14 +3873,14 @@
   "@importPreviewAction": {
     "description": "Import commit bar: step 2 → 3."
   },
-  "importCommitAction": "{count, plural, =1{Import 1 card} other{Import {count} cards}}",
+  "importCommitAction": "{count, plural, other{Import {count}}}",
   "@importCommitAction": {
     "placeholders": {
       "count": {
         "type": "int"
       }
     },
-    "description": "Import commit bar: step 3 → 4."
+    "description": "Import commit bar: step 3 → 4. No noun: the screen title says cards, and the label must fit half the footer row (DESIGN.md, The Short Label Rule)."
   },
   "importCommitting": "Importing…",
   "@importCommitting": {
@@ -3709,7 +3906,7 @@
   "@importCaptionProblemPaste": {
     "description": "Import commit bar, step 1, the pasted text could not be read."
   },
-  "importCaptionColumns": "Next you'll preview every row before anything is imported.",
+  "importCaptionColumns": "Next you'll preview every row before importing.",
   "@importCaptionColumns": {
     "description": "Import commit bar caption at step 2."
   },
@@ -3927,14 +4124,9 @@
   "@exportContentNote": {
     "description": "Export sheet: what the file holds and what it leaves out (BR-TRANSFER-008)."
   },
-  "exportAction": "{count, plural, =1{Export 1 card} other{Export {count} cards}}",
+  "exportAction": "Export",
   "@exportAction": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Export sheet primary action (UC-TRANSFER-002 step 3)."
+    "description": "Export sheet primary action (UC-TRANSFER-002 step 3); the title names the cards (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "exportPreparing": "Preparing…",
   "@exportPreparing": {
@@ -4001,6 +4193,10 @@
   "@deckActionExport": {
     "description": "Deck action sheet: opens the export sheet over the whole deck (UC-TRANSFER-002)."
   },
+  "deckActionSelectCards": "Select cards",
+  "@deckActionSelectCards": {
+    "description": "Deck action sheet, open deck of cards only: enters the card list's selection with nothing picked (BR-CARD-020, DEV-307)."
+  },
   "cardExport": "Export",
   "@cardExport": {
     "description": "Bulk bar: export the selected cards (UC-TRANSFER-002 A1)."
@@ -4046,6 +4242,28 @@
   "studyBrowseTerm": "Term",
   "@studyBrowseTerm": {
     "description": "Screen handoff 16 (FE-A6 P1c): the term half's label."
+  },
+  "studySpeakTerm": "Read aloud",
+  "@studySpeakTerm": {
+    "description": "Study session: the speaker button under the term while the session's language is not known yet (BR-STUDY-079)."
+  },
+  "studySpeakTermIn": "Read aloud · {language}",
+  "@studySpeakTermIn": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Study session: the speaker button under the term, naming the language it reads in, so a wrong voice is explained (critique 2026-10-07)."
+  },
+  "studySpeakVoiceMissing": "No {language} voice on this device",
+  "@studySpeakVoiceMissing": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Study session: the disabled speaker button when the device's engine lacks the session's language (BR-STUDY-081, critique 2026-10-07)."
   },
   "studyBrowseMeaning": "Meaning",
   "@studyBrowseMeaning": {
@@ -4965,6 +5183,10 @@
   "@summaryNoteTrash": {
     "description": "Screen handoff 21 (FE-A6 P1c): the end note after content moved to the Trash."
   },
+  "summaryStudyAgain": "Study again",
+  "@summaryStudyAgain": {
+    "description": "Screen handoff 21: the footer's outline button that studies the deck again. The Short Label Rule in DESIGN.md: it must fit its half of the footer pair."
+  },
   "summaryDone": "Done",
   "@summaryDone": {
     "description": "Screen handoff 21 (FE-A6 P1c): the footer's primary button."
@@ -5074,29 +5296,56 @@
   "@settingsLanguageSaveFailed": {
     "description": "Toast when saving the language failed (E2); offers Retry."
   },
-  "settingsStudyDefaults": "Study defaults",
+  "settingsStudyDefaults": "Study options",
   "@settingsStudyDefaults": {
-    "description": "Screen 23 section title (UC-SETTINGS-001 step 1)."
+    "description": "Settings hub (screen 23): the Study row's label, and the title of screen 23a it opens (settings hub spec D1)."
   },
-  "settingsStudyDefaultsNote": "Applies to sessions started from now on. A deck with its own study options keeps them.",
-  "@settingsStudyDefaultsNote": {
-    "description": "Note under Study defaults (BR-SETTINGS-003, BR-SETTINGS-004)."
+  "settingsStudySection": "Study",
+  "@settingsStudySection": {
+    "description": "Settings hub (screen 23): the overline of the group whose one row opens Study options (settings hub spec §5.1)."
+  },
+  "settingsStudyDefaultsSummary": "{count, plural, =1{1 card} other{{count} cards}} · {order} · Read aloud {isAutoPlay, select, on{on} other{off}}",
+  "@settingsStudyDefaultsSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "order": {
+        "type": "String"
+      },
+      "isAutoPlay": {
+        "type": "String"
+      }
+    },
+    "description": "Settings hub: the Study options row's subtitle, the stored defaults in one line (settings hub spec D8). order is the rendered In order / Random; isAutoPlay is on or off."
+  },
+  "settingsSessionSection": "Session",
+  "@settingsSessionSection": {
+    "description": "Study options (screen 23a): the overline over Cards and New-card order."
+  },
+  "settingsSessionNote": "Changes apply to sessions you start from now on. A deck with its own study options keeps them.",
+  "@settingsSessionNote": {
+    "description": "Study options (screen 23a): the note under the Session section (BR-SETTINGS-004)."
+  },
+  "settingsSpeechSection": "Speech",
+  "@settingsSpeechSection": {
+    "description": "Study options (screen 23a): the overline over Read the term aloud and Speech language."
+  },
+  "settingsSpeechNote": "Changes apply at once. A deck with its own speech language keeps it.",
+  "@settingsSpeechNote": {
+    "description": "Study options (screen 23a): the note under the Speech section (BR-STUDY-080, BR-SETTINGS-009)."
   },
   "settingsCardLimit": "Cards per session",
   "@settingsCardLimit": {
     "description": "The app-wide card limit row, and its number for TalkBack (BR-SETTINGS-002)."
   },
-  "settingsCardLimitRange": "1 to {max} · default {count}",
-  "@settingsCardLimitRange": {
-    "placeholders": {
-      "max": {
-        "type": "int"
-      },
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Line under Cards per session."
+  "settingsCardLimitShort": "Cards",
+  "@settingsCardLimitShort": {
+    "description": "Study options (screen 23a): the card-limit row's label beside its stepper, under the Session overline (owner 2026-10-07). The stepper keeps settingsCardLimit as its spoken name."
+  },
+  "settingsCardLimitPerSession": "Per session",
+  "@settingsCardLimitPerSession": {
+    "description": "Study options (screen 23a): the card-limit row's subtitle under Cards, so the row reads Cards per session (owner 2026-10-07)."
   },
   "settingsCardLimitInvalid": "Enter a number from {min} to {max}",
   "@settingsCardLimitInvalid": {
@@ -5134,6 +5383,53 @@
   "@settingsOrderRandom": {
     "description": "New-card order: shuffled."
   },
+  "settingsSpeechAutoPlay": "Read the term aloud",
+  "@settingsSpeechAutoPlay": {
+    "description": "Settings › Study options (23a): the read-aloud switch (BR-SETTINGS-010)."
+  },
+  "settingsSpeechAutoPlayHint": "When a new card comes up while learning",
+  "@settingsSpeechAutoPlayHint": {
+    "description": "Subtitle of the read-aloud switch."
+  },
+  "settingsSpeechLanguage": "Speech language",
+  "@settingsSpeechLanguage": {
+    "description": "Settings › Study options (23a) and a deck's Study options (15): the row that opens the language sheet (BR-SETTINGS-009)."
+  },
+  "settingsSpeechLanguageValue": "{language} · Used by decks that follow the defaults",
+  "@settingsSpeechLanguageValue": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Settings › Study options (23a): subtitle of the speech language row, the value first as the Theme and Language rows do (critique 2026-10-07)."
+  },
+  "settingsSpeechLanguageMissing": "No voice on this device · nothing is read",
+  "@settingsSpeechLanguageMissing": {
+    "description": "Speech language sheet: the device's engine lacks this language; it stays selectable and the term is not read in another voice (study speech spec D5, BR-STUDY-081)."
+  },
+  "studyOptionsSpeechLanguageValue": "{language} · The language the term is read in",
+  "@studyOptionsSpeechLanguageValue": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "Study options (screen 15): subtitle of the speech language row, the value first."
+  },
+  "speechLanguageName": "{language, select, enUs{English (US)} enGb{English (UK)} viVn{Vietnamese} koKr{Korean} jaJp{Japanese} zhCn{Chinese (Simplified)} zhTw{Chinese (Traditional)} frFr{French} deDe{German} esEs{Spanish} other{{language}}}",
+  "@speechLanguageName": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    },
+    "description": "The display name of a SpeechLanguage, by its enum name."
+  },
+  "settingsAccountSync": "Account & sync",
+  "@settingsAccountSync": {
+    "description": "Settings hub (screen 23): the overline over the account row and the Sync row (settings hub spec D2)."
+  },
   "settingsApp": "App",
   "@settingsApp": {
     "description": "Screen 23 section title for theme and language."
@@ -5163,7 +5459,7 @@
   "@settingsResetRow": {
     "description": "The row that opens the reset confirmation (UC-SETTINGS-001 A3)."
   },
-  "settingsResetRowHint": "Theme, language, study defaults, reminder",
+  "settingsResetRowHint": "Theme, language, study options, read-aloud, reminder",
   "@settingsResetRowHint": {
     "description": "Line under Reset app options; names the reminder (register row 123, closed by FE-B5)."
   },
@@ -5171,7 +5467,7 @@
   "@settingsResetTitle": {
     "description": "Reset confirmation title."
   },
-  "settingsResetBody": "Theme, language, cards per session, new-card order and the daily reminder (off, 20:00) go back to their defaults.",
+  "settingsResetBody": "Theme, language, cards per session, new-card order, read-aloud settings and the daily reminder (off, 20:00) go back to their defaults.",
   "@settingsResetBody": {
     "description": "Reset confirmation body; names what the app shows, the reminder included (FE-A3 D4; register row 123, closed by FE-B5)."
   },
@@ -5179,9 +5475,9 @@
   "@settingsResetSafe": {
     "description": "Reset confirmation note: it is not Reset learning progress (BR-SETTINGS-008, BR-SRS-022)."
   },
-  "settingsResetConfirm": "Reset options",
+  "settingsResetConfirm": "Reset",
   "@settingsResetConfirm": {
-    "description": "Reset confirmation button."
+    "description": "Reset confirmation button (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "settingsResetDone": "App options reset to defaults",
   "@settingsResetDone": {
@@ -5208,7 +5504,15 @@
   "@settingsOrderSaveFailed": {
     "description": "Toast when saving the new-card order failed (E2); offers Retry."
   },
-  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it. Changes apply to sessions started from now on; a session already open keeps its options.",
+  "settingsSpeechLanguageSaveFailed": "Couldn't save the speech language.",
+  "@settingsSpeechLanguageSaveFailed": {
+    "description": "Settings toast after a failed save of the speech language; Retry follows (UC-SETTINGS-001 E2)."
+  },
+  "settingsSpeechAutoPlaySaveFailed": "Couldn't save the read-aloud switch.",
+  "@settingsSpeechAutoPlaySaveFailed": {
+    "description": "Settings toast after a failed save of the read-aloud switch; Retry follows (UC-SETTINGS-001 E2)."
+  },
+  "studyOptionsBelongTo": "These options belong to {root} and every sub-deck in it. The card limit and order apply to sessions started from now on; the speech language changes at once.",
   "@studyOptionsBelongTo": {
     "placeholders": {
       "root": {
@@ -5407,9 +5711,9 @@
     },
     "description": "Screen 03 algorithm sheet: the suggested scheduler's description."
   },
-  "starterAddDeck": "Add deck",
+  "starterAddDeck": "Add",
   "@starterAddDeck": {
-    "description": "Screen 03 algorithm sheet: adds the template."
+    "description": "Screen 03 algorithm sheet: adds the template (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "starterTryAgain": "Try again",
   "@starterTryAgain": {
@@ -5459,9 +5763,9 @@
     },
     "description": "Screen 03 second copy dialog: the body."
   },
-  "starterSecondCopyConfirm": "Add second copy",
+  "starterSecondCopyConfirm": "Add",
   "@starterSecondCopyConfirm": {
-    "description": "Screen 03 second copy dialog: confirms and opens the algorithm sheet."
+    "description": "Screen 03 second copy dialog: confirms and opens the algorithm sheet (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "starterNoneTitle": "No starter decks in this build",
   "@starterNoneTitle": {
@@ -5696,14 +6000,9 @@
     },
     "description": "Screen 05 delete dialog: the note that no card is touched (BR-TAG-008)."
   },
-  "tagsDeleteConfirm": "{count, plural, =0{Delete tag} =1{Remove from 1 card} other{Remove from {count} cards}}",
+  "tagsDeleteConfirm": "Delete",
   "@tagsDeleteConfirm": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    },
-    "description": "Screen 05 delete dialog: the destructive confirm."
+    "description": "Screen 05 delete dialog: the destructive confirm; the title's verb, no count (the body states it, The Short Label Rule) (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "tagsRenameFailed": "Couldn't rename tag. Nothing changed — try again in a moment.",
   "@tagsRenameFailed": {
@@ -5796,7 +6095,7 @@
   "@studyExitBody": {
     "description": "The exit confirm dialog body."
   },
-  "studyExitKeep": "Keep studying",
+  "studyExitKeep": "Keep going",
   "@studyExitKeep": {
     "description": "The exit confirm dialog: stay in the session."
   },
@@ -6253,7 +6552,11 @@
   "@syncTryAgain": {
     "description": "Screen 27 (SB-U1): re-queues the refused rows and syncs."
   },
-  "syncKeepOnDevice": "Keep on this device",
+  "syncKeepConfirm": "Keep",
+  "@syncKeepConfirm": {
+    "description": "Screen 27 keep dialog: the confirm (DEV-179: the title names the object, so the confirm is the verb alone)."
+  },
+  "syncKeepOnDevice": "Keep on device",
   "@syncKeepOnDevice": {
     "description": "Screen 27 (SB-U1): forgets the refusals; the data stays local (R7)."
   },
@@ -6357,7 +6660,23 @@
   },
   "settingsAdmin": "Admin",
   "@settingsAdmin": {
-    "description": "Screen 23 (Monitoring): the section title of the admin-only entry."
+    "description": "Settings hub (screen 23): the admin-only group's overline, and the title of the Admin page (screen 23b)."
+  },
+  "settingsAdminTools": "Admin tools",
+  "@settingsAdminTools": {
+    "description": "Settings hub (screen 23): the one Admin row, for an admin only; opens screen 23b (settings hub spec D4)."
+  },
+  "settingsAdminToolsHint": "Monitoring, users, SQL log",
+  "@settingsAdminToolsHint": {
+    "description": "Subtitle of the Admin tools row."
+  },
+  "settingsAdminLogs": "Logs",
+  "@settingsAdminLogs": {
+    "description": "Admin (screen 23b): the overline over Monitoring and Log SQL statements."
+  },
+  "settingsAdminPeople": "People",
+  "@settingsAdminPeople": {
+    "description": "Admin (screen 23b): the overline over Users."
   },
   "settingsMonitoring": "Monitoring",
   "@settingsMonitoring": {
@@ -6366,6 +6685,18 @@
   "settingsMonitoringHint": "Logs of the app and the server",
   "@settingsMonitoringHint": {
     "description": "Screen 23 (Monitoring): the Monitoring row subtitle."
+  },
+  "settingsLogSql": "Log SQL statements",
+  "@settingsLogSql": {
+    "description": "Admin row on screens 23 and 28: the SQL log switch (SQL log switch spec §5)."
+  },
+  "settingsLogSqlHint": "Each statement the app runs is logged, for performance checks. Turn off to keep the log small.",
+  "@settingsLogSqlHint": {
+    "description": "Subtitle of the SQL log switch row."
+  },
+  "settingsLogSqlSaveFailed": "Couldn't change that. The switch is unchanged.",
+  "@settingsLogSqlSaveFailed": {
+    "description": "Snackbar after a failed save of the SQL log switch."
   },
   "monitoringTitle": "Monitoring",
   "@monitoringTitle": {
@@ -6700,6 +7031,10 @@
   "@monitoringReopen": {
     "description": "Screen 28 detail: the triage button of a fixed log."
   },
+  "monitoringStatusConfirm": "Save",
+  "@monitoringStatusConfirm": {
+    "description": "Screen 28 triage sheet: the confirm; the sheet's title is the action (DEV-179)."
+  },
   "monitoringNoteLabel": "Note (optional)",
   "@monitoringNoteLabel": {
     "description": "Screen 28 detail: the note field of the triage sheet."
@@ -6756,7 +7091,7 @@
   "@accountSignedInHint": {
     "description": "Screen 23: under the attached account's email (plan ruling 5)."
   },
-  "welcomeLead": "Sign in to keep your decks safe and the same on every phone.",
+  "welcomeLead": "MemoX works on this phone without an account, offline too. Signing in adds:",
   "@welcomeLead": {
     "description": "Screen 29: the line under the app name."
   },
@@ -6767,10 +7102,6 @@
   "welcomeBenefitPhones": "Study on several phones",
   "@welcomeBenefitPhones": {
     "description": "Screen 29: the second benefit."
-  },
-  "welcomeBenefitOffline": "Still works offline",
-  "@welcomeBenefitOffline": {
-    "description": "Screen 29: the third benefit."
   },
   "accountContinueGoogle": "Continue with Google",
   "@accountContinueGoogle": {
@@ -6784,9 +7115,9 @@
   "@accountContinueWithout": {
     "description": "Screen 29: leave without signing in."
   },
-  "accountOfflineNote": "Signing in needs a connection. You can do it later in Settings.",
+  "accountOfflineNote": "Signing in needs a connection. Try later in Settings.",
   "@accountOfflineNote": {
-    "description": "Screens 29 and 30: sign-in must wait for the network (plan ruling 6)."
+    "description": "The footer caption on screens 29 and 30: sign-in must wait for the network (plan ruling 6)."
   },
   "accountLinkLine": "Your decks stay on this phone and join the account.",
   "@accountLinkLine": {
@@ -6796,13 +7127,21 @@
   "@accountTargetLine": {
     "description": "Transition layer: the target sign-in."
   },
-  "accountOr": "or",
-  "@accountOr": {
-    "description": "Screen 30: between Google and the email field."
+  "accountEmailHint": "name@example.com",
+  "@accountEmailHint": {
+    "description": "Screen 30: the email field's hint."
+  },
+  "accountReauthTitle": "Sign in again",
+  "@accountReauthTitle": {
+    "description": "Screen 30, re-auth: the title."
+  },
+  "accountContinueWithoutThis": "Continue without this account",
+  "@accountContinueWithoutThis": {
+    "description": "Screen 30, re-auth: the way out under the form and its dialog's confirm; Welcome keeps accountContinueWithout."
   },
   "accountEmail": "Email address",
   "@accountEmail": {
-    "description": "Screen 30: the email field's label and hint."
+    "description": "Screen 30: the email field's label."
   },
   "accountSendCode": "Send code",
   "@accountSendCode": {
@@ -6841,31 +7180,26 @@
   "@accountCodeTitle": {
     "description": "Screen 31's title."
   },
-  "accountCodeSentTo": "Enter the 6-digit code sent to {email}",
+  "accountCodeSentTo": "We sent a 6-digit code to",
   "@accountCodeSentTo": {
-    "placeholders": {
-      "email": {
-        "type": "String"
-      }
-    },
-    "description": "Screen 31: where the code went."
+    "description": "Screen 31: the lead; the address follows on its own line."
   },
   "accountCodeLabel": "Code, 6 digits",
   "@accountCodeLabel": {
     "description": "Screen 31: the code field's TalkBack label."
   },
-  "accountCodeWrong": "That code is wrong or has expired. Check the latest email, or send a new code.",
+  "accountCodeWrong": "That code is wrong or has expired. Check the latest email.",
   "@accountCodeWrong": {
     "description": "Screen 31: a refused code (Account UI spec R3)."
   },
-  "accountResendIn": "Resend code in {time}",
+  "accountResendIn": "New code in {time}",
   "@accountResendIn": {
     "placeholders": {
       "time": {
         "type": "String"
       }
     },
-    "description": "Screen 31: the resend countdown, as m:ss."
+    "description": "Screen 31: the wait before a new code can be sent, as m:ss; a caption, not a button."
   },
   "accountResend": "Resend code",
   "@accountResend": {
@@ -6878,6 +7212,10 @@
   "accountUseAnotherEmail": "Use another email",
   "@accountUseAnotherEmail": {
     "description": "Screen 31: back to the email."
+  },
+  "accountCodeSpamHint": "Not there yet? Check your spam folder.",
+  "@accountCodeSpamHint": {
+    "description": "Screen 31: the footnote under the code."
   },
   "accountTakenEmail": "{email} already has an account",
   "@accountTakenEmail": {
@@ -6928,9 +7266,9 @@
   "@accountContinue": {
     "description": "Merge sheet: confirm the merge."
   },
-  "accountDiscardContinue": "Discard and continue",
+  "accountDiscardContinue": "Discard data",
   "@accountDiscardContinue": {
-    "description": "Merge sheet: confirm the discard."
+    "description": "Merge sheet: confirm the discard. The Short Label Rule in DESIGN.md: it must fit its half of the even footer pair."
   },
   "accountStepSending": "Sending your changes…",
   "@accountStepSending": {
@@ -6985,6 +7323,24 @@
     },
     "description": "Transition layer: a sign-out stopped offline."
   },
+  "accountSwitchRefused": "{count, plural, =1{1 change on this phone was refused by the server and can't be merged.} other{{count} changes on this phone were refused by the server and can't be merged.}}",
+  "@accountSwitchRefused": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Transition layer (DEV-191): a merge stopped on rows the server refused, which exist only on this phone; Retry repeats the refusal, so the footer also offers to lose them."
+  },
+  "accountSwitchLosing": "Continue and lose {count, plural, =1{1 change} other{{count} changes}}",
+  "@accountSwitchLosing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Transition layer (DEV-191): the way on from a merge stopped on refused rows; they are kept on the device, where the switch's reset loses them."
+  },
   "accountMergeNotDone": "Couldn't merge. Your decks are still on this phone.",
   "@accountMergeNotDone": {
     "description": "Toast: the merge was refused (auth spec #25)."
@@ -7019,7 +7375,11 @@
   },
   "accountSwitch": "Switch account",
   "@accountSwitch": {
-    "description": "Screen 32's row and its dialog's confirm (Account UI spec §5.6)."
+    "description": "Screen 32's row (Account UI spec §5.6)."
+  },
+  "accountSwitchConfirm": "Switch",
+  "@accountSwitchConfirm": {
+    "description": "Screen 32: the switch dialog's confirm (DEV-179: the title names the object, so the confirm is the verb alone)."
   },
   "accountSwitchHint": "Move this phone to another account",
   "@accountSwitchHint": {
@@ -7039,7 +7399,11 @@
   },
   "accountDelete": "Delete account",
   "@accountDelete": {
-    "description": "Screen 32's row and its dialog's confirm (Account UI spec §5.6)."
+    "description": "Screen 32's row (Account UI spec §5.6)."
+  },
+  "accountDeleteConfirm": "Delete",
+  "@accountDeleteConfirm": {
+    "description": "Screen 32: the delete dialog's confirm; its title already names the account (owner 2026-10-06)."
   },
   "accountDeleteHint": "Your account and its data, for good",
   "@accountDeleteHint": {
@@ -7106,7 +7470,7 @@
   "@accountCommandFailed": {
     "description": "Screen 32: toast when a command was refused (Account UI spec §9)."
   },
-  "accountReauthLine": "Sign in again to keep syncing. Your decks are still here.",
+  "accountReauthLine": "This phone was signed out, so syncing paused. Your decks are still here.",
   "@accountReauthLine": {
     "description": "Screen 30 in reauth mode: the mode line (Account UI spec §5.2)."
   },
@@ -7119,6 +7483,14 @@
     },
     "description": "Screen 30 reauth, another account: title (Account UI spec §9 B8)."
   },
+  "accountUnsentConfirm": "Lose",
+  "@accountUnsentConfirm": {
+    "description": "Screens 30 and 31: the unsent-loss dialog's confirm; the title names what it loses (DEV-179: the title names the object, so the confirm is the verb alone)."
+  },
+  "accountSignedOutLabel": "Signed out",
+  "@accountSignedOutLabel": {
+    "description": "Screen 30 in reauth mode: the eyebrow's label before the account's email, upper-cased by the screen (DEV-168)."
+  },
   "accountUnsentBody": "{count, plural, =1{1 change on this phone isn't sent and will be lost.} other{{count} changes on this phone aren't sent and will be lost.}}",
   "@accountUnsentBody": {
     "placeholders": {
@@ -7128,9 +7500,13 @@
     },
     "description": "Screen 30 reauth, another account: body (Account UI spec §5.2)."
   },
-  "accountWithoutTitle": "Continue without an account?",
+  "accountWithoutTitle": "Continue without this account?",
   "@accountWithoutTitle": {
     "description": "Screen 30 reauth: the confirm's title (Account UI spec §9.1)."
+  },
+  "accountWithoutConfirm": "Continue",
+  "@accountWithoutConfirm": {
+    "description": "Continue-without-an-account dialog: the confirm; the title asks the whole question. The Short Label Rule in DESIGN.md: it must fit its half of the footer pair."
   },
   "accountWithoutBody": "This phone's decks from {email} are removed. Sign in to {email} later to get them back.",
   "@accountWithoutBody": {

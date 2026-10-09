@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:memox/core/network/api_config.dart';
 import 'package:memox/core/network/network_status.dart';
 import 'package:memox/core/network/request_id_interceptor.dart';
+import 'package:memox/core/network/supabase_config.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'network_providers.g.dart';
@@ -12,6 +13,12 @@ const _sendTimeout = Duration(seconds: 20);
 
 @Riverpod(keepAlive: true)
 ApiConfig apiConfig(Ref ref) => ApiConfig.environment;
+
+/// Where the Supabase project lives (ADR-015); sync, auth and the log
+/// shipper run only when it is set. Network configuration, so it lives here
+/// and not in sync's providers (DEV-177).
+@Riverpod(keepAlive: true)
+SupabaseConfig supabaseConfig(Ref ref) => SupabaseConfig.environment;
 
 /// The one HTTP client (ADR-012): every API call goes through it.
 @Riverpod(keepAlive: true)

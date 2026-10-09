@@ -53,7 +53,9 @@ void main() {
     expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
   });
 
-  testWidgets('the count sits at 60% resting and 75% selected', (tester) async {
+  testWidgets('the count sits at 60% resting and at full ink selected', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxFilterChip(
@@ -77,10 +79,7 @@ void main() {
         onSelected: (_) {},
       ),
     );
-    expect(
-      tester.widget<Text>(find.text('12')).style!.color,
-      scheme.onPrimary.withValues(alpha: 0.75),
-    );
+    expect(tester.widget<Text>(find.text('12')).style!.color, scheme.onPrimary);
   });
 
   testWidgets('a tap reports the flipped selection', (tester) async {
@@ -138,6 +137,37 @@ void main() {
           )
           .opacity,
       0.38,
+    );
+  });
+
+  // SW-REV-010: a label wider than the column ends in an ellipsis.
+  testWidgets('a label wider than its column ends in an ellipsis', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 200,
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: MxFilterChip(
+            label: 'Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)',
+            count: 12,
+            isSelected: false,
+            onSelected: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester
+          .widget<Text>(
+            find.text('Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)'),
+          )
+          .overflow,
+      TextOverflow.ellipsis,
     );
   });
 }

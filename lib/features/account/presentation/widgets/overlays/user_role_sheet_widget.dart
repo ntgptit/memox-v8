@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/domain/models/managed_user_model.dart';
 import 'package:memox/features/account/presentation/controllers/users_controller.dart';
 import 'package:memox/features/account/presentation/states/users_state.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -94,15 +94,7 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
     // always has a sheet to be said in (P4 minor M3).
     return MxBottomSheet(
       isHeld: _isSaving,
-      header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
-        ),
-        child: Text(widget.user.email, style: context.textStyles.compactTitle),
-      ),
+      title: widget.user.email,
       footer: MxSheetActions(
         isInSheet: true,
         cancelLabel: l10n.commonCancel,
@@ -114,18 +106,21 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          MxOptionRow(
-            title: l10n.usersRoleUser,
-            description: l10n.usersRoleUserHint,
-            isSelected: _choice == AccountRole.user,
-            onSelected: () => _choose(AccountRole.user),
-          ),
-          MxOptionRow(
-            title: l10n.usersRoleAdmin,
-            description: l10n.usersRoleAdminHint,
-            isSelected: _choice == AccountRole.admin,
-            onSelected: () => _choose(AccountRole.admin),
-            hasDivider: false,
+          MxDividedColumn(
+            children: [
+              MxOptionRow(
+                title: l10n.usersRoleUser,
+                description: l10n.usersRoleUserHint,
+                isSelected: _choice == AccountRole.user,
+                onSelected: () => _choose(AccountRole.user),
+              ),
+              MxOptionRow(
+                title: l10n.usersRoleAdmin,
+                description: l10n.usersRoleAdminHint,
+                isSelected: _choice == AccountRole.admin,
+                onSelected: () => _choose(AccountRole.admin),
+              ),
+            ],
           ),
           if (_problem case final text?)
             Padding(

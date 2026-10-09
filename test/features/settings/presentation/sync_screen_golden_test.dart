@@ -116,7 +116,7 @@ void main() {
         'keep_dialog',
         SyncStatus(lastSuccessAt: minutesAgo(env, 5), rejectedCount: 2),
         act: () async {
-          await tester.tap(find.text('Keep on this device'));
+          await tester.tap(find.text('Keep on device'));
           await tester.pumpAndSettle();
         },
       );

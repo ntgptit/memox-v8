@@ -9,9 +9,36 @@ without re-checking.
 - [ ] Acceptance criteria from the Linear issue all pass.
 - [ ] No refactoring outside the stated scope leaked in. If you found something
       that needs fixing, open a separate Linear issue (`DEV-n`) rather than
-      widening this one.
+      widening this one. Moving a fix down to its shared owner and fixing the
+      same-cause hits of check similar are in scope (below).
 - [ ] Existing architecture was not broken to make this fit. If the architecture
       genuinely blocked the task, that is a design conversation, not a workaround.
+
+## Bug fix or improvement (CLAUDE.md, "Fixing bugs and improving")
+- [ ] Root cause proven through `superpowers:systematic-debugging` and written
+      as a mechanism: `file:line`, why it happens, the invariant or contract it
+      breaks, why the change removes it, which symptoms it explains. No guess,
+      retry, guard or delay that hides it.
+- [ ] A regression test fails before the fix and passes after it.
+- [ ] The fix sits at the lowest shared owner of the cause, so every consumer
+      inherits it; no per-screen patch over a shared defect. A local fix states
+      why the shared layer is not the owner, and adds no override, magic value
+      or conditional that hides a shared defect.
+- [ ] **Check degrade** done: every consumer of what changed listed, and each
+      proven unchanged (its tests, the gate, goldens when UI changed). No test
+      or assertion weakened or removed to get green.
+- [ ] **Check similar** done: the codebase searched for the same mechanism, by
+      symbol and by behaviour; each hit classed as same root cause, similar
+      but unaffected, suspect (then verified) or unrelated; same-cause hits
+      fixed in this PR, other-cause hits filed as sub-issues.
+- [ ] Any change made after the checks reran both on the final diff.
+- [ ] Both checks, with their consumer and hit lists, and the final state
+      (`VERIFIED`, `BLOCKED` or `UNRESOLVED`) written in the PR and in the
+      issue's Done comment; a bug's issue has sections I to V of the Bug
+      template filled, an improvement's issue sections II to V of the
+      Chore/Docs template, and both section VI when a screen or its state
+      is touched ([linear-templates.md](linear-templates.md)).
+      `VERIFIED` only when every line above holds.
 
 ## Code
 - [ ] `dart format` produces no changes — run `check_format.sh`, not
@@ -35,6 +62,11 @@ without re-checking.
 - [ ] Default text scale checked; large text is not a design target (PRODUCT.md, 2026-09-30).
 - [ ] Loading, empty, error and success states all render correctly. An
       unhandled empty state is the single most common gap here.
+- [ ] Every state and transition the work touches is checked (CLAUDE.md, "A
+      screen is a state machine"): the screen's States and Transitions tables
+      match the code, each touched row is `VERIFIED`, `FAILED`, `UNVERIFIED`
+      or `N/A` with its evidence, and a state without a golden was rendered
+      for the audit or is reported `UNVERIFIED`.
 - [ ] Icon-only controls have semantic labels; touch targets are at least 48dp.
 - [ ] The screen's geometry contract identifies its content gutters, alignment
       groups, relative widths/heights and important baselines. Every material

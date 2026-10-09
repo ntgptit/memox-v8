@@ -6,6 +6,7 @@ import 'package:memox/features/study/presentation/states/session_ending_state.da
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
@@ -37,7 +38,7 @@ class SessionSummaryFactsWidget extends StatelessWidget {
         MxListSectionHeader(label: l10n.summaryFactsHeader),
         MxCard(
           isFullBleed: true,
-          child: Column(
+          child: MxDividedColumn(
             children: [
               MxListRow(
                 title: isLearning
@@ -80,7 +81,6 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                         : colors.onSurface,
                   ),
                 ),
-                hasDivider: false,
               ),
             ],
           ),

@@ -7,6 +7,7 @@ import 'package:memox/features/deck/presentation/widgets/overlays/deck_level_que
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
@@ -26,11 +27,11 @@ void main() {
         ),
       ),
     );
-    final header =
-        tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).header!
-            as Padding;
-
-    expect((header.padding as EdgeInsets).bottom, AppSpacing.grouped);
+    // The sheet's own head (SW-REV-008): 12 under the title.
+    expect(
+      tester.widget<MxBottomSheet>(find.byType(MxBottomSheet)).title,
+      _en.deckSortFilterTitle,
+    );
     expect(
       tester
           .widget<MxListSectionHeader>(find.byType(MxListSectionHeader))
@@ -42,5 +43,28 @@ void main() {
       find.widgetWithText(MxSettingsRow, _en.deckFilterDueOnlyTitle),
       findsOneWidget,
     );
+  });
+
+  // DEV-232 (UI-REV-004): the "SORT BY" header starts on the rows' edge, 16
+  // from the sheet like the option rows' radios, not on a third edge of its
+  // own (DESIGN.md gutter).
+  testWidgets('the sort header shares the option rows\' edge', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: buildLightTheme(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: DeckSortFilterSheetWidget(parentId: null)),
+        ),
+      ),
+    );
+
+    final header = tester.getTopLeft(
+      find.text(_en.deckSortByHeader.toUpperCase()),
+    );
+    final row = tester.getTopLeft(find.byType(MxOptionRow).first);
+    expect(header.dx, row.dx + AppSpacing.gutter);
+    expect(header.dx, AppSpacing.gutter);
   });
 }

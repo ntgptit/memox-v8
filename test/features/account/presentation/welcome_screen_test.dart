@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -8,6 +11,8 @@ import 'package:memox/features/account/presentation/screens/welcome_screen.dart'
 import 'package:memox/features/account/presentation/widgets/overlays/merge_choice_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_footer_bar.dart';
+import 'package:memox/shared/widgets/mx_settings_row.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/deck_fixtures.dart';
@@ -37,6 +42,25 @@ void main() {
   bool isDue(WidgetTester tester) =>
       ProviderScope.containerOf(tester.element(find.byType(WelcomeScreen)))
           .read(welcomeDueProvider);
+
+  accountTest('the title names the route for TalkBack', (
+    tester,
+    env,
+    world,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    final node = tester.getSemantics(find.text(_en.appTitle));
+    expect(node.hasFlag(SemanticsFlag.namesRoute), isTrue);
+    expect(node.hasFlag(SemanticsFlag.isHeader), isTrue);
+    handle.dispose();
+  });
 
   accountTest('Continue without an account answers Welcome for good and '
       'goes on', (tester, env, world) async {
@@ -75,6 +99,34 @@ void main() {
     expect(find.text(_en.accountSignedInAs('g@example.com')), findsOneWidget);
   });
 
+  accountTest('while Google signs in, Welcome keeps its ways and never '
+      'looks offline (final review F2)', (tester, env, world) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+    final held = world.api.holdMe = Completer<void>();
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.text(_en.accountContinueGoogle), findsOneWidget);
+    expect(find.text(_en.accountContinueEmail), findsOneWidget);
+    expect(find.text(_en.accountOfflineNote), findsNothing);
+    final without = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, _en.accountContinueWithout),
+    );
+    expect(without.tone, MxButtonTone.text);
+
+    held.complete();
+    world.api.holdMe = null;
+    await _settle(tester);
+    expect(dones, 1);
+  });
+
   accountTest('Continue with email goes to screen 30', (
     tester,
     env,
@@ -107,15 +159,70 @@ void main() {
       ],
     );
 
-    MxButton button(String label) =>
-        tester.widget<MxButton>(find.widgetWithText(MxButton, label));
-    expect(button(_en.accountContinueGoogle).onPressed, isNull);
-    expect(button(_en.accountContinueEmail).onPressed, isNull);
-    expect(find.text(_en.accountOfflineNote), findsOneWidget);
+    expect(find.text(_en.accountContinueGoogle), findsNothing);
+    expect(find.text(_en.accountContinueEmail), findsNothing);
+    final without = tester.widget<MxButton>(
+      find.widgetWithText(MxButton, _en.accountContinueWithout),
+    );
+    expect(without.tone, MxButtonTone.primary);
+    expect(
+      find.descendant(
+        of: find.byType(MxFooterBar),
+        matching: find.text(_en.accountOfflineNote),
+      ),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text(_en.accountContinueWithout));
     await _settle(tester);
     expect(dones, 1);
+  });
+
+  accountTest('the lead says MemoX works without an account, and two '
+      'benefits follow', (tester, env, world) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    expect(find.text(_en.welcomeLead), findsOneWidget);
+    expect(find.text(_en.welcomeBenefitReinstall), findsOneWidget);
+    expect(find.text(_en.welcomeBenefitPhones), findsOneWidget);
+    expect(find.byType(MxSettingsRow), findsNWidgets(2));
+    expect(
+      tester
+          .widget<MxButton>(
+            find.widgetWithText(MxButton, _en.accountContinueGoogle),
+          )
+          .tone,
+      MxButtonTone.primary,
+    );
+  });
+
+  accountTest('when the account becomes ready, the three ways come back '
+      '(Review Focus 4)', (tester, env, world) async {
+    final auth = ValueNotifier<AuthState>(const LocalOnly());
+    addTearDown(auth.dispose);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [
+        ...accountOverrides(world),
+        shown,
+        authStateOfListenable(auth),
+      ],
+    );
+    expect(find.text(_en.accountContinueGoogle), findsNothing);
+
+    auth.value = world.state;
+    await _settle(tester);
+
+    expect(find.text(_en.accountContinueGoogle), findsOneWidget);
+    expect(find.text(_en.accountContinueEmail), findsOneWidget);
+    expect(find.text(_en.accountOfflineNote), findsNothing);
   });
 
   accountTest("a Google account that is another account's asks to merge, "
@@ -136,8 +243,65 @@ void main() {
 
     await tester.tap(find.text(_en.accountContinue));
     await _settle(tester);
+    await tester.pumpAndSettle();
 
     expect(dones, 1);
+    // The Google account picked on Welcome signs in to its account at once:
+    // no second sign-in page (owner 2026-10-08).
+    expect(world.state, _signedInAs('g@example.com'));
+  });
+
+  accountTest("an empty phone whose Google account is another account's "
+      'signs in to it at once, without asking (owner 2026-10-08)', (
+    tester,
+    env,
+    world,
+  ) async {
+    world.server.addUser(email: 'g@example.com');
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await _settle(tester);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MergeChoiceSheetWidget), findsNothing);
+    expect(dones, 1);
+    expect(world.state, _signedInAs('g@example.com'));
+  });
+  accountTest('Welcome is answered as soon as the switch starts, so a phone '
+      'closed meanwhile does not show it again (owner 2026-10-08)', (
+    tester,
+    env,
+    world,
+  ) async {
+    world.server.addUser(email: 'g@example.com');
+    final held = world.gateway.holdGoogleSignIn = Completer<void>();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: [...accountOverrides(world), shown],
+    );
+
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await _settle(tester);
+
     expect(world.state, isA<Transitioning>());
+    expect(isDue(tester), isFalse);
+    expect(await AccountDeviceRepositoryImpl(env.db).isWelcomeSeen(), isTrue);
+
+    world.gateway.holdGoogleSignIn = null;
+    held.complete();
+    await tester.pumpAndSettle();
+    expect(world.state, _signedInAs('g@example.com'));
   });
 }
+
+Matcher _signedInAs(String email) => isA<Ready>()
+    .having((s) => s.user.email, 'email', email)
+    .having((s) => s.user.isAnonymous, 'anonymous', isFalse);

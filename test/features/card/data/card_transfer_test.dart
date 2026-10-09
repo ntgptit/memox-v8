@@ -6,6 +6,8 @@ import 'package:memox/features/card/data/repositories/card_transfer_repository_i
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/card/domain/models/card_list_query_model.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
@@ -54,21 +56,21 @@ final class _SecondScheduleFails implements ScheduleRepository {
 void main() {
   late AppDatabase db;
   late DeckRepositoryImpl decks;
+  late CardRepositoryImpl list;
   late CardTransferRepositoryImpl cards;
   late DeckEntity root;
   late DeckEntity leaf;
   setUp(() async {
     db = openTestDatabase();
     decks = DeckRepositoryImpl(db, now: _now);
-    cards = CardTransferRepositoryImpl(
+    list = CardRepositoryImpl(
       db,
-      CardRepositoryImpl(
-        db,
-        ScheduleRepositoryImpl(db, now: _now),
-        TagRepositoryImpl(db, now: _now),
-        now: _now,
-      ),
+      ScheduleRepositoryImpl(db, now: _now),
+      TagRepositoryImpl(db, now: _now),
+      DeckTreeDataSource(db),
+      now: _now,
     );
+    cards = CardTransferRepositoryImpl(db, list, decks);
     root = await decks.root('r');
     leaf = await decks.sub(root.id, 'l');
   });
@@ -138,12 +140,41 @@ void main() {
       );
     });
 
+    test('cards of one import keep the source order in the list and in an export (DEV-216)', () async {
+      // One import writes every card with the same created_at, so the
+      // source order can only survive through the ids (ADR-007).
+      final fronts = List.generate(12, (i) => 'row ${i + 1}');
+      _ok(
+        await cards.importCards(
+          deckId: leaf.id,
+          drafts: [for (final f in fronts) CardDraft(front: f, back: 'b')],
+          includeDuplicates: false,
+        ),
+      );
+
+      final snapshot = _ok(await cards.exportSnapshot(deckId: leaf.id));
+      final view = await list
+          .watchCardList(
+            deckId: leaf.id,
+            query: const CardListQuery(),
+            windowSize: 50,
+            now: _now(),
+          )
+          .first;
+
+      expect([for (final r in snapshot.rows) r.front], fronts);
+      expect([
+        for (final item in view.items) item.front,
+      ], fronts.reversed.toList());
+    });
+
     test('a draft written in the other Unicode form is a duplicate (BE-C5, '
         'BR-TRANSFER-003)', () async {
       await CardRepositoryImpl(
         db,
         ScheduleRepositoryImpl(db, now: _now),
         TagRepositoryImpl(db, now: _now),
+        DeckTreeDataSource(db),
         now: _now,
       ).card(leaf.id, const CardDraft(front: 'c\u00F4ng', back: 'work'));
 
@@ -292,8 +323,10 @@ void main() {
             db,
             _SecondScheduleFails(ScheduleRepositoryImpl(db, now: _now)),
             TagRepositoryImpl(db, now: _now),
+            DeckTreeDataSource(db),
             now: _now,
           ),
+          decks,
         );
 
         await expectLater(
@@ -336,109 +369,5 @@ void main() {
       expect(await _count(db, 'card_schedule'), 1500);
       expect(await _count(db, 'tags'), 1);
     });
-  });
-
-  group('exportSnapshot (BR-TRANSFER-007, BR-TRANSFER-010, BR-TRANSFER-011)', () {
-    // `c` is inserted before `b` on the same day, so insertion order alone
-    // would put `c` first (BR-TRANSFER-010).
-    setUp(() async {
-      await insertCard(
-        db,
-        id: 'c',
-        deckId: leaf.id,
-        front: 'tie',
-        back: '3',
-        createdAt: DateTime(2026, 9, 2),
-      );
-      await insertCard(
-        db,
-        id: 'a',
-        deckId: leaf.id,
-        front: 'first',
-        back: '1',
-        hint: 'h',
-        createdAt: DateTime(2026, 9, 1),
-      );
-      await insertCard(
-        db,
-        id: 'b',
-        deckId: leaf.id,
-        front: 'second',
-        back: '2',
-        createdAt: DateTime(2026, 9, 2),
-      );
-      await insertCard(
-        db,
-        id: 'z',
-        deckId: leaf.id,
-        front: 'gone',
-        back: '4',
-        deleteBatchId: 'batch',
-      );
-      await TagRepositoryImpl(
-        db,
-        now: _now,
-      ).replaceForCard(cardId: 'a', names: ['zeta', 'Alpha'], now: _now());
-    });
-
-    test(
-      'the live cards by created_at then id, their six fields and sorted tags',
-      () async {
-        final snapshot = _ok(await cards.exportSnapshot(deckId: leaf.id));
-
-        expect(snapshot.deckName, 'l');
-        expect(snapshot.rows.map((row) => row.front), [
-          'first',
-          'second',
-          'tie',
-        ]);
-        final first = snapshot.rows.first;
-        expect((first.back, first.hint, first.example), ('1', 'h', null));
-        expect(first.tagNames, ['Alpha', 'zeta']);
-      },
-    );
-
-    test(
-      'a selection keeps that order whatever order it was touched in',
-      () async {
-        final snapshot = _ok(
-          await cards.exportSnapshot(deckId: leaf.id, cardIds: {'c', 'a'}),
-        );
-
-        expect(snapshot.rows.map((row) => row.front), ['first', 'tie']);
-      },
-    );
-
-    test('an id that is gone, in the Trash or in another deck fails the whole request (E6)', () async {
-      final other = await decks.sub(root.id, 'o');
-      await insertCard(db, id: 'x', deckId: other.id);
-
-      for (final ids in [
-        {'a', 'missing'},
-        {'a', 'z'},
-        {'a', 'x'},
-      ]) {
-        expect(
-          _reason(await cards.exportSnapshot(deckId: leaf.id, cardIds: ids)),
-          CardRejection.notFound,
-        );
-      }
-      expect(
-        _reason(await cards.exportSnapshot(deckId: 'missing')),
-        CardRejection.notFound,
-      );
-    });
-
-    test(
-      'an empty deck is an empty snapshot, and reading writes nothing',
-      () async {
-        final empty = await decks.sub(root.id, 'e');
-        final before = await totalChanges(db);
-
-        expect(_ok(await cards.exportSnapshot(deckId: empty.id)).rows, isEmpty);
-        _ok(await cards.exportSnapshot(deckId: leaf.id));
-        expect(await totalChanges(db), before);
-      },
-    );
   });
 }

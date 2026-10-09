@@ -6,7 +6,6 @@ import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -242,24 +241,6 @@ void main() {
     expect(opacity.opacity, 0.38);
   });
 
-  testWidgets('loading keeps the width, shows a spinner and ignores taps', (
-    tester,
-  ) async {
-    var taps = 0;
-    await pumpMx(tester, MxButton(label: 'Save changes', onPressed: () {}));
-    final restingWidth = tester.getSize(_painted.first).width;
-
-    await pumpMx(
-      tester,
-      MxButton(label: 'Save changes', isLoading: true, onPressed: () => taps++),
-    );
-    await tester.tap(find.byType(MxButton), warnIfMissed: false);
-
-    expect(tester.getSize(_painted.first).width, restingWidth);
-    expect(find.byType(MxSpinner), findsOneWidget);
-    expect(taps, 0);
-  });
-
   testWidgets('a leading glyph is painted at 16', (tester) async {
     await pumpMx(
       tester,
@@ -297,38 +278,6 @@ void main() {
     );
 
     await expectAccessibleTargets(tester);
-  });
-
-  testWidgets('loading: a filled button spins onPrimary, outline primary', (
-    tester,
-  ) async {
-    for (final (tone, isOnFill) in [
-      (MxButtonTone.primary, true),
-      (MxButtonTone.destructive, true),
-      (MxButtonTone.secondary, false),
-      (MxButtonTone.outline, false),
-    ]) {
-      await pumpMx(
-        tester,
-        MxButton(label: 'Save', tone: tone, isLoading: true, onPressed: () {}),
-      );
-
-      expect(
-        tester.widget<MxSpinner>(find.byType(MxSpinner)).isOnFill,
-        isOnFill,
-      );
-    }
-  });
-
-  testWidgets('a loading button keeps its name for TalkBack', (tester) async {
-    final handle = tester.ensureSemantics();
-    await pumpMx(
-      tester,
-      MxButton(label: 'Save', isLoading: true, onPressed: () {}),
-    );
-
-    expect(find.bySemanticsLabel('Save'), findsOneWidget);
-    handle.dispose();
   });
 
   testWidgets('isSingleLine keeps a long label on one line', (tester) async {

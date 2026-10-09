@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/logging/app_logger.dart';
+import 'package:memox/core/sync/supabase_sync_api.dart';
+import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_scheduler.dart';
 
 import '../../support/recording_log_sink.dart';
@@ -322,6 +324,35 @@ void main() {
 
       scheduler.dispose();
       triggers.close();
+    });
+  });
+
+  test('pause during a run hung on an RPC ends once the RPC times out, and '
+      'the run backs off as a network failure (DEV-186, AUTH-004)', () {
+    fakeAsync((clock) {
+      final api = SupabaseSyncApi(
+        ensureSession: () async {},
+        rpc: (_, _) => Completer<Object?>().future,
+      );
+      Object? failure;
+      final scheduler = SyncScheduler(
+        run: () => api.changes(0, 500),
+        triggers: const Stream.empty(),
+        onFailed: (error) async => failure = error,
+      )..start();
+      clock.elapse(Duration.zero);
+
+      var paused = false;
+      scheduler.pause().then((_) => paused = true);
+      clock.elapse(SupabaseSyncApi.rpcTimeout - const Duration(seconds: 1));
+      expect(paused, isFalse);
+
+      clock.elapse(const Duration(seconds: 1));
+      expect(paused, isTrue);
+      expect(failure, isA<TimeoutException>());
+      expect(classifySyncFailure(failure!), SyncFailureKind.network);
+
+      scheduler.dispose();
     });
   });
 }

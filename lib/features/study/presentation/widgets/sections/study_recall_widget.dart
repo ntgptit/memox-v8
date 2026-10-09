@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -10,9 +11,10 @@ import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_appearing_widget.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_whole_word_text_widget.dart';
 import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
@@ -40,7 +42,11 @@ class StudyRecallWidget extends StatefulWidget {
     required this.onAnswer,
     required this.onTimeUp,
     required this.onContinue,
+    required this.speechLanguage,
   });
+
+  /// The language the term is read in; null until the session knows it.
+  final SpeechLanguage? speechLanguage;
 
   final StudyItem item;
 
@@ -196,9 +202,19 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
                 Expanded(
                   child: StudyFaceCardWidget(
                     label: l10n.studyBrowseTerm,
-                    child: StudyWholeWordTextWidget(
-                      widget.item.front,
-                      style: context.textStyles.studyTerm,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: AppSpacing.control,
+                      children: [
+                        StudyWholeWordTextWidget(
+                          widget.item.front,
+                          style: context.textStyles.studyTerm,
+                        ),
+                        StudySpeakButtonWidget(
+                          text: widget.item.front,
+                          language: widget.speechLanguage,
+                        ),
+                      ],
                     ),
                   ),
                 ),

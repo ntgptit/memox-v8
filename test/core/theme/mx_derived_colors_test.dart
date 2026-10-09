@@ -20,6 +20,27 @@ void main() {
     MxSemanticColors.dark,
   );
 
+  test('outlineEdge: light raises outline\'s saturation to 30% alone; dark '
+      'pulls outline 20% toward onSurface (DEV-179)', () {
+    final lightOutline = HSLColor.fromColor(AppColorSchemes.light.outline);
+    final lightEdge = HSLColor.fromColor(light.outlineEdge);
+    expect(lightEdge.hue, closeTo(lightOutline.hue, 1));
+    expect(lightEdge.lightness, closeTo(lightOutline.lightness, 0.005));
+    expect(lightEdge.saturation, closeTo(0.30, 0.005));
+    expect(
+      dark.outlineEdge,
+      Color.lerp(
+        AppColorSchemes.dark.outline,
+        AppColorSchemes.dark.onSurface,
+        0.20,
+      ),
+    );
+    expect(
+      MxDerivedColors.outlineEdgeOf(AppColorSchemes.light),
+      light.outlineEdge,
+    );
+  });
+
   test('dangerSoft: error at 8% light, 16% dark', () {
     expect(light.dangerSoft, isColorCloseTo(0x14C02447));
     expect(dark.dangerSoft, isColorCloseTo(0x29FF8FA3));
@@ -78,11 +99,6 @@ void main() {
       _ratio(dark.surfaceHero, scheme.surfaceContainerLowest),
       greaterThanOrEqualTo(1.06),
     );
-  });
-
-  test('chromeGlass is surface at the glass opacity, not pre-flattened', () {
-    expect(light.chromeGlass, isColorCloseTo(0xD6F7F9FE));
-    expect(dark.chromeGlass, isColorCloseTo(0xD60A0E27));
   });
 
   test('ghostBorder is primary at 14% light, 16% dark', () {

@@ -5,10 +5,11 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 
-/// The footer every dialog and sheet ends with. The confirm takes 1.3 shares
-/// to Cancel's 1, so a real verb ("Move to Trash") keeps its line and Cancel
-/// gives up width first; when a label cannot fit its share on one line, the
-/// two stack instead (MxActionPair, spec 2026-09-26 D3).
+/// The footer every dialog and sheet ends with: Cancel and the confirm share
+/// the row 1 : 1, since the title names the object and the confirm is its
+/// verb alone (DEV-179); when a label cannot fit its half on one line, the
+/// two stack instead (MxActionPair, spec 2026-09-26 D3). A popup's buttons
+/// carry no icon: the tone already tells the weight (DEV-179).
 class MxSheetActions extends StatelessWidget {
   const MxSheetActions({
     super.key,
@@ -16,13 +17,32 @@ class MxSheetActions extends StatelessWidget {
     required this.onCancel,
     required String this.confirmLabel,
     required this.onConfirm,
-    this.confirmIcon,
     this.isDestructive = false,
     this.isWarning = false,
     this.isInSheet = false,
     this.isConfirmLoading = false,
   }) : assert(!(isDestructive && isWarning), 'a confirm has one tone'),
-       children = const [];
+       children = const [],
+       _singleTone = null;
+
+  /// One action across the row: a lone Close, Done or OK (SW-REV-008). A
+  /// lone Close stays primary (The One Indigo Rule, R8); a dismiss beside
+  /// choices is outline.
+  const MxSheetActions.single({
+    super.key,
+    required String label,
+    required VoidCallback? onPressed,
+    MxButtonTone tone = MxButtonTone.primary,
+    this.isInSheet = false,
+  }) : confirmLabel = label,
+       onConfirm = onPressed,
+       _singleTone = tone,
+       children = const [],
+       cancelLabel = null,
+       onCancel = null,
+       isDestructive = false,
+       isWarning = false,
+       isConfirmLoading = false;
 
   /// A custom footer (Trash restore / delete-forever, a single OK) in place
   /// of the pair (ruling O10).
@@ -35,10 +55,10 @@ class MxSheetActions extends StatelessWidget {
        onCancel = null,
        confirmLabel = null,
        onConfirm = null,
-       confirmIcon = null,
        isDestructive = false,
        isWarning = false,
-       isConfirmLoading = false;
+       isConfirmLoading = false,
+       _singleTone = null;
 
   final String? cancelLabel;
 
@@ -48,7 +68,6 @@ class MxSheetActions extends StatelessWidget {
 
   /// Null disables the confirm; Cancel stays live.
   final VoidCallback? onConfirm;
-  final IconData? confirmIcon;
 
   /// The destructive Button tone on the confirm.
   final bool isDestructive;
@@ -57,20 +76,36 @@ class MxSheetActions extends StatelessWidget {
   final bool isWarning;
 
   /// The confirm's work is running: it spins and cannot be pressed; Cancel
-  /// stays live.
+  /// stays live, since some work can be cancelled (Export's preparing). Work
+  /// that cannot be stopped nulls [onCancel] and holds its popup
+  /// (MxDialog.isHeld, MxBottomSheet.isHeld), so Back and the scrim wait too.
   final bool isConfirmLoading;
 
-  /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of 16
-  /// all round.
+  /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of
+  /// the dialog's 16 all round.
   final bool isInSheet;
   final List<Widget> children;
 
-  static const int _cancelShare = 10;
-  static const int _confirmShare = 13;
+  /// Set only by [MxSheetActions.single]: the one button's tone.
+  final MxButtonTone? _singleTone;
 
   @override
   Widget build(BuildContext context) {
-    final Widget row = children.isNotEmpty
+    final singleTone = _singleTone;
+    final Widget row = singleTone != null
+        ? Row(
+            children: [
+              Expanded(
+                child: MxButton(
+                  label: confirmLabel!,
+                  onPressed: onConfirm,
+                  tone: singleTone,
+                  isBlock: true,
+                ),
+              ),
+            ],
+          )
+        : children.isNotEmpty
         ? Row(spacing: AppSpacing.control, children: children)
         : MxActionPair(
             leading: MxButton(
@@ -83,7 +118,6 @@ class MxSheetActions extends StatelessWidget {
             trailing: MxButton(
               label: confirmLabel!,
               onPressed: onConfirm,
-              icon: confirmIcon,
               isLoading: isConfirmLoading,
               tone: switch ((isDestructive, isWarning)) {
                 (true, _) => MxButtonTone.destructive,
@@ -93,10 +127,10 @@ class MxSheetActions extends StatelessWidget {
               isBlock: true,
               isSingleLine: true,
             ),
-            leadingFlex: _cancelShare,
-            trailingFlex: _confirmShare,
           );
     if (!isInSheet) {
+      // A dialog's pair, 16 in on the edge its title and body share
+      // (DEV-166).
       return Padding(
         padding: const EdgeInsets.all(AppSpacing.gutter),
         child: row,

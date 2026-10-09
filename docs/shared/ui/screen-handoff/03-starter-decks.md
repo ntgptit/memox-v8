@@ -21,7 +21,7 @@ person's own under the scheduler they choose. UC-STARTER-001; BR-STARTER-001…0
 | App bar | `MxAppBar` (content) | Back and "Starter decks". |
 | Note | `MxNote` (flask), dismissible | "These decks are practice fixtures for development and testing, not published course material. Anything you add is yours to edit." (BR-STARTER-010). Shown while the templates load too. |
 | A card per template | `MxCard` + `MxIconTile` (sparkles) + `MxBadge` | The title, "In library" once a copy is in the library, the facts "{front} · {back} · {n} cards · {m} sub-decks · {source}", then the add ("Add to library" in primary, or "Add another copy" in secondary, critique 2026-09-30) and "Suggests {algorithm}". The title wraps and the badge follows it; the suggestion drops below the button, whole, when both do not fit (critique P2a). The facts and the actions line up with the title, past the tile. |
-| Algorithm sheet | `MxBottomSheet` + `MxOptionRow` ×2 + `MxSheetActions` | "Add “{title}”", "The scheduler locks after the first review. Changing it later resets learning progress.", "REVIEW ALGORITHM · REQUIRED", SM-2 ("grade yourself, intervals adapt") and Eight boxes ("Boxes 1–8 · match, guess, recall, fill"); the suggested one is prefixed "Suggested for this deck ·" and chosen first. Cancel / "Add deck". |
+| Algorithm sheet | `MxBottomSheet` + `MxOptionRow` ×2 + `MxSheetActions` | "Add “{title}”", "The scheduler locks after the first review. Changing it later resets learning progress.", "REVIEW ALGORITHM · REQUIRED", SM-2 ("grade yourself, intervals adapt") and Eight boxes ("Boxes 1–8 · match, guess, recall, fill"); the suggested one is prefixed "Suggested for this deck ·" and chosen first. Cancel / "Add" (the title names the deck, DEV-179). |
 
 Language names come from a small table of the tags the build ships: English,
 Vietnamese, Korean, and "Latin" for a `-Latn` tag; any other tag shows as written (D7). The fixtures' source, "Development fixture", is named in the
@@ -33,7 +33,7 @@ person's language too; any other source shows as written.
 |---|---|---|---|
 | list | `starter_list_light.png` | `starter_list_dark.png` | The badge and the suggestion wrap instead of truncating (UI-base row 135). |
 | choose | `starter_choose_light.png` | `starter_choose_dark.png` | — |
-| adding | `starter_adding_light.png` | `starter_adding_dark.png` | The options and Cancel lock, the sheet cannot be dismissed (Back, the scrim or a drag; `MxBottomSheet.isHeld`), and "Add deck" spins with no "Adding…" text (D13). A second add is ignored. |
+| adding | `starter_adding_light.png` | `starter_adding_dark.png` | The options and Cancel lock, the sheet cannot be dismissed (Back, the scrim or a drag; `MxBottomSheet.isHeld`), and "Add" spins with no "Adding…" text (D13). A second add is ignored. |
 | added | `starter_added_light.png` | `starter_added_dark.png` | The sheet closes; "Added “{title}” · {algorithm} · {n} new cards" with Open, which goes to the new root deck in the Library. |
 | alreadyPresent | `starter_already_present_light.png` | `starter_already_present_dark.png` | A copy made meanwhile copies nothing more. |
 | secondCopy | `starter_second_copy_light.png` | `starter_second_copy_dark.png` | "Add second copy" opens the algorithm sheet (BR-STARTER-008). |
@@ -62,11 +62,11 @@ published course material. Anything you add is yours to edit." · "In library" �
 cards" · "{m} sub-decks" · "Add to library" · "Add another copy" · "Development fixture" · "Suggests {algorithm}"
 · "SM-2" · "Eight boxes" · "Add “{title}”" · "The scheduler locks after the first review.
 Changing it later resets learning progress." · "Review algorithm · required" · "grade yourself, intervals adapt" · "Boxes
-1–8 · match, guess, recall, fill" · "Suggested for this deck · {description}" · "Add
-deck" · "Try again" · "Couldn't add the deck." · "Nothing was copied — try again." ·
+1–8 · match, guess, recall, fill" · "Suggested for this deck · {description}" · "Add" ·
+"Try again" · "Couldn't add the deck." · "Nothing was copied — try again." ·
 "Added “{title}” · {algorithm} · {n} new cards" · "Open" · "Already in your library —
 nothing was copied" · "Add a second copy?" · "“{title}” is already in your library. A
-second copy is a separate deck with its own progress." · "Add second copy" · "No starter
+second copy is a separate deck with its own progress." · "Add" · "No starter
 decks in this build" · "This version ships without practice content. Create a deck or
 import cards instead." · "Create a deck" · "Couldn't load starter decks" · "Your library
 is unaffected. Try again in a moment."

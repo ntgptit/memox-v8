@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/database/local_data_reset.dart';
+import 'package:memox/features/settings/data/datasources/settings_dao.dart';
 
 import '../../support/test_database.dart';
 
@@ -21,7 +22,7 @@ Future<void> _seed(AppDatabase db) async {
     "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 't')",
     "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, answer_count, lapse_count, current_box) VALUES ('K', 'eight_box', 1, 1, 1, 0, 1)",
     "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, \"action\", answered_at) VALUES ('V', 'K', 's', 'eight_box', 1, 'learning', 'self_assess', 'remembered', 1)",
-    "UPDATE app_settings SET card_limit = 35, theme_mode = 'dark', language = 'vi', new_card_order = 'random', reminder_enabled = 1, reminder_minute_of_day = 480, welcome_seen = 1",
+    "UPDATE app_settings SET card_limit = 35, theme_mode = 'dark', language = 'vi', new_card_order = 'random', reminder_enabled = 1, reminder_minute_of_day = 480, welcome_seen = 1, log_sql_statements = 0",
     "INSERT INTO sync_rejection (entity_type, entity_id, code, rejected_at) VALUES ('deck', 'R', 'CONFLICT', 0)",
     "INSERT OR REPLACE INTO sync_state (name, value) VALUES ('since', '42'), ('device_id', 'dev-1'), ('last_success_at', '9')",
     "INSERT INTO account_transition (id, op_id, kind, stage, created_at, updated_at) VALUES (1, 'op', 'signOut', 'signedOut', 0, 0)",
@@ -37,7 +38,11 @@ void main() {
     await _seed(db);
     db.mutationGate.close();
 
-    await LocalDataReset(db).run();
+    await LocalDataReset(
+      db,
+      resetSyncedSettings: () =>
+          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
+    ).run();
 
     for (final table in [
       'deck',
@@ -57,6 +62,7 @@ void main() {
     expect(settings.newCardOrder, 'created');
     expect(settings.themeMode, 'system');
     expect(settings.language, 'system');
+    expect(settings.logSqlStatements, 1);
     expect(settings.reminderEnabled, 1);
     expect(settings.reminderMinuteOfDay, 480);
     expect(settings.welcomeSeen, 1);
@@ -77,7 +83,11 @@ void main() {
     final db = openTestDatabase();
     addTearDown(db.close);
     await _seed(db);
-    final reset = LocalDataReset(db);
+    final reset = LocalDataReset(
+      db,
+      resetSyncedSettings: () =>
+          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
+    );
 
     await reset.run();
     await reset.run();
@@ -104,7 +114,11 @@ void main() {
     addTearDown(settingsWatch.cancel);
     await pumpEventQueue();
 
-    await LocalDataReset(db).run();
+    await LocalDataReset(
+      db,
+      resetSyncedSettings: () =>
+          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
+    ).run();
     await pumpEventQueue();
 
     expect(decks.last, 0);

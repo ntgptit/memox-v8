@@ -414,4 +414,22 @@ void main() {
     await settleReminderScreen(tester);
     expect(find.text('20:07'), findsOneWidget);
   });
+
+  // SW-REV-005: the time button reads its full label and keeps its tap.
+  libraryTest('TalkBack reads the time button and can press it', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpReminderScreen(tester, env);
+    await tapReminderToggle(tester);
+
+    expect(
+      tester.getSemantics(
+        find.bySemanticsLabel(_en.reminderTimeButton('20:00')),
+      ),
+      isSemantics(hasTapAction: true, hasEnabledState: true, isEnabled: true),
+    );
+    handle.dispose();
+  });
 }

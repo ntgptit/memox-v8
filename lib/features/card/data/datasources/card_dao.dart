@@ -43,6 +43,25 @@ final class CardDao extends DatabaseAccessor<AppDatabase> with _$CardDaoMixin {
       (front: row.frontFolded, back: row.backFolded),
   };
 
+  /// The live direct sub-decks of [parentId], in sibling order.
+  Future<List<LiveChildDecksResult>> childDecks(String parentId) =>
+      liveChildDecks(parentId).get();
+
+  /// The folded faces of the live cards of each live direct sub-deck of
+  /// [parentId], one per card (BR-TRANSFER-003), keyed by deck id.
+  Future<Map<String, List<CardFoldedPair>>> foldedFacesUnder(
+    String parentId,
+  ) async {
+    final byDeck = <String, List<CardFoldedPair>>{};
+    for (final row in await liveCardFacesUnder(parentId).get()) {
+      (byDeck[row.deckId] ??= []).add((
+        front: row.frontFolded,
+        back: row.backFolded,
+      ));
+    }
+    return byDeck;
+  }
+
   /// How many live cards [deckId] holds.
   Future<int> liveCount(String deckId) =>
       liveCardCountOfDeck(deckId).getSingle();
@@ -78,8 +97,15 @@ final class CardDao extends DatabaseAccessor<AppDatabase> with _$CardDaoMixin {
     ),
   );
 
+  /// The content of [draft], never its flag: the flag is set by the person
+  /// or the system on the card as it is (BR-CARD-009), not by a draft that
+  /// may predate either (DEV-220).
   Future<void> updateContent(String id, CardDraft draft, DateTime now) =>
-      updateLiveCard(_contentOf(draft).copyWith(updatedAt: Value(now)), id);
+      updateLiveCard(
+        _contentOf(draft)
+            .copyWith(isFlagged: const Value.absent(), updatedAt: Value(now)),
+        id,
+      );
 
   /// [id] goes to the Trash as the item root of the batch [batchId]
   /// (BR-TRASH-001). The row stays as it is otherwise; only a purge deletes
@@ -158,18 +184,6 @@ final class CardDao extends DatabaseAccessor<AppDatabase> with _$CardDaoMixin {
       await flagLiveCardsIn(flag, now, chunk);
     }
   }
-
-  /// Whether [deckId] still holds a live card; tombstones do not count, as in
-  /// invariant 29.
-  Future<bool> holdsCards(String deckId) =>
-      deckHoldsLiveCards(deckId).getSingle();
-
-  /// A deck in the Trash keeps its row as it is.
-  Future<void> setDeckContentType(
-    String deckId,
-    String contentType,
-    DateTime now,
-  ) => setLiveDeckContentType(contentType, now, deckId);
 }
 
 /// The columns a draft sets: sides in their stored form (trimmed, NFC) with

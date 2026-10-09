@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -12,12 +14,16 @@ import 'package:memox/features/account/presentation/screens/users_screen.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/screens/welcome_screen.dart';
+import 'package:memox/features/account/presentation/widgets/sections/account_transition_layer_widget.dart';
+import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
+import 'package:memox/features/settings/presentation/screens/admin_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../support/account_harness.dart';
 import '../support/fake_auth_server.dart';
@@ -297,10 +303,9 @@ void main() {
 
     await tester.tap(find.text(_en.accountContinueGoogle));
     await tester.pumpAndSettle();
-    // The phone holds no library: no merge sheet, straight to the target
-    // sign-in of the transition layer.
-    await tester.tap(find.text(_en.accountContinueGoogle).last);
-    await tester.pumpAndSettle();
+    // The phone holds no library: no merge sheet, and the Google account
+    // just picked signs in to the target at once, with no second sign-in
+    // page (owner 2026-10-08).
 
     expect(world.state, isA<Ready>());
     expect(find.byType(SignInScreen), findsNothing);
@@ -310,6 +315,97 @@ void main() {
     await tester.pageBack();
     await tester.pumpAndSettle();
     expect(find.byType(SettingsScreen), findsOneWidget);
+  });
+
+  accountTest('a slow account check after that Google sign-in still ends on '
+      'screen 32, with no error (final review 2026-10-08, I1)', (
+    tester,
+    env,
+    world,
+  ) async {
+    world.server.addUser(email: world.gateway.google.email);
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+    _router(tester).go(AppRoutes.settings);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.accountSignIn));
+    await _settle(tester);
+
+    final held = world.api.holdMe = Completer<void>();
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await _settle(tester);
+    await _settle(tester);
+    world.api.holdMe = null;
+    held.complete();
+    await tester.pumpAndSettle();
+
+    expect(world.state, isA<Ready>());
+    expect(find.byType(AccountScreen), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  accountTest('while the picked Google account signs in, the layer does not '
+      'raise the keyboard (final review 2026-10-08, M2)', (
+    tester,
+    env,
+    world,
+  ) async {
+    world.server.addUser(email: world.gateway.google.email);
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+    _router(tester).go(AppRoutes.settings);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.accountSignIn));
+    await _settle(tester);
+
+    final held = world.gateway.holdGoogleSignIn = Completer<void>();
+    await tester.tap(find.text(_en.accountContinueGoogle));
+    await _settle(tester);
+
+    final layerField = find.descendant(
+      of: find.byType(AccountTransitionLayerWidget),
+      matching: find.byType(MxTextField),
+    );
+    expect(layerField, findsOneWidget);
+    expect(tester.widget<MxTextField>(layerField).isAutofocused, isFalse);
+
+    world.gateway.holdGoogleSignIn = null;
+    held.complete();
+    await tester.pumpAndSettle();
+    expect(world.state, isA<Ready>());
+  });
+
+  accountTest('an email that already has an account gets its sign-in code at '
+      'once, and the layer opens on the code (owner 2026-10-08)', (
+    tester,
+    env,
+    world,
+  ) async {
+    world.server.addUser(email: 'b@example.com');
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+    _router(tester).go(AppRoutes.settings);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.accountSignIn));
+    await _settle(tester);
+
+    await tester.enterText(find.byType(TextField), 'b@example.com');
+    await tester.tap(find.text(_en.accountSendCode));
+    await tester.pumpAndSettle();
+
+    // One request, made for the person: no second "Send code" on the layer.
+    expect(world.gateway.signInCodeRequests, ['b@example.com']);
+    final layer = find.byType(AccountTransitionLayerWidget);
+    expect(
+      find.descendant(of: layer, matching: find.byType(CodeFormWidget)),
+      findsOneWidget,
+    );
+
+    await tester.enterText(
+      find.descendant(of: layer, matching: find.byType(TextField)),
+      FakeAuthGateway.code,
+    );
+    await tester.pumpAndSettle();
+
+    expect(world.state, isA<Ready>());
+    expect(find.byType(AccountScreen), findsOneWidget);
   });
 
   libraryTest('a build that cannot sign in has no Account section and no '
@@ -343,11 +439,48 @@ void main() {
     _router(tester).go(AppRoutes.settings);
     await tester.pumpAndSettle();
 
-    await tester.scrollUntilVisible(find.text(_en.usersTitle), 200);
+    await tester.tap(find.text(_en.settingsAdminTools));
+    await tester.pumpAndSettle();
+    expect(find.byType(AdminScreen), findsOneWidget);
     await tester.tap(find.text(_en.usersTitle));
     await tester.pumpAndSettle();
     expect(find.byType(UsersScreen), findsOneWidget);
     expect(find.text('ann@example.com'), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byType(AdminScreen), findsOneWidget, reason: 'Back to 23b');
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byType(SettingsScreen), findsOneWidget);
+  });
+
+  accountTest('a non-admin\'s deep link to Admin meets the gate, titled '
+      'Admin', (tester, env, world) async {
+    await pumpMemoxApp(tester, env, overrides: accountOverrides(world));
+
+    _router(tester).go(AppRoutes.settingsAdmin);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AdminScreen), findsNothing);
+    expect(find.text(_en.monitoringNotAdminTitle), findsOneWidget);
+    expect(find.text(_en.settingsAdmin), findsOneWidget);
+  });
+
+  accountTest('an admin\'s deep link to Monitoring returns to the hub, not '
+      'to 23b (settings hub spec D5)', (tester, env, world) async {
+    await pumpMemoxApp(
+      tester,
+      env,
+      overrides: [
+        ...accountOverrides(world),
+        isAdminProvider.overrideWithValue(true),
+      ],
+    );
+
+    _router(tester).go(AppRoutes.settingsMonitoring);
+    await tester.pumpAndSettle();
+    expect(find.text(_en.monitoringTitle), findsOneWidget);
 
     await tester.pageBack();
     await tester.pumpAndSettle();

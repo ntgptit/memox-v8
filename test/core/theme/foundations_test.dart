@@ -69,14 +69,12 @@ void main() {
     );
   });
 
-  test('strokes, state opacities and glass effect', () {
+  test('strokes and state opacities', () {
     expect(AppStroke.hairline, 1);
     expect(AppStroke.focus, 2);
     expect(AppStroke.focusOffset, 2);
     expect(AppOpacity.disabled, 0.38);
     expect(AppOpacity.pressed, 0.12);
-    expect(AppEffects.glassOpacity, 0.84);
-    expect(AppEffects.glassBlur, 18);
   });
 
   test('durations are the ones the widget contracts state', () {

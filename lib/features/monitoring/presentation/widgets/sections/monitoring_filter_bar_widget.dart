@@ -12,6 +12,7 @@ import 'package:memox/features/monitoring/presentation/widgets/support/monitorin
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 /// The Server tab's filters (monitoring spec §3.2): five chips in a row that
 /// scrolls, each opening its sheet. A chip that holds a choice shows it, and
@@ -41,40 +42,44 @@ class MonitoringFilterBarWidget extends StatelessWidget {
           monitoringStatusLabel(l10n, status),
     ];
     final ids = [?filter.deviceId, ?filter.userId];
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-      child: Row(
-        spacing: AppSpacing.control,
-        children: [
-          _chip(
-            l10n,
-            l10n.monitoringChipLevel,
-            levels,
-            () => unawaited(_pickLevels(context)),
-          ),
-          _chip(
-            l10n,
-            l10n.monitoringChipStatus,
-            statuses,
-            () => unawaited(_pickStatuses(context)),
-          ),
-          _chip(l10n, l10n.monitoringChipCategory, [
-            for (final category in filter.categories) category.name,
-          ], () => unawaited(_pickCategories(context))),
-          _chip(l10n, l10n.monitoringChipTime, [
-            if (filter.window != LogWindow.all)
-              monitoringWindowLabel(l10n, filter.window),
-          ], () => unawaited(_pickWindow(context))),
-          // A device id and a user id are not names: a pair is counted.
-          _chip(
-            l10n,
-            l10n.monitoringChipDevice,
-            ids,
-            () => unawaited(_pickDeviceUser(context)),
-            isPairNamed: false,
-          ),
-        ],
+    // A cut chip fades at the edge (DEV-306).
+    return MxScrollFade(
+      axis: Axis.horizontal,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+        child: Row(
+          spacing: AppSpacing.control,
+          children: [
+            _chip(
+              l10n,
+              l10n.monitoringChipLevel,
+              levels,
+              () => unawaited(_pickLevels(context)),
+            ),
+            _chip(
+              l10n,
+              l10n.monitoringChipStatus,
+              statuses,
+              () => unawaited(_pickStatuses(context)),
+            ),
+            _chip(l10n, l10n.monitoringChipCategory, [
+              for (final category in filter.categories) category.name,
+            ], () => unawaited(_pickCategories(context))),
+            _chip(l10n, l10n.monitoringChipTime, [
+              if (filter.window != LogWindow.all)
+                monitoringWindowLabel(l10n, filter.window),
+            ], () => unawaited(_pickWindow(context))),
+            // A device id and a user id are not names: a pair is counted.
+            _chip(
+              l10n,
+              l10n.monitoringChipDevice,
+              ids,
+              () => unawaited(_pickDeviceUser(context)),
+              isPairNamed: false,
+            ),
+          ],
+        ),
       ),
     );
   }

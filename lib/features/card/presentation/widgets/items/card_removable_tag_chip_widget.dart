@@ -31,6 +31,8 @@ class CardRemovableTagChipWidget extends StatelessWidget {
       button: true,
       label: context.l10n.cardTagRemove(name),
       excludeSemantics: true,
+      // The excluded chip's tap, kept on this one node (SW-REV-005).
+      onTap: onRemove,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onRemove,

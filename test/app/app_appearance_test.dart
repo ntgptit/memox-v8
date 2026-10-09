@@ -21,6 +21,7 @@ const _dark = AppSettingsEntity(
   theme: ThemeChoice.dark,
   language: LanguageChoice.system,
   reminder: ReminderSettings.defaults,
+  isSpeechAutoPlay: true,
 );
 
 Brightness _brightness(WidgetTester tester) =>

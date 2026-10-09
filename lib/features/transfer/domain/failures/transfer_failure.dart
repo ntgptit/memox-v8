@@ -24,6 +24,21 @@ enum TransferRejection {
   /// holds sub-decks.
   targetRejected,
 
+  /// BR-TRANSFER-001, UC-TRANSFER-001 E7: a sectioned source from a deck
+  /// of cards.
+  sectionsNeedDeckContainer,
+
+  /// BR-DECK-001, UC-TRANSFER-001 E8: the target is at level 10.
+  depthExceeded,
+
+  /// BR-TRANSFER-001, UC-TRANSFER-001 E9: a deck chosen for "Add to
+  /// existing" changed before the commit.
+  sectionTargetChanged,
+
+  /// Spec 2026-10-08 U6: a clash is undecided or the default name is
+  /// refused.
+  sectionChoiceMissing,
+
   /// BR-TRANSFER-007, UC-TRANSFER-002 E5: nothing to export.
   emptyScope,
 

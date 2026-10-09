@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
@@ -210,6 +211,11 @@ class _MxStepperState extends State<MxStepper> {
       button: _canEdit,
       label: widget.valueLabel,
       value: _text,
+      // Said on every visit, not only when the error first appears (audit
+      // 2026-10-07).
+      validationResult: widget.isInvalid
+          ? SemanticsValidationResult.invalid
+          : SemanticsValidationResult.none,
       onTap: _canEdit ? _edit : null,
       onTapHint: _canEdit ? widget.editHint : null,
       child: GestureDetector(

@@ -86,4 +86,55 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(_en.accountLastAdminTitle), findsNothing);
   });
+
+  Widget asker(Future<bool> Function(BuildContext context) ask) => Scaffold(
+    body: Builder(
+      builder: (context) => TextButton(
+        onPressed: () => unawaited(ask(context)),
+        child: const Text('ask'),
+      ),
+    ),
+  );
+
+  double widthOf(WidgetTester tester, String label) =>
+      tester.getSize(find.widgetWithText(MxButton, label)).width;
+
+  libraryTest('every account confirm splits its pair evenly (DEV-179)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      asker(
+        (context) => confirmAccountStep(
+          context,
+          title: 'Sure?',
+          body: 'Body',
+          confirmLabel: 'Do it',
+        ),
+      ),
+    );
+    await tester.tap(find.text('ask'));
+    await tester.pumpAndSettle();
+
+    expect(widthOf(tester, 'Do it'), widthOf(tester, _en.commonCancel));
+  });
+
+  libraryTest('the unsent-loss confirm is the verb alone: its title names '
+      'the count (DEV-179)', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      asker((context) => confirmUnsentLoss(context, 2)),
+    );
+    await tester.tap(find.text('ask'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(_en.accountUnsentTitle(2)), findsOneWidget);
+    expect(
+      find.widgetWithText(MxButton, _en.accountUnsentConfirm),
+      findsOneWidget,
+    );
+  });
 }

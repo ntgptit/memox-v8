@@ -11,6 +11,7 @@ import 'package:memox/features/study/presentation/screens/study_session_screen.d
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -18,7 +19,7 @@ import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 
-// Screen 17, Match: BR-STUDY-049, BR-STUDY-060, BR-STUDY-062,
+// Screen 17, Match (UC-STUDY-005): BR-STUDY-049, BR-STUDY-060, BR-STUDY-062,
 // BR-STUDY-063, BR-STUDY-070; FE-A6 P3 rulings M1, M2, C1, C3, C4, C7, C8.
 
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -413,7 +414,7 @@ void main() {
     final id = await _match(env);
     await pumpLibraryScreen(tester, env, _screen(id));
 
-    expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
+    expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
   });
 
   libraryTest('a tile eases into its tone (Impeccable after P3)', (

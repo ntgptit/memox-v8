@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/card/data/mappers/card_mapper.dart';
+import 'package:memox/features/card/domain/models/card_display_status_model.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
@@ -31,7 +32,14 @@ void main() {
         .watchLevel(parentId: null, now: _now, startOfToday: _today)
         .first;
     final schedules = await db.select(db.cardSchedule).get();
-    return (tile.masteredCount, statusCountsOf(schedules).mastered);
+    final mastered = schedules
+        .where(
+          (s) =>
+              CardDisplayStatus.of(scheduleStateOf(s)) ==
+              CardDisplayStatus.mastered,
+        )
+        .length;
+    return (tile.masteredCount, mastered);
   }
 
   test('eight boxes: box 7 is not mastered, box 8 is, an unlearned card '

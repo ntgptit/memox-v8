@@ -51,7 +51,7 @@ void main() {
     expect(find.text("Couldn't sync. Nothing was lost."), findsOneWidget);
   });
 
-  libraryTest('refused rows offer Try again and Keep on this device', (
+  libraryTest('refused rows offer Try again and Keep on device', (
     tester,
     env,
   ) async {
@@ -237,11 +237,11 @@ void main() {
       const SyncScreen(),
       overrides: syncOverrides(const SyncStatus(rejectedCount: 3), commands),
     );
-    await tester.tap(find.text('Keep on this device'));
+    await tester.tap(find.text('Keep on device'));
     await tester.pumpAndSettle();
     expect(find.text('Keep 3 changes on this device only?'), findsOneWidget);
     expect(commands.keeps, 0);
-    await tester.tap(find.text('Keep on this device').last);
+    await tester.tap(find.text('Keep'));
     await _settle(tester);
     expect(commands.keeps, 1);
     expect(find.text('Kept on this device'), findsOneWidget);
@@ -258,12 +258,12 @@ void main() {
       const SyncScreen(),
       overrides: syncOverrides(const SyncStatus(rejectedCount: 3), commands),
     );
-    await tester.tap(find.text('Keep on this device'));
+    await tester.tap(find.text('Keep on device'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(commands.keeps, 0);
-    await tester.tap(find.text('Keep on this device'));
+    await tester.tap(find.text('Keep on device'));
     await tester.pumpAndSettle();
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();

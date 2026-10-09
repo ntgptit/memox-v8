@@ -10,6 +10,7 @@ import 'package:memox/features/study/presentation/widgets/sections/study_guess_w
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../../support/fake_day_clock.dart';
 import '../../../support/library_harness.dart';
@@ -17,7 +18,7 @@ import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
 
-// Screen 18, Guess: BR-STUDY-037, BR-STUDY-040, BR-STUDY-041,
+// Screen 18, Guess (UC-STUDY-006): BR-STUDY-037, BR-STUDY-040, BR-STUDY-041,
 // BR-STUDY-042, BR-STUDY-063; FE-A6 P3 rulings G1–G3, C1–C4, C6.
 
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -195,7 +196,7 @@ void main() {
     final id = await _guess(env);
     await pumpLibraryScreen(tester, env, _screen(id));
 
-    expect(find.byKey(const ValueKey('study-scroll-fade')), findsNothing);
+    expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
   });
 
   testWidgets('a blocked question shows the notice, and Close ends the '

@@ -43,5 +43,13 @@ final class ProgressDays {
     return DateTime(date.year, date.month, date.day);
   }
 
+  /// The first second of [day] at [utcOffset], as an answer's time is
+  /// stored: the lower bound of a range of days (DEV-208).
+  int startOfDay(int day) => day * Duration.secondsPerDay - utcOffset.inSeconds;
+
+  /// The last second of [day] at [utcOffset]: the upper bound of a range of
+  /// days.
+  int endOfDay(int day) => startOfDay(day + 1) - 1;
+
   int _startOf(ProgressRange range) => today - range.days + 1;
 }

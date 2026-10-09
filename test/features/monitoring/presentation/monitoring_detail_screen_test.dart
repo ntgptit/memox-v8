@@ -16,6 +16,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/shared/widgets/mx_empty_state.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
@@ -58,7 +59,7 @@ Future<void> _markFixed(WidgetTester tester, {String note = ''}) async {
   if (note.isNotEmpty) {
     await tester.enterText(find.byType(TextField), note);
   }
-  await tester.tap(find.widgetWithText(MxButton, 'Mark fixed').last);
+  await tester.tap(find.widgetWithText(MxButton, 'Save'));
   await _settle(tester);
 }
 
@@ -296,7 +297,7 @@ void main() {
 
     await tester.tap(find.widgetWithText(MxButton, 'Reopen'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(MxButton, 'Reopen').last);
+    await tester.tap(find.widgetWithText(MxButton, 'Save'));
     await _settle(tester);
 
     expect(repository.statusChanges.single.status, LogStatus.open);
@@ -424,6 +425,11 @@ void main() {
     expect(find.text('This log is gone'), findsOneWidget);
     expect(find.text('It may have been cleaned up.'), findsOneWidget);
     expect(find.text('Retry'), findsNothing);
+    // A gone item reads in the neutral tone (owner 2026-10-08).
+    expect(
+      tester.widget<MxEmptyState>(find.byType(MxEmptyState)).tone,
+      MxEmptyStateTone.neutral,
+    );
   });
 
   libraryTest('offline and other failures offer Retry, not an admin its '

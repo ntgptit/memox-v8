@@ -22,7 +22,7 @@ void main() {
       final db = AppDatabase(schema.newConnection());
       addTearDown(db.close);
 
-      await verifier.migrateAndValidate(db, 12);
+      await verifier.migrateAndValidate(db, 16);
 
       final row = await db.select(db.appSettings).getSingle();
       expect(row.cardLimit, 35);

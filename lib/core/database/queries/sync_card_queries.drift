@@ -45,20 +45,3 @@ DELETE FROM card WHERE id = :id;
 
 acknowledgeCard(:id AS TEXT, :server_version AS INTEGER):
 UPDATE card SET server_version = :server_version WHERE id = :id;
-
--- BR-CARD-004: every card without a schedule gets the row a new card starts
--- with: its root's scheduler at the root's generation, nothing learned. The
--- values are CardScheduleState.initial's; lib/core cannot call the srs
--- feature, and card_sync_adapter_test.dart holds the two equal. A card in
--- the Trash gets one too, as a local card keeps its row when trashed.
-ensureCardSchedules:
-INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version,
-  generation, answer_count, lapse_count, current_box, ease_factor,
-  interval_days, repetitions)
-SELECT c.id, r.scheduler_type, r.scheduler_version, r.generation, 0, 0,
-  CASE r.scheduler_type WHEN 'eight_box' THEN 1 END,
-  CASE r.scheduler_type WHEN 'sm2' THEN 2.5 END,
-  CASE r.scheduler_type WHEN 'sm2' THEN 0 END,
-  CASE r.scheduler_type WHEN 'sm2' THEN 0 END
-FROM card c JOIN deck d ON d.id = c.deck_id JOIN deck r ON r.id = d.root_id
-WHERE NOT EXISTS (SELECT 1 FROM card_schedule s WHERE s.card_id = c.id);

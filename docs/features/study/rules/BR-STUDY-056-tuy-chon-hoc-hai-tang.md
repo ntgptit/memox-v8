@@ -9,7 +9,7 @@ superseded_by:
 
 Tùy chọn học MUST có hai tầng: mặc định toàn app, và ghi đè trên **root deck**. Deck có giá trị riêng thì dùng giá trị đó; NULL thì theo mặc định. Deck con MUST NOT có tùy chọn riêng — tra qua `root_id` như BR-DECK-025.
 
-**Enforced by:** db
+**Enforced by:** domain + store
 **Liên quan:** BR-DECK-025, BR-STUDY-024, BR-STUDY-057
 
 ## Lý do

@@ -18,5 +18,9 @@ extension CardRejectionMessage on AppLocalizations {
     CardRejection.sameDeck => cardRejectionSameDeck,
     CardRejection.crossRootMove => cardRejectionCrossRootMove,
     CardRejection.targetInTrash => cardRejectionTargetInTrash,
+    // Import reasons (spec 2026-10-08), with the deck feature's words.
+    CardRejection.notADeckContainer => deckRejectionNotADeckContainer,
+    CardRejection.depthExceeded => deckRejectionDepthExceeded,
+    CardRejection.sectionTargetChanged => cardRejectionTargetNotFound,
   };
 }

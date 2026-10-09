@@ -44,14 +44,14 @@ WHERE s.status = 'in_progress' AND s.started_at >= :start_of_today
 ORDER BY s.started_at DESC, s.id DESC
 LIMIT 1;
 
--- Study Home spec D4: the earliest due date after :now of a learned card
--- out of the Trash.
-nextDueAtAfter(:now AS DATETIME):
+-- Study Home spec D4: the earliest due date of a resting card out of the
+-- Trash; $is_scheduled is CardDueSql's (BR-STUDY-068, DEV-221).
+nextDueAtAfter:
 SELECT MIN(cs.due_at) FROM card c
 JOIN deck k ON k.id = c.deck_id
 JOIN card_schedule cs ON cs.card_id = c.id
 WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
-  AND cs.learned_at IS NOT NULL AND cs.due_at > :now;
+  AND $is_scheduled;
 
 modesOfSession(:session_id AS TEXT):
 SELECT DISTINCT mode FROM study_queue_items WHERE session_id = :session_id

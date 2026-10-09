@@ -115,6 +115,11 @@ void main() {
     );
     expect(find.text(_en.commonBack), findsOneWidget);
     expect(find.text(_en.commonRetry), findsNothing);
+    // A gone item reads in the neutral tone (owner 2026-10-08).
+    expect(
+      tester.widget<MxEmptyState>(find.byType(MxEmptyState)).tone,
+      MxEmptyStateTone.neutral,
+    );
   });
 
   libraryTest('a deck moved to the Trash while its level is open turns into '

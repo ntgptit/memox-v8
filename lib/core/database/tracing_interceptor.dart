@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/logging/app_logger.dart';
+import 'package:memox/core/logging/sql_log_switch.dart';
 
 /// Logs every statement [AppDatabase] runs (ADR-018; spec
 /// 2026-09-29-app-logging-design.md §3): `debug db.query`, a slow one as
@@ -12,9 +13,17 @@ import 'package:memox/core/logging/app_logger.dart';
 /// sees the call, so it includes the wait for Drift's lock on the connection
 /// (statements queue behind each other). A `db.slow_query` can therefore mean
 /// a busy connection, not a slow statement; read its neighbours in the log.
+///
+/// An admin's switch ([SqlLogSwitch]) turns the per-statement row off; slow,
+/// failed and transaction rows always log (SQL log switch spec §4.2).
 final class TracingInterceptor extends QueryInterceptor {
-  TracingInterceptor({this._logger, int Function()? micros})
-    : _micros = micros ?? (() => _stopwatch.elapsedMicroseconds);
+  TracingInterceptor({
+    AppLogger? logger,
+    int Function()? micros,
+    SqlLogSwitch? sqlLog,
+  }) : _logger = logger,
+       _sqlLog = sqlLog,
+       _micros = micros ?? (() => _stopwatch.elapsedMicroseconds);
 
   static const slowMs = 50;
   static const verySlowMs = 150;
@@ -28,7 +37,12 @@ final class TracingInterceptor extends QueryInterceptor {
   static final _stopwatch = Stopwatch()..start();
 
   final AppLogger? _logger;
+  final SqlLogSwitch? _sqlLog;
   final int Function() _micros;
+
+  /// Off drops only the per-statement debug row (SQL log switch spec §1);
+  /// no switch means on.
+  bool get _logsStatements => _sqlLog?.value ?? true;
 
   /// When each open transaction began, on [_micros]'s clock. Drift hands the
   /// commit or rollback the executor [beginTransaction] returned.
@@ -191,7 +205,7 @@ final class TracingInterceptor extends QueryInterceptor {
       _log.warning('db.slow_query', category: LogCategory.db, context: context);
     } else if (ms >= slowMs) {
       _log.info('db.slow_query', category: LogCategory.db, context: context);
-    } else {
+    } else if (_logsStatements) {
       _log.debug('db.query', category: LogCategory.db, context: context);
     }
   }

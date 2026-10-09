@@ -11,7 +11,7 @@ UC-REMINDER-001; spec
 
 ## Entry points
 
-- Screen 23, App section, row "Daily reminder" ("Off" or "On · {HH:mm}"). Route
+- Screen 23 (the hub), App section, row "Daily reminder" ("Off" or "On · {HH:mm}"). Route
   `/settings/reminder`, on the root navigator like Theme and Language; Back returns to 23.
 
 ## Layout

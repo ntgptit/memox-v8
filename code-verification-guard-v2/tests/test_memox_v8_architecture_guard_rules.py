@@ -94,3 +94,16 @@ def test_reminder_plugins_are_imported_by_their_data_source_only(tmp_path: Path)
             REMINDER_PLUGINS, tmp_path / f"{plugin}-door",
             {PLUGINS_DOOR: line},
         ), plugin
+
+
+TTS_PLUGIN = "memox_v8.architecture.tts_plugin_has_one_door"
+SPEECH_DOOR = "lib/core/speech/plugin_speech_synthesizer.dart"
+
+
+def test_tts_plugin_is_imported_by_its_door_only(tmp_path: Path) -> None:
+    line = "import 'package:flutter_tts/flutter_tts.dart';\n"
+    assert _violations_at(
+        TTS_PLUGIN, tmp_path / "leak",
+        {"lib/features/study/presentation/screens/study_session_screen.dart": line},
+    )
+    assert not _violations_at(TTS_PLUGIN, tmp_path / "door", {SPEECH_DOOR: line})
