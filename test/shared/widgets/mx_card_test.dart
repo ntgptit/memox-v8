@@ -126,10 +126,7 @@ void main() {
         AppColorSchemes.light,
         MxSemanticColors.light,
       );
-      final raised = AppDecorations.raisedCard(
-        AppColorSchemes.light,
-        derived,
-      ).color!;
+      final raised = AppDecorations.raisedCard(AppColorSchemes.light).color!;
 
       expect(
         _surface(tester).color,
@@ -180,11 +177,10 @@ void main() {
         .map((material) => material.color)
         .toList();
     final scheme = AppColorSchemes.light;
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
 
     expect(colors, [
-      AppDecorations.successCard(scheme, derived).color,
-      AppDecorations.dangerCard(scheme, derived).color,
+      AppDecorations.successCard(scheme, MxSemanticColors.light).color,
+      AppDecorations.dangerCard(scheme).color,
     ]);
   });
 

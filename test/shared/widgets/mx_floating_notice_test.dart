@@ -44,7 +44,7 @@ void main() {
       _ground(tester),
       AppDecorations.warningCard(
         scheme,
-        derived,
+        semantic,
       ).copyWith(boxShadow: AppShadows.overlay(scheme)),
     );
     expect((glyph.size, glyph.color), (16, derived.warningInk));
