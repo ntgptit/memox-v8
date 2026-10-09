@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
@@ -13,6 +15,24 @@ Border _ring(WidgetTester tester) =>
                 as BoxDecoration)
             .border!
         as Border;
+
+// The painted focus ring: the one CustomPaint whose painter is the shared one.
+Finder _ringFinder() => find.byWidgetPredicate(
+  (w) => w is CustomPaint && w.foregroundPainter is MxFocusRingPainter,
+);
+
+MxFocusRingPainter _painter(WidgetTester tester) =>
+    tester.widget<CustomPaint>(_ringFinder()).foregroundPainter!
+        as MxFocusRingPainter;
+
+void _showFocusRings() {
+  FocusManager.instance.highlightStrategy =
+      FocusHighlightStrategy.alwaysTraditional;
+  addTearDown(
+    () => FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.automatic,
+  );
+}
 
 void main() {
   final scheme = AppColorSchemes.light;
@@ -215,5 +235,37 @@ void main() {
       isSemantics(hasEnabledState: true, isEnabled: false),
     );
     handle.dispose();
+  });
+
+  testWidgets('focus: the shared ring inside the row in primaryForeground', (
+    tester,
+  ) async {
+    _showFocusRings();
+    await pumpMx(
+      tester,
+      MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
+    );
+    expect(_ringFinder(), findsNothing);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+
+    expect(_ringFinder(), findsOneWidget);
+    expect(_painter(tester).color, MxSemanticColors.light.primaryForeground);
+    expect(_painter(tester).placement, MxFocusRingPlacement.inside);
+  });
+
+  testWidgets('a row without onSelected takes no focus and paints no ring', (
+    tester,
+  ) async {
+    _showFocusRings();
+    await pumpMx(
+      tester,
+      const MxOptionRow(title: 'SM-2', isSelected: false, onSelected: null),
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+
+    expect(_ringFinder(), findsNothing);
   });
 }

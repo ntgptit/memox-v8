@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 
 /// A top-level destination: an outlined resting glyph, a filled selected one.
 @immutable
@@ -105,39 +106,44 @@ class _Item extends StatelessWidget {
       container: true,
       selected: isSelected,
       button: true,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: AppSpacing.micro,
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: isSelected ? colors.primaryContainer : null,
-                borderRadius: BorderRadius.circular(AppRadius.full),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.gutter,
-                  vertical: AppSpacing.micro,
+      // The ring wraps the InkWell, whose node takes the focus.
+      child: MxFocusRing(
+        radius: BorderRadius.circular(AppRadius.md),
+        placement: MxFocusRingPlacement.inside,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: AppSpacing.micro,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: isSelected ? colors.primaryContainer : null,
+                  borderRadius: BorderRadius.circular(AppRadius.full),
                 ),
-                child: Icon(
-                  isSelected ? destination.selectedIcon : destination.icon,
-                  size: AppIconSize.compact,
-                  color: isSelected
-                      ? colors.onPrimaryContainer
-                      : colors.onSurfaceVariant,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.gutter,
+                    vertical: AppSpacing.micro,
+                  ),
+                  child: Icon(
+                    isSelected ? destination.selectedIcon : destination.icon,
+                    size: AppIconSize.compact,
+                    color: isSelected
+                        ? colors.onPrimaryContainer
+                        : colors.onSurfaceVariant,
+                  ),
                 ),
               ),
-            ),
-            Text(
-              destination.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.textStyles.navLabel(isSelected: isSelected),
-            ),
-          ],
+              Text(
+                destination.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textStyles.navLabel(isSelected: isSelected),
+              ),
+            ],
+          ),
         ),
       ),
     );

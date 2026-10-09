@@ -423,6 +423,50 @@ void main() {
 
     expect(marked - plain, 18 + 4);
   });
+
+  testWidgets('an unfilled tone presses through its ink', (tester) async {
+    Color? pressed(WidgetTester tester) => tester
+        .widget<TextButton>(find.byType(TextButton))
+        .style!
+        .overlayColor!
+        .resolve({WidgetState.pressed});
+
+    await pumpMx(
+      tester,
+      MxButton(label: 'Go', tone: MxButtonTone.outline, onPressed: () {}),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      pressed(tester),
+      MxSemanticColors.light.primaryForeground.withValues(
+        alpha: AppOpacity.pressed,
+      ),
+    );
+
+    await pumpMx(
+      tester,
+      MxButton(label: 'Go', tone: MxButtonTone.text, onPressed: () {}),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      pressed(tester),
+      MxSemanticColors.light.primaryForeground.withValues(
+        alpha: AppOpacity.pressed,
+      ),
+    );
+
+    // The ghost is the chip size: it paints a fill, so it presses through
+    // the shadow like every filled tone.
+    await pumpMx(
+      tester,
+      MxButton(label: 'Go', size: MxButtonSize.chip, onPressed: () {}),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      pressed(tester),
+      AppColorSchemes.light.shadow.withValues(alpha: AppOpacity.pressed),
+    );
+  });
 }
 
 double _ratio(Color a, Color b) {

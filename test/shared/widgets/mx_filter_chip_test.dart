@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
@@ -199,6 +200,34 @@ void main() {
     expect(
       (ring.foregroundPainter! as MxFocusRingPainter).color,
       MxSemanticColors.light.primaryForeground,
+    );
+  });
+
+  testWidgets('pressed lays the label ink at the pressed alpha', (
+    tester,
+  ) async {
+    Color? pressed(WidgetTester tester) => tester
+        .widget<TextButton>(find.byType(TextButton))
+        .style!
+        .overlayColor!
+        .resolve({WidgetState.pressed});
+
+    await pumpMx(
+      tester,
+      MxFilterChip(label: 'Due', isSelected: false, onSelected: (_) {}),
+    );
+    expect(
+      pressed(tester),
+      scheme.onSurface.withValues(alpha: AppOpacity.pressed),
+    );
+
+    await pumpMx(
+      tester,
+      MxFilterChip(label: 'Due', isSelected: true, onSelected: (_) {}),
+    );
+    expect(
+      pressed(tester),
+      scheme.onPrimary.withValues(alpha: AppOpacity.pressed),
     );
   });
 }

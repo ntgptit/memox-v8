@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/shared/widgets/mx_linear_progress.dart';
 
@@ -86,5 +87,30 @@ void main() {
 
   test('a value outside 0 to 1 is a programming error', () {
     expect(() => MxLinearProgress(value: 1.2), throwsAssertionError);
+  });
+
+  testWidgets('the track is surfaceContainerLow', (tester) async {
+    for (final brightness in Brightness.values) {
+      final scheme = brightness == Brightness.light
+          ? AppColorSchemes.light
+          : AppColorSchemes.dark;
+      await pumpMx(
+        tester,
+        const SizedBox(width: 200, child: MxLinearProgress(value: 0.6)),
+        brightness: brightness,
+      );
+      await tester.pumpAndSettle();
+
+      final track = tester.widget<ColoredBox>(
+        find
+            .descendant(
+              of: find.byType(MxLinearProgress),
+              matching: find.byType(ColoredBox),
+            )
+            .first,
+      );
+      expect(track.color, scheme.surfaceContainerLow);
+      expect(track.color, MasteryRamp.track(scheme));
+    }
   });
 }

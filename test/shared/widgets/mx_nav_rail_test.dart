@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -48,6 +51,24 @@ Widget _rail({
 
 Finder _item(String label) =>
     find.ancestor(of: find.text(label), matching: find.byType(InkWell));
+
+// The painted focus ring: the one CustomPaint whose painter is the shared one.
+Finder _ringFinder() => find.byWidgetPredicate(
+  (w) => w is CustomPaint && w.foregroundPainter is MxFocusRingPainter,
+);
+
+MxFocusRingPainter _painter(WidgetTester tester) =>
+    tester.widget<CustomPaint>(_ringFinder()).foregroundPainter!
+        as MxFocusRingPainter;
+
+void _showFocusRings() {
+  FocusManager.instance.highlightStrategy =
+      FocusHighlightStrategy.alwaysTraditional;
+  addTearDown(
+    () => FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.automatic,
+  );
+}
 
 void main() {
   final scheme = AppColorSchemes.light;
@@ -149,5 +170,25 @@ void main() {
       padding: inset,
     );
     expect(tester.getSize(find.byType(MxNavRail)).width, 80 + 24);
+  });
+
+  testWidgets('focus: Tab lands on the first destination; one ring, '
+      'primaryForeground, and it moves', (tester) async {
+    _showFocusRings();
+    await pumpMx(tester, _rail());
+    expect(_ringFinder(), findsNothing);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(_ringFinder(), findsOneWidget);
+    expect(_painter(tester).color, MxSemanticColors.light.primaryForeground);
+    expect(_painter(tester).placement, MxFocusRingPlacement.inside);
+    final first = tester.getRect(_ringFinder());
+    expect(first.center, tester.getCenter(_item('Library')));
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(_ringFinder(), findsOneWidget);
+    expect(tester.getRect(_ringFinder()), isNot(first));
   });
 }

@@ -5,6 +5,7 @@ import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 
 /// The top-level destinations in a rail on the leading edge, for windows of
 /// [AppSize.navRailBreakpoint] and wider (FE-C5). The kit draws no rail: it
@@ -81,49 +82,54 @@ class _RailItem extends StatelessWidget {
       container: true,
       selected: isSelected,
       button: true,
-      child: InkWell(
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: _minHeight,
-            minWidth: AppSize.navRail,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: AppSpacing.micro,
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: isSelected ? colors.primaryContainer : null,
-                  borderRadius: BorderRadius.circular(AppRadius.full),
+      // The ring wraps the InkWell, whose node takes the focus.
+      child: MxFocusRing(
+        radius: BorderRadius.circular(AppRadius.md),
+        placement: MxFocusRingPlacement.inside,
+        child: InkWell(
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: _minHeight,
+              minWidth: AppSize.navRail,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: AppSpacing.micro,
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: isSelected ? colors.primaryContainer : null,
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.gutter,
+                      vertical: AppSpacing.micro,
+                    ),
+                    child: Icon(
+                      isSelected ? destination.selectedIcon : destination.icon,
+                      size: AppIconSize.compact,
+                      color: isSelected
+                          ? colors.onPrimaryContainer
+                          : colors.onSurfaceVariant,
+                    ),
+                  ),
                 ),
-                child: Padding(
+                Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                    vertical: AppSpacing.micro,
+                    horizontal: AppSpacing.micro,
                   ),
-                  child: Icon(
-                    isSelected ? destination.selectedIcon : destination.icon,
-                    size: AppIconSize.compact,
-                    color: isSelected
-                        ? colors.onPrimaryContainer
-                        : colors.onSurfaceVariant,
+                  child: Text(
+                    destination.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: context.textStyles.navLabel(isSelected: isSelected),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.micro,
-                ),
-                child: Text(
-                  destination.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textStyles.navLabel(isSelected: isSelected),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

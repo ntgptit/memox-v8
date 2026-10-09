@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_focus_ring.dart';
 
 /// A single-choice row (algorithm, study mode, direction). The radio is a ring
 /// that thickens when selected, so nothing moves between states. The whole
@@ -51,61 +53,66 @@ class MxOptionRow extends StatelessWidget {
         inMutuallyExclusiveGroup: true,
         // A row that cannot be picked says so (SW-REV-006).
         enabled: onSelected != null,
-        child: InkWell(
-          onTap: onSelected,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.gutter,
-                vertical: AppSpacing.grouped,
-              ),
-              child: Row(
-                spacing: AppSpacing.grouped,
-                children: [
-                  _dim(
-                    isDim,
-                    SizedBox(
-                      width: _radioColumn,
-                      child: Center(
-                        heightFactor: 1,
-                        child: DecoratedBox(
-                          key: const ValueKey('mx-option-radio'),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              // A stroke glyph, so primaryForeground: it
-                              // reads 3:1 on a sheet. The empty ring is a
-                              // control edge: outline, 3:1 on every ground
-                              // (SW-REV-001).
-                              color: isSelected
-                                  ? context.semanticColors.primaryForeground
-                                  : context.colors.outline,
-                              width: isSelected
-                                  ? AppStroke.selectedRing
-                                  : AppStroke.control,
+        // The ring wraps the InkWell, whose node takes the focus.
+        child: MxFocusRing(
+          radius: BorderRadius.circular(AppRadius.md),
+          placement: MxFocusRingPlacement.inside,
+          child: InkWell(
+            onTap: onSelected,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.gutter,
+                  vertical: AppSpacing.grouped,
+                ),
+                child: Row(
+                  spacing: AppSpacing.grouped,
+                  children: [
+                    _dim(
+                      isDim,
+                      SizedBox(
+                        width: _radioColumn,
+                        child: Center(
+                          heightFactor: 1,
+                          child: DecoratedBox(
+                            key: const ValueKey('mx-option-radio'),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                // A stroke glyph, so primaryForeground: it
+                                // reads 3:1 on a sheet. The empty ring is a
+                                // control edge: outline, 3:1 on every ground
+                                // (SW-REV-001).
+                                color: isSelected
+                                    ? context.semanticColors.primaryForeground
+                                    : context.colors.outline,
+                                width: isSelected
+                                    ? AppStroke.selectedRing
+                                    : AppStroke.control,
+                              ),
                             ),
+                            child: const SizedBox.square(dimension: _radioSize),
                           ),
-                          child: const SizedBox.square(dimension: _radioSize),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _dim(isDim, Text(title, style: styles.rowTitle)),
-                        if (description case final text?) ...[
-                          const SizedBox(height: _descriptionGap),
-                          Text(text, style: styles.rowDescription),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _dim(isDim, Text(title, style: styles.rowTitle)),
+                          if (description case final text?) ...[
+                            const SizedBox(height: _descriptionGap),
+                            Text(text, style: styles.rowDescription),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                  ?trailing,
-                ],
+                    ?trailing,
+                  ],
+                ),
               ),
             ),
           ),

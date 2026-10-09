@@ -287,4 +287,34 @@ void main() {
       expect((rect.left, rect.width), (16, 360 - 2 * 16));
     });
   });
+
+  testWidgets("the action's focus side is inversePrimary", (tester) async {
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => MxButton(
+          label: 'Delete',
+          onPressed: () => showMxSnackbar(
+            context,
+            message: 'Moved to Trash',
+            actionLabel: 'Undo',
+            onAction: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+
+    final action = tester.widget<TextButton>(
+      find.descendant(
+        of: find.byType(SnackBar),
+        matching: find.byType(TextButton),
+      ),
+    );
+    expect(
+      action.style!.side!.resolve({WidgetState.focused})!.color,
+      scheme.inversePrimary,
+    );
+  });
 }
