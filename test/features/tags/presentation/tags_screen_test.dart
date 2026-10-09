@@ -194,6 +194,16 @@ void main() {
 
     final glyph = tester.element(find.byIcon(AppIcons.merge));
     expect(IconTheme.of(glyph).color, glyph.semanticColors.onWarningContainer);
+    // Text on a container reads its on-container (spec 4.6), notes included.
+    for (final text in [
+      _en.tagsMergeNotice('ngữ pháp', 'động từ'),
+      _en.tagsMergeSafe,
+    ]) {
+      expect(
+        tester.widget<Text>(find.text(text)).style?.color,
+        glyph.semanticColors.onWarningContainer,
+      );
+    }
   });
 
   libraryTest('nameTooLong: the counter and the field say so, and Rename is '

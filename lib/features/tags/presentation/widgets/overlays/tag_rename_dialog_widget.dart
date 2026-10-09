@@ -209,11 +209,12 @@ class _MergePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final note = context.textStyles.noteText;
     final ink = context.semanticColors.onWarningContainer;
+    // Text on a container reads its on-container, spec 4.6.
+    final note = context.textStyles.noteText.copyWith(color: ink);
     return MxCard(
       isWarning: true,
-      // The panel's glyphs take the warning ink.
+      // The panel's glyphs take the same on-container ink.
       child: IconTheme.merge(
         data: IconThemeData(color: ink),
         child: Column(

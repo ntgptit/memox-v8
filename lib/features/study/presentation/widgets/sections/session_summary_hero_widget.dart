@@ -43,6 +43,14 @@ class SessionSummaryHeroWidget extends StatelessWidget {
       view.deckName,
     );
     final (body, strong) = _bodyOf(l10n);
+    // Text on a container reads its on-container, spec 4.6; the paused
+    // surface is a plain card and keeps its neutral roles.
+    final ink = switch (tone) {
+      SummaryTone.success => context.semanticColors.onSuccessContainer,
+      SummaryTone.ended => context.semanticColors.onWarningContainer,
+      SummaryTone.error => context.colors.onErrorContainer,
+      SummaryTone.paused => null,
+    };
     return MxCard(
       isSuccess: tone == SummaryTone.success,
       isWarning: tone == SummaryTone.ended,
@@ -64,7 +72,7 @@ class SessionSummaryHeroWidget extends StatelessWidget {
             shown,
             semanticsLabel: overline,
             textAlign: TextAlign.center,
-            style: styles.eyebrow,
+            style: styles.eyebrow.copyWith(color: ink),
           ),
           const SizedBox(height: AppSpacing.micro),
           Semantics(
@@ -72,11 +80,11 @@ class SessionSummaryHeroWidget extends StatelessWidget {
             child: Text(
               _titleOf(l10n),
               textAlign: TextAlign.center,
-              style: styles.summaryTitle,
+              style: styles.summaryTitle.copyWith(color: ink),
             ),
           ),
           const SizedBox(height: AppSpacing.micro),
-          _BodyText(body: body, strong: strong),
+          _BodyText(body: body, strong: strong, ink: ink),
           if (outcome.drawsStats && summary.hasAnswers) ...[
             const SizedBox(height: AppSpacing.grouped),
             _Stats(
@@ -89,6 +97,7 @@ class SessionSummaryHeroWidget extends StatelessWidget {
               // Only a finished session had later rounds (critique
               // 2026-10-02, F1).
               isWrongExplained: tone == SummaryTone.success,
+              ink: ink,
             ),
           ],
         ],
@@ -163,10 +172,13 @@ class SessionSummaryHeroWidget extends StatelessWidget {
 /// The body with its [strong] run in the strong role, as the kit bolds the
 /// count; the whole [body] plain when it has no such run.
 class _BodyText extends StatelessWidget {
-  const _BodyText({required this.body, required this.strong});
+  const _BodyText({required this.body, required this.strong, this.ink});
 
   final String body;
   final String? strong;
+
+  /// The container's on-container; null keeps the neutral roles.
+  final Color? ink;
 
   @override
   Widget build(BuildContext context) {
@@ -174,14 +186,21 @@ class _BodyText extends StatelessWidget {
     final run = strong;
     final start = run == null ? -1 : body.indexOf(run);
     if (run == null || start < 0) {
-      return Text(body, textAlign: TextAlign.center, style: styles.emptyBody);
+      return Text(
+        body,
+        textAlign: TextAlign.center,
+        style: styles.emptyBody.copyWith(color: ink),
+      );
     }
     return Text.rich(
       TextSpan(
-        style: styles.emptyBody,
+        style: styles.emptyBody.copyWith(color: ink),
         children: [
           TextSpan(text: body.substring(0, start)),
-          TextSpan(text: run, style: styles.summaryBodyStrong),
+          TextSpan(
+            text: run,
+            style: styles.summaryBodyStrong.copyWith(color: ink),
+          ),
           TextSpan(text: body.substring(start + run.length)),
         ],
       ),
@@ -199,6 +218,7 @@ class _Stats extends StatelessWidget {
     required this.summary,
     required this.isFinishedStated,
     required this.isWrongExplained,
+    this.ink,
   });
 
   final StudySessionView view;
@@ -210,6 +230,9 @@ class _Stats extends StatelessWidget {
 
   /// Wrong cards came back in later rounds only in a finished session.
   final bool isWrongExplained;
+
+  /// The container's on-container; null keeps the neutral roles.
+  final Color? ink;
 
   @override
   Widget build(BuildContext context) {
@@ -255,7 +278,7 @@ class _Stats extends StatelessWidget {
           Text(
             l10n.summaryWrongExplained,
             textAlign: TextAlign.center,
-            style: context.textStyles.emptyBody,
+            style: context.textStyles.emptyBody.copyWith(color: ink),
           ),
       ],
     );

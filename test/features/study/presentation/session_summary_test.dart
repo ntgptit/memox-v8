@@ -240,6 +240,57 @@ void main() {
     expect(wrongCountColor(), context.colors.onSurface);
   });
 
+  libraryTest('the hero\'s own text reads its container\'s on-container, '
+      'and stays neutral on the paused surface (spec 4.6)', (
+    tester,
+    env,
+  ) async {
+    Set<Color?> heroInks() {
+      final tiles = find.descendant(
+        of: find.byType(SessionSummaryHeroWidget),
+        matching: find.byType(MxStatTile),
+      );
+      final own = find
+          .descendant(
+            of: find.byType(SessionSummaryHeroWidget),
+            matching: find.byType(Text),
+          )
+          .evaluate()
+          .where(
+            (e) => find
+                .ancestor(of: find.byWidget(e.widget), matching: tiles)
+                .evaluate()
+                .isEmpty,
+          );
+      return {
+        for (final e in own)
+          (e.widget as Text).style?.color ??
+              (e.widget as Text).textSpan?.style?.color,
+      };
+    }
+
+    for (final (outcome, pick)
+        in <(SummaryOutcome, Color Function(BuildContext))>[
+          (
+            SummaryOutcome.reviewFinished,
+            (c) => c.semanticColors.onSuccessContainer,
+          ),
+          (SummaryOutcome.reset, (c) => c.semanticColors.onWarningContainer),
+          (SummaryOutcome.saveError, (c) => c.colors.onErrorContainer),
+        ]) {
+      await _pump(tester, env, summaryView(), outcome);
+      final context = tester.element(find.byType(SessionSummaryHeroWidget));
+      expect(heroInks(), {pick(context)}, reason: outcome.name);
+    }
+
+    await _pump(tester, env, summaryView(), SummaryOutcome.interrupted);
+    final context = tester.element(find.byType(SessionSummaryHeroWidget));
+    expect(
+      heroInks(),
+      isNot(contains(context.semanticColors.onWarningContainer)),
+    );
+  });
+
   libraryTest('a session that ended before its first turn draws neither '
       'stats nor facts (FE-A6 D18)', (tester, env) async {
     await _pump(
@@ -420,7 +471,13 @@ void main() {
     expect(overline, findsOneWidget);
     expect(find.text('REVIEW SESSION · NHÀ HÀNG'), findsNothing);
     final text = tester.widget<Text>(overline);
-    expect(text.style, tester.element(overline).textStyles.eyebrow);
+    final context = tester.element(overline);
+    expect(
+      text.style,
+      context.textStyles.eyebrow.copyWith(
+        color: context.semanticColors.onSuccessContainer,
+      ),
+    );
     expect(
       text.semanticsLabel,
       _en.summaryOverline(_en.summaryKindReview, 'Nhà hàng'),
