@@ -323,7 +323,7 @@ void main() {
     expect(syncCheck(), findsOneWidget);
     expect(
       tester.widget<Icon>(syncCheck()).color,
-      tester.element(syncCheck()).derivedColors.successInk,
+      tester.element(syncCheck()).semanticColors.success,
     );
   });
 

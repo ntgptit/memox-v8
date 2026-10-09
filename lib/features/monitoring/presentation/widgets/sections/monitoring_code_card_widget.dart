@@ -89,7 +89,7 @@ class MonitoringCodeCardWidget extends StatelessWidget {
           text: text,
           style: styles.code,
           frameStyle: styles.code.copyWith(
-            color: context.derivedColors.primaryInk,
+            color: context.semanticColors.primaryForeground,
           ),
         ),
       ),

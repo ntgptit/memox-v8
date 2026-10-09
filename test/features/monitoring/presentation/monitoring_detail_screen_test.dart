@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/features/monitoring/di/monitoring_repository_provider.dart';
@@ -155,6 +156,11 @@ void main() {
     final suspension = find.text('<asynchronous suspension>');
     final base = tester.widget<Text>(first).style?.color;
     expect(tester.widget<Text>(zero).style?.color, isNot(base));
+    // The frame number reads in the primary foreground role.
+    expect(
+      tester.widget<Text>(zero).style?.color,
+      tester.element(zero).semanticColors.primaryForeground,
+    );
     expect(
       tester.widget<Text>(find.text('#1')).style?.color,
       tester.widget<Text>(zero).style?.color,

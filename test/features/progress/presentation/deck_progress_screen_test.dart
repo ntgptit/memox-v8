@@ -12,6 +12,7 @@ import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/shared/widgets/mx_status_badge.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
@@ -87,6 +88,36 @@ void main() {
 
     expect(taps.decks, [grammar.id]);
     expect(taps.ancestors, [null]);
+  });
+
+  libraryTest('the card-days line paints learning and reviewing in their '
+      'status roles', (tester, env) async {
+    final korean = await studiedDeck(
+      env,
+      'Korean',
+      days: [(daysAgo: 0, learning: 1, reviewing: 2)],
+    );
+    await pumpLibraryScreen(tester, env, _screen(korean, _Taps()));
+    await _settle(tester);
+
+    final whole = find.widgetWithText(MxListRow, _en.progressWholeDeck);
+    final line = find.descendant(
+      of: whole,
+      matching: find.textContaining(_en.progressRowCardDaysLead),
+    );
+    final spans = (tester.widget<Text>(line).textSpan! as TextSpan).children!
+        .cast<TextSpan>();
+    final context = tester.element(line);
+    Color? colorOf(String text) =>
+        spans.singleWhere((span) => span.text == text).style?.color;
+    expect(
+      colorOf(_en.progressRowLearning(1)),
+      MxCardStatus.learning.foreground(context),
+    );
+    expect(
+      colorOf(_en.progressRowReviewing(2)),
+      MxCardStatus.reviewing.foreground(context),
+    );
   });
 
   libraryTest('a deck with no children keeps its total and says it is all of '

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
@@ -117,5 +119,19 @@ void main() {
       isSemantics(hasTapAction: true),
     );
     handle.dispose();
+  });
+
+  libraryTest('the chosen theme wears a check in the primary foreground role', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, const ThemeScreen());
+
+    final check = find.byIcon(AppIcons.check);
+    expect(check, findsOneWidget);
+    expect(
+      tester.widget<Icon>(check).color,
+      tester.element(check).semanticColors.primaryForeground,
+    );
   });
 }

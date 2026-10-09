@@ -50,7 +50,7 @@ class SyncStatusSectionWidget extends StatelessWidget {
                   child: Icon(
                     AppIcons.check,
                     size: AppIconSize.compact,
-                    color: context.derivedColors.successInk,
+                    color: context.semanticColors.success,
                   ),
                 )
               : null,
