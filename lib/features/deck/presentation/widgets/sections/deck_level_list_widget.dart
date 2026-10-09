@@ -94,7 +94,7 @@ class DeckLevelListWidget extends ConsumerWidget {
     // Ruling L4: an empty level is the first run; an empty filter is not.
     if (!level.hasDecks) {
       return MxScreenScroll(
-        clearance: MxScrollClearance.fabAboveNav,
+        clearance: MxScrollClearance.fab,
         children: [
           const SizedBox(height: AppSpacing.gutter),
           emptyState,
@@ -102,7 +102,7 @@ class DeckLevelListWidget extends ConsumerWidget {
       );
     }
     return MxScreenScroll(
-      clearance: MxScrollClearance.fabAboveNav,
+      clearance: MxScrollClearance.fab,
       children: [
         // Screen 01: the strip or the summary sits close under the search
         // field or the breadcrumb, whose own inset is the gap.

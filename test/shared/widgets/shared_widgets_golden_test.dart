@@ -285,7 +285,7 @@ void main() {
 
   testWidgets('MxAppShell with nav + FAB, and with a footer', (tester) async {
     Widget rows() => MxScreenScroll(
-      clearance: MxScrollClearance.fabAboveNav,
+      clearance: MxScrollClearance.fab,
       children: [
         for (var i = 0; i < 12; i++)
           Padding(

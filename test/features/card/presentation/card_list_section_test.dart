@@ -434,7 +434,7 @@ void main() {
     MxScrollClearance clearance() =>
         tester.widget<MxScreenScroll>(find.byType(MxScreenScroll)).clearance;
 
-    expect(clearance(), MxScrollClearance.fabAboveNav);
+    expect(clearance(), MxScrollClearance.fab);
 
     await tester.longPress(find.byType(CardRowWidget).first);
     await tester.pump();

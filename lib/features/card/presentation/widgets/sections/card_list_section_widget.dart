@@ -289,7 +289,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     // The FAB shows unless cards are selected; the list's end clears it.
     final clearance = isSelecting
         ? MxScrollClearance.base
-        : MxScrollClearance.fabAboveNav;
+        : MxScrollClearance.fab;
     final provider = cardListProvider(
       deckId: widget.deckId,
       filter: request.filter,

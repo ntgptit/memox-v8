@@ -88,7 +88,7 @@ class DeckLevelBodyWidget extends ConsumerWidget {
               hasDeepestSubDecks: hasDeepestSubDecks,
             ),
       loading: () => MxScreenScroll(
-        clearance: MxScrollClearance.fabAboveNav,
+        clearance: MxScrollClearance.fab,
         children: [
           MxSkeletonList(
             semanticLabel: context.l10n.commonLoading,
@@ -97,7 +97,7 @@ class DeckLevelBodyWidget extends ConsumerWidget {
         ],
       ),
       error: (_, _) => MxScreenScroll(
-        clearance: MxScrollClearance.fabAboveNav,
+        clearance: MxScrollClearance.fab,
         children: [
           MxErrorState(
             title: l10n.libraryLoadErrorTitle,

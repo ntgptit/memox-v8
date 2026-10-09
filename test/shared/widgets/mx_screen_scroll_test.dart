@@ -39,18 +39,7 @@ void main() {
     expect(_padding(tester).bottom, 24 + 52 + 24 + 20);
   });
 
-  testWidgets('FAB above nav tail: 4 + 52 + 24 + inset', (tester) async {
-    await pumpMxPage(
-      tester,
-      Scaffold(
-        body: MxScreenScroll(
-          clearance: MxScrollClearance.fabAboveNav,
-          children: rows,
-        ),
-      ),
-      padding: const EdgeInsets.only(bottom: 20),
-    );
-
-    expect(_padding(tester).bottom, 4 + 52 + 24 + 20);
+  test('two clearances exist: base and fab', () {
+    expect(MxScrollClearance.values.length, 2);
   });
 }
