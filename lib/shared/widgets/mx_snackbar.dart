@@ -118,6 +118,7 @@ class MxSnackbarContent extends StatelessWidget {
                 fill: null,
                 ink: colors.inversePrimary,
                 edge: BorderSide.none,
+                pressedLayer: colors.inversePrimary,
                 focusColor: colors.inversePrimary,
                 height: AppSize.buttonCompact,
                 radius: AppRadius.sm,

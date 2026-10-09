@@ -55,6 +55,7 @@ class MxFilterChip extends StatelessWidget {
                     color: context.derivedColors.ghostBorder,
                     width: AppStroke.hairline,
                   ),
+            pressedLayer: ink,
             focusColor: context.derivedColors.primaryInk,
             height: AppSize.chip,
             radius: AppRadius.full,

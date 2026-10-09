@@ -121,6 +121,7 @@ class MxButton extends StatelessWidget {
         fill: paint.fill,
         ink: paint.ink,
         edge: paint.edge,
+        pressedLayer: paint.fill == null ? paint.ink : context.colors.shadow,
         focusColor: context.derivedColors.primaryInk,
         height: geometry.height,
         radius: geometry.radius,
