@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/mx_text_styles.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
@@ -39,7 +40,11 @@ Map<String, String> _captions(AppLocalizations l10n) => {
 
 void main() {
   final theme = buildLightTheme();
-  final style = MxTextStyles(theme.textTheme, theme.colorScheme).footerCaption;
+  final style = MxTextStyles(
+    theme.textTheme,
+    theme.colorScheme,
+    theme.extension<MxSemanticColors>()!,
+  ).footerCaption;
   const width = _phone - 2 * AppSpacing.gutter;
 
   for (final locale in const [Locale('en'), Locale('vi')]) {

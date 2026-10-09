@@ -40,7 +40,7 @@ abstract final class AppComponentThemes {
           : scheme.surfaceContainerLow,
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.grouped),
-    hintStyle: MxTextStyles(texts, scheme).inputHint,
+    hintStyle: MxTextStyles(texts, scheme, semantic).inputHint,
     border: fieldEdge(scheme.outline),
     enabledBorder: fieldEdge(scheme.outline),
     disabledBorder: fieldEdge(scheme.outlineVariant),
@@ -71,7 +71,7 @@ abstract final class AppComponentThemes {
       height: AppSize.buttonRegular,
       radius: AppRadius.md,
       padding: AppSpacing.gutter,
-      label: MxTextStyles(texts, scheme).buttonLabel,
+      label: MxTextStyles(texts, scheme, semantic).buttonLabel,
     );
     Color? dimmed(Color? color) =>
         color?.withValues(alpha: color.a * AppOpacity.disabled);
@@ -189,8 +189,12 @@ abstract final class AppComponentThemes {
 
   /// Dialog (Dialog contract): the high container at radius 20, flat, over
   /// the 45% scrim, with the compact title and the dialog body.
-  static DialogThemeData dialogs(ColorScheme scheme, TextTheme texts) {
-    final styles = MxTextStyles(texts, scheme);
+  static DialogThemeData dialogs(
+    ColorScheme scheme,
+    MxSemanticColors semantic,
+    TextTheme texts,
+  ) {
+    final styles = MxTextStyles(texts, scheme, semantic);
     return DialogThemeData(
       backgroundColor: scheme.surfaceContainerHigh,
       elevation: 0,
@@ -221,25 +225,28 @@ abstract final class AppComponentThemes {
 
   /// SnackBar (Snackbar contract): the inverse surface, floating a gutter in,
   /// radius 12, the snackbar message style.
-  static SnackBarThemeData snackbars(ColorScheme scheme, TextTheme texts) =>
-      SnackBarThemeData(
-        backgroundColor: scheme.inverseSurface,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-        ),
-        // Even sides, so no direction is needed.
-        insetPadding: const EdgeInsets.fromLTRB(
-          AppSpacing.gutter,
-          0,
-          AppSpacing.gutter,
-          AppSpacing.gutter,
-        ),
-        contentTextStyle: MxTextStyles(texts, scheme).snackbarMessage,
-        // Flat: the inverse surface sets it apart; DESIGN.md gives shadows
-        // to cards, dialogs, sheets and the FAB only (SW-REV-007).
-        elevation: 0,
-      );
+  static SnackBarThemeData snackbars(
+    ColorScheme scheme,
+    MxSemanticColors semantic,
+    TextTheme texts,
+  ) => SnackBarThemeData(
+    backgroundColor: scheme.inverseSurface,
+    behavior: SnackBarBehavior.floating,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+    ),
+    // Even sides, so no direction is needed.
+    insetPadding: const EdgeInsets.fromLTRB(
+      AppSpacing.gutter,
+      0,
+      AppSpacing.gutter,
+      AppSpacing.gutter,
+    ),
+    contentTextStyle: MxTextStyles(texts, scheme, semantic).snackbarMessage,
+    // Flat: the inverse surface sets it apart; DESIGN.md gives shadows
+    // to cards, dialogs, sheets and the FAB only (SW-REV-007).
+    elevation: 0,
+  );
 
   /// Tooltip (MxIconButton's long-press name): the caption on the inverse
   /// surface, as the snackbar, radius 8 (SW-REV-007).

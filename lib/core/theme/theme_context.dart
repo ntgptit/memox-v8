@@ -35,7 +35,7 @@ extension ThemeContext on BuildContext {
     );
   }
 
-  MxTextStyles get textStyles => MxTextStyles(texts, colors);
+  MxTextStyles get textStyles => MxTextStyles(texts, colors, semanticColors);
 
   /// The TextField hint the theme's fields carry (spec §4.6).
   TextStyle get fieldHint =>

@@ -1,13 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/mx_text_styles.dart';
 
 // The import step tracker's type (kit 11), apart from the component styles.
 void main() {
   final theme = buildLightTheme();
   final scheme = AppColorSchemes.light;
-  final styles = MxTextStyles(theme.textTheme, scheme);
+  final styles = MxTextStyles(theme.textTheme, scheme, MxSemanticColors.light);
 
   test('a step label is 12, onSurface once reached, muted before', () {
     expect(styles.stepLabel(isReached: true).color, scheme.onSurface);
