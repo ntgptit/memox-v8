@@ -2,11 +2,16 @@
 library;
 
 import 'package:flutter/material.dart';
+
+import 'dart:ui';
+
+import 'package:flutter/rendering.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -59,8 +64,64 @@ Future<String> _review(LibraryEnv env, StudyMode mode) async {
   return (opened as Ok<String, StudyRejection>).value;
 }
 
+/// The painted colour of the tile showing [text], read from the captured
+/// pixels: a point 8 dp inside the tile's left edge, on its vertical middle,
+/// where no text or icon sits. A press layer still fading over the tile
+/// would tint it, so this pins the rest state a golden is meant to show.
+Future<Color> _tileColor(WidgetTester tester, String text) async {
+  final tile = find.ancestor(
+    of: find.text(text),
+    matching: find.byType(StudyChoiceWidget),
+  );
+  final rect = tester.getRect(tile);
+  final boundary = tester.renderObject<RenderRepaintBoundary>(
+    find.byKey(goldenBoundaryKey),
+  );
+  final image = (await tester.runAsync(() => boundary.toImage()))!;
+  final data = (await tester.runAsync(
+    () => image.toByteData(format: ImageByteFormat.rawRgba),
+  ))!;
+  final x = (rect.left + 8).round();
+  final y = rect.center.dy.round();
+  final i = (y * image.width + x) * 4;
+  final color = Color.fromARGB(
+    data.getUint8(i + 3),
+    data.getUint8(i),
+    data.getUint8(i + 1),
+    data.getUint8(i + 2),
+  );
+  image.dispose();
+  return color;
+}
+
+/// [actual] has [expected]'s exact RGB, whatever the alpha channel says.
+void _expectFill(Color actual, Color expected, String what) {
+  expect(
+    actual.toARGB32() & 0xFFFFFF,
+    expected.toARGB32() & 0xFFFFFF,
+    reason:
+        '$what: painted #${(actual.toARGB32() & 0xFFFFFF).toRadixString(16)}, '
+        'the rest state is #${(expected.toARGB32() & 0xFFFFFF).toRadixString(16)}',
+  );
+}
+
 Future<void> _golden(WidgetTester tester, String name, String theme) =>
     expectBoundaryGolden(tester, 'goldens/study_${name}_$theme.png');
+
+/// The press layer of a tapped tile (MxRowInk's InkWell highlight and splash)
+/// fades out within this; a golden shows the rest state after it.
+const Duration _pressLayerFade = Duration(milliseconds: 1000);
+
+/// [screen] under a theme without the ink splash. A wrong pair is shown for
+/// 600 ms and the splash of the tap that made it outlasts that, so its
+/// press layer would veil the tone in every capture inside the flash; the
+/// rest state is the tone alone. Test-only: the app keeps its splash.
+Widget _withoutSplash(Widget screen) => Builder(
+  builder: (context) => Theme(
+    data: Theme.of(context).copyWith(splashFactory: NoSplash.splashFactory),
+    child: screen,
+  ),
+);
 
 void main() {
   for (final brightness in Brightness.values) {
@@ -71,11 +132,17 @@ void main() {
       LibraryEnv env,
       StudyMode mode,
       String name,
-      Future<void> Function() act,
-    ) async {
+      Future<void> Function() act, {
+      bool withoutSplash = false,
+    }) async {
       final id = await _review(env, mode);
       await withRealShadows(() async {
-        await pumpLibraryGolden(tester, env, _screen(id), brightness);
+        await pumpLibraryGolden(
+          tester,
+          env,
+          withoutSplash ? _withoutSplash(_screen(id)) : _screen(id),
+          brightness,
+        );
         await tester.pumpAndSettle();
         await act();
         await _golden(tester, name, theme);
@@ -150,6 +217,15 @@ void main() {
         await tester.pump();
         // The tone eases in.
         await tester.pump(AppDurations.standard);
+        await tester.pump(_pressLayerFade);
+        final scheme = Theme.of(
+          tester.element(find.byType(StudyChoiceWidget).first),
+        ).colorScheme;
+        _expectFill(
+          await _tileColor(tester, 'waiter'),
+          scheme.primary,
+          'the selected tile',
+        );
       });
     });
 
@@ -162,7 +238,17 @@ void main() {
         await tester.pump();
         // Past the tone's ease, inside the 600 ms flash.
         await tester.pump(const Duration(milliseconds: 300));
-      });
+        final scheme = Theme.of(
+          tester.element(find.byType(StudyChoiceWidget).first),
+        ).colorScheme;
+        for (final text in ['reservation', 'hóa đơn']) {
+          _expectFill(
+            await _tileColor(tester, text),
+            scheme.errorContainer,
+            'the wrong tile $text',
+          );
+        }
+      }, withoutSplash: true);
     });
   }
 }
