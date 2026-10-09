@@ -151,7 +151,7 @@ class CardScheduleWidget extends StatelessWidget {
   }
 }
 
-/// Eight bars: the boxes behind the card tinted, its box full and taller.
+/// Eight bars: the card's box and those behind it in primary, its box taller.
 /// The overline above says the same in words, so the ramp is not read out.
 class _BoxRamp extends StatelessWidget {
   const _BoxRamp({required this.box, required this.count});
@@ -161,7 +161,6 @@ class _BoxRamp extends StatelessWidget {
 
   static const double _barHeight = 6;
   static const double _currentBarHeight = 10;
-  static const double _pastAlpha = 0.4;
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +176,7 @@ class _BoxRamp extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: switch (index.compareTo(box)) {
                     0 => colors.primary,
-                    < 0 => colors.primary.withValues(alpha: _pastAlpha),
+                    < 0 => colors.primary,
                     _ => colors.surfaceContainerHigh,
                   },
                   borderRadius: BorderRadius.circular(AppRadius.full),

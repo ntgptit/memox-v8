@@ -90,6 +90,49 @@ void main() {
     );
   });
 
+  // The status line reads the one status resolver (spec 2026-10-08 §4.7).
+  libraryTest('the status label reads the card status foreground role', (
+    tester,
+    env,
+  ) async {
+    final expected = {
+      CardDisplayStatus.newCard: (_en.cardStatusNew, MxCardStatus.newCard),
+      CardDisplayStatus.beginning: (
+        _en.cardStatusBeginning,
+        MxCardStatus.learning,
+      ),
+      CardDisplayStatus.reviewing: (
+        _en.cardStatusReviewing,
+        MxCardStatus.reviewing,
+      ),
+      CardDisplayStatus.mastered: (
+        _en.cardStatusMastered,
+        MxCardStatus.mastered,
+      ),
+    };
+    for (final MapEntry(key: display, value: (name, badge))
+        in expected.entries) {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _host([
+          CardRowWidget(
+            item: _item(status: display),
+            isSelecting: false,
+            isSelected: false,
+          ),
+        ]),
+      );
+      final label = find.text(name.toUpperCase());
+      final text = tester.widget<Text>(label);
+      expect(
+        text.style!.color,
+        badge.foreground(tester.element(label)),
+        reason: '$display',
+      );
+    }
+  });
+
   libraryTest('the row names its status once to a screen reader', (
     tester,
     env,

@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_removable_tag_chip_widget.dart';
 
 import '../../../support/library_harness.dart';
 
-// Spec 2026-09-27 D2: a glyph is ink, so it reads in primaryInk; the tag
-// chip's tint stays primary.
+// A glyph is ink, so it reads in primaryForeground; the tag chip's pill is
+// the primaryContainer role.
 void main() {
-  final ink = MxDerivedColors.primaryInkOf(AppColorSchemes.dark);
-
   Color? glyphColor(WidgetTester tester, Type owner) => IconTheme.of(
     tester.element(
       find
@@ -20,17 +17,24 @@ void main() {
     ),
   ).color;
 
-  libraryTest('Add details: the glyph is primaryInk', (tester, env) async {
+  libraryTest('Add details: the glyph is primaryForeground', (
+    tester,
+    env,
+  ) async {
     await pumpLibraryScreen(
       tester,
       env,
       Scaffold(body: CardAddDetailsWidget(onPressed: () {})),
       brightness: Brightness.dark,
     );
-    expect(glyphColor(tester, CardAddDetailsWidget), ink);
+    final context = tester.element(find.byType(CardAddDetailsWidget));
+    expect(
+      glyphColor(tester, CardAddDetailsWidget),
+      context.semanticColors.primaryForeground,
+    );
   });
 
-  libraryTest('a removable tag chip: the glyph is primaryInk', (
+  libraryTest('a removable tag chip: the glyph is primaryForeground', (
     tester,
     env,
   ) async {
@@ -42,7 +46,38 @@ void main() {
       ),
       brightness: Brightness.dark,
     );
-    expect(glyphColor(tester, CardRemovableTagChipWidget), ink);
+    final context = tester.element(find.byType(CardRemovableTagChipWidget));
+    expect(
+      glyphColor(tester, CardRemovableTagChipWidget),
+      context.semanticColors.primaryForeground,
+    );
+  });
+
+  libraryTest('a removable tag chip: the pill is primaryContainer and the '
+      'label onPrimaryContainer', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: CardRemovableTagChipWidget(name: 'verb', onRemove: () {}),
+      ),
+      brightness: Brightness.dark,
+    );
+    final context = tester.element(find.byType(CardRemovableTagChipWidget));
+    final pill = tester.widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byType(CardRemovableTagChipWidget),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    expect(
+      (pill.decoration as BoxDecoration).color,
+      context.colors.primaryContainer,
+    );
+    final label = tester.widget<Text>(find.text('verb'));
+    expect(label.style!.color, context.colors.onPrimaryContainer);
   });
 
   // SW-REV-005: the chip's one TalkBack node keeps the tap that removes it.

@@ -9,6 +9,7 @@ import 'package:memox/features/card/presentation/widgets/items/card_due_chip_wid
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
+import 'package:memox/shared/widgets/mx_status_badge.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 
 /// Tags a row names before "+N" (screen 07, spec A15).
@@ -64,15 +65,14 @@ class _Content extends StatelessWidget {
 
   final CardListItem item;
 
-  static Color _statusInk(BuildContext context, CardDisplayStatus status) {
-    final derived = context.derivedColors;
-    return switch (status) {
-      CardDisplayStatus.newCard => derived.statusNewInk,
-      CardDisplayStatus.beginning => derived.statusLearningInk,
-      CardDisplayStatus.reviewing => derived.statusReviewingInk,
-      CardDisplayStatus.mastered => derived.statusMasteredInk,
-    };
-  }
+  /// The display status as the badge status that owns its colour.
+  static MxCardStatus _badgeStatus(CardDisplayStatus status) =>
+      switch (status) {
+        CardDisplayStatus.newCard => MxCardStatus.newCard,
+        CardDisplayStatus.beginning => MxCardStatus.learning,
+        CardDisplayStatus.reviewing => MxCardStatus.reviewing,
+        CardDisplayStatus.mastered => MxCardStatus.mastered,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +107,9 @@ class _Content extends StatelessWidget {
             Text(
               label.toUpperCase(),
               semanticsLabel: label,
-              style: styles.statusLabel(_statusInk(context, status)),
+              style: styles.statusLabel(
+                _badgeStatus(status).foreground(context),
+              ),
             ),
             for (final tag in tags.take(_shownTags))
               MxTagChip(label: tag.name, isDense: true),

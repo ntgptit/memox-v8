@@ -7,7 +7,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 
-/// A tag on the card being edited (kit `RemovableTagChip`): a primary-tinted
+/// A tag on the card being edited (kit `RemovableTagChip`): a primary-container
 /// pill with an ✕. Its whole 48 area removes the tag (ruling P4a-L8); the
 /// read-only `MxTagChip` is a different control.
 class CardRemovableTagChipWidget extends StatelessWidget {
@@ -19,8 +19,6 @@ class CardRemovableTagChipWidget extends StatelessWidget {
 
   final String name;
   final VoidCallback onRemove;
-
-  static const double _tint = 0.10;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +40,7 @@ class CardRemovableTagChipWidget extends StatelessWidget {
             widthFactor: 1,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: _tint),
+                color: colors.primaryContainer,
                 borderRadius: BorderRadius.circular(AppRadius.full),
               ),
               child: ConstrainedBox(
@@ -54,7 +52,7 @@ class CardRemovableTagChipWidget extends StatelessWidget {
                   ),
                   child: IconTheme.merge(
                     data: IconThemeData(
-                      color: context.derivedColors.primaryInk,
+                      color: context.semanticColors.primaryForeground,
                       size: AppIconSize.inline,
                     ),
                     child: Row(

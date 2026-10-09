@@ -23,7 +23,7 @@ class CardAddDetailsWidget extends StatelessWidget {
     final styles = context.textStyles;
     final radius = BorderRadius.circular(AppRadius.md);
     final glyph = IconThemeData(
-      color: context.derivedColors.primaryInk,
+      color: context.semanticColors.primaryForeground,
       size: AppIconSize.inline,
     );
     // The ripple paints on this Material, so it keeps to the rounded box.
@@ -43,7 +43,7 @@ class CardAddDetailsWidget extends StatelessWidget {
             borderRadius: radius,
             // The control edge, as the fields beside it (DEV-166).
             border: Border.all(
-              color: context.derivedColors.outlineEdge,
+              color: context.colors.outline,
               width: AppStroke.hairline,
             ),
           ),
