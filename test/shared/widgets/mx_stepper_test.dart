@@ -223,4 +223,32 @@ void main() {
             as MxFocusRingPainter;
     expect(painter.color, MxSemanticColors.light.primaryForeground);
   });
+
+  testWidgets('editing: the field edge is primaryForeground; at rest there is '
+      'none', (tester) async {
+    BoxDecoration decoration() =>
+        tester.widget<DecoratedBox>(find.byKey(_valueKey)).decoration
+            as BoxDecoration;
+
+    await pumpMx(
+      tester,
+      MxStepper(
+        value: 20,
+        decrementLabel: 'Fewer cards',
+        incrementLabel: 'More cards',
+        onDecrement: () {},
+        onIncrement: () {},
+        onValueSubmitted: (_) {},
+      ),
+    );
+    expect(decoration().border, isNull);
+
+    await tester.tap(find.byKey(_valueKey));
+    await tester.pump();
+
+    expect(
+      (decoration().border! as Border).top,
+      BorderSide(color: MxSemanticColors.light.primaryForeground),
+    );
+  });
 }
