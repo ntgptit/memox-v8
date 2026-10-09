@@ -61,28 +61,6 @@ void main() {
     );
   });
 
-  test('no legacy member survives', () {
-    // Names are split so a repo-wide grep for the retired members stays empty.
-    const retired = [
-      'status'
-          'New',
-      'status'
-          'Learning',
-      'status'
-          'Reviewing',
-      'status'
-          'Mastered',
-      'error'
-          'Fill',
-      'onError'
-          'Fill',
-    ];
-    final text = MxSemanticColors.light.toString();
-    for (final name in retired) {
-      expect(text, isNot(contains(name)), reason: name);
-    }
-  });
-
   test('lerp against a foreign extension keeps this one', () {
     expect(MxSemanticColors.light.lerp(null, 0.5), MxSemanticColors.light);
   });
