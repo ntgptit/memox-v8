@@ -8,7 +8,7 @@
 
 **Tech Stack:** Flutter 3.47, Material 3 `ColorScheme`, `ThemeExtension`, flutter_test, goldens in the Linux container.
 
-**Spec:** `docs/superpowers/specs/2026-10-10-indigo-palette-design.md` (owner-approved 2026-10-10). Epic: DEV-363.
+**Spec:** `docs/superpowers/specs/2026-10-10-indigo-palette-design.md` (owner-approved 2026-10-10). Epic: DEV-363; tasks 1–7 are DEV-364…DEV-370.
 
 ## Global Constraints
 
@@ -490,7 +490,7 @@ Expected: analyze clean. `mx_derived_colors_test.dart` and `mx_text_styles_ink_t
 
 ```bash
 git add lib/core/theme test/core/theme
-git commit -m "feat(theme): DEV-<task1> Indigo Day and Indigo Night tokens"
+git commit -m "feat(theme): DEV-364 Indigo Day and Indigo Night tokens"
 ```
 
 ---
@@ -767,7 +767,7 @@ Expected: analyze clean; theme tests PASS. Widget tests that assert an old deriv
 
 ```bash
 git add lib test
-git commit -m "feat(theme): DEV-<task2> theme layer reads the Indigo tokens"
+git commit -m "feat(theme): DEV-365 theme layer reads the Indigo tokens"
 ```
 
 ---
@@ -975,7 +975,7 @@ Expected: PASS, analyze clean.
 
 ```bash
 git add lib test
-git commit -m "feat(ui): DEV-<task3> soft grounds render in Day; badges and tiles read tokens"
+git commit -m "feat(ui): DEV-366 soft grounds render in Day; badges and tiles read tokens"
 ```
 
 ---
@@ -1087,7 +1087,7 @@ Expected: PASS (goldens excluded by the script).
 
 ```bash
 git add -A lib test
-git commit -m "refactor(theme): DEV-<task4> delete MxDerivedColors; consumers read tokens"
+git commit -m "refactor(theme): DEV-367 delete MxDerivedColors; consumers read tokens"
 ```
 
 ---
@@ -1115,7 +1115,7 @@ Expected: PASS.
 
 ```bash
 git add -A lib test
-git commit -m "refactor(theme): DEV-<task5> colour parameters are foregrounds, not inks"
+git commit -m "refactor(theme): DEV-368 colour parameters are foregrounds, not inks"
 ```
 
 ---
@@ -1151,7 +1151,7 @@ Expected: check passes; grep prints nothing.
 
 ```bash
 git add DESIGN.md .impeccable/design.json docs/shared/ui/screen-handoff
-git commit -m "docs(design): DEV-<task6> Indigo Day and Indigo Night in DESIGN.md"
+git commit -m "docs(design): DEV-369 Indigo Day and Indigo Night in DESIGN.md"
 ```
 
 ---
@@ -1183,5 +1183,5 @@ One `impeccable audit` of the regenerated goldens (light and dark, every screen)
 
 ```bash
 git add test
-git commit -m "test(golden): DEV-<task7> regenerate goldens for the Indigo palette"
+git commit -m "test(golden): DEV-370 regenerate goldens for the Indigo palette"
 ```
