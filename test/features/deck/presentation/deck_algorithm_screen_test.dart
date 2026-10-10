@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/di/schedule_repository_provider.dart';
@@ -166,6 +167,30 @@ void main() {
       expect(_option(tester, title).onSelected, isNull, reason: title);
     }
     expect(find.text(_en.algorithmResetAction), findsOneWidget);
+  });
+
+  libraryTest('Night: the locked strip is a soft ground, so its title and '
+      'body read Day\'s text (spec 2026-10-10 D4)', (tester, env) async {
+    final korean = await env.decks.root('Korean', SchedulerType.sm2);
+    await lockScheduler(env.db, korean.id);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      deckAlgorithmScreen(deckId: korean.id),
+      brightness: Brightness.dark,
+    );
+    final date = DateFormat.yMMMd('en').format(DateTime(2026, 9, 20));
+    Color? colorOf(String text) =>
+        tester.widget<Text>(find.text(text)).style?.color;
+
+    expect(
+      colorOf(_en.algorithmLockedTitle(1)),
+      AppColorSchemes.light.onSurface,
+    );
+    expect(
+      colorOf(_en.algorithmLockedBody(date)),
+      AppColorSchemes.light.onSurfaceVariant,
+    );
   });
 
   libraryTest('the lock strip centres its tile on the title and body (owner '

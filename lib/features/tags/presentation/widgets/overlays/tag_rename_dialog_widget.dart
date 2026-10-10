@@ -209,44 +209,49 @@ class _MergePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final note = context.textStyles.noteText;
-    final foreground = context.semanticColors.warningText;
     return MxCard(
       isWarning: true,
-      // The panel's glyphs take the warning foreground.
-      child: IconTheme.merge(
-        data: IconThemeData(color: foreground),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.control,
-          children: [
-            Row(
-              spacing: AppSpacing.control,
-              children: [
-                const Icon(AppIcons.merge),
-                Expanded(
-                  child: Text(
-                    l10n.tagsMergeNotice(merge.target.name, source.name),
-                    style: note,
-                  ),
+      // A soft ground: its styles are read from inside it, so they resolve
+      // Day's (spec 2026-10-10 D4); the glyphs take the on-soft warning.
+      child: Builder(builder: (ground) => _content(ground, l10n)),
+    );
+  }
+
+  Widget _content(BuildContext context, AppLocalizations l10n) {
+    final note = context.textStyles.noteText;
+    final foreground = context.semanticColors.onWarningSoft;
+    return IconTheme.merge(
+      data: IconThemeData(color: foreground),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: AppSpacing.control,
+        children: [
+          Row(
+            spacing: AppSpacing.control,
+            children: [
+              const Icon(AppIcons.merge),
+              Expanded(
+                child: Text(
+                  l10n.tagsMergeNotice(merge.target.name, source.name),
+                  style: note,
                 ),
-              ],
-            ),
-            Wrap(
-              spacing: AppSpacing.control,
-              runSpacing: AppSpacing.micro,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                MxTagChip(label: tagWithCount(source.name, source.cardCount)),
-                const Icon(AppIcons.arrowRight),
-                MxTagChip(
-                  label: tagWithCount(merge.target.name, merge.mergedCardCount),
-                ),
-              ],
-            ),
-            Text(l10n.tagsMergeSafe, style: note),
-          ],
-        ),
+              ),
+            ],
+          ),
+          Wrap(
+            spacing: AppSpacing.control,
+            runSpacing: AppSpacing.micro,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              MxTagChip(label: tagWithCount(source.name, source.cardCount)),
+              const Icon(AppIcons.arrowRight),
+              MxTagChip(
+                label: tagWithCount(merge.target.name, merge.mergedCardCount),
+              ),
+            ],
+          ),
+          Text(l10n.tagsMergeSafe, style: note),
+        ],
       ),
     );
   }

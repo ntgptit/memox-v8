@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
 import 'package:memox/features/tags/presentation/widgets/overlays/tag_rename_dialog_widget.dart';
@@ -29,6 +30,7 @@ Future<TagRepositoryFake> _pump(
   bool isSeeded = true,
   ValueChanged<String>? onFindCards,
   void Function(TagRepositoryFake store)? arrange,
+  Brightness brightness = Brightness.light,
 }) async {
   if (isSeeded) await seedTags(env);
   final store = TagRepositoryFake(env);
@@ -38,6 +40,7 @@ Future<TagRepositoryFake> _pump(
     env,
     TagsScreen(onFindCards: onFindCards ?? (_) {}),
     overrides: [store.asOverride],
+    brightness: brightness,
   );
   await tester.pumpAndSettle();
   return store;
@@ -183,6 +186,21 @@ void main() {
     expect(await tagRowsOf(env.db), hasLength(15));
     expect(find.text(_en.tagsCardCount(77)), findsOneWidget);
     expect(find.text('động từ'), findsNothing);
+  });
+
+  libraryTest('Night: the merge panel is a soft ground, so its notice reads '
+      'Day\'s text (spec 2026-10-10 D4)', (tester, env) async {
+    await _pump(tester, env, brightness: Brightness.dark);
+    await _openRename(tester, 'động từ');
+    await _type(tester, 'NGỮ PHÁP');
+
+    expect(
+      tester
+          .widget<Text>(find.text(_en.tagsMergeNotice('ngữ pháp', 'động từ')))
+          .style
+          ?.color,
+      AppColorSchemes.light.onSurfaceVariant,
+    );
   });
 
   libraryTest('nameTooLong: the counter and the field say so, and Rename is '

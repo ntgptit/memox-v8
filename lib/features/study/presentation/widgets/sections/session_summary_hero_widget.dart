@@ -30,7 +30,6 @@ class SessionSummaryHeroWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final tone = outcome.tone;
     final kind = view.kind == SessionKind.learning
         ? l10n.summaryKindLearning
@@ -60,19 +59,25 @@ class SessionSummaryHeroWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.grouped),
-          Text(
-            shown,
-            semanticsLabel: overline,
-            textAlign: TextAlign.center,
-            style: styles.eyebrow,
+          // A toned card is a soft ground: its text styles are read from
+          // inside it, so they resolve Day's (spec 2026-10-10 D4).
+          Builder(
+            builder: (ground) => Text(
+              shown,
+              semanticsLabel: overline,
+              textAlign: TextAlign.center,
+              style: ground.textStyles.eyebrow,
+            ),
           ),
           const SizedBox(height: AppSpacing.micro),
           Semantics(
             header: true,
-            child: Text(
-              _titleOf(l10n),
-              textAlign: TextAlign.center,
-              style: styles.summaryTitle,
+            child: Builder(
+              builder: (ground) => Text(
+                _titleOf(l10n),
+                textAlign: TextAlign.center,
+                style: ground.textStyles.summaryTitle,
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.micro),

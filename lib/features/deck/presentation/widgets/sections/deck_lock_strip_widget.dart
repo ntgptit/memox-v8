@@ -19,7 +19,6 @@ class DeckLockStripWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final isLocked = view.isSchedulerLocked;
     final (title, body) = isLocked
         ? (
@@ -42,14 +41,18 @@ class DeckLockStripWidget extends StatelessWidget {
               size: MxIconTileSize.medium,
               tone: isLocked ? MxIconTileTone.warning : MxIconTileTone.primary,
             ),
+            // A locked strip is a soft ground: its text styles are read from
+            // inside it, so they resolve Day's (spec 2026-10-10 D4).
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.micro,
-                children: [
-                  Text(title, style: styles.rowTitle),
-                  Text(body, style: styles.rowDescription),
-                ],
+              child: Builder(
+                builder: (ground) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: AppSpacing.micro,
+                  children: [
+                    Text(title, style: ground.textStyles.rowTitle),
+                    Text(body, style: ground.textStyles.rowDescription),
+                  ],
+                ),
               ),
             ),
           ],
