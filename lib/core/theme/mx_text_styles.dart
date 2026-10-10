@@ -323,8 +323,9 @@ final class MxTextStyles {
   /// (DEV-170).
   TextStyle get historyAgo => counter.copyWith(color: _scheme.onSurface);
 
-  /// A removable tag's label: the tag label in primary, on its tint.
-  TextStyle get removableTagLabel => tagLabel.copyWith(color: _primaryText);
+  /// A removable tag's label: the tag label on the primary soft ground.
+  TextStyle get removableTagLabel =>
+      tagLabel.copyWith(color: _semantic.onPrimarySoft);
 
   /// Badge and StatusBadge label: 12/700 tabular at line-height 1, with the
   /// label's 0.1 tracking (S4).

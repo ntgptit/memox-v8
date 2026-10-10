@@ -4,7 +4,6 @@ import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_floating_notice.dart';
@@ -34,7 +33,6 @@ BoxDecoration _ground(WidgetTester tester) =>
 void main() {
   final scheme = AppColorSchemes.light;
   final semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(scheme, semantic);
 
   testWidgets('the warning card, lifted by the overlay shadow', (tester) async {
     await pumpMx(tester, _width(const MxFloatingNotice(message: _message)));
@@ -44,10 +42,32 @@ void main() {
       _ground(tester),
       AppDecorations.warningCard(
         scheme,
-        derived,
+        semantic,
       ).copyWith(boxShadow: AppShadows.overlay(scheme)),
     );
-    expect((glyph.size, glyph.color), (16, derived.warningInk));
+    expect((glyph.size, glyph.color), (16, semantic.onWarningSoft));
+    expect(
+      tester.widget<Text>(find.text(_message)).style!.color,
+      semantic.onSoft,
+    );
+  });
+
+  testWidgets('Night: the light soft ground keeps its Day text and glyph', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(const MxFloatingNotice(message: _message)),
+      brightness: Brightness.dark,
+    );
+    await tester.pumpAndSettle();
+    const night = MxSemanticColors.dark;
+
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
+      night.onWarningSoft,
+    );
+    expect(tester.widget<Text>(find.text(_message)).style!.color, night.onSoft);
   });
 
   testWidgets('one action sits on the message line, at the end', (

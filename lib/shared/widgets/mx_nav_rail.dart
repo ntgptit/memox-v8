@@ -26,17 +26,11 @@ class MxNavRail extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
-  static const double _pillTintLight = 0.14;
-  static const double _pillTintDark = 0.20;
-
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final pillTint = colors.primary.withValues(
-      alpha: colors.brightness == Brightness.dark
-          ? _pillTintDark
-          : _pillTintLight,
-    );
+    // The selected ground (spec 2026-10-10 §4).
+    final pillGround = colors.primaryContainer;
     // SafeArea's sides are physical: the rail takes only the one it sits on.
     final isLtr = Directionality.of(context) == TextDirection.ltr;
     return ColoredBox(
@@ -57,7 +51,7 @@ class MxNavRail extends StatelessWidget {
                     _RailItem(
                       destination: destination,
                       isSelected: index == selectedIndex,
-                      pillTint: pillTint,
+                      pillGround: pillGround,
                       onTap: () => onSelected(index),
                     ),
                 ],
@@ -74,13 +68,13 @@ class _RailItem extends StatelessWidget {
   const _RailItem({
     required this.destination,
     required this.isSelected,
-    required this.pillTint,
+    required this.pillGround,
     required this.onTap,
   });
 
   final MxNavDestination destination;
   final bool isSelected;
-  final Color pillTint;
+  final Color pillGround;
   final VoidCallback onTap;
 
   static const double _minHeight = 56;
@@ -106,7 +100,7 @@ class _RailItem extends StatelessWidget {
             children: [
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: isSelected ? pillTint : null,
+                  color: isSelected ? pillGround : null,
                   borderRadius: BorderRadius.circular(AppRadius.full),
                 ),
                 child: Padding(
@@ -118,7 +112,7 @@ class _RailItem extends StatelessWidget {
                     isSelected ? destination.selectedIcon : destination.icon,
                     size: AppIconSize.compact,
                     color: isSelected
-                        ? context.derivedColors.primaryInk
+                        ? context.semanticColors.primaryText
                         : colors.onSurfaceVariant,
                   ),
                 ),

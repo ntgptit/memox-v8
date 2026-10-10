@@ -4,7 +4,6 @@ import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -37,15 +36,13 @@ void main() {
     }
   });
 
-  testWidgets('default: primary at 10% light and 16% dark, primaryInk glyph', (
-    tester,
-  ) async {
-    final light = AppColorSchemes.light.primary;
+  testWidgets('default: the primary soft ground with its on-soft glyph, '
+      'light in both themes', (tester) async {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder));
-    expect(_tile(tester).color, light.withValues(alpha: 0.10));
+    expect(_tile(tester).color, MxSemanticColors.light.primarySoft);
     expect(
       tester.widget<Icon>(find.byType(Icon)).color,
-      MxDerivedColors.primaryInkOf(AppColorSchemes.light),
+      MxSemanticColors.light.onPrimarySoft,
     );
 
     await pumpMx(
@@ -55,16 +52,15 @@ void main() {
     );
     // The theme animates from light when the same app re-pumps dark.
     await tester.pumpAndSettle();
-    expect(
-      _tile(tester).color,
-      AppColorSchemes.dark.primary.withValues(alpha: 0.16),
-    );
+    expect(_tile(tester).color, MxSemanticColors.dark.primarySoft);
   });
 
-  testWidgets('seeded: the seed at 12% with a seed glyph', (tester) async {
+  testWidgets('seeded: the seed glyph on the primary soft ground', (
+    tester,
+  ) async {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder, seed: _seed));
 
-    expect(_tile(tester).color, _seed.withValues(alpha: 0.12));
+    expect(_tile(tester).color, MxSemanticColors.light.primarySoft);
     expect(tester.widget<Icon>(find.byType(Icon)).color, _seed);
   });
 
@@ -143,24 +139,25 @@ void main() {
       MxIconTileTone.caution,
       MxIconTileTone.danger,
     ]) {
-      testWidgets('${tone.name}, ${brightness.name}: a soft tint, and the '
-          'glyph reads 3:1 on it over the surface (FE-A6 D14)', (tester) async {
+      testWidgets('${tone.name}, ${brightness.name}: its soft ground, and the '
+          'glyph reads 3:1 on it (FE-A6 D14)', (tester) async {
         await pumpMx(
           tester,
           MxIconTile(icon: AppIcons.check, tone: tone),
           brightness: brightness,
         );
-        final scheme = brightness == Brightness.light
-            ? AppColorSchemes.light
-            : AppColorSchemes.dark;
+        final semantic = brightness == Brightness.light
+            ? MxSemanticColors.light
+            : MxSemanticColors.dark;
         final fill = _tile(tester).color!;
         final glyph = tester.widget<Icon>(find.byIcon(AppIcons.check)).color!;
 
-        expect(fill.a, lessThan(1), reason: 'a soft tint, not a solid fill');
-        expect(
-          _ratio(glyph, Color.alphaBlend(fill, scheme.surface)),
-          greaterThanOrEqualTo(3),
-        );
+        expect(fill, switch (tone) {
+          MxIconTileTone.success => semantic.successSoft,
+          MxIconTileTone.caution => semantic.warningSoft,
+          _ => semantic.dangerSoft,
+        });
+        expect(_ratio(glyph, fill), greaterThanOrEqualTo(3));
       });
     }
   }

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -65,16 +65,15 @@ void main() {
     expect(widths.toSet(), hasLength(1));
   });
 
-  testWidgets('the selected destination is primaryInk with its filled glyph', (
-    tester,
-  ) async {
+  testWidgets('the selected destination reads primaryText with its filled '
+      'glyph', (tester) async {
     await pumpMx(tester, _nav(selected: 1));
 
     expect(find.byIcon(AppIcons.studySelected), findsOneWidget);
     expect(find.byIcon(AppIcons.study), findsNothing);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      MxDerivedColors.primaryInkOf(scheme),
+      MxSemanticColors.light.primaryText,
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
@@ -82,11 +81,13 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text('Study')).style!.color,
-      MxDerivedColors.primaryInkOf(scheme),
+      MxSemanticColors.light.primaryText,
     );
   });
 
-  testWidgets('the pill tints primary at 14% in light', (tester) async {
+  testWidgets('the pill is the primary container (spec 2026-10-10 §4)', (
+    tester,
+  ) async {
     await pumpMx(tester, _nav());
     final pill = tester.widget<DecoratedBox>(
       find
@@ -97,10 +98,7 @@ void main() {
           .first,
     );
 
-    expect(
-      (pill.decoration as BoxDecoration).color,
-      scheme.primary.withValues(alpha: 0.14),
-    );
+    expect((pill.decoration as BoxDecoration).color, scheme.primaryContainer);
   });
 
   testWidgets('a tap reports the index; the selected item is marked', (

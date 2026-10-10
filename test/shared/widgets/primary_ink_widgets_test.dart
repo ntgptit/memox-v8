@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -21,6 +22,8 @@ import '../../support/widget_harness.dart';
 void main() {
   final scheme = AppColorSchemes.dark;
   final ink = MxDerivedColors.primaryInkOf(scheme);
+  // A primary soft ground is light in Night too (spec 2026-10-10 D4).
+  final onPrimarySoft = MxSemanticColors.dark.onPrimarySoft;
 
   Future<void> pumpDark(WidgetTester tester, Widget child) =>
       pumpMx(tester, child, brightness: Brightness.dark);
@@ -59,11 +62,11 @@ void main() {
     expect(style('Fill').side!.resolve(focused)!.color, ink);
   });
 
-  testWidgets('MxBadge: a tinted primary badge inks in primaryInk', (
+  testWidgets('MxBadge: a tonal primary badge reads onPrimarySoft', (
     tester,
   ) async {
     await pumpDark(tester, const MxBadge(label: '23 due'));
-    expect(textColor(tester, '23 due'), ink);
+    expect(textColor(tester, '23 due'), MxSemanticColors.dark.onPrimarySoft);
   });
 
   test('MxBadge: a solid badge is primary only (D5)', () {
@@ -73,8 +76,8 @@ void main() {
     );
   });
 
-  testWidgets('MxActionSheetCommandRow: a non-destructive glyph inks in '
-      'primaryInk', (tester) async {
+  testWidgets('MxActionSheetCommandRow: a non-destructive glyph reads '
+      'onPrimarySoft on its tile', (tester) async {
     await pumpDark(
       tester,
       MxActionSheetCommandRow(
@@ -83,9 +86,12 @@ void main() {
         onTap: () {},
       ),
     );
-    // The verb stays onSurface (commandLabel); the glyph is the ink.
+    // The verb stays onSurface (commandLabel); the glyph sits on its tile.
     expect(textColor(tester, 'Restore…'), scheme.onSurface);
-    expect(tester.widget<Icon>(find.byIcon(AppIcons.restore)).color, ink);
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.restore)).color,
+      onPrimarySoft,
+    );
   });
 
   testWidgets('MxWorkloadBreakdownLine: the today term is primaryInk', (
@@ -131,13 +137,16 @@ void main() {
     expect(tester.widget<Icon>(find.byIcon(AppIcons.search)).color, ink);
   });
 
-  testWidgets('MxEmptyState: the primary glyph is primaryInk; its tile tint '
-      'stays primary', (tester) async {
+  testWidgets('MxEmptyState: the primary glyph reads onPrimarySoft on its '
+      'tile', (tester) async {
     await pumpDark(
       tester,
       const MxEmptyState(icon: AppIcons.library, title: 'Empty'),
     );
-    expect(tester.widget<Icon>(find.byIcon(AppIcons.library)).color, ink);
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
+      onPrimarySoft,
+    );
   });
 
   testWidgets('MxStatTile: the primary emphasis reads in primaryInk', (
@@ -154,14 +163,18 @@ void main() {
     expect(textColor(tester, '20'), ink);
   });
 
-  testWidgets('MxIconTile: the tinted glyph is primaryInk without a seed', (
-    tester,
-  ) async {
+  testWidgets('MxIconTile: the tinted glyph reads onPrimarySoft without a '
+      'seed', (tester) async {
     await pumpDark(tester, const MxIconTile(icon: AppIcons.library));
-    expect(tester.widget<Icon>(find.byIcon(AppIcons.library)).color, ink);
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
+      onPrimarySoft,
+    );
   });
 
-  testWidgets('MxStudyTopBar: the badge text is primaryInk', (tester) async {
+  testWidgets('MxStudyTopBar: the badge text reads onPrimarySoft', (
+    tester,
+  ) async {
     await pumpDark(
       tester,
       MxStudyTopBar(
@@ -173,7 +186,7 @@ void main() {
         onClose: () {},
       ),
     );
-    expect(textColor(tester, 'MATCH'), ink);
+    expect(textColor(tester, 'MATCH'), onPrimarySoft);
   });
 
   testWidgets('MxSpinner: off a fill the arc is primaryInk; on a fill it is '

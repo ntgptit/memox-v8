@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -19,14 +18,14 @@ void main() {
   testWidgets('a 52 danger-soft tile with a 24 error glyph, 40 from the top', (
     tester,
   ) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
     await pumpMx(tester, const MxErrorState(title: _title, body: _body));
     final tile = find.descendant(
       of: find.byType(MxErrorState),
       matching: find.byWidgetPredicate(
         (widget) =>
             widget is DecoratedBox &&
-            (widget.decoration as BoxDecoration).color == derived.dangerSoft,
+            (widget.decoration as BoxDecoration).color ==
+                MxSemanticColors.light.dangerSoft,
       ),
     );
 
@@ -37,7 +36,10 @@ void main() {
       BorderRadius.circular(16),
     );
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
-    expect((glyph.size, glyph.color), (24, scheme.error));
+    expect(
+      (glyph.size, glyph.color),
+      (24, MxSemanticColors.light.onDangerSoft),
+    );
     expect(
       tester.getTopLeft(tile).dy - tester.getTopLeft(find.byType(MxCard)).dy,
       40,

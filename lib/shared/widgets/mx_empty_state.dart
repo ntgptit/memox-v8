@@ -65,7 +65,6 @@ class MxEmptyState extends StatelessWidget {
   /// 2026-10-08 F-02, DEV-303).
   final String? footnote;
 
-  static const double _tileTint = 0.10;
   static const double _tileSize = 64;
   static const double _compactTileSize = 52;
 
@@ -74,7 +73,6 @@ class MxEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final toneColor = _toneColor(context);
     final styles = context.textStyles;
     final padding = isCompact
         ? const EdgeInsets.symmetric(
@@ -99,19 +97,7 @@ class MxEmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _Tile(
-                icon: icon,
-                color: toneColor,
-                ink: switch (tone) {
-                  MxEmptyStateTone.primary => context.derivedColors.primaryInk,
-                  MxEmptyStateTone.success => context.derivedColors.successInk,
-                  // As the caution tile and the warning banner (critique
-                  // 2026-09-30 part 3d-2, E14).
-                  MxEmptyStateTone.warning => context.derivedColors.warningInk,
-                  _ => toneColor,
-                },
-                isCompact: isCompact,
-              ),
+              _Tile(icon: icon, tone: tone, isCompact: isCompact),
               // Ruling R7: the tile→title and title→body gaps are
               // UNSPECIFIED in the contract.
               const SizedBox(height: AppSpacing.gutter),
@@ -166,54 +152,61 @@ class MxEmptyState extends StatelessWidget {
       ),
     );
   }
-
-  Color _toneColor(BuildContext context) => switch (tone) {
-    MxEmptyStateTone.primary => context.colors.primary,
-    MxEmptyStateTone.neutral => context.colors.onSurfaceVariant,
-    MxEmptyStateTone.success => context.semanticColors.success,
-    MxEmptyStateTone.warning => context.semanticColors.warning,
-    MxEmptyStateTone.danger => context.colors.error,
-  };
 }
 
 class _Tile extends StatelessWidget {
   const _Tile({
     required this.icon,
-    required this.color,
-    required this.ink,
+    required this.tone,
     required this.isCompact,
   });
 
   final IconData icon;
-
-  /// The tint's base.
-  final Color color;
-
-  /// The glyph: primaryInk for the primary tone (spec 2026-09-27 D2),
-  /// successInk for success (critique 2026-09-30 tone pass, T7), warningInk
-  /// for warning (part 3d-2, E14).
-  final Color ink;
+  final MxEmptyStateTone tone;
   final bool isCompact;
 
   @override
-  Widget build(BuildContext context) => SizedBox.square(
-    dimension: isCompact
-        ? MxEmptyState._compactTileSize
-        : MxEmptyState._tileSize,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: MxEmptyState._tileTint),
-        borderRadius: BorderRadius.circular(
-          isCompact ? AppRadius.lg : AppRadius.xl,
+  Widget build(BuildContext context) {
+    final semantic = context.semanticColors;
+    // The tone's soft ground with its on-soft glyph (spec 2026-10-10 §5.3).
+    final (ground, foreground) = switch (tone) {
+      MxEmptyStateTone.primary => (
+        semantic.primarySoft,
+        semantic.onPrimarySoft,
+      ),
+      MxEmptyStateTone.neutral => (
+        semantic.neutralSoft,
+        semantic.onNeutralSoft,
+      ),
+      MxEmptyStateTone.success => (
+        semantic.successSoft,
+        semantic.onSuccessSoft,
+      ),
+      MxEmptyStateTone.warning => (
+        semantic.warningSoft,
+        semantic.onWarningSoft,
+      ),
+      MxEmptyStateTone.danger => (semantic.dangerSoft, semantic.onDangerSoft),
+    };
+    return SizedBox.square(
+      dimension: isCompact
+          ? MxEmptyState._compactTileSize
+          : MxEmptyState._tileSize,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: ground,
+          borderRadius: BorderRadius.circular(
+            isCompact ? AppRadius.lg : AppRadius.xl,
+          ),
+        ),
+        child: Center(
+          child: Icon(
+            icon,
+            size: isCompact ? AppIconSize.standard : AppIconSize.large,
+            color: foreground,
+          ),
         ),
       ),
-      child: Center(
-        child: Icon(
-          icon,
-          size: isCompact ? AppIconSize.standard : AppIconSize.large,
-          color: ink,
-        ),
-      ),
-    ),
-  );
+    );
+  }
 }

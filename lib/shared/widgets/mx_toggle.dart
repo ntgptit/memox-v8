@@ -36,23 +36,22 @@ class _MxToggleState extends State<MxToggle> {
   var _hasFocus = false;
 
   /// The ring over the track: focus first, else the off track's edge.
+  /// The focus ring, drawn over the track so it never pads the thumb.
   BoxDecoration? _ring(BuildContext context) {
-    if (_hasFocus) {
-      return _edge(context.derivedColors.primaryInk, AppStroke.focus);
-    }
-    if (widget.isOn) return null;
-    // A control edge: 3:1 on every ground, a sheet included (SW-REV-001).
-    return _edge(context.derivedColors.outlineEdge, AppStroke.control);
+    if (!_hasFocus) return null;
+    return BoxDecoration(
+      borderRadius: BorderRadius.circular(AppRadius.full),
+      border: Border.all(
+        color: context.semanticColors.focusRing,
+        width: AppStroke.focus,
+      ),
+    );
   }
-
-  BoxDecoration _edge(Color color, double width) => BoxDecoration(
-    borderRadius: BorderRadius.circular(AppRadius.full),
-    border: Border.all(color: color, width: width),
-  );
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final semantic = context.semanticColors;
     final onChanged = widget.onChanged;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
@@ -65,12 +64,10 @@ class _MxToggleState extends State<MxToggle> {
       height: _trackHeight,
       padding: const EdgeInsets.all(_thumbInset),
       decoration: BoxDecoration(
-        color: widget.isOn ? colors.primary : colors.surfaceContainerHighest,
+        color: widget.isOn ? semantic.primaryTrack : semantic.neutralTrack,
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
-      // Foreground rings, so neither pads the thumb (ruling R5): focus, or
-      // the off track's outline edge, 3:1 against the row where the kit's
-      // track alone is 1.32 (FE-C1).
+      // A foreground ring, so it never pads the thumb (ruling R5).
       foregroundDecoration: _ring(context),
       child: AnimatedAlign(
         duration: duration,
@@ -81,9 +78,9 @@ class _MxToggleState extends State<MxToggle> {
         child: DecoratedBox(
           key: const ValueKey('mx-toggle-thumb'),
           decoration: BoxDecoration(
-            // Off, the thumb sits on the track's fill: variant ink holds 3:1
-            // there, where outline is 2.74 light and 1.96 dark (FE-C1).
-            color: widget.isOn ? colors.surfaceBright : colors.onSurfaceVariant,
+            // On, the primary thumb on the light primary track; off, the
+            // white thumb on the neutral track (spec 2026-10-10 §5.2).
+            color: widget.isOn ? colors.primary : colors.onPrimary,
             shape: BoxShape.circle,
             boxShadow: AppShadows.whisper(colors),
           ),

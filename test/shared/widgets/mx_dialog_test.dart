@@ -26,7 +26,7 @@ Widget _still(Widget child) => Builder(
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('surfaceContainerHigh at radius 20 with the overlay shadow', (
+  testWidgets('the card ground at radius 20 with the overlay shadow', (
     tester,
   ) async {
     await pumpMx(tester, const MxDialog(title: 'Delete deck?'));
@@ -44,7 +44,7 @@ void main() {
                 as BoxDecoration)
             .boxShadow;
 
-    expect(_surface(tester).color, scheme.surfaceContainerHigh);
+    expect(_surface(tester).color, scheme.surfaceContainerLowest);
     expect(
       (_surface(tester).shape! as RoundedRectangleBorder).borderRadius,
       BorderRadius.circular(20),
@@ -96,7 +96,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('showMxDialog: a 45% scrim; a scrim tap returns null (RF2)', (
+  testWidgets('showMxDialog: a 56% scrim; a scrim tap returns null (RF2)', (
     tester,
   ) async {
     String? result = 'unset';
@@ -118,7 +118,7 @@ void main() {
     expect(find.byType(MxDialog), findsOneWidget);
     expect(
       tester.widget<ModalBarrier>(find.byType(ModalBarrier).last).color,
-      scheme.scrim.withValues(alpha: 0.45),
+      scheme.scrim.withValues(alpha: 0.56),
     );
     await tester.tapAt(const Offset(8, 8));
     await tester.pumpAndSettle();

@@ -21,7 +21,7 @@ Widget _rows(int count) => Column(
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('surface: container-high, top radius 20, the chrome shadow', (
+  testWidgets('surface: the card ground, top radius 20, the chrome shadow', (
     tester,
   ) async {
     await pumpMx(tester, MxBottomSheet(child: _rows(2)));
@@ -47,7 +47,7 @@ void main() {
           .first,
     );
 
-    expect(surface.color, scheme.surfaceContainerHigh);
+    expect(surface.color, scheme.surfaceContainerLowest);
     expect(
       (surface.shape! as RoundedRectangleBorder).borderRadius,
       const BorderRadius.vertical(top: Radius.circular(20)),
@@ -148,7 +148,7 @@ void main() {
     );
   });
 
-  testWidgets('showMxBottomSheet: a 45% scrim; a scrim tap closes it (RF2)', (
+  testWidgets('showMxBottomSheet: a 56% scrim; a scrim tap closes it (RF2)', (
     tester,
   ) async {
     await pumpMx(
@@ -169,7 +169,7 @@ void main() {
     expect(find.byType(MxBottomSheet), findsOneWidget);
     expect(
       tester.widget<ModalBarrier>(find.byType(ModalBarrier).last).color,
-      scheme.scrim.withValues(alpha: 0.45),
+      scheme.scrim.withValues(alpha: 0.56),
     );
     await tester.tapAt(const Offset(8, 8));
     await tester.pumpAndSettle();

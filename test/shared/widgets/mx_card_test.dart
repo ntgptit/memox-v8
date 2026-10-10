@@ -4,6 +4,7 @@ import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 
 import '../../support/widget_harness.dart';
@@ -207,6 +208,39 @@ void main() {
     }
   });
 
+  testWidgets('Night: a toned card renders its content in Day text (plan R1)', (
+    tester,
+  ) async {
+    for (final card in const [
+      MxCard(isSuccess: true, child: _OnSurfaceText('toned')),
+      MxCard(isWarning: true, child: _OnSurfaceText('toned')),
+      MxCard(isDanger: true, child: _OnSurfaceText('toned')),
+    ]) {
+      await pumpMx(tester, card, brightness: Brightness.dark);
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<Text>(find.text('toned')).style!.color,
+        const Color(0xFF282E3E),
+      );
+    }
+  });
+
+  testWidgets('Night: a raised or hero card keeps Night text', (tester) async {
+    for (final card in const [
+      MxCard(child: _OnSurfaceText('plain')),
+      MxCard(isHero: true, child: _OnSurfaceText('plain')),
+    ]) {
+      await pumpMx(tester, card, brightness: Brightness.dark);
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<Text>(find.text('plain')).style!.color,
+        const Color(0xFFF6F7FB),
+      );
+    }
+  });
+
   test('a card takes one tone at most', () {
     expect(
       () => MxCard(isHero: true, isSuccess: true, child: const SizedBox()),
@@ -221,4 +255,15 @@ void main() {
       throwsAssertionError,
     );
   });
+}
+
+/// Text in the theme's onSurface, read where it is built.
+class _OnSurfaceText extends StatelessWidget {
+  const _OnSurfaceText(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) =>
+      Text(text, style: TextStyle(color: context.colors.onSurface));
 }

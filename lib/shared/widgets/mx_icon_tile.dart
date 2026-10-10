@@ -46,46 +46,28 @@ class MxIconTile extends StatelessWidget {
   /// The medium step's side, for a caller that indents past it.
   static const double mediumBox = 36;
   static const double _largeBox = 44;
-  static const double _primaryTintLight = 0.10;
-  static const double _primaryTintDark = 0.16;
-  static const double _seedTint = 0.12;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final tinted = seed ?? colors.primary;
-    final tint = switch ((seed, colors.brightness)) {
-      (_?, _) => _seedTint,
-      (null, Brightness.light) => _primaryTintLight,
-      (null, Brightness.dark) => _primaryTintDark,
-    };
+    final semantic = context.semanticColors;
     final (box, radius, glyph) = switch (size) {
       MxIconTileSize.small => (smallBox, AppRadius.sm, AppIconSize.inline),
       MxIconTileSize.medium => (mediumBox, AppRadius.md, AppIconSize.compact),
       MxIconTileSize.large => (_largeBox, AppRadius.md, AppIconSize.compact),
     };
-    final (fill, ink) = switch (tone) {
+    // The soft tones sit on their soft ground with the on-soft glyph; a seed
+    // keeps its own glyph on the primary soft ground.
+    final (fill, foreground) = switch (tone) {
       MxIconTileTone.tinted => (
-        tinted.withValues(alpha: tint),
-        seed ?? context.derivedColors.primaryInk,
+        semantic.primarySoft,
+        seed ?? semantic.onPrimarySoft,
       ),
       MxIconTileTone.primary => (colors.primary, colors.onPrimary),
-      MxIconTileTone.warning => (
-        context.semanticColors.warning,
-        context.semanticColors.onWarning,
-      ),
-      MxIconTileTone.success => (
-        context.derivedColors.successSoft,
-        context.derivedColors.successInk,
-      ),
-      MxIconTileTone.caution => (
-        context.derivedColors.warningSoft,
-        context.derivedColors.warningInk,
-      ),
-      MxIconTileTone.danger => (
-        context.derivedColors.dangerSoft,
-        context.colors.error,
-      ),
+      MxIconTileTone.warning => (semantic.warning, semantic.onWarning),
+      MxIconTileTone.success => (semantic.successSoft, semantic.onSuccessSoft),
+      MxIconTileTone.caution => (semantic.warningSoft, semantic.onWarningSoft),
+      MxIconTileTone.danger => (semantic.dangerSoft, semantic.onDangerSoft),
     };
     return SizedBox.square(
       dimension: box,
@@ -95,7 +77,7 @@ class MxIconTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(radius),
         ),
         child: Center(
-          child: child ?? Icon(icon, size: glyph, color: ink),
+          child: child ?? Icon(icon, size: glyph, color: foreground),
         ),
       ),
     );

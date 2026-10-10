@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
 
 import '../../support/widget_harness.dart';
@@ -17,8 +17,8 @@ void main() {
   for (final tone in MxOutcomeTone.values) {
     for (final brightness in Brightness.values) {
       testWidgets(
-        '${tone.name}, ${brightness.name}: the label reads 4.5:1 on its '
-        'ground in a dialog',
+        '${tone.name}, ${brightness.name}: the label reads on its light soft '
+        'ground, at AA or at its recorded floor (owner 2026-10-10)',
         (tester) async {
           await pumpMx(
             tester,
@@ -28,9 +28,6 @@ void main() {
             ),
             brightness: brightness,
           );
-          final scheme = brightness == Brightness.light
-              ? AppColorSchemes.light
-              : AppColorSchemes.dark;
           final label = tester.widget<Text>(find.text('Label'));
           final box = tester.widget<DecoratedBox>(
             find
@@ -40,14 +37,14 @@ void main() {
                 )
                 .first,
           );
-          final ground = Color.alphaBlend(
-            (box.decoration as BoxDecoration).color!,
-            scheme.surfaceContainerHigh,
-          );
+          final ground = (box.decoration as BoxDecoration).color!;
+          // Lost reads #997700 on #FFEDAB: the 3.59 floor that
+          // token_contrast_test records (spec 2026-10-10 D3).
+          final floor = tone == MxOutcomeTone.kept ? 4.5 : 3.59;
 
           expect(
             _ratio(label.style!.color!, ground),
-            greaterThanOrEqualTo(4.5),
+            greaterThanOrEqualTo(floor),
           );
           expect(find.text('Body'), findsOneWidget);
         },
@@ -55,8 +52,8 @@ void main() {
     }
   }
 
-  testWidgets('kept reads in the success ink, lost in the warning ink '
-      '(critique 2026-09-30 tone pass, final review)', (tester) async {
+  testWidgets('kept reads onSuccessSoft, lost onWarningSoft, the body Day\'s '
+      'description; the same in Night (spec 2026-10-10 D4)', (tester) async {
     await pumpMx(
       tester,
       const Column(
@@ -66,15 +63,30 @@ void main() {
         ],
       ),
     );
-    final context = tester.element(find.text('Kept'));
+    const semantic = MxSemanticColors.dark;
+    await pumpMx(
+      tester,
+      const Column(
+        children: [
+          MxOutcomeTile(label: 'Kept', body: 'a', tone: MxOutcomeTone.kept),
+          MxOutcomeTile(label: 'Lost', body: 'b', tone: MxOutcomeTone.lost),
+        ],
+      ),
+      brightness: Brightness.dark,
+    );
+    await tester.pumpAndSettle();
 
     expect(
       tester.widget<Text>(find.text('Kept')).style!.color,
-      context.derivedColors.successInk,
+      semantic.onSuccessSoft,
     );
     expect(
       tester.widget<Text>(find.text('Lost')).style!.color,
-      context.derivedColors.warningInk,
+      semantic.onWarningSoft,
+    );
+    expect(
+      tester.widget<Text>(find.text('a')).style!.color,
+      AppColorSchemes.light.onSurfaceVariant,
     );
   });
 }

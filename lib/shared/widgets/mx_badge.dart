@@ -35,34 +35,43 @@ class MxBadge extends StatelessWidget {
   /// A minimum: text scaling grows the pill (ruling S11).
   static const double _height = 22;
   static const double _glyphSize = 12;
-  static const double _tint = 0.12;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final toneColor = switch (tone) {
-      MxBadgeTone.primary => colors.primary,
-      MxBadgeTone.mastery => context.semanticColors.mastery,
-      MxBadgeTone.success => context.semanticColors.success,
-      MxBadgeTone.warning => context.semanticColors.warning,
-      MxBadgeTone.danger => colors.error,
-      // Ruling S2: the contract names no neutral colour.
-      MxBadgeTone.neutral => colors.onSurfaceVariant,
-    };
-    // Ruling S3: tonal warning text reads in warning-ink, because the amber
-    // fails as 12px text on a light surface; the mastery green likewise
-    // reads in its ink (3.56:1 on its tint in light, FE-C1).
-    final ink = switch ((isSolid, tone)) {
-      (true, _) => colors.onPrimary,
-      (false, MxBadgeTone.warning) => context.derivedColors.warningInk,
-      (false, MxBadgeTone.primary) => context.derivedColors.primaryInk,
-      (false, MxBadgeTone.mastery) => context.derivedColors.statusMasteredInk,
-      (false, MxBadgeTone.success) => context.derivedColors.successInk,
-      (false, _) => toneColor,
+    final semantic = context.semanticColors;
+    // A tonal badge sits on its tone's soft ground and reads its on-soft
+    // token (spec 2026-10-10 §5.3); a solid badge is primary.
+    final (ground, foreground) = switch ((isSolid, tone)) {
+      (true, _) => (colors.primary, colors.onPrimary),
+      (false, MxBadgeTone.primary) => (
+        semantic.primarySoft,
+        semantic.onPrimarySoft,
+      ),
+      (false, MxBadgeTone.mastery) => (
+        semantic.successSoft,
+        semantic.onSuccessSoft,
+      ),
+      (false, MxBadgeTone.success) => (
+        semantic.successSoft,
+        semantic.onSuccessSoft,
+      ),
+      (false, MxBadgeTone.warning) => (
+        semantic.warningSoft,
+        semantic.onWarningSoft,
+      ),
+      (false, MxBadgeTone.danger) => (
+        semantic.dangerSoft,
+        semantic.onDangerSoft,
+      ),
+      (false, MxBadgeTone.neutral) => (
+        semantic.neutralSoft,
+        semantic.onNeutralSoft,
+      ),
     };
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: isSolid ? toneColor : toneColor.withValues(alpha: _tint),
+        color: ground,
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
       child: ConstrainedBox(
@@ -74,12 +83,12 @@ class MxBadge extends StatelessWidget {
             spacing: AppSpacing.micro,
             children: [
               if (icon case final glyph?)
-                Icon(glyph, size: _glyphSize, color: ink),
+                Icon(glyph, size: _glyphSize, color: foreground),
               Text(
                 label,
                 maxLines: 1,
                 softWrap: false,
-                style: context.textStyles.badgeLabel(ink),
+                style: context.textStyles.badgeLabel(foreground),
               ),
             ],
           ),

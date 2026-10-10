@@ -7,7 +7,6 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -56,38 +55,25 @@ void main() {
     );
   });
 
-  testWidgets('tone tints the tile at 10% and paints the glyph', (
+  testWidgets('the tone paints its soft ground and on-soft glyph', (
     tester,
   ) async {
+    const semantic = MxSemanticColors.light;
     final tones = {
-      MxEmptyStateTone.primary: scheme.primary,
-      MxEmptyStateTone.neutral: scheme.onSurfaceVariant,
-      MxEmptyStateTone.success: MxSemanticColors.light.success,
-      MxEmptyStateTone.warning: MxSemanticColors.light.warning,
-      MxEmptyStateTone.danger: scheme.error,
+      MxEmptyStateTone.primary: (semantic.primarySoft, semantic.onPrimarySoft),
+      MxEmptyStateTone.neutral: (semantic.neutralSoft, semantic.onNeutralSoft),
+      MxEmptyStateTone.success: (semantic.successSoft, semantic.onSuccessSoft),
+      MxEmptyStateTone.warning: (semantic.warningSoft, semantic.onWarningSoft),
+      MxEmptyStateTone.danger: (semantic.dangerSoft, semantic.onDangerSoft),
     };
-    for (final MapEntry(key: tone, value: color) in tones.entries) {
+    for (final MapEntry(key: tone, value: (ground, glyph)) in tones.entries) {
       await pumpMx(
         tester,
         MxEmptyState(icon: AppIcons.inbox, title: 'T', tone: tone),
       );
       final tile = tester.widget<DecoratedBox>(_tile(AppIcons.inbox));
 
-      expect(
-        (tile.decoration as BoxDecoration).color,
-        color.withValues(alpha: 0.10),
-        reason: '$tone',
-      );
-      // The primary glyph reads in primaryInk (spec 2026-09-27 D2), the
-      // success glyph in its ink (critique 2026-09-30 tone pass, T7).
-      final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
-      final glyph = switch (tone) {
-        MxEmptyStateTone.primary => MxDerivedColors.primaryInkOf(scheme),
-        MxEmptyStateTone.success => derived.successInk,
-        // Warning reads in its ink too (critique 2026-09-30 part 3d-2, E14).
-        MxEmptyStateTone.warning => derived.warningInk,
-        _ => color,
-      };
+      expect((tile.decoration as BoxDecoration).color, ground, reason: '$tone');
       expect(tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color, glyph);
     }
   });
@@ -218,8 +204,8 @@ void main() {
     );
   });
 
-  testWidgets('in dark the warning glyph reads in warning ink too (critique '
-      '2026-09-30 part 3d-2, E14)', (tester) async {
+  testWidgets('in Night the warning glyph reads its on-soft token on the '
+      'light soft ground (spec 2026-10-10 D4)', (tester) async {
     await pumpMx(
       tester,
       const MxEmptyState(
@@ -231,7 +217,7 @@ void main() {
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color,
-      tester.element(find.byIcon(AppIcons.inbox)).derivedColors.warningInk,
+      MxSemanticColors.dark.onWarningSoft,
     );
   });
 }

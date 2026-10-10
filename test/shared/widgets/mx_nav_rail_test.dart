@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_nav_rail.dart';
 
@@ -79,14 +79,14 @@ void main() {
     }
   });
 
-  testWidgets('the selected item: filled glyph in primaryInk on the pill; '
+  testWidgets('the selected item: filled glyph in primaryText on the pill; '
       'the rest outlined in onSurfaceVariant', (tester) async {
     await pumpMx(tester, _rail(selected: 1));
 
     expect(find.byIcon(AppIcons.study), findsNothing);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      MxDerivedColors.primaryInkOf(scheme),
+      MxSemanticColors.light.primaryText,
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
@@ -100,10 +100,7 @@ void main() {
           )
           .first,
     );
-    expect(
-      (pill.decoration as BoxDecoration).color,
-      scheme.primary.withValues(alpha: 0.14),
-    );
+    expect((pill.decoration as BoxDecoration).color, scheme.primaryContainer);
   });
 
   testWidgets('a tap reports its index, a re-tap of the current one too', (

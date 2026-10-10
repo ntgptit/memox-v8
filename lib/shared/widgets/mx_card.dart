@@ -3,9 +3,10 @@ import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_soft_ground.dart';
 
-/// The base surface. Light lifts it with the whisper shadow; dark draws the
-/// hairline ghost edge instead. It is a Material, so the ripple of a row
+/// The base surface: the card ground with the border hairline in both themes
+/// and the whisper shadow where the theme casts one. It is a Material, so the ripple of a row
 /// inside paints on the card instead of under its fill (ruling S14).
 class MxCard extends StatelessWidget {
   const MxCard({
@@ -92,6 +93,15 @@ class MxCard extends StatelessWidget {
     final edge = isSelected
         ? Border.all(color: context.colors.primary, width: AppStroke.control)
         : surface.border as Border?;
+    final padded = Padding(
+      padding: isFullBleed
+          ? EdgeInsets.zero
+          : const EdgeInsets.all(AppSpacing.card),
+      child: child,
+    );
+    // A toned card is a soft ground, light in both themes: its content
+    // renders in Day (spec 2026-10-10 D4).
+    final isSoft = isWarning || isSuccess || isDanger;
     return SizedBox(
       width: double.infinity,
       child: DecoratedBox(
@@ -106,12 +116,7 @@ class MxCard extends StatelessWidget {
             side: edge?.top ?? BorderSide.none,
           ),
           clipBehavior: Clip.antiAlias,
-          child: Padding(
-            padding: isFullBleed
-                ? EdgeInsets.zero
-                : const EdgeInsets.all(AppSpacing.card),
-            child: child,
-          ),
+          child: isSoft ? MxSoftGround(child: padded) : padded,
         ),
       ),
     );

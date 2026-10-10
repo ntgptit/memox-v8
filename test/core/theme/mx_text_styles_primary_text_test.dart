@@ -17,7 +17,8 @@ void main() {
       expect(styles.disclosureLabel.color, primaryText);
       expect(styles.rowTitleMatch.color, primaryText);
       expect(styles.requiredMarker.color, primaryText);
-      expect(styles.removableTagLabel.color, primaryText);
+      // The removable tag chip sits on the primary soft ground.
+      expect(styles.removableTagLabel.color, semantic.onPrimarySoft);
     });
   }
 }

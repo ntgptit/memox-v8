@@ -50,7 +50,6 @@ class MxErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     final styles = context.textStyles;
     return MxCard(
       isFullBleed: true,
@@ -66,14 +65,14 @@ class MxErrorState extends StatelessWidget {
               dimension: _tileSize,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: context.derivedColors.dangerSoft,
+                  color: context.semanticColors.dangerSoft,
                   borderRadius: BorderRadius.circular(AppRadius.lg),
                 ),
                 child: Center(
                   child: Icon(
                     icon,
                     size: AppIconSize.standard,
-                    color: colors.error,
+                    color: context.semanticColors.onDangerSoft,
                   ),
                 ),
               ),
