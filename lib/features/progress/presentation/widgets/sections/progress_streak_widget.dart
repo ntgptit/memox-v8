@@ -58,11 +58,13 @@ class ProgressStreakWidget extends StatelessWidget {
   Widget _tiles(BuildContext context) {
     final l10n = context.l10n;
     final streak = overview.streak;
+    // A live streak burns in the streak accent; a lost one goes idle on the
+    // neutral ground, legible in both themes.
+    final isLive = streak.days > 0;
     final current = _StreakTile(
       icon: AppIcons.streak,
-      tint: streak.days > 0
-          ? context.semanticColors.streak
-          : context.colors.onSurfaceVariant,
+      tint: isLive ? context.semanticColors.streak : null,
+      tone: isLive ? MxIconTileTone.tinted : MxIconTileTone.neutral,
       label: l10n.progressStreakCurrent,
       value: l10n.progressStreakDays(streak.days),
       sub: switch (streak.state) {
@@ -106,13 +108,15 @@ class _StreakTile extends StatelessWidget {
     required this.label,
     required this.value,
     required this.sub,
+    required this.tone,
     this.tint,
   });
 
   final IconData icon;
 
-  /// Null tints with primary.
+  /// The glyph's accent on the tinted tone (see [MxIconTile.seed]).
   final Color? tint;
+  final MxIconTileTone tone;
   final String label;
   final String value;
   final String sub;
@@ -132,7 +136,7 @@ class _StreakTile extends StatelessWidget {
         child: Row(
           spacing: AppSpacing.control,
           children: [
-            MxIconTile(icon: icon, seed: tint),
+            MxIconTile(icon: icon, seed: tint, tone: tone),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

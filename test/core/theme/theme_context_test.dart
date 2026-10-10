@@ -30,5 +30,9 @@ void main() {
     mode.value = ThemeMode.dark;
     await tester.pumpAndSettle();
     expect(primaryText, MxSemanticColors.dark.primaryText);
+
+    mode.value = ThemeMode.light;
+    await tester.pumpAndSettle();
+    expect(primaryText, MxSemanticColors.light.primaryText);
   });
 }

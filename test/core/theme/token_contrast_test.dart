@@ -49,6 +49,7 @@ const _exceptions = <String, double>{
   'day/onLearningSoft on learningSoft': 4.22,
   'day/onWarningSoft on warningSoft': 3.59,
   'day/outline on the warning ground': 2.36,
+  'day/Day primaryText on dangerSoft': 4.47,
   'night/error on row': 4.43,
   'night/error on low': 3.27,
   'night/primaryText on low': 3.54,
@@ -61,6 +62,7 @@ const _exceptions = <String, double>{
   'night/onLearningSoft on learningSoft': 4.22,
   'night/onWarningSoft on warningSoft': 3.59,
   'night/outline on the warning ground': 2.36,
+  'night/Day primaryText on dangerSoft': 4.47,
 };
 
 List<_Pair> _pairs(
@@ -183,6 +185,30 @@ List<_Pair> _pairs(
       'outline on the warning ground',
       day.outline,
       semantic.warningSoft,
+      _nonText,
+    ),
+    // Content on a soft ground reads Day's tokens in both themes (R1): the
+    // detail line, the eyebrow, and an outline or text button's label.
+    for (final (ground, where) in [
+      (semantic.primarySoft, 'primarySoft'),
+      (semantic.successSoft, 'successSoft'),
+      (semantic.learningSoft, 'learningSoft'),
+      (semantic.warningSoft, 'warningSoft'),
+      (semantic.dangerSoft, 'dangerSoft'),
+    ]) ...[
+      ('Day onSurfaceVariant on $where', day.onSurfaceVariant, ground, _text),
+      (
+        'Day primaryText on $where',
+        MxSemanticColors.light.primaryText,
+        ground,
+        _text,
+      ),
+    ],
+    // A seeded icon tile's glyph on its primary soft ground (MxIconTile).
+    (
+      'streak glyph on its tile',
+      semantic.streak,
+      semantic.primarySoft,
       _nonText,
     ),
     // A Guess option out of play fades as a whole to AppOpacity.muted.

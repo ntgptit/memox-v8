@@ -16,6 +16,7 @@ import 'package:memox/features/progress/presentation/widgets/sections/progress_t
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_dashed_note.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -215,6 +216,44 @@ void main() {
     expect(find.text(_en.progressStreakDays(0)), findsOneWidget);
   });
 
+  // The tile's ground is light in both themes, so a glyph picked from the
+  // Night scheme vanished on it (whole-branch review, DEV-370).
+  for (final brightness in Brightness.values) {
+    libraryTest('a lost streak keeps a legible flame, ${brightness.name}', (
+      tester,
+      env,
+    ) async {
+      await progressLibrary(env, lastDaysAgo: 2);
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screen(_Taps()),
+        brightness: brightness,
+      );
+      await _settle(tester);
+
+      final tile = find.ancestor(
+        of: find.byIcon(AppIcons.streak),
+        matching: find.byType(MxIconTile),
+      );
+      final ground =
+          (tester
+                      .widget<DecoratedBox>(
+                        find
+                            .descendant(
+                              of: tile,
+                              matching: find.byType(DecoratedBox),
+                            )
+                            .first,
+                      )
+                      .decoration
+                  as BoxDecoration)
+              .color!;
+      final glyph = tester.widget<Icon>(find.byIcon(AppIcons.streak)).color!;
+      expect(_ratio(glyph, ground), greaterThanOrEqualTo(3));
+    });
+  }
+
   libraryTest('never studied: the places of the chart and the streak, no '
       'by-deck list of zeros, and Start studying opens the Study tab '
       '(UC-PROGRESS-001 A2, D1; critique 2026-09-30)', (tester, env) async {
@@ -380,4 +419,11 @@ void main() {
       findsOneWidget,
     );
   });
+}
+
+double _ratio(Color a, Color b) {
+  final la = a.computeLuminance();
+  final lb = b.computeLuminance();
+  final (hi, lo) = la > lb ? (la, lb) : (lb, la);
+  return (hi + 0.05) / (lo + 0.05);
 }

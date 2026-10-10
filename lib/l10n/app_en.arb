@@ -4891,7 +4891,7 @@
         "type": "int"
       }
     },
-    "description": "Screen handoff 22 (FE-A9): a row's learning card-days, in the learning ink."
+    "description": "Screen handoff 22 (FE-A9): a row's learning card-days, in the learning text colour."
   },
   "progressRowReviewing": "{count} reviewing",
   "@progressRowReviewing": {
@@ -4900,7 +4900,7 @@
         "type": "int"
       }
     },
-    "description": "Screen handoff 22 (FE-A9): a row's reviewing card-days, in the primary ink."
+    "description": "Screen handoff 22 (FE-A9): a row's reviewing card-days, in the primary text colour."
   },
   "progressNoActivity": "No activity in this range",
   "@progressNoActivity": {

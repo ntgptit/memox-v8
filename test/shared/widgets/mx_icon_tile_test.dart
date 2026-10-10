@@ -138,6 +138,7 @@ void main() {
       MxIconTileTone.success,
       MxIconTileTone.caution,
       MxIconTileTone.danger,
+      MxIconTileTone.neutral,
     ]) {
       testWidgets('${tone.name}, ${brightness.name}: its soft ground, and the '
           'glyph reads 3:1 on it (FE-A6 D14)', (tester) async {
@@ -155,6 +156,7 @@ void main() {
         expect(fill, switch (tone) {
           MxIconTileTone.success => semantic.successSoft,
           MxIconTileTone.caution => semantic.warningSoft,
+          MxIconTileTone.neutral => semantic.neutralSoft,
           _ => semantic.dangerSoft,
         });
         expect(_ratio(glyph, fill), greaterThanOrEqualTo(3));

@@ -79,7 +79,7 @@ class MxFilterChip extends StatelessWidget {
               if (count case final value?)
                 Text(
                   value.toString(),
-                  // On the primary fill even full white is only 4.77:1, so
+                  // On the primary fill even full white is only 5.28:1, so
                   // the selected count keeps the label's foreground (SW-REV-001).
                   style: styles.chipCount(
                     isSelected

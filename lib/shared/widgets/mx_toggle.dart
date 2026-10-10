@@ -35,7 +35,6 @@ class _MxToggleState extends State<MxToggle> {
 
   var _hasFocus = false;
 
-  /// The ring over the track: focus first, else the off track's edge.
   /// The focus ring, drawn over the track so it never pads the thumb.
   BoxDecoration? _ring(BuildContext context) {
     if (!_hasFocus) return null;
