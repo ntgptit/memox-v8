@@ -2,43 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 
-// Every V3_DEFINED role from 02-theme-binding.md, light then dark. The dark
-// primary pair follows spec 2026-09-27 D1, not the kit; the light error and
-// both inversePrimary values follow FE-C1 (§9 rows 2 and 66), not the kit.
+// Every role of the Indigo palette (spec 2026-10-10 §4), Day then Night.
 const _v3Roles = <String, (int, int)>{
-  'primary': (0xFF5265F5, 0xFF5265F5),
+  'primary': (0xFF4255FF, 0xFF4255FF),
   'onPrimary': (0xFFFFFFFF, 0xFFFFFFFF),
-  'primaryContainer': (0xFFE0E5FE, 0xFF2D346A),
-  'onPrimaryContainer': (0xFF1A2580, 0xFFD9DFFF),
-  'secondary': (0xFF6E7CD9, 0xFF9DA8E8),
-  'onSecondary': (0xFFFFFFFF, 0xFF1A2150),
-  'secondaryContainer': (0xFFE3E6F7, 0xFF343C78),
-  'onSecondaryContainer': (0xFF262E6E, 0xFFDDE2FB),
-  'tertiary': (0xFF8B6FF5, 0xFFB5A0FF),
-  'onTertiary': (0xFFFFFFFF, 0xFF240B63),
-  'tertiaryContainer': (0xFFEBE3FE, 0xFF443078),
-  'onTertiaryContainer': (0xFF33177E, 0xFFE6DCFF),
-  'error': (0xFFC02447, 0xFFFF8FA3),
-  'onError': (0xFFFFFFFF, 0xFF52061B),
-  'errorContainer': (0xFFFBDDE3, 0xFF7A2036),
-  'onErrorContainer': (0xFF7A0A23, 0xFFFFD9DF),
-  'surfaceDim': (0xFFDAE0EF, 0xFF060925),
-  'surface': (0xFFF7F9FE, 0xFF0A0E27),
-  'surfaceBright': (0xFFFFFFFF, 0xFF232B5A),
-  'surfaceContainerLowest': (0xFFFFFFFF, 0xFF131A3A),
-  'surfaceContainerLow': (0xFFF1F4FB, 0xFF1B2249),
-  'surfaceContainer': (0xFFE9EDF7, 0xFF232B5A),
-  'surfaceContainerHigh': (0xFFE2E7F3, 0xFF2C356E),
-  'surfaceContainerHighest': (0xFFDAE0EF, 0xFF353D7E),
-  'onSurface': (0xFF0F1638, 0xFFE4E8FA),
-  'onSurfaceVariant': (0xFF4A5278, 0xFFA4ACD0),
-  'outline': (0xFF7C85AB, 0xFF5A6BAE),
-  'outlineVariant': (0xFFC5CBE3, 0xFF2A3267),
-  'inverseSurface': (0xFF34395D, 0xFF34395D),
-  'onInverseSurface': (0xFFE8EAFC, 0xFFE8EAFC),
-  'inversePrimary': (0xFFA0ACFF, 0xFFA0ACFF),
-  'scrim': (0xFF0A0E27, 0xFF000000),
-  'shadow': (0xFF0F1638, 0xFF000000),
+  'primaryContainer': (0xFFEDEFFF, 0xFF14125C),
+  'onPrimaryContainer': (0xFF4255FF, 0xFFEDEFFF),
+  'secondary': (0xFF586380, 0xFF586380),
+  'onSecondary': (0xFFFFFFFF, 0xFFF6F7FB),
+  'secondaryContainer': (0xFFEDEFF4, 0xFF2E3856),
+  'onSecondaryContainer': (0xFF2E3856, 0xFFD9DDE8),
+  'tertiary': (0xFF9C63FF, 0xFF9C63FF),
+  'onTertiary': (0xFFFFFFFF, 0xFFFFFFFF),
+  'tertiaryContainer': (0xFFFAA6FF, 0xFFFAA6FF),
+  'onTertiaryContainer': (0xFF282E3E, 0xFF282E3E),
+  'error': (0xFFB00020, 0xFFFC3C60),
+  'onError': (0xFFFFFFFF, 0xFFFFFFFF),
+  'errorContainer': (0xFFFFE8D8, 0xFFFFE8D8),
+  'onErrorContainer': (0xFFB00020, 0xFFB00020),
+  'surfaceDim': (0xFFEDEFF4, 0xFF0A092D),
+  'surface': (0xFFFFFFFF, 0xFF0A092D),
+  'surfaceBright': (0xFFFFFFFF, 0xFF2E3856),
+  'surfaceContainerLowest': (0xFFFFFFFF, 0xFF202040),
+  'surfaceContainerLow': (0xFFF6F7FB, 0xFF2E3856),
+  'surfaceContainer': (0xFFF6F7FB, 0xFF2E3856),
+  'surfaceContainerHigh': (0xFFEDEFF4, 0xFF282E3E),
+  'surfaceContainerHighest': (0xFFD9DDE8, 0xFF586380),
+  'onSurface': (0xFF282E3E, 0xFFF6F7FB),
+  'onSurfaceVariant': (0xFF586380, 0xFFD9DDE8),
+  'outline': (0xFF939BB4, 0xFF586380),
+  'outlineVariant': (0xFFD9DDE8, 0xFF586380),
+  'inverseSurface': (0xFF1A1D28, 0xFFEDEFF4),
+  'onInverseSurface': (0xFFF6F7FB, 0xFF282E3E),
+  'inversePrimary': (0xFFF6F7FB, 0xFF586380),
+  'scrim': (0xFF010110, 0xFF010110),
+  'shadow': (0xFF282E3E, 0xFF282E3E),
 };
 
 final _read = <String, Color Function(ColorScheme)>{
@@ -84,47 +82,50 @@ void main() {
   });
 
   for (final MapEntry(key: role, value: (light, dark)) in _v3Roles.entries) {
-    test('$role is the V3 value in both themes', () {
+    test('$role is the Indigo value in both themes', () {
       expect(_read[role]!(AppColorSchemes.light).toARGB32(), light);
       expect(_read[role]!(AppColorSchemes.dark).toARGB32(), dark);
     });
   }
 
-  test('inverseSurface pair is invariant across themes', () {
-    expect(
-      AppColorSchemes.light.inverseSurface,
-      AppColorSchemes.dark.inverseSurface,
-    );
-    expect(
-      AppColorSchemes.light.onInverseSurface,
-      AppColorSchemes.dark.onInverseSurface,
-    );
-  });
-
   test(
-    'roles V3 leaves open keep the seed-generated value (REPO_PRESERVED)',
+    'the inverse surface inverts each theme: dark in Day, light in Night',
     () {
-      for (final brightness in Brightness.values) {
-        final seeded = ColorScheme.fromSeed(
-          seedColor: AppColorSchemes.seed,
-          brightness: brightness,
-        );
-        final actual = brightness == Brightness.light
-            ? AppColorSchemes.light
-            : AppColorSchemes.dark;
-        expect(actual.primaryFixed, seeded.primaryFixed);
-        expect(actual.primaryFixedDim, seeded.primaryFixedDim);
-        expect(actual.onPrimaryFixed, seeded.onPrimaryFixed);
-        expect(actual.onPrimaryFixedVariant, seeded.onPrimaryFixedVariant);
-        expect(actual.secondaryFixed, seeded.secondaryFixed);
-        expect(actual.secondaryFixedDim, seeded.secondaryFixedDim);
-        expect(actual.onSecondaryFixed, seeded.onSecondaryFixed);
-        expect(actual.onSecondaryFixedVariant, seeded.onSecondaryFixedVariant);
-        expect(actual.tertiaryFixed, seeded.tertiaryFixed);
-        expect(actual.tertiaryFixedDim, seeded.tertiaryFixedDim);
-        expect(actual.onTertiaryFixed, seeded.onTertiaryFixed);
-        expect(actual.onTertiaryFixedVariant, seeded.onTertiaryFixedVariant);
-      }
+      final day = AppColorSchemes.light;
+      final night = AppColorSchemes.dark;
+
+      expect(
+        day.inverseSurface.computeLuminance(),
+        lessThan(day.surface.computeLuminance()),
+      );
+      expect(
+        night.inverseSurface.computeLuminance(),
+        greaterThan(night.surface.computeLuminance()),
+      );
     },
   );
+
+  test('the *Fixed family keeps the seed-generated value', () {
+    for (final brightness in Brightness.values) {
+      final seeded = ColorScheme.fromSeed(
+        seedColor: AppColorSchemes.seed,
+        brightness: brightness,
+      );
+      final actual = brightness == Brightness.light
+          ? AppColorSchemes.light
+          : AppColorSchemes.dark;
+      expect(actual.primaryFixed, seeded.primaryFixed);
+      expect(actual.primaryFixedDim, seeded.primaryFixedDim);
+      expect(actual.onPrimaryFixed, seeded.onPrimaryFixed);
+      expect(actual.onPrimaryFixedVariant, seeded.onPrimaryFixedVariant);
+      expect(actual.secondaryFixed, seeded.secondaryFixed);
+      expect(actual.secondaryFixedDim, seeded.secondaryFixedDim);
+      expect(actual.onSecondaryFixed, seeded.onSecondaryFixed);
+      expect(actual.onSecondaryFixedVariant, seeded.onSecondaryFixedVariant);
+      expect(actual.tertiaryFixed, seeded.tertiaryFixed);
+      expect(actual.tertiaryFixedDim, seeded.tertiaryFixedDim);
+      expect(actual.onTertiaryFixed, seeded.onTertiaryFixed);
+      expect(actual.onTertiaryFixedVariant, seeded.onTertiaryFixedVariant);
+    }
+  });
 }

@@ -167,7 +167,7 @@ void main() {
         final barrier = tester.widget<ModalBarrier>(
           find.byType(ModalBarrier).last,
         );
-        expect(barrier.color, scheme.scrim.withValues(alpha: 0.45));
+        expect(barrier.color, scheme.scrim.withValues(alpha: 0.56));
       });
 
       testWidgets('a framework sheet takes the V3 surface and top radius', (
@@ -200,7 +200,7 @@ void main() {
           (sheets.shape! as RoundedRectangleBorder).borderRadius,
           const BorderRadius.vertical(top: Radius.circular(20)),
         );
-        expect(sheets.modalBarrierColor, scheme.scrim.withValues(alpha: 0.45));
+        expect(sheets.modalBarrierColor, scheme.scrim.withValues(alpha: 0.56));
       });
 
       testWidgets('a raw SnackBar takes the V3 toast', (tester) async {
