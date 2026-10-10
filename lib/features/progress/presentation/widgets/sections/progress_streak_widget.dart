@@ -125,7 +125,7 @@ class _StreakTile extends StatelessWidget {
     return DecoratedBox(
       decoration: AppDecorations.recessedCard(
         context.colors,
-        context.derivedColors,
+        context.semanticColors,
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.grouped),

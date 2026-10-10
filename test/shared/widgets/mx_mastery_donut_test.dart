@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 
@@ -19,15 +18,14 @@ RenderObject _ring(WidgetTester tester) => tester.renderObject(
 void main() {
   final scheme = AppColorSchemes.light;
   final semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(scheme, semantic);
 
-  testWidgets('56 box; the arc in the ramp fill, the label in its ink', (
+  testWidgets('56 box; the arc in the ramp fill, the label in its text token', (
     tester,
   ) async {
-    for (final (fraction, text, color, ink) in [
-      (0.2, '20%', derived.statusLearningInk, derived.statusLearningInk),
-      (0.42, '42%', semantic.statusReviewing, derived.statusReviewingInk),
-      (0.9, '90%', semantic.statusMastered, derived.statusMasteredInk),
+    for (final (fraction, text, color, label) in [
+      (0.2, '20%', semantic.statusLearning, semantic.learningText),
+      (0.42, '42%', semantic.statusReviewing, semantic.primaryText),
+      (0.9, '90%', semantic.statusMastered, semantic.masteryText),
     ]) {
       await pumpMx(tester, MxMasteryDonut(fraction: fraction));
 
@@ -35,8 +33,8 @@ void main() {
         tester.getSize(find.byType(MxMasteryDonut)),
         const Size.square(56),
       );
-      // The arc is the fill; the label is text, so it takes the ink.
-      expect(tester.widget<Text>(find.text(text)).style!.color, ink);
+      // The arc is the fill; the label is text, so it takes the text token.
+      expect(tester.widget<Text>(find.text(text)).style!.color, label);
       expect(
         _ring(tester),
         paints
@@ -53,7 +51,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text('0%')).style!.color,
-      derived.statusLearningInk,
+      semantic.learningText,
     );
     expect(_ring(tester), paints..circle(color: scheme.surfaceContainer));
     expect(_ring(tester), isNot(paints..arc()));
@@ -64,7 +62,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text('100%')).style!.color,
-      derived.statusMasteredInk,
+      semantic.masteryText,
     );
     expect(_ring(tester), paints..arc(color: semantic.statusMastered));
   });

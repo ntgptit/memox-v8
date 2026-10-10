@@ -25,13 +25,21 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
     extensions: [semantic],
     // Spec §4.6: the V3 defaults of the Material components.
     inputDecorationTheme: AppComponentThemes.fields(scheme, semantic, texts),
-    filledButtonTheme: AppComponentThemes.filledButtons(scheme, texts),
-    outlinedButtonTheme: AppComponentThemes.outlinedButtons(scheme, texts),
-    textButtonTheme: AppComponentThemes.textButtons(scheme, texts),
-    iconButtonTheme: AppComponentThemes.iconButtons(scheme),
-    dialogTheme: AppComponentThemes.dialogs(scheme, texts),
+    filledButtonTheme: AppComponentThemes.filledButtons(
+      scheme,
+      semantic,
+      texts,
+    ),
+    outlinedButtonTheme: AppComponentThemes.outlinedButtons(
+      scheme,
+      semantic,
+      texts,
+    ),
+    textButtonTheme: AppComponentThemes.textButtons(scheme, semantic, texts),
+    iconButtonTheme: AppComponentThemes.iconButtons(scheme, semantic),
+    dialogTheme: AppComponentThemes.dialogs(scheme, semantic, texts),
     bottomSheetTheme: AppComponentThemes.sheets(scheme),
-    snackBarTheme: AppComponentThemes.snackbars(scheme, texts),
+    snackBarTheme: AppComponentThemes.snackbars(scheme, semantic, texts),
     tooltipTheme: AppComponentThemes.tooltips(scheme, texts),
     // InkWell rows (MxRowInk, MxOptionRow, the tray, the nav) press in the
     // theme's ink at the buttons' 12% overlay, not Material's grey

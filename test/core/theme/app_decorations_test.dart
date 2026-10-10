@@ -3,61 +3,54 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
-// Card contract: surface-raised, radius 20, whisper shadow in light,
-// 1px ghost border and no shadow in dark.
+// Card contract: the card ground at radius 12, the border hairline in both
+// themes (plan R2), the whisper shadow where the theme casts one.
 void main() {
-  test('light: surface-raised with the whisper shadow and no border', () {
-    final scheme = AppColorSchemes.light;
-    final card = AppDecorations.raisedCard(
-      scheme,
-      MxDerivedColors.resolve(scheme, MxSemanticColors.light),
-    );
+  for (final (theme, scheme, semantic) in [
+    ('Day', AppColorSchemes.light, MxSemanticColors.light),
+    ('Night', AppColorSchemes.dark, MxSemanticColors.dark),
+  ]) {
+    Border edge(Color color) =>
+        Border.all(color: color, width: AppStroke.hairline);
 
-    expect(card.color, scheme.surfaceContainerLowest);
-    expect(card.borderRadius, BorderRadius.circular(12));
-    expect(card.boxShadow, AppShadows.whisper(scheme));
-    expect(card.border, isNull);
-  });
+    test('raised card draws the border hairline in $theme (R2)', () {
+      final box = AppDecorations.raisedCard(scheme, semantic);
 
-  test('dark: a 1px ghost border and no shadow', () {
-    final scheme = AppColorSchemes.dark;
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.dark);
-    final card = AppDecorations.raisedCard(scheme, derived);
+      expect(box.color, scheme.surfaceContainerLowest);
+      expect(box.borderRadius, BorderRadius.circular(12));
+      expect(box.border, edge(semantic.border));
+      expect(box.boxShadow, AppShadows.whisper(scheme));
+    });
 
-    expect(card.boxShadow, isEmpty);
-    expect(card.border, Border.all(color: derived.ghostBorder));
-  });
+    test('recessed card is the low ground, flat, in $theme', () {
+      final box = AppDecorations.recessedCard(scheme, semantic);
 
-  test('hero: surface-hero fill with the ghost edge in both themes', () {
-    for (final (scheme, semantic) in [
-      (AppColorSchemes.light, MxSemanticColors.light),
-      (AppColorSchemes.dark, MxSemanticColors.dark),
-    ]) {
-      final derived = MxDerivedColors.resolve(scheme, semantic);
-      final hero = AppDecorations.heroCard(scheme, derived);
+      expect(box.color, scheme.surfaceContainerLow);
+      expect(box.border, edge(semantic.border));
+      expect(box.boxShadow, isEmpty);
+    });
 
-      expect(hero.color, derived.surfaceHero);
-      expect(hero.border, Border.all(color: derived.ghostBorder));
-      expect(hero.borderRadius, BorderRadius.circular(12));
-      expect(hero.boxShadow, AppShadows.whisper(scheme));
-    }
-  });
+    test('hero card fills primaryContainer in $theme', () {
+      final hero = AppDecorations.heroCard(scheme, semantic);
 
-  test('the success and danger cards blend their soft tint over the raised '
-      'fill and take their border (FE-A6 D14)', () {
-    final scheme = AppColorSchemes.light;
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
-    final raised = AppDecorations.raisedCard(scheme, derived).color!;
+      expect(hero.color, scheme.primaryContainer);
+      expect(hero.border, edge(semantic.border));
+    });
 
-    final success = AppDecorations.successCard(scheme, derived);
-    final danger = AppDecorations.dangerCard(scheme, derived);
+    test('toned cards fill their soft token outright in $theme', () {
+      final warning = AppDecorations.warningCard(scheme, semantic);
+      final success = AppDecorations.successCard(scheme, semantic);
+      final danger = AppDecorations.dangerCard(scheme, semantic);
 
-    expect(success.color, Color.alphaBlend(derived.successSoft, raised));
-    expect((success.border! as Border).top.color, derived.successBorder);
-    expect(danger.color, Color.alphaBlend(derived.dangerSoft, raised));
-    expect((danger.border! as Border).top.color, derived.dangerBorder);
-  });
+      expect(warning.color, semantic.warningSoft);
+      expect(warning.border, edge(semantic.warningBorder));
+      expect(success.color, semantic.successSoft);
+      expect(success.border, edge(semantic.successBorder));
+      expect(danger.color, semantic.dangerSoft);
+      expect(danger.border, edge(semantic.dangerBorder));
+    });
+  }
 }
