@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -15,8 +13,6 @@ Finder _tile(IconData icon) => find
     .first;
 
 void main() {
-  final scheme = AppColorSchemes.light;
-
   testWidgets('title, body and a block primary action', (tester) async {
     var taps = 0;
     await pumpMx(
