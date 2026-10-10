@@ -16,7 +16,7 @@ import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 
 /// One answer on the card history's timeline (DEV-170, kit "Flashcard
-/// history"): a dot in the outcome's ink on the rail, then a card with the
+/// history"): a dot in the outcome's foreground on the rail, then a card with the
 /// outcome, when (how long ago over the date and time), the kind, and the
 /// values its row stored (BR-CARD-016).
 class CardHistoryEventWidget extends StatelessWidget {
@@ -37,7 +37,7 @@ class CardHistoryEventWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
-    final derived = context.derivedColors;
+    final semantic = context.semanticColors;
     final styles = context.textStyles;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final action = entry.action;
@@ -45,28 +45,28 @@ class CardHistoryEventWidget extends StatelessWidget {
         action == EightBoxAction.forgotten || action == Sm2Action.again;
     // A right answer is success, never mastery or the action Indigo
     // (DESIGN.md; critique 2026-09-30 tone pass, T5). The dot and the
-    // moves read in the same tone's ink.
-    final (tone, icon, ink) = switch (entry.kind) {
+    // moves read in the same tone's foreground.
+    final (tone, icon, foreground) = switch (entry.kind) {
       _ when isLapse => (
         MxBadgeTone.warning,
         AppIcons.lapses,
-        derived.warningInk,
+        semantic.warningText,
       ),
       ReviewKind.relearning => (
         MxBadgeTone.neutral,
         AppIcons.repeat,
         colors.onSurfaceVariant,
       ),
-      _ => (MxBadgeTone.success, AppIcons.check, derived.successInk),
+      _ => (MxBadgeTone.success, AppIcons.check, semantic.success),
     };
-    final meta = _meta(l10n, locale, ink);
+    final meta = _meta(l10n, locale, foreground);
     // The dot centres on the header row, which the two-line time sets:
     // the card's 20 interior, then the middle of those lines.
     return CardHistoryRailWidget(
       dotTop:
           AppSpacing.card +
           CardHistoryRailWidget.dotTopOn(context, styles.counter, lines: 2),
-      ink: ink,
+      foreground: foreground,
       child: MxCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -120,22 +120,28 @@ class CardHistoryEventWidget extends StatelessWidget {
   }
 
   /// Only what the row stored; before → after only when both are stored.
-  /// The moves read in the outcome's ink; the rest carry their glyph.
-  List<Widget> _meta(AppLocalizations l10n, String locale, Color ink) {
+  /// The moves read in the outcome's foreground; the rest carry their glyph.
+  List<Widget> _meta(AppLocalizations l10n, String locale, Color foreground) {
     final ease = NumberFormat(_easePattern, locale).format;
     return [
       if ((entry.previousBox, entry.nextBox) case (final from?, final to?))
-        _Meta(text: l10n.cardHistoryBoxMove(from, to), ink: ink),
+        _Meta(text: l10n.cardHistoryBoxMove(from, to), foreground: foreground),
       if ((entry.previousEaseFactor, entry.nextEaseFactor) case (
         final from?,
         final to?,
       ))
-        _Meta(text: l10n.cardHistoryEaseMove(ease(from), ease(to)), ink: ink),
+        _Meta(
+          text: l10n.cardHistoryEaseMove(ease(from), ease(to)),
+          foreground: foreground,
+        ),
       if ((entry.previousIntervalDays, entry.nextIntervalDays) case (
         final from?,
         final to?,
       ))
-        _Meta(text: l10n.cardHistoryIntervalMove(from, to), ink: ink),
+        _Meta(
+          text: l10n.cardHistoryIntervalMove(from, to),
+          foreground: foreground,
+        ),
       _Meta(text: l10n.cardHistoryMode(entry.mode), icon: AppIcons.studyMode),
       if (entry.usedHint ?? false)
         _Meta(text: l10n.cardHistoryHintUsed, icon: AppIcons.hint),
@@ -152,20 +158,22 @@ class CardHistoryEventWidget extends StatelessWidget {
   }
 }
 
-/// One metadata item: a glyph and words, or a move in the outcome's ink.
+/// One metadata item: a glyph and words, or a move in the outcome's foreground.
 class _Meta extends StatelessWidget {
-  const _Meta({required this.text, this.icon, this.ink});
+  const _Meta({required this.text, this.icon, this.foreground});
 
   final String text;
   final IconData? icon;
-  final Color? ink;
+  final Color? foreground;
 
   @override
   Widget build(BuildContext context) {
     final styles = context.textStyles;
-    final ink = this.ink;
+    final foreground = this.foreground;
     final icon = this.icon;
-    final style = ink == null ? styles.rowDescription : styles.historyMove(ink);
+    final style = foreground == null
+        ? styles.rowDescription
+        : styles.historyMove(foreground);
     return Row(
       mainAxisSize: MainAxisSize.min,
       spacing: AppSpacing.micro,

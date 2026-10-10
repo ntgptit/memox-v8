@@ -10,7 +10,7 @@ enum MxDialogWidth { small, medium, large }
 
 const double _enterScale = 0.94;
 
-/// Opens [builder] (usually an MxDialog) over a 45% scrim. The dialog fades
+/// Opens [builder] (usually an MxDialog) over a 56% scrim. The dialog fades
 /// in and scales from 0.94 over 200ms; it opens instantly under reduced
 /// motion (ruling O7). A scrim tap dismisses it with null, unless the dialog
 /// is held (MxDialog.isHeld).

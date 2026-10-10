@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
 
 import '../../support/widget_harness.dart';
 
 Iterable<ColoredBox> _hairlines(WidgetTester tester) {
-  final ghost = MxDerivedColors.resolve(
-    AppColorSchemes.light,
-    MxSemanticColors.light,
-  ).ghostBorder;
+  final ghost = MxSemanticColors.light.border;
   return tester
       .widgetList<ColoredBox>(find.byType(ColoredBox))
       .where((box) => box.color == ghost);

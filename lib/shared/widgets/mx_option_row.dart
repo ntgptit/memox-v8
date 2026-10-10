@@ -74,13 +74,12 @@ class MxOptionRow extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              // A stroke glyph, so primaryInk (spec
-                              // 2026-09-27): it reads 3:1 on a sheet. The
-                              // empty ring is a control edge: Outline Edge,
-                              // 3:1 on every ground (SW-REV-001).
+                              // A stroke glyph, so primaryText; the empty
+                              // ring is a control edge, the outline (spec
+                              // 2026-10-10 §4-5).
                               color: isSelected
-                                  ? context.derivedColors.primaryInk
-                                  : context.derivedColors.outlineEdge,
+                                  ? context.semanticColors.primaryText
+                                  : context.colors.outline,
                               width: isSelected
                                   ? AppStroke.selectedRing
                                   : AppStroke.control,

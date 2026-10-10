@@ -114,7 +114,7 @@ void main() {
     expect(_tile(tester, _en.studyEntryNew).emphasis, MxStatTileEmphasis.muted);
   });
 
-  libraryTest('the overdue note is in the warning ink (kit sm2)', (
+  libraryTest('the overdue note is in the warning text (kit sm2)', (
     tester,
     env,
   ) async {
@@ -125,7 +125,7 @@ void main() {
 
     final note = tester.widget<Text>(find.text(_en.studyEntryOverdue(1)));
     final context = tester.element(find.text(_en.studyEntryOverdue(1)));
-    expect(note.style?.color, context.derivedColors.warningInk);
+    expect(note.style?.color, context.semanticColors.warningText);
   });
 
   libraryTest('Eight boxes lists its four review modes, each with its count '

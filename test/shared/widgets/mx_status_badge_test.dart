@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 
@@ -15,26 +13,32 @@ Color? _fill(WidgetTester tester, Finder finder) =>
 void main() {
   final semantic = MxSemanticColors.light;
 
-  testWidgets('the status fixes the dot and fill; the label is its ink', (
-    tester,
-  ) async {
-    final derived = MxDerivedColors.resolve(AppColorSchemes.light, semantic);
-    for (final (status, color, ink) in [
-      (MxCardStatus.newCard, semantic.statusNew, derived.statusNewInk),
+  testWidgets('the status fixes the dot; the pill is its soft ground and the '
+      'label its on-soft token', (tester) async {
+    for (final (status, color, ground, foreground) in [
+      (
+        MxCardStatus.newCard,
+        semantic.statusNew,
+        semantic.neutralSoft,
+        semantic.onNeutralSoft,
+      ),
       (
         MxCardStatus.learning,
         semantic.statusLearning,
-        derived.statusLearningInk,
+        semantic.learningSoft,
+        semantic.onLearningSoft,
       ),
       (
         MxCardStatus.reviewing,
         semantic.statusReviewing,
-        derived.statusReviewingInk,
+        semantic.primarySoft,
+        semantic.onPrimarySoft,
       ),
       (
         MxCardStatus.mastered,
         semantic.statusMastered,
-        derived.statusMasteredInk,
+        semantic.successSoft,
+        semantic.onSuccessSoft,
       ),
     ]) {
       await pumpMx(tester, MxStatusBadge(status: status, label: 'State'));
@@ -45,9 +49,9 @@ void main() {
           )
           .first;
 
-      expect(_fill(tester, pill), color.withValues(alpha: 0.12));
+      expect(_fill(tester, pill), ground);
       expect(_fill(tester, find.byKey(_dotKey)), color);
-      expect(tester.widget<Text>(find.text('State')).style!.color, ink);
+      expect(tester.widget<Text>(find.text('State')).style!.color, foreground);
     }
   });
 

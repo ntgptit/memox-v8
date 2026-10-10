@@ -15,7 +15,7 @@ An open deck whose content type is `card`: the card section of `DeckLevelScreen`
 | Summary card | `MxCard` (hero) + `MxMasteryDonut` + `MxWorkloadBreakdownLine` | "DECK PROGRESS · {algorithm}", "{n} of {total} cards mastered", overdue · today · new; mastery is stated once, with no four-state bar or legend (critique 2026-09-30, R2). "Study this deck · {n} due" (primary block `MxButton`; "Study this deck" when only new cards wait) opens the Study Entry, screen 14 (FE-A6 D10); hidden when the deck holds no card to study. Hidden while selecting, and while search is open, so the first results sit above the keyboard (critique 2026-09-30 part 1). |
 | Filters | `MxFilterChip` | All · Due · New · Flagged with counts, then Tags with the tag glyph: selected with the count of tags applied, and its tap opens the tag filter (FE-B2 D14). |
 | Header | `MxListSectionHeader` + `MxChipTrigger` | "Cards" while every card of the deck shows; "Showing {n} of {total}" (matches of the deck's cards) while a filter, a tag or search narrows it; none while selecting, when the app bar holds the count (critique 2026-09-30 part 3b); sort "Newest ⇅" / "Due first ⇅" (the sort glyph, not a chevron). |
-| Rows | `MxSelectableCardRow` per row, 8 apart (DEV-304) | The checkbox while selecting (no status dot: the label states the status once, critique 2026-09-30 part 3b, R3); front 16/700 and back 12, one line each; uppercase status label in its ink, up to two `MxTagChip`s and "+{n}"; trailing flag in plain ink (critique 2026-10-02, F6) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
+| Rows | `MxSelectableCardRow` per row, 8 apart (DEV-304) | The checkbox while selecting (no status dot: the label states the status once, critique 2026-09-30 part 3b, R3); front 16/700 and back 12, one line each; uppercase status label in its text token, up to two `MxTagChip`s and "+{n}"; trailing flag in plain text colour (critique 2026-10-02, F6) and the due chip, an `MxBadge` (E-L4): "New", "Due today", "In {n}d", "{n}d overdue". The status label, tags and "+{n}" wrap at large text. Rows build as they scroll into view (E-L5). |
 | Bulk bar | `MxFooterBar` with five icon buttons | Move · Flag · Tag · Export (screen 12; the selection stays) · Trash. |
 | FAB | `MxFab` | "New card" (#33); hidden while selecting and while search is open (critique 2026-09-30 part 3d-1). The list ends clear of it (`MxScrollClearance.fabAboveNav`), and drops that clearance while selecting (critique 2026-09-30). |
 
@@ -84,13 +84,13 @@ The goldens are in `test/features/card/presentation/goldens/`.
 - **Move to Trash dialog:** no glyph (`MxDialog` has no glyph slot); the body reads "Recoverable from Trash for 30 days, with its schedule and history", since the dialog reads no history count.
 - **FE-B2 D14 (critique P1b):** Tags is a filter chip, selected while tags are applied.
 - **BR-DECK-015, E-L1:** an empty card list makes the deck unset again; screen 01's unset state shows.
-- **E-L2:** the flag uses the warning colour; the theme has no streak token. Superseded by critique 2026-10-02 (F6): plain ink.
+- **E-L2:** the flag uses the warning colour; the theme has no streak token. Superseded by critique 2026-10-02 (F6): plain text colour.
 - **E-L3:** "Select all" is a compact secondary `MxButton`.
 - **E-L4:** the due chip is an `MxBadge`: overdue warning, today primary, else neutral.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the deck summary's progress line is an eyebrow.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the add FAB steps aside while search is open; a failed bulk flag's banner offers Retry, repeating the same cards and choice.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** while a failed bulk flag's Retry runs, the banner stays and Retry shows the button's loading state; the bulk bar ignores taps meanwhile. A failure keeps the banner; success clears the selection as before.
-- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain ink (`onSurface`), the filled glyph carrying the state as in the editor and the detail; E-L2 is superseded (F6).
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain text colour (`onSurface`), the filled glyph carrying the state as in the editor and the detail; E-L2 is superseded (F6).
 
 ## Copy
 

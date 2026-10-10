@@ -20,9 +20,9 @@ class MxIconButton extends StatelessWidget {
   final VoidCallback? onPressed;
 
   /// The theme's IconButton is this contract (spec §4.6): the glyph size,
-  /// the 36 ink and 48 target, the overlay and the focus ring. The glyph
-  /// keeps one ink and a disabled control dims whole under the global 0.38
-  /// rule, as every Mx control does: the theme's per-ink dim, meant for
+  /// the 36 ink circle and 48 target, the overlay and the focus ring. The glyph
+  /// keeps one foreground and a disabled control dims whole under the global 0.38
+  /// rule, as every Mx control does: the theme's per-foreground dim, meant for
   /// framework buttons, draws different pixels (component-themes ruling).
   @override
   Widget build(BuildContext context) {

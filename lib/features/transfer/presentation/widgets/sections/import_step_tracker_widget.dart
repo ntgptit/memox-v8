@@ -124,7 +124,7 @@ class _Step extends StatelessWidget {
         : isCurrent
         ? colors.primary
         : colors.surfaceContainerHigh;
-    final ink = isDone
+    final foreground = isDone
         ? semantic.onMastery
         : isCurrent
         ? colors.onPrimary
@@ -144,12 +144,15 @@ class _Step extends StatelessWidget {
             child: Center(
               child: isDone
                   ? IconTheme.merge(
-                      data: IconThemeData(color: ink, size: AppIconSize.inline),
+                      data: IconThemeData(
+                        color: foreground,
+                        size: AppIconSize.inline,
+                      ),
                       child: const Icon(AppIcons.check),
                     )
                   : Text(
                       context.l10n.importStepNumber(number),
-                      style: styles.stepNumber(ink),
+                      style: styles.stepNumber(foreground),
                     ),
             ),
           ),
@@ -171,7 +174,7 @@ class _Line extends StatelessWidget {
     child: ColoredBox(
       color: isDone
           ? context.semanticColors.mastery
-          : context.derivedColors.ghostBorder,
+          : context.semanticColors.border,
     ),
   );
 }

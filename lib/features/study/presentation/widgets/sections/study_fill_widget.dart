@@ -259,7 +259,7 @@ class _HintRow extends StatelessWidget {
   );
 }
 
-/// A wrong answer: what was typed, struck through in the error ink, the
+/// A wrong answer: what was typed, struck through in the error foreground, the
 /// right term below it, and when it comes back (F3, V1, V10).
 class _Corrected extends StatelessWidget {
   const _Corrected({required this.typed, required this.term});
@@ -293,7 +293,7 @@ class _Corrected extends StatelessWidget {
             tag.toUpperCase(),
             semanticsLabel: tag,
             textAlign: TextAlign.center,
-            style: styles.statusLabel(context.derivedColors.warningInk),
+            style: styles.statusLabel(context.semanticColors.warningText),
           ),
         ),
       ],

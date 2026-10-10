@@ -76,7 +76,7 @@ void main() {
     );
   });
 
-  libraryTest('a ready row is marked with a success-ink check (critique '
+  libraryTest('a ready row is marked with a success check (critique '
       '2026-09-30 tone pass, T6)', (tester, env) async {
     await pumpLibraryScreen(
       tester,
@@ -99,7 +99,7 @@ void main() {
     // The mark takes its colour from an IconTheme around the glyph.
     expect(
       IconTheme.of(tester.element(mark)).color,
-      tester.element(mark).derivedColors.successInk,
+      tester.element(mark).semanticColors.success,
     );
   });
 }

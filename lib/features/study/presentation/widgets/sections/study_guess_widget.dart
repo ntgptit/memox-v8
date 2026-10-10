@@ -229,19 +229,19 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
       onTap: _isAnswered || widget.isBusy
           ? null
           : () => widget.onPick(option.cardId),
-      builder: (ink) => Row(
+      builder: (foreground) => Row(
         spacing: AppSpacing.grouped,
         children: [
-          _Letter(letter: letter, ink: ink),
+          _Letter(letter: letter, foreground: foreground),
           Expanded(
             child: Text(
               option.meaning,
-              style: context.textStyles.studyOption(ink),
+              style: context.textStyles.studyOption(foreground),
             ),
           ),
           if (tone == StudyChoiceTone.right || tone == StudyChoiceTone.wrong)
             IconTheme(
-              data: IconThemeData(color: ink, size: AppIconSize.inline),
+              data: IconThemeData(color: foreground, size: AppIconSize.inline),
               child: Icon(
                 tone == StudyChoiceTone.right ? AppIcons.check : AppIcons.close,
               ),
@@ -261,10 +261,10 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
 
 /// The option's letter in a ringed circle (kit GuessScreen).
 class _Letter extends StatelessWidget {
-  const _Letter({required this.letter, required this.ink});
+  const _Letter({required this.letter, required this.foreground});
 
   final String letter;
-  final Color ink;
+  final Color foreground;
 
   static const double _ring = 1.5;
 
@@ -274,10 +274,13 @@ class _Letter extends StatelessWidget {
     child: DecoratedBox(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: ink, width: _ring),
+        border: Border.all(color: foreground, width: _ring),
       ),
       child: Center(
-        child: Text(letter, style: context.textStyles.studyOptionLetter(ink)),
+        child: Text(
+          letter,
+          style: context.textStyles.studyOptionLetter(foreground),
+        ),
       ),
     ),
   );

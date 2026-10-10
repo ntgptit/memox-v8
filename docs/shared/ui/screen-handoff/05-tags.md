@@ -38,8 +38,8 @@ not to Tags (plan C4).
 | searchEmpty | `tags_search_empty_light.png` | `tags_search_empty_dark.png` | "No tags match “{term}”" (A6), distinct from "No tags yet". |
 | sheet | `tags_sheet_light.png` | `tags_sheet_dark.png` | — |
 | rename | `tags_rename_light.png` | `tags_rename_dark.png` | The tag's name in quotes, not bold. |
-| renameMerge | `tags_rename_merge_light.png` | `tags_rename_merge_dark.png` | "{len} / 50 · names are unique regardless of letter case.", the warning panel, the chips `{source} · {n}` → `{target} · {union}` (the union, BE-B2 D6), and "Merge tags" in the warning tone, amber with dark ink (D15; UI-base row 134). A merge that no longer plans the same way when written (`mergeNotConfirmed`) opens the dialog again on the name typed. |
-| nameTooLong | `tags_name_too_long_light.png` | `tags_name_too_long_dark.png` | The counter "{len} / 50" in the error ink, "A tag name can be at most 50 characters." under the field, Rename off. The field keeps one line. A blank name and a control character show their own messages (E2). |
+| renameMerge | `tags_rename_merge_light.png` | `tags_rename_merge_dark.png` | "{len} / 50 · names are unique regardless of letter case.", the warning panel, the chips `{source} · {n}` → `{target} · {union}` (the union, BE-B2 D6), and "Merge tags" in the warning tone, yellow with dark text (D15; UI-base row 134). A merge that no longer plans the same way when written (`mergeNotConfirmed`) opens the dialog again on the name typed. |
+| nameTooLong | `tags_name_too_long_light.png` | `tags_name_too_long_dark.png` | The counter "{len} / 50" in the error colour, "A tag name can be at most 50 characters." under the field, Rename off. The field keeps one line. A blank name and a control character show their own messages (E2). |
 | del | `tags_del_light.png` | `tags_del_dark.png` | No glyph over the title; the text is left-aligned; the buttons stay side by side ("Delete tag", The Short Label Rule) (UI-base row 139). |
 | busy | `tags_busy_light.png` | `tags_busy_dark.png` | — |
 | opError | `tags_op_error_light.png` | `tags_op_error_dark.png` | One sentence, "Couldn't rename tag. Nothing changed — try again in a moment." (or delete), with Retry, which runs the same write (UI-base row 138). |
@@ -52,7 +52,7 @@ Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,sea
 
 ## Rulings
 
-- **D15 (AA):** "Merge tags" uses the warning role with its ink.
+- **D15 (AA):** "Merge tags" uses the warning role with its text.
 - **BE-B2 D6, D8:** the merge target's count is the union of both tags' cards, not their sum.
 - **BR-TAG-003, critique P2b:** there is one order (the store's folded order, diacritics folded), so "A→Z" is plain text with no sort glyph.
 - **UC-TAG-001 E1, D10:** a read failure shows `MxErrorState` with Retry.

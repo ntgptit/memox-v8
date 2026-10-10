@@ -23,9 +23,9 @@ The library level, top to bottom:
 |---|---|---|
 | App bar | `MxAppBar` (screen) | "Progress". |
 | Today | `MxCard` | The overline "Today", the day's card-days, and "{l} learning · {r} reviewing · a card counts once per day", "No cards studied yet today" or "Nothing studied yet". Below, `MxStackedDayBars`: the last seven days, learning over reviewing, today at full strength, labelled by narrow weekday and "Today", with the legend. |
-| Streak | `MxCard` | One tile, "Current" (the flame in the `streak` colour, "{n} days", and "includes today", "held from yesterday" or "no study yesterday"); Today's figure is the Today card's alone (critique 2026-09-30). A held streak adds "Study one card today and the streak continues at {n}."; a lost one "The streak ended on {day}. It starts again with the next card you study." |
+| Streak | `MxCard` | One tile, "Current" (the flame in the `streak` colour on the primary soft ground; at 0 days the tile goes neutral, `onNeutralSoft` on `neutralSoft`; "{n} days", and "includes today", "held from yesterday" or "no study yesterday"); Today's figure is the Today card's alone (critique 2026-09-30). A held streak adds "Study one card today and the streak continues at {n}."; a lost one "The streak ended on {day}. It starts again with the next card you study." |
 | Range | `MxSegmentedTray` (wide) | "Last 7 days" · "Last 30 days", directly above the list (D10). |
-| List | `MxListSectionHeader` + `MxCard` + `MxListRow`s | "By deck" (the range segment above states the range; critique 2026-09-30 part 3b); the total row "All decks" (D2), then a row per root deck: the name, then "{n} cards · {d} active days" and "Card-days: {l} learning · {r} reviewing" (learning in the learning ink, reviewing in the primary ink), and a chevron on a deck row, none on the total (critique 2026-09-30 part 3d-1, D3). An idle deck reads "No activity in this range", nothing dimmed (D11). |
+| List | `MxListSectionHeader` + `MxCard` + `MxListRow`s | "By deck" (the range segment above states the range; critique 2026-09-30 part 3b); the total row "All decks" (D2), then a row per root deck: the name, then "{n} cards · {d} active days" and "Card-days: {l} learning · {r} reviewing" (learning in `learningText`, reviewing in `primaryText`), and a chevron on a deck row, none on the total (critique 2026-09-30 part 3d-1, D3). An idle deck reads "No activity in this range", nothing dimmed (D11). |
 | Note | `MxNote` | A quiet range: "Nothing studied in the last 7 days. Switch to Last 30 days to see older study." (at 30 days, the first sentence only). |
 | Footer line | text | "Read-only · resets change nothing here" (Today states the once-a-day rule; critique 2026-09-30 part 3b). |
 
@@ -69,7 +69,7 @@ Goldens: `test/features/progress/presentation/goldens/progress_{week,month,held,
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the Today label and the streak labels are eyebrows; the list headers stay section labels.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** a deck row's meta reads "{n} cards · {d} active days" then "Card-days: {l} learning · {r} reviewing", and it ends in a chevron; the total row has none; the never-studied "Start studying" is primary (D3).
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** loading shows the screen's own skeleton, a Today card, a Streak card and a deck-list card (`MxSkeletonPulse`, `MxCard`, `MxSkeleton`, `MxSkeletonRow`); deck progress keeps its range control and shows the deck-list card.
-- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** every day's bars draw at full strength, reviewing in primary and learning in its ink, each holding 3:1 on the card; Today is told by its bold label (F5).
+- **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** every day's bars draw at full strength, reviewing in primary and learning in `statusLearning` (Day's learning bars on the card are a recorded contrast exception, owner 2026-10-10); Today is told by its bold label (F5).
 
 ## Copy
 

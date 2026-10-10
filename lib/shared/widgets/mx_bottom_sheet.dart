@@ -6,7 +6,7 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// Opens [builder] (usually an MxBottomSheet) on the platform modal route
-/// over a 45% scrim, sliding up over 260ms. It opens instantly under reduced
+/// over a 56% scrim, sliding up over 260ms. It opens instantly under reduced
 /// motion (ruling O7). A scrim tap or a drag down dismisses it.
 Future<T?> showMxBottomSheet<T>(
   BuildContext context, {
@@ -124,8 +124,7 @@ class MxBottomSheet extends StatelessWidget {
                           width: _grabberWidth,
                           height: _grabberHeight,
                           child: DecoratedBox(
-                            // Variant ink, 3:1 on the sheet; the kit's
-                            // outlineVariant is 1.30 (FE-C1).
+                            // The variant text colour, 3:1 on the sheet.
                             decoration: BoxDecoration(
                               color: colors.onSurfaceVariant,
                               borderRadius: BorderRadius.circular(

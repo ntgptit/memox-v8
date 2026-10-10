@@ -266,14 +266,17 @@ class _Tile extends StatelessWidget {
         vertical: AppSpacing.gutter,
       ),
       onTap: tile.isMatched ? null : onTap,
-      builder: (ink) => Center(
+      builder: (foreground) => Center(
         child: Row(
           mainAxisSize: MainAxisSize.min,
           spacing: AppSpacing.micro,
           children: [
             if (tone == StudyChoiceTone.right || tone == StudyChoiceTone.wrong)
               IconTheme(
-                data: IconThemeData(color: ink, size: AppIconSize.inline),
+                data: IconThemeData(
+                  color: foreground,
+                  size: AppIconSize.inline,
+                ),
                 child: Icon(
                   tone == StudyChoiceTone.right
                       ? AppIcons.check
@@ -284,8 +287,8 @@ class _Tile extends StatelessWidget {
               child: StudyWholeWordTextWidget(
                 tile.text,
                 style: isTerm
-                    ? styles.matchTerm(ink)
-                    : styles.matchMeaning(ink),
+                    ? styles.matchTerm(foreground)
+                    : styles.matchMeaning(foreground),
               ),
             ),
           ],

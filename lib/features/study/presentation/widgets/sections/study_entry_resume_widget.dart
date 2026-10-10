@@ -14,7 +14,7 @@ import 'package:memox/shared/widgets/mx_linear_progress.dart';
 /// Screen 14's resume banner (UC-STUDY-001 A3b, BR-STUDY-072): today's open
 /// session of this deck, its progress as text and track (FE-A8 H2), and the
 /// choice to take it up. The dot is static and decorative, in the primary
-/// ink (UI-base ledger row 28: no streak tone; FE-A8 S3: no pulse).
+/// foreground (UI-base ledger row 28: no streak tone; FE-A8 S3: no pulse).
 class StudyEntryResumeWidget extends StatelessWidget {
   const StudyEntryResumeWidget({
     super.key,

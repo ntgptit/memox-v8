@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 
@@ -37,12 +36,12 @@ void main() {
 
     expect(tester.getSize(find.byKey(_tileKey)), const Size.square(30));
     expect(tester.getTopLeft(find.byKey(_tileKey)).dx - row.dx, 9);
-    expect(_tile(tester).color, scheme.primary.withValues(alpha: 0.08));
+    expect(_tile(tester).color, MxSemanticColors.light.primarySoft);
     expect(_tile(tester).borderRadius, BorderRadius.circular(8));
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.edit));
     expect(
       (glyph.size, glyph.color),
-      (16, MxDerivedColors.primaryInkOf(scheme)),
+      (16, MxSemanticColors.light.onPrimarySoft),
     );
     expect(tester.widget<Text>(find.text('Rename')).style!.fontSize, 14);
     expect(tester.getTopLeft(find.text('Rename')).dx - row.dx, 52);
@@ -52,7 +51,6 @@ void main() {
   testWidgets('destructive: danger-soft tile, error glyph and verb', (
     tester,
   ) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
     await pumpMx(
       tester,
       _width(
@@ -65,10 +63,10 @@ void main() {
       ),
     );
 
-    expect(_tile(tester).color, derived.dangerSoft);
+    expect(_tile(tester).color, MxSemanticColors.light.dangerSoft);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.delete)).color,
-      scheme.error,
+      MxSemanticColors.light.onDangerSoft,
     );
     expect(tester.widget<Text>(find.text('Delete')).style!.color, scheme.error);
   });

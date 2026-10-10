@@ -3,13 +3,14 @@ import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_soft_ground.dart';
 
 /// What an outcome keeps or loses (the reset dialog of screen 02, D-O2).
 enum MxOutcomeTone { kept, lost }
 
-/// A labelled consequence: the label in its tone's ink over its tint, and
-/// the body under it. "Kept" uses the mastered ink (spec A10), "Lost" the
-/// warning ink; both reach 4.5:1 on their ground.
+/// A labelled consequence on a soft ground (spec 2026-10-10 D4): the label in
+/// its tone's on-soft token, the body under it. "Kept" is the success soft
+/// ground, "Lost" the warning soft ground.
 class MxOutcomeTile extends StatelessWidget {
   const MxOutcomeTile({
     super.key,
@@ -22,28 +23,26 @@ class MxOutcomeTile extends StatelessWidget {
   final String body;
   final MxOutcomeTone tone;
 
-  /// Lighter than the 12% status tint: on the dialog's surface the success
-  /// ink reaches 4.53:1 over 8% (light). Kept is a fine state, so success,
-  /// not mastery (critique 2026-09-30 tone pass, final review).
-  static const double _keptTint = 0.08;
-
+  /// Kept is a fine state, so success, not mastery (critique 2026-09-30 tone
+  /// pass, final review).
   @override
   Widget build(BuildContext context) {
-    final derived = context.derivedColors;
+    final semantic = context.semanticColors;
     final styles = context.textStyles;
-    final (ground, edge, ink) = switch (tone) {
+    // A soft ground, light in both themes (spec 2026-10-10 D4).
+    final (ground, edge, foreground) = switch (tone) {
       MxOutcomeTone.kept => (
-        context.semanticColors.success.withValues(alpha: _keptTint),
-        derived.ghostBorder,
-        derived.successInk,
+        semantic.successSoft,
+        semantic.successBorder,
+        semantic.onSuccessSoft,
       ),
       MxOutcomeTone.lost => (
-        derived.warningSoft,
-        derived.warningBorder,
-        derived.warningInk,
+        semantic.warningSoft,
+        semantic.warningBorder,
+        semantic.onWarningSoft,
       ),
     };
-    return DecoratedBox(
+    return MxSoftGround(
       decoration: BoxDecoration(
         color: ground,
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -55,8 +54,12 @@ class MxOutcomeTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: AppSpacing.micro,
           children: [
-            Text(label, style: styles.badgeLabel(ink)),
-            Text(body, style: styles.rowDescription),
+            Text(label, style: styles.badgeLabel(foreground)),
+            // Day's description style, read from inside the ground.
+            Builder(
+              builder: (day) =>
+                  Text(body, style: day.textStyles.rowDescription),
+            ),
           ],
         ),
       ),

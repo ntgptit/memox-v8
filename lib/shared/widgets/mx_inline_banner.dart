@@ -7,6 +7,7 @@ import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_soft_ground.dart';
 
 /// Warning is a refusal or a limit, and nothing was lost. Danger means an
 /// operation failed.
@@ -47,24 +48,21 @@ class MxInlineBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final derived = context.derivedColors;
+    final semantic = context.semanticColors;
     final styles = context.textStyles;
-    final (ground, edge, ink, titleInk) = switch (tone) {
+    // A soft ground, light in both themes (spec 2026-10-10 D4): the glyph and
+    // the title read the tone's on-soft token; the message reads Day's
+    // banner style from inside the ground.
+    final (ground, edge, foreground) = switch (tone) {
       MxBannerTone.warning => (
-        derived.warningSoft,
-        derived.warningBorder,
-        // The kit's amber glyph is 1.87:1 on the soft ground (FE-C1).
-        derived.warningInk,
-        derived.warningInk,
+        semantic.warningSoft,
+        semantic.warningBorder,
+        semantic.onWarningSoft,
       ),
-      // The glyph needs 3:1 and keeps error; the title is text and reads in
-      // the danger ink, 4.5:1 even inside a sheet (tone pass, final review).
       MxBannerTone.danger => (
-        derived.dangerSoft,
-        derived.dangerBorder,
-        colors.error,
-        derived.dangerInk,
+        semantic.dangerSoft,
+        semantic.dangerBorder,
+        semantic.onDangerSoft,
       ),
     };
     final messageStyle = styles.bannerMessage(isLead: title == null);
@@ -90,7 +88,7 @@ class MxInlineBanner extends StatelessWidget {
           : const EdgeInsets.only(bottom: AppSpacing.gutter),
       child: Semantics(
         liveRegion: true,
-        child: DecoratedBox(
+        child: MxSoftGround(
           decoration: BoxDecoration(
             color: ground,
             borderRadius: BorderRadius.circular(AppRadius.md),
@@ -108,7 +106,7 @@ class MxInlineBanner extends StatelessWidget {
                   child: Icon(
                     AppIcons.alert,
                     size: AppIconSize.inline,
-                    color: ink,
+                    color: foreground,
                   ),
                 ),
                 Expanded(
@@ -122,11 +120,18 @@ class MxInlineBanner extends StatelessWidget {
                       if (title case final lead?) ...[
                         Text(
                           lead,
-                          style: styles.bannerTitle.copyWith(color: titleInk),
+                          style: styles.bannerTitle.copyWith(color: foreground),
                         ),
                         const SizedBox(height: _titleGap),
                       ],
-                      Text(message, style: messageStyle),
+                      Builder(
+                        builder: (day) => Text(
+                          message,
+                          style: day.textStyles.bannerMessage(
+                            isLead: title == null,
+                          ),
+                        ),
+                      ),
                       if (actions.isNotEmpty) ...[
                         const SizedBox(height: AppSpacing.control),
                         Wrap(

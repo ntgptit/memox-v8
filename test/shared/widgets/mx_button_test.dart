@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -42,7 +41,7 @@ void main() {
     }
   });
 
-  testWidgets('tones paint their fill, ink and edge', (tester) async {
+  testWidgets('tones paint their fill, foreground and edge', (tester) async {
     final expected = {
       MxButtonTone.primary: (scheme.primary, scheme.onPrimary, BorderSide.none),
       MxButtonTone.secondary: (
@@ -56,20 +55,20 @@ void main() {
         BorderSide.none,
       ),
     };
-    for (final MapEntry(key: tone, value: (fill, ink, edge))
+    for (final MapEntry(key: tone, value: (fill, foreground, edge))
         in expected.entries) {
       await pumpMx(tester, MxButton(label: 'Go', tone: tone, onPressed: () {}));
       final material = _material(tester);
 
       expect(material.color, fill, reason: '$tone');
-      expect(material.textStyle!.color, ink, reason: '$tone');
+      expect(material.textStyle!.color, foreground, reason: '$tone');
       expect((material.shape! as RoundedRectangleBorder).side, edge);
     }
   });
 
-  testWidgets('dangerSoft paints the soft danger tint with the error ink '
+  testWidgets('dangerSoft paints the soft danger tint with the error colour '
       '(FE-A6 P2, screen 16a)', (tester) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+    final derived = MxSemanticColors.light;
     await pumpMx(
       tester,
       MxButton(label: 'Again', tone: MxButtonTone.dangerSoft, onPressed: () {}),
@@ -84,26 +83,29 @@ void main() {
     );
   });
 
-  testWidgets('warning paints the warning role with its ink, above 4.5:1 in '
-      'both themes (spec D15)', (tester) async {
-    await pumpMx(
-      tester,
-      MxButton(label: 'Merge', tone: MxButtonTone.warning, onPressed: () {}),
-    );
-    final material = _material(tester);
-
-    expect(material.color, MxSemanticColors.light.warning);
-    expect(material.textStyle!.color, MxSemanticColors.light.onWarning);
-    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
-    for (final colors in [MxSemanticColors.light, MxSemanticColors.dark]) {
-      expect(
-        _ratio(colors.warning, colors.onWarning),
-        greaterThanOrEqualTo(4.5),
+  testWidgets(
+    'warning paints the warning role with its foreground, above 4.5:1 in '
+    'both themes (spec D15)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        MxButton(label: 'Merge', tone: MxButtonTone.warning, onPressed: () {}),
       );
-    }
-  });
+      final material = _material(tester);
 
-  testWidgets('a detail line sits under the label in the button ink '
+      expect(material.color, MxSemanticColors.light.warning);
+      expect(material.textStyle!.color, MxSemanticColors.light.onWarning);
+      expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
+      for (final colors in [MxSemanticColors.light, MxSemanticColors.dark]) {
+        expect(
+          _ratio(colors.warning, colors.onWarning),
+          greaterThanOrEqualTo(4.5),
+        );
+      }
+    },
+  );
+
+  testWidgets('a detail line sits under the label in the button foreground '
       '(FE-A6 P2, screen 16a)', (tester) async {
     await pumpMx(
       tester,
@@ -139,7 +141,7 @@ void main() {
     );
   });
 
-  testWidgets('outline tone has no fill, primaryInk, 1px outlineEdge', (
+  testWidgets('outline tone has no fill, primaryText, a 1px outline edge', (
     tester,
   ) async {
     await pumpMx(
@@ -149,21 +151,16 @@ void main() {
     final material = _material(tester);
 
     expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, MxDerivedColors.primaryInkOf(scheme));
+    expect(material.textStyle!.color, MxSemanticColors.light.primaryText);
     expect(
       (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(
-        color: MxDerivedColors.resolve(
-          scheme,
-          MxSemanticColors.light,
-        ).outlineEdge,
-      ),
+      BorderSide(color: scheme.outline),
     );
   });
 
   // Critique 2026-09-30 part 1 (R7): outlineVariant nearly vanished on the
   // dark sheet (1.05:1).
-  testWidgets('dark: the outline edge is the dark outlineEdge', (tester) async {
+  testWidgets('dark: the outline edge is the dark outline', (tester) async {
     await pumpMx(
       tester,
       MxButton(label: 'Go', tone: MxButtonTone.outline, onPressed: () {}),
@@ -171,12 +168,7 @@ void main() {
     );
     expect(
       (_material(tester).shape! as RoundedRectangleBorder).side,
-      BorderSide(
-        color: MxDerivedColors.resolve(
-          AppColorSchemes.dark,
-          MxSemanticColors.dark,
-        ).outlineEdge,
-      ),
+      BorderSide(color: AppColorSchemes.dark.outline),
     );
   });
 
@@ -188,13 +180,13 @@ void main() {
       MxButton(label: 'Tag', size: MxButtonSize.chip, onPressed: () {}),
     );
     final material = _material(tester);
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+    final derived = MxSemanticColors.light;
 
     expect(material.color, scheme.surfaceContainerLowest);
     expect(material.textStyle!.color, scheme.onSurface);
     expect(
       (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(color: derived.ghostBorder),
+      BorderSide(color: derived.border),
     );
   });
 
@@ -347,7 +339,7 @@ void main() {
     );
     expect(loading, idle);
   });
-  testWidgets('text tone has no fill and no edge, in primaryInk', (
+  testWidgets('text tone has no fill and no edge, in primaryText', (
     tester,
   ) async {
     await pumpMx(
@@ -357,7 +349,7 @@ void main() {
     final material = _material(tester);
 
     expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, MxDerivedColors.primaryInkOf(scheme));
+    expect(material.textStyle!.color, MxSemanticColors.light.primaryText);
     expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
   });
 

@@ -193,7 +193,7 @@ void main() {
     );
   });
 
-  testWidgets('a disabled row keeps its subtitle at full ink (critique '
+  testWidgets('a disabled row keeps its subtitle at full strength (critique '
       '2026-09-30, screen 24)', (tester) async {
     await pumpMx(
       tester,

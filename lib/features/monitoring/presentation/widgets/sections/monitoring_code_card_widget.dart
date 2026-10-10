@@ -39,7 +39,7 @@ class MonitoringCodeCardWidget extends StatelessWidget {
     required this.text,
   }) : _kind = _CardKind.error;
 
-  /// A stack trace in code, each frame's `#n` in the primary ink and in a
+  /// A stack trace in code, each frame's `#n` in the primary foreground and in a
   /// cell its wrapped lines hang under, so a new frame reads apart from a
   /// line that wrapped (Impeccable 2026-09-29 F6; critique 2026-09-30 part
   /// 3d-2, E11).
@@ -89,7 +89,7 @@ class MonitoringCodeCardWidget extends StatelessWidget {
           text: text,
           style: styles.code,
           frameStyle: styles.code.copyWith(
-            color: context.derivedColors.primaryInk,
+            color: context.semanticColors.primaryText,
           ),
         ),
       ),

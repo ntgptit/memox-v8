@@ -122,7 +122,7 @@ bằng token của bottom nav.
 
 - [x] Destination API giống `MxBottomNav` (`MxNavDestination`, `selectedIndex`,
   `onSelected`).
-- [x] Không tạo vocabulary selected mới: cùng pill tint, `primaryInk`, `navLabel`.
+- [x] Không tạo vocabulary selected mới: cùng pill `primaryContainer`, `primaryText`, `navLabel`.
 - [x] Test riêng (`mx_nav_rail_test.dart`) theo cùng các khẳng định của bar.
 
 ## 13. `BottomAppBarThemeData`

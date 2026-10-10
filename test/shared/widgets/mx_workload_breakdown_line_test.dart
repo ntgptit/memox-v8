@@ -3,7 +3,6 @@ import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
@@ -52,7 +51,7 @@ TextStyle? _termStyle(WidgetTester tester, String term) =>
 void main() {
   final scheme = AppColorSchemes.light;
   final semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(scheme, semantic);
+  final derived = semantic;
 
   testWidgets('all three terms in order, each in its colour, at 600', (
     tester,
@@ -60,12 +59,12 @@ void main() {
     await pumpMx(tester, _line());
 
     expect(_plain(tester), '3 overdue · 5 today · 2 new');
-    expect(_termStyle(tester, '3 overdue')!.color, derived.warningInk);
+    expect(_termStyle(tester, '3 overdue')!.color, derived.warningText);
     expect(
       _termStyle(tester, '5 today')!.color,
-      MxDerivedColors.primaryInkOf(scheme),
+      MxSemanticColors.light.primaryText,
     );
-    expect(_termStyle(tester, '2 new')!.color, derived.statusNewInk);
+    expect(_termStyle(tester, '2 new')!.color, scheme.onSurfaceVariant);
     expect(_termStyle(tester, '2 new')!.fontWeight, FontWeight.w600);
     expect(_root(tester).style!.fontWeight, FontWeight.w400);
     expect(_root(tester).style!.color, scheme.onSurfaceVariant);
@@ -211,7 +210,7 @@ void main() {
       expect(_termStyle(tester, zero)!.color, scheme.onSurfaceVariant);
       expect(_termStyle(tester, zero)!.fontWeight, FontWeight.w400);
     }
-    expect(_termStyle(tester, '2 new')!.color, derived.statusNewInk);
+    expect(_termStyle(tester, '2 new')!.color, scheme.onSurfaceVariant);
 
     await pumpMx(
       tester,
@@ -220,7 +219,7 @@ void main() {
     expect(_plain(tester), '0 overdue · 0 today · 0 new');
   });
 
-  testWidgets('with icons each term leads with its own glyph in its ink, on '
+  testWidgets('with icons each term leads with its own glyph in its colour, on '
       'the same 18 line, and is read as its words only (BR-STUDY-076)', (
     tester,
   ) async {
@@ -242,9 +241,9 @@ void main() {
         .map((icon) => (icon.icon, icon.color))
         .toList();
     expect(glyphs, [
-      (AppIcons.overdue, derived.warningInk),
+      (AppIcons.overdue, derived.warningText),
       (AppIcons.dueNow, scheme.onSurfaceVariant),
-      (AppIcons.newCards, derived.statusNewInk),
+      (AppIcons.newCards, scheme.onSurfaceVariant),
     ]);
     final semantics = tester.widget<Semantics>(
       find

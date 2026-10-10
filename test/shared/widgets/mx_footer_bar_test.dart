@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -54,16 +53,11 @@ void main() {
     expect(decoration.color, scheme.surface);
     expect(
       (decoration.border! as Border).top,
-      BorderSide(
-        color: MxDerivedColors.resolve(
-          scheme,
-          MxSemanticColors.light,
-        ).ghostBorder,
-      ),
+      BorderSide(color: MxSemanticColors.light.border),
     );
   });
 
-  testWidgets('the caption sits under the action, centred at full ink', (
+  testWidgets('the caption sits under the action, centred at full strength', (
     tester,
   ) async {
     await pumpMx(

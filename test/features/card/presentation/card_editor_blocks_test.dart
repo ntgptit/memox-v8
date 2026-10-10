@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
@@ -342,10 +341,7 @@ void main() {
                 )
                 .decoration!
             as BoxDecoration;
-    expect(
-      (box.border! as Border).top.color,
-      MxDerivedColors.outlineEdgeOf(AppColorSchemes.light),
-    );
+    expect((box.border! as Border).top.color, AppColorSchemes.light.outline);
   });
 
   libraryTest('field labels are sentence case; Required is a caption '

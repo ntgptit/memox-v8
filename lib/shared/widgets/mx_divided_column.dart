@@ -35,6 +35,6 @@ class _Hairline extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
     height: AppStroke.hairline,
-    child: ColoredBox(color: context.derivedColors.ghostBorder),
+    child: ColoredBox(color: context.semanticColors.border),
   );
 }

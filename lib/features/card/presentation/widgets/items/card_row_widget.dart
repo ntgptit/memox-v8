@@ -16,7 +16,7 @@ const int _shownTags = 2;
 
 /// One card of the list (screen 07's CardRow): the status dot, or the
 /// checkbox while selecting; front and back on one line each; the status in
-/// its ink with up to two tags and "+N"; the flag and when it comes back. A
+/// its text token with up to two tags and "+N"; the flag and when it comes back. A
 /// long-press selects it (BR-CARD-020).
 class CardRowWidget extends StatelessWidget {
   const CardRowWidget({
@@ -64,13 +64,16 @@ class _Content extends StatelessWidget {
 
   final CardListItem item;
 
-  static Color _statusInk(BuildContext context, CardDisplayStatus status) {
-    final derived = context.derivedColors;
+  static Color _statusForeground(
+    BuildContext context,
+    CardDisplayStatus status,
+  ) {
+    final semantic = context.semanticColors;
     return switch (status) {
-      CardDisplayStatus.newCard => derived.statusNewInk,
-      CardDisplayStatus.beginning => derived.statusLearningInk,
-      CardDisplayStatus.reviewing => derived.statusReviewingInk,
-      CardDisplayStatus.mastered => derived.statusMasteredInk,
+      CardDisplayStatus.newCard => context.colors.onSurfaceVariant,
+      CardDisplayStatus.beginning => semantic.learningText,
+      CardDisplayStatus.reviewing => semantic.primaryText,
+      CardDisplayStatus.mastered => semantic.masteryText,
     };
   }
 
@@ -107,7 +110,7 @@ class _Content extends StatelessWidget {
             Text(
               label.toUpperCase(),
               semanticsLabel: label,
-              style: styles.statusLabel(_statusInk(context, status)),
+              style: styles.statusLabel(_statusForeground(context, status)),
             ),
             for (final tag in tags.take(_shownTags))
               MxTagChip(label: tag.name, isDense: true),
@@ -123,7 +126,7 @@ class _Content extends StatelessWidget {
   }
 }
 
-/// The flag in plain ink, the filled glyph carrying the state as in the
+/// The flag in plain foreground, the filled glyph carrying the state as in the
 /// editor and the detail (critique 2026-10-02, F6; supersedes E-L2), over
 /// the due chip.
 class _Trailing extends StatelessWidget {

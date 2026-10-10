@@ -7,11 +7,21 @@ import 'package:memox/core/theme/theme_context.dart';
 /// leads settings rows, large leads deck rows.
 enum MxIconTileSize { small, medium, large }
 
-/// The fill: the primary or seed tint (default), or a solid primary or
+/// The fill: the primary soft ground (default), or a solid primary or
 /// warning square whose glyph takes the matching on-colour (screen 02's lock
 /// strip, owner decision D-O1). [success], [caution] and [danger] are soft
-/// tints with a legible glyph: the session summary's outcomes (FE-A6 D14).
-enum MxIconTileTone { tinted, primary, warning, success, caution, danger }
+/// grounds with a legible glyph: the session summary's outcomes (FE-A6 D14).
+/// [neutral] is the neutral soft ground for an idle glyph, such as a lost
+/// streak.
+enum MxIconTileTone {
+  tinted,
+  primary,
+  warning,
+  success,
+  caution,
+  danger,
+  neutral,
+}
 
 /// The tinted square that leads a row. It never shrinks; the text beside it
 /// gives up space first.
@@ -35,8 +45,10 @@ class MxIconTile extends StatelessWidget {
   final Widget? child;
   final MxIconTileSize size;
 
-  /// A per-deck colour from the caller's data (ruling S16). Null tints with
-  /// primary.
+  /// The glyph's colour over the primary soft ground, which is light in
+  /// both themes (spec 2026-10-10 D4). It must be a theme-invariant accent
+  /// that holds 3:1 on that ground, never a colour of the outer scheme.
+  /// Null takes the on-primary-soft glyph.
   final Color? seed;
   final MxIconTileTone tone;
 
@@ -46,46 +58,29 @@ class MxIconTile extends StatelessWidget {
   /// The medium step's side, for a caller that indents past it.
   static const double mediumBox = 36;
   static const double _largeBox = 44;
-  static const double _primaryTintLight = 0.10;
-  static const double _primaryTintDark = 0.16;
-  static const double _seedTint = 0.12;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final tinted = seed ?? colors.primary;
-    final tint = switch ((seed, colors.brightness)) {
-      (_?, _) => _seedTint,
-      (null, Brightness.light) => _primaryTintLight,
-      (null, Brightness.dark) => _primaryTintDark,
-    };
+    final semantic = context.semanticColors;
     final (box, radius, glyph) = switch (size) {
       MxIconTileSize.small => (smallBox, AppRadius.sm, AppIconSize.inline),
       MxIconTileSize.medium => (mediumBox, AppRadius.md, AppIconSize.compact),
       MxIconTileSize.large => (_largeBox, AppRadius.md, AppIconSize.compact),
     };
-    final (fill, ink) = switch (tone) {
+    // Each soft tone sits on its soft ground with the on-soft glyph; a seed
+    // keeps its own glyph on the primary soft ground.
+    final (fill, foreground) = switch (tone) {
       MxIconTileTone.tinted => (
-        tinted.withValues(alpha: tint),
-        seed ?? context.derivedColors.primaryInk,
+        semantic.primarySoft,
+        seed ?? semantic.onPrimarySoft,
       ),
       MxIconTileTone.primary => (colors.primary, colors.onPrimary),
-      MxIconTileTone.warning => (
-        context.semanticColors.warning,
-        context.semanticColors.onWarning,
-      ),
-      MxIconTileTone.success => (
-        context.derivedColors.successSoft,
-        context.derivedColors.successInk,
-      ),
-      MxIconTileTone.caution => (
-        context.derivedColors.warningSoft,
-        context.derivedColors.warningInk,
-      ),
-      MxIconTileTone.danger => (
-        context.derivedColors.dangerSoft,
-        context.colors.error,
-      ),
+      MxIconTileTone.warning => (semantic.warning, semantic.onWarning),
+      MxIconTileTone.success => (semantic.successSoft, semantic.onSuccessSoft),
+      MxIconTileTone.caution => (semantic.warningSoft, semantic.onWarningSoft),
+      MxIconTileTone.danger => (semantic.dangerSoft, semantic.onDangerSoft),
+      MxIconTileTone.neutral => (semantic.neutralSoft, semantic.onNeutralSoft),
     };
     return SizedBox.square(
       dimension: box,
@@ -95,7 +90,7 @@ class MxIconTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(radius),
         ),
         child: Center(
-          child: child ?? Icon(icon, size: glyph, color: ink),
+          child: child ?? Icon(icon, size: glyph, color: foreground),
         ),
       ),
     );

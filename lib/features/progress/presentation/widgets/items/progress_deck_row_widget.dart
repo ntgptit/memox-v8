@@ -30,7 +30,7 @@ class ProgressDeckRowWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final styles = context.textStyles;
-    final derived = context.derivedColors;
+    final semantic = context.semanticColors;
     final caption = styles.footerCaption;
     final isActive = numbers.hasActivity;
     return MxListRow(
@@ -56,14 +56,14 @@ class ProgressDeckRowWidget extends StatelessWidget {
                         text: l10n.progressRowLearning(
                           numbers.learningCardDays,
                         ),
-                        style: styles.captionIn(derived.statusLearningInk),
+                        style: styles.captionIn(semantic.learningText),
                       ),
                       const TextSpan(text: _separator),
                       TextSpan(
                         text: l10n.progressRowReviewing(
                           numbers.reviewingCardDays,
                         ),
-                        style: styles.captionIn(derived.primaryInk),
+                        style: styles.captionIn(semantic.primaryText),
                       ),
                     ],
                   ),

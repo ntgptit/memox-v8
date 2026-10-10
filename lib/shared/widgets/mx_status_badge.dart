@@ -30,7 +30,6 @@ class MxStatusBadge extends StatelessWidget {
 
   /// The dot sits closer to the start edge than the label to the end edge.
   static const double _startPadding = 6;
-  static const double _tint = 0.12;
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +40,13 @@ class MxStatusBadge extends StatelessWidget {
       MxCardStatus.reviewing => semantic.statusReviewing,
       MxCardStatus.mastered => semantic.statusMastered,
     };
-    final derived = context.derivedColors;
-    // The label reads in the status ink (AA); dot and fill keep the colour.
-    final ink = switch (status) {
-      MxCardStatus.newCard => derived.statusNewInk,
-      MxCardStatus.learning => derived.statusLearningInk,
-      MxCardStatus.reviewing => derived.statusReviewingInk,
-      MxCardStatus.mastered => derived.statusMasteredInk,
+    // The pill is the status's soft ground and its label the on-soft token;
+    // the dot keeps the status colour.
+    final (ground, foreground) = switch (status) {
+      MxCardStatus.newCard => (semantic.neutralSoft, semantic.onNeutralSoft),
+      MxCardStatus.learning => (semantic.learningSoft, semantic.onLearningSoft),
+      MxCardStatus.reviewing => (semantic.primarySoft, semantic.onPrimarySoft),
+      MxCardStatus.mastered => (semantic.successSoft, semantic.onSuccessSoft),
     };
     if (isDot) {
       return Semantics(
@@ -58,7 +57,7 @@ class MxStatusBadge extends StatelessWidget {
     }
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: color.withValues(alpha: _tint),
+        color: ground,
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
       child: ConstrainedBox(
@@ -77,7 +76,7 @@ class MxStatusBadge extends StatelessWidget {
                 label,
                 maxLines: 1,
                 softWrap: false,
-                style: context.textStyles.badgeLabel(ink),
+                style: context.textStyles.badgeLabel(foreground),
               ),
             ],
           ),

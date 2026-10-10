@@ -38,7 +38,6 @@ class MxActionSheetCommandRow extends StatelessWidget {
 
   static const double _leadColumn = 32;
   static const double _tileSize = 30;
-  static const double _tileTint = 0.08;
 
   /// Ruling S7: UNSPECIFIED; the ListRow gap.
   static const double _subtitleGap = 2;
@@ -47,7 +46,11 @@ class MxActionSheetCommandRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final styles = context.textStyles;
-    final ink = isDestructive ? colors.error : context.derivedColors.primaryInk;
+    final semantic = context.semanticColors;
+    // The lead tile is a soft ground with its on-soft glyph.
+    final (ground, foreground) = isDestructive
+        ? (semantic.dangerSoft, semantic.onDangerSoft)
+        : (semantic.primarySoft, semantic.onPrimarySoft);
     return MxRowInk(
       onTap: onTap,
       isEnabled: isEnabled,
@@ -70,15 +73,17 @@ class MxActionSheetCommandRow extends StatelessWidget {
                     child: DecoratedBox(
                       key: const ValueKey('mx-command-tile'),
                       decoration: BoxDecoration(
-                        color: isDestructive
-                            ? context.derivedColors.dangerSoft
-                            : colors.primary.withValues(alpha: _tileTint),
+                        color: ground,
                         borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                       // Ruling S7: the glyph size is UNSPECIFIED; the small
                       // IconTile step.
                       child: Center(
-                        child: Icon(icon, size: AppIconSize.inline, color: ink),
+                        child: Icon(
+                          icon,
+                          size: AppIconSize.inline,
+                          color: foreground,
+                        ),
                       ),
                     ),
                   ),

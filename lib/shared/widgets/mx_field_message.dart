@@ -22,12 +22,12 @@ class MxFieldMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (glyph, ink) = switch (tone) {
+    final (glyph, foreground) = switch (tone) {
       MxFieldMessageTone.error => (context.colors.error, context.colors.error),
-      // A glyph is ink, never the amber fill (tone pass T1, SW-REV-001).
+      // A glyph is foreground, never the amber fill (tone pass T1, SW-REV-001).
       MxFieldMessageTone.warning => (
-        context.derivedColors.warningInk,
-        context.derivedColors.warningInk,
+        context.semanticColors.warningText,
+        context.semanticColors.warningText,
       ),
     };
     return Semantics(
@@ -44,7 +44,10 @@ class MxFieldMessage extends StatelessWidget {
           children: [
             Icon(AppIcons.alert, size: AppIconSize.inline, color: glyph),
             Expanded(
-              child: Text(message, style: context.textStyles.fieldMessage(ink)),
+              child: Text(
+                message,
+                style: context.textStyles.fieldMessage(foreground),
+              ),
             ),
           ],
         ),

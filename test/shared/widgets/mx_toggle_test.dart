@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../support/widget_harness.dart';
@@ -35,16 +35,16 @@ Color _trackColor(WidgetTester tester) =>
 
 void main() {
   final scheme = AppColorSchemes.light;
+  const semantic = MxSemanticColors.light;
 
-  testWidgets('off: highest track, thumb at 3; on: primary, thumb at 21', (
-    tester,
-  ) async {
+  testWidgets('off: the neutral track, thumb at 3; on: the primary track, '
+      'thumb at 21', (tester) async {
     await pumpMx(
       tester,
       MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
     );
     expect(tester.getSize(find.byKey(_trackKey)), const Size(44, 26));
-    expect(_trackColor(tester), scheme.surfaceContainerHighest);
+    expect(_trackColor(tester), semantic.neutralTrack);
     expect(_thumbOffset(tester), 3);
 
     await pumpMx(
@@ -52,23 +52,18 @@ void main() {
       MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Reminders'),
     );
     await tester.pumpAndSettle();
-    expect(_trackColor(tester), scheme.primary);
+    expect(_trackColor(tester), semantic.primaryTrack);
     expect(_thumbOffset(tester), 21);
   });
 
-  testWidgets('off: a 2 Outline Edge, 3:1 on every ground, and a variant-ink '
-      'thumb, 3:1 on the track; '
-      'on: no edge, a bright thumb (FE-C1)', (tester) async {
+  testWidgets('off: no edge and a white thumb; on: no edge and a primary '
+      'thumb (spec 2026-10-10 §5.2)', (tester) async {
     await pumpMx(
       tester,
       MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
     );
-    expect(
-      _ring(tester),
-      Border.all(color: MxDerivedColors.outlineEdgeOf(scheme), width: 2),
-    );
-    // The thumb sits on the track's fill: variant ink, 3:1 there.
-    expect(_thumbColor(tester), scheme.onSurfaceVariant);
+    expect(_ring(tester), isNull);
+    expect(_thumbColor(tester), scheme.onPrimary);
 
     await pumpMx(
       tester,
@@ -76,7 +71,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(_ring(tester), isNull);
-    expect(_thumbColor(tester), scheme.surfaceBright);
+    expect(_thumbColor(tester), scheme.primary);
   });
 
   testWidgets('a tap reports the flipped value', (tester) async {
@@ -126,10 +121,7 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
 
-    expect(
-      _ring(tester),
-      Border.all(color: MxDerivedColors.primaryInkOf(scheme), width: 2),
-    );
+    expect(_ring(tester), Border.all(color: semantic.focusRing, width: 2));
     expect(_thumbOffset(tester), before);
   });
 

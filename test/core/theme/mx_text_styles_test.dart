@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/mx_text_styles.dart';
 
 // Component type treatments, each from its widget contract.
 void main() {
   final theme = buildLightTheme();
   final scheme = AppColorSchemes.light;
-  final styles = MxTextStyles(theme.textTheme, scheme);
+  final styles = MxTextStyles(
+    theme.textTheme,
+    scheme,
+    theme.extension<MxSemanticColors>()!,
+  );
 
   void expectStyle(
     TextStyle style, {
@@ -144,28 +149,28 @@ void main() {
     );
   });
 
-  test('chip count 12/700 tabular in the given ink', () {
-    const ink = Color(0xFF654321);
+  test('chip count 12/700 tabular in the given foreground', () {
+    const foreground = Color(0xFF654321);
     expectStyle(
-      styles.chipCount(ink),
+      styles.chipCount(foreground),
       size: 12,
       weight: FontWeight.w700,
       tracking: 0.1,
-      color: ink,
+      color: foreground,
     );
     expect(
-      styles.chipCount(ink).fontFeatures,
+      styles.chipCount(foreground).fontFeatures,
       contains(const FontFeature.tabularFigures()),
     );
   });
 
-  test('field message is the caption role in the given ink', () {
-    const ink = Color(0xFF654321);
+  test('field message is the caption role in the given foreground', () {
+    const foreground = Color(0xFF654321);
     expectStyle(
-      styles.fieldMessage(ink),
+      styles.fieldMessage(foreground),
       size: 12,
       weight: FontWeight.w600,
-      color: ink,
+      color: foreground,
     );
   });
 
@@ -372,11 +377,14 @@ void main() {
     );
   });
 
-  test('rowTitleMatch is the list row title, bold (ink: see _ink_test)', () {
-    expect(styles.rowTitleMatch.fontSize, styles.listRowTitle.fontSize);
-    expect(styles.rowTitleMatch.height, styles.listRowTitle.height);
-    expect(styles.rowTitleMatch.fontWeight, FontWeight.w700);
-  });
+  test(
+    'rowTitleMatch is the list row title, bold (foreground: see _ink_test)',
+    () {
+      expect(styles.rowTitleMatch.fontSize, styles.listRowTitle.fontSize);
+      expect(styles.rowTitleMatch.height, styles.listRowTitle.height);
+      expect(styles.rowTitleMatch.fontWeight, FontWeight.w700);
+    },
+  );
 
   test('sentences at caption size carry no tracking (kit components)', () {
     for (final style in [
@@ -394,7 +402,7 @@ void main() {
     expect(styles.fieldCount(isOver: true).letterSpacing, 0.2);
   });
 
-  test('statValue is tabular in the ink given (FE-A6 D17)', () {
+  test('statValue is tabular in the foreground given (FE-A6 D17)', () {
     final value = styles.statValue(const Color(0xFF123456));
 
     expect(value.color, const Color(0xFF123456));

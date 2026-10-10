@@ -266,14 +266,14 @@ void main() {
         .toList();
 
     expect(rails().first.isFirst, isTrue);
-    expect(rails().first.ink, isNull, reason: 'a cycle mark is hollow');
+    expect(rails().first.foreground, isNull, reason: 'a cycle mark is hollow');
     expect(rails().where((rail) => rail.isLast), isEmpty);
 
     await _tapLoadMore(tester, _en.cardHistoryLoadMore);
     await _scrollToEnd(tester);
 
     expect(rails().last.isLast, isTrue);
-    expect(rails().last.ink, isNull);
+    expect(rails().last.foreground, isNull);
   });
 
   libraryTest('a failed older page keeps the rows and offers Retry (E4)', (
@@ -395,7 +395,7 @@ void main() {
     }
   });
 
-  libraryTest('an answer sits on the timeline: its dot in the outcome ink, '
+  libraryTest('an answer sits on the timeline: its dot in the outcome colour, '
       'how long ago over the date (DEV-170)', (tester, env) async {
     final now = env.clock.now();
     final entry = ReviewHistoryEntry(
@@ -429,9 +429,9 @@ void main() {
       find.byType(CardHistoryRailWidget),
     );
     final context = tester.element(find.byType(CardHistoryEventWidget));
-    expect(rail.ink, context.derivedColors.warningInk);
+    expect(rail.foreground, context.semanticColors.warningText);
     final move = tester.widget<Text>(find.text(_en.cardHistoryBoxMove(4, 1)));
-    expect(move.style!.color, context.derivedColors.warningInk);
+    expect(move.style!.color, context.semanticColors.warningText);
     expect(find.text(_en.cardHistoryTimedOut), findsOneWidget);
     expect(find.byIcon(AppIcons.timeout), findsOneWidget);
   });

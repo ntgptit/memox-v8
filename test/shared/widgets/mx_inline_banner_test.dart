@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -29,10 +28,9 @@ BoxDecoration _ground(WidgetTester tester) =>
 void main() {
   final scheme = AppColorSchemes.light;
   final semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(scheme, semantic);
 
-  testWidgets('warning: amber ground, warning border, warning-ink 16 glyph '
-      '(FE-C1)', (tester) async {
+  testWidgets('warning: the warning soft ground, its border, an on-soft 16 '
+      'glyph', (tester) async {
     await pumpMx(
       tester,
       _width(
@@ -41,13 +39,15 @@ void main() {
     );
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
 
-    expect(_ground(tester).color, derived.warningSoft);
-    expect(_ground(tester).border, Border.all(color: derived.warningBorder));
+    expect(_ground(tester).color, semantic.warningSoft);
+    expect(_ground(tester).border, Border.all(color: semantic.warningBorder));
     expect(_ground(tester).borderRadius, BorderRadius.circular(12));
-    expect((glyph.size, glyph.color), (16, derived.warningInk));
+    expect((glyph.size, glyph.color), (16, semantic.onWarningSoft));
   });
 
-  testWidgets('danger: red ground, danger border, error glyph', (tester) async {
+  testWidgets('danger: the danger soft ground, its border, an on-soft glyph', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       _width(
@@ -55,11 +55,11 @@ void main() {
       ),
     );
 
-    expect(_ground(tester).color, derived.dangerSoft);
-    expect(_ground(tester).border, Border.all(color: derived.dangerBorder));
+    expect(_ground(tester).color, semantic.dangerSoft);
+    expect(_ground(tester).border, Border.all(color: semantic.dangerBorder));
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      scheme.error,
+      semantic.onDangerSoft,
     );
   });
 
@@ -204,11 +204,11 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('the title reads in its tone ink; an untitled lead stays '
-      'onSurface (critique 2026-09-30 tone pass, T2)', (tester) async {
-    for (final (tone, ink) in [
-      (MxBannerTone.warning, derived.warningInk),
-      (MxBannerTone.danger, derived.dangerInk),
+  testWidgets('the title reads its tone\'s on-soft token; the message reads '
+      'Day\'s banner style, in Night too (spec 2026-10-10 D4)', (tester) async {
+    for (final (tone, foreground) in [
+      (MxBannerTone.warning, semantic.onWarningSoft),
+      (MxBannerTone.danger, semantic.onDangerSoft),
     ]) {
       await pumpMx(
         tester,
@@ -216,7 +216,7 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text('Title')).style!.color,
-        ink,
+        foreground,
         reason: '$tone',
       );
       await pumpMx(
@@ -225,15 +225,12 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text(_message)).style!.color,
-        scheme.onSurface,
+        semantic.onSoft,
         reason: '$tone untitled',
       );
     }
 
-    final darkDerived = MxDerivedColors.resolve(
-      AppColorSchemes.dark,
-      MxSemanticColors.dark,
-    );
+    const night = MxSemanticColors.dark;
     await pumpMx(
       tester,
       _width(
@@ -249,7 +246,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       tester.widget<Text>(find.text('Title')).style!.color,
-      darkDerived.warningInk,
+      night.onWarningSoft,
+    );
+    expect(
+      tester.widget<Text>(find.text(_message)).style!.color,
+      AppColorSchemes.light.onSurfaceVariant,
     );
   });
 

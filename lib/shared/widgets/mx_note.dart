@@ -25,7 +25,7 @@ class MxNote extends StatelessWidget {
          'a dismissible note names its close button',
        );
 
-  /// A footnote: the glyph and text in the secondary ink, no box.
+  /// A footnote: the glyph and text in the secondary foreground, no box.
   const MxNote.hint({super.key, required this.text, this.icon = AppIcons.info})
     : isHint = true,
       onDismiss = null,
@@ -89,7 +89,7 @@ class MxNote extends StatelessWidget {
         color: colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
-          color: context.derivedColors.ghostBorder,
+          color: context.semanticColors.border,
           width: AppStroke.hairline,
         ),
       ),

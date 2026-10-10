@@ -7,7 +7,6 @@ import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/mx_text_styles.dart';
 
@@ -26,18 +25,17 @@ abstract final class AppComponentThemes {
   );
 
   /// Every form field (TextField contract): the muted fill that lightens on
-  /// focus, the Outline Edge at rest (ghost when disabled), primary on focus,
-  /// error in error, the 14 hint.
+  /// focus, the outline at rest (the border hairline when disabled), the
+  /// focus ring on focus, error in error, the 14 hint.
   static InputDecorationTheme fields(
     ColorScheme scheme,
     MxSemanticColors semantic,
     TextTheme texts,
   ) {
-    final derived = MxDerivedColors.resolve(scheme, semantic);
-    final ghost = derived.ghostBorder;
-    // Every edged field rests on the one control edge (3:1, DEV-166); a
-    // disabled one keeps the ghost hairline, as SC 1.4.11 exempts it.
-    final rest = derived.outlineEdge;
+    final ghost = semantic.border;
+    // Every edged field rests on the outline; a disabled one keeps the
+    // border hairline, as SC 1.4.11 exempts it.
+    final rest = scheme.outline;
     return InputDecorationTheme(
       filled: true,
       isDense: true,
@@ -49,35 +47,36 @@ abstract final class AppComponentThemes {
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.grouped,
       ),
-      hintStyle: MxTextStyles(texts, scheme).inputHint,
+      hintStyle: MxTextStyles(texts, scheme, semantic).inputHint,
       border: fieldEdge(rest),
       enabledBorder: fieldEdge(rest),
       disabledBorder: fieldEdge(ghost),
-      focusedBorder: fieldEdge(MxDerivedColors.primaryInkOf(scheme)),
+      focusedBorder: fieldEdge(semantic.focusRing),
       errorBorder: fieldEdge(scheme.error),
       focusedErrorBorder: fieldEdge(scheme.error),
     );
   }
 
-  /// A Material button at the regular V3 size in [fill] and [ink]: 48 tall,
+  /// A Material button at the regular V3 size in [fill] and [foreground]: 48 tall,
   /// radius 12, gutter padding, the 14/600 label, the pressed overlay and
   /// the focus ring. A disabled one dims under the global 0.38 rule.
   static ButtonStyle _button(
     ColorScheme scheme,
+    MxSemanticColors semantic,
     TextTheme texts, {
     required Color? fill,
-    required Color ink,
+    required Color foreground,
     required BorderSide edge,
   }) {
     final style = appButtonStyle(
       fill: fill,
-      ink: ink,
+      foreground: foreground,
       edge: edge,
-      focusColor: MxDerivedColors.primaryInkOf(scheme),
+      focusColor: semantic.focusRing,
       height: AppSize.buttonRegular,
       radius: AppRadius.md,
       padding: AppSpacing.gutter,
-      label: MxTextStyles(texts, scheme).buttonLabel,
+      label: MxTextStyles(texts, scheme, semantic).buttonLabel,
     );
     Color? dimmed(Color? color) =>
         color?.withValues(alpha: color.a * AppOpacity.disabled);
@@ -94,7 +93,9 @@ abstract final class AppComponentThemes {
         (states) => states.contains(WidgetState.disabled) ? dimmed(fill) : fill,
       ),
       foregroundColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.disabled) ? dimmed(ink) : ink,
+        (states) => states.contains(WidgetState.disabled)
+            ? dimmed(foreground)
+            : foreground,
       ),
     );
   }
@@ -102,13 +103,15 @@ abstract final class AppComponentThemes {
   /// FilledButton: the primary tone.
   static FilledButtonThemeData filledButtons(
     ColorScheme scheme,
+    MxSemanticColors semantic,
     TextTheme texts,
   ) => FilledButtonThemeData(
     style: _button(
       scheme,
+      semantic,
       texts,
       fill: scheme.primary,
-      ink: scheme.onPrimary,
+      foreground: scheme.onPrimary,
       edge: BorderSide.none,
     ),
   );
@@ -116,69 +119,71 @@ abstract final class AppComponentThemes {
   /// OutlinedButton: the outline tone.
   static OutlinedButtonThemeData outlinedButtons(
     ColorScheme scheme,
+    MxSemanticColors semantic,
     TextTheme texts,
   ) => OutlinedButtonThemeData(
     style: _button(
       scheme,
+      semantic,
       texts,
       fill: null,
-      ink: MxDerivedColors.primaryInkOf(scheme),
-      edge: BorderSide(
-        color: MxDerivedColors.outlineEdgeOf(scheme),
-        width: AppStroke.hairline,
-      ),
+      foreground: semantic.primaryText,
+      edge: BorderSide(color: scheme.outline, width: AppStroke.hairline),
     ),
   );
 
-  /// TextButton: primary ink, no fill — the framework's dialog actions.
-  static TextButtonThemeData textButtons(ColorScheme scheme, TextTheme texts) =>
-      TextButtonThemeData(
-        style: _button(
-          scheme,
-          texts,
-          fill: null,
-          ink: MxDerivedColors.primaryInkOf(scheme),
-          edge: BorderSide.none,
-        ),
-      );
+  /// TextButton: primary text, no fill — the framework's dialog actions.
+  static TextButtonThemeData textButtons(
+    ColorScheme scheme,
+    MxSemanticColors semantic,
+    TextTheme texts,
+  ) => TextButtonThemeData(
+    style: _button(
+      scheme,
+      semantic,
+      texts,
+      fill: null,
+      foreground: semantic.primaryText,
+      edge: BorderSide.none,
+    ),
+  );
 
   /// IconButton (IconButton contract): a 20 glyph in a 36 round ink box with
   /// a 48 touch area, the pressed overlay, and the focus ring on the
   /// circle's edge (ruling R5).
-  static IconButtonThemeData iconButtons(ColorScheme scheme) =>
-      IconButtonThemeData(
-        style: ButtonStyle(
-          iconSize: const WidgetStatePropertyAll(AppIconSize.compact),
-          // A disabled one dims under the global 0.38 rule.
-          foregroundColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.disabled)
-                ? scheme.onSurface.withValues(alpha: AppOpacity.disabled)
-                : scheme.onSurface,
-          ),
-          overlayColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.pressed)
-                ? scheme.onSurface.withValues(alpha: AppOpacity.pressed)
-                : null,
-          ),
-          side: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.focused)
-                ? BorderSide(
-                    color: MxDerivedColors.primaryInkOf(scheme),
-                    width: AppStroke.focus,
-                  )
-                : null,
-          ),
-          shape: const WidgetStatePropertyAll(CircleBorder()),
-          fixedSize: const WidgetStatePropertyAll(
-            Size.square(AppSize.iconButtonInk),
-          ),
-          minimumSize: const WidgetStatePropertyAll(
-            Size.square(AppSize.iconButtonInk),
-          ),
-          padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-          tapTargetSize: MaterialTapTargetSize.padded,
-        ),
-      );
+  static IconButtonThemeData iconButtons(
+    ColorScheme scheme,
+    MxSemanticColors semantic,
+  ) => IconButtonThemeData(
+    style: ButtonStyle(
+      iconSize: const WidgetStatePropertyAll(AppIconSize.compact),
+      // A disabled one dims under the global 0.38 rule.
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled)
+            ? scheme.onSurface.withValues(alpha: AppOpacity.disabled)
+            : scheme.onSurface,
+      ),
+      overlayColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.pressed)
+            ? scheme.onSurface.withValues(alpha: AppOpacity.pressed)
+            : null,
+      ),
+      side: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.focused)
+            ? BorderSide(color: semantic.focusRing, width: AppStroke.focus)
+            : null,
+      ),
+      shape: const WidgetStatePropertyAll(CircleBorder()),
+      fixedSize: const WidgetStatePropertyAll(
+        Size.square(AppSize.iconButtonInk),
+      ),
+      minimumSize: const WidgetStatePropertyAll(
+        Size.square(AppSize.iconButtonInk),
+      ),
+      padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+      tapTargetSize: MaterialTapTargetSize.padded,
+    ),
+  );
 
   static Color _scrim(ColorScheme scheme) =>
       scheme.scrim.withValues(alpha: AppEffects.scrimOpacity);
@@ -187,12 +192,16 @@ abstract final class AppComponentThemes {
     top: Radius.circular(AppRadius.xl),
   );
 
-  /// Dialog (Dialog contract): the high container at radius 20, flat, over
-  /// the 45% scrim, with the compact title and the dialog body.
-  static DialogThemeData dialogs(ColorScheme scheme, TextTheme texts) {
-    final styles = MxTextStyles(texts, scheme);
+  /// Dialog (Dialog contract): the card ground at radius 20, flat, over the
+  /// 56% scrim, with the compact title and the dialog body.
+  static DialogThemeData dialogs(
+    ColorScheme scheme,
+    MxSemanticColors semantic,
+    TextTheme texts,
+  ) {
+    final styles = MxTextStyles(texts, scheme, semantic);
     return DialogThemeData(
-      backgroundColor: scheme.surfaceContainerHigh,
+      backgroundColor: scheme.surfaceContainerLowest,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -207,12 +216,12 @@ abstract final class AppComponentThemes {
     );
   }
 
-  /// BottomSheet (BottomSheet contract): the high container, top radius 20,
-  /// flat, over the 45% scrim.
+  /// BottomSheet (BottomSheet contract): the card ground, top radius 20,
+  /// flat, over the 56% scrim.
   static BottomSheetThemeData sheets(ColorScheme scheme) =>
       BottomSheetThemeData(
-        backgroundColor: scheme.surfaceContainerHigh,
-        modalBackgroundColor: scheme.surfaceContainerHigh,
+        backgroundColor: scheme.surfaceContainerLowest,
+        modalBackgroundColor: scheme.surfaceContainerLowest,
         elevation: 0,
         modalElevation: 0,
         shape: const RoundedRectangleBorder(borderRadius: _sheetRadius),
@@ -221,25 +230,28 @@ abstract final class AppComponentThemes {
 
   /// SnackBar (Snackbar contract): the inverse surface, floating a gutter in,
   /// radius 12, the snackbar message style.
-  static SnackBarThemeData snackbars(ColorScheme scheme, TextTheme texts) =>
-      SnackBarThemeData(
-        backgroundColor: scheme.inverseSurface,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-        ),
-        // Even sides, so no direction is needed.
-        insetPadding: const EdgeInsets.fromLTRB(
-          AppSpacing.gutter,
-          0,
-          AppSpacing.gutter,
-          AppSpacing.gutter,
-        ),
-        contentTextStyle: MxTextStyles(texts, scheme).snackbarMessage,
-        // Flat: the inverse surface sets it apart; DESIGN.md gives shadows
-        // to cards, dialogs, sheets and the FAB only (SW-REV-007).
-        elevation: 0,
-      );
+  static SnackBarThemeData snackbars(
+    ColorScheme scheme,
+    MxSemanticColors semantic,
+    TextTheme texts,
+  ) => SnackBarThemeData(
+    backgroundColor: scheme.inverseSurface,
+    behavior: SnackBarBehavior.floating,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+    ),
+    // Even sides, so no direction is needed.
+    insetPadding: const EdgeInsets.fromLTRB(
+      AppSpacing.gutter,
+      0,
+      AppSpacing.gutter,
+      AppSpacing.gutter,
+    ),
+    contentTextStyle: MxTextStyles(texts, scheme, semantic).snackbarMessage,
+    // Flat: the inverse surface sets it apart; DESIGN.md gives shadows
+    // to cards, dialogs, sheets and the FAB only (SW-REV-007).
+    elevation: 0,
+  );
 
   /// Tooltip (MxIconButton's long-press name): the caption on the inverse
   /// surface, as the snackbar, radius 8 (SW-REV-007).

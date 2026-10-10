@@ -56,7 +56,7 @@ Every state above is built.
 - **FE-A6 spec D14:** the zero card's check tile uses the `success` tone; green is mastery's alone.
 - **FE-A8 ruling S9:** Resume is a primary block `MxButton` with the play glyph; "Go to Library" in noDecks is `MxEmptyState`'s neutral secondary action; `primary-soft` is preserve-only.
 - **E-L3:** "Library" is a compact secondary `MxButton`.
-- **BR-STUDY-076:** the hero and row breakdowns wrap between whole terms, never cut; a deck with cards always states its three counts, a zero term muted, each led by its glyph (history, zap, sparkles) in its ink; a deck with no card reads "No cards yet".
+- **BR-STUDY-076:** the hero and row breakdowns wrap between whole terms, never cut; a deck with cards always states its three counts, a zero term muted, each led by its glyph (history, zap, sparkles) in its text token; a deck with no card reads "No cards yet".
 - **UI-base ruling O3:** loading uses a two-bar hero skeleton and the standard `MxSkeletonList` rows.
 - `MxEmptyState` actions carry no glyph.
 - **Account UI spec R2, B5:** the re-auth notice takes the slot over the sync notice.

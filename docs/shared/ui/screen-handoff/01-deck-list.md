@@ -60,7 +60,7 @@ One `MxBottomSheet`, "Sort & filter":
 
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| rootLoaded | `library_decks_light.png` | `library_decks_dark.png` | Every row carries its mastery bar (BR-DECK-026); the learning band is the darker learning ink in light (§9 row 141). The due strip shows its chevron: the fixture wires Study home as the app does (critique 2026-09-30 part 3a). |
+| rootLoaded | `library_decks_light.png` | `library_decks_dark.png` | Every row carries its mastery bar (BR-DECK-026); the learning band is the learning fill, `statusLearning` (spec 2026-10-10). The due strip shows its chevron: the fixture wires Study home as the app does (critique 2026-09-30 part 3a). |
 | rootLoading | no golden | no golden | Skeletons in the row's shape; header kept. |
 | rootEmpty | `library_empty_light.png` | `library_empty_dark.png` | No search field, no Tags, no FAB (The Content Gate Rule, DEV-309); Starter decks and the Trash stay. "Create deck", then "Browse starter decks" (screen 03), and the footnote (FE-B4 §5.4). |
 | rootError | no golden | no golden | "Couldn't load your library" with Retry. |
@@ -89,9 +89,10 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 - **Critique 2026-09-30 part 1, R9 (amends P4a-L9):** an `unset` deck has no FAB; its empty state already offers New card and New sub-deck. The FAB returns once the deck holds sub-decks.
 - **FE-B1 D7:** an Undo happens where the item was deleted. A refused Undo says
   "Can't undo. {reason} Restore it from Trash and choose a deck."; it carries no deck name.
-- **Owner ruling R4** (deck mastery spec, §9 row 141): the < 34% mastery band uses
-  `statusLearningInk` in light (4.94:1 on the track) and the amber in dark.
-- **§9 rows 142, 145 (FE-C1):** the mastery bar's track is `surfaceContainerLow`, so the fill keeps 3:1 against it in dark too.
+- **Owner ruling R4, amended 2026-10-10:** the < 34% mastery band is the learning
+  fill, `statusLearning` (#FF983A), in both themes; on Day's track it is a recorded
+  contrast exception (spec 2026-10-10 D3).
+- **§9 rows 142, 145 (FE-C1):** the mastery bar's track is `surfaceContainerLow`.
 - **Library spec D7:** Reorder is in the root deck's action sheet too.
 - **C-L6:** the action sheet reads only `DeckView`, which carries no counts, so its header
   is the name alone.

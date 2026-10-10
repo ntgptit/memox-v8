@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
@@ -22,7 +21,7 @@ void main() {
     );
   });
 
-  testWidgets('warning in dark: the amber is its own ink (I1, T1)', (
+  testWidgets('warning in dark: the amber is its own text colour (I1, T1)', (
     tester,
   ) async {
     await pumpMx(
@@ -44,9 +43,9 @@ void main() {
     );
   });
 
-  // The tone pass (T1, critique 2026-09-30): a warning glyph is ink, never
+  // The tone pass (T1, critique 2026-09-30): a warning glyph is foreground, never
   // the amber fill, which is about 2:1 on the light page.
-  testWidgets('warning: the glyph in warning ink on the light page', (
+  testWidgets('warning: the glyph in warning text on the light page', (
     tester,
   ) async {
     await pumpMx(
@@ -59,10 +58,7 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxDerivedColors.resolve(
-        AppColorSchemes.light,
-        MxSemanticColors.light,
-      ).warningInk,
+      MxSemanticColors.light.warningText,
     );
   });
 

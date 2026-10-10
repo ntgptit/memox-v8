@@ -27,7 +27,7 @@ enum MxButtonTone {
 /// the touch area is 48 for every size.
 enum MxButtonSize { regular, small, compact, chip, study }
 
-typedef _Paint = ({Color? fill, Color ink, BorderSide edge});
+typedef _Paint = ({Color? fill, Color foreground, BorderSide edge});
 typedef _Geometry = ({
   double height,
   double radius,
@@ -87,7 +87,7 @@ class MxButton extends StatelessWidget {
   /// dialog (BR-TRASH-011).
   final bool isAutofocused;
 
-  /// A second line under the label, in the button ink, such as the interval
+  /// A second line under the label, in the button foreground, such as the interval
   /// a grade gives (screen 16a). It grows the button instead of clipping.
   final String? detail;
 
@@ -119,9 +119,9 @@ class MxButton extends StatelessWidget {
       autofocus: isAutofocused,
       style: appButtonStyle(
         fill: paint.fill,
-        ink: paint.ink,
+        foreground: paint.foreground,
         edge: paint.edge,
-        focusColor: context.derivedColors.primaryInk,
+        focusColor: context.semanticColors.focusRing,
         height: geometry.height,
         radius: geometry.radius,
         padding: geometry.padding,
@@ -129,7 +129,11 @@ class MxButton extends StatelessWidget {
             ? context.textStyles.buttonLabelSmall
             : context.textStyles.buttonLabel,
       ),
-      child: _content(paint.ink, geometry, context.textStyles.buttonDetail),
+      child: _content(
+        paint.foreground,
+        geometry,
+        context.textStyles.buttonDetail,
+      ),
     );
     final block = isBlock
         ? SizedBox(width: double.infinity, child: button)
@@ -190,9 +194,9 @@ class MxButton extends StatelessWidget {
       // Chip geometry paints its own surface whatever the tone (ruling R2).
       return (
         fill: colors.surfaceContainerLowest,
-        ink: colors.onSurface,
+        foreground: colors.onSurface,
         edge: BorderSide(
-          color: context.derivedColors.ghostBorder,
+          color: context.semanticColors.border,
           width: AppStroke.hairline,
         ),
       );
@@ -200,49 +204,45 @@ class MxButton extends StatelessWidget {
     return switch (tone) {
       MxButtonTone.primary => (
         fill: colors.primary,
-        ink: colors.onPrimary,
+        foreground: colors.onPrimary,
         edge: BorderSide.none,
       ),
       MxButtonTone.secondary => (
         fill: colors.surfaceContainer,
-        ink: colors.onSurface,
+        foreground: colors.onSurface,
         edge: BorderSide.none,
       ),
       MxButtonTone.outline => (
         fill: null,
-        ink: context.derivedColors.primaryInk,
-        edge: BorderSide(
-          color: context.derivedColors.outlineEdge,
-          width: AppStroke.hairline,
-        ),
+        foreground: context.semanticColors.primaryText,
+        edge: BorderSide(color: colors.outline, width: AppStroke.hairline),
       ),
       // The quiet action beside a decision's fill (account UI spec U2): the
-      // outline's ink without its edge.
+      // outline's foreground without its edge.
       MxButtonTone.text => (
         fill: null,
-        ink: context.derivedColors.primaryInk,
+        foreground: context.semanticColors.primaryText,
         edge: BorderSide.none,
       ),
       MxButtonTone.destructive => (
         fill: context.semanticColors.errorFill,
-        ink: context.semanticColors.onErrorFill,
+        foreground: context.semanticColors.onErrorFill,
         edge: BorderSide.none,
       ),
       // The soft danger tint MxInlineBanner and MxCard.isDanger draw
       // (FE-A6 D14); the solid pair above stays the destructive action's.
       MxButtonTone.dangerSoft => (
-        fill: context.derivedColors.dangerSoft,
-        ink: colors.error,
+        fill: context.semanticColors.dangerSoft,
+        foreground: context.semanticColors.onDangerSoft,
         edge: BorderSide(
-          color: context.derivedColors.dangerBorder,
+          color: context.semanticColors.dangerBorder,
           width: AppStroke.hairline,
         ),
       ),
-      // The warning role and its ink, not the kit's orange and white, which
-      // is about 2.8:1 (FE-B2 spec D15).
+      // The warning fill and the text on it (FE-B2 spec D15).
       MxButtonTone.warning => (
         fill: context.semanticColors.warning,
-        ink: context.semanticColors.onWarning,
+        foreground: context.semanticColors.onWarning,
         edge: BorderSide.none,
       ),
     };
@@ -293,7 +293,7 @@ class MxButton extends StatelessWidget {
     ),
   };
 
-  Widget _content(Color ink, _Geometry geometry, TextStyle detailStyle) {
+  Widget _content(Color foreground, _Geometry geometry, TextStyle detailStyle) {
     final canWrap = geometry.canWrap && !isSingleLine;
     final labelText = Text(
       label,

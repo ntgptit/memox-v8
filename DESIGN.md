@@ -1,48 +1,72 @@
 ---
 name: MemoX V8
-description: A quiet, focused study space for spaced-repetition flashcards, in two themes, Tokyo Pure Light and Tokyo Nebula.
+description: A quiet, focused study space for spaced-repetition flashcards, in two themes, Indigo Day and Indigo Night.
 colors:
-  primary: "#5265F5"
+  primary: "#4255FF"
   on-primary: "#FFFFFF"
-  primary-container: "#E0E5FE"
-  on-primary-container: "#1A2580"
-  secondary: "#6E7CD9"
-  secondary-container: "#E3E6F7"
-  on-secondary-container: "#262E6E"
-  tertiary: "#8B6FF5"
-  tertiary-container: "#EBE3FE"
-  on-tertiary-container: "#33177E"
-  error: "#C02447"
-  error-container: "#FBDDE3"
-  on-error-container: "#7A0A23"
-  surface: "#F7F9FE"
+  primary-container: "#EDEFFF"
+  on-primary-container: "#4255FF"
+  secondary: "#586380"
+  secondary-container: "#EDEFF4"
+  on-secondary-container: "#2E3856"
+  tertiary: "#9C63FF"
+  tertiary-container: "#FAA6FF"
+  on-tertiary-container: "#282E3E"
+  error: "#B00020"
+  error-container: "#FFE8D8"
+  on-error-container: "#B00020"
+  surface: "#FFFFFF"
   surface-bright: "#FFFFFF"
   surface-container-lowest: "#FFFFFF"
-  surface-container-low: "#F1F4FB"
-  surface-container: "#E9EDF7"
-  surface-container-high: "#E2E7F3"
-  surface-container-highest: "#DAE0EF"
-  on-surface: "#0F1638"
-  on-surface-variant: "#4A5278"
-  outline: "#7C85AB"
-  outline-variant: "#C5CBE3"
-  inverse-surface: "#34395D"
-  on-inverse-surface: "#E8EAFC"
-  inverse-primary: "#A0ACFF"
-  scrim: "#0A0E27"
-  mastery: "#1F8A5B"
+  surface-container-low: "#F6F7FB"
+  surface-container: "#F6F7FB"
+  surface-container-high: "#EDEFF4"
+  surface-container-highest: "#D9DDE8"
+  on-surface: "#282E3E"
+  on-surface-variant: "#586380"
+  outline: "#939BB4"
+  outline-variant: "#D9DDE8"
+  inverse-surface: "#1A1D28"
+  on-inverse-surface: "#F6F7FB"
+  inverse-primary: "#F6F7FB"
+  scrim: "#010110"
+  mastery: "#18AE79"
   on-mastery: "#FFFFFF"
-  success: "#2BA88B"
-  warning: "#F59E0B"
-  on-warning: "#3A2A00"
-  warning-ink: "#895806"
-  error-fill: "#DC2D4E"
+  success: "#12815A"
+  warning: "#FFCD1F"
+  on-warning: "#282E3E"
+  error-fill: "#B00020"
   on-error-fill: "#FFFFFF"
-  status-new: "#8C95B8"
-  status-learning: "#F59E0B"
-  status-reviewing: "#5265F5"
-  status-mastered: "#1F8A5B"
-  streak: "#F97316"
+  status-new: "#939BB4"
+  status-learning: "#FF983A"
+  status-reviewing: "#4255FF"
+  status-mastered: "#18AE79"
+  streak: "#F6406C"
+  primary-text: "#4255FF"
+  mastery-text: "#12815A"
+  learning-text: "#CC4E00"
+  warning-text: "#997700"
+  focus-ring: "#A8B1FF"
+  border: "#EDEFF4"
+  primary-track: "#DBDFFF"
+  neutral-track: "#939BB4"
+  primary-soft: "#EDEFFF"
+  on-primary-soft: "#4255FF"
+  success-soft: "#E6FCF4"
+  success-border: "#98F1D1"
+  on-success-soft: "#12815A"
+  learning-soft: "#FFF6EF"
+  learning-border: "#FFC38C"
+  on-learning-soft: "#CC4E00"
+  warning-soft: "#FFEDAB"
+  warning-border: "#FFDC62"
+  on-warning-soft: "#997700"
+  danger-soft: "#FFE8D8"
+  danger-border: "#FFC38C"
+  on-danger-soft: "#B00020"
+  neutral-soft: "#EDEFFF"
+  on-neutral-soft: "#2E3856"
+  on-soft: "#282E3E"
 typography:
   stat:
     fontFamily: "PlusJakartaSans"
@@ -129,13 +153,13 @@ components:
     height: "48px"
     padding: "0 16px"
   button-outline:
-    textColor: "{colors.primary}"
+    textColor: "{colors.primary-text}"
     typography: "{typography.button-label}"
     rounded: "{rounded.md}"
     height: "48px"
     padding: "0 16px"
   button-text:
-    textColor: "{colors.primary}"
+    textColor: "{colors.primary-text}"
     typography: "{typography.button-label}"
     rounded: "{rounded.md}"
     height: "48px"
@@ -184,7 +208,7 @@ components:
     rounded: "{rounded.lg}"
     size: "52px"
   dialog:
-    backgroundColor: "{colors.surface-container-high}"
+    backgroundColor: "{colors.surface-container-lowest}"
     rounded: "{rounded.xl}"
   snackbar:
     backgroundColor: "{colors.inverse-surface}"
@@ -198,7 +222,7 @@ components:
 
 **Creative North Star: "The Quiet Study Desk"**
 
-MemoX should feel like a quiet, focused study space. The system ships two themes from one structure: **Tokyo Pure Light**, a cool blue-tinted white where every neutral carries a trace of indigo, and **Tokyo Nebula**, a deep navy theme authored on its own rather than filtered from light, where the brand indigo holds and the surfaces step up in lightness instead of inverting. Component philosophy: **"Calm and exact"**. A control does one job at one size, and its numbers (48 tall, 12 radius, 16 gutter) do not drift between screens.
+MemoX should feel like a quiet, focused study space. The system ships two themes from one structure: **Indigo Day**, a white page whose cards are edged in a cool grey hairline, and **Indigo Night**, a deep indigo page (#0A092D) with cards a step lighter (#202040) and inputs and chips a step lighter again (#2E3856). The brand indigo (#4255FF) holds in both. Every colour is a literal token per theme; nothing is derived from another colour. Component philosophy: **"Calm and exact"**. A control does one job at one size, and its numbers (48 tall, 12 radius, 16 gutter) do not drift between screens.
 
 - Content is always more prominent than chrome.
 - Clear hierarchy and spacing create structure before decoration does.
@@ -212,51 +236,61 @@ MemoX should feel like a quiet, focused study space. The system ships two themes
 
 **Key Characteristics:**
 - One sans family (Plus Jakarta Sans), seven roles, tight-tracked for headings and figures.
-- Tonal surfaces plus a 1px ghost hairline; shadows are neutral and whisper-quiet.
+- Tonal surfaces plus a 1px border hairline; shadows are whisper-quiet.
 - One radius (12) for every in-flow surface; larger radii only for surfaces that float.
 - Phone-first, 16dp gutter, single content column, 48dp touch targets everywhere.
-- Every text and edge colour is contrast-tested (AA) in both themes.
+- Every text and edge colour is contrast-tested in both themes; the pairs below AA are recorded exceptions of the fixed palette.
 
 ## Colors
 
-A cool indigo-tinted neutral field with one saturated brand indigo, one reserved violet, and a green that only ever means progress. Frontmatter holds the Tokyo Pure Light values; Tokyo Nebula values and tonal information live in `.impeccable/design.json` `colorMeta`.
+One saturated brand indigo on a cool grey-blue neutral field, a green that only ever means progress, an orange for learning and a yellow for warning. Every colour is a literal token, one value per theme (spec 2026-10-10): no colour is pulled toward another, laid over a ground at an alpha, or otherwise derived. Frontmatter holds the Indigo Day values; Indigo Night values live in `.impeccable/design.json` `colorMeta`. Material roles live in `AppColorSchemes`, everything else in `MxSemanticColors`.
 
 ### Primary
-- **Brand Indigo** (`primary`): the fill of primary buttons, the FAB, the selected filter chip, progress fills and the selected-choice surface. Identical in both themes (#5265F5). White ink on it in both themes.
-- **Indigo Ink** (derived, not a fill): primary as text, icon, focus ring or spinner is `primary` pulled toward `on-surface` (25% in light, 45% in dark) so it reads at 4.5:1 on every ground. Outline buttons, links and the 2dp focus ring use it.
-- **Indigo Wash** (`primary-container`, `on-primary-container`): quiet selected and informational grounds. Dark: #2D346A / #D9DFFF.
-
-### Secondary
-- **Soft Periwinkle** (`secondary`, `secondary-container`): supporting tonal role; rarely painted directly.
-
-### Tertiary
-- **Meaningful Violet** (`tertiary`, `tertiary-container`): the reserved accent. Never used for status and never for mastery.
+- **Brand Indigo** (`primary`, #4255FF in both themes): the fill of primary buttons, the FAB, the selected filter chip, progress fills and the selected-choice surface. White on it in both themes.
+- **Primary Text** (`primaryText`): primary as text and glyph: outline and text buttons, links, the selected destination, a reviewing status label. Day #4255FF, Night #7583FF.
+- **Focus Ring** (`focusRing`, #A8B1FF in both themes): the 2dp focus ring of every control, the code slot taking the next digit, the stepper being edited.
+- **Primary Container** (`primary-container`): the hero card and the selected nav pill. Day #EDEFFF with #4255FF, Night #14125C with #EDEFFF.
 
 ### Neutral
-- **Pure Light Page** (`surface`, #F7F9FE): the screen ground. Dark: #0A0E27 (Nebula Night).
-- **Raised White** (`surface-container-lowest`): cards, list rows, chips. Dark: #131A3A.
-- **Muted Fill** (`surface-container-low`): text-field fill at rest, the mastery track, navigation rail ground, recessed study face. Dark: #1B2249.
-- **Sheet Ground** (`surface-container-high`): dialogs and bottom sheets. Dark: #2C356E.
-- **On Surface** (`on-surface`) and **Variant Ink** (`on-surface-variant`): primary and secondary text. Dark: #E4E8FA and #A4ACD0.
-- **Outline** (`outline`) and **Outline Variant** (`outline-variant`): control edges and dividers; the everyday hairline is the derived Ghost Border (primary at 14% light, 16% dark). The edge of every control that must hold 3:1 is the derived **Outline Edge** (`outlineEdge`), as light as 3:1 allows: in light, `outline` with its hue and lightness kept and its saturation raised to 30% (≈ #7380B4: 3.65:1 on the page, 3.50 on the field fill, 3.11 on the sheet); in dark, where saturation alone cannot reach 3:1, `outline` pulled 20% toward `on-surface` (≈ #7684BD: 5.25, 4.23, 3.15); 3:1 or more on the warning ground in both (owner 2026-10-06, DEV-179). Fields at rest, the outline button, the code slots, the unselected radio, the unchecked box and the off toggle use it (shared widgets review 2026-10-07, SW-REV-001; DEV-166, replacing R7's light `outline-variant`, which held about 1.5:1). The Ghost Border stays the everyday hairline of cards, sections, dividers and a disabled field.
-- **Inverse Surface** (`inverse-surface`, #34395D): the snackbar ground, identical in both themes, with `inverse-primary` (#A0ACFF, 5.21:1) for its action.
+- **Page** (`surface`): the screen, the app bar and the bottom bar. Day #FFFFFF, Night #0A092D.
+- **Card** (`surface-container-lowest`): cards, list rows, dialogs and bottom sheets. Day #FFFFFF, Night #202040.
+- **Surface** (`surface-container-low`, `surface-container`): the field fill, tracks, the recessed study face, the secondary button, chips, the segmented tray, the stepper. Day #F6F7FB, Night #2E3856.
+- **Muted Fill** (`surface-container-high`): skeletons and neutral marks. Day #EDEFF4, Night #282E3E.
+- **On Surface** (`on-surface`) and **On Surface Variant** (`on-surface-variant`): primary and secondary text. Day #282E3E and #586380, Night #F6F7FB and #D9DDE8.
+- **Border** (`border`): the 1px hairline of cards, sections, dividers, chrome and a disabled field. Day #EDEFF4, Night #282E3E. Every card draws it in both themes, since Day's card and page are both white.
+- **Outline** (`outline`): every control edge at rest: fields, the outline button, the code slots, the unselected radio and the unchecked box. Day #939BB4, Night #586380. **Outline Variant** (#D9DDE8 Day, #586380 Night): the dashed note.
+- **Inverse Surface** (`inverse-surface`): the snackbar and the tooltip, the inverse of each theme: Day #1A1D28 with #F6F7FB text and action, Night #EDEFF4 with #282E3E text and a #586380 action.
 
 ### Semantic
-- **Mastery Green** (`mastery`, #1F8A5B; dark #6FE0BD) and **Success Teal** (`success`, #2BA88B): progress and a finished session. Two roles, never interchangeable; a right answer is success, never mastery.
-- **Status ramp**: `status-new` (#8C95B8), `status-learning` (#F59E0B), `status-reviewing` (indigo), `status-mastered` (green). Dots, fills and tints use the colour itself; status text uses an Ink derived by pulling the colour toward `on-surface`.
-- **Warning Amber** (`warning`, `on-warning`, `warning-ink`): a refusal or a limit where nothing was lost. Warning text and glyphs use **Warning Ink** (`warningInk`): #895806 in light (amber's hue at 28% lightness, 4.5:1 or more on every ground and tint, the sheet included), the amber itself in dark. `on-warning` is only the ink on an amber fill (critique 2026-09-30 tone pass, T1).
-- **Error** (`error`, #C02447) is the text/icon/edge role; **Danger Ink** (`dangerInk`) is error pulled toward `on-surface` (10% light, 30% dark) for text on the danger ground, such as a banner title, 4.5:1 or more on every surface including a sheet (critique 2026-09-30 tone pass); **Destructive Fill** (`error-fill`, #DC2D4E; dark #B0485C) is the solid destructive button only.
-- **Streak Orange** (`streak`): the Progress flame only.
-- **Derived tints**: danger/warning/success soft grounds are the role at 8-18% alpha over the surface (danger 8/16, warning 12/18, success 10/18, light/dark), with borders at 22-32%.
+- **Mastery** (`mastery`, #18AE79) and **Success** (`success`): progress and a finished session or a right answer. Two roles, never interchangeable; a right answer is success, never mastery. Success is text-safe: Day #12815A, Night #59E8B5. Mastery as text is **Mastery Text** (`masteryText`, the same two values).
+- **Status ramp**: `status-new` (#939BB4 Day, #586380 Night), `status-learning` (#FF983A), `status-reviewing` (indigo), `status-mastered` (#18AE79): dots and fills. Status text reads its text token: new in `on-surface-variant`, learning in **Learning Text** (`learningText`, Day #CC4E00, Night #FF983A), reviewing in `primaryText`, mastered in `masteryText`.
+- **Warning** (`warning`, #FFCD1F, with `on-warning` #282E3E): a refusal or a limit where nothing was lost. Warning text and glyphs on a plain ground read **Warning Text** (`warningText`, Day #997700, Night #FFCD1F).
+- **Error** (`error`): the text, glyph and edge role, Day #B00020, Night #FC3C60. **Destructive Fill** (`error-fill`, #B00020 in both): the solid destructive button only.
+- **Streak** (`streak`, #F6406C): the Progress flame only.
+- **Switch**: `primaryTrack` (#DBDFFF) with a primary thumb when on, `neutralTrack` (#939BB4) with a white thumb when off.
+
+### Soft grounds
+A soft ground is a light tint with its own edge and text, the same in both themes, so in Indigo Night a toned card, a banner, a badge, an icon tile or a right or wrong study tile is a light box with dark text.
+
+| Family | Soft | Border | Text on it |
+|---|---|---|---|
+| primary | `primarySoft` #EDEFFF | — | `onPrimarySoft` #4255FF |
+| success / mastery | `successSoft` #E6FCF4 | `successBorder` #98F1D1 | `onSuccessSoft` #12815A |
+| learning | `learningSoft` #FFF6EF | `learningBorder` #FFC38C | `onLearningSoft` #CC4E00 |
+| warning | `warningSoft` #FFEDAB | `warningBorder` #FFDC62 | `onWarningSoft` #997700 |
+| danger | `dangerSoft` #FFE8D8 | `dangerBorder` #FFC38C | `onDangerSoft` #B00020 |
+| neutral | `neutralSoft` Day #EDEFFF, Night #586380 | — | `onNeutralSoft` Day #2E3856, Night #F6F7FB |
+
+A soft ground that holds a caller's content (MxCard's toned variants, MxInlineBanner, MxFloatingNotice, MxOutcomeTile) is an **MxSoftGround**: it themes its content with Indigo Day, so the text, glyphs and buttons inside read Day's tokens in both themes: body text is Day's `on-surface` (#282E3E, the same value as `onSoft`), a detail line or eyebrow Day's `on-surface-variant` (#586380), and an outline or text button's label Day's `primary-text`. `onSoft` is the text token of a soft ground drawn without MxSoftGround.
 
 ### Named Rules
 **The One Indigo Rule.** Indigo means "act". A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8). A screen that asks *which way* fills its first way (Welcome: Google); a screen for one way fills that way's commit and outlines the other (Sign-in: Send code, then Google) (sign-in redesign 2026-10-05, S7).
 
 **The Green Means Progress Rule.** Green is `mastery` or `success` and nothing else. Violet is never a status; green is never decoration.
 
-**The Ink Is Not The Fill Rule.** Text, icons and focus rings use the derived ink (primary ink, status inks, success ink, warning ink, `error`), never the fill colour, because the fills fail 4.5:1 as text on light surfaces.
+**The Text Token Rule.** Text and glyphs read a text token (`on-surface`, `on-surface-variant`, `primaryText`, `masteryText`, `learningText`, `warningText`, `success`, `error`, an `on…Soft`), never a fill. Focus reads `focusRing`, a control edge `outline`, a hairline `border`. No colour is derived from another.
 
-**The Contrast Floor Rule.** Text and glyphs hold 4.5:1 and non-text (edges, thumbs, progress fill on its track, grabber) hold 3:1, on page, row, low and sheet grounds, in both themes. Pull the ink, not the ground, to pass.
+**The Contrast Floor Rule.** Text holds 4.5:1 and non-text 3:1 where the palette allows. The palette is fixed (owner 2026-10-10): the pairs below the floor are the exceptions `test/core/theme/token_contrast_test.dart` lists with their measured floors, and a change that worsens one or adds one turns that test red.
 
 ## Typography
 
@@ -275,7 +309,7 @@ A cool indigo-tinted neutral field with one saturated brand indigo, one reserved
 - **Button Label** (600, 14px, 1.5, 0.1px): component override of Body; compact and chip buttons use the small label.
 - **Section Label** (700, 13px, 0.6px, tabular, upper-cased by the widget): the overline that introduces a list or settings group, and nothing else.
 - **Eyebrow** (600, 12px, 0.8px, tabular, `on-surface-variant`): the context line above a big title or number; the app's own words upper-cased, user data as typed (critique 2026-09-30 part 2).
-- **Field Label** (600, 14px, `on-surface`, sentence case): names an input or a read-only field; "Required" is the optional caption's size in primary ink.
+- **Field Label** (600, 14px, `on-surface`, sentence case): names an input or a read-only field; "Required" is the optional caption's size in `primaryText`.
 
 Component styles (row title, field term, study term, banner title) override the nearest role inside that component; they never add a global style.
 
@@ -309,17 +343,17 @@ Touch targets are 48dp minimum for every interactive control, whatever the paint
 
 ## Elevation & Depth
 
-Hybrid, tonal first. Depth is conveyed by stepping through the surface-container ramp and a 1px ghost hairline; shadows are neutral (built on the scheme's `shadow` role, never brand-tinted) and appear only on cards, dialogs, sheets and the FAB. Dark has almost no shadow on cards and draws the hairline instead.
+Hybrid, tonal first. Depth is conveyed by stepping through the surface ramp and the 1px border hairline; shadows are built on the scheme's `shadow` role (#282E3E, never brand-tinted) and appear only on cards, dialogs, sheets and the FAB. Night has almost no shadow on cards; cards draw the hairline in both themes.
 
 ### Shadow Vocabulary
-- **Whisper** (`0 1px 2px` at 4%, light only): Card and toggle thumb. Dark: none, ghost border instead.
+- **Whisper** (`0 1px 2px` at 4%, light only): Card and toggle thumb. Night: none.
 - **Chrome** (`0 -2px 12px` at 5% light, `0 -2px 14px` at 36% dark): bottom sheet and bottom chrome, cast upward. The snackbar is flat (SW-REV-007).
 - **Overlay** (`0 12px 32px` at 10% light, `0 16px 40px` at 42% dark): dialogs.
 - **FAB** (`0 8px 24px` at 12% light, `0 10px 28px` at 50% dark): the floating action.
-- **Scrim** (scheme `scrim` at 45%): behind every dialog and sheet. The bottom bar is the page surface with the ghost edge: it floats over nothing, since the body ends where it starts (audit 2026-10-08, DEV-302).
+- **Scrim** (scheme `scrim`, #010110, at 56%): behind every dialog and sheet. The bottom bar is the page surface with the border hairline: it floats over nothing, since the body ends where it starts (audit 2026-10-08, DEV-302).
 
 ### Named Rules
-**The Hairline Before Shadow Rule.** Group with tone and a 1px ghost edge first; reach for a shadow only for a surface that floats above content.
+**The Hairline Before Shadow Rule.** Group with tone and the 1px border hairline first; reach for a shadow only for a surface that floats above content.
 
 ## Shapes
 
@@ -330,39 +364,39 @@ One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, not
 Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no copy (callers pass localized strings) and read colour only from the theme.
 
 ### Actions
-- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, Indigo Ink: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width and is never dimmed, whatever `onPressed` is (SW-REV-003), disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), `semanticLabel` names the button to TalkBack when its painted label does not say it, on its own node with the tap and the state (SW-REV-005), pressed overlay 12%, 2px focus ring in primary ink. Regular labels wrap to two lines; others stay single line. The outline tone's edge is Outline Edge, 3:1 on the page, the card, the sheet and the warning ground in both themes.
+- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, `primaryText`: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width and is never dimmed, whatever `onPressed` is (SW-REV-003), disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), `semanticLabel` names the button to TalkBack when its painted label does not say it, on its own node with the tap and the state (SW-REV-005), pressed overlay 12%, 2px focus ring in `focusRing`. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outline`. The dangerSoft tone is the danger soft ground with `onDangerSoft`.
 - **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area; its long-press tooltip is the caption on the inverse surface at radius 8, as the snackbar's ground (SW-REV-007). **MxFab**: square 52, r16, icon only, no extended form.
-- **MxActionPair** (two footer actions, side by side; stacked only as the last resort of The Short Label Rule; a screen footer's Cancel and its action share the row 1 : 1, as Card editor and Import do, DEV-169) and **MxSheetActions** (dialog and sheet footer; Cancel and the confirm share the row 1 : 1, the confirm being the verb alone, and neither carries an icon, since the tone already tells the weight, owner 2026-10-06, DEV-179; `MxSheetActions.single` is one action across the row, a lone Close, Done or OK, primary unless it dismisses beside choices, SW-REV-008). In a dialog it is inset 16 all round, on the edge the dialog's title and body share (DEV-166); the sheet form stays 8 / 16 / 16 under a ghost rule.
+- **MxActionPair** (two footer actions, side by side; stacked only as the last resort of The Short Label Rule; a screen footer's Cancel and its action share the row 1 : 1, as Card editor and Import do, DEV-169) and **MxSheetActions** (dialog and sheet footer; Cancel and the confirm share the row 1 : 1, the confirm being the verb alone, and neither carries an icon, since the tone already tells the weight, owner 2026-10-06, DEV-179; `MxSheetActions.single` is one action across the row, a lone Close, Done or OK, primary unless it dismisses beside choices, SW-REV-008). In a dialog it is inset 16 all round, on the edge the dialog's title and body share (DEV-166); the sheet form stays 8 / 16 / 16 under a border rule.
 
 ### Containers
-- **MxCard**: raised (surface-container-lowest, r12, whisper shadow or dark ghost edge), plus hero, warning, success, danger and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
-- **MxDialog** (widths 340, 320, 300; scale-in; centres in the room the keyboard leaves and scrolls its text when that room is short, SW-REV-002; `isHeld` refuses Back and the scrim while its work runs, as MxBottomSheet's and MxDeckPickerSheet's do, SW-REV-004; `showMxConfirm` asks a yes/no question, true only on the confirm, the tone on the confirm alone, SW-REV-009; title and body 16 in at the sides and 20 down, on the action pair's edge, DEV-166), **MxBottomSheet** (top corners 20, chrome shadow, grabber; `title` and `subtitle` draw the head every sheet shares: the compact title 20 in and 4 down, at most two lines, a heading to TalkBack, the subtitle 4 under it in the note role and 12 above the content, SW-REV-008; a head that is not a title and a line keeps `header`), **MxDeckPickerSheet** (with its loading and error sheets, which keep its head; the error sheet adds Retry and a dismiss, SW-REV-008), **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxDividedColumn** (rows with the ghost hairline between them, none after the last: the one owner of list dividers, DEV-305; a row draws no edge of its own), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border, and the one form for a footnote under a card, a section or an empty state (`MxSection.note`, `MxEmptyState.footnote`); the boxed note stands on its own in the flow, never inside another surface, DEV-303), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption in `footerCaption` at full ink, 4.5:1 or more, since it can carry a reason such as the offline note; sign-in redesign 2026-10-05; one line at a 360dp phone in English and Vietnamese, so a caption that does not fit is shortened, never wrapped, as `test/l10n/footer_caption_length_test.dart` asserts, owner 2026-10-05), **MxScrollFade** (a 24 fade over the edge of a scroll view while more lies past it: the bottom of a study face, both ends of a horizontal row such as the breadcrumb or a chip row; it takes no taps and says nothing to TalkBack, DEV-306).
+- **MxCard**: raised (the card ground, r12, the border hairline in both themes, the whisper shadow in Day), plus hero (`primary-container`), warning, success, danger (soft grounds, through `MxSoftGround`) and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
+- **MxDialog** (widths 340, 320, 300; scale-in; centres in the room the keyboard leaves and scrolls its text when that room is short, SW-REV-002; `isHeld` refuses Back and the scrim while its work runs, as MxBottomSheet's and MxDeckPickerSheet's do, SW-REV-004; `showMxConfirm` asks a yes/no question, true only on the confirm, the tone on the confirm alone, SW-REV-009; title and body 16 in at the sides and 20 down, on the action pair's edge, DEV-166), **MxBottomSheet** (top corners 20, chrome shadow, grabber; `title` and `subtitle` draw the head every sheet shares: the compact title 20 in and 4 down, at most two lines, a heading to TalkBack, the subtitle 4 under it in the note role and 12 above the content, SW-REV-008; a head that is not a title and a line keeps `header`), **MxDeckPickerSheet** (with its loading and error sheets, which keep its head; the error sheet adds Retry and a dismiss, SW-REV-008), **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxDividedColumn** (rows with the border hairline between them, none after the last: the one owner of list dividers, DEV-305; a row draws no edge of its own), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border, and the one form for a footnote under a card, a section or an empty state (`MxSection.note`, `MxEmptyState.footnote`); the boxed note stands on its own in the flow, never inside another surface, DEV-303), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption in `footerCaption` at full strength, 4.5:1 or more, since it can carry a reason such as the offline note; sign-in redesign 2026-10-05; one line at a 360dp phone in English and Vietnamese, so a caption that does not fit is shortened, never wrapped, as `test/l10n/footer_caption_length_test.dart` asserts, owner 2026-10-05), **MxScrollFade** (a 24 fade over the edge of a scroll view while more lies past it: the bottom of a study face, both ends of a horizontal row such as the breadcrumb or a chip row; it takes no taps and says nothing to TalkBack, DEV-306).
 
 ### Inputs
-- **MxTextField**: one box for every entry: 52 floor, muted fill that lightens on focus, r12, 12 padding, the body role. Variants form (one line), detail (multi-line, grows with its lines on a 12 padding; a card's meaning and details, pasted rows), term (wraps like detail, Enter moves on; a card's term, in the body role like every field, DEV-169), code (six slots, 48 wide at most and 56 tall at least, r12 on the form fill, edged in Outline Edge (3:1 on the page and the fill; the Ghost Border when disabled), the slot that takes the next digit in a 2dp primary-ink edge, every slot in `error` on a wrong code, the next one still 2dp wide; read-only while a code is checked, at full ink; one hidden field under them keeps the numeric keyboard, one-time-code autofill, paste and the TalkBack label; headline role with tabular figures; sign-in redesign 2026-10-05) and study (bare). Every edged variant, and **MxSearchField** (whose edges are the theme's), rests on Outline Edge (3:1 on the page, the field fill, the card and the sheet, DEV-166), a disabled one on the Ghost Border; primary-ink edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
-- **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills primary with on-primary ink), **MxChipTrigger** (ghost chip that opens a menu).
+- **MxTextField**: one box for every entry: 52 floor, muted fill that lightens on focus, r12, 12 padding, the body role. Variants form (one line), detail (multi-line, grows with its lines on a 12 padding; a card's meaning and details, pasted rows), term (wraps like detail, Enter moves on; a card's term, in the body role like every field, DEV-169), code (six slots, 48 wide at most and 56 tall at least, r12 on the form fill, edged in `outline` (the border hairline when disabled), the slot that takes the next digit in a 2dp `focusRing` edge, every slot in `error` on a wrong code, the next one still 2dp wide; read-only while a code is checked, at full strength; one hidden field under them keeps the numeric keyboard, one-time-code autofill, paste and the TalkBack label; headline role with tabular figures; sign-in redesign 2026-10-05) and study (bare). Every edged variant, and **MxSearchField** (whose edges are the theme's), rests on `outline`, a disabled one on the border hairline; the `focusRing` edge on focus, error edge plus **MxFieldMessage** (error or warning) below.
+- **MxSearchField**, **MxStepper** (bounded integer, press-and-hold repeat; `minDigits` zero-pads the value, as the reminder's "07" : "05", critique 2026-09-30 part 3d-2), **MxToggle** (44x26 track, 20 thumb: `primaryTrack` and a primary thumb on, `neutralTrack` and a white thumb off), **MxOptionRow** (single-choice radio row; a dimmed row dims only its radio and title, never the description that says why, and the selected row is never dimmed, so a locked current choice reads), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (28 pill, selected fills primary with on-primary text), **MxChipTrigger** (ghost chip that opens a menu).
 
 ### Navigation
-- **MxAppBar** (56, content or screen density; a bar without a leading control starts its title on the gutter, in line with the body, critique 2026-09-30 part 3c-1; a form's single save lives in its footer, never also in the bar), **MxStudyTopBar** (close, mode badge, thin progress, Indigo in every mode; the session context line under it names deck, kind, stage and round in two lines at most, never the mode again; critique 2026-09-30 part 3c-2), **MxBottomNav** (surface bar with the ghost edge, outlined resting glyph, filled selected glyph, tinted pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation; a deep path fades its start edge, its hidden ancestors still reachable buttons to TalkBack, DEV-306), **MxAppShell** and **MxScreenScroll** (tail clearance for FAB and nav).
+- **MxAppBar** (56, content or screen density; a bar without a leading control starts its title on the gutter, in line with the body, critique 2026-09-30 part 3c-1; a form's single save lives in its footer, never also in the bar), **MxStudyTopBar** (close, mode badge, thin progress, Indigo in every mode; the session context line under it names deck, kind, stage and round in two lines at most, never the mode again; critique 2026-09-30 part 3c-2), **MxBottomNav** (surface bar with the border hairline, outlined resting glyph, filled selected glyph in `primaryText` on a `primary-container` pill), **MxNavRail** (80 wide, from 600dp), **MxBreadcrumb** (on a form it is the only statement of the deck: the path ends in the deck and the operation; a deep path fades its start edge, its hidden ancestors still reachable buttons to TalkBack, DEV-306), **MxAppShell** and **MxScreenScroll** (tail clearance for FAB and nav).
 
 ### Feedback and Status
-- **MxSnackbar** (inverse surface, one optional action, 4s; 8s when offering Undo), **MxFloatingNotice** (floats over a screen that does not own the problem, as Study home's sync notice; the screen that owns it shows an `MxInlineBanner` in place), **MxInlineBanner** (warning or danger; the glyph reads in warning ink or error and the bold title in warning ink or danger ink, and the message stays neutral, critique 2026-09-30 tone pass; its actions put the primary last, as Material 3 does, so screen 24's permission banner reads Try again then Open system settings; critique 2026-09-30 part 3a, R5 amends FE-B6; it keeps 16 below itself, which `hasBottomMargin: false` drops when it ends a dialog's content, as in the sign-in confirms, 2026-10-05 L3), **MxEmptyState** (tones primary, neutral, success, warning, danger; success tints with success and draws its glyph in success ink, critique 2026-09-30 tone pass; warning draws its glyph in warning ink, part 3d-2), **MxErrorState** (inline load failure with Retry, its title a live region; a gone item is not a failure but an `MxEmptyState` in the neutral tone, owner 2026-10-08; the alert glyph by default, cloud-off only for a network failure), **MxSpinner** (4 sizes, 800ms cycle), **MxSkeleton** family (pulse 0.45 to 0.75 over 1.4s), **MxBadge** (primary, mastery, success, warning, danger, neutral; mastery is learning progress, success a right answer or a finished, fine state, in its success ink; critique 2026-09-30 tone pass), **MxStatusBadge** (new, learning, reviewing, mastered).
+- **MxSnackbar** (inverse surface, one optional action, 4s; 8s when offering Undo), **MxFloatingNotice** (floats over a screen that does not own the problem, as Study home's sync notice; the screen that owns it shows an `MxInlineBanner` in place), **MxInlineBanner** (warning or danger; a soft ground through `MxSoftGround`: the glyph and the bold title read `onWarningSoft` or `onDangerSoft`, and the message stays neutral in Day's text, critique 2026-09-30 tone pass; its actions put the primary last, as Material 3 does, so screen 24's permission banner reads Try again then Open system settings; critique 2026-09-30 part 3a, R5 amends FE-B6; it keeps 16 below itself, which `hasBottomMargin: false` drops when it ends a dialog's content, as in the sign-in confirms, 2026-10-05 L3), **MxEmptyState** (tones primary, neutral, success, warning, danger; each tone's tile is its soft ground with its `on…Soft` glyph), **MxErrorState** (inline load failure with Retry, its title a live region; a gone item is not a failure but an `MxEmptyState` in the neutral tone, owner 2026-10-08; the alert glyph by default, cloud-off only for a network failure), **MxSpinner** (4 sizes, 800ms cycle), **MxSkeleton** family (pulse 0.45 to 0.75 over 1.4s), **MxBadge** (primary, mastery, success, warning, danger, neutral; each on its soft ground with its `on…Soft` label; mastery is learning progress, success a right answer or a finished, fine state; critique 2026-09-30 tone pass), **MxStatusBadge** (new, learning, reviewing, mastered).
 
 ### Study-specific
-- **MxMasteryDonut** (its label in the band's ink, `MasteryRamp.ink`, SW-REV-001), **MxLinearProgress** and the single **MasteryRamp** threshold function: below 34% learning ink, 34 to 66% reviewing indigo, from 67% mastered green, a flat fill on a `surface-container-low` track, never a gradient; percent never rounds to 0 or 100 falsely.
+- **MxMasteryDonut** (its label in the band's text token, `MasteryRamp.label`), **MxLinearProgress** and the single **MasteryRamp** threshold function: below 34% learning orange, 34 to 66% reviewing indigo, from 67% mastered green, a flat fill on a `surface-container-low` track, never a gradient; percent never rounds to 0 or 100 falsely.
 - **MxOutcomeTile** (what a reset keeps, in success, or loses, in warning; critique 2026-09-30 tone pass), **MxWorkloadBreakdownLine** ("overdue, today, new" with one colour each), study choice surfaces (idle, selected, right, wrong; an answered option out of play fades to `AppOpacity.muted`, 0.7, and stays readable) and the recessed answer face, whose ground Match's idle meaning tiles share while its terms stay raised (part 3c-2).
 - **StudyCtaRow**: two actions share the row at up to 160 each and stack at text scale 1.3; a lone button spans the width of that pair (2 × 160 + 8), so Continue weighs what a pair does. Grades that judge the learner (Forgot, Remembered) share one tone. An action swapped in place under the finger (Show answer to the grades, Show meaning to Forgot · Remembered, Check to Continue) settles for 400 ms, easing in from `AppOpacity.muted`, before it takes a tap (critique 2026-09-30 part 3c-2).
 - **SessionFooterHint**: the glyph sits inline before the first line and wraps with the text; every hint is one line at normal size in English and Vietnamese, so the CTA above it stands in one place in every mode with no empty line under it (critique 2026-09-30 part 3c-2).
 
 ### Data Display
-- **MxSelectableCardRow** (the card that is one item of a list: the raised card, the ink over all of it, the checkbox while selecting, 16 in and 12 down, one TalkBack node with the checked state, a ⋮ outside the ink 4 from the edge; the deck, card and Trash rows are its content, DEV-304), **MxListRow** (48 minimum, grows to two title lines; a trailing badge or the chevron, never both; a disabled row dims its leading, title and chevron, never the subtitle or meta that says why, DEV-230; no edge of its own, the list's `MxDividedColumn` divides, DEV-305), **MxSettingsRow** (a value that only follows another setting reads as plain trailing text at full contrast, not as a dimmed control; a disabled row dims its tile, label and chevron, never the subtitle that says why; a trailing control that draws its own disabled state (`MxButton`, `MxToggle`, `MxStepper`) is not dimmed again (critique 2026-09-30 part 3a); an `isAction` row, which runs an action or opens a dialog, shows no chevron; `iconTone` sets the lead tile's tone, tinted by default (critique 2026-09-30 tone pass); a `message`, such as a field error, runs under the row from the label's start to the row's end, so a trailing control does not squeeze it (owner 2026-10-07)), **MxListSectionHeader**, **MxStatTile** (boxed or inline; a boxed tile fills with the Muted Fill so it stays a box on a plain card, DEV-231; emphasis primary, plain, muted; its value keeps one line and scales down in a narrow column, critique 2026-09-30 part 3c-1), **MxStackedDayBars** (every day at full strength, each series in a colour that holds 3:1 on the card, learning in its ink; the current day is told by its bold label, critique 2026-10-02), **MxTagChip** (22 or 18), the card history timeline (screen 10, a card-feature widget, DEV-170: a 2dp rail on the centre of a leading 24, 14dp dots ringed 2dp in the outcome ink, hollow marks for a cycle and the beginning; `AppSize.timelineDot`), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press, pressed in `onSurface` at the 12% overlay; `onLongPress` for a row that selects on a long-press, SW-REV-005, SW-REV-007).
+- **MxSelectableCardRow** (the card that is one item of a list: the raised card, the ink over all of it, the checkbox while selecting, 16 in and 12 down, one TalkBack node with the checked state, a ⋮ outside the ink 4 from the edge; the deck, card and Trash rows are its content, DEV-304), **MxListRow** (48 minimum, grows to two title lines; a trailing badge or the chevron, never both; a disabled row dims its leading, title and chevron, never the subtitle or meta that says why, DEV-230; no edge of its own, the list's `MxDividedColumn` divides, DEV-305), **MxSettingsRow** (a value that only follows another setting reads as plain trailing text at full contrast, not as a dimmed control; a disabled row dims its tile, label and chevron, never the subtitle that says why; a trailing control that draws its own disabled state (`MxButton`, `MxToggle`, `MxStepper`) is not dimmed again (critique 2026-09-30 part 3a); an `isAction` row, which runs an action or opens a dialog, shows no chevron; `iconTone` sets the lead tile's tone, tinted by default (critique 2026-09-30 tone pass); a `message`, such as a field error, runs under the row from the label's start to the row's end, so a trailing control does not squeeze it (owner 2026-10-07)), **MxListSectionHeader**, **MxStatTile** (boxed or inline; a boxed tile fills with the Muted Fill so it stays a box on a plain card, DEV-231; emphasis primary, plain, muted; its value keeps one line and scales down in a narrow column, critique 2026-09-30 part 3c-1), **MxStackedDayBars** (every day at full strength, each series in its fill; the current day is told by its bold label, critique 2026-10-02), **MxTagChip** (22 or 18), the card history timeline (screen 10, a card-feature widget, DEV-170: a 2dp rail on the centre of a leading 24, 14dp dots ringed 2dp in the outcome's colour, hollow marks for a cycle and the beginning; `AppSize.timelineDot`), **MxIconTile** (small, medium, large; tones tinted, primary, warning, success, caution, danger, neutral; a seed is a theme-invariant accent that holds 3:1 on the primary soft ground, never a colour of the outer scheme; an idle glyph takes the neutral tone), **MxActionSheetCommandRow**, **MxRowInk** (shared row ripple and press, pressed in `onSurface` at the 12% overlay; `onLongPress` for a row that selects on a long-press, SW-REV-005, SW-REV-007).
 - **Settings pattern** (settings hub spec 2026-10-07, §4). The Settings tab is a hub: `MxSection`s of navigation rows (label, the current value first in the subtitle, a chevron) and at most one action row (`isAction`, opens a dialog). No wide control and no toggle on the hub. A group with more than one setting of its own, or with a wide control, is a page under `/settings/<group>`, titled as its hub row, with a content-density app bar and Back; its rows sit in `MxSection`s with one note per section. On a page a setting is: a boolean → an `MxToggle` in the row; a bounded number → an `MxStepper` in the row's trailing slot, with a label short enough to stay on one line beside it and its error in the row's `message` slot (23a); a pick from at most ten fixed values → a bottom sheet of `MxOptionRow`s opened by a value row; a value with its own state, feedback or preview (a time, sync, the account) → a page of its own. Theme and Language predate the rule and keep their pages (FE-A3 D2). A row that opens a page or a sheet always names the current value in its subtitle.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** use `primary` for exactly one primary action per decision and the derived primary ink for any indigo text, icon or focus ring.
-- **Do** keep text at 4.5:1 and non-text edges, thumbs and fills at 3:1 on every surface, in both themes; adjust the ink, and keep the contrast test green.
+- **Do** use `primary` for exactly one primary action per decision, `primaryText` for indigo text and glyphs, and `focusRing` for focus.
+- **Do** keep the contrast test green: text at 4.5:1 and non-text at 3:1 except the recorded exceptions of the fixed palette.
 - **Do** guarantee a 48x48dp touch area on every interactive element, and let text containers grow instead of clamping scale or fixing heights.
 - **Do** write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.
 - **Do** use `mastery` and `success` green only for mastery and success, and route mastery fills through `MasteryRamp`.
@@ -374,12 +408,12 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
   - A row states a status once: a coloured label, not a dot beside it.
   - Kept because a rule asks for them: the card list's filter chip counts (IT-ORG-005), Study entry's NEW and DUE tiles and each mode's count (UC-STUDY-001, BR-STUDY-044), the selected count (UC-CARD-001), Import's preview counts (UC-TRANSFER-001), Progress's two ranges (BR-PROGRESS-003).
 - **Do** make a hero card that leads somewhere tappable, with a trailing chevron (the Library's due strip opens Study).
-- **Do** separate groups with tone and a 1px ghost hairline first; use the named shadows only for floating surfaces.
+- **Do** separate groups with tone and the 1px border hairline first; use the named shadows only for floating surfaces.
 - **Do** use 12 for every in-flow surface and the spacing steps (4, 8, 12, 16, 20, 24, 32, 48) rather than ad-hoc values.
 - **Do** centre content at a 720dp maximum column and switch to the navigation rail from 600dp.
 
 ### Don't:
-- **Don't** use a fill colour as text (primary fill, warning fill, success fill, status colour); use its ink.
+- **Don't** use a fill colour as text (primary fill, warning fill, success fill, status colour); use its text token.
 - **Don't** use violet or green as decoration, or green for anything but progress and success.
 - **Don't** tint shadows with the brand colour, and don't add elevation where a hairline groups the content.
 - **Don't** add hover states (Android only) or a global text style for one component.

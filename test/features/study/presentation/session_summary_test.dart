@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -31,10 +32,12 @@ Future<void> _pump(
   VoidCallback? onDone,
   VoidCallback? onStudyDeck,
   double textScale = 1,
+  Brightness brightness = Brightness.light,
 }) => pumpLibraryScreen(
   tester,
   env,
   textScale: textScale,
+  brightness: brightness,
   SessionSummaryWidget(
     view: view,
     outcome: outcome,
@@ -84,6 +87,22 @@ void main() {
     await tester.tap(find.widgetWithText(MxButton, _en.summaryDone));
     await tester.tap(find.widgetWithText(MxButton, _en.summaryStudyAgain));
     expect((done, again), (1, 1));
+  });
+
+  libraryTest('Night: a finished session is a soft ground, so its title reads '
+      'Day\'s text (spec 2026-10-10 D4)', (tester, env) async {
+    await _pump(
+      tester,
+      env,
+      summaryView(),
+      SummaryOutcome.reviewFinished,
+      brightness: Brightness.dark,
+    );
+
+    expect(
+      tester.widget<Text>(find.text(_en.summaryReviewFinished)).style?.color,
+      AppColorSchemes.light.onSurface,
+    );
   });
 
   libraryTest('left early in learning: the finished cards are kept, the rest '

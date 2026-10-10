@@ -20,11 +20,8 @@ class CardRemovableTagChipWidget extends StatelessWidget {
   final String name;
   final VoidCallback onRemove;
 
-  static const double _tint = 0.10;
-
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     // Its own node, or the tag editor's row merges every chip into one.
     return Semantics(
       container: true,
@@ -42,7 +39,7 @@ class CardRemovableTagChipWidget extends StatelessWidget {
             widthFactor: 1,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: _tint),
+                color: context.semanticColors.primarySoft,
                 borderRadius: BorderRadius.circular(AppRadius.full),
               ),
               child: ConstrainedBox(
@@ -54,7 +51,7 @@ class CardRemovableTagChipWidget extends StatelessWidget {
                   ),
                   child: IconTheme.merge(
                     data: IconThemeData(
-                      color: context.derivedColors.primaryInk,
+                      color: context.semanticColors.onPrimarySoft,
                       size: AppIconSize.inline,
                     ),
                     child: Row(

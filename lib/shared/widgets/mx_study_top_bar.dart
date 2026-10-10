@@ -41,7 +41,6 @@ class MxStudyTopBar extends StatelessWidget {
   /// Leaving mid-session is the screen's decision; this bar only reports it.
   final VoidCallback onClose;
 
-  static const double _badgeTint = 0.10;
   static const double _trackHeight = 4;
 
   /// The share of the bar's width the mode chip may take (FE-A6 P3 T1).
@@ -54,8 +53,8 @@ class MxStudyTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final accentColor = colors.primary;
-    // The badge text is ink: primaryInk on the primary tint.
-    final accentInk = context.derivedColors.primaryInk;
+    // The mode badge is the primary soft ground with its on-soft text.
+    final semantic = context.semanticColors;
     final styles = context.textStyles;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
@@ -86,7 +85,7 @@ class MxStudyTopBar extends StatelessWidget {
                     ),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: accentColor.withValues(alpha: _badgeTint),
+                        color: semantic.primarySoft,
                         borderRadius: BorderRadius.circular(AppRadius.full),
                       ),
                       child: Padding(
@@ -98,7 +97,7 @@ class MxStudyTopBar extends StatelessWidget {
                           modeLabel.toUpperCase(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: styles.studyBadge(accentInk),
+                          style: styles.studyBadge(semantic.onPrimarySoft),
                         ),
                       ),
                     ),

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -17,7 +16,7 @@ void main() {
     expect(find.byType(InkWell), findsNothing);
   });
 
-  testWidgets('tappable: fires, and focus draws the 2px primaryInk ring', (
+  testWidgets('tappable: fires, and focus draws the 2px focus ring', (
     tester,
   ) async {
     var taps = 0;
@@ -52,10 +51,7 @@ void main() {
 
     expect(
       ring.border,
-      Border.all(
-        color: MxDerivedColors.primaryInkOf(AppColorSchemes.light),
-        width: 2,
-      ),
+      Border.all(color: MxSemanticColors.light.focusRing, width: 2),
     );
   });
 

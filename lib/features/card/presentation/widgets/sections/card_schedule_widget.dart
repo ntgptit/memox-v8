@@ -161,7 +161,6 @@ class _BoxRamp extends StatelessWidget {
 
   static const double _barHeight = 6;
   static const double _currentBarHeight = 10;
-  static const double _pastAlpha = 0.4;
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +176,7 @@ class _BoxRamp extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: switch (index.compareTo(box)) {
                     0 => colors.primary,
-                    < 0 => colors.primary.withValues(alpha: _pastAlpha),
+                    < 0 => context.semanticColors.primaryTrack,
                     _ => colors.surfaceContainerHigh,
                   },
                   borderRadius: BorderRadius.circular(AppRadius.full),

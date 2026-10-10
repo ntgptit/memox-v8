@@ -9,9 +9,9 @@ import 'package:memox/features/study/presentation/widgets/sections/study_home_wo
 import '../../../support/library_harness.dart';
 
 // The "waiting" glyph follows its eyebrow in onSurfaceVariant; it no longer
-// borrows the Required ink (critique 2026-09-30 part 2, P2).
+// borrows the Required foreground (critique 2026-09-30 part 2, P2).
 void main() {
-  libraryTest('the waiting glyph is the eyebrow ink (dark)', (
+  libraryTest('the waiting glyph is the eyebrow colour (dark)', (
     tester,
     env,
   ) async {
