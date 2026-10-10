@@ -17,7 +17,7 @@ once, and the page stays open. UC-SETTINGS-001 step 4, BR-SETTINGS-005; spec
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` | Back and "Theme" (D7). |
-| Cards | `MxCard` (selected ring) + `MxRowInk` × 3 | A preview, then "System" / "Match phone", "Light" / "Always light", "Dark" / "Always dark", and a check on the chosen card. The preview paints the light and dark themes' own colours; System is split in half. Each card is one TalkBack node, "selected" when chosen. |
+| Cards | `MxCard` (selected ring) + `MxRowInk` × 3 | A preview, then "System" / "Match phone", "Light" / "Always light", "Dark" / "Always dark", and a check on the chosen card. The preview paints Indigo Day's and Indigo Night's own colours; System is split in half. Each card is one TalkBack node, "selected" when chosen. |
 | Note | `MxNote.hint` | "Applies at once — no restart, and you stay where you are.", the footnote form Language and Settings use (critique 2026-09-30 part 3a). |
 | Toast | `MxSnackbar` | "Couldn't change the theme." · Retry. The stored choice stays selected. |
 

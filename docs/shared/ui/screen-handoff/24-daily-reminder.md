@@ -63,7 +63,7 @@ turns the reminder on.
 
 ## Rulings
 
-- **Critique 2026-09-30 part 1:** the preview reads the live workload (no sample counts), and the Time row's hint stays at full ink while the row is disabled (`MxSettingsRow`).
+- **Critique 2026-09-30 part 1:** the preview reads the live workload (no sample counts), and the Time row's hint stays at full strength while the row is disabled (`MxSettingsRow`).
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the hour and minute steppers read in two digits ("07" : "05", `MxStepper` `minDigits: 2`), matching the "07:05" preview.
 - **UC-REMINDER-001 E6 (spec D8):** offMayShow is a `warning` `MxInlineBanner` with Try again, which cancels again and writes nothing; `MxInlineBanner` has no info tone.
 - **UC-REMINDER-001 E3:** a refused Change time says "Couldn't change the time. The reminder stays at {HH:mm}." and the reminder stays on.

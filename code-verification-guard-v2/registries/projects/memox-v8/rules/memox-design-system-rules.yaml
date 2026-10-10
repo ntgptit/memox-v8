@@ -267,8 +267,7 @@ rules:
 
   # A colour on a raw `Icon` is an open colour on a glyph; `MxIconTile` and
   # `MxIconButton` own the coloured glyph. A colour computed by a
-  # `….resolve(…)` call stays legal: it comes out of a theme-owned set
-  # (`MxDerivedColors.resolve`).
+  # `….resolve(…)` call stays legal: it comes out of a theme-owned set.
   - id: memox_v8.design_system.no_raw_icon_color
     type: regex
     severity: error

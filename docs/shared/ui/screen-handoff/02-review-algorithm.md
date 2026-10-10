@@ -29,7 +29,7 @@ Algorithm descriptions:
 | switching | no golden | no golden | Reached **after** the confirmation dialog (UC-DECK-002 steps 3–4). |
 | switched | no golden | no golden | Snackbar "Switched to {algorithm} · every card starts fresh". |
 | switchFailed | no golden | no golden | Danger banner with Retry (UC-DECK-002 E2). |
-| resetConfirm | `library_algorithm_reset_light.png` | `library_algorithm_reset_dark.png` | "Kept" in `statusMasteredInk` (spec A10); "the open session" only when a session is open. |
+| resetConfirm | `library_algorithm_reset_light.png` | `library_algorithm_reset_dark.png` | "Kept" in `onSuccessSoft` on the success soft ground (spec 2026-10-10); "the open session" only when a session is open. |
 | resetting | no golden | no golden | The confirm spins and Cancel is off (M3 review B2). |
 | resetDone | no golden | no golden | Then the unlocked state. |
 | nothingToLose | no golden | no golden | When `hasProgressToLose` is false (UC-SRS-001 A2). |
@@ -56,7 +56,7 @@ Beyond the states above:
 
 - **UC-DECK-002 steps 3–4:** choosing the other algorithm asks for confirmation first; it never switches on the tap.
 - **M3 review 2026-09-28 B2:** while a reset runs the confirm button spins (`MxSheetActions.isConfirmLoading`), with no "Resetting…" text, as every async confirm.
-- **Spec A10 (WCAG 2.2 AA):** "Kept" is written in `statusMasteredInk` (4.5:1) on an 8% mastery tint; over 12% the ink falls to 4.4:1.
+- **Spec A10, amended 2026-10-10:** "Kept" is written in `onSuccessSoft` (#12815A) on `successSoft` (#E6FCF4), 4.54:1, light in both themes.
 - **D-L1:** a switch refused because the tree just locked shows the locked state from the stream, with the reason as a snackbar.
 - **Critique 2026-09-30:** each algorithm is described in one sentence.
 - **Critique 2026-09-30 tone pass (final review):** the reset dialog's Kept tile is success (a fine state), Lost stays warning.

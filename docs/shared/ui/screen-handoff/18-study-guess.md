@@ -38,7 +38,7 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 
 ## Rulings
 
-- **FE-A6 spec D14 (P3 ruling C1):** the right option uses the `success` semantic (`successSoft`/`successBorder`/`successInk`); green is mastery-only.
+- **FE-A6 spec D14 (P3 ruling C1):** the right option uses the `success` semantic (`successSoft`/`successBorder`/`onSuccessSoft`); green is mastery-only.
 - **BR-STUDY-040 (P3 ruling C2):** a question that cannot be built shows "This question can't be shown", whose Close ends the session; nothing is written or skipped.
 - **P3 ruling C6:** with TalkBack on, the answered state waits on a "Next" button instead of advancing by itself.
 - **BR-STUDY-042:** before the pick the footer hint reads "Only your first pick counts".
@@ -52,7 +52,7 @@ take their tones, the rest fade, and the outcome is announced; the turn is held 
 - The outcome is announced when its write commits: "Correct", or "Wrong. The answer is {meaning}." (P3 ruling C3).
 - The options scroll with the prompt once they outgrow the screen at large text, and a soft fade over the bottom edge says more is below; each is at least 48 tall (C4).
 - A term word too wide for the prompt is drawn just small enough to stay whole; the term wraps between words and never ellipsizes (FE-A6 D19).
-- The options ease into their tones, surface and ink together (standard duration; at once under Remove animations).
+- The options ease into their tones, surface and foreground together (standard duration; at once under Remove animations).
 
 ## Copy
 

@@ -18,7 +18,7 @@ The six digits sent to the address. SB-A2; spec
 |---|---|---|
 | App bar | `MxAppBar` (content) + back | Back only, no title. |
 | Title | `screenTitle`, header semantics | "Enter the code". |
-| Lead | `emptyBody` | "We sent a 6-digit code to", then the email on its own line in the same style at `on-surface` ink, weight 600 (`emptyBodyStrong`), so a typo shows. TalkBack reads the lead and the address as one stop (`MergeSemantics`, DEV-168). |
+| Lead | `emptyBody` | "We sent a 6-digit code to", then the email on its own line in the same style at `on-surface`, weight 600 (`emptyBodyStrong`), so a typo shows. TalkBack reads the lead and the address as one stop (`MergeSemantics`, DEV-168). |
 | Code | `MxTextField` (code), `section` (24) under the lead | Six slots over one hidden field (DESIGN.md Inputs): numeric keyboard, one-time-code autofill, TalkBack "Code, 6 digits". Autofocused when the screen opens. Six digits check at once. A wrong code clears the field (plan ruling 11). |
 | Status line | 48 dp minimum, `grouped` (12) under the field | While waiting: "New code in 0:42" as a caption in `on-surface-variant` (no button). When the wait ends: "Resend code" (text button) in a polite live region, so TalkBack says it once (DEV-168); it toasts "A new code is on its way." and starts the wait again; the button spins while resending. While verifying: `MxSpinner` in this line, so nothing below moves. In a re-auth to another account with changes unsent, the resend first asks in screen 30's loss dialog (an even pair, layout balance L2); Cancel sends nothing (P3b minor M7). |
 | Hint | `MxNote.hint` | "Not there yet? Check your spam folder." |
@@ -39,7 +39,7 @@ The images are the goldens.
 |---|---|---|---|
 | waiting | ![](../../../../test/features/account/presentation/goldens/code_waiting_light.png) | ![](../../../../test/features/account/presentation/goldens/code_waiting_dark.png) | Golden `code_waiting_*`. |
 | wrong | ![](../../../../test/features/account/presentation/goldens/code_wrong_light.png) | ![](../../../../test/features/account/presentation/goldens/code_wrong_dark.png) | Golden `code_wrong_*`. |
-| verifying | — | — | The field read-only, the digits at full ink; `MxSpinner` in the status line. |
+| verifying | — | — | The field read-only, the digits at full strength; `MxSpinner` in the status line. |
 
 ## Rulings
 

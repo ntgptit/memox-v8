@@ -43,7 +43,7 @@ Continue (spec D5). Goldens:
 ## Rulings
 
 - **BR-STUDY-032, BR-STUDY-033, BR-STUDY-066:** the ending has two branches: a self-check advances by itself, a timeout waits for Continue.
-- **FE-A6 spec D14 (P4 ruling V2):** the clock's fill and caption are a neutral `onSurfaceVariant` while counting down and `warning`/`warningInk` once timed out; the top bar is Indigo (3c-2 R8).
+- **FE-A6 spec D14 (P4 ruling V2):** the clock's fill and caption are a neutral `onSurfaceVariant` while counting down and `warning`/`warningText` once timed out; the top bar is Indigo (3c-2 R8).
 - **M3 review 2026-09-28 F2:** the clock track is 4dp, the app's thin track.
 - **P2 face-label fix:** the answer face carries its "Meaning" label in flow, as every study face.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face labels and the session context line are eyebrows; the deck name keeps its case.

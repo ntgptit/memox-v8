@@ -1,22 +1,19 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-29T15:57:34.636Z",
+  "generatedAt": "2026-10-10T00:00:00.000Z",
   "title": "Design System: MemoX V8",
   "extensions": {
     "colorMeta": {
       "primary": {
         "role": "primary",
         "displayName": "Brand Indigo",
-        "canonical": "#5265F5",
-        "light": "#5265F5",
-        "dark": "#5265F5",
+        "canonical": "#4255FF",
+        "light": "#4255FF",
+        "dark": "#4255FF",
         "tonalRamp": [
-          "#1A2580",
-          "#2D346A",
-          "#5265F5",
-          "#E0E5FE"
+          "#4255FF"
         ],
-        "tonalInfo": "Derived, not stored: primary ink = primary lerped toward on-surface by 25% (light) / 45% (dark). Ghost border = primary at 14% (light) / 16% (dark). Status inks are the status colour lerped toward on-surface by 40/50/25/25% (new/learning/reviewing/mastered, light) and 40/0/10/0% (dark)."
+        "tonalInfo": "Every colour is a literal token per theme (spec 2026-10-10); nothing is derived. Text and glyphs read text tokens, focus reads focus-ring, hairlines read border, control edges read outline."
       },
       "on-primary": {
         "role": "on",
@@ -30,358 +27,347 @@
       },
       "primary-container": {
         "role": "primary",
-        "displayName": "Indigo Wash",
-        "canonical": "#E0E5FE",
-        "light": "#E0E5FE",
-        "dark": "#2D346A",
+        "displayName": "Primary Container",
+        "canonical": "#EDEFFF",
+        "light": "#EDEFFF",
+        "dark": "#14125C",
         "tonalRamp": [
-          "#2D346A",
-          "#E0E5FE"
+          "#14125C",
+          "#EDEFFF"
         ]
       },
       "on-primary-container": {
         "role": "on",
-        "displayName": "Ink on Indigo Wash",
-        "canonical": "#1A2580",
-        "light": "#1A2580",
-        "dark": "#D9DFFF",
+        "displayName": "On Primary Container",
+        "canonical": "#4255FF",
+        "light": "#4255FF",
+        "dark": "#EDEFFF",
         "tonalRamp": [
-          "#D9DFFF",
-          "#1A2580"
+          "#EDEFFF",
+          "#4255FF"
         ]
       },
       "secondary": {
         "role": "secondary",
-        "displayName": "Soft Periwinkle",
-        "canonical": "#6E7CD9",
-        "light": "#6E7CD9",
-        "dark": "#9DA8E8",
+        "displayName": "Neutral Slate",
+        "canonical": "#586380",
+        "light": "#586380",
+        "dark": "#586380",
         "tonalRamp": [
-          "#9DA8E8",
-          "#6E7CD9"
+          "#586380"
         ]
       },
       "secondary-container": {
         "role": "secondary",
-        "displayName": "Periwinkle Container",
-        "canonical": "#E3E6F7",
-        "light": "#E3E6F7",
-        "dark": "#343C78",
+        "displayName": "Slate Container",
+        "canonical": "#EDEFF4",
+        "light": "#EDEFF4",
+        "dark": "#2E3856",
         "tonalRamp": [
-          "#343C78",
-          "#E3E6F7"
+          "#2E3856",
+          "#EDEFF4"
         ]
       },
       "on-secondary-container": {
         "role": "on",
-        "displayName": "Ink on Periwinkle",
-        "canonical": "#262E6E",
-        "light": "#262E6E",
-        "dark": "#DDE2FB",
+        "displayName": "On Slate Container",
+        "canonical": "#2E3856",
+        "light": "#2E3856",
+        "dark": "#D9DDE8",
         "tonalRamp": [
-          "#DDE2FB",
-          "#262E6E"
+          "#D9DDE8",
+          "#2E3856"
         ]
       },
       "tertiary": {
         "role": "tertiary",
-        "displayName": "Meaningful Violet",
-        "canonical": "#8B6FF5",
-        "light": "#8B6FF5",
-        "dark": "#B5A0FF",
+        "displayName": "Accent Purple",
+        "canonical": "#9C63FF",
+        "light": "#9C63FF",
+        "dark": "#9C63FF",
         "tonalRamp": [
-          "#33177E",
-          "#443078",
-          "#8B6FF5",
-          "#EBE3FE"
+          "#9C63FF"
         ]
       },
       "tertiary-container": {
         "role": "tertiary",
-        "displayName": "Violet Container",
-        "canonical": "#EBE3FE",
-        "light": "#EBE3FE",
-        "dark": "#443078",
+        "displayName": "Accent Pink",
+        "canonical": "#FAA6FF",
+        "light": "#FAA6FF",
+        "dark": "#FAA6FF",
         "tonalRamp": [
-          "#443078",
-          "#EBE3FE"
+          "#FAA6FF"
         ]
       },
       "on-tertiary-container": {
         "role": "on",
-        "displayName": "Ink on Violet",
-        "canonical": "#33177E",
-        "light": "#33177E",
-        "dark": "#E6DCFF",
+        "displayName": "On Accent Pink",
+        "canonical": "#282E3E",
+        "light": "#282E3E",
+        "dark": "#282E3E",
         "tonalRamp": [
-          "#E6DCFF",
-          "#33177E"
+          "#282E3E"
         ]
       },
       "error": {
         "role": "error",
-        "displayName": "Error Ink",
-        "canonical": "#C02447",
-        "light": "#C02447",
-        "dark": "#FF8FA3",
+        "displayName": "Error",
+        "canonical": "#B00020",
+        "light": "#B00020",
+        "dark": "#FC3C60",
         "tonalRamp": [
-          "#FF8FA3",
-          "#C02447"
+          "#FC3C60",
+          "#B00020"
         ]
       },
       "error-container": {
         "role": "error",
         "displayName": "Error Container",
-        "canonical": "#FBDDE3",
-        "light": "#FBDDE3",
-        "dark": "#7A2036",
+        "canonical": "#FFE8D8",
+        "light": "#FFE8D8",
+        "dark": "#FFE8D8",
         "tonalRamp": [
-          "#7A2036",
-          "#FBDDE3"
+          "#FFE8D8"
         ]
       },
       "on-error-container": {
         "role": "on",
-        "displayName": "Ink on Error Container",
-        "canonical": "#7A0A23",
-        "light": "#7A0A23",
-        "dark": "#FFD9DF",
+        "displayName": "On Error Container",
+        "canonical": "#B00020",
+        "light": "#B00020",
+        "dark": "#B00020",
         "tonalRamp": [
-          "#FFD9DF",
-          "#7A0A23"
+          "#B00020"
         ]
       },
       "surface": {
         "role": "neutral",
-        "displayName": "Page Ground",
-        "canonical": "#F7F9FE",
-        "light": "#F7F9FE",
-        "dark": "#0A0E27",
+        "displayName": "Page",
+        "canonical": "#FFFFFF",
+        "light": "#FFFFFF",
+        "dark": "#0A092D",
         "tonalRamp": [
-          "#0A0E27",
-          "#F7F9FE"
+          "#0A092D",
+          "#FFFFFF"
         ]
       },
       "surface-bright": {
         "role": "neutral",
-        "displayName": "Bright Surface",
+        "displayName": "Surface Bright",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#232B5A",
+        "dark": "#2E3856",
         "tonalRamp": [
-          "#232B5A",
+          "#2E3856",
           "#FFFFFF"
         ]
       },
       "surface-container-lowest": {
         "role": "neutral",
-        "displayName": "Raised White",
+        "displayName": "Card",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#131A3A",
+        "dark": "#202040",
         "tonalRamp": [
-          "#131A3A",
+          "#202040",
           "#FFFFFF"
         ]
       },
       "surface-container-low": {
         "role": "neutral",
-        "displayName": "Muted Fill",
-        "canonical": "#F1F4FB",
-        "light": "#F1F4FB",
-        "dark": "#1B2249",
+        "displayName": "Surface",
+        "canonical": "#F6F7FB",
+        "light": "#F6F7FB",
+        "dark": "#2E3856",
         "tonalRamp": [
-          "#1B2249",
-          "#F1F4FB"
+          "#2E3856",
+          "#F6F7FB"
         ]
       },
       "surface-container": {
         "role": "neutral",
-        "displayName": "Container",
-        "canonical": "#E9EDF7",
-        "light": "#E9EDF7",
-        "dark": "#232B5A",
+        "displayName": "Surface",
+        "canonical": "#F6F7FB",
+        "light": "#F6F7FB",
+        "dark": "#2E3856",
         "tonalRamp": [
-          "#232B5A",
-          "#E9EDF7"
+          "#2E3856",
+          "#F6F7FB"
         ]
       },
       "surface-container-high": {
         "role": "neutral",
-        "displayName": "Sheet Ground",
-        "canonical": "#E2E7F3",
-        "light": "#E2E7F3",
-        "dark": "#2C356E",
+        "displayName": "Muted Fill",
+        "canonical": "#EDEFF4",
+        "light": "#EDEFF4",
+        "dark": "#282E3E",
         "tonalRamp": [
-          "#2C356E",
-          "#E2E7F3"
+          "#282E3E",
+          "#EDEFF4"
         ]
       },
       "surface-container-highest": {
         "role": "neutral",
-        "displayName": "Highest Container",
-        "canonical": "#DAE0EF",
-        "light": "#DAE0EF",
-        "dark": "#353D7E",
+        "displayName": "Strong Fill",
+        "canonical": "#D9DDE8",
+        "light": "#D9DDE8",
+        "dark": "#586380",
         "tonalRamp": [
-          "#353D7E",
-          "#DAE0EF"
+          "#586380",
+          "#D9DDE8"
         ]
       },
       "on-surface": {
-        "role": "neutral",
+        "role": "on",
         "displayName": "On Surface",
-        "canonical": "#0F1638",
-        "light": "#0F1638",
-        "dark": "#E4E8FA",
+        "canonical": "#282E3E",
+        "light": "#282E3E",
+        "dark": "#F6F7FB",
         "tonalRamp": [
-          "#E4E8FA",
-          "#0F1638"
+          "#F6F7FB",
+          "#282E3E"
         ]
       },
       "on-surface-variant": {
-        "role": "neutral",
-        "displayName": "Variant Ink",
-        "canonical": "#4A5278",
-        "light": "#4A5278",
-        "dark": "#A4ACD0",
+        "role": "on",
+        "displayName": "On Surface Variant",
+        "canonical": "#586380",
+        "light": "#586380",
+        "dark": "#D9DDE8",
         "tonalRamp": [
-          "#A4ACD0",
-          "#4A5278"
+          "#D9DDE8",
+          "#586380"
         ]
       },
       "outline": {
         "role": "neutral",
         "displayName": "Outline",
-        "canonical": "#7C85AB",
-        "light": "#7C85AB",
-        "dark": "#5A6BAE",
+        "canonical": "#939BB4",
+        "light": "#939BB4",
+        "dark": "#586380",
         "tonalRamp": [
-          "#5A6BAE",
-          "#7C85AB"
+          "#586380",
+          "#939BB4"
         ]
       },
       "outline-variant": {
         "role": "neutral",
         "displayName": "Outline Variant",
-        "canonical": "#C5CBE3",
-        "light": "#C5CBE3",
-        "dark": "#2A3267",
+        "canonical": "#D9DDE8",
+        "light": "#D9DDE8",
+        "dark": "#586380",
         "tonalRamp": [
-          "#2A3267",
-          "#C5CBE3"
+          "#586380",
+          "#D9DDE8"
         ]
       },
       "inverse-surface": {
         "role": "neutral",
-        "displayName": "Inverse Surface (theme-invariant)",
-        "canonical": "#34395D",
-        "light": "#34395D",
-        "dark": "#34395D",
+        "displayName": "Inverse Surface",
+        "canonical": "#1A1D28",
+        "light": "#1A1D28",
+        "dark": "#EDEFF4",
         "tonalRamp": [
-          "#34395D"
+          "#EDEFF4",
+          "#1A1D28"
         ]
       },
       "on-inverse-surface": {
-        "role": "neutral",
-        "displayName": "On Inverse Surface (theme-invariant)",
-        "canonical": "#E8EAFC",
-        "light": "#E8EAFC",
-        "dark": "#E8EAFC",
+        "role": "on",
+        "displayName": "On Inverse Surface",
+        "canonical": "#F6F7FB",
+        "light": "#F6F7FB",
+        "dark": "#282E3E",
         "tonalRamp": [
-          "#E8EAFC"
+          "#282E3E",
+          "#F6F7FB"
         ]
       },
       "inverse-primary": {
         "role": "primary",
-        "displayName": "Snackbar Action (theme-invariant)",
-        "canonical": "#A0ACFF",
-        "light": "#A0ACFF",
-        "dark": "#A0ACFF",
+        "displayName": "Toast Action",
+        "canonical": "#F6F7FB",
+        "light": "#F6F7FB",
+        "dark": "#586380",
         "tonalRamp": [
-          "#A0ACFF"
+          "#586380",
+          "#F6F7FB"
         ]
       },
       "scrim": {
         "role": "neutral",
-        "displayName": "Scrim (45% alpha behind overlays)",
-        "canonical": "#0A0E27",
-        "light": "#0A0E27",
-        "dark": "#000000",
+        "displayName": "Scrim",
+        "canonical": "#010110",
+        "light": "#010110",
+        "dark": "#010110",
         "tonalRamp": [
-          "#000000",
-          "#0A0E27"
+          "#010110"
         ]
       },
       "mastery": {
         "role": "semantic",
         "displayName": "Mastery Green",
-        "canonical": "#1F8A5B",
-        "light": "#1F8A5B",
-        "dark": "#6FE0BD",
+        "canonical": "#18AE79",
+        "light": "#18AE79",
+        "dark": "#18AE79",
         "tonalRamp": [
-          "#6FE0BD",
-          "#1F8A5B"
+          "#18AE79"
         ]
       },
       "on-mastery": {
-        "role": "semantic",
-        "displayName": "Ink on Mastery",
+        "role": "on",
+        "displayName": "On Mastery",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#11173A",
+        "dark": "#FFFFFF",
         "tonalRamp": [
-          "#11173A",
           "#FFFFFF"
         ]
       },
       "success": {
         "role": "semantic",
-        "displayName": "Success Teal",
-        "canonical": "#2BA88B",
-        "light": "#2BA88B",
-        "dark": "#6FE0BD",
+        "displayName": "Success",
+        "canonical": "#12815A",
+        "light": "#12815A",
+        "dark": "#59E8B5",
         "tonalRamp": [
-          "#6FE0BD",
-          "#2BA88B"
+          "#59E8B5",
+          "#12815A"
         ]
       },
       "warning": {
         "role": "semantic",
-        "displayName": "Warning Amber",
-        "canonical": "#F59E0B",
-        "light": "#F59E0B",
-        "dark": "#FFC658",
+        "displayName": "Warning Yellow",
+        "canonical": "#FFCD1F",
+        "light": "#FFCD1F",
+        "dark": "#FFCD1F",
         "tonalRamp": [
-          "#FFC658",
-          "#F59E0B"
+          "#FFCD1F"
         ]
       },
       "on-warning": {
-        "role": "semantic",
-        "displayName": "Ink on Warning",
-        "canonical": "#3A2A00",
-        "light": "#3A2A00",
-        "dark": "#2A1E00",
+        "role": "on",
+        "displayName": "On Warning",
+        "canonical": "#282E3E",
+        "light": "#282E3E",
+        "dark": "#282E3E",
         "tonalRamp": [
-          "#2A1E00",
-          "#3A2A00"
+          "#282E3E"
         ]
       },
       "error-fill": {
         "role": "semantic",
         "displayName": "Destructive Fill",
-        "canonical": "#DC2D4E",
-        "light": "#DC2D4E",
-        "dark": "#B0485C",
+        "canonical": "#B00020",
+        "light": "#B00020",
+        "dark": "#B00020",
         "tonalRamp": [
-          "#B0485C",
-          "#DC2D4E"
+          "#B00020"
         ]
       },
       "on-error-fill": {
-        "role": "semantic",
-        "displayName": "Ink on Destructive Fill",
+        "role": "on",
+        "displayName": "On Destructive Fill",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
         "dark": "#FFFFFF",
@@ -392,56 +378,309 @@
       "status-new": {
         "role": "semantic",
         "displayName": "Status New",
-        "canonical": "#8C95B8",
-        "light": "#8C95B8",
-        "dark": "#6B75A3",
+        "canonical": "#939BB4",
+        "light": "#939BB4",
+        "dark": "#586380",
         "tonalRamp": [
-          "#6B75A3",
-          "#8C95B8"
+          "#586380",
+          "#939BB4"
         ]
       },
       "status-learning": {
         "role": "semantic",
         "displayName": "Status Learning",
-        "canonical": "#F59E0B",
-        "light": "#F59E0B",
-        "dark": "#FFC658",
+        "canonical": "#FF983A",
+        "light": "#FF983A",
+        "dark": "#FF983A",
         "tonalRamp": [
-          "#FFC658",
-          "#F59E0B"
+          "#FF983A"
         ]
       },
       "status-reviewing": {
         "role": "semantic",
         "displayName": "Status Reviewing",
-        "canonical": "#5265F5",
-        "light": "#5265F5",
-        "dark": "#8B9AFF",
+        "canonical": "#4255FF",
+        "light": "#4255FF",
+        "dark": "#4255FF",
         "tonalRamp": [
-          "#8B9AFF",
-          "#5265F5"
+          "#4255FF"
         ]
       },
       "status-mastered": {
         "role": "semantic",
         "displayName": "Status Mastered",
-        "canonical": "#1F8A5B",
-        "light": "#1F8A5B",
-        "dark": "#6FE0BD",
+        "canonical": "#18AE79",
+        "light": "#18AE79",
+        "dark": "#18AE79",
         "tonalRamp": [
-          "#6FE0BD",
-          "#1F8A5B"
+          "#18AE79"
         ]
       },
       "streak": {
         "role": "semantic",
-        "displayName": "Streak Orange",
-        "canonical": "#F97316",
-        "light": "#F97316",
-        "dark": "#FFAE6E",
+        "displayName": "Streak",
+        "canonical": "#F6406C",
+        "light": "#F6406C",
+        "dark": "#F6406C",
         "tonalRamp": [
-          "#FFAE6E",
-          "#F97316"
+          "#F6406C"
+        ]
+      },
+      "primary-text": {
+        "role": "text",
+        "displayName": "Primary Text",
+        "canonical": "#4255FF",
+        "light": "#4255FF",
+        "dark": "#7583FF",
+        "tonalRamp": [
+          "#7583FF",
+          "#4255FF"
+        ]
+      },
+      "mastery-text": {
+        "role": "text",
+        "displayName": "Mastery Text",
+        "canonical": "#12815A",
+        "light": "#12815A",
+        "dark": "#59E8B5",
+        "tonalRamp": [
+          "#59E8B5",
+          "#12815A"
+        ]
+      },
+      "learning-text": {
+        "role": "text",
+        "displayName": "Learning Text",
+        "canonical": "#CC4E00",
+        "light": "#CC4E00",
+        "dark": "#FF983A",
+        "tonalRamp": [
+          "#FF983A",
+          "#CC4E00"
+        ]
+      },
+      "warning-text": {
+        "role": "text",
+        "displayName": "Warning Text",
+        "canonical": "#997700",
+        "light": "#997700",
+        "dark": "#FFCD1F",
+        "tonalRamp": [
+          "#FFCD1F",
+          "#997700"
+        ]
+      },
+      "focus-ring": {
+        "role": "edge",
+        "displayName": "Focus Ring",
+        "canonical": "#A8B1FF",
+        "light": "#A8B1FF",
+        "dark": "#A8B1FF",
+        "tonalRamp": [
+          "#A8B1FF"
+        ]
+      },
+      "border": {
+        "role": "edge",
+        "displayName": "Border",
+        "canonical": "#EDEFF4",
+        "light": "#EDEFF4",
+        "dark": "#282E3E",
+        "tonalRamp": [
+          "#282E3E",
+          "#EDEFF4"
+        ]
+      },
+      "primary-track": {
+        "role": "semantic",
+        "displayName": "Primary Track",
+        "canonical": "#DBDFFF",
+        "light": "#DBDFFF",
+        "dark": "#DBDFFF",
+        "tonalRamp": [
+          "#DBDFFF"
+        ]
+      },
+      "neutral-track": {
+        "role": "semantic",
+        "displayName": "Neutral Track",
+        "canonical": "#939BB4",
+        "light": "#939BB4",
+        "dark": "#939BB4",
+        "tonalRamp": [
+          "#939BB4"
+        ]
+      },
+      "primary-soft": {
+        "role": "soft",
+        "displayName": "Primary Soft",
+        "canonical": "#EDEFFF",
+        "light": "#EDEFFF",
+        "dark": "#EDEFFF",
+        "tonalRamp": [
+          "#EDEFFF"
+        ]
+      },
+      "on-primary-soft": {
+        "role": "on",
+        "displayName": "On Primary Soft",
+        "canonical": "#4255FF",
+        "light": "#4255FF",
+        "dark": "#4255FF",
+        "tonalRamp": [
+          "#4255FF"
+        ]
+      },
+      "success-soft": {
+        "role": "soft",
+        "displayName": "Success Soft",
+        "canonical": "#E6FCF4",
+        "light": "#E6FCF4",
+        "dark": "#E6FCF4",
+        "tonalRamp": [
+          "#E6FCF4"
+        ]
+      },
+      "success-border": {
+        "role": "edge",
+        "displayName": "Success Border",
+        "canonical": "#98F1D1",
+        "light": "#98F1D1",
+        "dark": "#98F1D1",
+        "tonalRamp": [
+          "#98F1D1"
+        ]
+      },
+      "on-success-soft": {
+        "role": "on",
+        "displayName": "On Success Soft",
+        "canonical": "#12815A",
+        "light": "#12815A",
+        "dark": "#12815A",
+        "tonalRamp": [
+          "#12815A"
+        ]
+      },
+      "learning-soft": {
+        "role": "soft",
+        "displayName": "Learning Soft",
+        "canonical": "#FFF6EF",
+        "light": "#FFF6EF",
+        "dark": "#FFF6EF",
+        "tonalRamp": [
+          "#FFF6EF"
+        ]
+      },
+      "learning-border": {
+        "role": "edge",
+        "displayName": "Learning Border",
+        "canonical": "#FFC38C",
+        "light": "#FFC38C",
+        "dark": "#FFC38C",
+        "tonalRamp": [
+          "#FFC38C"
+        ]
+      },
+      "on-learning-soft": {
+        "role": "on",
+        "displayName": "On Learning Soft",
+        "canonical": "#CC4E00",
+        "light": "#CC4E00",
+        "dark": "#CC4E00",
+        "tonalRamp": [
+          "#CC4E00"
+        ]
+      },
+      "warning-soft": {
+        "role": "soft",
+        "displayName": "Warning Soft",
+        "canonical": "#FFEDAB",
+        "light": "#FFEDAB",
+        "dark": "#FFEDAB",
+        "tonalRamp": [
+          "#FFEDAB"
+        ]
+      },
+      "warning-border": {
+        "role": "edge",
+        "displayName": "Warning Border",
+        "canonical": "#FFDC62",
+        "light": "#FFDC62",
+        "dark": "#FFDC62",
+        "tonalRamp": [
+          "#FFDC62"
+        ]
+      },
+      "on-warning-soft": {
+        "role": "on",
+        "displayName": "On Warning Soft",
+        "canonical": "#997700",
+        "light": "#997700",
+        "dark": "#997700",
+        "tonalRamp": [
+          "#997700"
+        ]
+      },
+      "danger-soft": {
+        "role": "soft",
+        "displayName": "Danger Soft",
+        "canonical": "#FFE8D8",
+        "light": "#FFE8D8",
+        "dark": "#FFE8D8",
+        "tonalRamp": [
+          "#FFE8D8"
+        ]
+      },
+      "danger-border": {
+        "role": "edge",
+        "displayName": "Danger Border",
+        "canonical": "#FFC38C",
+        "light": "#FFC38C",
+        "dark": "#FFC38C",
+        "tonalRamp": [
+          "#FFC38C"
+        ]
+      },
+      "on-danger-soft": {
+        "role": "on",
+        "displayName": "On Danger Soft",
+        "canonical": "#B00020",
+        "light": "#B00020",
+        "dark": "#B00020",
+        "tonalRamp": [
+          "#B00020"
+        ]
+      },
+      "neutral-soft": {
+        "role": "soft",
+        "displayName": "Neutral Soft",
+        "canonical": "#EDEFFF",
+        "light": "#EDEFFF",
+        "dark": "#586380",
+        "tonalRamp": [
+          "#586380",
+          "#EDEFFF"
+        ]
+      },
+      "on-neutral-soft": {
+        "role": "on",
+        "displayName": "On Neutral Soft",
+        "canonical": "#2E3856",
+        "light": "#2E3856",
+        "dark": "#F6F7FB",
+        "tonalRamp": [
+          "#F6F7FB",
+          "#2E3856"
+        ]
+      },
+      "on-soft": {
+        "role": "on",
+        "displayName": "On Soft",
+        "canonical": "#282E3E",
+        "light": "#282E3E",
+        "dark": "#282E3E",
+        "tonalRamp": [
+          "#282E3E"
         ]
       }
     },
@@ -486,22 +725,22 @@
     "shadows": [
       {
         "name": "whisper",
-        "value": "light: 0 1px 2px rgba(15,22,56,0.04); dark: none (ghost border)",
+        "value": "light: 0 1px 2px rgba(40,46,62,0.04); dark: none (the border hairline)",
         "purpose": "Card, toggle thumb."
       },
       {
         "name": "chrome",
-        "value": "light: 0 -2px 12px rgba(15,22,56,0.05); dark: 0 -2px 14px rgba(0,0,0,0.36)",
+        "value": "light: 0 -2px 12px rgba(40,46,62,0.05); dark: 0 -2px 14px rgba(40,46,62,0.36)",
         "purpose": "Bottom sheet and bottom chrome, cast upward."
       },
       {
         "name": "overlay",
-        "value": "light: 0 12px 32px rgba(15,22,56,0.10); dark: 0 16px 40px rgba(0,0,0,0.42)",
+        "value": "light: 0 12px 32px rgba(40,46,62,0.10); dark: 0 16px 40px rgba(40,46,62,0.42)",
         "purpose": "Dialog."
       },
       {
         "name": "fab",
-        "value": "light: 0 8px 24px rgba(15,22,56,0.12); dark: 0 10px 28px rgba(0,0,0,0.5)",
+        "value": "light: 0 8px 24px rgba(40,46,62,0.12); dark: 0 10px 28px rgba(40,46,62,0.5)",
         "purpose": "Floating action."
       }
     ],
@@ -560,7 +799,7 @@
       "refersTo": "button-primary",
       "description": "The one indigo action per decision. 48 tall, r12; pressed overlay 12%; disabled 0.38 opacity.",
       "html": "<button class=\"ds-btn-primary\">Start session</button>",
-      "css": ".ds-btn-primary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#5265F5;color:#FFFFFF;} .ds-btn-primary:active{filter:brightness(0.88)} .ds-btn-primary:focus-visible{outline:2px solid #4151C6;outline-offset:2px}"
+      "css": ".ds-btn-primary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#4255FF;color:#FFFFFF;} .ds-btn-primary:active{filter:brightness(0.88)} .ds-btn-primary:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
     },
     {
       "name": "Secondary Button",
@@ -568,15 +807,15 @@
       "refersTo": "button-secondary",
       "description": "Quiet alternative on a container fill.",
       "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
-      "css": ".ds-btn-secondary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#E9EDF7;color:#0F1638;} .ds-btn-secondary:active{filter:brightness(0.88)} .ds-btn-secondary:focus-visible{outline:2px solid #4151C6;outline-offset:2px}"
+      "css": ".ds-btn-secondary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#F6F7FB;color:#282E3E;} .ds-btn-secondary:active{filter:brightness(0.88)} .ds-btn-secondary:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
     },
     {
       "name": "Outline Button",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "Ghost action in primary ink with a 1px outlineEdge: outline-variant in light, outline pulled 25% toward on-surface in dark (critique 2026-09-30 part 1).",
+      "description": "Ghost action in primary-text with a 1px outline edge.",
       "html": "<button class=\"ds-btn-outline\">Edit deck</button>",
-      "css": ".ds-btn-outline{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:transparent;color:#4151C6;box-shadow:inset 0 0 0 1px #C5CBE3;} .ds-btn-outline:active{filter:brightness(0.88)} .ds-btn-outline:focus-visible{outline:2px solid #4151C6;outline-offset:2px}"
+      "css": ".ds-btn-outline{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:transparent;color:#4255FF;box-shadow:inset 0 0 0 1px #D9DDE8;} .ds-btn-outline:active{filter:brightness(0.88)} .ds-btn-outline:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
     },
     {
       "name": "Destructive Button",
@@ -584,31 +823,31 @@
       "refersTo": "button-destructive",
       "description": "Solid destructive fill, used only to confirm a destructive dialog.",
       "html": "<button class=\"ds-btn-danger\">Delete</button>",
-      "css": ".ds-btn-danger{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#DC2D4E;color:#FFFFFF;} .ds-btn-danger:active{filter:brightness(0.88)} .ds-btn-danger:focus-visible{outline:2px solid #4151C6;outline-offset:2px}"
+      "css": ".ds-btn-danger{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#B00020;color:#FFFFFF;} .ds-btn-danger:active{filter:brightness(0.88)} .ds-btn-danger:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
     },
     {
       "name": "Text Field",
       "kind": "input",
       "refersTo": "text-field",
-      "description": "52 tall, muted fill that lightens on focus, ghost edge, primary-ink edge on focus, error edge with a message below.",
+      "description": "52 tall, muted fill that lightens on focus, outline edge at rest, focus-ring edge on focus, error edge with a message below.",
       "html": "<input class=\"ds-input\" placeholder=\"Term\">",
-      "css": ".ds-input{box-sizing:border-box;height:52px;padding:0 12px;width:260px;font:400 14px \"Plus Jakarta Sans\",sans-serif;color:#0F1638;background:#F1F4FB;border:1px solid rgba(82,101,245,0.14);border-radius:12px;outline:none} .ds-input::placeholder{color:#4A5278} .ds-input:focus-visible{background:#FFFFFF;border-color:#4151C6}"
+      "css": ".ds-input{box-sizing:border-box;height:52px;padding:0 12px;width:260px;font:400 14px \"Plus Jakarta Sans\",sans-serif;color:#282E3E;background:#F6F7FB;border:1px solid #EDEFF4;border-radius:12px;outline:none} .ds-input::placeholder{color:#586380} .ds-input:focus-visible{background:#FFFFFF;border-color:#A8B1FF}"
     },
     {
       "name": "Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "Raised surface, r12, whisper shadow in light (dark: 1px ghost edge, no shadow). Interior 20.",
+      "description": "Raised surface, r12, the 1px border hairline in both themes, whisper shadow in light. Interior 20.",
       "html": "<div class=\"ds-card\"><strong>Spanish basics</strong><p>42 cards</p></div>",
-      "css": ".ds-card{padding:20px;width:240px;background:#FFFFFF;border-radius:12px;box-shadow:0 1px 2px rgba(15,22,56,0.04);font:400 14px/1.5 \"Plus Jakarta Sans\",sans-serif;color:#0F1638} .ds-card strong{font:500 16px/1.5 \"Plus Jakarta Sans\",sans-serif} .ds-card p{margin:0;color:#4A5278}"
+      "css": ".ds-card{padding:20px;width:240px;background:#FFFFFF;border-radius:12px;box-shadow:0 1px 2px rgba(40,46,62,0.04);font:400 14px/1.5 \"Plus Jakarta Sans\",sans-serif;color:#282E3E} .ds-card strong{font:500 16px/1.5 \"Plus Jakarta Sans\",sans-serif} .ds-card p{margin:0;color:#586380}"
     },
     {
       "name": "Filter Chip",
       "kind": "chip",
       "refersTo": "filter-chip",
-      "description": "28 tall pill; selected swaps fill to primary and ink to on-primary.",
+      "description": "28 tall pill; selected swaps fill to primary and text to on-primary.",
       "html": "<span class=\"ds-chip\">All</span> <span class=\"ds-chip ds-chip-on\">Cards</span>",
-      "css": ".ds-chip{display:inline-flex;align-items:center;height:28px;padding:0 8px;border-radius:999px;background:#FFFFFF;color:#0F1638;box-shadow:inset 0 0 0 1px rgba(82,101,245,0.14);font:600 12px \"Plus Jakarta Sans\",sans-serif;letter-spacing:0.1px} .ds-chip-on{background:#5265F5;color:#FFFFFF;box-shadow:none}"
+      "css": ".ds-chip{display:inline-flex;align-items:center;height:28px;padding:0 8px;border-radius:999px;background:#FFFFFF;color:#282E3E;box-shadow:inset 0 0 0 1px #EDEFF4;font:600 12px \"Plus Jakarta Sans\",sans-serif;letter-spacing:0.1px} .ds-chip-on{background:#4255FF;color:#FFFFFF;box-shadow:none}"
     },
     {
       "name": "Floating Action Button",
@@ -616,18 +855,18 @@
       "refersTo": "fab",
       "description": "Square 52, r16, icon only, fab shadow.",
       "html": "<button class=\"ds-fab\" aria-label=\"Add\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></button>",
-      "css": ".ds-fab{width:52px;height:52px;border:0;border-radius:16px;background:#5265F5;box-shadow:0 8px 24px rgba(15,22,56,0.12);display:grid;place-items:center} .ds-fab:focus-visible{outline:2px solid #4151C6;outline-offset:2px}"
+      "css": ".ds-fab{width:52px;height:52px;border:0;border-radius:16px;background:#4255FF;box-shadow:0 8px 24px rgba(40,46,62,0.12);display:grid;place-items:center} .ds-fab:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
     }
   ],
   "narrative": {
     "northStar": "The Quiet Study Desk",
-    "overview": "MemoX should feel like a quiet, focused study space. Two themes from one structure: Tokyo Pure Light and Tokyo Nebula. Component philosophy: \"Calm and exact\".",
+    "overview": "MemoX should feel like a quiet, focused study space. Two themes from one structure: Indigo Day and Indigo Night. Component philosophy: \"Calm and exact\".",
     "keyCharacteristics": [
       "One sans family (Plus Jakarta Sans), seven roles, tight-tracked for headings and figures.",
-      "Tonal surfaces plus a 1px ghost hairline; shadows are neutral and whisper-quiet.",
+      "Tonal surfaces plus a 1px border hairline; shadows are whisper-quiet.",
       "One radius (12) for every in-flow surface; larger radii only for surfaces that float.",
       "Phone-first, 16dp gutter, single content column, 48dp touch targets everywhere.",
-      "Every text and edge colour is contrast-tested (AA) in both themes."
+      "Every text and edge colour is contrast-tested in both themes; the pairs below AA are recorded exceptions."
     ],
     "rules": [
       {
@@ -641,13 +880,13 @@
         "section": "colors"
       },
       {
-        "name": "The Ink Is Not The Fill Rule",
-        "body": "Text, icons and focus rings use the derived ink, never the fill colour.",
+        "name": "The Text Token Rule",
+        "body": "Text and glyphs read a text token, never a fill; focus reads focus-ring, a control edge outline, a hairline border. No colour is derived from another.",
         "section": "colors"
       },
       {
         "name": "The Contrast Floor Rule",
-        "body": "Text and glyphs hold 4.5:1 and non-text hold 3:1 on page, row, low and sheet grounds, in both themes.",
+        "body": "Text holds 4.5:1 and non-text 3:1 where the palette allows; the palette is fixed (owner 2026-10-10) and the pairs below the floor are the exceptions token_contrast_test lists.",
         "section": "colors"
       },
       {
@@ -672,22 +911,22 @@
       },
       {
         "name": "The Hairline Before Shadow Rule",
-        "body": "Group with tone and a 1px ghost edge first; shadows only for floating surfaces.",
+        "body": "Group with tone and the 1px border hairline first; shadows only for floating surfaces.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do use primary for exactly one primary action per decision and the derived primary ink for any indigo text, icon or focus ring.",
+      "Do use primary for exactly one primary action per decision, primary-text for indigo text and glyphs, and focus-ring for focus.",
       "Do keep text at 4.5:1 and non-text edges, thumbs and fills at 3:1 on every surface, in both themes.",
       "Do guarantee a 48x48dp touch area on every interactive element, and let text containers grow.",
       "Do write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.",
       "Do use mastery and success green only for mastery and success, and route mastery fills through MasteryRamp.",
-      "Do separate groups with tone and a 1px ghost hairline first.",
+      "Do separate groups with tone and the 1px border hairline first.",
       "Do use 12 for every in-flow surface and the defined spacing steps.",
       "Do centre content at a 720dp maximum column and switch to the navigation rail from 600dp."
     ],
     "donts": [
-      "Don't use a fill colour as text; use its ink.",
+      "Don't use a fill colour as text; use its text token.",
       "Don't use violet or green as decoration, or green for anything but progress and success.",
       "Don't tint shadows with the brand colour, or add elevation where a hairline groups content.",
       "Don't add hover states or a global text style for one component.",

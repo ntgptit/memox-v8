@@ -46,11 +46,11 @@ card?") when leaving a dirty new-card form without saving.
 
 - **DEV-169 (owner 2026-10-05):** every card field (term, meaning, example, hint, pronunciation) is the app's form field: muted fill that lightens on focus, r12, 12 padding, 52 floor, the body role. The footer pair shares the row 1 : 1 like every footer pair.
 - **§9 row 81 (P4a-L7):** the deck chip is not a picker, so a deck that rejects cards says "This deck can't take cards now." / "It now holds sub-decks." with no "choose another deck".
-- **§9 row 101:** "Add details" has a solid edge, 48 tall (touch floor); the edge is Outline Edge, as the fields beside it (DEV-166, was `outlineVariant` at about 1.5:1).
+- **§9 row 101:** "Add details" has a solid edge, 48 tall (touch floor); the edge is the outline, as the fields beside it (DEV-166, was `outlineVariant` at about 1.5:1).
 - **§9 row 81 (P4a-L8):** "Add tag" is an outline `MxButton` chip; there is no dashed-border token.
 - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persistent header.
 - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spinner; the words live only in the caption line.
-- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in primary ink beside them; Optional details stays a section label.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in `primaryText` beside them; Optional details stays a section label.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the tag field has an "Add" button (`cardTagConfirm`) beside it, enabled while the field holds text; Done or Add adds the tag through the same checks (BR-TAG-001, BR-TAG-002); Save first adds the tag still typed, and an invalid one shows its error and saves nothing; "Save and add another" clears the tag field with the rest of the form.
 
 ## Copy
