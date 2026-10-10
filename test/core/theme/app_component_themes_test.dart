@@ -124,12 +124,15 @@ void main() {
           tester,
           IconButton(onPressed: () {}, icon: const Icon(Icons.close)),
         );
-        final ink = find.descendant(
+        final foreground = find.descendant(
           of: find.byType(IconButton),
           matching: find.byType(Material),
         );
-        expect(tester.getSize(ink.first), const Size.square(36));
-        expect(tester.widget<Material>(ink.first).shape, isA<CircleBorder>());
+        expect(tester.getSize(foreground.first), const Size.square(36));
+        expect(
+          tester.widget<Material>(foreground.first).shape,
+          isA<CircleBorder>(),
+        );
         expect(tester.getSize(find.byType(IconButton)), const Size.square(48));
       });
 
@@ -235,7 +238,7 @@ void main() {
         );
       });
 
-      testWidgets('disabled buttons dim whole: ink, fill and edge', (
+      testWidgets('disabled buttons dim whole: foreground, fill and edge', (
         tester,
       ) async {
         await pump(

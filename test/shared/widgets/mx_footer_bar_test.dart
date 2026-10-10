@@ -57,7 +57,7 @@ void main() {
     );
   });
 
-  testWidgets('the caption sits under the action, centred at full ink', (
+  testWidgets('the caption sits under the action, centred at full strength', (
     tester,
   ) async {
     await pumpMx(

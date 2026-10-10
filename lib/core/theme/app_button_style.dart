@@ -4,12 +4,12 @@ import 'package:memox/core/theme/foundations/app_stroke.dart';
 
 /// The ButtonStyle every text-labelled control shares: the Mx widgets and the
 /// theme's Material buttons (spec §4.6). It has one fill and
-/// one ink for every state; dimming a disabled control is the caller's 0.38
+/// one foreground for every state; dimming a disabled control is the caller's 0.38
 /// Opacity. It also sets the 0.12 pressed overlay, the focus ring on the
 /// control's edge (ruling R5), and a painted [height] inside a 48 touch area.
 ButtonStyle appButtonStyle({
   required Color? fill,
-  required Color ink,
+  required Color foreground,
   required BorderSide edge,
   required Color focusColor,
   required double height,
@@ -20,10 +20,10 @@ ButtonStyle appButtonStyle({
   final focusRing = BorderSide(color: focusColor, width: AppStroke.focus);
   return ButtonStyle(
     backgroundColor: WidgetStatePropertyAll(fill),
-    foregroundColor: WidgetStatePropertyAll(ink),
+    foregroundColor: WidgetStatePropertyAll(foreground),
     overlayColor: WidgetStateProperty.resolveWith(
       (states) => states.contains(WidgetState.pressed)
-          ? ink.withValues(alpha: AppOpacity.pressed)
+          ? foreground.withValues(alpha: AppOpacity.pressed)
           : null,
     ),
     side: WidgetStateProperty.resolveWith(

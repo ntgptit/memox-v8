@@ -68,7 +68,7 @@ void main() {
     expect(find.text(_en.cardMoreTags(2)), findsOneWidget);
     expect(find.text(_en.cardDueOverdue(30)), findsOneWidget);
     expect(find.byIcon(Icons.flag), findsOneWidget);
-    // The flag is plain ink, as in the editor and the detail; the filled
+    // The flag is plain foreground, as in the editor and the detail; the filled
     // glyph carries the state (critique 2026-10-02, F6).
     final flag = tester.element(find.byIcon(Icons.flag));
     expect(IconTheme.of(flag).color, flag.colors.onSurface);

@@ -205,7 +205,7 @@ void main() {
     );
   });
 
-  testWidgets('a disabled row keeps its subtitle at full ink and dims its '
+  testWidgets('a disabled row keeps its subtitle at full strength and dims its '
       'leading, title and chevron (DEV-230)', (tester) async {
     await pumpMx(
       tester,
@@ -243,7 +243,7 @@ void main() {
     }
   });
 
-  testWidgets('a disabled row keeps its meta at full ink (DEV-230)', (
+  testWidgets('a disabled row keeps its meta at full strength (DEV-230)', (
     tester,
   ) async {
     await pumpMx(

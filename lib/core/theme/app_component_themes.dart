@@ -70,7 +70,7 @@ abstract final class AppComponentThemes {
   }) {
     final style = appButtonStyle(
       fill: fill,
-      ink: foreground,
+      foreground: foreground,
       edge: edge,
       focusColor: semantic.focusRing,
       height: AppSize.buttonRegular,

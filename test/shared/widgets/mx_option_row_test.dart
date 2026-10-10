@@ -155,7 +155,9 @@ void main() {
     );
   });
 
-  testWidgets('a dimmed row keeps its description at full ink', (tester) async {
+  testWidgets('a dimmed row keeps its description at full strength', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const MxOptionRow(

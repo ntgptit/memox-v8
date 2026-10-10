@@ -437,23 +437,24 @@ void main() {
   });
 
   libraryTest('a tile keeps its content in place as its tone changes, and '
-      'its ink eases with its surface (Impeccable after P3)', (
+      'its foreground eases with its surface (Impeccable after P3)', (
     tester,
     env,
   ) async {
     final id = await _match(env);
     await pumpLibraryScreen(tester, env, _screen(id));
     final before = tester.getRect(find.text('term 1'));
-    Color inkOf() => tester.widget<Text>(find.text('term 1')).style!.color!;
-    final idleInk = inkOf();
+    Color foregroundOf() =>
+        tester.widget<Text>(find.text('term 1')).style!.color!;
+    final idleForeground = foregroundOf();
 
     await tester.tap(find.text('term 1'));
     await tester.pump();
     await tester.pump(AppDurations.standard ~/ 2);
-    final midInk = inkOf();
+    final midForeground = foregroundOf();
     await tester.pumpAndSettle();
 
     expect(tester.getRect(find.text('term 1')), before);
-    expect(midInk, isNot(anyOf(idleInk, inkOf())));
+    expect(midForeground, isNot(anyOf(idleForeground, foregroundOf())));
   });
 }

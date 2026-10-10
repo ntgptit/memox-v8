@@ -7,9 +7,9 @@ import '../../../support/library_harness.dart';
 import '../../../support/progress_screen_fixtures.dart';
 
 // Screen 22's bars use colours that hold 3:1 on the card (critique
-// 2026-10-02, F5): learning in its ink, reviewing in primary.
+// 2026-10-02, F5): learning in its colour, reviewing in primary.
 void main() {
-  libraryTest('the learning series is the learning ink', (tester, env) async {
+  libraryTest('the learning series is the learning fill', (tester, env) async {
     await progressLibrary(env);
     await pumpLibraryScreen(
       tester,

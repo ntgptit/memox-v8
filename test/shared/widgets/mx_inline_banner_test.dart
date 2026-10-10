@@ -206,7 +206,7 @@ void main() {
 
   testWidgets('the title reads its tone\'s on-soft token; the message reads '
       'Day\'s banner style, in Night too (spec 2026-10-10 D4)', (tester) async {
-    for (final (tone, ink) in [
+    for (final (tone, foreground) in [
       (MxBannerTone.warning, semantic.onWarningSoft),
       (MxBannerTone.danger, semantic.onDangerSoft),
     ]) {
@@ -216,7 +216,7 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text('Title')).style!.color,
-        ink,
+        foreground,
         reason: '$tone',
       );
       await pumpMx(

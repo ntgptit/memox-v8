@@ -72,7 +72,7 @@ void main() {
         expect(theme.tooltipTheme.textStyle!.fontSize, 12);
       });
 
-      test('$name text ink is onSurface', () {
+      test('$name text colour is onSurface', () {
         expect(theme.textTheme.bodyMedium!.color, scheme.onSurface);
       });
     }

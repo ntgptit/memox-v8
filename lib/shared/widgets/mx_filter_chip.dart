@@ -39,7 +39,7 @@ class MxFilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final styles = context.textStyles;
-    final ink = isSelected ? colors.onPrimary : colors.onSurface;
+    final foreground = isSelected ? colors.onPrimary : colors.onSurface;
     final select = onSelected;
     final chip = MergeSemantics(
       child: Semantics(
@@ -48,7 +48,7 @@ class MxFilterChip extends StatelessWidget {
           onPressed: select == null ? null : () => select(!isSelected),
           style: appButtonStyle(
             fill: isSelected ? colors.primary : colors.surfaceContainerLowest,
-            ink: ink,
+            foreground: foreground,
             edge: isSelected
                 ? BorderSide.none
                 : BorderSide(
@@ -80,11 +80,11 @@ class MxFilterChip extends StatelessWidget {
                 Text(
                   value.toString(),
                   // On the primary fill even full white is only 4.77:1, so
-                  // the selected count keeps the label's ink (SW-REV-001).
+                  // the selected count keeps the label's foreground (SW-REV-001).
                   style: styles.chipCount(
                     isSelected
-                        ? ink
-                        : ink.withValues(alpha: _countOpacityResting),
+                        ? foreground
+                        : foreground.withValues(alpha: _countOpacityResting),
                   ),
                 ),
             ],

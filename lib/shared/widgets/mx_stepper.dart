@@ -335,7 +335,7 @@ class _StepButtonState extends State<_StepButton> {
           style:
               appButtonStyle(
                 fill: colors.surfaceContainer,
-                ink: colors.onSurface,
+                foreground: colors.onSurface,
                 edge: BorderSide.none,
                 focusColor: context.semanticColors.focusRing,
                 height: AppSize.buttonSmall,

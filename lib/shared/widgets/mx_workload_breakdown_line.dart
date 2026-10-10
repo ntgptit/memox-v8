@@ -58,7 +58,7 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
 
   /// Learned cards resting until they fall due (BR-STUDY-068): a fourth,
   /// muted term after New, drawn only with [scheduledLabel]. It is the
-  /// schedule running, so it takes no warning ink and no headline.
+  /// schedule running, so it takes no warning foreground and no headline.
   final int scheduledCount;
   final String Function(int count)? scheduledLabel;
 
@@ -73,7 +73,7 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
   /// shows.
   final bool shouldKeepZeroTerms;
 
-  /// Leads each of the three terms with its own glyph in the term's ink, so
+  /// Leads each of the three terms with its own glyph in the term's foreground, so
   /// colour is never the only signal (BR-STUDY-076). Each term, its glyph
   /// and its dot then wrap as one unit, and the line is read as its words
   /// alone: the glyphs are decorative.
@@ -122,12 +122,15 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
         style: styles.workloadText,
         children: [
           if (isFallbackShown) TextSpan(text: fallback),
-          for (final (index, (count, label, ink, _)) in terms.indexed) ...[
+          for (final (index, (count, label, foreground, _))
+              in terms.indexed) ...[
             if (index > 0 || isFallbackShown)
               TextSpan(text: canWrap ? _gluedSeparator : _separator),
             TextSpan(
               text: _termText(label(count)),
-              style: count > 0 ? styles.workloadTerm(ink) : styles.workloadText,
+              style: count > 0
+                  ? styles.workloadTerm(foreground)
+                  : styles.workloadText,
             ),
           ],
           if (suffix case final clause?) ...[
@@ -167,7 +170,8 @@ class _GlyphStatement extends StatelessWidget {
         spacing: AppSpacing.micro,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          for (final (index, (count, label, ink, glyph)) in terms.indexed)
+          for (final (index, (count, label, foreground, glyph))
+              in terms.indexed)
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -175,7 +179,7 @@ class _GlyphStatement extends StatelessWidget {
                   Icon(
                     icon,
                     size: AppIconSize.inline,
-                    color: count > 0 ? ink : muted,
+                    color: count > 0 ? foreground : muted,
                   ),
                   const SizedBox(width: AppSpacing.micro),
                 ],
@@ -186,7 +190,9 @@ class _GlyphStatement extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: label(count),
-                          style: count > 0 ? styles.workloadTerm(ink) : null,
+                          style: count > 0
+                              ? styles.workloadTerm(foreground)
+                              : null,
                         ),
                         if (index < terms.length - 1)
                           const TextSpan(

@@ -42,7 +42,7 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
     snackBarTheme: AppComponentThemes.snackbars(scheme, semantic, texts),
     tooltipTheme: AppComponentThemes.tooltips(scheme, texts),
     // InkWell rows (MxRowInk, MxOptionRow, the tray, the nav) press in the
-    // theme's ink at the buttons' 12% overlay, not Material's grey
+    // theme's foreground at the buttons' 12% overlay, not Material's grey
     // (SW-REV-007).
     splashColor: scheme.onSurface.withValues(alpha: AppOpacity.pressed),
     highlightColor: scheme.onSurface.withValues(alpha: AppOpacity.pressed),

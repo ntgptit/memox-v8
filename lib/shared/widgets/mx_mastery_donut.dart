@@ -38,7 +38,7 @@ class MxMasteryDonut extends StatelessWidget {
     // text token (SW-REV-001). Ruling S10: 0% falls in the lowest band.
     final fill =
         MasteryRamp.fill(semantic, fraction) ?? semantic.statusLearning;
-    final ink = MasteryRamp.label(semantic, fraction);
+    final foreground = MasteryRamp.label(semantic, fraction);
     final percent = NumberFormat.percentPattern(
       Localizations.localeOf(context).toString(),
     ).format(MasteryRamp.percent(fraction) / 100);
@@ -56,7 +56,10 @@ class MxMasteryDonut extends StatelessWidget {
             dimension: _innerDiameter,
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text(percent, style: context.textStyles.donutLabel(ink)),
+              child: Text(
+                percent,
+                style: context.textStyles.donutLabel(foreground),
+              ),
             ),
           ),
         ),

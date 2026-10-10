@@ -11,7 +11,7 @@ const String trashSidesSeparator = ' · ';
 /// Between the names of the entries a blocked purge still holds.
 const String trashNamesSeparator = ', ';
 
-/// Under this much time left, the row says so in the warning ink (kit 06).
+/// Under this much time left, the row says so in the warning foreground (kit 06).
 const Duration trashExpiringSoon = Duration(days: 3);
 
 /// The entry as the person knows it: a deck's name, a card's two sides.

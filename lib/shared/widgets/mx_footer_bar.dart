@@ -9,7 +9,7 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 /// itself; call sites never re-declare it. The caption steps aside while
 /// the keyboard is up.
 ///
-/// The caption sits at full ink: it can carry a reason, such as the offline
+/// The caption sits at full strength: it can carry a reason, such as the offline
 /// note (Contrast Floor Rule).
 class MxFooterBar extends StatelessWidget {
   const MxFooterBar({super.key, required this.child, this.caption});

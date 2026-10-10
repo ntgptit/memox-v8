@@ -56,7 +56,7 @@ void main() {
   });
 
   testWidgets('the hint form is a footnote: no fill, no border, the glyph and '
-      'text in the secondary ink (critique 2026-09-30)', (tester) async {
+      'text in the secondary text (critique 2026-09-30)', (tester) async {
     await pumpMx(
       tester,
       const SizedBox(width: 328, child: MxNote.hint(text: _rule)),

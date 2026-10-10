@@ -432,7 +432,7 @@ void main() {
       tester.widget<Text>(waiting).style,
       tester.element(waiting).textStyles.eyebrow,
     );
-    // The glyph follows the eyebrow, not the Required ink.
+    // The glyph follows the eyebrow, not the Required foreground.
     final glyph = find
         .descendant(
           of: find.byType(StudyHomeWorkloadWidget),

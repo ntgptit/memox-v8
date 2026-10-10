@@ -210,12 +210,12 @@ class _MergePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final note = context.textStyles.noteText;
-    final ink = context.semanticColors.warningText;
+    final foreground = context.semanticColors.warningText;
     return MxCard(
       isWarning: true,
-      // The panel's glyphs take the warning ink.
+      // The panel's glyphs take the warning foreground.
       child: IconTheme.merge(
-        data: IconThemeData(color: ink),
+        data: IconThemeData(color: foreground),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: AppSpacing.control,

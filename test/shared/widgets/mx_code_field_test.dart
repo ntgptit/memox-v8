@@ -148,7 +148,9 @@ void main() {
     expect(edgeOf(1).top.width, 1);
   });
 
-  testWidgets('a read-only code keeps its digits at full ink', (tester) async {
+  testWidgets('a read-only code keeps its digits at full strength', (
+    tester,
+  ) async {
     final controller = TextEditingController(text: '123456');
     addTearDown(controller.dispose);
     await pumpMx(

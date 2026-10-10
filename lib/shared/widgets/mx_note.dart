@@ -25,7 +25,7 @@ class MxNote extends StatelessWidget {
          'a dismissible note names its close button',
        );
 
-  /// A footnote: the glyph and text in the secondary ink, no box.
+  /// A footnote: the glyph and text in the secondary foreground, no box.
   const MxNote.hint({super.key, required this.text, this.icon = AppIcons.info})
     : isHint = true,
       onDismiss = null,

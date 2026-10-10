@@ -234,7 +234,7 @@ void main() {
           tone: StudyChoiceTone.idle,
           isFaded: true,
           semanticsLabel: 'a',
-          builder: (ink) => const Text('a'),
+          builder: (foreground) => const Text('a'),
         ),
       ),
     );

@@ -41,7 +41,7 @@ void main() {
     }
   });
 
-  testWidgets('tones paint their fill, ink and edge', (tester) async {
+  testWidgets('tones paint their fill, foreground and edge', (tester) async {
     final expected = {
       MxButtonTone.primary: (scheme.primary, scheme.onPrimary, BorderSide.none),
       MxButtonTone.secondary: (
@@ -55,18 +55,18 @@ void main() {
         BorderSide.none,
       ),
     };
-    for (final MapEntry(key: tone, value: (fill, ink, edge))
+    for (final MapEntry(key: tone, value: (fill, foreground, edge))
         in expected.entries) {
       await pumpMx(tester, MxButton(label: 'Go', tone: tone, onPressed: () {}));
       final material = _material(tester);
 
       expect(material.color, fill, reason: '$tone');
-      expect(material.textStyle!.color, ink, reason: '$tone');
+      expect(material.textStyle!.color, foreground, reason: '$tone');
       expect((material.shape! as RoundedRectangleBorder).side, edge);
     }
   });
 
-  testWidgets('dangerSoft paints the soft danger tint with the error ink '
+  testWidgets('dangerSoft paints the soft danger tint with the error colour '
       '(FE-A6 P2, screen 16a)', (tester) async {
     final derived = MxSemanticColors.light;
     await pumpMx(
@@ -83,26 +83,29 @@ void main() {
     );
   });
 
-  testWidgets('warning paints the warning role with its ink, above 4.5:1 in '
-      'both themes (spec D15)', (tester) async {
-    await pumpMx(
-      tester,
-      MxButton(label: 'Merge', tone: MxButtonTone.warning, onPressed: () {}),
-    );
-    final material = _material(tester);
-
-    expect(material.color, MxSemanticColors.light.warning);
-    expect(material.textStyle!.color, MxSemanticColors.light.onWarning);
-    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
-    for (final colors in [MxSemanticColors.light, MxSemanticColors.dark]) {
-      expect(
-        _ratio(colors.warning, colors.onWarning),
-        greaterThanOrEqualTo(4.5),
+  testWidgets(
+    'warning paints the warning role with its foreground, above 4.5:1 in '
+    'both themes (spec D15)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        MxButton(label: 'Merge', tone: MxButtonTone.warning, onPressed: () {}),
       );
-    }
-  });
+      final material = _material(tester);
 
-  testWidgets('a detail line sits under the label in the button ink '
+      expect(material.color, MxSemanticColors.light.warning);
+      expect(material.textStyle!.color, MxSemanticColors.light.onWarning);
+      expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
+      for (final colors in [MxSemanticColors.light, MxSemanticColors.dark]) {
+        expect(
+          _ratio(colors.warning, colors.onWarning),
+          greaterThanOrEqualTo(4.5),
+        );
+      }
+    },
+  );
+
+  testWidgets('a detail line sits under the label in the button foreground '
       '(FE-A6 P2, screen 16a)', (tester) async {
     await pumpMx(
       tester,

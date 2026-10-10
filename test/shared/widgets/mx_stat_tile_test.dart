@@ -20,8 +20,8 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('primary takes the primary ink, muted the variant ink, plain '
-      'the surface ink', (tester) async {
+  testWidgets('primary takes the primary text, muted the variant text, plain '
+      'the surface text', (tester) async {
     await pumpMx(
       tester,
       const Column(
@@ -40,13 +40,13 @@ void main() {
         ],
       ),
     );
-    Color? ink(String value) =>
+    Color? foreground(String value) =>
         tester.widget<Text>(find.text(value)).style?.color;
     final scheme = AppColorSchemes.light;
 
-    expect(ink('1'), MxSemanticColors.light.primaryText);
-    expect(ink('2'), scheme.onSurface);
-    expect(ink('3'), scheme.onSurfaceVariant);
+    expect(foreground('1'), MxSemanticColors.light.primaryText);
+    expect(foreground('2'), scheme.onSurface);
+    expect(foreground('3'), scheme.onSurfaceVariant);
   });
 
   testWidgets('the label is upper-cased and a boxed tile does not clip', (

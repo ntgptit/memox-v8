@@ -13,7 +13,7 @@ class CardHistoryRailWidget extends StatelessWidget {
     super.key,
     required this.child,
     required this.dotTop,
-    this.ink,
+    this.foreground,
     this.isFirst = false,
     this.isLast = false,
     this.gap = AppSpacing.grouped,
@@ -24,9 +24,9 @@ class CardHistoryRailWidget extends StatelessWidget {
   /// Where the dot sits, so it centres on the line it marks.
   final double dotTop;
 
-  /// An answer's outcome ink; null draws the hollow marker of a cycle or of
+  /// An answer's outcome foreground; null draws the hollow marker of a cycle or of
   /// the beginning.
-  final Color? ink;
+  final Color? foreground;
 
   /// The rail starts at the first node's dot and ends at the last node's.
   final bool isFirst;
@@ -57,7 +57,7 @@ class CardHistoryRailWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final dotCentre = dotTop + AppSize.timelineDot / 2;
-    final ink = this.ink;
+    final foreground = this.foreground;
     return Stack(
       children: [
         PositionedDirectional(
@@ -76,11 +76,13 @@ class CardHistoryRailWidget extends StatelessWidget {
             height: AppSize.timelineDot,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: ink == null ? colors.surfaceContainerHigh : colors.surface,
+              color: foreground == null
+                  ? colors.surfaceContainerHigh
+                  : colors.surface,
               // Non-text, so the edge holds 3:1 on the page (DESIGN.md, The
-              // Contrast Floor Rule): the outcome's ink, or the outline.
+              // Contrast Floor Rule): the outcome's foreground, or the outline.
               border: Border.all(
-                color: ink ?? colors.outline,
+                color: foreground ?? colors.outline,
                 width: AppStroke.control,
               ),
             ),

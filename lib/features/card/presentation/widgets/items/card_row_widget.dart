@@ -64,7 +64,10 @@ class _Content extends StatelessWidget {
 
   final CardListItem item;
 
-  static Color _statusInk(BuildContext context, CardDisplayStatus status) {
+  static Color _statusForeground(
+    BuildContext context,
+    CardDisplayStatus status,
+  ) {
     final semantic = context.semanticColors;
     return switch (status) {
       CardDisplayStatus.newCard => context.colors.onSurfaceVariant,
@@ -107,7 +110,7 @@ class _Content extends StatelessWidget {
             Text(
               label.toUpperCase(),
               semanticsLabel: label,
-              style: styles.statusLabel(_statusInk(context, status)),
+              style: styles.statusLabel(_statusForeground(context, status)),
             ),
             for (final tag in tags.take(_shownTags))
               MxTagChip(label: tag.name, isDense: true),
@@ -123,7 +126,7 @@ class _Content extends StatelessWidget {
   }
 }
 
-/// The flag in plain ink, the filled glyph carrying the state as in the
+/// The flag in plain foreground, the filled glyph carrying the state as in the
 /// editor and the detail (critique 2026-10-02, F6; supersedes E-L2), over
 /// the due chip.
 class _Trailing extends StatelessWidget {

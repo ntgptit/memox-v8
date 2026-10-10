@@ -58,7 +58,7 @@ class MxSettingsRow extends StatelessWidget {
   final VoidCallback? onTap;
 
   /// False dims the tile, the label and the control while the setting is
-  /// unavailable; the subtitle, which says why, keeps full ink (critique
+  /// unavailable; the subtitle, which says why, keeps full strength (critique
   /// 2026-09-30). A control that draws its own disabled state is left to it
   /// (part 3a).
   final bool isEnabled;

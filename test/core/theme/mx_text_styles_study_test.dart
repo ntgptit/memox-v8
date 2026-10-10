@@ -34,7 +34,7 @@ void main() {
   }
 
   test('study faces: term 32/700 at -0.5, meaning 24/600 at -0.3, detail '
-      '14/400 in the variant ink (kit StudyScreenV3)', () {
+      '14/400 in the variant text (kit StudyScreenV3)', () {
     expectStyle(
       styles.studyTerm,
       size: 32,
@@ -67,7 +67,7 @@ void main() {
   });
 
   test('summary: title 24/700 at -0.4, the body strong run at 700 in '
-      'onSurface, a fact value 16/700 tabular in its ink', () {
+      'onSurface, a fact value 16/700 tabular in its colour', () {
     expectStyle(
       styles.summaryTitle,
       size: 24,
@@ -81,43 +81,46 @@ void main() {
       weight: FontWeight.w700,
       color: scheme.onSurface,
     );
-    const ink = Color(0xFF123456);
-    final value = styles.factValue(ink);
-    expectStyle(value, size: 16, weight: FontWeight.w700, color: ink);
+    const foreground = Color(0xFF123456);
+    final value = styles.factValue(foreground);
+    expectStyle(value, size: 16, weight: FontWeight.w700, color: foreground);
     expect(value.fontFeatures, contains(const FontFeature.tabularFigures()));
   });
 
-  test('guess option 16/500 at -0.1 and its letter 12/700; match term '
-      '18/700 at -0.4 and meaning 14/600, all in the given ink (FE-A6 P3)', () {
-    const ink = Color(0xFF123456);
-    expectStyle(
-      styles.studyOption(ink),
-      size: 16,
-      weight: FontWeight.w500,
-      tracking: -0.1,
-      color: ink,
-    );
-    expect(styles.studyOption(ink).height, 1.25);
-    expectStyle(
-      styles.studyOptionLetter(ink),
-      size: 12,
-      weight: FontWeight.w700,
-      color: ink,
-    );
-    expectStyle(
-      styles.matchTerm(ink),
-      size: 18,
-      weight: FontWeight.w700,
-      tracking: -0.4,
-      color: ink,
-    );
-    expectStyle(
-      styles.matchMeaning(ink),
-      size: 14,
-      weight: FontWeight.w600,
-      color: ink,
-    );
-  });
+  test(
+    'guess option 16/500 at -0.1 and its letter 12/700; match term '
+    '18/700 at -0.4 and meaning 14/600, all in the given foreground (FE-A6 P3)',
+    () {
+      const foreground = Color(0xFF123456);
+      expectStyle(
+        styles.studyOption(foreground),
+        size: 16,
+        weight: FontWeight.w500,
+        tracking: -0.1,
+        color: foreground,
+      );
+      expect(styles.studyOption(foreground).height, 1.25);
+      expectStyle(
+        styles.studyOptionLetter(foreground),
+        size: 12,
+        weight: FontWeight.w700,
+        color: foreground,
+      );
+      expectStyle(
+        styles.matchTerm(foreground),
+        size: 18,
+        weight: FontWeight.w700,
+        tracking: -0.4,
+        color: foreground,
+      );
+      expectStyle(
+        styles.matchMeaning(foreground),
+        size: 14,
+        weight: FontWeight.w600,
+        color: foreground,
+      );
+    },
+  );
 
   test('recall and fill: the passage is 16/400 at 1.55, the fill answer '
       '24/700 at -0.3, struck through when wrong (FE-A6 P4)', () {
@@ -128,14 +131,14 @@ void main() {
       color: scheme.onSurface,
     );
     expect(styles.studyPassage.height, 1.55);
-    final ink = scheme.error;
-    final struck = styles.fillAnswer(ink, isStruck: true);
+    final foreground = scheme.error;
+    final struck = styles.fillAnswer(foreground, isStruck: true);
     expectStyle(struck, size: 24, weight: FontWeight.w700, tracking: -0.3);
-    expect(struck.color, ink);
+    expect(struck.color, foreground);
     expect(struck.decoration, TextDecoration.lineThrough);
-    expect(struck.decorationColor, ink);
+    expect(struck.decorationColor, foreground);
     expect(
-      styles.fillAnswer(ink, isStruck: false).decoration,
+      styles.fillAnswer(foreground, isStruck: false).decoration,
       isNot(TextDecoration.lineThrough),
     );
   });

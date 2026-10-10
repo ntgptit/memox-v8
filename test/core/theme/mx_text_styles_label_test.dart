@@ -30,7 +30,7 @@ void main() {
     expect(styles.fieldLabel.color, scheme.onSurface);
   });
 
-  test('Required is the optional caption in primary ink (P3)', () {
+  test('Required is the optional caption in primary text (P3)', () {
     expect(styles.requiredMarker.fontSize, styles.rowDescription.fontSize);
     expect(styles.requiredMarker.fontWeight, styles.rowDescription.fontWeight);
     expect(

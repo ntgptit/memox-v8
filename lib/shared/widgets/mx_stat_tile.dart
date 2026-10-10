@@ -35,7 +35,7 @@ class MxStatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final styles = context.textStyles;
-    final ink = switch (emphasis) {
+    final foreground = switch (emphasis) {
       MxStatTileEmphasis.primary => context.semanticColors.primaryText,
       MxStatTileEmphasis.plain => colors.onSurface,
       MxStatTileEmphasis.muted => colors.onSurfaceVariant,
@@ -55,7 +55,7 @@ class MxStatTile extends StatelessWidget {
           alignment: isBoxed
               ? AlignmentDirectional.centerStart
               : Alignment.center,
-          child: Text(value, maxLines: 1, style: styles.statValue(ink)),
+          child: Text(value, maxLines: 1, style: styles.statValue(foreground)),
         ),
         Text(label.toUpperCase(), style: styles.statLabel),
       ],

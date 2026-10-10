@@ -21,7 +21,7 @@ void main() {
     );
   });
 
-  testWidgets('warning in dark: the amber is its own ink (I1, T1)', (
+  testWidgets('warning in dark: the amber is its own text colour (I1, T1)', (
     tester,
   ) async {
     await pumpMx(
@@ -43,9 +43,9 @@ void main() {
     );
   });
 
-  // The tone pass (T1, critique 2026-09-30): a warning glyph is ink, never
+  // The tone pass (T1, critique 2026-09-30): a warning glyph is foreground, never
   // the amber fill, which is about 2:1 on the light page.
-  testWidgets('warning: the glyph in warning ink on the light page', (
+  testWidgets('warning: the glyph in warning text on the light page', (
     tester,
   ) async {
     await pumpMx(

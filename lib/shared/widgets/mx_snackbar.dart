@@ -116,7 +116,7 @@ class MxSnackbarContent extends StatelessWidget {
               // UNSPECIFIED and uses 8.
               style: appButtonStyle(
                 fill: null,
-                ink: colors.inversePrimary,
+                foreground: colors.inversePrimary,
                 edge: BorderSide.none,
                 focusColor: colors.inversePrimary,
                 height: AppSize.buttonCompact,

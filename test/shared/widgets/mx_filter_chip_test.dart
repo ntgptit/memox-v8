@@ -47,7 +47,7 @@ void main() {
     expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
   });
 
-  testWidgets('the count sits at 60% resting and at full ink selected', (
+  testWidgets('the count sits at 60% resting and at full strength selected', (
     tester,
   ) async {
     await pumpMx(

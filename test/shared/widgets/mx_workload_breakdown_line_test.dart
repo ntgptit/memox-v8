@@ -219,7 +219,7 @@ void main() {
     expect(_plain(tester), '0 overdue · 0 today · 0 new');
   });
 
-  testWidgets('with icons each term leads with its own glyph in its ink, on '
+  testWidgets('with icons each term leads with its own glyph in its colour, on '
       'the same 18 line, and is read as its words only (BR-STUDY-076)', (
     tester,
   ) async {
