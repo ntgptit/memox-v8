@@ -37,7 +37,7 @@ class CardHistoryEventWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
-    final derived = context.derivedColors;
+    final semantic = context.semanticColors;
     final styles = context.textStyles;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final action = entry.action;
@@ -50,14 +50,14 @@ class CardHistoryEventWidget extends StatelessWidget {
       _ when isLapse => (
         MxBadgeTone.warning,
         AppIcons.lapses,
-        derived.warningInk,
+        semantic.warningText,
       ),
       ReviewKind.relearning => (
         MxBadgeTone.neutral,
         AppIcons.repeat,
         colors.onSurfaceVariant,
       ),
-      _ => (MxBadgeTone.success, AppIcons.check, derived.successInk),
+      _ => (MxBadgeTone.success, AppIcons.check, semantic.success),
     };
     final meta = _meta(l10n, locale, ink);
     // The dot centres on the header row, which the two-line time sets:

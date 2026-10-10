@@ -40,6 +40,8 @@ const _exceptions = <String, double>{
   'day/focusRing on row': 2.01,
   'day/focusRing on low': 1.88,
   'day/learning fill on its track': 1.99,
+  'day/learning bars on the card': 2.13,
+  'day/onMastery on mastery': 2.84,
   'day/mastered fill on its track': 2.65,
   'day/toggle off thumb on its track': 2.76,
   'day/learning label on the hero': 3.94,
@@ -55,6 +57,7 @@ const _exceptions = <String, double>{
   'night/reviewing bars on the card': 2.95,
   'night/progress fill on its track': 2.18,
   'night/toggle off thumb on its track': 2.76,
+  'night/onMastery on mastery': 2.84,
   'night/onLearningSoft on learningSoft': 4.22,
   'night/onWarningSoft on warningSoft': 3.59,
   'night/outline on the warning ground': 2.36,
@@ -86,6 +89,7 @@ List<_Pair> _pairs(
       ('focusRing on $where', semantic.focusRing, ground, _nonText),
     ],
     ('reviewing bars on the card', semantic.statusReviewing, row, _nonText),
+    ('learning bars on the card', semantic.statusLearning, row, _nonText),
     ('progress fill on its track', scheme.primary, low, _nonText),
     ('learning fill on its track', semantic.statusLearning, low, _nonText),
     ('mastered fill on its track', semantic.statusMastered, low, _nonText),
@@ -93,6 +97,8 @@ List<_Pair> _pairs(
     ('snackbar action', scheme.inversePrimary, scheme.inverseSurface, _text),
     ('onPrimary on primary', scheme.onPrimary, scheme.primary, _text),
     ('onWarning on warning', semantic.onWarning, semantic.warning, _text),
+    // A done import step's glyph on its fill.
+    ('onMastery on mastery', semantic.onMastery, semantic.mastery, _nonText),
     (
       'onErrorFill on errorFill',
       semantic.onErrorFill,

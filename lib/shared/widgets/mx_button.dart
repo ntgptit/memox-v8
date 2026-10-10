@@ -121,7 +121,7 @@ class MxButton extends StatelessWidget {
         fill: paint.fill,
         ink: paint.ink,
         edge: paint.edge,
-        focusColor: context.derivedColors.primaryInk,
+        focusColor: context.semanticColors.focusRing,
         height: geometry.height,
         radius: geometry.radius,
         padding: geometry.padding,
@@ -192,7 +192,7 @@ class MxButton extends StatelessWidget {
         fill: colors.surfaceContainerLowest,
         ink: colors.onSurface,
         edge: BorderSide(
-          color: context.derivedColors.ghostBorder,
+          color: context.semanticColors.border,
           width: AppStroke.hairline,
         ),
       );
@@ -210,17 +210,14 @@ class MxButton extends StatelessWidget {
       ),
       MxButtonTone.outline => (
         fill: null,
-        ink: context.derivedColors.primaryInk,
-        edge: BorderSide(
-          color: context.derivedColors.outlineEdge,
-          width: AppStroke.hairline,
-        ),
+        ink: context.semanticColors.primaryText,
+        edge: BorderSide(color: colors.outline, width: AppStroke.hairline),
       ),
       // The quiet action beside a decision's fill (account UI spec U2): the
       // outline's ink without its edge.
       MxButtonTone.text => (
         fill: null,
-        ink: context.derivedColors.primaryInk,
+        ink: context.semanticColors.primaryText,
         edge: BorderSide.none,
       ),
       MxButtonTone.destructive => (
@@ -231,15 +228,14 @@ class MxButton extends StatelessWidget {
       // The soft danger tint MxInlineBanner and MxCard.isDanger draw
       // (FE-A6 D14); the solid pair above stays the destructive action's.
       MxButtonTone.dangerSoft => (
-        fill: context.derivedColors.dangerSoft,
-        ink: colors.error,
+        fill: context.semanticColors.dangerSoft,
+        ink: context.semanticColors.onDangerSoft,
         edge: BorderSide(
-          color: context.derivedColors.dangerBorder,
+          color: context.semanticColors.dangerBorder,
           width: AppStroke.hairline,
         ),
       ),
-      // The warning role and its ink, not the kit's orange and white, which
-      // is about 2.8:1 (FE-B2 spec D15).
+      // The warning fill and the text on it (FE-B2 spec D15).
       MxButtonTone.warning => (
         fill: context.semanticColors.warning,
         ink: context.semanticColors.onWarning,

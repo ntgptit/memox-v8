@@ -75,7 +75,7 @@ class _MxRowInkState extends State<MxRowInk> {
           decoration: BoxDecoration(
             border: _hasFocus
                 ? Border.all(
-                    color: context.derivedColors.primaryInk,
+                    color: context.semanticColors.focusRing,
                     width: AppStroke.focus,
                   )
                 : null,

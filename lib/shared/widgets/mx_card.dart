@@ -35,7 +35,7 @@ class MxCard extends StatelessWidget {
   /// radius, so their dividers meet the corners.
   final bool isFullBleed;
 
-  /// The surface-hero tint, with the ghost edge in both themes.
+  /// The primary container, with the border hairline in both themes.
   final bool isHero;
 
   /// The warning-soft ground with the warning border (screen 02's locked
@@ -54,7 +54,7 @@ class MxCard extends StatelessWidget {
   /// by an error (FE-A6 D14).
   final bool isDanger;
 
-  /// The container-low ground, flat, with the ghost edge: the answer face of
+  /// The container-low ground, flat, with the border hairline: the answer face of
   /// a study card (kit StudyFaceCard, screen 16a).
   final bool isRecessed;
 

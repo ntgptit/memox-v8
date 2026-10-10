@@ -42,7 +42,6 @@ class MxBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final derived = context.derivedColors;
     final inset = MediaQuery.paddingOf(context).bottom;
     // The selected ground (spec 2026-10-10 §4).
     final pillGround = colors.primaryContainer;
@@ -61,7 +60,7 @@ class MxBottomNav extends StatelessWidget {
             color: colors.surface,
             borderRadius: radius,
             border: Border.all(
-              color: derived.ghostBorder,
+              color: context.semanticColors.border,
               width: AppStroke.hairline,
             ),
           ),

@@ -172,7 +172,7 @@ class _MxStepperState extends State<MxStepper> {
               ? Border.all(
                   color: widget.isInvalid
                       ? colors.error
-                      : context.derivedColors.primaryInk,
+                      : context.semanticColors.focusRing,
                   width: AppStroke.hairline,
                 )
               : null,
@@ -337,7 +337,7 @@ class _StepButtonState extends State<_StepButton> {
                 fill: colors.surfaceContainer,
                 ink: colors.onSurface,
                 edge: BorderSide.none,
-                focusColor: context.derivedColors.primaryInk,
+                focusColor: context.semanticColors.focusRing,
                 height: AppSize.buttonSmall,
                 radius: AppRadius.md,
                 padding: MxStepper._buttonPadding,

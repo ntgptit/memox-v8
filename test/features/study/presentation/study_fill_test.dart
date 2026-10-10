@@ -204,7 +204,7 @@ void main() {
     expect(fill.color, AppColorSchemes.light.primary);
     expect(
       tester.widget<Text>(chip).style?.color,
-      tester.element(chip).derivedColors.primaryInk,
+      tester.element(chip).semanticColors.onPrimarySoft,
     );
   });
 

@@ -125,7 +125,7 @@ void main() {
 
     final note = tester.widget<Text>(find.text(_en.studyEntryOverdue(1)));
     final context = tester.element(find.text(_en.studyEntryOverdue(1)));
-    expect(note.style?.color, context.derivedColors.warningInk);
+    expect(note.style?.color, context.semanticColors.warningText);
   });
 
   libraryTest('Eight boxes lists its four review modes, each with its count '

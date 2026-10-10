@@ -4,7 +4,7 @@ import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -91,7 +91,7 @@ void main() {
     expect(field.decoration!.fillColor, scheme.surfaceContainerLowest);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
-      MxDerivedColors.primaryInkOf(scheme),
+      MxSemanticColors.light.primaryText,
     );
   });
 

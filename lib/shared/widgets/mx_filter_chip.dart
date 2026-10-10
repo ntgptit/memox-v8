@@ -52,10 +52,10 @@ class MxFilterChip extends StatelessWidget {
             edge: isSelected
                 ? BorderSide.none
                 : BorderSide(
-                    color: context.derivedColors.ghostBorder,
+                    color: context.semanticColors.border,
                     width: AppStroke.hairline,
                   ),
-            focusColor: context.derivedColors.primaryInk,
+            focusColor: context.semanticColors.focusRing,
             height: AppSize.chip,
             radius: AppRadius.full,
             padding: AppSpacing.control,

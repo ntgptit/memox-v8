@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 
 import '../../support/widget_harness.dart';
@@ -31,10 +30,7 @@ void main() {
       const Size.square(20),
     );
     expect(_box(tester).color, isNull);
-    expect(
-      _box(tester).border,
-      Border.all(color: MxDerivedColors.outlineEdgeOf(scheme), width: 2),
-    );
+    expect(_box(tester).border, Border.all(color: scheme.outline, width: 2));
     expect(find.byIcon(AppIcons.check), findsNothing);
   });
 

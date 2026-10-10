@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -145,10 +144,7 @@ void main() {
   });
 
   testWidgets('in a sheet: a ghost rule on top, then 8 16 16', (tester) async {
-    final ghost = MxDerivedColors.resolve(
-      AppColorSchemes.light,
-      MxSemanticColors.light,
-    ).ghostBorder;
+    final ghost = MxSemanticColors.light.border;
     await pumpMx(
       tester,
       _width(

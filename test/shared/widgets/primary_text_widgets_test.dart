@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -17,13 +16,14 @@ import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
 import '../../support/widget_harness.dart';
 
-// Spec 2026-09-27 D2: in dark, primary as text, icon or focus ring reads in
-// primaryInk; fills, edges and tints keep primary.
+// Spec 2026-10-10 §5.2: in Night, primary as text or icon reads
+// primaryText and every focus ring focusRing; fills keep primary.
 void main() {
   final scheme = AppColorSchemes.dark;
-  final ink = MxDerivedColors.primaryInkOf(scheme);
+  const night = MxSemanticColors.dark;
+  final primaryText = night.primaryText;
   // A primary soft ground is light in Night too (spec 2026-10-10 D4).
-  final onPrimarySoft = MxSemanticColors.dark.onPrimarySoft;
+  final onPrimarySoft = night.onPrimarySoft;
 
   Future<void> pumpDark(WidgetTester tester, Widget child) =>
       pumpMx(tester, child, brightness: Brightness.dark);
@@ -31,8 +31,8 @@ void main() {
   Color? textColor(WidgetTester tester, String text) =>
       tester.widget<Text>(find.text(text)).style?.color;
 
-  testWidgets('MxButton: outline ink and every focus ring are primaryInk; '
-      'the primary fill keeps primary', (tester) async {
+  testWidgets('MxButton: the outline label is primaryText and every focus '
+      'ring focusRing; the primary fill keeps primary', (tester) async {
     await pumpDark(
       tester,
       Column(
@@ -55,18 +55,18 @@ void main() {
         )
         .style!;
     const focused = {WidgetState.focused};
-    expect(style('Outline').foregroundColor!.resolve({}), ink);
-    expect(style('Outline').side!.resolve(focused)!.color, ink);
+    expect(style('Outline').foregroundColor!.resolve({}), primaryText);
+    expect(style('Outline').side!.resolve(focused)!.color, night.focusRing);
     expect(style('Fill').backgroundColor!.resolve({}), scheme.primary);
     expect(style('Fill').foregroundColor!.resolve({}), scheme.onPrimary);
-    expect(style('Fill').side!.resolve(focused)!.color, ink);
+    expect(style('Fill').side!.resolve(focused)!.color, night.focusRing);
   });
 
   testWidgets('MxBadge: a tonal primary badge reads onPrimarySoft', (
     tester,
   ) async {
     await pumpDark(tester, const MxBadge(label: '23 due'));
-    expect(textColor(tester, '23 due'), MxSemanticColors.dark.onPrimarySoft);
+    expect(textColor(tester, '23 due'), night.onPrimarySoft);
   });
 
   test('MxBadge: a solid badge is primary only (D5)', () {
@@ -94,7 +94,7 @@ void main() {
     );
   });
 
-  testWidgets('MxWorkloadBreakdownLine: the today term is primaryInk', (
+  testWidgets('MxWorkloadBreakdownLine: the today term is primaryText', (
     tester,
   ) async {
     await pumpDark(
@@ -116,10 +116,10 @@ void main() {
         return span == null;
       });
     }
-    expect(span?.style?.color, ink);
+    expect(span?.style?.color, primaryText);
   });
 
-  testWidgets('MxSearchField: the focused search glyph is primaryInk', (
+  testWidgets('MxSearchField: the focused search glyph is primaryText', (
     tester,
   ) async {
     final controller = TextEditingController();
@@ -134,7 +134,10 @@ void main() {
     );
     await tester.tap(find.byType(TextField));
     await tester.pump();
-    expect(tester.widget<Icon>(find.byIcon(AppIcons.search)).color, ink);
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
+      primaryText,
+    );
   });
 
   testWidgets('MxEmptyState: the primary glyph reads onPrimarySoft on its '
@@ -149,7 +152,7 @@ void main() {
     );
   });
 
-  testWidgets('MxStatTile: the primary emphasis reads in primaryInk', (
+  testWidgets('MxStatTile: the primary emphasis reads primaryText', (
     tester,
   ) async {
     await pumpDark(
@@ -160,7 +163,7 @@ void main() {
         emphasis: MxStatTileEmphasis.primary,
       ),
     );
-    expect(textColor(tester, '20'), ink);
+    expect(textColor(tester, '20'), primaryText);
   });
 
   testWidgets('MxIconTile: the tinted glyph reads onPrimarySoft without a '
@@ -189,7 +192,7 @@ void main() {
     expect(textColor(tester, 'MATCH'), onPrimarySoft);
   });
 
-  testWidgets('MxSpinner: off a fill the arc is primaryInk; on a fill it is '
+  testWidgets('MxSpinner: off a fill the arc is primaryText; on a fill it is '
       'onPrimary', (tester) async {
     RenderObject ring() => tester.renderObject(
       find
@@ -200,7 +203,7 @@ void main() {
           .first,
     );
     await pumpDark(tester, const MxSpinner());
-    expect(ring(), paints..arc(color: ink));
+    expect(ring(), paints..arc(color: primaryText));
     await pumpDark(tester, const MxSpinner(isOnFill: true));
     expect(ring(), paints..arc(color: scheme.onPrimary));
   });

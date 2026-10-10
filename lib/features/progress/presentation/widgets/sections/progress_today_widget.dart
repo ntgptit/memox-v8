@@ -100,9 +100,8 @@ class ProgressTodayWidget extends StatelessWidget {
       ),
       top: MxBarSeries(
         label: l10n.progressLearning,
-        // The ink holds 3:1 on the card in both themes; the amber fill does
-        // not in light (critique 2026-10-02, F5).
-        color: context.derivedColors.statusLearningInk,
+        // The learning fill, as the mastery ramp's (spec 2026-10-10 §5.1).
+        color: context.semanticColors.statusLearning,
       ),
     );
   }

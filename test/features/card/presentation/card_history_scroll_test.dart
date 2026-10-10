@@ -429,9 +429,9 @@ void main() {
       find.byType(CardHistoryRailWidget),
     );
     final context = tester.element(find.byType(CardHistoryEventWidget));
-    expect(rail.ink, context.derivedColors.warningInk);
+    expect(rail.ink, context.semanticColors.warningText);
     final move = tester.widget<Text>(find.text(_en.cardHistoryBoxMove(4, 1)));
-    expect(move.style!.color, context.derivedColors.warningInk);
+    expect(move.style!.color, context.semanticColors.warningText);
     expect(find.text(_en.cardHistoryTimedOut), findsOneWidget);
     expect(find.byIcon(AppIcons.timeout), findsOneWidget);
   });

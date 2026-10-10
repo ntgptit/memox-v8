@@ -26,8 +26,8 @@ class MxFieldMessage extends StatelessWidget {
       MxFieldMessageTone.error => (context.colors.error, context.colors.error),
       // A glyph is ink, never the amber fill (tone pass T1, SW-REV-001).
       MxFieldMessageTone.warning => (
-        context.derivedColors.warningInk,
-        context.derivedColors.warningInk,
+        context.semanticColors.warningText,
+        context.semanticColors.warningText,
       ),
     };
     return Semantics(

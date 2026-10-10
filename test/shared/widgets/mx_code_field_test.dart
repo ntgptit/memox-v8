@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
@@ -77,7 +76,7 @@ void main() {
 
   testWidgets('the slot that takes the next digit carries the focus edge; '
       'the rest the outline edge; an error edges every slot', (tester) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+    final derived = MxSemanticColors.light;
     final controller = TextEditingController(text: '12');
     addTearDown(controller.dispose);
     Border edgeOf(int i) =>
@@ -102,9 +101,9 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(edgeOf(2).top.color, derived.primaryInk);
+    expect(edgeOf(2).top.color, derived.focusRing);
     expect(edgeOf(2).top.width, 2);
-    expect(edgeOf(3).top.color, derived.outlineEdge);
+    expect(edgeOf(3).top.color, scheme.outline);
 
     await pumpMx(
       tester,
@@ -175,7 +174,7 @@ void main() {
 
   testWidgets('a disabled code rests its slots on the ghost edge, as a '
       'disabled field does (DEV-166)', (tester) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+    final derived = MxSemanticColors.light;
     await pumpMx(
       tester,
       const MxTextField(variant: MxTextFieldVariant.code, isEnabled: false),
@@ -190,7 +189,7 @@ void main() {
                 )
                 .decoration
             as BoxDecoration;
-    expect((slot.border! as Border).top.color, derived.ghostBorder);
+    expect((slot.border! as Border).top.color, derived.border);
   });
 
   testWidgets('a tap on a slot focuses the code', (tester) async {

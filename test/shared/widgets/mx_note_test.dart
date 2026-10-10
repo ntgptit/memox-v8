@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -16,7 +15,7 @@ void main() {
   testWidgets('muted fill, ghost hairline, radius 12, padding 10 12', (
     tester,
   ) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
+    final derived = MxSemanticColors.light;
     await pumpMx(
       tester,
       const SizedBox(width: 328, child: MxNote(text: _rule)),
@@ -34,7 +33,7 @@ void main() {
     final note = tester.getTopLeft(find.byType(MxNote));
 
     expect(box.color, scheme.surfaceContainerLow);
-    expect(box.border, Border.all(color: derived.ghostBorder));
+    expect(box.border, Border.all(color: derived.border));
     expect(box.borderRadius, BorderRadius.circular(12));
     expect(tester.getTopLeft(find.byType(Icon)).dx - note.dx, 13);
     expect(tester.getTopLeft(find.text(_rule)) - note, const Offset(37, 11));

@@ -65,7 +65,9 @@ class ImportPreviewRowWidget extends StatelessWidget {
                     Text(
                       note,
                       style: row.kind == ImportRowKind.invalid
-                          ? styles.statusLabel(context.derivedColors.warningInk)
+                          ? styles.statusLabel(
+                              context.semanticColors.warningText,
+                            )
                           : styles.rowDescription,
                     ),
                 ],
@@ -89,11 +91,11 @@ class _Mark extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final (icon, color) = switch (kind) {
-      ImportRowKind.ready => (AppIcons.check, context.derivedColors.successInk),
+      ImportRowKind.ready => (AppIcons.check, context.semanticColors.success),
       // The legend badge's glyph; an X would read as a dismiss control.
       ImportRowKind.invalid => (
         AppIcons.alert,
-        context.derivedColors.warningInk,
+        context.semanticColors.warningText,
       ),
       ImportRowKind.duplicateInDeck || ImportRowKind.duplicateInSource => (
         AppIcons.cardDeck,

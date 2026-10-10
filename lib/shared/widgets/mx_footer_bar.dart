@@ -31,7 +31,7 @@ class MxFooterBar extends StatelessWidget {
         color: context.colors.surface,
         border: Border(
           top: BorderSide(
-            color: context.derivedColors.ghostBorder,
+            color: context.semanticColors.border,
             width: AppStroke.hairline,
           ),
         ),

@@ -135,7 +135,7 @@ class _MxSearchFieldState extends State<MxSearchField> {
             AppIcons.search,
             size: AppIconSize.compact,
             color: isFocused
-                ? context.derivedColors.primaryInk
+                ? context.semanticColors.primaryText
                 : colors.onSurfaceVariant,
           ),
         ),

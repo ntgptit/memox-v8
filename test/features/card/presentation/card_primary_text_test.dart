@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_removable_tag_chip_widget.dart';
 
 import '../../../support/library_harness.dart';
 
-// Spec 2026-09-27 D2: a glyph is ink, so it reads in primaryInk; the tag
-// chip's tint stays primary.
+// Spec 2026-10-10 §5.2: a primary glyph reads primaryText; the tag chip is a
+// primary soft ground.
 void main() {
-  final ink = MxDerivedColors.primaryInkOf(AppColorSchemes.dark);
+  final primaryText = MxSemanticColors.dark.primaryText;
 
   Color? glyphColor(WidgetTester tester, Type owner) => IconTheme.of(
     tester.element(
@@ -21,14 +20,14 @@ void main() {
     ),
   ).color;
 
-  libraryTest('Add details: the glyph is primaryInk', (tester, env) async {
+  libraryTest('Add details: the glyph is primaryText', (tester, env) async {
     await pumpLibraryScreen(
       tester,
       env,
       Scaffold(body: CardAddDetailsWidget(onPressed: () {})),
       brightness: Brightness.dark,
     );
-    expect(glyphColor(tester, CardAddDetailsWidget), ink);
+    expect(glyphColor(tester, CardAddDetailsWidget), primaryText);
   });
 
   libraryTest('a removable tag chip: the primary soft ground, glyph and label '

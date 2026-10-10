@@ -5,7 +5,6 @@ import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
@@ -118,11 +117,8 @@ void main() {
       expect(context.texts.displayMedium!.fontSize, 40);
       expect(context.semanticColors, MxSemanticColors.dark);
       expect(
-        context.derivedColors.surfaceHero,
-        MxDerivedColors.resolve(
-          AppColorSchemes.dark,
-          MxSemanticColors.dark,
-        ).surfaceHero,
+        context.textStyles.navLabel(isSelected: true).color,
+        MxSemanticColors.dark.primaryText,
       );
     });
 
