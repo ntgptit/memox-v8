@@ -112,32 +112,34 @@
       "error": {
         "role": "error",
         "displayName": "Error",
-        "canonical": "#B00020",
-        "light": "#B00020",
-        "dark": "#FC3C60",
+        "canonical": "#C02447",
+        "light": "#C02447",
+        "dark": "#FF8FA3",
         "tonalRamp": [
-          "#FC3C60",
-          "#B00020"
+          "#C02447",
+          "#FF8FA3"
         ]
       },
       "error-container": {
         "role": "error",
         "displayName": "Error Container",
-        "canonical": "#FFE8D8",
-        "light": "#FFE8D8",
-        "dark": "#FFE8D8",
+        "canonical": "#FBDDE3",
+        "light": "#FBDDE3",
+        "dark": "#7A2036",
         "tonalRamp": [
-          "#FFE8D8"
+          "#FBDDE3",
+          "#7A2036"
         ]
       },
       "on-error-container": {
         "role": "on",
         "displayName": "On Error Container",
-        "canonical": "#B00020",
-        "light": "#B00020",
-        "dark": "#B00020",
+        "canonical": "#7A0A23",
+        "light": "#7A0A23",
+        "dark": "#FFD9DF",
         "tonalRamp": [
-          "#B00020"
+          "#7A0A23",
+          "#FFD9DF"
         ]
       },
       "surface": {
@@ -625,31 +627,34 @@
       "danger-soft": {
         "role": "soft",
         "displayName": "Danger Soft",
-        "canonical": "#FFE8D8",
-        "light": "#FFE8D8",
-        "dark": "#FFE8D8",
+        "canonical": "#C0244714",
+        "light": "#C0244714",
+        "dark": "#FF8FA329",
         "tonalRamp": [
-          "#FFE8D8"
+          "#C0244714",
+          "#FF8FA329"
         ]
       },
       "danger-border": {
         "role": "edge",
         "displayName": "Danger Border",
-        "canonical": "#FFC38C",
-        "light": "#FFC38C",
-        "dark": "#FFC38C",
+        "canonical": "#C0244738",
+        "light": "#C0244738",
+        "dark": "#FF8FA352",
         "tonalRamp": [
-          "#FFC38C"
+          "#C0244738",
+          "#FF8FA352"
         ]
       },
       "on-danger-soft": {
         "role": "on",
         "displayName": "On Danger Soft",
-        "canonical": "#B00020",
-        "light": "#B00020",
-        "dark": "#B00020",
+        "canonical": "#AE2346",
+        "light": "#AE2346",
+        "dark": "#F7AABD",
         "tonalRamp": [
-          "#B00020"
+          "#AE2346",
+          "#F7AABD"
         ]
       },
       "neutral-soft": {

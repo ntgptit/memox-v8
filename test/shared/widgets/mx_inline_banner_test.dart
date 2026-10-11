@@ -45,23 +45,24 @@ void main() {
     expect((glyph.size, glyph.color), (16, semantic.onWarningSoft));
   });
 
-  testWidgets('danger: the danger soft ground, its border, an on-soft glyph', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
-      ),
-    );
+  testWidgets(
+    'danger: the danger tint, its border, the error glyph (DEV-371)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        _width(
+          const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
+        ),
+      );
 
-    expect(_ground(tester).color, semantic.dangerSoft);
-    expect(_ground(tester).border, Border.all(color: semantic.dangerBorder));
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      semantic.onDangerSoft,
-    );
-  });
+      expect(_ground(tester).color, semantic.dangerSoft);
+      expect(_ground(tester).border, Border.all(color: semantic.dangerBorder));
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
+        AppColorSchemes.light.error,
+      );
+    },
+  );
 
   testWidgets('titled: a 700 title 2 above the detail; untitled: the lead', (
     tester,

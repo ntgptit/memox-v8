@@ -36,13 +36,10 @@ final _expected = <String, (Color Function(MxSemanticColors), int, int)>{
   'warningSoft': ((c) => c.warningSoft, 0xFFFFEDAB, 0xFFFFEDAB),
   'warningBorder': ((c) => c.warningBorder, 0xFFFFDC62, 0xFFFFDC62),
   'onWarningSoft': ((c) => c.onWarningSoft, 0xFF997700, 0xFF997700),
-  'dangerSoft': ((c) => c.dangerSoft, 0xFFFFE8D8, 0xFFFFE8D8),
-  'dangerBorder': ((c) => c.dangerBorder, 0xFFFFC38C, 0xFFFFC38C),
-  'onDangerSoft': ((c) => c.onDangerSoft, 0xFFB00020, 0xFFB00020),
-  // The dangerSoft button's own tint, kept from before Indigo (DEV-371).
-  'dangerTint': ((c) => c.dangerTint, 0x14C02447, 0x29FF8FA3),
-  'dangerTintBorder': ((c) => c.dangerTintBorder, 0x38C02447, 0x52FF8FA3),
-  'onDangerTint': ((c) => c.onDangerTint, 0xFFC02447, 0xFFFF8FA3),
+  // The danger family keeps its pre-Indigo values (DEV-371).
+  'dangerSoft': ((c) => c.dangerSoft, 0x14C02447, 0x29FF8FA3),
+  'dangerBorder': ((c) => c.dangerBorder, 0x38C02447, 0x52FF8FA3),
+  'onDangerSoft': ((c) => c.onDangerSoft, 0xFFAE2346, 0xFFF7AABD),
   'neutralSoft': ((c) => c.neutralSoft, 0xFFEDEFFF, 0xFF586380),
   'onNeutralSoft': ((c) => c.onNeutralSoft, 0xFF2E3856, 0xFFF6F7FB),
   'onSoft': ((c) => c.onSoft, 0xFF282E3E, 0xFF282E3E),

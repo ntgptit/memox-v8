@@ -214,7 +214,6 @@ void main() {
     for (final card in const [
       MxCard(isSuccess: true, child: _OnSurfaceText('toned')),
       MxCard(isWarning: true, child: _OnSurfaceText('toned')),
-      MxCard(isDanger: true, child: _OnSurfaceText('toned')),
     ]) {
       await pumpMx(tester, card, brightness: Brightness.dark);
       await tester.pumpAndSettle();
@@ -226,10 +225,14 @@ void main() {
     }
   });
 
-  testWidgets('Night: a raised or hero card keeps Night text', (tester) async {
+  // The danger card keeps its pre-Indigo tint, dark in Night (DEV-371).
+  testWidgets('Night: a raised, hero or danger card keeps Night text', (
+    tester,
+  ) async {
     for (final card in const [
       MxCard(child: _OnSurfaceText('plain')),
       MxCard(isHero: true, child: _OnSurfaceText('plain')),
+      MxCard(isDanger: true, child: _OnSurfaceText('plain')),
     ]) {
       await pumpMx(tester, card, brightness: Brightness.dark);
       await tester.pumpAndSettle();

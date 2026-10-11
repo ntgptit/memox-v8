@@ -229,14 +229,13 @@ class MxButton extends StatelessWidget {
         foreground: context.semanticColors.onErrorFill,
         edge: BorderSide.none,
       ),
-      // A translucent danger tint of its own, kept from before the Indigo
-      // palette (owner 2026-10-11, DEV-371); the solid pair above stays the
-      // destructive action's.
+      // The danger tint with the error label, as before Indigo (DEV-371);
+      // the solid pair above stays the destructive action's.
       MxButtonTone.dangerSoft => (
-        fill: context.semanticColors.dangerTint,
-        foreground: context.semanticColors.onDangerTint,
+        fill: context.semanticColors.dangerSoft,
+        foreground: colors.error,
         edge: BorderSide(
-          color: context.semanticColors.dangerTintBorder,
+          color: context.semanticColors.dangerBorder,
           width: AppStroke.hairline,
         ),
       ),

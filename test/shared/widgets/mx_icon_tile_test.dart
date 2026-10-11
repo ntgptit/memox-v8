@@ -159,7 +159,14 @@ void main() {
           MxIconTileTone.neutral => semantic.neutralSoft,
           _ => semantic.dangerSoft,
         });
-        expect(_ratio(glyph, fill), greaterThanOrEqualTo(3));
+        // The danger tint is translucent (DEV-371): read it over the card.
+        final card = brightness == Brightness.light
+            ? AppColorSchemes.light.surfaceContainerLowest
+            : AppColorSchemes.dark.surfaceContainerLowest;
+        expect(
+          _ratio(glyph, Color.alphaBlend(fill, card)),
+          greaterThanOrEqualTo(3),
+        );
       });
     }
   }

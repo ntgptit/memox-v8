@@ -72,7 +72,7 @@ class MxErrorState extends StatelessWidget {
                   child: Icon(
                     icon,
                     size: AppIconSize.standard,
-                    color: context.semanticColors.onDangerSoft,
+                    color: context.colors.error,
                   ),
                 ),
               ),

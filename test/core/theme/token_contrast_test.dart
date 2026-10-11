@@ -49,9 +49,6 @@ const _exceptions = <String, double>{
   'day/onLearningSoft on learningSoft': 4.22,
   'day/onWarningSoft on warningSoft': 3.59,
   'day/outline on the warning ground': 2.36,
-  'day/Day primaryText on dangerSoft': 4.47,
-  'night/error on row': 4.43,
-  'night/error on low': 3.27,
   'night/primaryText on low': 3.54,
   'night/outline on row': 2.61,
   'night/outline on low': 1.92,
@@ -62,7 +59,6 @@ const _exceptions = <String, double>{
   'night/onLearningSoft on learningSoft': 4.22,
   'night/onWarningSoft on warningSoft': 3.59,
   'night/outline on the warning ground': 2.36,
-  'night/Day primaryText on dangerSoft': 4.47,
 };
 
 List<_Pair> _pairs(
@@ -165,19 +161,12 @@ List<_Pair> _pairs(
       _text,
     ),
     (
-      'onDangerSoft on dangerSoft',
-      semantic.onDangerSoft,
-      semantic.dangerSoft,
-      _text,
-    ),
-    (
       'onNeutralSoft on neutralSoft',
       semantic.onNeutralSoft,
       semantic.neutralSoft,
       _text,
     ),
     ('onSoft on warningSoft', semantic.onSoft, semantic.warningSoft, _text),
-    ('onSoft on dangerSoft', semantic.onSoft, semantic.dangerSoft, _text),
     ('onSoft on successSoft', semantic.onSoft, semantic.successSoft, _text),
     // A soft ground renders its content in Day (R1), so an outline button
     // inside a warning card carries Day's outline in both themes.
@@ -194,7 +183,6 @@ List<_Pair> _pairs(
       (semantic.successSoft, 'successSoft'),
       (semantic.learningSoft, 'learningSoft'),
       (semantic.warningSoft, 'warningSoft'),
-      (semantic.dangerSoft, 'dangerSoft'),
     ]) ...[
       ('Day onSurfaceVariant on $where', day.onSurfaceVariant, ground, _text),
       (
@@ -204,13 +192,20 @@ List<_Pair> _pairs(
         _text,
       ),
     ],
-    // The dangerSoft button's label on its translucent tint over the card.
-    (
-      'dangerSoft button label',
-      semantic.onDangerTint,
-      Color.alphaBlend(semantic.dangerTint, row),
-      _text,
-    ),
+    // The danger ground keeps its pre-Indigo translucent tint, dark in
+    // Night, and its content the current theme (DEV-371): read over the card.
+    for (final (fore, name, minimum) in [
+      (semantic.onDangerSoft, 'onDangerSoft', _text),
+      (scheme.error, 'error', _text),
+      (scheme.onSurface, 'onSurface', _text),
+      (scheme.onSurfaceVariant, 'onSurfaceVariant', _text),
+    ])
+      (
+        '$name on the danger tint',
+        fore,
+        Color.alphaBlend(semantic.dangerSoft, row),
+        minimum,
+      ),
     // A seeded icon tile's glyph on its primary soft ground (MxIconTile).
     (
       'streak glyph on its tile',

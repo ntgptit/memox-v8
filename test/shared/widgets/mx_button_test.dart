@@ -67,7 +67,8 @@ void main() {
   });
 
   for (final brightness in Brightness.values) {
-    testWidgets('dangerSoft paints its own danger tint, ${brightness.name} '
+    testWidgets('dangerSoft paints the danger tint with the error label, '
+        '${brightness.name} '
         '(FE-A6 P2, screen 16a, DEV-371)', (tester) async {
       final semantic = brightness == Brightness.light
           ? MxSemanticColors.light
@@ -83,11 +84,14 @@ void main() {
       );
       final material = _material(tester);
 
-      expect(material.color, semantic.dangerTint);
-      expect(material.textStyle!.color, semantic.onDangerTint);
+      final error = brightness == Brightness.light
+          ? AppColorSchemes.light.error
+          : AppColorSchemes.dark.error;
+      expect(material.color, semantic.dangerSoft);
+      expect(material.textStyle!.color, error);
       expect(
         (material.shape! as RoundedRectangleBorder).side,
-        BorderSide(color: semantic.dangerTintBorder),
+        BorderSide(color: semantic.dangerBorder),
       );
     });
   }

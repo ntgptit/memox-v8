@@ -52,7 +52,8 @@ void main() {
   ) async {
     for (final (tone, ground, foreground) in [
       (MxBadgeTone.mastery, semantic.successSoft, semantic.onSuccessSoft),
-      (MxBadgeTone.danger, semantic.dangerSoft, semantic.onDangerSoft),
+      // Danger keeps its pre-Indigo error label (DEV-371).
+      (MxBadgeTone.danger, semantic.dangerSoft, scheme.error),
       (MxBadgeTone.neutral, semantic.neutralSoft, semantic.onNeutralSoft),
       (MxBadgeTone.warning, semantic.warningSoft, semantic.onWarningSoft),
     ]) {

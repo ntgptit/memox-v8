@@ -36,10 +36,7 @@ void main() {
       BorderRadius.circular(16),
     );
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
-    expect(
-      (glyph.size, glyph.color),
-      (24, MxSemanticColors.light.onDangerSoft),
-    );
+    expect((glyph.size, glyph.color), (24, AppColorSchemes.light.error));
     expect(
       tester.getTopLeft(tile).dy - tester.getTopLeft(find.byType(MxCard)).dy,
       40,

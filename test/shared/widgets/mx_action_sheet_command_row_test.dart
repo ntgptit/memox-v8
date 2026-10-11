@@ -66,7 +66,7 @@ void main() {
     expect(_tile(tester).color, MxSemanticColors.light.dangerSoft);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.delete)).color,
-      MxSemanticColors.light.onDangerSoft,
+      scheme.error,
     );
     expect(tester.widget<Text>(find.text('Delete')).style!.color, scheme.error);
   });
