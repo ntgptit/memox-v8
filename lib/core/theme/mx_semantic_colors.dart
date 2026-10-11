@@ -57,7 +57,7 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     statusLearning: Color(0xFFFF983A),
     statusReviewing: Color(0xFF4255FF),
     statusMastered: Color(0xFF18AE79),
-    errorFill: Color(0xFFB00020),
+    errorFill: Color(0xFFDC2D4E),
     onErrorFill: Color(0xFFFFFFFF),
     streak: Color(0xFFF6406C),
     primaryText: Color(0xFF4255FF),
@@ -79,9 +79,9 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     warningSoft: Color(0xFFFFEDAB),
     warningBorder: Color(0xFFFFDC62),
     onWarningSoft: Color(0xFF997700),
-    dangerSoft: Color(0xFFFFE8D8),
-    dangerBorder: Color(0xFFFFC38C),
-    onDangerSoft: Color(0xFFB00020),
+    dangerSoft: Color(0x14C02447),
+    dangerBorder: Color(0x38C02447),
+    onDangerSoft: Color(0xFFAE2346),
     neutralSoft: Color(0xFFEDEFFF),
     onNeutralSoft: Color(0xFF2E3856),
     onSoft: Color(0xFF282E3E),
@@ -97,7 +97,7 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     statusLearning: Color(0xFFFF983A),
     statusReviewing: Color(0xFF4255FF),
     statusMastered: Color(0xFF18AE79),
-    errorFill: Color(0xFFB00020),
+    errorFill: Color(0xFFB0485C),
     onErrorFill: Color(0xFFFFFFFF),
     streak: Color(0xFFF6406C),
     primaryText: Color(0xFF7583FF),
@@ -119,9 +119,9 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     warningSoft: Color(0xFFFFEDAB),
     warningBorder: Color(0xFFFFDC62),
     onWarningSoft: Color(0xFF997700),
-    dangerSoft: Color(0xFFFFE8D8),
-    dangerBorder: Color(0xFFFFC38C),
-    onDangerSoft: Color(0xFFB00020),
+    dangerSoft: Color(0x29FF8FA3),
+    dangerBorder: Color(0x52FF8FA3),
+    onDangerSoft: Color(0xFFF7AABD),
     neutralSoft: Color(0xFF586380),
     onNeutralSoft: Color(0xFFF6F7FB),
     onSoft: Color(0xFF282E3E),
@@ -222,14 +222,16 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   /// Text and glyphs on [warningSoft].
   final Color onWarningSoft;
 
-  /// The danger soft ground.
+  /// The danger ground: the pre-Indigo error red at 8% (Day) or 16%
+  /// (Night), translucent as before, so it is light in Day and dark in Night
+  /// (owner 2026-10-11, DEV-371).
   final Color dangerSoft;
 
-  /// The edge of [dangerSoft]: the reference names none, so it borrows the
-  /// peach edge of the learning family.
+  /// The edge of [dangerSoft]: the same red at 22% or 32%.
   final Color dangerBorder;
 
-  /// Text and glyphs on [dangerSoft].
+  /// Danger text on [dangerSoft] (a banner title): the error red pulled 10%
+  /// (Day) or 30% (Night) toward the old on-surface. Glyphs keep error.
   final Color onDangerSoft;
 
   /// The neutral soft ground (a count badge, the new status pill).

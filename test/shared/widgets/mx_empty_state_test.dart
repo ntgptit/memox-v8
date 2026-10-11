@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -60,7 +61,11 @@ void main() {
       MxEmptyStateTone.neutral: (semantic.neutralSoft, semantic.onNeutralSoft),
       MxEmptyStateTone.success: (semantic.successSoft, semantic.onSuccessSoft),
       MxEmptyStateTone.warning: (semantic.warningSoft, semantic.onWarningSoft),
-      MxEmptyStateTone.danger: (semantic.dangerSoft, semantic.onDangerSoft),
+      // Danger keeps its pre-Indigo error glyph (DEV-371).
+      MxEmptyStateTone.danger: (
+        semantic.dangerSoft,
+        AppColorSchemes.light.error,
+      ),
     };
     for (final MapEntry(key: tone, value: (ground, glyph)) in tones.entries) {
       await pumpMx(

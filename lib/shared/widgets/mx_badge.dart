@@ -60,10 +60,9 @@ class MxBadge extends StatelessWidget {
         semantic.warningSoft,
         semantic.onWarningSoft,
       ),
-      (false, MxBadgeTone.danger) => (
-        semantic.dangerSoft,
-        semantic.onDangerSoft,
-      ),
+      // Danger keeps its pre-Indigo look: the error red on its tint
+      // (DEV-371).
+      (false, MxBadgeTone.danger) => (semantic.dangerSoft, colors.error),
       (false, MxBadgeTone.neutral) => (
         semantic.neutralSoft,
         semantic.onNeutralSoft,

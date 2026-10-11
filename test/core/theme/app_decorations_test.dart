@@ -49,7 +49,11 @@ void main() {
       expect(warning.border, edge(semantic.warningBorder));
       expect(success.color, semantic.successSoft);
       expect(success.border, edge(semantic.successBorder));
-      expect(danger.color, semantic.dangerSoft);
+      // The danger card keeps its pre-Indigo tint over the card (DEV-371).
+      expect(
+        danger.color,
+        Color.alphaBlend(semantic.dangerSoft, scheme.surfaceContainerLowest),
+      );
       expect(danger.border, edge(semantic.dangerBorder));
     });
   }

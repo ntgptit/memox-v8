@@ -35,7 +35,11 @@ void main() {
       expect(of(StudyChoiceTone.selected).color, scheme.primary);
       expect(of(StudyChoiceTone.right).color, semantic.successSoft);
       expect(edgeOf(StudyChoiceTone.right), semantic.successBorder);
-      expect(of(StudyChoiceTone.wrong).color, semantic.dangerSoft);
+      // Wrong keeps its pre-Indigo tint over the card (DEV-371).
+      expect(
+        of(StudyChoiceTone.wrong).color,
+        Color.alphaBlend(semantic.dangerSoft, scheme.surfaceContainerLowest),
+      );
       expect(edgeOf(StudyChoiceTone.wrong), semantic.dangerBorder);
     });
 
@@ -45,7 +49,7 @@ void main() {
       expect(foregroundOf(StudyChoiceTone.selected), scheme.onPrimary);
       expect(foregroundOf(StudyChoiceTone.right), semantic.onSuccessSoft);
       expect(foregroundOf(StudyChoiceTone.right), isNot(semantic.mastery));
-      expect(foregroundOf(StudyChoiceTone.wrong), semantic.onDangerSoft);
+      expect(foregroundOf(StudyChoiceTone.wrong), scheme.error);
     });
   }
 }

@@ -9,8 +9,6 @@ abstract final class AppColorSchemes {
   static const Color seed = Color(0xFF4255FF);
 
   static const Color _white = Color(0xFFFFFFFF);
-  static const Color _danger = Color(0xFFB00020);
-  static const Color _dangerSoft = Color(0xFFFFE8D8);
   static const Color _overlay = Color(0xFF010110);
   static const Color _shadow = Color(0xFF282E3E);
   static const Color _neutral = Color(0xFF586380);
@@ -32,10 +30,12 @@ abstract final class AppColorSchemes {
         onTertiary: _white,
         tertiaryContainer: _pink,
         onTertiaryContainer: _onLight,
-        error: _danger,
+        // The error family keeps its pre-Indigo values (owner 2026-10-11,
+        // DEV-371).
+        error: const Color(0xFFC02447),
         onError: _white,
-        errorContainer: _dangerSoft,
-        onErrorContainer: _danger,
+        errorContainer: const Color(0xFFFBDDE3),
+        onErrorContainer: const Color(0xFF7A0A23),
         surfaceDim: const Color(0xFFEDEFF4),
         surface: _white,
         surfaceBright: _white,
@@ -73,10 +73,10 @@ abstract final class AppColorSchemes {
         onTertiary: _white,
         tertiaryContainer: _pink,
         onTertiaryContainer: _onLight,
-        error: const Color(0xFFFC3C60),
-        onError: _white,
-        errorContainer: _dangerSoft,
-        onErrorContainer: _danger,
+        error: const Color(0xFFFF8FA3),
+        onError: const Color(0xFF52061B),
+        errorContainer: const Color(0xFF7A2036),
+        onErrorContainer: const Color(0xFFFFD9DF),
         surfaceDim: const Color(0xFF0A092D),
         surface: const Color(0xFF0A092D),
         surfaceBright: const Color(0xFF2E3856),

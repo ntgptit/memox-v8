@@ -66,22 +66,35 @@ void main() {
     }
   });
 
-  testWidgets('dangerSoft paints the soft danger tint with the error colour '
-      '(FE-A6 P2, screen 16a)', (tester) async {
-    final derived = MxSemanticColors.light;
-    await pumpMx(
-      tester,
-      MxButton(label: 'Again', tone: MxButtonTone.dangerSoft, onPressed: () {}),
-    );
-    final material = _material(tester);
+  for (final brightness in Brightness.values) {
+    testWidgets('dangerSoft paints the danger tint with the error label, '
+        '${brightness.name} '
+        '(FE-A6 P2, screen 16a, DEV-371)', (tester) async {
+      final semantic = brightness == Brightness.light
+          ? MxSemanticColors.light
+          : MxSemanticColors.dark;
+      await pumpMx(
+        tester,
+        MxButton(
+          label: 'Again',
+          tone: MxButtonTone.dangerSoft,
+          onPressed: () {},
+        ),
+        brightness: brightness,
+      );
+      final material = _material(tester);
 
-    expect(material.color, derived.dangerSoft);
-    expect(material.textStyle!.color, scheme.error);
-    expect(
-      (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(color: derived.dangerBorder),
-    );
-  });
+      final error = brightness == Brightness.light
+          ? AppColorSchemes.light.error
+          : AppColorSchemes.dark.error;
+      expect(material.color, semantic.dangerSoft);
+      expect(material.textStyle!.color, error);
+      expect(
+        (material.shape! as RoundedRectangleBorder).side,
+        BorderSide(color: semantic.dangerBorder),
+      );
+    });
+  }
 
   testWidgets(
     'warning paints the warning role with its foreground, above 4.5:1 in '

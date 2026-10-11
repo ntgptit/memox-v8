@@ -100,8 +100,10 @@ class MxCard extends StatelessWidget {
       child: child,
     );
     // A toned card is a soft ground, light in both themes: its content
-    // renders in Day (spec 2026-10-10 D4).
-    final isSoft = isWarning || isSuccess || isDanger;
+    // renders in Day (spec 2026-10-10 D4). The danger card keeps its
+    // pre-Indigo tint, dark in Night, so its content stays in the current
+    // theme (DEV-371).
+    final isSoft = isWarning || isSuccess;
     return SizedBox(
       width: double.infinity,
       child: DecoratedBox(

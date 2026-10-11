@@ -47,9 +47,10 @@ class MxActionSheetCommandRow extends StatelessWidget {
     final colors = context.colors;
     final styles = context.textStyles;
     final semantic = context.semanticColors;
-    // The lead tile is a soft ground with its on-soft glyph.
+    // The lead tile is a soft ground with its on-soft glyph; a destructive
+    // one keeps the error glyph on its tint (DEV-371).
     final (ground, foreground) = isDestructive
-        ? (semantic.dangerSoft, semantic.onDangerSoft)
+        ? (semantic.dangerSoft, colors.error)
         : (semantic.primarySoft, semantic.onPrimarySoft);
     return MxRowInk(
       onTap: onTap,

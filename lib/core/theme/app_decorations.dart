@@ -51,11 +51,18 @@ abstract final class AppDecorations {
     MxSemanticColors semantic,
   ) => _soft(scheme, semantic, semantic.successSoft, semantic.successBorder);
 
-  /// The danger Card, for a session stopped by an error.
+  /// The danger Card, for a session stopped by an error: the translucent
+  /// danger tint laid over the card ground, as before Indigo, so it is light
+  /// in Day and dark in Night (DEV-371).
   static BoxDecoration dangerCard(
     ColorScheme scheme,
     MxSemanticColors semantic,
-  ) => _soft(scheme, semantic, semantic.dangerSoft, semantic.dangerBorder);
+  ) => _soft(
+    scheme,
+    semantic,
+    Color.alphaBlend(semantic.dangerSoft, scheme.surfaceContainerLowest),
+    semantic.dangerBorder,
+  );
 
   static BoxDecoration _soft(
     ColorScheme scheme,
@@ -87,7 +94,10 @@ abstract final class AppDecorations {
       ),
       StudyChoiceTone.selected => (scheme.primary, scheme.primary),
       StudyChoiceTone.right => (semantic.successSoft, semantic.successBorder),
-      StudyChoiceTone.wrong => (semantic.dangerSoft, semantic.dangerBorder),
+      StudyChoiceTone.wrong => (
+        Color.alphaBlend(semantic.dangerSoft, scheme.surfaceContainerLowest),
+        semantic.dangerBorder,
+      ),
     };
     return BoxDecoration(
       color: fill,
@@ -105,7 +115,7 @@ abstract final class AppDecorations {
     StudyChoiceTone.idle => scheme.onSurface,
     StudyChoiceTone.selected => scheme.onPrimary,
     StudyChoiceTone.right => semantic.onSuccessSoft,
-    StudyChoiceTone.wrong => semantic.onDangerSoft,
+    StudyChoiceTone.wrong => scheme.error,
   };
 }
 

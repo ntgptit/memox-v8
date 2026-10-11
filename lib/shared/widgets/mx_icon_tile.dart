@@ -79,7 +79,7 @@ class MxIconTile extends StatelessWidget {
       MxIconTileTone.warning => (semantic.warning, semantic.onWarning),
       MxIconTileTone.success => (semantic.successSoft, semantic.onSuccessSoft),
       MxIconTileTone.caution => (semantic.warningSoft, semantic.onWarningSoft),
-      MxIconTileTone.danger => (semantic.dangerSoft, semantic.onDangerSoft),
+      MxIconTileTone.danger => (semantic.dangerSoft, colors.error),
       MxIconTileTone.neutral => (semantic.neutralSoft, semantic.onNeutralSoft),
     };
     return SizedBox.square(

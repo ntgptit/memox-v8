@@ -50,18 +50,24 @@ class MxInlineBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final semantic = context.semanticColors;
     final styles = context.textStyles;
-    // A soft ground, light in both themes (spec 2026-10-10 D4): the glyph and
-    // the title read the tone's on-soft token; the message reads Day's
-    // banner style from inside the ground.
-    final (ground, edge, foreground) = switch (tone) {
+    // The warning banner is a soft ground, light in both themes (spec
+    // 2026-10-10 D4): the glyph and the title read its on-soft token and the
+    // message reads Day's banner style from inside the ground. The danger
+    // banner keeps its pre-Indigo tint, dark in Night: the glyph in error,
+    // the title in the danger text, the message in the current theme
+    // (DEV-371).
+    final isDanger = tone == MxBannerTone.danger;
+    final (ground, edge, glyph, foreground) = switch (tone) {
       MxBannerTone.warning => (
         semantic.warningSoft,
         semantic.warningBorder,
+        semantic.onWarningSoft,
         semantic.onWarningSoft,
       ),
       MxBannerTone.danger => (
         semantic.dangerSoft,
         semantic.dangerBorder,
+        context.colors.error,
         semantic.onDangerSoft,
       ),
     };
@@ -89,6 +95,7 @@ class MxInlineBanner extends StatelessWidget {
       child: Semantics(
         liveRegion: true,
         child: MxSoftGround(
+          isDay: !isDanger,
           decoration: BoxDecoration(
             color: ground,
             borderRadius: BorderRadius.circular(AppRadius.md),
@@ -106,7 +113,7 @@ class MxInlineBanner extends StatelessWidget {
                   child: Icon(
                     AppIcons.alert,
                     size: AppIconSize.inline,
-                    color: foreground,
+                    color: glyph,
                   ),
                 ),
                 Expanded(

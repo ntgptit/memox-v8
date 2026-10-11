@@ -12,9 +12,9 @@ colors:
   tertiary: "#9C63FF"
   tertiary-container: "#FAA6FF"
   on-tertiary-container: "#282E3E"
-  error: "#B00020"
-  error-container: "#FFE8D8"
-  on-error-container: "#B00020"
+  error: "#C02447"
+  error-container: "#FBDDE3"
+  on-error-container: "#7A0A23"
   surface: "#FFFFFF"
   surface-bright: "#FFFFFF"
   surface-container-lowest: "#FFFFFF"
@@ -35,7 +35,7 @@ colors:
   success: "#12815A"
   warning: "#FFCD1F"
   on-warning: "#282E3E"
-  error-fill: "#B00020"
+  error-fill: "#DC2D4E"
   on-error-fill: "#FFFFFF"
   status-new: "#939BB4"
   status-learning: "#FF983A"
@@ -61,9 +61,9 @@ colors:
   warning-soft: "#FFEDAB"
   warning-border: "#FFDC62"
   on-warning-soft: "#997700"
-  danger-soft: "#FFE8D8"
-  danger-border: "#FFC38C"
-  on-danger-soft: "#B00020"
+  danger-soft: "#C0244714"
+  danger-border: "#C0244738"
+  on-danger-soft: "#AE2346"
   neutral-soft: "#EDEFFF"
   on-neutral-soft: "#2E3856"
   on-soft: "#282E3E"
@@ -265,12 +265,13 @@ One saturated brand indigo on a cool grey-blue neutral field, a green that only 
 - **Mastery** (`mastery`, #18AE79) and **Success** (`success`): progress and a finished session or a right answer. Two roles, never interchangeable; a right answer is success, never mastery. Success is text-safe: Day #12815A, Night #59E8B5. Mastery as text is **Mastery Text** (`masteryText`, the same two values).
 - **Status ramp**: `status-new` (#939BB4 Day, #586380 Night), `status-learning` (#FF983A), `status-reviewing` (indigo), `status-mastered` (#18AE79): dots and fills. Status text reads its text token: new in `on-surface-variant`, learning in **Learning Text** (`learningText`, Day #CC4E00, Night #FF983A), reviewing in `primaryText`, mastered in `masteryText`.
 - **Warning** (`warning`, #FFCD1F, with `on-warning` #282E3E): a refusal or a limit where nothing was lost. Warning text and glyphs on a plain ground read **Warning Text** (`warningText`, Day #997700, Night #FFCD1F).
-- **Error** (`error`): the text, glyph and edge role, Day #B00020, Night #FC3C60. **Destructive Fill** (`error-fill`, #B00020 in both): the solid destructive button only.
+- **The red family keeps its pre-Indigo values** (owner 2026-10-11, DEV-371): every error and danger colour below is the hex code it had before the Indigo palette.
+- **Error** (`error`): the text, glyph and edge role, Day #C02447, Night #FF8FA3. On error, Day #FFFFFF, Night #52061B. Error container Day #FBDDE3 / #7A0A23, Night #7A2036 / #FFD9DF. **Destructive Fill** (`error-fill`, Day #DC2D4E, Night #B0485C): the solid destructive button only.
 - **Streak** (`streak`, #F6406C): the Progress flame only.
 - **Switch**: `primaryTrack` (#DBDFFF) with a primary thumb when on, `neutralTrack` (#939BB4) with a white thumb when off.
 
 ### Soft grounds
-A soft ground is a light tint with its own edge and text, the same in both themes, so in Indigo Night a toned card, a banner, a badge, an icon tile or a right or wrong study tile is a light box with dark text.
+A soft ground is a light tint with its own edge and text, the same in both themes, so in Indigo Night a toned card, a banner, a badge, an icon tile or a right study tile is a light box with dark text. The danger ground is the exception: it keeps its pre-Indigo translucent red, so in Night a danger card, banner, badge, tile or wrong study tile is a dark pink box in Night's own text (DEV-371).
 
 | Family | Soft | Border | Text on it |
 |---|---|---|---|
@@ -278,10 +279,10 @@ A soft ground is a light tint with its own edge and text, the same in both theme
 | success / mastery | `successSoft` #E6FCF4 | `successBorder` #98F1D1 | `onSuccessSoft` #12815A |
 | learning | `learningSoft` #FFF6EF | `learningBorder` #FFC38C | `onLearningSoft` #CC4E00 |
 | warning | `warningSoft` #FFEDAB | `warningBorder` #FFDC62 | `onWarningSoft` #997700 |
-| danger | `dangerSoft` #FFE8D8 | `dangerBorder` #FFC38C | `onDangerSoft` #B00020 |
+| danger | `dangerSoft`: `error` at 8% (Day) / 16% (Night), translucent | `dangerBorder`: `error` at 22% / 32% | `onDangerSoft` Day #AE2346, Night #F7AABD (titles); glyphs and labels in `error` |
 | neutral | `neutralSoft` Day #EDEFFF, Night #586380 | — | `onNeutralSoft` Day #2E3856, Night #F6F7FB |
 
-A soft ground that holds a caller's content (MxCard's toned variants, MxInlineBanner, MxFloatingNotice, MxOutcomeTile) is an **MxSoftGround**: it themes its content with Indigo Day, so the text, glyphs and buttons inside read Day's tokens in both themes: body text is Day's `on-surface` (#282E3E, the same value as `onSoft`), a detail line or eyebrow Day's `on-surface-variant` (#586380), and an outline or text button's label Day's `primary-text`. `onSoft` is the text token of a soft ground drawn without MxSoftGround.
+A soft ground that holds a caller's content (MxCard's warning and success variants, the warning MxInlineBanner, MxFloatingNotice, MxOutcomeTile) is an **MxSoftGround**: it themes its content with Indigo Day, so the text, glyphs and buttons inside read Day's tokens in both themes: body text is Day's `on-surface` (#282E3E, the same value as `onSoft`), a detail line or eyebrow Day's `on-surface-variant` (#586380), and an outline or text button's label Day's `primary-text`. `onSoft` is the text token of a soft ground drawn without MxSoftGround.
 
 ### Named Rules
 **The One Indigo Rule.** Indigo means "act". A primary fill appears once per decision; the rest of the screen is neutral. An action in an `MxInlineBanner` or `MxFloatingNotice`, and the action in an `MxFooterBar`, is primary only when the screen shows no other primary for the same decision; otherwise it is outline or secondary (Sync's refused rows, an open session on Study entry, Study home's sync notice). A lone Close stays primary: one primary per decision holds (critique 2026-09-30 part 1, R8). A screen that asks *which way* fills its first way (Welcome: Google); a screen for one way fills that way's commit and outlines the other (Sign-in: Send code, then Google) (sign-in redesign 2026-10-05, S7).
@@ -364,12 +365,12 @@ One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, not
 Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no copy (callers pass localized strings) and read colour only from the theme.
 
 ### Actions
-- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, `primaryText`: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width and is never dimmed, whatever `onPressed` is (SW-REV-003), disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), `semanticLabel` names the button to TalkBack when its painted label does not say it, on its own node with the tap and the state (SW-REV-005), pressed overlay 12%, 2px focus ring in `focusRing`. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outline`. The dangerSoft tone is the danger soft ground with `onDangerSoft`.
+- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, `primaryText`: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width and is never dimmed, whatever `onPressed` is (SW-REV-003), disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), `semanticLabel` names the button to TalkBack when its painted label does not say it, on its own node with the tap and the state (SW-REV-005), pressed overlay 12%, 2px focus ring in `focusRing`. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outline`. The dangerSoft tone is the danger tint (`dangerSoft`, `dangerBorder`) with an `error` label.
 - **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area; its long-press tooltip is the caption on the inverse surface at radius 8, as the snackbar's ground (SW-REV-007). **MxFab**: square 52, r16, icon only, no extended form.
 - **MxActionPair** (two footer actions, side by side; stacked only as the last resort of The Short Label Rule; a screen footer's Cancel and its action share the row 1 : 1, as Card editor and Import do, DEV-169) and **MxSheetActions** (dialog and sheet footer; Cancel and the confirm share the row 1 : 1, the confirm being the verb alone, and neither carries an icon, since the tone already tells the weight, owner 2026-10-06, DEV-179; `MxSheetActions.single` is one action across the row, a lone Close, Done or OK, primary unless it dismisses beside choices, SW-REV-008). In a dialog it is inset 16 all round, on the edge the dialog's title and body share (DEV-166); the sheet form stays 8 / 16 / 16 under a border rule.
 
 ### Containers
-- **MxCard**: raised (the card ground, r12, the border hairline in both themes, the whisper shadow in Day), plus hero (`primary-container`), warning, success, danger (soft grounds, through `MxSoftGround`) and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
+- **MxCard**: raised (the card ground, r12, the border hairline in both themes, the whisper shadow in Day), plus hero (`primary-container`), warning, success, danger (warning and success are soft grounds through `MxSoftGround`; danger keeps its pre-Indigo tint over the card, dark in Night, and its content stays in the current theme, DEV-371) and recessed tones (one at a time), `isSelected` primary 2px edge, `isFullBleed` for edge-to-edge rows. Card interior 20.
 - **MxDialog** (widths 340, 320, 300; scale-in; centres in the room the keyboard leaves and scrolls its text when that room is short, SW-REV-002; `isHeld` refuses Back and the scrim while its work runs, as MxBottomSheet's and MxDeckPickerSheet's do, SW-REV-004; `showMxConfirm` asks a yes/no question, true only on the confirm, the tone on the confirm alone, SW-REV-009; title and body 16 in at the sides and 20 down, on the action pair's edge, DEV-166), **MxBottomSheet** (top corners 20, chrome shadow, grabber; `title` and `subtitle` draw the head every sheet shares: the compact title 20 in and 4 down, at most two lines, a heading to TalkBack, the subtitle 4 under it in the note role and 12 above the content, SW-REV-008; a head that is not a title and a line keeps `header`), **MxDeckPickerSheet** (with its loading and error sheets, which keep its head; the error sheet adds Retry and a dismiss, SW-REV-008), **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxDividedColumn** (rows with the border hairline between them, none after the last: the one owner of list dividers, DEV-305; a row draws no edge of its own), **MxNote** (one calm info line; `onDismiss` with a required `dismissLabel` adds a close button for a one-time note, stored as dismissed on the device; `MxNote.hint` is the footnote form with no fill and no border, and the one form for a footnote under a card, a section or an empty state (`MxSection.note`, `MxEmptyState.footnote`); the boxed note stands on its own in the flow, never inside another surface, DEV-303), **MxDashedNote** (placeholder for a chart or figure to come), **MxFooterBar** (in-flow commit bar; its caption in `footerCaption` at full strength, 4.5:1 or more, since it can carry a reason such as the offline note; sign-in redesign 2026-10-05; one line at a 360dp phone in English and Vietnamese, so a caption that does not fit is shortened, never wrapped, as `test/l10n/footer_caption_length_test.dart` asserts, owner 2026-10-05), **MxScrollFade** (a 24 fade over the edge of a scroll view while more lies past it: the bottom of a study face, both ends of a horizontal row such as the breadcrumb or a chip row; it takes no taps and says nothing to TalkBack, DEV-306).
 
 ### Inputs
