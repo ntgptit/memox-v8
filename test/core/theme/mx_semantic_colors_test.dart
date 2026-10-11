@@ -13,7 +13,8 @@ final _expected = <String, (Color Function(MxSemanticColors), int, int)>{
   'statusLearning': ((c) => c.statusLearning, 0xFFFF983A, 0xFFFF983A),
   'statusReviewing': ((c) => c.statusReviewing, 0xFF4255FF, 0xFF4255FF),
   'statusMastered': ((c) => c.statusMastered, 0xFF18AE79, 0xFF18AE79),
-  'errorFill': ((c) => c.errorFill, 0xFFB00020, 0xFFB00020),
+  // The destructive fill keeps its pre-Indigo values (DEV-371).
+  'errorFill': ((c) => c.errorFill, 0xFFDC2D4E, 0xFFB0485C),
   'onErrorFill': ((c) => c.onErrorFill, 0xFFFFFFFF, 0xFFFFFFFF),
   'streak': ((c) => c.streak, 0xFFF6406C, 0xFFF6406C),
   'primaryText': ((c) => c.primaryText, 0xFF4255FF, 0xFF7583FF),
@@ -38,6 +39,10 @@ final _expected = <String, (Color Function(MxSemanticColors), int, int)>{
   'dangerSoft': ((c) => c.dangerSoft, 0xFFFFE8D8, 0xFFFFE8D8),
   'dangerBorder': ((c) => c.dangerBorder, 0xFFFFC38C, 0xFFFFC38C),
   'onDangerSoft': ((c) => c.onDangerSoft, 0xFFB00020, 0xFFB00020),
+  // The dangerSoft button's own tint, kept from before Indigo (DEV-371).
+  'dangerTint': ((c) => c.dangerTint, 0x14C02447, 0x29FF8FA3),
+  'dangerTintBorder': ((c) => c.dangerTintBorder, 0x38C02447, 0x52FF8FA3),
+  'onDangerTint': ((c) => c.onDangerTint, 0xFFC02447, 0xFFFF8FA3),
   'neutralSoft': ((c) => c.neutralSoft, 0xFFEDEFFF, 0xFF586380),
   'onNeutralSoft': ((c) => c.onNeutralSoft, 0xFF2E3856, 0xFFF6F7FB),
   'onSoft': ((c) => c.onSoft, 0xFF282E3E, 0xFF282E3E),

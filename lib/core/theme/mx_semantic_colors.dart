@@ -42,6 +42,9 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     required this.dangerSoft,
     required this.dangerBorder,
     required this.onDangerSoft,
+    required this.dangerTint,
+    required this.dangerTintBorder,
+    required this.onDangerTint,
     required this.neutralSoft,
     required this.onNeutralSoft,
     required this.onSoft,
@@ -57,7 +60,7 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     statusLearning: Color(0xFFFF983A),
     statusReviewing: Color(0xFF4255FF),
     statusMastered: Color(0xFF18AE79),
-    errorFill: Color(0xFFB00020),
+    errorFill: Color(0xFFDC2D4E),
     onErrorFill: Color(0xFFFFFFFF),
     streak: Color(0xFFF6406C),
     primaryText: Color(0xFF4255FF),
@@ -82,6 +85,9 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     dangerSoft: Color(0xFFFFE8D8),
     dangerBorder: Color(0xFFFFC38C),
     onDangerSoft: Color(0xFFB00020),
+    dangerTint: Color(0x14C02447),
+    dangerTintBorder: Color(0x38C02447),
+    onDangerTint: Color(0xFFC02447),
     neutralSoft: Color(0xFFEDEFFF),
     onNeutralSoft: Color(0xFF2E3856),
     onSoft: Color(0xFF282E3E),
@@ -97,7 +103,7 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     statusLearning: Color(0xFFFF983A),
     statusReviewing: Color(0xFF4255FF),
     statusMastered: Color(0xFF18AE79),
-    errorFill: Color(0xFFB00020),
+    errorFill: Color(0xFFB0485C),
     onErrorFill: Color(0xFFFFFFFF),
     streak: Color(0xFFF6406C),
     primaryText: Color(0xFF7583FF),
@@ -122,6 +128,9 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     dangerSoft: Color(0xFFFFE8D8),
     dangerBorder: Color(0xFFFFC38C),
     onDangerSoft: Color(0xFFB00020),
+    dangerTint: Color(0x29FF8FA3),
+    dangerTintBorder: Color(0x52FF8FA3),
+    onDangerTint: Color(0xFFFF8FA3),
     neutralSoft: Color(0xFF586380),
     onNeutralSoft: Color(0xFFF6F7FB),
     onSoft: Color(0xFF282E3E),
@@ -232,6 +241,16 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   /// Text and glyphs on [dangerSoft].
   final Color onDangerSoft;
 
+  /// The dangerSoft button's fill: the pre-Indigo red at 8% (Day) or 16%
+  /// (Night), kept translucent as before (owner 2026-10-11, DEV-371).
+  final Color dangerTint;
+
+  /// The dangerSoft button's edge: the same red at 22% or 32%.
+  final Color dangerTintBorder;
+
+  /// The dangerSoft button's label.
+  final Color onDangerTint;
+
   /// The neutral soft ground (a count badge, the new status pill).
   final Color neutralSoft;
 
@@ -277,6 +296,9 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     Color? dangerSoft,
     Color? dangerBorder,
     Color? onDangerSoft,
+    Color? dangerTint,
+    Color? dangerTintBorder,
+    Color? onDangerTint,
     Color? neutralSoft,
     Color? onNeutralSoft,
     Color? onSoft,
@@ -315,6 +337,9 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     dangerSoft: dangerSoft ?? this.dangerSoft,
     dangerBorder: dangerBorder ?? this.dangerBorder,
     onDangerSoft: onDangerSoft ?? this.onDangerSoft,
+    dangerTint: dangerTint ?? this.dangerTint,
+    dangerTintBorder: dangerTintBorder ?? this.dangerTintBorder,
+    onDangerTint: onDangerTint ?? this.onDangerTint,
     neutralSoft: neutralSoft ?? this.neutralSoft,
     onNeutralSoft: onNeutralSoft ?? this.onNeutralSoft,
     onSoft: onSoft ?? this.onSoft,
@@ -362,6 +387,13 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
       dangerSoft: Color.lerp(dangerSoft, other.dangerSoft, t)!,
       dangerBorder: Color.lerp(dangerBorder, other.dangerBorder, t)!,
       onDangerSoft: Color.lerp(onDangerSoft, other.onDangerSoft, t)!,
+      dangerTint: Color.lerp(dangerTint, other.dangerTint, t)!,
+      dangerTintBorder: Color.lerp(
+        dangerTintBorder,
+        other.dangerTintBorder,
+        t,
+      )!,
+      onDangerTint: Color.lerp(onDangerTint, other.onDangerTint, t)!,
       neutralSoft: Color.lerp(neutralSoft, other.neutralSoft, t)!,
       onNeutralSoft: Color.lerp(onNeutralSoft, other.onNeutralSoft, t)!,
       onSoft: Color.lerp(onSoft, other.onSoft, t)!,

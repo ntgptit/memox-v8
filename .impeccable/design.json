@@ -358,11 +358,12 @@
       "error-fill": {
         "role": "semantic",
         "displayName": "Destructive Fill",
-        "canonical": "#B00020",
-        "light": "#B00020",
-        "dark": "#B00020",
+        "canonical": "#DC2D4E",
+        "light": "#DC2D4E",
+        "dark": "#B0485C",
         "tonalRamp": [
-          "#B00020"
+          "#DC2D4E",
+          "#B0485C"
         ]
       },
       "on-error-fill": {
@@ -823,7 +824,7 @@
       "refersTo": "button-destructive",
       "description": "Solid destructive fill, used only to confirm a destructive dialog.",
       "html": "<button class=\"ds-btn-danger\">Delete</button>",
-      "css": ".ds-btn-danger{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#B00020;color:#FFFFFF;} .ds-btn-danger:active{filter:brightness(0.88)} .ds-btn-danger:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
+      "css": ".ds-btn-danger{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#DC2D4E;color:#FFFFFF;} .ds-btn-danger:active{filter:brightness(0.88)} .ds-btn-danger:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
     },
     {
       "name": "Text Field",

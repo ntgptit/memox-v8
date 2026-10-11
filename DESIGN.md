@@ -35,7 +35,7 @@ colors:
   success: "#12815A"
   warning: "#FFCD1F"
   on-warning: "#282E3E"
-  error-fill: "#B00020"
+  error-fill: "#DC2D4E"
   on-error-fill: "#FFFFFF"
   status-new: "#939BB4"
   status-learning: "#FF983A"
@@ -265,7 +265,7 @@ One saturated brand indigo on a cool grey-blue neutral field, a green that only 
 - **Mastery** (`mastery`, #18AE79) and **Success** (`success`): progress and a finished session or a right answer. Two roles, never interchangeable; a right answer is success, never mastery. Success is text-safe: Day #12815A, Night #59E8B5. Mastery as text is **Mastery Text** (`masteryText`, the same two values).
 - **Status ramp**: `status-new` (#939BB4 Day, #586380 Night), `status-learning` (#FF983A), `status-reviewing` (indigo), `status-mastered` (#18AE79): dots and fills. Status text reads its text token: new in `on-surface-variant`, learning in **Learning Text** (`learningText`, Day #CC4E00, Night #FF983A), reviewing in `primaryText`, mastered in `masteryText`.
 - **Warning** (`warning`, #FFCD1F, with `on-warning` #282E3E): a refusal or a limit where nothing was lost. Warning text and glyphs on a plain ground read **Warning Text** (`warningText`, Day #997700, Night #FFCD1F).
-- **Error** (`error`): the text, glyph and edge role, Day #B00020, Night #FC3C60. **Destructive Fill** (`error-fill`, #B00020 in both): the solid destructive button only.
+- **Error** (`error`): the text, glyph and edge role, Day #B00020, Night #FC3C60. **Destructive Fill** (`error-fill`, Day #DC2D4E, Night #B0485C): the solid destructive button only; it keeps its pre-Indigo values (owner 2026-10-11, DEV-371). **Danger Tint** (`dangerTint`, `dangerTintBorder`, `onDangerTint`): the dangerSoft button only, also pre-Indigo: the red #C02447 (Day) or #FF8FA3 (Night) as the label, and the same red at 8% / 16% as the fill and 22% / 32% as the edge, translucent over its ground.
 - **Streak** (`streak`, #F6406C): the Progress flame only.
 - **Switch**: `primaryTrack` (#DBDFFF) with a primary thumb when on, `neutralTrack` (#939BB4) with a white thumb when off.
 
@@ -364,7 +364,7 @@ One radius for everything in the flow: 12 (`md`) for cards, buttons, inputs, not
 Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no copy (callers pass localized strings) and read colour only from the theme.
 
 ### Actions
-- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, `primaryText`: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width and is never dimmed, whatever `onPressed` is (SW-REV-003), disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), `semanticLabel` names the button to TalkBack when its painted label does not say it, on its own node with the tap and the state (SW-REV-005), pressed overlay 12%, 2px focus ring in `focusRing`. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outline`. The dangerSoft tone is the danger soft ground with `onDangerSoft`.
+- **MxButton**: tones primary, secondary, outline, text (no fill and no edge, `primaryText`: the quiet action beside a decision's fill), destructive, dangerSoft, warning; sizes regular (48, r12, 16 pad), small (36), compact (32, r8, 12 pad), chip (28 pill) and study (48 pill, 36 pad). One label style, icon at 16, an optional brand mark (an image at 18 in the icon's place, such as Google's G, never read aloud), optional detail line, `isLoading` swaps the label for a spinner at the same width and is never dimmed, whatever `onPressed` is (SW-REV-003), disabled is 0.38 opacity (`AppOpacity.disabled`, for controls that cannot be used), `semanticLabel` names the button to TalkBack when its painted label does not say it, on its own node with the tap and the state (SW-REV-005), pressed overlay 12%, 2px focus ring in `focusRing`. Regular labels wrap to two lines; others stay single line. The outline tone's edge is `outline`. The dangerSoft tone is the Danger Tint (`dangerTint`, `dangerTintBorder`, `onDangerTint`), not the danger soft ground.
 - **MxIconButton**: 20 glyph in a 36 round ink box with a 48 hit area; its long-press tooltip is the caption on the inverse surface at radius 8, as the snackbar's ground (SW-REV-007). **MxFab**: square 52, r16, icon only, no extended form.
 - **MxActionPair** (two footer actions, side by side; stacked only as the last resort of The Short Label Rule; a screen footer's Cancel and its action share the row 1 : 1, as Card editor and Import do, DEV-169) and **MxSheetActions** (dialog and sheet footer; Cancel and the confirm share the row 1 : 1, the confirm being the verb alone, and neither carries an icon, since the tone already tells the weight, owner 2026-10-06, DEV-179; `MxSheetActions.single` is one action across the row, a lone Close, Done or OK, primary unless it dismisses beside choices, SW-REV-008). In a dialog it is inset 16 all round, on the edge the dialog's title and body share (DEV-166); the sheet form stays 8 / 16 / 16 under a border rule.
 

@@ -204,6 +204,13 @@ List<_Pair> _pairs(
         _text,
       ),
     ],
+    // The dangerSoft button's label on its translucent tint over the card.
+    (
+      'dangerSoft button label',
+      semantic.onDangerTint,
+      Color.alphaBlend(semantic.dangerTint, row),
+      _text,
+    ),
     // A seeded icon tile's glyph on its primary soft ground (MxIconTile).
     (
       'streak glyph on its tile',
