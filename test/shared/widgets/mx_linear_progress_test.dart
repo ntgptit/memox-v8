@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
 import '../../support/theme_expect.dart';
@@ -26,7 +27,10 @@ void main() {
       find.byType(FractionallySizedBox),
     );
     expect(fill.widthFactor, 0.6);
-    expect(tester.getSize(find.byType(MxLinearProgress)).height, 4);
+    expect(
+      tester.getSize(find.byType(MxLinearProgress)).height,
+      const AppDimens().sizeTrack,
+    );
     // No node of its own: the whole track sits under ExcludeSemantics.
     expect(
       find.descendant(
@@ -50,14 +54,17 @@ void main() {
           .widthFactor!;
     }
 
-    testWidgets('5 tall, filled in the ramp colour', (tester) async {
+    testWidgets('sizeTrack tall, filled in the ramp colour', (tester) async {
       await pumpMx(
         tester,
         const SizedBox(width: 200, child: MxLinearProgress.mastery(value: 0.5)),
       );
       await tester.pumpAndSettle();
 
-      expect(tester.getSize(find.byType(MxLinearProgress)).height, 5);
+      expect(
+        tester.getSize(find.byType(MxLinearProgress)).height,
+        const AppDimens().sizeTrack,
+      );
       final fill = tester.widget<ColoredBox>(
         find.descendant(
           of: find.byType(FractionallySizedBox),
@@ -69,8 +76,11 @@ void main() {
 
     testWidgets('any mastery shows, and a deck short of 100% never looks '
         'full: the fill keeps its height in from either end', (tester) async {
-      expect(await drawn(tester, 0.0001), 5 / 200);
-      expect(await drawn(tester, 0.9999), 1 - 5 / 200);
+      expect(await drawn(tester, 0.0001), const AppDimens().sizeTrack / 200);
+      expect(
+        await drawn(tester, 0.9999),
+        1 - const AppDimens().sizeTrack / 200,
+      );
       expect(await drawn(tester, 0.5), 0.5);
       expect(await drawn(tester, 1), 1);
     });

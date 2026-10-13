@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
@@ -51,20 +52,27 @@ TextStyle? _termStyle(WidgetTester tester, String term) =>
         .firstWhere((span) => span.text == term)
         .style;
 
+/// One line of the breakdown: the labelMedium role's size times its height.
+double _lineHeight(WidgetTester tester) {
+  final role = tester
+      .element(find.byType(MxWorkloadBreakdownLine))
+      .texts
+      .labelMedium!;
+  return role.fontSize! * role.height!;
+}
+
 void main() {
   final scheme = lightColorScheme;
   const mx = MxColorsExtension.light;
 
-  testWidgets('all three terms in order, each in its colour, at 600', (
-    tester,
-  ) async {
+  testWidgets('all three terms in order, each in its colour', (tester) async {
     await pumpMx(tester, _line());
 
     expect(_plain(tester), '3 overdue · 5 today · 2 new');
     expect(_termStyle(tester, '3 overdue')!.color, mx.warning);
     expect(_termStyle(tester, '5 today')!.color, accentOf(scheme));
     expect(_termStyle(tester, '2 new')!.color, scheme.onSurfaceVariant);
-    expect(_termStyle(tester, '2 new')!.fontWeight, FontWeight.w600);
+    expect(_termStyle(tester, '2 new')!.fontWeight, FontWeight.w400);
     expect(_root(tester).style!.fontWeight, FontWeight.w400);
     expect(_root(tester).style!.color, scheme.onSurfaceVariant);
   });
@@ -92,7 +100,7 @@ void main() {
     expect(_plain(tester), '3 overdue · 5 today · 2 new across 4 decks');
   });
 
-  testWidgets('one 18 line with an ellipsis', (tester) async {
+  testWidgets('one line with an ellipsis', (tester) async {
     await pumpMx(tester, SizedBox(width: 120, child: _line()));
     final text = tester.widget<Text>(
       find.descendant(
@@ -102,7 +110,10 @@ void main() {
     );
 
     expect((text.maxLines, text.overflow), (1, TextOverflow.ellipsis));
-    expect(tester.getSize(find.byType(MxWorkloadBreakdownLine)).height, 18);
+    expect(
+      tester.getSize(find.byType(MxWorkloadBreakdownLine)).height,
+      _lineHeight(tester),
+    );
   });
 
   test('a negative count asserts', () {
@@ -219,7 +230,7 @@ void main() {
   });
 
   testWidgets('with icons each term leads with its own glyph in its ink, on '
-      'the same 18 line, and is read as its words only (BR-STUDY-076)', (
+      'the same line, and is read as its words only (BR-STUDY-076)', (
     tester,
   ) async {
     await pumpMx(
@@ -254,7 +265,10 @@ void main() {
     );
     expect(semantics.properties.label, '3 overdue · 0 today · 2 new');
     expect(semantics.excludeSemantics, isTrue);
-    expect(tester.getSize(find.byType(MxWorkloadBreakdownLine)).height, 18);
+    expect(
+      tester.getSize(find.byType(MxWorkloadBreakdownLine)).height,
+      _lineHeight(tester),
+    );
   });
 
   testWidgets('a plain line draws no icon', (tester) async {
@@ -269,7 +283,11 @@ void main() {
     await pumpMx(tester, SizedBox(width: 90, child: _line(hasIcons: true)));
 
     final line = find.byType(MxWorkloadBreakdownLine);
-    expect(tester.getSize(line).height, greaterThan(18), reason: 'it wraps');
+    expect(
+      tester.getSize(line).height,
+      greaterThan(_lineHeight(tester)),
+      reason: 'it wraps',
+    );
     for (final (glyph, words) in [
       (AppIcons.overdue, '3 overdue ·'),
       (AppIcons.dueNow, '5 today ·'),
@@ -328,7 +346,7 @@ void main() {
               )
               .single
               .top ~/
-          18;
+          _lineHeight(tester);
       for (final term in ['3 overdue', '5 today', '2 new']) {
         final start = text.indexOf(term.replaceAll(' ', ' '));
         expect(start, isNot(-1), reason: '$term at $width');

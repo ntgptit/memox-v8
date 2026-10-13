@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
@@ -49,22 +50,26 @@ void main() {
     expect(tester.widget<Text>(find.text('20')).style!.color, scheme.onSurface);
   });
 
-  testWidgets('36 buttons with 48 targets; the value column is at least 48', (
-    tester,
-  ) async {
-    await pumpMx(tester, _stepper(value: 1));
-    final painted = find.descendant(
-      of: find.byType(TextButton),
-      matching: find.byType(Material),
-    );
+  testWidgets(
+    'small buttons with 48 targets; the value column is at least 48',
+    (tester) async {
+      await pumpMx(tester, _stepper(value: 1));
+      final painted = find.descendant(
+        of: find.byType(TextButton),
+        matching: find.byType(Material),
+      );
 
-    expect(tester.getSize(painted.first), const Size.square(36));
-    expect(
-      tester.getSize(find.byKey(_valueKey)).width,
-      greaterThanOrEqualTo(48),
-    );
-    await expectAccessibleTargets(tester);
-  });
+      expect(
+        tester.getSize(painted.first),
+        Size.square(const AppDimens().sizeButtonSmall),
+      );
+      expect(
+        tester.getSize(find.byKey(_valueKey)).width,
+        greaterThanOrEqualTo(48),
+      );
+      await expectAccessibleTargets(tester);
+    },
+  );
 
   testWidgets('invalid: error number inside a 1px error ring', (tester) async {
     await pumpMx(tester, _stepper(value: 250, isInvalid: true));

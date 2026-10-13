@@ -52,7 +52,7 @@ void main() {
     await pumpMx(tester, const MxSkeleton(height: 28, isCircle: true));
 
     expect(tester.getSize(find.byType(MxSkeleton)), const Size.square(28));
-    expect(_block(tester).borderRadius, BorderRadius.circular(999));
+    expect(_block(tester).borderRadius, BorderRadius.circular(14));
   });
 
   testWidgets('pulses 0.45 → 0.75 → 0.45 over 1.4s', (tester) async {

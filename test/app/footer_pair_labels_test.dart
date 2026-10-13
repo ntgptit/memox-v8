@@ -6,7 +6,6 @@ import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../support/widget_harness.dart';
 
-
 /// A pair of actions sits side by side when both labels fit their share and
 /// stacks full width otherwise (MxActionPair). Either way a label is never
 /// wider than the row it stands in, so it never wraps or ellipsizes; this

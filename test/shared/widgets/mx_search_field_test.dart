@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
 import '../../support/theme_expect.dart';
@@ -31,20 +34,30 @@ void main() {
         ),
       );
 
-  testWidgets('52 tall, 16/400 value, resting fill and muted glyph', (
-    tester,
-  ) async {
-    await pump(tester);
-    final field = tester.widget<TextField>(find.byType(TextField));
+  testWidgets(
+    'sizeSearch tall, labelMedium value, search surface and muted glyph',
+    (tester) async {
+      await pump(tester);
+      final field = tester.widget<TextField>(find.byType(TextField));
 
-    expect(tester.getSize(find.byType(TextField)).height, 52);
-    expect(field.style!.fontSize, 16);
-    expect(field.decoration!.fillColor, scheme.surfaceContainer);
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
-      scheme.onSurfaceVariant,
-    );
-  });
+      expect(
+        tester.getSize(find.byType(TextField)).height,
+        const AppDimens().sizeSearch,
+      );
+      expect(
+        field.style,
+        tester.element(find.byType(TextField)).texts.labelMedium,
+      );
+      expect(
+        field.decoration!.fillColor,
+        MxColorsExtension.light.searchSurface,
+      );
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
+        scheme.onSurfaceVariant,
+      );
+    },
+  );
 
   testWidgets('no clear button until there is a query', (tester) async {
     await pump(tester);
@@ -53,7 +66,10 @@ void main() {
     await tester.enterText(find.byType(TextField), 'verb');
     await tester.pump();
     expect(find.byTooltip('Clear search'), findsOneWidget);
-    expect(tester.getSize(find.byType(TextField)).height, 52);
+    expect(
+      tester.getSize(find.byType(TextField)).height,
+      const AppDimens().sizeSearch,
+    );
   });
 
   testWidgets('clear empties the query and reports it', (tester) async {
@@ -84,13 +100,15 @@ void main() {
     );
   }, variant: TargetPlatformVariant.all());
 
-  testWidgets('focus lightens the fill and tints the glyph', (tester) async {
+  testWidgets('focus keeps the search surface and tints the glyph', (
+    tester,
+  ) async {
     await pump(tester);
     await tester.tap(find.byType(TextField));
     await tester.pump();
     final field = tester.widget<TextField>(find.byType(TextField));
 
-    expect(field.decoration!.fillColor, scheme.surfaceContainerLowest);
+    expect(field.decoration!.fillColor, MxColorsExtension.light.searchSurface);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
       accentOf(scheme),
@@ -103,7 +121,10 @@ void main() {
     await tester.pump();
 
     expect(tester.widget<TextField>(find.byType(TextField)).maxLines, 1);
-    expect(tester.getSize(find.byType(TextField)).height, 52);
+    expect(
+      tester.getSize(find.byType(TextField)).height,
+      const AppDimens().sizeSearch,
+    );
   });
 
   group('trigger', () {
@@ -115,16 +136,23 @@ void main() {
       ),
     );
 
-    testWidgets('looks like the resting field: 52 tall, resting fill, hint', (
-      tester,
-    ) async {
-      await pumpTrigger(tester, () {});
-      final field = tester.widget<TextField>(find.byType(TextField));
+    testWidgets(
+      'looks like the resting field: sizeSearch tall, search surface, hint',
+      (tester) async {
+        await pumpTrigger(tester, () {});
+        final field = tester.widget<TextField>(find.byType(TextField));
 
-      expect(tester.getSize(find.byType(TextField)).height, 52);
-      expect(field.decoration!.fillColor, scheme.surfaceContainer);
-      expect(find.text('Search decks'), findsOneWidget);
-    });
+        expect(
+          tester.getSize(find.byType(TextField)).height,
+          const AppDimens().sizeSearch,
+        );
+        expect(
+          field.decoration!.fillColor,
+          MxColorsExtension.light.searchSurface,
+        );
+        expect(find.text('Search decks'), findsOneWidget);
+      },
+    );
 
     testWidgets('a tap calls onTap once and takes no focus', (tester) async {
       var taps = 0;

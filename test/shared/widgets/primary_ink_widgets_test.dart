@@ -30,8 +30,8 @@ void main() {
   Color? textColor(WidgetTester tester, String text) =>
       tester.widget<Text>(find.text(text)).style?.color;
 
-  testWidgets('MxButton: outline ink and every focus ring are primaryInk; '
-      'the primary fill keeps primary', (tester) async {
+  testWidgets('MxButton: outline ink is the accent and every focus ring is '
+      'primary; the primary fill keeps primary', (tester) async {
     await pumpDark(
       tester,
       Column(
@@ -55,10 +55,10 @@ void main() {
         .style!;
     const focused = {WidgetState.focused};
     expect(style('Outline').foregroundColor!.resolve({}), ink);
-    expect(style('Outline').side!.resolve(focused)!.color, ink);
+    expect(style('Outline').side!.resolve(focused)!.color, scheme.primary);
     expect(style('Fill').backgroundColor!.resolve({}), scheme.primary);
     expect(style('Fill').foregroundColor!.resolve({}), scheme.onPrimary);
-    expect(style('Fill').side!.resolve(focused)!.color, ink);
+    expect(style('Fill').side!.resolve(focused)!.color, scheme.primary);
   });
 
   testWidgets('MxBadge: a tinted primary badge inks in primaryInk', (

@@ -158,11 +158,12 @@ void main() {
         final fill = _tile(tester).color!;
         final glyph = tester.widget<Icon>(find.byIcon(AppIcons.check)).color!;
 
-        expect(fill.a, lessThan(1), reason: 'a soft tint, not a solid fill');
         expect(
-          _ratio(glyph, Color.alphaBlend(fill, scheme.surface)),
-          greaterThanOrEqualTo(3),
+          _ratio(fill, scheme.surface),
+          lessThan(1.5),
+          reason: 'a soft tint, not a solid fill',
         );
+        expect(_ratio(glyph, fill), greaterThanOrEqualTo(3));
       });
     }
   }

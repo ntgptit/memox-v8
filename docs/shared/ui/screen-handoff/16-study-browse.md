@@ -99,4 +99,4 @@ look-back order is the order served, which the stage shuffles (BR-STUDY-022). Go
 ## Copy
 
 - Context line: "{deck} · Learning · stage {n} of {total}".
-- Footer hint: "Swipe for next or back · nothing is graded" / "Vuốt để sang hoặc quay lại · không chấm điểm".
+- Footer hint: "Swipe for next or back · nothing is graded" / "Vuốt để chuyển thẻ · không chấm điểm".

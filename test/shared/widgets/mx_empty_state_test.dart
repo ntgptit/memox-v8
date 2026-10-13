@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
@@ -108,7 +109,9 @@ void main() {
     expect(tester.getSize(find.byIcon(AppIcons.inbox)).width, 24);
   });
 
-  testWidgets('a footnote sits 20 below the action as a note', (tester) async {
+  testWidgets('a footnote sits space24 below the action as a note', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxEmptyState(
@@ -123,7 +126,7 @@ void main() {
     expect(
       tester.getTopLeft(find.byType(MxNote)).dy -
           tester.getBottomLeft(find.byType(MxButton)).dy,
-      20,
+      const AppDimens().space24,
     );
   });
 

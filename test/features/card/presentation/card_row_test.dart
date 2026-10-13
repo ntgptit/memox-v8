@@ -81,7 +81,7 @@ void main() {
               w is Padding &&
               w.padding ==
                   EdgeInsets.symmetric(
-                    horizontal: const AppDimens().marginScreenMedium,
+                    horizontal: const AppDimens().space16,
                     vertical: const AppDimens().space12,
                   ),
         ),

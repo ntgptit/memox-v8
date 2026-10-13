@@ -4114,7 +4114,7 @@
   "@studySelfAssessHintPrompt": {
     "description": "Screen handoff 16a (FE-A6 P2): footer hint before the reveal."
   },
-  "studySelfAssessHintGrade": "Be honest — grade how well you remembered",
+  "studySelfAssessHintGrade": "Grade how well you remembered",
   "@studySelfAssessHintGrade": {
     "description": "Screen handoff 16a (FE-A6 P2): footer hint after the reveal."
   },

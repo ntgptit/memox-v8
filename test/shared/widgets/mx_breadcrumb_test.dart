@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
@@ -25,18 +26,20 @@ void main() {
     expect(tapped, [1]);
   });
 
-  testWidgets('ancestor 500 onSurfaceVariant, current 700 onSurface', (
-    tester,
-  ) async {
-    await pumpMx(tester, MxBreadcrumb(segments: _path(2)));
+  testWidgets(
+    'ancestor labelMedium onSurfaceVariant, current titleSmall onSurface',
+    (tester) async {
+      await pumpMx(tester, MxBreadcrumb(segments: _path(2)));
 
-    final ancestor = tester.widget<Text>(find.text('Level 1')).style!;
-    final current = tester.widget<Text>(find.text('Level 2')).style!;
-    expect(ancestor.fontWeight, FontWeight.w500);
-    expect(ancestor.color, scheme.onSurfaceVariant);
-    expect(current.fontWeight, FontWeight.w700);
-    expect(current.color, scheme.onSurface);
-  });
+      final ancestor = tester.widget<Text>(find.text('Level 1')).style!;
+      final current = tester.widget<Text>(find.text('Level 2')).style!;
+      final texts = tester.element(find.text('Level 1')).texts;
+      expect(ancestor.fontWeight, texts.labelMedium!.fontWeight);
+      expect(ancestor.color, scheme.onSurfaceVariant);
+      expect(current.fontWeight, texts.titleSmall!.fontWeight);
+      expect(current.color, scheme.onSurface);
+    },
+  );
 
   testWidgets('one outline chevron at 16 between each pair', (tester) async {
     await pumpMx(tester, MxBreadcrumb(segments: _path(4)));

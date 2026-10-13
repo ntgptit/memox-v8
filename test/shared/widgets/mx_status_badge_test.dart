@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 
@@ -12,7 +13,11 @@ import '../../support/widget_harness.dart';
 const _dotKey = ValueKey('mx-status-dot');
 
 Color? _fill(WidgetTester tester, Finder finder) =>
-    (tester.widget<DecoratedBox>(finder).decoration as BoxDecoration).color;
+    switch (tester.widget<DecoratedBox>(finder).decoration) {
+      final ShapeDecoration shape => shape.color,
+      final BoxDecoration box => box.color,
+      _ => null,
+    };
 
 void main() {
   const mx = MxColorsExtension.light;
@@ -35,7 +40,7 @@ void main() {
           )
           .first;
 
-      expect(_fill(tester, pill), color.withValues(alpha: 0.12));
+      expect(_fill(tester, pill), color.tintOver(scheme.surface));
       expect(_fill(tester, find.byKey(_dotKey)), color);
       expect(tester.widget<Text>(find.text('State')).style!.color, ink);
     }

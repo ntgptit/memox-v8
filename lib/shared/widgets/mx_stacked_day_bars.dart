@@ -91,8 +91,12 @@ class MxStackedDayBars extends StatelessWidget {
                     child: Text(
                       day.label,
                       maxLines: 1,
+                      // The current day reads in the full ink; the weight is
+                      // the role's, so colour carries the distinction.
                       style: context.texts.labelSmall?.copyWith(
-                        color: context.colors.onSurfaceVariant,
+                        color: day.isCurrent
+                            ? context.colors.onSurface
+                            : context.colors.onSurfaceVariant,
                       ),
                     ),
                   ),

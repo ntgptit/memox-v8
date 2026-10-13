@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -181,27 +182,34 @@ void main() {
     );
   });
 
-  testWidgets('wide: the column is 720 and centred; the ground fills the '
-      'window (FE-C5)', (tester) async {
-    await _pumpWide(
-      tester,
-      const MxAppShell(
-        appBar: MxAppBar(title: 'Library', key: _barKey),
-        body: SizedBox.expand(key: _bodyKey),
-      ),
-    );
+  testWidgets(
+    'wide: the column is sizeContentMaxWide and centred; the ground fills the '
+    'window (FE-C5)',
+    (tester) async {
+      await _pumpWide(
+        tester,
+        const MxAppShell(
+          appBar: MxAppBar(title: 'Library', key: _barKey),
+          body: SizedBox.expand(key: _bodyKey),
+        ),
+      );
 
-    final body = tester.getRect(find.byKey(_bodyKey));
-    expect((body.left, body.width), ((1280 - 720) / 2, 720));
-    expect(tester.getRect(find.byKey(_barKey)).width, 720);
-    expect(tester.getSize(find.byType(Scaffold)).width, 1280);
-  });
+      final body = tester.getRect(find.byKey(_bodyKey));
+      final column = const AppDimens().sizeContentMaxWide;
+      expect((body.left, body.width), ((1280 - column) / 2, column));
+      expect(tester.getRect(find.byKey(_barKey)).width, column);
+      expect(tester.getSize(find.byType(Scaffold)).width, 1280);
+    },
+  );
 
-  testWidgets('wide: the FAB sits 16 in from the column edge, mirrored in '
+  testWidgets('wide: the FAB sits space16 in from the column edge, mirrored in '
       'RTL (FE-C5)', (tester) async {
+    const dimens = AppDimens();
+    final columnStart = (1280 - dimens.sizeContentMaxWide) / 2;
+    final columnEnd = columnStart + dimens.sizeContentMaxWide;
     for (final (direction, left) in [
-      (TextDirection.ltr, 1000.0 - 16 - 52),
-      (TextDirection.rtl, 280.0 + 16),
+      (TextDirection.ltr, columnEnd - dimens.space16 - dimens.sizeFab),
+      (TextDirection.rtl, columnStart + dimens.space16),
     ]) {
       await _pumpWide(
         tester,

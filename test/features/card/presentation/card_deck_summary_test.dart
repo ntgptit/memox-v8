@@ -188,7 +188,11 @@ void main() {
     final label = tester.widget<Text>(
       find.text(_en.cardDeckProgress('SM-2').toUpperCase()),
     );
-    expect(label.style!.fontSize, 12);
-    expect(label.style!.fontWeight, FontWeight.w600);
+    final role = tester
+        .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
+        .texts
+        .labelSmall!;
+    expect(label.style!.fontSize, role.fontSize);
+    expect(label.style!.fontWeight, role.fontWeight);
   });
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -45,7 +46,8 @@ void main() {
   testWidgets('the glyph centres on the first line', (tester) async {
     final long = List.filled(12, _rule).join(' ');
     await pumpMx(tester, SizedBox(width: 328, child: MxNote(text: long)));
-    const firstLine = 12 * 1.5;
+    final role = tester.element(find.text(long)).texts.bodyMedium!;
+    final firstLine = role.fontSize! * role.height!;
 
     expect(
       tester.getCenter(find.byType(Icon)).dy,

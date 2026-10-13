@@ -21,11 +21,11 @@ void main() {
                   ),
                 )
                 .decoration
-            as BoxDecoration;
+            as ShapeDecoration;
 
     expect(tester.getSize(find.byType(MxTagChip)).height, 22);
     expect(box.color, scheme.surfaceContainer);
-    expect(box.borderRadius, BorderRadius.circular(999));
+    expect(box.shape, isA<StadiumBorder>());
     expect(
       tester.widget<Text>(find.text('verbs')).style!.color,
       scheme.onSurfaceVariant,

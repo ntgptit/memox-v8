@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 
 import '../../support/theme_expect.dart';
 
@@ -55,40 +57,47 @@ Finder _item(String label) =>
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('80 wide on surfaceContainerLow; every item at least 48×56', (
-    tester,
-  ) async {
+  testWidgets('sizeRail wide on the surface with a divider edge; every item '
+      'at least control wide and 56 tall', (tester) async {
     await pumpMx(tester, _rail());
 
-    expect(tester.getSize(find.byType(MxNavRail)).width, 80);
     expect(
-      tester
-          .widget<ColoredBox>(
-            find
-                .descendant(
-                  of: find.byType(MxNavRail),
-                  matching: find.byType(ColoredBox),
-                )
-                .first,
+      tester.getSize(find.byType(MxNavRail)).width,
+      const AppDimens().sizeRail,
+    );
+    final rail = tester.widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byType(MxNavRail),
+            matching: find.byType(DecoratedBox),
           )
-          .color,
-      scheme.surfaceContainerLow,
+          .first,
+    );
+    final decoration = rail.decoration as BoxDecoration;
+    expect(decoration.color, scheme.surface);
+    expect(
+      (decoration.border! as BorderDirectional).end.color,
+      MxColorsExtension.light.divider,
     );
     for (final d in _destinations) {
       final size = tester.getSize(_item(d.label));
-      expect(size.width, greaterThanOrEqualTo(48), reason: d.label);
+      expect(
+        size.width,
+        greaterThanOrEqualTo(const AppDimens().sizeControl),
+        reason: d.label,
+      );
       expect(size.height, greaterThanOrEqualTo(56), reason: d.label);
     }
   });
 
-  testWidgets('the selected item: filled glyph in primaryInk on the pill; '
-      'the rest outlined in onSurfaceVariant', (tester) async {
+  testWidgets('the selected item: filled glyph on the secondary-container '
+      'pill; the rest outlined in onSurfaceVariant', (tester) async {
     await pumpMx(tester, _rail(selected: 1));
 
     expect(find.byIcon(AppIcons.study), findsNothing);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      accentOf(scheme),
+      scheme.onSecondaryContainer,
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
@@ -103,8 +112,22 @@ void main() {
           .first,
     );
     expect(
-      (pill.decoration as BoxDecoration).color,
-      scheme.primary.withValues(alpha: 0.14),
+      (pill.decoration as ShapeDecoration).color,
+      scheme.secondaryContainer,
+    );
+    expect(
+      tester.getSize(
+        find
+            .ancestor(
+              of: find.byIcon(AppIcons.studySelected),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      ),
+      Size(
+        const AppDimens().sizeNavIndicatorWidth,
+        const AppDimens().sizeNavIndicatorHeight,
+      ),
     );
   });
 

@@ -27,7 +27,7 @@ void main() {
     expect(material.color, scheme.surfaceContainerLowest);
     expect(material.textStyle!.color, scheme.onSurface);
     expect(
-      (material.shape! as RoundedRectangleBorder).side,
+      (material.shape! as OutlinedBorder).side,
       BorderSide(color: scheme.outlineVariant),
     );
   });
@@ -43,7 +43,7 @@ void main() {
 
     expect(material.color, scheme.primary);
     expect(material.textStyle!.color, scheme.onPrimary);
-    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
+    expect((material.shape! as OutlinedBorder).side, BorderSide.none);
   });
 
   testWidgets('the count sits at 60% resting and 75% selected', (tester) async {

@@ -54,6 +54,8 @@ void main() {
       overrides: [isAdminProvider.overrideWithValue(true)],
     );
     await tester.scrollUntilVisible(find.text('Users'), 200);
+    await tester.ensureVisible(find.text('Users'));
+    await tester.pumpAndSettle();
 
     expect(find.text('Who can manage the app'), findsOneWidget);
     expect(

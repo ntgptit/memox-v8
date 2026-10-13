@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
 import '../../support/theme_expect.dart';
@@ -42,12 +44,37 @@ MxBottomNav _nav({int selected = 0, ValueChanged<int>? onSelected}) =>
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('an 80 block with no inset, 80 + inset with one', (tester) async {
+  testWidgets('sizeNav tall with no inset, plus the inset with one', (
+    tester,
+  ) async {
+    final height = const AppDimens().sizeNav;
     await pumpMx(tester, _nav());
-    expect(tester.getSize(find.byType(MxBottomNav)).height, 80);
+    expect(tester.getSize(find.byType(MxBottomNav)).height, height);
 
     await pumpMx(tester, _nav(), padding: const EdgeInsets.only(bottom: 24));
-    expect(tester.getSize(find.byType(MxBottomNav)).height, 80 + 24);
+    expect(tester.getSize(find.byType(MxBottomNav)).height, height + 24);
+  });
+
+  testWidgets('a flat bar: the surface, a divider on top, no glass', (
+    tester,
+  ) async {
+    await pumpMx(tester, _nav());
+    final bar = tester.widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byType(MxBottomNav),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    final decoration = bar.decoration as BoxDecoration;
+
+    expect(decoration.color, scheme.surface);
+    expect(
+      (decoration.border! as Border).top.color,
+      MxColorsExtension.light.divider,
+    );
+    expect(find.byType(BackdropFilter), findsNothing);
   });
 
   testWidgets('four equal columns', (tester) async {
@@ -67,16 +94,15 @@ void main() {
     expect(widths.toSet(), hasLength(1));
   });
 
-  testWidgets('the selected destination is primaryInk with its filled glyph', (
-    tester,
-  ) async {
+  testWidgets('the selected destination: filled glyph on the pill, label in '
+      'onSurface', (tester) async {
     await pumpMx(tester, _nav(selected: 1));
 
     expect(find.byIcon(AppIcons.studySelected), findsOneWidget);
     expect(find.byIcon(AppIcons.study), findsNothing);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      accentOf(scheme),
+      scheme.onSecondaryContainer,
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
@@ -84,24 +110,35 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text('Study')).style!.color,
-      accentOf(scheme),
+      scheme.onSurface,
+    );
+    expect(
+      tester.widget<Text>(find.text('Library')).style!.color,
+      scheme.onSurfaceVariant,
     );
   });
 
-  testWidgets('the pill tints primary at 14% in light', (tester) async {
+  testWidgets('the pill is the indicator size on secondaryContainer', (
+    tester,
+  ) async {
     await pumpMx(tester, _nav());
-    final pill = tester.widget<DecoratedBox>(
-      find
-          .ancestor(
-            of: find.byIcon(AppIcons.librarySelected),
-            matching: find.byType(DecoratedBox),
-          )
-          .first,
-    );
+    final pill = find
+        .ancestor(
+          of: find.byIcon(AppIcons.librarySelected),
+          matching: find.byType(DecoratedBox),
+        )
+        .first;
 
     expect(
-      (pill.decoration as BoxDecoration).color,
-      scheme.primary.withValues(alpha: 0.14),
+      (tester.widget<DecoratedBox>(pill).decoration as ShapeDecoration).color,
+      scheme.secondaryContainer,
+    );
+    expect(
+      tester.getSize(pill),
+      Size(
+        const AppDimens().sizeNavIndicatorWidth,
+        const AppDimens().sizeNavIndicatorHeight,
+      ),
     );
   });
 
@@ -119,14 +156,6 @@ void main() {
       isSemantics(label: 'Library', isSelected: true, isButton: true),
     );
     handle.dispose();
-  });
-
-  testWidgets('glass: a backdrop blur behind the chrome surface', (
-    tester,
-  ) async {
-    await pumpMx(tester, _nav());
-
-    expect(find.byType(BackdropFilter), findsOneWidget);
   });
 
   test('selectedIndex outside the destinations is rejected', () {

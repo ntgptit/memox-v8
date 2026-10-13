@@ -33,11 +33,11 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxColorsExtension.dark.warningContainer,
+      MxColorsExtension.dark.warning,
     );
     expect(
       tester.widget<Text>(find.text('Ten tags at most')).style!.color,
-      MxColorsExtension.dark.warningContainer,
+      MxColorsExtension.dark.warning,
     );
   });
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
 import '../../support/theme_expect.dart';
@@ -253,7 +254,10 @@ void main() {
     final spans = (title.textSpan! as TextSpan).children!.cast<TextSpan>();
 
     expect([for (final span in spans) span.text], ['Academic ', 'words', '']);
-    expect(spans[1].style!.fontWeight, FontWeight.w700);
+    expect(
+      spans[1].style!.fontWeight,
+      tester.element(find.text('Academic words')).texts.titleSmall!.fontWeight,
+    );
     expect(spans[1].style!.color, accentOf(scheme));
     expect((title.maxLines, title.overflow), (1, TextOverflow.ellipsis));
   });

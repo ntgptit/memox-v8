@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/app.dart';
@@ -173,7 +174,10 @@ void main() {
 
     // 72 physical px at 3x = 24 logical.
     expect(tester.getTopLeft(find.byType(MxAppBar)).dy, 24);
-    expect(tester.getSize(find.byType(MxAppBar)).height, 56);
+    expect(
+      tester.getSize(find.byType(MxAppBar)).height,
+      const AppDimens().sizeAppBar,
+    );
   });
 
   libraryTest('Settings offers the gallery in debug builds', (

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
@@ -62,44 +63,49 @@ void main() {
     );
   });
 
-  testWidgets('titled: a 700 title 2 above the detail; untitled: the lead', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(
-          tone: MxBannerTone.danger,
-          title: 'Export failed',
-          message: _message,
+  testWidgets(
+    'titled: a labelMedium title 2 above the detail; untitled: the lead',
+    (tester) async {
+      await pumpMx(
+        tester,
+        _width(
+          const MxInlineBanner(
+            tone: MxBannerTone.danger,
+            title: 'Export failed',
+            message: _message,
+          ),
         ),
-      ),
-    );
-    expect(
-      tester.widget<Text>(find.text('Export failed')).style!.fontWeight,
-      FontWeight.w700,
-    );
-    expect(
-      tester.widget<Text>(find.text(_message)).style!.color,
-      scheme.onSurfaceVariant,
-    );
-    expect(
-      tester.getTopLeft(find.text(_message)).dy -
-          tester.getBottomLeft(find.text('Export failed')).dy,
-      2,
-    );
+      );
+      expect(
+        tester.widget<Text>(find.text('Export failed')).style!.fontWeight,
+        tester
+            .element(find.text('Export failed'))
+            .texts
+            .labelMedium!
+            .fontWeight,
+      );
+      expect(
+        tester.widget<Text>(find.text(_message)).style!.color,
+        scheme.onSurfaceVariant,
+      );
+      expect(
+        tester.getTopLeft(find.text(_message)).dy -
+            tester.getBottomLeft(find.text('Export failed')).dy,
+        2,
+      );
 
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
-      ),
-    );
-    expect(
-      tester.widget<Text>(find.text(_message)).style!.color,
-      scheme.onSurface,
-    );
-  });
+      await pumpMx(
+        tester,
+        _width(
+          const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
+        ),
+      );
+      expect(
+        tester.widget<Text>(find.text(_message)).style!.color,
+        scheme.onSurface,
+      );
+    },
+  );
 
   testWidgets(
     'padding 12 16 after the hairline, 16 below; 8 12 and 0 in a bar',
@@ -241,7 +247,10 @@ void main() {
     );
     // The theme change animates.
     await tester.pumpAndSettle();
-    expect(tester.widget<Text>(find.text('Title')).style!.color, mx.warning);
+    expect(
+      tester.widget<Text>(find.text('Title')).style!.color,
+      MxColorsExtension.dark.warning,
+    );
   });
 
   testWidgets('without a bottom margin the banner ends at its painted edge; '

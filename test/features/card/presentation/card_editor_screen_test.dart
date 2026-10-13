@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
@@ -391,7 +392,8 @@ void main() {
     await tester.pump();
 
     final term = tester.renderObject<RenderBox>(_field(0));
-    expect(term.size.height, greaterThan(40));
+    final role = tester.element(_field(0)).texts.bodyMedium!;
+    expect(term.size.height, greaterThan(role.fontSize! * role.height!));
     expect(tester.takeException(), isNull);
   });
 

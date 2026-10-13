@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_stacked_day_bars.dart';
 
 import '../../support/widget_harness.dart';
@@ -85,19 +86,20 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('the current day is labelled in bold', (tester) async {
+  testWidgets('the current day is labelled in the full ink', (tester) async {
     await pumpMx(
       tester,
       _chart([_day('S', 1, 0), _day('Today', 1, 0, now: true)]),
     );
 
+    final scheme = lightColorScheme;
     expect(
-      tester.widget<Text>(find.text('Today')).style!.fontWeight,
-      FontWeight.w700,
+      tester.widget<Text>(find.text('Today')).style!.color,
+      scheme.onSurface,
     );
     expect(
-      tester.widget<Text>(find.text('S')).style!.fontWeight,
-      FontWeight.w400,
+      tester.widget<Text>(find.text('S')).style!.color,
+      scheme.onSurfaceVariant,
     );
   });
 }

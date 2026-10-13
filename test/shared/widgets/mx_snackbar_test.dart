@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
@@ -38,36 +40,44 @@ void main() {
     expect(bar.padding, const EdgeInsets.symmetric(horizontal: 16));
   });
 
-  testWidgets('14 message on the inverse surface; a 32 action in 48', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      SizedBox(
-        width: 328,
-        child: MxSnackbarContent(
-          message: 'Moved to Trash',
-          actionLabel: 'Undo',
-          onAction: () {},
+  testWidgets(
+    'bodyMedium message on the inverse surface; a small action in the control box',
+    (tester) async {
+      await pumpMx(
+        tester,
+        SizedBox(
+          width: 328,
+          child: MxSnackbarContent(
+            message: 'Moved to Trash',
+            actionLabel: 'Undo',
+            onAction: () {},
+          ),
         ),
-      ),
-    );
-    final message = tester.widget<Text>(find.text('Moved to Trash')).style!;
-    final painted = find.descendant(
-      of: find.byType(TextButton),
-      matching: find.byType(Material),
-    );
+      );
+      final message = tester.widget<Text>(find.text('Moved to Trash')).style!;
+      final painted = find.descendant(
+        of: find.byType(TextButton),
+        matching: find.byType(Material),
+      );
 
-    expect((message.fontSize, message.height), (14, 1.4));
-    expect(message.color, scheme.onInverseSurface);
-    expect(tester.getSize(painted.first).height, 32);
-    expect(
-      tester.getTopLeft(find.byType(TextButton)).dx -
-          tester.getTopRight(find.text('Moved to Trash')).dx,
-      12,
-    );
-    await expectAccessibleTargets(tester);
-  });
+      final role = tester
+          .element(find.text('Moved to Trash'))
+          .texts
+          .bodyMedium!;
+      expect((message.fontSize, message.height), (role.fontSize, role.height));
+      expect(message.color, scheme.onInverseSurface);
+      expect(
+        tester.getSize(painted.first).height,
+        const AppDimens().sizeButtonSmall,
+      );
+      expect(
+        tester.getTopLeft(find.byType(TextButton)).dx -
+            tester.getTopRight(find.text('Moved to Trash')).dx,
+        12,
+      );
+      await expectAccessibleTargets(tester);
+    },
+  );
 
   testWidgets('Undo hides the toast and calls onAction once (RF5)', (
     tester,
@@ -275,7 +285,9 @@ void main() {
       await tester.pumpAndSettle();
 
       final rect = toast(tester);
-      expect((rect.left, rect.width), ((1280 - 688) / 2, 720 - 2 * 16));
+      const dimens = AppDimens();
+      final width = dimens.sizeContentMax - 2 * dimens.space16;
+      expect((rect.left, rect.width), ((1280 - width) / 2, width));
     });
 
     testWidgets('a phone: the theme inset, as before', (tester) async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -37,49 +38,59 @@ void main() {
     expect(_surface(tester).elevation, greaterThan(0));
   });
 
-  testWidgets('width: the column 20 in from each edge, capped at 340/320/300', (
-    tester,
-  ) async {
-    await pumpMx(tester, const MxDialog(title: 'Delete deck?'));
-    expect(tester.getSize(find.byType(Material).last).width, 320);
+  testWidgets(
+    'width: the column space24 in from each edge, capped at 340/320/300',
+    (tester) async {
+      await pumpMx(tester, const MxDialog(title: 'Delete deck?'));
+      expect(
+        tester.getSize(find.byType(Material).last).width,
+        360 - 2 * const AppDimens().space24,
+      );
 
-    tester.view.physicalSize = const Size(600, 800);
-    for (final (width, cap) in [
-      (MxDialogWidth.large, 340.0),
-      (MxDialogWidth.medium, 320.0),
-      (MxDialogWidth.small, 300.0),
-    ]) {
-      await tester.pumpWidget(const SizedBox());
-      await pumpMxAt(tester, MxDialog(title: 'Delete deck?', width: width));
+      tester.view.physicalSize = const Size(600, 800);
+      for (final (width, cap) in [
+        (MxDialogWidth.large, 340.0),
+        (MxDialogWidth.medium, 320.0),
+        (MxDialogWidth.small, 300.0),
+      ]) {
+        await tester.pumpWidget(const SizedBox());
+        await pumpMxAt(tester, MxDialog(title: 'Delete deck?', width: width));
 
-      expect(tester.getSize(find.byType(Material).last).width, cap);
-    }
-  });
+        expect(tester.getSize(find.byType(Material).last).width, cap);
+      }
+    },
+  );
 
-  testWidgets('title 16/700 over a 14 body, 16 in and 20 down, on the action '
-      'pair\'s edge (DEV-166); the route is named', (tester) async {
-    final handle = tester.ensureSemantics();
-    await pumpMx(
-      tester,
-      const MxDialog(title: 'Delete deck?', body: 'Its cards move to Trash.'),
-    );
-    final surface = tester.getTopLeft(find.byType(Material).last);
+  testWidgets(
+    'titleSmall over a bodyMedium body, space16 in and space24 down, on '
+    'the action pair\'s edge (DEV-166); the route is named',
+    (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpMx(
+        tester,
+        const MxDialog(title: 'Delete deck?', body: 'Its cards move to Trash.'),
+      );
+      final surface = tester.getTopLeft(find.byType(Material).last);
 
-    expect(tester.widget<Text>(find.text('Delete deck?')).style!.fontSize, 16);
-    expect(
-      tester.widget<Text>(find.text('Its cards move to Trash.')).style!.color,
-      scheme.onSurface,
-    );
-    expect(
-      tester.getTopLeft(find.text('Delete deck?')) - surface,
-      const Offset(16, 20),
-    );
-    expect(
-      tester.getSemantics(find.byType(MxDialog)),
-      isSemantics(label: 'Delete deck?', namesRoute: true, scopesRoute: true),
-    );
-    handle.dispose();
-  });
+      expect(
+        tester.widget<Text>(find.text('Delete deck?')).style,
+        tester.element(find.text('Delete deck?')).texts.titleSmall,
+      );
+      expect(
+        tester.widget<Text>(find.text('Its cards move to Trash.')).style!.color,
+        scheme.onSurface,
+      );
+      expect(
+        tester.getTopLeft(find.text('Delete deck?')) - surface,
+        Offset(const AppDimens().space16, const AppDimens().space24),
+      );
+      expect(
+        tester.getSemantics(find.byType(MxDialog)),
+        isSemantics(label: 'Delete deck?', namesRoute: true, scopesRoute: true),
+      );
+      handle.dispose();
+    },
+  );
 
   testWidgets('showMxDialog: a 45% scrim; a scrim tap returns null (RF2)', (
     tester,

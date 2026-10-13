@@ -139,7 +139,7 @@ void main() {
       () => MxButton(
         label: 'Go',
         detail: '6d',
-        size: MxButtonSize.small,
+        size: MxButtonSize.chip,
         onPressed: () {},
       ),
       throwsAssertionError,
@@ -175,7 +175,7 @@ void main() {
       brightness: Brightness.dark,
     );
     expect(
-      (_material(tester).shape! as RoundedRectangleBorder).side,
+      (_material(tester).shape! as OutlinedBorder).side,
       BorderSide(
         color: darkColorScheme.outline,
         width: const AppDimens().strokeHairline,
@@ -229,18 +229,25 @@ void main() {
     expect(taps, 1);
   });
 
-  testWidgets('disabled dims the whole control to 0.38 and ignores taps', (
+  testWidgets('disabled follows the disabled opacities and ignores taps', (
     tester,
   ) async {
     await pumpMx(tester, const MxButton(label: 'Go', onPressed: null));
+    final context = tester.element(find.text('Go'));
+    final style = tester.widget<TextButton>(find.byType(TextButton)).style!;
 
-    final opacity = tester.widget<Opacity>(
-      find.ancestor(
-        of: find.byType(TextButton),
-        matching: find.byType(Opacity),
+    expect(
+      style.foregroundColor!.resolve({WidgetState.disabled}),
+      context.colors.onSurface.withValues(
+        alpha: context.dimens.opacityDisabledContent,
       ),
     );
-    expect(opacity.opacity, 0.38);
+    expect(
+      style.backgroundColor!.resolve({WidgetState.disabled}),
+      context.colors.onSurface.withValues(
+        alpha: context.dimens.opacityDisabledContainer,
+      ),
+    );
   });
 
   testWidgets('loading keeps the width, shows a spinner and ignores taps', (

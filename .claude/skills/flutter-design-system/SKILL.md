@@ -13,36 +13,40 @@ done once.
 ## Tokens come first
 
 Nothing in `features/` may contain a raw colour, text style, padding value,
-radius, elevation, icon size or duration. Those live in `core/theme/` as tokens
-and reach widgets through the theme.
+radius, elevation, icon size or duration. They come from the theme, whose single
+source is `design/tokens.json` (the Design System export). **No value is written
+in this skill, in code, in a test or in a document:** change the look by following
+`docs/agent/visual-change.md`, never by editing a value in place.
 
-Token names are **semantic**, not physical. `AppColors.danger`, not
-`AppColors.red`; `AppSpacing.md`, not `AppSpacing.sixteen`. The reason is that
-physical names lie the first time the design changes — a `red` token that has
-become orange is worse than no token, because now nobody trusts the names.
+Token names are the Design System's, which are semantic: `primary`, `space16`,
+`radiusMd`, `successContainer`. Read `references/tokens.md` for where each kind of
+token lives and how a widget reads it.
 
-Read `references/tokens.md` for the token set and the code shape.
-
-Spacing uses one scale: 4 / 8 / 12 / 16 / 24 / 32. A layout that needs 15 is
-telling you a constraint is wrong somewhere else; reach for the neighbouring
-step rather than adding a value to the scale.
+A layout that needs a size the scale does not have is telling you a constraint is
+wrong somewhere else; use the neighbouring step. A value the Design System lacks
+is a private constant in its one widget, or an entry in `design/app_tokens.json`
+when several use it; either way it is reported to the owner.
 
 ## Theme
 
-Material 3 on. Build `ColorScheme` from a seed and then override deliberately —
-seeding alone gives a coherent palette, but the semantic colours (success,
-warning, info) are not part of `ColorScheme` and need a theme extension.
+Material 3 on. The colour scheme is a generated `const ColorScheme` with every
+role written out, never `fromSeed`. `ThemeData` carries the scheme, the twelve
+`TextTheme` roles, two `ThemeExtension`s (`MxColorsExtension`, `AppDimens`) and the
+component themes. Widgets read it through `context.colors`, `context.texts`,
+`context.mxColors` and `context.dimens`; the mode-dependent Design System rules
+are `context.accentColor` and `context.deckIconColor` (`theme_rules.dart`). A
+widget never branches on `brightness` to choose a colour or a size.
 
-Configure component themes centrally: AppBar, NavigationBar, Card, Dialog,
-BottomSheet, Input, Button, Chip, Snackbar. Setting these once is what stops
-every screen re-specifying them slightly differently.
+Configure component themes centrally (`app_component_themes.dart`): card, search
+bar, divider, buttons, navigation bar and rail, progress, chip, input, dialog,
+sheet, snack bar, tooltip. Setting these once is what stops every screen
+re-specifying them slightly differently.
 
-Light and dark are both first-class. Dark is not "light with inverted colours" —
-elevation reads through surface tint rather than shadow, and a colour that
-passes contrast on white can fail on a dark surface.
+Light and dark are both first-class and generated from the same tokens; dark is
+authored, not "light with inverted colours".
 
-Primary as text, icon or focus ring is `context.derivedColors.primaryInk`;
-`colors.primary` is for fills, edges, indicators and tints (spec 2026-09-27).
+Accent as text, icon or focus colour is `context.accentColor`; `colors.primary` is
+for fills, edges, indicators and the focus ring.
 
 Check every interactive component in disabled, pressed, focused and selected
 states. Focused especially: it is invisible to mouse users and essential for

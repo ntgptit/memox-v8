@@ -344,6 +344,8 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.scrollUntilVisible(find.text(_en.usersTitle), 200);
+    await tester.ensureVisible(find.text(_en.usersTitle));
+    await tester.pumpAndSettle();
     await tester.tap(find.text(_en.usersTitle));
     await tester.pumpAndSettle();
     expect(find.byType(UsersScreen), findsOneWidget);

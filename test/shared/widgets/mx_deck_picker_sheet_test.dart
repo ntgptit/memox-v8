@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
@@ -22,29 +23,34 @@ MxDeckPickerSheet _picker(
 );
 
 void main() {
-  testWidgets('head: a 16/700 title and a 12 rule, 20 in and 4 down', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      _picker([MxPickerCandidate(label: 'Kana', onTap: () {})]),
-    );
-    final sheet = tester.getTopLeft(find.byType(MxBottomSheet));
+  testWidgets(
+    'head: a titleSmall title and a labelSmall rule, space24 in and 20 down',
+    (tester) async {
+      await pumpMx(
+        tester,
+        _picker([MxPickerCandidate(label: 'Kana', onTap: () {})]),
+      );
+      final sheet = tester.getTopLeft(find.byType(MxBottomSheet));
 
-    expect(tester.widget<Text>(find.text('Move to deck')).style!.fontSize, 16);
-    expect(
-      tester
-          .widget<Text>(find.text('Cards keep their progress.'))
-          .style!
-          .fontSize,
-      12,
-    );
-    // The grabber block is 8 + 4 + 4 = 16, then the head's 4.
-    expect(
-      tester.getTopLeft(find.text('Move to deck')) - sheet,
-      const Offset(20, 20),
-    );
-  });
+      final texts = tester.element(find.text('Move to deck')).texts;
+      expect(
+        tester.widget<Text>(find.text('Move to deck')).style!.fontSize,
+        texts.titleSmall!.fontSize,
+      );
+      expect(
+        tester
+            .widget<Text>(find.text('Cards keep their progress.'))
+            .style!
+            .fontSize,
+        texts.labelSmall!.fontSize,
+      );
+      // The grabber block is 8 + 4 + 4 = 16, then the head's 4.
+      expect(
+        tester.getTopLeft(find.text('Move to deck')) - sheet,
+        Offset(const AppDimens().space24, 20),
+      );
+    },
+  );
 
   testWidgets(
     'candidates are chevron rows; an ineligible one keeps its reason',
@@ -127,7 +133,7 @@ void main() {
     expect(find.byType(MxSkeletonList), findsOneWidget);
     expect(
       tester.getTopLeft(find.text('Move to deck')) - sheet,
-      const Offset(20, 20),
+      Offset(const AppDimens().space24, 20),
     );
   });
 }

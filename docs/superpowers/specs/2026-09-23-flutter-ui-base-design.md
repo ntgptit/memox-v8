@@ -1,5 +1,8 @@
 # MemoX V8 — Flutter UI base design
 
+> **Superseded (token values, 2026-10-13):** every colour, type, spacing, shape, size and motion value this spec defines (foundations V3) is superseded by the Design System "Flashcard Color Tokens" (`design/tokens.json`) and [ADR-022](../../shared/decisions/ADR-022-mot-nguon-token-va-theme-flutter.md). The Indigo palette spec of 2026-10-10 (D3, D4) is superseded the same way. The UI-base register (§9) stays the list of known UI debt.
+
+
 Status: approved 2026-09-23 · amended while writing the phase 1 plan (§3, §4.2, §4.4, §4.6,
 §8.1, §8.3) · Path: architectural
 

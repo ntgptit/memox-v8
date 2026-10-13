@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -240,7 +241,12 @@ void main() {
     final scheme = Theme.of(tester.element(find.text('apple'))).colorScheme;
 
     expect(_groundOf(tester, 'apple'), scheme.surfaceContainerLow);
-    expect(_groundOf(tester, 'term 1'), scheme.surfaceContainerLowest);
+    expect(
+      _groundOf(tester, 'term 1'),
+      Theme.of(tester.element(find.text('apple')))
+          .extension<MxColorsExtension>()!
+          .cardSurface,
+    );
   });
 
   libraryTest('tiles take no tap while a wrong pair flashes (BR-STUDY-004)', (

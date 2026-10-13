@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/log_entry.dart';
@@ -134,7 +135,10 @@ void main() {
     );
     final type = card.textSpan!.children!.first as TextSpan;
     expect(type.text, 'PostgrestException');
-    expect(type.style!.fontWeight, FontWeight.w600);
+    expect(
+      type.style,
+      tester.element(find.byType(SelectableText).first).texts.titleSmall,
+    );
   });
 
   // Impeccable 2026-09-29 F6: a new frame reads apart from a wrapped line.

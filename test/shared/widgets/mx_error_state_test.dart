@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -43,24 +44,32 @@ void main() {
     );
   });
 
-  testWidgets('title 16/700, 4 above a 14 body at 1.55; no Retry by default', (
-    tester,
-  ) async {
-    await pumpMx(tester, const MxErrorState(title: _title, body: _body));
-    final title = tester.widget<Text>(find.text(_title)).style!;
-    final body = tester.widget<Text>(find.text(_body)).style!;
+  testWidgets(
+    'titleSmall title, 4 above a bodyMedium body; no Retry by default',
+    (tester) async {
+      await pumpMx(tester, const MxErrorState(title: _title, body: _body));
+      final title = tester.widget<Text>(find.text(_title)).style!;
+      final body = tester.widget<Text>(find.text(_body)).style!;
 
-    expect((title.fontSize, title.fontWeight), (16, FontWeight.w700));
-    expect(title.color, scheme.onSurface);
-    expect((body.fontSize, body.height), (14, 1.55));
-    expect(body.color, scheme.onSurfaceVariant);
-    expect(
-      tester.getTopLeft(find.text(_body)).dy -
-          tester.getBottomLeft(find.text(_title)).dy,
-      4,
-    );
-    expect(find.byType(MxButton), findsNothing);
-  });
+      final texts = tester.element(find.text(_title)).texts;
+      expect(
+        (title.fontSize, title.fontWeight),
+        (texts.titleSmall!.fontSize, texts.titleSmall!.fontWeight),
+      );
+      expect(title.color, scheme.onSurface);
+      expect(
+        (body.fontSize, body.height),
+        (texts.bodyMedium!.fontSize, texts.bodyMedium!.height),
+      );
+      expect(body.color, scheme.onSurfaceVariant);
+      expect(
+        tester.getTopLeft(find.text(_body)).dy -
+            tester.getBottomLeft(find.text(_title)).dy,
+        4,
+      );
+      expect(find.byType(MxButton), findsNothing);
+    },
+  );
 
   testWidgets('a primary Retry with the refresh glyph, 16 below the body', (
     tester,

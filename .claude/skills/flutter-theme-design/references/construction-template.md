@@ -147,8 +147,8 @@ Cho mỗi component pair:
 
 ```
 TextButtonTheme         ↔ MxButton (mọi tone: primary, secondary, outline,
-                          destructive, dangerSoft, warning; TextButton +
-                          appButtonStyle)
+                          destructive, dangerTint, warning; TextButton +
+                          buttonStyle)
 FilledButtonTheme       ↔ — (slot có trong app_theme.dart; V8 không có Mx riêng,
 OutlinedButtonTheme     ↔    MxButton phủ cả hai)
 IconButtonTheme         ↔ MxIconButton

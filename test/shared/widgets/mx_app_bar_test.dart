@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -10,7 +12,7 @@ import 'package:memox/shared/widgets/mx_search_field.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
-  testWidgets('56 tall on the page ground, below the status inset', (
+  testWidgets('sizeAppBar tall on the page ground, below the status inset', (
     tester,
   ) async {
     await pumpMx(
@@ -19,21 +21,30 @@ void main() {
       padding: const EdgeInsets.only(top: 24),
     );
 
-    expect(tester.getSize(find.byType(MxAppBar)).height, 56 + 24);
-  });
-
-  testWidgets('screen density: 24 title, 16 gutter', (tester) async {
-    await pumpMx(tester, const MxAppBar(title: 'Library'));
-
-    expect(tester.widget<Text>(find.text('Library')).style!.fontSize, 24);
     expect(
-      tester.getTopLeft(find.text('Library')).dx -
-          tester.getTopLeft(find.byType(MxAppBar)).dx,
-      16,
+      tester.getSize(find.byType(MxAppBar)).height,
+      const AppDimens().sizeAppBar + 24,
     );
   });
 
-  testWidgets('content density: 16 title after the leading control', (
+  testWidgets('screen density: titleLarge title, screen margin', (
+    tester,
+  ) async {
+    await pumpMx(tester, const MxAppBar(title: 'Library'));
+    final context = tester.element(find.text('Library'));
+
+    expect(
+      tester.widget<Text>(find.text('Library')).style,
+      context.texts.titleLarge,
+    );
+    expect(
+      tester.getTopLeft(find.text('Library')).dx -
+          tester.getTopLeft(find.byType(MxAppBar)).dx,
+      context.screenMargin,
+    );
+  });
+
+  testWidgets('content density: titleLarge title after the leading control', (
     tester,
   ) async {
     await pumpMx(
@@ -49,7 +60,10 @@ void main() {
       ),
     );
 
-    expect(tester.widget<Text>(find.text('Japanese N5')).style!.fontSize, 16);
+    expect(
+      tester.widget<Text>(find.text('Japanese N5')).style,
+      tester.element(find.text('Japanese N5')).texts.titleLarge,
+    );
   });
 
   testWidgets('a long title ellipsises and the actions keep their width', (
@@ -150,7 +164,7 @@ void main() {
       expect(
         tester.getTopRight(find.byType(MxAppBar)).dx -
             tester.getTopRight(find.byType(MxButton)).dx,
-        16,
+        tester.element(find.byType(MxAppBar)).screenMargin,
         reason: density.name,
       );
     }
@@ -177,10 +191,13 @@ void main() {
       final bar = tester.getRect(find.byType(MxAppBar));
       final field = tester.getRect(find.byType(MxSearchField));
 
-      expect(field.top - bar.top, 8);
-      expect(bar.bottom - field.bottom, 8);
-      // A bordered field lines up with the content's 16 gutter below it.
-      expect(bar.right - field.right, 16);
+      expect(field.top - bar.top, const AppDimens().space8);
+      expect(bar.bottom - field.bottom, const AppDimens().space8);
+      // The field lines up with the content's screen margin below it.
+      expect(
+        bar.right - field.right,
+        tester.element(find.byType(MxAppBar)).screenMargin,
+      );
     },
   );
 
@@ -195,7 +212,7 @@ void main() {
     );
     expect(
       tester.getTopLeft(find.text('Session summary')).dx,
-      const AppDimens().space16,
+      tester.element(find.byType(MxAppBar)).screenMargin,
     );
   });
 
