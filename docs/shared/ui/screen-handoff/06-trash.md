@@ -59,7 +59,7 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 
 ## Rulings
 
-- **The Short Label Rule (DEV-169):** the pairs stay side by side in English and Vietnamese; Vietnamese reads "Xoá ({n})" in the selection bar and "Giữ lại" in the delete-for-good dialog. Exception: from 1,000 items the counts in the selection bar no longer fit their shares and the pair stacks (`canStack`), since the count is what the action acts on.
+- **The Footer Pair Rule (DEV-169):** the pairs stay side by side in English and Vietnamese; Vietnamese reads "Xoá ({n})" in the selection bar and "Giữ lại" in the delete-for-good dialog. Exception: from 1,000 items the counts in the selection bar no longer fit their shares and the pair stacks (`canStack`), since the count is what the action acts on.
 - **DEV-179 (owner 2026-10-06):** the delete-for-good dialog's title names the count, so its confirm is "Delete" / "Xoá" alone, sharing the row 1 : 1 with "Keep in Trash"; it no longer stacks.
 - **Invariant 36 (spec D6):** a blocked restore says "“X” still contains an entry deleted earlier (“Y”)" in a warning banner, one per blocked batch.
 - **P3-L8:** a restore target shows its path, as the move sheets do; targets carry no counts.

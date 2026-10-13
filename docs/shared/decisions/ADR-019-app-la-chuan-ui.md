@@ -24,12 +24,16 @@ deviation.
   cùng PR với mọi thay đổi hệ thống hình ảnh. File chi tiết của màn cập nhật cùng PR với
   thay đổi của màn đó. Không còn khái niệm deviation so với kit.
 - Impeccable đánh giá UI so với `DESIGN.md` và quality floor.
+- **Cập nhật 2026-10-13 ([ADR-022](ADR-022-mot-nguon-token-va-theme-flutter.md)):** thứ tự
+  ưu tiên thành BR/UC > `design/tokens.json` > golden đã duyệt > file chi tiết của màn.
+  `DESIGN.md` (frontmatter) và `.impeccable/design.json` được sinh từ `design/tokens.json`
+  bằng `tools/design/generate.py`; phần văn xuôi chỉ gọi tên token.
 
 ## Hệ quả
 
 - Xoá `docs/shared/ui/screen-handoff/img/`, `docs/shared/ui/design-handoff/`,
   `docs/shared/ui/design-handoff.json`, `tools/docs/split_handoff.py`, `tools/design/`
-  và checklist state theo kit; các mục Deviations của file chi tiết thành mục Rulings.
+  (thư mục cũ; `tools/design/` hiện nay là bộ sinh token của ADR-022) và checklist state theo kit; các mục Deviations của file chi tiết thành mục Rulings.
 - `tools/docs/check.py` không kiểm link trong `docs/superpowers/`: spec và plan cũ là hồ
   sơ lịch sử, giữ nguyên link tới các file đã xoá.
 - Sổ nợ UI-base (spec 2026-09-23 §9) vẫn là danh sách nợ UI đã biết, không còn ghi lệch

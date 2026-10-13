@@ -50,7 +50,7 @@ Every state above is built.
 - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persistent header, above the scrolling history strip.
 - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spinner; the words live only in the caption line.
 - **§9 row 125:** loading is a single generic `MxSkeletonList`, the app-wide convention (screens 15, 22, 23, 25, 26 do the same).
-- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in `primaryText` beside them; Optional details stays a section label.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in `context.accentColor` beside them; Optional details stays a section label.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** in edit, Save is enabled only once the draft differs from the saved card; create is unchanged.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the tag field has the same "Add" button and add rule as create; Save adds the tag still typed (so pending tag text enables Save, and is saved), and an invalid one shows its error and saves nothing.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain text colour everywhere, the card list included (F6).

@@ -17,7 +17,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | Top bar | `MxStudyTopBar` | Indigo, as every mode (3c-2 R8). |
 | Context line | `SessionContextLine` | "{deck} · Review · round {n}". |
 | Prompt face | `StudyFaceCard` | The card's meaning. |
-| Answer face | `StudyFaceCard` (`role: answer`); the typed text itself: `MxTextField` (borderless, no visible chrome, the study answer text style) — its style comes from `MxTextStyles`, settled in the FE-A6 plan against the no-per-site-text-styling guard | `input`/`hint`: what has been typed so far with a blinking caret. `wrong`: the typed answer struck through, the correct term below it, tagged "Wrong · comes back next round" (see Rulings). |
+| Answer face | `StudyFaceCard` (`role: answer`); the typed text itself: `MxTextField` (borderless, no visible chrome, the study answer text style) — its style is a `context.texts` role, settled in the FE-A6 plan against the no-per-site-text-styling guard | `input`/`hint`: what has been typed so far with a blinking caret. `wrong`: the typed answer struck through, the correct term below it, tagged "Wrong · comes back next round" (see Rulings). |
 | Hint row | inline row inside the answer face, shown only in `hint`, its line reserved from the start (3c-2 R4) | Lightbulb glyph + the card's own hint text; only offered when the card has one (BR-STUDY-028). |
 | CTA row | `StudyCtaRow` | `input`: "Show hint" (only if the card has a hint) + "Check". `hint`: "Check" only. `wrong`: one "Continue" button, as wide as a two-button row (critique 2026-09-30). |
 | Footer hint | `SessionFooterHint` | Varies by state; see Copy. |
