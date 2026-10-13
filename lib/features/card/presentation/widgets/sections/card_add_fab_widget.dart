@@ -24,7 +24,7 @@ class CardAddFabWidget extends ConsumerWidget {
     // Selecting or searching, adding waits (critique 2026-09-30 part 3d-1):
     // the FAB would cover a row's badge under the keyboard.
     final isBusy =
-        ref.watch(cardSelectionProvider(deckId)).isNotEmpty ||
+        ref.watch(cardSelectionProvider(deckId)).isSelecting ||
         ref.watch(cardSearchOpenProvider(deckId));
     if (isBusy) return const SizedBox.shrink();
     return MxFab(

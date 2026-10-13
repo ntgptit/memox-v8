@@ -3,6 +3,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/domain/failures/settings_failure.dart';
@@ -64,10 +65,8 @@ void main() {
 
   Future<void> limitCards(int cardLimit) async => expect(
     await SettingsRepositoryImpl(db, now: () => now).saveStudyDefaults(
-      options: StudyOptions(
-        cardLimit: cardLimit,
-        newCardOrder: NewCardOrder.created,
-      ),
+      cardLimit: cardLimit,
+      newCardOrder: NewCardOrder.created,
     ),
     isA<Ok<void, SettingsRejection>>(),
   );
@@ -205,6 +204,7 @@ void main() {
       db,
       schedules,
       TagRepositoryImpl(db, now: () => now),
+      DeckTreeDataSource(db),
       now: () => now,
     );
 

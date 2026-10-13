@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/sync/supabase_sync_api.dart';
+import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_models.dart';
 
 void main() {
@@ -106,6 +109,36 @@ void main() {
 
     await expectLater(api.changes(0, 500), throwsStateError);
     expect(calls, ['session']);
+  });
+
+  group('an RPC that never answers (DEV-186)', () {
+    SupabaseSyncApi hanging() => SupabaseSyncApi(
+      ensureSession: () async {},
+      rpc: (_, _) => Completer<Object?>().future,
+      timeout: const Duration(milliseconds: 20),
+    );
+
+    test('push times out as a network failure', () async {
+      final error = await hanging()
+          .push(const PushRequestModel(deviceId: 'd', operations: []))
+          .then<Object>((_) => 'no error', onError: (Object e) => e);
+
+      expect(error, isA<TimeoutException>());
+      expect(classifySyncFailure(error), SyncFailureKind.network);
+    });
+
+    test('changes times out as a network failure', () async {
+      final error = await hanging()
+          .changes(0, 500)
+          .then<Object>((_) => 'no error', onError: (Object e) => e);
+
+      expect(error, isA<TimeoutException>());
+      expect(classifySyncFailure(error), SyncFailureKind.network);
+    });
+
+    test('the default bound is 30 seconds', () {
+      expect(SupabaseSyncApi.rpcTimeout, const Duration(seconds: 30));
+    });
   });
 
   test('an RPC error reaches the scheduler', () async {

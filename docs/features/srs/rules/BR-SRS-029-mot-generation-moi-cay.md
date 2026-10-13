@@ -21,4 +21,4 @@ Không áp dụng
 
 ## Edge case
 
-Không áp dụng
+Pull từ máy khác: pull bỏ qua `card_schedule` đang chờ đẩy ở máy này, nên một Reset hay đổi scheduler kéo về có thể đưa root lên generation mới mà hàng đó vẫn ở generation cũ. Cuối pull, `CardScheduleSyncDao.afterPull` seed lại mọi hàng lệch root (`generation` hoặc `scheduler_type`) về trạng thái ban đầu ở generation của root, như máy kia đã làm, và xếp vào outbox (DEV-224).

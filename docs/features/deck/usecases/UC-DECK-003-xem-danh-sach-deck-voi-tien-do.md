@@ -2,7 +2,7 @@
 id: UC-DECK-003
 title: Xem danh sách deck với tiến độ
 status: ready
-rules: [BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-DECK-026, BR-DECK-027, BR-STUDY-008, BR-STUDY-046, BR-STUDY-051, BR-STUDY-067, BR-STUDY-068]
+rules: [BR-DECK-002, BR-DECK-003, BR-DECK-011, BR-DECK-026, BR-DECK-027, BR-SRS-013, BR-STUDY-008, BR-STUDY-046, BR-STUDY-051, BR-STUDY-067, BR-STUDY-068]
 code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/features/deck/domain/usecases/watch_deck_use_case.dart, lib/features/deck/domain/models/deck_level_model.dart, lib/features/deck/domain/models/deck_level_query_model.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -29,7 +29,8 @@ code: [lib/features/deck/domain/usecases/watch_deck_level_use_case.dart, lib/fea
    alphabetic baseline; Scheduled là tập trung tính, không actionable và không
    bao giờ là primary metric.
 4. Mỗi deck có một thanh mastery: số thẻ `mastered` trên mọi thẻ của cây
-   (BR-DECK-026). Deck rỗng chỉ vẽ track. Thanh không có chữ, nên hàng đọc
+   (BR-DECK-026). `mastered` là "đã thuộc" của BR-SRS-013 — box 8 với `eight_box`,
+   `interval_days >= 128` với `sm2` — suy ra khi đọc, không có cột. Deck rỗng chỉ vẽ track. Thanh không có chữ, nên hàng đọc
    "{n}% mastered" cho trình đọc màn hình.
 5. Mở một deck chứa deck con hiển thị ở tóm tắt một donut mastery của cả level,
    cạnh dòng "Mastered · {thuật toán}".

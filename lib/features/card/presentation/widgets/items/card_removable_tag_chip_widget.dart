@@ -20,13 +20,14 @@ class CardRemovableTagChipWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     // Its own node, or the tag editor's row merges every chip into one.
     return Semantics(
       container: true,
       button: true,
       label: context.l10n.cardTagRemove(name),
       excludeSemantics: true,
+      // The excluded chip's tap, kept on this one node (SW-REV-005).
+      onTap: onRemove,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onRemove,
@@ -36,7 +37,7 @@ class CardRemovableTagChipWidget extends StatelessWidget {
             widthFactor: 1,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: context.accentColor.tintOver(colors.surface),
+                color: context.accentColor.tintOver(context.colors.surface),
                 borderRadius: BorderRadius.circular(
                   context.dimens.sizeChip / 2,
                 ),

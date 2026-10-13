@@ -6,12 +6,30 @@ enum ImportSummaryKind { success, partial, none }
 
 /// What an import did (UC-TRANSFER-001 step 8): the cards written, the blank
 /// rows ignored, and every row skipped, with why.
+/// One deck a sectioned import wrote to (spec 2026-10-08 U8).
+final class ImportDeckResult {
+  const ImportDeckResult({
+    required this.name,
+    required this.isNew,
+    required this.written,
+  });
+
+  final String name;
+  final bool isNew;
+  final int written;
+}
+
 final class ImportSummary {
   const ImportSummary({
     required this.written,
     required this.blank,
     required this.skipped,
+    this.decks = const [],
   });
+
+  /// The decks a sectioned import wrote to, in source order; empty for a
+  /// flat import.
+  final List<ImportDeckResult> decks;
 
   final int written;
   final int blank;

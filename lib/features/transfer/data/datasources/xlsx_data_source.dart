@@ -10,27 +10,26 @@ final class XlsxDataSource {
   static const exportSheetName = 'cards';
 
   /// The workbook's sheet names in order, and the rows of the sheet at
-  /// [sheetIndex], or of the first sheet that holds anything when it is null
-  /// (UC-TRANSFER-001 A2). Every cell reads as text. Throws when the bytes
-  /// are not a readable workbook.
+  /// [sheetIndex], or of the first sheet when it is null (UC-TRANSFER-001
+  /// A2, spec 2026-10-08 S6). Every cell reads as text. Throws when the
+  /// bytes are not a readable workbook.
   ({List<String> sheetNames, int sheetIndex, List<List<String>> rows}) read(
     Uint8List bytes, {
     int? sheetIndex,
   }) {
     final sheets = Excel.decodeBytes(bytes).tables;
     final sheetNames = sheets.keys.toList();
-    final tables = [
-      for (final name in sheetNames)
-        [
-          for (final row in sheets[name]!.rows)
-            [for (final cell in row) _textOf(cell?.value)],
-        ],
-    ];
-    final chosen = sheetIndex ?? _firstFilled(tables) ?? 0;
+    final chosen = sheetIndex ?? 0;
+    if (chosen >= sheetNames.length) {
+      return (sheetNames: sheetNames, sheetIndex: chosen, rows: const []);
+    }
     return (
       sheetNames: sheetNames,
       sheetIndex: chosen,
-      rows: chosen < tables.length ? tables[chosen] : const [],
+      rows: [
+        for (final row in sheets[sheetNames[chosen]]!.rows)
+          [for (final cell in row) _textOf(cell?.value)],
+      ],
     );
   }
 
@@ -47,16 +46,6 @@ final class XlsxDataSource {
     final bytes = workbook.encode();
     if (bytes == null) throw StateError('workbook not encoded');
     return Uint8List.fromList(bytes);
-  }
-
-  int? _firstFilled(List<List<List<String>>> tables) {
-    for (var index = 0; index < tables.length; index++) {
-      final filled = tables[index].any(
-        (row) => row.any((cell) => cell.trim().isNotEmpty),
-      );
-      if (filled) return index;
-    }
-    return null;
   }
 }
 

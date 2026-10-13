@@ -436,7 +436,7 @@ void main() {
           .labelSmall
           ?.copyWith(color: tester.element(waiting).colors.onSurfaceVariant),
     );
-    // The glyph follows the eyebrow, not the Required ink.
+    // The glyph follows the eyebrow, not the Required foreground.
     final glyph = find
         .descendant(
           of: find.byType(StudyHomeWorkloadWidget),

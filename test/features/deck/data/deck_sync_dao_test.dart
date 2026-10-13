@@ -57,6 +57,32 @@ void main() {
     );
   });
 
+  test(
+    'a child row without contentType, from a build before the key, takes the '
+    'default (server sync spec §4.4)',
+    () async {
+      final child = {
+        ..._serverRoot('C'),
+        'parentId': 'R',
+        'rootId': 'R',
+        'depth': 2,
+        'schedulerType': null,
+        'schedulerVersion': null,
+        'studyConfig': null,
+        'generation': null,
+      }..remove('contentType');
+      await store.applyingRemote(() async {
+        await adapter.upsertFromServer(_serverRoot('R'), 9);
+        await adapter.upsertFromServer(child, 10);
+      });
+
+      final deck = await (db.select(
+        db.deck,
+      )..where((d) => d.id.equals('C'))).getSingle();
+      expect(deck.contentType, 'unset');
+    },
+  );
+
   test('applying server data queues nothing', () async {
     await store.applyingRemote(
       () => adapter.upsertFromServer(_serverRoot('R'), 1),

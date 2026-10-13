@@ -11,9 +11,10 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 abstract interface class ScheduleRepository {
   /// Writes the schedule row of a card just created (BR-CARD-004): the start
   /// values of its root's scheduler, at the root's generation. Joins the
-  /// caller's transaction. Throws [StateError] when the card does not exist:
-  /// the caller inserts the card first, in that same transaction, so a
-  /// missing card is a bug, not a business outcome.
+  /// caller's transaction, through the account's gate like every business
+  /// write. A card that does not exist is a bug, not a business outcome
+  /// (the caller inserts the card first, in that same transaction), and
+  /// leaves as a failure.
   Future<void> initializeCard({required String cardId});
 
   /// Records one answer of a study session (BR-SRS-019). Only a `scheduled`

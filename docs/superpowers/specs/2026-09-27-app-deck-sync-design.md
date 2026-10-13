@@ -50,6 +50,7 @@ CREATE TABLE sync_outbox (
   op TEXT NOT NULL CHECK (op IN ('upsert', 'delete')),
   created_at DATETIME NOT NULL,
   attempts INTEGER NOT NULL DEFAULT 0,
+  payload TEXT,  -- schema 13 (DEV-181): what a delete sends beyond the op
   UNIQUE (entity_type, entity_id)
 ) AS SyncOutboxEntry;
 
@@ -69,10 +70,19 @@ Triggers, one set per synced table. They run only when
   `sync_outbox` with `op = 'upsert'`. The upsert sets a **new `op_id`** and
   keeps the existing `created_at`.
 - `AFTER DELETE` → the same with `op = 'delete'`. This covers purge and
-  foreign-key cascades.
+  foreign-key cascades. From schema 13 (DEV-181) the deck and card triggers
+  keep the row's `delete_batch_id` and `server_version` in `payload` as JSON
+  (`{"deleteBatchId", "serverVersion"}`) when the row was in the Trash, so
+  the server can tell a purge of a row still in that batch from one another
+  device restored; a delete outside the Trash carries none.
 - `op_id` is a random UUID built in SQL from `randomblob(16)`.
-- `created_at` is the time of the first pending write, and push order is
-  `created_at`, so a parent is pushed before its child.
+- `created_at` is the time of the first pending write. Push order is the
+  entity type (the coordinator's adapter order), then, among decks, the
+  local row's `depth` (a delete has no row and goes first), then
+  `created_at`: a parent is pushed before its child, even a child pending
+  since before its new parent was made (DEV-182). Schema 14 (DEV-205)
+  indexes the outbox on `(entity_type, created_at)`, so a batch is one
+  range read of one type, never a sort of the whole outbox.
 
 The migration seeds the outbox with every existing `delete_batches` and `deck`
 row, in that order, so the first sync uploads the existing library. It also
@@ -103,27 +113,53 @@ failure, with backoff of 5 s, 10 s, 20 s and so on, capped at 5 minutes.
 **Run = push, then pull.**
 
 - **Push:**
-  - Read up to 100 outbox entries ordered by `created_at`.
+  - Read up to 100 outbox entries of one entity type: the first type in
+    adapter order that has any, in the order of §3. The push goes on, batch
+    by batch, until nothing is pending (a short batch ends a type, not the
+    run), or until the server answers for none of a batch.
   - For each entry, the adapter reads the entity's current row. An `upsert`
-    whose row is gone is sent as a `delete`.
+    whose row is gone is sent as a `delete`. A `delete` sends the entry's
+    `payload` as its `row` (server sync spec §4.1).
   - `POST /sync/push`.
   - For each result, in one transaction with `applying_remote`:
     - `applied` sets the row's `server_version`, and deletes the outbox
       entry **only if its `op_id` still equals the one sent**. An edit made
       during the push has replaced the `op_id`, so that entry stays pending.
     - `rejected` applies `current`: it upserts the row, or deletes it when
-      `current` is a tombstone. When `current` is `null` the server has
+      `current` is a tombstone. So a purge the server refuses
+      (`ENTITY_NOT_IN_TRASH`: another device restored the row) brings the
+      row back, and an edit of a row purged elsewhere
+      (`ENTITY_TOMBSTONED`) removes it. When `current` is `null` the server has
       never seen the row, so the row and its cards are **kept** and the
       rejection is logged. The entry is deleted on the same `op_id`
       condition.
+    - `current` is applied in a savepoint of its own (DEV-183): a copy this
+      device cannot hold yet (its parent not pulled, a constraint the local
+      rows break) fails only that entity. The row stays as it is, recorded
+      in `sync_rejection` as `LOCAL_APPLY_FAILED`, and the run goes on to
+      the pull, which brings the parent; a pull that applies the server's
+      copy of a listed row clears its record.
   - Repeat while entries remain.
 - **Pull:**
   - `GET /sync/changes?since=` from `sync_state.since`, paging while
     `hasMore`.
-  - Each page is applied in one transaction with `applying_remote` and
-    `PRAGMA defer_foreign_keys = ON`, because a child may arrive before its
-    parent.
+  - One transaction with `applying_remote` and
+    `PRAGMA defer_foreign_keys = ON` is open before the first page, and
+    each page is applied as it arrives (DEV-206): the pull holds one page
+    at a time, and a child may still arrive before its parent because keys
+    are checked at commit. The transaction stays open while a page is on
+    the wire, bounded by the RPC's 30 s.
   - Changes for entities that still have an outbox entry are skipped.
+  - Each change is applied in a savepoint of its own (DEV-185): one this
+    device cannot hold (a local constraint the server does not mirror)
+    fails alone, recorded in `sync_rejection` as `PULL_APPLY_FAILED`, and
+    the pull goes on; `since` still moves at commit. Try again sends
+    nothing for such a row; the next pull of it that applies clears the
+    record. Before commit, `PRAGMA foreign_key_check` is logged when it
+    finds rows, so a commit that fails on a deferred key names them.
+  - `afterPull` runs only when the pull applied at least one change
+    (DEV-210): the pull after a local write, which brings nothing, no
+    longer scans the library for cards without a schedule.
   - Upserts write the row, including `server_version`. Tombstones delete it,
     and Drift's cascades remove its local descendants, matching the server's
     subtree tombstone.
@@ -137,6 +173,11 @@ failure, with backoff of 5 s, 10 s, 20 s and so on, capped at 5 minutes.
   reconnection retries at once and resets the backoff.
 - **Errors:**
   - A network error or 5xx increments `attempts` and schedules a backoff.
+  - Each RPC (`sync_push` of one batch, `sync_changes` of one page) is
+    bounded at 30 s (`SupabaseSyncApi.rpcTimeout`, DEV-186): a request the
+    network never answers fails as `TimeoutException`, a network failure,
+    so the run ends, backs off, and a `pause()` waiting on it (an account
+    transition) returns instead of hanging until the app is killed.
   - A 4xx on push, meaning a batch the server refuses as a whole, is logged
     and backs off.
   - Nothing reaches the UI.
@@ -171,6 +212,16 @@ triggers do the capturing.
   descendant), soft delete, restore and purge all leave exactly one outbox
   entry per touched row, with the right `op`, a fresh `op_id` on every write
   and the original `created_at`. Writes under `applying_remote` leave none.
+- **The chain (DEV-226):** `sync_store_test.dart` checks `outboxChanges()` fires
+  on listen, after a write the triggers queue, and not for a device-local
+  table; `sync_scheduler_store_test.dart` runs the real coordinator and
+  scheduler on Drift against the fake server: a deck made through the
+  repository reaches the server with nobody calling `syncNow`, and a pull
+  echoes nothing back and does not keep the scheduler running;
+  `sync_providers_test.dart` does the same through `syncSchedulerProvider`
+  and its 2 s debounce. Drift
+  propagates the trigger statically, so the stream also fires for a write
+  under `applying_remote`; the run it starts finds nothing to push.
 - **Migration:** v1/v2/v3 → v4, with the outbox seeded.
 - **Coordinator,** against a fake `SyncApi`:
   - coalescing;

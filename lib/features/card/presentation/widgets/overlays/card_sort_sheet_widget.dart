@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
 /// Picks the card list's order (IT-ORG-003). The chosen option closes the
@@ -38,23 +38,14 @@ class CardSortSheetWidget extends StatelessWidget {
     final l10n = context.l10n;
     const sorts = CardListSort.values;
     return MxBottomSheet(
-      header: Padding(
-        padding: EdgeInsets.fromLTRB(
-          context.dimens.space24,
-          context.dimens.space4,
-          context.dimens.space24,
-          context.dimens.space12,
-        ),
-        child: Text(l10n.cardSortTitle, style: context.texts.titleSmall),
-      ),
-      child: Column(
+      title: l10n.cardSortTitle,
+      child: MxDividedColumn(
         children: [
-          for (final (index, sort) in sorts.indexed)
+          for (final sort in sorts)
             MxOptionRow(
               title: l10n.cardSort(sort),
               isSelected: sort == selected,
               onSelected: () => onSelected(sort),
-              hasDivider: index < sorts.length - 1,
             ),
         ],
       ),

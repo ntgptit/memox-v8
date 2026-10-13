@@ -4,7 +4,7 @@ import 'package:memox/core/theme/theme_rules.dart';
 
 /// A single-choice row (algorithm, study mode, direction). The radio is a ring
 /// that thickens when selected, so nothing moves between states. The whole
-/// row is the target.
+/// row is the target. Dividers are the list's (`MxDividedColumn`, DEV-305).
 class MxOptionRow extends StatelessWidget {
   const MxOptionRow({
     super.key,
@@ -13,7 +13,6 @@ class MxOptionRow extends StatelessWidget {
     required this.onSelected,
     this.description,
     this.trailing,
-    this.hasDivider = true,
     this.isDimmed,
   });
 
@@ -35,9 +34,6 @@ class MxOptionRow extends StatelessWidget {
   final String? description;
   final Widget? trailing;
 
-  /// The ghost rule under the row; the caller turns it off on the last row.
-  final bool hasDivider;
-
   static const double _radioColumn = 22;
 
   /// The selected radio's ring: it thickens, nothing moves.
@@ -53,83 +49,71 @@ class MxOptionRow extends StatelessWidget {
       child: Semantics(
         checked: isSelected,
         inMutuallyExclusiveGroup: true,
+        // A row that cannot be picked says so (SW-REV-006).
+        enabled: onSelected != null,
         child: InkWell(
           onTap: onSelected,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              border: hasDivider
-                  ? Border(
-                      bottom: BorderSide(
-                        color: context.colors.outlineVariant,
-                        width: context.dimens.strokeHairline,
-                      ),
-                    )
-                  : null,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: context.dimens.sizeControl,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimens.space16,
+                vertical: context.dimens.space12,
               ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.dimens.space16,
-                  vertical: context.dimens.space12,
-                ),
-                child: Row(
-                  spacing: context.dimens.space12,
-                  children: [
-                    _dim(
-                      context,
-                      isDim,
-                      SizedBox(
-                        width: _radioColumn,
-                        child: Center(
-                          heightFactor: 1,
-                          child: DecoratedBox(
-                            key: const ValueKey('mx-option-radio'),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                // A stroke glyph, so primaryInk (spec
-                                // 2026-09-27): it reads 3:1 on a sheet.
-                                color: isSelected
-                                    ? context.accentColor
-                                    : colors.outline,
-                                width: isSelected
-                                    ? _selectedRing
-                                    : context.dimens.strokeControl,
-                              ),
+              child: Row(
+                spacing: context.dimens.space12,
+                children: [
+                  _dim(
+                    context,
+                    isDim,
+                    SizedBox(
+                      width: _radioColumn,
+                      child: Center(
+                        heightFactor: 1,
+                        child: DecoratedBox(
+                          key: const ValueKey('mx-option-radio'),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              // A stroke glyph, so primaryInk (spec
+                              // 2026-09-27): it reads 3:1 on a sheet.
+                              color: isSelected
+                                  ? context.accentColor
+                                  : colors.outline,
+                              width: isSelected
+                                  ? _selectedRing
+                                  : context.dimens.strokeControl,
                             ),
-                            child: const SizedBox.square(dimension: _radioSize),
                           ),
+                          child: const SizedBox.square(dimension: _radioSize),
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _dim(
-                            context,
-                            isDim,
-                            Text(title, style: context.texts.titleSmall),
-                          ),
-                          if (description case final text?) ...[
-                            const SizedBox(height: _descriptionGap),
-                            Text(
-                              text,
-                              style: context.texts.bodyMedium?.copyWith(
-                                color: context.colors.onSurfaceVariant,
-                              ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _dim(
+                          context,
+                          isDim,
+                          Text(title, style: context.texts.titleSmall),
+                        ),
+                        if (description case final text?) ...[
+                          const SizedBox(height: _descriptionGap),
+                          Text(
+                            text,
+                            style: context.texts.bodyMedium?.copyWith(
+                              color: context.colors.onSurfaceVariant,
                             ),
-                          ],
+                          ),
                         ],
-                      ),
+                      ],
                     ),
-                    ?trailing,
-                  ],
-                ),
+                  ),
+                  ?trailing,
+                ],
               ),
             ),
           ),

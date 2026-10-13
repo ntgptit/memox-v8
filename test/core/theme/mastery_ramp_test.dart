@@ -26,10 +26,24 @@ void main() {
     expect(MasteryRamp.fill(mx, accent, 1), mx.successContainer);
   });
 
+  test('the text foreground is the band\'s own text colour, never the fill '
+      '(SW-REV-001); 0% reads in the lowest band', () {
+    expect(MasteryRamp.foreground(mx, accent, 0), mx.warning);
+    expect(MasteryRamp.foreground(mx, accent, 0.3399), mx.warning);
+    expect(MasteryRamp.foreground(mx, accent, 0.34), accent);
+    expect(MasteryRamp.foreground(mx, accent, 0.67), mx.success);
+    expect(MasteryRamp.foreground(mx, accent, 1), mx.success);
+  });
+
   test('a fraction outside [0, 1] or NaN is rejected, not painted', () {
     for (final bad in [-0.01, 1.01, double.nan, double.infinity]) {
       expect(
         () => MasteryRamp.fill(mx, accent, bad),
+        throwsArgumentError,
+        reason: '$bad',
+      );
+      expect(
+        () => MasteryRamp.foreground(mx, accent, bad),
         throwsArgumentError,
         reason: '$bad',
       );

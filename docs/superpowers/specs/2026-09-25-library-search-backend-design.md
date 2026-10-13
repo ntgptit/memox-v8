@@ -45,9 +45,10 @@ Success means:
     between two reads (BR-SEARCH-004).
   - Two groups, decks first. A page fills with decks first; no card appears while
     decks remain; the groups never interleave (BR-SEARCH-005).
-  - A card matching several fields or tags yields one result, merged by a correlated
-    aggregate in the query, never by `DISTINCT` over a multiplying join
-    (BR-SEARCH-006).
+  - A card matching several fields or tags yields one result: the tags that hold
+    the term are ranked per card in the query and the best one joins the card, never
+    `DISTINCT` over a multiplying join (BR-SEARCH-006; DEV-209 moved this from a
+    correlated aggregate per card to the tag side).
   - Pagination is keyset over exactly four parts in the sort order: tier, the folded
     text sorted on, `created_at`, `id`. No `OFFSET`. A write between two pages never
     repeats or skips a row (BR-SEARCH-007).
@@ -231,18 +232,29 @@ this only guards against a partial one (plan Clarification 4).
 `cardHits` is one statement, sketched here; the plan pins it:
 
 ```sql
-WITH hits AS (
+WITH matching_tags AS (
+  SELECT t.id, t.name, <tier of t.name_folded> AS tier,
+    ROW_NUMBER() OVER (ORDER BY <tier of t.name_folded>, t.name_folded, t.id) AS rank
+  FROM tags t WHERE instr(t.name_folded, :term) > 0),
+best_links AS (
+  SELECT ct.card_id, MIN(mt.rank) AS rank
+  FROM matching_tags mt CROSS JOIN card_tags ct ON ct.tag_id = mt.id
+  GROUP BY ct.card_id),
+best_tags AS (
+  SELECT b.card_id, mt.tier AS tag_tier, mt.name AS tag_name
+  FROM best_links b JOIN matching_tags mt ON mt.rank = b.rank),
+found AS (
+  SELECT c.id, NULL AS tag_tier, NULL AS tag_name FROM card c
+  WHERE <live> AND (instr(c.front_folded, :term) > 0 OR instr(c.back_folded, :term) > 0)
+    AND NOT EXISTS (SELECT 1 FROM best_tags b WHERE b.card_id = c.id)
+  UNION ALL SELECT card_id, tag_tier, tag_name FROM best_tags),
+hits AS (
   SELECT c.id, c.deck_id, c.front, c.back, c.front_folded, c.created_at,
     <tier of c.front_folded> AS front_tier,
     <tier of c.back_folded>  AS back_tier,
-    COALESCE((SELECT MIN(<tier of t.name_folded>)
-              FROM card_tags ct JOIN tags t ON t.id = ct.tag_id
-              WHERE ct.card_id = c.id), <none>) AS tag_tier,
-    (SELECT t.name FROM card_tags ct JOIN tags t ON t.id = ct.tag_id
-     WHERE ct.card_id = c.id AND instr(t.name_folded, :term) > 0
-     ORDER BY <tier of t.name_folded>, t.name_folded, t.id
-     LIMIT 1) AS tag_name
-  FROM card c JOIN deck k ON k.id = c.deck_id
+    COALESCE(f.tag_tier, <none>) AS tag_tier,
+    f.tag_name
+  FROM found f CROSS JOIN card c ON c.id = f.id CROSS JOIN deck k ON k.id = c.deck_id
   WHERE <live: D8>
 )
 SELECT ... , MIN(front_tier, back_tier, tag_tier) AS tier
@@ -256,7 +268,14 @@ LIMIT :limit
 
 `<tier of x>` is `CASE WHEN x = :term THEN 0 WHEN instr(x, :term) = 1 THEN 1 WHEN
 instr(x, :term) > 0 THEN 2 ELSE <none> END`. The tags come from this statement, one
-row per card, with no `DISTINCT` (BR-SEARCH-006, BR-SEARCH-009).
+row per card, with no `DISTINCT` (BR-SEARCH-006, BR-SEARCH-009). The tag side is
+computed from the tags (DEV-209): before it, two correlated subqueries ran for every
+live card, tagged or not, so the statement's cost grew with the cards times their
+tags; now the matching tags are ranked once, their links give each card its best
+tag, and only the cards found (by a face or by a tag) join the deck and take their
+tiers. `CROSS JOIN` fixes the join order the planner would otherwise invert. The
+probe `search_probe_test.dart` (10k cards, a third tagged) measures both statements
+on a page of 50 and checks they find the same hits in the same order.
 
 ### 6.3 One emission
 

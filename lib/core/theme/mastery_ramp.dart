@@ -24,6 +24,18 @@ abstract final class MasteryRamp {
     return mx.successContainer;
   }
 
+  /// The text colour of [fraction]'s band, for a percentage beside or inside
+  /// the fill: the fill colours are not text colours (SW-REV-001). 0 reads in
+  /// the lowest band.
+  static Color foreground(MxColorsExtension mx, Color accent, double fraction) {
+    if (fraction.isNaN || fraction < 0 || fraction > 1) {
+      throw ArgumentError.value(fraction, 'fraction', 'must be within [0, 1]');
+    }
+    if (fraction < _reviewingFrom) return mx.warning;
+    if (fraction < _masteredFrom) return accent;
+    return mx.success;
+  }
+
   /// [fraction] as a whole percent that never rounds to a lie: 0 only at 0,
   /// 100 only at 1, and 1…99 between (deck mastery spec D13).
   static int percent(double fraction) {

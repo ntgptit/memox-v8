@@ -1,7 +1,15 @@
 import 'package:flutter/foundation.dart';
 
 /// The submits of screen 23; each is a write of its own (BR-SETTINGS-007).
-enum SettingsSubmit { cardLimit, newCardOrder, theme, language, reset }
+enum SettingsSubmit {
+  cardLimit,
+  newCardOrder,
+  speechLanguage,
+  speechAutoPlay,
+  theme,
+  language,
+  reset,
+}
 
 /// What screen 23 says once a submit ends. Each is a new object, so a
 /// listener sees two of the same kind in a row (spec §5.2).

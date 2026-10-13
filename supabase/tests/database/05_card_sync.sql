@@ -74,14 +74,14 @@ select is(public.t_push(jsonb_build_array(public.t_op(8, 'card', public.t_uuid(1
     public.t_card(public.t_uuid(10), public.t_uuid(2)))))->0->'current'->>'deleted',
   'true', 'an edit of a card in a deleted deck is refused with the tombstone');
 
--- Card delete and resurrection.
+-- Card delete; the tombstone is final (DEV-184, policy A).
 select is(public.t_push(jsonb_build_array(
     public.t_op(9, 'card', public.t_uuid(13), 'upsert', public.t_card(public.t_uuid(13), public.t_uuid(1))),
     public.t_op(10, 'card', public.t_uuid(13), 'delete', null)))->1->>'status',
   'applied', 'a card delete is applied');
 select is(public.t_change(public.t_uuid(13))->>'deleted', 'true', 'a deleted card is a tombstone');
 select is(public.t_push(jsonb_build_array(public.t_op(11, 'card', public.t_uuid(13), 'upsert',
-    public.t_card(public.t_uuid(13), public.t_uuid(1)))))->0->>'status', 'applied', 'an upsert resurrects a card');
+    public.t_card(public.t_uuid(13), public.t_uuid(1)))))->0->>'code', 'ENTITY_TOMBSTONED', 'an upsert on a tombstoned card is refused');
 
 -- User B.
 select set_config('request.jwt.claims',

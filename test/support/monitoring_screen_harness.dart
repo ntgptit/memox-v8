@@ -19,6 +19,7 @@ Future<void> pumpMonitoring(
   FakeMonitoringRepository repository, {
   ValueChanged<String>? onOpenServerLog,
   ValueChanged<String>? onOpenPendingLog,
+  Widget? pendingHeader,
   double textScale = 1,
   Locale locale = const Locale('en'),
 }) => pumpLibraryScreen(
@@ -27,6 +28,7 @@ Future<void> pumpMonitoring(
   MonitoringScreen(
     onOpenServerLog: onOpenServerLog ?? (_) {},
     onOpenPendingLog: onOpenPendingLog ?? (_) {},
+    pendingHeader: pendingHeader,
   ),
   overrides: monitoringOverrides(repository),
   textScale: textScale,

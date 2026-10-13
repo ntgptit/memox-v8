@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/card_due_sql.dart';
 
 part 'reminder_workload_dao.g.dart';
 
@@ -19,5 +20,11 @@ final class ReminderWorkloadDao extends DatabaseAccessor<AppDatabase>
   Future<List<DeckTileRow>> rootDeckRows({
     required DateTime now,
     required DateTime startOfToday,
-  }) => deckLevelOfRoots(startOfToday, now).get();
+  }) => deckLevelOfRoots(
+    (c, k, cs) => CardDueSql.isNew(cs),
+    (c, k, cs) => CardDueSql.isOverdue(cs, startOfToday),
+    (c, k, cs) =>
+        CardDueSql.isDueToday(cs, now: now, startOfToday: startOfToday),
+    (c, k, cs) => CardDueSql.isDue(cs, now),
+  ).get();
 }

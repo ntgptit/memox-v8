@@ -6,6 +6,7 @@ import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/features/account/presentation/providers/unsent_count_provider.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_transition_layer_widget.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
@@ -18,6 +19,7 @@ import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import '../../../support/account_harness.dart';
 import '../../../support/auth_fakes.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/sync_fakes.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -40,6 +42,9 @@ Future<void> _onThemePage(
     ),
   );
   await tester.pumpAndSettle();
+  // Below the fold since the speech rows of Study defaults: scrolling to
+  // the Reset row puts the Theme row above the bottom bar.
+  await tester.scrollUntilVisible(find.text(_en.settingsResetRow), 200);
   await tester.tap(find.text(_en.settingsTheme));
   await _settle(tester);
   expect(find.byType(ThemeScreen), findsOneWidget);
@@ -296,6 +301,45 @@ void main() {
     expect(inFooter(_en.commonRetry), findsOneWidget);
     expect(find.text(_en.commonRetry), findsOneWidget);
     expect(inFooter(_en.accountSignOutLosing(2)), findsOneWidget);
+  });
+
+  libraryTest('a merge stopped on rows the server refused names them, and '
+      'offers to lose them and go on (DEV-191)', (tester, env) async {
+    final commands = FakeSyncCommands();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      AccountTransitionLayerWidget(navigatorKey: GlobalKey()),
+      overrides: [
+        authStateOf(
+          Transitioning(
+            transitionOf(
+              TransitionKind.switchAccount,
+              TransitionStage.started,
+              choice: TransitionChoice.merge,
+            ),
+            error: const UnsentChangesFailure(count: 2),
+          ),
+        ),
+        ...syncOverrides(const SyncStatus(), commands),
+      ],
+    );
+    await tester.pump();
+
+    expect(find.text(_en.accountSwitchRefused(2)), findsOneWidget);
+    expect(find.text(_en.accountLayerFailed), findsNothing);
+    expect(find.text(_en.commonCancel), findsOneWidget);
+    Finder inFooter(String text) => find.descendant(
+      of: find.byType(MxFooterBar),
+      matching: find.text(text),
+    );
+    expect(inFooter(_en.commonRetry), findsOneWidget);
+    expect(inFooter(_en.accountSwitchLosing(2)), findsOneWidget);
+
+    await tester.tap(find.text(_en.accountSwitchLosing(2)));
+    await _settle(tester);
+
+    expect(commands.keeps, 1);
   });
 
   libraryTest('a sign-out still sending offers no Cancel (R4)', (

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/app/app.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/app_database.dart';
@@ -49,6 +50,7 @@ final class LibraryEnv {
         db,
         ScheduleRepositoryImpl(db),
         TagRepositoryImpl(db),
+        DeckTreeDataSource(db),
       ),
       sessions = LockableSessions(studySessionRepository(db, clock.now)),
       entries = FailingEntries(studyEntryRepository(db, clock.now));
@@ -211,6 +213,7 @@ DeckLevelScreen deckScreen({
   ValueChanged<String>? onOpenAlgorithm,
   ValueChanged<String>? onImportCards,
   ValueChanged<DeckEntity>? onExportCards,
+  ValueChanged<String>? onSelectCards,
   ValueChanged<String>? onOpenStudy,
   ValueChanged<String>? onOpenStudyOptions,
   VoidCallback? onOpenTrash,
@@ -228,6 +231,7 @@ DeckLevelScreen deckScreen({
   onAddCard: onAddCard ?? (_) {},
   onImportCards: onImportCards ?? (_) {},
   onExportCards: onExportCards ?? (_) {},
+  onSelectCards: onSelectCards ?? (_) {},
   onOpenTrash: onOpenTrash ?? () {},
   onOpenStarterDecks: onOpenStarterDecks ?? () {},
   onOpenTags: onOpenTags ?? () {},
@@ -245,9 +249,14 @@ DeckLevelScreen deckScreen({
   cardFab: cardFab ?? (_) => const SizedBox.shrink(),
 );
 
-/// Screen 07: the open deck as `app/` composes it (A14).
-DeckLevelScreen cardDeckScreen(String deckId) => deckScreen(
+/// Screen 07: the open deck as `app/` composes it (A14). [onSelectCards]
+/// is the router's: the test reaches the scope's container (DEV-307).
+DeckLevelScreen cardDeckScreen(
+  String deckId, {
+  ValueChanged<String>? onSelectCards,
+}) => deckScreen(
   deckId: deckId,
+  onSelectCards: onSelectCards,
   cardContent: (view) => CardListSectionWidget(
     deckId: view.deck.id,
     algorithm: 'Eight boxes',

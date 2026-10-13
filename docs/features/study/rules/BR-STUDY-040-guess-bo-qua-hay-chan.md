@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-Phân biệt hai ca: tập thẻ của phiên **không đủ năm nghĩa khác nhau** thì stage `guess` MUST bị bỏ qua theo BR-MODE-009, không phải lỗi. Đủ năm nhưng một question vẫn không dựng được thì MUST chặn: không render, không ghi lượt, không bỏ qua thẻ, không tiến checkpoint.
+Phân biệt hai ca: nguồn distractor của BR-STUDY-038 — thẻ đã học xong trong cây deck hoặc thẻ của phiên — **không đủ năm nghĩa khác nhau** thì stage `guess` MUST bị bỏ qua theo BR-MODE-009, không phải lỗi. Đủ năm nhưng một question vẫn không dựng được thì MUST chặn: không render, không ghi lượt, không bỏ qua thẻ, không tiến checkpoint.
 
 **Enforced by:** rule
 **Liên quan:** BR-MODE-009, BR-STUDY-071, BR-STUDY-037

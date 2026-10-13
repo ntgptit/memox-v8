@@ -7,7 +7,9 @@ superseded_by:
 ---
 ## Rule
 
-Mỗi lượt `fill` MUST lưu phiên bản chính sách so khớp đã dùng. Đổi chính sách MUST tăng phiên bản, MUST NOT sửa lại các lượt cũ.
+Mỗi lượt `fill` MUST lưu phiên bản chính sách so khớp đã dùng, ở `review_log.comparison_version`. Đổi chính sách MUST tăng phiên bản, MUST NOT sửa lại các lượt cũ.
+
+Phiên bản hiện hành là **2**. Phiên bản 1 so câu trả lời đã trim và hạ hoa, chưa chuẩn hoá Unicode; phiên bản 2 thêm NFC (BR-STUDY-026).
 
 **Enforced by:** db
 **Liên quan:** BR-STUDY-026

@@ -7,7 +7,7 @@ them sends the agent to something it cannot read. What a skill cites is V8's:
 an ADR in `docs/shared/decisions/`, a `BR-<AREA>-NNN` or `UC-<AREA>-NNN` in
 `docs/features/`, the WBS files, or V8's code.
 
-The vendored skills (ECC, Superpowers, Impeccable) are not the repo's to edit
+The vendored skills (ECC, Superpowers, Impeccable, diagram-design) are not the repo's to edit
 and are not scanned. The `tests/` directories are not scanned either: the CI
 tooling tests themselves assert that Widgetbook and `memox-api` are absent.
 """
@@ -41,8 +41,9 @@ REPO_OWNED_SKILLS = (
     "spring-boot-mybatis-review",
 )
 
-# Copied from their upstreams and not the repo's to edit (docs/agent/vendored-ecc.md): ECC,
-# Superpowers and Impeccable. Every other skill is the repo's, and is scanned.
+# Copied from their upstreams and not the repo's to edit (docs/agent/vendored-ecc.md,
+# docs/agent/vendored-diagram-design.md): ECC, Superpowers, Impeccable and
+# diagram-design. Every other skill is the repo's, and is scanned.
 VENDORED_SKILLS = (
     # ECC
     "android-clean-architecture",
@@ -82,6 +83,8 @@ VENDORED_SKILLS = (
     "writing-skills",
     # Impeccable
     "impeccable",
+    # diagram-design
+    "diagram-design",
 )
 
 V7_MARKERS = (

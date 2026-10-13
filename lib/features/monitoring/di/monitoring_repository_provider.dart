@@ -7,7 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'monitoring_repository_provider.g.dart';
 
-/// The admin RPCs through the Supabase project main.dart initialized, and
+/// The admin RPCs through the Supabase project `startApp` initialized, and
 /// the device's log buffer. Read only from Monitoring's screens, which only
 /// an admin of a build with Supabase reaches.
 @riverpod

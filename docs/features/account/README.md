@@ -13,12 +13,14 @@ Luật chuyển hướng của router nằm ở `lib/app/router/account_redirect
 
 | Màn hình | UC |
 |---|---|
-| Welcome, lần mở đầu tiên (màn 29) | Chưa có UC; hành vi theo account UI spec §5 |
-| Đăng nhập, sheet gộp thư viện, lớp chuyển tiếp (màn 30) | Chưa có UC; hành vi theo auth spec và account UI spec §5 |
-| Nhập mã (màn 31) | Chưa có UC; hành vi theo account UI spec §5 |
-| Tài khoản: đăng nhập lại, đổi tài khoản, đăng xuất, xoá (màn 32) | Chưa có UC; hành vi theo account UI spec §9 |
-| Users, chỉ admin: tìm user, gán quyền `user`/`admin` (màn 33) | Chưa có UC; hành vi theo [users spec](../../superpowers/specs/2026-09-30-users-admin-design.md) §6 |
+| Welcome, lần mở đầu tiên (màn 29) | UC-ACCOUNT-001 |
+| Đăng nhập, sheet gộp thư viện, lớp chuyển tiếp (màn 30) | UC-ACCOUNT-001 (gắn tài khoản), UC-ACCOUNT-002 (sheet gộp, lớp chuyển tiếp), UC-ACCOUNT-003 (đăng nhập lại) |
+| Nhập mã (màn 31) | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| Tài khoản: đăng nhập lại, đổi tài khoản, đăng xuất, xoá (màn 32) | UC-ACCOUNT-002 (đổi tài khoản), UC-ACCOUNT-003 (banner đăng nhập lại), UC-ACCOUNT-004 (đăng xuất, xoá) |
+| Users, chỉ admin: tìm user, gán quyền `user`/`admin` (màn 33) | UC-ACCOUNT-005 |
 | Mục tài khoản trong tab Settings (màn 23) | Lối vào |
+
+Các UC đặc tả hành vi app đã có (status `draft` cho tới khi có test mang ID của chúng); BR-ACCOUNT-001 đến BR-ACCOUNT-024 ghi luật của nó, kể cả luật chỉ-admin (BR-ACCOUNT-019) mà [feature monitoring](../monitoring/README.md) cũng dùng.
 
 ## Không thuộc phạm vi
 

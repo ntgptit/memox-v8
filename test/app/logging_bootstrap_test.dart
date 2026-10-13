@@ -12,7 +12,7 @@ import 'package:memox/core/logging/buffer_sink.dart';
 import 'package:memox/core/logging/console_sink.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
 import 'package:memox/core/network/supabase_config.dart';
-import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 
 import '../support/test_database.dart';
 

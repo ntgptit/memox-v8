@@ -162,7 +162,11 @@ extension AccountLeaving on AccountCoordinator {
       } on LastAdminFailure catch (error) {
         return _refuseDelete(s, error); // #44
       } on OfflineFailure catch (error) {
-        return _refuseDelete(s, error); // #44
+        // Whether the server took it is unknown (the request may have been
+        // sent): the record stays, and the retry finds either the account
+        // or #43 (DEV-192). Offline before the request, deleteAccount()
+        // refused already.
+        return _emit(_inTransition(s, error: error));
       }
       s = await _save(s.copyWith(stage: TransitionStage.serverDeleted));
     }

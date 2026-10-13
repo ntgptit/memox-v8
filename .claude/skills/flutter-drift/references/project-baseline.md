@@ -82,7 +82,7 @@ and `local_data_reset.dart` are the only Dart that may hold SQL.
 | Contract | What this repo does | Why it matters later |
 |---|---|---|
 | Primary key | `TEXT` UUID, client-generated (ADR-007) | A backend cannot renumber rows a device already created |
-| Ownership | nullable `owner_id` on `deck`, `tags` and `delete_batches`; `NULL` until login | Login arrives without a migration; the server takes the owner from its own `CurrentUserProvider`, never from the client (ADR-013) |
+| Ownership | `owner_id` on `deck`, `tags` and `delete_batches` is **retired**: always `NULL`, read only as the constant `owner_id IS NULL` and in `idx_tags_owner_name_folded` (DEV-198) | One profile per device: sign-in never namespaces local rows (auth spec O12, `LocalDataReset`); the server takes the owner from `auth.uid()`, never from the client (ADR-013, ADR-015). The column goes when its table is rebuilt for another reason (`migrations.md`) |
 | Enums | stable lowercase text codes with a `CHECK` — `eight_box`, `sm2`, `unset`, `card`, `deck`, `learning`, `reviewing` | An ordinal would change meaning the day a value is inserted in the middle |
 | Timestamps | `DATETIME` columns holding UTC (ADR-008); **no `build.yaml`**, so Drift's default storage applies | See the warning below |
 
@@ -138,7 +138,10 @@ Knowing the negatives prevents half of the bad suggestions:
 - **No sync code in a repository.** `sync.drift` holds `sync_outbox` and
   `sync_state`, and its triggers queue each write to `deck` and
   `delete_batches` in the same statement; `server_version` on those two tables
-  records the server's acknowledgement. A table that does not sync yet has
+  records the server's acknowledgement. Locally only `deck` and `card` read it
+  back (the delete triggers keep it in the op's payload, DEV-181); on `tags`
+  and `delete_batches` it is write-only, a diagnostic, as `sync_outbox.attempts`
+  is (DEV-198). A table that does not sync yet has
   neither; its order is the priority of the `Supabase` issues in the Linear
   project MemoX (ADR-021).
 - **No encryption.** ADR-002 decides it for now; opening the database in one
@@ -158,8 +161,9 @@ possible, and each one would be expensive to retrofit:
 
 - **IDs are client-generated**, so rows created offline can be referenced
   immediately and never need renumbering.
-- **`owner_id` is nullable on user tables**, so login backfills rather than
-  migrates.
+- **`owner_id` is retired, not pending**: always `NULL`, because a device holds
+  one profile and sign-in resets local data instead of namespacing it (auth spec
+  O12). It stays until its table is rebuilt for another reason (`migrations.md`).
 - **Enum codes are stable text**, so the database, the DTOs and the domain
   share one vocabulary.
 - **The migration path is tested from v1** (`test/drift/migration_test.dart`),

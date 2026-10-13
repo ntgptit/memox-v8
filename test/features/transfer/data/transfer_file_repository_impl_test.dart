@@ -323,33 +323,43 @@ void main() {
   });
 
   group('XLSX', () {
-    test('the first sheet that holds anything is chosen, and any sheet can be (A2)', () async {
-      final bytes = _workbook({
-        'Notes': [],
-        'Vocab': [
-          [TextCellValue('front'), TextCellValue('back')],
-          [TextCellValue('menu'), TextCellValue('thực đơn')],
-        ],
-        'Other': [
-          [TextCellValue('x')],
-        ],
-      });
+    test(
+      'the first sheet is read by default, even empty; any sheet can be (A2)',
+      () async {
+        final bytes = _workbook({
+          'Notes': [],
+          'Vocab': [
+            [TextCellValue('front'), TextCellValue('back')],
+            [TextCellValue('menu'), TextCellValue('thực đơn')],
+          ],
+        });
 
-      final table = await _table(
-        FileSource(bytes: bytes, format: TransferFormat.xlsx),
-      );
-      expect(table.sheetNames, ['Notes', 'Vocab', 'Other']);
-      expect(table.sheetIndex, 1);
-      expect(table.rows.last, ['menu', 'thực đơn']);
+        final first = await _table(
+          FileSource(bytes: bytes, format: TransferFormat.xlsx),
+        );
+        expect((first.sheetIndex, first.isBlank), (0, true));
+        expect(first.sheetNames, ['Notes', 'Vocab']);
 
-      final other = await _table(
-        FileSource(bytes: bytes, format: TransferFormat.xlsx),
-        sheetIndex: 2,
-      );
-      expect(other.rows, [
-        ['x'],
-      ]);
-    });
+        final vocab = await _table(
+          FileSource(bytes: bytes, format: TransferFormat.xlsx),
+          sheetIndex: 1,
+        );
+        expect(vocab.sheetIndex, 1);
+        expect(vocab.rows.last, ['menu', 'thực đơn']);
+      },
+    );
+
+    test(
+      'a workbook with one blank sheet is still an empty source (E2)',
+      () async {
+        final bytes = _workbook({'Only': []});
+
+        expect(
+          await _refusal(FileSource(bytes: bytes, format: TransferFormat.xlsx)),
+          TransferRejection.emptySource,
+        );
+      },
+    );
 
     test('numbers and dates read as text', () async {
       final bytes = _workbook({

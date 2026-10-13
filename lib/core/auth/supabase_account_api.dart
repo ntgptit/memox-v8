@@ -10,7 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseAccountApi implements AccountApi {
   SupabaseAccountApi({required this._rpc, required this._refreshSession});
 
-  /// On the client main.dart initialized.
+  /// On the client `startApp` initialized.
   factory SupabaseAccountApi.instance() => SupabaseAccountApi(
     rpc: supabaseRpc,
     refreshSession: () async {

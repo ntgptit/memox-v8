@@ -1,5 +1,6 @@
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/features/card/data/datasources/card_detail_dao.dart';
+import 'package:memox/features/card/data/datasources/card_list_dao.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
@@ -8,9 +9,9 @@ import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_tree_model.dart';
+import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
-import 'package:memox/features/srs/domain/models/card_schedule_state_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 
@@ -46,6 +47,7 @@ CardListItem listItemOf(
   CardRow card,
   CardSchedule schedule, {
   required List<Tag> tags,
+  required DateTime now,
   required DateTime startOfToday,
 }) => CardListItem(
   id: card.id,
@@ -55,66 +57,31 @@ CardListItem listItemOf(
   dueAt: schedule.dueAt,
   displayStatus: CardDisplayStatus.of(scheduleStateOf(schedule)),
   due: CardDue.of(
-    isLearned: schedule.learnedAt != null,
+    learnedAt: schedule.learnedAt,
     dueAt: schedule.dueAt,
+    now: now,
     startOfToday: startOfToday,
   ),
   tags: [for (final tag in tags) TagEntity(id: tag.id, name: tag.name)],
 );
 
-/// The display state of every schedule row, counted once each.
-CardStatusCounts statusCountsOf(Iterable<CardSchedule> schedules) {
-  var newCards = 0;
-  var beginning = 0;
-  var reviewing = 0;
-  var mastered = 0;
-  for (final schedule in schedules) {
-    switch (CardDisplayStatus.of(scheduleStateOf(schedule))) {
-      case CardDisplayStatus.newCard:
-        newCards++;
-      case CardDisplayStatus.beginning:
-        beginning++;
-      case CardDisplayStatus.reviewing:
-        reviewing++;
-      case CardDisplayStatus.mastered:
-        mastered++;
-    }
-  }
-  return CardStatusCounts(
-    newCards: newCards,
-    beginning: beginning,
-    reviewing: reviewing,
-    mastered: mastered,
-  );
-}
+/// The display state of every live card of the deck, counted once each by
+/// SQL (BR-CARD-008, DEV-211); the thresholds are CardStatusSql's, which a
+/// parity test holds to CardDisplayStatus.
+CardStatusCounts statusCountsOf(DeckStatusCountsRow row) => CardStatusCounts(
+  newCards: row.newCount,
+  beginning: row.beginningCount,
+  reviewing: row.reviewingCount,
+  mastered: row.masteredCount,
+);
 
-/// Every schedule row by when it comes back, counted once each (E-O1).
-CardWorkload workloadOf(
-  Iterable<CardSchedule> schedules,
-  DateTime startOfToday,
-) {
-  var overdue = 0;
-  var today = 0;
-  var newCards = 0;
-  for (final schedule in schedules) {
-    final due = CardDue.of(
-      isLearned: schedule.learnedAt != null,
-      dueAt: schedule.dueAt,
-      startOfToday: startOfToday,
-    );
-    switch (due.kind) {
-      case CardDueKind.overdue:
-        overdue++;
-      case CardDueKind.today:
-        today++;
-      case CardDueKind.newCard:
-        newCards++;
-      case CardDueKind.later:
-        break;
-    }
-  }
-  return CardWorkload(overdue: overdue, today: today, newCards: newCards);
-}
+/// Every live card of the deck by its set of BR-STUDY-068, counted once each
+/// by SQL (E-O1), through the one SQL copy of the rule (DEV-221).
+CardWorkload workloadOf(DeckStatusCountsRow row) => CardWorkload(
+  overdue: row.overdueCount,
+  today: row.dueTodayCount,
+  newCards: row.newCount,
+);
 
 CardDetail cardDetailOf(CardDetailResult row) => CardDetail(
   card: cardEntityOf(row.c),

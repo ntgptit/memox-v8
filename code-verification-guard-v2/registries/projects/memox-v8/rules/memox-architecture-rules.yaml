@@ -269,6 +269,26 @@ rules:
       - memox-v8
       - architecture
 
+  # Study speech spec D1: the TTS plugin is reached through one door, so a
+  # failing engine is logged in one place and tests fake one interface.
+  - id: memox_v8.architecture.tts_plugin_has_one_door
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      Import `flutter_tts` only in
+      `lib/core/speech/plugin_speech_synthesizer.dart`; go through
+      `SpeechSynthesizer` instead.
+    scopes:
+      - dart_lib
+    exclude:
+      - lib/core/speech/plugin_speech_synthesizer.dart
+    patterns:
+      - "^\\s*import\\s+'package:flutter_tts/"
+    tags:
+      - memox-v8
+      - architecture
+
   # Auth spec §5: the SDKs of identity, sync and secrets are reached through
   # their door files only, so no Supabase or Google type leaks into a
   # feature (core-auth plan rulings 18-19; test/architecture/sdk_door_test.dart).

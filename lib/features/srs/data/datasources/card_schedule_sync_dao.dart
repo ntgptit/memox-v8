@@ -83,20 +83,49 @@ class CardScheduleSyncDao extends DatabaseAccessor<AppDatabase>
 
   /// Gives every card without a schedule the row a new card starts with
   /// (BR-CARD-004): its root's scheduler at the root's generation, nothing
-  /// learned, the row `ScheduleRepository.initializeCard` writes. Runs at the
-  /// end of a pull, under `applying_remote`, inside its transaction.
+  /// learned, the row `ScheduleRepository.initializeCard` writes. Then every
+  /// schedule the pull left behind its root, one pending here that the pull
+  /// skipped while a reset or a scheduler change moved the root on, gets
+  /// that same row and is queued, as the change would have reseeded it on
+  /// the device it was made (invariant 9, DEV-224). Runs at the end of a
+  /// pull, under `applying_remote`, inside its transaction.
   @override
   Future<void> afterPull() async {
     for (final row in await cardsWithoutSchedule().get()) {
-      final type = SchedulerType.fromCode(row.schedulerType!);
       await createInitialSchedule(
-        cardScheduleColumnsOf(
-          CardScheduleState.initial(type, generation: row.generation!),
-          type: type,
+        _initialRowOf(
+          row.cardId,
+          schedulerType: row.schedulerType!,
           version: row.schedulerVersion!,
-        ).copyWith(cardId: Value(row.cardId)),
+          generation: row.generation!,
+        ),
       );
     }
+    for (final row in await cardsWithStaleSchedule().get()) {
+      await upsertSyncedCardSchedule(
+        _initialRowOf(
+          row.cardId,
+          schedulerType: row.schedulerType!,
+          version: row.schedulerVersion!,
+          generation: row.generation!,
+        ),
+      );
+      await _store.enqueue(type, row.cardId, _upsert, _now());
+    }
+  }
+
+  static CardScheduleCompanion _initialRowOf(
+    String cardId, {
+    required String schedulerType,
+    required int version,
+    required int generation,
+  }) {
+    final type = SchedulerType.fromCode(schedulerType);
+    return cardScheduleColumnsOf(
+      CardScheduleState.initial(type, generation: generation),
+      type: type,
+      version: version,
+    ).copyWith(cardId: Value(cardId));
   }
 
   @override
@@ -124,8 +153,9 @@ class CardScheduleSyncDao extends DatabaseAccessor<AppDatabase>
     learnedAt: Value(fromWireTime(row['learnedAt'])),
     dueAt: Value(fromWireTime(row['dueAt'])),
     lastAnsweredAt: Value(fromWireTime(row['lastAnsweredAt'])),
-    answerCount: Value(row['answerCount'] as int),
-    lapseCount: Value(row['lapseCount'] as int),
+    // Optional wire keys (server sync spec §4.4): absent means no answer yet.
+    answerCount: Value(row['answerCount'] as int? ?? 0),
+    lapseCount: Value(row['lapseCount'] as int? ?? 0),
     currentBox: Value(row['currentBox'] as int?),
     easeFactor: Value((row['easeFactor'] as num?)?.toDouble()),
     intervalDays: Value(row['intervalDays'] as int?),

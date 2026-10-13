@@ -224,7 +224,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
     try {
       final Outcome<Object?, CardRejection> outcome = _isCreating
           ? await actions.createCard(deckId: widget.deckId, draft: draft)
-          : await actions.editCard(cardId: _card!.id, draft: draft);
+          : await _edit(draft);
       if (!mounted) return;
       _afterSave(outcome, draft);
     } on Failure {
@@ -235,6 +235,23 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
         _hasFailed = true;
       });
     }
+  }
+
+  /// The content, then the flag only when the person toggled it here: the
+  /// flag is not content (BR-CARD-009), so a save never writes back the one
+  /// the editor opened with (DEV-220). The controller is read again for the
+  /// second write: nothing keeps it alive across the first.
+  Future<Outcome<void, CardRejection>> _edit(CardDraft draft) async {
+    final cardId = _card!.id;
+    final outcome = await ref
+        .read(cardActionsControllerProvider.notifier)
+        .editCard(cardId: cardId, draft: draft);
+    if (outcome is! Ok || draft.isFlagged == _saved.isFlagged || !mounted) {
+      return outcome;
+    }
+    return ref
+        .read(cardActionsControllerProvider.notifier)
+        .setFlagged(cardIds: {cardId}, isFlagged: draft.isFlagged);
   }
 
   void _afterSave(Outcome<Object?, CardRejection> outcome, CardDraft draft) {

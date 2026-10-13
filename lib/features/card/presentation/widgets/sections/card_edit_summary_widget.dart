@@ -45,7 +45,6 @@ class CardEditSummaryWidget extends StatelessWidget {
           leading: const MxIconTile(icon: AppIcons.clock),
           hasChevron: true,
           onTap: onOpenDetails,
-          hasDivider: false,
         ),
       ),
     );

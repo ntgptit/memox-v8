@@ -82,9 +82,7 @@ void main() {
     expect(_edge(_decoration(tester).disabledBorder), ghost);
   });
 
-  testWidgets('every edged variant rests on the outline edge (DEV-166)', (
-    tester,
-  ) async {
+  testWidgets('every edged variant rests on the outline', (tester) async {
     for (final variant in [
       MxTextFieldVariant.form,
       MxTextFieldVariant.detail,

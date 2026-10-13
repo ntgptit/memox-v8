@@ -149,3 +149,15 @@ Future<void> logReview(
   ],
   updates: {db.reviewLog},
 );
+
+/// The schedule rows of the live cards of [deckId], for a parity test's Dart
+/// side; the app's read models count them in SQL (DEV-211).
+Future<List<CardSchedule>> liveSchedulesOf(
+  AppDatabase db,
+  String deckId,
+) async {
+  final query = db.select(db.cardSchedule).join([
+    innerJoin(db.card, db.card.id.equalsExp(db.cardSchedule.cardId)),
+  ])..where(db.card.deckId.equals(deckId) & db.card.deleteBatchId.isNull());
+  return [for (final row in await query.get()) row.readTable(db.cardSchedule)];
+}

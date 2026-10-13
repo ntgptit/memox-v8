@@ -31,9 +31,9 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (workload.isCaughtUp) return _CaughtUp(workload: workload, now: now);
     final l10n = context.l10n;
-    // The eyebrow's own colour: it no longer borrows the Required ink
+    // The eyebrow's own colour: it no longer borrows the Required foreground
     // (critique 2026-09-30 part 2, P2).
-    final ink = context.colors.onSurfaceVariant;
+    final foreground = context.colors.onSurfaceVariant;
     // A summary card, not a hero: sessions start per deck, so it leads
     // nowhere (critique 2026-09-30 part 3c-1, R2).
     return MxCard(
@@ -47,7 +47,7 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
             children: [
               IconTheme(
                 data: IconThemeData(
-                  color: ink,
+                  color: foreground,
                   size: context.dimens.sizeIconInline,
                 ),
                 child: const ExcludeSemantics(child: Icon(AppIcons.dueNow)),

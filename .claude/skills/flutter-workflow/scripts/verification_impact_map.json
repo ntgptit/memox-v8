@@ -69,6 +69,7 @@
     "search_queries": ["search"],
     "settings_queries": ["settings", "reminders", "study"],
     "srs_queries": ["srs", "study", "deck"],
+    "sql_log_queries": [],
     "starter_queries": ["starter_decks"],
     "study_queue_queries": ["study"],
     "study_round_queries": ["study"],

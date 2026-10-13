@@ -20,7 +20,7 @@ import 'package:memox/core/theme/theme_rules.dart';
 /// wrong one stays on screen, the typed text struck through beside the
 /// right term, until Continue (BR-STUDY-059, BR-STUDY-063, BR-STUDY-064).
 /// The typed text lives only here and in the one answer sent; it is never
-/// kept (BR-STUDY-027). The screen keys it per turn. Its actions settle
+/// kept (BR-STUDY-030). The screen keys it per turn. Its actions settle
 /// after a swap (critique 2026-09-30 part 3c-2, R1).
 class StudyFillWidget extends StatefulWidget {
   const StudyFillWidget({
@@ -260,7 +260,7 @@ class _HintRow extends StatelessWidget {
   );
 }
 
-/// A wrong answer: what was typed, struck through in the error ink, the
+/// A wrong answer: what was typed, struck through in the error foreground, the
 /// right term below it, and when it comes back (F3, V1, V10).
 class _Corrected extends StatelessWidget {
   const _Corrected({required this.typed, required this.term});

@@ -15,7 +15,9 @@ trong khi branch nội bộ và màn hình gốc của nó vẫn là Decks.
 - **Progress** (UC-PROGRESS-001, UC-PROGRESS-002): streak, hôm nay và bảy ngày gần nhất đọc từ
   lịch sử học thật, rồi bên dưới là hai khoảng 7/30 ngày, bảng tổng và một
   hàng cho mỗi deck với drill-down xuống từng cấp. **Settings** (UC-SETTINGS-001,
-  BR-SETTINGS-001…BR-SETTINGS-008): mặc định học, theme và ngôn ngữ; nhắc học hằng ngày (UC-REMINDER-001)
+  BR-SETTINGS-001…BR-SETTINGS-010): tab là một hub (màn 23) chỉ gồm các hàng điều hướng; mặc
+  định học ở màn 23a (`/settings/study`), các công cụ admin ở màn 23b (`/settings/admin`, chỉ
+  admin thấy); theme và ngôn ngữ có trang riêng; nhắc học hằng ngày (UC-REMINDER-001)
   nằm trong branch Settings: màn 24 ở `/settings/reminder`, trên root navigator như Theme
   và Language, Back về màn 23.
 - Thư viện starter (M6) là child flow bên trong tab Thư viện (branch Decks), không phải tab riêng.

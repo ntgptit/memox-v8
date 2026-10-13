@@ -21,6 +21,9 @@ final class FillModeHandler extends GradedModeHandler {
   const FillModeHandler();
 
   @override
+  bool get readsTermAloud => false;
+
+  @override
   StageEligibility eligibility(
     List<StudyCardFacts> cards, {
     required int distinctMeaningCount,

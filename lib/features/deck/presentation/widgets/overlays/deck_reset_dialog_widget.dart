@@ -16,6 +16,7 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
@@ -78,6 +79,15 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
       // E1: rolled back; the dialog stays for another try.
       setState(() => _isResetting = false);
       showMxSnackbar(context, message: context.l10n.failure(failure));
+    } on Object catch (error, stackTrace) {
+      // A bug, not a Failure (ADR-016): log it, and never leave the held
+      // dialog without a way out (final review 2026-10-08).
+      FlutterError.reportError(
+        FlutterErrorDetails(exception: error, stack: stackTrace),
+      );
+      if (!mounted) return;
+      setState(() => _isResetting = false);
+      showMxSnackbar(context, message: context.l10n.failureUnknown);
     }
   }
 
@@ -110,6 +120,7 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
       _ => null,
     };
     return MxDialog(
+      isHeld: _isResetting,
       title: l10n.resetDialogTitle,
       body: body,
       content: Column(
@@ -209,7 +220,7 @@ class _AlgorithmChoice extends StatelessWidget {
     final onChosen = this.onChosen;
     return MxCard(
       isFullBleed: true,
-      child: Column(
+      child: MxDividedColumn(
         children: [
           MxOptionRow(
             title: l10n.resetKeep(l10n.schedulerType(current)),
@@ -220,7 +231,6 @@ class _AlgorithmChoice extends StatelessWidget {
             title: l10n.resetSwitchTo(l10n.schedulerType(other)),
             isSelected: choice == other,
             onSelected: onChosen == null ? null : () => onChosen(other),
-            hasDivider: false,
           ),
         ],
       ),

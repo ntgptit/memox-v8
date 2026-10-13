@@ -14,6 +14,7 @@ import 'package:memox/features/card/domain/usecases/move_cards_use_case.dart';
 import 'package:memox/features/card/domain/usecases/remove_tag_from_cards_use_case.dart';
 import 'package:memox/features/card/domain/usecases/set_cards_flagged_use_case.dart';
 import 'package:memox/features/card/domain/usecases/undo_card_deletion_use_case.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -42,6 +43,7 @@ void main() {
         db,
         ScheduleRepositoryImpl(db, now: now),
         tags,
+        DeckTreeDataSource(db),
         now: now,
       );
       final root = await decks.root('Korean');
@@ -130,6 +132,7 @@ void main() {
         db,
         ScheduleRepositoryImpl(db, now: now),
         TagRepositoryImpl(db, now: now),
+        DeckTreeDataSource(db),
         now: now,
       );
       final lesson = await decks.sub((await decks.root('Korean')).id, 'Lesson');

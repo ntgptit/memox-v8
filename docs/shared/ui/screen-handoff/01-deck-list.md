@@ -9,11 +9,11 @@ One recursive screen for the Library root (`/decks`) and any open deck
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (large) | "Library", then Starter decks (sparkles, screen 03), Tags (tag, screen 05) and Trash (screen 06) (FE-B2 + FE-B4 D2). |
-| Search | `MxSearchField`, trigger mode | Hint "Search decks". A tap pushes `/decks/search` (screen 04). |
+| App bar | `MxAppBar` (large) | "Library", then Starter decks (sparkles, screen 03), Tags (tag, screen 05; only with decks, The Content Gate Rule, DEV-309) and Trash (screen 06, always: the way back) (FE-B2 + FE-B4 D2). |
+| Search | `MxSearchField`, trigger mode | Hint "Search decks, cards, tags", the same string as screen 04 (`searchFieldHint`; DEV-233). A tap pushes `/decks/search` (screen 04). Only with decks (The Content Gate Rule, DEV-309). |
 | Due strip | `MxCard` (hero) + `MxIconTile` + `MxWorkloadBreakdownLine` | Bolt tile on primary, "N cards due", overdue · today (New is not due, BR-STUDY-068). A tap opens Study home; a trailing chevron says so (critique 2026-09-30, R4). Hidden when the library holds no card. |
 | Section header | `MxListSectionHeader` + `MxChipTrigger` | "N DECKS"; pill "Manual ⌄", or "Manual · Due only" tinted primary with the filter on. |
-| Rows | `MxCard` per deck, 8 apart | 44 px `MxIconTile` (layers = holds decks, copy = holds cards, folder-open = empty); name on one line with ellipsis; `MxBadge` "N due" when due > 0; meta "N sub-decks · N cards" or "Empty · add cards or a sub-deck"; the mastery bar (`MxLinearProgress.mastery`, 5 tall, 12 under the meta, across the text column, on `surfaceContainerLow`; BR-DECK-026), the bare track for a deck with no card; trailing `⋮` (`MxIconButton`). |
+| Rows | `MxSelectableCardRow` per deck, 8 apart (DEV-304) | 44 px `MxIconTile` (layers = holds decks, copy = holds cards, folder-open = empty); name on one line with ellipsis; `MxBadge` "N due" when due > 0; meta "N sub-decks · N cards" or "Empty · add cards or a sub-deck"; the mastery bar (`MxLinearProgress.mastery`, 5 tall, 12 under the meta, across the text column, on `surfaceContainerLow`; BR-DECK-026), the bare track for a deck with no card; trailing `⋮` (`MxIconButton`). |
 | FAB | `MxFab` | "New deck". |
 
 ## Layout — open deck
@@ -34,11 +34,14 @@ subtitles (ruling C-L6):
 
 - **Root deck:** Open deck · Study this deck → screen 14 · Rename · Study options
   ("Cards per session · new-card order") → screen 15 · Review algorithm
-  ("{algorithm} · locked · reset to start over" when locked) → screen 02 · Reorder ·
-  Move to Trash ("Recoverable for 30 days").
+  ("{algorithm} · locked · reset to start over" when locked) → screen 02 · Import cards
+  → screen 11 (spec 2026-10-08 U1) · Reorder · Move to Trash ("Recoverable for 30
+  days").
 - **Sub-deck:** Open · Study this deck → screen 14 · Rename ·
+  Select cards (an open deck of cards only, DEV-307) → selection on screen 07 ·
   Study options → screen 15 (its root's options) ·
-  Move to another deck · Reorder ("Move before or after a sibling") · Move to Trash
+  Move to another deck · Import cards → screen 11 (every sub-deck, spec 2026-10-08 U1) ·
+  Reorder ("Move before or after a sibling") · Move to Trash
   ("Recoverable for 30 days").
 
 ## Sort & filter sheet
@@ -57,9 +60,9 @@ One `MxBottomSheet`, "Sort & filter":
 
 | State | Golden (light) | Golden (dark) | App |
 |---|---|---|---|
-| rootLoaded | `library_decks_light.png` | `library_decks_dark.png` | Every row carries its mastery bar (BR-DECK-026); the learning band is the darker learning ink in light (§9 row 141). The due strip shows its chevron: the fixture wires Study home as the app does (critique 2026-09-30 part 3a). |
+| rootLoaded | `library_decks_light.png` | `library_decks_dark.png` | Every row carries its mastery bar (BR-DECK-026); the learning band is the learning fill, `statusLearning` (spec 2026-10-10). The due strip shows its chevron: the fixture wires Study home as the app does (critique 2026-09-30 part 3a). |
 | rootLoading | no golden | no golden | Skeletons in the row's shape; header kept. |
-| rootEmpty | `library_empty_light.png` | `library_empty_dark.png` | "Create deck", then "Browse starter decks" (screen 03), and the footnote (FE-B4 §5.4). |
+| rootEmpty | `library_empty_light.png` | `library_empty_dark.png` | No search field, no Tags, no FAB (The Content Gate Rule, DEV-309); Starter decks and the Trash stay. "Create deck", then "Browse starter decks" (screen 03), and the footnote (FE-B4 §5.4). |
 | rootError | no golden | no golden | "Couldn't load your library" with Retry. |
 | rootSearch | no golden | no golden | The field is a trigger: a tap opens screen 04 instead of typing here. |
 | rootSortFilter | `library_sort_light.png` | `library_sort_dark.png` | Progress orders least mastered first, decks with no card last (BR-DECK-027). |
@@ -74,7 +77,7 @@ One `MxBottomSheet`, "Sort & filter":
 | deckMaxDepth | no golden | no golden | No FAB. |
 | deckLoading | no golden | no golden | Skeletons under the summary card. |
 | deckError | no golden | no golden | Error state with Retry. |
-| deckNotFound | no golden | no golden | "This deck is no longer here", Back to Library and Open Trash (FE-B1 D11); replaces ruling P2-L7. |
+| deckNotFound | no golden | no golden | "This deck is no longer here", Back to Library and Open Trash (FE-B1 D11), a neutral `MxEmptyState` like the card's (owner 2026-10-08); replaces ruling P2-L7. |
 | deckOverflow | no golden | no golden | The sub-deck action sheet. |
 | deckMove | no golden | no golden | The deck picker; only decks with the same review algorithm receive it (UC-DECK-005). |
 | deckDelete | no golden | no golden | As rootDelete. |
@@ -86,9 +89,10 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 - **Critique 2026-09-30 part 1, R9 (amends P4a-L9):** an `unset` deck has no FAB; its empty state already offers New card and New sub-deck. The FAB returns once the deck holds sub-decks.
 - **FE-B1 D7:** an Undo happens where the item was deleted. A refused Undo says
   "Can't undo. {reason} Restore it from Trash and choose a deck."; it carries no deck name.
-- **Owner ruling R4** (deck mastery spec, §9 row 141): the < 34% mastery band uses
-  `statusLearningInk` in light (4.94:1 on the track) and the amber in dark.
-- **§9 rows 142, 145 (FE-C1):** the mastery bar's track is `surfaceContainerLow`, so the fill keeps 3:1 against it in dark too.
+- **Owner ruling R4, amended 2026-10-10:** the < 34% mastery band is the learning
+  fill, `statusLearning` (#FF983A), in both themes; on Day's track it is a recorded
+  contrast exception (spec 2026-10-10 D3).
+- **§9 rows 142, 145 (FE-C1):** the mastery bar's track is `surfaceContainerLow`.
 - **Library spec D7:** Reorder is in the root deck's action sheet too.
 - **C-L6:** the action sheet reads only `DeckView`, which carries no counts, so its header
   is the name alone.
@@ -107,11 +111,11 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 
 ## Copy
 
-- Root: "Library" · "Search decks" · "{n} cards due" · "{n} decks" · "Manual" · "Manual · Due only" · "New deck".
+- Root: "Library" · "Search decks, cards, tags" · "{n} cards due" · "{n} decks" · "Manual" · "Manual · Due only" · "New deck".
 - Row: "{n} due" · "{n} sub-deck(s)" · "{n} cards" · "Empty · add cards or a sub-deck" · "More actions for {name}" · "{n}% mastered" (TalkBack only).
 - Summary: "Mastered · {algorithm}".
 - Sort: "Progress" · "Least mastered first".
-- First launch: "Start your library" · "A deck groups the sub-decks that hold your cards. Create one, or copy a starter deck to begin with content." · "Create deck" · "Browse starter decks" · "Everything stays on this device. Nothing is added until you choose."
+- First launch: "Start your library" · "Organize your cards into decks. Create your own or start with a ready-made collection." · "Create deck" · "Browse starter decks" · "Everything stays on this device. Nothing is added until you choose."
 - Error: "Couldn't load your library" · "Your data is safe on this device. Try again in a moment."
 - Due filter, none: "Nothing due right now" · "No deck has cards waiting. The next card becomes due tomorrow at 00:00." · "Show all decks".
 - Create: "New deck" · "Holds sub-decks; sub-decks hold cards." · "Name" · "Review algorithm · required" · "Eight boxes" / "Cards move up a box each time you remember them, back to box 1 when you forget. Forgiving of long breaks." · "SM-2" / "Intervals adapt to how well you recall each card. You grade yourself: again · hard · good · easy." · "Locks once the first card finishes learning. After that, only “Reset learning progress” starts a new cycle." · "Cancel" · "Create deck". No algorithm is chosen up front; Create without one says "Choose how the cards are reviewed." (BR-SRS-001, UC-DECK-001 E3). Cancel, Back or a tap outside after typing asks "Discard this deck?" · "What you typed is not saved." · "Keep editing" · "Discard" (UC-DECK-001 A1).

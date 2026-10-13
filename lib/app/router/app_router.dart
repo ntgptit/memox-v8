@@ -12,14 +12,15 @@ import 'package:memox/app/router/app_tab_shell.dart';
 import 'package:memox/app/router/log_navigator_observer.dart';
 import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/app/router/study_route_screens.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_admin_gate_widget.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_screen.dart';
-import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
+import 'package:memox/features/settings/presentation/widgets/items/sql_log_row_widget.dart';
+import 'package:memox/features/reminders/presentation/providers/reset_app_options_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_detail_screen.dart';
 import 'package:memox/features/card/presentation/screens/card_editor_screen.dart';
+import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_add_fab_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_deck_app_bar_widget.dart';
@@ -34,6 +35,7 @@ import 'package:memox/features/progress/presentation/screens/progress_screen.dar
 import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
 import 'package:memox/features/settings/presentation/screens/language_screen.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
+import 'package:memox/features/settings/presentation/screens/study_defaults_screen.dart';
 import 'package:memox/features/settings/presentation/screens/sync_screen.dart';
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
 import 'package:memox/features/starter_decks/presentation/screens/starter_library_screen.dart';
@@ -250,19 +252,22 @@ GoRouter buildAppRouter({
               GoRoute(
                 path: AppRoutes.settings,
                 builder: (context, state) => SettingsScreen(
-                  accountSection: accountSettingsSection(context),
+                  accountRow: accountSettingsRow(context),
+                  accountBanner: accountSettingsBanner(context),
+                  onOpenStudyDefaults: () =>
+                      context.push(AppRoutes.settingsStudy),
                   onOpenTheme: () => context.push(AppRoutes.settingsTheme),
                   onOpenLanguage: () =>
                       context.push(AppRoutes.settingsLanguage),
                   onOpenReminder: () =>
                       context.push(AppRoutes.settingsReminder),
-                  // The reset turned the reminder off; the pending alarm
-                  // follows through the gate (FE-B5 spec D7).
                   onOpenSync: () => context.push(AppRoutes.settingsSync),
-                  adminRows: adminSettingsRows(context),
-                  onAppOptionsReset: () => unawaited(
-                    _reconcileAfterReset(ProviderScope.containerOf(context)),
-                  ),
+                  onOpenAdmin: () => context.push(AppRoutes.settingsAdmin),
+                  // The reminders feature owns the reset's consequence: the
+                  // alarm follows in the same turn of the gate (DEV-218).
+                  resetAppOptions: () =>
+                      ProviderScope.containerOf(context)
+                          .read(resetAppOptionsProvider)(),
                   onOpenGallery: hasGallery
                       ? () => context.push(AppRoutes.gallery)
                       : null,
@@ -272,6 +277,11 @@ GoRouter buildAppRouter({
                     path: AppRoutes.settingsThemeChild,
                     parentNavigatorKey: rootNavigator,
                     builder: (context, state) => const ThemeScreen(),
+                  ),
+                  GoRoute(
+                    path: AppRoutes.settingsStudyChild,
+                    parentNavigatorKey: rootNavigator,
+                    builder: (context, state) => const StudyDefaultsScreen(),
                   ),
                   GoRoute(
                     path: AppRoutes.settingsLanguageChild,
@@ -291,6 +301,7 @@ GoRouter buildAppRouter({
                   signInRoute(rootNavigator),
                   accountRoute(rootNavigator),
                   usersRoute(rootNavigator),
+                  adminRoute(rootNavigator),
                   GoRoute(
                     path: AppRoutes.settingsMonitoringChild,
                     parentNavigatorKey: rootNavigator,
@@ -298,6 +309,7 @@ GoRouter buildAppRouter({
                     // only an admin in (Codex review on PR #160).
                     builder: (context, state) => MonitoringAdminGateWidget(
                       child: MonitoringScreen(
+                        pendingHeader: const SqlLogRowWidget(),
                         onOpenServerLog: (id) => unawaited(
                           context.push(AppRoutes.settingsMonitoringLog(id)),
                         ),
@@ -375,6 +387,12 @@ DeckLevelScreen _deckLevel(BuildContext context, {String? deckId}) {
     onExportCards: (deck) => unawaited(
       showDeckExportSheet(context, deckId: deck.id, deckName: deck.name),
     ),
+    // Select cards from the deck's ⋮ (DEV-307): the card feature's
+    // selection, reached through the scope as the deck never imports it.
+    onSelectCards: (id) =>
+        ProviderScope.containerOf(context)
+            .read(cardSelectionProvider(id).notifier)
+            .start(),
     onOpenTrash: openTrash,
     onOpenStudyHome: () => context.go(AppRoutes.study),
     onOpenStarterDecks: _opener(context, AppRoutes.starterDecks),
@@ -463,15 +481,4 @@ void _openAncestor(
   });
   if (deckId == null || isOnStack) return;
   unawaited(router.push(levelOf(deckId)));
-}
-
-/// Reconcile after Reset app options. A refusal or a read that fails
-/// changes nothing on screen; the next start or resume reconciles again, as
-/// `app.dart` does.
-Future<void> _reconcileAfterReset(ProviderContainer container) async {
-  try {
-    await container.read(reconcileReminderProvider)();
-  } on Failure {
-    // Retried at the next start or resume.
-  }
 }

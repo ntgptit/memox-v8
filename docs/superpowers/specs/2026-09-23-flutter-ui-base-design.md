@@ -132,8 +132,8 @@ nine `BIND_NOW` `MEMOX_SEMANTIC_COLOR` entries:
 `mastery · warning · onWarning · statusNew · statusLearning · statusReviewing ·
 statusMastered · errorFill · onErrorFill`
 
-- The five `DERIVED_COLOR` entries (`dangerSoft`, `dangerBorder`, `warningSoft`,
-  `surfaceHero`, `chromeGlass`) and the `border-ghost` edge colour live in
+- The four `DERIVED_COLOR` entries (`dangerSoft`, `dangerBorder`, `warningSoft`,
+  `surfaceHero`; `chromeGlass` went with the glass, DEV-302) and the `border-ghost` edge colour live in
   `MxDerivedColors`, built from the `ColorScheme`, the extension and the
   brightness at the mix ratios in the foundations, and read as
   `context.derivedColors`. They are not extension fields.
@@ -174,14 +174,14 @@ Static `abstract final class` holders in `core/theme/foundations/`:
 | `AppIconSize` | 16 · 20 · 24 · 32 · 40 |
 | `AppStroke` | hairline 1 · focus 2, plus each width a component contract states |
 | `AppOpacity` | disabled 0.38 · pressed 0.12 (state tokens) |
-| `AppEffects` | glassOpacity 0.84 · glassBlur 18 (effect tokens, kept out of the state layer) |
+| `AppEffects` | scrimOpacity 0.45 (effect token, kept out of the state layer); glassOpacity and glassBlur went with DEV-302 |
 | `AppDurations` | toggle 160 · standard 200 · scrimFade 220 · sheet 260 · spinnerCycle 800 · skeletonPulse 1400 ms — every duration the widget contracts state |
 | `AppShadows` | whisper · overlay · chrome · fab, named by the handoff's semantic (the `shadow-card` token is the overlay shadow). Functions of the `ColorScheme` and brightness, because the values differ per theme and dark has no whisper shadow |
 
-The glass effect on the bottom nav is translucent `chromeGlass` plus
-`BackdropFilter` blur 18. The saturate(180%) part of the CSS filter is dropped:
-Flutter has no cheap equivalent and the handoff allows a plain surface in its
-place.
+The bottom nav was translucent `chromeGlass` plus a `BackdropFilter` blur 18
+until DEV-302 (audit 2026-10-08): the bar is an in-flow sibling of the body, so
+the blur had nothing under it, and the bar is now the page surface with the
+ghost edge.
 
 ### 4.5 Global state policy
 
@@ -488,7 +488,7 @@ item names where it comes from.
 | 75 | The card list's selection header (count and close) sits inside the card section, under the deck app bar, not in it: the deck screen may not import `card` (D8) — closed by library alignment phase E | library phase 3 P3-L1 |
 | 76 | Bulk Tag only adds a tag. Removing one from a selection needs a read of the tags the selection carries, which the backend lacks (finding) | library phase 3 P3-L2 |
 | 77 | A card row's tap opens nothing, and the empty deck offers no "Add card", until the detail and the editor arrive in phase 4 — "Add card" closed by library phase 4a — row tap closed by library phase 4b | library phase 3 P3-L3 |
-| 78 | The bulk tag input is a dialog, not a sheet, because MxBottomSheet does not pad for the keyboard (row 64) | library phase 3 P3-L9 |
+| 78 | The bulk tag input is a dialog, not a sheet, because MxBottomSheet did not pad for the keyboard (row 64). Both pad now: the sheet since FE-C6 (row 64) and MxDialog since the shared widgets review (2026-10-07, SW-REV-002) | library phase 3 P3-L9 |
 | 79 | The card editor follows the V3 kit (08, 09) over library spec §6.5: live validation with Save disabled until valid, failures inside the form (inline banner, warning banner, gone state), and a discard confirm | library phase 4a P4a-L1…L5 |
 | 80 | A new card has no flag control; the flag toggles from the edit app bar, and its glyph changes but does not recolour (`Icon(color:)` is banned) | library phase 4a P4a-L6 |
 | 81 | The editor's deck context drops the kit's pill border, and Add tag is an outline chip, not dashed: no `BorderSide`, and no dashed-border token | library phase 4a P4a-L7, P4a-L8 |
@@ -579,6 +579,13 @@ item names where it comes from.
 | 164 | 11: with the file option picking from its card, the inert "Pick a spreadsheet or text file" empty state below still reads like a drop zone | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 | 165 | 27 dark: after a network failure the bare "syncs on its own" section note and the filled offline `MxNote` sit stacked with two treatments | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
 | 166 | 22 light: the learning bars and legend dot in the learning ink (brown) differ from the amber learning fill used elsewhere; chosen for 3:1 (F5/R3) | critique 2026-10-02 fixes, post-build Impeccable audit P3 (owner 2026-10-02) |
+| 167 | The bottom bar's glass blur blurred nothing (the body ends where the bar starts) — closed by DEV-302 (spec `2026-10-08-shared-widgets-mobile-native-fixes-design.md` §3.1): the bar is the page surface with the ghost edge; `AppEffects.glassOpacity`, `glassBlur` and `MxDerivedColors.chromeGlass` removed | audit 2026-10-08 F-01 |
+| 168 | The empty state's footnote drew as a boxed `MxNote`, a second surface under the card's actions — closed by DEV-303 (spec `2026-10-08-shared-widgets-mobile-native-fixes-design.md` §3.2): the footnote is `MxNote.hint`, the one footnote form | audit 2026-10-08 F-02 |
+| 169 | The deck, card and Trash rows each rebuilt the selectable card (ink, checkbox, padding, TalkBack node) on their own, with three paddings and two semantics shapes — closed by DEV-304 (spec §3.3): `MxSelectableCardRow` is the one frame, 16 in and 12 down, the ⋮ outside the ink | audit 2026-10-08 F-03 |
+| 170 | Dividers had two owners: `MxListRow` and `MxOptionRow` drew their own bottom edge while `MxSection` drew between rows, so callers turned rows off by hand and the last row's edge touched the card radius — closed by DEV-305 (spec §3.4): `MxDividedColumn` owns list dividers, rows draw no edge, the hairline takes its 1 | audit 2026-10-08 F-04 |
+| 171 | The breadcrumb and the chip rows cut their overflow flat, with no sign of more, while the study faces had their own fade — closed by DEV-306 (spec §3.5): `MxScrollFade` is shared, horizontal or vertical, over the page, raised or recessed ground | audit 2026-10-08 F-05 |
+| 172 | The card list entered selection only through a long-press, with no entry from the deck's ⋮ as the Trash has — closed by DEV-307 (spec §3.6): Select cards from the open deck's actions enters selection with nothing picked; Close ends it, unticking the last card does not | audit 2026-10-08 F-06 |
+| 173 | The empty Library kept its search field and Tags, two controls over content that did not exist, while the FAB alone waited for a deck — closed by DEV-309 (spec `2026-10-08-library-empty-state-content-gate-design.md`): one derived `LibraryRootState` gates the search trigger, Tags and the FAB; The Content Gate Rule names the convention Trash and Tags already followed | owner 2026-10-08 |
 
 Further contradictions found while implementing are appended here with the same
 rule applied. `docs/_generated/open-questions.md` is generated and is not

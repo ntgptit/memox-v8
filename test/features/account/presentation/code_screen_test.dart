@@ -72,7 +72,7 @@ void main() {
   });
 
   accountTest('a code being checked is read-only and its digits stay at '
-      'full ink', (tester, env, world) async {
+      'full strength', (tester, env, world) async {
     await world.coordinator.requestCode('a@example.com');
     await pumpLibraryScreen(
       tester,

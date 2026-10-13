@@ -2,15 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_whole_word_text_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -34,7 +36,11 @@ class StudyGuessWidget extends StatefulWidget {
     required this.onPick,
     required this.onContinue,
     required this.onClose,
+    required this.speechLanguage,
   });
+
+  /// The language the term is read in; null until the session knows it.
+  final SpeechLanguage? speechLanguage;
 
   final StudyItem item;
 
@@ -122,7 +128,7 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
         ],
       );
     }
-    final body = StudyScrollFadeWidget(
+    final body = MxScrollFade(
       child: CustomScrollView(
         slivers: [
           SliverFillRemaining(
@@ -136,9 +142,19 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
                   Expanded(
                     child: StudyFaceCardWidget(
                       label: l10n.studyGuessPrompt,
-                      child: StudyWholeWordTextWidget(
-                        widget.item.front,
-                        style: context.texts.displaySmall!,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: context.dimens.space8,
+                        children: [
+                          StudyWholeWordTextWidget(
+                            widget.item.front,
+                            style: context.texts.displaySmall!,
+                          ),
+                          StudySpeakButtonWidget(
+                            text: widget.item.front,
+                            language: widget.speechLanguage,
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -208,20 +224,20 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
       onTap: _isAnswered || widget.isBusy
           ? null
           : () => widget.onPick(option.cardId),
-      builder: (ink) => Row(
+      builder: (foreground) => Row(
         spacing: context.dimens.space12,
         children: [
-          _Letter(letter: letter, ink: ink),
+          _Letter(letter: letter, foreground: foreground),
           Expanded(
             child: Text(
               option.meaning,
-              style: context.texts.bodySmall?.copyWith(color: ink),
+              style: context.texts.bodySmall?.copyWith(color: foreground),
             ),
           ),
           if (tone == StudyChoiceTone.right || tone == StudyChoiceTone.wrong)
             IconTheme(
               data: IconThemeData(
-                color: ink,
+                color: foreground,
                 size: context.dimens.sizeIconInline,
               ),
               child: Icon(
@@ -243,10 +259,10 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
 
 /// The option's letter in a ringed circle (kit GuessScreen).
 class _Letter extends StatelessWidget {
-  const _Letter({required this.letter, required this.ink});
+  const _Letter({required this.letter, required this.foreground});
 
   final String letter;
-  final Color ink;
+  final Color foreground;
 
   static const double _ring = 1.5;
 
@@ -256,12 +272,12 @@ class _Letter extends StatelessWidget {
     child: DecoratedBox(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: ink, width: _ring),
+        border: Border.all(color: foreground, width: _ring),
       ),
       child: Center(
         child: Text(
           letter,
-          style: context.texts.labelSmall?.copyWith(color: ink),
+          style: context.texts.labelSmall?.copyWith(color: foreground),
         ),
       ),
     ),

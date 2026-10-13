@@ -6,33 +6,57 @@ import '../tables/srs.drift';
 -- only, never a browse row (BR-PROGRESS-012), on the local day at :offset
 -- (Progress spec §6.1). A card-day with a learning answer is Learning
 -- (BR-PROGRESS-005). Each query writes them out; the local day is cast,
--- since Drift types answered_at + :offset as a date.
+-- since Drift types answered_at + :offset as a date. A range of days is a
+-- range of answered_at, its bounds :from and :to computed by ProgressDays,
+-- read through idx_review_log_answered (DEV-208); CROSS JOIN keeps r the
+-- outer loop, so the planner never walks every card instead, whatever its
+-- statistics say.
 
--- UC-PROGRESS-001 step 2, BR-PROGRESS-016: every local day with activity up
--- to :today, oldest first; the streak's days.
-progressActiveDays(:offset AS INTEGER, :today AS INTEGER):
-SELECT DISTINCT CAST((r.answered_at + :offset) / 86400 AS INTEGER) AS day
+-- UC-PROGRESS-001 step 2, BR-PROGRESS-016: the local day of the latest
+-- counting answer up to :until (the last second of today): the day a lost
+-- streak ended, and the streak's anchor when it is today or yesterday. One
+-- backward walk of the index, stopping at the first live row.
+progressLastActiveDay(:offset AS INTEGER, :until AS INTEGER):
+SELECT CAST((r.answered_at + :offset) / 86400 AS INTEGER) AS day
 FROM review_log r
-JOIN card c ON c.id = r.card_id
-JOIN deck k ON k.id = c.deck_id
-WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
-  AND r.mode <> 'browse' AND (r.answered_at + :offset) / 86400 <= :today
-ORDER BY day;
+CROSS JOIN card c ON c.id = r.card_id
+CROSS JOIN deck k ON k.id = c.deck_id
+WHERE r.answered_at <= :until AND r.mode <> 'browse'
+  AND c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
+ORDER BY r.answered_at DESC LIMIT 1;
 
--- BR-PROGRESS-014, BR-PROGRESS-015: the days from :week_start to :today with
--- activity, with their Learning and Reviewing card-days.
-progressWeekActivity(:offset AS INTEGER, :week_start AS INTEGER,
-  :today AS INTEGER) AS WeekActivityRow:
+-- BR-PROGRESS-016: the days that follow each other back from :anchor (a
+-- day with activity), oldest first: one range probe per day, stopping at
+-- the first day without a counting answer; no cap. The history before the
+-- gap is never read.
+progressStreakDays(:offset AS INTEGER, :anchor AS INTEGER):
+WITH RECURSIVE streak(day) AS (
+  SELECT :anchor
+  UNION ALL
+  SELECT streak.day - 1 FROM streak
+  WHERE EXISTS (SELECT 1 FROM review_log r
+    CROSS JOIN card c ON c.id = r.card_id
+    CROSS JOIN deck k ON k.id = c.deck_id
+    WHERE r.answered_at BETWEEN (streak.day - 1) * 86400 - :offset
+      AND streak.day * 86400 - :offset - 1
+      AND r.mode <> 'browse'
+      AND c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL))
+SELECT day FROM streak ORDER BY day;
+
+-- BR-PROGRESS-014, BR-PROGRESS-015: the days of the last seven (:from, the
+-- first second of the week's first day, to :to, the last second of today)
+-- with activity, with their Learning and Reviewing card-days.
+progressWeekActivity(:offset AS INTEGER, :from AS INTEGER, :to AS INTEGER)
+  AS WeekActivityRow:
 WITH card_days AS (
   SELECT c.id AS card_id,
     CAST((r.answered_at + :offset) / 86400 AS INTEGER) AS day,
     MAX(r.kind = 'learning') AS is_learning
   FROM review_log r
-  JOIN card c ON c.id = r.card_id
-  JOIN deck k ON k.id = c.deck_id
-  WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
-    AND r.mode <> 'browse'
-    AND (r.answered_at + :offset) / 86400 BETWEEN :week_start AND :today
+  CROSS JOIN card c ON c.id = r.card_id
+  CROSS JOIN deck k ON k.id = c.deck_id
+  WHERE r.answered_at BETWEEN :from AND :to AND r.mode <> 'browse'
+    AND c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
   GROUP BY c.id, day)
 SELECT day,
   COUNT(*) FILTER (WHERE is_learning) AS learning,
@@ -41,21 +65,21 @@ FROM card_days GROUP BY day ORDER BY day;
 
 -- BR-PROGRESS-002, BR-PROGRESS-004: every active root deck with the numbers
 -- of its whole tree, grouped by root_id, then the library's total from the
--- same statement (Progress spec D5). The week counts the days from
--- :week_start, the month every day from :month_start to :today
--- (BR-PROGRESS-001). A deck with no activity has no tiles row.
-progressRootLevel(:offset AS INTEGER, :week_start AS INTEGER,
-  :month_start AS INTEGER, :today AS INTEGER) AS ProgressLevelRow:
+-- same statement (Progress spec D5). The month is :from (the first second of
+-- its first day) to :to (the last second of today); the week counts the
+-- days from :week_start (BR-PROGRESS-001). A deck with no activity has no
+-- tiles row.
+progressRootLevel(:offset AS INTEGER, :from AS INTEGER, :to AS INTEGER,
+  :week_start AS INTEGER) AS ProgressLevelRow:
 WITH card_days AS (
   SELECT c.id AS card_id, k.root_id AS tile_id,
     CAST((r.answered_at + :offset) / 86400 AS INTEGER) AS day,
     MAX(r.kind = 'learning') AS is_learning
   FROM review_log r
-  JOIN card c ON c.id = r.card_id
-  JOIN deck k ON k.id = c.deck_id
-  WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
-    AND r.mode <> 'browse'
-    AND (r.answered_at + :offset) / 86400 BETWEEN :month_start AND :today
+  CROSS JOIN card c ON c.id = r.card_id
+  CROSS JOIN deck k ON k.id = c.deck_id
+  WHERE r.answered_at BETWEEN :from AND :to AND r.mode <> 'browse'
+    AND c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
   GROUP BY c.id, day),
 tiles AS (
   SELECT tile_id,
@@ -94,9 +118,8 @@ FROM card_days;
 -- deckLevelOfChildren walks it (UNION, cycle safe, no cap), its tile_id the
 -- child; :deck_id itself has no tile, so its own cards count in the total
 -- only.
-progressChildLevel(:deck_id AS TEXT, :offset AS INTEGER,
-  :week_start AS INTEGER, :month_start AS INTEGER, :today AS INTEGER)
-  AS ProgressLevelRow:
+progressChildLevel(:deck_id AS TEXT, :offset AS INTEGER, :from AS INTEGER,
+  :to AS INTEGER, :week_start AS INTEGER) AS ProgressLevelRow:
 WITH RECURSIVE tree(tile_id, deck_id) AS (
   SELECT id, id FROM deck
   WHERE parent_id = :deck_id AND delete_batch_id IS NULL
@@ -110,12 +133,11 @@ card_days AS (
     CAST((r.answered_at + :offset) / 86400 AS INTEGER) AS day,
     MAX(r.kind = 'learning') AS is_learning
   FROM review_log r
-  JOIN card c ON c.id = r.card_id
-  JOIN deck k ON k.id = c.deck_id
+  CROSS JOIN card c ON c.id = r.card_id
+  CROSS JOIN deck k ON k.id = c.deck_id
   JOIN scope s ON s.deck_id = k.id
-  WHERE c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
-    AND r.mode <> 'browse'
-    AND (r.answered_at + :offset) / 86400 BETWEEN :month_start AND :today
+  WHERE r.answered_at BETWEEN :from AND :to AND r.mode <> 'browse'
+    AND c.delete_batch_id IS NULL AND k.delete_batch_id IS NULL
   GROUP BY c.id, day),
 tiles AS (
   SELECT tile_id,

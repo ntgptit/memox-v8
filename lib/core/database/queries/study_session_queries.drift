@@ -6,6 +6,9 @@ import '../tables/study.drift';
 -- The subtree of :deck_id is its active decks, walked through parent_id
 -- (schema.md "Duyệt cây"); it is written out in each query that reads it.
 
+-- The due sets come in as $is_new, $is_due, $is_overdue and $is_scheduled,
+-- the one SQL copy of BR-STUDY-068's rule (CardDueSql, DEV-221).
+
 -- BR-STUDY-051, BR-STUDY-057: the active cards of :deck_id's whole subtree
 -- not learned yet, oldest first.
 newCardsOfSubtree(:deck_id AS TEXT) AS SubtreeCardRow:
@@ -17,12 +20,12 @@ WITH RECURSIVE subtree(id) AS (
 SELECT c.id, c.example IS NOT NULL AS has_example
 FROM card c JOIN card_schedule cs ON cs.card_id = c.id
 WHERE c.deck_id IN (SELECT id FROM subtree) AND c.delete_batch_id IS NULL
-  AND cs.learned_at IS NULL
+  AND $is_new
 ORDER BY c.created_at, c.id;
 
 -- BR-STUDY-001, BR-STUDY-002, BR-STUDY-051: the active learned cards of
--- :deck_id's whole subtree due at :now, earliest due first.
-dueCardsOfSubtree(:deck_id AS TEXT, :now AS DATETIME) AS SubtreeCardRow:
+-- :deck_id's whole subtree due now, earliest due first.
+dueCardsOfSubtree(:deck_id AS TEXT) AS SubtreeCardRow:
 WITH RECURSIVE subtree(id) AS (
   SELECT id FROM deck WHERE id = :deck_id AND delete_batch_id IS NULL
   UNION
@@ -31,27 +34,23 @@ WITH RECURSIVE subtree(id) AS (
 SELECT c.id, c.example IS NOT NULL AS has_example
 FROM card c JOIN card_schedule cs ON cs.card_id = c.id
 WHERE c.deck_id IN (SELECT id FROM subtree) AND c.delete_batch_id IS NULL
-  AND cs.learned_at IS NOT NULL AND cs.due_at <= :now
+  AND $is_due
 ORDER BY cs.due_at, c.created_at, c.id;
 
 -- BR-STUDY-051, BR-STUDY-068, BR-STUDY-008: the new and the due cards of
--- :deck_id's subtree at :now, the due ones that fell due before
--- :start_of_today, and the earliest due_at after :now.
-subtreeCountsOf(:deck_id AS TEXT, :now AS DATETIME,
-  :start_of_today AS DATETIME) AS SubtreeCountsRow:
+-- :deck_id's subtree now, the due ones that fell due before today, and the
+-- earliest due_at of the cards still resting.
+subtreeCountsOf(:deck_id AS TEXT) AS SubtreeCountsRow:
 WITH RECURSIVE subtree(id) AS (
   SELECT id FROM deck WHERE id = :deck_id AND delete_batch_id IS NULL
   UNION
   SELECT d.id FROM deck d JOIN subtree s ON d.parent_id = s.id
   WHERE d.delete_batch_id IS NULL)
 SELECT
-  COUNT(CASE WHEN cs.learned_at IS NULL THEN 1 END) AS new_count,
-  COUNT(CASE WHEN cs.learned_at IS NOT NULL AND cs.due_at <= :now
-    THEN 1 END) AS due_count,
-  COUNT(CASE WHEN cs.learned_at IS NOT NULL AND cs.due_at < :start_of_today
-    THEN 1 END) AS overdue_count,
-  MIN(CASE WHEN cs.learned_at IS NOT NULL AND cs.due_at > :now
-    THEN cs.due_at END) AS next_due_at
+  COUNT(*) FILTER (WHERE $is_new) AS new_count,
+  COUNT(*) FILTER (WHERE $is_due) AS due_count,
+  COUNT(*) FILTER (WHERE $is_overdue) AS overdue_count,
+  MIN(cs.due_at) FILTER (WHERE $is_scheduled) AS next_due_at
 FROM card c JOIN card_schedule cs ON cs.card_id = c.id
 WHERE c.deck_id IN (SELECT id FROM subtree) AND c.delete_batch_id IS NULL;
 

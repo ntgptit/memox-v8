@@ -276,6 +276,10 @@ the tag id in its pending outbox entries.
 - An unknown command `type` or patch `group` is rejected with
   `VALIDATION_FAILED`, never a `500`, so an older server does not break a
   newer client's batch.
+- A call under a live JWT whose account no longer exists fails as a whole
+  with `UNAUTHORIZED` (`private.require_current_profile()`, DEV-192); the
+  app treats it as a sign-in failure and validates the account again (auth
+  spec #13) instead of recording rejections.
 
 ## 9. Rollout and tracking
 

@@ -1,0 +1,6 @@
+import '../tables/settings.drift';
+
+-- The SQL log switch of the account (SQL log switch spec §4.3): the tracer
+-- follows it through SqlLogDao. Read only; the settings feature writes it.
+logSqlStatementsFlag(:row_id AS INTEGER):
+SELECT log_sql_statements FROM app_settings WHERE id = :row_id;

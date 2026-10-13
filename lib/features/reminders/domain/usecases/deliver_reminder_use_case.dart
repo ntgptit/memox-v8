@@ -17,7 +17,9 @@ import 'package:memox/features/srs/domain/models/due_date_model.dart';
 /// a local day (BR-REMINDER-004) and schedules the next fire. The only write
 /// is the last delivery (reminders spec D16).
 ///
-/// The report holds typed reasons and counts only (BR-REMINDER-005).
+/// The report holds typed reasons and counts (reminders spec §9); what the
+/// notification may say is BR-REMINDER-005's, and the log masks nothing
+/// (ADR-018).
 final class DeliverReminderUseCase {
   const DeliverReminderUseCase(
     this._settings,

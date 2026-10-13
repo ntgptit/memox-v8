@@ -116,6 +116,11 @@ class ColourTest(unittest.TestCase):
         out = migrate(source)
         self.assertIn("import 'package:memox/core/theme/theme_rules.dart';", out)
 
+    def test_a_theme_file_never_imports_itself(self) -> None:
+        source = "import 'package:flutter/material.dart';\nColor a(Color c) => c.tintOver(c);"
+        out = migrate(source, "lib/core/theme/color_tint.dart")
+        self.assertNotIn("import 'package:memox/core/theme/color_tint.dart';", out)
+
     def test_migrating_twice_changes_nothing(self) -> None:
         once = migrate("context.semanticColors.warning; context.textStyles.rowTitle; AppSpacing.micro;")
         self.assertEqual(migrate(once), once)

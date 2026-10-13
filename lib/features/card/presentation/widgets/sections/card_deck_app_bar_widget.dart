@@ -161,8 +161,8 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final selected = ref.watch(cardSelectionProvider(_deckId));
-    if (selected.isEmpty) return _deckBar();
-    return _selectingBar(selected.length);
+    final selection = ref.watch(cardSelectionProvider(_deckId));
+    if (!selection.isSelecting) return _deckBar();
+    return _selectingBar(selection.ids.length);
   }
 }

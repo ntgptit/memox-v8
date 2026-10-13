@@ -29,9 +29,9 @@ enum ReminderFireOutcome {
   couldNotShow,
 }
 
-/// A fire of the reminder, told in typed reasons and counts only, so that a
-/// log line built from it can never carry a deck name, a card or the
-/// digest's text (BR-REMINDER-005).
+/// A fire of the reminder, told in typed reasons and counts: the shape the
+/// log line and the tests read (reminders spec §9). The digest's text is the
+/// notification's (BR-REMINDER-005); the log itself masks nothing (ADR-018).
 final class ReminderFireReport {
   const ReminderFireReport({
     required this.outcome,

@@ -77,6 +77,9 @@ class CardDeckSummaryWidget extends StatelessWidget {
                         fallback: total == 0
                             ? l10n.workloadNoCards
                             : l10n.workloadNothingDue(total),
+                        // A hero statement wraps between whole terms, never
+                        // "…", as the Deck level hero's (SW-REV-011).
+                        canWrap: true,
                       ),
                     ],
                   ),

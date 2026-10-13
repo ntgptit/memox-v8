@@ -34,10 +34,12 @@ class MxMasteryDonut extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ruling S10: 0% falls in the lowest band, so its label takes that colour.
-    final ink =
-        MasteryRamp.fill(context.mxColors, context.accentColor, fraction) ??
-        context.mxColors.warning;
+    // The arc is the ramp's fill; the label is text, so it takes the band's
+    // text colour (SW-REV-001). Ruling S10: 0% falls in the lowest band.
+    final mx = context.mxColors;
+    final accent = context.accentColor;
+    final fill = MasteryRamp.fill(mx, accent, fraction) ?? mx.warning;
+    final foreground = MasteryRamp.foreground(mx, accent, fraction);
     final percent = NumberFormat.percentPattern(
       Localizations.localeOf(context).toString(),
     ).format(MasteryRamp.percent(fraction) / 100);
@@ -46,7 +48,7 @@ class MxMasteryDonut extends StatelessWidget {
       child: CustomPaint(
         painter: _DonutPainter(
           fraction: fraction,
-          arc: ink,
+          arc: fill,
           // Ruling S10: the contract's track, not the ramp's progress-track.
           track: context.colors.surfaceContainer,
         ),
@@ -57,7 +59,7 @@ class MxMasteryDonut extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: Text(
                 percent,
-                style: context.texts.labelSmall?.copyWith(color: ink),
+                style: context.texts.labelSmall?.copyWith(color: foreground),
               ),
             ),
           ),

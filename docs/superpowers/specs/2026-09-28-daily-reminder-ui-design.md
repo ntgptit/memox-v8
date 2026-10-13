@@ -57,7 +57,7 @@ which stays with BE-B5b.
 | D4 | Enable, Disable and Change time go through `reminderOperationGateProvider`, and the screen starts no operation while one is in flight | Reminders spec §14; the controls are disabled while an operation runs |
 | D5 | Route `/settings/reminder`, a child of the Settings branch like Theme and Language | `navigation.md` places the reminder under Settings |
 | D6 | Screen 23's row reads `AppSettingsEntity.reminder`: "Off", or "On · {time}" | The entity already carries it; no import of `reminders` from `settings` |
-| D7 | After a successful reset, `SettingsScreen` calls `onAppOptionsReset`, which `app/` wires to `reconcileReminderProvider` | Backend spec §9 "For FE-A3"; `app/` composes the two features, as it already reconciles at start |
+| D7 | `SettingsScreen` takes `resetAppOptions`, the reset as `app/` composes it: the reminders feature's `resetAppOptionsProvider`, which resets the settings and reconciles the reminder in one turn of the gate (amended by DEV-218; before it, the screen called `onAppOptionsReset` after the reset, and `app/` reconciled outside the gate) | Backend spec §9 "For FE-A3"; `app/` composes the two features, as it already reconciles at start |
 | D8 | `offMayShow` is a `warning` `MxInlineBanner` with the kit's sentence and **Try again** (Disable again) | UC-REMINDER-001 E6 asks for a retry; the kit draws a Note, which takes no action. `MxInlineBanner` has no info tone, and a reminder that may still appear is a mild warning |
 | D9 | Times show as 24-hour `HH:mm` in English and Vietnamese | The kit draws "20:00"; BR-REMINDER-002 stores a minute of the local day |
 | D10 | Loading draws `MxSkeletonList`, not skeleton sub-lines inside the rows | `MxSettingsRow.subtitle` is text; UI-base ruling O3 (one list skeleton shape), as on screen 13 |
@@ -133,7 +133,8 @@ Save. The dialog returns the minute of the day, or null.
   the dialog body becomes "Theme, language, cards per session, new-card order and the
   daily reminder (off, 20:00) go back to their defaults." (en and vi). Register row 123
   closes.
-- **After reset:** on success the controller's caller runs `onAppOptionsReset` (D7).
+- **Reset:** the dialog runs `resetAppOptions`, which `app/` supplies (D7); the reconcile
+  is part of it, not a step after it.
 
 ## 6. Errors
 

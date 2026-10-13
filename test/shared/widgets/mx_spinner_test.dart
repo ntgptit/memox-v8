@@ -52,7 +52,7 @@ void main() {
     expect(tester.getSize(find.byType(MxSpinner)), const Size.square(16));
   });
 
-  testWidgets('a 2px ring: primaryInk on a surface, onPrimary on a fill', (
+  testWidgets('a 2px ring: the accent on a surface, onPrimary on a fill', (
     tester,
   ) async {
     await pumpMx(tester, const MxSpinner());

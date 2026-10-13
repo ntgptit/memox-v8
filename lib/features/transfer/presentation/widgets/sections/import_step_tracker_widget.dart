@@ -122,7 +122,7 @@ class _Step extends StatelessWidget {
         : isCurrent
         ? colors.primary
         : colors.surfaceContainerHigh;
-    final ink = isDone
+    final foreground = isDone
         ? context.mxColors.onSuccessContainer
         : isCurrent
         ? colors.onPrimary
@@ -139,14 +139,16 @@ class _Step extends StatelessWidget {
               child: isDone
                   ? IconTheme.merge(
                       data: IconThemeData(
-                        color: ink,
+                        color: foreground,
                         size: context.dimens.sizeIconInline,
                       ),
                       child: const Icon(AppIcons.check),
                     )
                   : Text(
                       context.l10n.importStepNumber(number),
-                      style: context.texts.labelSmall?.copyWith(color: ink),
+                      style: context.texts.labelSmall?.copyWith(
+                        color: foreground,
+                      ),
                     ),
             ),
           ),

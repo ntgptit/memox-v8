@@ -17,7 +17,7 @@ screens](16-study-browse.md#shared-by-the-session-screens).
 | Top bar | `MxStudyTopBar` | Indigo, as every mode (3c-2 R8). |
 | Context line | `SessionContextLine` | "{deck} · Review · round {n}". |
 | Turn clock | new: `RecallCountdownBar` (feature-local; distinct from `MxStudyTopBar`'s session-wide track — this one measures the current turn, pauses in the background, and stops for good once revealed or timed out, BR-STUDY-031, BR-STUDY-036) | Caption + "{s}s / 20s", a 4dp fill that drains to 0. |
-| Term face | `StudyFaceCard` (label "Term") | The prompt; always visible. |
+| Term face | `StudyFaceCard` (label "Term") | The prompt; always visible, with the speaker ("Read aloud · {language}", disabled with "No {language} voice on this device" when the device lacks the voice) under the term (BR-STUDY-079; 16-study-browse.md, Speech). |
 | Meaning face | `StudyFaceCard` (`role: answer`) | Blurred placeholder before reveal; the meaning once revealed or timed out, with a "Counted as forgot" tag when timed out. |
 | CTA row | new: `StudyCtaRow` (feature-local) | `countingDown`: one "Show the meaning" button. `revealed`: "Forgot" and "Remembered", both secondary so neither grade is the loud one (critique 2026-09-30) — the only recorded input, at most once a turn (BR-STUDY-032, BR-STUDY-065). `timedOut`: one "Continue" button that only advances, records nothing (BR-STUDY-033, BR-STUDY-066). |
 | Footer hint | `SessionFooterHint` | Varies by state; see Copy. |
@@ -43,7 +43,7 @@ Continue (spec D5). Goldens:
 ## Rulings
 
 - **BR-STUDY-032, BR-STUDY-033, BR-STUDY-066:** the ending has two branches: a self-check advances by itself, a timeout waits for Continue.
-- **FE-A6 spec D14 (P4 ruling V2):** the clock's fill and caption are a neutral `onSurfaceVariant` while counting down and `warning`/`warningInk` once timed out; the top bar is Indigo (3c-2 R8).
+- **FE-A6 spec D14 (P4 ruling V2):** the clock's fill and caption are a neutral `onSurfaceVariant` while counting down and `warning`/`warningText` once timed out; the top bar is Indigo (3c-2 R8).
 - **M3 review 2026-09-28 F2:** the clock track is 4dp, the app's thin track.
 - **P2 face-label fix:** the answer face carries its "Meaning" label in flow, as every study face.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the face labels and the session context line are eyebrows; the deck name keeps its case.

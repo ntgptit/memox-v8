@@ -2,7 +2,7 @@
 id: UC-DECK-005
 title: Di chuyển deck trong cây
 status: ready
-rules: [BR-DECK-001, BR-DECK-002, BR-DECK-008, BR-DECK-010, BR-DECK-011, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-SRS-005, BR-SRS-006, BR-SRS-028, BR-SRS-029]
+rules: [BR-DECK-001, BR-DECK-002, BR-DECK-008, BR-DECK-010, BR-DECK-011, BR-DECK-015, BR-DECK-016, BR-DECK-017, BR-DECK-018, BR-DECK-019, BR-DECK-028, BR-SRS-005, BR-SRS-006, BR-SRS-028, BR-SRS-029]
 code: [lib/features/deck/domain/usecases/watch_deck_move_targets_use_case.dart, lib/features/deck/domain/usecases/move_deck_use_case.dart]
 ---
 ## Mục tiêu / Actor / Precondition
@@ -81,7 +81,8 @@ Không áp dụng — UC chạy trên Drift và không gọi mạng; đồng b�
 - [ ] **Given** deck nguồn và đích hợp lệ (đích không phải chính nó hay descendant, đích `deck` hoặc `unset`, cùng scheduler và generation, độ sâu sau khi di chuyển không quá 10), **when** di chuyển, **then** deck nguồn nhận `parent_id` mới và cả subtree có `root_id` và độ sâu đúng, trong một transaction (BR-DECK-002, BR-DECK-016, BR-DECK-018, BR-DECK-019).
 - [ ] **Given** đích đang `unset` và deck cha cũ (không phải root) vừa mất phần tử con cuối cùng, **when** di chuyển xong, **then** đích thành `content_type = 'deck'` và cha cũ về `unset`, cùng transaction với việc di chuyển (BR-DECK-008, BR-DECK-015).
 - [ ] **Given** nguồn và đích cùng một root, **when** di chuyển, **then** `root_id` không đổi và việc đổi `parent_id` vẫn chạy trong transaction (A1).
-- [ ] **Given** deck nguồn là root, **when** di chuyển, **then** bị từ chối: đưa một deck lên hay xuống vị trí root nằm ngoài phạm vi (A2).
+- [ ] **Given** deck nguồn là root, **when** di chuyển, **then** bị từ chối: đưa một deck lên hay xuống vị trí root nằm ngoài phạm vi (BR-DECK-028, A2).
+- [ ] **Given** đích là đúng cha hiện tại của deck nguồn, **when** di chuyển, **then** bị từ chối và không có gì được ghi (BR-DECK-028).
 - [ ] **Given** đích là chính deck nguồn hoặc một descendant của nó, **when** di chuyển, **then** bị chặn với lý do rõ ràng và `parent_id` không đổi (BR-DECK-016, BR-DECK-017, E1).
 - [ ] **Given** đích có `content_type = 'card'`, **when** di chuyển, **then** bị chặn kèm giải thích và `parent_id` không đổi (BR-DECK-010, E2).
 - [ ] **Given** root của đích khác `scheduler_type` hoặc `generation` với root của nguồn, **when** di chuyển, **then** bị chặn và không có chuyển đổi study state ngầm nào (BR-SRS-005, BR-SRS-006, E3).

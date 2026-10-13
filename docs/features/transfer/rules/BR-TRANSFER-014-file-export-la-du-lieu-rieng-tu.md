@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-File export là dữ liệu riêng tư cùng mức nội dung card (BR-CORE-001) và MUST chỉ được tạo khi người dùng chủ động yêu cầu (BR-CORE-004). Ứng dụng MUST NOT xin quyền truy cập bộ nhớ diện rộng, và MUST NOT ghi artifact vào thư mục dùng chung trước một hành động tường minh của người dùng; bản tạm MUST nằm trong vùng riêng của ứng dụng và là transient. Bàn giao file MUST đi qua share sheet của hệ điều hành. Người dùng đóng share sheet MUST được hiểu là **cancel**, MUST NOT báo lỗi. UI MUST NOT nói file đã được lưu khi hệ điều hành không xác nhận điều đó — copy trung thực nói "đã bàn giao cho hệ thống", không nói "đã lưu".
+File export thuộc dữ liệu riêng tư của [BR-CORE-001](../../../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) và MUST chỉ được tạo khi người dùng chủ động yêu cầu (BR-CORE-004). Ứng dụng MUST NOT xin quyền truy cập bộ nhớ diện rộng, và MUST NOT ghi artifact vào thư mục dùng chung trước một hành động tường minh của người dùng; bản tạm MUST nằm trong vùng riêng của ứng dụng và là transient. Bàn giao file MUST đi qua share sheet của hệ điều hành. Người dùng đóng share sheet MUST được hiểu là **cancel**, MUST NOT báo lỗi. UI MUST NOT nói file đã được lưu khi hệ điều hành không xác nhận điều đó — copy trung thực nói "đã bàn giao cho hệ thống", không nói "đã lưu".
 
 **Enforced by:** store + UI
 **Liên quan:** BR-CORE-001, BR-CORE-004, BR-TRANSFER-006

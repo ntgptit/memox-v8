@@ -40,6 +40,7 @@ changes.
 | D3 | A closure, not an extension on `Future` | `_mapped` also catches an error thrown while the body builds its future; `future.mapDatabaseErrors()` would not |
 | D4 | No class, no provider, no new constructor parameter | Owner ruling 2026-09-29 (helper + extension over an injected `DatabaseExecutor`): a pass-through layer with DI churn in nine repositories, their providers and their tests buys nothing the helper does not |
 | D5 | An architecture test keeps it so: outside `lib/core/`, no file calls `mapDatabaseError(` | Stops the copy from coming back; the stream extension and the two helpers are the only entry points |
+| D6 (DEV-178) | A second architecture test keeps D2 so: under `lib/features/*/data/`, a raw `transaction(` body calls no write (`test/architecture/write_gate_test.dart`, rules in `write_gate_rules.dart`, allowlist by `file#member` with a reason) | The account's gate (auth spec R3) sits in `mappedTransaction`; a write through a raw transaction would pass it by. `ScheduleRepositoryImpl.initializeCard` was the one such write and now joins its caller through `mappedTransaction` |
 
 ## 3. Changes
 

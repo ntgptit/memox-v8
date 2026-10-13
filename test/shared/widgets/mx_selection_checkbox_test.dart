@@ -20,7 +20,7 @@ BoxDecoration _box(WidgetTester tester) =>
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('unchecked: a 20 box with a 2px outline, no fill', (
+  testWidgets('unchecked: a 20 box with a 2px outline edge, no fill', (
     tester,
   ) async {
     await pumpMx(tester, const MxSelectionCheckbox(isChecked: false));

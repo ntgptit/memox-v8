@@ -103,10 +103,13 @@ class _MonitoringDetailScreenState
         ),
         MonitoringDetailGone() => MxScreenScroll(
           children: [
-            MxErrorState(
+            // A gone item, not a load failure: the neutral empty state
+            // (owner 2026-10-08).
+            MxEmptyState(
+              icon: AppIcons.searchOff,
+              tone: MxEmptyStateTone.neutral,
               title: l10n.monitoringGoneTitle,
               body: l10n.monitoringGoneBody,
-              icon: AppIcons.searchOff,
             ),
           ],
         ),

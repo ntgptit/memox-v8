@@ -9,8 +9,10 @@ superseded_by:
 
 Trùng lặp khi import MUST đo bằng khoá `front_folded + back_folded`, trong hai phạm vi: card đang có trong **chính deck đích**, và các hàng lặp lại trong cùng nguồn import; card ở deck khác MUST NOT bị coi là trùng. Mặc định trùng lặp bị bỏ qua; người dùng MAY bật "Include duplicates". Import MUST NOT cập nhật hay gộp vào card hiện có — trùng thì hoặc bỏ hoặc tạo bản thứ hai, không có đường thứ ba. Kiểm tra trùng MUST chạy lại **bên trong** transaction commit theo policy đã chọn, vì database có thể đổi giữa preview và import.
 
+Với nguồn có dòng sao (BR-TRANSFER-015), trùng lặp MUST đo theo **từng deck đích**: nhóm "Thêm vào có sẵn" so với card của deck đó cộng các dòng trước trong cùng nhóm; nhóm tạo deck mới chỉ so với các dòng trước trong cùng nhóm. Hai dòng ở hai nhóm khác nhau MUST NOT bị coi là trùng.
+
 **Enforced by:** rule + store
-**Liên quan:** BR-TRANSFER-004
+**Liên quan:** BR-TRANSFER-004, BR-TRANSFER-015
 
 ## Lý do
 

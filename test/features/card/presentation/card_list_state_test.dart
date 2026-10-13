@@ -74,10 +74,10 @@ void main() {
       ..toggle('a')
       ..toggle('b')
       ..toggle('a');
-    expect(container.read(provider), {'b'});
+    expect(container.read(provider).ids, {'b'});
     notifier.selectAll({'a', 'b', 'c'});
-    expect(container.read(provider), {'a', 'b', 'c'});
+    expect(container.read(provider).ids, {'a', 'b', 'c'});
     notifier.clear();
-    expect(container.read(provider), isEmpty);
+    expect(container.read(provider).ids, isEmpty);
   });
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
 /// The two ids of the device and user sheet; empty text is no id.
@@ -61,15 +61,7 @@ class _MonitoringDeviceUserSheetWidgetState
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxBottomSheet(
-      header: Padding(
-        padding: EdgeInsets.fromLTRB(
-          context.dimens.space24,
-          context.dimens.space4,
-          context.dimens.space24,
-          context.dimens.space12,
-        ),
-        child: Text(l10n.monitoringChipDevice, style: context.texts.titleSmall),
-      ),
+      title: l10n.monitoringChipDevice,
       footer: MxSheetActions.custom(
         isInSheet: true,
         children: [

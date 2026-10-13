@@ -60,6 +60,10 @@ CREATE TABLE review_log (
 
 CREATE INDEX idx_review_log_card ON review_log (card_id, answered_at);
 CREATE INDEX idx_review_log_session ON review_log (session_id);
+-- Schema 14 (DEV-208): the Progress statements read the week and the month
+-- as a range of answered_at, and the streak probes one day at a time
+-- (progress_queries.drift); without it each read folded the whole history.
+CREATE INDEX idx_review_log_answered ON review_log (answered_at);
 
 CREATE TRIGGER review_log_append_only
 BEFORE UPDATE ON review_log

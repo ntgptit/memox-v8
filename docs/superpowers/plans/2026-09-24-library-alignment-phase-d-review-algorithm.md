@@ -1,5 +1,7 @@
 # Library Alignment Phase D — Review Algorithm & Reset (Screen 02) Implementation Plan
 
+> **Historical (ADR-019).** Written against the "Mobile UI Kit v3", retired on 2026-09-30; its kit references and screen captures are history, not authority. The app, `DESIGN.md` and the goldens decide the UI; each screen's current state is in its detail file under `docs/shared/ui/screen-handoff/`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** A root deck's review algorithm is changed and its learning progress reset from its own screen, `/decks/deck/:deckId/algorithm`, drawn as screen 02 of the V3 handoff; the scheduler sheet goes.

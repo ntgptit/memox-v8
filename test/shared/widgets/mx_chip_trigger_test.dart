@@ -33,4 +33,35 @@ void main() {
     expect(taps, 1);
     await expectAccessibleTargets(tester);
   });
+
+  // SW-REV-010: Import's sheet chip carries a workbook sheet name, user
+  // data; a label wider than the column ends in an ellipsis, never an
+  // overflow.
+  testWidgets('a label wider than its column ends in an ellipsis', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 200,
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: MxChipTrigger(
+            label: 'Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)',
+            onPressed: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester
+          .widget<Text>(
+            find.text('Sheet: Vocabulary_Korean_Lesson_12_Final (3 of 5)'),
+          )
+          .overflow,
+      TextOverflow.ellipsis,
+    );
+  });
 }

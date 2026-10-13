@@ -47,7 +47,6 @@ class StudyEntryLearnWidget extends StatelessWidget {
           ),
         ),
         trailing: _trailing(context),
-        hasDivider: false,
       ),
     );
   }

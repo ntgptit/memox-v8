@@ -22,29 +22,31 @@ class MxListSectionHeader extends StatelessWidget {
   static const double _afterFilterBandTop = 2;
 
   @override
-  Widget build(BuildContext context) {
-    final dimens = context.dimens;
-    return Padding(
-      padding: EdgeInsetsDirectional.fromSTEB(
-        dimens.space4,
-        isAfterFilterBand ? _afterFilterBandTop : 0,
-        dimens.space4,
-        dimens.space8,
-      ),
-      // A trailing too wide for the row (large text) moves under the label.
-      child: OverflowBar(
-        alignment: MainAxisAlignment.spaceBetween,
-        spacing: context.dimens.space8,
-        overflowSpacing: context.dimens.space8,
-        children: [
-          Text(
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsetsDirectional.fromSTEB(
+      context.dimens.space4,
+      isAfterFilterBand ? _afterFilterBandTop : 0,
+      context.dimens.space4,
+      context.dimens.space8,
+    ),
+    // A trailing too wide for the row (large text) moves under the label.
+    child: OverflowBar(
+      alignment: MainAxisAlignment.spaceBetween,
+      spacing: context.dimens.space8,
+      overflowSpacing: context.dimens.space8,
+      children: [
+        // A heading for screen readers, so a list of sections can be
+        // skimmed by its overlines.
+        Semantics(
+          header: true,
+          child: Text(
             label.toUpperCase(),
             semanticsLabel: label,
             style: context.texts.labelSmall,
           ),
-          ?trailing,
-        ],
-      ),
-    );
-  }
+        ),
+        ?trailing,
+      ],
+    ),
+  );
 }

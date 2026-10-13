@@ -59,7 +59,9 @@ class MxEmptyState extends StatelessWidget {
   final String? tertiaryActionLabel;
   final VoidCallback? onTertiaryAction;
 
-  /// A product rule under the action, drawn as an MxNote (ruling S19).
+  /// A product rule under the action, in the footnote form (`MxNote.hint`,
+  /// ruling S19; a boxed note inside the card was two edges in dark, audit
+  /// 2026-10-08 F-02, DEV-303).
   final String? footnote;
 
   static const double _tileSize = 64;
@@ -94,7 +96,7 @@ class MxEmptyState extends StatelessWidget {
               _Tile(
                 icon: icon,
                 color: toneColor,
-                ink: switch (tone) {
+                foreground: switch (tone) {
                   MxEmptyStateTone.primary => context.accentColor,
                   MxEmptyStateTone.success => context.mxColors.success,
                   // As the caution tile and the warning banner (critique
@@ -154,7 +156,7 @@ class MxEmptyState extends StatelessWidget {
               ],
               if (footnote case final rule?) ...[
                 SizedBox(height: context.dimens.space24),
-                MxNote(text: rule),
+                MxNote.hint(text: rule),
               ],
             ],
           ),
@@ -176,7 +178,7 @@ class _Tile extends StatelessWidget {
   const _Tile({
     required this.icon,
     required this.color,
-    required this.ink,
+    required this.foreground,
     required this.isCompact,
   });
 
@@ -188,7 +190,7 @@ class _Tile extends StatelessWidget {
   /// The glyph: primaryInk for the primary tone (spec 2026-09-27 D2),
   /// successInk for success (critique 2026-09-30 tone pass, T7), warningInk
   /// for warning (part 3d-2, E14).
-  final Color ink;
+  final Color foreground;
   final bool isCompact;
 
   @override
@@ -209,7 +211,7 @@ class _Tile extends StatelessWidget {
           size: isCompact
               ? context.dimens.sizeIcon
               : context.dimens.sizeIconTile,
-          color: ink,
+          color: foreground,
         ),
       ),
     ),

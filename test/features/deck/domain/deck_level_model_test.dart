@@ -232,4 +232,15 @@ void main() {
     expect(level.deckCount, 2);
     expect(level.tiles, hasLength(1));
   });
+
+  test('hasDecks counts the level, whatever the filter shows (ruling L4)', () {
+    expect(DeckLevel.of(const []).hasDecks, isFalse);
+    expect(DeckLevel.of([_tile('a', cards: 1)]).hasDecks, isTrue);
+    // "Due only" hides every tile of a level that still holds a deck.
+    final dueOnly = DeckLevel.of([
+      _tile('a', cards: 1),
+    ], filter: DeckLevelFilter.due);
+    expect(dueOnly.tiles, isEmpty);
+    expect(dueOnly.hasDecks, isTrue);
+  });
 }

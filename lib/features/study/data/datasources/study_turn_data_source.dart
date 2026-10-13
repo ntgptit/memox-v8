@@ -1,6 +1,7 @@
 import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
+import 'package:memox/features/srs/domain/failures/srs_failure.dart';
 import 'package:memox/features/srs/domain/models/review_turn_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/schedulers_model.dart';
@@ -8,6 +9,7 @@ import 'package:memox/features/srs/domain/repositories/schedule_repository.dart'
 import 'package:memox/features/study/data/datasources/study_queue_dao.dart';
 import 'package:memox/features/study/data/datasources/study_session_dao.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
+import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/turn_kind_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study_mode/domain/models/match_mode.dart';
@@ -81,6 +83,17 @@ final class StudyTurnDataSource {
         ),
       );
       if (recorded case Rejected(:final reason)) {
+        // The srs refused the generation the session runs at: the session
+        // ends as it does when its root was reset (BR-STUDY-017), instead
+        // of serving this card again (DEV-224).
+        if (reason == SrsRejection.staleGeneration) {
+          await _dao.endSession(
+            session.id,
+            status: SessionStatus.invalidated,
+            reason: SessionEndReason.staleGeneration,
+            now: at,
+          );
+        }
         return Rejected(StudyRejection.ofTurnRefusal(reason));
       }
     }

@@ -110,7 +110,9 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
         draft: draft,
         onCancel: _close,
         onRead: () => unawaited(_wizard.readSource()),
-        onPreview: () => unawaited(_wizard.previewRows()),
+        onPreview: () => unawaited(
+          _wizard.previewRows(defaultDeckName: l10n.importDefaultDeckName),
+        ),
         onCommit: () => unawaited(_wizard.commit()),
       ),
     );
@@ -144,6 +146,14 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
             draft: draft,
             onIncludeDuplicates: (isOn) =>
                 _wizard.setIncludingDuplicates(isIncluding: isOn),
+            onChooseSection: _wizard.chooseSection,
+            onChooseAllSections: _wizard.chooseAllSections,
+            onRenameDefault: _wizard.renameDefaultDeck,
+            onPreviewAgain: () => unawaited(
+              _wizard.previewRows(
+                defaultDeckName: context.l10n.importDefaultDeckName,
+              ),
+            ),
           ),
         if (step == CardImportStep.importing)
           _ImportingCard(count: draft.willWrite),
@@ -155,6 +165,12 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
     final l10n = context.l10n;
     final (secondary, primary) = switch (state) {
       CardImportDone(summary: final summary) when summary.written == 0 => (
+        (l10n.importAnother, _wizard.startOver),
+        (l10n.importBackToDeck, widget.onClose, AppIcons.back),
+      ),
+      // The deck now holds the decks the file named: it has no card list
+      // to open (spec 2026-10-08 U8).
+      CardImportDone(summary: final summary) when summary.decks.isNotEmpty => (
         (l10n.importAnother, _wizard.startOver),
         (l10n.importBackToDeck, widget.onClose, AppIcons.back),
       ),

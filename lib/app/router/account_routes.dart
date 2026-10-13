@@ -1,19 +1,23 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/app/router/app_routes.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/features/account/presentation/screens/account_screen.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/screens/welcome_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_reauth_notice_widget.dart';
-import 'package:memox/features/account/presentation/widgets/sections/account_settings_section_widget.dart';
+import 'package:memox/features/account/presentation/widgets/items/account_settings_row_widget.dart';
+import 'package:memox/features/account/presentation/widgets/sections/account_settings_banner_widget.dart';
 
 /// Screen 29 (account UI spec §5.1): the first launch, over everything.
 /// Its exits go on to where the launch was headed; email opens screen 30
-/// with Settings under it (P3a plan ruling 4).
+/// over it, and that flow ends there too (login navigation review
+/// 2026-10-08; it was Settings under it, P3a plan ruling 4).
 GoRoute welcomeRoute() => GoRoute(
   path: AppRoutes.welcome,
   builder: (context, state) {
@@ -23,7 +27,13 @@ GoRoute welcomeRoute() => GoRoute(
     );
     return WelcomeScreen(
       onDone: () => context.go(from),
-      onEmail: () => context.go(AppRoutes.settingsSignInLink),
+      // Over where the launch was headed, so Back and the end of the flow
+      // return there, as Google does (login navigation review 2026-10-08).
+      onEmail: () {
+        final router = GoRouter.of(context);
+        router.go(from);
+        unawaited(router.push(AppRoutes.settingsSignInLinkFrom(from)));
+      },
     );
   },
 );
@@ -80,7 +90,8 @@ Widget accountReauthNotice(BuildContext context) => AccountReauthNoticeWidget(
 );
 
 /// Where a sign-in flow began and ends (spec §9 B9): the link ends on
-/// screen 32; a re-auth returns to where it was opened.
+/// screen 32, or where Welcome was headed when it began there; a re-auth
+/// returns to where it was opened.
 final class _SignInFlow {
   const _SignInFlow(this.purpose, this.from);
 
@@ -88,29 +99,55 @@ final class _SignInFlow {
     final query = uri.queryParameters;
     final isReauth =
         query[AppRoutes.accountModeParam] == AppRoutes.accountReauthMode;
+    final from = query[AppRoutes.accountFromParam];
     return _SignInFlow(
       isReauth ? SignInPurpose.reauth : SignInPurpose.link,
-      AppRoutes.inAppOr(query[AppRoutes.accountFromParam], AppRoutes.settings),
+      from == null ? null : AppRoutes.inAppOr(from, AppRoutes.settings),
     );
   }
 
   final SignInPurpose purpose;
-  final String from;
 
-  String get end =>
-      purpose == SignInPurpose.reauth ? from : AppRoutes.settingsAccount;
+  /// Where the flow was opened from; none for the link from Settings.
+  final String? from;
+
+  String get end => switch (purpose) {
+    SignInPurpose.reauth => from ?? AppRoutes.settings,
+    _ => from ?? AppRoutes.settingsAccount,
+  };
 
   String codeLocation(String email) => purpose == SignInPurpose.reauth
-      ? AppRoutes.settingsSignInCodeReauth(email, from: from)
-      : AppRoutes.settingsSignInCodeLink(email);
+      ? AppRoutes.settingsSignInCodeReauth(
+          email,
+          from: from ?? AppRoutes.settings,
+        )
+      : AppRoutes.settingsSignInCodeLink(email, from: from);
 }
 
-/// Screen 23's Account section (spec §5.5).
-Widget accountSettingsSection(BuildContext context) =>
-    AccountSettingsSectionWidget(
-      onSignIn: () => unawaited(context.push(AppRoutes.settingsSignInLink)),
-      onOpenAccount: () => unawaited(context.push(AppRoutes.settingsAccount)),
-      onSignInAgain: () => unawaited(
-        context.push(AppRoutes.settingsSignInReauth(from: AppRoutes.settings)),
-      ),
-    );
+/// Whether this build can have an account at all: the hub draws its
+/// "Account & sync" section only when it gets a row, so a build without
+/// Supabase (no coordinator) gets none and shows no empty section
+/// (settings hub spec §5.1).
+bool _hasAccount(BuildContext context) =>
+    ProviderScope.containerOf(context).read(accountCoordinatorProvider) != null;
+
+/// The hub's account row (settings hub spec D7); null when the build has no
+/// account.
+Widget? accountSettingsRow(BuildContext context) => _hasAccount(context)
+    ? AccountSettingsRowWidget(
+        onSignIn: () => unawaited(context.push(AppRoutes.settingsSignInLink)),
+        onOpenAccount: () => unawaited(context.push(AppRoutes.settingsAccount)),
+      )
+    : null;
+
+/// The expired sign-in banner above the hub's Account & sync section; null
+/// when the build has no account.
+Widget? accountSettingsBanner(BuildContext context) => _hasAccount(context)
+    ? AccountSettingsBannerWidget(
+        onSignIn: () => unawaited(
+          context.push(
+            AppRoutes.settingsSignInReauth(from: AppRoutes.settings),
+          ),
+        ),
+      )
+    : null;

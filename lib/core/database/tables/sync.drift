@@ -15,8 +15,17 @@ CREATE TABLE sync_outbox (
   op TEXT NOT NULL CHECK (op IN ('upsert', 'delete')),
   created_at DATETIME NOT NULL,
   attempts INTEGER NOT NULL DEFAULT 0,
+  -- What the server needs beyond the row and the op, as JSON: a purge's
+  -- delete carries the batch it purged and the row's acknowledged version
+  -- (DEV-181, server sync spec §4.1).
+  payload TEXT,
   UNIQUE (entity_type, entity_id)
 ) AS SyncOutboxEntry;
+
+-- Schema 14 (DEV-205): a push batch is one entity type, oldest first
+-- (`pendingOutboxOfType`, `pendingDeckOutbox`); the index serves the filter
+-- and the order, so a batch is a range read, never a sort of the outbox.
+CREATE INDEX idx_sync_outbox_type_created ON sync_outbox (entity_type, created_at);
 
 CREATE TABLE sync_state (
   -- `name`, not `key`: KEY is reserved in drift's SQL parser.
@@ -29,28 +38,28 @@ CREATE TABLE sync_state (
 CREATE TRIGGER deck_sync_insert AFTER INSERT ON deck
 WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
 BEGIN
-  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
-          'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
-  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+          'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL)
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;
 END;
 
 CREATE TRIGGER deck_sync_update AFTER UPDATE ON deck
 WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
 BEGIN
-  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
-          'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
-  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+          'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL)
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;
 END;
 
 CREATE TRIGGER deck_sync_delete AFTER DELETE ON deck
 WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
 BEGIN
-  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
-          'deck', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))
-  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+          'deck', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER), CASE WHEN old.delete_batch_id IS NULL THEN NULL ELSE json_object('deleteBatchId', old.delete_batch_id, 'serverVersion', old.server_version) END)
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;
 END;
 
 CREATE TRIGGER delete_batches_sync_insert AFTER INSERT ON delete_batches
@@ -84,28 +93,28 @@ END;
 CREATE TRIGGER card_sync_insert AFTER INSERT ON card
 WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
 BEGIN
-  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
-          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
-  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL)
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;
 END;
 
 CREATE TRIGGER card_sync_update AFTER UPDATE ON card
 WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
 BEGIN
-  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
-          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
-  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL)
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;
 END;
 
 CREATE TRIGGER card_sync_delete AFTER DELETE ON card
 WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
 BEGIN
-  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
-          'card', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))
-  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+          'card', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER), CASE WHEN old.delete_batch_id IS NULL THEN NULL ELSE json_object('deleteBatchId', old.delete_batch_id, 'serverVersion', old.server_version) END)
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;
 END;
 
 -- SB-S3: tags, as cards; a card's links travel on the card, so a link change
@@ -157,13 +166,14 @@ BEGIN
   ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
 END;
 
--- SB-S5: the study and display settings sync per account; reminders and a
--- write that changes none of the four columns queue nothing (library and study
--- sync spec §3.5). The entity id is the nil UUID (D2).
+-- SB-S5: the study and display settings and the SQL log switch sync per
+-- account; reminders and a write that changes none of the five columns queue
+-- nothing (library and study sync spec §3.5). The entity id is the nil UUID (D2).
 CREATE TRIGGER app_settings_sync_update AFTER UPDATE ON app_settings
 WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
   AND (old.card_limit IS NOT new.card_limit OR old.new_card_order IS NOT new.new_card_order
-    OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language)
+    OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language
+    OR old.log_sql_statements IS NOT new.log_sql_statements)
 BEGIN
   INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),

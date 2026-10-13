@@ -8,7 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class SupabaseAuthGateway implements AuthGateway {
   SupabaseAuthGateway(this._auth, {required this._pickGoogle});
 
-  /// On the client main.dart initialized.
+  /// On the client `startApp` initialized.
   factory SupabaseAuthGateway.instance({
     required Future<GoogleCredential> Function() pickGoogle,
   }) => SupabaseAuthGateway(

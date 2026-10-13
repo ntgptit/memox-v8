@@ -1,5 +1,7 @@
 # Flutter UI Base — Phase 1 (Theme Foundations) Implementation Plan
 
+> **Historical (ADR-019).** Written against the "Mobile UI Kit v3", retired on 2026-09-30; its kit references and screen captures are history, not authority. The app, `DESIGN.md` and the goldens decide the UI; each screen's current state is in its detail file under `docs/shared/ui/screen-handoff/`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build `lib/core/theme/`, the complete light and dark MemoX V3 theme (ColorScheme, TextTheme, semantic extension, derived colours, tokens, shadows), with the Plus Jakarta Sans font bundled, so phase 2 can build `Mx*` components on it.

@@ -62,6 +62,24 @@ void main() {
     expect(row.isFlagged, 1);
   });
 
+  test(
+    'a row without isFlagged, from a build before the key, takes the default '
+    '(server sync spec §4.4)',
+    () async {
+      await db.customStatement(
+        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+        "scheduler_version, generation, sibling_position, created_at, updated_at) "
+        "VALUES ('D', 'd', NULL, 'D', 1, 'deck', 'eight_box', 1, 1, 0, 0, 0)",
+      );
+      await adapter.upsertFromServer(_wire('K', 'D')..remove('isFlagged'), 9);
+
+      final card = await (db.select(
+        db.card,
+      )..where((c) => c.id.equals('K'))).getSingle();
+      expect(card.isFlagged, 0);
+    },
+  );
+
   test('a deleted card and a missing card read as null', () async {
     await _root(db, 'R', 'sm2');
     await adapter.upsertFromServer(_wire('K', 'R'), 1);

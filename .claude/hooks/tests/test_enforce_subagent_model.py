@@ -1,5 +1,5 @@
 """The Agent gate of enforce_subagent_model.py: Sonnet for every subagent, Opus
-for the final whole-branch review only."""
+for the final whole-branch review and a root-cause investigation only."""
 
 import json
 import subprocess
@@ -50,6 +50,18 @@ class AgentGateTest(unittest.TestCase):
 
     def test_the_prefix_must_open_the_description(self):
         call = {"model": "opus", "description": "Not a Final whole-branch review"}
+        self.assertEqual(model_after(run(call), call), "sonnet")
+
+    def test_a_root_cause_investigation_on_opus_passes(self):
+        call = {"model": "opus", "description": "Root-cause investigation DEV-301 overflow"}
+        self.assertEqual(run(call), {})
+
+    def test_a_root_cause_investigation_on_another_model_is_moved_to_sonnet(self):
+        call = {"model": "fable", "description": "Root-cause investigation DEV-301"}
+        self.assertEqual(model_after(run(call), call), "sonnet")
+
+    def test_the_investigation_prefix_must_open_the_description(self):
+        call = {"model": "opus", "description": "Fix after Root-cause investigation"}
         self.assertEqual(model_after(run(call), call), "sonnet")
 
 

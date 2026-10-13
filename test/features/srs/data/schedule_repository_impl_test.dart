@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/failures/srs_failure.dart';
@@ -33,8 +34,33 @@ void main() {
     );
   });
 
-  test('initializeCard of a missing card throws', () async {
-    await expectLater(repo.initializeCard(cardId: 'missing'), throwsStateError);
+  test('initializeCard of a missing card leaves as a failure', () async {
+    await expectLater(
+      repo.initializeCard(cardId: 'missing'),
+      throwsA(isA<UnknownDatabaseFailure>()),
+    );
+  });
+
+  test('initializeCard refuses while the account gate is shut and writes '
+      'nothing (auth spec R3, DEV-178)', () async {
+    await insertStudyTree(db, 'r');
+    await insertBareCard(db, 'new', 'r-leaf');
+    db.mutationGate.close();
+
+    await expectLater(
+      repo.initializeCard(cardId: 'new'),
+      throwsA(isA<MutationBlockedFailure>()),
+    );
+
+    expect(
+      (await db
+              .customSelect(
+                "SELECT COUNT(*) AS n FROM card_schedule WHERE card_id = 'new'",
+              )
+              .getSingle())
+          .read<int>('n'),
+      0,
+    );
   });
 
   test('resetLearning bumps generation and recreates card_schedule', () async {

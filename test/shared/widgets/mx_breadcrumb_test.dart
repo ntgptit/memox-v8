@@ -4,6 +4,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -89,5 +90,23 @@ void main() {
     );
 
     await expectAccessibleTargets(tester);
+  });
+
+  testWidgets('a deep path fades its start edge and keeps its hidden '
+      'ancestors reachable (DEV-306)', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      SizedBox(width: 360, child: MxBreadcrumb(segments: _path(10))),
+    );
+    await tester.pump();
+
+    expect(find.byKey(MxScrollFade.leadingKey), findsOneWidget);
+    expect(find.byKey(MxScrollFade.trailingKey), findsNothing);
+    expect(
+      tester.getSemantics(find.text('Level 1', skipOffstage: false)),
+      isSemantics(label: 'Level 1', isButton: true, hasTapAction: true),
+    );
+    handle.dispose();
   });
 }

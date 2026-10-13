@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_field_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/shared/widgets/mx_list_section_header.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// One optional card field's input: its text, its message, and the touch
 /// that lets the form show that message.
@@ -50,20 +51,7 @@ class CardOptionalFieldsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (hasHeader)
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              context.dimens.space4,
-              0,
-              context.dimens.space4,
-              context.dimens.space8,
-            ),
-            child: Text(
-              l10n.cardOptionalDetails.toUpperCase(),
-              semanticsLabel: l10n.cardOptionalDetails,
-              style: context.texts.labelSmall,
-            ),
-          ),
+        if (hasHeader) MxListSectionHeader(label: l10n.cardOptionalDetails),
         for (final (input, icon, label, hintText) in [
           (
             example,

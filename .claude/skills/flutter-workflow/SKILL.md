@@ -97,4 +97,5 @@ Open a new epic only for a new feature or spec — one spec, one epic — and ma
 each task of its plan one sub-issue; never split a task further, and never nest
 a sub-issue under a sub-issue. A small defect found along the way goes into the
 issue in hand, or becomes a sub-issue of the nearest epic. An epic is Done when
-every sub-issue is Done or Canceled.
+every sub-issue is Done or Canceled; it then moves, with its sub-issues, to the
+project `MemoX · Lưu trữ` ([linear-templates.md](references/linear-templates.md#close)).

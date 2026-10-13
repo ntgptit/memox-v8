@@ -60,7 +60,11 @@ Success means:
   - `CardRepositoryImpl.createCard` (`lib/features/card/data/repositories/`) already writes
     one card the right way inside one transaction: `CardDraft.check()`, the container rule
     (`DeckEntity.checkCreateCard`), `CardDao.insertCard`,
-    `ScheduleRepository.initializeCard`, the tag links, and `unset` → `card`.
+    `ScheduleRepository.initializeCard`, the tag links, and `unset` → `card`. Since
+    DEV-215 an import writes the drafts it keeps through `CardRepository.insertCards`,
+    the same path for a batch, and the deck's content type follows through
+    `DeckContentRepository.refresh`; the transfer repository holds only the duplicate
+    policy.
   - `CardDraft` holds the per-field rules as static checks (`checkFront`, `checkBack`,
     `checkOptional`, `checkTagNames`), so a preview can report each row's reason.
   - `foldText` (`lib/core/text/`) is the fold behind `front_folded` and `back_folded`.

@@ -47,14 +47,14 @@ commits and the next one loads immediately (BR-STUDY-063, BR-STUDY-064).
 `MxTextField`'s bare `study` variant in the study term role (P4 ruling F1); it has focus
 when the turn opens, Check waits for a non-empty answer, and IME Done checks
 (BR-STUDY-029). A right answer lets the next turn follow at once; a wrong one is held
-until Continue, the typed text struck through in the error ink beside the right term
+until Continue, the typed text struck through in the error colour beside the right term
 (BR-STUDY-059, BR-STUDY-064). Show hint appears only for a card with a hint not yet shown
 (BR-STUDY-028). The typed text is never kept (BR-STUDY-027). Goldens:
 `test/features/study/presentation/goldens/study_fill_{input,hint,wrong}_*`.
 
 ## Rulings
 
-- **P4 ruling V1:** the struck-through wrong answer uses the `error` ink, as Guess's wrong option; one wrong colour across the round modes.
+- **P4 ruling V1:** the struck-through wrong answer uses `error`, as Guess's wrong option; one wrong colour across the round modes.
 - **BR-STUDY-059, BR-STUDY-069 (P4 ruling V10):** the wrong tag and footer read "Wrong · comes back next round": a wrong `fill` row leaves the current round and is enrolled exactly once in the next one.
 - **P4:** the prompt uses the study passage role at 16, and both faces carry their "Meaning" and "Term" labels in flow.
 - No card can be edited mid-session, so the prompt face has no edit button.

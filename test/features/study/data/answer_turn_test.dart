@@ -219,6 +219,36 @@ void main() {
     expect((await sessionOf(db, id)).read<String>('status'), 'completed');
   });
 
+  test('a turn the srs refuses as stale, with the root still at the session\'s '
+      'generation, writes nothing and ends the session too (BR-STUDY-017, '
+      'DEV-224)', () async {
+    final (_, id) = await learning(1);
+    await browseAll(id, 1);
+    final card = await servedCard(db, id);
+    // The schedule alone has moved on: the session's own check passes and
+    // only recordTurn refuses.
+    await db.customStatement('UPDATE card_schedule SET generation = 2');
+
+    expect(
+      await sessions.answerTurn(
+        sessionId: id,
+        cardId: card!,
+        answer: const SelfAssessAnswer(Sm2Action.good),
+      ),
+      _refusedWith(StudyRejection.staleGeneration),
+    );
+
+    final session = await sessionOf(db, id);
+    expect(session.read<String>('status'), 'invalidated');
+    expect(session.read<String>('end_reason'), 'stale_generation');
+    expect(session.read<DateTime>('ended_at'), now);
+    expect(await logCount(), 0);
+    expect((await scheduleRowOf(db, card)).data['last_answered_at'], isNull);
+    // Back to the root's generation: the teardown's invariants are about
+    // what the answer wrote, not this setup.
+    await db.customStatement('UPDATE card_schedule SET generation = 1');
+  });
+
   test(
     'an answer from a session whose root was reset since is refused, '
     'writes no turn and ends the session (BR-STUDY-017, IT-CONT-010)',

@@ -8,6 +8,11 @@ import 'package:memox/core/theme/theme_rules.dart';
 /// A content row: decks, search results, tags, move targets and cards. The
 /// title is one line by default and the sub one line, each with an
 /// ellipsis, so every row in a list is one height. It is not a SettingsRow: this is a piece of content.
+///
+/// A disabled row dims its leading, title and end (chevron, trailing or
+/// spinner), never the subtitle or meta that says why, as MxSettingsRow and
+/// MxOptionRow do (critique 2026-09-30 part 3a, DEV-230). Dividers are the
+/// list's (`MxDividedColumn`, DEV-305).
 class MxListRow extends StatelessWidget {
   const MxListRow({
     super.key,
@@ -21,7 +26,6 @@ class MxListRow extends StatelessWidget {
     this.onTap,
     this.isEnabled = true,
     this.isBusy = false,
-    this.hasDivider = true,
     this.titleMaxLines = 1,
   }) : assert(subtitle == null || meta == null, 'a subtitle or meta'),
        assert(trailing == null || !hasChevron, 'a trailing or the chevron');
@@ -53,10 +57,6 @@ class MxListRow extends StatelessWidget {
 
   /// A spinner takes the trailing slot while the row's action runs.
   final bool isBusy;
-
-  /// The ghost rule under the row. The caller turns it off on the last row
-  /// and inside an MxSection, which draws its own.
-  final bool hasDivider;
 
   /// 2 for a name the person chose (tag, deck), which must stay
   /// recognisable; content lists keep 1 so rows are one height (audit
@@ -94,40 +94,32 @@ class MxListRow extends StatelessWidget {
       ),
       (false, false) => trailing,
     };
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: hasDivider
-            ? Border(
-                bottom: BorderSide(
-                  color: context.colors.outlineVariant,
-                  width: context.dimens.strokeHairline,
-                ),
-              )
-            : null,
-      ),
-      child: MxRowInk(
-        onTap: onTap,
-        isEnabled: isEnabled,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.dimens.space16),
-            child: Row(
-              spacing: context.dimens.space12,
-              children: [
-                ?leading,
-                // Only the text carries the 12/12 inset, so a 48 trailing
-                // control sits inside the text height instead of growing the
-                // row: every row in a list stays one height.
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: context.dimens.space12,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+    return MxRowInk(
+      onTap: onTap,
+      isEnabled: isEnabled,
+      shouldDimWhenDisabled: false,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.dimens.space16),
+          child: Row(
+            spacing: context.dimens.space12,
+            children: [
+              if (leading case final lead?) _dim(context, lead),
+              // Only the text carries the 12/12 inset, so a 48 trailing
+              // control sits inside the text height instead of growing the
+              // row: every row in a list stays one height.
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: context.dimens.space12,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _dim(
+                        context,
                         Text.rich(
                           _titleSpan(
                             context.texts.titleSmall!.copyWith(
@@ -139,32 +131,36 @@ class MxListRow extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: context.texts.titleSmall,
                         ),
-                        if (subtitle case final text?) ...[
-                          const SizedBox(height: _subtitleGap),
-                          Text(
-                            text,
-                            maxLines: 1,
-                            softWrap: false,
-                            overflow: TextOverflow.ellipsis,
-                            style: context.texts.bodyMedium?.copyWith(
-                              color: context.colors.onSurfaceVariant,
-                            ),
+                      ),
+                      if (subtitle case final text?) ...[
+                        const SizedBox(height: _subtitleGap),
+                        Text(
+                          text,
+                          maxLines: 1,
+                          softWrap: false,
+                          overflow: TextOverflow.ellipsis,
+                          style: context.texts.bodyMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
                           ),
-                        ],
-                        if (meta case final slot?) ...[
-                          const SizedBox(height: _subtitleGap),
-                          slot,
-                        ],
+                        ),
                       ],
-                    ),
+                      if (meta case final slot?) ...[
+                        const SizedBox(height: _subtitleGap),
+                        slot,
+                      ],
+                    ],
                   ),
                 ),
-                ?end,
-              ],
-            ),
+              ),
+              if (end case final slot?) _dim(context, slot),
+            ],
           ),
         ),
       ),
     );
   }
+
+  Widget _dim(BuildContext context, Widget child) => isEnabled
+      ? child
+      : Opacity(opacity: context.dimens.opacityDisabledContent, child: child);
 }

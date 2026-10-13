@@ -26,8 +26,8 @@ class StudyChoiceWidget extends StatelessWidget {
 
   final StudyChoiceTone tone;
 
-  /// The content, drawn in the tone's ink.
-  final Widget Function(Color ink) builder;
+  /// The content, drawn in the tone's foreground.
+  final Widget Function(Color foreground) builder;
 
   /// What TalkBack reads: the content and its state.
   final String semanticsLabel;
@@ -51,10 +51,10 @@ class StudyChoiceWidget extends StatelessWidget {
     final motion = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : Durations.short4;
-    // The tone eases in, surface and ink together, so the content never
+    // The tone eases in, surface and foreground together, so the content never
     // sits on a surface it was not drawn for (Impeccable after P3). Not an
     // AnimatedContainer: it would inset the content by the border.
-    final ink = _ink(context);
+    final foreground = _foreground(context);
     final surface = ConstrainedBox(
       constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
       child: TweenAnimationBuilder<Decoration>(
@@ -66,10 +66,10 @@ class StudyChoiceWidget extends StatelessWidget {
         child: Padding(
           padding: padding,
           child: TweenAnimationBuilder<Color?>(
-            tween: ColorTween(end: ink),
+            tween: ColorTween(end: foreground),
             duration: motion,
             curve: Easing.standard,
-            builder: (context, color, _) => builder(color ?? ink),
+            builder: (context, color, _) => builder(color ?? foreground),
           ),
         ),
       ),
@@ -97,7 +97,7 @@ class StudyChoiceWidget extends StatelessWidget {
   }
 
   /// The content colour of [tone].
-  Color _ink(BuildContext context) => switch (tone) {
+  Color _foreground(BuildContext context) => switch (tone) {
     StudyChoiceTone.idle => context.colors.onSurface,
     StudyChoiceTone.selected => context.colors.onPrimary,
     StudyChoiceTone.right => context.mxColors.success,

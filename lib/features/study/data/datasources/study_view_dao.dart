@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/card_due_sql.dart';
 import 'package:memox/core/database/table_changes.dart';
 
 part 'study_view_dao.g.dart';
@@ -123,12 +124,18 @@ final class StudyViewDao extends DatabaseAccessor<AppDatabase>
   Future<List<DeckTileRow>> rootDeckRows({
     required DateTime now,
     required DateTime startOfToday,
-  }) => deckLevelOfRoots(startOfToday, now).get();
+  }) => deckLevelOfRoots(
+    (c, k, cs) => CardDueSql.isNew(cs),
+    (c, k, cs) => CardDueSql.isOverdue(cs, startOfToday),
+    (c, k, cs) =>
+        CardDueSql.isDueToday(cs, now: now, startOfToday: startOfToday),
+    (c, k, cs) => CardDueSql.isDue(cs, now),
+  ).get();
 
   /// The earliest due date after [now] of a learned card out of the Trash
   /// (Study Home spec D4); null when none waits.
   Future<DateTime?> nextDueAt({required DateTime now}) =>
-      nextDueAtAfter(now).getSingle();
+      nextDueAtAfter((c, k, cs) => CardDueSql.isScheduled(cs, now)).getSingle();
 
   /// Fires once when listened to, then after every write to a table the
   /// Study tab reads: decks, cards, schedules, sessions and queues

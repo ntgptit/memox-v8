@@ -289,12 +289,14 @@ def migrate_dimens(source: str) -> str:
     )
 
 
-def add_imports(source: str) -> str:
+def add_imports(source: str, path: str) -> str:
     needed = {name for token, name in IMPORTS.items() if token in source}
     if any(use in source for use in CONTEXT_USES):
         needed.add("theme_context")
     if "AppTypography." in source:
         needed.add("app_typography")
+    # A theme file that uses its own name never imports itself.
+    needed.discard(Path(path).stem)
     missing = [n for n in sorted(needed) if f"{IMPORT_PREFIX}{n}.dart'" not in source]
     if not missing or "\nimport '" not in "\n" + source:
         return source
@@ -318,12 +320,11 @@ def drop_deleted_imports(source: str) -> str:
 
 
 def migrate_source(source: str, path: str) -> tuple[str, list[str]]:
-    del path
     log: list[str] = []
     result = migrate_text(source)
     result = migrate_colors(result)
     result = migrate_dimens(result)
-    return add_imports(drop_deleted_imports(result)), log
+    return add_imports(drop_deleted_imports(result), path), log
 
 
 def main(argv: list[str]) -> int:

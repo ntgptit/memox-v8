@@ -67,6 +67,7 @@ void main() {
         'newCardOrder': 'created',
         'themeMode': 'dark',
         'language': 'system',
+        'logSqlStatements': true,
         'updatedAt': '2026-09-28T00:00:00Z',
       },
     );
@@ -92,6 +93,47 @@ void main() {
       expect(await b.db.select(b.db.syncOutbox).get(), isEmpty);
     },
   );
+
+  test(
+    'a pulled row without a setting, from a build before the key, leaves that '
+    'setting as it is (server sync spec §4.4)',
+    () async {
+      await a.db.customStatement(
+        "UPDATE app_settings SET card_limit = 30, theme_mode = 'dark' WHERE id = 1",
+      );
+      await SyncStore(a.db).applyingRemote(
+        () => AccountSettingsSyncDao(a.db).upsertFromServer({
+          'language': 'vi',
+          'updatedAt': '2026-09-28T00:00:00Z',
+        }, 7),
+      );
+
+      final settings = await _settings(a.db);
+      expect(settings.language, 'vi');
+      expect(settings.cardLimit, 30);
+      expect(settings.themeMode, 'dark');
+      expect(settings.newCardOrder, 'created');
+    },
+  );
+
+  test('a pulled card limit outside 1..200 leaves the limit as it is (DEV-214, '
+      'BR-STUDY-003)', () async {
+    await a.db.customStatement(
+      'UPDATE app_settings SET card_limit = 30 WHERE id = 1',
+    );
+    for (final limit in [0, -5, 201, 10000]) {
+      await SyncStore(a.db).applyingRemote(
+        () => AccountSettingsSyncDao(a.db).upsertFromServer({
+          'cardLimit': limit,
+          'themeMode': 'dark',
+          'updatedAt': '2026-09-28T00:00:00Z',
+        }, 7),
+      );
+      final settings = await _settings(a.db);
+      expect(settings.cardLimit, 30, reason: 'limit $limit is not taken');
+      expect(settings.themeMode, 'dark', reason: 'the rest of the row is');
+    }
+  });
 
   test('a device on the defaults pushes no settings', () async {
     await b.coordinator.runOnce();

@@ -147,6 +147,33 @@ list read and takes the whole screen down.
 Test every code round-trips. It is a three-line test per enum and it catches the
 typo that would otherwise corrupt rows silently.
 
+## Folded text
+
+`front_folded`, `back_folded` and `tags.name_folded` hold `foldText(raw)`:
+trimmed, NFC, lowercased in Dart, NFC again (`lib/core/text/folded_text.dart`).
+They exist because SQLite's `lower()` and `NOCASE` fold ASCII only. Three rules
+follow, and the second is the one that bites (DEV-201):
+
+- **Dart computes them, never SQL.** `SET front_folded = lower(front)` writes
+  exactly the values the column exists to replace.
+- **`foldText` is a wire contract, not an implementation detail.** The server
+  stores `tags.name_folded` as the client sends it and keeps tag names unique
+  on it (`uq_tags_user_live_name`); `tag_upsert` compares `r->>'nameFolded'`
+  and never folds. Two builds that fold differently create two tags the user
+  reads as one, which `TAG_NAME_TAKEN` does not catch. So a change to
+  `foldText` is a release with two migrations: a local step that recomputes
+  every folded column and merges the tags that become one name (the v4 → v5
+  step, `nfc_text_migration.dart`, is the model), **and** a server migration
+  that backfills `tags.name_folded` for every stored row, with a pgTAP test
+  over old data. Never move the fold to the server: Postgres `normalize()` is
+  not Dart's NFC on every input.
+- **A pull folds here.** Every pull path recomputes the derived columns from
+  the wire's raw text with this build's `foldText` (`card_sync_dao`,
+  `tag_sync_dao`) and never stores a `*Folded` value the wire carries; that
+  is what keeps a foreign fold from splitting one name into two local tags.
+  The raw text is stored as the wire gives it: the writing client already
+  put it in the stored form (`storedText`).
+
 ## Where a fact belongs
 
 Before adding a column, check it is not one of these:

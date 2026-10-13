@@ -27,6 +27,54 @@ void main() {
     expect(await store.pendingBatch(const [], 10), isEmpty);
   });
 
+  test(
+    'a batch holds the first type in adapter order that has entries',
+    () async {
+      await store.enqueue('card', 'K', 'upsert', DateTime.utc(2026, 9, 1));
+      await store.enqueue('deck', 'D', 'upsert', DateTime.utc(2026, 9, 2));
+
+      final batch = await store.pendingBatch(['deck', 'card'], 10);
+
+      expect(batch.map((e) => '${e.entityType}/${e.entityId}'), ['deck/D']);
+      expect(
+        (await store.pendingBatch(['tag', 'card'], 10)).map((e) => e.entityId),
+        ['K'],
+      );
+    },
+  );
+
+  test('a pending deck follows the deck it moved into, whatever was queued '
+      'first; a delete goes before both (DEV-182)', () async {
+    await store.applyingRemote(() async {
+      await _root(db, 'N');
+      await db.customStatement(
+        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, "
+        "sibling_position, created_at, updated_at) "
+        "VALUES ('C', 'c', 'N', 'N', 2, 'card', 0, 0, 0)",
+      );
+    });
+    await store.enqueue('deck', 'C', 'upsert', DateTime.utc(2026, 9, 1));
+    await store.enqueue('deck', 'N', 'upsert', DateTime.utc(2026, 9, 2));
+    await store.enqueue('deck', 'X', 'delete', DateTime.utc(2026, 9, 3));
+
+    final batch = await store.pendingBatch(['deck'], 10);
+
+    expect(batch.map((e) => e.entityId), ['X', 'N', 'C']);
+  });
+
+  test('a batch of one type is read through its index, in index order '
+      '(DEV-205)', () async {
+    final plan = await db
+        .customSelect(
+          'EXPLAIN QUERY PLAN SELECT * FROM sync_outbox '
+          "WHERE entity_type = 'card' ORDER BY created_at, rowid LIMIT 100",
+        )
+        .get();
+    final lines = plan.map((r) => r.data.values.join(' ')).join('\n');
+    expect(lines, contains('USING INDEX idx_sync_outbox_type_created'));
+    expect(lines, isNot(contains('USE TEMP B-TREE')));
+  });
+
   test('the device id is created once and kept', () async {
     final first = await store.deviceId();
     expect(await store.deviceId(), first);
@@ -175,5 +223,56 @@ void main() {
     );
     expect(await store.since(), 0);
     expect(await store.pendingCount(), 8);
+  });
+
+  // The chain a local write takes to a sync run starts here (app deck-sync
+  // spec §5, DEV-226): the trigger queues the row and the outbox stream
+  // reports it. A write the triggers skip queues nothing.
+  test('outboxChanges fires on listen, after a write the triggers queue, and '
+      'not for a device-local table', () async {
+    var fired = 0;
+    final subscription = store.outboxChanges().listen((_) => fired++);
+    addTearDown(subscription.cancel);
+    await pumpEventQueue();
+    expect(fired, 1, reason: 'once on listen, so a read model reads once');
+
+    await db.customInsert(
+      "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+      "scheduler_version, generation, sibling_position, created_at, updated_at) "
+      "VALUES ('D', 'r', NULL, 'D', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
+      updates: {db.deck},
+    );
+    await pumpEventQueue();
+    expect(fired, 2, reason: 'the trigger wrote the outbox');
+    expect(await store.pendingCount(), 1);
+
+    await db.customInsert(
+      "INSERT INTO dismissed_note (note_key, dismissed_at) VALUES ('n', 0)",
+      updates: {db.dismissedNote},
+    );
+    await pumpEventQueue();
+    expect(fired, 2, reason: 'never synced: no trigger, no firing');
+  });
+
+  test('a write under applyingRemote queues nothing; the stream still reports '
+      'the write, as Drift propagates the trigger statically', () async {
+    var fired = 0;
+    final subscription = store.outboxChanges().listen((_) => fired++);
+    addTearDown(subscription.cancel);
+    await pumpEventQueue();
+
+    await store.applyingRemote(
+      () => db.customInsert(
+        "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, scheduler_type, "
+        "scheduler_version, generation, sibling_position, created_at, updated_at) "
+        "VALUES ('E', 'r', NULL, 'E', 1, 'deck', 'sm2', 1, 1, 0, 0, 0)",
+        updates: {db.deck},
+      ),
+    );
+    await pumpEventQueue();
+
+    expect(await store.pendingCount(), 0, reason: 'the trigger skipped it');
+    // A run the firing starts finds nothing to push (sync_scheduler_store_test).
+    expect(fired, 2);
   });
 }

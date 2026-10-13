@@ -6,7 +6,6 @@ import 'package:memox/features/reminders/presentation/providers/disable_reminder
 import 'package:memox/features/reminders/presentation/providers/enable_reminder_provider.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_status_provider.dart';
 import 'package:memox/features/reminders/presentation/states/reminder_action_state.dart';
-import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'reminder_controller.g.dart';
@@ -22,17 +21,19 @@ class ReminderController extends _$ReminderController {
   @override
   ReminderActionState build() => const ReminderActionState();
 
-  int get _storedMinute =>
-      ref.read(reminderStatusProvider).value?.reminder.minuteOfDay ??
-      ReminderSettings.defaultMinuteOfDay;
-
   /// The toggle on, or Try again after a refusal: only here is the
-  /// permission asked (BR-REMINDER-011).
-  Future<void> turnOn() => _run(
-    ReminderOperation.turnOn,
-    () => ref.read(enableReminderProvider)(_storedMinute),
-    again: turnOn,
-  );
+  /// permission asked (BR-REMINDER-011). Before the stored reminder is read
+  /// there is no minute to enable at, and none is made up (BR-SETTINGS-001):
+  /// the screen shows no toggle until then.
+  Future<void> turnOn() async {
+    final stored = ref.read(reminderStatusProvider).value?.reminder;
+    if (stored == null) return;
+    await _run(
+      ReminderOperation.turnOn,
+      () => ref.read(enableReminderProvider)(stored.minuteOfDay),
+      again: turnOn,
+    );
+  }
 
   /// The toggle off, or Try again after `mayStillShow` (A2, E6).
   Future<void> turnOff() => _run(

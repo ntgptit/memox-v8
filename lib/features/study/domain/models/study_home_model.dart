@@ -3,6 +3,7 @@ import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study_mode/domain/models/session_kind_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/srs/domain/models/due_state_model.dart';
 
 /// The Study tab (UC-STUDY-002; Study Home spec §5): the session Resume takes
 /// up, and the library's root decks with their workload, read as one
@@ -115,11 +116,13 @@ final class StudyHomeDeck {
 
   bool get hasWorkload => overdueCount + dueTodayCount + newCount > 0;
 
-  /// Its cards resting until they fall due (BR-STUDY-068), never below 0.
-  int get scheduledCount {
-    final resting = cardCount - newCount - overdueCount - dueTodayCount;
-    return resting < 0 ? 0 : resting;
-  }
+  /// Its cards resting until they fall due (BR-STUDY-068): the four sets of
+  /// one statement add up to [cardCount], so nothing to clamp (DEV-221).
+  int get scheduledCount => scheduledCountOf(
+    cardCount: cardCount,
+    newCount: newCount,
+    dueCount: overdueCount + dueTodayCount,
+  );
 
   /// A deck with no card gets no open action (BR-STUDY-076).
   bool get canStudy => cardCount > 0;

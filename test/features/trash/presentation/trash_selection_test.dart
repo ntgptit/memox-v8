@@ -68,6 +68,8 @@ void main() {
     await _tap(tester, find.text('Basics'));
     expect(find.text(_en.trashCardsSelected(1)), findsOneWidget);
 
+    // One label for one action, as on Card list (owner 2026-10-08).
+    expect(_en.trashSelectionClose, _en.cardSelectionClose);
     await _tap(tester, find.byTooltip(_en.trashSelectionClose));
     expect(find.text(_en.libraryTrash), findsOneWidget);
     expect(find.byType(MxFilterChip), findsNWidgets(3));
@@ -315,5 +317,39 @@ void main() {
 
     expect(opacityOf('Basics'), closeTo(0.38, 0.001));
     expect(opacityOf('meokda · eat'), 1);
+  });
+
+  // SW-REV-005: the entry's one TalkBack node keeps the tap and the
+  // long-press that starts a selection.
+  libraryTest('TalkBack keeps the entry tap and its long-press', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    expect(
+      tester.getSemantics(find.bySemanticsLabel(RegExp('^Places')).first),
+      isSemantics(hasTapAction: true, hasLongPressAction: true),
+    );
+    handle.dispose();
+  });
+
+  // SW-REV-011: TalkBack reads the new count as it changes, as on Card list.
+  libraryTest('the selected count in the bar is a live region', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await seedTrash(env);
+    await pumpLibraryScreen(tester, env, const TrashScreen());
+    await _tap(tester, _button(_en.trashSelect));
+    await _tap(tester, find.text('meokda · eat'));
+
+    expect(
+      tester.getSemantics(find.text(_en.trashCardsSelected(1))),
+      isSemantics(isLiveRegion: true, isHeader: true),
+    );
+    handle.dispose();
   });
 }

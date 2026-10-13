@@ -1,8 +1,8 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/core/network/supabase_client.dart';
-import 'package:memox/core/network/supabase_config.dart';
 import 'package:memox/core/sync/entity_sync_adapter.dart';
 import 'package:memox/core/sync/supabase_sync_api.dart';
 import 'package:memox/core/sync/sync_commands.dart';
@@ -17,10 +17,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'sync_providers.g.dart';
 
-@Riverpod(keepAlive: true)
-SupabaseConfig supabaseConfig(Ref ref) => SupabaseConfig.environment;
-
-/// Sync through the Supabase project main.dart initialized. It never signs
+/// Sync through the Supabase project `startApp` initialized. It never signs
 /// in: the account coordinator does, and resumes sync once `me()` confirms
 /// the account (auth spec R2).
 @Riverpod(keepAlive: true)
@@ -52,6 +49,8 @@ SyncCoordinator syncCoordinator(Ref ref) => SyncCoordinator(
 );
 
 /// The running sync, or null when this build names no Supabase project.
+/// It starts here, paused; `startApp` (app_bootstrap.dart) is its only
+/// reader and reads it before the account coordinator starts (DEV-176).
 @Riverpod(keepAlive: true)
 SyncScheduler? syncScheduler(Ref ref) {
   if (!ref.watch(supabaseConfigProvider).isEnabled) {
@@ -59,16 +58,21 @@ SyncScheduler? syncScheduler(Ref ref) {
   }
   final store = ref.watch(syncStoreProvider);
   final clock = ref.watch(dayClockProvider);
-  final online = Connectivity().onConnectivityChanged
-      .where((results) => !results.contains(ConnectivityResult.none))
-      .map((_) {});
   final scheduler = SyncScheduler(
     run: ref.watch(syncCoordinatorProvider).runOnce,
     triggers: store.outboxChanges().skip(1),
-    reconnects: online,
+    // The one reconnect signal, the coordinator's too (DEV-203).
+    reconnects: ref.watch(networkStatusProvider).reconnects,
     onSucceeded: () => store.recordSuccess(clock.now()),
-    onFailed: (error) =>
-        store.recordFailure(classifySyncFailure(error), clock.now()),
+    onFailed: (error) async {
+      final kind = classifySyncFailure(error);
+      await store.recordFailure(kind, clock.now());
+      // A run refused for want of an account: the coordinator validates the
+      // account again (auth spec #13, DEV-192). Read late, so the account
+      // providers' dependency on sync stays one way at build time.
+      if (kind != SyncFailureKind.signIn) return;
+      await ref.read(accountCoordinatorProvider)?.recheckSession();
+    },
     // Paused until the account coordinator reaches Ready (auth spec R2).
   )..start(paused: true);
   ref.onDispose(scheduler.dispose);

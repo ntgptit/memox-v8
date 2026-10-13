@@ -13,6 +13,7 @@ import 'package:memox/features/card/domain/usecases/load_card_history_page_use_c
 import 'package:memox/features/card/presentation/controllers/card_history_controller.dart';
 import 'package:memox/features/card/presentation/providers/load_card_history_page_use_case_provider.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
@@ -124,6 +125,7 @@ void main() {
           db,
           ScheduleRepositoryImpl(db),
           TagRepositoryImpl(db),
+          DeckTreeDataSource(db),
         ),
       );
       final c = container([

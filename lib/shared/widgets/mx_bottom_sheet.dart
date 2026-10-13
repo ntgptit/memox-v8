@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// Opens [builder] (usually an MxBottomSheet) on the platform modal route
-/// over a 45% scrim, sliding up over 260ms. It opens instantly under reduced
+/// over a 56% scrim, sliding up over 260ms. It opens instantly under reduced
 /// motion (ruling O7). A scrim tap or a drag down dismisses it.
 Future<T?> showMxBottomSheet<T>(
   BuildContext context, {
@@ -38,10 +38,23 @@ class MxBottomSheet extends StatelessWidget {
     this.footer,
     this.hasGrabber = true,
     this.isHeld = false,
-  });
+    this.title,
+    this.subtitle,
+  }) : assert(header == null || title == null, 'a header or a title'),
+       assert(subtitle == null || title != null, 'a subtitle needs a title');
 
   final Widget child;
+
+  /// A head drawn by the caller, for one that is not a title and a line
+  /// (a chip, a 16 inset); most sheets pass [title] instead.
   final Widget? header;
+
+  /// The sheet's head: the compact title 20 in, at most two lines, and
+  /// [subtitle] under it in the note role (SW-REV-008). The title is a
+  /// heading to TalkBack; it names the route on iOS only, since on Android
+  /// the modal route's own "Dialog" label wins.
+  final String? title;
+  final String? subtitle;
 
   /// Usually MxSheetActions in its sheet form.
   final Widget? footer;
@@ -121,7 +134,10 @@ class MxBottomSheet extends StatelessWidget {
                     ),
                   ),
                 ),
-              ?header,
+              if (title case final text?)
+                _SheetHead(title: text, subtitle: subtitle)
+              else
+                ?header,
               Flexible(child: SingleChildScrollView(child: child)),
               ?footer,
             ],
@@ -142,6 +158,54 @@ class MxBottomSheet extends StatelessWidget {
                 child: sheet,
               )
             : sheet,
+      ),
+    );
+  }
+}
+
+/// The sheet's head: the title and, when given, the line under it.
+class _SheetHead extends StatelessWidget {
+  const _SheetHead({required this.title, this.subtitle});
+
+  final String title;
+  final String? subtitle;
+
+  static const int _titleMaxLines = 2;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        context.dimens.space24,
+        context.dimens.space4,
+        context.dimens.space24,
+        context.dimens.space12,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: context.dimens.space4,
+        children: [
+          // A user's name (a deck, an entry) stops at two lines. A heading;
+          // the route's name on iOS (Android keeps the route's own label).
+          Semantics(
+            namesRoute: true,
+            header: true,
+            child: Text(
+              title,
+              maxLines: _titleMaxLines,
+              overflow: TextOverflow.ellipsis,
+              style: context.texts.titleSmall,
+            ),
+          ),
+          if (subtitle case final text?)
+            Text(
+              text,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
+        ],
       ),
     );
   }

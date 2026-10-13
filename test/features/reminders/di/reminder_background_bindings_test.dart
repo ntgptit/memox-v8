@@ -10,7 +10,7 @@ import 'package:memox/core/logging/console_sink.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
 import 'package:memox/core/logging/log_entry.dart' show LogSink;
 import 'package:memox/core/network/supabase_config.dart';
-import 'package:memox/core/sync/di/sync_providers.dart';
+import 'package:memox/core/network/di/network_providers.dart';
 import 'package:memox/features/reminders/di/reminder_background_bindings.dart';
 import 'package:memox/features/reminders/di/reminder_platform_repository_provider.dart';
 import 'package:memox/features/reminders/domain/models/reminder_platform_model.dart';

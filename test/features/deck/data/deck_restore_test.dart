@@ -5,6 +5,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
+import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -59,6 +60,19 @@ void main() {
       row.read<String?>('delete_batch_id'),
     );
   }
+
+  /// The live decks under [parentId] in manual order, with their positions.
+  Future<List<(String, int)>> liveOrderUnder(String? parentId) async => [
+    for (final row
+        in await db
+            .customSelect(
+              'SELECT id, sibling_position FROM deck WHERE parent_id IS ? '
+              'AND delete_batch_id IS NULL ORDER BY sibling_position, id',
+              variables: [Variable(parentId)],
+            )
+            .get())
+      (row.read<String>('id'), row.read<int>('sibling_position')),
+  ];
 
   Future<int> batchCount() async =>
       (await db
@@ -258,6 +272,48 @@ void main() {
 
       expect(await placeOf(words.id), (root.id, root.id, 2, 0, null));
       expect(await batchCount(), 0);
+    });
+
+    test('after a reorder took its old position, Undo gets it back and the '
+        'sibling that held it moves on (BR-SRS-007, DEV-219)', () async {
+      final root = await decks.root('Korean');
+      final a = await decks.sub(root.id, 'A');
+      final b = await decks.sub(root.id, 'B');
+      final c = await decks.sub(root.id, 'C');
+      final batch = await delete(b.id);
+      // The live siblings are renumbered from 0: C(0), A(1).
+      await decks.reorderDeck(
+        deckId: c.id,
+        anchorId: a.id,
+        placement: DeckPlacement.before,
+      );
+
+      expect(
+        await decks.undoDeckDeletion(batchId: batch),
+        isA<Ok<void, DeckRejection>>(),
+      );
+
+      expect(await liveOrderUnder(root.id), [(c.id, 0), (b.id, 1), (a.id, 2)]);
+    });
+
+    test('after a reorder of the roots took its old position, an undone root '
+        'gets it back too (DEV-219)', () async {
+      final a = await decks.root('A');
+      final b = await decks.root('B');
+      final c = await decks.root('C');
+      final batch = await delete(b.id);
+      await decks.reorderDeck(
+        deckId: c.id,
+        anchorId: a.id,
+        placement: DeckPlacement.before,
+      );
+
+      expect(
+        await decks.undoDeckDeletion(batchId: batch),
+        isA<Ok<void, DeckRejection>>(),
+      );
+
+      expect(await liveOrderUnder(null), [(c.id, 0), (b.id, 1), (a.id, 2)]);
     });
 
     test(

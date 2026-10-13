@@ -71,10 +71,8 @@ void main() {
       '(BR-STUDY-056)', () async {
     await _insertTree(db);
     await settings.saveStudyDefaults(
-      options: const StudyOptions(
-        cardLimit: 7,
-        newCardOrder: NewCardOrder.random,
-      ),
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.random,
     );
 
     final effective = await settings.watchStudyOptions(deckId: 'r').first;
@@ -84,6 +82,19 @@ void main() {
     expect(effective?.options.newCardOrder, NewCardOrder.random);
     expect(effective?.source, StudyOptionsSource.appDefaults);
     expect(effective?.hasRootOverride, isFalse);
+  });
+
+  test('app defaults outside 1..200 in the row study with the fresh-install '
+      'defaults (DEV-214, BR-STUDY-003)', () async {
+    await _insertTree(db);
+    await db.customStatement(
+      "UPDATE app_settings SET card_limit = 0, new_card_order = 'random' WHERE id = 1",
+    );
+
+    final effective = await settings.watchStudyOptions(deckId: 'r').first;
+
+    expect(effective?.options, StudyOptions.defaults);
+    expect(effective?.source, StudyOptionsSource.appDefaults);
   });
 
   test("a sub-deck studies with its root's override (BR-STUDY-056)", () async {
@@ -167,10 +178,8 @@ void main() {
     await pumpEventQueue();
     final overridden = seen.last;
     await settings.saveStudyDefaults(
-      options: const StudyOptions(
-        cardLimit: 7,
-        newCardOrder: NewCardOrder.created,
-      ),
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.created,
     );
     await pumpEventQueue();
     final overrideStillWins = seen.last;
@@ -202,10 +211,8 @@ void main() {
     await pumpEventQueue();
 
     await settings.saveStudyDefaults(
-      options: const StudyOptions(
-        cardLimit: 7,
-        newCardOrder: NewCardOrder.created,
-      ),
+      cardLimit: 7,
+      newCardOrder: NewCardOrder.created,
     );
     await pumpEventQueue();
     await subscription.cancel();
@@ -231,7 +238,10 @@ void main() {
 
     expect(result, isA<Ok<void, SettingsRejection>>());
     final root = await _root(db);
-    expect(root.studyConfig, '{"card_limit":30,"new_card_order":"random"}');
+    expect(
+      root.studyConfig,
+      '{"card_limit":30,"new_card_order":"random","tts_language":"en-US"}',
+    );
     expect(root.updatedAt, _t0());
     // The root row, plus the sync_outbox entry its trigger writes (ADR-013).
     expect(await totalChanges(db), before + 2);

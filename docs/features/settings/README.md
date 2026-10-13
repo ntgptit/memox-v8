@@ -11,7 +11,9 @@ Tuỳ chọn ứng dụng (V8.0): mặc định học toàn app, theme và ngôn
 
 | Màn hình | UC |
 |---|---|
-| Tab Settings (màn 23) | UC-SETTINGS-001 |
+| Tab Settings (màn 23, hub) | UC-SETTINGS-001 |
+| Study defaults (màn 23a) | UC-SETTINGS-001 |
+| Admin (màn 23b, chỉ admin) | Chưa có UC; hành vi theo [spec settings hub](../../superpowers/specs/2026-10-07-settings-hub-design.md) §5.3 |
 | Theme (màn 25) | UC-SETTINGS-001 |
 | Language (màn 26) | UC-SETTINGS-001 |
 | Study options của bộ thẻ (màn 15) | UC-SETTINGS-001 (A1, E4) |

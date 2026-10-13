@@ -218,7 +218,7 @@ written (BR-TAG-009). A failure rolls back (UC-TAG-001 E5).
   - `_predicate` becomes deck & search & filter & tags: the window and Select all;
   - `counts` takes the tag ids and counts All, Due, New and Flagged under the search and
     the tags;
-  - `activeSchedules` (the status counts) and the workload stay deck-wide (D10);
+  - the status counts and the workload (one SQL statement, `deckStatusCounts`, DEV-211) stay deck-wide (D10);
   - `changes()` already listens to `card_tags` and `tags`.
 - `CardRepositoryImpl` passes `query.tagIds` to the counts; `WatchCardListUseCase` and
   `SelectAllCardIdsUseCase` keep their signatures.

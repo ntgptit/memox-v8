@@ -10,6 +10,7 @@ import 'package:memox/features/account/presentation/states/users_state.dart';
 import 'package:memox/features/account/presentation/widgets/items/user_row_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -117,7 +118,6 @@ class _Rows extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(usersControllerProvider.notifier);
-    final count = loaded.users.length;
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (loaded.more == UsersMore.idle &&
@@ -134,13 +134,15 @@ class _Rows extends ConsumerWidget {
           children: [
             SizedBox(height: context.dimens.space8),
             MxListSectionHeader(label: context.l10n.usersSection),
-            for (final (index, user) in loaded.users.indexed)
-              UserRowWidget(
-                user: user,
-                isSelf: user.id == selfId,
-                onTap: () => onOpenUser(user),
-                hasDivider: index < count - 1,
-              ),
+            // Lazy, as the list grows with every load-more.
+            ...MxDividedColumn.divided([
+              for (final user in loaded.users)
+                UserRowWidget(
+                  user: user,
+                  isSelf: user.id == selfId,
+                  onTap: () => onOpenUser(user),
+                ),
+            ]),
             SizedBox(height: context.dimens.space12),
             _End(loaded: loaded, onRetry: controller.loadMore),
           ],

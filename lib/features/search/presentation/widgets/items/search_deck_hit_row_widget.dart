@@ -16,13 +16,11 @@ class SearchDeckHitRowWidget extends StatelessWidget {
     required this.hit,
     required this.term,
     required this.onTap,
-    required this.hasDivider,
   });
 
   final SearchDeckHit hit;
   final String term;
   final VoidCallback onTap;
-  final bool hasDivider;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +45,6 @@ class SearchDeckHitRowWidget extends StatelessWidget {
       ),
       hasChevron: true,
       onTap: onTap,
-      hasDivider: hasDivider,
     );
   }
 }

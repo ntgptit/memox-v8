@@ -8,7 +8,7 @@ CREATE TABLE deck (
   depth INTEGER NOT NULL CHECK (depth BETWEEN 1 AND 10),
   content_type TEXT NOT NULL DEFAULT 'unset'
     CHECK (content_type IN ('unset', 'card', 'deck')),
-  owner_id TEXT, -- NULL = local profile. Scope: sub-project sau (auth).
+  owner_id TEXT, -- Retired: always NULL, one profile per device (DEV-198).
   scheduler_type TEXT CHECK (scheduler_type IN ('eight_box', 'sm2')),
   scheduler_version INTEGER,
   scheduler_config TEXT, -- JSON. Only on root, same NULL rule as scheduler_type.

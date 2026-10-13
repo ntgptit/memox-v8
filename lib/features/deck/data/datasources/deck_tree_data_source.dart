@@ -5,12 +5,13 @@ import 'package:memox/features/deck/data/mappers/deck_mapper.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
+import 'package:memox/features/deck/domain/repositories/deck_content_repository.dart';
 
 /// The tree writes that several deck writes share, inside the caller's
 /// transaction: whether a deck may go under another, putting it there with
 /// its subtree, and the content type that follows what a deck holds. A move
 /// and a restore ask the same rules (BR-TRASH-006).
-final class DeckTreeDataSource {
+final class DeckTreeDataSource implements DeckContentRepository {
   DeckTreeDataSource(AppDatabase db) : _dao = DeckDao(db);
 
   final DeckDao _dao;
@@ -54,14 +55,20 @@ final class DeckTreeDataSource {
     Deck moving, {
     required int siblingPosition,
     required DateTime at,
-  }) => _dao.moveSubtree(
-    moving.id,
-    parentId: target.id,
-    rootId: target.rootId,
-    depthShift: target.depth + 1 - moving.depth,
-    siblingPosition: siblingPosition,
-    now: at,
-  );
+  }) async {
+    await _dao.moveSubtree(
+      moving.id,
+      parentId: target.id,
+      rootId: target.rootId,
+      depthShift: target.depth + 1 - moving.depth,
+      siblingPosition: siblingPosition,
+      now: at,
+    );
+    // The scheduler lock follows the subtree (BR-SRS-006, invariant 30): a
+    // learned card now under a root that is not locked locks it here, in the
+    // same transaction, as its first completed card would (BR-SRS-003).
+    await _dao.lockRootIfLearned(at, target.rootId);
+  }
 
   /// Why [deckId] cannot take a restore: it is in the Trash, or it is gone
   /// (BR-TRASH-006).
@@ -71,8 +78,11 @@ final class DeckTreeDataSource {
       : DeckRejection.targetNotFound;
 
   /// A sub-deck's content type follows what it holds (BR-DECK-006..008,
-  /// BR-DECK-015); a root is always a deck of decks (BR-DECK-004).
-  Future<void> refreshContentType(String deckId, DateTime at) async {
+  /// BR-DECK-015); a root is always a deck of decks (BR-DECK-004). The card
+  /// feature asks this after every write that changes what a deck holds
+  /// (DEV-215).
+  @override
+  Future<void> refresh(String deckId, DateTime at) async {
     final deck = await _dao.findRow(deckId);
     if (deck == null || deck.parentId == null) return;
     final contentType = await _dao.contentTypeFromChildren(deckId);

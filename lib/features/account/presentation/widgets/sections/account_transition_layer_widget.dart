@@ -7,9 +7,11 @@ import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
+import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/providers/unsent_count_provider.dart';
+import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/states/account_step_state.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
@@ -62,9 +64,16 @@ class _LayerPage extends ConsumerWidget {
     final isStopped = view.error != null || view.isStuck;
     // A sign-out cancels only once it has stopped: one queued behind a
     // running push would land after it moved on (critique 2026-10-02, R4).
-    final canCancel =
+    final hasCancel =
         (canCancelSwitch(transition) && !view.isStuck) ||
         (canCancelSignOut(transition) && isStopped);
+    // A target sign-in that runs, as the picked Google account's does, ends
+    // before a Cancel could: it would be refused behind it while the switch
+    // goes on, so Cancel waits (login navigation review 2026-10-08).
+    final isTargetSigningIn = ref
+        .watch(signInControllerProvider(SignInPurpose.target))
+        .isRunning;
+    final canCancel = hasCancel && !isTargetSigningIn;
     void cancel() => unawaited(_cancel(context, ref, transition.kind));
     return PopScope(
       canPop: false,
@@ -77,8 +86,8 @@ class _LayerPage extends ConsumerWidget {
         context,
         view,
         isStopped: isStopped,
-        canCancel: canCancel,
-        cancel: cancel,
+        hasCancel: hasCancel,
+        cancel: canCancel ? cancel : null,
       ),
     );
   }
@@ -87,11 +96,11 @@ class _LayerPage extends ConsumerWidget {
     BuildContext context,
     BlockingView view, {
     required bool isStopped,
-    required bool canCancel,
-    required VoidCallback cancel,
+    required bool hasCancel,
+    required VoidCallback? cancel,
   }) {
     final isSigningIn = view.isAwaitingTargetSignIn && !view.isStuck;
-    final appBar = canCancel
+    final appBar = hasCancel
         ? MxAppBar(
             titleWidget: const SizedBox.shrink(),
             density: MxAppBarDensity.content,
@@ -266,6 +275,9 @@ class _Progress extends StatelessWidget {
   /// beside its loss button (critique 2026-10-02, F2).
   String _stoppedMessage(AppLocalizations l10n, Failure? error) {
     if (view.isStuck) return l10n.accountLayerStuck;
+    if (_isSwitchStoppedOnRefused(view.transition, error)) {
+      return l10n.accountSwitchRefused((error as UnsentChangesFailure).count);
+    }
     if (error is! OfflineFailure) return l10n.accountLayerFailed;
     return view.transition.kind == TransitionKind.signOut
         ? l10n.accountSignOutStoppedOffline
@@ -292,6 +304,8 @@ class _StoppedActions extends ConsumerWidget {
         onPressed: () => unawaited(_retry(ref)),
       ),
       if (_isSignOutStoppedOffline(view.error)) const _SignOutNow(),
+      if (_isSwitchStoppedOnRefused(view.transition, view.error))
+        _SwitchLosing(count: (view.error as UnsentChangesFailure).count),
     ],
   );
 
@@ -309,6 +323,44 @@ class _StoppedActions extends ConsumerWidget {
       // The state carries what stopped; the log keeps why.
       appLogger.warning(
         'account.retry_failed',
+        category: LogCategory.state,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+}
+
+/// Auth spec #19 (DEV-191): a merge stopped on rows the server refused,
+/// which exist only on this phone. Retry alone repeats the refusal; the
+/// way on keeps them on the device, where the switch's reset loses them.
+bool _isSwitchStoppedOnRefused(AccountTransition transition, Failure? error) =>
+    transition.kind == TransitionKind.switchAccount &&
+    transition.choice == TransitionChoice.merge &&
+    error is UnsentChangesFailure;
+
+/// "Continue and lose n changes": the refused rows are kept on the device
+/// (screen 27's command), then the switch goes on (DEV-191).
+class _SwitchLosing extends ConsumerWidget {
+  const _SwitchLosing({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => MxButton(
+    label: context.l10n.accountSwitchLosing(count),
+    tone: MxButtonTone.dangerTint,
+    isBlock: true,
+    onPressed: () => unawaited(_loseAndRetry(ref)),
+  );
+
+  Future<void> _loseAndRetry(WidgetRef ref) async {
+    try {
+      await ref.read(syncCommandsProvider)?.keepRejectedOnDevice();
+      await ref.read(accountCoordinatorProvider)?.retry();
+    } on Failure catch (error, stackTrace) {
+      appLogger.warning(
+        'account.switch_losing_failed',
         category: LogCategory.state,
         error: error,
         stackTrace: stackTrace,

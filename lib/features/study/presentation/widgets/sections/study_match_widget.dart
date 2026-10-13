@@ -9,7 +9,7 @@ import 'package:memox/features/study/domain/models/study_session_view_model.dart
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
+import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_whole_word_text_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
@@ -135,7 +135,7 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
-          child: StudyScrollFadeWidget(
+          child: MxScrollFade(
             child: CustomScrollView(
               slivers: [
                 SliverFillRemaining(
@@ -263,7 +263,7 @@ class _Tile extends StatelessWidget {
         vertical: context.dimens.space16,
       ),
       onTap: tile.isMatched ? null : onTap,
-      builder: (ink) => Center(
+      builder: (foreground) => Center(
         child: Row(
           mainAxisSize: MainAxisSize.min,
           spacing: context.dimens.space4,
@@ -271,7 +271,7 @@ class _Tile extends StatelessWidget {
             if (tone == StudyChoiceTone.right || tone == StudyChoiceTone.wrong)
               IconTheme(
                 data: IconThemeData(
-                  color: ink,
+                  color: foreground,
                   size: context.dimens.sizeIconInline,
                 ),
                 child: Icon(
@@ -284,8 +284,8 @@ class _Tile extends StatelessWidget {
               child: StudyWholeWordTextWidget(
                 tile.text,
                 style: isTerm
-                    ? context.texts.headlineSmall!.copyWith(color: ink)
-                    : context.texts.bodySmall!.copyWith(color: ink),
+                    ? context.texts.headlineSmall!.copyWith(color: foreground)
+                    : context.texts.bodySmall!.copyWith(color: foreground),
               ),
             ),
           ],

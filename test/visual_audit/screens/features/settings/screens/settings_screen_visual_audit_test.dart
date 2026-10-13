@@ -1,3 +1,4 @@
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 
 import '../../../../../support/library_harness.dart';
@@ -12,10 +13,12 @@ void main() {
         tester,
         env,
         SettingsScreen(
+          onOpenStudyDefaults: () {},
+          onOpenAdmin: () {},
           onOpenTheme: () {},
           onOpenLanguage: () {},
           onOpenReminder: () {},
-          onAppOptionsReset: () {},
+          resetAppOptions: () async => const Ok(null),
           onOpenSync: () {},
           onOpenGallery: () {},
         ),

@@ -5,6 +5,7 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
@@ -39,6 +40,7 @@ void main() {
       db,
       ScheduleRepositoryImpl(db, now: _t0),
       TagRepositoryImpl(db, now: _t0),
+      DeckTreeDataSource(db),
       now: _t0,
     );
     root = await decks.root('Korean');
@@ -85,7 +87,7 @@ void main() {
   int seconds(DateTime at) => at.millisecondsSinceEpoch ~/ 1000;
 
   group('editCard (BR-CARD-005)', () {
-    test('replaces the content, the flag and the tags; keeps the schedule and the log', () async {
+    test('replaces the content and the tags; keeps the flag, the schedule and the log', () async {
       final card = await cards.card(
         nouns.id,
         const CardDraft(front: 'f', back: 'b', tagNames: ['old']),
@@ -120,7 +122,7 @@ void main() {
           row['hint'],
           row['is_flagged'],
         ),
-        ('CÔNG', 'công', 'work', 'h', 1),
+        ('CÔNG', 'công', 'work', 'h', 0),
       );
       expect(
         (row['created_at'], row['updated_at']),

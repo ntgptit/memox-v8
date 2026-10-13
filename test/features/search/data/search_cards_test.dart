@@ -3,6 +3,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/search/data/repositories/search_repository_impl.dart';
 import 'package:memox/features/search/domain/models/library_search_model.dart';
@@ -69,6 +70,7 @@ void main() {
       db,
       ScheduleRepositoryImpl(db, now: () => now),
       tags,
+      DeckTreeDataSource(db),
       now: () => now,
     ).card(
       lessonId,
@@ -132,6 +134,25 @@ void main() {
           (hit.cardId, hit.matchedTag),
       ],
       [('tags', 'Học'), ('everywhere', null)],
+    );
+  });
+
+  test('two matching tags of one tier: the hit names the first by folded '
+      'name, whatever order they were attached in (Search spec §6.2, '
+      'DEV-209)', () async {
+    await insertCard(db, id: 'later', deckId: lessonId, front: 'homework');
+    await tag('later', 'Học tập');
+    await tag('later', 'Học sinh');
+    await insertCard(db, id: 'sooner', deckId: lessonId, front: 'exercise');
+    await tag('sooner', 'Học sinh');
+    await tag('sooner', 'Học tập');
+
+    expect(
+      [
+        for (final hit in (await read('học')).cards)
+          (hit.cardId, hit.matchedTag),
+      ],
+      [('sooner', 'Học sinh'), ('later', 'Học sinh')],
     );
   });
 
@@ -207,6 +228,7 @@ void main() {
       db,
       ScheduleRepositoryImpl(db, now: () => now),
       tags,
+      DeckTreeDataSource(db),
       now: () => now,
     );
     final cong = await repo.card(

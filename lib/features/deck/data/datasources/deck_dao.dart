@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/card_due_sql.dart';
 import 'package:memox/core/database/table_changes.dart';
 
 part 'deck_dao.g.dart';
@@ -44,9 +45,22 @@ final class DeckDao extends DatabaseAccessor<AppDatabase> with _$DeckDaoMixin {
     required DateTime startOfToday,
   }) {
     if (parentId == null) {
-      return deckLevelOfRoots(startOfToday, now).watch();
+      return deckLevelOfRoots(
+        (c, k, cs) => CardDueSql.isNew(cs),
+        (c, k, cs) => CardDueSql.isOverdue(cs, startOfToday),
+        (c, k, cs) =>
+            CardDueSql.isDueToday(cs, now: now, startOfToday: startOfToday),
+        (c, k, cs) => CardDueSql.isDue(cs, now),
+      ).watch();
     }
-    return deckLevelOfChildren(parentId, startOfToday, now).watch();
+    return deckLevelOfChildren(
+      parentId,
+      (c, cs) => CardDueSql.isNew(cs),
+      (c, cs) => CardDueSql.isOverdue(cs, startOfToday),
+      (c, cs) =>
+          CardDueSql.isDueToday(cs, now: now, startOfToday: startOfToday),
+      (c, cs) => CardDueSql.isDue(cs, now),
+    ).watch();
   }
 
   /// [id] and every deck above it, root first; empty when [id] is not an

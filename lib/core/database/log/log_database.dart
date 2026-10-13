@@ -5,6 +5,10 @@ import 'package:memox/core/logging/log_entry.dart';
 
 part 'log_database.g.dart';
 
+/// The hard cap of the buffer (spec §3): past it, the oldest `debug` rows go
+/// first. Applied at start and after every write (DEV-207).
+const int logBufferCap = 50000;
+
 /// How many buffered rows Monitoring lists at most, and how much of a
 /// message: the list shows one line.
 const int pendingLimit = 200;
@@ -110,18 +114,28 @@ class LogDatabase extends _$LogDatabase {
   Future<int> count() => logEntryCount().getSingle();
 
   /// Drops what the server would drop (ADR-018 §5), then keeps at most [cap]
-  /// rows: `debug` goes first, then `info`, `warning` and `error` last,
-  /// oldest first within each.
-  Future<void> prune({required DateTime now, int cap = 50000}) =>
+  /// rows as [pruneExcess] does.
+  Future<void> prune({required DateTime now, int cap = logBufferCap}) =>
       transaction(() async {
         await pruneExpiredLogs(
           now.subtract(_shortLife).millisecondsSinceEpoch,
           now.subtract(_longLife).millisecondsSinceEpoch,
         );
-        final excess = await count() - cap;
-        if (excess <= 0) return;
-        await pruneLogExcess(excess);
+        await _dropExcess(cap);
       });
+
+  /// Keeps at most [cap] rows: `debug` goes first, then `info`, `warning`
+  /// and `error` last, oldest first within each. The buffer runs it after
+  /// every write, so a bulk sync cannot grow the file past the cap between
+  /// two pushes (DEV-207).
+  Future<void> pruneExcess({int cap = logBufferCap}) =>
+      transaction(() => _dropExcess(cap));
+
+  Future<void> _dropExcess(int cap) async {
+    final excess = await count() - cap;
+    if (excess <= 0) return;
+    await pruneLogExcess(excess);
+  }
 
   static LogEntriesCompanion _companionOf(LogEntry entry) =>
       LogEntriesCompanion.insert(

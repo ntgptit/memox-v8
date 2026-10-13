@@ -37,7 +37,7 @@ void main() {
       BorderRadius.circular(16),
     );
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
-    expect((glyph.size, glyph.color), (24, scheme.error));
+    expect((glyph.size, glyph.color), (24, lightColorScheme.error));
     expect(
       tester.getTopLeft(tile).dy - tester.getTopLeft(find.byType(MxCard)).dy,
       40,
@@ -165,5 +165,20 @@ void main() {
       ),
       findsNothing,
     );
+  });
+
+  // SW-REV-006: a load failure swaps in for the skeleton in place, so its
+  // title is announced when it appears.
+  testWidgets('the title is a live region', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxErrorState(title: "Couldn't load", body: 'Nothing was lost.'),
+    );
+    expect(
+      tester.getSemantics(find.text("Couldn't load")),
+      isSemantics(isLiveRegion: true),
+    );
+    handle.dispose();
   });
 }

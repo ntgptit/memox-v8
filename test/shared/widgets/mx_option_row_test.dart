@@ -19,7 +19,7 @@ Border _ring(WidgetTester tester) =>
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('unselected 2px outline ring; selected 6px primaryInk', (
+  testWidgets('unselected 2px outline ring; selected 6px accent', (
     tester,
   ) async {
     await pumpMx(
@@ -37,9 +37,9 @@ void main() {
     expect(tester.getSize(find.byKey(_radioKey)), const Size.square(20));
   });
 
-  // Spec 2026-09-27: the ring is a stroke glyph, so it inks in primaryInk.
+  // The ring is a stroke glyph, so it reads the accent colour.
   // The dark primary reads 2.46:1 on a sheet, below the 3:1 of a state.
-  testWidgets('dark: the selected ring is primaryInk', (tester) async {
+  testWidgets('dark: the selected ring is the accent colour', (tester) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () {}),
@@ -106,32 +106,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('divider unless last; disabled at 0.38', (tester) async {
-    await pumpMx(
-      tester,
-      MxOptionRow(
-        title: 'A',
-        isSelected: false,
-        onSelected: () {},
-        hasDivider: false,
-      ),
-    );
-    expect(
-      tester
-          .widgetList<DecoratedBox>(
-            find.descendant(
-              of: find.byType(MxOptionRow),
-              matching: find.byType(DecoratedBox),
-            ),
-          )
-          .where(
-            (box) =>
-                (box.decoration as BoxDecoration).border is Border &&
-                box.key != _radioKey,
-          ),
-      isEmpty,
-    );
-
+  testWidgets('disabled at 0.38', (tester) async {
     await pumpMx(
       tester,
       const MxOptionRow(title: 'A', isSelected: false, onSelected: null),
@@ -179,7 +154,9 @@ void main() {
     );
   });
 
-  testWidgets('a dimmed row keeps its description at full ink', (tester) async {
+  testWidgets('a dimmed row keeps its description at full strength', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const MxOptionRow(
@@ -200,5 +177,21 @@ void main() {
       ),
       findsNothing,
     );
+  });
+
+  // SW-REV-006: a row that cannot be picked is announced as disabled.
+  testWidgets('a row that cannot be picked is a disabled radio to TalkBack', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxOptionRow(title: 'SM-2', isSelected: false, onSelected: null),
+    );
+    expect(
+      tester.getSemantics(find.text('SM-2')),
+      isSemantics(hasEnabledState: true, isEnabled: false),
+    );
+    handle.dispose();
   });
 }

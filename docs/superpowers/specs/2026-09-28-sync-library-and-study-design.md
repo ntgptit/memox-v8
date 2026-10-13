@@ -59,10 +59,14 @@ server applies later wins, tombstones for deletes, pending local rows skipped on
   `server_version` and `deleted_at`; `deck_id → deck`, `delete_batch_id →
   delete_batch`.
 - Upsert: another user's id → `SYNC_ENTITY_CONFLICT`; a deck that is missing,
-  another user's or tombstoned → `CARD_DECK_MISSING`. The upsert clears
-  `deleted_at`.
+  another user's or tombstoned → `CARD_DECK_MISSING`; a tombstoned card →
+  `ENTITY_TOMBSTONED` with the tombstone (DEV-184, policy A: a tombstone is
+  final, for decks too).
 - Delete: tombstones the card and **hard-deletes** its `card_schedule`,
-  `review_log` and `card_tags` rows on the server. A device that already holds them
+  `review_log` and `card_tags` rows on the server, when the card is still at
+  the version the device last acknowledged (the delete's `row`, server sync
+  spec §4.1); a card changed since is refused with `ENTITY_NOT_IN_TRASH` and
+  its live copy (DEV-181). A device that already holds them
   loses them through the local cascade when it applies the card tombstone; a device
   that never pulled them never sees them.
 - A deck delete (subtree tombstone) also tombstones every live card of those decks,
@@ -132,17 +136,24 @@ server applies later wins, tombstones for deletes, pending local rows skipped on
   with it after at most one more push.
 - Cost (D5): when two devices review the same card offline, the later answer decides
   the schedule; the other answer stays in the history.
+- A pull skips a schedule pending on this device, so a reset or a scheduler change
+  pulled from another device can move the root past it. At the end of the pull the
+  adapter reseeds every schedule not at its root's scheduler and generation (invariant
+  9) with the initial state at the root's generation, as the change reseeded it on
+  the device it was made, and queues it (DEV-224).
 
 ### 3.5 Account settings
 
-- Synced: `card_limit`, `new_card_order`, `theme_mode`, `language`, and
+- Synced: `card_limit`, `new_card_order`, `theme_mode`, `language`,
+  `log_sql_statements` (schema 15, SQL log switch spec 2026-10-07) and
   `updated_at`. Not synced: `reminder_*` (device settings, server-sync spec §5).
 - Wire: entity type `account_settings`, entity id the nil UUID
   `00000000-0000-0000-0000-000000000000` (D2); row `cardLimit`, `newCardOrder`,
-  `themeMode`, `language`, `updatedAt`.
+  `themeMode`, `language`, `logSqlStatements` (a boolean; absent from an older
+  app, and the server then stores `true`), `updatedAt`.
 - Server: `public.account_settings(user_id PK, …, server_version, deleted_at)`; the
   functions map the nil id to the caller's row. There is no delete.
-- Local: an update trigger on `app_settings` queues the row only when one of the four
+- Local: an update trigger on `app_settings` queues the row only when one of the five
   synced columns changes, so a fresh install's defaults never overwrite the account.
   The adapter's pull writes those columns into `id = 1`; its acknowledgement is a
   no-op.
@@ -161,13 +172,28 @@ are skipped as usual.
 ### 4.2 One transaction per pull (D4)
 
 `_pull` runs every page inside one `applyingRemote(deferForeignKeys: true)`
-transaction and stores `since` once, at the end. A failure rolls the whole pull back
-and the next run starts from the stored cursor. The last step inside the transaction
-gives every card without a `card_schedule` row its initial schedule (section 3.1).
+transaction and stores `since` once, at the end. The transaction is open before the
+first page and each page is applied as it arrives (DEV-206), so the pull holds one
+page in memory whatever the size of the account. A failure rolls the whole pull back
+and the next run starts from the stored cursor. Each change applies in a savepoint of
+its own: one this device cannot hold is recorded as `PULL_APPLY_FAILED` and skipped
+(DEV-185). The last step inside the transaction, run only when the pull applied
+something (DEV-210), gives every card without a `card_schedule` row its initial
+schedule (section 3.1) and reseeds every schedule the pull left behind its root
+(section 3.4, DEV-224).
 
 Cost: local writes wait while a pull runs. The SB-S2 measurement (section 6) records
 the time of a large first pull; if it blocks study noticeably, the fix is a smaller
 unit of commit that still orders parents first, decided then with numbers.
+
+**Checkpoint for `since = 0` (DEV-206, decided 2026-10-06 with the numbers in the
+card-sync plan's ledger):** kept as one transaction. 300 001 changes (50 000 cards
+with schedules, 200 000 review logs) pull in about 101 s in this container, about
+0.34 ms per change, with the pull adding about 100 MB to the process; memory no
+longer grows with the account, and the first pull happens on a device before study
+starts (auth spec #28). A per-type cursor (`sync_changes(since, max_rows,
+entity_types)`, commit per page) is the next step, taken when a real account's first
+pull is reported to exceed about two minutes or to be killed mid-way and repeat.
 
 ### 4.3 Adapters
 

@@ -108,7 +108,7 @@ InputDecorationTheme inputDecorationTheme(ThemeTokens t) {
   );
 }
 
-/// A Material button at the regular size in [fill] and [ink]: 40 tall at
+/// A Material button at the regular size in [fill] and [foreground]: 40 tall at
 /// least (a wrapped label or a larger text scale grows it), full radius, 24
 /// side padding, the `labelLarge` label, state layers and the focus ring. A
 /// disabled one follows the Design System's disabled opacities. `MxButton`
@@ -116,7 +116,7 @@ InputDecorationTheme inputDecorationTheme(ThemeTokens t) {
 ButtonStyle buttonStyle(
   ThemeTokens t, {
   required Color? fill,
-  required Color ink,
+  required Color foreground,
   BorderSide? edge,
 }) {
   final dimens = t.dimens;
@@ -139,22 +139,22 @@ ButtonStyle buttonStyle(
     foregroundColor: WidgetStateProperty.resolveWith(
       (states) => states.contains(WidgetState.disabled)
           ? t.onSurfaceAt(dimens.opacityDisabledContent)
-          : ink,
+          : foreground,
     ),
     iconColor: WidgetStateProperty.resolveWith(
       (states) => states.contains(WidgetState.disabled)
           ? t.onSurfaceAt(dimens.opacityDisabledContent)
-          : ink,
+          : foreground,
     ),
     overlayColor: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.pressed)) {
-        return ink.withValues(alpha: dimens.opacityPressed);
+        return foreground.withValues(alpha: dimens.opacityPressed);
       }
       if (states.contains(WidgetState.focused)) {
-        return ink.withValues(alpha: dimens.opacityFocus);
+        return foreground.withValues(alpha: dimens.opacityFocus);
       }
       if (states.contains(WidgetState.hovered)) {
-        return ink.withValues(alpha: dimens.opacityHover);
+        return foreground.withValues(alpha: dimens.opacityHover);
       }
       return null;
     }),
@@ -173,7 +173,7 @@ ButtonStyle buttonStyle(
 }
 
 FilledButtonThemeData filledButtonTheme(ThemeTokens t) => FilledButtonThemeData(
-  style: buttonStyle(t, fill: t.scheme.primary, ink: t.scheme.onPrimary),
+  style: buttonStyle(t, fill: t.scheme.primary, foreground: t.scheme.onPrimary),
 );
 
 OutlinedButtonThemeData outlinedButtonTheme(ThemeTokens t) =>
@@ -181,7 +181,7 @@ OutlinedButtonThemeData outlinedButtonTheme(ThemeTokens t) =>
       style: buttonStyle(
         t,
         fill: null,
-        ink: t.accent,
+        foreground: t.accent,
         edge: BorderSide(
           color: t.scheme.outline,
           width: t.dimens.strokeHairline,
@@ -189,8 +189,9 @@ OutlinedButtonThemeData outlinedButtonTheme(ThemeTokens t) =>
       ),
     );
 
-TextButtonThemeData textButtonTheme(ThemeTokens t) =>
-    TextButtonThemeData(style: buttonStyle(t, fill: null, ink: t.accent));
+TextButtonThemeData textButtonTheme(ThemeTokens t) => TextButtonThemeData(
+  style: buttonStyle(t, fill: null, foreground: t.accent),
+);
 
 IconButtonThemeData iconButtonTheme(ThemeTokens t) {
   final dimens = t.dimens;

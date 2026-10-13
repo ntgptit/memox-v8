@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
@@ -14,7 +15,8 @@ import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/screens/welcome_screen.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/merge_choice_sheet_widget.dart';
-import 'package:memox/features/account/presentation/widgets/sections/account_settings_section_widget.dart';
+import 'package:memox/features/account/presentation/widgets/items/account_settings_row_widget.dart';
+import 'package:memox/features/account/presentation/widgets/sections/account_settings_banner_widget.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_transition_layer_widget.dart';
 import 'package:memox/features/settings/presentation/screens/settings_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -250,16 +252,18 @@ void main() {
         tester,
         env,
         SettingsScreen(
+          onOpenStudyDefaults: () {},
+          onOpenAdmin: () {},
           onOpenTheme: () {},
           onOpenLanguage: () {},
           onOpenReminder: () {},
-          onAppOptionsReset: () {},
+          resetAppOptions: () async => const Ok(null),
           onOpenSync: () {},
-          accountSection: AccountSettingsSectionWidget(
+          accountRow: AccountSettingsRowWidget(
             onSignIn: () {},
             onOpenAccount: () {},
-            onSignInAgain: () {},
           ),
+          accountBanner: AccountSettingsBannerWidget(onSignIn: () {}),
         ),
         'settings_account',
         overrides: accountOverrides(world),

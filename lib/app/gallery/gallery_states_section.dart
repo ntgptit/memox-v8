@@ -54,10 +54,13 @@ class GalleryStatesSection extends StatelessWidget {
         retryLabel: context.l10n.commonRetry,
         onRetry: () {},
       ),
-      MxErrorState(
+      // A gone item is a neutral empty state, not a failure (owner
+      // 2026-10-08).
+      MxEmptyState(
+        icon: AppIcons.searchOff,
+        tone: MxEmptyStateTone.neutral,
         title: context.l10n.galleryDeckNotFound,
         body: context.l10n.galleryItMayHaveBeenDeleted,
-        icon: AppIcons.alert,
       ),
     ],
   );

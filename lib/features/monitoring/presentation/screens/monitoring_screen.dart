@@ -24,10 +24,17 @@ class MonitoringScreen extends ConsumerStatefulWidget {
     super.key,
     required this.onOpenServerLog,
     required this.onOpenPendingLog,
+    this.pendingHeader,
   });
 
   final ValueChanged<String> onOpenServerLog;
   final ValueChanged<String> onOpenPendingLog;
+
+  /// A row `app/` draws at the top of the Not sent tab: the SQL log switch
+  /// (SQL log switch spec §5). The screen never imports the settings feature
+  /// (ADR-011), so it takes the row as a slot, as Settings takes the Admin
+  /// rows.
+  final Widget? pendingHeader;
 
   @override
   ConsumerState<MonitoringScreen> createState() => _MonitoringScreenState();
@@ -107,6 +114,7 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
               ),
               MonitoringTab.notSent => MonitoringPendingTabWidget(
                 onOpenLog: widget.onOpenPendingLog,
+                header: widget.pendingHeader,
               ),
             },
           ),

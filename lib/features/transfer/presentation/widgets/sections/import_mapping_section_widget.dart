@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
+import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -12,7 +13,8 @@ import 'package:memox/core/theme/theme_context.dart';
 
 /// Step 2 of the import (kit 11): whether the first row is a header, and the
 /// field each column feeds. An unmapped face says so on its own row, above
-/// the note (BR-TRANSFER-002; kit deviation K3).
+/// the note (BR-TRANSFER-002; kit deviation K3). A blank sheet says so
+/// instead (E2).
 class ImportMappingSectionWidget extends StatelessWidget {
   const ImportMappingSectionWidget({
     super.key,
@@ -29,6 +31,15 @@ class ImportMappingSectionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final table = draft.table!;
+    // A blank sheet of a workbook with others: nothing to map, and the
+    // sheet chip above offers another sheet (A2, spec 2026-10-08 S6).
+    if (table.isBlank) {
+      return MxInlineBanner(
+        tone: MxBannerTone.warning,
+        title: l10n.importProblemEmptyTitle,
+        message: l10n.importProblemEmptyBody,
+      );
+    }
     final header = draft.hasHeaderRow && table.rows.isNotEmpty
         ? table.rows.first
         : null;
@@ -78,6 +89,17 @@ class ImportMappingSectionWidget extends StatelessWidget {
           MxInlineBanner(
             tone: MxBannerTone.warning,
             message: l10n.importMappingIncomplete,
+          ),
+          SizedBox(height: context.dimens.space12),
+        ],
+        // The target cannot take the decks the file names (E7, E8): the
+        // same source and mapping would be refused again.
+        if (draft.problem case final problem?
+            when isImportTargetProblem(problem)) ...[
+          MxInlineBanner(
+            tone: MxBannerTone.warning,
+            title: l10n.importProblem(problem).title,
+            message: l10n.importProblem(problem).body,
           ),
           SizedBox(height: context.dimens.space12),
         ],

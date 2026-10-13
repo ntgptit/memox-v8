@@ -21,7 +21,9 @@ void main() {
     );
   });
 
-  testWidgets('warning: amber glyph, warning ink text (I1)', (tester) async {
+  testWidgets('warning in dark: the amber is its own text colour (I1, T1)', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const MxFieldMessage(
@@ -38,6 +40,25 @@ void main() {
     expect(
       tester.widget<Text>(find.text('Ten tags at most')).style!.color,
       MxColorsExtension.dark.warning,
+    );
+  });
+
+  // The tone pass (T1, critique 2026-09-30): a warning glyph is foreground, never
+  // the amber fill, which is about 2:1 on the light page.
+  testWidgets('warning: the glyph in warning text on the light page', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxFieldMessage(
+        message: 'Ten tags at most',
+        tone: MxFieldMessageTone.warning,
+      ),
+    );
+
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
+      MxColorsExtension.light.warning,
     );
   });
 

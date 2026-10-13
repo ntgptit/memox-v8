@@ -34,10 +34,8 @@ void main() {
     await pumpEventQueue();
 
     final saved = await SaveStudyDefaultsUseCase(settings)(
-      options: const StudyOptions(
-        cardLimit: 5,
-        newCardOrder: NewCardOrder.random,
-      ),
+      cardLimit: 5,
+      newCardOrder: NewCardOrder.random,
     );
     await pumpEventQueue();
     await SetThemeUseCase(settings)(theme: ThemeChoice.dark);
@@ -67,10 +65,8 @@ void main() {
   test('SaveStudyDefaultsUseCase refuses a card limit of 0 '
       '(UC-SETTINGS-001 E1)', () async {
     final result = await SaveStudyDefaultsUseCase(settings)(
-      options: const StudyOptions(
-        cardLimit: 0,
-        newCardOrder: NewCardOrder.created,
-      ),
+      cardLimit: 0,
+      newCardOrder: NewCardOrder.created,
     );
 
     expect(

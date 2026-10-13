@@ -114,7 +114,7 @@ void main() {
     expect(_tile(tester, _en.studyEntryNew).emphasis, MxStatTileEmphasis.muted);
   });
 
-  libraryTest('the overdue note is in the warning ink (kit sm2)', (
+  libraryTest('the overdue note is in the warning text (kit sm2)', (
     tester,
     env,
   ) async {

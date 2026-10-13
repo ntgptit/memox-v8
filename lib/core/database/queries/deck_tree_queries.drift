@@ -59,3 +59,15 @@ WHERE d.delete_batch_id IS NULL
   AND d.content_type IN ('deck', 'unset')
   AND d.id NOT IN (SELECT id FROM subtree)
   AND d.depth + (SELECT MAX(height) FROM subtree) <= :max_depth;
+
+-- BR-SRS-006, invariant 30: the scheduler lock follows the subtree. After a
+-- move, a restore or an undo, a root that holds a learned card and is not
+-- locked gets its lock now, as its first completed card would (BR-SRS-003).
+-- Tombstones do not count: a learned card in the Trash locks nothing yet.
+lockRootIfLearned(:now AS DATETIME, :root_id AS TEXT):
+UPDATE deck SET first_answered_at = :now, updated_at = :now
+WHERE id = :root_id AND first_answered_at IS NULL AND EXISTS (
+  SELECT 1 FROM card c JOIN deck k ON k.id = c.deck_id
+  JOIN card_schedule cs ON cs.card_id = c.id
+  WHERE k.root_id = :root_id AND c.delete_batch_id IS NULL
+    AND k.delete_batch_id IS NULL AND cs.learned_at IS NOT NULL);

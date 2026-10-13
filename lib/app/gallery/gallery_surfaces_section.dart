@@ -7,11 +7,13 @@ import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
+import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -63,6 +65,21 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
         isSelected: true,
         child: MxListSectionHeader(label: context.l10n.gallerySelectedCard),
       ),
+      MxSelectableCardRow(
+        onTap: () {},
+        trailing: MxIconButton(
+          icon: AppIcons.more,
+          semanticLabel: context.l10n.galleryDeckActions,
+          onPressed: () {},
+        ),
+        child: Text(context.l10n.gallerySelectableRow),
+      ),
+      MxSelectableCardRow(
+        onTap: () {},
+        isSelecting: true,
+        isSelected: true,
+        child: Text(context.l10n.gallerySelectableRowPicked),
+      ),
       Row(
         spacing: context.dimens.space12,
         children: [
@@ -74,7 +91,7 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
           const MxIconTile(icon: AppIcons.library, size: MxIconTileSize.large),
           MxIconTile(
             icon: AppIcons.folder,
-            seed: context.mxColors.successContainer,
+            seed: context.mxColors.warningContainer,
           ),
           const MxIconTile(
             icon: AppIcons.lockOpen,
@@ -106,6 +123,11 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.danger,
           ),
+          MxIconTile(
+            icon: AppIcons.streak,
+            size: MxIconTileSize.medium,
+            tone: MxIconTileTone.neutral,
+          ),
         ],
       ),
       MxListSectionHeader(
@@ -118,7 +140,7 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
       ),
       MxCard(
         isFullBleed: true,
-        child: Column(
+        child: MxDividedColumn(
           children: [
             MxListRow(
               title: context.l10n.galleryKanjiN5,
@@ -151,7 +173,6 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
               leading: const MxIconTile(icon: AppIcons.folder),
               isEnabled: false,
               onTap: () {},
-              hasDivider: false,
             ),
           ],
         ),

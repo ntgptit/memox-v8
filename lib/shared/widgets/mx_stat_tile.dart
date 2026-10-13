@@ -6,9 +6,11 @@ import 'package:memox/core/theme/theme_rules.dart';
 /// screen offers, [plain] states a fact, [muted] a figure nothing acts on.
 enum MxStatTileEmphasis { primary, plain, muted }
 
-/// [boxed]: left-aligned on its own surface, as the Study Entry hero draws
-/// New and Due. [inline]: centred with no surface, as the session summary
-/// hero draws its three stats.
+/// [boxed]: left-aligned on the Muted Fill, as the Study Entry hero draws
+/// New and Due: the fill is one step below the plain card the hero became
+/// (ruling E5), so the box stays visible in both themes (DEV-231).
+/// [inline]: centred with no surface, as the session summary hero draws its
+/// three stats.
 enum MxStatTileLayout { boxed, inline }
 
 /// A figure over its label (FE-A6 D17): screens 14 and 21. One semantics
@@ -31,7 +33,7 @@ class MxStatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final ink = switch (emphasis) {
+    final foreground = switch (emphasis) {
       MxStatTileEmphasis.primary => context.accentColor,
       MxStatTileEmphasis.plain => colors.onSurface,
       MxStatTileEmphasis.muted => colors.onSurfaceVariant,
@@ -54,7 +56,7 @@ class MxStatTile extends StatelessWidget {
           child: Text(
             value,
             maxLines: 1,
-            style: context.texts.displayMedium?.copyWith(color: ink),
+            style: context.texts.displayMedium?.copyWith(color: foreground),
           ),
         ),
         Text(
@@ -68,7 +70,7 @@ class MxStatTile extends StatelessWidget {
     final body = isBoxed
         ? DecoratedBox(
             decoration: BoxDecoration(
-              color: colors.surfaceContainerLowest,
+              color: colors.surfaceContainerLow,
               borderRadius: BorderRadius.circular(context.dimens.radiusMd),
             ),
             child: Padding(

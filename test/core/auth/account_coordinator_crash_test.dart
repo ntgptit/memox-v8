@@ -330,6 +330,38 @@ void main() {
     },
   );
 
+  test('named case: killed after the merge committed, and the server cleanup '
+      'ran before the app came back (DEV-188)', () async {
+    final world = AuthWorld();
+    addTearDown(world.close);
+    final a = await readyAnonymous(world);
+    final b = world.server.addUser(email: _bEmail).id;
+    await _run(world, [(world) => world.coordinator.requestCode(_bEmail)]);
+    await world.coordinator.beginSwitch(choice: TransitionChoice.merge);
+    world.server.afterMergeCommit = () => throw const Killed();
+    await world.coordinator.requestCode(_bEmail);
+    await _run(world, [
+      (world) => world.coordinator.verifyCode(_bEmail, FakeAuthGateway.code),
+    ]);
+    world.server.afterMergeCommit = null;
+    final anonymousBefore = world.server.anonymousCreated;
+    // Months pass: the receipt is not acknowledged, so it must survive.
+    world.server.expireReceipts();
+
+    world.boot();
+    await world.coordinator.start();
+
+    await _expectSettled(world, 'cleanup before retry');
+    expect(_userId(world), b, reason: 'the merge is not undone');
+    expect(world.server.users.containsKey(a), isFalse);
+    expect(
+      world.server.anonymousCreated,
+      anonymousBefore,
+      reason: 'no new anonymous branch of the library',
+    );
+    expect(world.server.receipts.values.single.acknowledged, isTrue);
+  });
+
   test(
     'named case: killed between the target sign-in and saving targetSignedIn',
     () async {

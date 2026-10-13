@@ -128,7 +128,7 @@ class MxSnackbarContent extends StatelessWidget {
                   buttonStyle(
                     ThemeTokens.of(context),
                     fill: null,
-                    ink: colors.inversePrimary,
+                    foreground: colors.inversePrimary,
                   ).copyWith(
                     minimumSize: WidgetStatePropertyAll(
                       Size(0, context.dimens.sizeButtonSmall),

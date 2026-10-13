@@ -42,6 +42,16 @@ class FakeAuthServer {
   /// Runs right after a merge commits and before it answers.
   void Function()? afterMergeCommit;
 
+  /// Runs once the deletion is committed, before the response: a throw here
+  /// is a response lost on the way back (DEV-192).
+  void Function()? afterDeleteCommit;
+
+  /// The daily `cleanup_accounts` ran, long after every receipt was written:
+  /// an acknowledged receipt goes, an unacknowledged one stays whatever its
+  /// age (DEV-188), so a late retry of a committed merge still gets MERGED.
+  void expireReceipts() =>
+      receipts.removeWhere((_, receipt) => receipt.acknowledged);
+
   String nextId(String prefix) => '$prefix${_next++}';
 
   FakeUser addUser({
@@ -121,6 +131,15 @@ class FakeAuthGateway implements AuthGateway {
   /// Runs right after a target sign-in succeeds, before it returns.
   void Function()? afterSignIn;
 
+  /// The next Google sign-in fails with this, as a dropped network does.
+  Failure? failNextGoogleSignIn;
+
+  /// While set, a Google sign-in waits on it, as a slow network does.
+  Completer<void>? holdGoogleSignIn;
+
+  /// Every address a sign-in code was asked for, in order.
+  final signInCodeRequests = <String>[];
+
   void _set(String? userId) {
     _userId = userId;
     _refreshToken = userId == null ? null : server.issueToken(userId);
@@ -199,6 +218,7 @@ class FakeAuthGateway implements AuthGateway {
     server.checkOnline();
     _failIfAsked();
     await _waitIfHeld();
+    signInCodeRequests.add(email);
     server.sentCodes[email] = code;
   }
 
@@ -238,8 +258,14 @@ class FakeAuthGateway implements AuthGateway {
 
   @override
   Future<void> signInGoogle(GoogleCredential credential) async {
+    await holdGoogleSignIn?.future;
     kill?.step();
     server.checkOnline();
+    final failure = failNextGoogleSignIn;
+    if (failure != null) {
+      failNextGoogleSignIn = null;
+      throw failure;
+    }
     final email = credential.email!;
     final user = server.userByEmail(email) ?? server.addUser(email: email);
     user.methods.add(SignInMethod.google);
@@ -370,5 +396,6 @@ class FakeAccountApi implements AccountApi {
       throw const LastAdminFailure();
     }
     server.deleteUser(user.id);
+    server.afterDeleteCommit?.call();
   }
 }

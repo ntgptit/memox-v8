@@ -11,8 +11,9 @@ import 'package:memox/features/study_mode/domain/models/turn_judgement_model.dar
 const _comeBackAfterTurns = 3;
 
 /// The turns a row may take: one first turn and three `relearning` turns
-/// (BR-STUDY-073, invariant 17).
-const _turnCap = 4;
+/// (BR-STUDY-073, invariant 17). `study_queue_items` holds the same cap in a
+/// CHECK; schema_constants_parity_test keeps the two equal (DEV-222).
+const selfAssessTurnCap = 4;
 
 /// `self_assess`: the person flips the card and grades it with one of the
 /// scheduler's actions (BR-MODE-006, BR-MODE-011). No rounds: a forgotten
@@ -47,7 +48,7 @@ final class SelfAssessModeHandler extends StudyModeHandler {
   @override
   RowStep stepAfter({required bool lapsed, required int answersInSession}) {
     if (!lapsed) return const Leave();
-    if (answersInSession + 1 >= _turnCap) return const LeaveAtCap();
+    if (answersInSession + 1 >= selfAssessTurnCap) return const LeaveAtCap();
     return const ComeBack(afterTurns: _comeBackAfterTurns);
   }
 }

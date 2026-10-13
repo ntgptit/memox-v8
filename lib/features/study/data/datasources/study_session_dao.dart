@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/card_due_sql.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 
 part 'study_session_dao.g.dart';
@@ -35,14 +36,20 @@ final class StudySessionDao extends DatabaseAccessor<AppDatabase>
   /// The active cards of [deckId] and its whole subtree that are not learned
   /// yet, oldest first (BR-STUDY-051, BR-STUDY-057).
   Future<List<StudyCardRow>> newCards(String deckId) async => [
-    for (final row in await newCardsOfSubtree(deckId).get())
+    for (final row in await newCardsOfSubtree(
+      deckId,
+      (c, cs) => CardDueSql.isNew(cs),
+    ).get())
       (cardId: row.id, hasExample: row.hasExample),
   ];
 
   /// The active learned cards of [deckId] and its whole subtree that are due
   /// at [now], earliest due first (BR-STUDY-001, BR-STUDY-002, BR-STUDY-051).
   Future<List<StudyCardRow>> dueCards(String deckId, DateTime now) async => [
-    for (final row in await dueCardsOfSubtree(deckId, now).get())
+    for (final row in await dueCardsOfSubtree(
+      deckId,
+      (c, cs) => CardDueSql.isDue(cs, now),
+    ).get())
       (cardId: row.id, hasExample: row.hasExample),
   ];
 
@@ -55,7 +62,13 @@ final class StudySessionDao extends DatabaseAccessor<AppDatabase>
     DateTime now, {
     required DateTime startOfToday,
   }) async {
-    final row = await subtreeCountsOf(deckId, now, startOfToday).getSingle();
+    final row = await subtreeCountsOf(
+      deckId,
+      (c, cs) => CardDueSql.isNew(cs),
+      (c, cs) => CardDueSql.isDue(cs, now),
+      (c, cs) => CardDueSql.isOverdue(cs, startOfToday),
+      (c, cs) => CardDueSql.isScheduled(cs, now),
+    ).getSingle();
     return (
       newCount: row.newCount,
       dueCount: row.dueCount,

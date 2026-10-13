@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Force every subagent onto Sonnet, and refuse workflow scripts that do not pin it.
 
+Two Agent calls may run on Opus, each recognised by its description: the final
+whole-branch review and a root-cause investigation.
+
 Why this is a hook and not a setting: the Claude Code settings schema has no
 subagent-model key. `model` sets the main thread; agent frontmatter only covers
 named agent types; and Workflow's `agent()` calls inherit the *main-loop* model,
@@ -28,11 +31,13 @@ import sys
 
 REQUIRED_MODEL = "sonnet"
 
-# The one exception (owner's ruling, 2026-09-30): the final whole-branch review
-# that executing-plans and subagent-driven-development dispatch once per branch
-# runs on the most capable model. It is recognised by the call's description.
-FINAL_REVIEW_MODEL = "opus"
-FINAL_REVIEW_PREFIX = "Final whole-branch review"
+# The exceptions run on the most capable model and are recognised by the call's
+# description. The final whole-branch review that executing-plans and
+# subagent-driven-development dispatch once per branch (owner's ruling,
+# 2026-09-30); a root-cause investigation of a bug, where cost never ends the
+# search (owner's ruling, 2026-10-08, DEV-308).
+EXCEPTION_MODEL = "opus"
+EXCEPTION_PREFIXES = ("Final whole-branch review", "Root-cause investigation")
 
 # `agent(` but not `subagent(`, `myAgent(`, `x.agent(`.
 AGENT_CALL = re.compile(r"(?<![A-Za-z0-9_$.])agent\s*\(")
@@ -193,16 +198,16 @@ def read_script(tool_input):
         return None, "unreadable: %s" % error
 
 
-def is_final_review(tool_input):
+def is_exception(tool_input):
     description = tool_input.get("description") or ""
     return (
-        tool_input.get("model") == FINAL_REVIEW_MODEL
-        and description.startswith(FINAL_REVIEW_PREFIX)
+        tool_input.get("model") == EXCEPTION_MODEL
+        and description.startswith(EXCEPTION_PREFIXES)
     )
 
 
 def gate_agent(tool_input):
-    if tool_input.get("model") == REQUIRED_MODEL or is_final_review(tool_input):
+    if tool_input.get("model") == REQUIRED_MODEL or is_exception(tool_input):
         allow()
     updated = dict(tool_input)
     updated["model"] = REQUIRED_MODEL

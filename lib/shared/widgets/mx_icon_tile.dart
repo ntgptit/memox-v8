@@ -11,7 +11,17 @@ enum MxIconTileSize { small, medium, large }
 /// warning square whose glyph takes the matching on-colour (screen 02's lock
 /// strip, owner decision D-O1). [success], [caution] and [danger] are soft
 /// tints with a legible glyph: the session summary's outcomes (FE-A6 D14).
-enum MxIconTileTone { tinted, primary, warning, success, caution, danger }
+/// [neutral] is the neutral container for an idle glyph, such as a lost
+/// streak.
+enum MxIconTileTone {
+  tinted,
+  primary,
+  warning,
+  success,
+  caution,
+  danger,
+  neutral,
+}
 
 /// The tinted square that leads a row. It never shrinks; the text beside it
 /// gives up space first.
@@ -89,6 +99,11 @@ class MxIconTile extends StatelessWidget {
       MxIconTileTone.danger => (
         context.colors.error.tintOver(context.colors.surface),
         context.colors.error,
+      ),
+      // An idle glyph, such as a lost streak's (DEV-370).
+      MxIconTileTone.neutral => (
+        colors.secondaryContainer,
+        colors.onSecondaryContainer,
       ),
     };
     return SizedBox.square(

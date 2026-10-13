@@ -1,5 +1,7 @@
 # Monitoring screen (B2) Implementation Plan
 
+> **Historical (ADR-019).** Written against the "Mobile UI Kit v3", retired on 2026-09-30; its kit references and screen captures are history, not authority. The app, `DESIGN.md` and the goldens decide the UI; each screen's current state is in its detail file under `docs/shared/ui/screen-handoff/`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** From Settings, an admin reads the app's logs (the server's and the device's buffer), filters and searches them, opens one whole, and marks a warning or error fixed or reopens it.

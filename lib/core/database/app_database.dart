@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:drift/internal/versioned_schema.dart';
 import 'package:memox/core/database/migrations/nfc_text_migration.dart';
 import 'package:memox/core/database/mutation_gate.dart';
 import 'package:memox/core/database/schema_versions.dart';
@@ -33,154 +34,68 @@ class AppDatabase extends _$AppDatabase {
   /// The account's write gate (auth spec R3); open unless a transition runs.
   final MutationGate mutationGate;
 
+  /// Whether `beforeOpen` ran: a database whose open failed (a migration
+  /// stopped, a file that cannot be read) has no statistics to keep.
+  var _opened = false;
+
+  /// Keeps the planner's statistics current before the connection goes
+  /// (DEV-208), then closes it.
   @override
-  int get schemaVersion => 12;
+  Future<void> close() async {
+    if (_opened) {
+      await customStatement('PRAGMA optimize');
+    }
+    await super.close();
+  }
+
+  /// Where the last open stopped inside a migration step, as `(from, to)`
+  /// (DEV-195): a start that cannot open tells a stopped upgrade from a file
+  /// that cannot be read.
+  (int, int)? lastMigrationFailure;
+
+  /// Opens the file and runs its migrations now, not on the first query
+  /// (DEV-195): the start asks before the first frame, so a file that cannot
+  /// open is a result there, not an error under the first screen.
+  Future<void> ensureOpened() => executor.ensureOpen(this);
+
+  @override
+  int get schemaVersion => 16;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
   /// step never changes (`.claude/skills/flutter-drift/references/
   /// migrations.md`).
+  ///
+  /// The steps of one upgrade run in one transaction (DEV-194): Drift writes
+  /// `user_version` only after a whole step, so a step that stops halfway (the
+  /// app killed, a statement refused) would otherwise leave the tables,
+  /// columns and seeded rows of the new version under the old version, and
+  /// the next open would fail on them for good. Rolled back, the next open
+  /// starts the step over.
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onUpgrade: stepByStep(
-      from1To2: (m, schema) async {
-        // Package 2b: the fill hint and the match board on the queue row, and
-        // the stored options of a guess question (graded modes spec §6).
-        await m.addColumn(
-          schema.studyQueueItems,
-          schema.studyQueueItems.hintShown,
-        );
-        await m.addColumn(
-          schema.studyQueueItems,
-          schema.studyQueueItems.meaningSlot,
-        );
-        await m.createTable(schema.studyGuessOptions);
-        await m.createIndex(schema.idxStudyGuessOptionsOption);
-      },
-      from2To3: (m, schema) async {
-        // Package 7: the Trash. delete_batch_id becomes a key to the batch,
-        // which SQLite adds only by rebuilding deck and card; no row changes,
-        // since no build before v3 writes the column (trash spec §5.2).
-        await m.createTable(schema.deleteBatches);
-        await m.createIndex(schema.idxDeleteBatchesDeleted);
-        await m.alterTable(TableMigration(schema.deck));
-        await m.alterTable(TableMigration(schema.card));
-        await m.createIndex(schema.idxDeckDeleteBatch);
-        await m.createIndex(schema.idxCardDeleteBatch);
-      },
-      from3To4: (m, schema) async {
-        // ADR-013: sync. The outbox, its state, the acknowledged version on
-        // each synced row, and the triggers that capture every local write
-        // (app deck-sync spec §3). Existing rows are queued so the first sync
-        // uploads the library: batches first, then decks parents-first.
-        await m.createTable(schema.syncOutbox);
-        await m.createTable(schema.syncState);
-        await m.addColumn(schema.deck, schema.deck.serverVersion);
-        await m.addColumn(
-          schema.deleteBatches,
-          schema.deleteBatches.serverVersion,
-        );
-        await m.createTrigger(schema.deckSyncInsert);
-        await m.createTrigger(schema.deckSyncUpdate);
-        await m.createTrigger(schema.deckSyncDelete);
-        await m.createTrigger(schema.deleteBatchesSyncInsert);
-        await m.createTrigger(schema.deleteBatchesSyncUpdate);
-        await m.createTrigger(schema.deleteBatchesSyncDelete);
-        await customStatement(
-          seedOutboxSql('delete_batch', 'delete_batches', 'id'),
-        );
-        await customStatement(seedOutboxSql('deck', 'deck', 'depth, id'));
-      },
-      from4To5: (m, schema) async {
-        // G1 (BE-C5): user text in NFC, folded columns recomputed, tags that
-        // become one name merged; no structure changes (local backend spec
-        // 2026-09-27 §4).
-        await normalizeStoredText(this);
-      },
-      from5To6: (m, schema) async {
-        // SB-U1: refused sync rows are recorded (sync status spec §4). A new,
-        // empty table; no row changes.
-        await m.createTable(schema.syncRejection);
-      },
-      from6To7: (m, schema) async {
-        // SB-S2: cards sync (library and study sync spec §3.1). Existing cards
-        // are queued, oldest first, so the first run uploads them.
-        await m.addColumn(schema.card, schema.card.serverVersion);
-        await m.createTrigger(schema.cardSyncInsert);
-        await m.createTrigger(schema.cardSyncUpdate);
-        await m.createTrigger(schema.cardSyncDelete);
-        await customStatement(seedOutboxSql('card', 'card', 'created_at, id'));
-      },
-      from7To8: (m, schema) async {
-        // SB-S3: tags sync, and a card's links travel on the card (library
-        // and study sync spec §3.2). Tags are queued, then every tagged card,
-        // so the links reach the server; an already-queued card stays queued.
-        await m.addColumn(schema.tags, schema.tags.serverVersion);
-        await m.createTrigger(schema.tagsSyncInsert);
-        await m.createTrigger(schema.tagsSyncUpdate);
-        await m.createTrigger(schema.tagsSyncDelete);
-        await m.createTrigger(schema.cardTagsSyncInsert);
-        await m.createTrigger(schema.cardTagsSyncDelete);
-        await customStatement(seedOutboxSql('tag', 'tags', 'created_at, id'));
-        await customStatement(
-          '${seedOutboxSql('card', '(SELECT DISTINCT card_id AS id FROM card_tags)', 'id')} '
-          'ON CONFLICT (entity_type, entity_id) DO NOTHING',
-        );
-      },
-      from8To9: (m, schema) async {
-        // SB-S5: the study and display settings sync per account (library and
-        // study sync spec §3.5). They are queued once only when they differ
-        // from the defaults, so an untouched install never overwrites the
-        // account (plan R11).
-        await m.createTrigger(schema.appSettingsSyncUpdate);
-        await customStatement(
-          "INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) "
-          "SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || "
-          "substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || "
-          "substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), "
-          "'account_settings', '$accountSettingsEntityId', 'upsert', "
-          "CAST(strftime('%s', 'now') AS INTEGER) FROM app_settings "
-          "WHERE id = $appSettingsRowId AND (card_limit <> 20 OR new_card_order <> 'created' "
-          "OR theme_mode <> 'system' OR language <> 'system')",
-        );
-      },
-      from9To10: (m, schema) async {
-        // SB-S4: reviews and schedules sync (library and study sync spec
-        // §3.3–3.4, ADR-017). Existing rows are queued: schedules, then
-        // reviews oldest first.
-        await m.createTrigger(schema.reviewLogSyncInsert);
-        await m.createTrigger(schema.cardScheduleSyncInsert);
-        await m.createTrigger(schema.cardScheduleSyncUpdate);
-        await customStatement(
-          seedOutboxSql(
-            'card_schedule',
-            '(SELECT card_id AS id FROM card_schedule)',
-            'id',
+    onUpgrade: (m, from, to) async {
+      try {
+        await transaction(
+          () => VersionedSchema.runMigrationSteps(
+            migrator: m,
+            from: from,
+            to: to,
+            steps: _steps,
           ),
         );
-        await customStatement(
-          seedOutboxSql(
-            'review_log',
-            '(SELECT id, answered_at FROM review_log)',
-            'answered_at, id',
-          ),
-        );
-      },
-      from10To11: (m, schema) async {
-        // Critique 2026-09-30: dismissed one-time notes, device-local.
-        await m.createTable(schema.dismissedNote);
-      },
-      from11To12: (m, schema) async {
-        // SB-A2/SB-A3 (auth spec §4): the validated account, a pending
-        // account transition and the welcome flag. Two empty tables and one
-        // column with its default; no row changes.
-        await m.createTable(schema.accountState);
-        await m.createTable(schema.accountTransition);
-        await m.addColumn(schema.appSettings, schema.appSettings.welcomeSeen);
-      },
-    ),
+      } on Object {
+        lastMigrationFailure = (from, to);
+        rethrow;
+      }
+    },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
+      // The planner's statistics (DEV-208): `PRAGMA optimize` analyses the
+      // tables whose queries on this connection would gain from it, at open
+      // and again before close, so the next open plans with them.
+      await customStatement('PRAGMA optimize');
+      _opened = true;
       // BR-SETTINGS-001: the one settings row exists from the first open, so
       // every surface reads real values. It changes nothing once it exists.
       await into(appSettings).insert(
@@ -190,6 +105,195 @@ class AppDatabase extends _$AppDatabase {
         ),
         mode: InsertMode.insertOrIgnore,
       );
+    },
+  );
+
+  MigrationStepWithVersion get _steps => migrationSteps(
+    from1To2: (m, schema) async {
+      // Package 2b: the fill hint and the match board on the queue row, and
+      // the stored options of a guess question (graded modes spec §6).
+      await m.addColumn(
+        schema.studyQueueItems,
+        schema.studyQueueItems.hintShown,
+      );
+      await m.addColumn(
+        schema.studyQueueItems,
+        schema.studyQueueItems.meaningSlot,
+      );
+      await m.createTable(schema.studyGuessOptions);
+      await m.createIndex(schema.idxStudyGuessOptionsOption);
+    },
+    from2To3: (m, schema) async {
+      // Package 7: the Trash. delete_batch_id becomes a key to the batch,
+      // which SQLite adds only by rebuilding deck and card; no row changes,
+      // since no build before v3 writes the column (trash spec §5.2).
+      await m.createTable(schema.deleteBatches);
+      await m.createIndex(schema.idxDeleteBatchesDeleted);
+      await m.alterTable(TableMigration(schema.deck));
+      await m.alterTable(TableMigration(schema.card));
+      await m.createIndex(schema.idxDeckDeleteBatch);
+      await m.createIndex(schema.idxCardDeleteBatch);
+    },
+    from3To4: (m, schema) async {
+      // ADR-013: sync. The outbox, its state, the acknowledged version on
+      // each synced row, and the triggers that capture every local write
+      // (app deck-sync spec §3). Existing rows are queued so the first sync
+      // uploads the library: batches first, then decks parents-first.
+      await m.createTable(schema.syncOutbox);
+      await m.createTable(schema.syncState);
+      await m.addColumn(schema.deck, schema.deck.serverVersion);
+      await m.addColumn(
+        schema.deleteBatches,
+        schema.deleteBatches.serverVersion,
+      );
+      await m.createTrigger(schema.deckSyncInsert);
+      await m.createTrigger(schema.deckSyncUpdate);
+      await m.createTrigger(schema.deckSyncDelete);
+      await m.createTrigger(schema.deleteBatchesSyncInsert);
+      await m.createTrigger(schema.deleteBatchesSyncUpdate);
+      await m.createTrigger(schema.deleteBatchesSyncDelete);
+      await customStatement(
+        seedOutboxSql('delete_batch', 'delete_batches', 'id'),
+      );
+      await customStatement(seedOutboxSql('deck', 'deck', 'depth, id'));
+    },
+    from4To5: (m, schema) async {
+      // G1 (BE-C5): user text in NFC, folded columns recomputed, tags that
+      // become one name merged; no structure changes (local backend spec
+      // 2026-09-27 §4).
+      await normalizeStoredText(this);
+    },
+    from5To6: (m, schema) async {
+      // SB-U1: refused sync rows are recorded (sync status spec §4). A new,
+      // empty table; no row changes.
+      await m.createTable(schema.syncRejection);
+    },
+    from6To7: (m, schema) async {
+      // SB-S2: cards sync (library and study sync spec §3.1). Existing cards
+      // are queued, oldest first, so the first run uploads them.
+      await m.addColumn(schema.card, schema.card.serverVersion);
+      await m.createTrigger(schema.cardSyncInsert);
+      await m.createTrigger(schema.cardSyncUpdate);
+      await m.createTrigger(schema.cardSyncDelete);
+      await customStatement(seedOutboxSql('card', 'card', 'created_at, id'));
+    },
+    from7To8: (m, schema) async {
+      // SB-S3: tags sync, and a card's links travel on the card (library
+      // and study sync spec §3.2). Tags are queued, then every tagged card,
+      // so the links reach the server; an already-queued card stays queued.
+      await m.addColumn(schema.tags, schema.tags.serverVersion);
+      await m.createTrigger(schema.tagsSyncInsert);
+      await m.createTrigger(schema.tagsSyncUpdate);
+      await m.createTrigger(schema.tagsSyncDelete);
+      await m.createTrigger(schema.cardTagsSyncInsert);
+      await m.createTrigger(schema.cardTagsSyncDelete);
+      await customStatement(seedOutboxSql('tag', 'tags', 'created_at, id'));
+      await customStatement(
+        '${seedOutboxSql('card', '(SELECT DISTINCT card_id AS id FROM card_tags)', 'id')} '
+        'ON CONFLICT (entity_type, entity_id) DO NOTHING',
+      );
+    },
+    from8To9: (m, schema) async {
+      // SB-S5: the study and display settings sync per account (library and
+      // study sync spec §3.5). They are queued once only when they differ
+      // from the defaults, so an untouched install never overwrites the
+      // account (plan R11).
+      await m.createTrigger(schema.appSettingsSyncUpdate);
+      await customStatement(
+        "INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) "
+        "SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || "
+        "substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || "
+        "substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), "
+        "'account_settings', '$accountSettingsEntityId', 'upsert', "
+        "CAST(strftime('%s', 'now') AS INTEGER) FROM app_settings "
+        "WHERE id = $appSettingsRowId AND (card_limit <> 20 OR new_card_order <> 'created' "
+        "OR theme_mode <> 'system' OR language <> 'system')",
+      );
+    },
+    from9To10: (m, schema) async {
+      // SB-S4: reviews and schedules sync (library and study sync spec
+      // §3.3–3.4, ADR-017). Existing rows are queued: schedules, then
+      // reviews oldest first.
+      await m.createTrigger(schema.reviewLogSyncInsert);
+      await m.createTrigger(schema.cardScheduleSyncInsert);
+      await m.createTrigger(schema.cardScheduleSyncUpdate);
+      await customStatement(
+        seedOutboxSql(
+          'card_schedule',
+          '(SELECT card_id AS id FROM card_schedule)',
+          'id',
+        ),
+      );
+      await customStatement(
+        seedOutboxSql(
+          'review_log',
+          '(SELECT id, answered_at FROM review_log)',
+          'answered_at, id',
+        ),
+      );
+    },
+    from10To11: (m, schema) async {
+      // Critique 2026-09-30: dismissed one-time notes, device-local.
+      await m.createTable(schema.dismissedNote);
+    },
+    from11To12: (m, schema) async {
+      // SB-A2/SB-A3 (auth spec §4): the validated account, a pending
+      // account transition and the welcome flag. Two empty tables and one
+      // column with its default; no row changes.
+      await m.createTable(schema.accountState);
+      await m.createTable(schema.accountTransition);
+      await m.addColumn(schema.appSettings, schema.appSettings.welcomeSeen);
+    },
+    from12To13: (m, schema) async {
+      // DEV-181: a purge's delete carries the batch it purged. The outbox
+      // gains the payload column, and the deck and card triggers are
+      // recreated to write it (a trigger cannot be altered). Pending entries
+      // keep their rows; a payload is NULL until a delete writes one. No
+      // seed.
+      await m.addColumn(schema.syncOutbox, schema.syncOutbox.payload);
+      for (final trigger in const [
+        'deck_sync_insert',
+        'deck_sync_update',
+        'deck_sync_delete',
+        'card_sync_insert',
+        'card_sync_update',
+        'card_sync_delete',
+      ]) {
+        await customStatement('DROP TRIGGER IF EXISTS $trigger');
+      }
+      await m.createTrigger(schema.deckSyncInsert);
+      await m.createTrigger(schema.deckSyncUpdate);
+      await m.createTrigger(schema.deckSyncDelete);
+      await m.createTrigger(schema.cardSyncInsert);
+      await m.createTrigger(schema.cardSyncUpdate);
+      await m.createTrigger(schema.cardSyncDelete);
+    },
+    from13To14: (m, schema) async {
+      // DEV-205: a push batch is one entity type, oldest first, read through
+      // this index instead of a sort of the whole outbox. DEV-208: Progress
+      // reads the week, the month and the streak through an index on
+      // answered_at instead of folding the whole history. No row changes.
+      await m.createIndex(schema.idxSyncOutboxTypeCreated);
+      await m.createIndex(schema.idxReviewLogAnswered);
+    },
+    from14To15: (m, schema) async {
+      // SQL log switch (spec 2026-10-07-sql-log-switch-design.md §3): the
+      // fifth synced settings column, on for every existing row, and the
+      // settings trigger recreated to queue it too (a trigger cannot be
+      // altered, as in 12→13). No row changes, no seed: a device's default
+      // never overwrites the account (sync spec §3.5).
+      await m.addColumn(
+        schema.appSettings,
+        schema.appSettings.logSqlStatements,
+      );
+      await customStatement('DROP TRIGGER IF EXISTS app_settings_sync_update');
+      await m.createTrigger(schema.appSettingsSyncUpdate);
+    },
+    from15To16: (m, schema) async {
+      // Study speech spec §4: the speech language default and the read-aloud
+      // switch, each with its default. No row changes.
+      await m.addColumn(schema.appSettings, schema.appSettings.ttsLanguage);
+      await m.addColumn(schema.appSettings, schema.appSettings.ttsAutoPlay);
     },
   );
 }

@@ -1,0 +1,3127 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": false
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "account_state",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY CHECK (id = 1)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "user_id",
+            "getter_name": "userId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "email",
+            "getter_name": "email",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_anonymous",
+            "getter_name": "isAnonymous",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (is_anonymous IN (0, 1))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "role",
+            "getter_name": "role",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (role IN ('user', 'admin'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "validated_at",
+            "getter_name": "validatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 1,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "account_transition",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY CHECK (id = 1)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "op_id",
+            "getter_name": "opId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "kind",
+            "getter_name": "kind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (kind IN ('switchAccount', 'signOut', 'delete', 'clearToAnon', 'anonRecovery'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "choice",
+            "getter_name": "choice",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (choice IN ('merge', 'discard'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "source_user_id",
+            "getter_name": "sourceUserId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "source_is_anonymous",
+            "getter_name": "sourceIsAnonymous",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "CHECK (source_is_anonymous IN (0, 1))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "target_user_id",
+            "getter_name": "targetUserId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "target_hint",
+            "getter_name": "targetHint",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "stage",
+            "getter_name": "stage",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (stage IN ('started', 'sourcePushed', 'claimed', 'targetSignedIn', 'merged', 'localCleared', 'targetPulled', 'acknowledged', 'serverDeleted', 'signedOut', 'newAnon'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 2,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "dismissed_note",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "note_key",
+            "getter_name": "noteKey",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "dismissed_at",
+            "getter_name": "dismissedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 3,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "sync_outbox",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "op_id",
+            "getter_name": "opId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "entity_type",
+            "getter_name": "entityType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "entity_id",
+            "getter_name": "entityId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "op",
+            "getter_name": "op",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (op IN ('upsert', 'delete'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "attempts",
+            "getter_name": "attempts",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payload",
+            "getter_name": "payload",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "UNIQUE(entity_type, entity_id)"
+        ],
+        "unique_keys": [
+          [
+            "entity_type",
+            "entity_id"
+          ]
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "references": [
+        3
+      ],
+      "type": "index",
+      "data": {
+        "on": 3,
+        "name": "idx_sync_outbox_type_created",
+        "sql": "CREATE INDEX idx_sync_outbox_type_created ON sync_outbox (entity_type, created_at);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 5,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "sync_state",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "value",
+            "getter_name": "value",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 6,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "delete_batches",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "item_type",
+            "getter_name": "itemType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (item_type IN ('card', 'deck'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "root_item_id",
+            "getter_name": "rootItemId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "owner_id",
+            "getter_name": "ownerId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server_version",
+            "getter_name": "serverVersion",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 7,
+      "references": [
+        6
+      ],
+      "type": "table",
+      "data": {
+        "name": "deck",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "parent_id",
+            "getter_name": "parentId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "REFERENCES deck(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "deck",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "root_id",
+            "getter_name": "rootId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "depth",
+            "getter_name": "depth",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (depth BETWEEN 1 AND 10)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "content_type",
+            "getter_name": "contentType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 'unset' CHECK (content_type IN ('unset', 'card', 'deck'))",
+            "default_dart": "const CustomExpression('\\'unset\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "owner_id",
+            "getter_name": "ownerId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "scheduler_type",
+            "getter_name": "schedulerType",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (scheduler_type IN ('eight_box', 'sm2'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "scheduler_version",
+            "getter_name": "schedulerVersion",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "scheduler_config",
+            "getter_name": "schedulerConfig",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "study_config",
+            "getter_name": "studyConfig",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "first_answered_at",
+            "getter_name": "firstAnsweredAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "source_template_id",
+            "getter_name": "sourceTemplateId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "source_template_version",
+            "getter_name": "sourceTemplateVersion",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "delete_batch_id",
+            "getter_name": "deleteBatchId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "REFERENCES delete_batches(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "delete_batches",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "server_version",
+            "getter_name": "serverVersion",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "sibling_position",
+            "getter_name": "siblingPosition",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK((parent_id IS NULL)=(root_id = id))",
+          "CHECK(parent_id IS NOT NULL OR content_type = 'deck')",
+          "CHECK((parent_id IS NULL)=(scheduler_type IS NOT NULL))",
+          "CHECK((parent_id IS NULL)=(generation IS NOT NULL))",
+          "CHECK((parent_id IS NULL)=(scheduler_version IS NOT NULL))",
+          "CHECK(parent_id IS NULL OR scheduler_config IS NULL)",
+          "CHECK(parent_id IS NULL OR study_config IS NULL)",
+          "CHECK(parent_id IS NULL OR generation IS NULL)"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "references": [
+        7,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 7,
+        "references_in_body": [
+          7,
+          5,
+          3
+        ],
+        "name": "deck_sync_insert",
+        "sql": "CREATE TRIGGER deck_sync_insert AFTER INSERT ON deck\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL)\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;\nEND;"
+      }
+    },
+    {
+      "id": 9,
+      "references": [
+        7,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 7,
+        "references_in_body": [
+          7,
+          5,
+          3
+        ],
+        "name": "deck_sync_update",
+        "sql": "CREATE TRIGGER deck_sync_update AFTER UPDATE ON deck\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL)\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;\nEND;"
+      }
+    },
+    {
+      "id": 10,
+      "references": [
+        7,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 7,
+        "references_in_body": [
+          7,
+          5,
+          3
+        ],
+        "name": "deck_sync_delete",
+        "sql": "CREATE TRIGGER deck_sync_delete AFTER DELETE ON deck\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'deck', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER), CASE WHEN old.delete_batch_id IS NULL THEN NULL ELSE json_object('deleteBatchId', old.delete_batch_id, 'serverVersion', old.server_version) END)\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;\nEND;"
+      }
+    },
+    {
+      "id": 11,
+      "references": [
+        6,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 6,
+        "references_in_body": [
+          6,
+          5,
+          3
+        ],
+        "name": "delete_batches_sync_insert",
+        "sql": "CREATE TRIGGER delete_batches_sync_insert AFTER INSERT ON delete_batches\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'delete_batch', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 12,
+      "references": [
+        6,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 6,
+        "references_in_body": [
+          6,
+          5,
+          3
+        ],
+        "name": "delete_batches_sync_update",
+        "sql": "CREATE TRIGGER delete_batches_sync_update AFTER UPDATE ON delete_batches\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'delete_batch', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 13,
+      "references": [
+        6,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 6,
+        "references_in_body": [
+          6,
+          5,
+          3
+        ],
+        "name": "delete_batches_sync_delete",
+        "sql": "CREATE TRIGGER delete_batches_sync_delete AFTER DELETE ON delete_batches\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'delete_batch', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 14,
+      "references": [
+        7,
+        6
+      ],
+      "type": "table",
+      "data": {
+        "name": "card",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "deck_id",
+            "getter_name": "deckId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES deck(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "deck",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "front",
+            "getter_name": "front",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "back",
+            "getter_name": "back",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "front_folded",
+            "getter_name": "frontFolded",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT ''",
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "back_folded",
+            "getter_name": "backFolded",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT ''",
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_flagged",
+            "getter_name": "isFlagged",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (is_flagged IN (0, 1))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "example",
+            "getter_name": "example",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "hint",
+            "getter_name": "hint",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "pronunciation",
+            "getter_name": "pronunciation",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "delete_batch_id",
+            "getter_name": "deleteBatchId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "REFERENCES delete_batches(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "delete_batches",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server_version",
+            "getter_name": "serverVersion",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 15,
+      "references": [
+        14,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 14,
+        "references_in_body": [
+          14,
+          5,
+          3
+        ],
+        "name": "card_sync_insert",
+        "sql": "CREATE TRIGGER card_sync_insert AFTER INSERT ON card\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL)\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;\nEND;"
+      }
+    },
+    {
+      "id": 16,
+      "references": [
+        14,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 14,
+        "references_in_body": [
+          14,
+          5,
+          3
+        ],
+        "name": "card_sync_update",
+        "sql": "CREATE TRIGGER card_sync_update AFTER UPDATE ON card\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL)\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;\nEND;"
+      }
+    },
+    {
+      "id": 17,
+      "references": [
+        14,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 14,
+        "references_in_body": [
+          14,
+          5,
+          3
+        ],
+        "name": "card_sync_delete",
+        "sql": "CREATE TRIGGER card_sync_delete AFTER DELETE ON card\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER), CASE WHEN old.delete_batch_id IS NULL THEN NULL ELSE json_object('deleteBatchId', old.delete_batch_id, 'serverVersion', old.server_version) END)\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;\nEND;"
+      }
+    },
+    {
+      "id": 18,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "tags",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "name_folded",
+            "getter_name": "nameFolded",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "owner_id",
+            "getter_name": "ownerId",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server_version",
+            "getter_name": "serverVersion",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 19,
+      "references": [
+        18,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 18,
+        "references_in_body": [
+          18,
+          5,
+          3
+        ],
+        "name": "tags_sync_insert",
+        "sql": "CREATE TRIGGER tags_sync_insert AFTER INSERT ON tags\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'tag', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 20,
+      "references": [
+        18,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 18,
+        "references_in_body": [
+          18,
+          5,
+          3
+        ],
+        "name": "tags_sync_update",
+        "sql": "CREATE TRIGGER tags_sync_update AFTER UPDATE ON tags\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'tag', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 21,
+      "references": [
+        18,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 18,
+        "references_in_body": [
+          18,
+          5,
+          3
+        ],
+        "name": "tags_sync_delete",
+        "sql": "CREATE TRIGGER tags_sync_delete AFTER DELETE ON tags\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'tag', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 22,
+      "references": [
+        14,
+        18
+      ],
+      "type": "table",
+      "data": {
+        "name": "card_tags",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "card_id",
+            "getter_name": "cardId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES card(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "card",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "tag_id",
+            "getter_name": "tagId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES tags(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "tags",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "PRIMARY KEY(card_id, tag_id)"
+        ],
+        "explicit_pk": [
+          "card_id",
+          "tag_id"
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "references": [
+        22,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 22,
+        "references_in_body": [
+          22,
+          5,
+          3
+        ],
+        "name": "card_tags_sync_insert",
+        "sql": "CREATE TRIGGER card_tags_sync_insert AFTER INSERT ON card_tags\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 24,
+      "references": [
+        22,
+        5,
+        14,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 22,
+        "references_in_body": [
+          22,
+          5,
+          14,
+          3
+        ],
+        "name": "card_tags_sync_delete",
+        "sql": "CREATE TRIGGER card_tags_sync_delete AFTER DELETE ON card_tags\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\n  AND EXISTS (SELECT 1 FROM card WHERE id = old.card_id)\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card', old.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 25,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "app_settings",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY CHECK (id = 1)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "card_limit",
+            "getter_name": "cardLimit",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 20",
+            "default_dart": "const CustomExpression('20')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "new_card_order",
+            "getter_name": "newCardOrder",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 'created' CHECK (new_card_order IN ('created', 'random'))",
+            "default_dart": "const CustomExpression('\\'created\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "theme_mode",
+            "getter_name": "themeMode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 'system' CHECK (theme_mode IN ('system', 'light', 'dark'))",
+            "default_dart": "const CustomExpression('\\'system\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "language",
+            "getter_name": "language",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 'system' CHECK (language IN ('system', 'en', 'vi'))",
+            "default_dart": "const CustomExpression('\\'system\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reminder_enabled",
+            "getter_name": "reminderEnabled",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (reminder_enabled IN (0, 1))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reminder_minute_of_day",
+            "getter_name": "reminderMinuteOfDay",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 1200 CHECK (reminder_minute_of_day BETWEEN 0 AND 1439)",
+            "default_dart": "const CustomExpression('1200')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reminder_last_delivered_at",
+            "getter_name": "reminderLastDeliveredAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "welcome_seen",
+            "getter_name": "welcomeSeen",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (welcome_seen IN (0, 1))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "log_sql_statements",
+            "getter_name": "logSqlStatements",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 1 CHECK (log_sql_statements IN (0, 1))",
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 26,
+      "references": [
+        25,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 25,
+        "references_in_body": [
+          25,
+          5,
+          3
+        ],
+        "name": "app_settings_sync_update",
+        "sql": "CREATE TRIGGER app_settings_sync_update AFTER UPDATE ON app_settings\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\n  AND (old.card_limit IS NOT new.card_limit OR old.new_card_order IS NOT new.new_card_order\n    OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language\n    OR old.log_sql_statements IS NOT new.log_sql_statements)\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'account_settings', '00000000-0000-0000-0000-000000000000', 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 27,
+      "references": [
+        14
+      ],
+      "type": "table",
+      "data": {
+        "name": "review_log",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "card_id",
+            "getter_name": "cardId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES card(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "card",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "session_id",
+            "getter_name": "sessionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "scheduler_type",
+            "getter_name": "schedulerType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (scheduler_type IN ('eight_box', 'sm2'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "kind",
+            "getter_name": "kind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (kind IN ('learning', 'scheduled', 'relearning'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mode",
+            "getter_name": "mode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "outcome_reason",
+            "getter_name": "outcomeReason",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (outcome_reason IS NULL OR outcome_reason = 'timeout')",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "comparison_version",
+            "getter_name": "comparisonVersion",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "used_hint",
+            "getter_name": "usedHint",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "CHECK (used_hint IS NULL OR used_hint IN (0, 1))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "direction",
+            "getter_name": "direction",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "action",
+            "getter_name": "action",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (\"action\" IN ('forgotten', 'remembered', 'again', 'hard', 'good', 'easy'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "answered_at",
+            "getter_name": "answeredAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_due_at",
+            "getter_name": "nextDueAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "previous_box",
+            "getter_name": "previousBox",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_box",
+            "getter_name": "nextBox",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "previous_ease_factor",
+            "getter_name": "previousEaseFactor",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_ease_factor",
+            "getter_name": "nextEaseFactor",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "previous_interval_days",
+            "getter_name": "previousIntervalDays",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_interval_days",
+            "getter_name": "nextIntervalDays",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK(mode = 'fill' OR(comparison_version IS NULL AND used_hint IS NULL))",
+          "CHECK(outcome_reason IS NULL OR mode = 'recall')"
+        ]
+      }
+    },
+    {
+      "id": 28,
+      "references": [
+        27,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 27,
+        "references_in_body": [
+          27,
+          5,
+          3
+        ],
+        "name": "review_log_sync_insert",
+        "sql": "CREATE TRIGGER review_log_sync_insert AFTER INSERT ON review_log\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'review_log', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 29,
+      "references": [
+        14
+      ],
+      "type": "table",
+      "data": {
+        "name": "card_schedule",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "card_id",
+            "getter_name": "cardId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY REFERENCES card(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key",
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "card",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "scheduler_type",
+            "getter_name": "schedulerType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (scheduler_type IN ('eight_box', 'sm2'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "scheduler_version",
+            "getter_name": "schedulerVersion",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "learned_at",
+            "getter_name": "learnedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "due_at",
+            "getter_name": "dueAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_answered_at",
+            "getter_name": "lastAnsweredAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "answer_count",
+            "getter_name": "answerCount",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "lapse_count",
+            "getter_name": "lapseCount",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "current_box",
+            "getter_name": "currentBox",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "CHECK (current_box BETWEEN 1 AND 8)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "ease_factor",
+            "getter_name": "easeFactor",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "interval_days",
+            "getter_name": "intervalDays",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "repetitions",
+            "getter_name": "repetitions",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK((scheduler_type = 'eight_box')=(current_box IS NOT NULL))",
+          "CHECK((scheduler_type = 'sm2')=(ease_factor IS NOT NULL))",
+          "CHECK((ease_factor IS NULL)=(interval_days IS NULL))",
+          "CHECK((ease_factor IS NULL)=(repetitions IS NULL))",
+          "CHECK(learned_at IS NOT NULL OR due_at IS NULL)"
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "references": [
+        29,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 29,
+        "references_in_body": [
+          29,
+          5,
+          3
+        ],
+        "name": "card_schedule_sync_insert",
+        "sql": "CREATE TRIGGER card_schedule_sync_insert AFTER INSERT ON card_schedule\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card_schedule', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 31,
+      "references": [
+        29,
+        5,
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 29,
+        "references_in_body": [
+          29,
+          5,
+          3
+        ],
+        "name": "card_schedule_sync_update",
+        "sql": "CREATE TRIGGER card_schedule_sync_update AFTER UPDATE ON card_schedule\nWHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL\nBEGIN\n  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)\n  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),\n          'card_schedule', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))\n  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;\nEND;"
+      }
+    },
+    {
+      "id": 32,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "sync_rejection",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "entity_type",
+            "getter_name": "entityType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "entity_id",
+            "getter_name": "entityId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "code",
+            "getter_name": "code",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "rejected_at",
+            "getter_name": "rejectedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "PRIMARY KEY(entity_type, entity_id)"
+        ],
+        "explicit_pk": [
+          "entity_type",
+          "entity_id"
+        ]
+      }
+    },
+    {
+      "id": 33,
+      "references": [
+        6
+      ],
+      "type": "index",
+      "data": {
+        "on": 6,
+        "name": "idx_delete_batches_deleted",
+        "sql": "CREATE INDEX idx_delete_batches_deleted ON delete_batches (deleted_at, id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 34,
+      "references": [
+        7
+      ],
+      "type": "table",
+      "data": {
+        "name": "study_session",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "deck_id",
+            "getter_name": "deckId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES deck(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "deck",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "root_id",
+            "getter_name": "rootId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "generation",
+            "getter_name": "generation",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "session_kind",
+            "getter_name": "sessionKind",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (session_kind IN ('learning', 'reviewing'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "current_mode",
+            "getter_name": "currentMode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (current_mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "status",
+            "getter_name": "status",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (status IN ('in_progress', 'completed', 'abandoned', 'invalidated', 'failed'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "end_reason",
+            "getter_name": "endReason",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (end_reason IN ('user_exit', 'interrupted', 'scheduler_reset', 'scheduler_changed', 'stale_generation', 'persistence_error', 'content_deleted'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "cursor",
+            "getter_name": "cursor",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "card_limit",
+            "getter_name": "cardLimit",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 20",
+            "default_dart": "const CustomExpression('20')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "direction",
+            "getter_name": "direction",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean', 'mixed'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "started_at",
+            "getter_name": "startedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "ended_at",
+            "getter_name": "endedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": "",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK((status IN ('in_progress', 'completed') AND end_reason IS NULL)OR(status = 'abandoned' AND end_reason IN ('user_exit', 'interrupted'))OR(status = 'invalidated' AND end_reason IN ('scheduler_reset', 'scheduler_changed', 'stale_generation', 'content_deleted'))OR(status = 'failed' AND end_reason = 'persistence_error'))",
+          "CHECK((status = 'in_progress')=(ended_at IS NULL))",
+          "CHECK(direction IS NULL OR(session_kind = 'reviewing' AND current_mode = 'self_assess'))"
+        ]
+      }
+    },
+    {
+      "id": 35,
+      "references": [
+        34,
+        14
+      ],
+      "type": "table",
+      "data": {
+        "name": "study_queue_items",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "session_id",
+            "getter_name": "sessionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES study_session(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "study_session",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "mode",
+            "getter_name": "mode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "round",
+            "getter_name": "round",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 1 CHECK (round >= 1)",
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "card_id",
+            "getter_name": "cardId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES card(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "card",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "status",
+            "getter_name": "status",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (status IN ('pending', 'completed'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "available_at",
+            "getter_name": "availableAt",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (available_at >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "answers_in_session",
+            "getter_name": "answersInSession",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (answers_in_session >= 0)",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "remaining_ms",
+            "getter_name": "remainingMs",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "CHECK (remaining_ms IS NULL OR remaining_ms BETWEEN 0 AND 20000)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "is_revealed",
+            "getter_name": "isRevealed",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (is_revealed IN (0, 1))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "direction",
+            "getter_name": "direction",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": "CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean'))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "hint_shown",
+            "getter_name": "hintShown",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 0 CHECK (hint_shown IN (0, 1) AND(mode = 'fill' OR hint_shown = 0))",
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meaning_slot",
+            "getter_name": "meaningSlot",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": "CHECK (meaning_slot IS NULL OR(mode = 'match' AND meaning_slot BETWEEN 0 AND 4))",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "PRIMARY KEY(session_id, mode, round, card_id)",
+          "CHECK(mode <> 'self_assess' OR answers_in_session <= 4)",
+          "CHECK(mode = 'recall' OR(remaining_ms IS NULL AND is_revealed = 0))",
+          "CHECK(mode = 'self_assess' OR direction IS NULL)"
+        ],
+        "explicit_pk": [
+          "session_id",
+          "mode",
+          "round",
+          "card_id"
+        ]
+      }
+    },
+    {
+      "id": 36,
+      "references": [
+        35
+      ],
+      "type": "index",
+      "data": {
+        "on": 35,
+        "name": "idx_study_queue_pending",
+        "sql": "CREATE INDEX idx_study_queue_pending ON study_queue_items (session_id, status, available_at, position);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 37,
+      "references": [
+        14,
+        35
+      ],
+      "type": "table",
+      "data": {
+        "name": "study_guess_options",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "session_id",
+            "getter_name": "sessionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "mode",
+            "getter_name": "mode",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL DEFAULT 'guess' CHECK (mode = 'guess')",
+            "default_dart": "const CustomExpression('\\'guess\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "round",
+            "getter_name": "round",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "card_id",
+            "getter_name": "cardId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "slot",
+            "getter_name": "slot",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": "NOT NULL CHECK (slot BETWEEN 0 AND 4)",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "option_card_id",
+            "getter_name": "optionCardId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL REFERENCES card(id)ON DELETE CASCADE",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "card",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "PRIMARY KEY(session_id, mode, round, card_id, slot)",
+          "UNIQUE(session_id, mode, round, card_id, option_card_id)",
+          "FOREIGN KEY(session_id, mode, round, card_id)REFERENCES study_queue_items(session_id, mode, round, card_id)ON DELETE CASCADE"
+        ],
+        "explicit_pk": [
+          "session_id",
+          "mode",
+          "round",
+          "card_id",
+          "slot"
+        ],
+        "unique_keys": [
+          [
+            "session_id",
+            "mode",
+            "round",
+            "card_id",
+            "option_card_id"
+          ]
+        ]
+      }
+    },
+    {
+      "id": 38,
+      "references": [
+        37
+      ],
+      "type": "index",
+      "data": {
+        "on": 37,
+        "name": "idx_study_guess_options_option",
+        "sql": "CREATE INDEX idx_study_guess_options_option ON study_guess_options (option_card_id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 39,
+      "references": [
+        29
+      ],
+      "type": "index",
+      "data": {
+        "on": 29,
+        "name": "idx_card_schedule_due",
+        "sql": "CREATE INDEX idx_card_schedule_due ON card_schedule (due_at);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 40,
+      "references": [
+        27
+      ],
+      "type": "index",
+      "data": {
+        "on": 27,
+        "name": "idx_review_log_card",
+        "sql": "CREATE INDEX idx_review_log_card ON review_log (card_id, answered_at);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 41,
+      "references": [
+        27
+      ],
+      "type": "index",
+      "data": {
+        "on": 27,
+        "name": "idx_review_log_session",
+        "sql": "CREATE INDEX idx_review_log_session ON review_log (session_id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 42,
+      "references": [
+        27
+      ],
+      "type": "index",
+      "data": {
+        "on": 27,
+        "name": "idx_review_log_answered",
+        "sql": "CREATE INDEX idx_review_log_answered ON review_log (answered_at);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 43,
+      "references": [
+        27
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 27,
+        "references_in_body": [
+          27
+        ],
+        "name": "review_log_append_only",
+        "sql": "CREATE TRIGGER review_log_append_only\nBEFORE UPDATE ON review_log\nBEGIN\n  SELECT RAISE(ABORT, 'review_log is append-only');\nEND;"
+      }
+    },
+    {
+      "id": 44,
+      "references": [
+        27,
+        14
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 27,
+        "references_in_body": [
+          27,
+          14
+        ],
+        "name": "review_log_no_delete",
+        "sql": "CREATE TRIGGER review_log_no_delete\nBEFORE DELETE ON review_log\nWHEN OLD.card_id IN (SELECT id FROM card)\nBEGIN\n  SELECT RAISE(ABORT, 'review_log rows are only removed by a card cascade');\nEND;"
+      }
+    },
+    {
+      "id": 45,
+      "references": [
+        18
+      ],
+      "type": "index",
+      "data": {
+        "on": 18,
+        "name": "idx_tags_owner_name_folded",
+        "sql": "CREATE UNIQUE INDEX idx_tags_owner_name_folded ON tags (COALESCE(owner_id, ''), name_folded);",
+        "unique": true,
+        "columns": []
+      }
+    },
+    {
+      "id": 46,
+      "references": [
+        22
+      ],
+      "type": "index",
+      "data": {
+        "on": 22,
+        "name": "idx_card_tags_tag",
+        "sql": "CREATE INDEX idx_card_tags_tag ON card_tags (tag_id, card_id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 47,
+      "references": [
+        14
+      ],
+      "type": "index",
+      "data": {
+        "on": 14,
+        "name": "idx_card_deck_created",
+        "sql": "CREATE INDEX idx_card_deck_created ON card (deck_id, created_at, id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 48,
+      "references": [
+        14
+      ],
+      "type": "index",
+      "data": {
+        "on": 14,
+        "name": "idx_card_delete_batch",
+        "sql": "CREATE INDEX idx_card_delete_batch ON card (delete_batch_id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 49,
+      "references": [
+        7
+      ],
+      "type": "index",
+      "data": {
+        "on": 7,
+        "name": "idx_deck_parent_position",
+        "sql": "CREATE INDEX idx_deck_parent_position ON deck (parent_id, sibling_position, id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 50,
+      "references": [
+        7
+      ],
+      "type": "index",
+      "data": {
+        "on": 7,
+        "name": "idx_deck_root_position",
+        "sql": "CREATE INDEX idx_deck_root_position ON deck (root_id, sibling_position, id);",
+        "unique": false,
+        "columns": []
+      }
+    },
+    {
+      "id": 51,
+      "references": [
+        7
+      ],
+      "type": "index",
+      "data": {
+        "on": 7,
+        "name": "idx_deck_delete_batch",
+        "sql": "CREATE INDEX idx_deck_delete_batch ON deck (delete_batch_id);",
+        "unique": false,
+        "columns": []
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "account_state",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"account_state\" (\"id\" INTEGER NOT NULL PRIMARY KEY CHECK (id = 1), \"user_id\" TEXT NOT NULL, \"email\" TEXT, \"is_anonymous\" INTEGER NOT NULL CHECK (is_anonymous IN (0, 1)), \"role\" TEXT NOT NULL CHECK (role IN ('user', 'admin')), \"validated_at\" INTEGER NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "account_transition",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"account_transition\" (\"id\" INTEGER NOT NULL PRIMARY KEY CHECK (id = 1), \"op_id\" TEXT NOT NULL, \"kind\" TEXT NOT NULL CHECK (kind IN ('switchAccount', 'signOut', 'delete', 'clearToAnon', 'anonRecovery')), \"choice\" TEXT CHECK (choice IN ('merge', 'discard')), \"source_user_id\" TEXT, \"source_is_anonymous\" INTEGER CHECK (source_is_anonymous IN (0, 1)), \"target_user_id\" TEXT, \"target_hint\" TEXT, \"stage\" TEXT NOT NULL CHECK (stage IN ('started', 'sourcePushed', 'claimed', 'targetSignedIn', 'merged', 'localCleared', 'targetPulled', 'acknowledged', 'serverDeleted', 'signedOut', 'newAnon')), \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "dismissed_note",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"dismissed_note\" (\"note_key\" TEXT NOT NULL PRIMARY KEY, \"dismissed_at\" INTEGER NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "sync_outbox",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"sync_outbox\" (\"op_id\" TEXT NOT NULL PRIMARY KEY, \"entity_type\" TEXT NOT NULL, \"entity_id\" TEXT NOT NULL, \"op\" TEXT NOT NULL CHECK (op IN ('upsert', 'delete')), \"created_at\" INTEGER NOT NULL, \"attempts\" INTEGER NOT NULL DEFAULT 0, \"payload\" TEXT, UNIQUE(entity_type, entity_id));"
+        }
+      ]
+    },
+    {
+      "name": "idx_sync_outbox_type_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_sync_outbox_type_created ON sync_outbox (entity_type, created_at)"
+        }
+      ]
+    },
+    {
+      "name": "sync_state",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"sync_state\" (\"name\" TEXT NOT NULL PRIMARY KEY, \"value\" TEXT NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "delete_batches",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"delete_batches\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"item_type\" TEXT NOT NULL CHECK (item_type IN ('card', 'deck')), \"root_item_id\" TEXT NOT NULL, \"deleted_at\" INTEGER NOT NULL, \"owner_id\" TEXT, \"server_version\" INTEGER);"
+        }
+      ]
+    },
+    {
+      "name": "deck",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"deck\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"name\" TEXT NOT NULL, \"parent_id\" TEXT REFERENCES deck(id)ON DELETE CASCADE, \"root_id\" TEXT NOT NULL, \"depth\" INTEGER NOT NULL CHECK (depth BETWEEN 1 AND 10), \"content_type\" TEXT NOT NULL DEFAULT 'unset' CHECK (content_type IN ('unset', 'card', 'deck')), \"owner_id\" TEXT, \"scheduler_type\" TEXT CHECK (scheduler_type IN ('eight_box', 'sm2')), \"scheduler_version\" INTEGER, \"scheduler_config\" TEXT, \"study_config\" TEXT, \"generation\" INTEGER, \"first_answered_at\" INTEGER, \"source_template_id\" TEXT, \"source_template_version\" INTEGER, \"delete_batch_id\" TEXT REFERENCES delete_batches(id)ON DELETE CASCADE, \"server_version\" INTEGER, \"sibling_position\" INTEGER NOT NULL, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, CHECK((parent_id IS NULL)=(root_id = id)), CHECK(parent_id IS NOT NULL OR content_type = 'deck'), CHECK((parent_id IS NULL)=(scheduler_type IS NOT NULL)), CHECK((parent_id IS NULL)=(generation IS NOT NULL)), CHECK((parent_id IS NULL)=(scheduler_version IS NOT NULL)), CHECK(parent_id IS NULL OR scheduler_config IS NULL), CHECK(parent_id IS NULL OR study_config IS NULL), CHECK(parent_id IS NULL OR generation IS NULL));"
+        }
+      ]
+    },
+    {
+      "name": "deck_sync_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER deck_sync_insert AFTER INSERT ON deck WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END"
+        }
+      ]
+    },
+    {
+      "name": "deck_sync_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER deck_sync_update AFTER UPDATE ON deck WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'deck', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END"
+        }
+      ]
+    },
+    {
+      "name": "deck_sync_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER deck_sync_delete AFTER DELETE ON deck WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'deck', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER), CASE WHEN old.delete_batch_id IS NULL THEN NULL ELSE json_object('deleteBatchId', old.delete_batch_id, 'serverVersion', old.server_version) END) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END"
+        }
+      ]
+    },
+    {
+      "name": "delete_batches_sync_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER delete_batches_sync_insert AFTER INSERT ON delete_batches WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'delete_batch', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "delete_batches_sync_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER delete_batches_sync_update AFTER UPDATE ON delete_batches WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'delete_batch', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "delete_batches_sync_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER delete_batches_sync_delete AFTER DELETE ON delete_batches WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'delete_batch', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "card",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"card\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"deck_id\" TEXT NOT NULL REFERENCES deck(id)ON DELETE CASCADE, \"front\" TEXT NOT NULL, \"back\" TEXT NOT NULL, \"front_folded\" TEXT NOT NULL DEFAULT '', \"back_folded\" TEXT NOT NULL DEFAULT '', \"is_flagged\" INTEGER NOT NULL DEFAULT 0 CHECK (is_flagged IN (0, 1)), \"example\" TEXT, \"hint\" TEXT, \"pronunciation\" TEXT, \"delete_batch_id\" TEXT REFERENCES delete_batches(id)ON DELETE CASCADE, \"created_at\" INTEGER NOT NULL, \"updated_at\" INTEGER NOT NULL, \"server_version\" INTEGER);"
+        }
+      ]
+    },
+    {
+      "name": "card_sync_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER card_sync_insert AFTER INSERT ON card WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END"
+        }
+      ]
+    },
+    {
+      "name": "card_sync_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER card_sync_update AFTER UPDATE ON card WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'card', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER), NULL) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END"
+        }
+      ]
+    },
+    {
+      "name": "card_sync_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER card_sync_delete AFTER DELETE ON card WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at, payload) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'card', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER), CASE WHEN old.delete_batch_id IS NULL THEN NULL ELSE json_object('deleteBatchId', old.delete_batch_id, 'serverVersion', old.server_version) END) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op, payload = excluded.payload;END"
+        }
+      ]
+    },
+    {
+      "name": "tags",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"tags\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"name\" TEXT NOT NULL, \"name_folded\" TEXT NOT NULL, \"owner_id\" TEXT, \"created_at\" INTEGER NOT NULL, \"server_version\" INTEGER);"
+        }
+      ]
+    },
+    {
+      "name": "tags_sync_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER tags_sync_insert AFTER INSERT ON tags WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'tag', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "tags_sync_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER tags_sync_update AFTER UPDATE ON tags WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'tag', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "tags_sync_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER tags_sync_delete AFTER DELETE ON tags WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'tag', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "card_tags",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"card_tags\" (\"card_id\" TEXT NOT NULL REFERENCES card(id)ON DELETE CASCADE, \"tag_id\" TEXT NOT NULL REFERENCES tags(id)ON DELETE CASCADE, PRIMARY KEY(card_id, tag_id));"
+        }
+      ]
+    },
+    {
+      "name": "card_tags_sync_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER card_tags_sync_insert AFTER INSERT ON card_tags WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'card', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "card_tags_sync_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER card_tags_sync_delete AFTER DELETE ON card_tags WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL AND EXISTS (SELECT 1 FROM card WHERE id = old.card_id) BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'card', old.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "app_settings",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"app_settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY CHECK (id = 1), \"card_limit\" INTEGER NOT NULL DEFAULT 20, \"new_card_order\" TEXT NOT NULL DEFAULT 'created' CHECK (new_card_order IN ('created', 'random')), \"theme_mode\" TEXT NOT NULL DEFAULT 'system' CHECK (theme_mode IN ('system', 'light', 'dark')), \"language\" TEXT NOT NULL DEFAULT 'system' CHECK (language IN ('system', 'en', 'vi')), \"reminder_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (reminder_enabled IN (0, 1)), \"reminder_minute_of_day\" INTEGER NOT NULL DEFAULT 1200 CHECK (reminder_minute_of_day BETWEEN 0 AND 1439), \"reminder_last_delivered_at\" INTEGER, \"welcome_seen\" INTEGER NOT NULL DEFAULT 0 CHECK (welcome_seen IN (0, 1)), \"log_sql_statements\" INTEGER NOT NULL DEFAULT 1 CHECK (log_sql_statements IN (0, 1)), \"updated_at\" INTEGER NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "app_settings_sync_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER app_settings_sync_update AFTER UPDATE ON app_settings WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL AND(old.card_limit IS NOT new.card_limit OR old.new_card_order IS NOT new.new_card_order OR old.theme_mode IS NOT new.theme_mode OR old.language IS NOT new.language OR old.log_sql_statements IS NOT new.log_sql_statements)BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'account_settings', '00000000-0000-0000-0000-000000000000', 'upsert', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "review_log",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"review_log\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"card_id\" TEXT NOT NULL REFERENCES card(id)ON DELETE CASCADE, \"session_id\" TEXT NOT NULL, \"scheduler_type\" TEXT NOT NULL CHECK (scheduler_type IN ('eight_box', 'sm2')), \"generation\" INTEGER NOT NULL, \"kind\" TEXT NOT NULL CHECK (kind IN ('learning', 'scheduled', 'relearning')), \"mode\" TEXT NOT NULL CHECK (mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill')), \"outcome_reason\" TEXT CHECK (outcome_reason IS NULL OR outcome_reason = 'timeout'), \"comparison_version\" INTEGER, \"used_hint\" INTEGER CHECK (used_hint IS NULL OR used_hint IN (0, 1)), \"direction\" TEXT CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean')), \"action\" TEXT NOT NULL CHECK (\"action\" IN ('forgotten', 'remembered', 'again', 'hard', 'good', 'easy')), \"answered_at\" INTEGER NOT NULL, \"next_due_at\" INTEGER, \"previous_box\" INTEGER, \"next_box\" INTEGER, \"previous_ease_factor\" REAL, \"next_ease_factor\" REAL, \"previous_interval_days\" INTEGER, \"next_interval_days\" INTEGER, CHECK(mode = 'fill' OR(comparison_version IS NULL AND used_hint IS NULL)), CHECK(outcome_reason IS NULL OR mode = 'recall'));"
+        }
+      ]
+    },
+    {
+      "name": "review_log_sync_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER review_log_sync_insert AFTER INSERT ON review_log WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'review_log', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "card_schedule",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"card_schedule\" (\"card_id\" TEXT NOT NULL PRIMARY KEY REFERENCES card(id)ON DELETE CASCADE, \"scheduler_type\" TEXT NOT NULL CHECK (scheduler_type IN ('eight_box', 'sm2')), \"scheduler_version\" INTEGER NOT NULL, \"generation\" INTEGER NOT NULL, \"learned_at\" INTEGER, \"due_at\" INTEGER, \"last_answered_at\" INTEGER, \"answer_count\" INTEGER NOT NULL DEFAULT 0, \"lapse_count\" INTEGER NOT NULL DEFAULT 0, \"current_box\" INTEGER CHECK (current_box BETWEEN 1 AND 8), \"ease_factor\" REAL, \"interval_days\" INTEGER, \"repetitions\" INTEGER, CHECK((scheduler_type = 'eight_box')=(current_box IS NOT NULL)), CHECK((scheduler_type = 'sm2')=(ease_factor IS NOT NULL)), CHECK((ease_factor IS NULL)=(interval_days IS NULL)), CHECK((ease_factor IS NULL)=(repetitions IS NULL)), CHECK(learned_at IS NOT NULL OR due_at IS NULL));"
+        }
+      ]
+    },
+    {
+      "name": "card_schedule_sync_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER card_schedule_sync_insert AFTER INSERT ON card_schedule WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'card_schedule', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "card_schedule_sync_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER card_schedule_sync_update AFTER UPDATE ON card_schedule WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))), 'card_schedule', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_rejection",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"sync_rejection\" (\"entity_type\" TEXT NOT NULL, \"entity_id\" TEXT NOT NULL, \"code\" TEXT NOT NULL, \"rejected_at\" INTEGER NOT NULL, PRIMARY KEY(entity_type, entity_id));"
+        }
+      ]
+    },
+    {
+      "name": "idx_delete_batches_deleted",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_delete_batches_deleted ON delete_batches (deleted_at, id)"
+        }
+      ]
+    },
+    {
+      "name": "study_session",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"study_session\" (\"id\" TEXT NOT NULL PRIMARY KEY, \"deck_id\" TEXT NOT NULL REFERENCES deck(id)ON DELETE CASCADE, \"root_id\" TEXT NOT NULL, \"generation\" INTEGER NOT NULL, \"session_kind\" TEXT NOT NULL CHECK (session_kind IN ('learning', 'reviewing')), \"current_mode\" TEXT NOT NULL CHECK (current_mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill')), \"status\" TEXT NOT NULL CHECK (status IN ('in_progress', 'completed', 'abandoned', 'invalidated', 'failed')), \"end_reason\" TEXT CHECK (end_reason IN ('user_exit', 'interrupted', 'scheduler_reset', 'scheduler_changed', 'stale_generation', 'persistence_error', 'content_deleted')), \"cursor\" INTEGER NOT NULL DEFAULT 0, \"card_limit\" INTEGER NOT NULL DEFAULT 20, \"direction\" TEXT CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean', 'mixed')), \"started_at\" INTEGER NOT NULL, \"ended_at\" INTEGER, CHECK((status IN ('in_progress', 'completed') AND end_reason IS NULL)OR(status = 'abandoned' AND end_reason IN ('user_exit', 'interrupted'))OR(status = 'invalidated' AND end_reason IN ('scheduler_reset', 'scheduler_changed', 'stale_generation', 'content_deleted'))OR(status = 'failed' AND end_reason = 'persistence_error')), CHECK((status = 'in_progress')=(ended_at IS NULL)), CHECK(direction IS NULL OR(session_kind = 'reviewing' AND current_mode = 'self_assess')));"
+        }
+      ]
+    },
+    {
+      "name": "study_queue_items",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"study_queue_items\" (\"session_id\" TEXT NOT NULL REFERENCES study_session(id)ON DELETE CASCADE, \"mode\" TEXT NOT NULL CHECK (mode IN ('browse', 'self_assess', 'match', 'guess', 'recall', 'fill')), \"round\" INTEGER NOT NULL DEFAULT 1 CHECK (round >= 1), \"card_id\" TEXT NOT NULL REFERENCES card(id)ON DELETE CASCADE, \"position\" INTEGER NOT NULL, \"status\" TEXT NOT NULL CHECK (status IN ('pending', 'completed')), \"available_at\" INTEGER NOT NULL DEFAULT 0 CHECK (available_at >= 0), \"answers_in_session\" INTEGER NOT NULL DEFAULT 0 CHECK (answers_in_session >= 0), \"remaining_ms\" INTEGER CHECK (remaining_ms IS NULL OR remaining_ms BETWEEN 0 AND 20000), \"is_revealed\" INTEGER NOT NULL DEFAULT 0 CHECK (is_revealed IN (0, 1)), \"direction\" TEXT CHECK (direction IS NULL OR direction IN ('korean_to_meaning', 'meaning_to_korean')), \"hint_shown\" INTEGER NOT NULL DEFAULT 0 CHECK (hint_shown IN (0, 1) AND(mode = 'fill' OR hint_shown = 0)), \"meaning_slot\" INTEGER CHECK (meaning_slot IS NULL OR(mode = 'match' AND meaning_slot BETWEEN 0 AND 4)), PRIMARY KEY(session_id, mode, round, card_id), CHECK(mode <> 'self_assess' OR answers_in_session <= 4), CHECK(mode = 'recall' OR(remaining_ms IS NULL AND is_revealed = 0)), CHECK(mode = 'self_assess' OR direction IS NULL));"
+        }
+      ]
+    },
+    {
+      "name": "idx_study_queue_pending",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_study_queue_pending ON study_queue_items (session_id, status, available_at, position)"
+        }
+      ]
+    },
+    {
+      "name": "study_guess_options",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"study_guess_options\" (\"session_id\" TEXT NOT NULL, \"mode\" TEXT NOT NULL DEFAULT 'guess' CHECK (mode = 'guess'), \"round\" INTEGER NOT NULL, \"card_id\" TEXT NOT NULL, \"slot\" INTEGER NOT NULL CHECK (slot BETWEEN 0 AND 4), \"option_card_id\" TEXT NOT NULL REFERENCES card(id)ON DELETE CASCADE, PRIMARY KEY(session_id, mode, round, card_id, slot), UNIQUE(session_id, mode, round, card_id, option_card_id), FOREIGN KEY(session_id, mode, round, card_id)REFERENCES study_queue_items(session_id, mode, round, card_id)ON DELETE CASCADE);"
+        }
+      ]
+    },
+    {
+      "name": "idx_study_guess_options_option",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_study_guess_options_option ON study_guess_options (option_card_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_card_schedule_due",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_card_schedule_due ON card_schedule (due_at)"
+        }
+      ]
+    },
+    {
+      "name": "idx_review_log_card",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_review_log_card ON review_log (card_id, answered_at)"
+        }
+      ]
+    },
+    {
+      "name": "idx_review_log_session",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_review_log_session ON review_log (session_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_review_log_answered",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_review_log_answered ON review_log (answered_at)"
+        }
+      ]
+    },
+    {
+      "name": "review_log_append_only",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER review_log_append_only BEFORE UPDATE ON review_log BEGIN SELECT RAISE (ABORT, 'review_log is append-only');END"
+        }
+      ]
+    },
+    {
+      "name": "review_log_no_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER review_log_no_delete BEFORE DELETE ON review_log WHEN OLD.card_id IN (SELECT id FROM card) BEGIN SELECT RAISE (ABORT, 'review_log rows are only removed by a card cascade');END"
+        }
+      ]
+    },
+    {
+      "name": "idx_tags_owner_name_folded",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE UNIQUE INDEX idx_tags_owner_name_folded ON tags (COALESCE(owner_id, ''), name_folded)"
+        }
+      ]
+    },
+    {
+      "name": "idx_card_tags_tag",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_card_tags_tag ON card_tags (tag_id, card_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_card_deck_created",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_card_deck_created ON card (deck_id, created_at, id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_card_delete_batch",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_card_delete_batch ON card (delete_batch_id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_deck_parent_position",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_deck_parent_position ON deck (parent_id, sibling_position, id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_deck_root_position",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_deck_root_position ON deck (root_id, sibling_position, id)"
+        }
+      ]
+    },
+    {
+      "name": "idx_deck_delete_batch",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX idx_deck_delete_batch ON deck (delete_batch_id)"
+        }
+      ]
+    }
+  ]
+}

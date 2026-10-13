@@ -3,6 +3,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_transfer_repository_impl.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -51,8 +52,10 @@ void main() {
         db,
         ScheduleRepositoryImpl(db, now: _now),
         TagRepositoryImpl(db, now: _now),
+        DeckTreeDataSource(db),
         now: _now,
       ),
+      decks,
     );
     root = await decks.root('r');
     leaf = await decks.sub(root.id, 'Nhà hàng');
@@ -71,7 +74,7 @@ void main() {
         mapping: ColumnMapping.fromHeader(table.rows.first),
         hasHeaderRow: true,
       ),
-    );
+    ).preview(defaultDeckName: 'Uncategorized', choices: const {});
   }
 
   test('pasted rows become cards; the summary counts what was skipped (UC-TRANSFER-001)', () async {

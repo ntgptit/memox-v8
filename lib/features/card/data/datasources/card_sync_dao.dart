@@ -56,7 +56,8 @@ class CardSyncDao extends DatabaseAccessor<AppDatabase>
         back: back,
         frontFolded: Value(foldText(front)),
         backFolded: Value(foldText(back)),
-        isFlagged: Value((row['isFlagged'] as bool) ? 1 : 0),
+        // Optional wire key (server sync spec §4.4): absent means not flagged.
+        isFlagged: Value((row['isFlagged'] as bool? ?? false) ? 1 : 0),
         example: Value(row['example'] as String?),
         hint: Value(row['hint'] as String?),
         pronunciation: Value(row['pronunciation'] as String?),

@@ -22,4 +22,4 @@ Không áp dụng
 
 ## Edge case
 
-Không áp dụng
+Vị trí cũ (`sibling_position`) đã bị một deck sống chiếm vì có reorder xen giữa (reorder đánh số lại các deck sống từ 0, BR-SRS-007): Undo vẫn trả deck về đúng vị trí cũ và dịch deck đang chiếm cùng mọi deck sống sau nó lên một, trong cùng transaction, để không hai deck sống cùng vị trí (DEV-219). Ví dụ A(0), B(1), C(2); xoá B; kéo C lên trước A → C(0), A(1); Undo B → C(0), B(1), A(2).

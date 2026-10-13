@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Ruling P3-L4: the flag is set or cleared, never toggled (BR-CARD-011).
 /// Completes with true to set it, false to clear it, null when dismissed.
@@ -20,15 +20,7 @@ class CardFlagSheetWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxBottomSheet(
-      header: Padding(
-        padding: EdgeInsets.fromLTRB(
-          context.dimens.space24,
-          context.dimens.space4,
-          context.dimens.space24,
-          context.dimens.space12,
-        ),
-        child: Text(l10n.cardFlag, style: context.texts.titleSmall),
-      ),
+      title: l10n.cardFlag,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
         child: Column(

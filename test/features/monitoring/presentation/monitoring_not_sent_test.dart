@@ -4,6 +4,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/features/monitoring/domain/models/pending_logs_model.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_note.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/monitoring_fakes.dart';
@@ -11,6 +12,27 @@ import '../../../support/monitoring_screen_harness.dart';
 
 // Monitoring spec §3.2: the Not sent tab, and the tabs together.
 void main() {
+  libraryTest('the Not sent tab draws the header it is given above the note '
+      '(SQL log switch spec §5)', (tester, env) async {
+    final repository = FakeMonitoringRepository()..autoPage = pageOf(1);
+    await pumpMonitoring(
+      tester,
+      env,
+      repository,
+      pendingHeader: const Text('header', key: ValueKey('header')),
+    );
+    repository.watches.single.feed.add(
+      PendingLogs(items: [summary('p1', status: null)], total: 1),
+    );
+    await settleMonitoring(tester);
+    await tester.tap(find.text('Not sent (1)'));
+    await tester.pumpAndSettle();
+
+    final header = tester.getTopLeft(find.byKey(const ValueKey('header')));
+    final note = tester.getTopLeft(find.byType(MxNote));
+    expect(header.dy, lessThan(note.dy));
+  });
+
   libraryTest('the Not sent tab shows the count, the note and the rows', (
     tester,
     env,

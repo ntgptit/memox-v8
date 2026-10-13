@@ -6,10 +6,12 @@ import 'package:memox/features/card/data/datasources/card_sync_dao.dart';
 import 'package:memox/features/deck/data/datasources/deck_sync_dao.dart';
 import 'package:memox/features/trash/data/datasources/delete_batch_sync_dao.dart';
 import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
+import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
 import 'package:memox/core/sync/sync_coordinator.dart';
 import 'package:memox/core/sync/sync_store.dart';
 import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
 
+import '../../support/invariant_queries.dart';
 import '../../support/test_database.dart';
 import 'fake_sync_server.dart';
 
@@ -167,4 +169,27 @@ void main() {
       }
     },
   );
+
+  test('a reset on one device reaches a schedule still pending on the other '
+      'without leaving it behind its root (invariant 9, DEV-224)', () async {
+    await _answer(a.db, _ten);
+    await ScheduleRepositoryImpl(b.db).resetLearning(rootDeckId: 'R');
+    await run([b]);
+
+    // A pulls before its answer could go: the pull skips the pending
+    // schedule, and the root moves on without it.
+    await a.coordinator.pullAll();
+
+    expect(await a.db.customSelect(invariantQueries[9]!).get(), isEmpty);
+    final reseeded = await _schedule(a.db);
+    expect(reseeded.generation, 2);
+    expect(reseeded.lastAnsweredAt, isNull);
+    expect(reseeded.answerCount, 0);
+
+    await run([a, b]);
+    for (final device in [a, b]) {
+      expect((await _schedule(device.db)).generation, 2);
+      expect(await device.db.select(device.db.syncOutbox).get(), isEmpty);
+    }
+  });
 }

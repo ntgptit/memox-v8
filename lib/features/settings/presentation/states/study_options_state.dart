@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 
@@ -14,6 +15,7 @@ final class StudyOptionsState {
     this.cardLimit,
     this.isCardLimitInvalid = false,
     this.newCardOrder,
+    this.speechLanguage,
     this.save = StudyOptionsSave.idle,
     this.timesSaved = 0,
   });
@@ -24,6 +26,9 @@ final class StudyOptionsState {
   /// A typed limit outside 1–200: shown in the error ring, never saved (E1).
   final bool isCardLimitInvalid;
   final NewCardOrder? newCardOrder;
+
+  /// The root's speech language the person picked (BR-SETTINGS-009).
+  final SpeechLanguage? speechLanguage;
   final StudyOptionsSave save;
 
   /// Grows with each save that landed, so the screen says "Saved" once per
@@ -40,11 +45,13 @@ final class StudyOptionsState {
     int? cardLimit,
     bool? isCardLimitInvalid,
     NewCardOrder? newCardOrder,
+    SpeechLanguage? speechLanguage,
   }) => StudyOptionsState(
     isUsingAppDefaults: isUsingAppDefaults ?? this.isUsingAppDefaults,
     cardLimit: cardLimit ?? this.cardLimit,
     isCardLimitInvalid: isCardLimitInvalid ?? this.isCardLimitInvalid,
     newCardOrder: newCardOrder ?? this.newCardOrder,
+    speechLanguage: speechLanguage ?? this.speechLanguage,
     save: save == StudyOptionsSave.failed
         ? StudyOptionsSave.failed
         : StudyOptionsSave.idle,
@@ -56,6 +63,7 @@ final class StudyOptionsState {
     cardLimit: cardLimit,
     isCardLimitInvalid: isCardLimitInvalid,
     newCardOrder: newCardOrder,
+    speechLanguage: speechLanguage,
     save: save,
     timesSaved: timesSaved,
   );
@@ -87,6 +95,8 @@ final class StudyOptionsForm {
         : StudyOptions(
             cardLimit: draft.cardLimit ?? stored.options.cardLimit,
             newCardOrder: draft.newCardOrder ?? stored.options.newCardOrder,
+            speechLanguage:
+                draft.speechLanguage ?? stored.options.speechLanguage,
           );
     final isChanged =
         isUsingAppDefaults != wasUsingAppDefaults ||
@@ -94,7 +104,8 @@ final class StudyOptionsForm {
         stored.source == StudyOptionsSource.unreadableRootOverride ||
         (!isUsingAppDefaults &&
             (options.cardLimit != stored.options.cardLimit ||
-                options.newCardOrder != stored.options.newCardOrder));
+                options.newCardOrder != stored.options.newCardOrder ||
+                options.speechLanguage != stored.options.speechLanguage));
     return StudyOptionsForm._(
       isUsingAppDefaults: isUsingAppDefaults,
       options: options,

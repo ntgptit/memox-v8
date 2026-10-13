@@ -4,6 +4,7 @@ import 'package:memox/core/database/app_database.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/card/data/repositories/card_repository_impl.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/search/data/repositories/search_repository_impl.dart';
 import 'package:memox/features/search/domain/models/library_search_model.dart';
@@ -39,6 +40,7 @@ void main() {
       db,
       ScheduleRepositoryImpl(db, now: () => now),
       tags,
+      DeckTreeDataSource(db),
       now: () => now,
     );
     search = SearchRepositoryImpl(db);

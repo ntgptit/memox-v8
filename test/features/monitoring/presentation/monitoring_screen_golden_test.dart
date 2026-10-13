@@ -14,6 +14,7 @@ import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/features/monitoring/domain/models/pending_logs_model.dart';
 import 'package:memox/features/monitoring/presentation/controllers/monitoring_list_controller.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_screen.dart';
+import 'package:memox/features/settings/presentation/widgets/items/sql_log_row_widget.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 
 import '../../../support/golden_harness.dart';
@@ -23,6 +24,7 @@ import '../../../support/monitoring_fakes.dart';
 final _screen = MonitoringScreen(
   onOpenServerLog: (_) {},
   onOpenPendingLog: (_) {},
+  pendingHeader: const SqlLogRowWidget(),
 );
 
 /// Open warnings and errors over today and the day before: what the

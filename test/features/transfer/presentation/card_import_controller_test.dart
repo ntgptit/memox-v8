@@ -14,6 +14,7 @@ import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/domain/models/card_import_result_model.dart';
 import 'package:memox/features/card/domain/repositories/card_transfer_repository.dart';
+import 'package:memox/features/deck/data/datasources/deck_tree_data_source.dart';
 import 'package:memox/features/deck/data/repositories/deck_repository_impl.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/srs/data/repositories/schedule_repository_impl.dart';
@@ -101,8 +102,10 @@ void main() {
         db,
         ScheduleRepositoryImpl(db, now: _now),
         TagRepositoryImpl(db, now: _now),
+        DeckTreeDataSource(db),
         now: _now,
       ),
+      DeckRepositoryImpl(db, now: _now),
     );
     final result = ProviderContainer(
       overrides: [
@@ -136,7 +139,7 @@ void main() {
       expect(draftOf(c).step, CardImportStep.columns);
       expect(draftOf(c).mapping.isComplete, isTrue);
 
-      await wizard.previewRows();
+      await wizard.previewRows(defaultDeckName: 'Uncategorized');
       expect(draftOf(c).step, CardImportStep.preview);
       expect(draftOf(c).willWrite, 1);
 
@@ -232,13 +235,13 @@ void main() {
     await wizard.chooseFile();
     await wizard.readSource();
 
-    await wizard.previewRows();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
     expect(draftOf(c).problem, TransferRejection.mappingIncomplete);
 
     wizard
       ..assignColumn(0, TransferField.front)
       ..assignColumn(1, TransferField.back);
-    await wizard.previewRows();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
     expect(draftOf(c).step, CardImportStep.preview);
   });
 
@@ -249,7 +252,7 @@ void main() {
     await wizard.chooseFile();
     await wizard.readSource();
     wizard.assignColumn(2, null);
-    await wizard.previewRows();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
 
     expect(wizard.stepBack(), isTrue);
     expect(draftOf(c).step, CardImportStep.columns);
@@ -276,7 +279,7 @@ void main() {
       c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
       await wizard.chooseFile();
       await wizard.readSource();
-      await wizard.previewRows();
+      await wizard.previewRows(defaultDeckName: 'Uncategorized');
 
       final writing = wizard.commit();
       await pumpEventQueue();
@@ -306,7 +309,7 @@ void main() {
     c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
     await wizard.chooseFile();
     await wizard.readSource();
-    await wizard.previewRows();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
     expect(draftOf(c).willWrite, 0);
 
     wizard.setIncludingDuplicates(isIncluding: true);
@@ -327,7 +330,7 @@ void main() {
       c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
       await wizard.chooseFile();
       await wizard.readSource();
-      await wizard.previewRows();
+      await wizard.previewRows(defaultDeckName: 'Uncategorized');
       await decks.sub(leaf.id, 'child');
 
       await wizard.commit();
@@ -347,7 +350,7 @@ void main() {
       c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
       await wizard.chooseFile();
       await wizard.readSource();
-      await wizard.previewRows();
+      await wizard.previewRows(defaultDeckName: 'Uncategorized');
 
       await wizard.commit();
       final failed =
@@ -380,7 +383,7 @@ void main() {
     c.listen(cardImportControllerProvider(leaf.id), (_, _) {});
     await wizard.chooseFile();
     await wizard.readSource();
-    await wizard.previewRows();
+    await wizard.previewRows(defaultDeckName: 'Uncategorized');
     expect(draftOf(c).willWrite, 0);
 
     await wizard.commit();

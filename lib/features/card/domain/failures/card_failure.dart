@@ -18,6 +18,17 @@ enum CardRejection {
   /// BR-CARD-003: an example, hint or pronunciation longer than 240 characters.
   optionalFieldTooLong,
 
+  /// BR-TRANSFER-001: sections need a target that takes sub-decks; this one
+  /// holds cards.
+  notADeckContainer,
+
+  /// BR-DECK-001: a section's deck would go below level 10.
+  depthExceeded,
+
+  /// BR-TRANSFER-001: a deck chosen for "Add to existing" is gone, moved,
+  /// or no longer takes cards.
+  sectionTargetChanged,
+
   /// BR-TAG-001: a tag name the tag rule refuses.
   invalidTagName,
 

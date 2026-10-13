@@ -25,3 +25,9 @@ deck đang có nội dung không đổi loại. Đường duy nhất giữa hai 
 Root deck được tạo thẳng với `content_type = 'deck'` và giá trị đó bất biến — đó
 là cách BR-DECK-004 trở thành ràng buộc kiểm tra được bằng cùng một câu query như mọi
 deck khác.
+
+**Một chủ sở hữu (DEV-215):** mọi chuyển đổi trên đều do deck feature thực hiện qua
+`DeckTreeDataSource.refresh` (câu `deckContentFromChildren`): deck suy loại từ những
+gì nó đang chứa. Card feature (tạo, chuyển, khôi phục, xoá, import card) gọi
+`DeckContentRepository.refresh` trong cùng transaction và không bao giờ tự ghi cột;
+`test/architecture/deck_content_owner_test.dart` giữ đúng như vậy.

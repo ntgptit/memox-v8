@@ -10,7 +10,7 @@
 |---|---|---|---|---|
 | [BR-CORE-001](../shared/rules/BR-CORE-001-noi-dung-nguoi-dung-la-du-lieu-rieng-tu.md) | Nội dung người dùng là dữ liệu riêng tư | active | Nội dung deck/card, ghi chú, lịch sử học, file import, hình ảnh, audio và backup là dữ liệu riêng tư. | UC-PROGRESS-002, UC-REMINDER-001, UC-TRANSFER-002 |
 | [BR-CORE-002](../shared/rules/BR-CORE-002-khong-log-noi-dung.md) | Không log nội dung | deprecated | Không log nội dung flashcard hoặc ghi chú ở bất kỳ log level nào; log ID thì được. | — |
-| [BR-CORE-003](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md) | Media trong thư mục riêng của ứng dụng | active | Media lưu trong thư mục riêng của ứng dụng. | — |
+| [BR-CORE-003](../shared/rules/BR-CORE-003-media-trong-thu-muc-rieng-cua-ung-dung.md) | Media trong thư mục riêng của ứng dụng | draft | Media lưu trong thư mục riêng của ứng dụng. | — |
 | [BR-CORE-004](../shared/rules/BR-CORE-004-export-backup-chi-khi-nguoi-dung-yeu-cau.md) | Export và backup chỉ khi người dùng yêu cầu | active | Export và backup chỉ chạy khi người dùng chủ động yêu cầu. | UC-REMINDER-001, UC-TRANSFER-002 |
 | [BR-CORE-005](../shared/rules/BR-CORE-005-thong-bao-loi-khong-lo-chi-tiet-ky-thuat.md) | Thông báo lỗi không lộ chi tiết kỹ thuật | active | Thông báo lỗi hiển thị cho người dùng không là thông báo kỹ thuật và không lộ id, đường dẫn hay SQL. | UC-CARD-002, UC-PROGRESS-001, UC-PROGRESS-002 |
 
@@ -42,7 +42,44 @@
 
 ## [account](../features/account/README.md)
 
-Chưa có tài liệu.
+### Rules
+
+| ID | Title | Status | Summary | Used by |
+|---|---|---|---|---|
+| [BR-ACCOUNT-001](../features/account/rules/BR-ACCOUNT-001-welcome-hien-mot-lan-tren-moi-thiet-bi.md) | Welcome hiện một lần trên mỗi thiết bị | active | Màn Welcome (29) hiện đúng một lần trên mỗi thiết bị của bản build có thể đăng nhập; cờ `welcome_seen` chỉ của máy, mọi lối ra đều trả lời Welcome. | UC-ACCOUNT-001 |
+| [BR-ACCOUNT-002](../features/account/rules/BR-ACCOUNT-002-dang-nhap-la-tuy-chon.md) | Đăng nhập là tuỳ chọn | active | App dùng đầy đủ trên phiên ẩn danh; không màn hình nào bị chặn hay chuyển hướng để buộc đăng nhập ngoài Welcome lần đầu. | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| [BR-ACCOUNT-003](../features/account/rules/BR-ACCOUNT-003-man-gan-va-man-quan-ly-theo-tai-khoan-cua-thiet-bi.md) | Màn gắn và màn quản lý tài khoản theo tài khoản của thiết bị | active | Thiết bị đã giữ tài khoản thì luồng gắn chuyển sang màn 32; thiết bị còn ẩn danh thì màn 32 chuyển về Settings. | UC-ACCOUNT-001, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-004](../features/account/rules/BR-ACCOUNT-004-luong-ket-thuc-o-dau-va-from-chi-tro-vao-trong-app.md) | Luồng kết thúc ở đâu và from chỉ trỏ vào trong app | active | Luồng gắn kết thúc ở màn 32, đăng nhập lại quay về nơi nó được mở; tham số `from` chỉ nhận vị trí trong app. | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| [BR-ACCOUNT-005](../features/account/rules/BR-ACCOUNT-005-email-hop-le-va-cach-so-sanh-email.md) | Email hợp lệ và cách so sánh email | active | Email hợp lệ khi sau trim khớp `^[^@\s]+@[^@\s]+\.[^@\s]+$`, chỉ kiểm ở form đăng nhập; hai email so sánh bằng trim và chữ thường. | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| [BR-ACCOUNT-006](../features/account/rules/BR-ACCOUNT-006-ma-xac-nhan-sau-chu-so-kiem-ngay-khi-du.md) | Mã xác nhận sáu chữ số, kiểm ngay khi đủ sáu | active | Mã gồm đúng sáu chữ số, kiểm ngay ở chữ số thứ sáu không cần nút; mã sai và mã hết hạn là một trạng thái và xoá ô mã. | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| [BR-ACCOUNT-007](../features/account/rules/BR-ACCOUNT-007-gui-lai-ma-sau-60-giay.md) | Gửi lại mã sau 60 giây | active | "Resend code" chỉ dùng được sau 60 giây kể từ lần gửi trước; trong lúc chờ là một dòng chú thích, không phải nút. | UC-ACCOUNT-001, UC-ACCOUNT-003 |
+| [BR-ACCOUNT-008](../features/account/rules/BR-ACCOUNT-008-chi-hoi-gop-khi-may-co-deck-song-trash-khong-tinh.md) | Chỉ hỏi gộp hay bỏ khi máy có deck sống; Trash không tính là dữ liệu cần giữ | active | Khi đăng nhập trùng một tài khoản đã có, app chỉ hỏi gộp hay bỏ khi máy có deck ngoài Trash; không có thì tự chọn bỏ, không hỏi. | UC-ACCOUNT-002 |
+| [BR-ACCOUNT-009](../features/account/rules/BR-ACCOUNT-009-khi-hoi-gop-la-mac-dinh-bo-di-can-hai-thao-tac-co-chu-y.md) | Khi hỏi, gộp là mặc định; bỏ dữ liệu cần hai thao tác có chủ ý | active | Sheet gộp chọn sẵn "Merge into the account"; chọn "Discard this phone's data" hiện cảnh báo và đổi nút xác nhận sang destructive. | UC-ACCOUNT-002 |
+| [BR-ACCOUNT-010](../features/account/rules/BR-ACCOUNT-010-mat-thay-doi-chua-gui-luon-duoc-neu-so-va-xac-nhan.md) | Mất thay đổi chưa gửi luôn được nêu số và xác nhận | active | Mọi bước làm mất thay đổi chưa gửi lên server phải nói rõ bao nhiêu thay đổi và cần một xác nhận tường minh; cùng email thì không hỏi. | UC-ACCOUNT-002, UC-ACCOUNT-003, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-011](../features/account/rules/BR-ACCOUNT-011-lop-chuyen-tiep-chan-moi-thao-tac-ghi.md) | Lớp chuyển tiếp chặn mọi thao tác ghi | active | Khi chuyển tài khoản, đăng xuất, xoá hoặc dọn về ẩn danh đang chạy, cổng ghi đóng và một lớp phủ toàn app chặn giao diện. | UC-ACCOUNT-002, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-012](../features/account/rules/BR-ACCOUNT-012-mat-mang-giua-chung-dung-lai-giu-ban-ghi-va-cho-thu-lai.md) | Mất mạng giữa chừng dừng lại, giữ bản ghi và cho thử lại | active | Một chuyển tiếp gặp lỗi mạng dừng tại bước đó, giữ bản ghi và dữ liệu, rồi chạy tiếp cùng thao tác khi có mạng hoặc khi Retry. | UC-ACCOUNT-002, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-013](../features/account/rules/BR-ACCOUNT-013-du-lieu-tren-may-chi-bi-xoa-theo-nhung-duong-da-liet-ke.md) | Dữ liệu trên máy chỉ bị xoá theo những đường đã được liệt kê | active | Dữ liệu nghiệp vụ trên máy chỉ bị `LocalDataReset` xoá qua sáu đường; mất mạng, phiên bị từ chối hay người dùng ẩn danh bị dọn không xoá gì. | UC-ACCOUNT-002, UC-ACCOUNT-003, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-014](../features/account/rules/BR-ACCOUNT-014-dang-xuat-gui-thay-doi-truoc-roi-moi-xoa-du-lieu-may.md) | Đăng xuất gửi thay đổi trước rồi mới xoá dữ liệu máy | active | Đăng xuất gửi thay đổi và log lên server trước, rồi xoá dữ liệu máy và bắt đầu người dùng ẩn danh mới; offline thì phải nhận mất thay đổi mới đi tiếp. | UC-ACCOUNT-004 |
+| [BR-ACCOUNT-015](../features/account/rules/BR-ACCOUNT-015-xoa-tai-khoan-can-mang-va-neu-ro-cai-gi-bi-xoa.md) | Xoá tài khoản cần mạng và nêu rõ cái gì bị xoá | active | Xoá tài khoản chỉ online, nêu rõ tài khoản và dữ liệu máy bị xoá không hoàn tác, và bị từ chối với admin cuối cùng. | UC-ACCOUNT-004 |
+| [BR-ACCOUNT-016](../features/account/rules/BR-ACCOUNT-016-doi-tai-khoan-tu-man-32-luon-la-bo-va-luon-hoi.md) | Đổi tài khoản từ màn 32 luôn là bỏ dữ liệu máy và luôn hỏi | active | "Switch account" từ một tài khoản vĩnh viễn luôn là `discard` sau một hộp thoại xác nhận, không đếm thư viện và không có người dùng ẩn danh ở giữa. | UC-ACCOUNT-002 |
+| [BR-ACCOUNT-017](../features/account/rules/BR-ACCOUNT-017-phien-bi-tu-choi-giu-du-lieu-bao-bang-banner-va-cho-dang-nhap-lai.md) | Phiên bị từ chối giữ dữ liệu, báo bằng banner và chờ đăng nhập lại | active | Khi phiên của tài khoản vĩnh viễn bị từ chối, app giữ dữ liệu, tạm dừng đồng bộ và nhắc đăng nhập lại ở Settings, màn 32 và Study home, không chuyển hướng. | UC-ACCOUNT-003 |
+| [BR-ACCOUNT-018](../features/account/rules/BR-ACCOUNT-018-lenh-o-man-32-can-tai-khoan-da-xac-nhan-va-chay-mot-lan-mot-lenh.md) | Lệnh ở màn 32 cần tài khoản đã xác nhận và chạy một lần một lệnh | active | Đổi tài khoản, đăng xuất và xoá chỉ dùng được khi tài khoản đã được xác nhận; mỗi lúc chỉ một lệnh hỏi hoặc chạy. | UC-ACCOUNT-003, UC-ACCOUNT-004 |
+| [BR-ACCOUNT-019](../features/account/rules/BR-ACCOUNT-019-chi-admin-thay-va-mo-duoc-man-admin-server-quyet-dinh.md) | Chỉ admin thấy và mở được màn admin, server quyết định quyền | active | Mục Admin của Settings và các route Monitoring, Users chỉ mở cho tài khoản admin đã được `me()` xác nhận; app chỉ ẩn hiện, server từ chối bằng `FORBIDDEN`. | UC-ACCOUNT-005, UC-MONITORING-001, UC-MONITORING-002 |
+| [BR-ACCOUNT-020](../features/account/rules/BR-ACCOUNT-020-users-liet-ke-tai-khoan-co-email-va-tim-theo-email.md) | Users liệt kê tài khoản có email và tìm theo email | active | Màn Users chỉ liệt kê tài khoản không ẩn danh có email, sắp theo email, 50 dòng một trang, tìm theo email sau 400 ms. | UC-ACCOUNT-005 |
+| [BR-ACCOUNT-021](../features/account/rules/BR-ACCOUNT-021-hang-cua-chinh-admin-chi-doc.md) | Hàng của chính admin chỉ đọc | active | Trên màn Users, hàng của tài khoản đang đăng nhập có nhãn "You" và không mở sheet đổi role; người khác phải hạ quyền bạn. | UC-ACCOUNT-005 |
+| [BR-ACCOUNT-022](../features/account/rules/BR-ACCOUNT-022-doi-role-server-tu-choi-thi-sheet-giu-nguyen-va-noi-ngay-trong-sheet.md) | Đổi role bị từ chối thì sheet ở lại và nói ngay trong sheet | active | Sheet role lưu qua `role_set`; server từ chối admin cuối, tài khoản ẩn danh, hoặc không phải admin, và mỗi từ chối có cách nói riêng. | UC-ACCOUNT-005 |
+| [BR-ACCOUNT-023](../features/account/rules/BR-ACCOUNT-023-huy-chuyen-tai-khoan-chi-truoc-khi-tai-khoan-dich-dang-nhap.md) | Huỷ chuyển tài khoản chỉ được trước khi tài khoản đích đăng nhập | active | Cancel của lớp chuyển tiếp trả máy về tài khoản nguồn nguyên vẹn, nhưng chỉ cho tới lúc tài khoản đích đăng nhập xong. | UC-ACCOUNT-002 |
+| [BR-ACCOUNT-024](../features/account/rules/BR-ACCOUNT-024-merge-bi-server-tu-choi-thi-quay-ve-nguon-nguyen-ven.md) | Merge bị server từ chối thì quay về tài khoản nguồn nguyên vẹn | active | Khi server từ chối claim của merge, app khôi phục tài khoản nguồn với dữ liệu máy nguyên vẹn và nói "Couldn't merge"; không có gì bị xoá. | UC-ACCOUNT-002 |
+
+### Use cases
+
+| ID | Title | Status | Summary |
+|---|---|---|---|
+| [UC-ACCOUNT-001](../features/account/usecases/UC-ACCOUNT-001-mo-app-lan-dau-va-gan-tai-khoan-vao-thiet-bi.md) | Mở app lần đầu và gắn tài khoản vào thiết bị | draft | — |
+| [UC-ACCOUNT-002](../features/account/usecases/UC-ACCOUNT-002-gop-hoac-chuyen-thiet-bi-sang-tai-khoan-khac.md) | Gộp hoặc chuyển thiết bị sang tài khoản khác | draft | — |
+| [UC-ACCOUNT-003](../features/account/usecases/UC-ACCOUNT-003-dang-nhap-lai-khi-phien-het-hieu-luc.md) | Đăng nhập lại khi phiên hết hiệu lực | draft | — |
+| [UC-ACCOUNT-004](../features/account/usecases/UC-ACCOUNT-004-dang-xuat-hoac-xoa-tai-khoan.md) | Đăng xuất hoặc xoá tài khoản | draft | — |
+| [UC-ACCOUNT-005](../features/account/usecases/UC-ACCOUNT-005-admin-cap-quyen-admin-hoac-user-cho-tai-khoan.md) | Admin cấp quyền admin hoặc user cho tài khoản | draft | — |
 
 ## [card](../features/card/README.md)
 
@@ -51,7 +88,7 @@ Chưa có tài liệu.
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
 | [BR-CARD-001](../features/card/rules/BR-CARD-001-hai-mat-khong-rong.md) | Card có hai mặt không rỗng | active | Card có mặt trước và mặt sau, đều không rỗng sau trim. | UC-CARD-001, UC-TRANSFER-001 |
-| [BR-CARD-002](../features/card/rules/BR-CARD-002-gioi-han-do-dai-hai-mat.md) | Giới hạn độ dài hai mặt | active | Mặt trước tối đa 60 ký tự, mặt sau tối đa 240 ký tự, đo sau trim. | UC-CARD-001, UC-TRANSFER-001 |
+| [BR-CARD-002](../features/card/rules/BR-CARD-002-gioi-han-do-dai-hai-mat.md) | Giới hạn độ dài hai mặt | active | Mặt trước tối đa 60 ký tự, mặt sau tối đa 240 ký tự, đo sau trim. | UC-CARD-001, UC-STUDY-008, UC-TRANSFER-001 |
 | [BR-CARD-003](../features/card/rules/BR-CARD-003-ba-truong-phu-tuy-chon.md) | Ba trường phụ tuỳ chọn | active | Card có thể có ví dụ, gợi ý và phiên âm, mỗi trường tối đa 240 ký tự sau trim. | UC-CARD-001, UC-CARD-002, UC-TRANSFER-001 |
 | [BR-CARD-004](../features/card/rules/BR-CARD-004-tao-card-tao-study-state.md) | Tạo card tạo study state | active | Tạo card đồng thời tạo study state theo scheduler và `generation` của root, `due_at = NULL`. | UC-CARD-001, UC-DECK-004, UC-SRS-001, UC-STARTER-001, UC-TRANSFER-001 |
 | [BR-CARD-005](../features/card/rules/BR-CARD-005-sua-noi-dung-khong-dung-study-state.md) | Sửa nội dung không đụng study state | active | Sửa nội dung card không đụng study state hay study answers. | UC-CARD-001, UC-CARD-002 |
@@ -84,7 +121,7 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | UC-DECK-004, UC-DECK-005, UC-DECK-006, UC-PROGRESS-002, UC-SEARCH-001, UC-TRASH-001 |
+| [BR-DECK-001](../features/deck/rules/BR-DECK-001-do-sau-cay-toi-da-10-cap.md) | Độ sâu cây deck tối đa 10 cấp | active | Cây deck lồng nhiều cấp, tối đa 10 cấp (root là cấp 1); tạo hoặc di chuyển vượt cấp 10 bị chặn trước khi ghi. | UC-DECK-004, UC-DECK-005, UC-DECK-006, UC-PROGRESS-002, UC-SEARCH-001, UC-TRANSFER-001, UC-TRASH-001 |
 | [BR-DECK-002](../features/deck/rules/BR-DECK-002-moi-deck-mang-root-id.md) | Mọi deck mang root_id | active | Mỗi deck mang `root_id`; root có `root_id = id`, descendant mang `root_id` của root. | UC-DECK-001, UC-DECK-003, UC-DECK-004, UC-DECK-005, UC-DECK-006, UC-PROGRESS-002, UC-SEARCH-001, UC-STARTER-001 |
 | [BR-DECK-003](../features/deck/rules/BR-DECK-003-xac-dinh-root-qua-root-id.md) | Xác định root qua root_id | active | Root được xác định qua `root_id`, không bao giờ bằng `COALESCE(parent_id, id)`. | UC-DECK-003, UC-DECK-006, UC-PROGRESS-002, UC-REMINDER-001, UC-SEARCH-001 |
 | [BR-DECK-004](../features/deck/rules/BR-DECK-004-root-deck-chi-chua-deck-con.md) | Root deck chỉ chứa deck con | active | Root deck chỉ chứa deck con, không chứa card trực tiếp. | UC-DECK-001, UC-DECK-002, UC-DECK-004, UC-DECK-006, UC-TRANSFER-001 |
@@ -103,7 +140,7 @@ Chưa có tài liệu.
 | [BR-DECK-017](../features/deck/rules/BR-DECK-017-khong-di-chuyen-deck-vao-chinh-no-hoac-descendant.md) | Không di chuyển deck vào chính nó hoặc descendant | active | Không di chuyển một deck vào chính nó hoặc vào descendant của nó. | UC-DECK-005, UC-TRASH-001 |
 | [BR-DECK-018](../features/deck/rules/BR-DECK-018-di-chuyen-subtree-cap-nhat-root-id.md) | Di chuyển subtree cập nhật root_id và depth | active | Di chuyển subtree cập nhật `root_id` và `depth` cho toàn bộ subtree trong một transaction. | UC-DECK-005, UC-TRASH-001 |
 | [BR-DECK-019](../features/deck/rules/BR-DECK-019-khong-descendant-nao-tro-sai-root.md) | Không descendant nào trỏ sai root | active | Không có descendant trỏ sai root. | UC-DECK-004, UC-DECK-005 |
-| [BR-DECK-020](../features/deck/rules/BR-DECK-020-ten-deck-khong-rong-toi-da-200-ky-tu.md) | Tên deck không rỗng, tối đa 200 ký tự | active | Tên deck không rỗng sau trim, tối đa 200 ký tự. | UC-DECK-001, UC-DECK-002 |
+| [BR-DECK-020](../features/deck/rules/BR-DECK-020-ten-deck-khong-rong-toi-da-200-ky-tu.md) | Tên deck không rỗng, tối đa 200 ký tự | active | Tên deck không rỗng sau trim, tối đa 200 ký tự. | UC-DECK-001, UC-DECK-002, UC-TRANSFER-001 |
 | [BR-DECK-021](../features/deck/rules/BR-DECK-021-ten-deck-duoc-phep-trung.md) | Tên deck được phép trùng | active | Tên deck được phép trùng nhau. | UC-DECK-001 |
 | [BR-DECK-022](../features/deck/rules/BR-DECK-022-xoa-deck-dua-ca-cay-vao-trash.md) | Xoá deck đưa cả cây vào Trash | active | Xoá deck chuyển deck cùng mọi deck con và card còn active bên dưới vào Trash thành một batch; chỉ purge mới xoá hẳn, theo cascade. | UC-CARD-001, UC-DECK-002 |
 | [BR-DECK-023](../features/deck/rules/BR-DECK-023-xoa-deck-can-xac-nhan-kem-so-luong.md) | Xoá deck cần xác nhận kèm số lượng | active | Xoá deck cần xác nhận, kèm số deck con và số card sẽ vào Trash cùng nó. | UC-CARD-001, UC-DECK-002 |
@@ -111,6 +148,7 @@ Chưa có tài liệu.
 | [BR-DECK-025](../features/deck/rules/BR-DECK-025-cot-scheduler-chi-co-gia-tri-tren-root.md) | Cột scheduler chỉ có giá trị trên root | active | Cột scheduler chỉ có giá trị trên root deck; deck khác để NULL và tra qua `root_id`. | UC-DECK-002, UC-DECK-004, UC-STUDY-003 |
 | [BR-DECK-026](../features/deck/rules/BR-DECK-026-mastery-cua-deck.md) | Mastery của deck | active | Mastery của một deck là số thẻ `mastered` chia cho mọi thẻ active trong cả cây, kể cả thẻ mới; suy ra khi đọc, không lưu cột. | UC-DECK-003 |
 | [BR-DECK-027](../features/deck/rules/BR-DECK-027-sap-theo-tien-do.md) | Sắp theo tiến độ | active | Sort Progress xếp deck theo mastery tăng dần; deck không có thẻ xếp cuối; bằng nhau thì theo thứ tự thủ công. | UC-DECK-003, UC-DECK-006 |
+| [BR-DECK-028](../features/deck/rules/BR-DECK-028-root-khong-di-chuyen-va-cung-cha-bi-tu-choi.md) | Root không di chuyển và di chuyển về cùng cha bị từ chối | active | Root deck không di chuyển được; di chuyển một deck về đúng cha hiện tại bị từ chối và không ghi gì. | UC-DECK-005 |
 
 ### Use cases
 
@@ -125,7 +163,27 @@ Chưa có tài liệu.
 
 ## [monitoring](../features/monitoring/README.md)
 
-Chưa có tài liệu.
+### Rules
+
+| ID | Title | Status | Summary | Used by |
+|---|---|---|---|---|
+| [BR-MONITORING-001](../features/monitoring/rules/BR-MONITORING-001-mac-dinh-mo-vao-van-de-dang-mo.md) | Mặc định mở vào các vấn đề đang mở | active | Tab Server mở với bộ lọc mặc định là warning và error ở trạng thái open, mới nhất trước; rỗng ở mặc định là "No open problems". | UC-MONITORING-001 |
+| [BR-MONITORING-002](../features/monitoring/rules/BR-MONITORING-002-chon-debug-info-hoac-khong-muc-nao-thi-xoa-loc-trang-thai.md) | Chọn debug, info hoặc không mức nào thì bỏ lọc trạng thái | active | Hàng debug và info không có trạng thái, nên chọn chúng (hoặc không chọn mức nào) xoá bộ lọc Status để không giấu chúng. | UC-MONITORING-001 |
+| [BR-MONITORING-003](../features/monitoring/rules/BR-MONITORING-003-doi-bo-loc-tim-kiem-hoac-keo-lam-moi-tai-lai-tu-trang-dau.md) | Đổi bộ lọc, tìm kiếm hoặc kéo làm mới thì tải lại từ trang đầu | active | Mọi thay đổi bộ lọc, tìm kiếm hay kéo làm mới tải lại từ trang đầu; câu trả lời của lần hỏi cũ không bao giờ ghi đè lần mới. | UC-MONITORING-001 |
+| [BR-MONITORING-004](../features/monitoring/rules/BR-MONITORING-004-tim-kiem-khop-event-va-message-nguyen-van-sau-400-ms.md) | Tìm kiếm khớp event và message nguyên văn, hỏi sau 400 ms | active | Ô tìm kiếm khớp `event` và `message` không phân biệt hoa thường, coi `%`, `_` và `\` là chữ, và chỉ hỏi server 400 ms sau lần gõ cuối. | UC-MONITORING-001 |
+| [BR-MONITORING-005](../features/monitoring/rules/BR-MONITORING-005-trang-100-dong-theo-con-tro-tai-khi-gan-cuoi.md) | Trang 100 dòng theo con trỏ, tải khi gần cuối | active | Tab Server tải 100 dòng một trang theo con trỏ (thời gian, id), trang kế tải khi mười dòng cuối vào tầm nhìn và kết thúc ở "No more logs". | UC-MONITORING-001 |
+| [BR-MONITORING-006](../features/monitoring/rules/BR-MONITORING-006-chi-warning-va-error-cua-server-co-trang-thai-open-fixed.md) | Chỉ warning và error của server có trạng thái open hoặc fixed | active | Admin đánh dấu fixed hoặc mở lại một log warning hoặc error của server, kèm ghi chú tuỳ chọn; debug, info và log chưa gửi không có trạng thái. | UC-MONITORING-002 |
+| [BR-MONITORING-007](../features/monitoring/rules/BR-MONITORING-007-doi-trang-thai-mot-lan-mot-thay-doi-cap-nhat-tai-cho.md) | Đổi trạng thái một lần một thay đổi và cập nhật tại chỗ | active | Đổi trạng thái chạy một lần một thay đổi, cập nhật dòng ở chi tiết và danh sách, bỏ dòng khỏi danh sách nếu bộ lọc không còn khớp, và lỗi không đổi gì. | UC-MONITORING-002 |
+| [BR-MONITORING-008](../features/monitoring/rules/BR-MONITORING-008-tab-not-sent-doc-bo-dem-tren-may-va-chay-duoc-khi-offline.md) | Tab Not sent đọc bộ đệm trên máy và chạy được khi offline | active | Tab "Not sent" đọc bộ đệm log của máy (`LogDatabase`), được theo dõi, chỉ lọc theo mức, không có trạng thái, và dùng được khi offline. | UC-MONITORING-001, UC-MONITORING-002 |
+| [BR-MONITORING-009](../features/monitoring/rules/BR-MONITORING-009-gio-hien-theo-gio-may-dinh-dang-24-gio.md) | Giờ hiện theo giờ máy, định dạng 24 giờ | active | Log lưu giờ UTC và hiện theo giờ máy: `HH:mm` trong ngày, "Sep 26" ngày trước, và đủ ngày với `HH:mm:ss` ở chi tiết. | UC-MONITORING-001, UC-MONITORING-002 |
+| [BR-MONITORING-010](../features/monitoring/rules/BR-MONITORING-010-danh-sach-chi-tai-hang-gon-chi-tiet-tai-ca-hang.md) | Danh sách chỉ tải hàng gọn, chi tiết tải cả hàng | active | Danh sách không tải `context` và `stack_trace` và cắt message ở 300 ký tự; mở một dòng mới gọi `log_get` lấy cả hàng. | UC-MONITORING-001, UC-MONITORING-002 |
+
+### Use cases
+
+| ID | Title | Status | Summary |
+|---|---|---|---|
+| [UC-MONITORING-001](../features/monitoring/usecases/UC-MONITORING-001-duyet-va-loc-log-cua-server-va-cua-may.md) | Duyệt và lọc log của server và của máy | draft | — |
+| [UC-MONITORING-002](../features/monitoring/usecases/UC-MONITORING-002-doc-mot-log-va-danh-dau-da-sua.md) | Đọc một log và đánh dấu đã sửa | draft | — |
 
 ## [progress](../features/progress/README.md)
 
@@ -220,6 +278,8 @@ Chưa có tài liệu.
 | [BR-SETTINGS-006](../features/settings/rules/BR-SETTINGS-006-ngon-ngu.md) | Ngôn ngữ | active | Ngôn ngữ là `system`, `en` hoặc `vi`, mặc định `system`, fallback `en`. | UC-SETTINGS-001 |
 | [BR-SETTINGS-007](../features/settings/rules/BR-SETTINGS-007-moi-lan-luu-mot-transaction.md) | Mỗi lần lưu một transaction | active | Mỗi lần lưu một tuỳ chọn là một transaction độc lập; lỗi là `Failure` có kiểu. | UC-SETTINGS-001 |
 | [BR-SETTINGS-008](../features/settings/rules/BR-SETTINGS-008-reset-to-defaults.md) | Reset to defaults | active | `Reset to defaults` có xác nhận, đưa `app_settings` về mặc định, không đụng dữ liệu học. | UC-SETTINGS-001 |
+| [BR-SETTINGS-009](../features/settings/rules/BR-SETTINGS-009-ngon-ngu-phat-am-la-study-option.md) | Ngôn ngữ phát âm là study option | active | Ngôn ngữ phát âm theo BR-STUDY-056: override của root deck (`study_config.tts_language`) khi có, mặc định app (`app_settings.tts_language`) khi không. | UC-SETTINGS-001 |
+| [BR-SETTINGS-010](../features/settings/rules/BR-SETTINGS-010-tu-dong-doc-toan-app.md) | Tự động đọc là tuỳ chọn toàn app, chỉ của máy | active | `tts_auto_play` toàn app, mặc định bật, không sync; Reset to defaults đưa về bật. | UC-SETTINGS-001 |
 
 ### Use cases
 
@@ -245,7 +305,7 @@ Chưa có tài liệu.
 | [BR-SRS-010](../features/srs/rules/BR-SRS-010-sm2-anh-xa-action-sang-chat-luong.md) | sm2: ánh xạ action sang thang chất lượng | active | `sm2`: `again`, `hard`, `good`, `easy` ánh xạ sang q = 0, 3, 4, 5. | UC-STUDY-001 |
 | [BR-SRS-011](../features/srs/rules/BR-SRS-011-sm2-cap-nhat-interval-va-repetitions.md) | sm2: cập nhật interval và repetitions | active | `sm2`: cập nhật `interval_days` và `repetitions` bằng ease factor đã cập nhật của chính lượt đó. | UC-STUDY-001 |
 | [BR-SRS-012](../features/srs/rules/BR-SRS-012-sm2-cap-nhat-ease-factor.md) | sm2: cập nhật ease factor | active | `sm2`: công thức ease factor, sàn 1.3, cập nhật ở mọi lượt `scheduled`. | UC-STUDY-001 |
-| [BR-SRS-013](../features/srs/rules/BR-SRS-013-dinh-nghia-da-thuoc.md) | Định nghĩa "đã thuộc" | active | Card "đã thuộc" khi `current_box = 8` (`eight_box`) hoặc `interval_days >= 128` (`sm2`); suy ra khi đọc. | — |
+| [BR-SRS-013](../features/srs/rules/BR-SRS-013-dinh-nghia-da-thuoc.md) | Định nghĩa "đã thuộc" | active | Card "đã thuộc" khi `current_box = 8` (`eight_box`) hoặc `interval_days >= 128` (`sm2`); suy ra khi đọc. | UC-DECK-003 |
 | [BR-SRS-014](../features/srs/rules/BR-SRS-014-review-log-kind-ba-gia-tri.md) | review_log.kind có ba giá trị | active | `review_log.kind` có đúng ba giá trị: `learning`, `scheduled`, `relearning`. | UC-CARD-002, UC-STUDY-001 |
 | [BR-SRS-015](../features/srs/rules/BR-SRS-015-kind-luu-tuong-minh.md) | kind lưu tường minh | active | `kind` được lưu tường minh lúc ghi, không suy từ trạng thái trước và sau. | UC-CARD-002, UC-PROGRESS-002, UC-STUDY-001, UC-STUDY-002 |
 | [BR-SRS-016](../features/srs/rules/BR-SRS-016-luot-dau-trong-reviewing-la-scheduled.md) | Lượt đầu trong phiên reviewing là scheduled | active | Trong phiên `reviewing`, lượt đầu của thẻ là `scheduled`; chỉ lượt `scheduled` được đổi lịch. | UC-STUDY-001 |
@@ -302,7 +362,7 @@ Chưa có tài liệu.
 | [BR-STUDY-001](../features/study/rules/BR-STUDY-001-phien-lay-card-den-han-hoac-chua-co-lich.md) | Phiên lấy card đến hạn hoặc chưa có lịch | deprecated | Đã thay bằng BR-STUDY-051. Một phiên chỉ lấy card có `due_at IS NULL OR due_at <= now`. | — |
 | [BR-STUDY-002](../features/study/rules/BR-STUDY-002-thu-tu-the-trong-phien.md) | Thứ tự thẻ trong phiên | active | Ôn tập theo `due_at` tăng dần; học mới theo `new_card_order`; hai loại phiên không trộn thẻ. | UC-STUDY-001 |
 | [BR-STUDY-003](../features/study/rules/BR-STUDY-003-gioi-han-the-rieng-biet-moi-phien.md) | Giới hạn thẻ riêng biệt mỗi phiên | active | Mỗi phiên giới hạn số thẻ riêng biệt theo `card_limit` (1–200, mặc định 20), là trần mỗi lần lấy. | UC-SETTINGS-001, UC-STUDY-001 |
-| [BR-STUDY-004](../features/study/rules/BR-STUDY-004-ghi-danh-gia-ngay.md) | Ghi đánh giá ngay | active | Đánh giá được ghi ngay khi người dùng bấm, không chờ hết phiên. | UC-STUDY-001, UC-STUDY-003 |
+| [BR-STUDY-004](../features/study/rules/BR-STUDY-004-ghi-danh-gia-ngay.md) | Ghi đánh giá ngay | active | Đánh giá được ghi ngay khi người dùng bấm, không chờ hết phiên. | UC-STUDY-001, UC-STUDY-004 |
 | [BR-STUDY-005](../features/study/rules/BR-STUDY-005-self-assess-the-quen-quay-lai.md) | self_assess: thẻ quên quay lại | active | Chỉ `self_assess`: thẻ `forgotten`/`again` quay lại cùng hàng đợi sau ít nhất 3 thẻ khác. | UC-STUDY-001, UC-STUDY-003 |
 | [BR-STUDY-006](../features/study/rules/BR-STUDY-006-chi-luot-scheduled-doi-lich-dai-han.md) | Chỉ lượt scheduled đổi lịch dài hạn | active | Chỉ lượt `scheduled` được đổi lịch dài hạn, và chỉ có trong phiên `reviewing`. | UC-STUDY-001 |
 | [BR-STUDY-007](../features/study/rules/BR-STUDY-007-the-roi-hang-doi-khi-danh-gia-khac-quen.md) | Thẻ rời hàng đợi khi đánh giá khác quên | active | Ở stage chấm điểm, thẻ rời hàng đợi khi được đánh giá khác `forgotten`/`again`. | UC-STUDY-001 |
@@ -316,66 +376,71 @@ Chưa có tài liệu.
 | [BR-STUDY-015](../features/study/rules/BR-STUDY-015-reset-khi-dang-mo-la-invalidated.md) | Reset khi phiên đang mở là invalidated | active | Reset khi session đang mở cho `invalidated`, `end_reason = scheduler_reset`. | UC-SRS-001, UC-STUDY-001, UC-STUDY-003 |
 | [BR-STUDY-016](../features/study/rules/BR-STUDY-016-doi-scheduler-khi-dang-mo-la-invalidated.md) | Đổi scheduler khi phiên đang mở là invalidated | active | Đổi scheduler khi chưa khoá làm phiên đang mở `invalidated` trong cùng transaction. | UC-DECK-002 |
 | [BR-STUDY-017](../features/study/rules/BR-STUDY-017-tu-choi-ghi-generation-cu.md) | Từ chối ghi của generation cũ | active | Session thuộc generation cũ bị từ chối ghi và chuyển `invalidated`/`stale_generation`. | UC-SRS-001, UC-STUDY-001, UC-STUDY-002 |
-| [BR-STUDY-018](../features/study/rules/BR-STUDY-018-loi-khong-the-tiep-tuc-la-failed.md) | Lỗi không thể tiếp tục là failed | active | Lỗi không thể tiếp tục cho `failed`, `end_reason = persistence_error`. | UC-STUDY-001 |
+| [BR-STUDY-018](../features/study/rules/BR-STUDY-018-loi-khong-the-tiep-tuc-la-failed.md) | Lỗi không thể tiếp tục là failed | active | Lỗi không thể tiếp tục cho `failed`, `end_reason = persistence_error`. | UC-STUDY-001, UC-STUDY-004, UC-STUDY-005, UC-STUDY-006, UC-STUDY-007, UC-STUDY-008 |
 | [BR-STUDY-019](../features/study/rules/BR-STUDY-019-giu-luot-da-ghi.md) | Giữ các lượt đã ghi | active | Lượt đã ghi trước khi session kết thúc bất thường được giữ ở mọi trạng thái kết thúc. | UC-STUDY-001 |
 | [BR-STUDY-020](../features/study/rules/BR-STUDY-020-session-chi-tao-boi-hanh-dong-study.md) | Session chỉ tạo bởi hành động Study | active | Session chỉ được tạo bởi hành động Study tường minh; hiển thị số đến hạn không tạo session. | UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
 | [BR-STUDY-021](../features/study/rules/BR-STUDY-021-hang-doi-luu-db-va-bat-bien.md) | Hàng đợi lưu DB và bất biến | active | Hàng đợi được lưu trong database và bất biến trong suốt phiên. | UC-STUDY-001 |
 | [BR-STUDY-022](../features/study/rules/BR-STUDY-022-moi-stage-mot-hang-doi.md) | Mỗi stage một hàng đợi | active | Mỗi stage có hàng đợi riêng trên cùng tập thẻ, thứ tự xáo độc lập. | UC-STUDY-001 |
 | [BR-STUDY-023](../features/study/rules/BR-STUDY-023-loai-luot-theo-loai-phien.md) | Loại lượt theo loại phiên | active | Học mới: mọi lượt là `learning`/`relearning`, không đổi lịch; ôn tập: lượt đầu `scheduled`, lượt lặp `relearning`. | UC-STUDY-001 |
 | [BR-STUDY-024](../features/study/rules/BR-STUDY-024-card-limit-chot-luc-mo-phien.md) | card_limit chốt lúc mở phiên | active | Số thẻ của phiên chốt một lần lúc mở vào `card_limit`; đổi tùy chọn sau đó không ảnh hưởng. | UC-SETTINGS-001, UC-STUDY-001 |
-| [BR-STUDY-025](../features/study/rules/BR-STUDY-025-dieu-kien-dung-noi-dung-khong-phai-nguong.md) | Điều kiện dựng nội dung không phải ngưỡng thẻ | active | Điều kiện dựng được nội dung quyết định stage chạy hay bỏ qua, không quyết định số thẻ. | — |
-| [BR-STUDY-026](../features/study/rules/BR-STUDY-026-fill-de-la-mat-sau-go-mat-truoc.md) | fill: đề là mặt sau, gõ mặt trước | active | `fill` hiện mặt sau làm đề, yêu cầu gõ mặt trước, chấm bằng so dạng fold với `front_folded`, giữ nguyên dấu. | — |
-| [BR-STUDY-027](../features/study/rules/BR-STUDY-027-fill-luu-phien-ban-chinh-sach-so-khop.md) | fill: lưu phiên bản chính sách so khớp | active | Mỗi lượt `fill` lưu phiên bản chính sách so khớp; đổi chính sách tăng phiên bản, không sửa lượt cũ. | — |
+| [BR-STUDY-025](../features/study/rules/BR-STUDY-025-dieu-kien-dung-noi-dung-khong-phai-nguong.md) | Điều kiện dựng nội dung không phải ngưỡng thẻ | active | Điều kiện dựng được nội dung quyết định stage chạy hay bỏ qua, không quyết định số thẻ. | UC-STUDY-005, UC-STUDY-006, UC-STUDY-008 |
+| [BR-STUDY-026](../features/study/rules/BR-STUDY-026-fill-de-la-mat-sau-go-mat-truoc.md) | fill: đề là mặt sau, gõ mặt trước | active | `fill` hiện mặt sau làm đề, yêu cầu gõ mặt trước, chấm bằng so dạng fold (trim, NFC, hạ hoa) với `front_folded`, giữ nguyên dấu. | UC-STUDY-008 |
+| [BR-STUDY-027](../features/study/rules/BR-STUDY-027-fill-luu-phien-ban-chinh-sach-so-khop.md) | fill: lưu phiên bản chính sách so khớp | active | Mỗi lượt `fill` lưu phiên bản chính sách so khớp; đổi chính sách tăng phiên bản, không sửa lượt cũ. | UC-STUDY-008 |
 | [BR-STUDY-028](../features/study/rules/BR-STUDY-028-ghi-viec-dung-goi-y.md) | Ghi việc dùng gợi ý | active | Việc dùng gợi ý được ghi trên lượt và không tự đổi `action` hay lịch. | UC-CARD-002 |
-| [BR-STUDY-029](../features/study/rules/BR-STUDY-029-cau-tra-loi-rong-khong-sinh-luot.md) | Câu trả lời rỗng không sinh lượt | active | Câu trả lời rỗng sau trim không sinh lượt, không tiến checkpoint. | — |
-| [BR-STUDY-030](../features/study/rules/BR-STUDY-030-khong-luu-noi-dung-go-o-fill.md) | Không lưu nội dung gõ ở fill | active | Nội dung người dùng gõ ở `fill` không được lưu; chỉ lưu kết cục, phiên bản chính sách và cờ gợi ý. | — |
-| [BR-STUDY-031](../features/study/rules/BR-STUDY-031-recall-20-giay-tuong-tac.md) | recall: 20 giây tương tác | active | `recall` cho tối đa 20 giây mỗi lượt, đo thời gian tương tác thực. | — |
-| [BR-STUDY-032](../features/study/rules/BR-STUDY-032-recall-toi-da-mot-dap-an.md) | recall: tối đa một đáp án mỗi lượt | active | Một lượt `recall` ghi tối đa một đáp án; tại mốc hết giờ chỉ một nhánh thắng. | — |
-| [BR-STUDY-033](../features/study/rules/BR-STUDY-033-het-gio-khoa-ket-cuc-sai.md) | Hết giờ khoá kết cục sai | active | Hết giờ khoá kết cục thành sai và tự lật đáp án sau khi ghi đã commit. | — |
+| [BR-STUDY-029](../features/study/rules/BR-STUDY-029-cau-tra-loi-rong-khong-sinh-luot.md) | Câu trả lời rỗng không sinh lượt | active | Câu trả lời rỗng sau trim không sinh lượt, không tiến checkpoint. | UC-STUDY-008 |
+| [BR-STUDY-030](../features/study/rules/BR-STUDY-030-khong-luu-noi-dung-go-o-fill.md) | Không lưu nội dung gõ ở fill | active | Nội dung người dùng gõ ở `fill` không được lưu; chỉ lưu kết cục, phiên bản chính sách và cờ gợi ý. | UC-STUDY-008 |
+| [BR-STUDY-031](../features/study/rules/BR-STUDY-031-recall-20-giay-tuong-tac.md) | recall: 20 giây tương tác | active | `recall` cho tối đa 20 giây mỗi lượt, đo thời gian tương tác thực. | UC-STUDY-007 |
+| [BR-STUDY-032](../features/study/rules/BR-STUDY-032-recall-toi-da-mot-dap-an.md) | recall: tối đa một đáp án mỗi lượt | active | Một lượt `recall` ghi tối đa một đáp án; tại mốc hết giờ chỉ một nhánh thắng. | UC-STUDY-007 |
+| [BR-STUDY-033](../features/study/rules/BR-STUDY-033-het-gio-khoa-ket-cuc-sai.md) | Hết giờ khoá kết cục sai | active | Hết giờ khoá kết cục thành sai và tự lật đáp án sau khi ghi đã commit. | UC-STUDY-007 |
 | [BR-STUDY-034](../features/study/rules/BR-STUDY-034-luu-ly-do-het-gio.md) | Lưu lý do hết giờ | active | Lý do hết giờ lưu tường minh ở `review_log.outcome_reason`, không suy từ `action`. | UC-CARD-002 |
 | [BR-STUDY-035](../features/study/rules/BR-STUDY-035-khong-luu-nhan-man-hinh.md) | Không lưu nhãn màn hình | active | Nhãn trên màn hình không được lưu; chỉ `action` canonical vào `review_log`. | UC-CARD-002, UC-SETTINGS-001 |
 | [BR-STUDY-036](../features/study/rules/BR-STUDY-036-luu-thoi-gian-con-lai-va-trang-thai-lat.md) | Lưu thời gian còn lại và trạng thái lật | active | Thời gian còn lại và trạng thái đã lật được lưu để Resume đúng chỗ, không đặt lại 20 giây. | UC-STUDY-002 |
-| [BR-STUDY-037](../features/study/rules/BR-STUDY-037-guess-dung-nam-lua-chon.md) | guess: đúng năm lựa chọn | active | Mỗi question `guess` có đúng năm lựa chọn: một đáp án đúng và bốn distractor. | — |
-| [BR-STUDY-038](../features/study/rules/BR-STUDY-038-nguon-distractor.md) | Nguồn distractor | active | Distractor lấy từ thẻ đã học xong hoặc đang trong phiên, cùng cây deck, khác thẻ đang hỏi. | — |
-| [BR-STUDY-039](../features/study/rules/BR-STUDY-039-khac-nghia-do-bang-back-folded.md) | Khác nghĩa đo bằng back_folded | active | "Hai nghĩa khác nhau" đo bằng `back_folded`; hai thẻ cùng `back_folded` không cùng option set. | — |
-| [BR-STUDY-040](../features/study/rules/BR-STUDY-040-guess-bo-qua-hay-chan.md) | guess: bỏ qua stage hay chặn | active | Không đủ năm nghĩa thì bỏ qua stage `guess`; đủ mà question không dựng được thì chặn. | — |
-| [BR-STUDY-041](../features/study/rules/BR-STUDY-041-danh-gia-lua-chon-bang-dinh-danh.md) | Đánh giá lựa chọn bằng định danh | active | Đánh giá lựa chọn so bằng định danh, không bằng chuỗi hiển thị. | — |
-| [BR-STUDY-042](../features/study/rules/BR-STUDY-042-chi-nhan-lua-chon-dau-tien.md) | Chỉ nhận lựa chọn đầu tiên | active | Mỗi question chỉ nhận lựa chọn đầu tiên và sinh tối đa một lượt. | — |
-| [BR-STUDY-043](../features/study/rules/BR-STUDY-043-hai-hoan-vi-doc-lap.md) | Hai hoán vị độc lập | active | Thứ tự thẻ trong round và thứ tự năm lựa chọn là hai hoán vị độc lập, ổn định khi Resume. | — |
+| [BR-STUDY-037](../features/study/rules/BR-STUDY-037-guess-dung-nam-lua-chon.md) | guess: đúng năm lựa chọn | active | Mỗi question `guess` có đúng năm lựa chọn: một đáp án đúng và bốn distractor. | UC-STUDY-006 |
+| [BR-STUDY-038](../features/study/rules/BR-STUDY-038-nguon-distractor.md) | Nguồn distractor | active | Distractor lấy từ thẻ đã học xong hoặc đang trong phiên, cùng cây deck, khác thẻ đang hỏi. | UC-STUDY-006 |
+| [BR-STUDY-039](../features/study/rules/BR-STUDY-039-khac-nghia-do-bang-back-folded.md) | Khác nghĩa đo bằng back_folded | active | "Hai nghĩa khác nhau" đo bằng `back_folded`; hai thẻ cùng `back_folded` không cùng option set. | UC-STUDY-006 |
+| [BR-STUDY-040](../features/study/rules/BR-STUDY-040-guess-bo-qua-hay-chan.md) | guess: bỏ qua stage hay chặn | active | Không đủ năm nghĩa thì bỏ qua stage `guess`; đủ mà question không dựng được thì chặn. | UC-STUDY-006 |
+| [BR-STUDY-041](../features/study/rules/BR-STUDY-041-danh-gia-lua-chon-bang-dinh-danh.md) | Đánh giá lựa chọn bằng định danh | active | Đánh giá lựa chọn so bằng định danh, không bằng chuỗi hiển thị. | UC-STUDY-006 |
+| [BR-STUDY-042](../features/study/rules/BR-STUDY-042-chi-nhan-lua-chon-dau-tien.md) | Chỉ nhận lựa chọn đầu tiên | active | Mỗi question chỉ nhận lựa chọn đầu tiên và sinh tối đa một lượt. | UC-STUDY-004, UC-STUDY-006 |
+| [BR-STUDY-043](../features/study/rules/BR-STUDY-043-hai-hoan-vi-doc-lap.md) | Hai hoán vị độc lập | active | Thứ tự thẻ trong round và thứ tự năm lựa chọn là hai hoán vị độc lập, ổn định khi Resume. | UC-STUDY-006 |
 | [BR-STUDY-044](../features/study/rules/BR-STUDY-044-so-the-cua-tung-mode.md) | Số thẻ của từng mode | active | Màn chọn mode ôn tập hiện số thẻ của từng mode, không dùng chung một số. | UC-STUDY-001 |
-| [BR-STUDY-045](../features/study/rules/BR-STUDY-045-match-it-nhat-hai-cap.md) | match: ít nhất hai cặp | active | `match` cần ít nhất hai cặp; một cặp thì bỏ qua (learning) hoặc vô hiệu hoá (reviewing). | UC-STUDY-001 |
+| [BR-STUDY-045](../features/study/rules/BR-STUDY-045-match-it-nhat-hai-cap.md) | match: ít nhất hai cặp | active | `match` cần ít nhất hai cặp; một cặp thì bỏ qua (learning) hoặc vô hiệu hoá (reviewing). | UC-STUDY-001, UC-STUDY-005 |
 | [BR-STUDY-046](../features/study/rules/BR-STUDY-046-badge-deck-hai-so.md) | Badge deck hiện hai số | active | Badge trên danh sách deck hiện hai số: thẻ chưa học và thẻ đến hạn, không gộp. | UC-DECK-003, UC-STARTER-001 |
-| [BR-STUDY-047](../features/study/rules/BR-STUDY-047-pill-new-due-dung-cung-dinh-nghia.md) | Pill New/Due dùng cùng định nghĩa | active | Pill New và Due trên danh sách thẻ dùng cùng định nghĩa của BR-STUDY-051, hai tập rời nhau. | — |
-| [BR-STUDY-048](../features/study/rules/BR-STUDY-048-browse-xem-lai-the-da-qua.md) | browse: xem lại thẻ đã qua | active | Chỉ `browse` cho xem lại thẻ đã qua trong round; xem lại không ghi lượt, không lùi `cursor`. | — |
-| [BR-STUDY-049](../features/study/rules/BR-STUDY-049-match-toi-da-nam-cap-moi-ban.md) | match: tối đa năm cặp mỗi bàn | active | `match` bày tối đa năm cặp một lúc, chia round thành các bàn liên tiếp theo `position`. | — |
+| [BR-STUDY-047](../features/study/rules/BR-STUDY-047-pill-new-due-dung-cung-dinh-nghia.md) | Pill New/Due dùng cùng định nghĩa | active | Pill New và Due trên danh sách thẻ dùng cùng định nghĩa của BR-STUDY-051, hai tập rời nhau. | UC-CARD-001 |
+| [BR-STUDY-048](../features/study/rules/BR-STUDY-048-browse-xem-lai-the-da-qua.md) | browse: xem lại thẻ đã qua | active | Chỉ `browse` cho xem lại thẻ đã qua trong round; xem lại không ghi lượt, không lùi `cursor`. | UC-STUDY-004 |
+| [BR-STUDY-049](../features/study/rules/BR-STUDY-049-match-toi-da-nam-cap-moi-ban.md) | match: tối đa năm cặp mỗi bàn | active | `match` bày tối đa năm cặp một lúc, chia round thành các bàn liên tiếp theo `position`. | UC-STUDY-005 |
 | [BR-STUDY-050](../features/study/rules/BR-STUDY-050-reset-dua-learned-at-va-due-at-ve-null.md) | Reset đưa learned_at và due_at về NULL | active | Reset đặt `learned_at` và `due_at` cùng về NULL. | UC-SRS-001 |
-| [BR-STUDY-051](../features/study/rules/BR-STUDY-051-hai-loai-phien-learning-reviewing.md) | Hai loại phiên learning và reviewing | active | Có đúng hai loại phiên: `learning` lấy thẻ chưa học xong, `reviewing` lấy thẻ đã học và đến hạn. | UC-DECK-003, UC-REMINDER-001, UC-SRS-001, UC-STARTER-001, UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
+| [BR-STUDY-051](../features/study/rules/BR-STUDY-051-hai-loai-phien-learning-reviewing.md) | Hai loại phiên learning và reviewing | active | Có đúng hai loại phiên: `learning` lấy thẻ chưa học xong, `reviewing` lấy thẻ đã học và đến hạn. | UC-CARD-001, UC-DECK-003, UC-REMINDER-001, UC-SRS-001, UC-STARTER-001, UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
 | [BR-STUDY-052](../features/study/rules/BR-STUDY-052-kind-learning-cho-chuoi-hoc-moi.md) | kind learning cho chuỗi học mới | active | `kind = learning` dành cho lượt trong chuỗi học mới; không xuất hiện trong phiên `reviewing`. | UC-STUDY-001 |
 | [BR-STUDY-053](../features/study/rules/BR-STUDY-053-hoan-tat-chuoi-hoc-moi-la-su-kien.md) | Hoàn tất chuỗi học mới là sự kiện | active | Chuỗi học mới không đổi lịch tới khi thẻ đi hết stage của nó; hoàn tất là sự kiện đặt `learned_at` và lịch đầu. | UC-CARD-002, UC-STUDY-001 |
 | [BR-STUDY-054](../features/study/rules/BR-STUDY-054-khong-mo-reviewing-khi-khong-co-the-den-han.md) | Không mở reviewing khi không có thẻ đến hạn | active | Phiên `reviewing` không mở khi không có thẻ đến hạn; không có ôn sớm hơn hạn. | UC-STUDY-001, UC-STUDY-003 |
 | [BR-STUDY-055](../features/study/rules/BR-STUDY-055-mode-kha-dung-de-on-tap.md) | Mode khả dụng để ôn tập | active | Mode ôn tập là các stage chấm điểm của thuật toán; chỉ một mode thì vào thẳng. | UC-STUDY-001, UC-STUDY-003 |
 | [BR-STUDY-056](../features/study/rules/BR-STUDY-056-tuy-chon-hoc-hai-tang.md) | Tùy chọn học hai tầng | active | Tùy chọn học có mặc định toàn app và ghi đè trên root deck; deck con không có tùy chọn riêng. | UC-SETTINGS-001, UC-STUDY-001 |
 | [BR-STUDY-057](../features/study/rules/BR-STUDY-057-new-card-order.md) | new_card_order | active | `new_card_order` là `created` hoặc `random`, mặc định `created`. | UC-SETTINGS-001, UC-STUDY-001 |
-| [BR-STUDY-058](../features/study/rules/BR-STUDY-058-the-da-hoc-phai-co-lich.md) | Thẻ đã học phải có lịch | active | Thẻ có `learned_at` có `due_at`; thẻ `learned_at IS NULL` không có lượt `scheduled`. | — |
-| [BR-STUDY-059](../features/study/rules/BR-STUDY-059-mode-cham-diem-chay-theo-round.md) | Mode chấm điểm chạy theo round | active | Bốn mode chấm điểm chạy theo round; round sau chỉ gồm thẻ không đạt; `self_assess` không dùng round. | UC-STUDY-001 |
-| [BR-STUDY-060](../features/study/rules/BR-STUDY-060-tap-khong-dat-cua-round.md) | Tập không đạt của round | active | Thẻ từng sai trong round thuộc tập không đạt kể cả khi sau đó đúng; khử trùng theo thẻ. | UC-STUDY-001 |
-| [BR-STUDY-061](../features/study/rules/BR-STUDY-061-moi-round-mot-thu-tu-xao.md) | Mỗi round một thứ tự xáo | active | Mỗi round có thứ tự xáo riêng, không trùng sequence với round hoặc stage liền trước. | UC-STUDY-001 |
-| [BR-STUDY-062](../features/study/rules/BR-STUDY-062-match-luot-thuoc-the-so-huu-term.md) | match: lượt thuộc thẻ sở hữu term | active | Lượt `match` thuộc thẻ sở hữu term bất kể vế nào chạm trước; cặp sai giữ thẻ trên bàn. | — |
-| [BR-STUDY-063](../features/study/rules/BR-STUDY-063-hien-ket-qua-sau-khi-commit.md) | Hiện kết quả sau khi commit | active | Kết quả một lượt chỉ hiện sau khi transaction ghi đã commit; ghi thất bại không chuyển lượt. | — |
-| [BR-STUDY-064](../features/study/rules/BR-STUDY-064-don-vi-hoc-o-lai-man-hinh-giua-luot.md) | Đơn vị học ở lại màn hình giữa hai lượt | active | Đơn vị học đang hiện ở lại trong lúc đọc kết quả và tải lượt kế; không thay bằng trạng thái tải. | — |
-| [BR-STUDY-065](../features/study/rules/BR-STUDY-065-recall-mo-dap-an-khong-phai-ket-cuc.md) | recall: mở đáp án không phải kết cục | active | Ở `recall`, mở đáp án không ghi lượt; dừng đồng hồ và chuyển sang tự đánh giá hai lựa chọn. | — |
-| [BR-STUDY-066](../features/study/rules/BR-STUDY-066-recall-nhip-hai-ket-thuc.md) | recall: nhịp của hai kết thúc | active | Tự đánh giá tự chuyển lượt sau commit; hết giờ hiện trạng thái sai và nút Tiếp theo. | — |
+| [BR-STUDY-058](../features/study/rules/BR-STUDY-058-the-da-hoc-phai-co-lich.md) | Thẻ đã học phải có lịch | active | Thẻ có `learned_at` có `due_at`; thẻ `learned_at IS NULL` không có lượt `scheduled`. | UC-STUDY-001 |
+| [BR-STUDY-059](../features/study/rules/BR-STUDY-059-mode-cham-diem-chay-theo-round.md) | Mode chấm điểm chạy theo round | active | Bốn mode chấm điểm chạy theo round; round sau chỉ gồm thẻ không đạt; `self_assess` không dùng round. | UC-STUDY-001, UC-STUDY-005, UC-STUDY-006, UC-STUDY-007, UC-STUDY-008 |
+| [BR-STUDY-060](../features/study/rules/BR-STUDY-060-tap-khong-dat-cua-round.md) | Tập không đạt của round | active | Thẻ từng sai trong round thuộc tập không đạt kể cả khi sau đó đúng; khử trùng theo thẻ. | UC-STUDY-001, UC-STUDY-005 |
+| [BR-STUDY-061](../features/study/rules/BR-STUDY-061-moi-round-mot-thu-tu-xao.md) | Mỗi round một thứ tự xáo | active | Mỗi round có thứ tự xáo riêng, không trùng sequence với round hoặc stage liền trước. | UC-STUDY-001, UC-STUDY-005, UC-STUDY-006 |
+| [BR-STUDY-062](../features/study/rules/BR-STUDY-062-match-luot-thuoc-the-so-huu-term.md) | match: lượt thuộc thẻ sở hữu term | active | Lượt `match` thuộc thẻ sở hữu term bất kể vế nào chạm trước; cặp sai giữ thẻ trên bàn. | UC-STUDY-005 |
+| [BR-STUDY-063](../features/study/rules/BR-STUDY-063-hien-ket-qua-sau-khi-commit.md) | Hiện kết quả sau khi commit | active | Kết quả một lượt chỉ hiện sau khi transaction ghi đã commit; ghi thất bại không chuyển lượt. | UC-STUDY-004, UC-STUDY-005, UC-STUDY-006, UC-STUDY-007, UC-STUDY-008 |
+| [BR-STUDY-064](../features/study/rules/BR-STUDY-064-don-vi-hoc-o-lai-man-hinh-giua-luot.md) | Đơn vị học ở lại màn hình giữa hai lượt | active | Đơn vị học đang hiện ở lại trong lúc đọc kết quả và tải lượt kế; mỗi mode có thời lượng hiện kết quả riêng. | UC-STUDY-005, UC-STUDY-006, UC-STUDY-007, UC-STUDY-008 |
+| [BR-STUDY-065](../features/study/rules/BR-STUDY-065-recall-mo-dap-an-khong-phai-ket-cuc.md) | recall: mở đáp án không phải kết cục | active | Ở `recall`, mở đáp án không ghi lượt; dừng đồng hồ và chuyển sang tự đánh giá hai lựa chọn. | UC-STUDY-007 |
+| [BR-STUDY-066](../features/study/rules/BR-STUDY-066-recall-nhip-hai-ket-thuc.md) | recall: nhịp của hai kết thúc | active | Tự đánh giá tự chuyển lượt sau commit; hết giờ hiện trạng thái sai và nút Tiếp theo. | UC-STUDY-007 |
 | [BR-STUDY-067](../features/study/rules/BR-STUDY-067-phan-loai-deck-theo-lich.md) | Phân loại deck theo lịch | active | Danh sách deck phân loại `notDue`/`dueToday`/`overdue`, suy ra lúc đọc, badge số ngày quá hạn. | UC-DECK-003, UC-REMINDER-001 |
 | [BR-STUDY-068](../features/study/rules/BR-STUDY-068-hero-summary-bon-tap-roi-nhau.md) | Hero summary nêu tổng Due và hai nửa rời nhau | active | Hero summary nêu tổng Due của level đang xem và hai nửa rời nhau Overdue, Due today; New và Scheduled không ở hero. | UC-DECK-003, UC-STUDY-002 |
 | [BR-STUDY-069](../features/study/rules/BR-STUDY-069-mode-round-hoan-tat-khi-sach.md) | Mode dùng round hoàn tất khi sạch | active | Mode dùng round hoàn tất khi một round kết thúc mà tập không đạt rỗng; không trần số round. | UC-STUDY-001 |
-| [BR-STUDY-070](../features/study/rules/BR-STUDY-070-muc-phan-hoi-khong-dung-la-sai.md) | Mức phản hồi không đúng là sai | active | Mọi mức phản hồi không phải "đúng" vào tập không đạt và ánh xạ như sai; không lưu vào `action`. | — |
-| [BR-STUDY-071](../features/study/rules/BR-STUDY-071-bo-qua-the-thieu-du-lieu-co-ghi-nhan.md) | Bỏ qua thẻ thiếu dữ liệu có ghi nhận | active | Thẻ thiếu dữ liệu cho một stage bị bỏ qua có ghi nhận ở stage đó, vẫn xuất hiện ở stage khác. | UC-STUDY-001 |
-| [BR-STUDY-072](../features/study/rules/BR-STUDY-072-phien-do-khi-mo-app.md) | Phiên dở khi mở app | active | Còn phiên dở cùng ngày học: ba đường tiếp tục, Học mới, Ôn tập; phiên của ngày khác bị đóng `interrupted`. | UC-STUDY-001, UC-STUDY-002, UC-STUDY-003 |
+| [BR-STUDY-070](../features/study/rules/BR-STUDY-070-muc-phan-hoi-khong-dung-la-sai.md) | Mức phản hồi không đúng là sai | active | Mọi mức phản hồi không phải "đúng" vào tập không đạt và ánh xạ như sai; không lưu vào `action`. | UC-STUDY-005, UC-STUDY-007 |
+| [BR-STUDY-071](../features/study/rules/BR-STUDY-071-bo-qua-the-thieu-du-lieu-co-ghi-nhan.md) | Bỏ qua thẻ thiếu dữ liệu có ghi nhận | active | Thẻ thiếu dữ liệu cho một stage bị bỏ qua có ghi nhận ở stage đó, vẫn xuất hiện ở stage khác. | UC-STUDY-001, UC-STUDY-008 |
+| [BR-STUDY-072](../features/study/rules/BR-STUDY-072-phien-do-khi-mo-app.md) | Phiên dở khi mở app | active | Còn phiên dở cùng ngày học: ba đường tiếp tục, Học mới, Ôn tập; phiên của ngày khác bị đóng `interrupted`; toàn app tối đa một phiên `in_progress`. | UC-STUDY-001, UC-STUDY-002, UC-STUDY-003, UC-STUDY-004 |
 | [BR-STUDY-073](../features/study/rules/BR-STUDY-073-self-assess-tran-ba-luot-relearning.md) | self_assess: trần 3 lượt relearning | active | Chỉ `self_assess`: chạm trần 3 lượt `relearning` thì thẻ rời hàng đợi và được bật cờ. | UC-STUDY-001 |
 | [BR-STUDY-074](../features/study/rules/BR-STUDY-074-next-due-at-neo-00-00-dia-phuong.md) | next_due_at neo 00:00 địa phương | active | `next_due_at` rơi vào 00:00 giờ địa phương của ngày thứ N; lưu bằng UTC. | UC-PROGRESS-001, UC-PROGRESS-002, UC-REMINDER-001, UC-STUDY-001, UC-STUDY-002 |
 | [BR-STUDY-075](../features/study/rules/BR-STUDY-075-tab-study-doc-thu-vien-that.md) | Tab Study đọc thư viện thật | active | Tab Study đọc thư viện thật, không phụ thuộc deck id cố định, và không ghi database. | UC-STUDY-002 |
 | [BR-STUDY-076](../features/study/rules/BR-STUDY-076-study-home-liet-ke-root-deck.md) | Study Home liệt kê root deck | active | Study Home liệt kê root deck với workload toàn subtree, xếp theo ba khoá. | UC-STUDY-002 |
 | [BR-STUDY-077](../features/study/rules/BR-STUDY-077-study-home-ba-trang-thai.md) | Study Home ba trạng thái | active | Study Home phân biệt ba trạng thái đã tải, mỗi trạng thái một bước tiếp theo. | UC-STARTER-001, UC-STUDY-002 |
+| [BR-STUDY-078](../features/study/rules/BR-STUDY-078-doc-term-khi-the-moi.md) | Đọc term khi thẻ mới xuất hiện | active | Trong phiên `learning`, mỗi lượt mới ở `browse`, `self_assess`, `guess`, `recall` đọc to `front` một lần bằng ngôn ngữ phát âm của root deck. | UC-STUDY-001 |
+| [BR-STUDY-079](../features/study/rules/BR-STUDY-079-cong-tac-tu-dong-doc.md) | Công tắc tự động đọc | active | Tự động đọc chỉ chạy khi `tts_auto_play` bật; nút loa đọc khi chạm bất kể công tắc. | UC-STUDY-001 |
+| [BR-STUDY-080](../features/study/rules/BR-STUDY-080-tuy-chon-doc-theo-thoi-gian-thuc.md) | Tuỳ chọn đọc áp dụng theo thời gian thực | active | Ngôn ngữ phát âm và công tắc đọc được lấy tại thời điểm đọc; đổi áp dụng cho thẻ kế tiếp, không cần phiên mới. | UC-STUDY-001 |
+| [BR-STUDY-081](../features/study/rules/BR-STUDY-081-doc-la-best-effort.md) | Đọc là best-effort | active | Lỗi engine TTS chỉ được log; không banner, không retry, không đổi lượt; không log nội dung thẻ. | UC-STUDY-001 |
+| [BR-STUDY-082](../features/study/rules/BR-STUDY-082-mot-giong.md) | Một giọng | active | Lần đọc mới dừng lần trước; rời body phiên (summary, abandon, leave, dispose) dừng đọc. | UC-STUDY-001 |
 
 ### Use cases
 
@@ -384,6 +449,11 @@ Chưa có tài liệu.
 | [UC-STUDY-001](../features/study/usecases/UC-STUDY-001-on-tap-mot-deck-luong-chinh.md) | Ôn tập một deck — luồng chính | ready | — |
 | [UC-STUDY-002](../features/study/usecases/UC-STUDY-002-mo-tab-study-va-chon-viec-de-hoc.md) | Mở tab Study và chọn việc để học | ready | — |
 | [UC-STUDY-003](../features/study/usecases/UC-STUDY-003-chon-chieu-hoi-cho-phien-self-assess.md) | Chọn chiều hỏi cho một phiên self-assess | ready | — |
+| [UC-STUDY-004](../features/study/usecases/UC-STUDY-004-xem-the-o-stage-browse.md) | Xem thẻ ở stage browse | ready | — |
+| [UC-STUDY-005](../features/study/usecases/UC-STUDY-005-ghep-cap-o-mode-match.md) | Ghép cặp thuật ngữ và nghĩa ở mode match | ready | — |
+| [UC-STUDY-006](../features/study/usecases/UC-STUDY-006-chon-nghia-dung-o-mode-guess.md) | Chọn nghĩa đúng trong năm lựa chọn ở mode guess | ready | — |
+| [UC-STUDY-007](../features/study/usecases/UC-STUDY-007-nho-lai-nghia-o-mode-recall.md) | Nhớ lại nghĩa trong 20 giây ở mode recall | ready | — |
+| [UC-STUDY-008](../features/study/usecases/UC-STUDY-008-go-thuat-ngu-o-mode-fill.md) | Gõ thuật ngữ từ nghĩa ở mode fill | ready | — |
 
 ## [study-mode](../features/study-mode/README.md)
 
@@ -394,15 +464,15 @@ Chưa có tài liệu.
 | [BR-MODE-001](../features/study-mode/rules/BR-MODE-001-nam-study-mode.md) | Năm StudyMode | deprecated | Đã thay bằng BR-MODE-002. StudyMode là một trong năm: `review`, `match`, `guess`, `recall`, `fill`. | — |
 | [BR-MODE-002](../features/study-mode/rules/BR-MODE-002-sau-study-mode.md) | Sáu StudyMode | active | StudyMode là một trong sáu: `browse`, `self_assess`, `match`, `guess`, `recall`, `fill`. | UC-STUDY-001 |
 | [BR-MODE-003](../features/study-mode/rules/BR-MODE-003-chuoi-stage-hoc-moi-mot-mode-on-tap.md) | Chuỗi stage cho học mới, một mode cho ôn tập | active | Phiên học mới chạy chuỗi stage cố định; phiên ôn tập chạy đúng một mode người dùng chọn. | UC-STUDY-001 |
-| [BR-MODE-004](../features/study-mode/rules/BR-MODE-004-chuoi-stage-theo-thuat-toan.md) | Chuỗi stage theo thuật toán | active | Chuỗi stage: `eight_box` → browse, match, guess, recall, fill; `sm2` → browse, self_assess. | UC-STUDY-001 |
-| [BR-MODE-005](../features/study-mode/rules/BR-MODE-005-browse-khong-sinh-action.md) | browse không sinh action | active | `browse` không sinh action, không ghi `review_log`, không đổi lịch; chỉ ghi tiến độ stage. | UC-PROGRESS-001 |
+| [BR-MODE-004](../features/study-mode/rules/BR-MODE-004-chuoi-stage-theo-thuat-toan.md) | Chuỗi stage theo thuật toán | active | Chuỗi stage: `eight_box` → browse, match, guess, recall, fill; `sm2` → browse, self_assess. | UC-STUDY-001, UC-STUDY-004 |
+| [BR-MODE-005](../features/study-mode/rules/BR-MODE-005-browse-khong-sinh-action.md) | browse không sinh action | active | `browse` không sinh action, không ghi `review_log`, không đổi lịch; chỉ ghi tiến độ stage. | UC-PROGRESS-001, UC-STUDY-004 |
 | [BR-MODE-006](../features/study-mode/rules/BR-MODE-006-browse-hien-hai-mat-self-assess-lat.md) | browse hiện hai mặt, self_assess lật | active | `browse` hiện hai mặt cùng lúc; `self_assess` hiện mặt trước, lật mới hiện mặt sau và action. | UC-STUDY-001 |
-| [BR-MODE-007](../features/study-mode/rules/BR-MODE-007-stage-sequence-do-thuat-toan-khai-bao.md) | stageSequence do thuật toán khai báo | active | Chuỗi stage do thuật toán SRS của root khai báo qua `stageSequence`, không hardcode ở UI. | — |
+| [BR-MODE-007](../features/study-mode/rules/BR-MODE-007-stage-sequence-do-thuat-toan-khai-bao.md) | stageSequence do thuật toán khai báo | active | Chuỗi stage do thuật toán SRS của root khai báo qua `stageSequence`, không hardcode ở UI. | UC-STUDY-001, UC-STUDY-004 |
 | [BR-MODE-008](../features/study-mode/rules/BR-MODE-008-luu-tuong-minh-mode-dang-chay.md) | Lưu tường minh mode đang chạy | active | Stage đang chạy lưu trên `study_session.current_mode`, mode từng lượt trên `review_log.mode`. | UC-CARD-002, UC-STUDY-002 |
-| [BR-MODE-009](../features/study-mode/rules/BR-MODE-009-stage-khong-du-du-lieu.md) | Stage không đủ dữ liệu | active | Học mới: stage không còn thẻ đủ dữ liệu bị bỏ qua; ôn tập: mode không đủ dữ liệu bị vô hiệu hoá kèm lý do. | UC-STUDY-001 |
-| [BR-MODE-010](../features/study-mode/rules/BR-MODE-010-mode-bi-chan-khong-goi-y-reset.md) | Mode bị chặn không gợi ý Reset | active | Mode bị chặn vì thuật toán được trình bày là không khả dụng, không gợi ý Reset để mở khoá. | — |
-| [BR-MODE-011](../features/study-mode/rules/BR-MODE-011-moi-mode-tru-browse-sinh-action.md) | Mọi mode trừ browse sinh action | active | Mọi mode trừ `browse` sinh action thuộc `supportedActions`; `self_assess` lấy action từ người dùng. | UC-STUDY-001 |
-| [BR-MODE-012](../features/study-mode/rules/BR-MODE-012-eight-box-anh-xa-ket-qua-nhi-phan.md) | eight_box: ánh xạ kết quả nhị phân | active | Với `eight_box`: sai → `forgotten`, đúng → `remembered`; hết giờ ở `recall` là sai. | UC-STUDY-001 |
+| [BR-MODE-009](../features/study-mode/rules/BR-MODE-009-stage-khong-du-du-lieu.md) | Stage không đủ dữ liệu | active | Học mới: stage không còn thẻ đủ dữ liệu bị bỏ qua; ôn tập: mode không đủ dữ liệu bị vô hiệu hoá kèm lý do. | UC-STUDY-001, UC-STUDY-005, UC-STUDY-006, UC-STUDY-008 |
+| [BR-MODE-010](../features/study-mode/rules/BR-MODE-010-mode-bi-chan-khong-goi-y-reset.md) | Mode bị chặn không gợi ý Reset | active | Mode bị chặn vì thuật toán được trình bày là không khả dụng, không gợi ý Reset để mở khoá. | UC-STUDY-003 |
+| [BR-MODE-011](../features/study-mode/rules/BR-MODE-011-moi-mode-tru-browse-sinh-action.md) | Mọi mode trừ browse sinh action | active | Mọi mode trừ `browse` sinh action thuộc `supportedActions`; `self_assess` lấy action từ người dùng. | UC-STUDY-001, UC-STUDY-005, UC-STUDY-006, UC-STUDY-007, UC-STUDY-008 |
+| [BR-MODE-012](../features/study-mode/rules/BR-MODE-012-eight-box-anh-xa-ket-qua-nhi-phan.md) | eight_box: ánh xạ kết quả nhị phân | active | Với `eight_box`: sai → `forgotten`, đúng → `remembered`; hết giờ ở `recall` là sai. | UC-STUDY-001, UC-STUDY-005, UC-STUDY-006, UC-STUDY-007, UC-STUDY-008 |
 | [BR-MODE-013](../features/study-mode/rules/BR-MODE-013-dieu-kien-chon-chieu-hoi.md) | Điều kiện chọn chiều hỏi | active | Chọn chiều hỏi chỉ khả dụng khi phiên `reviewing`, scheduler `sm2` và mode `self_assess`. | UC-STUDY-003 |
 | [BR-MODE-014](../features/study-mode/rules/BR-MODE-014-hai-chieu-cua-mot-luot.md) | Hai chiều của một lượt | active | Chiều của một lượt là `korean_to_meaning` hoặc `meaning_to_korean`; chỉ đổi nội dung hai nửa thẻ. | UC-STUDY-003 |
 | [BR-MODE-015](../features/study-mode/rules/BR-MODE-015-chieu-cua-phien-va-mixed.md) | Chiều của phiên và mixed | active | Chiều của phiên là một trong ba; `mixed` gán chiều từng thẻ một lần lúc tạo hàng đợi, lệch không quá một. | UC-STUDY-003 |
@@ -441,7 +511,7 @@ Chưa có tài liệu.
 
 | ID | Title | Status | Summary | Used by |
 |---|---|---|---|---|
-| [BR-TRANSFER-001](../features/transfer/rules/BR-TRANSFER-001-dieu-kien-deck-dich-import.md) | Điều kiện deck đích của import | active | Deck đích import thoả cùng điều kiện tạo card: sub-deck `unset` hoặc `card`. | UC-TRANSFER-001 |
+| [BR-TRANSFER-001](../features/transfer/rules/BR-TRANSFER-001-dieu-kien-deck-dich-import.md) | Điều kiện deck đích của import | active | Nguồn phẳng ghi vào deck card/unset hoặc một deck con mặc định; nguồn có dòng sao cần deck đích chứa được deck con. | UC-TRANSFER-001 |
 | [BR-TRANSFER-002](../features/transfer/rules/BR-TRANSFER-002-hang-import-can-ca-hai-mat.md) | Hàng import cần cả hai mặt | active | Mỗi hàng import cần `front` và `back` sau trim; hàng trống toàn bộ được bỏ qua. | UC-TRANSFER-001 |
 | [BR-TRANSFER-003](../features/transfer/rules/BR-TRANSFER-003-khoa-trung-lap-khi-import.md) | Khoá trùng lặp khi import | active | Trùng lặp đo bằng `front_folded + back_folded` trong deck đích và trong cùng nguồn import. | UC-TRANSFER-001 |
 | [BR-TRANSFER-004](../features/transfer/rules/BR-TRANSFER-004-import-mot-transaction.md) | Import trong một transaction | active | Một lần import ghi toàn bộ card, study state và tag trong đúng một transaction. | UC-TRANSFER-001 |
@@ -455,6 +525,7 @@ Chưa có tài liệu.
 | [BR-TRANSFER-012](../features/transfer/rules/BR-TRANSFER-012-sau-header-canonical.md) | Sáu header canonical | active | File export mở đầu bằng sáu header canonical, chữ thường tiếng Anh, không localize. | UC-TRANSFER-002 |
 | [BR-TRANSFER-013](../features/transfer/rules/BR-TRANSFER-013-ten-file-export.md) | Tên file export | active | Tên file export dẫn xuất từ tên deck đã sanitize. | UC-TRANSFER-002 |
 | [BR-TRANSFER-014](../features/transfer/rules/BR-TRANSFER-014-file-export-la-du-lieu-rieng-tu.md) | File export là dữ liệu riêng tư | active | File export là dữ liệu riêng tư, chỉ tạo khi người dùng chủ động yêu cầu. | UC-TRANSFER-002 |
+| [BR-TRANSFER-015](../features/transfer/rules/BR-TRANSFER-015-dong-sao-la-ten-deck.md) | Dòng sao là tên deck | active | Dòng dữ liệu có ô `front` bắt đầu bằng `*` đặt tên một deck con; các dòng dưới nó là card của deck đó. | UC-TRANSFER-001 |
 
 ### Use cases
 
@@ -472,7 +543,7 @@ Chưa có tài liệu.
 | [BR-TRASH-001](../features/trash/rules/BR-TRASH-001-xoa-la-soft-delete.md) | Xoá là soft-delete | active | Xoá card hoặc deck là soft-delete trong một transaction, tạo đúng một batch và một item root. | UC-CARD-001, UC-DECK-002, UC-TRASH-001 |
 | [BR-TRASH-002](../features/trash/rules/BR-TRASH-002-loai-khoi-moi-be-mat-active.md) | Loại khỏi mọi bề mặt active | active | Hàng đã soft-delete bị loại khỏi mọi bề mặt active, đếm và hàng đợi học. | UC-DECK-002, UC-TRASH-001 |
 | [BR-TRASH-003](../features/trash/rules/BR-TRASH-003-xoa-deck-danh-dau-descendant-active.md) | Xoá deck đánh dấu mọi descendant active | active | Xoá deck đánh dấu deck và mọi descendant đang active bằng cùng một batch. | UC-DECK-002, UC-TRASH-001 |
-| [BR-TRASH-004](../features/trash/rules/BR-TRASH-004-soft-delete-giu-nguyen-du-lieu.md) | Soft-delete giữ nguyên dữ liệu | active | Soft-delete giữ nguyên nội dung, lịch, lịch sử, tag và id tới khi purge; phiên chạm item bị vô hiệu. | UC-CARD-001, UC-DECK-002, UC-TRASH-001 |
+| [BR-TRASH-004](../features/trash/rules/BR-TRASH-004-soft-delete-giu-nguyen-du-lieu.md) | Soft-delete giữ nguyên dữ liệu | active | Soft-delete giữ nguyên nội dung, lịch, lịch sử, tag và id tới khi purge; phiên chạm item bị vô hiệu. | UC-CARD-001, UC-DECK-002, UC-STUDY-006, UC-TRASH-001 |
 | [BR-TRASH-005](../features/trash/rules/BR-TRASH-005-content-type-ve-unset-khi-soft-delete.md) | content_type về unset khi soft-delete | active | Soft-delete lấy đi direct child active cuối cùng thì deck non-root về `unset` cùng transaction. | UC-CARD-001, UC-DECK-002, UC-TRASH-001 |
 | [BR-TRASH-006](../features/trash/rules/BR-TRASH-006-restore-hoi-target.md) | Restore hỏi target | active | Restore hỏi target và không ghi gì trước khi người dùng xác nhận. | UC-TRASH-001 |
 | [BR-TRASH-007](../features/trash/rules/BR-TRASH-007-restore-dung-mot-batch.md) | Restore đúng một batch | active | Restore một batch hồi sinh đúng các hàng của batch đó, giữ nguyên id, nội dung, lịch sử và tag. | UC-TRASH-001 |

@@ -38,7 +38,9 @@ class RecallCountdownBarWidget extends StatelessWidget {
     final fraction = MediaQuery.disableAnimationsOf(context)
         ? seconds * _msPerSecond / recallTurnMs
         : left / recallTurnMs;
-    final ink = isTimedOut ? context.mxColors.warning : colors.onSurfaceVariant;
+    final foreground = isTimedOut
+        ? context.mxColors.warning
+        : colors.onSurfaceVariant;
     final fill = isTimedOut
         ? context.mxColors.warningContainer
         : colors.onSurfaceVariant;
@@ -64,12 +66,14 @@ class RecallCountdownBarWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     caption,
-                    style: context.texts.labelSmall?.copyWith(color: ink),
+                    style: context.texts.labelSmall?.copyWith(
+                      color: foreground,
+                    ),
                   ),
                 ),
                 Text(
                   l10n.studyRecallClock(seconds, recallTurnMs ~/ _msPerSecond),
-                  style: context.texts.labelSmall?.copyWith(color: ink),
+                  style: context.texts.labelSmall?.copyWith(color: foreground),
                 ),
               ],
             ),

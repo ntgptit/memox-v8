@@ -1,5 +1,7 @@
 # FE-B5 Daily reminder UI Implementation Plan
 
+> **Historical (ADR-019).** Written against the "Mobile UI Kit v3", retired on 2026-09-30; its kit references and screen captures are history, not authority. The app, `DESIGN.md` and the goldens decide the UI; each screen's current state is in its detail file under `docs/shared/ui/screen-handoff/`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven-development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build screen 24 "Daily reminder" on the six BE-B5a use cases and the BE-B5b adapter, and give screen 23 its Daily reminder row, the reset copy that names the reminder, and a reconcile after a reset.

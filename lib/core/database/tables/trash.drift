@@ -10,7 +10,7 @@ CREATE TABLE delete_batches (
   -- The only home of the deletion time: the 30-day retention counts from it
   -- (BR-TRASH-009).
   deleted_at DATETIME NOT NULL,
-  owner_id TEXT, -- NULL = local profile. Scope: sub-project sau (auth).
+  owner_id TEXT, -- Retired: always NULL, one profile per device (DEV-198).
   server_version INTEGER -- NULL = never acknowledged by the server (ADR-013).
 ) AS DeleteBatch;
 

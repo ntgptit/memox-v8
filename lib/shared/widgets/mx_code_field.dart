@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// The code variant of [MxTextField]: six slots over one hidden field. The field fills the
 /// row, so a tap on any slot focuses it and a long press offers paste; the
@@ -83,11 +82,11 @@ class _MxCodeFieldState extends State<MxCodeField> {
     }
     if (isNext) {
       return BorderSide(
-        color: context.accentColor,
+        color: context.colors.primary,
         width: context.dimens.strokeFocus,
       );
     }
-    // A disabled code rests on the ghost edge, as a disabled field does.
+    // A disabled code rests on the border hairline, as a disabled field does.
     return BorderSide(
       color: widget.field.isEnabled
           ? context.colors.outline

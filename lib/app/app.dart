@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memox/app/app_lifecycle_hooks.dart';
 import 'package:memox/app/font_license.dart';
 import 'package:memox/app/router/account_redirect.dart';
 import 'package:memox/app/router/app_router.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
-import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/logging/di/logging_providers.dart';
 import 'package:memox/core/theme/app_theme.dart';
@@ -19,20 +19,16 @@ import 'package:memox/features/account/presentation/providers/welcome_due_provid
 import 'package:memox/features/account/presentation/widgets/sections/account_layer_host_widget.dart';
 import 'package:memox/features/reminders/data/datasources/reminder_plugins_data_source.dart';
 import 'package:memox/features/reminders/di/reminder_plugins_data_source_provider.dart';
-import 'package:memox/features/reminders/presentation/providers/reconcile_reminder_provider.dart';
 import 'package:memox/features/settings/domain/entities/app_settings_entity.dart';
 import 'package:memox/features/settings/domain/models/language_choice_model.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
-import 'package:memox/features/study/presentation/providers/abandon_stale_sessions_use_case_provider.dart';
-import 'package:memox/features/trash/presentation/providers/purge_expired_trash_use_case_provider.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
-/// The composition root: themes, localization and the router, the start-up
-/// close of an earlier day's open study session (FE-A6 D9), and the Trash's
-/// auto-purge at start and on every resume (FE-B1 D5), and the daily
-/// reminder's start-up Reconcile and tap route (BE-B5b), and the account
-/// transition layer (account UI spec U4). The theme and the language follow
+/// The composition root: themes, localization and the router, the features'
+/// lifecycle side effects at start and on every resume ([AppLifecycleHooks]),
+/// the daily reminder's tap route (BE-B5b), and the account transition layer
+/// (account UI spec U4). The theme and the language follow
 /// the `app_settings` row (BR-SETTINGS-005, BR-SETTINGS-006).
 class MemoxApp extends ConsumerStatefulWidget {
   const MemoxApp({
@@ -89,6 +85,12 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
   /// Taps on the daily reminder while the app runs (BR-REMINDER-008).
   StreamSubscription<String?>? _reminderTaps;
 
+  /// The features' lifecycle side effects (DEV-176), over this scope's
+  /// container.
+  late final _hooks = AppLifecycleHooks(
+    ProviderScope.containerOf(context, listen: false),
+  );
+
   @override
   void initState() {
     super.initState();
@@ -96,18 +98,13 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
     // Every inset is read from MediaQuery.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     registerFontLicense();
-    // A session left open on an earlier day closes as interrupted before
-    // anything could offer it (BR-STUDY-072). Unawaited: the entry already
-    // offers no earlier day's session, so no frame waits for it.
-    unawaited(_closeStaleSessions());
-    unawaited(_purgeExpiredTrash());
+    // The features' start side effects, and the resume's below, in one
+    // place (DEV-176). Unawaited: no frame waits for them.
+    _hooks.onStart();
     _lifecycle = AppLifecycleListener(
       onResume: () {
         appLogger.info('lifecycle.resume', category: LogCategory.lifecycle);
-        unawaited(_purgeExpiredTrash());
-        // The local offset may have changed while the app slept
-        // (BR-REMINDER-009); Reconcile schedules from the offset now.
-        unawaited(_reconcileReminder());
+        _hooks.onResume();
         // The logs of the last session go up while the app is in front
         // (ADR-018 §3).
         unawaited(ref.read(logSchedulerProvider)?.syncNow());
@@ -119,7 +116,6 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
       },
     );
     _followReminderTaps();
-    unawaited(_reconcileReminder());
     // Account UI spec §4: the welcome flag and the account drive the
     // redirect.
     ref
@@ -155,35 +151,6 @@ class _MemoxAppState extends ConsumerState<MemoxApp> {
   void _openFromReminder(String? payload) {
     if (payload != reminderTapPayload || !mounted) return;
     _router.go(AppRoutes.study);
-  }
-
-  /// UC-REMINDER-001 step 6: the pending alarm follows the stored reminder
-  /// again, through the gate. A refusal changes nothing the person sees; the
-  /// next start tries again.
-  Future<void> _reconcileReminder() async {
-    try {
-      await ref.read(reconcileReminderProvider)();
-    } on Failure {
-      // The stored reminder could not be read; the next start retries.
-    }
-  }
-
-  /// BR-TRASH-009: what is past 30 days leaves for good. A failed purge
-  /// keeps it for the next start, resume or visit to the Trash.
-  Future<void> _purgeExpiredTrash() async {
-    try {
-      await ref.read(purgeExpiredTrashUseCaseProvider)();
-    } on Failure {
-      // Nothing to say: the entries stay in the Trash until the next try.
-    }
-  }
-
-  Future<void> _closeStaleSessions() async {
-    try {
-      await ref.read(abandonStaleSessionsUseCaseProvider)();
-    } on Failure {
-      // A failed sweep leaves the sessions open; the next start retries.
-    }
   }
 
   @override

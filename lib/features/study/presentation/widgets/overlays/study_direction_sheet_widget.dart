@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// UC-STUDY-003: an sm2 review asks its direction once, here, before it
 /// opens (BR-MODE-013, BR-MODE-017). Term first is chosen at first
@@ -36,15 +37,7 @@ class _StudyDirectionSheetWidgetState extends State<StudyDirectionSheetWidget> {
     final l10n = context.l10n;
     const choices = DirectionChoice.values;
     return MxBottomSheet(
-      header: Padding(
-        padding: EdgeInsets.fromLTRB(
-          context.dimens.space24,
-          context.dimens.space4,
-          context.dimens.space24,
-          context.dimens.space12,
-        ),
-        child: Text(l10n.studyDirectionTitle, style: context.texts.titleSmall),
-      ),
+      title: l10n.studyDirectionTitle,
       footer: MxSheetActions.custom(
         isInSheet: true,
         children: [
@@ -72,14 +65,17 @@ class _StudyDirectionSheetWidgetState extends State<StudyDirectionSheetWidget> {
             ),
             child: MxNote(text: l10n.studyDirectionNote),
           ),
-          for (final (index, choice) in choices.indexed)
-            MxOptionRow(
-              title: _title(l10n, choice),
-              description: _body(l10n, choice),
-              isSelected: choice == _choice,
-              onSelected: () => setState(() => _choice = choice),
-              hasDivider: index < choices.length - 1,
-            ),
+          MxDividedColumn(
+            children: [
+              for (final choice in choices)
+                MxOptionRow(
+                  title: _title(l10n, choice),
+                  description: _body(l10n, choice),
+                  isSelected: choice == _choice,
+                  onSelected: () => setState(() => _choice = choice),
+                ),
+            ],
+          ),
         ],
       ),
     );

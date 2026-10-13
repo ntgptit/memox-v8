@@ -1,5 +1,6 @@
 import 'package:memox/features/transfer/domain/failures/transfer_failure.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
+import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/domain/models/import_summary_model.dart';
 import 'package:memox/features/transfer/domain/models/source_table_model.dart';
@@ -28,7 +29,10 @@ final class CardImportDraft extends CardImportState {
     this.table,
     this.mapping = const ColumnMapping({}),
     this.hasHeaderRow = true,
+    this.plan,
     this.preview,
+    this.sectionChoices = const {},
+    this.defaultDeckName,
     this.isIncludingDuplicates = false,
     this.isBusy = false,
     this.problem,
@@ -49,8 +53,20 @@ final class CardImportDraft extends CardImportState {
   final ColumnMapping mapping;
   final bool hasHeaderRow;
 
+  /// What step 3 read, re-derived into [preview] as the user decides
+  /// (spec 2026-10-08 U2–U6); null before step 3.
+  final ImportPlan? plan;
+
   /// Null before step 3.
   final ImportPreview? preview;
+
+  /// How each clashing group of [plan] is imported, by group index (U3).
+  /// They belong to one mapping, so a new preview starts without them.
+  final Map<int, ImportSectionChoice> sectionChoices;
+
+  /// The default deck's name once a preview has named it (U4); kept across
+  /// Back so an edit is not lost.
+  final String? defaultDeckName;
   final bool isIncludingDuplicates;
 
   /// Reading or previewing is running.
@@ -63,11 +79,18 @@ final class CardImportDraft extends CardImportState {
   int get willWrite =>
       preview?.willWrite(includeDuplicates: isIncludingDuplicates) ?? 0;
 
+  /// Import may run: something to write, every clash decided and the
+  /// default name usable (U6).
+  bool get canCommit => willWrite > 0 && (preview?.canCommit ?? false);
+
   CardImportDraft copyWith({
     CardImportStep? step,
     ColumnMapping? mapping,
     bool? hasHeaderRow,
+    ImportPlan? plan,
     ImportPreview? preview,
+    Map<int, ImportSectionChoice>? sectionChoices,
+    String? defaultDeckName,
     bool? isIncludingDuplicates,
     bool? isBusy,
     TransferRejection? problem,
@@ -80,7 +103,10 @@ final class CardImportDraft extends CardImportState {
     table: table,
     mapping: mapping ?? this.mapping,
     hasHeaderRow: hasHeaderRow ?? this.hasHeaderRow,
+    plan: plan ?? this.plan,
     preview: preview ?? this.preview,
+    sectionChoices: sectionChoices ?? this.sectionChoices,
+    defaultDeckName: defaultDeckName ?? this.defaultDeckName,
     isIncludingDuplicates: isIncludingDuplicates ?? this.isIncludingDuplicates,
     isBusy: isBusy ?? this.isBusy,
     problem: isProblemCleared ? null : problem ?? this.problem,

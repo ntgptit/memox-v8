@@ -29,6 +29,9 @@ final class MatchModeHandler extends GradedModeHandler {
   const MatchModeHandler();
 
   @override
+  bool get readsTermAloud => false;
+
+  @override
   bool get servesInOrder => false;
 
   @override

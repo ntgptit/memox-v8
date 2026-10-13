@@ -41,3 +41,13 @@ WHERE NOT EXISTS (SELECT 1 FROM card_schedule s WHERE s.card_id = c.id);
 
 -- The initial row of a card the pull left without one (afterPull).
 createInitialSchedule: INSERT INTO card_schedule $row;
+
+-- Invariant 9 (BR-SRS-028, BR-SRS-029): the schedules not at their root's
+-- scheduler and generation, each with the root's; afterPull reseeds them
+-- (DEV-224). A pull skips a schedule pending here, so a reset or a scheduler
+-- change pulled from another device can move the root past it.
+cardsWithStaleSchedule:
+SELECT s.card_id, r.scheduler_type, r.scheduler_version, r.generation
+FROM card_schedule s
+JOIN card c ON c.id = s.card_id JOIN deck d ON d.id = c.deck_id JOIN deck r ON r.id = d.root_id
+WHERE s.generation <> r.generation OR s.scheduler_type <> r.scheduler_type;

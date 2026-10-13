@@ -15,7 +15,7 @@ không bị chép đi đâu cả — chúng chỉ nhận `delete_batch_id`.
 | `item_type` | TEXT NOT NULL | `'card'` \| `'deck'` — loại của **item root**, tức thứ người dùng đã chạm (BR-TRASH-011) |
 | `root_item_id` | TEXT NOT NULL | id của card hoặc deck đó. Không phải FK: hai bảng đích, và cascade đã đi theo chiều ngược lại |
 | `deleted_at` | DATETIME NOT NULL | UTC. Mốc duy nhất của retention 30 ngày (BR-TRASH-009) |
-| `owner_id` | TEXT NULL | NULL = local profile |
+| `owner_id` | TEXT NULL | **Retired** (DEV-198): luôn NULL, như `deck.owner_id` (`shared/data/schema.md`); giữ cột tới lần rebuild bảng vì lý do khác |
 
 ```sql
 CREATE INDEX idx_delete_batches_deleted ON delete_batches (deleted_at, id);

@@ -16,9 +16,11 @@ abstract mixin class EntitySyncAdapter {
   /// Records the version the server gave to the pushed state.
   Future<void> markAcknowledged(String id, int serverVersion);
 
-  /// Runs once at the end of a successful pull, in list order, still under
-  /// `applying_remote`: the place for a rule that needs every pulled row,
-  /// such as giving new cards their schedule (BR-CARD-004). None by default.
+  /// Runs once at the end of a pull that applied at least one change, in
+  /// list order, still under `applying_remote`: the place for a rule that
+  /// needs every pulled row, such as giving new cards their schedule
+  /// (BR-CARD-004). A pull with nothing to apply skips it (DEV-210). None
+  /// by default.
   Future<void> afterPull() async {}
 }
 

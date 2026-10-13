@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_level_query_label_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// One sheet for the level's order and its due-only filter (screen 01). A
 /// sort applies at once; Done closes the sheet.
@@ -30,6 +30,7 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
   final String? parentId;
 
   /// The handoff's order: manual, date added, name, most due, progress.
+
   static const _sorts = [
     DeckLevelSort.manual,
     DeckLevelSort.recent,
@@ -46,26 +47,11 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
     final l10n = context.l10n;
     final query = ref.watch(deckLevelQueryProvider(parentId));
     return MxBottomSheet(
-      header: Padding(
-        padding: EdgeInsets.fromLTRB(
-          context.dimens.space24,
-          context.dimens.space4,
-          context.dimens.space24,
-          context.dimens.space12,
-        ),
-        child: Text(l10n.deckSortFilterTitle, style: context.texts.titleSmall),
-      ),
-      footer: MxSheetActions.custom(
+      title: l10n.deckSortFilterTitle,
+      footer: MxSheetActions.single(
         isInSheet: true,
-        children: [
-          Expanded(
-            child: MxButton(
-              label: l10n.commonDone,
-              isBlock: true,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-        ],
+        label: l10n.commonDone,
+        onPressed: () => Navigator.of(context).pop(),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,17 +59,25 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
           Padding(
             padding:
                 EdgeInsets.only(top: context.dimens.space4) +
-                EdgeInsets.symmetric(horizontal: context.dimens.space8),
+                // "Sort by" starts on the rows' edge, 16 from the sheet like
+                // the option rows' radios: the header carries 4 of its own, so
+                // the sheet gives it the rest (DEV-232).
+                EdgeInsets.symmetric(
+                  horizontal: context.dimens.space16 - context.dimens.space4,
+                ),
             child: MxListSectionHeader(label: l10n.deckSortByHeader),
           ),
-          for (final sort in _sorts)
-            MxOptionRow(
-              title: l10n.deckSort(sort),
-              description: _hint(l10n, sort),
-              isSelected: sort == query.sort,
-              onSelected: () => _query(ref).sortBy(sort),
-              hasDivider: sort != _sorts.last,
-            ),
+          MxDividedColumn(
+            children: [
+              for (final sort in _sorts)
+                MxOptionRow(
+                  title: l10n.deckSort(sort),
+                  description: _hint(l10n, sort),
+                  isSelected: sort == query.sort,
+                  onSelected: () => _query(ref).sortBy(sort),
+                ),
+            ],
+          ),
           MxSettingsRow(
             label: l10n.deckFilterDueOnlyTitle,
             subtitle: l10n.deckFilterDueOnlyBody,

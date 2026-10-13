@@ -14,7 +14,6 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
-import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 /// Picks the deck [deck] moves under (UC-DECK-005).
@@ -75,6 +74,7 @@ class _DeckMoveSheetWidgetState extends ConsumerState<DeckMoveSheetWidget> {
     final provider = deckMoveTargetsProvider(widget.deck.id);
     return switch (ref.watch(provider)) {
       AsyncData(:final value) => MxDeckPickerSheet(
+        isHeld: _isMoving,
         title: l10n.deckMoveTitle,
         rule: l10n.deckMoveRule,
         candidates: [
@@ -94,14 +94,16 @@ class _DeckMoveSheetWidgetState extends ConsumerState<DeckMoveSheetWidget> {
         emptyTitle: l10n.deckMoveEmptyTitle,
         emptyBody: l10n.deckMoveEmptyBody,
       ),
-      AsyncError(:final isLoading) => MxBottomSheet(
-        child: MxErrorState(
-          title: l10n.libraryLoadErrorTitle,
-          body: l10n.libraryLoadErrorBody,
-          retryLabel: l10n.commonRetry,
-          onRetry: () => ref.invalidate(provider),
-          isRetrying: isLoading,
-        ),
+      AsyncError(:final isLoading) => MxDeckPickerErrorSheet(
+        title: l10n.deckMoveTitle,
+        rule: l10n.deckMoveRule,
+        errorTitle: l10n.libraryLoadErrorTitle,
+        errorBody: l10n.libraryLoadErrorBody,
+        retryLabel: l10n.commonRetry,
+        onRetry: () => ref.invalidate(provider),
+        isRetrying: isLoading,
+        dismissLabel: l10n.commonCancel,
+        onDismiss: () => Navigator.of(context).pop(),
       ),
       _ => MxDeckPickerLoadingSheet(
         title: l10n.deckMoveTitle,

@@ -34,10 +34,22 @@ final class ProgressDao extends DatabaseAccessor<AppDatabase>
     with _$ProgressDaoMixin {
   ProgressDao(super.attachedDatabase);
 
-  /// Every local day with activity up to today, oldest first, folded in
-  /// SQLite: the streak's days (UC-PROGRESS-001 step 2, BR-PROGRESS-016).
-  Future<List<int>> activeDays(ProgressDays days) =>
-      progressActiveDays(days.utcOffset.inSeconds, days.today).get();
+  /// The active days the overview needs, oldest first (UC-PROGRESS-001
+  /// step 2, BR-PROGRESS-016): the days that follow each other back from
+  /// the streak's anchor (today when it has activity, else yesterday), or
+  /// the latest active day alone when the streak is lost, or none when
+  /// nothing was ever studied. The history before the streak's gap is
+  /// never read (DEV-208).
+  Future<List<int>> activeDays(ProgressDays days) async {
+    final offset = days.utcOffset.inSeconds;
+    final last = await progressLastActiveDay(
+      offset,
+      days.endOfDay(days.today),
+    ).getSingleOrNull();
+    if (last == null) return const [];
+    if (last < days.today - 1) return [last];
+    return progressStreakDays(last, offset).get();
+  }
 
   /// The days of the last seven with activity, with their Learning and
   /// Reviewing card-days: Today and the bars (BR-PROGRESS-014,
@@ -45,8 +57,8 @@ final class ProgressDao extends DatabaseAccessor<AppDatabase>
   Future<List<ActiveDayRow>> weekActivity(ProgressDays days) async {
     final rows = await progressWeekActivity(
       days.utcOffset.inSeconds,
-      days.weekStart,
-      days.today,
+      days.startOfDay(days.weekStart),
+      days.endOfDay(days.today),
     ).get();
     return [
       for (final row in rows)
@@ -60,8 +72,8 @@ final class ProgressDao extends DatabaseAccessor<AppDatabase>
   Future<List<LevelRow>> rootLevel(ProgressDays days) async {
     final rows = await progressRootLevel(
       days.utcOffset.inSeconds,
-      days.monthStart,
-      days.today,
+      days.startOfDay(days.monthStart),
+      days.endOfDay(days.today),
       days.weekStart,
     ).get();
     return [for (final row in rows) _levelRowOf(row)];
@@ -74,8 +86,8 @@ final class ProgressDao extends DatabaseAccessor<AppDatabase>
     final rows = await progressChildLevel(
       deckId,
       days.utcOffset.inSeconds,
-      days.monthStart,
-      days.today,
+      days.startOfDay(days.monthStart),
+      days.endOfDay(days.today),
       days.weekStart,
     ).get();
     return [for (final row in rows) _levelRowOf(row)];

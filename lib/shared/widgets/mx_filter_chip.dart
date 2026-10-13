@@ -28,12 +28,11 @@ class MxFilterChip extends StatelessWidget {
   final IconData? icon;
 
   static const double _countOpacityResting = 0.6;
-  static const double _countOpacitySelected = 0.75;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final ink = isSelected ? colors.onPrimary : colors.onSurface;
+    final foreground = isSelected ? colors.onPrimary : colors.onSurface;
     final select = onSelected;
     final chip = MergeSemantics(
       child: Semantics(
@@ -46,7 +45,7 @@ class MxFilterChip extends StatelessWidget {
                 fill: isSelected
                     ? colors.primary
                     : colors.surfaceContainerLowest,
-                ink: ink,
+                foreground: foreground,
                 edge: isSelected
                     ? null
                     : BorderSide(
@@ -67,16 +66,26 @@ class MxFilterChip extends StatelessWidget {
             children: [
               if (icon case final glyph?)
                 Icon(glyph, size: context.dimens.sizeIconInline),
-              Text(label, maxLines: 1, softWrap: false),
+              // A label wider than the column ends in an ellipsis, as
+              // MxTagChip's does (SW-REV-010).
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
               if (count case final value?)
                 Text(
                   value.toString(),
+                  // On the primary fill a dimmed count loses its contrast, so
+                  // the selected count keeps the label's foreground
+                  // (SW-REV-001).
                   style: context.texts.labelSmall?.copyWith(
-                    color: ink.withValues(
-                      alpha: isSelected
-                          ? _countOpacitySelected
-                          : _countOpacityResting,
-                    ),
+                    color: isSelected
+                        ? foreground
+                        : foreground.withValues(alpha: _countOpacityResting),
                   ),
                 ),
             ],
