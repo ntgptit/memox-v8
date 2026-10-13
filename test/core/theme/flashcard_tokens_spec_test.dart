@@ -15,136 +15,11 @@ import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/mx_text_styles.dart';
 
+import '../../support/flashcard_tokens_spec_values.dart';
+
 // Pins every value of the "Flashcard Color Tokens" spec, sections 1 to 4
 // (docs/shared/design/memox-design-tokens.md, owner 2026-10-13, ADR-022).
 // The spec is the source of truth: a value here changes only with the spec.
-
-// §1: the 46 ColorScheme roles, light then dark.
-final _schemeRoles = <String, (Color Function(ColorScheme), int, int)>{
-  'primary': ((s) => s.primary, 0xFF564BCB, 0xFF564BCB),
-  'onPrimary': ((s) => s.onPrimary, 0xFFFFFFFF, 0xFFFFFFFF),
-  'primaryContainer': ((s) => s.primaryContainer, 0xFF564BCB, 0xFF564BCB),
-  'onPrimaryContainer': ((s) => s.onPrimaryContainer, 0xFFD9D4FF, 0xFFD9D4FF),
-  'primaryFixed': ((s) => s.primaryFixed, 0xFFE3DFFF, 0xFFE3DFFF),
-  'primaryFixedDim': ((s) => s.primaryFixedDim, 0xFFC5C0FF, 0xFFC5C0FF),
-  'onPrimaryFixed': ((s) => s.onPrimaryFixed, 0xFF130067, 0xFF130067),
-  'onPrimaryFixedVariant': (
-    (s) => s.onPrimaryFixedVariant,
-    0xFF3D2FB2,
-    0xFF3D2FB2,
-  ),
-  'secondary': ((s) => s.secondary, 0xFF535E7A, 0xFFBBC6E6),
-  'onSecondary': ((s) => s.onSecondary, 0xFFFFFFFF, 0xFF253049),
-  'secondaryContainer': ((s) => s.secondaryContainer, 0xFFD1DCFD, 0xFF3B4661),
-  'onSecondaryContainer': (
-    (s) => s.onSecondaryContainer,
-    0xFF55607C,
-    0xFFAAB5D4,
-  ),
-  'secondaryFixed': ((s) => s.secondaryFixed, 0xFFD9E2FF, 0xFFD9E2FF),
-  'secondaryFixedDim': ((s) => s.secondaryFixedDim, 0xFFBBC6E6, 0xFFBBC6E6),
-  'onSecondaryFixed': ((s) => s.onSecondaryFixed, 0xFF0F1B33, 0xFF0F1B33),
-  'onSecondaryFixedVariant': (
-    (s) => s.onSecondaryFixedVariant,
-    0xFF3B4661,
-    0xFF3B4661,
-  ),
-  'tertiary': ((s) => s.tertiary, 0xFF723700, 0xFFFFB785),
-  'onTertiary': ((s) => s.onTertiary, 0xFFFFFFFF, 0xFF502400),
-  'tertiaryContainer': ((s) => s.tertiaryContainer, 0xFF964A00, 0xFF964A00),
-  'onTertiaryContainer': ((s) => s.onTertiaryContainer, 0xFFFFD0B2, 0xFFFFD0B2),
-  'tertiaryFixed': ((s) => s.tertiaryFixed, 0xFFFFDCC6, 0xFFFFDCC6),
-  'tertiaryFixedDim': ((s) => s.tertiaryFixedDim, 0xFFFFB785, 0xFFFFB785),
-  'onTertiaryFixed': ((s) => s.onTertiaryFixed, 0xFF301400, 0xFF301400),
-  'onTertiaryFixedVariant': (
-    (s) => s.onTertiaryFixedVariant,
-    0xFF723700,
-    0xFF723700,
-  ),
-  'error': ((s) => s.error, 0xFFBA1A1A, 0xFFFFB4AB),
-  'onError': ((s) => s.onError, 0xFFFFFFFF, 0xFF690005),
-  'errorContainer': ((s) => s.errorContainer, 0xFFFFDAD6, 0xFF93000A),
-  'onErrorContainer': ((s) => s.onErrorContainer, 0xFF93000A, 0xFFFFDAD6),
-  'surface': ((s) => s.surface, 0xFFFFFFFF, 0xFF0A082D),
-  'onSurface': ((s) => s.onSurface, 0xFF1C1B21, 0xFFE5E1E9),
-  'surfaceDim': ((s) => s.surfaceDim, 0xFFDFE0E0, 0xFF0A082D),
-  'surfaceBright': ((s) => s.surfaceBright, 0xFFFFFFFF, 0xFF313055),
-  'surfaceContainerLowest': (
-    (s) => s.surfaceContainerLowest,
-    0xFFFFFFFF,
-    0xFF040227,
-  ),
-  'surfaceContainerLow': ((s) => s.surfaceContainerLow, 0xFFF9F9F9, 0xFF141337),
-  'surfaceContainer': ((s) => s.surfaceContainer, 0xFFF3F3F3, 0xFF18173B),
-  'surfaceContainerHigh': (
-    (s) => s.surfaceContainerHigh,
-    0xFFEEEEEE,
-    0xFF222145,
-  ),
-  'surfaceContainerHighest': (
-    (s) => s.surfaceContainerHighest,
-    0xFFE8E8E8,
-    0xFF2D2C51,
-  ),
-  'onSurfaceVariant': ((s) => s.onSurfaceVariant, 0xFF3B4661, 0xFFBBC6E6),
-  'outline': ((s) => s.outline, 0xFF6C7794, 0xFF8590AE),
-  'outlineVariant': ((s) => s.outlineVariant, 0xFFBBC6E6, 0xFF3B4661),
-  'shadow': ((s) => s.shadow, 0xFF000000, 0xFF000000),
-  'scrim': ((s) => s.scrim, 0xFF000000, 0xFF000000),
-  'inverseSurface': ((s) => s.inverseSurface, 0xFF313036, 0xFFE5E1E9),
-  'onInverseSurface': ((s) => s.onInverseSurface, 0xFFF3EFF7, 0xFF313036),
-  'inversePrimary': ((s) => s.inversePrimary, 0xFFC5C0FF, 0xFF564BCB),
-  'surfaceTint': ((s) => s.surfaceTint, 0xFF564BCB, 0xFF564BCB),
-};
-
-// §2.1 and §2.2: the 44 MxSemanticColors fields, light then dark.
-final _semanticFields = <String, (Color Function(MxSemanticColors), int, int)>{
-  'mastery': ((c) => c.mastery, 0xFF17AE79, 0xFF17AE79),
-  'onMastery': ((c) => c.onMastery, 0xFF003925, 0xFF003925),
-  'success': ((c) => c.success, 0xFF006C49, 0xFF5ADDA4),
-  'warning': ((c) => c.warning, 0xFFF59E0B, 0xFFF59E0B),
-  'onWarning': ((c) => c.onWarning, 0xFF613B00, 0xFF613B00),
-  'statusNew': ((c) => c.statusNew, 0xFF6C7794, 0xFF8590AE),
-  'statusLearning': ((c) => c.statusLearning, 0xFFF59E0B, 0xFFF59E0B),
-  'statusReviewing': ((c) => c.statusReviewing, 0xFF564BCB, 0xFFC5C0FF),
-  'statusMastered': ((c) => c.statusMastered, 0xFF17AE79, 0xFF17AE79),
-  'errorFill': ((c) => c.errorFill, 0xFFBA1A1A, 0xFFFFB4AB),
-  'onErrorFill': ((c) => c.onErrorFill, 0xFFFFFFFF, 0xFF690005),
-  'streak': ((c) => c.streak, 0xFFF59E0B, 0xFFF59E0B),
-  'primaryText': ((c) => c.primaryText, 0xFF564BCB, 0xFFC5C0FF),
-  'masteryText': ((c) => c.masteryText, 0xFF006C49, 0xFF5ADDA4),
-  'learningText': ((c) => c.learningText, 0xFF855300, 0xFFFFC174),
-  'warningText': ((c) => c.warningText, 0xFF855300, 0xFFFFC174),
-  'focusRing': ((c) => c.focusRing, 0xFF564BCB, 0xFF564BCB),
-  'border': ((c) => c.border, 0xFFBBC6E6, 0xFF3B4661),
-  'primaryTrack': ((c) => c.primaryTrack, 0xFF564BCB, 0xFF564BCB),
-  'neutralTrack': ((c) => c.neutralTrack, 0xFFE8E8E8, 0xFF2D2C51),
-  'primarySoft': ((c) => c.primarySoft, 0xFFE4E2F7, 0xFF28254F),
-  'onPrimarySoft': ((c) => c.onPrimarySoft, 0xFF564BCB, 0xFFC5C0FF),
-  'successSoft': ((c) => c.successSoft, 0xFFD6E7E2, 0xFF172A40),
-  'successBorder': ((c) => c.successBorder, 0xFF006C49, 0xFF5ADDA4),
-  'onSuccessSoft': ((c) => c.onSuccessSoft, 0xFF006C49, 0xFF5ADDA4),
-  'learningSoft': ((c) => c.learningSoft, 0xFFEBE3D6, 0xFF312638),
-  'learningBorder': ((c) => c.learningBorder, 0xFF855300, 0xFFFFC174),
-  'onLearningSoft': ((c) => c.onLearningSoft, 0xFF855300, 0xFFFFC174),
-  'warningSoft': ((c) => c.warningSoft, 0xFFEBE3D6, 0xFF312638),
-  'warningBorder': ((c) => c.warningBorder, 0xFF855300, 0xFFFFC174),
-  'onWarningSoft': ((c) => c.onWarningSoft, 0xFF855300, 0xFFFFC174),
-  'dangerSoft': ((c) => c.dangerSoft, 0xFFF4DADA, 0xFF312441),
-  'dangerBorder': ((c) => c.dangerBorder, 0xFFBA1A1A, 0xFFFFB4AB),
-  'onDangerSoft': ((c) => c.onDangerSoft, 0xFFBA1A1A, 0xFFFFB4AB),
-  'neutralSoft': ((c) => c.neutralSoft, 0xFFD1DCFD, 0xFF3B4661),
-  'onNeutralSoft': ((c) => c.onNeutralSoft, 0xFF55607C, 0xFFAAB5D4),
-  'onSoft': ((c) => c.onSoft, 0xFF1C1B21, 0xFFE5E1E9),
-  // §2.2, new.
-  'cardSurface': ((c) => c.cardSurface, 0xFFF1F1FB, 0xFF222145),
-  'searchSurface': ((c) => c.searchSurface, 0xFFF1F1FB, 0xFF222145),
-  'tileSurface': ((c) => c.tileSurface, 0xFFEDF8FF, 0xFF2E3953),
-  'divider': ((c) => c.divider, 0xFFEEEEEE, 0xFF18173B),
-  'info': ((c) => c.info, 0xFF006684, 0xFFA9E3FF),
-  'infoContainer': ((c) => c.infoContainer, 0xFF50CCFC, 0xFF50CCFC),
-  'onInfoContainer': ((c) => c.onInfoContainer, 0xFF00546D, 0xFF00546D),
-};
 
 typedef _Role = ({double size, double line, FontWeight weight, double track});
 
@@ -259,10 +134,10 @@ void main() {
       expect(AppColorSchemes.dark.brightness, Brightness.dark);
     });
 
-    test('lists the 46 roles', () => expect(_schemeRoles, hasLength(46)));
+    test('lists the 46 roles', () => expect(specSchemeRoles, hasLength(46)));
 
     for (final MapEntry(key: role, value: (read, light, dark))
-        in _schemeRoles.entries) {
+        in specSchemeRoles.entries) {
       test(role, () {
         expect(read(AppColorSchemes.light).toARGB32(), light, reason: 'light');
         expect(read(AppColorSchemes.dark).toARGB32(), dark, reason: 'dark');
@@ -270,7 +145,8 @@ void main() {
     }
 
     test('the built themes carry the same schemes', () {
-      for (final MapEntry(value: (read, light, dark)) in _schemeRoles.entries) {
+      for (final MapEntry(value: (read, light, dark))
+          in specSchemeRoles.entries) {
         expect(read(buildLightTheme().colorScheme).toARGB32(), light);
         expect(read(buildDarkTheme().colorScheme).toARGB32(), dark);
       }
@@ -278,10 +154,13 @@ void main() {
   });
 
   group('§2 MxSemanticColors', () {
-    test('lists the 44 fields', () => expect(_semanticFields, hasLength(44)));
+    test(
+      'lists the 44 fields',
+      () => expect(specSemanticFields, hasLength(44)),
+    );
 
     for (final MapEntry(key: field, value: (read, light, dark))
-        in _semanticFields.entries) {
+        in specSemanticFields.entries) {
       test(field, () {
         expect(read(MxSemanticColors.light).toARGB32(), light, reason: 'light');
         expect(read(MxSemanticColors.dark).toARGB32(), dark, reason: 'dark');
@@ -322,7 +201,8 @@ void main() {
         expect(field, red);
       }
       final end = MxSemanticColors.light.lerp(MxSemanticColors.dark, 1);
-      for (final MapEntry(value: (read, _, dark)) in _semanticFields.entries) {
+      for (final MapEntry(value: (read, _, dark))
+          in specSemanticFields.entries) {
         expect(read(end).toARGB32(), dark);
       }
     });

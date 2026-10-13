@@ -107,6 +107,8 @@ Dependency rules: `core/theme/` imports only Flutter. `shared/` imports only
 
 ## 4. Theme binding
 
+> **Superseded by Flashcard Color Tokens 2026-10-13** ([`memox-design-tokens.md`](../../shared/design/memox-design-tokens.md), [ADR-022](../../shared/decisions/ADR-022-token-flashcard-color-tokens.md)): the colour roles, type scale, tokens and component values of §4.1–§4.4 (the V3 foundations) are replaced. The structure (where each value lives) still holds.
+
 The order follows the 15-step sequence in
 [`02-theme-binding.md`](../../shared/ui/design-handoff/02-theme-binding.md).
 

@@ -19,7 +19,9 @@ deviation.
   sử, không được đọc làm nguồn.
 - Thứ tự ưu tiên: BR/UC > [`DESIGN.md`](../../../DESIGN.md) cùng golden đã được chủ dự án
   duyệt > file chi tiết của màn trong
-  [`docs/shared/ui/screen-handoff/`](../ui/screen-handoff/00-index.md).
+  [`docs/shared/ui/screen-handoff/`](../ui/screen-handoff/00-index.md). Từ 2026-10-13,
+  file token "Flashcard Color Tokens" đứng trên `DESIGN.md`
+  ([ADR-022](ADR-022-token-flashcard-color-tokens.md)).
 - `DESIGN.md` được sinh từ code (`lib/core/theme/`, `lib/shared/widgets/`) và cập nhật
   cùng PR với mọi thay đổi hệ thống hình ảnh. File chi tiết của màn cập nhật cùng PR với
   thay đổi của màn đó. Không còn khái niệm deviation so với kit.

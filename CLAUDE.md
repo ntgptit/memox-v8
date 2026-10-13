@@ -147,7 +147,10 @@ asked. Without the connector, tell the owner and record progress nowhere else.
   `memox-api-services/` is frozen: a reference only, out of CI, not developed.
 - **The app is the UI authority** ([ADR-019](docs/shared/decisions/ADR-019-app-la-chuan-ui.md)):
   `DESIGN.md` and the reviewed goldens. The "Mobile UI Kit v3" artifact is
-  retired and never read. A BR or UC beats `DESIGN.md`; `DESIGN.md` and the
+  retired and never read. A BR or UC beats the token spec
+  ([`docs/shared/design/memox-design-tokens.md`](docs/shared/design/memox-design-tokens.md),
+  [ADR-022](docs/shared/decisions/ADR-022-token-flashcard-color-tokens.md)); the token spec
+  beats `DESIGN.md`; `DESIGN.md` and the
   goldens beat a screen's detail file. A PR that changes the visual system
   updates `DESIGN.md`; one that changes a screen updates its detail file and
   its row in the screen index.

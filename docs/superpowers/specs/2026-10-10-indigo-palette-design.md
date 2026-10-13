@@ -1,5 +1,7 @@
 # Indigo palette: explicit colour tokens, no derived inks
 
+> **Superseded by Flashcard Color Tokens 2026-10-13** ([`memox-design-tokens.md`](../../shared/design/memox-design-tokens.md), [ADR-022](../../shared/decisions/ADR-022-token-flashcard-color-tokens.md)): every colour value here, D3's exception table and D4's light soft grounds in both themes are replaced. Read this file as history.
+
 Date: 2026-10-10 · Owner decisions in the brainstorm of 2026-10-10 · Status: draft for owner review
 
 ## 1. Goal
@@ -19,8 +21,8 @@ The reference's brand is never named in the repository.
 |---|---|
 | D1 | Scope is colour only. Typography (Plus Jakarta Sans and its seven roles), radii, border widths, spacing, sizes and elevation alphas stay as they are. |
 | D2 | "Remove ink" means removing the derivation: `primaryInk`, `warningInk`, `dangerInk`, `successInk`, `status{New,Learning,Reviewing,Mastered}Ink`, `MasteryRamp.ink`, `primaryInkOf`. Each text or glyph role reads its own literal token. |
-| D3 | The reference values are used exactly, even where a pair falls below WCAG AA. The contrast test keeps every pair that passes and records each pair that does not as a named exception with its measured ratio (§7). |
-| D4 | Fully explicit (approach B): `MxDerivedColors` is deleted. Soft grounds (tints) are the reference's `/50` tokens in **both** themes, so in Indigo Night a banner, a tinted badge or an outcome tile is a light box with dark text, as the reference's stat boxes are. |
+| D3 | *(Superseded by Flashcard Color Tokens 2026-10-13.)* The reference values are used exactly, even where a pair falls below WCAG AA. The contrast test keeps every pair that passes and records each pair that does not as a named exception with its measured ratio (§7). |
+| D4 | *(Superseded by Flashcard Color Tokens 2026-10-13: soft grounds are 16% over each theme's surface, dark in dark; `MxSoftGround` is deleted.)* Fully explicit (approach B): `MxDerivedColors` is deleted. Soft grounds (tints) are the reference's `/50` tokens in **both** themes, so in Indigo Night a banner, a tinted badge or an outcome tile is a light box with dark text, as the reference's stat boxes are. |
 | D5 | The token mapping of §4 and §5 was approved as presented. |
 | D6 | Theme names: Indigo Day / Indigo Night. |
 

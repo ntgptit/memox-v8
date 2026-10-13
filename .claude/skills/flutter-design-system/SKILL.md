@@ -41,12 +41,12 @@ Light and dark are both first-class. Dark is not "light with inverted colours" â
 elevation reads through surface tint rather than shadow, and a colour that
 passes contrast on white can fail on a dark surface.
 
-Every colour is a literal token per theme (spec 2026-10-10): Material roles on
-`context.colors`, everything else on `context.semanticColors`. Primary as text
-or icon is `semanticColors.primaryText`, a focus ring `semanticColors.focusRing`;
-`colors.primary` is for fills and indicators. Nothing derives a colour with an
-alpha or a lerp; a soft ground is a `*Soft` token, and caller content on one
-goes in `MxSoftGround`.
+Every colour is a literal token per theme ("Flashcard Color Tokens", ADR-022):
+Material roles on `context.colors`, everything else on `context.semanticColors`.
+Primary as text or icon is `semanticColors.primaryText`, a focus ring
+`semanticColors.focusRing`; `colors.primary` is for fills and indicators. Nothing
+derives a colour with an alpha or a lerp; a soft ground is a `*Soft` token, and
+its content reads the current theme.
 
 Check every interactive component in disabled, pressed, focused and selected
 states. Focused especially: it is invisible to mouse users and essential for

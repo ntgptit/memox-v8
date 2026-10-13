@@ -98,6 +98,7 @@ docs/
 │   ├── rules/                   # BR-CORE-NNN-<slug>.md — rule không feature nào sở hữu
 │   ├── decisions/               # ADR-NNN-<slug>.md
 │   ├── data/                    # schema.md — bảng, cột, index, invariant `-- N.`
+│   ├── design/                  # memox-design-tokens.md — giá trị token chuẩn (ADR-022)
 │   ├── ui/
 │   │   ├── navigation.md        # điều hướng toàn app
 │   │   └── screen-handoff/      # từng màn của app: layout, state kèm golden, ruling, copy
@@ -117,8 +118,11 @@ File/folder trong `shared/` và file tùy chọn của feature chỉ tồn tại
 dung thật. Không tạo file rỗng.
 
 `shared/ui/screen-handoff/` ghi từng màn của app: layout, state kèm golden, ruling và copy
-([index](shared/ui/screen-handoff/00-index.md)). Hệ thống hình ảnh ở [`DESIGN.md`](../DESIGN.md);
-thứ tự ưu tiên theo [ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md).
+([index](shared/ui/screen-handoff/00-index.md)). Giá trị token chuẩn ở
+[`shared/design/memox-design-tokens.md`](shared/design/memox-design-tokens.md), hệ thống hình
+ảnh ở [`DESIGN.md`](../DESIGN.md); thứ tự ưu tiên theo
+[ADR-019](shared/decisions/ADR-019-app-la-chuan-ui.md), sửa bởi
+[ADR-022](shared/decisions/ADR-022-token-flashcard-color-tokens.md).
 
 ## Thứ tự đọc
 

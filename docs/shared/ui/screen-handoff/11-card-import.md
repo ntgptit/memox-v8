@@ -78,6 +78,7 @@ Source it closes; while importing it does nothing (IT-NAV-012 step 4–5).
 - **Spec §8.2 K4:** results use `MxEmptyState` in its success, neutral, warning and danger tones.
 - The deck is shown by the deck context header shared with the card editor and detail, with no card count.
 - **UC-TRANSFER-001 step 8, ruling 1:** success offers Import another file · View the cards; `none` offers Import another file · Back to deck.
+- **The Short Label Rule, recorded exception (owner 2026-10-13):** at the regular button's 24 padding ("Flashcard Color Tokens" §6) the result's pair outgrows a 360 dp row in English, so it stacks (`canStack`); Vietnamese stays side by side. The labels are kept as they are.
 - **UC-TRANSFER-001:** there is no deck picker, so rejects offer Close only.
 - **Spec D2:** only the six canonical header names map by themselves.
 - Paste field and header cells use the body font; the theme has no monospace role.

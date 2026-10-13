@@ -1,775 +1,1178 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-10T00:00:00.000Z",
+  "generatedAt": "2026-10-13T00:00:00.000Z",
   "title": "Design System: MemoX V8",
   "extensions": {
     "colorMeta": {
       "primary": {
         "role": "primary",
-        "displayName": "Brand Indigo",
-        "canonical": "#4255FF",
-        "light": "#4255FF",
-        "dark": "#4255FF",
+        "displayName": "Primary",
+        "canonical": "#564BCB",
+        "light": "#564BCB",
+        "dark": "#564BCB",
         "tonalRamp": [
-          "#4255FF"
+          "#564BCB"
         ],
-        "tonalInfo": "Every colour is a literal token per theme (spec 2026-10-10); nothing is derived. Text and glyphs read text tokens, focus reads focus-ring, hairlines read border, control edges read outline."
+        "source": "Material role",
+        "tonalInfo": "Every colour is a literal token per theme (\"Flashcard Color Tokens\" 2026-10-13, ADR-022); nothing is derived at run time. Soft grounds are 16% over each theme's surface, precomputed."
       },
       "on-primary": {
         "role": "on",
-        "displayName": "White on Indigo",
+        "displayName": "On Primary",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
         "dark": "#FFFFFF",
         "tonalRamp": [
           "#FFFFFF"
-        ]
+        ],
+        "source": "Material role"
       },
       "primary-container": {
         "role": "primary",
         "displayName": "Primary Container",
-        "canonical": "#EDEFFF",
-        "light": "#EDEFFF",
-        "dark": "#14125C",
+        "canonical": "#564BCB",
+        "light": "#564BCB",
+        "dark": "#564BCB",
         "tonalRamp": [
-          "#14125C",
-          "#EDEFFF"
-        ]
+          "#564BCB"
+        ],
+        "source": "Material role"
       },
       "on-primary-container": {
         "role": "on",
         "displayName": "On Primary Container",
-        "canonical": "#4255FF",
-        "light": "#4255FF",
-        "dark": "#EDEFFF",
+        "canonical": "#D9D4FF",
+        "light": "#D9D4FF",
+        "dark": "#D9D4FF",
         "tonalRamp": [
-          "#EDEFFF",
-          "#4255FF"
-        ]
+          "#D9D4FF"
+        ],
+        "source": "Material role"
+      },
+      "primary-fixed": {
+        "role": "primary",
+        "displayName": "Primary Fixed",
+        "canonical": "#E3DFFF",
+        "light": "#E3DFFF",
+        "dark": "#E3DFFF",
+        "tonalRamp": [
+          "#E3DFFF"
+        ],
+        "source": "Material role"
+      },
+      "primary-fixed-dim": {
+        "role": "primary",
+        "displayName": "Primary Fixed Dim",
+        "canonical": "#C5C0FF",
+        "light": "#C5C0FF",
+        "dark": "#C5C0FF",
+        "tonalRamp": [
+          "#C5C0FF"
+        ],
+        "source": "Material role"
+      },
+      "on-primary-fixed": {
+        "role": "on",
+        "displayName": "On Primary Fixed",
+        "canonical": "#130067",
+        "light": "#130067",
+        "dark": "#130067",
+        "tonalRamp": [
+          "#130067"
+        ],
+        "source": "Material role"
+      },
+      "on-primary-fixed-variant": {
+        "role": "on",
+        "displayName": "On Primary Fixed Variant",
+        "canonical": "#3D2FB2",
+        "light": "#3D2FB2",
+        "dark": "#3D2FB2",
+        "tonalRamp": [
+          "#3D2FB2"
+        ],
+        "source": "Material role"
       },
       "secondary": {
-        "role": "secondary",
-        "displayName": "Neutral Slate",
-        "canonical": "#586380",
-        "light": "#586380",
-        "dark": "#586380",
+        "role": "semantic",
+        "displayName": "Secondary",
+        "canonical": "#535E7A",
+        "light": "#535E7A",
+        "dark": "#BBC6E6",
         "tonalRamp": [
-          "#586380"
-        ]
+          "#535E7A",
+          "#BBC6E6"
+        ],
+        "source": "Material role"
+      },
+      "on-secondary": {
+        "role": "on",
+        "displayName": "On Secondary",
+        "canonical": "#FFFFFF",
+        "light": "#FFFFFF",
+        "dark": "#253049",
+        "tonalRamp": [
+          "#253049",
+          "#FFFFFF"
+        ],
+        "source": "Material role"
       },
       "secondary-container": {
-        "role": "secondary",
-        "displayName": "Slate Container",
-        "canonical": "#EDEFF4",
-        "light": "#EDEFF4",
-        "dark": "#2E3856",
+        "role": "semantic",
+        "displayName": "Secondary Container",
+        "canonical": "#D1DCFD",
+        "light": "#D1DCFD",
+        "dark": "#3B4661",
         "tonalRamp": [
-          "#2E3856",
-          "#EDEFF4"
-        ]
+          "#3B4661",
+          "#D1DCFD"
+        ],
+        "source": "Material role"
       },
       "on-secondary-container": {
         "role": "on",
-        "displayName": "On Slate Container",
-        "canonical": "#2E3856",
-        "light": "#2E3856",
-        "dark": "#D9DDE8",
+        "displayName": "On Secondary Container",
+        "canonical": "#55607C",
+        "light": "#55607C",
+        "dark": "#AAB5D4",
         "tonalRamp": [
-          "#D9DDE8",
-          "#2E3856"
-        ]
+          "#55607C",
+          "#AAB5D4"
+        ],
+        "source": "Material role"
+      },
+      "secondary-fixed": {
+        "role": "semantic",
+        "displayName": "Secondary Fixed",
+        "canonical": "#D9E2FF",
+        "light": "#D9E2FF",
+        "dark": "#D9E2FF",
+        "tonalRamp": [
+          "#D9E2FF"
+        ],
+        "source": "Material role"
+      },
+      "secondary-fixed-dim": {
+        "role": "semantic",
+        "displayName": "Secondary Fixed Dim",
+        "canonical": "#BBC6E6",
+        "light": "#BBC6E6",
+        "dark": "#BBC6E6",
+        "tonalRamp": [
+          "#BBC6E6"
+        ],
+        "source": "Material role"
+      },
+      "on-secondary-fixed": {
+        "role": "on",
+        "displayName": "On Secondary Fixed",
+        "canonical": "#0F1B33",
+        "light": "#0F1B33",
+        "dark": "#0F1B33",
+        "tonalRamp": [
+          "#0F1B33"
+        ],
+        "source": "Material role"
+      },
+      "on-secondary-fixed-variant": {
+        "role": "on",
+        "displayName": "On Secondary Fixed Variant",
+        "canonical": "#3B4661",
+        "light": "#3B4661",
+        "dark": "#3B4661",
+        "tonalRamp": [
+          "#3B4661"
+        ],
+        "source": "Material role"
       },
       "tertiary": {
-        "role": "tertiary",
-        "displayName": "Accent Purple",
-        "canonical": "#9C63FF",
-        "light": "#9C63FF",
-        "dark": "#9C63FF",
+        "role": "semantic",
+        "displayName": "Tertiary",
+        "canonical": "#723700",
+        "light": "#723700",
+        "dark": "#FFB785",
         "tonalRamp": [
-          "#9C63FF"
-        ]
+          "#723700",
+          "#FFB785"
+        ],
+        "source": "Material role"
+      },
+      "on-tertiary": {
+        "role": "on",
+        "displayName": "On Tertiary",
+        "canonical": "#FFFFFF",
+        "light": "#FFFFFF",
+        "dark": "#502400",
+        "tonalRamp": [
+          "#502400",
+          "#FFFFFF"
+        ],
+        "source": "Material role"
       },
       "tertiary-container": {
-        "role": "tertiary",
-        "displayName": "Accent Pink",
-        "canonical": "#FAA6FF",
-        "light": "#FAA6FF",
-        "dark": "#FAA6FF",
+        "role": "semantic",
+        "displayName": "Tertiary Container",
+        "canonical": "#964A00",
+        "light": "#964A00",
+        "dark": "#964A00",
         "tonalRamp": [
-          "#FAA6FF"
-        ]
+          "#964A00"
+        ],
+        "source": "Material role"
       },
       "on-tertiary-container": {
         "role": "on",
-        "displayName": "On Accent Pink",
-        "canonical": "#282E3E",
-        "light": "#282E3E",
-        "dark": "#282E3E",
+        "displayName": "On Tertiary Container",
+        "canonical": "#FFD0B2",
+        "light": "#FFD0B2",
+        "dark": "#FFD0B2",
         "tonalRamp": [
-          "#282E3E"
-        ]
+          "#FFD0B2"
+        ],
+        "source": "Material role"
+      },
+      "tertiary-fixed": {
+        "role": "semantic",
+        "displayName": "Tertiary Fixed",
+        "canonical": "#FFDCC6",
+        "light": "#FFDCC6",
+        "dark": "#FFDCC6",
+        "tonalRamp": [
+          "#FFDCC6"
+        ],
+        "source": "Material role"
+      },
+      "tertiary-fixed-dim": {
+        "role": "semantic",
+        "displayName": "Tertiary Fixed Dim",
+        "canonical": "#FFB785",
+        "light": "#FFB785",
+        "dark": "#FFB785",
+        "tonalRamp": [
+          "#FFB785"
+        ],
+        "source": "Material role"
+      },
+      "on-tertiary-fixed": {
+        "role": "on",
+        "displayName": "On Tertiary Fixed",
+        "canonical": "#301400",
+        "light": "#301400",
+        "dark": "#301400",
+        "tonalRamp": [
+          "#301400"
+        ],
+        "source": "Material role"
+      },
+      "on-tertiary-fixed-variant": {
+        "role": "on",
+        "displayName": "On Tertiary Fixed Variant",
+        "canonical": "#723700",
+        "light": "#723700",
+        "dark": "#723700",
+        "tonalRamp": [
+          "#723700"
+        ],
+        "source": "Material role"
       },
       "error": {
         "role": "error",
         "displayName": "Error",
-        "canonical": "#C02447",
-        "light": "#C02447",
-        "dark": "#FF8FA3",
+        "canonical": "#BA1A1A",
+        "light": "#BA1A1A",
+        "dark": "#FFB4AB",
         "tonalRamp": [
-          "#C02447",
-          "#FF8FA3"
-        ]
+          "#BA1A1A",
+          "#FFB4AB"
+        ],
+        "source": "Material role"
+      },
+      "on-error": {
+        "role": "on",
+        "displayName": "On Error",
+        "canonical": "#FFFFFF",
+        "light": "#FFFFFF",
+        "dark": "#690005",
+        "tonalRamp": [
+          "#690005",
+          "#FFFFFF"
+        ],
+        "source": "Material role"
       },
       "error-container": {
         "role": "error",
         "displayName": "Error Container",
-        "canonical": "#FBDDE3",
-        "light": "#FBDDE3",
-        "dark": "#7A2036",
+        "canonical": "#FFDAD6",
+        "light": "#FFDAD6",
+        "dark": "#93000A",
         "tonalRamp": [
-          "#FBDDE3",
-          "#7A2036"
-        ]
+          "#93000A",
+          "#FFDAD6"
+        ],
+        "source": "Material role"
       },
       "on-error-container": {
         "role": "on",
         "displayName": "On Error Container",
-        "canonical": "#7A0A23",
-        "light": "#7A0A23",
-        "dark": "#FFD9DF",
+        "canonical": "#93000A",
+        "light": "#93000A",
+        "dark": "#FFDAD6",
         "tonalRamp": [
-          "#7A0A23",
-          "#FFD9DF"
-        ]
+          "#93000A",
+          "#FFDAD6"
+        ],
+        "source": "Material role"
       },
       "surface": {
         "role": "neutral",
-        "displayName": "Page",
+        "displayName": "Surface",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#0A092D",
+        "dark": "#0A082D",
         "tonalRamp": [
-          "#0A092D",
+          "#0A082D",
           "#FFFFFF"
-        ]
+        ],
+        "source": "Material role"
+      },
+      "on-surface": {
+        "role": "on",
+        "displayName": "On Surface",
+        "canonical": "#1C1B21",
+        "light": "#1C1B21",
+        "dark": "#E5E1E9",
+        "tonalRamp": [
+          "#1C1B21",
+          "#E5E1E9"
+        ],
+        "source": "Material role"
+      },
+      "surface-dim": {
+        "role": "neutral",
+        "displayName": "Surface Dim",
+        "canonical": "#DFE0E0",
+        "light": "#DFE0E0",
+        "dark": "#0A082D",
+        "tonalRamp": [
+          "#0A082D",
+          "#DFE0E0"
+        ],
+        "source": "Material role"
       },
       "surface-bright": {
         "role": "neutral",
         "displayName": "Surface Bright",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#2E3856",
+        "dark": "#313055",
         "tonalRamp": [
-          "#2E3856",
+          "#313055",
           "#FFFFFF"
-        ]
+        ],
+        "source": "Material role"
       },
       "surface-container-lowest": {
         "role": "neutral",
-        "displayName": "Card",
+        "displayName": "Surface Container Lowest",
         "canonical": "#FFFFFF",
         "light": "#FFFFFF",
-        "dark": "#202040",
+        "dark": "#040227",
         "tonalRamp": [
-          "#202040",
+          "#040227",
           "#FFFFFF"
-        ]
+        ],
+        "source": "Material role"
       },
       "surface-container-low": {
         "role": "neutral",
-        "displayName": "Surface",
-        "canonical": "#F6F7FB",
-        "light": "#F6F7FB",
-        "dark": "#2E3856",
+        "displayName": "Surface Container Low",
+        "canonical": "#F9F9F9",
+        "light": "#F9F9F9",
+        "dark": "#141337",
         "tonalRamp": [
-          "#2E3856",
-          "#F6F7FB"
-        ]
+          "#141337",
+          "#F9F9F9"
+        ],
+        "source": "Material role"
       },
       "surface-container": {
         "role": "neutral",
-        "displayName": "Surface",
-        "canonical": "#F6F7FB",
-        "light": "#F6F7FB",
-        "dark": "#2E3856",
+        "displayName": "Surface Container",
+        "canonical": "#F3F3F3",
+        "light": "#F3F3F3",
+        "dark": "#18173B",
         "tonalRamp": [
-          "#2E3856",
-          "#F6F7FB"
-        ]
+          "#18173B",
+          "#F3F3F3"
+        ],
+        "source": "Material role"
       },
       "surface-container-high": {
         "role": "neutral",
-        "displayName": "Muted Fill",
-        "canonical": "#EDEFF4",
-        "light": "#EDEFF4",
-        "dark": "#282E3E",
+        "displayName": "Surface Container High",
+        "canonical": "#EEEEEE",
+        "light": "#EEEEEE",
+        "dark": "#222145",
         "tonalRamp": [
-          "#282E3E",
-          "#EDEFF4"
-        ]
+          "#222145",
+          "#EEEEEE"
+        ],
+        "source": "Material role"
       },
       "surface-container-highest": {
         "role": "neutral",
-        "displayName": "Strong Fill",
-        "canonical": "#D9DDE8",
-        "light": "#D9DDE8",
-        "dark": "#586380",
+        "displayName": "Surface Container Highest",
+        "canonical": "#E8E8E8",
+        "light": "#E8E8E8",
+        "dark": "#2D2C51",
         "tonalRamp": [
-          "#586380",
-          "#D9DDE8"
-        ]
-      },
-      "on-surface": {
-        "role": "on",
-        "displayName": "On Surface",
-        "canonical": "#282E3E",
-        "light": "#282E3E",
-        "dark": "#F6F7FB",
-        "tonalRamp": [
-          "#F6F7FB",
-          "#282E3E"
-        ]
+          "#2D2C51",
+          "#E8E8E8"
+        ],
+        "source": "Material role"
       },
       "on-surface-variant": {
         "role": "on",
         "displayName": "On Surface Variant",
-        "canonical": "#586380",
-        "light": "#586380",
-        "dark": "#D9DDE8",
+        "canonical": "#3B4661",
+        "light": "#3B4661",
+        "dark": "#BBC6E6",
         "tonalRamp": [
-          "#D9DDE8",
-          "#586380"
-        ]
+          "#3B4661",
+          "#BBC6E6"
+        ],
+        "source": "Material role"
       },
       "outline": {
         "role": "neutral",
         "displayName": "Outline",
-        "canonical": "#939BB4",
-        "light": "#939BB4",
-        "dark": "#586380",
+        "canonical": "#6C7794",
+        "light": "#6C7794",
+        "dark": "#8590AE",
         "tonalRamp": [
-          "#586380",
-          "#939BB4"
-        ]
+          "#6C7794",
+          "#8590AE"
+        ],
+        "source": "Material role"
       },
       "outline-variant": {
         "role": "neutral",
         "displayName": "Outline Variant",
-        "canonical": "#D9DDE8",
-        "light": "#D9DDE8",
-        "dark": "#586380",
+        "canonical": "#BBC6E6",
+        "light": "#BBC6E6",
+        "dark": "#3B4661",
         "tonalRamp": [
-          "#586380",
-          "#D9DDE8"
-        ]
+          "#3B4661",
+          "#BBC6E6"
+        ],
+        "source": "Material role"
       },
-      "inverse-surface": {
+      "shadow": {
         "role": "neutral",
-        "displayName": "Inverse Surface",
-        "canonical": "#1A1D28",
-        "light": "#1A1D28",
-        "dark": "#EDEFF4",
+        "displayName": "Shadow",
+        "canonical": "#000000",
+        "light": "#000000",
+        "dark": "#000000",
         "tonalRamp": [
-          "#EDEFF4",
-          "#1A1D28"
-        ]
-      },
-      "on-inverse-surface": {
-        "role": "on",
-        "displayName": "On Inverse Surface",
-        "canonical": "#F6F7FB",
-        "light": "#F6F7FB",
-        "dark": "#282E3E",
-        "tonalRamp": [
-          "#282E3E",
-          "#F6F7FB"
-        ]
-      },
-      "inverse-primary": {
-        "role": "primary",
-        "displayName": "Toast Action",
-        "canonical": "#F6F7FB",
-        "light": "#F6F7FB",
-        "dark": "#586380",
-        "tonalRamp": [
-          "#586380",
-          "#F6F7FB"
-        ]
+          "#000000"
+        ],
+        "source": "Material role"
       },
       "scrim": {
         "role": "neutral",
         "displayName": "Scrim",
-        "canonical": "#010110",
-        "light": "#010110",
-        "dark": "#010110",
+        "canonical": "#000000",
+        "light": "#000000",
+        "dark": "#000000",
         "tonalRamp": [
-          "#010110"
-        ]
+          "#000000"
+        ],
+        "source": "Material role"
+      },
+      "inverse-surface": {
+        "role": "semantic",
+        "displayName": "Inverse Surface",
+        "canonical": "#313036",
+        "light": "#313036",
+        "dark": "#E5E1E9",
+        "tonalRamp": [
+          "#313036",
+          "#E5E1E9"
+        ],
+        "source": "Material role"
+      },
+      "on-inverse-surface": {
+        "role": "on",
+        "displayName": "On Inverse Surface",
+        "canonical": "#F3EFF7",
+        "light": "#F3EFF7",
+        "dark": "#313036",
+        "tonalRamp": [
+          "#313036",
+          "#F3EFF7"
+        ],
+        "source": "Material role"
+      },
+      "inverse-primary": {
+        "role": "primary",
+        "displayName": "Inverse Primary",
+        "canonical": "#C5C0FF",
+        "light": "#C5C0FF",
+        "dark": "#564BCB",
+        "tonalRamp": [
+          "#564BCB",
+          "#C5C0FF"
+        ],
+        "source": "Material role"
+      },
+      "surface-tint": {
+        "role": "neutral",
+        "displayName": "Surface Tint",
+        "canonical": "#564BCB",
+        "light": "#564BCB",
+        "dark": "#564BCB",
+        "tonalRamp": [
+          "#564BCB"
+        ],
+        "source": "Material role"
       },
       "mastery": {
         "role": "semantic",
-        "displayName": "Mastery Green",
-        "canonical": "#18AE79",
-        "light": "#18AE79",
-        "dark": "#18AE79",
+        "displayName": "Mastery",
+        "canonical": "#17AE79",
+        "light": "#17AE79",
+        "dark": "#17AE79",
         "tonalRamp": [
-          "#18AE79"
-        ]
+          "#17AE79"
+        ],
+        "source": "Flashcard Color Tokens: `success-container`"
       },
       "on-mastery": {
         "role": "on",
         "displayName": "On Mastery",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#FFFFFF",
+        "canonical": "#003925",
+        "light": "#003925",
+        "dark": "#003925",
         "tonalRamp": [
-          "#FFFFFF"
-        ]
+          "#003925"
+        ],
+        "source": "Flashcard Color Tokens: `success-onContainer`"
       },
       "success": {
         "role": "semantic",
         "displayName": "Success",
-        "canonical": "#12815A",
-        "light": "#12815A",
-        "dark": "#59E8B5",
+        "canonical": "#006C49",
+        "light": "#006C49",
+        "dark": "#5ADDA4",
         "tonalRamp": [
-          "#59E8B5",
-          "#12815A"
-        ]
+          "#006C49",
+          "#5ADDA4"
+        ],
+        "source": "Flashcard Color Tokens: `success-color`"
       },
       "warning": {
         "role": "semantic",
-        "displayName": "Warning Yellow",
-        "canonical": "#FFCD1F",
-        "light": "#FFCD1F",
-        "dark": "#FFCD1F",
+        "displayName": "Warning",
+        "canonical": "#F59E0B",
+        "light": "#F59E0B",
+        "dark": "#F59E0B",
         "tonalRamp": [
-          "#FFCD1F"
-        ]
+          "#F59E0B"
+        ],
+        "source": "Flashcard Color Tokens: `warning-container`"
       },
       "on-warning": {
         "role": "on",
         "displayName": "On Warning",
-        "canonical": "#282E3E",
-        "light": "#282E3E",
-        "dark": "#282E3E",
+        "canonical": "#613B00",
+        "light": "#613B00",
+        "dark": "#613B00",
         "tonalRamp": [
-          "#282E3E"
-        ]
-      },
-      "error-fill": {
-        "role": "semantic",
-        "displayName": "Destructive Fill",
-        "canonical": "#DC2D4E",
-        "light": "#DC2D4E",
-        "dark": "#B0485C",
-        "tonalRamp": [
-          "#DC2D4E",
-          "#B0485C"
-        ]
-      },
-      "on-error-fill": {
-        "role": "on",
-        "displayName": "On Destructive Fill",
-        "canonical": "#FFFFFF",
-        "light": "#FFFFFF",
-        "dark": "#FFFFFF",
-        "tonalRamp": [
-          "#FFFFFF"
-        ]
+          "#613B00"
+        ],
+        "source": "Flashcard Color Tokens: `warning-onContainer`"
       },
       "status-new": {
         "role": "semantic",
         "displayName": "Status New",
-        "canonical": "#939BB4",
-        "light": "#939BB4",
-        "dark": "#586380",
+        "canonical": "#6C7794",
+        "light": "#6C7794",
+        "dark": "#8590AE",
         "tonalRamp": [
-          "#586380",
-          "#939BB4"
-        ]
+          "#6C7794",
+          "#8590AE"
+        ],
+        "source": "Flashcard Color Tokens: `outline`"
       },
       "status-learning": {
         "role": "semantic",
         "displayName": "Status Learning",
-        "canonical": "#FF983A",
-        "light": "#FF983A",
-        "dark": "#FF983A",
+        "canonical": "#F59E0B",
+        "light": "#F59E0B",
+        "dark": "#F59E0B",
         "tonalRamp": [
-          "#FF983A"
-        ]
+          "#F59E0B"
+        ],
+        "source": "Flashcard Color Tokens: `warning-container`"
       },
       "status-reviewing": {
         "role": "semantic",
         "displayName": "Status Reviewing",
-        "canonical": "#4255FF",
-        "light": "#4255FF",
-        "dark": "#4255FF",
+        "canonical": "#564BCB",
+        "light": "#564BCB",
+        "dark": "#C5C0FF",
         "tonalRamp": [
-          "#4255FF"
-        ]
+          "#564BCB",
+          "#C5C0FF"
+        ],
+        "source": "Flashcard Color Tokens: accent (`primary` light / `primaryFixedDim` dark)"
       },
       "status-mastered": {
         "role": "semantic",
         "displayName": "Status Mastered",
-        "canonical": "#18AE79",
-        "light": "#18AE79",
-        "dark": "#18AE79",
+        "canonical": "#17AE79",
+        "light": "#17AE79",
+        "dark": "#17AE79",
         "tonalRamp": [
-          "#18AE79"
-        ]
+          "#17AE79"
+        ],
+        "source": "Flashcard Color Tokens: `success-container`"
+      },
+      "error-fill": {
+        "role": "error",
+        "displayName": "Error Fill",
+        "canonical": "#BA1A1A",
+        "light": "#BA1A1A",
+        "dark": "#FFB4AB",
+        "tonalRamp": [
+          "#BA1A1A",
+          "#FFB4AB"
+        ],
+        "source": "Flashcard Color Tokens: `error`"
+      },
+      "on-error-fill": {
+        "role": "on",
+        "displayName": "On Error Fill",
+        "canonical": "#FFFFFF",
+        "light": "#FFFFFF",
+        "dark": "#690005",
+        "tonalRamp": [
+          "#690005",
+          "#FFFFFF"
+        ],
+        "source": "Flashcard Color Tokens: `onError`"
       },
       "streak": {
         "role": "semantic",
         "displayName": "Streak",
-        "canonical": "#F6406C",
-        "light": "#F6406C",
-        "dark": "#F6406C",
+        "canonical": "#F59E0B",
+        "light": "#F59E0B",
+        "dark": "#F59E0B",
         "tonalRamp": [
-          "#F6406C"
-        ]
+          "#F59E0B"
+        ],
+        "source": "Flashcard Color Tokens: `warning-container`"
       },
       "primary-text": {
-        "role": "text",
+        "role": "primary",
         "displayName": "Primary Text",
-        "canonical": "#4255FF",
-        "light": "#4255FF",
-        "dark": "#7583FF",
+        "canonical": "#564BCB",
+        "light": "#564BCB",
+        "dark": "#C5C0FF",
         "tonalRamp": [
-          "#7583FF",
-          "#4255FF"
-        ]
+          "#564BCB",
+          "#C5C0FF"
+        ],
+        "source": "Flashcard Color Tokens: accent (`primary` light / `primaryFixedDim` dark)"
       },
       "mastery-text": {
-        "role": "text",
+        "role": "semantic",
         "displayName": "Mastery Text",
-        "canonical": "#12815A",
-        "light": "#12815A",
-        "dark": "#59E8B5",
+        "canonical": "#006C49",
+        "light": "#006C49",
+        "dark": "#5ADDA4",
         "tonalRamp": [
-          "#59E8B5",
-          "#12815A"
-        ]
+          "#006C49",
+          "#5ADDA4"
+        ],
+        "source": "Flashcard Color Tokens: `success-color`"
       },
       "learning-text": {
-        "role": "text",
+        "role": "semantic",
         "displayName": "Learning Text",
-        "canonical": "#CC4E00",
-        "light": "#CC4E00",
-        "dark": "#FF983A",
+        "canonical": "#855300",
+        "light": "#855300",
+        "dark": "#FFC174",
         "tonalRamp": [
-          "#FF983A",
-          "#CC4E00"
-        ]
+          "#855300",
+          "#FFC174"
+        ],
+        "source": "Flashcard Color Tokens: `warning-color`"
       },
       "warning-text": {
-        "role": "text",
+        "role": "semantic",
         "displayName": "Warning Text",
-        "canonical": "#997700",
-        "light": "#997700",
-        "dark": "#FFCD1F",
+        "canonical": "#855300",
+        "light": "#855300",
+        "dark": "#FFC174",
         "tonalRamp": [
-          "#FFCD1F",
-          "#997700"
-        ]
+          "#855300",
+          "#FFC174"
+        ],
+        "source": "Flashcard Color Tokens: `warning-color`"
       },
       "focus-ring": {
-        "role": "edge",
+        "role": "semantic",
         "displayName": "Focus Ring",
-        "canonical": "#A8B1FF",
-        "light": "#A8B1FF",
-        "dark": "#A8B1FF",
+        "canonical": "#564BCB",
+        "light": "#564BCB",
+        "dark": "#564BCB",
         "tonalRamp": [
-          "#A8B1FF"
-        ]
+          "#564BCB"
+        ],
+        "source": "Flashcard Color Tokens: `primary`"
       },
       "border": {
-        "role": "edge",
+        "role": "neutral",
         "displayName": "Border",
-        "canonical": "#EDEFF4",
-        "light": "#EDEFF4",
-        "dark": "#282E3E",
+        "canonical": "#BBC6E6",
+        "light": "#BBC6E6",
+        "dark": "#3B4661",
         "tonalRamp": [
-          "#282E3E",
-          "#EDEFF4"
-        ]
+          "#3B4661",
+          "#BBC6E6"
+        ],
+        "source": "Flashcard Color Tokens: `outlineVariant`"
       },
       "primary-track": {
-        "role": "semantic",
+        "role": "primary",
         "displayName": "Primary Track",
-        "canonical": "#DBDFFF",
-        "light": "#DBDFFF",
-        "dark": "#DBDFFF",
+        "canonical": "#564BCB",
+        "light": "#564BCB",
+        "dark": "#564BCB",
         "tonalRamp": [
-          "#DBDFFF"
-        ]
+          "#564BCB"
+        ],
+        "source": "Flashcard Color Tokens: `primary`"
       },
       "neutral-track": {
-        "role": "semantic",
+        "role": "neutral",
         "displayName": "Neutral Track",
-        "canonical": "#939BB4",
-        "light": "#939BB4",
-        "dark": "#939BB4",
+        "canonical": "#E8E8E8",
+        "light": "#E8E8E8",
+        "dark": "#2D2C51",
         "tonalRamp": [
-          "#939BB4"
-        ]
+          "#2D2C51",
+          "#E8E8E8"
+        ],
+        "source": "Flashcard Color Tokens: `surfaceContainerHighest`"
       },
       "primary-soft": {
-        "role": "soft",
+        "role": "primary",
         "displayName": "Primary Soft",
-        "canonical": "#EDEFFF",
-        "light": "#EDEFFF",
-        "dark": "#EDEFFF",
+        "canonical": "#E4E2F7",
+        "light": "#E4E2F7",
+        "dark": "#28254F",
         "tonalRamp": [
-          "#EDEFFF"
-        ]
+          "#28254F",
+          "#E4E2F7"
+        ],
+        "source": "Flashcard Color Tokens: `primary` (accent) 16% trên `surface`"
       },
       "on-primary-soft": {
         "role": "on",
         "displayName": "On Primary Soft",
-        "canonical": "#4255FF",
-        "light": "#4255FF",
-        "dark": "#4255FF",
+        "canonical": "#564BCB",
+        "light": "#564BCB",
+        "dark": "#C5C0FF",
         "tonalRamp": [
-          "#4255FF"
-        ]
+          "#564BCB",
+          "#C5C0FF"
+        ],
+        "source": "Flashcard Color Tokens: accent (`primary` light / `primaryFixedDim` dark)"
       },
       "success-soft": {
-        "role": "soft",
+        "role": "semantic",
         "displayName": "Success Soft",
-        "canonical": "#E6FCF4",
-        "light": "#E6FCF4",
-        "dark": "#E6FCF4",
+        "canonical": "#D6E7E2",
+        "light": "#D6E7E2",
+        "dark": "#172A40",
         "tonalRamp": [
-          "#E6FCF4"
-        ]
+          "#172A40",
+          "#D6E7E2"
+        ],
+        "source": "Flashcard Color Tokens: `success-color` 16% trên `surface`"
       },
       "success-border": {
-        "role": "edge",
+        "role": "semantic",
         "displayName": "Success Border",
-        "canonical": "#98F1D1",
-        "light": "#98F1D1",
-        "dark": "#98F1D1",
+        "canonical": "#006C49",
+        "light": "#006C49",
+        "dark": "#5ADDA4",
         "tonalRamp": [
-          "#98F1D1"
-        ]
+          "#006C49",
+          "#5ADDA4"
+        ],
+        "source": "Flashcard Color Tokens: `success-color`"
       },
       "on-success-soft": {
         "role": "on",
         "displayName": "On Success Soft",
-        "canonical": "#12815A",
-        "light": "#12815A",
-        "dark": "#12815A",
+        "canonical": "#006C49",
+        "light": "#006C49",
+        "dark": "#5ADDA4",
         "tonalRamp": [
-          "#12815A"
-        ]
+          "#006C49",
+          "#5ADDA4"
+        ],
+        "source": "Flashcard Color Tokens: `success-color`"
       },
       "learning-soft": {
-        "role": "soft",
+        "role": "semantic",
         "displayName": "Learning Soft",
-        "canonical": "#FFF6EF",
-        "light": "#FFF6EF",
-        "dark": "#FFF6EF",
+        "canonical": "#EBE3D6",
+        "light": "#EBE3D6",
+        "dark": "#312638",
         "tonalRamp": [
-          "#FFF6EF"
-        ]
+          "#312638",
+          "#EBE3D6"
+        ],
+        "source": "Flashcard Color Tokens: `warning-color` 16% trên `surface`"
       },
       "learning-border": {
-        "role": "edge",
+        "role": "semantic",
         "displayName": "Learning Border",
-        "canonical": "#FFC38C",
-        "light": "#FFC38C",
-        "dark": "#FFC38C",
+        "canonical": "#855300",
+        "light": "#855300",
+        "dark": "#FFC174",
         "tonalRamp": [
-          "#FFC38C"
-        ]
+          "#855300",
+          "#FFC174"
+        ],
+        "source": "Flashcard Color Tokens: `warning-color`"
       },
       "on-learning-soft": {
         "role": "on",
         "displayName": "On Learning Soft",
-        "canonical": "#CC4E00",
-        "light": "#CC4E00",
-        "dark": "#CC4E00",
+        "canonical": "#855300",
+        "light": "#855300",
+        "dark": "#FFC174",
         "tonalRamp": [
-          "#CC4E00"
-        ]
+          "#855300",
+          "#FFC174"
+        ],
+        "source": "Flashcard Color Tokens: `warning-color`"
       },
       "warning-soft": {
-        "role": "soft",
+        "role": "semantic",
         "displayName": "Warning Soft",
-        "canonical": "#FFEDAB",
-        "light": "#FFEDAB",
-        "dark": "#FFEDAB",
+        "canonical": "#EBE3D6",
+        "light": "#EBE3D6",
+        "dark": "#312638",
         "tonalRamp": [
-          "#FFEDAB"
-        ]
+          "#312638",
+          "#EBE3D6"
+        ],
+        "source": "Flashcard Color Tokens: `warning-color` 16% trên `surface`"
       },
       "warning-border": {
-        "role": "edge",
+        "role": "semantic",
         "displayName": "Warning Border",
-        "canonical": "#FFDC62",
-        "light": "#FFDC62",
-        "dark": "#FFDC62",
+        "canonical": "#855300",
+        "light": "#855300",
+        "dark": "#FFC174",
         "tonalRamp": [
-          "#FFDC62"
-        ]
+          "#855300",
+          "#FFC174"
+        ],
+        "source": "Flashcard Color Tokens: `warning-color`"
       },
       "on-warning-soft": {
         "role": "on",
         "displayName": "On Warning Soft",
-        "canonical": "#997700",
-        "light": "#997700",
-        "dark": "#997700",
+        "canonical": "#855300",
+        "light": "#855300",
+        "dark": "#FFC174",
         "tonalRamp": [
-          "#997700"
-        ]
+          "#855300",
+          "#FFC174"
+        ],
+        "source": "Flashcard Color Tokens: `warning-color`"
       },
       "danger-soft": {
-        "role": "soft",
+        "role": "error",
         "displayName": "Danger Soft",
-        "canonical": "#C0244714",
-        "light": "#C0244714",
-        "dark": "#FF8FA329",
+        "canonical": "#F4DADA",
+        "light": "#F4DADA",
+        "dark": "#312441",
         "tonalRamp": [
-          "#C0244714",
-          "#FF8FA329"
-        ]
+          "#312441",
+          "#F4DADA"
+        ],
+        "source": "Flashcard Color Tokens: `error` 16% trên `surface`"
       },
       "danger-border": {
-        "role": "edge",
+        "role": "error",
         "displayName": "Danger Border",
-        "canonical": "#C0244738",
-        "light": "#C0244738",
-        "dark": "#FF8FA352",
+        "canonical": "#BA1A1A",
+        "light": "#BA1A1A",
+        "dark": "#FFB4AB",
         "tonalRamp": [
-          "#C0244738",
-          "#FF8FA352"
-        ]
+          "#BA1A1A",
+          "#FFB4AB"
+        ],
+        "source": "Flashcard Color Tokens: `error`"
       },
       "on-danger-soft": {
         "role": "on",
         "displayName": "On Danger Soft",
-        "canonical": "#AE2346",
-        "light": "#AE2346",
-        "dark": "#F7AABD",
+        "canonical": "#BA1A1A",
+        "light": "#BA1A1A",
+        "dark": "#FFB4AB",
         "tonalRamp": [
-          "#AE2346",
-          "#F7AABD"
-        ]
+          "#BA1A1A",
+          "#FFB4AB"
+        ],
+        "source": "Flashcard Color Tokens: `error`"
       },
       "neutral-soft": {
-        "role": "soft",
+        "role": "neutral",
         "displayName": "Neutral Soft",
-        "canonical": "#EDEFFF",
-        "light": "#EDEFFF",
-        "dark": "#586380",
+        "canonical": "#D1DCFD",
+        "light": "#D1DCFD",
+        "dark": "#3B4661",
         "tonalRamp": [
-          "#586380",
-          "#EDEFFF"
-        ]
+          "#3B4661",
+          "#D1DCFD"
+        ],
+        "source": "Flashcard Color Tokens: `secondaryContainer`"
       },
       "on-neutral-soft": {
         "role": "on",
         "displayName": "On Neutral Soft",
-        "canonical": "#2E3856",
-        "light": "#2E3856",
-        "dark": "#F6F7FB",
+        "canonical": "#55607C",
+        "light": "#55607C",
+        "dark": "#AAB5D4",
         "tonalRamp": [
-          "#F6F7FB",
-          "#2E3856"
-        ]
+          "#55607C",
+          "#AAB5D4"
+        ],
+        "source": "Flashcard Color Tokens: `onSecondaryContainer`"
       },
       "on-soft": {
         "role": "on",
         "displayName": "On Soft",
-        "canonical": "#282E3E",
-        "light": "#282E3E",
-        "dark": "#282E3E",
+        "canonical": "#1C1B21",
+        "light": "#1C1B21",
+        "dark": "#E5E1E9",
         "tonalRamp": [
-          "#282E3E"
-        ]
+          "#1C1B21",
+          "#E5E1E9"
+        ],
+        "source": "Flashcard Color Tokens: `onSurface`"
+      },
+      "card-surface": {
+        "role": "semantic",
+        "displayName": "Card Surface",
+        "canonical": "#F1F1FB",
+        "light": "#F1F1FB",
+        "dark": "#222145",
+        "tonalRamp": [
+          "#222145",
+          "#F1F1FB"
+        ],
+        "source": "Flashcard Color Tokens: `cardSurface`"
+      },
+      "search-surface": {
+        "role": "semantic",
+        "displayName": "Search Surface",
+        "canonical": "#F1F1FB",
+        "light": "#F1F1FB",
+        "dark": "#222145",
+        "tonalRamp": [
+          "#222145",
+          "#F1F1FB"
+        ],
+        "source": "Flashcard Color Tokens: `searchSurface`"
+      },
+      "tile-surface": {
+        "role": "semantic",
+        "displayName": "Tile Surface",
+        "canonical": "#EDF8FF",
+        "light": "#EDF8FF",
+        "dark": "#2E3953",
+        "tonalRamp": [
+          "#2E3953",
+          "#EDF8FF"
+        ],
+        "source": "Flashcard Color Tokens: `tileSurface`"
+      },
+      "divider": {
+        "role": "neutral",
+        "displayName": "Divider",
+        "canonical": "#EEEEEE",
+        "light": "#EEEEEE",
+        "dark": "#18173B",
+        "tonalRamp": [
+          "#18173B",
+          "#EEEEEE"
+        ],
+        "source": "Flashcard Color Tokens: `divider`"
+      },
+      "info": {
+        "role": "semantic",
+        "displayName": "Info",
+        "canonical": "#006684",
+        "light": "#006684",
+        "dark": "#A9E3FF",
+        "tonalRamp": [
+          "#006684",
+          "#A9E3FF"
+        ],
+        "source": "Flashcard Color Tokens: `info-color`"
+      },
+      "info-container": {
+        "role": "semantic",
+        "displayName": "Info Container",
+        "canonical": "#50CCFC",
+        "light": "#50CCFC",
+        "dark": "#50CCFC",
+        "tonalRamp": [
+          "#50CCFC"
+        ],
+        "source": "Flashcard Color Tokens: `info-container`"
+      },
+      "on-info-container": {
+        "role": "on",
+        "displayName": "On Info Container",
+        "canonical": "#00546D",
+        "light": "#00546D",
+        "dark": "#00546D",
+        "tonalRamp": [
+          "#00546D"
+        ],
+        "source": "Flashcard Color Tokens: `info-onContainer`"
       }
     },
     "typographyMeta": {
-      "stat": {
-        "displayName": "Stat",
-        "purpose": "Large metrics, tabular numerals."
+      "display-term": {
+        "displayName": "Display Term",
+        "flutterSlot": "displaySmall",
+        "purpose": "The word being studied on a flashcard."
       },
-      "display": {
-        "displayName": "Display",
-        "purpose": "Hero figure."
+      "term-tile": {
+        "displayName": "Term Tile",
+        "flutterSlot": "headlineSmall",
+        "purpose": "A Korean word in a match tile."
       },
-      "headline": {
-        "displayName": "Headline",
-        "purpose": "Screen headline."
+      "display-stat": {
+        "displayName": "Display Stat",
+        "flutterSlot": "displayMedium",
+        "purpose": "A key number that replaces a sentence; tabular."
       },
-      "title": {
-        "displayName": "Title",
-        "purpose": "Section and screen titles."
+      "title-section": {
+        "displayName": "Title Section",
+        "flutterSlot": "titleLarge",
+        "purpose": "A section heading; the app bar screen title."
       },
-      "body-large": {
-        "displayName": "Body Large",
-        "purpose": "List titles, emphasised body."
+      "title-card": {
+        "displayName": "Title Card",
+        "flutterSlot": "titleMedium",
+        "purpose": "A card title; a compact stat number."
+      },
+      "title-item": {
+        "displayName": "Title Item",
+        "flutterSlot": "titleSmall",
+        "purpose": "An item or row title."
+      },
+      "body-content": {
+        "displayName": "Body Content",
+        "flutterSlot": "bodyLarge",
+        "purpose": "Card content the learner reads."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Default running text."
+        "flutterSlot": "bodyMedium",
+        "purpose": "Interface copy."
       },
-      "caption": {
-        "displayName": "Caption",
-        "purpose": "Metadata, counts, chips; 12px floor."
+      "body-tile": {
+        "displayName": "Body Tile",
+        "flutterSlot": "bodySmall",
+        "purpose": "A meaning in a match tile or guess option."
       },
-      "button-label": {
-        "displayName": "Button Label",
-        "purpose": "Every text-labelled control."
+      "label-button": {
+        "displayName": "Label Button",
+        "flutterSlot": "labelLarge",
+        "purpose": "A button label at both sizes."
       },
-      "section-label": {
-        "displayName": "Section Label",
-        "purpose": "Introduces a list or settings group; not a decorative kicker."
+      "label-meta": {
+        "displayName": "Label Meta",
+        "flutterSlot": "labelMedium",
+        "purpose": "Progress text, search placeholder, banner, counts."
+      },
+      "label-nav": {
+        "displayName": "Label Nav",
+        "flutterSlot": "labelSmall",
+        "purpose": "A navigation label; the 12 floor."
       }
     },
     "shadows": [
       {
         "name": "whisper",
-        "value": "light: 0 1px 2px rgba(40,46,62,0.04); dark: none (the border hairline)",
-        "purpose": "Card, toggle thumb."
+        "value": "none in both themes (shadow-raised = none)",
+        "purpose": "Cards, the search field and navigation rise by tone, never by shadow."
       },
       {
         "name": "chrome",
-        "value": "light: 0 -2px 12px rgba(40,46,62,0.05); dark: 0 -2px 14px rgba(40,46,62,0.36)",
-        "purpose": "Bottom sheet and bottom chrome, cast upward."
+        "value": "light: 0 -2px 12px rgba(0,0,0,0.05); dark: 0 -2px 14px rgba(0,0,0,0.36)",
+        "purpose": "Bottom sheet, cast upward."
       },
       {
         "name": "overlay",
-        "value": "light: 0 12px 32px rgba(40,46,62,0.10); dark: 0 16px 40px rgba(40,46,62,0.42)",
-        "purpose": "Dialog."
+        "value": "light: 0 12px 32px rgba(0,0,0,0.10); dark: 0 16px 40px rgba(0,0,0,0.42)",
+        "purpose": "Dialog, floating notice."
       },
       {
         "name": "fab",
-        "value": "light: 0 8px 24px rgba(40,46,62,0.12); dark: 0 10px 28px rgba(40,46,62,0.5)",
+        "value": "light: 0 8px 24px rgba(0,0,0,0.12); dark: 0 10px 28px rgba(0,0,0,0.5)",
         "purpose": "Floating action."
       }
     ],
     "motion": [
       {
+        "name": "selection",
+        "value": "100ms (motion-duration-short2)",
+        "purpose": "Selection and state-layer changes."
+      },
+      {
         "name": "toggle",
-        "value": "160ms",
-        "purpose": "Toggle track colour and thumb."
+        "value": "150ms (motion-duration-short3)",
+        "purpose": "State colour changes: toggle, match tile."
       },
       {
         "name": "standard",
-        "value": "200ms",
-        "purpose": "Dialog scale-in, snackbar in, study progress fill."
+        "value": "200ms (motion-duration-short4)",
+        "purpose": "Small exits and fades, dialog scale-in, study progress fill."
       },
       {
         "name": "scrim-fade",
-        "value": "220ms",
+        "value": "200ms (motion-duration-short4)",
         "purpose": "Modal scrim."
       },
       {
         "name": "sheet",
-        "value": "260ms",
-        "purpose": "Bottom sheet translate-in."
+        "value": "300ms (motion-duration-medium2)",
+        "purpose": "Bottom sheet, banner appear, navigation pill."
+      },
+      {
+        "name": "page-transition",
+        "value": "400ms (motion-duration-medium4)",
+        "purpose": "Card swipe, page transition, hold after a right answer."
+      },
+      {
+        "name": "long-transition",
+        "value": "600ms (motion-duration-long4)",
+        "purpose": "Large transitions, hold after a wrong match."
       },
       {
         "name": "spinner-cycle",
@@ -785,16 +1188,25 @@
         "name": "toast",
         "value": "4000ms (8000ms with Undo)",
         "purpose": "Snackbar dwell."
+      },
+      {
+        "name": "easing",
+        "value": "standard cubic-bezier(0.2,0,0,1); standard-decelerate (0,0,0,1); standard-accelerate (0.3,0,1,1); emphasized easeInOutCubicEmphasized; emphasized-decelerate (0.05,0.7,0.1,1); emphasized-accelerate (0.3,0,0.8,0.15); linear",
+        "purpose": "AppEasing: entering decelerates, leaving accelerates, in place standard, a countdown linear."
       }
     ],
     "breakpoints": [
       {
-        "name": "nav-rail",
-        "value": "600dp window width: bottom bar becomes an 80dp rail"
+        "name": "medium",
+        "value": "600dp window width: the bottom bar becomes an 80dp rail, the margin 24, the content area at most 1040 centred"
+      },
+      {
+        "name": "expanded",
+        "value": "840dp window width: medium becomes expanded"
       },
       {
         "name": "content-max",
-        "value": "720dp centred column"
+        "value": "599dp single column on a compact window and in every study session"
       }
     ]
   },
@@ -803,75 +1215,91 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The one indigo action per decision. 48 tall, r12; pressed overlay 12%; disabled 0.38 opacity.",
+      "description": "The one indigo action per decision. 40 tall (32 small), pill, 24 padding, labelLarge 400; state layers 8/10/10%; disabled 0.38 opacity; 48 touch area.",
       "html": "<button class=\"ds-btn-primary\">Start session</button>",
-      "css": ".ds-btn-primary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#4255FF;color:#FFFFFF;} .ds-btn-primary:active{filter:brightness(0.88)} .ds-btn-primary:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
+      "css": ".ds-btn-primary{font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:14px;font-weight:400;letter-spacing:0.1px;line-height:20px;height:40px;padding:0 24px;border-radius:999px;border:0;background:#564BCB;color:#FFFFFF;} .ds-btn-primary:focus-visible{outline:2px solid #564BCB;outline-offset:2px}"
     },
     {
       "name": "Secondary Button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Quiet alternative on a container fill.",
-      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
-      "css": ".ds-btn-secondary{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#F6F7FB;color:#282E3E;} .ds-btn-secondary:active{filter:brightness(0.88)} .ds-btn-secondary:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
+      "description": "Neutral action on the surface container.",
+      "html": "<button class=\"ds-btn-secondary\">Later</button>",
+      "css": ".ds-btn-secondary{font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:14px;font-weight:400;letter-spacing:0.1px;line-height:20px;height:40px;padding:0 24px;border-radius:999px;border:0;background:#F3F3F3;color:#1C1B21;} .ds-btn-secondary:focus-visible{outline:2px solid #564BCB;outline-offset:2px}"
     },
     {
       "name": "Outline Button",
       "kind": "button",
       "refersTo": "button-outline",
-      "description": "Ghost action in primary-text with a 1px outline edge.",
-      "html": "<button class=\"ds-btn-outline\">Edit deck</button>",
-      "css": ".ds-btn-outline{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:transparent;color:#4255FF;box-shadow:inset 0 0 0 1px #939BB4;} .ds-btn-outline:active{filter:brightness(0.88)} .ds-btn-outline:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
+      "description": "Outline action: primaryText label, outline edge.",
+      "html": "<button class=\"ds-btn-outline\">Edit</button>",
+      "css": ".ds-btn-outline{font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:14px;font-weight:400;letter-spacing:0.1px;line-height:20px;height:40px;padding:0 24px;border-radius:999px;border:1px solid #6C7794;background:transparent;color:#564BCB;} .ds-btn-outline:focus-visible{outline:2px solid #564BCB;outline-offset:2px}"
     },
     {
       "name": "Destructive Button",
       "kind": "button",
       "refersTo": "button-destructive",
-      "description": "Solid destructive fill, used only to confirm a destructive dialog.",
+      "description": "Solid destructive action: error fill, on-error label.",
       "html": "<button class=\"ds-btn-danger\">Delete</button>",
-      "css": ".ds-btn-danger{font-family:\"Plus Jakarta Sans\",sans-serif;font-size:14px;font-weight:600;letter-spacing:0.1px;height:48px;padding:0 16px;border:0;border-radius:12px;background:#DC2D4E;color:#FFFFFF;} .ds-btn-danger:active{filter:brightness(0.88)} .ds-btn-danger:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
+      "css": ".ds-btn-danger{font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:14px;font-weight:400;letter-spacing:0.1px;line-height:20px;height:40px;padding:0 24px;border-radius:999px;border:0;background:#BA1A1A;color:#FFFFFF;} .ds-btn-danger:focus-visible{outline:2px solid #564BCB;outline-offset:2px}"
     },
     {
       "name": "Text Field",
       "kind": "input",
       "refersTo": "text-field",
-      "description": "52 tall, muted fill that lightens on focus, outline edge at rest, focus-ring edge on focus, error edge with a message below.",
+      "description": "52 floor, muted fill, r12, outline edge at rest, focus ring on focus, body role.",
       "html": "<input class=\"ds-input\" placeholder=\"Term\">",
-      "css": ".ds-input{box-sizing:border-box;height:52px;padding:0 12px;width:260px;font:400 14px \"Plus Jakarta Sans\",sans-serif;color:#282E3E;background:#F6F7FB;border:1px solid #EDEFF4;border-radius:12px;outline:none} .ds-input::placeholder{color:#586380} .ds-input:focus-visible{background:#FFFFFF;border-color:#A8B1FF}"
+      "css": ".ds-input{box-sizing:border-box;height:52px;padding:0 12px;width:260px;font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:14px;font-weight:400;letter-spacing:0.25px;background:#F9F9F9;color:#1C1B21;border:1px solid #6C7794;border-radius:12px;} .ds-input:focus{outline:none;border-color:#564BCB}"
     },
     {
       "name": "Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "Raised surface, r12, the 1px border hairline in both themes, whisper shadow in light. Interior 20.",
-      "html": "<div class=\"ds-card\"><strong>Spanish basics</strong><p>42 cards</p></div>",
-      "css": ".ds-card{padding:20px;width:240px;background:#FFFFFF;border-radius:12px;box-shadow:0 1px 2px rgba(40,46,62,0.04);font:400 14px/1.5 \"Plus Jakarta Sans\",sans-serif;color:#282E3E} .ds-card strong{font:500 16px/1.5 \"Plus Jakarta Sans\",sans-serif} .ds-card p{margin:0;color:#586380}"
+      "description": "The card surface at r12, 24 interior; no border and no shadow in either theme.",
+      "html": "<div class=\"ds-card\">Korean basics</div>",
+      "css": ".ds-card{padding:24px;width:240px;background:#F1F1FB;border-radius:12px;font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:18px;font-weight:500;letter-spacing:0.15px;color:#1C1B21;}"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "56 tall pill on the search surface, no edge, no shadow; labelMedium placeholder in on-surface-variant; 24 glyph.",
+      "html": "<input class=\"ds-search\" placeholder=\"Search decks\">",
+      "css": ".ds-search{box-sizing:border-box;height:56px;padding:0 16px;width:260px;font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:14px;font-weight:400;letter-spacing:0.5px;background:#F1F1FB;color:#1C1B21;border:0;border-radius:999px;}"
     },
     {
       "name": "Filter Chip",
       "kind": "chip",
       "refersTo": "filter-chip",
-      "description": "28 tall pill; selected swaps fill to primary and text to on-primary.",
-      "html": "<span class=\"ds-chip\">All</span> <span class=\"ds-chip ds-chip-on\">Cards</span>",
-      "css": ".ds-chip{display:inline-flex;align-items:center;height:28px;padding:0 8px;border-radius:999px;background:#FFFFFF;color:#282E3E;box-shadow:inset 0 0 0 1px #EDEFF4;font:600 12px \"Plus Jakarta Sans\",sans-serif;letter-spacing:0.1px} .ds-chip-on{background:#4255FF;color:#FFFFFF;box-shadow:none}"
+      "description": "28 pill; at rest the neutral chip (neutralSoft, onNeutralSoft); selected primary with on-primary.",
+      "html": "<span class=\"ds-chip\">Due</span>",
+      "css": ".ds-chip{display:inline-flex;align-items:center;height:28px;padding:0 8px;border-radius:999px;background:#D1DCFD;color:#55607C;font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:14px;font-weight:400;letter-spacing:0.1px;}"
+    },
+    {
+      "name": "Navigation Bar",
+      "kind": "navigation",
+      "refersTo": "bottom-nav",
+      "description": "64 tall, the page surface, a divider hairline on top, no shadow; the selected glyph on a 56x32 secondary-container pill, labels labelSmall.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-pill\">Library</span></nav>",
+      "css": ".ds-nav{height:64px;background:#FFFFFF;border-top:1px solid #EEEEEE;display:flex;align-items:center;justify-content:center;} .ds-pill{display:inline-flex;align-items:center;justify-content:center;width:56px;height:32px;border-radius:999px;background:#D1DCFD;color:#55607C;font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:12px;font-weight:500;}"
     },
     {
       "name": "Floating Action Button",
-      "kind": "custom",
+      "kind": "button",
       "refersTo": "fab",
-      "description": "Square 52, r16, icon only, fab shadow.",
-      "html": "<button class=\"ds-fab\" aria-label=\"Add\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg></button>",
-      "css": ".ds-fab{width:52px;height:52px;border:0;border-radius:16px;background:#4255FF;box-shadow:0 8px 24px rgba(40,46,62,0.12);display:grid;place-items:center} .ds-fab:focus-visible{outline:2px solid #A8B1FF;outline-offset:2px}"
+      "description": "Square 52, r16, icon only, primary fill.",
+      "html": "<button class=\"ds-fab\">+</button>",
+      "css": ".ds-fab{width:52px;height:52px;border:0;border-radius:16px;background:#564BCB;color:#FFFFFF;font-size:24px;box-shadow:0 8px 24px rgba(0,0,0,0.12);}"
     }
   ],
   "narrative": {
     "northStar": "The Quiet Study Desk",
-    "overview": "MemoX should feel like a quiet, focused study space. Two themes from one structure: Indigo Day and Indigo Night. Component philosophy: \"Calm and exact\".",
+    "overview": "MemoX should feel like a quiet, focused study space. One structure, a light and a dark theme, from the owner's \"Flashcard Color Tokens\" spec (ADR-022). Component philosophy: \"Calm and exact\".",
     "keyCharacteristics": [
-      "One sans family (Plus Jakarta Sans), seven roles, tight-tracked for headings and figures.",
-      "Tonal surfaces plus a 1px border hairline; shadows are whisper-quiet.",
-      "One radius (12) for every in-flow surface; larger radii only for surfaces that float.",
-      "Phone-first, 16dp gutter, single content column, 48dp touch targets everywhere.",
+      "One sans family (Be Vietnam Pro, Noto Sans KR for Korean), twelve roles; interface text 14, only section titles bold.",
+      "Tonal surfaces with no resting shadow; cards, search and navigation have no edge.",
+      "12 for every card; pills for buttons, search, progress and the navigation pill; 28 for dialogs and sheets.",
+      "Compact: 16dp margin, 599dp column, bottom bar; from 600dp: rail, 24dp margin, 1040dp area; 48dp touch targets everywhere.",
       "Every text and edge colour is contrast-tested in both themes; the pairs below AA are recorded exceptions."
     ],
     "rules": [
@@ -882,42 +1310,42 @@
       },
       {
         "name": "The Green Means Progress Rule",
-        "body": "Green is mastery or success and nothing else. Violet is never a status; green is never decoration.",
+        "body": "Green is mastery or success and nothing else; green is never decoration.",
         "section": "colors"
       },
       {
         "name": "The Text Token Rule",
-        "body": "Text and glyphs read a text token, never a fill; focus reads focus-ring, a control edge outline, a hairline border. No colour is derived from another.",
+        "body": "Text and glyphs read a text token, never a fill; primary on the dark page is a fill only. Focus reads focus-ring, a control edge outline, a hairline inside a card border, a rule on the page divider.",
         "section": "colors"
       },
       {
         "name": "The Contrast Floor Rule",
-        "body": "Text holds 4.5:1 and non-text 3:1 where the palette allows; the palette is fixed (owner 2026-10-10) and the pairs below the floor are the exceptions token_contrast_test lists.",
+        "body": "Text holds 4.5:1 and non-text 3:1 where the palette allows; the palette is fixed (spec §2.3, owner 2026-10-13) and the pairs below the floor are the exceptions token_contrast_test.dart records with their measured ratios.",
         "section": "colors"
       },
       {
-        "name": "The Seven Roles Rule",
-        "body": "Screens use the seven type roles; a new size is a component-level override, never a new global style.",
+        "name": "The Twelve Roles Rule",
+        "body": "Screens use the twelve TextTheme roles untouched; a component picks a role and a colour, never a size, weight, height or tracking of its own.",
         "section": "typography"
       },
       {
         "name": "The Text Grows Rule",
-        "body": "Text scale is never clamped and no fixed height wraps text.",
+        "body": "Text scale is never clamped and no fixed height wraps text. Heights are minimums (button 40, app bar 64, field 52, search 56) and grow with wrapped labels and OS text scaling.",
         "section": "typography"
       },
       {
         "name": "The 48 Floor Rule",
-        "body": "Painted size never sets the touch area; every control keeps a 48x48dp hit area.",
+        "body": "Painted size never sets the touch area. Buttons paint at 40 or 32; every control keeps a 48x48 hit.",
         "section": "layout"
       },
       {
         "name": "The Column Rule",
-        "body": "Content never grows wider than 720dp; wide windows gain empty ground.",
+        "body": "Content never grows wider than 599dp on a compact window or in a session, or 1040dp from 600; wide windows gain empty ground.",
         "section": "layout"
       },
       {
-        "name": "The Hairline Before Shadow Rule",
-        "body": "Group with tone and the 1px border hairline first; shadows only for floating surfaces.",
+        "name": "The Tone Before Shadow Rule",
+        "body": "A card, the search field and navigation rise by tone alone, with no edge and no shadow; a shadow is only for a surface that floats above content.",
         "section": "elevation"
       }
     ],
@@ -927,14 +1355,14 @@
       "Do guarantee a 48x48dp touch area on every interactive element, and let text containers grow.",
       "Do write failure copy in the local-first voice: say first that nothing was lost, then offer the retry. Copy is caller-supplied and localized; components hold no copy.",
       "Do use mastery and success green only for mastery and success, and route mastery fills through MasteryRamp.",
-      "Do separate groups with tone and the 1px border hairline first.",
-      "Do use 12 for every in-flow surface and the defined spacing steps.",
-      "Do centre content at a 720dp maximum column and switch to the navigation rail from 600dp."
+      "Do separate groups with tone first; use the named shadows only for floating surfaces.",
+      "Do use 12 for every card and the defined spacing steps; a screen side margin is context.screenMargin.",
+      "Do keep a 599dp column on a compact window and in a session, a 1040dp centred area from 600dp, and switch to the navigation rail from 600dp."
     ],
     "donts": [
       "Don't use a fill colour as text; use its text token.",
       "Don't use violet or green as decoration, or green for anything but progress and success.",
-      "Don't tint shadows with the brand colour, or add elevation where a hairline groups content.",
+      "Don't tint shadows with the brand colour, or add an edge or a shadow to a card, the search field or navigation.",
       "Don't add hover states or a global text style for one component.",
       "Don't put text below 12px or a fixed height around text.",
       "Don't put failure copy in a component, or word a load failure as though data was lost.",

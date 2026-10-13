@@ -182,7 +182,7 @@ rules:
       - memox-v8
       - design-system
 
-  # The app's face, Plus Jakarta Sans, is a variable font with a `wght` axis,
+  # The Korean fallback, Noto Sans KR, is a variable font with a `wght` axis,
   # and renderers read the axis over `TextStyle.fontWeight` once it is present
   # — so a bare `copyWith(fontWeight:)` reports the new weight to every test and
   # paints the rung's old one on the device. `AppTypography.withWeight` moves
@@ -285,12 +285,12 @@ rules:
       - memox-v8
       - design-system
 
-  # `ColorScheme` is the 45 Material 3 colour roles — 26 standard, 19 add-on —
-  # and the guard locks the names to that list by allowlist, in both
-  # directions. The SDK's constructor accepts a few more names
-  # (three deprecated roles and a tint mechanism it resolves for itself), and
-  # any name that is not on the list is a finding, so none of them has to be
-  # spelled here to stay out. `brightness` is the one non-role argument the
+  # `ColorScheme` is the 46 roles "Flashcard Color Tokens" §1 declares — 26
+  # standard, 19 add-on and `surfaceTint` (owner 2026-10-13, ADR-022) — and
+  # the guard locks the names to that list by allowlist, in both directions.
+  # The SDK's constructor accepts a few more names (three deprecated roles),
+  # and any name that is not on the list is a finding, so none of them has
+  # to be spelled here to stay out. `brightness` is the one non-role argument the
   # constructor takes.
   #
   # Argument side, file mode: the callee is the unnamed constructor, one of
@@ -310,21 +310,22 @@ rules:
     severity: error
     enabled: true
     message: >-
-      A `ColorScheme` is built from the 45 Material 3 colour roles only (26
-      standard + 19 add-on), plus `brightness`. Any other argument name is
+      A `ColorScheme` is built from the 46 Material 3 colour roles only (26
+      standard + 19 add-on + `surfaceTint`, which "Flashcard Color Tokens"
+      §1 declares), plus `brightness`. Any other argument name is
       either a deprecated role or a mechanism the SDK already resolves — do
       not pass it; this rule's allowlist is the set.
     scopes:
       - dart_lib
     patterns:
-      - '(?:\bColorScheme(?:\.(?:light|dark|highContrastLight|highContrastDark))?|\b(?:scheme|colors|colorScheme)\??\.copyWith)\s*\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*?^\s+(?!(?:brightness|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim)\s*:)[A-Za-z_]\w*\s*:'
-      - '(?:\bColorScheme(?:\.(?:light|dark|highContrastLight|highContrastDark))?|\b(?:scheme|colors|colorScheme)\??\.copyWith)\s*\([^()\n]*?\b(?!(?:brightness|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim)\s*:)[A-Za-z_]\w*\s*:'
+      - '(?:\bColorScheme(?:\.(?:light|dark|highContrastLight|highContrastDark))?|\b(?:scheme|colors|colorScheme)\??\.copyWith)\s*\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*?^\s+(?!(?:brightness|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim|surfaceTint)\s*:)[A-Za-z_]\w*\s*:'
+      - '(?:\bColorScheme(?:\.(?:light|dark|highContrastLight|highContrastDark))?|\b(?:scheme|colors|colorScheme)\??\.copyWith)\s*\([^()\n]*?\b(?!(?:brightness|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim|surfaceTint)\s*:)[A-Za-z_]\w*\s*:'
     tags:
       - memox-v8
       - design-system
 
   # Read side, line mode: on the three identifiers the codebase gives a
-  # scheme, a member must be one of the 45 roles, `brightness`, or
+  # scheme, a member must be one of the 46 roles, `brightness`, or
   # `copyWith`. Comment lines are exempt because prose names files such as
   # `colors.css`. `?.` is accepted so a nullable scheme is not a way around
   # the rule. `context.colors.<role>` and `theme.colorScheme.<role>` are the
@@ -335,14 +336,14 @@ rules:
     severity: error
     enabled: true
     message: >-
-      Read a `ColorScheme` through one of its 45 Material 3 role names (or
+      Read a `ColorScheme` through one of its 46 Material 3 role names (or
       `brightness` / `copyWith`). Anything else is a deprecated role, a
       mechanism the SDK resolves for itself, or a typo — name the role you
       mean, e.g. `onSurface`, `surfaceContainerHighest`.
     scopes:
       - dart_lib
     patterns:
-      - '^(?!\s*//).*?\b(?:scheme|colors|colorScheme)\??\.(?!(?:brightness|copyWith|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim)\b)[A-Za-z_]\w*'
+      - '^(?!\s*//).*?\b(?:scheme|colors|colorScheme)\??\.(?!(?:brightness|copyWith|surfaceContainerHighest|onSecondaryFixedVariant|surfaceContainerLowest|onTertiaryFixedVariant|onPrimaryFixedVariant|onSecondaryContainer|surfaceContainerHigh|onTertiaryContainer|surfaceContainerLow|onPrimaryContainer|secondaryContainer|tertiaryContainer|secondaryFixedDim|primaryContainer|onErrorContainer|onSurfaceVariant|onInverseSurface|surfaceContainer|onSecondaryFixed|tertiaryFixedDim|primaryFixedDim|onTertiaryFixed|errorContainer|outlineVariant|inverseSurface|inversePrimary|onPrimaryFixed|secondaryFixed|surfaceBright|tertiaryFixed|primaryFixed|onSecondary|onTertiary|surfaceDim|onPrimary|secondary|onSurface|tertiary|primary|onError|surface|outline|shadow|error|scrim|surfaceTint)\b)[A-Za-z_]\w*'
     tags:
       - memox-v8
       - design-system

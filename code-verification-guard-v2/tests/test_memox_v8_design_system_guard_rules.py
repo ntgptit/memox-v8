@@ -197,3 +197,43 @@ def test_no_text_restyle_leaves_the_hint_style_alone(tmp_path: Path) -> None:
     style: context.textStyles.inputHint,
     """
     assert not _violations(RESTYLE, tmp_path, good)
+
+
+SCHEME_ARGUMENTS = "memox_v8.design_system.color_scheme_arguments_are_m3_roles"
+SCHEME_READS = "memox_v8.design_system.color_scheme_reads_are_m3_roles"
+
+
+def test_color_scheme_arguments_accept_the_spec_46_roles(tmp_path: Path) -> None:
+    good = """
+    static const ColorScheme light = ColorScheme(
+      brightness: Brightness.light,
+      primary: Color(0xFF564BCB),
+      onPrimary: Color(0xFFFFFFFF),
+      surfaceTint: Color(0xFF564BCB),
+    );
+    """
+    assert not _violations(SCHEME_ARGUMENTS, tmp_path, good)
+
+
+def test_color_scheme_arguments_go_red_on_a_deprecated_role(tmp_path: Path) -> None:
+    bad = """
+    static const ColorScheme light = ColorScheme(
+      brightness: Brightness.light,
+      background: Color(0xFFFFFFFF),
+    );
+    """
+    assert _violations(SCHEME_ARGUMENTS, tmp_path, bad)
+
+
+def test_color_scheme_reads_accept_surface_tint(tmp_path: Path) -> None:
+    good = """
+    final tint = context.colors.surfaceTint;
+    """
+    assert not _violations(SCHEME_READS, tmp_path, good)
+
+
+def test_color_scheme_reads_go_red_on_a_deprecated_role(tmp_path: Path) -> None:
+    bad = """
+    final ground = context.colors.background;
+    """
+    assert _violations(SCHEME_READS, tmp_path, bad)
