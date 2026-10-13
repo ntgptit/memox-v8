@@ -52,3 +52,23 @@ class SymbolsCheckTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class GeneratedSyncTest(unittest.TestCase):
+    def test_committed_generated_files_equal_a_fresh_generation(self) -> None:
+        self.assertEqual(check.generated_problems(), [])
+
+    def test_a_hand_edited_generated_file_is_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            committed = Path(tmp)
+            check.generate.write_dart(
+                check.generate.render_all(
+                    check.generate_inputs()[0], check.generate_inputs()[1]
+                ),
+                committed,
+            )
+            edited = committed / "app_dimens.g.dart"
+            edited.write_text(edited.read_text() + "// hand edit\n")
+            problems = check.generated_problems(committed)
+        self.assertEqual(len(problems), 1)
+        self.assertIn("app_dimens.g.dart", problems[0])

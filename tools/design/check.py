@@ -12,12 +12,14 @@ from __future__ import annotations
 
 import json
 import sys
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO_ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 
+import generate  # noqa: E402
 import removed_symbols  # noqa: E402
 
 DART_ROOTS = ("lib", "test", "integration_test")
@@ -47,11 +49,35 @@ def symbol_problems(root: Path) -> list[str]:
     return problems
 
 
+def generate_inputs() -> tuple[dict, dict]:
+    tokens = json.loads(generate.TOKENS_PATH.read_text(encoding="utf-8"))
+    app_tokens = json.loads(generate.APP_TOKENS_PATH.read_text(encoding="utf-8"))
+    return tokens, app_tokens
+
+
+def generated_problems(committed: Path = generate.GENERATED_DIR) -> list[str]:
+    """Generated Dart that differs from a fresh generation of design/tokens.json."""
+    fresh_files = generate.render_all(*generate_inputs())
+    problems: list[str] = []
+    with tempfile.TemporaryDirectory() as tmp:
+        fresh = Path(tmp)
+        generate.write_dart(fresh_files, fresh)
+        for name in sorted(fresh_files):
+            current = committed / name
+            if not current.is_file():
+                problems.append(f"{name}: missing, run tools/design/generate.py")
+                continue
+            if current.read_text(encoding="utf-8") != (fresh / name).read_text(encoding="utf-8"):
+                problems.append(f"{name}: differs from design/tokens.json, run tools/design/generate.py")
+    return problems
+
+
 def main(argv: list[str]) -> int:
     problems = symbol_problems(REPO_ROOT)
     if "--symbols" not in argv:
         data = json.loads(removed_symbols.SYMBOLS_FILE.read_text(encoding="utf-8"))
         problems += unfilled_replacements(data)
+        problems += generated_problems()
     for problem in problems:
         print(problem)
     if problems:
