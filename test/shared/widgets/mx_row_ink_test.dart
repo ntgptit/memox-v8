@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 
 import '../../support/widget_harness.dart';
@@ -50,10 +54,7 @@ void main() {
 
     expect(
       ring.border,
-      Border.all(
-        color: MxDerivedColors.primaryInkOf(AppColorSchemes.light),
-        width: 2,
-      ),
+      Border.all(color: accentOf(lightColorScheme), width: 2),
     );
   });
 

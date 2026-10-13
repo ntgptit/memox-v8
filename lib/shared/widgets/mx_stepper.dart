@@ -10,10 +10,10 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
 /// How long a stepper button is held before it starts repeating (FE-A3 D6).
-const Duration _repeatDelay = Duration(milliseconds: 400);
+const Duration mxStepperRepeatDelay = Duration(milliseconds: 400);
 
 /// The pace of a held stepper button, one step each (FE-A3 D6).
-const Duration _repeatInterval = Duration(milliseconds: 80);
+const Duration mxStepperRepeatInterval = Duration(milliseconds: 80);
 
 /// The bounded integer input (cards per session). It owns the invalid ring,
 /// the busy spinner and the disabled dim. The bounds, the clamping and the
@@ -228,8 +228,8 @@ class _MxStepperState extends State<MxStepper> {
 }
 
 /// A − or + button. A hold repeats it, first after
-/// [_repeatDelay] and then every
-/// [_repeatInterval], until release or a null
+/// [mxStepperRepeatDelay] and then every
+/// [mxStepperRepeatInterval], until release or a null
 /// [onPressed] (the caller's bound).
 class _StepButton extends StatefulWidget {
   const _StepButton({
@@ -273,9 +273,9 @@ class _StepButtonState extends State<_StepButton> {
     _stop();
     _downAt = event.position;
     if (widget.onPressed == null) return;
-    _timer = Timer(_repeatDelay, () {
+    _timer = Timer(mxStepperRepeatDelay, () {
       _repeat();
-      _timer = Timer.periodic(_repeatInterval, (_) => _repeat());
+      _timer = Timer.periodic(mxStepperRepeatInterval, (_) => _repeat());
     });
   }
 

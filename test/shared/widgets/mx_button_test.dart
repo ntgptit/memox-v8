@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -16,17 +23,17 @@ Material _material(WidgetTester tester) =>
     tester.widget<Material>(_painted.first);
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('each size paints its height and keeps a 48 target', (
     tester,
   ) async {
-    const heights = {
-      MxButtonSize.regular: 48.0,
-      MxButtonSize.small: 36.0,
-      MxButtonSize.small: 32.0,
-      MxButtonSize.chip: 28.0,
-      MxButtonSize.study: 48.0,
+    const dimens = AppDimens();
+    final heights = {
+      MxButtonSize.regular: dimens.sizeButton,
+      MxButtonSize.small: dimens.sizeButtonSmall,
+      MxButtonSize.chip: dimens.sizeChip,
+      MxButtonSize.study: dimens.sizeButton,
     };
     for (final MapEntry(key: size, value: height) in heights.entries) {
       await pumpMx(tester, MxButton(label: 'Go', size: size, onPressed: () {}));
@@ -49,8 +56,8 @@ void main() {
         BorderSide.none,
       ),
       MxButtonTone.destructive: (
-        MxSemanticColors.light.errorFill,
-        MxSemanticColors.light.onErrorFill,
+        lightColorScheme.error,
+        lightColorScheme.onError,
         BorderSide.none,
       ),
     };
@@ -61,24 +68,23 @@ void main() {
 
       expect(material.color, fill, reason: '$tone');
       expect(material.textStyle!.color, ink, reason: '$tone');
-      expect((material.shape! as RoundedRectangleBorder).side, edge);
+      expect((material.shape! as OutlinedBorder).side, edge);
     }
   });
 
   testWidgets('dangerSoft paints the soft danger tint with the error ink '
       '(FE-A6 P2, screen 16a)', (tester) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
     await pumpMx(
       tester,
       MxButton(label: 'Again', tone: MxButtonTone.dangerTint, onPressed: () {}),
     );
     final material = _material(tester);
 
-    expect(material.color, derived.dangerSoft);
+    expect(material.color, scheme.error.tintOver(scheme.surface));
     expect(material.textStyle!.color, scheme.error);
     expect(
-      (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(color: derived.dangerBorder),
+      (material.shape! as OutlinedBorder).side,
+      BorderSide(color: scheme.error, width: const AppDimens().strokeHairline),
     );
   });
 
@@ -90,12 +96,15 @@ void main() {
     );
     final material = _material(tester);
 
-    expect(material.color, MxSemanticColors.light.warning);
-    expect(material.textStyle!.color, MxSemanticColors.light.onWarning);
-    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
-    for (final colors in [MxSemanticColors.light, MxSemanticColors.dark]) {
+    expect(material.color, MxColorsExtension.light.warningContainer);
+    expect(
+      material.textStyle!.color,
+      MxColorsExtension.light.onWarningContainer,
+    );
+    expect((material.shape! as OutlinedBorder).side, BorderSide.none);
+    for (final colors in [MxColorsExtension.light, MxColorsExtension.dark]) {
       expect(
-        _ratio(colors.warning, colors.onWarning),
+        _ratio(colors.warningContainer, colors.onWarningContainer),
         greaterThanOrEqualTo(4.5),
       );
     }
@@ -147,14 +156,12 @@ void main() {
     final material = _material(tester);
 
     expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, MxDerivedColors.primaryInkOf(scheme));
+    expect(material.textStyle!.color, accentOf(scheme));
     expect(
-      (material.shape! as RoundedRectangleBorder).side,
+      (material.shape! as OutlinedBorder).side,
       BorderSide(
-        color: MxDerivedColors.resolve(
-          scheme,
-          MxSemanticColors.light,
-        ).outlineEdge,
+        color: scheme.outline,
+        width: const AppDimens().strokeHairline,
       ),
     );
   });
@@ -170,10 +177,8 @@ void main() {
     expect(
       (_material(tester).shape! as RoundedRectangleBorder).side,
       BorderSide(
-        color: MxDerivedColors.resolve(
-          AppColorSchemes.dark,
-          MxSemanticColors.dark,
-        ).outlineEdge,
+        color: darkColorScheme.outline,
+        width: const AppDimens().strokeHairline,
       ),
     );
   });
@@ -186,13 +191,12 @@ void main() {
       MxButton(label: 'Tag', size: MxButtonSize.chip, onPressed: () {}),
     );
     final material = _material(tester);
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
 
     expect(material.color, scheme.surfaceContainerLowest);
     expect(material.textStyle!.color, scheme.onSurface);
     expect(
-      (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(color: derived.ghostBorder),
+      (material.shape! as OutlinedBorder).side,
+      BorderSide(color: scheme.outlineVariant),
     );
   });
 
@@ -405,8 +409,8 @@ void main() {
     final material = _material(tester);
 
     expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, MxDerivedColors.primaryInkOf(scheme));
-    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
+    expect(material.textStyle!.color, accentOf(scheme));
+    expect((material.shape! as OutlinedBorder).side, BorderSide.none);
   });
 
   testWidgets('a brand mark is painted at 18 in the icon\'s place, and '

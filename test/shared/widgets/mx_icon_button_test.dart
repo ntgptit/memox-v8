@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
@@ -41,7 +42,7 @@ void main() {
     );
     final glyph = tester.element(find.byIcon(AppIcons.search));
 
-    expect(IconTheme.of(glyph).color, AppColorSchemes.light.onSurface);
+    expect(IconTheme.of(glyph).color, lightColorScheme.onSurface);
     expect(tester.widget<Material>(_painted.first).color?.a ?? 0, 0);
   });
 

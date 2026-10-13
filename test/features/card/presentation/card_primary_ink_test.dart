@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../../support/theme_expect.dart';
+
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_removable_tag_chip_widget.dart';
 
@@ -8,7 +12,7 @@ import '../../../support/library_harness.dart';
 // Spec 2026-09-27 D2: a glyph is ink, so it reads in primaryInk; the tag
 // chip's tint stays primary.
 void main() {
-  final ink = MxDerivedColors.primaryInkOf(AppColorSchemes.dark);
+  final ink = accentOf(darkColorScheme);
 
   Color? glyphColor(WidgetTester tester, Type owner) => IconTheme.of(
     tester.element(

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 
 import '../../support/widget_harness.dart';
-
-import 'package:memox/core/theme/theme_context.dart';
 
 enum _Range { week, month }
 
@@ -27,7 +27,7 @@ BoxDecoration _thumb(WidgetTester tester, String label) =>
         as BoxDecoration;
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('the active option sits on a raised lowest thumb', (
     tester,
@@ -42,7 +42,6 @@ void main() {
     );
 
     expect(_thumb(tester, '7d').color, scheme.surfaceContainerLowest);
-    expect(_thumb(tester, '7d').boxShadow, AppShadows.whisper(scheme));
     expect(_thumb(tester, '30d').color, isNull);
     expect(tester.widget<Text>(find.text('7d')).style!.color, scheme.onSurface);
     expect(
@@ -122,7 +121,7 @@ void main() {
           )
           .first,
     );
-    expect(opacity.opacity, context.dimens.opacityDisabledContent);
+    expect(opacity.opacity, const AppDimens().opacityDisabledContent);
     expect(
       tester.getSemantics(find.text('30d')),
       isSemantics(hasEnabledState: true, isEnabled: false),

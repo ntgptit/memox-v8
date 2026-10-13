@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -194,7 +195,10 @@ void main() {
               .first,
         )
         .height;
-    expect(shortHeight, line + context.dimens.space8 + context.dimens.space16);
+    expect(
+      shortHeight,
+      line + const AppDimens().space8 + const AppDimens().space16,
+    );
     expect(await heightOf(long), greaterThan(shortHeight));
     expect(await heightOf(short, textScale: 2), greaterThan(shortHeight));
   });
@@ -236,7 +240,7 @@ void main() {
     );
 
     final fade = tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity));
-    expect(fade.opacity, context.dimens.opacityMuted);
+    expect(fade.opacity, const AppDimens().opacityMuted);
   });
 
   libraryTest('one action spans the width of a two-action row, not its own '
@@ -253,7 +257,7 @@ void main() {
 
     expect(
       tester.getSize(find.byType(MxButton)).width,
-      2 * 160 + context.dimens.space8,
+      2 * 160 + const AppDimens().space8,
     );
   });
 
@@ -281,7 +285,11 @@ void main() {
       final label = find.text(text);
       expect(
         tester.widget<Text>(label).style,
-        tester.element(label).textStyles.eyebrow,
+        tester
+            .element(label)
+            .texts
+            .labelSmall
+            ?.copyWith(color: tester.element(label).colors.onSurfaceVariant),
         reason: text,
       );
     }

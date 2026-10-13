@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_dashed_note.dart';
 
 import '../../support/widget_harness.dart';
@@ -12,7 +13,7 @@ void main() {
   testWidgets('a centred note line on the muted fill, padded 24 16', (
     tester,
   ) async {
-    final scheme = AppColorSchemes.light;
+    final scheme = lightColorScheme;
     await pumpMx(
       tester,
       const SizedBox(width: 328, child: MxDashedNote(text: _line)),

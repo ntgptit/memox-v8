@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
@@ -17,25 +19,12 @@ Widget _rows(int count) => Column(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('surface: container-high, top radius 20, the chrome shadow', (
     tester,
   ) async {
     await pumpMx(tester, MxBottomSheet(child: _rows(2)));
-    final shadow =
-        (tester
-                    .widget<DecoratedBox>(
-                      find
-                          .descendant(
-                            of: find.byType(MxBottomSheet),
-                            matching: find.byType(DecoratedBox),
-                          )
-                          .first,
-                    )
-                    .decoration
-                as BoxDecoration)
-            .boxShadow;
     final surface = tester.widget<Material>(
       find
           .descendant(
@@ -48,9 +37,9 @@ void main() {
     expect(surface.color, scheme.surfaceContainerHigh);
     expect(
       (surface.shape! as RoundedRectangleBorder).borderRadius,
-      const BorderRadius.vertical(top: Radius.circular(20)),
+      BorderRadius.vertical(top: Radius.circular(const AppDimens().radiusXl)),
     );
-    expect(shadow, AppShadows.chrome(scheme));
+    expect(surface.elevation, greaterThan(0));
   });
 
   testWidgets('a 36×4 onSurfaceVariant grabber, 8 above and 4 below '

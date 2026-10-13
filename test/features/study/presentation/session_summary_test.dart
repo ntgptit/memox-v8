@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_hero_widget.dart';
@@ -323,7 +324,7 @@ void main() {
     final spaceCentre = (bar.bottom + footer.top) / 2;
     expect(
       (hero.center.dy - spaceCentre).abs(),
-      lessThan(context.dimens.space16),
+      lessThan(const AppDimens().space16),
     );
   });
 
@@ -340,7 +341,7 @@ void main() {
     );
     final hero = tester.getRect(find.byType(SessionSummaryHeroWidget));
     final bar = tester.getRect(find.byType(MxAppBar));
-    expect(hero.top - bar.bottom, lessThan(context.dimens.space24));
+    expect(hero.top - bar.bottom, lessThan(const AppDimens().space24));
     expect(tester.takeException(), isNull);
   });
 
@@ -380,7 +381,14 @@ void main() {
     expect(overline, findsOneWidget);
     expect(find.text('REVIEW SESSION · NHÀ HÀNG'), findsNothing);
     final text = tester.widget<Text>(overline);
-    expect(text.style, tester.element(overline).textStyles.eyebrow);
+    expect(
+      text.style,
+      tester
+          .element(overline)
+          .texts
+          .labelSmall
+          ?.copyWith(color: tester.element(overline).colors.onSurfaceVariant),
+    );
     expect(
       text.semanticsLabel,
       _en.summaryOverline(_en.summaryKindReview, 'Nhà hàng'),

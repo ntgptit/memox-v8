@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
@@ -338,10 +340,7 @@ void main() {
                 )
                 .decoration!
             as BoxDecoration;
-    expect(
-      (box.border! as Border).top.color,
-      MxDerivedColors.outlineEdgeOf(AppColorSchemes.light),
-    );
+    expect((box.border! as Border).top.color, lightColorScheme.outline);
   });
 
   libraryTest('field labels are sentence case; Required is a caption '
@@ -373,10 +372,13 @@ void main() {
       (_en.cardRequiredLegend, 'requiredMarker'),
     ]) {
       final label = find.text(text);
-      final styles = tester.element(label).textStyles;
+      final texts = tester.element(label).texts;
+      final accent = tester.element(label).accentColor;
       expect(
         tester.widget<Text>(label).style,
-        role == 'fieldLabel' ? styles.fieldLabel : styles.requiredMarker,
+        role == 'fieldLabel'
+            ? texts.labelMedium
+            : texts.bodyMedium?.copyWith(color: accent),
         reason: text,
       );
     }

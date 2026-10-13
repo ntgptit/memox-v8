@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
@@ -11,11 +13,11 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      AppColorSchemes.light.error,
+      lightColorScheme.error,
     );
     expect(
       tester.widget<Text>(find.text('Name is required')).style!.color,
-      AppColorSchemes.light.error,
+      lightColorScheme.error,
     );
   });
 
@@ -31,11 +33,11 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxSemanticColors.dark.warning,
+      MxColorsExtension.dark.warningContainer,
     );
     expect(
       tester.widget<Text>(find.text('Ten tags at most')).style!.color,
-      MxSemanticColors.dark.warning,
+      MxColorsExtension.dark.warningContainer,
     );
   });
 

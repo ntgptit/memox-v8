@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -20,32 +22,19 @@ Widget _still(Widget child) => Builder(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('surfaceContainerHigh at radius 20 with the overlay shadow', (
     tester,
   ) async {
     await pumpMx(tester, const MxDialog(title: 'Delete deck?'));
-    final shadow =
-        (tester
-                    .widget<DecoratedBox>(
-                      find
-                          .descendant(
-                            of: find.byType(MxDialog),
-                            matching: find.byType(DecoratedBox),
-                          )
-                          .first,
-                    )
-                    .decoration
-                as BoxDecoration)
-            .boxShadow;
 
     expect(_surface(tester).color, scheme.surfaceContainerHigh);
     expect(
       (_surface(tester).shape! as RoundedRectangleBorder).borderRadius,
-      BorderRadius.circular(20),
+      BorderRadius.circular(const AppDimens().radiusXl),
     );
-    expect(shadow, AppShadows.overlay(scheme));
+    expect(_surface(tester).elevation, greaterThan(0));
   });
 
   testWidgets('width: the column 20 in from each edge, capped at 340/320/300', (

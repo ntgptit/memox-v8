@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
 
@@ -47,9 +52,8 @@ TextStyle? _termStyle(WidgetTester tester, String term) =>
         .style;
 
 void main() {
-  final scheme = AppColorSchemes.light;
-  final semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(scheme, semantic);
+  final scheme = lightColorScheme;
+  const mx = MxColorsExtension.light;
 
   testWidgets('all three terms in order, each in its colour, at 600', (
     tester,
@@ -57,12 +61,9 @@ void main() {
     await pumpMx(tester, _line());
 
     expect(_plain(tester), '3 overdue · 5 today · 2 new');
-    expect(_termStyle(tester, '3 overdue')!.color, derived.warningInk);
-    expect(
-      _termStyle(tester, '5 today')!.color,
-      MxDerivedColors.primaryInkOf(scheme),
-    );
-    expect(_termStyle(tester, '2 new')!.color, derived.statusNewInk);
+    expect(_termStyle(tester, '3 overdue')!.color, mx.warning);
+    expect(_termStyle(tester, '5 today')!.color, accentOf(scheme));
+    expect(_termStyle(tester, '2 new')!.color, scheme.onSurfaceVariant);
     expect(_termStyle(tester, '2 new')!.fontWeight, FontWeight.w600);
     expect(_root(tester).style!.fontWeight, FontWeight.w400);
     expect(_root(tester).style!.color, scheme.onSurfaceVariant);
@@ -208,7 +209,7 @@ void main() {
       expect(_termStyle(tester, zero)!.color, scheme.onSurfaceVariant);
       expect(_termStyle(tester, zero)!.fontWeight, FontWeight.w400);
     }
-    expect(_termStyle(tester, '2 new')!.color, derived.statusNewInk);
+    expect(_termStyle(tester, '2 new')!.color, scheme.onSurfaceVariant);
 
     await pumpMx(
       tester,
@@ -239,9 +240,9 @@ void main() {
         .map((icon) => (icon.icon, icon.color))
         .toList();
     expect(glyphs, [
-      (AppIcons.overdue, derived.warningInk),
+      (AppIcons.overdue, mx.warning),
       (AppIcons.dueNow, scheme.onSurfaceVariant),
-      (AppIcons.newCards, derived.statusNewInk),
+      (AppIcons.newCards, scheme.onSurfaceVariant),
     ]);
     final semantics = tester.widget<Semantics>(
       find

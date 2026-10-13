@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 
@@ -11,7 +12,7 @@ final _painted = find.descendant(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('unselected: lowest fill, ghost edge, onSurface label', (
     tester,
@@ -27,12 +28,7 @@ void main() {
     expect(material.textStyle!.color, scheme.onSurface);
     expect(
       (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(
-        color: MxDerivedColors.resolve(
-          scheme,
-          MxSemanticColors.light,
-        ).ghostBorder,
-      ),
+      BorderSide(color: scheme.outlineVariant),
     );
   });
 

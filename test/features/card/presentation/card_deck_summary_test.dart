@@ -62,8 +62,14 @@ void main() {
           .style,
       tester
           .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
-          .textStyles
-          .eyebrow,
+          .texts
+          .labelSmall
+          ?.copyWith(
+            color: tester
+                .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
+                .colors
+                .onSurfaceVariant,
+          ),
     );
     expect(find.text(_en.cardMasteredOf(80, 420)), findsOneWidget);
     expect(

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../support/widget_harness.dart';
@@ -31,7 +35,7 @@ Widget _still(Widget child) => Builder(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('four sizes off the icon scale; 16 by default', (tester) async {
     for (final (size, box) in [
@@ -55,7 +59,7 @@ void main() {
     expect(
       _ring(tester),
       paints..arc(
-        color: MxDerivedColors.primaryInkOf(scheme),
+        color: accentOf(scheme),
         strokeWidth: 2,
         style: PaintingStyle.stroke,
       ),

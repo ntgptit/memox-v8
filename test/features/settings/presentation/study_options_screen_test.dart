@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
@@ -68,7 +69,7 @@ void main() {
     expect(
       tester.getTopLeft(find.byType(MxSection).first).dy -
           tester.getBottomLeft(find.byType(MxNote).first).dy,
-      context.dimens.space16,
+      const AppDimens().space16,
     );
     expect(
       find.text(
@@ -90,11 +91,11 @@ void main() {
     expect(find.text('20'), findsOneWidget);
     expect(find.text(_en.settingsOrderCreated), findsOneWidget);
     // Full contrast: the value reads like the row's label, not a muted count.
-    final styles = tester.element(find.text('20')).textStyles;
+    final texts = tester.element(find.text('20')).texts;
     for (final value in ['20', _en.settingsOrderCreated]) {
       expect(
         tester.widget<Text>(find.text(value)).style,
-        styles.settingsLabel,
+        texts.titleSmall,
         reason: value,
       );
     }

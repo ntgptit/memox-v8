@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../support/widget_harness.dart';
 
-import 'package:memox/core/theme/theme_context.dart';
-
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('the code variant asks for digits and offers the one-time '
       'code', (tester) async {
@@ -75,7 +78,6 @@ void main() {
 
   testWidgets('the slot that takes the next digit carries the focus edge; '
       'the rest the outline edge; an error edges every slot', (tester) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
     final controller = TextEditingController(text: '12');
     addTearDown(controller.dispose);
     Border edgeOf(int i) =>
@@ -100,9 +102,9 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(edgeOf(2).top.color, derived.primaryInk);
+    expect(edgeOf(2).top.color, accentOf(scheme));
     expect(edgeOf(2).top.width, 2);
-    expect(edgeOf(3).top.color, derived.outlineEdge);
+    expect(edgeOf(3).top.color, scheme.outline);
 
     await pumpMx(
       tester,
@@ -166,7 +168,7 @@ void main() {
         matching: find.byWidgetPredicate(
           (w) =>
               w is Opacity &&
-              w.opacity == context.dimens.opacityDisabledContent,
+              w.opacity == const AppDimens().opacityDisabledContent,
         ),
       ),
       findsNothing,
@@ -175,7 +177,6 @@ void main() {
 
   testWidgets('a disabled code rests its slots on the ghost edge, as a '
       'disabled field does (DEV-166)', (tester) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
     await pumpMx(
       tester,
       const MxTextField(variant: MxTextFieldVariant.code, isEnabled: false),
@@ -190,7 +191,7 @@ void main() {
                 )
                 .decoration
             as BoxDecoration;
-    expect((slot.border! as Border).top.color, derived.ghostBorder);
+    expect((slot.border! as Border).top.color, scheme.outlineVariant);
   });
 
   testWidgets('a tap on a slot focuses the code', (tester) async {

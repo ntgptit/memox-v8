@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -13,7 +18,7 @@ Finder _tile(IconData icon) => find
     .first;
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('title, body and a block primary action', (tester) async {
     var taps = 0;
@@ -59,8 +64,8 @@ void main() {
     final tones = {
       MxEmptyStateTone.primary: scheme.primary,
       MxEmptyStateTone.neutral: scheme.onSurfaceVariant,
-      MxEmptyStateTone.success: MxSemanticColors.light.success,
-      MxEmptyStateTone.warning: MxSemanticColors.light.warning,
+      MxEmptyStateTone.success: MxColorsExtension.light.success,
+      MxEmptyStateTone.warning: MxColorsExtension.light.warningContainer,
       MxEmptyStateTone.danger: scheme.error,
     };
     for (final MapEntry(key: tone, value: color) in tones.entries) {
@@ -77,12 +82,11 @@ void main() {
       );
       // The primary glyph reads in primaryInk (spec 2026-09-27 D2), the
       // success glyph in its ink (critique 2026-09-30 tone pass, T7).
-      final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
       final glyph = switch (tone) {
-        MxEmptyStateTone.primary => MxDerivedColors.primaryInkOf(scheme),
-        MxEmptyStateTone.success => derived.successInk,
+        MxEmptyStateTone.primary => accentOf(scheme),
+        MxEmptyStateTone.success => MxColorsExtension.light.success,
         // Warning reads in its ink too (critique 2026-09-30 part 3d-2, E14).
-        MxEmptyStateTone.warning => derived.warningInk,
+        MxEmptyStateTone.warning => MxColorsExtension.light.warning,
         _ => color,
       };
       expect(tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color, glyph);
@@ -225,7 +229,7 @@ void main() {
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color,
-      tester.element(find.byIcon(AppIcons.inbox)).derivedColors.warningInk,
+      tester.element(find.byIcon(AppIcons.inbox)).mxColors.warning,
     );
   });
 }

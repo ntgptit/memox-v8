@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
 import '../../support/widget_harness.dart';
@@ -40,9 +44,9 @@ void main() {
     );
     Color? ink(String value) =>
         tester.widget<Text>(find.text(value)).style?.color;
-    final scheme = AppColorSchemes.light;
+    final scheme = lightColorScheme;
 
-    expect(ink('1'), MxDerivedColors.primaryInkOf(scheme));
+    expect(ink('1'), accentOf(scheme));
     expect(ink('2'), scheme.onSurface);
     expect(ink('3'), scheme.onSurfaceVariant);
   });
@@ -95,7 +99,11 @@ void main() {
     final label = find.text('WRONG TURNS');
     expect(
       tester.widget<Text>(label).style,
-      tester.element(label).textStyles.eyebrow,
+      tester
+          .element(label)
+          .texts
+          .labelSmall
+          ?.copyWith(color: tester.element(label).colors.onSurfaceVariant),
     );
   });
 }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
@@ -36,7 +40,7 @@ MxBottomNav _nav({int selected = 0, ValueChanged<int>? onSelected}) =>
     );
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('an 80 block with no inset, 80 + inset with one', (tester) async {
     await pumpMx(tester, _nav());
@@ -72,7 +76,7 @@ void main() {
     expect(find.byIcon(AppIcons.study), findsNothing);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      MxDerivedColors.primaryInkOf(scheme),
+      accentOf(scheme),
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
@@ -80,7 +84,7 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text('Study')).style!.color,
-      MxDerivedColors.primaryInkOf(scheme),
+      accentOf(scheme),
     );
   });
 

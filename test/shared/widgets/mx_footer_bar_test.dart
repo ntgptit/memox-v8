@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -7,7 +8,7 @@ import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('8 / 16 / 16 + inset padding around a block action', (
     tester,
@@ -51,12 +52,7 @@ void main() {
     expect(decoration.color, scheme.surface);
     expect(
       (decoration.border! as Border).top,
-      BorderSide(
-        color: MxDerivedColors.resolve(
-          scheme,
-          MxSemanticColors.light,
-        ).ghostBorder,
-      ),
+      BorderSide(color: scheme.outlineVariant),
     );
   });
 

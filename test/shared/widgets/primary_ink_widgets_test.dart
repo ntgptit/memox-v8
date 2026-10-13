@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -17,8 +21,8 @@ import '../../support/widget_harness.dart';
 // Spec 2026-09-27 D2: in dark, primary as text, icon or focus ring reads in
 // primaryInk; fills, edges and tints keep primary.
 void main() {
-  final scheme = AppColorSchemes.dark;
-  final ink = MxDerivedColors.primaryInkOf(scheme);
+  final scheme = darkColorScheme;
+  final ink = accentOf(scheme);
 
   Future<void> pumpDark(WidgetTester tester, Widget child) =>
       pumpMx(tester, child, brightness: Brightness.dark);

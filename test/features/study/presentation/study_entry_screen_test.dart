@@ -321,7 +321,11 @@ void main() {
     final overline = find.text(_en.deckSchedulerEightBox.toUpperCase());
     expect(
       tester.widget<Text>(overline).style,
-      tester.element(overline).textStyles.eyebrow,
+      tester
+          .element(overline)
+          .texts
+          .labelSmall
+          ?.copyWith(color: tester.element(overline).colors.onSurfaceVariant),
     );
   });
 

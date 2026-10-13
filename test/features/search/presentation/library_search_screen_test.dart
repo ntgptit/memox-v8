@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/search/data/repositories/search_repository_impl.dart';
 import 'package:memox/features/search/di/search_repository_provider.dart';
@@ -28,8 +29,6 @@ import 'package:memox/shared/widgets/mx_tag_chip.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
-
-import 'package:memox/core/theme/theme_context.dart';
 
 // UC-SEARCH-001 on screen 04; IT-DISC-006, IT-DISC-007 in the whole-library
 // sense (spec D17).
@@ -254,7 +253,7 @@ void main() {
     expect(
       tester.getTopLeft(find.byType(MxEmptyState)).dy -
           tester.getBottomLeft(find.byType(MxAppBar)).dy,
-      context.dimens.space8,
+      const AppDimens().space8,
     );
 
     await tester.tap(

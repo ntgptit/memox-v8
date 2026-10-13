@@ -67,7 +67,7 @@ void main() {
     // A read-only field label: sentence case (critique 2026-09-30 part 2).
     expect(
       tester.widget<Text>(label).style,
-      tester.element(label).textStyles.fieldLabel,
+      tester.element(label).texts.labelMedium,
     );
     final field = find.ancestor(of: label, matching: find.byType(Row)).first;
     expectCentredOn(tester, field, [
@@ -135,8 +135,14 @@ void main() {
           .style,
       tester
           .element(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
-          .textStyles
-          .eyebrow,
+          .texts
+          .labelSmall
+          ?.copyWith(
+            color: tester
+                .element(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
+                .colors
+                .onSurfaceVariant,
+          ),
     );
     expect(find.text(_en.cardBoxRampStart), findsOneWidget);
     expect(

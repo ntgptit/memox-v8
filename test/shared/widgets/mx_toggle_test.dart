@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_toggle.dart';
 
 import '../../support/widget_harness.dart';
@@ -32,7 +36,7 @@ Color _trackColor(WidgetTester tester) =>
         .color!;
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('off: highest track, thumb at 3; on: primary, thumb at 21', (
     tester,
@@ -121,10 +125,7 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
 
-    expect(
-      _ring(tester),
-      Border.all(color: MxDerivedColors.primaryInkOf(scheme), width: 2),
-    );
+    expect(_ring(tester), Border.all(color: accentOf(scheme), width: 2));
     expect(_thumbOffset(tester), before);
   });
 

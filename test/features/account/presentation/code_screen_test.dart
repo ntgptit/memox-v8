@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
@@ -16,8 +17,6 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 import '../../../support/account_harness.dart';
 import '../../../support/fake_auth_server.dart';
 import '../../../support/library_harness.dart';
-
-import 'package:memox/core/theme/theme_context.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -100,7 +99,7 @@ void main() {
         matching: find.byWidgetPredicate(
           (w) =>
               w is Opacity &&
-              w.opacity == context.dimens.opacityDisabledContent,
+              w.opacity == const AppDimens().opacityDisabledContent,
         ),
       ),
       findsNothing,

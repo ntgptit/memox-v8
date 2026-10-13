@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 
@@ -17,7 +18,7 @@ BoxDecoration _box(WidgetTester tester) =>
         as BoxDecoration;
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('unchecked: a 20 box with a 2px outline, no fill', (
     tester,

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -39,7 +40,7 @@ void main() {
         .decoration;
     expect(
       (decoration.enabledBorder! as OutlineInputBorder).borderSide.color,
-      MxDerivedColors.outlineEdgeOf(AppColorSchemes.light),
+      lightColorScheme.outline,
     );
   });
 

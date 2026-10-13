@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
@@ -13,11 +17,8 @@ Color _edge(InputBorder? border) =>
     (border! as OutlineInputBorder).borderSide.color;
 
 void main() {
-  final scheme = AppColorSchemes.light;
-  final ghost = MxDerivedColors.resolve(
-    scheme,
-    MxSemanticColors.light,
-  ).ghostBorder;
+  final scheme = lightColorScheme;
+  final ghost = scheme.outlineVariant;
 
   testWidgets('single line is 52 tall', (tester) async {
     await pumpMx(
@@ -68,13 +69,10 @@ void main() {
 
   testWidgets('edges: outline edge at rest, primaryInk focused, ghost '
       'disabled (DEV-166)', (tester) async {
-    final rest = MxDerivedColors.outlineEdgeOf(scheme);
+    final rest = scheme.outline;
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));
     expect(_edge(_decoration(tester).enabledBorder), rest);
-    expect(
-      _edge(_decoration(tester).focusedBorder),
-      MxDerivedColors.primaryInkOf(scheme),
-    );
+    expect(_edge(_decoration(tester).focusedBorder), accentOf(scheme));
 
     await pumpMx(
       tester,
@@ -97,7 +95,7 @@ void main() {
       );
       expect(
         _edge(_decoration(tester).enabledBorder),
-        MxDerivedColors.outlineEdgeOf(scheme),
+        scheme.outline,
         reason: '$variant',
       );
     }
@@ -207,7 +205,7 @@ void main() {
         scheme.surfaceContainerLowest,
       );
       final edge = decoration.enabledBorder! as OutlineInputBorder;
-      expect(edge.borderSide.color, MxDerivedColors.outlineEdgeOf(scheme));
+      expect(edge.borderSide.color, scheme.outline);
       expect(edge.borderRadius, BorderRadius.circular(12));
       final style = tester.widget<EditableText>(find.byType(EditableText));
       expect(style.style.fontSize, 14);

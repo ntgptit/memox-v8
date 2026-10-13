@@ -37,7 +37,11 @@ void main() {
     final label = find.text('CONTINUE STUDYING');
     expect(
       tester.widget<Text>(label).style,
-      tester.element(label).textStyles.eyebrow,
+      tester
+          .element(label)
+          .texts
+          .labelSmall
+          ?.copyWith(color: tester.element(label).colors.onSurfaceVariant),
     );
   });
 }

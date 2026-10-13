@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import '../../support/widget_harness.dart';
@@ -47,7 +48,7 @@ void main() {
           .color;
 
       await pumpMx(tester, _bar());
-      expect(fillColor(), AppColorSchemes.light.primary);
+      expect(fillColor(), lightColorScheme.primary);
     },
   );
 
@@ -62,7 +63,7 @@ void main() {
           .first,
     );
 
-    expect(track.color, AppColorSchemes.light.surfaceContainerLow);
+    expect(track.color, lightColorScheme.surfaceContainerLow);
   });
 
   testWidgets('the fill animates over 200ms unless motion is reduced', (

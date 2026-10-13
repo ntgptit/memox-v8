@@ -48,16 +48,16 @@ void main() {
     final hold = await tester.startGesture(
       tester.getCenter(find.byTooltip('More cards')),
     );
-    await tester.pump(AppDurations.stepperRepeatDelay - _tick);
+    await tester.pump(mxStepperRepeatDelay - _tick);
     expect(_value(tester), 21);
     await tester.pump(_tick);
     expect(_value(tester), 22);
-    await tester.pump(AppDurations.stepperRepeatInterval);
-    await tester.pump(AppDurations.stepperRepeatInterval);
+    await tester.pump(mxStepperRepeatInterval);
+    await tester.pump(mxStepperRepeatInterval);
     expect(_value(tester), 24);
 
     await hold.up();
-    await tester.pump(AppDurations.stepperRepeatDelay * 2);
+    await tester.pump(mxStepperRepeatDelay * 2);
     // Releasing a hold is not one more tap.
     expect(_value(tester), 24);
   });
@@ -69,7 +69,7 @@ void main() {
     );
     // Past touch slop: the finger is scrolling the page, not holding +.
     await drag.moveBy(const Offset(0, kTouchSlop * 2));
-    await tester.pump(AppDurations.stepperRepeatDelay * 2);
+    await tester.pump(mxStepperRepeatDelay * 2);
     await drag.up();
     await tester.pump();
 
@@ -81,9 +81,9 @@ void main() {
     final hold = await tester.startGesture(
       tester.getCenter(find.byTooltip('More cards')),
     );
-    await tester.pump(AppDurations.stepperRepeatDelay);
+    await tester.pump(mxStepperRepeatDelay);
     for (var i = 0; i < 5; i++) {
-      await tester.pump(AppDurations.stepperRepeatInterval);
+      await tester.pump(mxStepperRepeatInterval);
     }
     await hold.up();
     await tester.pump();

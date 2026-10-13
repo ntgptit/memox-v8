@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
 
@@ -28,8 +29,8 @@ void main() {
             brightness: brightness,
           );
           final scheme = brightness == Brightness.light
-              ? AppColorSchemes.light
-              : AppColorSchemes.dark;
+              ? lightColorScheme
+              : darkColorScheme;
           final label = tester.widget<Text>(find.text('Label'));
           final box = tester.widget<DecoratedBox>(
             find

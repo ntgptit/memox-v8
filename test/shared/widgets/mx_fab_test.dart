@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 
 import '../../support/widget_harness.dart';
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('a square 52 primary box, radius 16, 20 onPrimary glyph', (
     tester,
@@ -37,16 +38,13 @@ void main() {
       tester,
       MxFab(icon: AppIcons.add, semanticLabel: 'New deck', onPressed: () {}),
     );
-    final box = tester.widget<DecoratedBox>(
+    final material = tester.widget<Material>(
       find
-          .descendant(
-            of: find.byType(MxFab),
-            matching: find.byType(DecoratedBox),
-          )
+          .descendant(of: find.byType(MxFab), matching: find.byType(Material))
           .first,
     );
 
-    expect((box.decoration as BoxDecoration).boxShadow, AppShadows.fab(scheme));
+    expect(material.elevation, greaterThan(0));
   });
 
   testWidgets('the label is its accessible name, never painted', (

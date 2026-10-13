@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -11,19 +13,19 @@ const _title = 'Could not load decks';
 const _body = 'Nothing was lost. Try again in a moment.';
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('a 52 danger-soft tile with a 24 error glyph, 40 from the top', (
     tester,
   ) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
     await pumpMx(tester, const MxErrorState(title: _title, body: _body));
     final tile = find.descendant(
       of: find.byType(MxErrorState),
       matching: find.byWidgetPredicate(
         (widget) =>
             widget is DecoratedBox &&
-            (widget.decoration as BoxDecoration).color == derived.dangerSoft,
+            (widget.decoration as BoxDecoration).color ==
+                scheme.error.tintOver(scheme.surface),
       ),
     );
 

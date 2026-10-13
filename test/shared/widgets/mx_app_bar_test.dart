@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -7,8 +8,6 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
 import '../../support/widget_harness.dart';
-
-import 'package:memox/core/theme/theme_context.dart';
 
 void main() {
   testWidgets('56 tall on the page ground, below the status inset', (
@@ -196,7 +195,7 @@ void main() {
     );
     expect(
       tester.getTopLeft(find.text('Session summary')).dx,
-      context.dimens.space16,
+      const AppDimens().space16,
     );
   });
 
@@ -217,7 +216,7 @@ void main() {
     );
     expect(
       tester.getTopLeft(find.byType(MxIconButton)).dx,
-      context.dimens.space8,
+      const AppDimens().space8,
     );
   });
 }

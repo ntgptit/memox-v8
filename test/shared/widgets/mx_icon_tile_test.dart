@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 
@@ -37,12 +42,12 @@ void main() {
   testWidgets('default: primary at 10% light and 16% dark, primaryInk glyph', (
     tester,
   ) async {
-    final light = AppColorSchemes.light.primary;
+    final light = lightColorScheme.primary;
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder));
     expect(_tile(tester).color, light.withValues(alpha: 0.10));
     expect(
       tester.widget<Icon>(find.byType(Icon)).color,
-      MxDerivedColors.primaryInkOf(AppColorSchemes.light),
+      accentOf(lightColorScheme),
     );
 
     await pumpMx(
@@ -54,7 +59,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       _tile(tester).color,
-      AppColorSchemes.dark.primary.withValues(alpha: 0.16),
+      darkColorScheme.primary.withValues(alpha: 0.16),
     );
   });
 
@@ -97,7 +102,7 @@ void main() {
         tester,
         const MxIconTile(icon: AppIcons.lockOpen, tone: MxIconTileTone.primary),
       );
-      final scheme = AppColorSchemes.light;
+      final scheme = lightColorScheme;
 
       expect(_tile(tester).color, scheme.primary);
       expect(
@@ -115,10 +120,10 @@ void main() {
         const MxIconTile(icon: AppIcons.lock, tone: MxIconTileTone.warning),
       );
 
-      expect(_tile(tester).color, MxSemanticColors.light.warning);
+      expect(_tile(tester).color, MxColorsExtension.light.warningContainer);
       expect(
         tester.widget<Icon>(find.byIcon(AppIcons.lock)).color,
-        MxSemanticColors.light.onWarning,
+        MxColorsExtension.light.onWarningContainer,
       );
     },
   );
@@ -148,8 +153,8 @@ void main() {
           brightness: brightness,
         );
         final scheme = brightness == Brightness.light
-            ? AppColorSchemes.light
-            : AppColorSchemes.dark;
+            ? lightColorScheme
+            : darkColorScheme;
         final fill = _tile(tester).color!;
         final glyph = tester.widget<Icon>(find.byIcon(AppIcons.check)).color!;
 

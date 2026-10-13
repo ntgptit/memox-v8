@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 
@@ -19,7 +20,7 @@ void main() {
 
     expect(tester.getSize(_painted.first).height, 28);
     expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, AppColorSchemes.light.onSurfaceVariant);
+    expect(material.textStyle!.color, lightColorScheme.onSurfaceVariant);
     expect(find.byIcon(AppIcons.chevronDown), findsOneWidget);
     expect(tester.getSize(find.byIcon(AppIcons.chevronDown)).width, 16);
   });

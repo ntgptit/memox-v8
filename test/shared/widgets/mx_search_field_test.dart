@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
@@ -7,7 +11,7 @@ import 'package:memox/shared/widgets/mx_search_field.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
   late TextEditingController controller;
 
   setUp(() => controller = TextEditingController());
@@ -89,7 +93,7 @@ void main() {
     expect(field.decoration!.fillColor, scheme.surfaceContainerLowest);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
-      MxDerivedColors.primaryInkOf(scheme),
+      accentOf(scheme),
     );
   });
 

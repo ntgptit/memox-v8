@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
@@ -80,14 +81,20 @@ void main() {
       tester.widget<Text>(find.text(_en.progressToday.toUpperCase())).style,
       tester
           .element(find.text(_en.progressToday.toUpperCase()))
-          .textStyles
-          .eyebrow,
+          .texts
+          .labelSmall
+          ?.copyWith(
+            color: tester
+                .element(find.text(_en.progressToday.toUpperCase()))
+                .colors
+                .onSurfaceVariant,
+          ),
     );
     // M3-D3: every section gap on the overview is context.dimens.space16.
     expect(
       tester.getTopLeft(find.byType(ProgressStreakWidget)).dy -
           tester.getBottomLeft(find.byType(ProgressTodayWidget)).dy,
-      context.dimens.space16,
+      const AppDimens().space16,
     );
     final total = await _row(tester, _en.progressAllDecks);
     expect(

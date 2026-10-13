@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 
@@ -14,7 +19,7 @@ BoxDecoration _tile(WidgetTester tester) =>
         as BoxDecoration;
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('a 30 tile at primary 8%, 16 glyph, 14/600 verb; 48 target', (
     tester,
@@ -37,10 +42,7 @@ void main() {
     expect(_tile(tester).color, scheme.primary.withValues(alpha: 0.08));
     expect(_tile(tester).borderRadius, BorderRadius.circular(8));
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.edit));
-    expect(
-      (glyph.size, glyph.color),
-      (16, MxDerivedColors.primaryInkOf(scheme)),
-    );
+    expect((glyph.size, glyph.color), (16, accentOf(scheme)));
     expect(tester.widget<Text>(find.text('Rename')).style!.fontSize, 14);
     expect(tester.getTopLeft(find.text('Rename')).dx - row.dx, 52);
     await expectAccessibleTargets(tester);
@@ -49,7 +51,6 @@ void main() {
   testWidgets('destructive: danger-soft tile, error glyph and verb', (
     tester,
   ) async {
-    final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
     await pumpMx(
       tester,
       _width(
@@ -62,7 +63,7 @@ void main() {
       ),
     );
 
-    expect(_tile(tester).color, derived.dangerSoft);
+    expect(_tile(tester).color, scheme.error.tintOver(scheme.surface));
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.delete)).color,
       scheme.error,

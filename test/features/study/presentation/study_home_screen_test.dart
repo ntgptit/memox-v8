@@ -430,7 +430,11 @@ void main() {
     final waiting = find.text(_en.studyHomeWaiting.toUpperCase());
     expect(
       tester.widget<Text>(waiting).style,
-      tester.element(waiting).textStyles.eyebrow,
+      tester
+          .element(waiting)
+          .texts
+          .labelSmall
+          ?.copyWith(color: tester.element(waiting).colors.onSurfaceVariant),
     );
     // The glyph follows the eyebrow, not the Required ink.
     final glyph = find

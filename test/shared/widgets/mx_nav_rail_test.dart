@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_nav_rail.dart';
@@ -49,7 +53,7 @@ Finder _item(String label) =>
     find.ancestor(of: find.text(label), matching: find.byType(InkWell));
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('80 wide on surfaceContainerLow; every item at least 48×56', (
     tester,
@@ -84,7 +88,7 @@ void main() {
     expect(find.byIcon(AppIcons.study), findsNothing);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      MxDerivedColors.primaryInkOf(scheme),
+      accentOf(scheme),
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,

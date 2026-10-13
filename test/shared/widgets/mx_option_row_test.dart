@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
 import '../../support/widget_harness.dart';
@@ -13,7 +17,7 @@ Border _ring(WidgetTester tester) =>
         as Border;
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('unselected 2px outline ring; selected 6px primaryInk', (
     tester,
@@ -29,10 +33,7 @@ void main() {
       tester,
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () {}),
     );
-    expect(
-      _ring(tester).top,
-      BorderSide(color: MxDerivedColors.primaryInkOf(scheme), width: 6),
-    );
+    expect(_ring(tester).top, BorderSide(color: accentOf(scheme), width: 6));
     expect(tester.getSize(find.byKey(_radioKey)), const Size.square(20));
   });
 
@@ -44,10 +45,7 @@ void main() {
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () {}),
       brightness: Brightness.dark,
     );
-    expect(
-      _ring(tester).top.color,
-      MxDerivedColors.primaryInkOf(AppColorSchemes.dark),
-    );
+    expect(_ring(tester).top.color, accentOf(darkColorScheme));
   });
 
   testWidgets('at least 48 tall; a description wraps and grows the row', (

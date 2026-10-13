@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 
 import '../../support/widget_harness.dart';
@@ -14,17 +19,16 @@ RenderObject _ring(WidgetTester tester) => tester.renderObject(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
-  final semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(scheme, semantic);
+  final scheme = lightColorScheme;
+  const mx = MxColorsExtension.light;
 
   testWidgets('56 box; the label is the percentage in the ramp colour', (
     tester,
   ) async {
     for (final (fraction, text, color) in [
-      (0.2, '20%', derived.statusLearningInk),
-      (0.42, '42%', semantic.statusReviewing),
-      (0.9, '90%', semantic.statusMastered),
+      (0.2, '20%', mx.warning),
+      (0.42, '42%', accentOf(scheme)),
+      (0.9, '90%', mx.successContainer),
     ]) {
       await pumpMx(tester, MxMasteryDonut(fraction: fraction));
 
@@ -47,10 +51,7 @@ void main() {
   ) async {
     await pumpMx(tester, const MxMasteryDonut(fraction: 0));
 
-    expect(
-      tester.widget<Text>(find.text('0%')).style!.color,
-      derived.statusLearningInk,
-    );
+    expect(tester.widget<Text>(find.text('0%')).style!.color, mx.warning);
     expect(_ring(tester), paints..circle(color: scheme.surfaceContainer));
     expect(_ring(tester), isNot(paints..arc()));
   });
@@ -60,9 +61,9 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text('100%')).style!.color,
-      semantic.statusMastered,
+      mx.successContainer,
     );
-    expect(_ring(tester), paints..arc(color: semantic.statusMastered));
+    expect(_ring(tester), paints..arc(color: mx.successContainer));
   });
 
   testWidgets('the label never rounds to a lie: 99.6% reads 99%, 0.4% reads '

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -200,10 +202,10 @@ void main() {
       matching: find.text(_en.studyMode(StudyMode.fill).toUpperCase()),
     );
 
-    expect(fill.color, AppColorSchemes.light.primary);
+    expect(fill.color, lightColorScheme.primary);
     expect(
       tester.widget<Text>(chip).style?.color,
-      tester.element(chip).derivedColors.primaryInk,
+      tester.element(chip).accentColor,
     );
   });
 
@@ -277,7 +279,11 @@ void main() {
     final hint = find.text('hint 1');
     expect(
       tester.widget<Text>(hint).style,
-      tester.element(hint).textStyles.studyDetail,
+      tester
+          .element(hint)
+          .texts
+          .bodyMedium
+          ?.copyWith(color: tester.element(hint).colors.onSurfaceVariant),
     );
     handle.dispose();
   });

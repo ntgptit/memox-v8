@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -24,9 +27,8 @@ BoxDecoration _ground(WidgetTester tester) =>
         as BoxDecoration;
 
 void main() {
-  final scheme = AppColorSchemes.light;
-  final semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(scheme, semantic);
+  final scheme = lightColorScheme;
+  const mx = MxColorsExtension.light;
 
   testWidgets('warning: amber ground, warning border, warning-ink 16 glyph '
       '(FE-C1)', (tester) async {
@@ -38,10 +40,10 @@ void main() {
     );
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
 
-    expect(_ground(tester).color, derived.warningSoft);
-    expect(_ground(tester).border, Border.all(color: derived.warningBorder));
+    expect(_ground(tester).color, mx.warning.tintOver(scheme.surface));
+    expect(_ground(tester).border, Border.all(color: mx.warning));
     expect(_ground(tester).borderRadius, BorderRadius.circular(12));
-    expect((glyph.size, glyph.color), (16, derived.warningInk));
+    expect((glyph.size, glyph.color), (16, mx.warning));
   });
 
   testWidgets('danger: red ground, danger border, error glyph', (tester) async {
@@ -52,8 +54,8 @@ void main() {
       ),
     );
 
-    expect(_ground(tester).color, derived.dangerSoft);
-    expect(_ground(tester).border, Border.all(color: derived.dangerBorder));
+    expect(_ground(tester).color, scheme.error.tintOver(scheme.surface));
+    expect(_ground(tester).border, Border.all(color: scheme.error));
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
       scheme.error,
@@ -204,8 +206,8 @@ void main() {
   testWidgets('the title reads in its tone ink; an untitled lead stays '
       'onSurface (critique 2026-09-30 tone pass, T2)', (tester) async {
     for (final (tone, ink) in [
-      (MxBannerTone.warning, derived.warningInk),
-      (MxBannerTone.danger, derived.dangerInk),
+      (MxBannerTone.warning, mx.warning),
+      (MxBannerTone.danger, scheme.error),
     ]) {
       await pumpMx(
         tester,
@@ -226,11 +228,6 @@ void main() {
         reason: '$tone untitled',
       );
     }
-
-    final darkDerived = MxDerivedColors.resolve(
-      AppColorSchemes.dark,
-      MxSemanticColors.dark,
-    );
     await pumpMx(
       tester,
       _width(
@@ -244,10 +241,7 @@ void main() {
     );
     // The theme change animates.
     await tester.pumpAndSettle();
-    expect(
-      tester.widget<Text>(find.text('Title')).style!.color,
-      darkDerived.warningInk,
-    );
+    expect(tester.widget<Text>(find.text('Title')).style!.color, mx.warning);
   });
 
   testWidgets('without a bottom margin the banner ends at its painted edge; '

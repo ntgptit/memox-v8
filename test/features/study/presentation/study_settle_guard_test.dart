@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_settle_guard_widget.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/widget_harness.dart';
-
-import 'package:memox/core/theme/theme_context.dart';
 
 // Critique 2026-09-30 part 3c-2, R1: an action swapped in place under the
 // finger takes no tap for 400 ms.
@@ -48,7 +47,10 @@ void main() {
     await pumpMx(tester, _guarded(true, () => taps++));
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(_opacity(tester), inExclusiveRange(context.dimens.opacityMuted, 1));
+    expect(
+      _opacity(tester),
+      inExclusiveRange(const AppDimens().opacityMuted, 1),
+    );
     await tester.tap(find.text('Go'), warnIfMissed: false);
     expect(taps, 0);
 

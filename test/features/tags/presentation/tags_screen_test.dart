@@ -333,7 +333,7 @@ void main() {
     final label = find.text(_en.tagsNewName);
     expect(
       tester.widget<Text>(label).style,
-      tester.element(label).textStyles.fieldLabel,
+      tester.element(label).texts.labelMedium,
     );
     expect(find.text(_en.tagsNewName.toUpperCase()), findsNothing);
   });
