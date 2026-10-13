@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/shared/widgets/mx_dashed_note.dart';
 
@@ -32,7 +33,7 @@ void main() {
 
     expect(text.textAlign, TextAlign.center);
     expect(text.style!.color, scheme.onSurfaceVariant);
-    expect(box.color, scheme.surfaceContainerLow);
+    expect(box.color, MxSemanticColors.light.neutralSoft);
     expect(
       tester.getTopLeft(find.text(_line)).dy -
           tester.getTopLeft(find.byType(MxDashedNote)).dy,

@@ -47,15 +47,12 @@ class ImportStepTrackerWidget extends StatelessWidget {
           child: LayoutBuilder(
             builder: (context, constraints) =>
                 _oneRowWidth(context, labels) <= constraints.maxWidth
-                ? Row(
-                    spacing: AppSpacing.micro,
-                    children: _children(labels, isOneRow: true),
-                  )
+                ? Row(spacing: AppSpacing.micro, children: _oneRow(labels))
                 : Wrap(
                     spacing: AppSpacing.micro,
                     runSpacing: AppSpacing.micro,
                     crossAxisAlignment: WrapCrossAlignment.center,
-                    children: _children(labels, isOneRow: false),
+                    children: _wrapped(labels),
                   ),
           ),
         ),
@@ -63,25 +60,43 @@ class ImportStepTrackerWidget extends StatelessWidget {
     );
   }
 
-  /// The steps with a connector between each pair: stretched to fill one
-  /// row, or of a fixed length when they wrap (large text).
-  List<Widget> _children(List<String> labels, {required bool isOneRow}) => [
+  /// The steps with a connector between each pair, stretched to fill one
+  /// row.
+  List<Widget> _oneRow(List<String> labels) => [
     for (final (index, step) in CardImportStep.values.indexed) ...[
-      _Step(
-        number: index + 1,
-        label: labels[index],
-        isDone: step.index < current.index,
-        isCurrent: step == current,
-      ),
+      _step(labels, index, step),
       if (index < labels.length - 1)
-        isOneRow
-            ? Expanded(child: _Line(isDone: step.index < current.index))
-            : SizedBox(
-                width: _wrappedLine,
-                child: _Line(isDone: step.index < current.index),
-              ),
+        Expanded(child: _Line(isDone: step.index < current.index)),
     ],
   ];
+
+  /// The wrapped steps (large text, or a narrow phone at the spec's type
+  /// scale): each connector of a fixed length leads the step after it, as
+  /// one unit, so a line never ends on a dangling connector (owner
+  /// 2026-10-13).
+  List<Widget> _wrapped(List<String> labels) => [
+    for (final (index, step) in CardImportStep.values.indexed)
+      index == 0
+          ? _step(labels, index, step)
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: AppSpacing.micro,
+              children: [
+                SizedBox(
+                  width: _wrappedLine,
+                  child: _Line(isDone: step.index <= current.index),
+                ),
+                _step(labels, index, step),
+              ],
+            ),
+  ];
+
+  Widget _step(List<String> labels, int index, CardImportStep step) => _Step(
+    number: index + 1,
+    label: labels[index],
+    isDone: step.index < current.index,
+    isCurrent: step == current,
+  );
 
   /// The width the four steps need on one row with the shortest connectors,
   /// at the reader's text scale.

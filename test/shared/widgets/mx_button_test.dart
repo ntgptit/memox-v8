@@ -77,8 +77,8 @@ void main() {
     final expected = {
       MxButtonTone.primary: (scheme.primary, scheme.onPrimary, BorderSide.none),
       MxButtonTone.secondary: (
-        scheme.surfaceContainer,
-        scheme.onSurface,
+        MxSemanticColors.light.neutralSoft,
+        MxSemanticColors.light.onNeutralSoft,
         BorderSide.none,
       ),
       MxButtonTone.destructive: (
@@ -167,7 +167,10 @@ void main() {
       tester.getRect(find.text('6d')).top,
       greaterThanOrEqualTo(tester.getRect(find.text('Good')).bottom),
     );
-    expect(DefaultTextStyle.of(context).style.color, scheme.onSurface);
+    expect(
+      DefaultTextStyle.of(context).style.color,
+      MxSemanticColors.light.onNeutralSoft,
+    );
     expect(
       tester.widget<Text>(find.text('6d')).style,
       context.textStyles.buttonDetail,

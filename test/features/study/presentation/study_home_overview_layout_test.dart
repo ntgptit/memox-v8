@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
@@ -57,6 +58,17 @@ void main() {
     final decks = tester.getRect(find.byType(StudyHomeDecksWidget));
     expect(decks.top, greaterThan(workload.bottom));
     expect(decks.left, workload.left);
+    // A deck list's 64 tile (§4.3; owner 2026-10-13).
+    final tile = tester.widget<MxIconTile>(
+      find
+          .descendant(
+            of: find.byType(StudyHomeDecksWidget),
+            matching: find.byType(MxIconTile),
+          )
+          .first,
+    );
+    expect(tile.size, MxIconTileSize.deck);
+    expect(tile.tone, MxIconTileTone.deck);
   });
 
   libraryTest('from a 672 content area the decks sit beside the workload, '

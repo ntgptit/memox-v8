@@ -5,7 +5,6 @@ import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
@@ -52,7 +51,13 @@ class MxNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final style = context.textStyles.noteText;
+    // The boxed note sits on the neutral soft ground with its own
+    // foreground, as a banner, with no border (owner 2026-10-13, ADR-022);
+    // the footnote keeps the page's muted text.
+    final foreground = isHint
+        ? colors.onSurfaceVariant
+        : context.semanticColors.onNeutralSoft;
+    final style = context.textStyles.statusNote(foreground);
     // The glyph centres on the first line at any text scale.
     final firstLine =
         MediaQuery.textScalerOf(context).scale(style.fontSize!) * style.height!;
@@ -63,11 +68,7 @@ class MxNote extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.only(top: glyphInset),
-          child: Icon(
-            icon,
-            size: AppIconSize.inline,
-            color: colors.onSurfaceVariant,
-          ),
+          child: Icon(icon, size: AppIconSize.inline, color: foreground),
         ),
         Expanded(child: Text(text, style: style)),
         if (onDismiss case final dismiss?)
@@ -86,19 +87,13 @@ class MxNote extends StatelessWidget {
     }
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
+        color: context.semanticColors.neutralSoft,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(
-          color: context.semanticColors.border,
-          width: AppStroke.hairline,
-        ),
       ),
       child: Padding(
-        // A DecoratedBox border does not inset its child, so the padding
-        // starts after the hairline, as in the kit's CSS box.
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.grouped + AppStroke.hairline,
-          vertical: _verticalPadding + AppStroke.hairline,
+          horizontal: AppSpacing.grouped,
+          vertical: _verticalPadding,
         ),
         child: line,
       ),

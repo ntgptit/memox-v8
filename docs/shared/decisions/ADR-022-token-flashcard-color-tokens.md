@@ -36,6 +36,22 @@ thước, opacity, motion, bố cục theo cỡ cửa sổ và quy tắc compone
   - cặp nút footer giữ cạnh nhau khi hai nhãn cùng vừa hàng (chia theo bề rộng nhãn khi
     tỉ lệ flex không vừa); Trash từ 100 mục và kết quả Import tiếng Anh được xếp chồng
     như ngoại lệ ghi nhận.
+- Bốn quyết định của chủ dự án sau khi duyệt golden (2026-10-13):
+  - hàng 4 nút chấm điểm (Again · Hard · Good · Easy) dùng cỡ small (32, đệm 12) theo
+    quy tắc mục 6 "nút cùng hàng với nội dung khác"; cỡ regular chỉ còn ~28 cho chữ ở
+    360 nên nhãn vỡ giữa từ;
+  - nền trung tính (nút tone secondary, nút ± của stepper, khay segmented, `MxNote`,
+    ô stat dạng hộp, ô mã OTP, dashed note) dùng `neutralSoft` (= `secondaryContainer`,
+    nền tonal M3); nút và `MxNote` dùng chữ `onNeutralSoft`, `MxNote` không viền như
+    banner. Các role `surfaceContainer*` trùng hoặc gần trùng `cardSurface` nên những
+    nền đó chìm trên card;
+  - rãnh và placeholder (skeleton, hộp chưa đạt, rãnh vòng mastery, cột ngày trống,
+    đường lịch sử, các bước chưa tới) dùng `neutralTrack` của mục 2.1;
+  - thanh bước Import khi xuống dòng gắn mỗi gạch nối với bước đứng sau, không còn gạch
+    treo cuối dòng;
+  - ô deck 64 trên `tileSurface` (mục 4.3) cho mọi danh sách chỉ có deck: Library (cả
+    chế độ sắp xếp), "Your decks" ở Study home, mục DECKS của Search, sheet chọn deck.
+    Trash trộn deck và thẻ trong một danh sách nên giữ ô nhỏ để các hàng cùng chiều cao.
 
 ## Hệ quả
 

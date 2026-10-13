@@ -319,7 +319,6 @@ class _StepButtonState extends State<_StepButton> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     return Listener(
       onPointerDown: _start,
       onPointerMove: _move,
@@ -334,8 +333,8 @@ class _StepButtonState extends State<_StepButton> {
           onPressed: widget.onPressed == null ? null : _tap,
           style:
               appButtonStyle(
-                fill: colors.surfaceContainer,
-                foreground: colors.onSurface,
+                fill: context.semanticColors.neutralSoft,
+                foreground: context.semanticColors.onNeutralSoft,
                 edge: BorderSide.none,
                 focusColor: context.semanticColors.focusRing,
                 height: AppSize.buttonSmall,

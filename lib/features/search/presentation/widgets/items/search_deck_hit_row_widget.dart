@@ -36,12 +36,16 @@ class SearchDeckHitRowWidget extends StatelessWidget {
         DeckContentType.deck => l10n.searchHoldsDecks(path),
         DeckContentType.unset => l10n.searchHoldsNothing(path),
       },
+      // A deck list's tile ("Flashcard Color Tokens" §4.3 size-tile 64 on
+      // tileSurface; owner 2026-10-13: every list of decks only).
       leading: MxIconTile(
         icon: switch (hit.contentType) {
           DeckContentType.card => AppIcons.cardDeck,
           DeckContentType.deck => AppIcons.library,
           DeckContentType.unset => AppIcons.folder,
         },
+        size: MxIconTileSize.deck,
+        tone: MxIconTileTone.deck,
       ),
       hasChevron: true,
       onTap: onTap,

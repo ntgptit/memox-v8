@@ -93,7 +93,7 @@ class MxSegmentedTray<T> extends StatelessWidget {
 
   Widget _stacked(BuildContext context) => DecoratedBox(
     decoration: BoxDecoration(
-      color: context.colors.surfaceContainer,
+      color: context.semanticColors.neutralSoft,
       borderRadius: BorderRadius.circular(AppRadius.md),
     ),
     child: Padding(
@@ -129,7 +129,7 @@ class MxSegmentedTray<T> extends StatelessWidget {
               width: double.infinity,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: context.colors.surfaceContainer,
+                  color: context.semanticColors.neutralSoft,
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
               ),

@@ -63,7 +63,7 @@ class MxStatTile extends StatelessWidget {
     final body = isBoxed
         ? DecoratedBox(
             decoration: BoxDecoration(
-              color: colors.surfaceContainerLow,
+              color: context.semanticColors.neutralSoft,
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Padding(

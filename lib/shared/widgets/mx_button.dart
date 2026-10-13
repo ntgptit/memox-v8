@@ -189,9 +189,11 @@ class MxButton extends StatelessWidget {
         foreground: colors.onPrimary,
         edge: BorderSide.none,
       ),
+      // The tonal pair (owner 2026-10-13, ADR-022): a container role would
+      // match the card it sits on.
       MxButtonTone.secondary => (
-        fill: colors.surfaceContainer,
-        foreground: colors.onSurface,
+        fill: context.semanticColors.neutralSoft,
+        foreground: context.semanticColors.onNeutralSoft,
         edge: BorderSide.none,
       ),
       MxButtonTone.outline => (

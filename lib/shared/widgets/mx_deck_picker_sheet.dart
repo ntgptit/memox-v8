@@ -100,7 +100,13 @@ class MxDeckPickerSheet extends StatelessWidget {
                     MxListRow(
                       title: candidate.label,
                       subtitle: candidate.reason,
-                      leading: MxIconTile(icon: candidate.icon),
+                      // A deck list's tile ("Flashcard Color Tokens" §4.3
+                      // size-tile 64; owner 2026-10-13).
+                      leading: MxIconTile(
+                        icon: candidate.icon,
+                        size: MxIconTileSize.deck,
+                        tone: MxIconTileTone.deck,
+                      ),
                       hasChevron: true,
                       onTap: candidate.onTap,
                       isEnabled: candidate.isEnabled,

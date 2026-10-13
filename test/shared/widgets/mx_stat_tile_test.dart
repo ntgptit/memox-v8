@@ -107,7 +107,7 @@ void main() {
     );
     expect(
       (box.decoration as BoxDecoration).color,
-      AppColorSchemes.light.surfaceContainerLow,
+      MxSemanticColors.light.neutralSoft,
     );
   });
 

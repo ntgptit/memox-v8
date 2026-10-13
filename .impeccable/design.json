@@ -1223,9 +1223,9 @@
       "name": "Secondary Button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Neutral action on the surface container.",
+      "description": "Neutral tonal action on neutralSoft with onNeutralSoft, which holds on the page and on a card (owner 2026-10-13, ADR-022).",
       "html": "<button class=\"ds-btn-secondary\">Later</button>",
-      "css": ".ds-btn-secondary{font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:14px;font-weight:400;letter-spacing:0.1px;line-height:20px;height:40px;padding:0 24px;border-radius:999px;border:0;background:#F3F3F3;color:#1C1B21;} .ds-btn-secondary:focus-visible{outline:2px solid #564BCB;outline-offset:2px}"
+      "css": ".ds-btn-secondary{font-family:\"Be Vietnam Pro\",\"Noto Sans KR\",sans-serif;font-size:14px;font-weight:400;letter-spacing:0.1px;line-height:20px;height:40px;padding:0 24px;border-radius:999px;border:0;background:#D1DCFD;color:#55607C;} .ds-btn-secondary:focus-visible{outline:2px solid #564BCB;outline-offset:2px}"
     },
     {
       "name": "Outline Button",

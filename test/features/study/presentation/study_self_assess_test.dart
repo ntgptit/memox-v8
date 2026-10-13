@@ -100,6 +100,38 @@ void main() {
     handle.dispose();
   });
 
+  // Golden audit 2026-10-13: four regular buttons left a grade about 28 of
+  // label at 360, so Again broke as Ag / ain. The row takes the small size
+  // (owner 2026-10-13), and each grade keeps one line.
+  libraryTest('at 360 every grade keeps its word on one line', (
+    tester,
+    env,
+  ) async {
+    final id = await openSelfAssessReview(env.db, env.decks, libraryToday);
+    await pumpLibraryScreen(tester, env, _screen(id));
+    await _reveal(tester);
+
+    for (final grade in [
+      _en.cardActionAgain,
+      _en.cardActionHard,
+      _en.cardActionGood,
+      _en.cardActionEasy,
+    ]) {
+      final label = find.descendant(
+        of: find.byType(StudyGradeRowWidget),
+        matching: find.text(grade),
+      );
+      final style =
+          tester.widget<Text>(label).style ??
+          DefaultTextStyle.of(tester.element(label)).style;
+      expect(
+        tester.getSize(label).height,
+        style.fontSize! * style.height!,
+        reason: grade,
+      );
+    }
+  });
+
   libraryTest('Good records one scheduled turn and the next card follows, '
       'unrevealed', (tester, env) async {
     final id = await openSelfAssessReview(env.db, env.decks, libraryToday);

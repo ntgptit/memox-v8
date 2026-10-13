@@ -74,6 +74,10 @@ class StudyGradeRowWidget extends StatelessWidget {
         tone: action == Sm2Action.again
             ? MxButtonTone.dangerSoft
             : MxButtonTone.secondary,
+        // Four in a row with each other: the small size ("Flashcard Color
+        // Tokens" §6; owner 2026-10-13), whose 12 of padding leaves a grade
+        // its whole word at 360.
+        size: MxButtonSize.small,
         isBlock: true,
         onPressed: () => onGrade(action),
       ),

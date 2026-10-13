@@ -68,7 +68,13 @@ class _Row extends StatelessWidget {
     return MxListRow(
       titleMaxLines: 2,
       title: deck.name,
-      leading: const MxIconTile(icon: AppIcons.library),
+      // A deck list's tile ("Flashcard Color Tokens" §4.3 size-tile 64 on
+      // tileSurface; owner 2026-10-13: every list of decks only).
+      leading: const MxIconTile(
+        icon: AppIcons.library,
+        size: MxIconTileSize.deck,
+        tone: MxIconTileTone.deck,
+      ),
       meta: MxWorkloadBreakdownLine(
         overdueCount: deck.overdueCount,
         todayCount: deck.dueTodayCount,

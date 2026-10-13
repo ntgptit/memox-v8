@@ -43,4 +43,32 @@ void main() {
       expect((hi + 0.05) / (lo + 0.05), greaterThanOrEqualTo(2.84));
     }
   });
+
+  // Golden audit 2026-10-13: at the spec's type scale the four steps no
+  // longer fit a 360 phone and wrap, which left 'Preview —' dangling at a
+  // line's end. A connector now leads the step after it, as one unit.
+  libraryTest('wrapped, each connector travels with the step after it', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      const Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: 360,
+            child: ImportStepTrackerWidget(current: CardImportStep.columns),
+          ),
+        ),
+      ),
+    );
+
+    final wrap = tester.widget<Wrap>(find.byType(Wrap));
+    expect(wrap.children, hasLength(CardImportStep.values.length));
+    expect(wrap.children.first, isNot(isA<Row>()));
+    for (final unit in wrap.children.skip(1)) {
+      expect(unit, isA<Row>());
+    }
+  });
 }

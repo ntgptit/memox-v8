@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/search/data/repositories/search_repository_impl.dart';
@@ -158,6 +159,18 @@ void main() {
     expect(find.widgetWithText(MxBadge, '1'), findsNWidgets(2));
     expect(find.byType(SearchDeckHitRowWidget), findsOneWidget);
     expect(find.byType(SearchCardHitRowWidget), findsOneWidget);
+    // A deck list's 64 tile (§4.3; owner 2026-10-13).
+    final tile = tester.widget<MxIconTile>(
+      find
+          .descendant(
+            of: find.byType(SearchDeckHitRowWidget),
+            matching: find.byType(MxIconTile),
+          )
+          .first,
+    );
+    expect(tile.size, MxIconTileSize.deck);
+    expect(tile.tone, MxIconTileTone.deck);
+
     expect(find.text(_en.searchFooter), findsOneWidget);
     expect(find.text(_en.searchLoadMore), findsNothing);
   });

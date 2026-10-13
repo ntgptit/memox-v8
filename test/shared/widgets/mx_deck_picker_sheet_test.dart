@@ -7,6 +7,7 @@ import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
@@ -197,5 +198,17 @@ void main() {
     await tester.tap(find.widgetWithText(MxButton, 'Retry'));
     await tester.tap(find.widgetWithText(MxButton, 'Cancel'));
     expect((retries, dismissed), (1, 1));
+  });
+
+  testWidgets('a candidate leads with the deck list tile (§4.3; owner '
+      '2026-10-13)', (tester) async {
+    await pumpMx(
+      tester,
+      _picker([MxPickerCandidate(label: 'Kana', onTap: () {})]),
+    );
+
+    final tile = tester.widget<MxIconTile>(find.byType(MxIconTile));
+    expect(tile.size, MxIconTileSize.deck);
+    expect(tile.tone, MxIconTileTone.deck);
   });
 }

@@ -33,15 +33,17 @@ void main() {
             as BoxDecoration;
     final note = tester.getTopLeft(find.byType(MxNote));
 
-    expect(box.color, scheme.surfaceContainerLow);
-    expect(box.border, Border.all(color: derived.border));
+    // A banner's ground with no border (owner 2026-10-13, ADR-022).
+    expect(box.color, derived.neutralSoft);
+    expect(box.border, isNull);
     expect(box.borderRadius, BorderRadius.circular(12));
-    expect(tester.getTopLeft(find.byType(Icon)).dx - note.dx, 13);
-    expect(tester.getTopLeft(find.text(_rule)) - note, const Offset(37, 11));
+    expect(tester.getTopLeft(find.byType(Icon)).dx - note.dx, 12);
+    expect(tester.getTopLeft(find.text(_rule)) - note, const Offset(36, 10));
     expect(tester.widget<Icon>(find.byType(Icon)).size, 16);
+    expect(tester.widget<Icon>(find.byType(Icon)).color, derived.onNeutralSoft);
     expect(
       tester.widget<Text>(find.text(_rule)).style!.color,
-      scheme.onSurfaceVariant,
+      derived.onNeutralSoft,
     );
   });
 

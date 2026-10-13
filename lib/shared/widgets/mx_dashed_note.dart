@@ -19,7 +19,7 @@ class MxDashedNote extends StatelessWidget {
       foregroundPainter: _DashedBorder(color: colors.outlineVariant),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: colors.surfaceContainerLow,
+          color: context.semanticColors.neutralSoft,
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Padding(
