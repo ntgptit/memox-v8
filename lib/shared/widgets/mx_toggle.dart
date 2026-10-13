@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_easing.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
@@ -57,7 +58,7 @@ class _MxToggleState extends State<MxToggle> {
     final track = AnimatedContainer(
       key: const ValueKey('mx-toggle-track'),
       duration: duration,
-      curve: Easing.standard,
+      curve: AppEasing.standard,
       width: _trackWidth,
       height: _trackHeight,
       padding: const EdgeInsets.all(_thumbInset),
@@ -69,7 +70,7 @@ class _MxToggleState extends State<MxToggle> {
       foregroundDecoration: _ring(context),
       child: AnimatedAlign(
         duration: duration,
-        curve: Easing.standard,
+        curve: AppEasing.standard,
         alignment: widget.isOn
             ? AlignmentDirectional.centerEnd
             : AlignmentDirectional.centerStart,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
+import 'package:memox/core/theme/foundations/app_easing.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -27,7 +28,12 @@ Future<T?> showMxDialog<T>(
       : AppDurations.standard,
   pageBuilder: (dialogContext, _, _) => builder(dialogContext),
   transitionBuilder: (_, animation, _, child) {
-    final curved = CurvedAnimation(parent: animation, curve: Easing.standard);
+    // Entering decelerates, leaving accelerates (spec §4.7).
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: AppEasing.standardDecelerate,
+      reverseCurve: AppEasing.standardAccelerate,
+    );
     return FadeTransition(
       opacity: curved,
       child: ScaleTransition(
@@ -196,7 +202,7 @@ class MxDialog extends StatelessWidget {
           duration: MediaQuery.disableAnimationsOf(context)
               ? Duration.zero
               : AppDurations.standard,
-          curve: Easing.standard,
+          curve: AppEasing.standard,
           child: centred,
         ),
       ),

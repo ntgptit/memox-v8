@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_easing.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -23,7 +24,9 @@ class StudyAppearingWidget extends StatelessWidget {
     final isStill = MediaQuery.disableAnimationsOf(context);
     return AnimatedSwitcher(
       duration: isStill ? Duration.zero : AppDurations.standard,
-      switchInCurve: Easing.standard,
+      // Entering decelerates, leaving accelerates (spec §4.7).
+      switchInCurve: AppEasing.standardDecelerate,
+      switchOutCurve: AppEasing.standardAccelerate,
       transitionBuilder: (child, animation) => FadeTransition(
         opacity: animation,
         child: SlideTransition(

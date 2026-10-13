@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_easing.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
@@ -73,7 +74,7 @@ class StudyChoiceWidget extends StatelessWidget {
           ),
         ),
         duration: motion,
-        curve: Easing.standard,
+        curve: AppEasing.standard,
         builder: (context, decoration, child) =>
             DecoratedBox(decoration: decoration, child: child),
         child: Padding(
@@ -81,7 +82,7 @@ class StudyChoiceWidget extends StatelessWidget {
           child: TweenAnimationBuilder<Color?>(
             tween: ColorTween(end: foreground),
             duration: motion,
-            curve: Easing.standard,
+            curve: AppEasing.standard,
             builder: (context, color, _) => builder(color ?? foreground),
           ),
         ),

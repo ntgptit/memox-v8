@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
+import 'package:memox/core/theme/foundations/app_easing.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
@@ -22,7 +23,9 @@ Future<T?> showMxBottomSheet<T>(
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
           : AppDurations.sheet,
-      curve: Easing.standard,
+      // Entering decelerates, leaving accelerates (spec §4.7).
+      curve: AppEasing.standardDecelerate,
+      reverseCurve: AppEasing.standardAccelerate,
     ),
   );
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_easing.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 
 /// A session screen's actions after an in-place swap (critique 2026-09-30
@@ -67,7 +68,7 @@ class _StudySettleGuardWidgetState extends State<StudySettleGuardWidget>
               : lerpDouble(
                   AppOpacity.muted,
                   1,
-                  Easing.standard.transform(_settle.value),
+                  AppEasing.standard.transform(_settle.value),
                 )!,
           child: child,
         ),

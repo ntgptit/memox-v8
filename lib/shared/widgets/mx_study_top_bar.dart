@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_easing.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
@@ -112,7 +113,7 @@ class MxStudyTopBar extends StatelessWidget {
                             child: TweenAnimationBuilder<double>(
                               tween: Tween(end: current / total),
                               duration: duration,
-                              curve: Easing.standard,
+                              curve: AppEasing.standard,
                               builder: (context, fraction, _) =>
                                   FractionallySizedBox(
                                     widthFactor: fraction,
