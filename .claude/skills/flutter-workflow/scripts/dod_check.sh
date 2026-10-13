@@ -302,6 +302,24 @@ else
   FAILED+=("hook tests unavailable: $HOOK_TESTS")
 fi
 
+# The design system: generated theme code, DESIGN.md frontmatter and the
+# impeccable token part must equal what design/tokens.json generates, and no
+# name listed in tools/design/removed_symbols.json may remain in lib/ or test/.
+# Its own tests run beside it.
+DESIGN_CHECK="$REPO_ROOT/tools/design/check.py"
+DESIGN_TESTS="$REPO_ROOT/tools/design/tests"
+if [[ -n "$PY" && -f "$DESIGN_CHECK" ]]; then
+  plan design_tokens "design tokens in sync, removed names gone" "$PY '$DESIGN_CHECK'"
+else
+  FAILED+=("design check unavailable: $DESIGN_CHECK")
+fi
+if [[ -n "$PY" && -d "$DESIGN_TESTS" ]]; then
+  plan design_tooling "design tooling tests" \
+    "$PY -m unittest discover -s '$DESIGN_TESTS' -p 'test_*.py'"
+else
+  FAILED+=("design tooling tests unavailable: $DESIGN_TESTS")
+fi
+
 # The guard's own probes, and they belong wherever the guard runs. A rule that
 # has been excluded, disabled or deleted leaves the guard green: the guard does
 # not go red when the thing being edited is itself, so its verdict is evidence
