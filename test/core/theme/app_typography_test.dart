@@ -2,57 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_typography.dart';
+import 'package:memox/core/theme/generated/text_theme.g.dart';
 
-// (slot, size, weight, height, letterSpacing) for the seven V3 roles.
-final _roles =
-    <
-      String,
-      (TextStyle? Function(TextTheme), double, FontWeight, double, double)
-    >{
-      'stat → displayMedium': (
-        (t) => t.displayMedium,
-        40,
-        FontWeight.w600,
-        1.0,
-        -0.64,
-      ),
-      'display → displaySmall': (
-        (t) => t.displaySmall,
-        32,
-        FontWeight.w800,
-        1.1,
-        -0.64,
-      ),
-      'headline → headlineSmall': (
-        (t) => t.headlineSmall,
-        24,
-        FontWeight.w700,
-        1.2,
-        -0.64,
-      ),
-      'title → titleLarge': (
-        (t) => t.titleLarge,
-        20,
-        FontWeight.w700,
-        1.2,
-        -0.64,
-      ),
-      'body large → bodyLarge': (
-        (t) => t.bodyLarge,
-        16,
-        FontWeight.w500,
-        1.5,
-        0,
-      ),
-      'body → bodyMedium': ((t) => t.bodyMedium, 14, FontWeight.w400, 1.5, 0),
-      'caption → labelSmall': (
-        (t) => t.labelSmall,
-        12,
-        FontWeight.w600,
-        1.4,
-        0,
-      ),
-    };
+import 'token_source.dart';
+
+final _slotPattern = RegExp(r'\(Flutter (\w+)\)');
+
+TextStyle? _slot(TextTheme theme, String name) => switch (name) {
+  'displayMedium' => theme.displayMedium,
+  'displaySmall' => theme.displaySmall,
+  'headlineSmall' => theme.headlineSmall,
+  'titleLarge' => theme.titleLarge,
+  'titleMedium' => theme.titleMedium,
+  'titleSmall' => theme.titleSmall,
+  'bodyLarge' => theme.bodyLarge,
+  'bodyMedium' => theme.bodyMedium,
+  'bodySmall' => theme.bodySmall,
+  'labelLarge' => theme.labelLarge,
+  'labelMedium' => theme.labelMedium,
+  'labelSmall' => theme.labelSmall,
+  _ => throw ArgumentError(name),
+};
 
 List<TextStyle?> _allSlots(TextTheme t) => [
   t.displayLarge,
@@ -70,7 +40,7 @@ List<TextStyle?> _allSlots(TextTheme t) => [
   t.labelLarge,
   t.labelMedium,
   t.labelSmall,
-];
+]; // fmt: skip
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -78,24 +48,50 @@ void main() {
   final bound = AppTypography.bind(
     Typography.material2021(platform: TargetPlatform.android).englishLike,
   );
+  final groups = ((tokensJson['type'] as Map)['groups'] as List)
+      .cast<Map<String, dynamic>>();
+  final styles = [
+    for (final group in groups)
+      ...(group['styles'] as List).cast<Map<String, dynamic>>(),
+  ];
 
-  for (final MapEntry(key: name, value: (read, size, weight, height, spacing))
-      in _roles.entries) {
-    test('$name is ${size.toInt()}/${weight.value}/$height/$spacing', () {
-      final style = read(bound)!;
-      expect(style.fontFamily, AppTypography.fontFamily);
-      expect(style.fontSize, size);
-      expect(style.fontWeight, weight);
-      expect(style.height, height);
-      expect(style.letterSpacing, spacing);
+  test('the JSON defines twelve roles', () => expect(styles, hasLength(12)));
+
+  for (final style in styles) {
+    final slot = _slotPattern.firstMatch(style['usage'] as String)!.group(1)!;
+    test('${style['name']} is bound to $slot exactly', () {
+      final actual = _slot(bound, slot)!;
+      final size = tokenNumber(style['fontSize'] as String);
+      final line = tokenNumber(style['lineHeight'] as String);
+      expect(actual.fontSize, size);
+      expect(actual.height, closeTo(line / size, 1e-9));
+      expect(
+        actual.fontWeight,
+        FontWeight.values[(style['fontWeight'] as int) ~/ 100 - 1],
+      );
+      expect(
+        actual.letterSpacing,
+        tokenNumber(style['letterSpacing'] as String),
+      );
+      expect(actual.fontFamily, kFontFamily);
+      expect(actual.fontFamilyFallback, kFontFamilyFallback);
     });
   }
 
-  test('the stat role uses tabular figures', () {
+  test('the family and its fallback are the first two of the JSON stack', () {
+    final stack =
+        ((tokensJson['type'] as Map)['families'] as Map)['sans'] as String;
+    expect(stack, startsWith('"Be Vietnam Pro", "Noto Sans KR"'));
+    expect(kFontFamily, 'BeVietnamPro');
+    expect(kFontFamilyFallback, ['NotoSansKR']);
+  });
+
+  test('only the stat role uses tabular figures', () {
     expect(
       bound.displayMedium!.fontFeatures,
       contains(const FontFeature.tabularFigures()),
     );
+    expect(bound.bodyMedium!.fontFeatures, isNull);
   });
 
   test('every slot moves the wght axis with its weight', () {
@@ -111,15 +107,19 @@ void main() {
 
   test('withWeight sets fontWeight and the wght axis together', () {
     final style = AppTypography.withWeight(const TextStyle(), FontWeight.w700);
-
     expect(style.fontWeight, FontWeight.w700);
     expect(style.fontVariations, [const FontVariation.weight(700)]);
   });
 
-  test('the font asset is bundled', () async {
-    final data = await rootBundle.load(
-      'assets/fonts/PlusJakartaSans-Variable.ttf',
-    );
-    expect(data.lengthInBytes, greaterThan(0));
-  });
+  for (final asset in [
+    'BeVietnamPro-Regular.ttf',
+    'BeVietnamPro-Medium.ttf',
+    'BeVietnamPro-SemiBold.ttf',
+    'NotoSansKR-Variable.ttf',
+  ]) {
+    test('the font asset $asset is bundled', () async {
+      final data = await rootBundle.load('assets/fonts/$asset');
+      expect(data.lengthInBytes, greaterThan(0));
+    });
+  }
 }

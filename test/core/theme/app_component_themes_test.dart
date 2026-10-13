@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/shared/widgets/mx_dialog.dart';
-import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 
-// Spec UI base §4.6: the Material component themes carry the V3 defaults, so
-// a raw Material widget — or one the framework builds — looks like MemoX.
+// The Material component themes carry the Design System defaults, so a raw
+// Material widget, or one the framework builds, looks like MemoX. Sizes and
+// colours are read from the tokens, never restated.
 void main() {
+  const dimens = AppDimens();
+
   for (final (name, theme) in [
     ('light', buildLightTheme()),
     ('dark', buildDarkTheme()),
   ]) {
     final scheme = theme.colorScheme;
-    final ghost = MxDerivedColors.resolve(
-      scheme,
-      theme.extension<MxSemanticColors>()!,
-    ).ghostBorder;
+    final mx = theme.extension<MxColorsExtension>()!;
 
     Future<void> pump(WidgetTester tester, Widget child) => tester.pumpWidget(
       MaterialApp(
@@ -25,115 +25,184 @@ void main() {
     );
 
     group(name, () {
-      test('outlined and text buttons ink and focus in primaryInk; the '
-          'filled fill keeps primary (spec 2026-09-27 D2)', () {
-        final ink = MxDerivedColors.primaryInkOf(scheme);
-        const focused = {WidgetState.focused};
-        for (final style in [
-          theme.outlinedButtonTheme.style!,
-          theme.textButtonTheme.style!,
-        ]) {
-          expect(style.foregroundColor!.resolve({}), ink);
-          expect(style.side!.resolve(focused)!.color, ink);
-        }
-        final filled = theme.filledButtonTheme.style!;
-        expect(filled.backgroundColor!.resolve({}), scheme.primary);
-        expect(filled.side!.resolve(focused)!.color, ink);
+      test('card: tonal surface, medium radius, no border, no shadow', () {
+        final card = theme.cardTheme;
+        expect(card.color, mx.cardSurface);
+        expect(card.elevation, 0);
+        final shape = card.shape! as RoundedRectangleBorder;
+        expect(shape.borderRadius, BorderRadius.circular(dimens.radiusMd));
+        expect(shape.side, BorderSide.none);
       });
 
-      test('fields: filled, outline edge at rest, ghost when disabled, '
-          'radius 12, no label gap (DEV-166)', () {
-        final fields = theme.inputDecorationTheme;
-        expect(fields.filled, isTrue);
+      test('search bar and divider use their own surfaces', () {
         expect(
-          WidgetStateProperty.resolveAs(fields.fillColor!, <WidgetState>{}),
-          scheme.surfaceContainerLow,
+          theme.searchBarTheme.backgroundColor!.resolve({}),
+          mx.searchSurface,
         );
-        expect(
-          WidgetStateProperty.resolveAs(fields.fillColor!, {
-            WidgetState.focused,
-          }),
-          scheme.surfaceContainerLowest,
-        );
-        final rest = MxDerivedColors.outlineEdgeOf(scheme);
-        final edge = fields.enabledBorder! as OutlineInputBorder;
-        expect(edge.borderSide.color, rest);
-        expect((fields.border! as OutlineInputBorder).borderSide.color, rest);
-        expect(
-          (fields.disabledBorder! as OutlineInputBorder).borderSide.color,
-          ghost,
-        );
-        expect(edge.gapPadding, 0);
-        expect(edge.borderRadius, BorderRadius.circular(12));
-        expect(
-          (fields.focusedBorder! as OutlineInputBorder).borderSide.color,
-          MxDerivedColors.primaryInkOf(scheme),
-        );
-        expect(
-          (fields.errorBorder! as OutlineInputBorder).borderSide.color,
-          scheme.error,
-        );
-        expect(fields.hintStyle!.color, scheme.onSurfaceVariant);
-        expect(fields.hintStyle!.fontSize, 14);
+        expect(theme.searchBarTheme.constraints!.minHeight, dimens.sizeSearch);
+        expect(theme.dividerTheme.color, mx.divider);
+        expect(theme.dividerTheme.thickness, dimens.strokeHairline);
       });
 
-      testWidgets('raw buttons take the V3 shape, height and tones', (
-        tester,
-      ) async {
-        await pump(
-          tester,
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FilledButton(onPressed: () {}, child: const Text('Filled')),
-              OutlinedButton(onPressed: () {}, child: const Text('Outlined')),
-              TextButton(onPressed: () {}, child: const Text('Text')),
-            ],
-          ),
-        );
-        for (final label in ['Filled', 'Outlined', 'Text']) {
-          final box = find.ancestor(
-            of: find.text(label),
-            matching: find.byType(Material),
-          );
-          final material = tester.widget<Material>(box.first);
-          expect(tester.getSize(box.first).height, 48, reason: label);
+      test(
+        'outlined and text buttons ink in the accent; filled keeps primary',
+        () {
+          final accent = name == 'light'
+              ? scheme.primary
+              : scheme.primaryFixedDim;
+          for (final style in [
+            theme.outlinedButtonTheme.style!,
+            theme.textButtonTheme.style!,
+          ]) {
+            expect(style.foregroundColor!.resolve({}), accent);
+            expect(
+              style.side!.resolve({WidgetState.focused})!.color,
+              scheme.primary,
+            );
+            expect(
+              style.side!.resolve({WidgetState.focused})!.width,
+              dimens.strokeFocus,
+            );
+          }
           expect(
-            (material.shape! as RoundedRectangleBorder).borderRadius,
-            BorderRadius.circular(12),
-            reason: label,
+            theme.filledButtonTheme.style!.backgroundColor!.resolve({}),
+            scheme.primary,
           );
-        }
-        Material paintOf(String label) => tester.widget<Material>(
-          find
-              .ancestor(of: find.text(label), matching: find.byType(Material))
-              .first,
-        );
-        expect(paintOf('Filled').color, scheme.primary);
-        expect(paintOf('Text').color, anyOf(isNull, Colors.transparent));
+        },
+      );
+
+      test('a disabled button follows the disabled opacities', () {
+        final filled = theme.filledButtonTheme.style!;
+        const disabled = {WidgetState.disabled};
         expect(
-          (paintOf('Outlined').shape! as RoundedRectangleBorder).side.color,
-          MxDerivedColors.outlineEdgeOf(scheme),
+          filled.foregroundColor!.resolve(disabled),
+          scheme.onSurface.withValues(alpha: dimens.opacityDisabledContent),
+        );
+        expect(
+          filled.backgroundColor!.resolve(disabled),
+          scheme.onSurface.withValues(alpha: dimens.opacityDisabledContainer),
         );
       });
 
-      testWidgets('a raw IconButton is the 36 round V3 icon button', (
+      test(
+        'fields: filled, outline at rest, primary focus ring, no label gap',
+        () {
+          final fields = theme.inputDecorationTheme;
+          expect(fields.filled, isTrue);
+          expect(
+            WidgetStateProperty.resolveAs(fields.fillColor!, <WidgetState>{}),
+            scheme.surfaceContainerLow,
+          );
+          expect(
+            WidgetStateProperty.resolveAs(fields.fillColor!, {
+              WidgetState.focused,
+            }),
+            scheme.surfaceContainerLowest,
+          );
+          final edge = fields.enabledBorder! as OutlineInputBorder;
+          expect(edge.borderSide.color, scheme.outline);
+          expect(edge.gapPadding, 0);
+          expect(edge.borderRadius, BorderRadius.circular(dimens.radiusMd));
+          final focused = fields.focusedBorder! as OutlineInputBorder;
+          expect(focused.borderSide.color, scheme.primary);
+          expect(focused.borderSide.width, dimens.strokeFocus);
+          expect(
+            (fields.errorBorder! as OutlineInputBorder).borderSide.color,
+            scheme.error,
+          );
+          expect(fields.hintStyle!.color, scheme.onSurfaceVariant);
+        },
+      );
+
+      test('navigation: bar and rail sizes, the secondary-container pill', () {
+        expect(theme.navigationBarTheme.height, dimens.sizeNav);
+        expect(theme.navigationBarTheme.backgroundColor, scheme.surface);
+        expect(
+          theme.navigationBarTheme.indicatorColor,
+          scheme.secondaryContainer,
+        );
+        expect(theme.navigationRailTheme.minWidth, dimens.sizeRail);
+        expect(
+          theme.navigationRailTheme.indicatorColor,
+          scheme.secondaryContainer,
+        );
+      });
+
+      test('progress: a track tall, success fill on the highest container', () {
+        final progress = theme.progressIndicatorTheme;
+        expect(progress.linearMinHeight, dimens.sizeTrack);
+        expect(progress.color, mx.successContainer);
+        expect(progress.linearTrackColor, scheme.surfaceContainerHighest);
+      });
+
+      test('neutral chip is secondaryContainer on onSecondaryContainer', () {
+        expect(theme.chipTheme.backgroundColor, scheme.secondaryContainer);
+        expect(theme.chipTheme.labelStyle!.color, scheme.onSecondaryContainer);
+      });
+
+      test('dialog, sheet and snack bar carry their tokens', () {
+        expect(theme.dialogTheme.backgroundColor, scheme.surfaceContainerHigh);
+        expect(
+          (theme.dialogTheme.shape! as RoundedRectangleBorder).borderRadius,
+          BorderRadius.circular(dimens.radiusXl),
+        );
+        expect(
+          theme.dialogTheme.barrierColor,
+          scheme.scrim.withValues(alpha: dimens.opacityScrim),
+        );
+        expect(
+          (theme.bottomSheetTheme.shape! as RoundedRectangleBorder)
+              .borderRadius,
+          BorderRadius.vertical(top: Radius.circular(dimens.radiusXl)),
+        );
+        expect(theme.snackBarTheme.backgroundColor, scheme.inverseSurface);
+        expect(theme.snackBarTheme.actionTextColor, scheme.inversePrimary);
+      });
+
+      testWidgets(
+        'raw buttons are full-radius and at least the button height',
+        (tester) async {
+          await pump(
+            tester,
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FilledButton(onPressed: () {}, child: const Text('Filled')),
+                OutlinedButton(onPressed: () {}, child: const Text('Outlined')),
+                TextButton(onPressed: () {}, child: const Text('Text')),
+              ],
+            ),
+          );
+          for (final label in ['Filled', 'Outlined', 'Text']) {
+            final box = find.ancestor(
+              of: find.text(label),
+              matching: find.byType(Material),
+            );
+            final material = tester.widget<Material>(box.first);
+            expect(
+              tester.getSize(box.first).height,
+              greaterThanOrEqualTo(dimens.sizeButton),
+              reason: label,
+            );
+            expect(material.shape, isA<StadiumBorder>(), reason: label);
+          }
+        },
+      );
+
+      testWidgets('a raw IconButton is the control size, round', (
         tester,
       ) async {
         await pump(
           tester,
           IconButton(onPressed: () {}, icon: const Icon(Icons.close)),
         );
-        final ink = find.descendant(
-          of: find.byType(IconButton),
-          matching: find.byType(Material),
+        expect(
+          tester.getSize(find.byType(IconButton)),
+          Size.square(dimens.sizeControl),
         );
-        expect(tester.getSize(ink.first), const Size.square(36));
-        expect(tester.widget<Material>(ink.first).shape, isA<CircleBorder>());
-        expect(tester.getSize(find.byType(IconButton)), const Size.square(48));
       });
 
-      testWidgets('a framework dialog takes the V3 surface and scrim', (
+      testWidgets('a framework dialog takes the surface, radius and scrim', (
         tester,
       ) async {
         await pump(
@@ -157,165 +226,18 @@ void main() {
               .first,
         );
         expect(surface.color, scheme.surfaceContainerHigh);
-        expect(surface.elevation, 0);
         expect(
           (surface.shape! as RoundedRectangleBorder).borderRadius,
-          BorderRadius.circular(20),
+          BorderRadius.circular(dimens.radiusXl),
         );
         final barrier = tester.widget<ModalBarrier>(
           find.byType(ModalBarrier).last,
         );
-        expect(barrier.color, scheme.scrim.withValues(alpha: 0.45));
-      });
-
-      testWidgets('a framework sheet takes the V3 surface and top radius', (
-        tester,
-      ) async {
-        await pump(
-          tester,
-          Builder(
-            builder: (context) => TextButton(
-              onPressed: () => showModalBottomSheet<void>(
-                context: context,
-                builder: (_) => const Text('Sheet'),
-              ),
-              child: const Text('open'),
-            ),
-          ),
-        );
-        await tester.tap(find.text('open'));
-        await tester.pumpAndSettle();
-
-        final sheet = tester.widget<BottomSheet>(find.byType(BottomSheet));
-        final sheets = Theme.of(tester.element(find.text('Sheet')))
-            .bottomSheetTheme;
         expect(
-          sheet.backgroundColor ?? sheets.backgroundColor,
-          scheme.surfaceContainerHigh,
-        );
-        expect(sheets.elevation, 0);
-        expect(
-          (sheets.shape! as RoundedRectangleBorder).borderRadius,
-          const BorderRadius.vertical(top: Radius.circular(20)),
-        );
-        expect(sheets.modalBarrierColor, scheme.scrim.withValues(alpha: 0.45));
-      });
-
-      testWidgets('a raw SnackBar takes the V3 toast', (tester) async {
-        await pump(
-          tester,
-          Builder(
-            builder: (context) => TextButton(
-              onPressed: () =>
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(const SnackBar(content: Text('Toast'))),
-              child: const Text('open'),
-            ),
-          ),
-        );
-        await tester.tap(find.text('open'));
-        await tester.pumpAndSettle();
-
-        final toast = tester.widget<Material>(
-          find
-              .ancestor(of: find.text('Toast'), matching: find.byType(Material))
-              .first,
-        );
-        expect(toast.color, scheme.inverseSurface);
-        expect(
-          (toast.shape! as RoundedRectangleBorder).borderRadius,
-          BorderRadius.circular(12),
-        );
-        expect(
-          tester.widget<SnackBar>(find.byType(SnackBar)).behavior ??
-              Theme.of(tester.element(find.text('Toast')))
-                  .snackBarTheme
-                  .behavior,
-          SnackBarBehavior.floating,
-        );
-      });
-
-      testWidgets('disabled buttons dim whole: ink, fill and edge', (
-        tester,
-      ) async {
-        await pump(
-          tester,
-          const Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FilledButton(onPressed: null, child: Text('Filled')),
-              OutlinedButton(onPressed: null, child: Text('Outlined')),
-            ],
-          ),
-        );
-        Material paintOf(String label) => tester.widget<Material>(
-          find
-              .ancestor(of: find.text(label), matching: find.byType(Material))
-              .first,
-        );
-        expect(
-          paintOf('Filled').color!.a,
-          closeTo(scheme.primary.a * 0.38, 0.01),
-        );
-        final edge =
-            (paintOf('Outlined').shape! as RoundedRectangleBorder).side;
-        expect(
-          edge.color.a,
-          closeTo(MxDerivedColors.outlineEdgeOf(scheme).a * 0.38, 0.01),
-        );
-      });
-
-      testWidgets('a raw TextField takes the V3 field', (tester) async {
-        await pump(
-          tester,
-          const SizedBox(
-            width: 300,
-            child: TextField(decoration: InputDecoration(hintText: 'x')),
-          ),
-        );
-        final decorator = tester.widget<InputDecorator>(
-          find.byType(InputDecorator),
-        );
-        final applied = decorator.decoration;
-        expect(applied.filled, isTrue);
-        expect(
-          (applied.enabledBorder! as OutlineInputBorder).borderSide.color,
-          MxDerivedColors.outlineEdgeOf(scheme),
+          barrier.color,
+          scheme.scrim.withValues(alpha: dimens.opacityScrim),
         );
       });
     });
   }
-
-  testWidgets('an Mx field outside the MemoX theme names the fix', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: ThemeData(),
-        home: const Scaffold(body: MxTextField(hintText: 'x')),
-      ),
-    );
-
-    expect(
-      tester.takeException(),
-      isA<StateError>().having(
-        (error) => error.message,
-        'message',
-        contains('buildLightTheme'),
-      ),
-    );
-  });
-
-  testWidgets('an Mx dialog outside the MemoX theme names the fix', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: ThemeData(),
-        home: const Scaffold(body: MxDialog(title: 'Title')),
-      ),
-    );
-
-    expect(tester.takeException(), isA<StateError>());
-  });
 }

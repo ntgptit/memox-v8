@@ -1,48 +1,35 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 
 void main() {
-  const semantic = MxSemanticColors.light;
-  final derived = MxDerivedColors.resolve(AppColorSchemes.light, semantic);
+  const mx = MxColorsExtension.light;
+  final accent = lightColorScheme.primary;
 
   test('0% paints no fill, only the track', () {
-    expect(MasteryRamp.fill(semantic, derived, 0), isNull);
+    expect(MasteryRamp.fill(mx, accent, 0), isNull);
   });
 
-  test('below 34% is the learning ink (deck mastery spec R4)', () {
-    expect(
-      MasteryRamp.fill(semantic, derived, 0.01),
-      derived.statusLearningInk,
-    );
-    expect(
-      MasteryRamp.fill(semantic, derived, 0.3399),
-      derived.statusLearningInk,
-    );
+  test('below 34% is the warning colour (deck mastery spec R4)', () {
+    expect(MasteryRamp.fill(mx, accent, 0.01), mx.warning);
+    expect(MasteryRamp.fill(mx, accent, 0.3399), mx.warning);
   });
 
-  test('in dark the learning ink is the kit amber itself', () {
-    const dark = MxSemanticColors.dark;
-    final darkDerived = MxDerivedColors.resolve(AppColorSchemes.dark, dark);
-    expect(MasteryRamp.fill(dark, darkDerived, 0.2), dark.statusLearning);
+  test('34% up to 67% is the accent', () {
+    expect(MasteryRamp.fill(mx, accent, 0.34), accent);
+    expect(MasteryRamp.fill(mx, accent, 0.6699), accent);
   });
 
-  test('34% up to 67% is reviewing', () {
-    expect(MasteryRamp.fill(semantic, derived, 0.34), semantic.statusReviewing);
-    expect(
-      MasteryRamp.fill(semantic, derived, 0.6699),
-      semantic.statusReviewing,
-    );
-  });
-
-  test('67% and above is mastered', () {
-    expect(MasteryRamp.fill(semantic, derived, 0.67), semantic.statusMastered);
-    expect(MasteryRamp.fill(semantic, derived, 1), semantic.statusMastered);
+  test('67% and above is the success container', () {
+    expect(MasteryRamp.fill(mx, accent, 0.67), mx.successContainer);
+    expect(MasteryRamp.fill(mx, accent, 1), mx.successContainer);
   });
 
   test('a fraction outside [0, 1] or NaN is rejected, not painted', () {
     for (final bad in [-0.01, 1.01, double.nan, double.infinity]) {
       expect(
-        () => MasteryRamp.fill(semantic, derived, bad),
+        () => MasteryRamp.fill(mx, accent, bad),
         throwsArgumentError,
         reason: '$bad',
       );
@@ -65,10 +52,9 @@ void main() {
     );
   });
 
-  test('the track is surfaceContainerLow, so a primary fill keeps 3:1 '
-      'in dark (FE-C1)', () {
-    for (final scheme in [AppColorSchemes.light, AppColorSchemes.dark]) {
-      expect(MasteryRamp.track(scheme), scheme.surfaceContainerLow);
+  test('the track is the highest surface container', () {
+    for (final scheme in [lightColorScheme, darkColorScheme]) {
+      expect(MasteryRamp.track(scheme), scheme.surfaceContainerHighest);
     }
   });
 }

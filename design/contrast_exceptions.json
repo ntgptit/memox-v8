@@ -1,0 +1,10 @@
+{
+  "exceptions": [
+    {
+      "pair": "primary on surface",
+      "mode": "dark",
+      "ratio": 3.01,
+      "reason": "primary is a fill colour. As text or icon on the dark page use the accent (primaryFixedDim); primary stays at 3.01:1 and is only drawn as a fill or at 18sp and larger."
+    }
+  ]
+}

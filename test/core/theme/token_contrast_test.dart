@@ -1,123 +1,112 @@
-import 'dart:math' as math;
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/mastery_ramp.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/color_tint.dart';
 
-// FE-C1: the palette's ink and edge pairs meet WCAG 2.2 AA, worked from the
-// tokens rather than sampled from pixels: Flutter's textContrastGuideline
-// misreads anti-aliased 12px text and filled buttons, so it stays out of
-// the screen audit. A tint is its alpha laid over the ground it sits on.
+import 'token_source.dart';
+
+// WCAG 2 contrast of the token pairs, worked from design/tokens.json. Pairs
+// below the floor are recorded in design/contrast_exceptions.json with their
+// measured ratio and the reason; the test fails when a pair falls below its
+// floor without a record, and when a record no longer matches the measurement.
 
 const double _text = 4.5;
 const double _nonText = 3;
 
-double _contrast(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
-  return (math.max(la, lb) + 0.05) / (math.min(la, lb) + 0.05);
-}
-
-Color _tint(Color color, double alpha, Color ground) =>
-    Color.alphaBlend(color.withValues(alpha: alpha), ground);
-
 typedef _Pair = (String name, Color ink, Color ground, double minimum);
 
-List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
-  final derived = MxDerivedColors.resolve(scheme, semantic);
-  final page = scheme.surface;
-  final sheet = scheme.surfaceContainerHigh;
-  final row = scheme.surfaceContainerLowest;
-  final track = MasteryRamp.track(scheme);
-  return [
-    for (final (ground, where) in [
-      (page, 'page'),
-      (row, 'row'),
-      (scheme.surfaceContainerLow, 'low'),
-      (sheet, 'sheet'),
-    ]) ...[
-      ('error text on $where', scheme.error, ground, _text),
-      ('primaryInk on $where', derived.primaryInk, ground, _text),
-      ('variant text on $where', scheme.onSurfaceVariant, ground, _text),
-      ('newInk on $where', derived.statusNewInk, ground, _text),
-      ('learningInk on $where', derived.statusLearningInk, ground, _text),
-      ('masteredInk on $where', derived.statusMasteredInk, ground, _text),
-    ],
-    // The Progress day bars on their card, the container-lowest ground
-    // (critique 2026-10-02, F5); learning's ink is held at 4.5 above.
-    ('reviewing bars on the card', scheme.primary, row, _nonText),
-    ('snackbar action', scheme.inversePrimary, scheme.inverseSurface, _text),
-    (
-      'danger badge on its 12% tint',
-      scheme.error,
-      _tint(scheme.error, 0.12, page),
-      _text,
-    ),
-    (
-      'mastery badge ink on its 12% tint',
-      derived.statusMasteredInk,
-      _tint(semantic.mastery, 0.12, page),
-      _text,
-    ),
-    (
-      'warning banner text',
-      derived.warningInk,
-      Color.alphaBlend(derived.warningSoft, page),
-      _text,
-    ),
-    (
-      'warning banner glyph',
-      derived.warningInk,
-      Color.alphaBlend(derived.warningSoft, page),
-      _nonText,
-    ),
-    ('toggle off edge on a row', scheme.outline, row, _nonText),
-    (
-      'toggle off thumb on its track',
-      scheme.onSurfaceVariant,
-      scheme.surfaceContainerHighest,
-      _nonText,
-    ),
-    ('progress fill on its track', scheme.primary, track, _nonText),
-    ('sheet grabber', scheme.onSurfaceVariant, sheet, _nonText),
-    // Critique 2026-09-30: a Guess option out of play fades as a whole (ink and
-    // surface) to context.dimens.opacityMuted over the page, and must stay readable.
-    (
-      'faded choice ink',
-      _tint(scheme.onSurface, context.dimens.opacityMuted, page),
-      _tint(scheme.surfaceContainerLowest, context.dimens.opacityMuted, page),
-      _text,
-    ),
-    // The one control edge (DEV-166, spec 2026-10-05 control edges §3.1):
-    // fields, outline buttons and code slots hold 3:1 on the grounds they
-    // sit on (page, field fill, card, sheet, warning), in both themes.
-    for (final (ground, where) in [
-      (page, 'page'),
-      (scheme.surfaceContainerLow, 'field fill'),
-      (scheme.surfaceContainerLowest, 'lowest'),
-      (sheet, 'sheet'),
-      (Color.alphaBlend(derived.warningSoft, page), 'warning ground'),
-    ])
-      ('outline edge on $where', derived.outlineEdge, ground, _nonText),
-  ];
+List<_Pair> _pairs(String mode) {
+  Color c(String name) => tokenColor(name, mode);
+  final surface = c('surface');
+  final card = c('cardSurface');
+  final accent = mode == 'light' ? c('primary') : c('primaryFixedDim');
+  final pairs = <_Pair>[];
+  void add(String name, Color ink, Color ground, [double min = _text]) =>
+      pairs.add((name, ink, ground, min));
+
+  for (final role in [
+    'primary',
+    'primaryContainer',
+    'secondary',
+    'secondaryContainer',
+    'tertiary',
+    'tertiaryContainer',
+    'error',
+    'errorContainer',
+    'inverseSurface',
+  ]) {
+    final on = 'on${role[0].toUpperCase()}${role.substring(1)}';
+    add('$on on $role', c(on), c(role));
+  }
+  for (final family in ['success', 'warning', 'info']) {
+    add(
+      '$family-onColor on $family-color',
+      c('$family-onColor'),
+      c('$family-color'),
+    );
+    add(
+      '$family-onContainer on $family-container',
+      c('$family-onContainer'),
+      c('$family-container'),
+    );
+  }
+  for (final (ground, where) in [(surface, 'surface'), (card, 'cardSurface')]) {
+    add('onSurface on $where', c('onSurface'), ground);
+    add('onSurfaceVariant on $where', c('onSurfaceVariant'), ground);
+    add('accent on $where', accent, ground);
+    add('error on $where', c('error'), ground);
+    add('success on $where', c('success-color'), ground);
+    add('warning on $where', c('warning-color'), ground);
+    add('info on $where', c('info-color'), ground);
+    add('outline on $where', c('outline'), ground, _nonText);
+  }
+  add(
+    'inversePrimary on inverseSurface',
+    c('inversePrimary'),
+    c('inverseSurface'),
+  );
+  add('primary on surface', c('primary'), surface);
+  for (final (name, ink) in [
+    ('accent', accent),
+    ('success', c('success-color')),
+    ('warning', c('warning-color')),
+    ('error', c('error')),
+  ]) {
+    add('$name on its tint over surface', ink, ink.tintOver(surface));
+  }
+  return pairs;
 }
 
 void main() {
-  for (final (theme, scheme, semantic) in [
-    ('light', AppColorSchemes.light, MxSemanticColors.light),
-    ('dark', AppColorSchemes.dark, MxSemanticColors.dark),
-  ]) {
-    group('$theme palette meets WCAG 2.2 AA', () {
-      for (final (name, ink, ground, minimum) in _pairs(scheme, semantic)) {
+  final exceptions =
+      (jsonDecode(File('design/contrast_exceptions.json').readAsStringSync())
+              as Map<String, dynamic>)['exceptions']
+          as List<dynamic>;
+
+  for (final mode in ['light', 'dark']) {
+    group(mode, () {
+      for (final (name, ink, ground, minimum) in _pairs(mode)) {
         test(name, () {
-          expect(
-            _contrast(ink, ground),
-            greaterThanOrEqualTo(minimum),
-            reason:
-                '#${ink.toARGB32().toRadixString(16)} on '
-                '#${ground.toARGB32().toRadixString(16)}',
+          final ratio = contrast(ink, ground);
+          final known = exceptions.cast<Map<String, dynamic>>().where(
+            (e) => e['pair'] == name && e['mode'] == mode,
           );
+          if (known.isEmpty) {
+            expect(ratio, greaterThanOrEqualTo(minimum));
+            return;
+          }
+          expect(
+            ratio,
+            lessThan(minimum),
+            reason: 'recorded exception is now met',
+          );
+          expect(
+            ratio,
+            closeTo((known.single['ratio'] as num).toDouble(), 0.01),
+          );
+          expect((known.single['reason'] as String).trim(), isNotEmpty);
         });
       }
     });
