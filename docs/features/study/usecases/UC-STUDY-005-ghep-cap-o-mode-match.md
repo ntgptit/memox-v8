@@ -35,7 +35,7 @@ code: [lib/features/study_mode/domain/models/match_mode.dart, lib/features/study
    không bị ghi gì (BR-STUDY-062).
 6. Chỉ sau khi transaction commit, bàn mới hiện kết quả (BR-STUDY-063). Cặp đúng
    chuyển sang trạng thái matched ngay; cặp sai nháy màu sai khoảng 600 ms kèm dòng
-   "Not a match — this pair comes back next round", rồi bàn nhận chạm tiếp. Bàn
+   "Not a match — it comes back next round", rồi bàn nhận chạm tiếp. Bàn
    không bao giờ bị thay bằng màn tải giữa hai lượt (BR-STUDY-064).
 7. Hết cặp của một bàn, bàn kế hiện ra. Hết round thì UC-STUDY-001 A0c quyết định:
    còn thẻ trong tập không đạt thì dựng round mới chỉ từ tập đó (BR-STUDY-059).

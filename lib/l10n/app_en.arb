@@ -959,7 +959,7 @@
   "@cardCaptionSaving": {
     "description": "Editor footer caption while saving."
   },
-  "cardCaptionEdit": "Editing content never changes the schedule or history.",
+  "cardCaptionEdit": "Edits never change the schedule or history.",
   "@cardCaptionEdit": {
     "description": "Edit footer caption when the card is valid."
   },
@@ -3209,7 +3209,7 @@
     },
     "description": "Screen handoff 14 (FE-A6 P2): footer caption under Review."
   },
-  "studyEntryNothingDueCaption": "Nothing is due. Review opens once cards come due.",
+  "studyEntryNothingDueCaption": "Nothing is due. Review opens as cards come due.",
   "@studyEntryNothingDueCaption": {
     "description": "Screen handoff 14 (FE-A6 P2): footer caption under Learn with nothing due."
   },
@@ -4329,7 +4329,7 @@
   "@studySelfAssessHintPrompt": {
     "description": "Screen handoff 16a (FE-A6 P2): footer hint before the reveal."
   },
-  "studySelfAssessHintGrade": "Be honest — grade how well you remembered",
+  "studySelfAssessHintGrade": "Be honest — grade how well you recalled",
   "@studySelfAssessHintGrade": {
     "description": "Screen handoff 16a (FE-A6 P2): footer hint after the reveal."
   },
@@ -4419,7 +4419,7 @@
   "@studyGuessHintIdle": {
     "description": "Screen handoff 18 (FE-A6 P3): footer hint before the pick."
   },
-  "studyGuessHintAnswered": "Answer shown — the correct option is highlighted",
+  "studyGuessHintAnswered": "Answer shown — the right option is marked",
   "@studyGuessHintAnswered": {
     "description": "Screen handoff 18 (FE-A6 P3): footer hint after the pick."
   },
@@ -4482,7 +4482,7 @@
   "@studyMatchHint": {
     "description": "Screen handoff 17 (FE-A6 P3): footer hint."
   },
-  "studyMatchHintWrong": "Not a match — this pair comes back next round",
+  "studyMatchHintWrong": "Not a match — it comes back next round",
   "@studyMatchHintWrong": {
     "description": "Screen handoff 17 (FE-A6 P3): footer hint and announcement after a wrong pair."
   },
@@ -4588,11 +4588,11 @@
   "@studyRecallTagTimedOut": {
     "description": "Screen handoff 19 (FE-A6 P4): tag under the meaning when the time ran out; upper-cased by the widget."
   },
-  "studyRecallHintCounting": "Recall the meaning before the time runs out",
+  "studyRecallHintCounting": "Recall the meaning before time runs out",
   "@studyRecallHintCounting": {
     "description": "Screen handoff 19 (FE-A6 P4): footer hint while counting down."
   },
-  "studyRecallHintRevealed": "Be honest — the next card follows automatically",
+  "studyRecallHintRevealed": "Be honest — the next card follows by itself",
   "@studyRecallHintRevealed": {
     "description": "Screen handoff 19 (FE-A6 P4): footer hint once revealed."
   },
@@ -4651,7 +4651,7 @@
   "@studyFillHintUsed": {
     "description": "Screen handoff 20 (FE-A6 P4): footer hint once the hint is shown."
   },
-  "studyFillHintWrong": "Case and spaces are ignored, accents are not",
+  "studyFillHintWrong": "Case and spaces don't count; accents do",
   "@studyFillHintWrong": {
     "description": "Screen handoff 20 (FE-A6 P4): footer hint on a wrong answer (BR-STUDY-026)."
   },
@@ -5343,7 +5343,7 @@
   "@settingsCardLimitShort": {
     "description": "Study options (screen 23a): the card-limit row's label beside its stepper, under the Session overline (owner 2026-10-07). The stepper keeps settingsCardLimit as its spoken name."
   },
-  "settingsCardLimitPerSession": "Per session",
+  "settingsCardLimitPerSession": "A session",
   "@settingsCardLimitPerSession": {
     "description": "Study options (screen 23a): the card-limit row's subtitle under Cards, so the row reads Cards per session (owner 2026-10-07)."
   },

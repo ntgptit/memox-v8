@@ -61,7 +61,7 @@ Every state above is built.
 - App bar: "Edit card" · "Flag this card" · "Remove flag".
 - History summary: "{status} · {answers}" · "{lapses}" · "due {date}".
 - Fields: same labels, hints and errors as 08-card-create, plus "Optional details".
-- Footer: "Cancel" · "Save changes" · "Retry save" · "Couldn't save changes." · "Nothing was lost. Tap Save to try again." · "Editing content never changes the schedule or history." · "Add the missing field to enable save." · "Fix the marked field to enable save." · "Saving to this device…".
+- Footer: "Cancel" · "Save changes" · "Retry save" · "Couldn't save changes." · "Nothing was lost. Tap Save to try again." · "Edits never change the schedule or history." · "Add the missing field to enable save." · "Fix the marked field to enable save." · "Saving to this device…".
 - More: "More" · "Move this card to Trash" · "Leaves this deck and can be restored from Trash for 30 days, schedule and history included." · "Move to Trash".
 - Move to Trash dialog: "Move this card to Trash?" · "Recoverable from Trash for 30 days, with its schedule and history. Other cards are unaffected." · "Cancel" · "Move".
 - Discard: "Discard changes?" · "You edited {parts}. Leaving now keeps the card as it was saved." (parts: "the term", "the meaning", "the example", "the hint", "the pronunciation", "the flag", "the tags", joined "a, b and c") · "Keep editing" · "Discard".

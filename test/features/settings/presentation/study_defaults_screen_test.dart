@@ -374,7 +374,7 @@ void main() {
     }
   });
 
-  libraryTest('the card-limit row reads "Cards · Per session" and stands as '
+  libraryTest('the card-limit row reads "Cards · A session" and stands as '
       'tall as the order row (owner 2026-10-07)', (tester, env) async {
     for (final locale in const [Locale('en'), Locale('vi')]) {
       final l10n = lookupAppLocalizations(locale);
