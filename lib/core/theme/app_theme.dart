@@ -1,35 +1,60 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/app_typography.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 
-/// Tokyo Pure Light.
-ThemeData buildLightTheme() =>
-    _build(AppColorSchemes.light, MxSemanticColors.light);
+/// The light theme: its scheme, its extension and its accent.
+ThemeData buildLightTheme() => _build(
+  scheme: lightColorScheme,
+  mx: MxColorsExtension.light,
+  accent: lightColorScheme.primary,
+);
 
-/// Tokyo Nebula. Authored, not a filter over light.
-ThemeData buildDarkTheme() =>
-    _build(AppColorSchemes.dark, MxSemanticColors.dark);
+/// The dark theme, authored on its own rather than as a filter over light.
+/// Its accent is the lighter fixed step, as `primary` on the dark page is
+/// only 3.01:1.
+ThemeData buildDarkTheme() => _build(
+  scheme: darkColorScheme,
+  mx: MxColorsExtension.dark,
+  accent: darkColorScheme.primaryFixedDim,
+);
 
-ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
+ThemeData _build({
+  required ColorScheme scheme,
+  required MxColorsExtension mx,
+  required Color accent,
+}) {
   // The base supplies Material's default slots, already inked onSurface.
   final base = ThemeData(colorScheme: scheme);
   final texts = AppTypography.bind(base.textTheme);
+  final tokens = ThemeTokens(
+    scheme: scheme,
+    mx: mx,
+    texts: texts,
+    accent: accent,
+  );
   return base.copyWith(
     textTheme: texts,
     // Read directly by CircleAvatar, FlexibleSpaceBar and others.
     primaryTextTheme: AppTypography.bind(base.primaryTextTheme),
     scaffoldBackgroundColor: scheme.surface,
-    extensions: [semantic],
-    // Spec §4.6: the V3 defaults of the Material components.
-    inputDecorationTheme: AppComponentThemes.fields(scheme, semantic, texts),
-    filledButtonTheme: AppComponentThemes.filledButtons(scheme, texts),
-    outlinedButtonTheme: AppComponentThemes.outlinedButtons(scheme, texts),
-    textButtonTheme: AppComponentThemes.textButtons(scheme, texts),
-    iconButtonTheme: AppComponentThemes.iconButtons(scheme),
-    dialogTheme: AppComponentThemes.dialogs(scheme, texts),
-    bottomSheetTheme: AppComponentThemes.sheets(scheme),
-    snackBarTheme: AppComponentThemes.snackbars(scheme, texts),
+    extensions: [mx, tokens.dimens],
+    cardTheme: cardTheme(tokens),
+    searchBarTheme: searchBarTheme(tokens),
+    dividerTheme: dividerTheme(tokens),
+    filledButtonTheme: filledButtonTheme(tokens),
+    outlinedButtonTheme: outlinedButtonTheme(tokens),
+    textButtonTheme: textButtonTheme(tokens),
+    iconButtonTheme: iconButtonTheme(tokens),
+    navigationBarTheme: navigationBarTheme(tokens),
+    navigationRailTheme: navigationRailTheme(tokens),
+    progressIndicatorTheme: progressIndicatorTheme(tokens),
+    chipTheme: chipTheme(tokens),
+    inputDecorationTheme: inputDecorationTheme(tokens),
+    dialogTheme: dialogTheme(tokens),
+    bottomSheetTheme: bottomSheetTheme(tokens),
+    snackBarTheme: snackBarTheme(tokens),
+    tooltipTheme: tooltipTheme(tokens),
   );
 }

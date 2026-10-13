@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
 import 'package:memox/core/notes/note_keys.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/starter_decks/domain/models/starter_library_entry_model.dart';
 import 'package:memox/features/starter_decks/presentation/providers/starter_library_provider.dart';

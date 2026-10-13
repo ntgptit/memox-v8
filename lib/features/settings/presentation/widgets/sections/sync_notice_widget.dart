@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/settings/presentation/states/sync_screen_state.dart';
 import 'package:memox/features/settings/presentation/widgets/overlays/sync_keep_dialog_widget.dart';
 import 'package:memox/features/settings/presentation/widgets/support/sync_labels_widget.dart';

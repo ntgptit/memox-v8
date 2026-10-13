@@ -10,7 +10,7 @@ import 'package:memox/features/transfer/presentation/providers/import_file_picke
 import 'package:memox/features/transfer/presentation/screens/card_import_screen.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';

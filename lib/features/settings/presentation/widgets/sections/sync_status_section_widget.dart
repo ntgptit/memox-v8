@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/presentation/widgets/support/sync_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';

@@ -171,7 +171,7 @@ def families(tokens: dict) -> tuple[str, list[str]]:
 def render_text_theme(tokens: dict) -> str:
     family, fallback = families(tokens)
     fallback_list = ", ".join(f"'{f}'" for f in fallback)
-    out = [HEADER, "", "import 'dart:ui';", "", "import 'package:flutter/painting.dart';", "",
+    out = [HEADER, "", "import 'package:flutter/material.dart';", "",
            f"const String kFontFamily = '{family}';",
            f"const List<String> kFontFamilyFallback = [{fallback_list}];", "",
            "/// The twelve Design System roles; slots the Design System leaves out keep Material's defaults.",

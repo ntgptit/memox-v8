@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/search/presentation/controllers/search_screen_controller.dart';
 import 'package:memox/features/search/presentation/widgets/sections/search_body_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';

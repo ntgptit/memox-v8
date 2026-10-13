@@ -5,7 +5,7 @@ import 'package:memox/features/progress/presentation/widgets/sections/progress_s
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/deck_progress_provider.dart';

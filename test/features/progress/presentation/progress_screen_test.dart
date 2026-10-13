@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';

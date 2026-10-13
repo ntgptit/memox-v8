@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
 import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/l10n/l10n_context.dart';

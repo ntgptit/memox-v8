@@ -48,6 +48,17 @@ class AppDimens extends ThemeExtension<AppDimens> {
     this.opacityDragged = 0.16,
     this.opacityDisabledContent = 0.38,
     this.opacityDisabledContainer = 0.12,
+    // App-only — not yet in the design system.
+    this.sizeChip = 28,
+    this.sizeInput = 52,
+    this.sizeFab = 52,
+    this.sizeAppBar = 64,
+    this.sizeIconInline = 16,
+    this.sizeIconCompact = 20,
+    this.strokeControl = 2,
+    this.strokeIndicator = 2,
+    this.opacityMuted = 0.7,
+    this.opacityScrim = 0.45,
   });
 
   final double space4;
@@ -92,6 +103,36 @@ class AppDimens extends ThemeExtension<AppDimens> {
   final double opacityDragged;
   final double opacityDisabledContent;
   final double opacityDisabledContainer;
+  // App-only — not yet in the design system.
+  /// Chip and filter chip height. A chip never wraps, its row scrolls.
+  final double sizeChip;
+
+  /// Text field height.
+  final double sizeInput;
+
+  /// Floating action button, square, icon only.
+  final double sizeFab;
+
+  /// App bar height (48 + 2 x 8).
+  final double sizeAppBar;
+
+  /// Icon inside body text; the smallest icon.
+  final double sizeIconInline;
+
+  /// Dense rows, metadata, nav glyphs, FAB glyph.
+  final double sizeIconCompact;
+
+  /// Unselected radio ring and checkbox border.
+  final double strokeControl;
+
+  /// Spinner arc and other progress strokes.
+  final double strokeIndicator;
+
+  /// Readable content that steps back: an answered choice out of play, a footer caption.
+  final double opacityMuted;
+
+  /// Alpha of the scrim behind a dialog or a bottom sheet.
+  final double opacityScrim;
 
   @override
   AppDimens copyWith() => this;

@@ -1,240 +1,343 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/app_button_style.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
-import 'package:memox/core/theme/mx_text_styles.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 
-/// The Material component themes (spec UI base §4.6): the V3 defaults a raw
-/// Material widget, or one the framework builds, picks up. A MemoX variant
-/// richer than a Material theme can express stays in its `Mx*` widget, which
-/// reads these defaults and overrides only what differs.
-abstract final class AppComponentThemes {
-  /// A field's edge in [color]: hairline, radius 12, and no label gap —
-  /// fields never float a label, and Material 3 would otherwise add the gap
-  /// to each side of the text.
-  static OutlineInputBorder fieldEdge(Color color) => OutlineInputBorder(
-    gapPadding: 0,
-    borderRadius: BorderRadius.circular(AppRadius.md),
-    borderSide: BorderSide(color: color, width: AppStroke.hairline),
-  );
+/// What one mode's component themes are built from. Light and dark each get
+/// their own instance; no function here branches on the mode.
+final class ThemeTokens {
+  const ThemeTokens({
+    required this.scheme,
+    required this.mx,
+    required this.texts,
+    required this.accent,
+    this.dimens = const AppDimens(),
+  });
 
-  /// Every form field (TextField contract): the muted fill that lightens on
-  /// focus, the Outline Edge at rest (ghost when disabled), primary on focus,
-  /// error in error, the 14 hint.
-  static InputDecorationTheme fields(
-    ColorScheme scheme,
-    MxSemanticColors semantic,
-    TextTheme texts,
-  ) {
-    final derived = MxDerivedColors.resolve(scheme, semantic);
-    final ghost = derived.ghostBorder;
-    // Every edged field rests on the one control edge (3:1, DEV-166); a
-    // disabled one keeps the ghost hairline, as SC 1.4.11 exempts it.
-    final rest = derived.outlineEdge;
-    return InputDecorationTheme(
-      filled: true,
-      isDense: true,
-      fillColor: WidgetStateColor.resolveWith(
-        (states) => states.contains(WidgetState.focused)
-            ? scheme.surfaceContainerLowest
-            : scheme.surfaceContainerLow,
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.grouped,
-      ),
-      hintStyle: MxTextStyles(texts, scheme).inputHint,
-      border: fieldEdge(rest),
-      enabledBorder: fieldEdge(rest),
-      disabledBorder: fieldEdge(ghost),
-      focusedBorder: fieldEdge(MxDerivedColors.primaryInkOf(scheme)),
-      errorBorder: fieldEdge(scheme.error),
-      focusedErrorBorder: fieldEdge(scheme.error),
-    );
-  }
+  final ColorScheme scheme;
+  final MxColorsExtension mx;
+  final TextTheme texts;
 
-  /// A Material button at the regular V3 size in [fill] and [ink]: 48 tall,
-  /// radius 12, gutter padding, the 14/600 label, the pressed overlay and
-  /// the focus ring. A disabled one dims under the global 0.38 rule.
-  static ButtonStyle _button(
-    ColorScheme scheme,
-    TextTheme texts, {
-    required Color? fill,
-    required Color ink,
-    required BorderSide edge,
-  }) {
-    final style = appButtonStyle(
-      fill: fill,
-      ink: ink,
-      edge: edge,
-      focusColor: MxDerivedColors.primaryInkOf(scheme),
-      height: AppSize.buttonRegular,
-      radius: AppRadius.md,
-      padding: AppSpacing.gutter,
-      label: MxTextStyles(texts, scheme).buttonLabel,
-    );
-    Color? dimmed(Color? color) =>
-        color?.withValues(alpha: color.a * AppOpacity.disabled);
-    final dimmedEdge = edge == BorderSide.none
-        ? edge
-        : edge.copyWith(color: dimmed(edge.color));
-    return style.copyWith(
-      side: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.disabled)
-            ? dimmedEdge
-            : style.side?.resolve(states),
-      ),
-      backgroundColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.disabled) ? dimmed(fill) : fill,
-      ),
-      foregroundColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.disabled) ? dimmed(ink) : ink,
-      ),
-    );
-  }
+  /// Icon and text colour of the accent (see `ThemeRules.accentColor`).
+  final Color accent;
+  final AppDimens dimens;
 
-  /// FilledButton: the primary tone.
-  static FilledButtonThemeData filledButtons(
-    ColorScheme scheme,
-    TextTheme texts,
-  ) => FilledButtonThemeData(
-    style: _button(
-      scheme,
-      texts,
-      fill: scheme.primary,
-      ink: scheme.onPrimary,
-      edge: BorderSide.none,
-    ),
-  );
+  OutlinedBorder get stadium => const StadiumBorder();
 
-  /// OutlinedButton: the outline tone.
-  static OutlinedButtonThemeData outlinedButtons(
-    ColorScheme scheme,
-    TextTheme texts,
-  ) => OutlinedButtonThemeData(
-    style: _button(
-      scheme,
-      texts,
-      fill: null,
-      ink: MxDerivedColors.primaryInkOf(scheme),
-      edge: BorderSide(
-        color: MxDerivedColors.outlineEdgeOf(scheme),
-        width: AppStroke.hairline,
-      ),
-    ),
-  );
+  BorderRadius radius(double value) => BorderRadius.circular(value);
 
-  /// TextButton: primary ink, no fill — the framework's dialog actions.
-  static TextButtonThemeData textButtons(ColorScheme scheme, TextTheme texts) =>
-      TextButtonThemeData(
-        style: _button(
-          scheme,
-          texts,
-          fill: null,
-          ink: MxDerivedColors.primaryInkOf(scheme),
-          edge: BorderSide.none,
-        ),
-      );
+  Color get scrim => scheme.scrim.withValues(alpha: dimens.opacityScrim);
 
-  /// IconButton (IconButton contract): a 20 glyph in a 36 round ink box with
-  /// a 48 touch area, the pressed overlay, and the focus ring on the
-  /// circle's edge (ruling R5).
-  static IconButtonThemeData iconButtons(ColorScheme scheme) =>
-      IconButtonThemeData(
-        style: ButtonStyle(
-          iconSize: const WidgetStatePropertyAll(AppIconSize.compact),
-          // A disabled one dims under the global 0.38 rule.
-          foregroundColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.disabled)
-                ? scheme.onSurface.withValues(alpha: AppOpacity.disabled)
-                : scheme.onSurface,
-          ),
-          overlayColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.pressed)
-                ? scheme.onSurface.withValues(alpha: AppOpacity.pressed)
-                : null,
-          ),
-          side: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.focused)
-                ? BorderSide(
-                    color: MxDerivedColors.primaryInkOf(scheme),
-                    width: AppStroke.focus,
-                  )
-                : null,
-          ),
-          shape: const WidgetStatePropertyAll(CircleBorder()),
-          fixedSize: const WidgetStatePropertyAll(
-            Size.square(AppSize.iconButtonInk),
-          ),
-          minimumSize: const WidgetStatePropertyAll(
-            Size.square(AppSize.iconButtonInk),
-          ),
-          padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-          tapTargetSize: MaterialTapTargetSize.padded,
-        ),
-      );
-
-  static Color _scrim(ColorScheme scheme) =>
-      scheme.scrim.withValues(alpha: AppEffects.scrimOpacity);
-
-  static const _sheetRadius = BorderRadius.vertical(
-    top: Radius.circular(AppRadius.xl),
-  );
-
-  /// Dialog (Dialog contract): the high container at radius 20, flat, over
-  /// the 45% scrim, with the compact title and the dialog body.
-  static DialogThemeData dialogs(ColorScheme scheme, TextTheme texts) {
-    final styles = MxTextStyles(texts, scheme);
-    return DialogThemeData(
-      backgroundColor: scheme.surfaceContainerHigh,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-      ),
-      barrierColor: _scrim(scheme),
-      titleTextStyle: styles.compactTitle,
-      contentTextStyle: styles.dialogBody,
-      insetPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.card,
-        vertical: AppSpacing.section,
-      ),
-    );
-  }
-
-  /// BottomSheet (BottomSheet contract): the high container, top radius 20,
-  /// flat, over the 45% scrim.
-  static BottomSheetThemeData sheets(ColorScheme scheme) =>
-      BottomSheetThemeData(
-        backgroundColor: scheme.surfaceContainerHigh,
-        modalBackgroundColor: scheme.surfaceContainerHigh,
-        elevation: 0,
-        modalElevation: 0,
-        shape: const RoundedRectangleBorder(borderRadius: _sheetRadius),
-        modalBarrierColor: _scrim(scheme),
-      );
-
-  /// SnackBar (Snackbar contract): the inverse surface, floating a gutter in,
-  /// radius 12, the snackbar message style.
-  static SnackBarThemeData snackbars(ColorScheme scheme, TextTheme texts) =>
-      SnackBarThemeData(
-        backgroundColor: scheme.inverseSurface,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-        ),
-        // Even sides, so no direction is needed.
-        insetPadding: const EdgeInsets.fromLTRB(
-          AppSpacing.gutter,
-          0,
-          AppSpacing.gutter,
-          AppSpacing.gutter,
-        ),
-        contentTextStyle: MxTextStyles(texts, scheme).snackbarMessage,
-      );
+  Color onSurfaceAt(double opacity) =>
+      scheme.onSurface.withValues(alpha: opacity);
 }
+
+/// Card: tonal surface, no border, no shadow.
+CardThemeData cardTheme(ThemeTokens t) => CardThemeData(
+  color: t.mx.cardSurface,
+  surfaceTintColor: Colors.transparent,
+  shadowColor: Colors.transparent,
+  elevation: 0,
+  margin: EdgeInsets.zero,
+  clipBehavior: Clip.antiAlias,
+  shape: RoundedRectangleBorder(borderRadius: t.radius(t.dimens.radiusMd)),
+);
+
+SearchBarThemeData searchBarTheme(ThemeTokens t) {
+  final hint = t.texts.labelMedium?.copyWith(color: t.scheme.onSurfaceVariant);
+  return SearchBarThemeData(
+    backgroundColor: WidgetStatePropertyAll(t.mx.searchSurface),
+    surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+    elevation: const WidgetStatePropertyAll(0),
+    shape: WidgetStatePropertyAll(t.stadium),
+    constraints: BoxConstraints(minHeight: t.dimens.sizeSearch),
+    hintStyle: WidgetStatePropertyAll(hint),
+    textStyle: WidgetStatePropertyAll(
+      t.texts.labelMedium?.copyWith(color: t.scheme.onSurface),
+    ),
+  );
+}
+
+DividerThemeData dividerTheme(ThemeTokens t) => DividerThemeData(
+  color: t.mx.divider,
+  thickness: t.dimens.strokeHairline,
+  space: t.dimens.strokeHairline,
+);
+
+/// A field's edge in [color] at [width]; no label gap, because fields never
+/// float a label and Material 3 would otherwise add the gap to each side.
+OutlineInputBorder fieldEdge(ThemeTokens t, Color color, {double? width}) =>
+    OutlineInputBorder(
+      gapPadding: 0,
+      borderRadius: t.radius(t.dimens.radiusMd),
+      borderSide: BorderSide(
+        color: color,
+        width: width ?? t.dimens.strokeHairline,
+      ),
+    );
+
+InputDecorationTheme inputDecorationTheme(ThemeTokens t) {
+  final scheme = t.scheme;
+  return InputDecorationTheme(
+    filled: true,
+    isDense: true,
+    fillColor: WidgetStateColor.resolveWith(
+      (states) => states.contains(WidgetState.focused)
+          ? scheme.surfaceContainerLowest
+          : scheme.surfaceContainerLow,
+    ),
+    contentPadding: EdgeInsets.symmetric(horizontal: t.dimens.space12),
+    hintStyle: t.texts.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+    border: fieldEdge(t, scheme.outline),
+    enabledBorder: fieldEdge(t, scheme.outline),
+    disabledBorder: fieldEdge(t, scheme.outlineVariant),
+    focusedBorder: fieldEdge(t, scheme.primary, width: t.dimens.strokeFocus),
+    errorBorder: fieldEdge(t, scheme.error),
+    focusedErrorBorder: fieldEdge(t, scheme.error, width: t.dimens.strokeFocus),
+  );
+}
+
+/// A Material button at the regular size in [fill] and [ink]: 40 tall, full
+/// radius, 24 side padding, the `labelLarge` label, state layers and the focus
+/// ring. A disabled one follows the Design System's disabled opacities.
+ButtonStyle _buttonStyle(
+  ThemeTokens t, {
+  required Color? fill,
+  required Color ink,
+  BorderSide? edge,
+}) {
+  final dimens = t.dimens;
+  return ButtonStyle(
+    minimumSize: WidgetStatePropertyAll(Size(0, dimens.sizeButton)),
+    fixedSize: WidgetStatePropertyAll(Size.fromHeight(dimens.sizeButton)),
+    padding: WidgetStatePropertyAll(
+      EdgeInsets.symmetric(horizontal: dimens.space24),
+    ),
+    shape: WidgetStatePropertyAll(t.stadium),
+    elevation: const WidgetStatePropertyAll(0),
+    tapTargetSize: MaterialTapTargetSize.padded,
+    textStyle: WidgetStatePropertyAll(t.texts.labelLarge),
+    backgroundColor: WidgetStateProperty.resolveWith(
+      (states) => states.contains(WidgetState.disabled)
+          ? (fill == null
+                ? null
+                : t.onSurfaceAt(dimens.opacityDisabledContainer))
+          : fill,
+    ),
+    foregroundColor: WidgetStateProperty.resolveWith(
+      (states) => states.contains(WidgetState.disabled)
+          ? t.onSurfaceAt(dimens.opacityDisabledContent)
+          : ink,
+    ),
+    iconColor: WidgetStateProperty.resolveWith(
+      (states) => states.contains(WidgetState.disabled)
+          ? t.onSurfaceAt(dimens.opacityDisabledContent)
+          : ink,
+    ),
+    overlayColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.pressed)) {
+        return ink.withValues(alpha: dimens.opacityPressed);
+      }
+      if (states.contains(WidgetState.focused)) {
+        return ink.withValues(alpha: dimens.opacityFocus);
+      }
+      if (states.contains(WidgetState.hovered)) {
+        return ink.withValues(alpha: dimens.opacityHover);
+      }
+      return null;
+    }),
+    side: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.focused)) {
+        return BorderSide(color: t.scheme.primary, width: dimens.strokeFocus);
+      }
+      if (states.contains(WidgetState.disabled) && edge != null) {
+        return edge.copyWith(
+          color: t.onSurfaceAt(dimens.opacityDisabledContainer),
+        );
+      }
+      return edge;
+    }),
+  );
+}
+
+FilledButtonThemeData filledButtonTheme(ThemeTokens t) => FilledButtonThemeData(
+  style: _buttonStyle(t, fill: t.scheme.primary, ink: t.scheme.onPrimary),
+);
+
+OutlinedButtonThemeData outlinedButtonTheme(ThemeTokens t) =>
+    OutlinedButtonThemeData(
+      style: _buttonStyle(
+        t,
+        fill: null,
+        ink: t.accent,
+        edge: BorderSide(
+          color: t.scheme.outline,
+          width: t.dimens.strokeHairline,
+        ),
+      ),
+    );
+
+TextButtonThemeData textButtonTheme(ThemeTokens t) =>
+    TextButtonThemeData(style: _buttonStyle(t, fill: null, ink: t.accent));
+
+IconButtonThemeData iconButtonTheme(ThemeTokens t) {
+  final dimens = t.dimens;
+  return IconButtonThemeData(
+    style: ButtonStyle(
+      iconSize: WidgetStatePropertyAll(dimens.sizeIcon),
+      foregroundColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.disabled)
+            ? t.onSurfaceAt(dimens.opacityDisabledContent)
+            : t.scheme.onSurface,
+      ),
+      overlayColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.pressed)) {
+          return t.onSurfaceAt(dimens.opacityPressed);
+        }
+        if (states.contains(WidgetState.focused)) {
+          return t.onSurfaceAt(dimens.opacityFocus);
+        }
+        if (states.contains(WidgetState.hovered)) {
+          return t.onSurfaceAt(dimens.opacityHover);
+        }
+        return null;
+      }),
+      side: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.focused)
+            ? BorderSide(color: t.scheme.primary, width: dimens.strokeFocus)
+            : null,
+      ),
+      shape: const WidgetStatePropertyAll(CircleBorder()),
+      fixedSize: WidgetStatePropertyAll(Size.square(dimens.sizeControl)),
+      minimumSize: WidgetStatePropertyAll(Size.square(dimens.sizeControl)),
+      padding: const WidgetStatePropertyAll(EdgeInsets.zero),
+    ),
+  );
+}
+
+NavigationBarThemeData navigationBarTheme(ThemeTokens t) {
+  final scheme = t.scheme;
+  return NavigationBarThemeData(
+    height: t.dimens.sizeNav,
+    backgroundColor: scheme.surface,
+    surfaceTintColor: Colors.transparent,
+    shadowColor: Colors.transparent,
+    elevation: 0,
+    indicatorColor: scheme.secondaryContainer,
+    indicatorShape: t.stadium,
+    iconTheme: WidgetStateProperty.resolveWith(
+      (states) => IconThemeData(
+        size: t.dimens.sizeIcon,
+        color: states.contains(WidgetState.selected)
+            ? scheme.onSecondaryContainer
+            : scheme.onSurfaceVariant,
+      ),
+    ),
+    labelTextStyle: WidgetStateProperty.resolveWith(
+      (states) => t.texts.labelSmall?.copyWith(
+        color: states.contains(WidgetState.selected)
+            ? scheme.onSurface
+            : scheme.onSurfaceVariant,
+      ),
+    ),
+  );
+}
+
+NavigationRailThemeData navigationRailTheme(ThemeTokens t) {
+  final scheme = t.scheme;
+  return NavigationRailThemeData(
+    minWidth: t.dimens.sizeRail,
+    backgroundColor: scheme.surface,
+    elevation: 0,
+    indicatorColor: scheme.secondaryContainer,
+    indicatorShape: t.stadium,
+    selectedIconTheme: IconThemeData(
+      size: t.dimens.sizeIcon,
+      color: scheme.onSecondaryContainer,
+    ),
+    unselectedIconTheme: IconThemeData(
+      size: t.dimens.sizeIcon,
+      color: scheme.onSurfaceVariant,
+    ),
+    selectedLabelTextStyle: t.texts.labelSmall?.copyWith(
+      color: scheme.onSurface,
+    ),
+    unselectedLabelTextStyle: t.texts.labelSmall?.copyWith(
+      color: scheme.onSurfaceVariant,
+    ),
+  );
+}
+
+ProgressIndicatorThemeData progressIndicatorTheme(ThemeTokens t) =>
+    ProgressIndicatorThemeData(
+      color: t.mx.successContainer,
+      linearTrackColor: t.scheme.surfaceContainerHighest,
+      circularTrackColor: t.scheme.surfaceContainerHighest,
+      linearMinHeight: t.dimens.sizeTrack,
+      borderRadius: t.radius(t.dimens.sizeTrack / 2),
+    );
+
+/// Neutral chip: `secondaryContainer` with `onSecondaryContainer`.
+ChipThemeData chipTheme(ThemeTokens t) => ChipThemeData(
+  backgroundColor: t.scheme.secondaryContainer,
+  selectedColor: t.scheme.secondaryContainer,
+  side: BorderSide.none,
+  shape: RoundedRectangleBorder(borderRadius: t.radius(t.dimens.radiusSm)),
+  labelStyle: t.texts.labelMedium?.copyWith(
+    color: t.scheme.onSecondaryContainer,
+  ),
+  iconTheme: IconThemeData(color: t.scheme.onSecondaryContainer),
+);
+
+DialogThemeData dialogTheme(ThemeTokens t) => DialogThemeData(
+  backgroundColor: t.scheme.surfaceContainerHigh,
+  surfaceTintColor: Colors.transparent,
+  elevation: 0,
+  shape: RoundedRectangleBorder(borderRadius: t.radius(t.dimens.radiusXl)),
+  barrierColor: t.scrim,
+  titleTextStyle: t.texts.titleSmall?.copyWith(color: t.scheme.onSurface),
+  contentTextStyle: t.texts.bodyMedium?.copyWith(
+    color: t.scheme.onSurfaceVariant,
+  ),
+  insetPadding: EdgeInsets.symmetric(
+    horizontal: t.dimens.space24,
+    vertical: t.dimens.space24,
+  ),
+);
+
+BottomSheetThemeData bottomSheetTheme(ThemeTokens t) => BottomSheetThemeData(
+  backgroundColor: t.scheme.surfaceContainerHigh,
+  modalBackgroundColor: t.scheme.surfaceContainerHigh,
+  surfaceTintColor: Colors.transparent,
+  elevation: 0,
+  modalElevation: 0,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(
+      top: Radius.circular(t.dimens.radiusXl),
+    ),
+  ),
+  modalBarrierColor: t.scrim,
+);
+
+SnackBarThemeData snackBarTheme(ThemeTokens t) => SnackBarThemeData(
+  backgroundColor: t.scheme.inverseSurface,
+  actionTextColor: t.scheme.inversePrimary,
+  behavior: SnackBarBehavior.floating,
+  shape: RoundedRectangleBorder(borderRadius: t.radius(t.dimens.radiusMd)),
+  insetPadding: EdgeInsets.fromLTRB(
+    t.dimens.marginScreen,
+    0,
+    t.dimens.marginScreen,
+    t.dimens.marginScreen,
+  ),
+  contentTextStyle: t.texts.bodyMedium?.copyWith(
+    color: t.scheme.onInverseSurface,
+  ),
+);
+
+TooltipThemeData tooltipTheme(ThemeTokens t) => TooltipThemeData(
+  decoration: BoxDecoration(
+    color: t.scheme.inverseSurface,
+    borderRadius: t.radius(t.dimens.radiusXs),
+  ),
+  textStyle: t.texts.bodySmall?.copyWith(color: t.scheme.onInverseSurface),
+);

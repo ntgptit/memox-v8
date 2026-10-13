@@ -1,8 +1,6 @@
 // GENERATED from design/tokens.json by tools/design/generate.py. Do not edit.
 
-import 'dart:ui';
-
-import 'package:flutter/painting.dart';
+import 'package:flutter/material.dart';
 
 const String kFontFamily = 'BeVietnamPro';
 const List<String> kFontFamilyFallback = ['NotoSansKR'];

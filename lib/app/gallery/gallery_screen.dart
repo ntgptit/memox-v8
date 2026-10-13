@@ -9,7 +9,7 @@ import 'package:memox/app/gallery/gallery_states_section.dart';
 import 'package:memox/app/gallery/gallery_status_section.dart';
 import 'package:memox/app/gallery/gallery_surfaces_section.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
