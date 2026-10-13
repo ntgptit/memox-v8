@@ -26,6 +26,11 @@ Token source and spec; barrier hook; generator (`tools/design/generate.py`, `che
 - **check.py structure** (`1ec3fed7`): allowed theme files, `ThemeContext` getters, extension field counts; tests added. Hook test covers the two new rules (9 pass).
 - **DESIGN.md + sidecar generated** (`ec3a1dc3`): frontmatter and `.impeccable/design.json` from tokens; prose rewritten with token names only; `check.py` fails on a value in prose/narrative. Verified: `check.py: clean`, generator twice is byte-identical, `tools/design/tests` 60 pass, `tools/docs/check.py` PASS.
 
+- **Docs** (`02e215b4`): screen handoffs renamed off removed roles; ADR-019 points at ADR-022.
+- **Check similar** (`03f12783`): a live streak flame seeded with `warningContainer` read 1.89:1 on its tint; now `mxColors.warning` (test RED→GREEN). Other fill-for-glyph mappings checked: badges, status badge, empty state, icon tile keep a separate text colour.
+- **Gates (run):** `generate.py` twice → clean; `check.py` clean; full `dod_check.sh` → all green except format of one file, fixed (`acf76590`); suite 3845 pass, 1 skip (master's opt-in bulk test). `run_goldens.sh --update` rewrote 546 PNGs (`745426ef`), then `run_goldens.sh` → 508 pass. Hook proof: Write of `MxSemanticColors` into `lib/` refused with the replacement text. golden-compare pages: parts 1–4 (artifact links in the final report).
+- **In flight when written:** `run_auth_it.sh`, the Opus final review, a last `dod_check.sh`.
+
 ## Next steps (in order)
 1. ~~Full suite~~ done. 2. ~~`_pastAlpha`~~ done; left: `mx_filter_chip` resting count alpha (text dimming, not a ground) and `mx_scroll_fade` gradient clear stop (legit) — record in check similar.
 3. ~~Guard~~ done. 4. ~~check.py structure~~ done. 5. ~~DESIGN.md/sidecar~~ done.
