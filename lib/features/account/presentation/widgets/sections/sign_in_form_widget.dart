@@ -10,6 +10,7 @@ import 'package:memox/features/account/presentation/widgets/overlays/account_con
 import 'package:memox/features/account/presentation/widgets/overlays/merge_choice_sheet_widget.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -157,6 +158,13 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
     return _send(confirmedLoss: true);
   }
 
+  /// The line under the title: why this sign-in is asked for.
+  String _purposeLine(AppLocalizations l10n) => switch (widget.purpose) {
+    SignInPurpose.link => l10n.accountLinkLine,
+    SignInPurpose.target => l10n.accountTargetLine,
+    SignInPurpose.reauth => l10n.accountReauthLine,
+  };
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -210,11 +218,7 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
           ),
           SizedBox(height: context.dimens.space8),
           Text(
-            switch (widget.purpose) {
-              SignInPurpose.link => l10n.accountLinkLine,
-              SignInPurpose.target => l10n.accountTargetLine,
-              SignInPurpose.reauth => l10n.accountReauthLine,
-            },
+            _purposeLine(l10n),
             style: context.texts.bodyMedium?.copyWith(
               color: context.colors.onSurfaceVariant,
             ),

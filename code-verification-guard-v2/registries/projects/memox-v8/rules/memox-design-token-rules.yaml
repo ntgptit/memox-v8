@@ -20,9 +20,10 @@ rules:
     severity: error
     enabled: true
     message: >-
-      No hardcoded colours in product UI. Use the semantic tokens from
-      `lib/core/theme/` (`context.colors` / `context.semanticColors`) so light,
-      dark and contrast stay correct in one place.
+      No hardcoded colours in product UI. Use the theme's roles
+      (`context.colors`, `context.mxColors`, `context.accentColor`) so light,
+      dark and contrast stay correct in one place; a tint is
+      `ColorTint.tintOver`.
     scopes:
       - ui_surfaces
     patterns:
@@ -35,7 +36,9 @@ rules:
       - design-token
       - ui
     fix:
-      hint: Use a semantic token; add one to MxSemanticColors if none fits.
+      hint: >-
+        Use a ColorScheme or MxColorsExtension role; a colour none fits is a
+        Design System change (design/tokens.json, docs/agent/visual-change.md).
 
   - id: memox.design_token.no_raw_text_style
     type: regex
@@ -58,8 +61,9 @@ rules:
     severity: error
     enabled: true
     message: >-
-      No hardcoded padding or spacing. Use `AppSpacing` tokens — the 4/8/12/16/
-      24/32 scale — so spacing stays on the scale instead of drifting per screen.
+      No hardcoded padding or spacing. Use `context.dimens.space*` (or
+      `context.screenMargin` at a screen edge) so spacing stays on the Design
+      System scale instead of drifting per screen.
     scopes:
       - ui_surfaces
     patterns:
@@ -73,16 +77,16 @@ rules:
       - design-token
       - ui
     fix:
-      hint: Use AppSpacing.* instead of a bare number.
+      hint: Use context.dimens.* instead of a bare number.
 
   - id: memox.design_token.no_raw_duration
     type: regex
     severity: warning
     enabled: true
     message: >-
-      No anonymous `Duration` literal in product UI. Use an `AppDurations` token
-      or, when the value is not motion, declare a named `const Duration` beside
-      the thing that reads it and say what it is for.
+      No anonymous `Duration` literal in product UI. Use Flutter's `Durations`
+      for motion or, when the value is not motion, declare a named
+      `const Duration` beside the thing that reads it and say what it is for.
     # **`ui_and_theme_surfaces`, not `ui_surfaces`, and that is the whole point
     # of the rule.** A component theme in `lib/core/theme` is where an inline
     # `Duration(milliseconds: …)` hides, and `ui_surfaces` deliberately excludes
@@ -90,7 +94,7 @@ rules:
     # message describes.
     #
     # **This replaces `flutter.no_hardcoded_duration`, disabled in
-    # overrides.yaml.** That rule fired on `AppDurations`' own declarations and
+    # overrides.yaml.** That rule fired on the motion scale's own declarations and
     # on domain date arithmetic like `Duration(days: 1)`. Neither needs a scope
     # exemption — both are *named* constants, and the lookahead below exempts
     # those by shape. So the theme comes back into scope and domain code stays
@@ -103,8 +107,8 @@ rules:
     #   `//` and `*` — a comment line. A doc comment that says what a duration
     #     must not be quotes the literal to say it, and a rule that fails on the
     #     prose describing it is a rule people switch off.
-    #   `const Duration` — a *named* declaration. `AppDurations`' tokens,
-    #     `searchDebounce` and `startupSettingsLimit` are all written this way,
+    #   `const Duration` — a *named* declaration. `searchDebounce` and
+    #     `startupSettingsLimit` are written this way,
     #     which is the shape the message asks for.
     patterns:
       - >-
@@ -115,8 +119,8 @@ rules:
       - ui
     fix:
       hint: >-
-        Use an AppDurations token, or name it as a const with a comment
-        explaining why it is not on the motion scale.
+        Use a Flutter `Durations` constant, or name it as a const with a
+        comment explaining why it is not on the motion scale.
 
   - id: memox.design_token.no_raw_border_radius
     type: regex
@@ -124,7 +128,9 @@ rules:
     # rule nobody has.
     severity: error
     enabled: true
-    message: No hardcoded corner radius in product UI. Use `AppRadius` tokens.
+    message: >-
+      No hardcoded corner radius in product UI. Use `context.dimens.radius*`,
+      or `StadiumBorder` for a full radius.
     scopes:
       - ui_surfaces
     patterns:
@@ -135,26 +141,74 @@ rules:
       - design-token
       - ui
 
-  # A stroke width is a design decision with named tokens (`AppStroke.hairline`,
-  # `control`, `focus`, `indicator`, `selectedRing`); a literal beside
-  # `strokeWidth:` or `width:` on a border is a width nobody named.
-  # `Border.all(color:)` with no width is legal — Flutter's default IS the
-  # hairline, and `test/core/theme/foundations_test.dart` pins
-  # `AppStroke.hairline` at 1.
+  # A stroke width is a design decision with named tokens
+  # (`context.dimens.strokeHairline`, `strokeControl`, `strokeFocus`,
+  # `strokeIndicator`); a literal beside `strokeWidth:` or `width:` on a border
+  # is a width nobody named. `Border.all(color:)` with no width is legal —
+  # Flutter's default IS the hairline.
   - id: memox.design_token.no_raw_stroke_width
     type: regex
     severity: error
     enabled: true
     message: >-
-      No literal stroke width. `AppStroke` names the scale — hairline, control,
-      focus, indicator — so a border or an arc is one of four weights, not a
-      number typed at the site. A width none of them fits is a fifth rung to
-      argue for in lib/core/theme/foundations/app_stroke.dart.
+      No literal stroke width. `context.dimens.stroke*` names the scale —
+      hairline, control, focus, indicator — so a border or an arc is one of
+      four weights, not a number typed at the site. A width none of them fits
+      is a Design System change (design/tokens.json).
     scopes:
       - ui_and_theme_surfaces
     patterns:
       - '^(?!\s*(?://|\*)).*\bstrokeWidth\s*:\s*\d'
       - '^(?!\s*(?://|\*)).*\b(?:BorderSide|Border\.all|Border\.symmetric)\s*\([^)]*\bwidth\s*:\s*\d'
+    tags:
+      - memox-v8
+      - design-token
+
+  # ADR-022: "this mode uses role A, that one role B" is a getter in
+  # `theme_rules.dart` (`accentColor`, `deckIconColor`). Anywhere else a
+  # branch on brightness picks a colour or a size behind the theme's back,
+  # and the two modes drift apart. `app_theme.dart` builds light and dark by
+  # two calls, so it never branches either.
+  - id: memox_v8.design_token.no_brightness_branch
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No branching on brightness outside lib/core/theme/theme_rules.dart. A
+      colour or size that differs by mode is a rule there (`context.accentColor`,
+      `context.deckIconColor`) or a role the two generated themes already
+      differ on.
+    scopes:
+      - brightness_branch_surfaces
+    patterns:
+      - '^(?!\s*(?://|\*)).*\bBrightness\.(?:dark|light)\b'
+      - '^(?!\s*(?://|\*)).*\.brightness\s*[=!]='
+      - '^(?!\s*(?://|\*)).*\bisDark(?:Mode|Theme)?\b'
+      - '^(?!\s*(?://|\*)).*\bplatformBrightness(?:Of)?\b'
+    tags:
+      - memox-v8
+      - design-token
+
+  # ADR-022 and CLAUDE.md: a removed theme name never comes back, in any form.
+  # The removed names themselves are refused by
+  # `tools/design/removed_symbols.json` (hook, check.py); this rule refuses the
+  # shapes a comeback takes in the theme — a typedef, a deprecated alias, a
+  # selective re-export, a getter that only forwards another name.
+  - id: memox_v8.design_token.no_theme_alias
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      No alias in lib/core/theme: no `typedef`, no `@Deprecated` name, no
+      `export … show`, no getter that only forwards another name. Fix the
+      callers instead (tools/design/codemod.py for the mechanical renames).
+    scopes:
+      - theme_files
+    patterns:
+      - '^\s*typedef\s'
+      - '^(?!\s*(?://|\*)).*@Deprecated\b'
+      - '^\s*export\s[^;]*\bshow\b'
+      - '^(?!\s*(?://|\*)).*\bget\s+\w+\s*=>\s*[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)?\s*;'
     tags:
       - memox-v8
       - design-token
