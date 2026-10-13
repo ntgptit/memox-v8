@@ -29,7 +29,9 @@ Token source and spec; barrier hook; generator (`tools/design/generate.py`, `che
 - **Docs** (`02e215b4`): screen handoffs renamed off removed roles; ADR-019 points at ADR-022.
 - **Check similar** (`03f12783`): a live streak flame seeded with `warningContainer` read 1.89:1 on its tint; now `mxColors.warning` (test RED→GREEN). Other fill-for-glyph mappings checked: badges, status badge, empty state, icon tile keep a separate text colour.
 - **Gates (run):** `generate.py` twice → clean; `check.py` clean; full `dod_check.sh` → all green except format of one file, fixed (`acf76590`); suite 3845 pass, 1 skip (master's opt-in bulk test). `run_goldens.sh --update` rewrote 546 PNGs (`745426ef`), then `run_goldens.sh` → 508 pass. Hook proof: Write of `MxSemanticColors` into `lib/` refused with the replacement text. golden-compare pages: parts 1–4 (artifact links in the final report).
-- **In flight when written:** `run_auth_it.sh`, the Opus final review, a last `dod_check.sh`.
+- **Last run (HEAD `d455c681`):** `run_auth_it.sh` 13 pass; full `dod_check.sh` exit 0 ("mechanical gates passed", suite 3845 pass / 1 opt-in skip).
+- **BLOCKED:** the Opus final whole-branch review stopped on the weekly usage limit (resets 15:00 UTC). Re-run it first: `bash .claude/skills/subagent-driven-development/scripts/review-package docs/superpowers/plans/2026-10-13-design-system-architecture.md $(git merge-base origin/master HEAD) HEAD`, Agent description `Final whole-branch review …`, `model: opus`; then one fix pass, `finishing-a-development-branch`, delete this file before the merge.
+- golden-compare pages: part 1 https://claude.ai/artifact/LUsgn8u1dBeummQcijgtzW · 2 https://claude.ai/artifact/B6wsBzugtL5B68tR1r5pv7 · 3 https://claude.ai/artifact/BCfDMp5v4EN1dBtqgWuTrg · 4 https://claude.ai/artifact/YLBiwjsFUgx61nQW5t7bWr
 
 ## Next steps (in order)
 1. ~~Full suite~~ done. 2. ~~`_pastAlpha`~~ done; left: `mx_filter_chip` resting count alpha (text dimming, not a ground) and `mx_scroll_fade` gradient clear stop (legit) — record in check similar.
