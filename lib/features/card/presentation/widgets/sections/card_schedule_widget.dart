@@ -183,13 +183,15 @@ class _BoxRamp extends StatelessWidget {
             Expanded(
               child: Container(
                 height: index == box ? _currentBarHeight : _barHeight,
-                decoration: ShapeDecoration(
+                decoration: BoxDecoration(
                   color: switch (index.compareTo(box)) {
                     0 => colors.primary,
                     < 0 => colors.primary.withValues(alpha: _pastAlpha),
                     _ => colors.surfaceContainerHigh,
                   },
-                  shape: const StadiumBorder(),
+                  borderRadius: BorderRadius.circular(
+                    (index == box ? _currentBarHeight : _barHeight) / 2,
+                  ),
                 ),
               ),
             ),

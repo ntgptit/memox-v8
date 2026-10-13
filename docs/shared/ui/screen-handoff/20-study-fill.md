@@ -72,4 +72,4 @@ until Continue, the typed text struck through in the error ink beside the right 
 - Context line: "{deck} · Review · round {n}".
 - CTAs: "Show hint" · "Check" · "Continue".
 - Wrong tag: "Wrong · comes back next round" (see Rulings).
-- Footer hint: "Type the term for this meaning, then check" (`input`) · "Using the hint is noted; it changes nothing" (`hint`) · "Case and spaces are ignored, accents are not" (`wrong`).
+- Footer hint: "Type the term for this meaning, then check" (`input`) · "Using the hint is noted; it changes nothing" (`hint`) · "Case and spaces ignored; accents count" (`wrong`).

@@ -134,10 +134,7 @@ class _Step extends StatelessWidget {
         SizedBox.square(
           dimension: context.dimens.sizeIconCompact,
           child: DecoratedBox(
-            decoration: ShapeDecoration(
-              color: fill,
-              shape: const CircleBorder(),
-            ),
+            decoration: BoxDecoration(color: fill, shape: BoxShape.circle),
             child: Center(
               child: isDone
                   ? IconTheme.merge(

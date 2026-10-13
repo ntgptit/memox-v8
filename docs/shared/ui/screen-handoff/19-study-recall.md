@@ -64,4 +64,4 @@ Continue (spec D5). Goldens:
 - Clock caption: "Time to recall" (`countingDown`) · "Revealed with time left" (`revealed`) · "Time is up" (`timedOut`).
 - Meaning tag: "Counted as forgot" (`timedOut`).
 - CTAs: "Show the meaning" · "Forgot" · "Remembered" · "Continue".
-- Footer hint: "Recall the meaning before the time runs out" (`countingDown`) · "Be honest — the next card follows automatically" (`revealed`) · "This card comes back in a later round" (`timedOut`).
+- Footer hint: "Recall the meaning before time is up" (`countingDown`) · "The next card follows automatically" (`revealed`) · "This card comes back in a later round" (`timedOut`).

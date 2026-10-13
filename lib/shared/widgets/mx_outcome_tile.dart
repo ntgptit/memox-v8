@@ -20,16 +20,11 @@ class MxOutcomeTile extends StatelessWidget {
   final String body;
   final MxOutcomeTone tone;
 
-  /// Lighter than the 12% status tint: on the dialog's surface the success
-  /// ink reaches 4.53:1 over 8% (light). Kept is a fine state, so success,
-  /// not mastery (critique 2026-09-30 tone pass, final review).
-  static const double _keptTint = 0.08;
-
   @override
   Widget build(BuildContext context) {
     final (ground, edge, ink) = switch (tone) {
       MxOutcomeTone.kept => (
-        context.mxColors.success.withValues(alpha: _keptTint),
+        context.mxColors.success.tintOver(context.colors.surface),
         context.colors.outlineVariant,
         context.mxColors.success,
       ),

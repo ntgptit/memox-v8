@@ -39,7 +39,7 @@ void main() {
 
     expect(tester.getSize(find.byKey(_tileKey)), const Size.square(30));
     expect(tester.getTopLeft(find.byKey(_tileKey)).dx - row.dx, 9);
-    expect(_tile(tester).color, scheme.primary.withValues(alpha: 0.08));
+    expect(_tile(tester).color, scheme.primary.tintOver(scheme.surface));
     expect(_tile(tester).borderRadius, BorderRadius.circular(8));
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.edit));
     expect((glyph.size, glyph.color), (16, accentOf(scheme)));

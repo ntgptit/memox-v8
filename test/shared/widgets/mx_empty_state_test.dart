@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
@@ -78,7 +79,7 @@ void main() {
 
       expect(
         (tile.decoration as BoxDecoration).color,
-        color.withValues(alpha: 0.10),
+        color.tintOver(scheme.surface),
         reason: '$tone',
       );
       // The primary glyph reads in primaryInk (spec 2026-09-27 D2), the

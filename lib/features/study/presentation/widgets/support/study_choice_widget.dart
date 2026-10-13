@@ -110,11 +110,13 @@ class StudyChoiceWidget extends StatelessWidget {
   BoxDecoration _decoration(BuildContext context) {
     final colors = context.colors;
     final dimens = context.dimens;
+    final rest = isRecessed
+        ? colors.surfaceContainerLow
+        : context.mxColors.cardSurface;
+    // At rest the edge is the fill itself, so the tone eases in without a
+    // border appearing from nothing.
     final (Color fill, Color edge) = switch (tone) {
-      StudyChoiceTone.idle => (
-        isRecessed ? colors.surfaceContainerLow : context.mxColors.cardSurface,
-        Colors.transparent,
-      ),
+      StudyChoiceTone.idle => (rest, rest),
       StudyChoiceTone.selected => (colors.primary, colors.primary),
       StudyChoiceTone.right => (
         context.mxColors.success.tintOver(colors.surface),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/theme_context.dart';
 
 /// An icon in a round `sizeControl` box: the Design System's icon button.
 /// [semanticLabel] names it for screen readers and shows as its tooltip.

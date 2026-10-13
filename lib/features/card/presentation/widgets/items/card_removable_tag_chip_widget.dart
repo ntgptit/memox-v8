@@ -35,9 +35,11 @@ class CardRemovableTagChipWidget extends StatelessWidget {
           child: Center(
             widthFactor: 1,
             child: DecoratedBox(
-              decoration: ShapeDecoration(
+              decoration: BoxDecoration(
                 color: context.accentColor.tintOver(colors.surface),
-                shape: const StadiumBorder(),
+                borderRadius: BorderRadius.circular(
+                  context.dimens.sizeChip / 2,
+                ),
               ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: context.dimens.sizeChip),

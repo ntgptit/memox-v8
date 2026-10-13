@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -24,7 +25,7 @@ MxDeckPickerSheet _picker(
 
 void main() {
   testWidgets(
-    'head: a titleSmall title and a labelSmall rule, space24 in and 20 down',
+    'head: a titleSmall title and a bodyMedium rule, space24 in and 20 down',
     (tester) async {
       await pumpMx(
         tester,
@@ -42,7 +43,7 @@ void main() {
             .widget<Text>(find.text('Cards keep their progress.'))
             .style!
             .fontSize,
-        texts.labelSmall!.fontSize,
+        texts.bodyMedium!.fontSize,
       );
       // The grabber block is 8 + 4 + 4 = 16, then the head's 4.
       expect(

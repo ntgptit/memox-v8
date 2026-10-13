@@ -46,19 +46,11 @@ class MxIconTile extends StatelessWidget {
   /// The medium step's side, for a caller that indents past it.
   static const double mediumBox = 36;
   static const double _largeBox = 44;
-  static const double _primaryTintLight = 0.10;
-  static const double _primaryTintDark = 0.16;
-  static const double _seedTint = 0.12;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final tinted = seed ?? colors.primary;
-    final tint = switch ((seed, colors.brightness)) {
-      (_?, _) => _seedTint,
-      (null, Brightness.light) => _primaryTintLight,
-      (null, Brightness.dark) => _primaryTintDark,
-    };
+    final tinted = seed ?? context.accentColor;
     final (box, radius, glyph) = switch (size) {
       MxIconTileSize.small => (
         smallBox,
@@ -78,7 +70,7 @@ class MxIconTile extends StatelessWidget {
     };
     final (fill, ink) = switch (tone) {
       MxIconTileTone.tinted => (
-        tinted.withValues(alpha: tint),
+        tinted.tintOver(colors.surface),
         seed ?? context.accentColor,
       ),
       MxIconTileTone.primary => (colors.primary, colors.onPrimary),

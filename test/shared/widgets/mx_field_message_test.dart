@@ -33,7 +33,7 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxColorsExtension.dark.warning,
+      MxColorsExtension.dark.warningContainer,
     );
     expect(
       tester.widget<Text>(find.text('Ten tags at most')).style!.color,

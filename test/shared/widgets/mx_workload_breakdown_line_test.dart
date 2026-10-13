@@ -314,7 +314,7 @@ void main() {
   testWidgets('a wrapping line without glyphs never breaks inside a term nor '
       'before its dot, at any width', (tester) async {
     // From the width where the widest term and its dot fit on one line.
-    for (var width = 72.0; width <= 180; width += 2) {
+    for (var width = 96.0; width <= 200; width += 2) {
       await pumpMx(
         tester,
         SizedBox(

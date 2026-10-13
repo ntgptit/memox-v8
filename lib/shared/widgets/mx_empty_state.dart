@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -61,7 +62,6 @@ class MxEmptyState extends StatelessWidget {
   /// A product rule under the action, drawn as an MxNote (ruling S19).
   final String? footnote;
 
-  static const double _tileTint = 0.10;
   static const double _tileSize = 64;
   static const double _compactTileSize = 52;
 
@@ -198,7 +198,7 @@ class _Tile extends StatelessWidget {
         : MxEmptyState._tileSize,
     child: DecoratedBox(
       decoration: BoxDecoration(
-        color: color.withValues(alpha: MxEmptyState._tileTint),
+        color: color.tintOver(context.colors.surface),
         borderRadius: BorderRadius.circular(
           isCompact ? context.dimens.radiusLg : context.dimens.radiusXl,
         ),

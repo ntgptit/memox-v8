@@ -4,8 +4,6 @@ import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 
-import '../../support/theme_expect.dart';
-
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_nav_rail.dart';

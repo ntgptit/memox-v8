@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
@@ -39,12 +40,14 @@ void main() {
     }
   });
 
-  testWidgets('default: primary at 10% light and 16% dark, primaryInk glyph', (
+  testWidgets('default: the accent tinted over the surface, primaryInk glyph', (
     tester,
   ) async {
-    final light = lightColorScheme.primary;
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder));
-    expect(_tile(tester).color, light.withValues(alpha: 0.10));
+    expect(
+      _tile(tester).color,
+      accentOf(lightColorScheme).tintOver(lightColorScheme.surface),
+    );
     expect(
       tester.widget<Icon>(find.byType(Icon)).color,
       accentOf(lightColorScheme),
@@ -59,14 +62,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       _tile(tester).color,
-      darkColorScheme.primary.withValues(alpha: 0.16),
+      accentOf(darkColorScheme).tintOver(darkColorScheme.surface),
     );
   });
 
-  testWidgets('seeded: the seed at 12% with a seed glyph', (tester) async {
+  testWidgets('seeded: the seed tinted over the surface with a seed glyph', (
+    tester,
+  ) async {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder, seed: _seed));
 
-    expect(_tile(tester).color, _seed.withValues(alpha: 0.12));
+    expect(_tile(tester).color, _seed.tintOver(lightColorScheme.surface));
     expect(tester.widget<Icon>(find.byType(Icon)).color, _seed);
   });
 

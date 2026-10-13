@@ -36,7 +36,6 @@ class MxActionSheetCommandRow extends StatelessWidget {
 
   static const double _leadColumn = 32;
   static const double _tileSize = 30;
-  static const double _tileTint = 0.08;
 
   /// Ruling S7: UNSPECIFIED; the ListRow gap.
   static const double _subtitleGap = 2;
@@ -71,7 +70,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
                             ? context.colors.error.tintOver(
                                 context.colors.surface,
                               )
-                            : colors.primary.withValues(alpha: _tileTint),
+                            : colors.primary.tintOver(context.colors.surface),
                         borderRadius: BorderRadius.circular(
                           context.dimens.radiusSm,
                         ),
