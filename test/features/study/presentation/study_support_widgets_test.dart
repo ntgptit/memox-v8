@@ -5,9 +5,6 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
@@ -197,7 +194,7 @@ void main() {
               .first,
         )
         .height;
-    expect(shortHeight, line + AppSpacing.control + AppSpacing.gutter);
+    expect(shortHeight, line + context.dimens.space8 + context.dimens.space16);
     expect(await heightOf(long), greaterThan(shortHeight));
     expect(await heightOf(short, textScale: 2), greaterThan(shortHeight));
   });
@@ -239,7 +236,7 @@ void main() {
     );
 
     final fade = tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity));
-    expect(fade.opacity, AppOpacity.muted);
+    expect(fade.opacity, context.dimens.opacityMuted);
   });
 
   libraryTest('one action spans the width of a two-action row, not its own '
@@ -256,7 +253,7 @@ void main() {
 
     expect(
       tester.getSize(find.byType(MxButton)).width,
-      2 * 160 + AppSpacing.control,
+      2 * 160 + context.dimens.space8,
     );
   });
 

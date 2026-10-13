@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/entities/card_entity.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_delete_dialog_widget.dart';
@@ -43,9 +42,8 @@ class CardTrashSectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+      padding: EdgeInsets.only(bottom: context.dimens.space16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -53,11 +51,16 @@ class CardTrashSectionWidget extends StatelessWidget {
           MxCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.micro,
+              spacing: context.dimens.space4,
               children: [
-                Text(l10n.cardEditTrashTitle, style: styles.rowTitle),
-                Text(l10n.cardEditTrashBody, style: styles.rowDescription),
-                const SizedBox(height: AppSpacing.control),
+                Text(l10n.cardEditTrashTitle, style: context.texts.titleSmall),
+                Text(
+                  l10n.cardEditTrashBody,
+                  style: context.texts.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
+                ),
+                SizedBox(height: context.dimens.space8),
                 MxButton(
                   label: l10n.cardMoveToTrash,
                   icon: AppIcons.delete,

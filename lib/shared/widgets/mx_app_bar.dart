@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
@@ -48,8 +46,7 @@ class MxAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isContent = density == MxAppBarDensity.content;
-    final styles = context.textStyles;
-    final side = isContent ? AppSpacing.control : AppSpacing.gutter;
+    final side = isContent ? context.dimens.space8 : context.dimens.space16;
     final endsOnText = actions.lastOrNull is MxButton;
     final holdsField = titleWidget is MxSearchField;
     return ColoredBox(
@@ -57,19 +54,19 @@ class MxAppBar extends StatelessWidget {
       child: SafeArea(
         bottom: false,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSize.appBar),
+          constraints: BoxConstraints(minHeight: context.dimens.sizeAppBar),
           child: Padding(
             padding: EdgeInsetsDirectional.only(
               // A bar without a leading control starts its title on the
               // gutter, in line with the body (critique 2026-09-30 part
               // 3c-1).
-              start: leading == null ? AppSpacing.gutter : side,
-              top: holdsField ? AppSpacing.control : 0,
-              end: endsOnText || holdsField ? AppSpacing.gutter : side,
-              bottom: holdsField ? AppSpacing.control : 0,
+              start: leading == null ? context.dimens.space16 : side,
+              top: holdsField ? context.dimens.space8 : 0,
+              end: endsOnText || holdsField ? context.dimens.space16 : side,
+              bottom: holdsField ? context.dimens.space8 : 0,
             ),
             child: Row(
-              spacing: AppSpacing.micro,
+              spacing: context.dimens.space4,
               children: [
                 ?leading,
                 Expanded(
@@ -82,8 +79,8 @@ class MxAppBar extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: isContent
-                              ? styles.contentTitle
-                              : styles.screenTitle,
+                              ? context.texts.titleMedium
+                              : context.texts.titleLarge,
                         ),
                       ),
                 ),

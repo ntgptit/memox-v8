@@ -1,8 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
-import 'package:memox/core/theme/mx_text_styles.dart';
 
 // Primary as text reads in primaryInk, never the fill (spec 2026-09-27 D2).
 void main() {

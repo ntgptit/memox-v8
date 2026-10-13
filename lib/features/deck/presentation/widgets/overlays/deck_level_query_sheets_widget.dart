@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
@@ -45,17 +44,16 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final query = ref.watch(deckLevelQueryProvider(parentId));
     return MxBottomSheet(
       header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space24,
+          context.dimens.space4,
+          context.dimens.space24,
+          context.dimens.space12,
         ),
-        child: Text(l10n.deckSortFilterTitle, style: styles.compactTitle),
+        child: Text(l10n.deckSortFilterTitle, style: context.texts.titleSmall),
       ),
       footer: MxSheetActions.custom(
         isInSheet: true,
@@ -74,8 +72,8 @@ class DeckSortFilterSheetWidget extends ConsumerWidget {
         children: [
           Padding(
             padding:
-                const EdgeInsets.only(top: AppSpacing.micro) +
-                const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+                EdgeInsets.only(top: context.dimens.space4) +
+                EdgeInsets.symmetric(horizontal: context.dimens.space8),
             child: MxListSectionHeader(label: l10n.deckSortByHeader),
           ),
           for (final sort in _sorts)

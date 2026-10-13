@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A tag on the card being edited (kit `RemovableTagChip`): a primary-tinted
 /// pill with an ✕. Its whole 48 area removes the tag (ruling P4a-L8); the
@@ -35,7 +32,7 @@ class CardRemovableTagChipWidget extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: onRemove,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
+          constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
           child: Center(
             widthFactor: 1,
             child: DecoratedBox(
@@ -44,27 +41,29 @@ class CardRemovableTagChipWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadius.full),
               ),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: AppSize.chip),
+                constraints: BoxConstraints(minHeight: context.dimens.sizeChip),
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.only(
-                    start: AppSpacing.grouped,
-                    end: AppSpacing.control,
+                  padding: EdgeInsetsDirectional.only(
+                    start: context.dimens.space12,
+                    end: context.dimens.space8,
                   ),
                   child: IconTheme.merge(
                     data: IconThemeData(
-                      color: context.derivedColors.primaryInk,
-                      size: AppIconSize.inline,
+                      color: context.accentColor,
+                      size: context.dimens.sizeIconInline,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      spacing: AppSpacing.micro,
+                      spacing: context.dimens.space4,
                       children: [
                         Flexible(
                           child: Text(
                             name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textStyles.removableTagLabel,
+                            style: context.texts.labelSmall?.copyWith(
+                              color: context.accentColor,
+                            ),
                           ),
                         ),
                         const Icon(AppIcons.close),

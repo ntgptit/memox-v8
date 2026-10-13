@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -38,16 +37,13 @@ class _StudyDirectionSheetWidgetState extends State<StudyDirectionSheetWidget> {
     const choices = DirectionChoice.values;
     return MxBottomSheet(
       header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space24,
+          context.dimens.space4,
+          context.dimens.space24,
+          context.dimens.space12,
         ),
-        child: Text(
-          l10n.studyDirectionTitle,
-          style: context.textStyles.compactTitle,
-        ),
+        child: Text(l10n.studyDirectionTitle, style: context.texts.titleSmall),
       ),
       footer: MxSheetActions.custom(
         isInSheet: true,
@@ -68,11 +64,11 @@ class _StudyDirectionSheetWidgetState extends State<StudyDirectionSheetWidget> {
           // The lock leads, above the choices (BR-MODE-017; critique
           // 2026-09-30 part 3c-1).
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
-              AppSpacing.micro,
-              AppSpacing.gutter,
-              AppSpacing.grouped,
+            padding: EdgeInsets.fromLTRB(
+              context.dimens.space16,
+              context.dimens.space4,
+              context.dimens.space16,
+              context.dimens.space12,
             ),
             child: MxNote(text: l10n.studyDirectionNote),
           ),

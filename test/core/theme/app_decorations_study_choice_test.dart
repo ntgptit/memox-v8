@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 // Screens 17 and 18's toned surface (FE-A6 P3, ruling C1: a right outcome is
 // success, never mastery — spec D14).

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A content row: decks, search results, tags, move targets and cards. The
 /// title is one line by default and the sub one line, each with an
@@ -88,12 +85,11 @@ class MxListRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
     final end = switch ((isBusy, hasChevron)) {
       (true, _) => const MxSpinner(),
       (false, true) => Icon(
         AppIcons.chevronRight,
-        size: AppIconSize.compact,
+        size: context.dimens.sizeIconCompact,
         color: colors.onSurfaceVariant,
       ),
       (false, false) => trailing,
@@ -103,8 +99,8 @@ class MxListRow extends StatelessWidget {
         border: hasDivider
             ? Border(
                 bottom: BorderSide(
-                  color: context.derivedColors.ghostBorder,
-                  width: AppStroke.hairline,
+                  color: context.colors.outlineVariant,
+                  width: context.dimens.strokeHairline,
                 ),
               )
             : null,
@@ -113,11 +109,11 @@ class MxListRow extends StatelessWidget {
         onTap: onTap,
         isEnabled: isEnabled,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
+          constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
             child: Row(
-              spacing: AppSpacing.grouped,
+              spacing: context.dimens.space12,
               children: [
                 ?leading,
                 // Only the text carries the 12/12 inset, so a 48 trailing
@@ -125,19 +121,23 @@ class MxListRow extends StatelessWidget {
                 // row: every row in a list stays one height.
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppSpacing.grouped,
+                    padding: EdgeInsets.symmetric(
+                      vertical: context.dimens.space12,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text.rich(
-                          _titleSpan(styles.rowTitleMatch),
+                          _titleSpan(
+                            context.texts.titleSmall?.copyWith(
+                              color: context.accentColor,
+                            ),
+                          ),
                           maxLines: titleMaxLines,
                           softWrap: titleMaxLines > 1,
                           overflow: TextOverflow.ellipsis,
-                          style: styles.listRowTitle,
+                          style: context.texts.titleSmall,
                         ),
                         if (subtitle case final text?) ...[
                           const SizedBox(height: _subtitleGap),
@@ -146,7 +146,9 @@ class MxListRow extends StatelessWidget {
                             maxLines: 1,
                             softWrap: false,
                             overflow: TextOverflow.ellipsis,
-                            style: styles.rowSubtitle,
+                            style: context.texts.bodyMedium?.copyWith(
+                              color: context.colors.onSurfaceVariant,
+                            ),
                           ),
                         ],
                         if (meta case final slot?) ...[

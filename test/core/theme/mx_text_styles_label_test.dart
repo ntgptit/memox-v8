@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
-import 'package:memox/core/theme/mx_text_styles.dart';
 
 // The three label roles (critique 2026-09-30 part 2, P1–P3).
 void main() {

@@ -3,10 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
@@ -15,6 +12,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_choice_w
 import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_whole_word_text_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Screen 17, Match: the board's terms on the left and its meanings on the
 /// right, in their stored order (BR-STUDY-049). Tap a term and a meaning, in
@@ -143,18 +141,18 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
                 SliverFillRemaining(
                   hasScrollBody: false,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.gutter,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.screenMargin,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      spacing: AppSpacing.control,
+                      spacing: context.dimens.space8,
                       children: [
                         for (var row = 0; row < rows; row++)
                           Expanded(
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              spacing: AppSpacing.control,
+                              spacing: context.dimens.space8,
                               children: [
                                 Expanded(child: _term(context, board, row)),
                                 Expanded(child: _meaning(context, board, row)),
@@ -249,7 +247,6 @@ class _Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     return StudyChoiceWidget(
       tone: tone,
       isSelected: tone == StudyChoiceTone.selected,
@@ -261,19 +258,22 @@ class _Tile extends StatelessWidget {
         StudyChoiceTone.idle => label,
       },
       sortKey: OrdinalSortKey(order),
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.grouped,
-        vertical: AppSpacing.gutter,
+      padding: EdgeInsets.symmetric(
+        horizontal: context.dimens.space12,
+        vertical: context.dimens.space16,
       ),
       onTap: tile.isMatched ? null : onTap,
       builder: (ink) => Center(
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          spacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
           children: [
             if (tone == StudyChoiceTone.right || tone == StudyChoiceTone.wrong)
               IconTheme(
-                data: IconThemeData(color: ink, size: AppIconSize.inline),
+                data: IconThemeData(
+                  color: ink,
+                  size: context.dimens.sizeIconInline,
+                ),
                 child: Icon(
                   tone == StudyChoiceTone.right
                       ? AppIcons.check
@@ -284,8 +284,8 @@ class _Tile extends StatelessWidget {
               child: StudyWholeWordTextWidget(
                 tile.text,
                 style: isTerm
-                    ? styles.matchTerm(ink)
-                    : styles.matchMeaning(ink),
+                    ? context.texts.headlineSmall?.copyWith(color: ink)
+                    : context.texts.bodySmall?.copyWith(color: ink),
               ),
             ),
           ],

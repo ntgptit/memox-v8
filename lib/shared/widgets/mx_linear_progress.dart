@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
@@ -59,7 +57,7 @@ class MxLinearProgress extends StatelessWidget {
                   tween: Tween(end: value),
                   duration: MediaQuery.disableAnimationsOf(context)
                       ? Duration.zero
-                      : AppDurations.standard,
+                      : Durations.short4,
                   curve: Easing.standard,
                   builder: (context, fraction, _) => FractionallySizedBox(
                     widthFactor: _factor(fraction, constraints.maxWidth),

@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 
 import '../../support/widget_harness.dart';

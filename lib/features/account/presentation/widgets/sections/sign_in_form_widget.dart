@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
@@ -145,7 +144,6 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final state = ref.watch(signInControllerProvider(widget.purpose));
     final canAct = widget.isEnabled && !state.isRunning;
     final fieldProblem = state.problemTask == SignInTask.email
@@ -174,29 +172,39 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
       body: MxScreenScroll(
         children: [
           if (eyebrow != null) ...[
-            Text(eyebrow, style: styles.eyebrow),
-            const SizedBox(height: AppSpacing.micro),
+            Text(
+              eyebrow,
+              style: context.texts.labelSmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
+            SizedBox(height: context.dimens.space4),
           ],
           Semantics(
             header: true,
             namesRoute: true,
             child: Text(
               isReauth ? l10n.accountReauthTitle : l10n.accountSignIn,
-              style: styles.screenTitle,
+              style: context.texts.titleLarge,
             ),
           ),
-          const SizedBox(height: AppSpacing.control),
-          Text(switch (widget.purpose) {
-            SignInPurpose.link => l10n.accountLinkLine,
-            SignInPurpose.target => l10n.accountTargetLine,
-            SignInPurpose.reauth => l10n.accountReauthLine,
-          }, style: styles.emptyBody),
-          const SizedBox(height: AppSpacing.section),
+          SizedBox(height: context.dimens.space8),
+          Text(
+            switch (widget.purpose) {
+              SignInPurpose.link => l10n.accountLinkLine,
+              SignInPurpose.target => l10n.accountTargetLine,
+              SignInPurpose.reauth => l10n.accountReauthLine,
+            },
+            style: context.texts.bodyMedium?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
+          ),
+          SizedBox(height: context.dimens.space24),
           // The field announces the same label; TalkBack reads it once.
           ExcludeSemantics(
-            child: Text(l10n.accountEmail, style: styles.fieldLabel),
+            child: Text(l10n.accountEmail, style: context.texts.labelMedium),
           ),
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           MxTextField(
             controller: _email,
             label: l10n.accountEmail,
@@ -219,7 +227,7 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
           builder: (footerContext) => Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.grouped,
+            spacing: context.dimens.space12,
             children: [
               MxButton(
                 label: l10n.accountSendCode,

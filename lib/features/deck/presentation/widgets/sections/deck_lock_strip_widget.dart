@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -19,7 +18,6 @@ class DeckLockStripWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final isLocked = view.isSchedulerLocked;
     final (title, body) = isLocked
         ? (
@@ -35,7 +33,7 @@ class DeckLockStripWidget extends StatelessWidget {
         isWarning: isLocked,
         // The tile centres on the title and body (owner 2026-09-26).
         child: Row(
-          spacing: AppSpacing.grouped,
+          spacing: context.dimens.space12,
           children: [
             MxIconTile(
               icon: isLocked ? AppIcons.lock : AppIcons.lockOpen,
@@ -45,10 +43,15 @@ class DeckLockStripWidget extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.micro,
+                spacing: context.dimens.space4,
                 children: [
-                  Text(title, style: styles.rowTitle),
-                  Text(body, style: styles.rowDescription),
+                  Text(title, style: context.texts.titleSmall),
+                  Text(
+                    body,
+                    style: context.texts.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),

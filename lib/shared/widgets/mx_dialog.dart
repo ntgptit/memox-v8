@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The width cap: 340, 320 or 300, never wider than the column.
@@ -22,7 +19,7 @@ Future<T?> showMxDialog<T>(
   barrierColor: context.dialogBarrier,
   transitionDuration: MediaQuery.disableAnimationsOf(context)
       ? Duration.zero
-      : AppDurations.standard,
+      : Durations.short4,
   pageBuilder: (dialogContext, _, _) => builder(dialogContext),
   transitionBuilder: (_, animation, _, child) {
     final curved = CurvedAnimation(parent: animation, curve: Easing.standard);
@@ -64,7 +61,6 @@ class MxDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
     // The surface and radius are the theme's dialog (spec §4.6).
     final dialogs = DialogTheme.of(context);
     final shape = context.dialogShape;
@@ -76,9 +72,9 @@ class MxDialog extends StatelessWidget {
       label: title,
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.card,
-            vertical: AppSpacing.section,
+          padding: EdgeInsets.symmetric(
+            horizontal: context.dimens.space24,
+            vertical: context.dimens.space24,
           ),
           child: ConstrainedBox(
             constraints: BoxConstraints(
@@ -108,26 +104,26 @@ class MxDialog extends StatelessWidget {
                           // the pair keeps its width (DEV-166, The Short
                           // Label Rule).
                           padding: actions == null
-                              ? const EdgeInsets.fromLTRB(
-                                  AppSpacing.gutter,
-                                  AppSpacing.card,
-                                  AppSpacing.gutter,
-                                  AppSpacing.card,
+                              ? EdgeInsets.fromLTRB(
+                                  context.dimens.space16,
+                                  context.dimens.space24,
+                                  context.dimens.space16,
+                                  context.dimens.space24,
                                 )
-                              : const EdgeInsetsDirectional.only(
-                                  start: AppSpacing.gutter,
-                                  end: AppSpacing.gutter,
-                                  top: AppSpacing.card,
+                              : EdgeInsetsDirectional.only(
+                                  start: context.dimens.space16,
+                                  end: context.dimens.space16,
+                                  top: context.dimens.space24,
                                 ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: AppSpacing.control,
+                            spacing: context.dimens.space8,
                             children: [
                               if (title case final text?)
-                                Text(text, style: styles.compactTitle),
+                                Text(text, style: context.texts.titleSmall),
                               if (body case final text?)
-                                Text(text, style: styles.dialogBody),
+                                Text(text, style: context.texts.bodyMedium),
                               ?content,
                             ],
                           ),

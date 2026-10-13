@@ -33,12 +33,10 @@ class MxMasteryDonut extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final semantic = context.semanticColors;
-    final derived = context.derivedColors;
     // Ruling S10: 0% falls in the lowest band, so its label takes that colour.
     final ink =
         MasteryRamp.fill(semantic, derived, fraction) ??
-        derived.statusLearningInk;
+        context.mxColors.warning;
     final percent = NumberFormat.percentPattern(
       Localizations.localeOf(context).toString(),
     ).format(MasteryRamp.percent(fraction) / 100);
@@ -56,7 +54,10 @@ class MxMasteryDonut extends StatelessWidget {
             dimension: _innerDiameter,
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text(percent, style: context.textStyles.donutLabel(ink)),
+              child: Text(
+                percent,
+                style: context.texts.labelSmall?.copyWith(color: ink),
+              ),
             ),
           ),
         ),

@@ -40,7 +40,12 @@ class StudyEntryLearnWidget extends StatelessWidget {
       child: MxListRow(
         title: l10n.studyEntryLearnTitle,
         // The kit wraps the line; the row's own subtitle is one line.
-        meta: Text(line, style: context.textStyles.noteText),
+        meta: Text(
+          line,
+          style: context.texts.bodyMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
+        ),
         trailing: _trailing(context),
         hasDivider: false,
       ),

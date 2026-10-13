@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
@@ -18,6 +17,7 @@ import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Screen 19, Recall: the term, the meaning hidden behind the turn's
 /// 20-second clock (BR-STUDY-031). Revealing records nothing; only the
@@ -188,17 +188,17 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
         ),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: AppSpacing.control,
+              spacing: context.dimens.space8,
               children: [
                 Expanded(
                   child: StudyFaceCardWidget(
                     label: l10n.studyBrowseTerm,
                     child: StudyWholeWordTextWidget(
                       widget.item.front,
-                      style: context.textStyles.studyTerm,
+                      style: context.texts.displaySmall,
                     ),
                   ),
                 ),
@@ -290,19 +290,24 @@ class _Meaning extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final tag = context.l10n.studyRecallTagTimedOut;
     return Column(
       mainAxisSize: MainAxisSize.min,
-      spacing: AppSpacing.grouped,
+      spacing: context.dimens.space12,
       children: [
-        Text(meaning, textAlign: TextAlign.center, style: styles.studyPassage),
+        Text(
+          meaning,
+          textAlign: TextAlign.center,
+          style: context.texts.bodyLarge,
+        ),
         if (isTimedOut)
           Text(
             tag.toUpperCase(),
             semanticsLabel: tag,
             textAlign: TextAlign.center,
-            style: styles.statusLabel(context.derivedColors.warningInk),
+            style: context.texts.labelSmall?.copyWith(
+              color: context.mxColors.warning,
+            ),
           ),
       ],
     );

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A single-choice row (algorithm, study mode, direction). The radio is a ring
 /// that thickens when selected, so nothing moves between states. The whole
@@ -48,7 +45,6 @@ class MxOptionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
     final isDim = isDimmed ?? (onSelected == null && !isSelected);
     return MergeSemantics(
       child: Semantics(
@@ -61,21 +57,23 @@ class MxOptionRow extends StatelessWidget {
               border: hasDivider
                   ? Border(
                       bottom: BorderSide(
-                        color: context.derivedColors.ghostBorder,
-                        width: AppStroke.hairline,
+                        color: context.colors.outlineVariant,
+                        width: context.dimens.strokeHairline,
                       ),
                     )
                   : null,
             ),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
+              constraints: BoxConstraints(
+                minHeight: context.dimens.sizeControl,
+              ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.gutter,
-                  vertical: AppSpacing.grouped,
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.screenMargin,
+                  vertical: context.dimens.space12,
                 ),
                 child: Row(
-                  spacing: AppSpacing.grouped,
+                  spacing: context.dimens.space12,
                   children: [
                     _dim(
                       isDim,
@@ -91,11 +89,11 @@ class MxOptionRow extends StatelessWidget {
                                 // A stroke glyph, so primaryInk (spec
                                 // 2026-09-27): it reads 3:1 on a sheet.
                                 color: isSelected
-                                    ? context.derivedColors.primaryInk
+                                    ? context.accentColor
                                     : colors.outline,
                                 width: isSelected
                                     ? AppStroke.selectedRing
-                                    : AppStroke.control,
+                                    : context.dimens.strokeControl,
                               ),
                             ),
                             child: const SizedBox.square(dimension: _radioSize),
@@ -108,10 +106,18 @@ class MxOptionRow extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _dim(isDim, Text(title, style: styles.rowTitle)),
+                          _dim(
+                            isDim,
+                            Text(title, style: context.texts.titleSmall),
+                          ),
                           if (description case final text?) ...[
                             const SizedBox(height: _descriptionGap),
-                            Text(text, style: styles.rowDescription),
+                            Text(
+                              text,
+                              style: context.texts.bodyMedium?.copyWith(
+                                color: context.colors.onSurfaceVariant,
+                              ),
+                            ),
                           ],
                         ],
                       ),
@@ -127,6 +133,7 @@ class MxOptionRow extends StatelessWidget {
     );
   }
 
-  static Widget _dim(bool isDim, Widget child) =>
-      isDim ? Opacity(opacity: AppOpacity.disabled, child: child) : child;
+  static Widget _dim(bool isDim, Widget child) => isDim
+      ? Opacity(opacity: context.dimens.opacityDisabledContent, child: child)
+      : child;
 }

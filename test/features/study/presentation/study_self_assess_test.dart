@@ -4,7 +4,6 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_grade_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -12,6 +11,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
+
+import 'package:memox/core/theme/theme_context.dart';
 
 // Screen 16a, Self-assess: BR-MODE-006, BR-MODE-011, BR-MODE-014,
 // BR-STUDY-004, BR-STUDY-005; FE-A6 D11b.
@@ -64,7 +65,7 @@ void main() {
     expect(
       tester.getSize(grades).width,
       tester.getSize(find.byType(StudyCtaRowWidget)).width -
-          AppSpacing.gutter * 2,
+          context.dimens.space16 * 2,
     );
     expect(await turnKindsOf(env.db, 'R1'), isEmpty);
   });

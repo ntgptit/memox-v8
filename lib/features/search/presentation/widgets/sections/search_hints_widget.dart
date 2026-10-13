@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -8,6 +7,7 @@ import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Before a term: what search finds, read-only (UC-SEARCH-001 step 2; spec
 /// D9). No statement runs (BR-SEARCH-003).
@@ -19,7 +19,7 @@ class SearchHintsWidget extends StatelessWidget {
     final l10n = context.l10n;
     return MxScreenScroll(
       children: [
-        const SizedBox(height: AppSpacing.control),
+        SizedBox(height: context.dimens.space8),
         MxListSectionHeader(label: l10n.searchFinds),
         MxCard(
           isFullBleed: true,
@@ -44,7 +44,7 @@ class SearchHintsWidget extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         MxNote(text: l10n.searchAccentNote),
       ],
     );

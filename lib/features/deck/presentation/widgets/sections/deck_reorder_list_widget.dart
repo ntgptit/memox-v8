@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_reorder_row_widget.dart';
@@ -13,6 +12,7 @@ import 'package:memox/features/deck/presentation/widgets/support/deck_reorder_an
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// A level's decks in drag-to-reorder mode (spec §6.1, ruling P2-L3). Each
 /// drop is one `ReorderDeckUseCase` call. The dropped order shows at once,
@@ -90,17 +90,17 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
   Widget build(BuildContext context) => ReorderableListView.builder(
     buildDefaultDragHandles: false,
     padding: EdgeInsets.fromLTRB(
-      AppSpacing.gutter,
-      AppSpacing.gutter,
-      AppSpacing.gutter,
-      AppSpacing.section + MediaQuery.paddingOf(context).bottom,
+      context.dimens.space16,
+      context.dimens.space16,
+      context.dimens.space16,
+      context.dimens.space24 + MediaQuery.paddingOf(context).bottom,
     ),
     itemCount: _order.length,
     onReorderItem: (oldIndex, newIndex) => unawaited(_drop(oldIndex, newIndex)),
     itemBuilder: (context, index) => Padding(
       key: ValueKey(_order[index].id),
       padding: EdgeInsets.only(
-        bottom: index < _order.length - 1 ? AppSpacing.control : 0,
+        bottom: index < _order.length - 1 ? context.dimens.space8 : 0,
       ),
       child: DeckReorderRowWidget(tile: _order[index], index: index),
     ),

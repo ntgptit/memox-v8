@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A 20 glyph in a 36 round ink box with a 48 touch area: the kit's only
@@ -35,6 +34,9 @@ class MxIconButton extends StatelessWidget {
       ),
     );
     if (onPressed != null) return button;
-    return Opacity(opacity: AppOpacity.disabled, child: button);
+    return Opacity(
+      opacity: context.dimens.opacityDisabledContent,
+      child: button,
+    );
   }
 }

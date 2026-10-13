@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/presentation/providers/deck_level_provider.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
@@ -17,6 +16,7 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// The roots with today's work first (UC-DECK-003).
 class DeckLibraryRootWidget extends ConsumerWidget {
@@ -115,11 +115,11 @@ class DeckLibraryRootWidget extends ConsumerWidget {
           // summary and the sort pill (critique 2026-09-30 part 3d-2, E3).
           if (!isReordering)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
-                AppSpacing.micro,
-                AppSpacing.gutter,
-                AppSpacing.control,
+              padding: EdgeInsets.fromLTRB(
+                context.dimens.space16,
+                context.dimens.space4,
+                context.dimens.space16,
+                context.dimens.space8,
               ),
               child: MxSearchField.trigger(
                 hintText: l10n.searchFieldHint,

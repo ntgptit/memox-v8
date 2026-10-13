@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_mapping_row_widget.dart';
@@ -9,6 +8,7 @@ import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Step 2 of the import (kit 11): whether the first row is a header, and the
 /// field each column feeds. An unmapped face says so on its own row, above
@@ -79,7 +79,7 @@ class ImportMappingSectionWidget extends StatelessWidget {
             tone: MxBannerTone.warning,
             message: l10n.importMappingIncomplete,
           ),
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
         ],
         // It says columns were mapped: only once they are.
         if (draft.mapping.isComplete) MxNote.hint(text: l10n.importMappingNote),

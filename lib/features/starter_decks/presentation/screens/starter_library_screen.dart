@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
 import 'package:memox/core/notes/note_keys.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/starter_decks/domain/models/starter_library_entry_model.dart';
 import 'package:memox/features/starter_decks/presentation/providers/starter_library_provider.dart';
 import 'package:memox/features/starter_decks/presentation/states/starter_add_state.dart';
@@ -24,6 +23,7 @@ import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 03, Starter decks (UC-STARTER-001): the templates bundled with the
 /// app, each added as a deck of the person's own under the scheduler they
@@ -124,10 +124,10 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
             ),
           ],
           AsyncData(:final value) => [
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             if (_showsNote) _fixtureNote(l10n),
             for (final entry in value) ...[
-              const SizedBox(height: AppSpacing.grouped),
+              SizedBox(height: context.dimens.space12),
               StarterTemplateCardWidget(
                 key: ValueKey(entry.templateId),
                 entry: entry,
@@ -147,9 +147,9 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
           // The note is the screen's own copy: it shows while the templates
           // are read (kit 03 `loading`).
           _ => [
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             if (_showsNote) _fixtureNote(l10n),
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
             MxSkeletonList(
               semanticLabel: l10n.commonLoading,
               rows: _skeletonRows,

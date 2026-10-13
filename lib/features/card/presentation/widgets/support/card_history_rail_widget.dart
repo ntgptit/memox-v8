@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// One node of the card history's timeline (DEV-170, kit "Flashcard
@@ -16,7 +13,7 @@ class CardHistoryRailWidget extends StatelessWidget {
     this.ink,
     this.isFirst = false,
     this.isLast = false,
-    this.gap = AppSpacing.grouped,
+    this.gap = context.dimens.space12,
   });
 
   final Widget child;
@@ -37,9 +34,9 @@ class CardHistoryRailWidget extends StatelessWidget {
 
   /// The rail sits on the centre of the leading 24.
   static const double _railStart =
-      (AppSpacing.section - AppStroke.indicator) / 2;
+      (context.dimens.space24 - context.dimens.strokeIndicator) / 2;
   static const double _dotStart =
-      (AppSpacing.section - AppSize.timelineDot) / 2;
+      (context.dimens.space24 - AppSize.timelineDot) / 2;
 
   /// The dot's top that centres it on [lines] lines of text in [style].
   static double dotTopOn(
@@ -62,7 +59,7 @@ class CardHistoryRailWidget extends StatelessWidget {
       children: [
         PositionedDirectional(
           start: _railStart,
-          width: AppStroke.indicator,
+          width: context.dimens.strokeIndicator,
           top: isFirst ? dotCentre : 0,
           bottom: isLast ? null : 0,
           height: isLast ? dotCentre : null,
@@ -81,14 +78,14 @@ class CardHistoryRailWidget extends StatelessWidget {
               // Contrast Floor Rule): the outcome's ink, or the outline.
               border: Border.all(
                 color: ink ?? colors.outline,
-                width: AppStroke.control,
+                width: context.dimens.strokeControl,
               ),
             ),
           ),
         ),
         Padding(
           padding: EdgeInsetsDirectional.only(
-            start: AppSpacing.section,
+            start: context.dimens.space24,
             bottom: gap,
           ),
           child: child,

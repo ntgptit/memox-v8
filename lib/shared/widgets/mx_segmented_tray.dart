@@ -1,11 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// One option of an MxSegmentedTray.
@@ -60,7 +55,7 @@ class MxSegmentedTray<T> extends StatelessWidget {
           : _inline(context),
     );
     if (onSelected != null) return tray;
-    return Opacity(opacity: AppOpacity.disabled, child: tray);
+    return Opacity(opacity: context.dimens.opacityDisabledContent, child: tray);
   }
 
   VoidCallback? _select(T value) {
@@ -69,15 +64,18 @@ class MxSegmentedTray<T> extends StatelessWidget {
     return () => onSelected(value);
   }
 
-  double get _padding => isWide ? AppSpacing.gutter : AppSpacing.grouped;
+  double get _padding =>
+      isWide ? context.dimens.space16 : context.dimens.space12;
 
   /// The one-line width: each option its label and padding, at least a
   /// touch target, plus the gaps and the tray's inset.
   double _naturalWidth(BuildContext context) {
-    final style = context.textStyles.trayLabel(isSelected: true);
+    final style = context.texts.labelSmall?.copyWith(
+      color: true ? context.colors.onSurface : context.colors.onSurfaceVariant,
+    );
     final textScaler = MediaQuery.textScalerOf(context);
     final direction = Directionality.of(context);
-    var width = AppSpacing.micro * 2 + _segmentGap * (segments.length - 1);
+    var width = context.dimens.space4 * 2 + _segmentGap * (segments.length - 1);
     for (final segment in segments) {
       final painter = TextPainter(
         text: TextSpan(text: segment.label, style: style),
@@ -85,7 +83,10 @@ class MxSegmentedTray<T> extends StatelessWidget {
         textScaler: textScaler,
         maxLines: 1,
       )..layout();
-      width += math.max(AppSize.touchTarget, painter.width + _padding * 2);
+      width += math.max(
+        context.dimens.sizeControl,
+        painter.width + _padding * 2,
+      );
       painter.dispose();
     }
     return width;
@@ -94,10 +95,10 @@ class MxSegmentedTray<T> extends StatelessWidget {
   Widget _stacked(BuildContext context) => DecoratedBox(
     decoration: BoxDecoration(
       color: context.colors.surfaceContainer,
-      borderRadius: BorderRadius.circular(AppRadius.md),
+      borderRadius: BorderRadius.circular(context.dimens.radiusMd),
     ),
     child: Padding(
-      padding: const EdgeInsets.all(AppSpacing.micro),
+      padding: EdgeInsets.all(context.dimens.space4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -118,7 +119,8 @@ class MxSegmentedTray<T> extends StatelessWidget {
 
   Widget _inline(BuildContext context) {
     // Ruling I4: the tray paints 40 tall inside a 48 layout band.
-    const trayHeight = _thumbHeight + AppSpacing.micro + AppSpacing.micro;
+    const trayHeight =
+        _thumbHeight + context.dimens.space4 + context.dimens.space4;
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -130,14 +132,14 @@ class MxSegmentedTray<T> extends StatelessWidget {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: context.colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  borderRadius: BorderRadius.circular(context.dimens.radiusMd),
                 ),
               ),
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.micro),
+          padding: EdgeInsets.symmetric(horizontal: context.dimens.space4),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             spacing: _segmentGap,
@@ -177,7 +179,7 @@ class _Segment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final radius = BorderRadius.circular(AppRadius.sm);
+    final radius = BorderRadius.circular(context.dimens.radiusSm);
     return MergeSemantics(
       child: Semantics(
         selected: isSelected,
@@ -188,9 +190,9 @@ class _Segment extends StatelessWidget {
           onTap: onTap,
           borderRadius: radius,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: AppSize.touchTarget,
-              minHeight: AppSize.touchTarget,
+            constraints: BoxConstraints(
+              minWidth: context.dimens.sizeControl,
+              minHeight: context.dimens.sizeControl,
             ),
             child: Center(
               heightFactor: 1,
@@ -212,8 +214,10 @@ class _Segment extends StatelessWidget {
                         label,
                         maxLines: 1,
                         softWrap: false,
-                        style: context.textStyles.trayLabel(
-                          isSelected: isSelected,
+                        style: context.texts.labelSmall?.copyWith(
+                          color: isSelected
+                              ? context.colors.onSurface
+                              : context.colors.onSurfaceVariant,
                         ),
                       ),
                     ),

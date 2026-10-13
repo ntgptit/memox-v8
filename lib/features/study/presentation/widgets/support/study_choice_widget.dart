@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A toned, tappable surface of the round-based modes: a Guess option
@@ -49,16 +45,15 @@ class StudyChoiceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final derived = context.derivedColors;
     final motion = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
-        : AppDurations.standard;
+        : Durations.short4;
     // The tone eases in, surface and ink together, so the content never
     // sits on a surface it was not drawn for (Impeccable after P3). Not an
     // AnimatedContainer: it would inset the content by the border.
     final ink = AppDecorations.studyChoiceInk(colors, derived, tone);
     final surface = ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
+      constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
       child: TweenAnimationBuilder<Decoration>(
         tween: DecorationTween(
           end: AppDecorations.studyChoice(
@@ -97,7 +92,7 @@ class StudyChoiceWidget extends StatelessWidget {
         excludeFromSemantics: true,
         // The fade eases in with the tones, at once under Remove animations.
         child: AnimatedOpacity(
-          opacity: isFaded ? AppOpacity.muted : 1,
+          opacity: isFaded ? context.dimens.opacityMuted : 1,
           duration: motion,
           child: surface,
         ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_outcome_tile.dart';
 
@@ -70,11 +69,11 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text('Kept')).style!.color,
-      context.derivedColors.successInk,
+      context.mxColors.success,
     );
     expect(
       tester.widget<Text>(find.text('Lost')).style!.color,
-      context.derivedColors.warningInk,
+      context.mxColors.warning,
     );
   });
 }

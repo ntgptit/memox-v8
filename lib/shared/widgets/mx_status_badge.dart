@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The card lifecycle, in order.
 enum MxCardStatus { newCard, learning, reviewing, mastered }
@@ -34,20 +33,18 @@ class MxStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final semantic = context.semanticColors;
     final color = switch (status) {
-      MxCardStatus.newCard => semantic.statusNew,
-      MxCardStatus.learning => semantic.statusLearning,
-      MxCardStatus.reviewing => semantic.statusReviewing,
-      MxCardStatus.mastered => semantic.statusMastered,
+      MxCardStatus.newCard => context.colors.outline,
+      MxCardStatus.learning => context.mxColors.warningContainer,
+      MxCardStatus.reviewing => context.accentColor,
+      MxCardStatus.mastered => context.mxColors.successContainer,
     };
-    final derived = context.derivedColors;
     // The label reads in the status ink (AA); dot and fill keep the colour.
     final ink = switch (status) {
-      MxCardStatus.newCard => derived.statusNewInk,
-      MxCardStatus.learning => derived.statusLearningInk,
-      MxCardStatus.reviewing => derived.statusReviewingInk,
-      MxCardStatus.mastered => derived.statusMasteredInk,
+      MxCardStatus.newCard => context.colors.onSurfaceVariant,
+      MxCardStatus.learning => context.mxColors.warning,
+      MxCardStatus.reviewing => context.accentColor,
+      MxCardStatus.mastered => context.mxColors.success,
     };
     if (isDot) {
       return Semantics(
@@ -64,20 +61,20 @@ class MxStatusBadge extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: _height),
         child: Padding(
-          padding: const EdgeInsetsDirectional.only(
+          padding: EdgeInsetsDirectional.only(
             start: _startPadding,
-            end: AppSpacing.control,
+            end: context.dimens.space8,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
               _Dot(color: color, size: _pillDot),
               Text(
                 label,
                 maxLines: 1,
                 softWrap: false,
-                style: context.textStyles.badgeLabel(ink),
+                style: context.texts.labelSmall?.copyWith(color: ink),
               ),
             ],
           ),

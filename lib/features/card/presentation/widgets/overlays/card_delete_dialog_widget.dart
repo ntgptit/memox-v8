@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
@@ -100,7 +99,7 @@ class _CardDeleteDialogWidgetState
       title: l10n.cardDeleteTitle(count),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           if (widget.preview case final preview?) _Preview(preview: preview),
           MxNote(icon: AppIcons.history, text: l10n.cardDeleteNote(count)),
@@ -127,23 +126,24 @@ class _Preview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     return MxCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.micro,
+        spacing: context.dimens.space4,
         children: [
           Text(
             preview.front,
             maxLines: _maxLines,
             overflow: TextOverflow.ellipsis,
-            style: styles.contentTitle,
+            style: context.texts.titleMedium,
           ),
           Text(
             preview.back,
             maxLines: _maxLines,
             overflow: TextOverflow.ellipsis,
-            style: styles.rowDescription,
+            style: context.texts.bodyMedium?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
         ],
       ),

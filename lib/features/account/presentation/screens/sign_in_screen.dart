@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/account/presentation/controllers/account_manage_controller.dart';
 import 'package:memox/features/account/presentation/providers/can_link_provider.dart';
 import 'package:memox/features/account/presentation/providers/can_sign_in_again_provider.dart';
@@ -17,6 +16,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 30 (account UI spec §5.2): attach Google or an email to this
 /// device's anonymous user (`link`), or sign in again after the session was
@@ -73,7 +73,7 @@ class SignInScreen extends ConsumerWidget {
         // S9: the way out sits in the body, 32 under the form, out of the
         // footer's thumb path.
         if (isReauth) ...[
-          const SizedBox(height: AppSpacing.major),
+          SizedBox(height: context.dimens.space32),
           MxButton(
             label: l10n.accountContinueWithoutThis,
             tone: MxButtonTone.text,

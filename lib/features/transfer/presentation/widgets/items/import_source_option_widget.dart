@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -25,7 +24,6 @@ class ImportSourceOptionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     return Semantics(
       selected: isSelected,
       button: true,
@@ -35,15 +33,20 @@ class ImportSourceOptionWidget extends StatelessWidget {
         child: MxRowInk(
           onTap: onSelected,
           child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.grouped),
+            padding: EdgeInsets.all(context.dimens.space12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.micro,
+              spacing: context.dimens.space4,
               children: [
                 MxIconTile(icon: icon),
-                const SizedBox(height: AppSpacing.micro),
-                Text(label, style: styles.contentTitle),
-                Text(hint, style: styles.rowDescription),
+                SizedBox(height: context.dimens.space4),
+                Text(label, style: context.texts.titleMedium),
+                Text(
+                  hint,
+                  style: context.texts.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),

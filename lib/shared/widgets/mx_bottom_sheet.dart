@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// Opens [builder] (usually an MxBottomSheet) on the platform modal route
@@ -21,7 +17,7 @@ Future<T?> showMxBottomSheet<T>(
     sheetAnimationStyle: AnimationStyle(
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
-          : AppDurations.sheet,
+          : Durations.medium2,
       curve: Easing.standard,
     ),
   );
@@ -102,9 +98,9 @@ class MxBottomSheet extends StatelessWidget {
                         .modalBarrierDismissLabel,
                     onTap: () => Navigator.of(context).maybePop(),
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: AppSpacing.control,
-                        bottom: AppSpacing.micro,
+                      padding: EdgeInsets.only(
+                        top: context.dimens.space8,
+                        bottom: context.dimens.space4,
                       ),
                       child: Center(
                         child: SizedBox(

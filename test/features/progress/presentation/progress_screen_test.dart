@@ -6,7 +6,6 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
 import 'package:memox/features/progress/presentation/screens/progress_screen.dart';
@@ -84,11 +83,11 @@ void main() {
           .textStyles
           .eyebrow,
     );
-    // M3-D3: every section gap on the overview is AppSpacing.gutter.
+    // M3-D3: every section gap on the overview is context.dimens.space16.
     expect(
       tester.getTopLeft(find.byType(ProgressStreakWidget)).dy -
           tester.getBottomLeft(find.byType(ProgressTodayWidget)).dy,
-      AppSpacing.gutter,
+      context.dimens.space16,
     );
     final total = await _row(tester, _en.progressAllDecks);
     expect(

@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/monitoring/domain/entities/log_record_entity.dart';
 import 'package:memox/features/monitoring/presentation/widgets/support/monitoring_labels_widget.dart';
@@ -19,12 +18,11 @@ class MonitoringDetailHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final status = record.status;
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+      padding: EdgeInsets.only(bottom: context.dimens.space16),
       child: Row(
-        spacing: AppSpacing.gutter,
+        spacing: context.dimens.space16,
         children: [
           MxIconTile(
             icon: monitoringLevelIcon(record.level),
@@ -33,15 +31,17 @@ class MonitoringDetailHeaderWidget extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.micro,
+              spacing: context.dimens.space4,
               children: [
                 Text(
                   monitoringLevelLabel(l10n, record.level),
-                  style: styles.settingsLabel,
+                  style: context.texts.titleSmall,
                 ),
                 Text(
                   monitoringFullTime(l10n, record.occurredAt),
-                  style: styles.rowDescription,
+                  style: context.texts.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),

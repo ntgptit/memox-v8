@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_scroll_fade_widget.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
@@ -12,6 +10,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_cta_row_
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Screen 16, Browse (handoff 16): both faces of the card at once, nothing
 /// graded (BR-MODE-005, BR-MODE-006). A left swipe goes on; a right swipe
@@ -103,7 +102,7 @@ class _StudyBrowseWidgetState extends State<StudyBrowseWidget> {
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
             child: Semantics(
               container: true,
               customSemanticsActions: {
@@ -183,7 +182,6 @@ class _Card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     return MxCard(
       isFullBleed: true,
       child: Stack(
@@ -197,18 +195,18 @@ class _Card extends StatelessWidget {
                   main: Text(
                     face.front,
                     textAlign: TextAlign.center,
-                    style: styles.studyTerm,
+                    style: context.texts.displaySmall,
                   ),
                   detail: face.pronunciation,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.card,
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.dimens.space24,
                 ),
                 child: SizedBox(
-                  height: AppStroke.hairline,
-                  child: ColoredBox(color: context.derivedColors.ghostBorder),
+                  height: context.dimens.strokeHairline,
+                  child: ColoredBox(color: context.colors.outlineVariant),
                 ),
               ),
               Expanded(
@@ -217,7 +215,7 @@ class _Card extends StatelessWidget {
                   main: Text(
                     face.back,
                     textAlign: TextAlign.center,
-                    style: styles.studyMeaning,
+                    style: context.texts.bodyLarge,
                   ),
                   detail: face.example,
                 ),
@@ -226,8 +224,8 @@ class _Card extends StatelessWidget {
           ),
           if (isLookingBack)
             Positioned(
-              top: AppSpacing.grouped,
-              right: AppSpacing.grouped,
+              top: context.dimens.space12,
+              right: context.dimens.space12,
               child: MxBadge(
                 label: l10n.studyBrowseLookingBack,
                 tone: MxBadgeTone.neutral,
@@ -250,22 +248,23 @@ class _Half extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final detail = this.detail;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.card,
-            AppSpacing.gutter,
-            AppSpacing.card,
+          padding: EdgeInsets.fromLTRB(
+            context.dimens.space24,
+            context.dimens.space16,
+            context.dimens.space24,
             0,
           ),
           child: Text(
             label.toUpperCase(),
             semanticsLabel: label,
-            style: styles.eyebrow,
+            style: context.texts.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
         ),
         Expanded(
@@ -273,17 +272,19 @@ class _Half extends StatelessWidget {
             ground: context.colors.surfaceContainerLowest,
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(AppSpacing.gutter),
+                padding: EdgeInsets.all(context.dimens.space16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  spacing: AppSpacing.control,
+                  spacing: context.dimens.space8,
                   children: [
                     main,
                     if (detail != null)
                       Text(
                         detail,
                         textAlign: TextAlign.center,
-                        style: styles.studyDetail,
+                        style: context.texts.bodyMedium?.copyWith(
+                          color: context.colors.onSurfaceVariant,
+                        ),
                       ),
                   ],
                 ),

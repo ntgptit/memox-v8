@@ -1,8 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 void main() {
   const semantic = MxSemanticColors.light;

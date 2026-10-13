@@ -1,8 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// One series of an MxStackedDayBars: its legend label and its fill.
@@ -73,16 +71,16 @@ class MxStackedDayBars extends StatelessWidget {
         SizedBox(
           height: _chartHeight,
           child: Row(
-            spacing: AppSpacing.control,
+            spacing: context.dimens.space8,
             children: [
               for (final day in days) Expanded(child: _bar(context, day, most)),
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.micro),
+        SizedBox(height: context.dimens.space4),
         ExcludeSemantics(
           child: Row(
-            spacing: AppSpacing.control,
+            spacing: context.dimens.space8,
             children: [
               for (final day in days)
                 // A label wider than its bar, such as "Today", shrinks to
@@ -93,8 +91,8 @@ class MxStackedDayBars extends StatelessWidget {
                     child: Text(
                       day.label,
                       maxLines: 1,
-                      style: context.textStyles.dayLabel(
-                        isCurrent: day.isCurrent,
+                      style: context.texts.labelSmall?.copyWith(
+                        color: context.colors.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -102,11 +100,11 @@ class MxStackedDayBars extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         ExcludeSemantics(
           child: Wrap(
-            spacing: AppSpacing.grouped,
-            runSpacing: AppSpacing.micro,
+            spacing: context.dimens.space12,
+            runSpacing: context.dimens.space4,
             children: [_legend(context, top), _legend(context, base)],
           ),
         ),
@@ -120,7 +118,7 @@ class MxStackedDayBars extends StatelessWidget {
     child: LayoutBuilder(
       builder: (context, constraints) {
         final unit = constraints.maxHeight / most;
-        const round = Radius.circular(AppRadius.xs);
+        const round = Radius.circular(context.dimens.radiusXs);
         return Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -159,14 +157,19 @@ class MxStackedDayBars extends StatelessWidget {
 
   Widget _legend(BuildContext context, MxBarSeries series) => Row(
     mainAxisSize: MainAxisSize.min,
-    spacing: AppSpacing.micro,
+    spacing: context.dimens.space4,
     children: [
       Container(
         width: _legendDot,
         height: _legendDot,
         decoration: BoxDecoration(color: series.color, shape: BoxShape.circle),
       ),
-      Text(series.label, style: context.textStyles.dayLabel(isCurrent: false)),
+      Text(
+        series.label,
+        style: context.texts.labelSmall?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
+      ),
     ],
   );
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// A session screen's actions, centred under the faces. Two share the row,
 /// each up to 160 wide, and stack full width at large text, as 16a's grades
@@ -24,17 +24,17 @@ class StudyCtaRowWidget extends StatelessWidget {
         children.length > 1 &&
         MediaQuery.textScalerOf(context).scale(1) >= _stackTextScale;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.gutter,
-        AppSpacing.gutter,
-        AppSpacing.gutter,
+      padding: EdgeInsets.fromLTRB(
+        context.dimens.space16,
+        context.dimens.space16,
+        context.dimens.space16,
         0,
       ),
       child: switch (children) {
         [final MxButton only] => Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 2 * _actionWidth + AppSpacing.control,
+            constraints: BoxConstraints(
+              maxWidth: 2 * _actionWidth + context.dimens.space8,
             ),
             child: SizedBox(width: double.infinity, child: only),
           ),
@@ -42,12 +42,12 @@ class StudyCtaRowWidget extends StatelessWidget {
         [final only] => Center(child: only),
         _ when isStacked => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.control,
+          spacing: context.dimens.space8,
           children: children,
         ),
         _ => Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          spacing: AppSpacing.control,
+          spacing: context.dimens.space8,
           children: [
             for (final action in children)
               Flexible(

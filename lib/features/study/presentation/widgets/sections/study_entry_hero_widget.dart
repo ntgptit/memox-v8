@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
@@ -26,33 +25,36 @@ class StudyEntryHeroWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final algorithm = l10n.studyScheduler(entry.schedulerType);
     // A summary, not a door (critique 2026-09-30 part 3d-2, E5).
     return MxCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.grouped,
+        spacing: context.dimens.space12,
         children: [
           // The algorithm alone as overline, the limit its own line: no
           // orphan word (critique 2026-09-30 part 3c-1, R5).
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
               Text(
                 algorithm.toUpperCase(),
                 semanticsLabel: algorithm,
-                style: styles.eyebrow,
+                style: context.texts.labelSmall?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
               Text(
                 l10n.studyEntryLimit(entry.cardLimit),
-                style: styles.rowDescription,
+                style: context.texts.bodyMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
             ],
           ),
           Row(
-            spacing: AppSpacing.control,
+            spacing: context.dimens.space8,
             children: [
               Expanded(
                 child: MxStatTile(
@@ -81,7 +83,9 @@ class StudyEntryHeroWidget extends StatelessWidget {
           if (entry.overdueCardCount > 0)
             Text(
               l10n.studyEntryOverdue(entry.overdueCardCount),
-              style: styles.statusNote(context.derivedColors.warningInk),
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.mxColors.warning,
+              ),
             ),
         ],
       ),

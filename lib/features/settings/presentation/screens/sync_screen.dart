@@ -5,8 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/presentation/controllers/sync_controller.dart';
 import 'package:memox/features/settings/presentation/states/sync_screen_state.dart';
@@ -65,7 +63,7 @@ class SyncScreen extends ConsumerWidget {
       body: switch (status) {
         AsyncData(:final value?) => MxScreenScroll(
           children: [
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             SyncStatusSectionWidget(
               status: value,
               now: ref.watch(dayClockProvider).now(),
@@ -78,7 +76,7 @@ class SyncScreen extends ConsumerWidget {
                 task: task,
                 onRun: (next) => _run(ref, next),
               ),
-            const SizedBox(height: AppSpacing.gutter),
+            SizedBox(height: context.dimens.space16),
             if (task == SyncTask.syncNow)
               const _SyncingRow()
             else
@@ -160,13 +158,18 @@ class _SyncingRow extends StatelessWidget {
       excludeSemantics: true,
       child: SizedBox(
         // The button it stands in for (critique 2026-09-30 part 3d-2).
-        height: AppSize.buttonRegular,
+        height: context.dimens.sizeButton,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          spacing: AppSpacing.control,
+          spacing: context.dimens.space8,
           children: [
             const MxSpinner(),
-            Text(label, style: context.textStyles.rowDescription),
+            Text(
+              label,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ),

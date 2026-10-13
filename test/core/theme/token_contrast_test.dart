@@ -2,11 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 // FE-C1: the palette's ink and edge pairs meet WCAG 2.2 AA, worked from the
 // tokens rather than sampled from pixels: Flutter's textContrastGuideline
@@ -85,11 +82,11 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
     ('progress fill on its track', scheme.primary, track, _nonText),
     ('sheet grabber', scheme.onSurfaceVariant, sheet, _nonText),
     // Critique 2026-09-30: a Guess option out of play fades as a whole (ink and
-    // surface) to AppOpacity.muted over the page, and must stay readable.
+    // surface) to context.dimens.opacityMuted over the page, and must stay readable.
     (
       'faded choice ink',
-      _tint(scheme.onSurface, AppOpacity.muted, page),
-      _tint(scheme.surfaceContainerLowest, AppOpacity.muted, page),
+      _tint(scheme.onSurface, context.dimens.opacityMuted, page),
+      _tint(scheme.surfaceContainerLowest, context.dimens.opacityMuted, page),
       _text,
     ),
     // The one control edge (DEV-166, spec 2026-10-05 control edges §3.1):

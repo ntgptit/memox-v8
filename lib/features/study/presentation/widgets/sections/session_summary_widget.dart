@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
@@ -13,6 +12,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 21, the session summary (kit StudyResultScreenV3): how the
 /// session ended, what it did, and the way back (UC-STUDY-001 step 13, A3,
@@ -49,7 +49,7 @@ class SessionSummaryWidget extends StatelessWidget {
       ),
       body: StudyCentredScrollWidget(
         children: [
-          const SizedBox(height: AppSpacing.micro),
+          SizedBox(height: context.dimens.space4),
           if (summary != null) ...[
             SessionSummaryHeroWidget(
               view: view,
@@ -61,7 +61,7 @@ class SessionSummaryWidget extends StatelessWidget {
             if (outcome.drawsFacts &&
                 summary.hasAnswers &&
                 !outcome.drawsStats) ...[
-              const SizedBox(height: AppSpacing.grouped),
+              SizedBox(height: context.dimens.space12),
               SessionSummaryFactsWidget(view: view, summary: summary),
             ],
           ],
@@ -106,6 +106,6 @@ class SessionSummaryWidget extends StatelessWidget {
       _ => null,
     };
     if (note == null) return const [];
-    return [const SizedBox(height: AppSpacing.grouped), note];
+    return [SizedBox(height: context.dimens.space12), note];
   }
 }

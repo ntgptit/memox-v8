@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/domain/models/managed_user_model.dart';
 import 'package:memox/features/account/presentation/controllers/users_controller.dart';
@@ -51,7 +49,7 @@ class UsersListWidget extends ConsumerWidget {
       ),
       UsersFailed(:final failure) => MxScreenScroll(
         children: [
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           switch (failure) {
             UsersLoadFailure.notAdmin => MxEmptyState(
               icon: AppIcons.lock,
@@ -81,7 +79,7 @@ class UsersListWidget extends ConsumerWidget {
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             MxEmptyState(
               icon: AppIcons.searchOff,
               title: state.query.trim().isEmpty
@@ -116,7 +114,7 @@ class _Rows extends ConsumerWidget {
   final String? selfId;
   final ValueChanged<ManagedUser> onOpenUser;
 
-  static const double _prefetchExtent = 10 * AppSize.listRowMin;
+  static const double _prefetchExtent = 10 * context.dimens.sizeControl;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -135,7 +133,7 @@ class _Rows extends ConsumerWidget {
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             MxListSectionHeader(label: context.l10n.usersSection),
             for (final (index, user) in loaded.users.indexed)
               UserRowWidget(
@@ -144,7 +142,7 @@ class _Rows extends ConsumerWidget {
                 onTap: () => onOpenUser(user),
                 hasDivider: index < count - 1,
               ),
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
             _End(loaded: loaded, onRetry: controller.loadMore),
           ],
         ),
@@ -182,7 +180,9 @@ class _End extends StatelessWidget {
       (_, null) => Text(
         l10n.usersNoMore,
         textAlign: TextAlign.center,
-        style: context.textStyles.footerCaption,
+        style: context.texts.labelSmall?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
       ),
       _ => const SizedBox.shrink(),
     };

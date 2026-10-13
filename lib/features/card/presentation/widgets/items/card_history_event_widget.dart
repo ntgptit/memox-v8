@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
@@ -37,8 +35,6 @@ class CardHistoryEventWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
-    final derived = context.derivedColors;
-    final styles = context.textStyles;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final action = entry.action;
     final isLapse =
@@ -50,30 +46,36 @@ class CardHistoryEventWidget extends StatelessWidget {
       _ when isLapse => (
         MxBadgeTone.warning,
         AppIcons.lapses,
-        derived.warningInk,
+        context.mxColors.warning,
       ),
       ReviewKind.relearning => (
         MxBadgeTone.neutral,
         AppIcons.repeat,
         colors.onSurfaceVariant,
       ),
-      _ => (MxBadgeTone.success, AppIcons.check, derived.successInk),
+      _ => (MxBadgeTone.success, AppIcons.check, context.mxColors.success),
     };
     final meta = _meta(l10n, locale, ink);
     // The dot centres on the header row, which the two-line time sets:
     // the card's 20 interior, then the middle of those lines.
     return CardHistoryRailWidget(
       dotTop:
-          AppSpacing.card +
-          CardHistoryRailWidget.dotTopOn(context, styles.counter, lines: 2),
+          context.dimens.space24 +
+          CardHistoryRailWidget.dotTopOn(
+            context,
+            context.texts.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
+            lines: 2,
+          ),
       ink: ink,
       child: MxCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.control,
+          spacing: context.dimens.space8,
           children: [
             Row(
-              spacing: AppSpacing.control,
+              spacing: context.dimens.space8,
               children: [
                 Expanded(
                   child: Align(
@@ -90,13 +92,15 @@ class CardHistoryEventWidget extends StatelessWidget {
                   children: [
                     Text(
                       l10n.ago(entry.answeredAt, now),
-                      style: styles.historyAgo,
+                      style: context.texts.labelSmall,
                     ),
                     Text(
                       DateFormat.MMMd(locale)
                           .add_Hm()
                           .format(entry.answeredAt.toLocal()),
-                      style: styles.counter,
+                      style: context.texts.labelSmall?.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -108,8 +112,8 @@ class CardHistoryEventWidget extends StatelessWidget {
             ),
             if (meta.isNotEmpty)
               Wrap(
-                spacing: AppSpacing.grouped,
-                runSpacing: AppSpacing.micro,
+                spacing: context.dimens.space12,
+                runSpacing: context.dimens.space4,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: meta,
               ),
@@ -162,20 +166,23 @@ class _Meta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final ink = this.ink;
     final icon = this.icon;
-    final style = ink == null ? styles.rowDescription : styles.historyMove(ink);
+    final style = ink == null
+        ? context.texts.bodyMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          )
+        : context.texts.labelMedium?.copyWith(color: ink);
     return Row(
       mainAxisSize: MainAxisSize.min,
-      spacing: AppSpacing.micro,
+      spacing: context.dimens.space4,
       children: [
         if (icon != null)
           // The words carry the meaning; the glyph is not read out.
           ExcludeSemantics(
             child: Icon(
               icon,
-              size: AppIconSize.inline,
+              size: context.dimens.sizeIconInline,
               color: context.colors.onSurfaceVariant,
             ),
           ),

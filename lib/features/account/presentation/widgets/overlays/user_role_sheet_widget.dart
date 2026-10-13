@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_user.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/domain/models/managed_user_model.dart';
 import 'package:memox/features/account/presentation/controllers/users_controller.dart';
@@ -95,13 +94,13 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
     return MxBottomSheet(
       isHeld: _isSaving,
       header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space24,
+          context.dimens.space4,
+          context.dimens.space24,
+          context.dimens.space12,
         ),
-        child: Text(widget.user.email, style: context.textStyles.compactTitle),
+        child: Text(widget.user.email, style: context.texts.titleSmall),
       ),
       footer: MxSheetActions(
         isInSheet: true,
@@ -129,10 +128,10 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
           ),
           if (_problem case final text?)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
-                AppSpacing.grouped,
-                AppSpacing.gutter,
+              padding: EdgeInsets.fromLTRB(
+                context.dimens.space16,
+                context.dimens.space12,
+                context.dimens.space16,
                 0,
               ),
               // Nothing changed, so the warning tone.

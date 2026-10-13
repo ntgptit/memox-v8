@@ -1,14 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A standing notice that floats over the page, above its content: one
 /// sentence and the compact Buttons that resolve it (SB-U1; owner ruling
@@ -32,7 +27,9 @@ class MxFloatingNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = context.colors;
-    final messageStyle = context.textStyles.bannerMessage(isLead: true);
+    final messageStyle = context.texts.labelMedium?.copyWith(
+      color: true ? context.colors.onSurface : context.colors.onSurfaceVariant,
+    );
     // The glyph centres on the first line at any text scale.
     final firstLine =
         MediaQuery.textScalerOf(context).scale(messageStyle.fontSize!) *
@@ -41,19 +38,19 @@ class MxFloatingNotice extends StatelessWidget {
     // On the one-line form the Row centres the glyph itself.
     final glyphInset = isOneLine
         ? 0.0
-        : math.max(0.0, (firstLine - AppIconSize.inline) / 2);
+        : math.max(0.0, (firstLine - context.dimens.sizeIconInline) / 2);
     final line = Row(
       crossAxisAlignment: isOneLine
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
-      spacing: AppSpacing.control,
+      spacing: context.dimens.space8,
       children: [
         Padding(
           padding: EdgeInsets.only(top: glyphInset),
           child: Icon(
             AppIcons.alert,
-            size: AppIconSize.inline,
-            color: context.semanticColors.warning,
+            size: context.dimens.sizeIconInline,
+            color: context.mxColors.warningContainer,
           ),
         ),
         Expanded(child: Text(message, style: messageStyle)),
@@ -69,25 +66,25 @@ class MxFloatingNotice extends StatelessWidget {
           context.derivedColors,
         ).copyWith(boxShadow: AppShadows.overlay(scheme)),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
+          constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
           child: Padding(
             // A DecoratedBox border does not inset its child.
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.gutter + AppStroke.hairline,
-              vertical: AppSpacing.control + AppStroke.hairline,
+            padding: EdgeInsets.symmetric(
+              horizontal: context.screenMargin + context.dimens.strokeHairline,
+              vertical: context.dimens.space8 + context.dimens.strokeHairline,
             ),
             child: actions.length < 2
                 ? line
                 : Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    spacing: AppSpacing.control,
+                    spacing: context.dimens.space8,
                     children: [
                       line,
                       Wrap(
                         alignment: WrapAlignment.end,
-                        spacing: AppSpacing.control,
-                        runSpacing: AppSpacing.control,
+                        spacing: context.dimens.space8,
+                        runSpacing: context.dimens.space8,
                         children: actions,
                       ),
                     ],

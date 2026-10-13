@@ -7,7 +7,6 @@ import 'package:memox/app/router/app_router.dart';
 import 'package:memox/app/router/app_routes.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/database/di/database_provider.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';

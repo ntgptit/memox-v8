@@ -1,13 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A top-level destination: an outlined resting glyph, a filled selected one.
 @immutable
@@ -47,20 +42,19 @@ class MxBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final derived = context.derivedColors;
     final inset = MediaQuery.paddingOf(context).bottom;
     final pillTint = colors.primary.withValues(
       alpha: colors.brightness == Brightness.dark
           ? _pillTintDark
           : _pillTintLight,
     );
-    final radius = BorderRadius.circular(AppRadius.lg);
+    final radius = BorderRadius.circular(context.dimens.radiusLg);
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        AppSpacing.control,
-        AppSpacing.micro,
-        AppSpacing.control,
-        AppSpacing.grouped + inset,
+        context.dimens.space8,
+        context.dimens.space4,
+        context.dimens.space8,
+        context.dimens.space12 + inset,
       ),
       child: ClipRRect(
         borderRadius: radius,
@@ -71,18 +65,16 @@ class MxBottomNav extends StatelessWidget {
           ),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: derived.chromeGlass,
+              color: context.colors.surface,
               borderRadius: radius,
               border: Border.all(
-                color: derived.ghostBorder,
-                width: AppStroke.hairline,
+                color: context.colors.outlineVariant,
+                width: context.dimens.strokeHairline,
               ),
             ),
             // Ruling R3: 64 at minimum, grows with text scaling.
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minHeight: AppSize.bottomNavBar,
-              ),
+              constraints: BoxConstraints(minHeight: context.dimens.sizeNav),
               child: Material(
                 type: MaterialType.transparency,
                 child: Row(
@@ -132,7 +124,7 @@ class _Item extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          spacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
           children: [
             DecoratedBox(
               decoration: BoxDecoration(
@@ -140,15 +132,15 @@ class _Item extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadius.full),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.gutter,
-                  vertical: AppSpacing.micro,
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.screenMargin,
+                  vertical: context.dimens.space4,
                 ),
                 child: Icon(
                   isSelected ? destination.selectedIcon : destination.icon,
-                  size: AppIconSize.compact,
+                  size: context.dimens.sizeIconCompact,
                   color: isSelected
-                      ? context.derivedColors.primaryInk
+                      ? context.accentColor
                       : colors.onSurfaceVariant,
                 ),
               ),
@@ -157,7 +149,11 @@ class _Item extends StatelessWidget {
               destination.label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: context.textStyles.navLabel(isSelected: isSelected),
+              style: context.texts.labelSmall?.copyWith(
+                color: isSelected
+                    ? context.colors.onSurface
+                    : context.colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),

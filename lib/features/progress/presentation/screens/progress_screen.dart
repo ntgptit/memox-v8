@@ -4,7 +4,6 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/domain/models/progress_overview_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
@@ -18,6 +17,7 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 22, the Progress tab (UC-PROGRESS-001, UC-PROGRESS-002 at the
 /// library level): Today with the last seven days, the streak, the range,
@@ -78,15 +78,15 @@ class ProgressScreen extends ConsumerWidget {
         overview: progress.overview,
         onStartStudying: onStartStudying,
       ),
-      const SizedBox(height: AppSpacing.gutter),
+      SizedBox(height: context.dimens.space16),
       ProgressStreakWidget(overview: progress.overview),
       // Never studied, every row would read 0: the list waits for the first
       // study day (critique 2026-09-30).
       if (progress.overview.streak.state != StreakState.never) ...[
-        const SizedBox(height: AppSpacing.gutter),
+        SizedBox(height: context.dimens.space16),
         // Above the list it changes; Today and Streak never do (FE-A9 D10).
         const ProgressRangeWidget(),
-        const SizedBox(height: AppSpacing.gutter),
+        SizedBox(height: context.dimens.space16),
         ProgressLevelListWidget(
           level: progress.level,
           isDeckLevel: false,

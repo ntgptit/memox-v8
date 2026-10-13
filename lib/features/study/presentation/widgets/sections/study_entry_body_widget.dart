@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study/presentation/controllers/review_mode_pick_controller.dart';
 import 'package:memox/features/study/presentation/controllers/study_entry_controller.dart';
@@ -21,6 +20,7 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 14 below its app bar: the deck's path, then the entry in its
 /// state — loading, failed, nothing due, or the hero and what it offers.
@@ -90,11 +90,11 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     final offer = studyEntryOfferOf(entry, picked: picked);
     final resumable = entry.resumable;
     return [
-      const SizedBox(height: AppSpacing.micro),
+      SizedBox(height: context.dimens.space4),
       // The hero stays over the nothing-due state, reading 0 and 0 (kit).
       StudyEntryHeroWidget(entry: entry),
       if (resumable != null && offer.canContinue) ...[
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         StudyEntryResumeWidget(
           session: resumable,
           isLocked: start.isStarting,
@@ -102,11 +102,11 @@ class StudyEntryBodyWidget extends ConsumerWidget {
         ),
       ],
       if (offer.isNothingDue) ...[
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         const _NothingDue(),
       ],
       if (entry.newCardCount > 0) ...[
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         StudyEntryLearnWidget(
           entry: entry,
           offer: offer,
@@ -116,7 +116,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       // A review needs due cards (kit onlyNew, nothing).
       if (entry.dueCardCount > 0 &&
           offer.reviews.length >= _minModesToChoose) ...[
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         StudyEntryReviewWidget(
           reviews: offer.reviews,
           target: offer.reviewTarget,
@@ -126,7 +126,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
       ],
       if (start.status == StudyStartStatus.refused ||
           start.status == StudyStartStatus.failed) ...[
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         StudyEntryBannerWidget(start: start),
       ],
     ];
@@ -170,25 +170,25 @@ class _LoadingEntry extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: AppSpacing.micro),
-            const MxCard(
+            SizedBox(height: context.dimens.space4),
+            MxCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.grouped,
+                spacing: context.dimens.space12,
                 children: [
                   MxSkeleton(width: _overlineWidth),
                   MxSkeleton(height: _figuresHeight),
                 ],
               ),
             ),
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
             MxCard(
               child: Column(
-                spacing: AppSpacing.grouped,
+                spacing: context.dimens.space12,
                 children: [
                   for (var i = 0; i < _optionRows; i++)
-                    const Row(
-                      spacing: AppSpacing.grouped,
+                    Row(
+                      spacing: context.dimens.space12,
                       children: [
                         MxSkeleton(
                           width: _radioSize,
@@ -198,7 +198,7 @@ class _LoadingEntry extends StatelessWidget {
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: AppSpacing.micro,
+                            spacing: context.dimens.space4,
                             children: [
                               MxSkeleton(width: _titleWidth),
                               MxSkeleton(width: _lineWidth),

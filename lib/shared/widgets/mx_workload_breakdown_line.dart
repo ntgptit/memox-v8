@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The "N overdue · N today · N new" statement, with one colour for each
 /// term across the whole product, and an optional muted "N scheduled".
@@ -93,27 +92,11 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final muted = context.colors.onSurfaceVariant;
     final terms = [
-      (
-        overdueCount,
-        overdueLabel,
-        context.derivedColors.warningInk,
-        AppIcons.overdue,
-      ),
-      (
-        todayCount,
-        todayLabel,
-        context.derivedColors.primaryInk,
-        AppIcons.dueNow,
-      ),
-      (
-        newCount,
-        newLabel,
-        context.derivedColors.statusNewInk,
-        AppIcons.newCards,
-      ),
+      (overdueCount, overdueLabel, context.mxColors.warning, AppIcons.overdue),
+      (todayCount, todayLabel, context.accentColor, AppIcons.dueNow),
+      (newCount, newLabel, context.colors.onSurfaceVariant, AppIcons.newCards),
       if (scheduledLabel case final label?)
         (scheduledCount, label, muted, null),
     ].where((term) => shouldKeepZeroTerms || term.$1 > 0).toList();
@@ -124,7 +107,9 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
     final isFallbackShown = !terms.any((term) => term.$4 != null);
     return Text.rich(
       TextSpan(
-        style: styles.workloadText,
+        style: context.texts.labelMedium?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
         children: [
           if (isFallbackShown) TextSpan(text: fallback),
           for (final (index, (count, label, ink, _)) in terms.indexed) ...[
@@ -132,7 +117,11 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
               TextSpan(text: canWrap ? _gluedSeparator : _separator),
             TextSpan(
               text: _termText(label(count)),
-              style: count > 0 ? styles.workloadTerm(ink) : styles.workloadText,
+              style: count > 0
+                  ? context.texts.labelMedium?.copyWith(color: ink)
+                  : context.texts.labelMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
             ),
           ],
           if (suffix case final clause?) ...[
@@ -160,16 +149,21 @@ class _GlyphStatement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final muted = context.colors.onSurfaceVariant;
-    if (terms.isEmpty) return Text(fallback, style: styles.workloadText);
+    if (terms.isEmpty)
+      return Text(
+        fallback,
+        style: context.texts.labelMedium?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
+      );
     final statement = [for (final (count, label, _, _) in terms) label(count)]
         .join(MxWorkloadBreakdownLine._separator);
     return Semantics(
       label: statement,
       excludeSemantics: true,
       child: Wrap(
-        spacing: AppSpacing.micro,
+        spacing: context.dimens.space4,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           for (final (index, (count, label, ink, glyph)) in terms.indexed)
@@ -179,19 +173,23 @@ class _GlyphStatement extends StatelessWidget {
                 if (glyph case final icon?) ...[
                   Icon(
                     icon,
-                    size: AppIconSize.inline,
+                    size: context.dimens.sizeIconInline,
                     color: count > 0 ? ink : muted,
                   ),
-                  const SizedBox(width: AppSpacing.micro),
+                  SizedBox(width: context.dimens.space4),
                 ],
                 Flexible(
                   child: Text.rich(
                     TextSpan(
-                      style: styles.workloadText,
+                      style: context.texts.labelMedium?.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
                       children: [
                         TextSpan(
                           text: label(count),
-                          style: count > 0 ? styles.workloadTerm(ink) : null,
+                          style: count > 0
+                              ? context.texts.labelMedium?.copyWith(color: ink)
+                              : null,
                         ),
                         if (index < terms.length - 1)
                           const TextSpan(

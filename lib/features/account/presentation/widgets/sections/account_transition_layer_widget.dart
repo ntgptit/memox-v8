@@ -8,7 +8,6 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/providers/unsent_count_provider.dart';
 import 'package:memox/features/account/presentation/states/account_step_state.dart';
@@ -216,7 +215,7 @@ class _Progress extends StatelessWidget {
         SliverFillRemaining(
           hasScrollBody: false,
           child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.gutter),
+            padding: EdgeInsets.all(context.dimens.space16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -237,20 +236,22 @@ class _Progress extends StatelessWidget {
                       semanticLabel: step,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.section),
+                  SizedBox(height: context.dimens.space24),
                   Semantics(
                     liveRegion: true,
                     child: Text(
                       step,
                       textAlign: TextAlign.center,
-                      style: context.textStyles.screenTitle,
+                      style: context.texts.titleLarge,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.control),
+                  SizedBox(height: context.dimens.space8),
                   Text(
                     l10n.accountSafeToClose,
                     textAlign: TextAlign.center,
-                    style: context.textStyles.emptyBody,
+                    style: context.texts.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ],
@@ -283,7 +284,7 @@ class _StoppedActions extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) => Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.stretch,
-    spacing: AppSpacing.grouped,
+    spacing: context.dimens.space12,
     children: [
       MxButton(
         label: context.l10n.commonRetry,

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/presentation/controllers/card_import_controller.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
@@ -121,7 +120,7 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
     final step = draft.step;
     return MxScreenScroll(
       children: [
-        const SizedBox(height: AppSpacing.micro),
+        SizedBox(height: context.dimens.space4),
         ImportSourceSectionWidget(
           // A new source or a fresh start rebuilds the pasted text field.
           key: ValueKey(draft.sourceKind),
@@ -133,7 +132,7 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
           onChooseSheet: (index) =>
               unawaited(_wizard.readSource(sheetIndex: index)),
         ),
-        const SizedBox(height: AppSpacing.gutter),
+        SizedBox(height: context.dimens.space16),
         if (step == CardImportStep.columns)
           ImportMappingSectionWidget(
             draft: draft,
@@ -210,22 +209,23 @@ class _ImportingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final title = l10n.importImportingTitle(count);
     return MxCard(
       child: Column(
-        spacing: AppSpacing.grouped,
+        spacing: context.dimens.space12,
         children: [
           MxSpinner(size: MxSpinnerSize.large, semanticLabel: title),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: styles.emptyTitleCompact,
+            style: context.texts.titleSmall,
           ),
           Text(
             l10n.importImportingBody,
             textAlign: TextAlign.center,
-            style: styles.emptyBody,
+            style: context.texts.bodyMedium?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
         ],
       ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
@@ -46,13 +45,13 @@ class ImportOptionSheetWidget<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MxBottomSheet(
     header: Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.card,
-        AppSpacing.micro,
-        AppSpacing.card,
-        AppSpacing.grouped,
+      padding: EdgeInsets.fromLTRB(
+        context.dimens.space24,
+        context.dimens.space4,
+        context.dimens.space24,
+        context.dimens.space12,
       ),
-      child: Text(title, style: context.textStyles.compactTitle),
+      child: Text(title, style: context.texts.titleSmall),
     ),
     child: Column(
       children: [

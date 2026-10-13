@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/presentation/providers/card_detail_provider.dart';
@@ -20,6 +19,7 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// A card, read-only (UC-CARD-002, spec §6.6, kit 10): content, schedule and
 /// history under the deck path `app/` passes in. Editing is the explicit
@@ -105,7 +105,7 @@ class _DetailBody extends ConsumerWidget {
               cardId: cardId,
               addedAt: value.card.createdAt,
               leading: [
-                const SizedBox(height: AppSpacing.control),
+                SizedBox(height: context.dimens.space8),
                 CardDetailContentWidget(detail: value),
                 CardScheduleWidget(detail: value),
               ],

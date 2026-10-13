@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
@@ -38,37 +37,41 @@ class TrashEntryActionsSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final ago = l10n.ago(entry.deletedAt, now);
     final parent = trashParent(l10n, entry);
     void choose(TrashEntryAction action) => Navigator.of(context).pop(action);
     return MxBottomSheet(
       header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space24,
+          context.dimens.space4,
+          context.dimens.space24,
+          context.dimens.space12,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
           children: [
             Text(
               trashEntryName(entry),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: styles.compactTitle,
+              style: context.texts.titleSmall,
             ),
-            Text(switch (entry) {
-              TrashCardEntry() => l10n.trashCardActionsMeta(ago, parent),
-              TrashDeckEntry() => l10n.trashDeckActionsMeta(ago, parent),
-            }, style: styles.rowDescription),
+            Text(
+              switch (entry) {
+                TrashCardEntry() => l10n.trashCardActionsMeta(ago, parent),
+                TrashDeckEntry() => l10n.trashDeckActionsMeta(ago, parent),
+              },
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+        padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
         child: Column(
           children: [
             MxActionSheetCommandRow(

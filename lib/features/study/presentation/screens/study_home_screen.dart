@@ -7,7 +7,6 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_home_controller.dart';
 import 'package:memox/features/study/presentation/providers/study_home_provider.dart';
@@ -23,6 +22,7 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 13, the Study tab (UC-STUDY-002): the session Resume takes up, the
 /// library's workload, and every root deck with its own, read as one
@@ -106,7 +106,7 @@ class StudyHomeScreen extends ConsumerWidget {
       ),
       final RootDeckWorkload workload => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.gutter,
+        spacing: context.dimens.space16,
         children: [
           StudyHomeWorkloadWidget(
             workload: workload,
@@ -127,7 +127,7 @@ class StudyHomeScreen extends ConsumerWidget {
           isResuming: ref.watch(studyHomeControllerProvider),
           onResume: () => unawaited(_resume(context, ref, session.sessionId)),
         ),
-        const SizedBox(height: AppSpacing.gutter),
+        SizedBox(height: context.dimens.space16),
       ],
       body,
     ];

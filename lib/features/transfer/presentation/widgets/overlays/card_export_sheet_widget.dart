@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/transfer_format_model.dart';
 import 'package:memox/features/transfer/presentation/controllers/card_export_controller.dart';
@@ -97,7 +96,7 @@ class CardExportSheetWidget extends ConsumerWidget {
         onExport: () => _sheet(ref).export(),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+        padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -105,8 +104,8 @@ class CardExportSheetWidget extends ConsumerWidget {
             // The overline, the banner and the note line up with the title.
             Padding(
               padding:
-                  const EdgeInsets.only(top: AppSpacing.micro) +
-                  const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+                  EdgeInsets.only(top: context.dimens.space4) +
+                  EdgeInsets.symmetric(horizontal: context.dimens.space8),
               child: MxListSectionHeader(
                 label: context.l10n.exportFormatSection,
               ),
@@ -123,11 +122,11 @@ class CardExportSheetWidget extends ConsumerWidget {
                     : () => _sheet(ref).chooseFormat(format),
               ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.grouped,
-                AppSpacing.grouped,
-                AppSpacing.grouped,
-                AppSpacing.control,
+              padding: EdgeInsets.fromLTRB(
+                context.dimens.space12,
+                context.dimens.space12,
+                context.dimens.space12,
+                context.dimens.space8,
               ),
               child: MxNote(
                 text: context.l10n.exportContentNote,
@@ -156,30 +155,29 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final deckName = scope.deckName;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.card,
-        AppSpacing.micro,
-        AppSpacing.card,
-        AppSpacing.grouped,
+      padding: EdgeInsets.fromLTRB(
+        context.dimens.space24,
+        context.dimens.space4,
+        context.dimens.space24,
+        context.dimens.space12,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.micro,
+        spacing: context.dimens.space4,
         children: [
           Text(
             deckName == null
                 ? l10n.exportTitleSelection(scope.cardCount)
                 : l10n.exportTitleDeck(scope.cardCount),
-            style: styles.compactTitle,
+            style: context.texts.titleSmall,
           ),
           Text(
             deckName == null
                 ? l10n.exportBodySelection
                 : l10n.exportBodyDeck(deckName),
-            style: styles.dialogBody,
+            style: context.texts.bodyMedium,
           ),
         ],
       ),
@@ -196,11 +194,11 @@ class _Problem extends StatelessWidget {
   Widget build(BuildContext context) {
     final copy = context.l10n.exportProblem(problem);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.grouped,
+      padding: EdgeInsets.fromLTRB(
+        context.dimens.space12,
         0,
-        AppSpacing.grouped,
-        AppSpacing.grouped,
+        context.dimens.space12,
+        context.dimens.space12,
       ),
       child: MxInlineBanner(
         tone: problem == CardExportProblem.prepareFailed

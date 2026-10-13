@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// How a stat's figure is inked: [primary] draws the eye to what the
 /// screen offers, [plain] states a fact, [muted] a figure nothing acts on.
@@ -32,9 +31,8 @@ class MxStatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
     final ink = switch (emphasis) {
-      MxStatTileEmphasis.primary => context.derivedColors.primaryInk,
+      MxStatTileEmphasis.primary => context.accentColor,
       MxStatTileEmphasis.plain => colors.onSurface,
       MxStatTileEmphasis.muted => colors.onSurfaceVariant,
     };
@@ -44,7 +42,7 @@ class MxStatTile extends StatelessWidget {
       crossAxisAlignment: isBoxed
           ? CrossAxisAlignment.start
           : CrossAxisAlignment.center,
-      spacing: AppSpacing.micro,
+      spacing: context.dimens.space4,
       children: [
         // The value keeps one line and scales down in a narrow column
         // (critique 2026-09-30 part 3c-1: "41 of / 241").
@@ -53,19 +51,28 @@ class MxStatTile extends StatelessWidget {
           alignment: isBoxed
               ? AlignmentDirectional.centerStart
               : Alignment.center,
-          child: Text(value, maxLines: 1, style: styles.statValue(ink)),
+          child: Text(
+            value,
+            maxLines: 1,
+            style: context.texts.displayMedium?.copyWith(color: ink),
+          ),
         ),
-        Text(label.toUpperCase(), style: styles.statLabel),
+        Text(
+          label.toUpperCase(),
+          style: context.texts.labelSmall?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
+        ),
       ],
     );
     final body = isBoxed
         ? DecoratedBox(
             decoration: BoxDecoration(
               color: colors.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderRadius: BorderRadius.circular(context.dimens.radiusMd),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.grouped),
+              padding: EdgeInsets.all(context.dimens.space12),
               child: SizedBox(width: double.infinity, child: figure),
             ),
           )

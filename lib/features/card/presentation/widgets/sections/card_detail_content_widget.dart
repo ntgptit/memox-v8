@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
@@ -20,7 +18,6 @@ class CardDetailContentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final card = detail.card;
     final status = detail.displayStatus;
     final optional = [
@@ -29,15 +26,15 @@ class CardDetailContentWidget extends StatelessWidget {
       (AppIcons.pronunciation, l10n.cardFieldPronunciation, card.pronunciation),
     ];
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+      padding: EdgeInsets.only(bottom: context.dimens.space16),
       child: MxCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.grouped,
+          spacing: context.dimens.space12,
           children: [
             // Status first, so a long front keeps the full width.
             Row(
-              spacing: AppSpacing.control,
+              spacing: context.dimens.space8,
               children: [
                 MxStatusBadge(
                   status: mxCardStatus(status),
@@ -49,7 +46,7 @@ class CardDetailContentWidget extends StatelessWidget {
                     container: true,
                     child: Icon(
                       AppIcons.flagged,
-                      size: AppIconSize.inline,
+                      size: context.dimens.sizeIconInline,
                       semanticLabel: l10n.cardFlaggedLabel,
                     ),
                   ),
@@ -57,10 +54,10 @@ class CardDetailContentWidget extends StatelessWidget {
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.micro,
+              spacing: context.dimens.space4,
               children: [
-                Text(card.front, style: styles.screenTitle),
-                Text(card.back, style: styles.dialogBody),
+                Text(card.front, style: context.texts.titleLarge),
+                Text(card.back, style: context.texts.bodyMedium),
               ],
             ),
             for (final (icon, label, value) in optional)
@@ -68,8 +65,8 @@ class CardDetailContentWidget extends StatelessWidget {
                 _OptionalField(icon: icon, label: label, value: value),
             if (detail.tags.isNotEmpty)
               Wrap(
-                spacing: AppSpacing.micro,
-                runSpacing: AppSpacing.micro,
+                spacing: context.dimens.space4,
+                runSpacing: context.dimens.space4,
                 children: [
                   for (final tag in detail.tags) MxTagChip(label: tag.name),
                 ],
@@ -94,20 +91,19 @@ class _OptionalField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     // The glyph centres on the label and value, as the schedule's fact
     // tiles do (owner 2026-09-26).
     return Row(
-      spacing: AppSpacing.control,
+      spacing: context.dimens.space8,
       children: [
-        Icon(icon, size: AppIconSize.inline),
+        Icon(icon, size: context.dimens.sizeIconInline),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
-              Text(label, style: styles.fieldLabel),
-              Text(value, style: styles.dialogBody),
+              Text(label, style: context.texts.labelMedium),
+              Text(value, style: context.texts.bodyMedium),
             ],
           ),
         ),

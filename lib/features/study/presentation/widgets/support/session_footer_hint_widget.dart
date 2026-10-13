@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 
@@ -26,13 +24,15 @@ class SessionFooterHintWidget extends StatelessWidget {
     if (MxAppShell.isTypingOf(context)) {
       return const SizedBox.shrink();
     }
-    final style = context.textStyles.sessionHint;
+    final style = context.texts.bodyMedium?.copyWith(
+      color: context.colors.onSurfaceVariant,
+    );
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.gutter,
-        AppSpacing.control,
-        AppSpacing.gutter,
-        AppSpacing.gutter,
+      padding: EdgeInsets.fromLTRB(
+        context.dimens.space16,
+        context.dimens.space8,
+        context.dimens.space16,
+        context.dimens.space16,
       ),
       child: Text.rich(
         TextSpan(
@@ -40,13 +40,11 @@ class SessionFooterHintWidget extends StatelessWidget {
             WidgetSpan(
               alignment: PlaceholderAlignment.middle,
               child: Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  end: AppSpacing.control,
-                ),
+                padding: EdgeInsetsDirectional.only(end: context.dimens.space8),
                 child: IconTheme.merge(
                   data: IconThemeData(
                     color: style.color,
-                    size: AppIconSize.inline,
+                    size: context.dimens.sizeIconInline,
                   ),
                   child: ExcludeSemantics(child: Icon(icon)),
                 ),

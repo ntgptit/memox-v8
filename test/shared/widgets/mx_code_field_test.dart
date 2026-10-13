@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../support/widget_harness.dart';
+
+import 'package:memox/core/theme/theme_context.dart';
 
 void main() {
   final scheme = AppColorSchemes.light;
@@ -166,7 +164,9 @@ void main() {
       find.ancestor(
         of: find.byKey(MxCodeField.slotKey(0)),
         matching: find.byWidgetPredicate(
-          (w) => w is Opacity && w.opacity == AppOpacity.disabled,
+          (w) =>
+              w is Opacity &&
+              w.opacity == context.dimens.opacityDisabledContent,
         ),
       ),
       findsNothing,

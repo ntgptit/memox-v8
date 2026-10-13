@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// One source row in the preview (kit 11 preview table): its number, the
 /// term and the meaning on up to two lines each, why it will not be written,
@@ -21,29 +20,30 @@ class ImportPreviewRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final draft = row.draft;
     final note = l10n.importRowNote(row);
     final back = draft?.back.trim() ?? '';
     return MergeSemantics(
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.gutter,
-          vertical: AppSpacing.grouped,
+        padding: EdgeInsets.symmetric(
+          horizontal: context.screenMargin,
+          vertical: context.dimens.space12,
         ),
         // The number and the mark centre on the row (kit 11).
         child: Row(
-          spacing: AppSpacing.grouped,
+          spacing: context.dimens.space12,
           children: [
             Text(
               '${row.rowNumber}',
               semanticsLabel: l10n.importRowNumber(row.rowNumber),
-              style: styles.counter,
+              style: context.texts.labelSmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
             ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.micro,
+                spacing: context.dimens.space4,
                 children: [
                   if (draft != null) ...[
                     Text(
@@ -52,21 +52,27 @@ class ImportPreviewRowWidget extends StatelessWidget {
                           : draft.front.trim(),
                       maxLines: _maxLines,
                       overflow: TextOverflow.ellipsis,
-                      style: styles.contentTitle,
+                      style: context.texts.titleMedium,
                     ),
                     Text(
                       back.isEmpty ? l10n.importRowEmptyCell : back,
                       maxLines: _maxLines,
                       overflow: TextOverflow.ellipsis,
-                      style: styles.rowDescription,
+                      style: context.texts.bodyMedium?.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
                     ),
                   ],
                   if (note != null)
                     Text(
                       note,
                       style: row.kind == ImportRowKind.invalid
-                          ? styles.statusLabel(context.derivedColors.warningInk)
-                          : styles.rowDescription,
+                          ? context.texts.labelSmall?.copyWith(
+                              color: context.mxColors.warning,
+                            )
+                          : context.texts.bodyMedium?.copyWith(
+                              color: context.colors.onSurfaceVariant,
+                            ),
                     ),
                 ],
               ),
@@ -89,12 +95,9 @@ class _Mark extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final (icon, color) = switch (kind) {
-      ImportRowKind.ready => (AppIcons.check, context.derivedColors.successInk),
+      ImportRowKind.ready => (AppIcons.check, context.mxColors.success),
       // The legend badge's glyph; an X would read as a dismiss control.
-      ImportRowKind.invalid => (
-        AppIcons.alert,
-        context.derivedColors.warningInk,
-      ),
+      ImportRowKind.invalid => (AppIcons.alert, context.mxColors.warning),
       ImportRowKind.duplicateInDeck || ImportRowKind.duplicateInSource => (
         AppIcons.cardDeck,
         colors.onSurfaceVariant,
@@ -104,7 +107,7 @@ class _Mark extends StatelessWidget {
     return Semantics(
       label: label,
       child: IconTheme.merge(
-        data: IconThemeData(color: color, size: AppIconSize.compact),
+        data: IconThemeData(color: color, size: context.dimens.sizeIconCompact),
         child: Icon(icon),
       ),
     );

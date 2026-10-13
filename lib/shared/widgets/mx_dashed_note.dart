@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The place a chart or a figure takes once there is something to show
 /// (kit 22's per-chart empty, FE-A9 D6): one centred line in a muted box
@@ -20,17 +18,19 @@ class MxDashedNote extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: colors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderRadius: BorderRadius.circular(context.dimens.radiusMd),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.gutter,
-            vertical: AppSpacing.section,
+          padding: EdgeInsets.symmetric(
+            horizontal: context.screenMargin,
+            vertical: context.dimens.space24,
           ),
           child: Text(
             text,
             textAlign: TextAlign.center,
-            style: context.textStyles.noteText,
+            style: context.texts.bodyMedium?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
         ),
       ),
@@ -49,23 +49,23 @@ class _DashedBorder extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const inset = AppStroke.hairline / 2;
+    const inset = context.dimens.strokeHairline / 2;
     final outline = Path()
       ..addRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(
             inset,
             inset,
-            size.width - AppStroke.hairline,
-            size.height - AppStroke.hairline,
+            size.width - context.dimens.strokeHairline,
+            size.height - context.dimens.strokeHairline,
           ),
-          const Radius.circular(AppRadius.md),
+          Radius.circular(context.dimens.radiusMd),
         ),
       );
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth = AppStroke.hairline;
+      ..strokeWidth = context.dimens.strokeHairline;
     for (final metric in outline.computeMetrics()) {
       for (var start = 0.0; start < metric.length; start += _dash + _gap) {
         canvas.drawPath(metric.extractPath(start, start + _dash), paint);

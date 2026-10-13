@@ -3,7 +3,6 @@ import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/features/monitoring/domain/entities/log_summary_entity.dart';
 import 'package:memox/features/monitoring/presentation/widgets/support/monitoring_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -59,9 +58,14 @@ class LogRowWidget extends StatelessWidget {
         trailing: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
-          spacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
           children: [
-            Text(time, style: context.textStyles.counter),
+            Text(
+              time,
+              style: context.texts.labelSmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
             if (status != statusShownByFilter &&
                 status != null &&
                 statusLabel != null)

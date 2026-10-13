@@ -200,7 +200,7 @@ void main() {
               ),
               top: MxBarSeries(
                 label: 'Learning',
-                color: context.semanticColors.statusLearning,
+                color: context.mxColors.warningContainer,
               ),
             ),
             const MxDashedNote(

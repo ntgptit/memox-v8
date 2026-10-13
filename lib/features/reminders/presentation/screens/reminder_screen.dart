@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/reminders/domain/models/reminder_platform_model.dart';
 import 'package:memox/features/reminders/domain/models/reminder_status_model.dart';
 import 'package:memox/features/reminders/presentation/controllers/reminder_controller.dart';
@@ -24,6 +23,7 @@ import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 24, Daily reminder (UC-REMINDER-001): the stored reminder from the
 /// stream, the operation in flight and its outcome from the controller
@@ -105,7 +105,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     if (status.capability == ReminderCapability.unsupported) {
       return MxScreenScroll(
         children: [
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           MxSection(
             children: [
               MxSettingsRow(
@@ -120,7 +120,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     }
     return MxScreenScroll(
       children: [
-        const SizedBox(height: AppSpacing.control),
+        SizedBox(height: context.dimens.space8),
         ReminderSettingsSectionWidget(
           reminder: status.reminder,
           action: action,
@@ -137,7 +137,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
           onOpenSettings: () =>
               unawaited(ref.read(openNotificationSettingsProvider)()),
         ),
-        const SizedBox(height: AppSpacing.gutter),
+        SizedBox(height: context.dimens.space16),
         const ReminderPreviewSectionWidget(),
       ],
     );

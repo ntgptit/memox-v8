@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/logging/log_entry.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/monitoring/domain/models/pending_logs_model.dart';
 import 'package:memox/features/monitoring/presentation/controllers/pending_logs_controller.dart';
 import 'package:memox/features/monitoring/presentation/widgets/items/log_row_widget.dart';
@@ -19,6 +18,8 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The Not sent tab (monitoring spec §3.2): the device buffer, read-only, so
 /// it works offline. Only the level can be filtered.
@@ -42,10 +43,10 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
         // Only while logs wait: an empty buffer says so below.
         if (state.logs.value case final logs? when logs.total > 0)
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
-              AppSpacing.grouped,
-              AppSpacing.gutter,
+            padding: EdgeInsets.fromLTRB(
+              context.dimens.space16,
+              context.dimens.space12,
+              context.dimens.space16,
               0,
             ),
             child: MxNote(text: l10n.monitoringPendingNote),
@@ -53,7 +54,7 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
             child: MxChipTrigger(
               label: monitoringChipLabel(
                 l10n,
@@ -97,7 +98,7 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
       final isBufferEmpty = logs.total == 0;
       return MxScreenScroll(
         children: [
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           MxEmptyState(
             icon: isBufferEmpty ? AppIcons.learned : AppIcons.searchOff,
             title: isBufferEmpty
@@ -117,7 +118,7 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
     final now = ref.watch(dayClockProvider).now();
     return MxScreenScroll(
       children: [
-        const SizedBox(height: AppSpacing.control),
+        SizedBox(height: context.dimens.space8),
         // The tab states the buffer's count; the list counts what it shows
         // at the chosen levels (critique 2026-09-30 part 3b).
         MxListSectionHeader(

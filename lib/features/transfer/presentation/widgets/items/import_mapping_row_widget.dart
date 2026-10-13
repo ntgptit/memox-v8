@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/column_mapping_model.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/import_option_sheet_widget.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// One source column and the field it feeds (kit 11 mapping row): its
 /// position name, the header it had, its first value, and a picker of the
@@ -34,38 +34,41 @@ class ImportMappingRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final letter = columnLetter(column);
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.gutter,
-        vertical: AppSpacing.grouped,
+      padding: EdgeInsets.symmetric(
+        horizontal: context.screenMargin,
+        vertical: context.dimens.space12,
       ),
       child: Row(
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.micro,
+              spacing: context.dimens.space4,
               children: [
                 Text(
                   l10n.importColumnName(letter),
-                  style: styles.rowDescription,
+                  style: context.texts.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
                 if (header case final text? when text.trim().isNotEmpty)
                   Text(
                     text,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: styles.contentTitle,
+                    style: context.texts.titleMedium,
                   ),
                 if (sample case final text?)
                   Text(
                     text,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: styles.rowDescription,
+                    style: context.texts.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
                   ),
               ],
             ),

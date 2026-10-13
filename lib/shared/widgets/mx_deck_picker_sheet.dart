@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -79,10 +78,10 @@ class MxDeckPickerSheet extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsetsDirectional.only(
-          start: AppSpacing.control,
-          end: AppSpacing.control,
-          bottom: AppSpacing.control,
+        padding: EdgeInsetsDirectional.only(
+          start: context.dimens.space8,
+          end: context.dimens.space8,
+          bottom: context.dimens.space8,
         ),
         child: isEmpty
             ? MxEmptyState(
@@ -151,21 +150,26 @@ class _PickerHead extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.card,
-        AppSpacing.micro,
-        AppSpacing.card,
-        AppSpacing.grouped,
+      padding: EdgeInsets.fromLTRB(
+        context.dimens.space24,
+        context.dimens.space4,
+        context.dimens.space24,
+        context.dimens.space12,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: _ruleGap,
         children: [
-          Text(title, style: styles.compactTitle),
-          if (rule case final text?) Text(text, style: styles.noteText),
+          Text(title, style: context.texts.titleSmall),
+          if (rule case final text?)
+            Text(
+              text,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
         ],
       ),
     );

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// One placeholder shape. It pulses: opacity travels 0.45 ↔ 0.75 over 1.4s,
 /// with no shimmer sweep. Under reduced motion it rests at 0.5.
@@ -135,20 +133,20 @@ class MxSkeletonRow extends StatelessWidget {
   static const double _subtitleShare = 0.45;
 
   @override
-  Widget build(BuildContext context) => const Padding(
+  Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.symmetric(
-      horizontal: AppSpacing.gutter,
-      vertical: AppSpacing.grouped,
+      horizontal: context.screenMargin,
+      vertical: context.dimens.space12,
     ),
     child: Row(
-      spacing: AppSpacing.grouped,
+      spacing: context.dimens.space12,
       children: [
         MxSkeleton(width: _tileSize, height: _tileSize),
         Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.control,
+            spacing: context.dimens.space8,
             children: [
               FractionallySizedBox(
                 widthFactor: _titleShare,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The size steps, each with one role: small leads content rows, medium
 /// leads settings rows, large leads deck rows.
@@ -60,30 +60,42 @@ class MxIconTile extends StatelessWidget {
       (null, Brightness.dark) => _primaryTintDark,
     };
     final (box, radius, glyph) = switch (size) {
-      MxIconTileSize.small => (smallBox, AppRadius.sm, AppIconSize.inline),
-      MxIconTileSize.medium => (mediumBox, AppRadius.md, AppIconSize.compact),
-      MxIconTileSize.large => (_largeBox, AppRadius.md, AppIconSize.compact),
+      MxIconTileSize.small => (
+        smallBox,
+        context.dimens.radiusSm,
+        context.dimens.sizeIconInline,
+      ),
+      MxIconTileSize.medium => (
+        mediumBox,
+        context.dimens.radiusMd,
+        context.dimens.sizeIconCompact,
+      ),
+      MxIconTileSize.large => (
+        _largeBox,
+        context.dimens.radiusMd,
+        context.dimens.sizeIconCompact,
+      ),
     };
     final (fill, ink) = switch (tone) {
       MxIconTileTone.tinted => (
         tinted.withValues(alpha: tint),
-        seed ?? context.derivedColors.primaryInk,
+        seed ?? context.accentColor,
       ),
       MxIconTileTone.primary => (colors.primary, colors.onPrimary),
       MxIconTileTone.warning => (
-        context.semanticColors.warning,
-        context.semanticColors.onWarning,
+        context.mxColors.warningContainer,
+        context.mxColors.onWarningContainer,
       ),
       MxIconTileTone.success => (
-        context.derivedColors.successSoft,
-        context.derivedColors.successInk,
+        context.mxColors.success.tintOver(context.colors.surface),
+        context.mxColors.success,
       ),
       MxIconTileTone.caution => (
-        context.derivedColors.warningSoft,
-        context.derivedColors.warningInk,
+        context.mxColors.warning.tintOver(context.colors.surface),
+        context.mxColors.warning,
       ),
       MxIconTileTone.danger => (
-        context.derivedColors.dangerSoft,
+        context.colors.error.tintOver(context.colors.surface),
         context.colors.error,
       ),
     };

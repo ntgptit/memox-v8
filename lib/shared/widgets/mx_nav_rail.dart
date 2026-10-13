@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The top-level destinations in a rail on the leading edge, for windows of
-/// [AppSize.navRailBreakpoint] and wider (FE-C5). The kit draws no rail: it
+/// [context.dimens.breakpointMedium] and wider (FE-C5). The kit draws no rail: it
 /// takes MxBottomNav's glyphs, pill and label so the two read as one
 /// control. It takes the insets on its own side and scrolls when the window
 /// is short.
@@ -45,13 +42,13 @@ class MxNavRail extends StatelessWidget {
         left: isLtr,
         right: !isLtr,
         child: SizedBox(
-          width: AppSize.navRail,
+          width: context.dimens.sizeRail,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.control),
+            padding: EdgeInsets.symmetric(vertical: context.dimens.space8),
             child: Material(
               type: MaterialType.transparency,
               child: Column(
-                spacing: AppSpacing.micro,
+                spacing: context.dimens.space4,
                 children: [
                   for (final (index, destination) in destinations.indexed)
                     _RailItem(
@@ -95,14 +92,14 @@ class _RailItem extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
+          constraints: BoxConstraints(
             minHeight: _minHeight,
-            minWidth: AppSize.navRail,
+            minWidth: context.dimens.sizeRail,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
               DecoratedBox(
                 decoration: BoxDecoration(
@@ -110,28 +107,32 @@ class _RailItem extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppRadius.full),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                    vertical: AppSpacing.micro,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.screenMargin,
+                    vertical: context.dimens.space4,
                   ),
                   child: Icon(
                     isSelected ? destination.selectedIcon : destination.icon,
-                    size: AppIconSize.compact,
+                    size: context.dimens.sizeIconCompact,
                     color: isSelected
-                        ? context.derivedColors.primaryInk
+                        ? context.accentColor
                         : colors.onSurfaceVariant,
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.micro,
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.dimens.space4,
                 ),
                 child: Text(
                   destination.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: context.textStyles.navLabel(isSelected: isSelected),
+                  style: context.texts.labelSmall?.copyWith(
+                    color: isSelected
+                        ? context.colors.onSurface
+                        : context.colors.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],

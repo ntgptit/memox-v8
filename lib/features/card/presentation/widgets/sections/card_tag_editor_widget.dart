@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_removable_tag_chip_widget.dart';
@@ -124,32 +122,33 @@ class CardTagEditorWidgetState extends State<CardTagEditorWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final isFull = widget.tags.length >= TagEntity.maxPerCard;
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+      padding: EdgeInsets.only(bottom: context.dimens.space16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.micro),
+            padding: EdgeInsets.symmetric(horizontal: context.dimens.space4),
             child: Row(
-              spacing: AppSpacing.micro,
+              spacing: context.dimens.space4,
               children: [
-                const Icon(AppIcons.tag, size: AppIconSize.inline),
-                Text(l10n.cardTags, style: styles.fieldLabel),
+                Icon(AppIcons.tag, size: context.dimens.sizeIconInline),
+                Text(l10n.cardTags, style: context.texts.labelMedium),
                 Flexible(
                   child: Text(
                     l10n.cardTagsMeta(widget.tags.length, TagEntity.maxPerCard),
-                    style: styles.rowDescription,
+                    style: context.texts.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           Wrap(
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               for (final tag in widget.tags)

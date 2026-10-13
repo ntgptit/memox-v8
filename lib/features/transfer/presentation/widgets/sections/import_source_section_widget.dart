@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
 import 'package:memox/core/notes/note_keys.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/source_table_model.dart';
 import 'package:memox/features/transfer/domain/models/transfer_source_model.dart';
@@ -78,7 +77,7 @@ class _ImportSourceSectionWidgetState
       return const [];
     }
     return [
-      const SizedBox(height: AppSpacing.grouped),
+      SizedBox(height: context.dimens.space12),
       MxNote(
         text: l10n.importHelperBody,
         dismissLabel: l10n.commonDismissNote,
@@ -102,7 +101,7 @@ class _ImportSourceSectionWidgetState
         IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.control,
+            spacing: context.dimens.space8,
             children: [
               Expanded(
                 child: ImportSourceOptionWidget(
@@ -134,7 +133,7 @@ class _ImportSourceSectionWidgetState
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.gutter),
+        SizedBox(height: context.dimens.space16),
       ],
       ..._body(context),
     ];
@@ -170,7 +169,7 @@ class _ImportSourceSectionWidgetState
           ],
         ),
         if (draft.sourceKind == CardImportSourceKind.paste) ...[
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
           _pasteField(context),
         ],
       ];
@@ -209,7 +208,7 @@ class _ImportSourceSectionWidgetState
         : _pasted.text.trim().split('\n').length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.micro,
+      spacing: context.dimens.space4,
       children: [
         MxTextField(
           controller: _pasted,
@@ -224,7 +223,9 @@ class _ImportSourceSectionWidgetState
         if (lines > 0)
           Text(
             l10n.importPastedLines(lines),
-            style: context.textStyles.rowDescription,
+            style: context.texts.bodyMedium?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
       ],
     );
@@ -253,7 +254,6 @@ class _SourceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final source = draft.source;
     final table = draft.table;
     final format = switch (source) {
@@ -271,24 +271,29 @@ class _SourceChip extends StatelessWidget {
     return MxCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           Row(
-            spacing: AppSpacing.grouped,
+            spacing: context.dimens.space12,
             children: [
               MxIconTile(icon: isFile ? AppIcons.fileText : AppIcons.clipboard),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.micro,
+                  spacing: context.dimens.space4,
                   children: [
                     Text(
                       isFile ? draft.fileName ?? '' : l10n.importSourcePaste,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: styles.contentTitle,
+                      style: context.texts.titleMedium,
                     ),
-                    Text(meta, style: styles.rowDescription),
+                    Text(
+                      meta,
+                      style: context.texts.bodyMedium?.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -346,10 +351,15 @@ class _ReadingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MxCard(
     child: Column(
-      spacing: AppSpacing.grouped,
+      spacing: context.dimens.space12,
       children: [
         MxSpinner(size: MxSpinnerSize.large, semanticLabel: label),
-        Text(label, style: context.textStyles.emptyBody),
+        Text(
+          label,
+          style: context.texts.bodyMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
+        ),
       ],
     ),
   );

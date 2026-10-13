@@ -5,7 +5,6 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/auth_gateway.dart';
 import 'package:memox/core/auth/auth_state.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/sign_in_form_widget.dart';
@@ -19,6 +18,8 @@ import 'package:memox/shared/widgets/mx_text_field.dart';
 import '../../../support/account_harness.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+
+import 'package:memox/core/theme/theme_context.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -317,7 +318,7 @@ void main() {
       final field = find.byType(MxTextField);
       expect(
         tester.getTopLeft(wayOut).dy - tester.getBottomLeft(field).dy,
-        AppSpacing.major,
+        context.dimens.space32,
       );
     });
 

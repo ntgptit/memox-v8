@@ -4,8 +4,6 @@ import 'package:memox/features/study/presentation/widgets/support/session_footer
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_guess_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -16,6 +14,8 @@ import '../../../support/library_harness.dart';
 import '../../../support/study_entry_fixtures.dart';
 import '../../../support/study_fixtures.dart';
 import '../../../support/test_database.dart';
+
+import 'package:memox/core/theme/theme_context.dart';
 
 // Screen 18, Guess: BR-STUDY-037, BR-STUDY-040, BR-STUDY-041,
 // BR-STUDY-042, BR-STUDY-063; FE-A6 P3 rulings G1–G3, C1–C4, C6.
@@ -128,7 +128,7 @@ void main() {
           )
           .first,
     );
-    expect(cherry.opacity, AppOpacity.muted);
+    expect(cherry.opacity, context.dimens.opacityMuted);
     expect(tester.takeAnnouncements().map((a) => a.message), [
       _en.studyGuessAnnounceWrong('apple'),
     ]);
@@ -224,7 +224,7 @@ void main() {
       final body = tester.getRect(find.byType(StudyGuessWidget));
       expect(
         tester.getCenter(find.byType(MxErrorState)).dy,
-        closeTo(body.center.dy - AppSpacing.section / 2, 1),
+        closeTo(body.center.dy - context.dimens.space24 / 2, 1),
       );
       expect(
         find.descendant(

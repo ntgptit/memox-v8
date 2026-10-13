@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
@@ -66,7 +64,7 @@ class MxSheetActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Widget row = children.isNotEmpty
-        ? Row(spacing: AppSpacing.control, children: children)
+        ? Row(spacing: context.dimens.space8, children: children)
         : MxActionPair(
             leading: MxButton(
               label: cancelLabel!,
@@ -92,7 +90,7 @@ class MxSheetActions extends StatelessWidget {
       // A dialog's pair, 16 in on the edge its title and body share
       // (DEV-166).
       return Padding(
-        padding: const EdgeInsets.all(AppSpacing.gutter),
+        padding: EdgeInsets.all(context.dimens.space16),
         child: row,
       );
     }
@@ -100,17 +98,17 @@ class MxSheetActions extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: context.derivedColors.ghostBorder,
-            width: AppStroke.hairline,
+            color: context.colors.outlineVariant,
+            width: context.dimens.strokeHairline,
           ),
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.gutter,
-          AppSpacing.control,
-          AppSpacing.gutter,
-          AppSpacing.gutter,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space16,
+          context.dimens.space8,
+          context.dimens.space16,
+          context.dimens.space16,
         ),
         child: row,
       ),

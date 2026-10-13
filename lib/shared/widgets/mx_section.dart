@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
@@ -24,11 +22,11 @@ class MxSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final divider = SizedBox(
-      height: AppStroke.hairline,
-      child: ColoredBox(color: context.derivedColors.ghostBorder),
+      height: context.dimens.strokeHairline,
+      child: ColoredBox(color: context.colors.outlineVariant),
     );
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+      padding: EdgeInsets.only(bottom: context.dimens.space16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -49,10 +47,10 @@ class MxSection extends StatelessWidget {
           ),
           if (note case final text?)
             Padding(
-              padding: const EdgeInsetsDirectional.only(
-                start: AppSpacing.micro,
-                end: AppSpacing.micro,
-                top: AppSpacing.control,
+              padding: EdgeInsetsDirectional.only(
+                start: context.dimens.space4,
+                end: context.dimens.space4,
+                top: context.dimens.space8,
               ),
               child: MxNote.hint(text: text),
             ),

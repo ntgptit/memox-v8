@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// The editor's save bar (kit 08/09): an inline banner after a failed save,
 /// Cancel and the save button sharing the row 1 : 1 as every footer pair
@@ -38,7 +38,7 @@ class CardEditorFooterWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           if (hasFailed)
             MxInlineBanner(

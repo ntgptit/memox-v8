@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_workload_line_widget.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// A deck in reorder mode, in the browse row's shape: one MxCard per deck
 /// (handoff 01, ruling M3-D2). Its drag handle takes the chevron's place
@@ -39,8 +39,8 @@ class DeckReorderRowWidget extends StatelessWidget {
       ),
       trailing: ReorderableDragStartListener(
         index: index,
-        child: const SizedBox.square(
-          dimension: AppSize.touchTarget,
+        child: SizedBox.square(
+          dimension: context.dimens.sizeControl,
           child: Icon(AppIcons.dragHandle),
         ),
       ),

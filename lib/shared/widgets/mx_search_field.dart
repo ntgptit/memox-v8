@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The library search input: a leading glyph, a single-line query, and a
 /// clear button that appears only once there is something to clear. What the
@@ -98,12 +96,11 @@ class _MxSearchFieldState extends State<MxSearchField> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
     final isFocused = _focusNode.hasFocus;
     final hasQuery = _controller.text.isNotEmpty;
     // As in MxTextField: padding centres the line in the 52 floor, so the
     // decorator paints the full box and scaled text still grows it.
-    final valueStyle = styles.searchValue;
+    final valueStyle = context.texts.labelMedium;
     final lineHeight = valueStyle.fontSize! * valueStyle.height!;
     final field = TextField(
       controller: _controller,
@@ -117,35 +114,33 @@ class _MxSearchFieldState extends State<MxSearchField> {
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: widget.hintText,
-        hintStyle: styles.searchHint,
+        hintStyle: context.texts.labelMedium?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
         // The edges are the theme's field (spec §4.6); the search keeps its
         // own fill.
         fillColor: isFocused
             ? colors.surfaceContainerLowest
             : colors.surfaceContainer,
         contentPadding: EdgeInsets.symmetric(
-          vertical: (AppSize.input - lineHeight) / 2,
+          vertical: (context.dimens.sizeInput - lineHeight) / 2,
         ),
         prefixIcon: Padding(
-          padding: const EdgeInsetsDirectional.only(
-            start: AppSpacing.gutter,
-            end: AppSpacing.control,
+          padding: EdgeInsetsDirectional.only(
+            start: context.dimens.space16,
+            end: context.dimens.space8,
           ),
           child: Icon(
             AppIcons.search,
-            size: AppIconSize.compact,
-            color: isFocused
-                ? context.derivedColors.primaryInk
-                : colors.onSurfaceVariant,
+            size: context.dimens.sizeIconCompact,
+            color: isFocused ? context.accentColor : colors.onSurfaceVariant,
           ),
         ),
         prefixIconConstraints: const BoxConstraints(),
         // The clear button owns its inset; an empty field keeps a 12 spacer.
         suffixIcon: hasQuery
             ? Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  end: AppSpacing.micro,
-                ),
+                padding: EdgeInsetsDirectional.only(end: context.dimens.space4),
                 child: MxIconButton(
                   icon: AppIcons.close,
                   // A trigger never holds a query, so a clear button always
@@ -154,7 +149,7 @@ class _MxSearchFieldState extends State<MxSearchField> {
                   onPressed: _clear,
                 ),
               )
-            : const SizedBox(width: AppSpacing.grouped),
+            : SizedBox(width: context.dimens.space12),
         suffixIconConstraints: const BoxConstraints(),
       ),
     );

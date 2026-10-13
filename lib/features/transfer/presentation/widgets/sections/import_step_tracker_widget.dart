@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
@@ -17,13 +13,13 @@ class ImportStepTrackerWidget extends StatelessWidget {
 
   final CardImportStep current;
 
-  static const double _dot = AppIconSize.compact;
+  static const double _dot = context.dimens.sizeIconCompact;
 
   /// The shortest connector a one-row tracker keeps; below it the steps wrap.
-  static const double _minLine = AppSpacing.control;
+  static const double _minLine = context.dimens.space8;
 
   /// A connector's length when the steps wrap.
-  static const double _wrappedLine = AppSpacing.grouped;
+  static const double _wrappedLine = context.dimens.space12;
 
   @override
   Widget build(BuildContext context) {
@@ -38,22 +34,22 @@ class ImportStepTrackerWidget extends StatelessWidget {
       ),
       child: ExcludeSemantics(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.gutter,
+          padding: EdgeInsets.fromLTRB(
+            context.dimens.space16,
             0,
-            AppSpacing.gutter,
-            AppSpacing.grouped,
+            context.dimens.space16,
+            context.dimens.space12,
           ),
           child: LayoutBuilder(
             builder: (context, constraints) =>
                 _oneRowWidth(context, labels) <= constraints.maxWidth
                 ? Row(
-                    spacing: AppSpacing.micro,
+                    spacing: context.dimens.space4,
                     children: _children(labels, isOneRow: true),
                   )
                 : Wrap(
-                    spacing: AppSpacing.micro,
-                    runSpacing: AppSpacing.micro,
+                    spacing: context.dimens.space4,
+                    runSpacing: context.dimens.space4,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: _children(labels, isOneRow: false),
                   ),
@@ -86,8 +82,10 @@ class ImportStepTrackerWidget extends StatelessWidget {
   /// The width the four steps need on one row with the shortest connectors,
   /// at the reader's text scale.
   double _oneRowWidth(BuildContext context, List<String> labels) {
-    final style = context.textStyles.stepLabel(isReached: true);
-    var width = (labels.length - 1) * (_minLine + 2 * AppSpacing.micro);
+    final style = context.texts.labelSmall?.copyWith(
+      color: true ? context.colors.onSurface : context.colors.onSurfaceVariant,
+    );
+    var width = (labels.length - 1) * (_minLine + 2 * context.dimens.space4);
     for (final label in labels) {
       final painter = TextPainter(
         text: TextSpan(text: label, style: style),
@@ -95,7 +93,7 @@ class ImportStepTrackerWidget extends StatelessWidget {
         textScaler: MediaQuery.textScalerOf(context),
         maxLines: 1,
       )..layout();
-      width += _dot + AppSpacing.micro + painter.width;
+      width += _dot + context.dimens.space4 + painter.width;
       painter.dispose();
     }
     return width;
@@ -118,21 +116,19 @@ class _Step extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final semantic = context.semanticColors;
     final fill = isDone
-        ? semantic.mastery
+        ? context.mxColors.successContainer
         : isCurrent
         ? colors.primary
         : colors.surfaceContainerHigh;
     final ink = isDone
-        ? semantic.onMastery
+        ? context.mxColors.onSuccessContainer
         : isCurrent
         ? colors.onPrimary
         : colors.onSurfaceVariant;
-    final styles = context.textStyles;
     return Row(
       mainAxisSize: MainAxisSize.min,
-      spacing: AppSpacing.micro,
+      spacing: context.dimens.space4,
       children: [
         SizedBox.square(
           dimension: ImportStepTrackerWidget._dot,
@@ -144,17 +140,27 @@ class _Step extends StatelessWidget {
             child: Center(
               child: isDone
                   ? IconTheme.merge(
-                      data: IconThemeData(color: ink, size: AppIconSize.inline),
+                      data: IconThemeData(
+                        color: ink,
+                        size: context.dimens.sizeIconInline,
+                      ),
                       child: const Icon(AppIcons.check),
                     )
                   : Text(
                       context.l10n.importStepNumber(number),
-                      style: styles.stepNumber(ink),
+                      style: context.texts.labelSmall?.copyWith(color: ink),
                     ),
             ),
           ),
         ),
-        Text(label, style: styles.stepLabel(isReached: isDone || isCurrent)),
+        Text(
+          label,
+          style: context.texts.labelSmall?.copyWith(
+            color: isDone || isCurrent
+                ? context.colors.onSurface
+                : context.colors.onSurfaceVariant,
+          ),
+        ),
       ],
     );
   }
@@ -167,11 +173,11 @@ class _Line extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    height: AppStroke.indicator,
+    height: context.dimens.strokeIndicator,
     child: ColoredBox(
       color: isDone
-          ? context.semanticColors.mastery
-          : context.derivedColors.ghostBorder,
+          ? context.mxColors.successContainer
+          : context.colors.outlineVariant,
     ),
   );
 }

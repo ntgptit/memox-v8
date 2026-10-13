@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A setting: a bigger label, a roomier lead column, and a trailing slot for
 /// a control. The chevron shows only when the row navigates and holds no
@@ -69,7 +66,6 @@ class MxSettingsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final isNavigable =
         onTap != null && !isAction && trailing == null && wideControl == null;
     final isStacked =
@@ -81,11 +77,11 @@ class MxSettingsRow extends StatelessWidget {
       isEnabled: isEnabled,
       shouldDimWhenDisabled: false,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
+        constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+          padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
           child: Row(
-            spacing: AppSpacing.gutter,
+            spacing: context.dimens.space16,
             // Kit 23: beside a wide control the tile stays with the label.
             crossAxisAlignment: below == null
                 ? CrossAxisAlignment.center
@@ -94,7 +90,7 @@ class MxSettingsRow extends StatelessWidget {
               if (icon case final glyph?)
                 Padding(
                   padding: EdgeInsets.only(
-                    top: below == null ? 0 : AppSpacing.grouped,
+                    top: below == null ? 0 : context.dimens.space12,
                   ),
                   child: SizedBox(
                     width: _leadColumn,
@@ -114,20 +110,25 @@ class MxSettingsRow extends StatelessWidget {
               // 48 toggle target sits inside the row instead of growing it.
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.grouped,
+                  padding: EdgeInsets.symmetric(
+                    vertical: context.dimens.space12,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _dim(Text(label, style: styles.settingsLabel)),
+                      _dim(Text(label, style: context.texts.titleSmall)),
                       if (subtitle case final text?) ...[
                         const SizedBox(height: _subtitleGap),
-                        Text(text, style: styles.rowDescription),
+                        Text(
+                          text,
+                          style: context.texts.bodyMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                       if (below case final control?) ...[
-                        const SizedBox(height: AppSpacing.grouped),
+                        SizedBox(height: context.dimens.space12),
                         _dimControl(control),
                       ],
                     ],
@@ -139,7 +140,7 @@ class MxSettingsRow extends StatelessWidget {
                 _dim(
                   Icon(
                     AppIcons.chevronRight,
-                    size: AppIconSize.compact,
+                    size: context.dimens.sizeIconCompact,
                     color: context.colors.onSurfaceVariant,
                   ),
                 ),
@@ -162,6 +163,7 @@ class MxSettingsRow extends StatelessWidget {
   Widget _dimControl(Widget control) =>
       _drawsOwnDisabledState(control) ? control : _dim(control);
 
-  Widget _dim(Widget child) =>
-      isEnabled ? child : Opacity(opacity: AppOpacity.disabled, child: child);
+  Widget _dim(Widget child) => isEnabled
+      ? child
+      : Opacity(opacity: context.dimens.opacityDisabledContent, child: child);
 }

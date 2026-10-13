@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
@@ -12,6 +10,7 @@ import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Tags a row names before "+N" (screen 07, spec A15).
 const int _shownTags = 2;
@@ -44,7 +43,7 @@ class CardRowWidget extends StatelessWidget {
     // row (spec 2026-09-26 D4, extended by the owner 2026-09-26). No status
     // dot: the status line states it once (critique 2026-09-30 part 3b, R3).
     final row = Row(
-      spacing: AppSpacing.grouped,
+      spacing: context.dimens.space12,
       children: [
         if (isSelecting) MxSelectionCheckbox(isChecked: isSelected),
         Expanded(child: _Content(item: item)),
@@ -57,7 +56,7 @@ class CardRowWidget extends StatelessWidget {
       child: Semantics(
         checked: isSelecting ? isSelected : null,
         child: Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.control),
+          padding: EdgeInsets.only(bottom: context.dimens.space8),
           child: GestureDetector(
             onLongPress: onLongPress,
             child: MxCard(
@@ -66,9 +65,9 @@ class CardRowWidget extends StatelessWidget {
               child: MxRowInk(
                 onTap: onTap,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                    vertical: AppSpacing.grouped,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.screenMargin,
+                    vertical: context.dimens.space12,
                   ),
                   child: row,
                 ),
@@ -87,56 +86,60 @@ class _Content extends StatelessWidget {
   final CardListItem item;
 
   static Color _statusInk(BuildContext context, CardDisplayStatus status) {
-    final derived = context.derivedColors;
     return switch (status) {
-      CardDisplayStatus.newCard => derived.statusNewInk,
-      CardDisplayStatus.beginning => derived.statusLearningInk,
-      CardDisplayStatus.reviewing => derived.statusReviewingInk,
-      CardDisplayStatus.mastered => derived.statusMasteredInk,
+      CardDisplayStatus.newCard => context.colors.onSurfaceVariant,
+      CardDisplayStatus.beginning => context.mxColors.warning,
+      CardDisplayStatus.reviewing => context.accentColor,
+      CardDisplayStatus.mastered => context.mxColors.success,
     };
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final status = item.displayStatus;
     final label = l10n.cardStatus(status);
     final tags = item.tags;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.micro,
+      spacing: context.dimens.space4,
       children: [
         Text(
           item.front,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: styles.contentTitle,
+          style: context.texts.titleMedium,
         ),
         Text(
           item.back,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: styles.rowDescription,
+          style: context.texts.bodyMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
         ),
-        const SizedBox(height: AppSpacing.micro),
+        SizedBox(height: context.dimens.space4),
         // Wraps rather than clips, so large text keeps every word.
         Wrap(
-          spacing: AppSpacing.micro,
-          runSpacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
+          runSpacing: context.dimens.space4,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(
               label.toUpperCase(),
               semanticsLabel: label,
-              style: styles.statusLabel(_statusInk(context, status)),
+              style: context.texts.labelSmall?.copyWith(
+                color: _statusInk(context, status),
+              ),
             ),
             for (final tag in tags.take(_shownTags))
               MxTagChip(label: tag.name, isDense: true),
             if (tags.length > _shownTags)
               Text(
                 l10n.cardMoreTags(tags.length - _shownTags),
-                style: styles.rowDescription,
+                style: context.texts.bodyMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
           ],
         ),
@@ -156,13 +159,13 @@ class _Trailing extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.end,
-    spacing: AppSpacing.micro,
+    spacing: context.dimens.space4,
     children: [
       if (item.isFlagged)
         IconTheme.merge(
           data: IconThemeData(
             color: context.colors.onSurface,
-            size: AppIconSize.inline,
+            size: context.dimens.sizeIconInline,
           ),
           child: Icon(
             AppIcons.flagged,

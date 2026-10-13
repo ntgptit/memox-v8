@@ -5,8 +5,6 @@ import 'package:memox/features/study/presentation/widgets/support/session_footer
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -432,7 +430,7 @@ void main() {
         matching: find.byType(TweenAnimationBuilder<Decoration>),
       ),
     );
-    expect(box.duration, AppDurations.standard);
+    expect(box.duration, Durations.short4);
   });
 
   libraryTest('a tile keeps its content in place as its tone changes, and '
@@ -448,7 +446,7 @@ void main() {
 
     await tester.tap(find.text('term 1'));
     await tester.pump();
-    await tester.pump(AppDurations.standard ~/ 2);
+    await tester.pump(Durations.short4 ~/ 2);
     final midInk = inkOf();
     await tester.pumpAndSettle();
 

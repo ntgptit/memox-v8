@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/monitoring/presentation/widgets/support/monitoring_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/app_typography.dart';
 
 /// One fact of a log's Details (Impeccable 2026-09-29 F1 to F3). The label
 /// is the quiet caption and the value carries the weight. A short value
@@ -37,29 +36,33 @@ class MonitoringDetailRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final copy = copyLabel;
-    final labelText = Text(label, style: styles.rowDescription);
+    final labelText = Text(
+      label,
+      style: context.texts.bodyMedium?.copyWith(
+        color: context.colors.onSurfaceVariant,
+      ),
+    );
     return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
+      constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
       child: Padding(
         padding: EdgeInsetsDirectional.only(
-          start: AppSpacing.gutter,
-          end: copy == null ? AppSpacing.gutter : AppSpacing.micro,
+          start: context.dimens.space16,
+          end: copy == null ? context.dimens.space16 : context.dimens.space4,
         ),
         child: Row(
-          spacing: AppSpacing.gutter,
+          spacing: context.dimens.space16,
           children: [
             if (copy == null && !isStacked) ...[
               labelText,
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.grouped,
+                  padding: EdgeInsets.symmetric(
+                    vertical: context.dimens.space12,
                   ),
                   child: Text(
                     value,
-                    style: styles.rowTitle,
+                    style: context.texts.titleSmall,
                     textAlign: TextAlign.end,
                   ),
                 ),
@@ -67,18 +70,23 @@ class MonitoringDetailRowWidget extends StatelessWidget {
             ] else
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.grouped,
+                  padding: EdgeInsets.symmetric(
+                    vertical: context.dimens.space12,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: AppSpacing.micro,
+                    spacing: context.dimens.space4,
                     children: [
                       labelText,
                       if (copy == null)
-                        Text(value, style: styles.rowTitle)
+                        Text(value, style: context.texts.titleSmall)
                       else
-                        Text(monitoringIdText(value), style: styles.code),
+                        Text(
+                          monitoringIdText(value),
+                          style: context.texts.bodyMedium?.copyWith(
+                            fontFamily: AppTypography.monoFamily,
+                          ),
+                        ),
                     ],
                   ),
                 ),

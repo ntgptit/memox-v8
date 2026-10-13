@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// What the tappable rows share (spec §4.5, ruling S13):
 /// - the platform ripple across the whole row;
@@ -54,7 +53,10 @@ class _MxRowInkState extends State<MxRowInk> {
               child: widget.child,
             );
       if (!widget.shouldDimWhenDisabled) return disabled;
-      return Opacity(opacity: AppOpacity.disabled, child: disabled);
+      return Opacity(
+        opacity: context.dimens.opacityDisabledContent,
+        child: disabled,
+      );
     }
     if (onTap == null) return widget.child;
     return Semantics(
@@ -68,8 +70,8 @@ class _MxRowInkState extends State<MxRowInk> {
           decoration: BoxDecoration(
             border: _hasFocus
                 ? Border.all(
-                    color: context.derivedColors.primaryInk,
-                    width: AppStroke.focus,
+                    color: context.accentColor,
+                    width: context.dimens.strokeFocus,
                   )
                 : null,
           ),

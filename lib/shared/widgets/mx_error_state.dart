@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/core/theme/color_tint.dart';
 
 /// An inline load failure with a Retry. It has EmptyState's anatomy at a
 /// smaller scale and a danger tone. The body says first that nothing was
@@ -50,12 +48,11 @@ class MxErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
     return MxCard(
       isFullBleed: true,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.section,
+        padding: EdgeInsets.symmetric(
+          horizontal: context.dimens.space24,
           vertical: _verticalPadding,
         ),
         child: Column(
@@ -65,32 +62,38 @@ class MxErrorState extends StatelessWidget {
               dimension: _tileSize,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: context.derivedColors.dangerSoft,
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  color: context.colors.error.tintOver(context.colors.surface),
+                  borderRadius: BorderRadius.circular(context.dimens.radiusLg),
                 ),
                 child: Center(
                   child: Icon(
                     icon,
-                    size: AppIconSize.standard,
+                    size: context.dimens.sizeIcon,
                     color: colors.error,
                   ),
                 ),
               ),
             ),
             // Ruling O4: the tile → title gap is UNSPECIFIED; EmptyState's.
-            const SizedBox(height: AppSpacing.gutter),
+            SizedBox(height: context.dimens.space16),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: styles.compactTitle,
+              style: context.texts.titleSmall,
             ),
             const SizedBox(height: _titleGap),
-            Text(body, textAlign: TextAlign.center, style: styles.emptyBody),
+            Text(
+              body,
+              textAlign: TextAlign.center,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
             if ((retryLabel, onRetry) case (
               final label?,
               final onPressed?,
             )) ...[
-              const SizedBox(height: AppSpacing.gutter),
+              SizedBox(height: context.dimens.space16),
               MxButton(
                 label: label,
                 icon: actionIcon,

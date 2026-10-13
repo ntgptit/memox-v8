@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
@@ -35,17 +33,14 @@ class RecallCountdownBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
-    final styles = context.textStyles;
     final left = remainingMs.clamp(0, recallTurnMs);
     final seconds = (left / _msPerSecond).ceil();
     final fraction = MediaQuery.disableAnimationsOf(context)
         ? seconds * _msPerSecond / recallTurnMs
         : left / recallTurnMs;
-    final ink = isTimedOut
-        ? context.derivedColors.warningInk
-        : colors.onSurfaceVariant;
+    final ink = isTimedOut ? context.mxColors.warning : colors.onSurfaceVariant;
     final fill = isTimedOut
-        ? context.semanticColors.warning
+        ? context.mxColors.warningContainer
         : colors.onSurfaceVariant;
     return Semantics(
       container: true,
@@ -53,23 +48,28 @@ class RecallCountdownBarWidget extends StatelessWidget {
       value: l10n.studyRecallClockValue(seconds),
       excludeSemantics: true,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.gutter,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space16,
           0,
-          AppSpacing.gutter,
-          AppSpacing.grouped,
+          context.dimens.space16,
+          context.dimens.space12,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
           children: [
             Row(
-              spacing: AppSpacing.control,
+              spacing: context.dimens.space8,
               children: [
-                Expanded(child: Text(caption, style: styles.statusLabel(ink))),
+                Expanded(
+                  child: Text(
+                    caption,
+                    style: context.texts.labelSmall?.copyWith(color: ink),
+                  ),
+                ),
                 Text(
                   l10n.studyRecallClock(seconds, recallTurnMs ~/ _msPerSecond),
-                  style: styles.statusLabel(ink),
+                  style: context.texts.labelSmall?.copyWith(color: ink),
                 ),
               ],
             ),

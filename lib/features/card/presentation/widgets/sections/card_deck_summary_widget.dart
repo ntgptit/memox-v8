@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -32,22 +31,21 @@ class CardDeckSummaryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final states = view.statusCounts;
     final total = states.total;
     final workload = view.workload;
     final overline = l10n.cardDeckProgress(algorithm);
     final due = workload.overdue + workload.today;
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.grouped),
+      padding: EdgeInsets.only(bottom: context.dimens.space12),
       child: MxCard(
         isHero: true,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.grouped,
+          spacing: context.dimens.space12,
           children: [
             Row(
-              spacing: AppSpacing.gutter,
+              spacing: context.dimens.space16,
               children: [
                 MxMasteryDonut(
                   fraction: total == 0 ? 0 : states.mastered / total,
@@ -56,16 +54,18 @@ class CardDeckSummaryWidget extends StatelessWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: AppSpacing.micro,
+                    spacing: context.dimens.space4,
                     children: [
                       Text(
                         overline.toUpperCase(),
                         semanticsLabel: overline,
-                        style: styles.eyebrow,
+                        style: context.texts.labelSmall?.copyWith(
+                          color: context.colors.onSurfaceVariant,
+                        ),
                       ),
                       Text(
                         l10n.cardMasteredOf(states.mastered, total),
-                        style: styles.dialogBody,
+                        style: context.texts.bodyMedium,
                       ),
                       MxWorkloadBreakdownLine(
                         overdueCount: workload.overdue,

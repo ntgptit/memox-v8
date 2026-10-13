@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The one pinned action: a square, icon-only 52 box. V3 has no extended FAB.
@@ -24,7 +19,7 @@ class MxFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final radius = BorderRadius.circular(AppRadius.lg);
+    final radius = BorderRadius.circular(context.dimens.radiusLg);
     final shape = RoundedRectangleBorder(borderRadius: radius);
     return Semantics(
       button: true,
@@ -45,15 +40,17 @@ class MxFab extends StatelessWidget {
             customBorder: shape,
             overlayColor: WidgetStateProperty.resolveWith(
               (states) => states.contains(WidgetState.pressed)
-                  ? colors.onPrimary.withValues(alpha: AppOpacity.pressed)
+                  ? colors.onPrimary.withValues(
+                      alpha: context.dimens.opacityPressed,
+                    )
                   : null,
             ),
             child: SizedBox.square(
-              dimension: AppSize.fab,
+              dimension: context.dimens.sizeFab,
               child: Center(
                 child: Icon(
                   icon,
-                  size: AppIconSize.compact,
+                  size: context.dimens.sizeIconCompact,
                   color: colors.onPrimary,
                 ),
               ),

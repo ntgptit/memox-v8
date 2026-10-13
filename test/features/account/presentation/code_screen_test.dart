@@ -5,7 +5,6 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_coordinator.dart';
 import 'package:memox/core/auth/auth_state.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/features/account/presentation/screens/code_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/features/account/presentation/widgets/sections/code_form_widget.dart';
@@ -17,6 +16,8 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 import '../../../support/account_harness.dart';
 import '../../../support/fake_auth_server.dart';
 import '../../../support/library_harness.dart';
+
+import 'package:memox/core/theme/theme_context.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -97,7 +98,9 @@ void main() {
       find.ancestor(
         of: find.byKey(MxCodeField.slotKey(0)),
         matching: find.byWidgetPredicate(
-          (w) => w is Opacity && w.opacity == AppOpacity.disabled,
+          (w) =>
+              w is Opacity &&
+              w.opacity == context.dimens.opacityDisabledContent,
         ),
       ),
       findsNothing,

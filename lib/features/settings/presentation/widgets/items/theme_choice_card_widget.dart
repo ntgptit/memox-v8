@@ -2,16 +2,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// One theme on screen 25 (kit 25): a preview in that theme's own colours,
 /// its name and its line (FE-A3 D7). One TalkBack node, selected when
@@ -28,14 +25,13 @@ class ThemeChoiceCardWidget extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onSelected;
 
-  static const double _padding = AppSpacing.control;
+  static const double _padding = context.dimens.space8;
 
   /// The narrowest card that keeps every word whole: the longest word of a
   /// name beside the check, or of a hint, plus the padding. Narrower, the
   /// cards stack (UI-base row 123's rule, for the theme cards).
   static double minWidth(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final textScaler = MediaQuery.textScalerOf(context);
     final direction = Directionality.of(context);
     double widest(String text, TextStyle style) {
@@ -63,10 +59,18 @@ class ThemeChoiceCardWidget extends StatelessWidget {
       l10n.settingsThemeLightHint,
       l10n.settingsThemeDarkHint,
     ];
-    final check = textScaler.scale(AppIconSize.compact) + AppSpacing.micro;
+    final check =
+        textScaler.scale(context.dimens.sizeIconCompact) +
+        context.dimens.space4;
     final text = [
-      for (final name in names) widest(name, styles.rowTitle) + check,
-      for (final hint in hints) widest(hint, styles.rowDescription),
+      for (final name in names) widest(name, context.texts.titleSmall) + check,
+      for (final hint in hints)
+        widest(
+          hint,
+          context.texts.bodyMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
+        ),
     ].reduce(math.max);
     return text + _padding * 2;
   }
@@ -74,7 +78,6 @@ class ThemeChoiceCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final (name, hint) = switch (theme) {
       ThemeChoice.system => (
         l10n.settingsThemeSystem,
@@ -101,22 +104,29 @@ class ThemeChoiceCardWidget extends StatelessWidget {
             padding: const EdgeInsets.all(_padding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: AppSpacing.control,
+              spacing: context.dimens.space8,
               children: [
                 _Preview(theme: theme),
                 Row(
-                  spacing: AppSpacing.micro,
+                  spacing: context.dimens.space4,
                   children: [
-                    Expanded(child: Text(name, style: styles.rowTitle)),
+                    Expanded(
+                      child: Text(name, style: context.texts.titleSmall),
+                    ),
                     if (isSelected)
                       Icon(
                         AppIcons.check,
-                        size: AppIconSize.compact,
-                        color: context.derivedColors.primaryInk,
+                        size: context.dimens.sizeIconCompact,
+                        color: context.accentColor,
                       ),
                   ],
                 ),
-                Text(hint, style: styles.rowDescription),
+                Text(
+                  hint,
+                  style: context.texts.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),
@@ -144,7 +154,7 @@ class _Preview extends StatelessWidget {
     final light = buildLightTheme().colorScheme;
     final dark = buildDarkTheme().colorScheme;
     final main = theme == ThemeChoice.dark ? dark : light;
-    final radius = BorderRadius.circular(AppRadius.sm);
+    final radius = BorderRadius.circular(context.dimens.radiusSm);
     // The kit's hairline keeps a light preview apart from a light card.
     return DecoratedBox(
       position: DecorationPosition.foreground,
@@ -152,7 +162,7 @@ class _Preview extends StatelessWidget {
         borderRadius: radius,
         border: Border.all(
           color: context.colors.outlineVariant,
-          width: AppStroke.hairline,
+          width: context.dimens.strokeHairline,
         ),
       ),
       child: _clipped(main, dark, radius),
@@ -177,13 +187,13 @@ class _Preview extends StatelessWidget {
                 ),
               ),
             Padding(
-              padding: const EdgeInsets.all(AppSpacing.control),
+              padding: EdgeInsets.all(context.dimens.space8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: AppSpacing.micro,
+                spacing: context.dimens.space4,
                 children: [
                   _block(main.primary, _tile, _tile),
-                  const SizedBox(height: AppSpacing.micro),
+                  SizedBox(height: context.dimens.space4),
                   _block(main.outlineVariant, _longLine, _lineHeight),
                   _block(main.outlineVariant, _shortLine, _lineHeight),
                 ],
@@ -199,7 +209,7 @@ class _Preview extends StatelessWidget {
       DecoratedBox(
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(AppRadius.xs),
+          borderRadius: BorderRadius.circular(context.dimens.radiusXs),
         ),
         child: SizedBox(width: width, height: height),
       );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
@@ -11,8 +10,8 @@ import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// One Trash entry (kit 06): its kind, its name and time left, what went
 /// with it and when, and where it was (information only, BR-TRASH-012).
@@ -52,7 +51,7 @@ class TrashEntryRowWidget extends StatelessWidget {
     // The tile or the checkbox centres on the lines (spec 2026-09-26 D4,
     // extended by the owner 2026-09-26).
     final lines = Row(
-      spacing: AppSpacing.grouped,
+      spacing: context.dimens.space12,
       children: [
         if (isSelecting)
           MxSelectionCheckbox(isChecked: isSelected)
@@ -97,9 +96,9 @@ class TrashEntryRowWidget extends StatelessWidget {
                 child: MxRowInk(
                   onTap: onTap,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.gutter,
-                      vertical: AppSpacing.grouped,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.screenMargin,
+                      vertical: context.dimens.space12,
                     ),
                     child: lines,
                   ),
@@ -109,7 +108,7 @@ class TrashEntryRowWidget extends StatelessWidget {
           ),
           if (onActions case final onActions? when !isSelecting)
             Padding(
-              padding: const EdgeInsets.only(right: AppSpacing.micro),
+              padding: EdgeInsets.only(right: context.dimens.space4),
               child: MxIconButton(
                 icon: AppIcons.more,
                 semanticLabel: l10n.trashEntryActions(name),
@@ -120,9 +119,9 @@ class TrashEntryRowWidget extends StatelessWidget {
       ),
     );
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.control),
+      padding: EdgeInsets.only(bottom: context.dimens.space8),
       child: isLocked
-          ? Opacity(opacity: AppOpacity.disabled, child: card)
+          ? Opacity(opacity: context.dimens.opacityDisabledContent, child: card)
           : card,
     );
   }
@@ -158,30 +157,31 @@ class _Lines extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     // Under three days the time left is a warning pill, so it reads as a
     // warning and not as darker text (owner 2026-09-26).
     final timeLeftLabel = isExpiringSoon
         ? MxBadge(label: timeLeft, tone: MxBadgeTone.warning)
         : Text(
             timeLeft,
-            style: styles.badgeLabel(context.colors.onSurfaceVariant),
+            style: context.texts.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.control,
+      spacing: context.dimens.space8,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
-          spacing: AppSpacing.control,
+          spacing: context.dimens.space8,
           children: [
             Expanded(
               child: Text(
                 name,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: styles.rowTitle,
+                style: context.texts.titleSmall,
               ),
             ),
             timeLeftLabel,
@@ -191,13 +191,17 @@ class _Lines extends StatelessWidget {
           meta,
           maxLines: _metaLines,
           overflow: TextOverflow.ellipsis,
-          style: styles.rowDescription,
+          style: context.texts.bodyMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
         ),
         Text(
           origin,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: styles.rowDescription,
+          style: context.texts.bodyMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
         ),
       ],
     );

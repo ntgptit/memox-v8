@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/progress/domain/models/progress_overview_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -39,15 +37,17 @@ class ProgressStreakWidget extends StatelessWidget {
           Text(
             l10n.progressStreak.toUpperCase(),
             semanticsLabel: l10n.progressStreak,
-            style: context.textStyles.eyebrow,
+            style: context.texts.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
           if (streak.state == StreakState.never)
             MxDashedNote(text: l10n.progressNeverStreak)
           else
             _tiles(context),
           if (note != null) ...[
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
             MxNote(text: note),
           ],
         ],
@@ -61,7 +61,7 @@ class ProgressStreakWidget extends StatelessWidget {
     final current = _StreakTile(
       icon: AppIcons.streak,
       tint: streak.days > 0
-          ? context.semanticColors.streak
+          ? context.mxColors.warningContainer
           : context.colors.onSurfaceVariant,
       label: l10n.progressStreakCurrent,
       value: l10n.progressStreakDays(streak.days),
@@ -119,7 +119,6 @@ class _StreakTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     // The kit's tile: the recessed ground at a 12 inset, tighter than a card,
     // so two fit side by side on a phone.
     return DecoratedBox(
@@ -128,9 +127,9 @@ class _StreakTile extends StatelessWidget {
         context.derivedColors,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.grouped),
+        padding: EdgeInsets.all(context.dimens.space12),
         child: Row(
-          spacing: AppSpacing.control,
+          spacing: context.dimens.space8,
           children: [
             MxIconTile(icon: icon, seed: tint),
             Expanded(
@@ -140,11 +139,18 @@ class _StreakTile extends StatelessWidget {
                   Text(
                     label.toUpperCase(),
                     semanticsLabel: label,
-                    style: styles.eyebrow,
+                    style: context.texts.labelSmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.micro),
-                  Text(value, style: styles.summaryBodyStrong),
-                  Text(sub, style: styles.footerCaption),
+                  SizedBox(height: context.dimens.space4),
+                  Text(value, style: context.texts.titleSmall),
+                  Text(
+                    sub,
+                    style: context.texts.labelSmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),

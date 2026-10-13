@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A study body that may outgrow the screen at large text (FE-A6 P3 C4): a
@@ -49,7 +48,7 @@ class _StudyScrollFadeWidgetState extends State<StudyScrollFadeWidget> {
             left: 0,
             right: 0,
             bottom: 0,
-            height: AppSpacing.section,
+            height: context.dimens.space24,
             child: IgnorePointer(
               child: ExcludeSemantics(
                 child: DecoratedBox(

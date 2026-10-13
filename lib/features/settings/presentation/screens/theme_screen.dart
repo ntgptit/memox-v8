@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/settings/domain/models/theme_choice_model.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
@@ -18,6 +17,7 @@ import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 25, the theme (UC-SETTINGS-001 step 4): a tap saves the choice
 /// and the whole app follows at once, this page included
@@ -61,7 +61,7 @@ class ThemeScreen extends ConsumerWidget {
       body: switch (settings) {
         AsyncData(:final value) => MxScreenScroll(
           children: [
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             LayoutBuilder(
               builder: (context, constraints) {
                 final cards = [
@@ -75,24 +75,27 @@ class ThemeScreen extends ConsumerWidget {
                     ),
                 ];
                 final share =
-                    (constraints.maxWidth - AppSpacing.control * 2) /
+                    (constraints.maxWidth - context.dimens.space8 * 2) /
                     cards.length;
                 // Large text or long words: one card per line, whole words.
                 if (share < ThemeChoiceCardWidget.minWidth(context)) {
-                  return Column(spacing: AppSpacing.control, children: cards);
+                  return Column(
+                    spacing: context.dimens.space8,
+                    children: cards,
+                  );
                 }
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.control,
+                  spacing: context.dimens.space8,
                   children: [for (final card in cards) Expanded(child: card)],
                 );
               },
             ),
             Padding(
-              padding: const EdgeInsetsDirectional.only(
-                start: AppSpacing.micro,
-                end: AppSpacing.micro,
-                top: AppSpacing.control,
+              padding: EdgeInsetsDirectional.only(
+                start: context.dimens.space4,
+                end: context.dimens.space4,
+                top: context.dimens.space8,
               ),
               child: MxNote.hint(text: l10n.settingsAppliesAtOnce),
             ),

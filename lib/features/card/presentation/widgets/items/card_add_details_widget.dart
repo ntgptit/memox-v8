@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The card editor's "Add details" disclosure (kit 08): a plus, the label
 /// and the fields it opens, and a chevron, in an outlined box. The kit's
@@ -20,11 +16,10 @@ class CardAddDetailsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
-    final radius = BorderRadius.circular(AppRadius.md);
+    final radius = BorderRadius.circular(context.dimens.radiusMd);
     final glyph = IconThemeData(
-      color: context.derivedColors.primaryInk,
-      size: AppIconSize.inline,
+      color: context.accentColor,
+      size: context.dimens.sizeIconInline,
     );
     // The ripple paints on this Material, so it keeps to the rounded box.
     return Material(
@@ -34,23 +29,23 @@ class CardAddDetailsWidget extends StatelessWidget {
       child: MxRowInk(
         onTap: onPressed,
         child: Container(
-          constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.gutter,
-            vertical: AppSpacing.control,
+          constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
+          padding: EdgeInsets.symmetric(
+            horizontal: context.screenMargin,
+            vertical: context.dimens.space8,
           ),
           decoration: BoxDecoration(
             borderRadius: radius,
             // The control edge, as the fields beside it (DEV-166).
             border: Border.all(
-              color: context.derivedColors.outlineEdge,
-              width: AppStroke.hairline,
+              color: context.colors.outline,
+              width: context.dimens.strokeHairline,
             ),
           ),
           child: IconTheme.merge(
             data: glyph,
             child: Row(
-              spacing: AppSpacing.control,
+              spacing: context.dimens.space8,
               children: [
                 const Icon(AppIcons.add),
                 Expanded(
@@ -59,14 +54,18 @@ class CardAddDetailsWidget extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: l10n.cardAddDetails,
-                          style: styles.disclosureLabel,
+                          style: context.texts.labelMedium?.copyWith(
+                            color: context.accentColor,
+                          ),
                         ),
-                        const WidgetSpan(
-                          child: SizedBox(width: AppSpacing.control),
+                        WidgetSpan(
+                          child: SizedBox(width: context.dimens.space8),
                         ),
                         TextSpan(
                           text: l10n.cardAddDetailsFields,
-                          style: styles.rowDescription,
+                          style: context.texts.bodyMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),

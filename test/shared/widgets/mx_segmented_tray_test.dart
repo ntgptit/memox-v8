@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 
 import '../../support/widget_harness.dart';
+
+import 'package:memox/core/theme/theme_context.dart';
 
 enum _Range { week, month }
 
@@ -123,7 +122,7 @@ void main() {
           )
           .first,
     );
-    expect(opacity.opacity, AppOpacity.disabled);
+    expect(opacity.opacity, context.dimens.opacityDisabledContent);
     expect(
       tester.getSemantics(find.text('30d')),
       isSemantics(hasEnabledState: true, isEnabled: false),

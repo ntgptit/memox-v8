@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The tone a count carries. There is no streak tone (ruling S1). Mastery is
 /// learning progress; success is a right answer or a finished, fine state
@@ -42,9 +41,9 @@ class MxBadge extends StatelessWidget {
     final colors = context.colors;
     final toneColor = switch (tone) {
       MxBadgeTone.primary => colors.primary,
-      MxBadgeTone.mastery => context.semanticColors.mastery,
-      MxBadgeTone.success => context.semanticColors.success,
-      MxBadgeTone.warning => context.semanticColors.warning,
+      MxBadgeTone.mastery => context.mxColors.successContainer,
+      MxBadgeTone.success => context.mxColors.success,
+      MxBadgeTone.warning => context.mxColors.warningContainer,
       MxBadgeTone.danger => colors.error,
       // Ruling S2: the contract names no neutral colour.
       MxBadgeTone.neutral => colors.onSurfaceVariant,
@@ -54,10 +53,10 @@ class MxBadge extends StatelessWidget {
     // reads in its ink (3.56:1 on its tint in light, FE-C1).
     final ink = switch ((isSolid, tone)) {
       (true, _) => colors.onPrimary,
-      (false, MxBadgeTone.warning) => context.derivedColors.warningInk,
-      (false, MxBadgeTone.primary) => context.derivedColors.primaryInk,
-      (false, MxBadgeTone.mastery) => context.derivedColors.statusMasteredInk,
-      (false, MxBadgeTone.success) => context.derivedColors.successInk,
+      (false, MxBadgeTone.warning) => context.mxColors.warning,
+      (false, MxBadgeTone.primary) => context.accentColor,
+      (false, MxBadgeTone.mastery) => context.mxColors.success,
+      (false, MxBadgeTone.success) => context.mxColors.success,
       (false, _) => toneColor,
     };
     return DecoratedBox(
@@ -68,10 +67,10 @@ class MxBadge extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: _height),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+          padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
               if (icon case final glyph?)
                 Icon(glyph, size: _glyphSize, color: ink),
@@ -79,7 +78,7 @@ class MxBadge extends StatelessWidget {
                 label,
                 maxLines: 1,
                 softWrap: false,
-                style: context.textStyles.badgeLabel(ink),
+                style: context.texts.labelSmall?.copyWith(color: ink),
               ),
             ],
           ),

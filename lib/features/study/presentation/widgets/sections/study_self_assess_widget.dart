@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
@@ -13,6 +12,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_grade_ro
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Screen 16a, Self-assess: the prompt, the answer once revealed, then the
 /// four grades (BR-MODE-006, BR-MODE-011). Revealing writes nothing; one
@@ -79,10 +79,10 @@ class _StudySelfAssessWidgetState extends State<StudySelfAssessWidget> {
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: AppSpacing.control,
+              spacing: context.dimens.space8,
               children: [
                 Expanded(child: prompt),
                 Expanded(child: answer),
@@ -130,24 +130,25 @@ class _TermFace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final pronunciation = item.pronunciation;
     return StudyAppearingWidget(
       isShown: isShown,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           Text(
             item.front,
             textAlign: TextAlign.center,
-            style: styles.studyTerm,
+            style: context.texts.displaySmall,
           ),
           if (pronunciation != null)
             Text(
               pronunciation,
               textAlign: TextAlign.center,
-              style: styles.studyDetail,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
             ),
         ],
       ),
@@ -172,24 +173,25 @@ class _MeaningFace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final example = item.example;
     return StudyAppearingWidget(
       isShown: isShown,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           Text(
             item.back,
             textAlign: TextAlign.center,
-            style: styles.studyMeaning,
+            style: context.texts.bodyLarge,
           ),
           if (hasExample && example != null)
             Text(
               example,
               textAlign: TextAlign.center,
-              style: styles.studyDetail,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
             ),
         ],
       ),

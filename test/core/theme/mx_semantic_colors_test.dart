@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 // The ten BIND_NOW MEMOX_SEMANTIC_COLOR entries plus onMastery (spec
 // 2026-09-27) and streak (FE-A9 D7), light then dark.

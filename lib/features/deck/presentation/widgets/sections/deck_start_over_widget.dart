@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -16,15 +15,19 @@ class DeckStartOverWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     return MxCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.micro,
+        spacing: context.dimens.space4,
         children: [
-          Text(l10n.algorithmResetTitle, style: styles.rowTitle),
-          Text(l10n.algorithmResetBody, style: styles.rowDescription),
-          const SizedBox(height: AppSpacing.control),
+          Text(l10n.algorithmResetTitle, style: context.texts.titleSmall),
+          Text(
+            l10n.algorithmResetBody,
+            style: context.texts.bodyMedium?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
+          ),
+          SizedBox(height: context.dimens.space8),
           MxButton(
             label: l10n.algorithmResetAction,
             tone: MxButtonTone.outline,

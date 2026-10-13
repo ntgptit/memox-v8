@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
@@ -40,13 +39,13 @@ class CardSortSheetWidget extends StatelessWidget {
     const sorts = CardListSort.values;
     return MxBottomSheet(
       header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space24,
+          context.dimens.space4,
+          context.dimens.space24,
+          context.dimens.space12,
         ),
-        child: Text(l10n.cardSortTitle, style: context.textStyles.compactTitle),
+        child: Text(l10n.cardSortTitle, style: context.texts.titleSmall),
       ),
       child: Column(
         children: [

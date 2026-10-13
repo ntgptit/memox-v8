@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
@@ -9,6 +8,7 @@ import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// One choice of a filter sheet: the value and the name it shows.
 @immutable
@@ -75,13 +75,13 @@ class _MonitoringChoiceSheetWidgetState<T>
     final l10n = context.l10n;
     return MxBottomSheet(
       header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.grouped,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space24,
+          context.dimens.space4,
+          context.dimens.space24,
+          context.dimens.space12,
         ),
-        child: Text(widget.title, style: context.textStyles.compactTitle),
+        child: Text(widget.title, style: context.texts.titleSmall),
       ),
       footer: MxSheetActions.custom(
         isInSheet: true,
@@ -108,7 +108,7 @@ class _MonitoringChoiceSheetWidgetState<T>
   }
 
   Widget _toggles() => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+    padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
     child: MxSection(
       children: [
         for (final choice in widget.choices)

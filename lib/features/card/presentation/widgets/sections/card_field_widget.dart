@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// One card field (kit 08/09): the overline label, "Required" or
 /// "· optional", the count against the limit, then the input. A required
@@ -43,10 +42,10 @@ class CardFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+    padding: EdgeInsets.only(bottom: context.dimens.space16),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.micro,
+      spacing: context.dimens.space4,
       children: [
         _FieldHeader(
           label: label,
@@ -94,27 +93,38 @@ class _FieldHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final icon = this.icon;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.micro),
+      padding: EdgeInsets.symmetric(horizontal: context.dimens.space4),
       child: Row(
-        spacing: AppSpacing.micro,
+        spacing: context.dimens.space4,
         children: [
-          if (icon != null) Icon(icon, size: AppIconSize.inline),
+          if (icon != null) Icon(icon, size: context.dimens.sizeIconInline),
           // The label and its marker take the room the count leaves, and
           // wrap as a pair rather than splitting the label.
           Expanded(
             child: Wrap(
-              spacing: AppSpacing.micro,
+              spacing: context.dimens.space4,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 // The input carries the name, so TalkBack reads it once.
-                ExcludeSemantics(child: Text(label, style: styles.fieldLabel)),
+                ExcludeSemantics(
+                  child: Text(label, style: context.texts.labelMedium),
+                ),
                 if (isRequired)
-                  Text(l10n.cardRequiredLegend, style: styles.requiredMarker)
+                  Text(
+                    l10n.cardRequiredLegend,
+                    style: context.texts.bodyMedium?.copyWith(
+                      color: context.accentColor,
+                    ),
+                  )
                 else
-                  Text(l10n.cardOptional, style: styles.rowDescription),
+                  Text(
+                    l10n.cardOptional,
+                    style: context.texts.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -125,7 +135,11 @@ class _FieldHeader extends StatelessWidget {
               if (!isRequired && count == 0) return const SizedBox.shrink();
               return Text(
                 l10n.cardFieldCount(count, limit),
-                style: styles.fieldCount(isOver: count > limit),
+                style: context.texts.labelSmall?.copyWith(
+                  color: count > limit
+                      ? context.colors.error
+                      : context.colors.onSurfaceVariant,
+                ),
               );
             },
           ),

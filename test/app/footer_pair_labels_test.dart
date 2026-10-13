@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../support/widget_harness.dart';
+
+import 'package:memox/core/theme/theme_context.dart';
 
 /// The Short Label Rule (DESIGN.md, owner 2026-10-05): every pair of
 /// actions stays side by side in English and Vietnamese on a 360 dp phone
@@ -203,7 +204,7 @@ void main() {
       );
 
       for (final pair in _pairs(lookupAppLocalizations(Locale(code)))) {
-        final shared = pair.row - AppSpacing.control;
+        final shared = pair.row - context.dimens.space8;
         final leadingShare =
             shared * pair.leadingFlex / (pair.leadingFlex + pair.trailingFlex);
         expect(

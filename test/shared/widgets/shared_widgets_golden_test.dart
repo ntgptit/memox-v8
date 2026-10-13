@@ -357,6 +357,8 @@ class _RowDescription extends StatelessWidget {
     text,
     maxLines: 1,
     overflow: TextOverflow.ellipsis,
-    style: context.textStyles.rowDescription,
+    style: context.texts.bodyMedium?.copyWith(
+      color: context.colors.onSurfaceVariant,
+    ),
   );
 }

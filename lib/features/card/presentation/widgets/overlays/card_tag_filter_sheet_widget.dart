@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/card/presentation/providers/card_tag_filter_provider.dart';
@@ -91,20 +90,24 @@ class _CardTagFilterSheetWidgetState
   }
 
   Widget _header(AppLocalizations l10n, String subLine) {
-    final styles = context.textStyles;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.card,
-        AppSpacing.micro,
-        AppSpacing.card,
-        AppSpacing.grouped,
+      padding: EdgeInsets.fromLTRB(
+        context.dimens.space24,
+        context.dimens.space4,
+        context.dimens.space24,
+        context.dimens.space12,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.micro,
+        spacing: context.dimens.space4,
         children: [
-          Text(l10n.cardTagFilterTitle, style: styles.compactTitle),
-          Text(subLine, style: styles.rowDescription),
+          Text(l10n.cardTagFilterTitle, style: context.texts.titleSmall),
+          Text(
+            subLine,
+            style: context.texts.bodyMedium?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
@@ -151,11 +154,11 @@ class _CardTagFilterSheetWidgetState
         children: [
           if (tags.length > _searchAbove)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
+              padding: EdgeInsets.fromLTRB(
+                context.dimens.space16,
                 0,
-                AppSpacing.gutter,
-                AppSpacing.control,
+                context.dimens.space16,
+                context.dimens.space8,
               ),
               child: MxSearchField(
                 controller: _search,
@@ -203,7 +206,9 @@ class _TagRow extends StatelessWidget {
         title: tag.name,
         trailing: Text(
           context.l10n.cardTagFilterCount(tag.cardCount),
-          style: context.textStyles.counter,
+          style: context.texts.labelSmall?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
         ),
         onTap: onTap,
         hasDivider: hasDivider,

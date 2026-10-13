@@ -2,11 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
@@ -19,6 +15,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_whole_wo
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Screen 18, Guess: the term and five meanings; only the first pick counts
 /// (BR-STUDY-037, BR-STUDY-042). Once its write commits, the pick and the
@@ -131,19 +128,17 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
           SliverFillRemaining(
             hasScrollBody: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.gutter,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: AppSpacing.control,
+                spacing: context.dimens.space8,
                 children: [
                   Expanded(
                     child: StudyFaceCardWidget(
                       label: l10n.studyGuessPrompt,
                       child: StudyWholeWordTextWidget(
                         widget.item.front,
-                        style: context.textStyles.studyTerm,
+                        style: context.texts.displaySmall,
                       ),
                     ),
                   ),
@@ -172,7 +167,7 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
         ),
         if (_isAnswered && MediaQuery.accessibleNavigationOf(context))
           Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.control),
+            padding: EdgeInsets.only(top: context.dimens.space8),
             child: Center(
               child: MxButton(
                 label: l10n.studyGuessNext,
@@ -206,26 +201,29 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
         StudyChoiceTone.wrong => l10n.studyGuessOptionWrong(label),
         StudyChoiceTone.idle || StudyChoiceTone.selected => label,
       },
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.gutter,
-        vertical: AppSpacing.control,
+      padding: EdgeInsets.symmetric(
+        horizontal: context.screenMargin,
+        vertical: context.dimens.space8,
       ),
       onTap: _isAnswered || widget.isBusy
           ? null
           : () => widget.onPick(option.cardId),
       builder: (ink) => Row(
-        spacing: AppSpacing.grouped,
+        spacing: context.dimens.space12,
         children: [
           _Letter(letter: letter, ink: ink),
           Expanded(
             child: Text(
               option.meaning,
-              style: context.textStyles.studyOption(ink),
+              style: context.texts.bodySmall?.copyWith(color: ink),
             ),
           ),
           if (tone == StudyChoiceTone.right || tone == StudyChoiceTone.wrong)
             IconTheme(
-              data: IconThemeData(color: ink, size: AppIconSize.inline),
+              data: IconThemeData(
+                color: ink,
+                size: context.dimens.sizeIconInline,
+              ),
               child: Icon(
                 tone == StudyChoiceTone.right ? AppIcons.check : AppIcons.close,
               ),
@@ -254,14 +252,17 @@ class _Letter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox.square(
-    dimension: AppSize.chip,
+    dimension: context.dimens.sizeChip,
     child: DecoratedBox(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(color: ink, width: _ring),
       ),
       child: Center(
-        child: Text(letter, style: context.textStyles.studyOptionLetter(ink)),
+        child: Text(
+          letter,
+          style: context.texts.labelSmall?.copyWith(color: ink),
+        ),
       ),
     ),
   );

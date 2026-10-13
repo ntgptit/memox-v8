@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Group B: every Button tone, size and state, and the IconButton.
 class GalleryActionsSection extends StatelessWidget {
@@ -17,16 +17,16 @@ class GalleryActionsSection extends StatelessWidget {
     title: context.l10n.galleryBActions,
     children: [
       Wrap(
-        spacing: AppSpacing.control,
-        runSpacing: AppSpacing.control,
+        spacing: context.dimens.space8,
+        runSpacing: context.dimens.space8,
         children: [
           for (final tone in MxButtonTone.values)
             MxButton(label: tone.name, tone: tone, onPressed: () {}),
         ],
       ),
       Wrap(
-        spacing: AppSpacing.control,
-        runSpacing: AppSpacing.control,
+        spacing: context.dimens.space8,
+        runSpacing: context.dimens.space8,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           MxButton(
@@ -59,8 +59,8 @@ class GalleryActionsSection extends StatelessWidget {
         ],
       ),
       Wrap(
-        spacing: AppSpacing.control,
-        runSpacing: AppSpacing.control,
+        spacing: context.dimens.space8,
+        runSpacing: context.dimens.space8,
         children: [
           MxButton(label: context.l10n.galleryDisabled, onPressed: null),
           MxButton(
@@ -101,8 +101,8 @@ class GalleryActionsSection extends StatelessWidget {
         ],
       ),
       Wrap(
-        spacing: AppSpacing.control,
-        runSpacing: AppSpacing.control,
+        spacing: context.dimens.space8,
+        runSpacing: context.dimens.space8,
         children: [
           MxFilterChip(
             label: context.l10n.galleryAll,

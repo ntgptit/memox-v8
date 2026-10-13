@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
@@ -53,34 +52,34 @@ class DeckRowWidget extends StatelessWidget {
       child: MxRowInk(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(
-            AppSpacing.gutter,
-            AppSpacing.gutter,
-            AppSpacing.micro,
-            AppSpacing.gutter,
+          padding: EdgeInsetsDirectional.fromSTEB(
+            context.dimens.space16,
+            context.dimens.space16,
+            context.dimens.space4,
+            context.dimens.space16,
           ),
           child: Row(
-            spacing: AppSpacing.gutter,
+            spacing: context.dimens.space16,
             children: [
               MxIconTile(icon: _glyph, size: MxIconTileSize.large),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  spacing: AppSpacing.grouped,
+                  spacing: context.dimens.space12,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: AppSpacing.micro,
+                      spacing: context.dimens.space4,
                       children: [
                         Row(
-                          spacing: AppSpacing.control,
+                          spacing: context.dimens.space8,
                           children: [
                             Expanded(
                               child: Text(
                                 tile.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: context.textStyles.rowTitle,
+                                style: context.texts.titleSmall,
                               ),
                             ),
                             if (tile.dueCount > 0)
@@ -89,7 +88,9 @@ class DeckRowWidget extends StatelessWidget {
                         ),
                         Text(
                           _meta(l10n),
-                          style: context.textStyles.rowSubtitle,
+                          style: context.texts.bodyMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),

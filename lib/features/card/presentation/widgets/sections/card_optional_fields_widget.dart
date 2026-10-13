@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
@@ -43,7 +42,7 @@ class CardOptionalFieldsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!isOpen) {
       return Padding(
-        padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+        padding: EdgeInsets.only(bottom: context.dimens.space16),
         child: CardAddDetailsWidget(onPressed: onOpen),
       );
     }
@@ -53,16 +52,16 @@ class CardOptionalFieldsWidget extends StatelessWidget {
       children: [
         if (hasHeader)
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.micro,
+            padding: EdgeInsets.fromLTRB(
+              context.dimens.space4,
               0,
-              AppSpacing.micro,
-              AppSpacing.control,
+              context.dimens.space4,
+              context.dimens.space8,
             ),
             child: Text(
               l10n.cardOptionalDetails.toUpperCase(),
               semanticsLabel: l10n.cardOptionalDetails,
-              style: context.textStyles.overline,
+              style: context.texts.labelSmall,
             ),
           ),
         for (final (input, icon, label, hintText) in [

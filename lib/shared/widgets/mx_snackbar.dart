@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/app_button_style.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 const double _verticalPadding = 10;
 
@@ -34,7 +30,8 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showMxSnackbar(
 }
 
 /// The toast's width on a wide window: the column less its gutters.
-const double _wideWidth = AppSize.contentMaxWidth - 2 * AppSpacing.gutter;
+const double _wideWidth =
+    context.dimens.sizeContentMax - 2 * context.dimens.space16;
 
 /// The platform SnackBar that [showMxSnackbar] shows, configured with the
 /// contract's surface (ruling O9).
@@ -54,7 +51,8 @@ SnackBar buildMxSnackBar(
   // On a window wider than the screen column the toast is at most the
   // column, centred (FE-C5 D5); SnackBar.width replaces the theme's side
   // inset only there.
-  final isWide = MediaQuery.sizeOf(context).width > AppSize.contentMaxWidth;
+  final isWide =
+      MediaQuery.sizeOf(context).width > context.dimens.sizeContentMax;
   // The surface, float, inset and radius are the theme's (spec §4.6).
   return SnackBar(
     width: isWide ? _wideWidth : null,
@@ -62,7 +60,7 @@ SnackBar buildMxSnackBar(
     persist: onAction != null && MediaQuery.accessibleNavigationOf(context),
     // Only the message carries the 10 vertical padding (MxSnackbarContent),
     // so the action's 48 target sits inside the 48 toast.
-    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+    padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
     content: MxSnackbarContent(
       message: message,
       actionLabel: actionLabel,
@@ -97,16 +95,20 @@ class MxSnackbarContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
     return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
+      constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
       child: Row(
-        spacing: AppSpacing.grouped,
+        spacing: context.dimens.space12,
         children: [
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: _verticalPadding),
-              child: Text(message, style: styles.snackbarMessage),
+              child: Text(
+                message,
+                style: context.texts.bodyMedium?.copyWith(
+                  color: context.colors.onInverseSurface,
+                ),
+              ),
             ),
           ),
           if ((actionLabel, onAction) case (final label?, final onPressed?))
@@ -119,10 +121,12 @@ class MxSnackbarContent extends StatelessWidget {
                 ink: colors.inversePrimary,
                 edge: BorderSide.none,
                 focusColor: colors.inversePrimary,
-                height: AppSize.buttonCompact,
-                radius: AppRadius.sm,
-                padding: AppSpacing.control,
-                label: styles.snackbarAction,
+                height: context.dimens.sizeButtonSmall,
+                radius: context.dimens.radiusSm,
+                padding: context.dimens.space8,
+                label: context.texts.labelLarge?.copyWith(
+                  color: context.colors.inversePrimary,
+                ),
               ),
               child: Text(label),
             ),

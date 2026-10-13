@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -14,6 +13,7 @@ import 'package:memox/shared/widgets/mx_floating_notice.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Group F: SheetActions and InlineBanner in place; the dialog, the sheets
 /// and the snackbar open live.
@@ -61,8 +61,8 @@ class GalleryOverlaysSection extends StatelessWidget {
         ],
       ),
       Wrap(
-        spacing: AppSpacing.control,
-        runSpacing: AppSpacing.control,
+        spacing: context.dimens.space8,
+        runSpacing: context.dimens.space8,
         children: [
           MxButton(
             label: context.l10n.galleryDialog,
@@ -118,7 +118,7 @@ class GalleryOverlaysSection extends StatelessWidget {
         context,
         builder: (sheetContext) => MxBottomSheet(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+            padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
             child: Column(
               children: [
                 MxActionSheetCommandRow(

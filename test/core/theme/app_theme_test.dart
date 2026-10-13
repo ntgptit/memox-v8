@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/app_typography.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 void main() {
   group('buildLightTheme / buildDarkTheme', () {
@@ -91,7 +90,7 @@ void main() {
       expect(context.texts.displayMedium!.fontSize, 40);
       expect(context.semanticColors, MxSemanticColors.dark);
       expect(
-        context.derivedColors.surfaceHero,
+        context.accentColor.tintOver(context.colors.surface),
         MxDerivedColors.resolve(
           AppColorSchemes.dark,
           MxSemanticColors.dark,

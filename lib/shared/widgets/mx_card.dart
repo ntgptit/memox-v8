@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The base surface. Light lifts it with the whisper shadow; dark draws the
@@ -90,7 +87,10 @@ class MxCard extends StatelessWidget {
     };
     final radius = surface.borderRadius!;
     final edge = isSelected
-        ? Border.all(color: context.colors.primary, width: AppStroke.control)
+        ? Border.all(
+            color: context.colors.primary,
+            width: context.dimens.strokeControl,
+          )
         : surface.border as Border?;
     return SizedBox(
       width: double.infinity,
@@ -109,7 +109,7 @@ class MxCard extends StatelessWidget {
           child: Padding(
             padding: isFullBleed
                 ? EdgeInsets.zero
-                : const EdgeInsets.all(AppSpacing.card),
+                : EdgeInsets.all(context.dimens.space24),
             child: child,
           ),
         ),

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/providers/can_link_provider.dart';
@@ -95,7 +94,7 @@ class WelcomeScreen extends ConsumerWidget {
         bottom: false,
         child: MxScreenScroll(
           children: [
-            const SizedBox(height: AppSpacing.major),
+            SizedBox(height: context.dimens.space32),
             // Plan U5: a tile until MemoX has its own icon (UI-base debt).
             const Align(
               alignment: AlignmentDirectional.centerStart,
@@ -104,15 +103,20 @@ class WelcomeScreen extends ConsumerWidget {
                 size: MxIconTileSize.large,
               ),
             ),
-            const SizedBox(height: AppSpacing.gutter),
+            SizedBox(height: context.dimens.space16),
             Semantics(
               header: true,
               namesRoute: true,
-              child: Text(l10n.appTitle, style: context.textStyles.screenTitle),
+              child: Text(l10n.appTitle, style: context.texts.titleLarge),
             ),
-            const SizedBox(height: AppSpacing.control),
-            Text(l10n.welcomeLead, style: context.textStyles.emptyBody),
-            const SizedBox(height: AppSpacing.section),
+            SizedBox(height: context.dimens.space8),
+            Text(
+              l10n.welcomeLead,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
+            SizedBox(height: context.dimens.space24),
             MxSection(
               children: [
                 MxSettingsRow(
@@ -134,7 +138,7 @@ class WelcomeScreen extends ConsumerWidget {
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: AppSpacing.grouped,
+                spacing: context.dimens.space12,
                 children: [
                   MxButton(
                     label: l10n.accountContinueGoogle,

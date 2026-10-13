@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
 import 'package:memox/features/card/domain/models/card_due_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
@@ -15,6 +14,8 @@ import 'package:memox/shared/widgets/mx_status_badge.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/widget_harness.dart';
+
+import 'package:memox/core/theme/theme_rules.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -80,9 +81,9 @@ void main() {
           (w) =>
               w is Padding &&
               w.padding ==
-                  const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                    vertical: AppSpacing.grouped,
+                  EdgeInsets.symmetric(
+                    horizontal: context.screenMargin,
+                    vertical: context.dimens.space12,
                   ),
         ),
       ),

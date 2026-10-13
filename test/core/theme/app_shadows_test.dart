@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
 
 // 02-theme-binding.md, DECORATION. Light shadows are rgba(15,22,56,a), which
 // is the light `shadow` role; dark ones are rgba(0,0,0,a), the dark role.

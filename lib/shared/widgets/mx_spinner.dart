@@ -1,10 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The icon step a spinner is drawn at, so it drops into a button, a row or a
 /// card without a new number.
@@ -52,10 +50,10 @@ class _MxSpinnerState extends State<MxSpinner>
   Widget build(BuildContext context) {
     final colors = context.colors;
     final dimension = switch (widget.size) {
-      MxSpinnerSize.inline => AppIconSize.inline,
-      MxSpinnerSize.compact => AppIconSize.compact,
-      MxSpinnerSize.standard => AppIconSize.standard,
-      MxSpinnerSize.large => AppIconSize.large,
+      MxSpinnerSize.inline => context.dimens.sizeIconInline,
+      MxSpinnerSize.compact => context.dimens.sizeIconCompact,
+      MxSpinnerSize.standard => context.dimens.sizeIcon,
+      MxSpinnerSize.large => context.dimens.sizeIconTile,
     };
     final ring = SizedBox.square(
       dimension: dimension,
@@ -63,9 +61,7 @@ class _MxSpinnerState extends State<MxSpinner>
         turns: _turns,
         child: CustomPaint(
           painter: _RingPainter(
-            color: widget.isOnFill
-                ? colors.onPrimary
-                : context.derivedColors.primaryInk,
+            color: widget.isOnFill ? colors.onPrimary : context.accentColor,
           ),
         ),
       ),
@@ -87,7 +83,9 @@ class _RingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final ring = (Offset.zero & size).deflate(AppStroke.indicator / 2);
+    final ring = (Offset.zero & size).deflate(
+      context.dimens.strokeIndicator / 2,
+    );
     canvas.drawArc(
       ring,
       _start,
@@ -96,7 +94,7 @@ class _RingPainter extends CustomPainter {
       Paint()
         ..color = color
         ..style = PaintingStyle.stroke
-        ..strokeWidth = AppStroke.indicator,
+        ..strokeWidth = context.dimens.strokeIndicator,
     );
   }
 

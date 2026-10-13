@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
@@ -32,7 +31,6 @@ class StudyEntryResumeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final kind = switch (session.kind) {
       SessionKind.learning => l10n.studyKindLearning,
       SessionKind.reviewing => l10n.studyKindReview,
@@ -44,7 +42,7 @@ class StudyEntryResumeWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           MxDotOverline(label: l10n.studyEntryResumeOverline),
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           Text(
             progress == null
                 ? l10n.studyEntryResumeLineNoProgress(kind, mode)
@@ -54,15 +52,20 @@ class StudyEntryResumeWidget extends StatelessWidget {
                     progress.completed,
                     progress.total,
                   ),
-            style: styles.rowTitle,
+            style: context.texts.titleSmall,
           ),
           if (progress != null && progress.total > 0) ...[
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             MxLinearProgress(value: progress.completed / progress.total),
           ],
-          const SizedBox(height: AppSpacing.micro),
-          Text(l10n.studyEntryResumeBody, style: styles.noteText),
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space4),
+          Text(
+            l10n.studyEntryResumeBody,
+            style: context.texts.bodyMedium?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
+          ),
+          SizedBox(height: context.dimens.space12),
           MxButton(
             label: l10n.studyEntryContinue,
             icon: AppIcons.play,

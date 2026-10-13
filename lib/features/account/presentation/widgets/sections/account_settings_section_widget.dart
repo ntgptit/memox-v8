@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/account/presentation/providers/can_link_provider.dart';
 import 'package:memox/features/account/presentation/providers/device_account_provider.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_reauth_banner_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 23's first section (account UI spec §5.5): attach an account, or
 /// the account attached, which opens screen 32; an expired sign-in's
@@ -64,7 +64,7 @@ class AccountSettingsSectionWidget extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         AccountReauthBannerWidget(onSignIn: onSignInAgain),
-        const SizedBox(height: AppSpacing.gutter),
+        SizedBox(height: context.dimens.space16),
         section,
       ],
     );

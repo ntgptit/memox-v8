@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The on/off switch (Settings, Reminder). One size ships; the thumb slides,
 /// it does not resize. Its 44×26 track sits inside a 48 touch area.
@@ -38,10 +33,10 @@ class _MxToggleState extends State<MxToggle> {
   /// The ring over the track: focus first, else the off track's edge.
   BoxDecoration? _ring(BuildContext context) {
     if (_hasFocus) {
-      return _edge(context.derivedColors.primaryInk, AppStroke.focus);
+      return _edge(context.accentColor, context.dimens.strokeFocus);
     }
     if (widget.isOn) return null;
-    return _edge(context.colors.outline, AppStroke.control);
+    return _edge(context.colors.outline, context.dimens.strokeControl);
   }
 
   BoxDecoration _edge(Color color, double width) => BoxDecoration(
@@ -55,7 +50,7 @@ class _MxToggleState extends State<MxToggle> {
     final onChanged = widget.onChanged;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
-        : AppDurations.toggle;
+        : Durations.short3;
     final track = AnimatedContainer(
       key: const ValueKey('mx-toggle-track'),
       duration: duration,
@@ -99,9 +94,9 @@ class _MxToggleState extends State<MxToggle> {
           onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
           customBorder: const StadiumBorder(),
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: AppSize.touchTarget,
-              minHeight: AppSize.touchTarget,
+            constraints: BoxConstraints(
+              minWidth: context.dimens.sizeControl,
+              minHeight: context.dimens.sizeControl,
             ),
             child: Center(widthFactor: 1, heightFactor: 1, child: track),
           ),
@@ -109,6 +104,9 @@ class _MxToggleState extends State<MxToggle> {
       ),
     );
     if (onChanged != null) return control;
-    return Opacity(opacity: AppOpacity.disabled, child: control);
+    return Opacity(
+      opacity: context.dimens.opacityDisabledContent,
+      child: control,
+    );
   }
 }

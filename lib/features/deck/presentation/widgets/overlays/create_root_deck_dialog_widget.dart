@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
@@ -20,6 +19,7 @@ import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Opens the new-deck dialog (UC-DECK-001). It completes with the created
 /// deck, or with null when the person cancels.
@@ -108,7 +108,7 @@ class _CreateRootDeckDialogWidgetState
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.grouped,
+        spacing: context.dimens.space12,
         children: [
           MxTextField(
             controller: _name,

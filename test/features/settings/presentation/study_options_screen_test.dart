@@ -7,7 +7,6 @@ import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
@@ -69,7 +68,7 @@ void main() {
     expect(
       tester.getTopLeft(find.byType(MxSection).first).dy -
           tester.getBottomLeft(find.byType(MxNote).first).dy,
-      AppSpacing.gutter,
+      context.dimens.space16,
     );
     expect(
       find.text(

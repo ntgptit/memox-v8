@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/states/settings_state.dart';
@@ -11,6 +10,7 @@ import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 23's Study defaults (UC-SETTINGS-001 step 2): the card limit by
 /// −/+, a hold or typing, and the new-card order, each saved on change
@@ -43,7 +43,7 @@ class SettingsStudyDefaultsSectionWidget extends ConsumerWidget {
           icon: AppIcons.library,
           wideControl: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
               MxStepper(
                 value: limit,

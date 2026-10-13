@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/color_tint.dart';
 
 /// What an outcome keeps or loses (the reset dialog of screen 02, D-O2).
 enum MxOutcomeTone { kept, lost }
@@ -29,34 +27,37 @@ class MxOutcomeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final derived = context.derivedColors;
-    final styles = context.textStyles;
     final (ground, edge, ink) = switch (tone) {
       MxOutcomeTone.kept => (
-        context.semanticColors.success.withValues(alpha: _keptTint),
-        derived.ghostBorder,
-        derived.successInk,
+        context.mxColors.success.withValues(alpha: _keptTint),
+        context.colors.outlineVariant,
+        context.mxColors.success,
       ),
       MxOutcomeTone.lost => (
-        derived.warningSoft,
-        derived.warningBorder,
-        derived.warningInk,
+        context.mxColors.warning.tintOver(context.colors.surface),
+        context.mxColors.warning,
+        context.mxColors.warning,
       ),
     };
     return DecoratedBox(
       decoration: BoxDecoration(
         color: ground,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: edge, width: AppStroke.hairline),
+        borderRadius: BorderRadius.circular(context.dimens.radiusMd),
+        border: Border.all(color: edge, width: context.dimens.strokeHairline),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.grouped),
+        padding: EdgeInsets.all(context.dimens.space12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
           children: [
-            Text(label, style: styles.badgeLabel(ink)),
-            Text(body, style: styles.rowDescription),
+            Text(label, style: context.texts.labelSmall?.copyWith(color: ink)),
+            Text(
+              body,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ),

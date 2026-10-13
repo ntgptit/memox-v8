@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/items/import_preview_row_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -9,6 +8,7 @@ import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Step 3 of the import (kit 11): the counts, the first rows with their
 /// status, and the duplicate policy (UC-TRANSFER-001 step 5, A4). A large
@@ -38,8 +38,8 @@ class ImportPreviewSectionWidget extends StatelessWidget {
         // (critique 2026-09-30 part 3b).
         MxListSectionHeader(label: l10n.importSectionPreview),
         Wrap(
-          spacing: AppSpacing.micro,
-          runSpacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
+          runSpacing: context.dimens.space4,
           children: [
             if (preview.ready > 0)
               MxBadge(
@@ -67,7 +67,7 @@ class ImportPreviewSectionWidget extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         // Before the rows it governs (critique 2026-09-30 part 3d-2, E10).
         if (preview.duplicates > 0)
           MxSection(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Two footer actions (spec 2026-09-26 D3): side by side when both labels
 /// fit their share on one line, otherwise stacked full width, [leading] on
@@ -29,7 +29,7 @@ class MxActionPair extends StatelessWidget {
   /// the default text scale, as a count no shorter label can drop does.
   final bool canStack;
 
-  static const double _gap = AppSpacing.control;
+  static const double _gap = context.dimens.space8;
 
   /// The phone width The Short Label Rule measures at; a narrower window
   /// may stack.

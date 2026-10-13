@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/states/study_home_caught_up_state.dart';
@@ -33,7 +31,6 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (workload.isCaughtUp) return _CaughtUp(workload: workload, now: now);
     final l10n = context.l10n;
-    final styles = context.textStyles;
     // The eyebrow's own colour: it no longer borrows the Required ink
     // (critique 2026-09-30 part 2, P2).
     final ink = context.colors.onSurfaceVariant;
@@ -42,27 +39,32 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
     return MxCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.micro,
+        spacing: context.dimens.space4,
         children: [
           Row(
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
               IconTheme(
-                data: IconThemeData(color: ink, size: AppIconSize.inline),
+                data: IconThemeData(
+                  color: ink,
+                  size: context.dimens.sizeIconInline,
+                ),
                 child: const ExcludeSemantics(child: Icon(AppIcons.dueNow)),
               ),
               Flexible(
                 child: Text(
                   l10n.studyHomeWaiting.toUpperCase(),
                   semanticsLabel: l10n.studyHomeWaiting,
-                  style: styles.eyebrow,
+                  style: context.texts.labelSmall?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],
           ),
           Text(
             l10n.studyHomeDueTitle(workload.dueCount),
-            style: styles.summaryTitle,
+            style: context.texts.titleMedium,
           ),
           // The hero states what is due, in its two halves; new and
           // scheduled cards are in the deck rows (BR-STUDY-068, critique

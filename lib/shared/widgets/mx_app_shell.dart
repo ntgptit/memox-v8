@@ -2,8 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The column every screen is: top chrome, one scroll body and a bottom bar,
@@ -66,7 +64,7 @@ class MxAppShell extends StatelessWidget {
   Widget _scaffold(BuildContext context, Widget? appBar) {
     return Scaffold(
       backgroundColor: context.colors.surface,
-      // A wide window centres the column at [AppSize.contentMaxWidth]; the
+      // A wide window centres the column at [context.dimens.sizeContentMax]; the
       // ground fills the rest (FE-C5). A phone gets its full width.
       // A context below the Scaffold, whose MediaQuery has already lost the
       // bottom inset when a bottom nav owns it; the shell's own context would
@@ -75,7 +73,10 @@ class MxAppShell extends StatelessWidget {
         builder: (bodyContext) => LayoutBuilder(
           builder: (_, constraints) => Center(
             child: SizedBox(
-              width: math.min(constraints.maxWidth, AppSize.contentMaxWidth),
+              width: math.min(
+                constraints.maxWidth,
+                context.dimens.sizeContentMax,
+              ),
               child: Column(
                 children: [
                   ?appBar,
@@ -134,21 +135,21 @@ final class _MxFabLocation extends FloatingActionButtonLocation {
   Offset getOffset(ScaffoldPrelayoutGeometry geometry) {
     final fab = geometry.floatingActionButtonSize;
     final width = geometry.scaffoldSize.width;
-    final column = math.min(width, AppSize.contentMaxWidth);
+    final column = math.min(width, context.dimens.sizeContentMax);
     final columnStart = (width - column) / 2;
     final columnEnd = columnStart + column;
     final x = switch (geometry.textDirection) {
       TextDirection.ltr =>
         math.min(columnEnd, width - geometry.minInsets.right) -
-            AppSpacing.gutter -
+            context.dimens.space16 -
             fab.width,
       TextDirection.rtl =>
-        math.max(columnStart, geometry.minInsets.left) + AppSpacing.gutter,
+        math.max(columnStart, geometry.minInsets.left) + context.dimens.space16,
     };
     // The part of the gesture inset not already covered by a bottom widget.
     final bottomContent = geometry.scaffoldSize.height - geometry.contentBottom;
     final inset = math.max(0.0, geometry.minViewPadding.bottom - bottomContent);
-    final gap = hasBottomBar ? AppSpacing.micro : AppSpacing.section;
+    final gap = hasBottomBar ? context.dimens.space4 : context.dimens.space24;
     return Offset(x, geometry.contentBottom - fab.height - gap - inset);
   }
 
@@ -188,7 +189,7 @@ class _NoticeLayerState extends State<_NoticeLayer> {
     final inset = media.padding.bottom;
     final reserve = _noticeHeight == 0
         ? 0.0
-        : _noticeHeight + AppSpacing.gutter;
+        : _noticeHeight + context.dimens.space16;
     return Stack(
       children: [
         Positioned.fill(
@@ -200,9 +201,9 @@ class _NoticeLayerState extends State<_NoticeLayer> {
           ),
         ),
         PositionedDirectional(
-          start: AppSpacing.gutter,
-          end: AppSpacing.gutter,
-          bottom: AppSpacing.gutter + inset,
+          start: context.dimens.space16,
+          end: context.dimens.space16,
+          bottom: context.dimens.space16 + inset,
           child: _SizeReporter(onSize: _measured, child: notice),
         ),
       ],

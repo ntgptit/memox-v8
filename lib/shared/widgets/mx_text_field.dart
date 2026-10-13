@@ -1,9 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
@@ -118,8 +115,8 @@ class MxTextField extends StatelessWidget {
 
   static _Geometry _geometry(MxTextFieldVariant variant) => switch (variant) {
     MxTextFieldVariant.form || MxTextFieldVariant.code => (
-      floor: AppSize.input,
-      horizontal: AppSpacing.grouped,
+      floor: context.dimens.sizeInput,
+      horizontal: context.dimens.space12,
       // Centred by the floor: see _field.
       vertical: 0,
       isMultiline: false,
@@ -127,13 +124,13 @@ class MxTextField extends StatelessWidget {
     // One line sits exactly as a form field does; more lines keep 12 above
     // and below.
     MxTextFieldVariant.detail || MxTextFieldVariant.term => (
-      floor: AppSize.input,
-      horizontal: AppSpacing.grouped,
-      vertical: AppSpacing.grouped,
+      floor: context.dimens.sizeInput,
+      horizontal: context.dimens.space12,
+      vertical: context.dimens.space12,
       isMultiline: true,
     ),
     MxTextFieldVariant.study => (
-      floor: AppSize.touchTarget,
+      floor: context.dimens.sizeControl,
       horizontal: 0,
       vertical: 0,
       isMultiline: false,
@@ -141,10 +138,9 @@ class MxTextField extends StatelessWidget {
   };
 
   TextStyle _valueStyle(BuildContext context) {
-    final styles = context.textStyles;
     return switch (variant) {
-      MxTextFieldVariant.study => styles.studyTerm,
-      MxTextFieldVariant.code => styles.fieldCode,
+      MxTextFieldVariant.study => context.texts.displaySmall,
+      MxTextFieldVariant.code => context.texts.displaySmall,
       _ => context.texts.bodyMedium!,
     };
   }
@@ -279,9 +275,9 @@ class MxTextField extends StatelessWidget {
               prefixIcon: leading == null
                   ? null
                   : Padding(
-                      padding: const EdgeInsetsDirectional.only(
-                        start: AppSpacing.grouped,
-                        end: AppSpacing.control,
+                      padding: EdgeInsetsDirectional.only(
+                        start: context.dimens.space12,
+                        end: context.dimens.space8,
                       ),
                       child: leading,
                     ),
@@ -289,9 +285,9 @@ class MxTextField extends StatelessWidget {
               suffixIcon: trailing == null
                   ? null
                   : Padding(
-                      padding: const EdgeInsetsDirectional.only(
-                        start: AppSpacing.control,
-                        end: AppSpacing.grouped,
+                      padding: EdgeInsetsDirectional.only(
+                        start: context.dimens.space8,
+                        end: context.dimens.space12,
                       ),
                       child: trailing,
                     ),
@@ -324,7 +320,10 @@ class MxTextField extends StatelessWidget {
       ],
     );
     if (isEnabled) return column;
-    return Opacity(opacity: AppOpacity.disabled, child: column);
+    return Opacity(
+      opacity: context.dimens.opacityDisabledContent,
+      child: column,
+    );
   }
 }
 

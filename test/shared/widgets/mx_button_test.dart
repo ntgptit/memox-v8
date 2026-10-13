@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/mx_derived_colors.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
@@ -124,7 +121,7 @@ void main() {
     expect(DefaultTextStyle.of(context).style.color, scheme.onSurface);
     expect(
       tester.widget<Text>(find.text('6d')).style,
-      context.textStyles.buttonDetail,
+      context.texts.labelMedium,
     );
   });
 

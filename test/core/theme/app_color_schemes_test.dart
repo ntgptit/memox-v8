@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 
 // Every V3_DEFINED role from 02-theme-binding.md, light then dark. The dark
 // primary pair follows spec 2026-09-27 D1, not the kit; the light error and

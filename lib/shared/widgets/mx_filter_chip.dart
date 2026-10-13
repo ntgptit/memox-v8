@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/app_button_style.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A selectable filter (All · Cards · Decks). Its selection is exposed as
 /// state, not only as a look, so screen readers announce it. It never shrinks
@@ -39,7 +33,6 @@ class MxFilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
     final ink = isSelected ? colors.onPrimary : colors.onSurface;
     final select = onSelected;
     final chip = MergeSemantics(
@@ -53,26 +46,27 @@ class MxFilterChip extends StatelessWidget {
             edge: isSelected
                 ? BorderSide.none
                 : BorderSide(
-                    color: context.derivedColors.ghostBorder,
-                    width: AppStroke.hairline,
+                    color: context.colors.outlineVariant,
+                    width: context.dimens.strokeHairline,
                   ),
-            focusColor: context.derivedColors.primaryInk,
-            height: AppSize.chip,
+            focusColor: context.accentColor,
+            height: context.dimens.sizeChip,
             radius: AppRadius.full,
-            padding: AppSpacing.control,
-            label: styles.buttonLabelSmall,
+            padding: context.dimens.space8,
+            label: context.texts.labelLarge,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
-              if (icon case final glyph?) Icon(glyph, size: AppIconSize.inline),
+              if (icon case final glyph?)
+                Icon(glyph, size: context.dimens.sizeIconInline),
               Text(label, maxLines: 1, softWrap: false),
               if (count case final value?)
                 Text(
                   value.toString(),
-                  style: styles.chipCount(
-                    ink.withValues(
+                  style: context.texts.labelSmall?.copyWith(
+                    color: ink.withValues(
                       alpha: isSelected
                           ? _countOpacitySelected
                           : _countOpacityResting,
@@ -85,6 +79,6 @@ class MxFilterChip extends StatelessWidget {
       ),
     );
     if (select != null) return chip;
-    return Opacity(opacity: AppOpacity.disabled, child: chip);
+    return Opacity(opacity: context.dimens.opacityDisabledContent, child: chip);
   }
 }

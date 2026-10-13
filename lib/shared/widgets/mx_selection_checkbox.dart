@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The selection-mode box on a card row. It is painted only (ruling I6): the
@@ -24,10 +22,13 @@ class MxSelectionCheckbox extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: isChecked ? colors.primary : null,
-          borderRadius: BorderRadius.circular(AppRadius.xs),
+          borderRadius: BorderRadius.circular(context.dimens.radiusXs),
           border: isChecked
               ? null
-              : Border.all(color: colors.outline, width: AppStroke.control),
+              : Border.all(
+                  color: colors.outline,
+                  width: context.dimens.strokeControl,
+                ),
         ),
         child: isChecked
             ? Center(

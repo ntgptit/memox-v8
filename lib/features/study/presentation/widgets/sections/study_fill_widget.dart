@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
@@ -15,6 +13,7 @@ import 'package:memox/features/study/presentation/widgets/support/study_face_car
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Screen 20, Fill: the meaning asks, the person types the term
 /// (BR-STUDY-026). A right answer lets the next turn follow at once; a
@@ -119,10 +118,10 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              spacing: AppSpacing.control,
+              spacing: context.dimens.space8,
               children: [
                 Expanded(
                   child: StudyFaceCardWidget(
@@ -130,7 +129,7 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
                     child: Text(
                       item.back,
                       textAlign: TextAlign.center,
-                      style: context.textStyles.studyPassage,
+                      style: context.texts.bodyLarge,
                     ),
                   ),
                 ),
@@ -142,7 +141,7 @@ class _StudyFillWidgetState extends State<StudyFillWidget> {
                         ? _Corrected(typed: _typed ?? '', term: item.front)
                         : Column(
                             mainAxisSize: MainAxisSize.min,
-                            spacing: AppSpacing.grouped,
+                            spacing: context.dimens.space12,
                             children: [
                               // Laid out from the start, so showing it moves
                               // nothing (critique 2026-09-30 part 3c-2, R4).
@@ -238,12 +237,12 @@ class _HintRow extends StatelessWidget {
     excludeSemantics: true,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      spacing: AppSpacing.control,
+      spacing: context.dimens.space8,
       children: [
         IconTheme(
           data: IconThemeData(
             color: context.colors.onSurfaceVariant,
-            size: AppIconSize.inline,
+            size: context.dimens.sizeIconInline,
           ),
           child: const Icon(AppIcons.hint),
         ),
@@ -251,7 +250,9 @@ class _HintRow extends StatelessWidget {
           child: Text(
             hint,
             textAlign: TextAlign.center,
-            style: context.textStyles.studyDetail,
+            style: context.texts.bodyMedium?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
         ),
       ],
@@ -270,30 +271,39 @@ class _Corrected extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final tag = l10n.studyFillTagWrong;
     return Column(
       mainAxisSize: MainAxisSize.min,
-      spacing: AppSpacing.micro,
+      spacing: context.dimens.space4,
       children: [
         Text(
           typed,
           semanticsLabel: l10n.studyFillTyped(typed),
           textAlign: TextAlign.center,
-          style: styles.fillAnswer(context.colors.error, isStruck: true),
+          style: context.texts.displaySmall?.copyWith(
+            color: context.colors.error,
+            decoration: true ? TextDecoration.lineThrough : null,
+            decorationColor: true ? context.colors.error : null,
+          ),
         ),
         Text(
           term,
           textAlign: TextAlign.center,
-          style: styles.fillAnswer(context.colors.onSurface, isStruck: false),
+          style: context.texts.displaySmall?.copyWith(
+            color: context.colors.onSurface,
+            decoration: false ? TextDecoration.lineThrough : null,
+            decorationColor: false ? context.colors.onSurface : null,
+          ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: AppSpacing.control),
+          padding: EdgeInsets.only(top: context.dimens.space8),
           child: Text(
             tag.toUpperCase(),
             semanticsLabel: tag,
             textAlign: TextAlign.center,
-            style: styles.statusLabel(context.derivedColors.warningInk),
+            style: context.texts.labelSmall?.copyWith(
+              color: context.mxColors.warning,
+            ),
           ),
         ),
       ],
