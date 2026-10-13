@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
@@ -36,8 +38,13 @@ void main() {
       8,
     );
 
+    // 18 is a minimum: the dense label's line box is raised to hold a stacked
+    // Vietnamese capital (ADR-022), and the chip holds that box.
     await pumpMx(tester, const MxTagChip(label: 'verbs', isDense: true));
-    expect(tester.getSize(find.byType(MxTagChip)).height, 18);
+    expect(
+      tester.getSize(find.byType(MxTagChip)).height,
+      math.max(18, tester.getSize(find.text('verbs')).height),
+    );
   });
 
   testWidgets('a long tag stops at 140 with an ellipsis', (tester) async {

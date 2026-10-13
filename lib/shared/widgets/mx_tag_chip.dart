@@ -4,7 +4,8 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A tag as read-only metadata, in two densities: 22 on its own line, 18
-/// inside a packed 12px metadata line. The removable chip in the card editor
+/// inside a packed 12px metadata line, or the label's line box where that is
+/// taller (a cut label keeps its Vietnamese marks, ADR-022). The removable chip in the card editor
 /// is a different, interactive control.
 class MxTagChip extends StatelessWidget {
   const MxTagChip({super.key, required this.label, this.isDense = false});

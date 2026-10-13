@@ -281,14 +281,14 @@ void main() {
         ),
       ),
     );
-    for (final text in ['WORDS · REVIEW', 'TERM']) {
-      final label = find.text(text);
-      expect(
-        tester.widget<Text>(label).style,
-        tester.element(label).textStyles.eyebrow,
-        reason: text,
-      );
-    }
+    final styles = tester.element(find.text('TERM')).textStyles;
+    expect(tester.widget<Text>(find.text('TERM')).style, styles.eyebrow);
+    // The context line is cut with "…", so its box holds Vietnamese marks
+    // (ADR-022).
+    expect(
+      tester.widget<Text>(find.text('WORDS · REVIEW')).style,
+      styles.ellipsized(styles.eyebrow),
+    );
   });
 
   for (final locale in const [Locale('en'), Locale('vi')]) {
