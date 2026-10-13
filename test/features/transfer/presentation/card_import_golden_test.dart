@@ -80,6 +80,9 @@ Future<String> _seed(LibraryEnv env) async {
 
 Future<void> _tap(WidgetTester tester, String label) async {
   await tester.ensureVisible(find.text(label).last);
+  // The scroll lands on the next frame; a tap before it hits where the
+  // label was, under the footer once the content runs past the viewport.
+  await tester.pumpAndSettle();
   await tester.tap(find.text(label).last);
   await tester.pumpAndSettle();
 }

@@ -68,6 +68,9 @@ void main() {
           deckAlgorithmScreen(deckId: korean.id),
           brightness,
         );
+        // The action sits below the fold at the spec's type scale.
+        await tester.ensureVisible(find.text(_en.algorithmResetAction));
+        await tester.pumpAndSettle();
         await tester.tap(find.text(_en.algorithmResetAction));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 400));
