@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_nav_rail.dart';
@@ -53,24 +57,32 @@ Finder _item(String label) =>
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('80 wide on surfaceContainerLow; every item at least 48×56', (
-    tester,
-  ) async {
+  testWidgets('rail wide on surface with a divider hairline at its end; every '
+      'item at least 48×56', (tester) async {
     await pumpMx(tester, _rail());
 
-    expect(tester.getSize(find.byType(MxNavRail)).width, 80);
-    expect(
-      tester
-          .widget<ColoredBox>(
-            find
-                .descendant(
-                  of: find.byType(MxNavRail),
-                  matching: find.byType(ColoredBox),
+    expect(tester.getSize(find.byType(MxNavRail)).width, AppSize.navRail);
+    final ground =
+        tester
+                .widget<DecoratedBox>(
+                  find
+                      .descendant(
+                        of: find.byType(MxNavRail),
+                        matching: find.byType(DecoratedBox),
+                      )
+                      .first,
                 )
-                .first,
-          )
-          .color,
-      scheme.surfaceContainerLow,
+                .decoration
+            as BoxDecoration;
+    expect(ground.color, scheme.surface);
+    expect(
+      ground.border,
+      BorderDirectional(
+        end: BorderSide(
+          color: MxSemanticColors.light.divider,
+          width: AppStroke.hairline,
+        ),
+      ),
     );
     for (final d in _destinations) {
       final size = tester.getSize(_item(d.label));
@@ -79,15 +91,18 @@ void main() {
     }
   });
 
-  testWidgets('the selected item: filled glyph in primaryText on the pill; '
-      'the rest outlined in onSurfaceVariant', (tester) async {
+  testWidgets('the selected item: filled glyph in onSecondaryContainer on the '
+      'secondaryContainer pill; the rest outlined in onSurfaceVariant', (
+    tester,
+  ) async {
     await pumpMx(tester, _rail(selected: 1));
 
     expect(find.byIcon(AppIcons.study), findsNothing);
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      MxSemanticColors.light.primaryText,
+    final selectedGlyph = tester.widget<Icon>(
+      find.byIcon(AppIcons.studySelected),
     );
+    expect(selectedGlyph.color, scheme.onSecondaryContainer);
+    expect(selectedGlyph.size, AppIconSize.standard);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
       scheme.onSurfaceVariant,
@@ -100,7 +115,20 @@ void main() {
           )
           .first,
     );
-    expect((pill.decoration as BoxDecoration).color, scheme.primaryContainer);
+    final pillDecoration = pill.decoration as BoxDecoration;
+    expect(pillDecoration.color, scheme.secondaryContainer);
+    expect(pillDecoration.borderRadius, BorderRadius.circular(AppRadius.full));
+    expect(
+      tester.getSize(
+        find
+            .ancestor(
+              of: find.byIcon(AppIcons.studySelected),
+              matching: find.byType(DecoratedBox),
+            )
+            .first,
+      ),
+      const Size(AppSize.navIndicatorWidth, AppSize.navIndicatorHeight),
+    );
   });
 
   testWidgets('a tap reports its index, a re-tap of the current one too', (
@@ -139,13 +167,13 @@ void main() {
   ) async {
     const inset = EdgeInsets.only(left: 32, right: 24);
     await pumpMx(tester, _rail(), padding: inset);
-    expect(tester.getSize(find.byType(MxNavRail)).width, 80 + 32);
+    expect(tester.getSize(find.byType(MxNavRail)).width, AppSize.navRail + 32);
 
     await pumpMx(
       tester,
       Directionality(textDirection: TextDirection.rtl, child: _rail()),
       padding: inset,
     );
-    expect(tester.getSize(find.byType(MxNavRail)).width, 80 + 24);
+    expect(tester.getSize(find.byType(MxNavRail)).width, AppSize.navRail + 24);
   });
 }

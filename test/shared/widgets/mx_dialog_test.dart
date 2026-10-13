@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
@@ -26,7 +29,7 @@ Widget _still(Widget child) => Builder(
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('the card ground at radius 20 with the overlay shadow', (
+  testWidgets('the card ground at radius 28 with the overlay shadow', (
     tester,
   ) async {
     await pumpMx(tester, const MxDialog(title: 'Delete deck?'));
@@ -44,19 +47,22 @@ void main() {
                 as BoxDecoration)
             .boxShadow;
 
-    expect(_surface(tester).color, scheme.surfaceContainerLowest);
+    expect(_surface(tester).color, MxSemanticColors.light.cardSurface);
     expect(
       (_surface(tester).shape! as RoundedRectangleBorder).borderRadius,
-      BorderRadius.circular(20),
+      BorderRadius.circular(AppRadius.xl),
     );
     expect(shadow, AppShadows.overlay(scheme));
   });
 
-  testWidgets('width: the column 20 in from each edge, capped at 340/320/300', (
+  testWidgets('width: the column 24 in from each edge, capped at 340/320/300', (
     tester,
   ) async {
     await pumpMx(tester, const MxDialog(title: 'Delete deck?'));
-    expect(tester.getSize(find.byType(Material).last).width, 320);
+    expect(
+      tester.getSize(find.byType(Material).last).width,
+      phoneSize.width - 2 * AppSpacing.card,
+    );
 
     tester.view.physicalSize = const Size(600, 800);
     for (final (width, cap) in [
@@ -71,7 +77,7 @@ void main() {
     }
   });
 
-  testWidgets('title 16/700 over a 14 body, 16 in and 20 down, on the action '
+  testWidgets('compact title over a body, 16 in and 24 down, on the action '
       'pair\'s edge (DEV-166); the route is named', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpMx(
@@ -80,14 +86,25 @@ void main() {
     );
     final surface = tester.getTopLeft(find.byType(Material).last);
 
-    expect(tester.widget<Text>(find.text('Delete deck?')).style!.fontSize, 16);
+    final texts = Theme.of(tester.element(find.byType(MxDialog))).textTheme;
+    final title = tester.widget<Text>(find.text('Delete deck?')).style!;
+
+    expect(title.fontSize, texts.titleSmall!.fontSize);
+    expect(title.fontWeight, texts.titleSmall!.fontWeight);
+    expect(
+      tester
+          .widget<Text>(find.text('Its cards move to Trash.'))
+          .style!
+          .fontSize,
+      texts.bodyMedium!.fontSize,
+    );
     expect(
       tester.widget<Text>(find.text('Its cards move to Trash.')).style!.color,
       scheme.onSurface,
     );
     expect(
       tester.getTopLeft(find.text('Delete deck?')) - surface,
-      const Offset(16, 20),
+      const Offset(AppSpacing.gutter, AppSpacing.card),
     );
     expect(
       tester.getSemantics(find.byType(MxDialog)),

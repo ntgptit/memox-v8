@@ -6,6 +6,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/core/theme/app_decorations.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
@@ -240,10 +241,12 @@ void main() {
   ) async {
     final id = await _match(env);
     await pumpLibraryScreen(tester, env, _screen(id));
-    final scheme = Theme.of(tester.element(find.text('apple'))).colorScheme;
+    final context = tester.element(find.text('apple'));
+    final scheme = Theme.of(context).colorScheme;
 
     expect(_groundOf(tester, 'apple'), scheme.surfaceContainerLow);
-    expect(_groundOf(tester, 'term 1'), scheme.surfaceContainerLowest);
+    // A raised tile is the card ground (token spec §4).
+    expect(_groundOf(tester, 'term 1'), context.semanticColors.cardSurface);
   });
 
   libraryTest('tiles take no tap while a wrong pair flashes (BR-STUDY-004)', (

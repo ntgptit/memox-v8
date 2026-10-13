@@ -43,16 +43,30 @@ void main() {
     );
   });
 
-  testWidgets('title 16/700, 4 above a 14 body at 1.55; no Retry by default', (
-    tester,
-  ) async {
+  testWidgets('titleSmall title, 4 above a bodyMedium body; no Retry by '
+      'default', (tester) async {
     await pumpMx(tester, const MxErrorState(title: _title, body: _body));
     final title = tester.widget<Text>(find.text(_title)).style!;
     final body = tester.widget<Text>(find.text(_body)).style!;
+    final texts = Theme.of(tester.element(find.byType(MxErrorState))).textTheme;
 
-    expect((title.fontSize, title.fontWeight), (16, FontWeight.w700));
+    expect(
+      (title.fontSize, title.fontWeight, title.height),
+      (
+        texts.titleSmall!.fontSize,
+        texts.titleSmall!.fontWeight,
+        texts.titleSmall!.height,
+      ),
+    );
     expect(title.color, scheme.onSurface);
-    expect((body.fontSize, body.height), (14, 1.55));
+    expect(
+      (body.fontSize, body.fontWeight, body.height),
+      (
+        texts.bodyMedium!.fontSize,
+        texts.bodyMedium!.fontWeight,
+        texts.bodyMedium!.height,
+      ),
+    );
     expect(body.color, scheme.onSurfaceVariant);
     expect(
       tester.getTopLeft(find.text(_body)).dy -

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -29,7 +32,7 @@ void main() {
   final scheme = AppColorSchemes.light;
   final semantic = MxSemanticColors.light;
 
-  testWidgets('warning: the warning soft ground, its border, an on-soft 16 '
+  testWidgets('warning: the warning soft ground, no edge, an on-soft 16 '
       'glyph', (tester) async {
     await pumpMx(
       tester,
@@ -40,13 +43,16 @@ void main() {
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
 
     expect(_ground(tester).color, semantic.warningSoft);
-    expect(_ground(tester).border, Border.all(color: semantic.warningBorder));
-    expect(_ground(tester).borderRadius, BorderRadius.circular(12));
-    expect((glyph.size, glyph.color), (16, semantic.onWarningSoft));
+    expect(_ground(tester).border, isNull);
+    expect(_ground(tester).borderRadius, BorderRadius.circular(AppRadius.sm));
+    expect(
+      (glyph.size, glyph.color),
+      (AppIconSize.inline, semantic.onWarningSoft),
+    );
   });
 
   testWidgets(
-    'danger: the danger tint, its border, the error glyph (DEV-371)',
+    'danger: the danger soft ground, no edge, the on-soft glyph (DEV-371)',
     (tester) async {
       await pumpMx(
         tester,
@@ -56,55 +62,59 @@ void main() {
       );
 
       expect(_ground(tester).color, semantic.dangerSoft);
-      expect(_ground(tester).border, Border.all(color: semantic.dangerBorder));
+      expect(_ground(tester).border, isNull);
       expect(
         tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-        AppColorSchemes.light.error,
+        semantic.onDangerSoft,
       );
     },
   );
 
-  testWidgets('titled: a 700 title 2 above the detail; untitled: the lead', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(
-          tone: MxBannerTone.danger,
-          title: 'Export failed',
-          message: _message,
+  testWidgets(
+    'titled: a label-meta title 2 above the detail; untitled: the lead',
+    (tester) async {
+      await pumpMx(
+        tester,
+        _width(
+          const MxInlineBanner(
+            tone: MxBannerTone.danger,
+            title: 'Export failed',
+            message: _message,
+          ),
         ),
-      ),
-    );
-    expect(
-      tester.widget<Text>(find.text('Export failed')).style!.fontWeight,
-      FontWeight.w700,
-    );
-    expect(
-      tester.widget<Text>(find.text(_message)).style!.color,
-      scheme.onSurfaceVariant,
-    );
-    expect(
-      tester.getTopLeft(find.text(_message)).dy -
-          tester.getBottomLeft(find.text('Export failed')).dy,
-      2,
-    );
+      );
+      expect(
+        tester.widget<Text>(find.text('Export failed')).style!.fontWeight,
+        Theme.of(tester.element(find.text('Export failed')))
+            .textTheme
+            .labelMedium!
+            .fontWeight,
+      );
+      expect(
+        tester.widget<Text>(find.text(_message)).style!.color,
+        scheme.onSurfaceVariant,
+      );
+      expect(
+        tester.getTopLeft(find.text(_message)).dy -
+            tester.getBottomLeft(find.text('Export failed')).dy,
+        2,
+      );
 
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
-      ),
-    );
-    expect(
-      tester.widget<Text>(find.text(_message)).style!.color,
-      scheme.onSurface,
-    );
-  });
+      await pumpMx(
+        tester,
+        _width(
+          const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
+        ),
+      );
+      expect(
+        tester.widget<Text>(find.text(_message)).style!.color,
+        scheme.onSurface,
+      );
+    },
+  );
 
   testWidgets(
-    'padding 12 16 after the hairline, 16 below; 8 12 and 0 in a bar',
+    'padding 12 16 (no hairline to compensate), 16 below; 8 12 and 0 in a bar',
     (tester) async {
       await pumpMx(
         tester,
@@ -113,10 +123,16 @@ void main() {
         ),
       );
       final banner = tester.getTopLeft(find.byType(MxInlineBanner));
-      expect(tester.getTopLeft(find.byType(Icon)).dx - banner.dx, 17);
+      expect(
+        tester.getTopLeft(find.byType(Icon)).dx - banner.dx,
+        AppSpacing.gutter,
+      );
       expect(
         tester.getTopLeft(find.text(_message)) - banner,
-        const Offset(41, 13),
+        const Offset(
+          AppSpacing.gutter + AppIconSize.inline + AppSpacing.control,
+          AppSpacing.grouped,
+        ),
       );
       expect(
         tester.getSize(find.byType(MxInlineBanner)).height -
@@ -144,7 +160,13 @@ void main() {
         ),
       );
       final bar = tester.getTopLeft(find.byType(MxInlineBanner));
-      expect(tester.getTopLeft(find.text(_message)) - bar, const Offset(37, 9));
+      expect(
+        tester.getTopLeft(find.text(_message)) - bar,
+        const Offset(
+          AppSpacing.grouped + AppIconSize.inline + AppSpacing.control,
+          AppSpacing.control,
+        ),
+      );
       expect(
         tester.getBottomLeft(find.byType(MxInlineBanner)).dy,
         tester
@@ -206,7 +228,8 @@ void main() {
   });
 
   testWidgets('the title reads its tone\'s on-soft token; the message reads '
-      'Day\'s banner style, in Night too (spec 2026-10-10 D4)', (tester) async {
+      'the current theme\'s banner style (no re-theming to Day on a soft '
+      'ground)', (tester) async {
     for (final (tone, foreground) in [
       (MxBannerTone.warning, semantic.onWarningSoft),
       (MxBannerTone.danger, semantic.onDangerSoft),
@@ -226,7 +249,7 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text(_message)).style!.color,
-        semantic.onSoft,
+        scheme.onSurface,
         reason: '$tone untitled',
       );
     }
@@ -251,7 +274,7 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text(_message)).style!.color,
-      AppColorSchemes.light.onSurfaceVariant,
+      AppColorSchemes.dark.onSurfaceVariant,
     );
   });
 

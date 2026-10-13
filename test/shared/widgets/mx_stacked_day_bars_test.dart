@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/shared/widgets/mx_stacked_day_bars.dart';
 
 import '../../support/widget_harness.dart';
@@ -85,19 +87,26 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('the current day is labelled in bold', (tester) async {
+  testWidgets('the current day reads onSurface, the rest onSurfaceVariant, in '
+      'one role', (tester) async {
     await pumpMx(
       tester,
       _chart([_day('S', 1, 0), _day('Today', 1, 0, now: true)]),
     );
+    final today = tester.widget<Text>(find.text('Today')).style!;
+    final other = tester.widget<Text>(find.text('S')).style!;
+    final labelNav = buildLightTheme().textTheme.labelSmall!;
 
+    expect(today.color, AppColorSchemes.light.onSurface);
+    expect(other.color, AppColorSchemes.light.onSurfaceVariant);
+    // The current day is told apart by colour alone: both are labelSmall.
     expect(
-      tester.widget<Text>(find.text('Today')).style!.fontWeight,
-      FontWeight.w700,
+      (today.fontSize, today.fontWeight),
+      (other.fontSize, other.fontWeight),
     );
     expect(
-      tester.widget<Text>(find.text('S')).style!.fontWeight,
-      FontWeight.w400,
+      (today.fontSize, today.fontWeight),
+      (labelNav.fontSize, labelNav.fontWeight),
     );
   });
 }

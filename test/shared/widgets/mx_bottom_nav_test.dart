@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/foundations/app_durations.dart';
+import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
@@ -40,12 +45,36 @@ MxBottomNav _nav({int selected = 0, ValueChanged<int>? onSelected}) =>
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('an 80 block with no inset, 80 + inset with one', (tester) async {
+  testWidgets('a 64 block with no inset, 64 + inset with one', (tester) async {
     await pumpMx(tester, _nav());
-    expect(tester.getSize(find.byType(MxBottomNav)).height, 80);
+    expect(
+      tester.getSize(find.byType(MxBottomNav)).height,
+      AppSize.bottomNavBar,
+    );
 
     await pumpMx(tester, _nav(), padding: const EdgeInsets.only(bottom: 24));
-    expect(tester.getSize(find.byType(MxBottomNav)).height, 80 + 24);
+    expect(
+      tester.getSize(find.byType(MxBottomNav)).height,
+      AppSize.bottomNavBar + 24,
+    );
+  });
+
+  testWidgets('the bar runs the full width, unrounded and unpadded', (
+    tester,
+  ) async {
+    await pumpMx(tester, _nav());
+
+    expect(tester.getSize(find.byType(MxBottomNav)).width, phoneSize.width);
+    final bar = tester.widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byType(MxBottomNav),
+            matching: find.byType(DecoratedBox),
+          )
+          .first,
+    );
+    expect((bar.decoration as BoxDecoration).borderRadius, isNull);
+    expect((bar.decoration as BoxDecoration).boxShadow, isNull);
   });
 
   testWidgets('four equal columns', (tester) async {
@@ -65,40 +94,106 @@ void main() {
     expect(widths.toSet(), hasLength(1));
   });
 
-  testWidgets('the selected destination reads primaryText with its filled '
-      'glyph', (tester) async {
+  testWidgets('the selected destination reads on-secondary-container with its '
+      'filled glyph, the label on-surface', (tester) async {
     await pumpMx(tester, _nav(selected: 1));
 
     expect(find.byIcon(AppIcons.studySelected), findsOneWidget);
     expect(find.byIcon(AppIcons.study), findsNothing);
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      MxSemanticColors.light.primaryText,
-    );
+    final selected = tester.widget<Icon>(find.byIcon(AppIcons.studySelected));
+    expect(selected.color, scheme.onSecondaryContainer);
+    expect(selected.size, AppIconSize.standard);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
       scheme.onSurfaceVariant,
     );
     expect(
       tester.widget<Text>(find.text('Study')).style!.color,
-      MxSemanticColors.light.primaryText,
+      scheme.onSurface,
+    );
+    expect(
+      tester.widget<Text>(find.text('Library')).style!.color,
+      scheme.onSurfaceVariant,
     );
   });
 
-  testWidgets('the pill is the primary container (spec 2026-10-10 §4)', (
-    tester,
-  ) async {
+  testWidgets('the pill is the 56x32 secondary container, fully rounded; the '
+      'resting ones are transparent', (tester) async {
     await pumpMx(tester, _nav());
-    final pill = tester.widget<DecoratedBox>(
-      find
-          .ancestor(
-            of: find.byIcon(AppIcons.librarySelected),
-            matching: find.byType(DecoratedBox),
-          )
-          .first,
-    );
+    BoxDecoration pillOf(IconData icon) =>
+        tester
+                .widget<DecoratedBox>(
+                  find
+                      .ancestor(
+                        of: find.byIcon(icon),
+                        matching: find.byType(DecoratedBox),
+                      )
+                      .first,
+                )
+                .decoration
+            as BoxDecoration;
 
-    expect((pill.decoration as BoxDecoration).color, scheme.primaryContainer);
+    final selected = pillOf(AppIcons.librarySelected);
+    expect(selected.color, scheme.secondaryContainer);
+    expect(selected.borderRadius, BorderRadius.circular(AppRadius.full));
+    expect(pillOf(AppIcons.study).color!.a, 0);
+    expect(
+      tester.getSize(
+        find
+            .ancestor(
+              of: find.byIcon(AppIcons.librarySelected),
+              matching: find.byType(AnimatedContainer),
+            )
+            .first,
+      ),
+      const Size(AppSize.navIndicatorWidth, AppSize.navIndicatorHeight),
+    );
+  });
+
+  testWidgets('the pill animates between destinations over the sheet '
+      'duration', (tester) async {
+    var selected = 0;
+    await pumpMx(
+      tester,
+      StatefulBuilder(
+        builder: (context, setState) => _nav(
+          selected: selected,
+          onSelected: (i) => setState(() => selected = i),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Study'));
+    await tester.pump();
+    await tester.pump(AppDurations.sheet ~/ 2);
+    final pill =
+        tester
+                .widget<DecoratedBox>(
+                  find
+                      .ancestor(
+                        of: find.byIcon(AppIcons.studySelected),
+                        matching: find.byType(DecoratedBox),
+                      )
+                      .first,
+                )
+                .decoration
+            as BoxDecoration;
+    expect(pill.color, isNot(scheme.secondaryContainer));
+    expect(pill.color!.a, greaterThan(0));
+
+    await tester.pump(AppDurations.sheet);
+    final settled =
+        tester
+                .widget<DecoratedBox>(
+                  find
+                      .ancestor(
+                        of: find.byIcon(AppIcons.studySelected),
+                        matching: find.byType(DecoratedBox),
+                      )
+                      .first,
+                )
+                .decoration
+            as BoxDecoration;
+    expect(settled.color, scheme.secondaryContainer);
   });
 
   testWidgets('a tap reports the index; the selected item is marked', (
@@ -117,8 +212,8 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('the bar is the page surface with the ghost edge, no backdrop '
-      'blur: nothing scrolls under it (DEV-302)', (tester) async {
+  testWidgets('the bar is the page surface with a hairline divider on top, no '
+      'backdrop blur: nothing scrolls under it (DEV-302)', (tester) async {
     await pumpMx(tester, _nav());
 
     expect(find.byType(BackdropFilter), findsNothing);
@@ -130,7 +225,17 @@ void main() {
           )
           .first,
     );
-    expect((bar.decoration as BoxDecoration).color, scheme.surface);
+    final decoration = bar.decoration as BoxDecoration;
+    expect(decoration.color, scheme.surface);
+    expect(
+      decoration.border,
+      Border(
+        top: BorderSide(
+          color: MxSemanticColors.light.divider,
+          width: AppStroke.hairline,
+        ),
+      ),
+    );
   });
 
   test('selectedIndex outside the destinations is rejected', () {

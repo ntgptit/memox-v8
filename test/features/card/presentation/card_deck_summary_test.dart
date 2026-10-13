@@ -182,8 +182,9 @@ void main() {
     final label = tester.widget<Text>(
       find.text(_en.cardDeckProgress('SM-2').toUpperCase()),
     );
+    // The eyebrow is the labelSmall role (label-nav, spec §3.2): 12, w500.
     expect(label.style!.fontSize, 12);
-    expect(label.style!.fontWeight, FontWeight.w600);
+    expect(label.style!.fontWeight, FontWeight.w500);
   });
 
   // SW-REV-011: a hero statement wraps between whole terms, never "…",

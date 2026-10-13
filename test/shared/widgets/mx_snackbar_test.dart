@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
@@ -38,7 +41,7 @@ void main() {
     expect(bar.padding, const EdgeInsets.symmetric(horizontal: 16));
   });
 
-  testWidgets('14 message on the inverse surface; a 32 action in 48', (
+  testWidgets('body message on the inverse surface; a 32 action in 48', (
     tester,
   ) async {
     await pumpMx(
@@ -58,7 +61,8 @@ void main() {
       matching: find.byType(Material),
     );
 
-    expect((message.fontSize, message.height), (14, 1.4));
+    final body = buildLightTheme().textTheme.bodyMedium!;
+    expect((message.fontSize, message.height), (body.fontSize, body.height));
     expect(message.color, scheme.onInverseSurface);
     expect(tester.getSize(painted.first).height, 32);
     expect(
@@ -275,7 +279,8 @@ void main() {
       await tester.pumpAndSettle();
 
       final rect = toast(tester);
-      expect((rect.left, rect.width), ((1280 - 688) / 2, 720 - 2 * 16));
+      const width = AppSize.contentMaxWidth - 2 * AppSpacing.gutter;
+      expect((rect.left, rect.width), ((1280 - width) / 2, width));
     });
 
     testWidgets('a phone: the theme inset, as before', (tester) async {

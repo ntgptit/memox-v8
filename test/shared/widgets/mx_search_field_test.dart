@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
@@ -10,6 +14,7 @@ import '../../support/widget_harness.dart';
 
 void main() {
   final scheme = AppColorSchemes.light;
+  final semantic = MxSemanticColors.light;
   late TextEditingController controller;
 
   setUp(() => controller = TextEditingController());
@@ -29,18 +34,24 @@ void main() {
         ),
       );
 
-  testWidgets('52 tall, 16/400 value, resting fill and muted glyph', (
-    tester,
-  ) async {
+  testWidgets('search tall, label-meta value, search ground, no edge at rest '
+      'and a muted standard glyph', (tester) async {
     await pump(tester);
     final field = tester.widget<TextField>(find.byType(TextField));
+    final labelMeta = buildLightTheme().textTheme.labelMedium!;
 
-    expect(tester.getSize(find.byType(TextField)).height, 52);
-    expect(field.style!.fontSize, 16);
-    expect(field.decoration!.fillColor, scheme.surfaceContainer);
+    expect(tester.getSize(find.byType(TextField)).height, AppSize.search);
+    expect(field.style!.fontSize, labelMeta.fontSize);
+    expect(field.style!.fontWeight, labelMeta.fontWeight);
+    expect(field.decoration!.fillColor, semantic.searchSurface);
     expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
-      scheme.onSurfaceVariant,
+      field.decoration!.enabledBorder,
+      AppComponentThemes.searchEdge(focusColor: null),
+    );
+    final glyph = tester.widget<Icon>(find.byIcon(AppIcons.search));
+    expect(
+      (glyph.color, glyph.size),
+      (scheme.onSurfaceVariant, AppIconSize.standard),
     );
   });
 
@@ -51,7 +62,7 @@ void main() {
     await tester.enterText(find.byType(TextField), 'verb');
     await tester.pump();
     expect(find.byTooltip('Clear search'), findsOneWidget);
-    expect(tester.getSize(find.byType(TextField)).height, 52);
+    expect(tester.getSize(find.byType(TextField)).height, AppSize.search);
   });
 
   testWidgets('clear empties the query and reports it', (tester) async {
@@ -82,16 +93,21 @@ void main() {
     );
   }, variant: TargetPlatformVariant.all());
 
-  testWidgets('focus lightens the fill and tints the glyph', (tester) async {
+  testWidgets('focus keeps the search ground, shows the focus ring and tints '
+      'the glyph', (tester) async {
     await pump(tester);
     await tester.tap(find.byType(TextField));
     await tester.pump();
     final field = tester.widget<TextField>(find.byType(TextField));
 
-    expect(field.decoration!.fillColor, scheme.surfaceContainerLowest);
+    expect(field.decoration!.fillColor, semantic.searchSurface);
+    expect(
+      field.decoration!.focusedBorder,
+      AppComponentThemes.searchEdge(focusColor: semantic.focusRing),
+    );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
-      MxSemanticColors.light.primaryText,
+      semantic.primaryText,
     );
   });
 
@@ -101,7 +117,7 @@ void main() {
     await tester.pump();
 
     expect(tester.widget<TextField>(find.byType(TextField)).maxLines, 1);
-    expect(tester.getSize(find.byType(TextField)).height, 52);
+    expect(tester.getSize(find.byType(TextField)).height, AppSize.search);
   });
 
   group('trigger', () {
@@ -113,16 +129,17 @@ void main() {
       ),
     );
 
-    testWidgets('looks like the resting field: 52 tall, resting fill, hint', (
-      tester,
-    ) async {
-      await pumpTrigger(tester, () {});
-      final field = tester.widget<TextField>(find.byType(TextField));
+    testWidgets(
+      'looks like the resting field: search tall, search ground, hint',
+      (tester) async {
+        await pumpTrigger(tester, () {});
+        final field = tester.widget<TextField>(find.byType(TextField));
 
-      expect(tester.getSize(find.byType(TextField)).height, 52);
-      expect(field.decoration!.fillColor, scheme.surfaceContainer);
-      expect(find.text('Search decks'), findsOneWidget);
-    });
+        expect(tester.getSize(find.byType(TextField)).height, AppSize.search);
+        expect(field.decoration!.fillColor, semantic.searchSurface);
+        expect(find.text('Search decks'), findsOneWidget);
+      },
+    );
 
     testWidgets('a tap calls onTap once and takes no focus', (tester) async {
       var taps = 0;

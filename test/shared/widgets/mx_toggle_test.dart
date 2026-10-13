@@ -56,14 +56,16 @@ void main() {
     expect(_thumbOffset(tester), 21);
   });
 
-  testWidgets('off: no edge and a white thumb; on: no edge and a primary '
-      'thumb (spec 2026-10-10 §5.2)', (tester) async {
+  testWidgets('off: no edge and an outline thumb; on: no edge and an onPrimary '
+      'thumb on the primary track ("Flashcard Color Tokens" §6)', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
     );
     expect(_ring(tester), isNull);
-    expect(_thumbColor(tester), scheme.onPrimary);
+    expect(_thumbColor(tester), scheme.outline);
 
     await pumpMx(
       tester,
@@ -71,7 +73,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(_ring(tester), isNull);
-    expect(_thumbColor(tester), scheme.primary);
+    expect(_thumbColor(tester), scheme.onPrimary);
   });
 
   testWidgets('a tap reports the flipped value', (tester) async {

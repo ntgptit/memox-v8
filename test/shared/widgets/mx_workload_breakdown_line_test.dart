@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
@@ -52,8 +53,12 @@ void main() {
   final scheme = AppColorSchemes.light;
   final semantic = MxSemanticColors.light;
   final derived = semantic;
+  // The line is the label-meta role: one weight for the root and every term,
+  // only the colour differs ("Flashcard Color Tokens" §3.2).
+  final labelMeta = buildLightTheme().textTheme.labelMedium!;
+  final lineHeight = labelMeta.fontSize! * labelMeta.height!;
 
-  testWidgets('all three terms in order, each in its colour, at 600', (
+  testWidgets('all three terms in order, each in its colour, in one role', (
     tester,
   ) async {
     await pumpMx(tester, _line());
@@ -65,8 +70,8 @@ void main() {
       MxSemanticColors.light.primaryText,
     );
     expect(_termStyle(tester, '2 new')!.color, scheme.onSurfaceVariant);
-    expect(_termStyle(tester, '2 new')!.fontWeight, FontWeight.w600);
-    expect(_root(tester).style!.fontWeight, FontWeight.w400);
+    expect(_termStyle(tester, '2 new')!.fontWeight, labelMeta.fontWeight);
+    expect(_root(tester).style!.fontWeight, labelMeta.fontWeight);
     expect(_root(tester).style!.color, scheme.onSurfaceVariant);
   });
 
@@ -93,7 +98,7 @@ void main() {
     expect(_plain(tester), '3 overdue · 5 today · 2 new across 4 decks');
   });
 
-  testWidgets('one 18 line with an ellipsis', (tester) async {
+  testWidgets('one line with an ellipsis', (tester) async {
     await pumpMx(tester, SizedBox(width: 120, child: _line()));
     final text = tester.widget<Text>(
       find.descendant(
@@ -103,7 +108,10 @@ void main() {
     );
 
     expect((text.maxLines, text.overflow), (1, TextOverflow.ellipsis));
-    expect(tester.getSize(find.byType(MxWorkloadBreakdownLine)).height, 18);
+    expect(
+      tester.getSize(find.byType(MxWorkloadBreakdownLine)).height,
+      lineHeight,
+    );
   });
 
   test('a negative count asserts', () {
@@ -220,7 +228,7 @@ void main() {
   });
 
   testWidgets('with icons each term leads with its own glyph in its colour, on '
-      'the same 18 line, and is read as its words only (BR-STUDY-076)', (
+      'the same line, and is read as its words only (BR-STUDY-076)', (
     tester,
   ) async {
     await pumpMx(
@@ -255,7 +263,10 @@ void main() {
     );
     expect(semantics.properties.label, '3 overdue · 0 today · 2 new');
     expect(semantics.excludeSemantics, isTrue);
-    expect(tester.getSize(find.byType(MxWorkloadBreakdownLine)).height, 18);
+    expect(
+      tester.getSize(find.byType(MxWorkloadBreakdownLine)).height,
+      lineHeight,
+    );
   });
 
   testWidgets('a plain line draws no icon', (tester) async {
@@ -270,7 +281,11 @@ void main() {
     await pumpMx(tester, SizedBox(width: 90, child: _line(hasIcons: true)));
 
     final line = find.byType(MxWorkloadBreakdownLine);
-    expect(tester.getSize(line).height, greaterThan(18), reason: 'it wraps');
+    expect(
+      tester.getSize(line).height,
+      greaterThan(lineHeight),
+      reason: 'it wraps',
+    );
     for (final (glyph, words) in [
       (AppIcons.overdue, '3 overdue ·'),
       (AppIcons.dueNow, '5 today ·'),
@@ -297,7 +312,13 @@ void main() {
   testWidgets('a wrapping line without glyphs never breaks inside a term nor '
       'before its dot, at any width', (tester) async {
     // From the width where the widest term and its dot fit on one line.
-    for (var width = 72.0; width <= 180; width += 2) {
+    final widest = TextPainter(
+      text: TextSpan(text: '3\u00A0overdue\u00A0·', style: labelMeta),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final from = widest.width.ceilToDouble();
+    widest.dispose();
+    for (var width = from; width <= from + 108; width += 2) {
       await pumpMx(
         tester,
         SizedBox(
@@ -329,7 +350,7 @@ void main() {
               )
               .single
               .top ~/
-          18;
+          lineHeight;
       for (final term in ['3 overdue', '5 today', '2 new']) {
         final start = text.indexOf(term.replaceAll(' ', ' '));
         expect(start, isNot(-1), reason: '$term at $width');

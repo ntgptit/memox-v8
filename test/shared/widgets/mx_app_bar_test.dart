@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -9,8 +10,11 @@ import 'package:memox/shared/widgets/mx_search_field.dart';
 
 import '../../support/widget_harness.dart';
 
+TextTheme _texts(WidgetTester tester) =>
+    Theme.of(tester.element(find.byType(MxAppBar))).textTheme;
+
 void main() {
-  testWidgets('56 tall on the page ground, below the status inset', (
+  testWidgets('64 tall on the page ground, below the status inset', (
     tester,
   ) async {
     await pumpMx(
@@ -19,21 +23,26 @@ void main() {
       padding: const EdgeInsets.only(top: 24),
     );
 
-    expect(tester.getSize(find.byType(MxAppBar)).height, 56 + 24);
+    expect(tester.getSize(find.byType(MxAppBar)).height, AppSize.appBar + 24);
   });
 
-  testWidgets('screen density: 24 title, 16 gutter', (tester) async {
+  testWidgets('screen density: titleLarge title, the 16 compact margin', (
+    tester,
+  ) async {
     await pumpMx(tester, const MxAppBar(title: 'Library'));
 
-    expect(tester.widget<Text>(find.text('Library')).style!.fontSize, 24);
+    expect(
+      tester.widget<Text>(find.text('Library')).style!.fontSize,
+      _texts(tester).titleLarge!.fontSize,
+    );
     expect(
       tester.getTopLeft(find.text('Library')).dx -
           tester.getTopLeft(find.byType(MxAppBar)).dx,
-      16,
+      AppSpacing.gutter,
     );
   });
 
-  testWidgets('content density: 16 title after the leading control', (
+  testWidgets('content density: titleMedium title after the leading control', (
     tester,
   ) async {
     await pumpMx(
@@ -49,7 +58,10 @@ void main() {
       ),
     );
 
-    expect(tester.widget<Text>(find.text('Japanese N5')).style!.fontSize, 16);
+    expect(
+      tester.widget<Text>(find.text('Japanese N5')).style!.fontSize,
+      _texts(tester).titleMedium!.fontSize,
+    );
   });
 
   testWidgets('a long title ellipsises and the actions keep their width', (
@@ -156,7 +168,7 @@ void main() {
     }
   });
   testWidgets(
-    'a search field in the bar keeps 8 above and below it and ends on the gutter',
+    'a search field in the bar keeps 4 above and below it and ends on the gutter',
     (tester) async {
       await pumpMx(
         tester,
@@ -177,10 +189,11 @@ void main() {
       final bar = tester.getRect(find.byType(MxAppBar));
       final field = tester.getRect(find.byType(MxSearchField));
 
-      expect(field.top - bar.top, 8);
-      expect(bar.bottom - field.bottom, 8);
-      // A bordered field lines up with the content's 16 gutter below it.
-      expect(bar.right - field.right, 16);
+      expect(field.height, AppSize.search);
+      expect(field.top - bar.top, AppSpacing.micro);
+      expect(bar.bottom - field.bottom, AppSpacing.micro);
+      // The field lines up with the content's side margin below it.
+      expect(bar.right - field.right, AppSpacing.gutter);
     },
   );
 
@@ -199,7 +212,7 @@ void main() {
     );
   });
 
-  testWidgets('with a leading control the content bar keeps its 8 start', (
+  testWidgets('with a leading control the content bar starts on the margin', (
     tester,
   ) async {
     await pumpMx(
@@ -214,6 +227,6 @@ void main() {
         ),
       ),
     );
-    expect(tester.getTopLeft(find.byType(MxIconButton)).dx, AppSpacing.control);
+    expect(tester.getTopLeft(find.byType(MxIconButton)).dx, AppSpacing.gutter);
   });
 }

@@ -390,8 +390,12 @@ void main() {
     await tester.enterText(_field(0), 'a' * 60);
     await tester.pump();
 
+    // The text box holds the value's lines only (the field pads around it):
+    // wrapped means taller than one bodyMedium line.
+    final value = Theme.of(tester.element(_field(0))).textTheme.bodyMedium!;
+    final oneLine = value.fontSize! * value.height!;
     final term = tester.renderObject<RenderBox>(_field(0));
-    expect(term.size.height, greaterThan(40));
+    expect(term.size.height, greaterThan(oneLine));
     expect(tester.takeException(), isNull);
   });
 

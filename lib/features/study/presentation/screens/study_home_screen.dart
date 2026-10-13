@@ -7,7 +7,6 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_home_controller.dart';
@@ -18,6 +17,7 @@ import 'package:memox/features/study/presentation/widgets/sections/study_home_em
 import 'package:memox/features/study/presentation/widgets/sections/study_home_resume_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_sync_banner_widget.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_workload_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_home_overview_columns_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -105,7 +105,7 @@ class StudyHomeScreen extends ConsumerWidget {
         onOpenLibrary: onOpenLibrary,
         onOpenStarterDecks: onOpenStarterDecks,
       ),
-      final RootDeckWorkload workload => _OverviewColumns(
+      final RootDeckWorkload workload => StudyHomeOverviewColumnsWidget(
         lead: [
           if (session != null)
             StudyHomeResumeWidget(
@@ -163,46 +163,4 @@ class StudyHomeScreen extends ConsumerWidget {
         break;
     }
   }
-}
-
-/// The overview's content ("Flashcard Color Tokens" §5): one column, or two
-/// side by side once the content area holds two [AppSize.overviewColumnMin]
-/// columns and the section gap. It measures its own area, not the window.
-class _OverviewColumns extends StatelessWidget {
-  const _OverviewColumns({required this.lead, required this.trail});
-
-  /// The resume card, when a session waits, and the workload.
-  final List<Widget> lead;
-
-  /// The decks.
-  final Widget trail;
-
-  static const double _splitWidth =
-      2 * AppSize.overviewColumnMin + AppSpacing.section;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final leadColumn = Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.gutter,
-        children: lead,
-      );
-      if (constraints.maxWidth < _splitWidth) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.gutter,
-          children: [leadColumn, trail],
-        );
-      }
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.section,
-        children: [
-          Expanded(child: leadColumn),
-          Expanded(child: trail),
-        ],
-      );
-    },
-  );
 }

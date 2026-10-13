@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -19,25 +22,54 @@ Material _material(WidgetTester tester) =>
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('each size paints its height and keeps a 48 target', (
+  testWidgets('each size paints its height as a pill and keeps a 48 target', (
     tester,
   ) async {
     const heights = {
-      MxButtonSize.regular: 48.0,
-      MxButtonSize.small: 36.0,
-      MxButtonSize.compact: 32.0,
-      MxButtonSize.chip: 28.0,
-      MxButtonSize.study: 48.0,
+      MxButtonSize.regular: AppSize.buttonRegular,
+      MxButtonSize.small: AppSize.buttonSmall,
+      MxButtonSize.compact: AppSize.buttonCompact,
+      MxButtonSize.chip: AppSize.chip,
+      MxButtonSize.study: AppSize.buttonRegular,
     };
     for (final MapEntry(key: size, value: height) in heights.entries) {
       await pumpMx(tester, MxButton(label: 'Go', size: size, onPressed: () {}));
 
       expect(tester.getSize(_painted.first).height, height, reason: '$size');
       expect(
+        (_material(tester).shape! as RoundedRectangleBorder).borderRadius,
+        BorderRadius.circular(AppRadius.full),
+        reason: '$size',
+      );
+      expect(
         tester.getSize(find.byType(TextButton)).height,
         greaterThanOrEqualTo(48),
         reason: '$size',
       );
+    }
+  });
+
+  testWidgets('regular and study pad 24 each side, small and compact 12', (
+    tester,
+  ) async {
+    const paddings = {
+      MxButtonSize.regular: AppSpacing.section,
+      MxButtonSize.study: AppSpacing.section,
+      MxButtonSize.small: AppSpacing.grouped,
+      MxButtonSize.compact: AppSpacing.grouped,
+    };
+    for (final MapEntry(key: size, value: padding) in paddings.entries) {
+      await pumpMx(
+        tester,
+        UnconstrainedBox(
+          child: MxButton(label: 'Go', size: size, onPressed: () {}),
+        ),
+      );
+      final label = tester.getRect(find.text('Go'));
+      final button = tester.getRect(_painted.first);
+
+      expect(label.left - button.left, padding, reason: '$size');
+      expect(button.right - label.right, padding, reason: '$size');
     }
   });
 
@@ -67,33 +99,33 @@ void main() {
   });
 
   for (final brightness in Brightness.values) {
-    testWidgets('dangerSoft paints the danger tint with the error label, '
-        '${brightness.name} '
-        '(FE-A6 P2, screen 16a, DEV-371)', (tester) async {
-      final semantic = brightness == Brightness.light
-          ? MxSemanticColors.light
-          : MxSemanticColors.dark;
-      await pumpMx(
-        tester,
-        MxButton(
-          label: 'Again',
-          tone: MxButtonTone.dangerSoft,
-          onPressed: () {},
-        ),
-        brightness: brightness,
-      );
-      final material = _material(tester);
+    testWidgets(
+      'dangerSoft paints the danger tint with the on-danger-soft label, '
+      '${brightness.name} '
+      '(FE-A6 P2, screen 16a, DEV-371)',
+      (tester) async {
+        final semantic = brightness == Brightness.light
+            ? MxSemanticColors.light
+            : MxSemanticColors.dark;
+        await pumpMx(
+          tester,
+          MxButton(
+            label: 'Again',
+            tone: MxButtonTone.dangerSoft,
+            onPressed: () {},
+          ),
+          brightness: brightness,
+        );
+        final material = _material(tester);
 
-      final error = brightness == Brightness.light
-          ? AppColorSchemes.light.error
-          : AppColorSchemes.dark.error;
-      expect(material.color, semantic.dangerSoft);
-      expect(material.textStyle!.color, error);
-      expect(
-        (material.shape! as RoundedRectangleBorder).side,
-        BorderSide(color: semantic.dangerBorder),
-      );
-    });
+        expect(material.color, semantic.dangerSoft);
+        expect(material.textStyle!.color, semantic.onDangerSoft);
+        expect(
+          (material.shape! as RoundedRectangleBorder).side,
+          BorderSide(color: semantic.dangerBorder),
+        );
+      },
+    );
   }
 
   testWidgets(
@@ -185,7 +217,7 @@ void main() {
     );
   });
 
-  testWidgets('chip size paints its own surface and ghost edge (R2)', (
+  testWidgets('chip size paints the neutral-soft chip with no edge (R2)', (
     tester,
   ) async {
     await pumpMx(
@@ -195,12 +227,9 @@ void main() {
     final material = _material(tester);
     final derived = MxSemanticColors.light;
 
-    expect(material.color, scheme.surfaceContainerLowest);
-    expect(material.textStyle!.color, scheme.onSurface);
-    expect(
-      (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(color: derived.border),
-    );
+    expect(material.color, derived.neutralSoft);
+    expect(material.textStyle!.color, derived.onNeutralSoft);
+    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
   });
 
   testWidgets('isAutofocused takes the focus when it shows', (tester) async {

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 
 import '../../support/widget_harness.dart';
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final semantic = MxSemanticColors.light;
 
-  testWidgets('22 default, 18 dense; surfaceContainer, muted label', (
+  testWidgets('22 default, 18 dense; neutralSoft, onNeutralSoft label', (
     tester,
   ) async {
     await pumpMx(tester, const MxTagChip(label: 'verbs'));
@@ -24,11 +24,11 @@ void main() {
             as BoxDecoration;
 
     expect(tester.getSize(find.byType(MxTagChip)).height, 22);
-    expect(box.color, scheme.surfaceContainer);
+    expect(box.color, semantic.neutralSoft);
     expect(box.borderRadius, BorderRadius.circular(999));
     expect(
       tester.widget<Text>(find.text('verbs')).style!.color,
-      scheme.onSurfaceVariant,
+      semantic.onNeutralSoft,
     );
     expect(
       tester.getTopLeft(find.text('verbs')).dx -

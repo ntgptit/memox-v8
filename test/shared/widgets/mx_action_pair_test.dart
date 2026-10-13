@@ -103,8 +103,8 @@ void main() {
       tester,
       _bar(
         MxActionPair(
-          leading: _button('Restore 2 cards', icon: Icons.restore),
-          trailing: _button('Delete for good', icon: Icons.delete),
+          leading: _button('Restore 2', icon: Icons.restore),
+          trailing: _button('Delete now', icon: Icons.delete),
         ),
       ),
     );

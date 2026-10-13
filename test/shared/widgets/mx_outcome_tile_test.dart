@@ -52,8 +52,10 @@ void main() {
     }
   }
 
-  testWidgets('kept reads onSuccessSoft, lost onWarningSoft, the body Day\'s '
-      'description; the same in Night (spec 2026-10-10 D4)', (tester) async {
+  testWidgets('kept reads onSuccessSoft, lost onWarningSoft, the body the '
+      'current theme\'s description; the soft grounds are Night\'s in Night', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const Column(
@@ -86,7 +88,7 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text('a')).style!.color,
-      AppColorSchemes.light.onSurfaceVariant,
+      AppColorSchemes.dark.onSurfaceVariant,
     );
   });
 }

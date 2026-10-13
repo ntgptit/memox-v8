@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
@@ -94,7 +95,7 @@ void main() {
     expect(tester.getSize(find.byIcon(AppIcons.inbox)).width, 24);
   });
 
-  testWidgets('a footnote sits 20 below the action as a note', (tester) async {
+  testWidgets('a footnote sits 24 below the action as a note', (tester) async {
     await pumpMx(
       tester,
       MxEmptyState(
@@ -109,7 +110,7 @@ void main() {
     expect(
       tester.getTopLeft(find.byType(MxNote)).dy -
           tester.getBottomLeft(find.byType(MxButton)).dy,
-      20,
+      AppSpacing.card,
     );
     // The footnote form, with no fill and no edge: a boxed note inside the
     // raised card was two ghost edges in dark (audit 2026-10-08 F-02).

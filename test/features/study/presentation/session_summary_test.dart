@@ -89,8 +89,8 @@ void main() {
     expect((done, again), (1, 1));
   });
 
-  libraryTest('Night: a finished session is a soft ground, so its title reads '
-      'Day\'s text (spec 2026-10-10 D4)', (tester, env) async {
+  libraryTest('Night: a finished session is a dark soft ground, so its title '
+      'reads Night\'s text (token spec §2)', (tester, env) async {
     await _pump(
       tester,
       env,
@@ -101,7 +101,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text(_en.summaryReviewFinished)).style?.color,
-      AppColorSchemes.light.onSurface,
+      AppColorSchemes.dark.onSurface,
     );
   });
 

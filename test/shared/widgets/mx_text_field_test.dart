@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
@@ -373,7 +374,10 @@ void main() {
     final field = tester.widget<TextField>(find.byType(TextField));
     expect(field.textAlign, TextAlign.center);
     expect(field.maxLines, 1);
-    expect(field.style!.fontSize, 32);
+    expect(
+      field.style!.fontSize,
+      buildLightTheme().textTheme.displaySmall!.fontSize,
+    );
     expect(
       tester.getSize(find.byType(TextField)).height,
       greaterThanOrEqualTo(48),

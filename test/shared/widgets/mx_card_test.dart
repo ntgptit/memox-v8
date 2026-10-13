@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -20,74 +22,83 @@ Material _surface(WidgetTester tester) => tester.widget<Material>(
 RoundedRectangleBorder _shape(WidgetTester tester) =>
     _surface(tester).shape! as RoundedRectangleBorder;
 
-List<BoxShadow>? _shadow(WidgetTester tester) =>
-    (tester
-                .widget<DecoratedBox>(
-                  find
-                      .descendant(
-                        of: find.byType(MxCard),
-                        matching: find.byType(DecoratedBox),
-                      )
-                      .first,
-                )
-                .decoration
-            as BoxDecoration)
-        .boxShadow;
+/// A card is flat: no shadow decoration, no Material elevation.
+void _expectFlat(WidgetTester tester) {
+  expect(
+    find.descendant(
+      of: find.byType(MxCard),
+      matching: find.byType(DecoratedBox),
+    ),
+    findsNothing,
+  );
+  expect(_surface(tester).elevation, 0);
+}
 
 void main() {
-  testWidgets('Day: raised fill, radius 12, 20 padding, whisper, the border '
-      'hairline (plan R2: the card and the page are both white)', (
-    tester,
-  ) async {
-    final scheme = AppColorSchemes.light;
+  testWidgets('Day: the card ground, radius 12, 24 padding, no edge and no '
+      'shadow', (tester) async {
     await pumpMx(
       tester,
       const MxCard(child: SizedBox(key: _bodyKey, height: 40)),
     );
 
-    expect(_surface(tester).color, scheme.surfaceContainerLowest);
-    expect(_shape(tester).borderRadius, BorderRadius.circular(12));
-    expect(
-      _shape(tester).side,
-      BorderSide(color: MxSemanticColors.light.border),
-    );
-    expect(_shadow(tester), AppShadows.whisper(scheme));
+    expect(_surface(tester).color, MxSemanticColors.light.cardSurface);
+    expect(_shape(tester).borderRadius, BorderRadius.circular(AppRadius.md));
+    expect(_shape(tester).side, BorderSide.none);
+    _expectFlat(tester);
     expect(
       tester.getTopLeft(find.byKey(_bodyKey)) -
           tester.getTopLeft(find.byType(MxCard)),
-      const Offset(20, 20),
+      const Offset(AppSpacing.card, AppSpacing.card),
     );
     expect(tester.getSize(find.byType(MxCard)).width, 360);
   });
 
-  testWidgets('Night: the 1px border hairline and no shadow', (tester) async {
+  testWidgets('compact: the overview padding of 16', (tester) async {
+    await pumpMx(
+      tester,
+      const MxCard(isCompact: true, child: SizedBox(key: _bodyKey, height: 40)),
+    );
+
+    expect(
+      tester.getTopLeft(find.byKey(_bodyKey)) -
+          tester.getTopLeft(find.byType(MxCard)),
+      const Offset(AppSpacing.cardCompact, AppSpacing.cardCompact),
+    );
+  });
+
+  testWidgets('Night: the dark card ground, no edge and no shadow', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const MxCard(child: SizedBox(height: 40)),
       brightness: Brightness.dark,
     );
 
-    expect(
-      _shape(tester).side,
-      BorderSide(color: MxSemanticColors.dark.border),
-    );
-    expect(_shadow(tester), isEmpty);
+    expect(_surface(tester).color, MxSemanticColors.dark.cardSurface);
+    expect(_shape(tester).side, BorderSide.none);
+    _expectFlat(tester);
   });
 
-  testWidgets('hero: the primary container keeps the border hairline in Day', (
+  testWidgets('hero: the primary soft ground, no edge, in Day and Night', (
     tester,
   ) async {
-    final scheme = AppColorSchemes.light;
-    await pumpMx(
-      tester,
-      const MxCard(isHero: true, child: SizedBox(height: 40)),
-    );
+    for (final brightness in Brightness.values) {
+      final semantic = brightness == Brightness.light
+          ? MxSemanticColors.light
+          : MxSemanticColors.dark;
+      await pumpMx(
+        tester,
+        const MxCard(isHero: true, child: SizedBox(height: 40)),
+        brightness: brightness,
+      );
+      await tester.pumpAndSettle();
 
-    expect(_surface(tester).color, scheme.primaryContainer);
-    expect(
-      _shape(tester).side,
-      BorderSide(color: MxSemanticColors.light.border),
-    );
+      expect(_surface(tester).color, semantic.primarySoft);
+      expect(_shape(tester).side, BorderSide.none);
+      _expectFlat(tester);
+    }
   });
 
   testWidgets('full bleed: no padding, clipped, the row ripple on the card', (
@@ -122,19 +133,17 @@ void main() {
     );
   });
 
-  testWidgets(
-    'a warning card fills with warning-soft and edges with the warning border',
-    (tester) async {
-      await pumpMx(
-        tester,
-        const MxCard(isWarning: true, child: SizedBox(height: 40)),
-      );
-      const semantic = MxSemanticColors.light;
+  testWidgets('a warning card fills with warning-soft and has no edge', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxCard(isWarning: true, child: SizedBox(height: 40)),
+    );
 
-      expect(_surface(tester).color, semantic.warningSoft);
-      expect(_shape(tester).side.color, semantic.warningBorder);
-    },
-  );
+    expect(_surface(tester).color, MxSemanticColors.light.warningSoft);
+    expect(_shape(tester).side, BorderSide.none);
+  });
 
   test('a card is hero or warning, not both', () {
     expect(
@@ -152,8 +161,11 @@ void main() {
       const MxCard(isSelected: true, child: SizedBox(height: 40)),
     );
 
-    expect(_shape(tester).side, BorderSide(color: scheme.primary, width: 2));
-    expect(_surface(tester).color, scheme.surfaceContainerLowest);
+    expect(
+      _shape(tester).side,
+      BorderSide(color: scheme.primary, width: AppStroke.control),
+    );
+    expect(_surface(tester).color, MxSemanticColors.light.cardSurface);
   });
 
   testWidgets('a success card and a danger card take their decoration '
@@ -186,14 +198,11 @@ void main() {
   });
 
   testWidgets('recessed: the answer face of a study card, container-low, '
-      'the border hairline in both themes, flat (FE-A6 P2)', (tester) async {
+      'no edge in both themes, flat (FE-A6 P2)', (tester) async {
     for (final brightness in Brightness.values) {
       final scheme = brightness == Brightness.light
           ? AppColorSchemes.light
           : AppColorSchemes.dark;
-      final semantic = brightness == Brightness.light
-          ? MxSemanticColors.light
-          : MxSemanticColors.dark;
       await pumpMx(
         tester,
         const MxCard(isRecessed: true, child: SizedBox(height: 40)),
@@ -203,43 +212,30 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(_surface(tester).color, scheme.surfaceContainerLow);
-      expect(_shape(tester).side, BorderSide(color: semantic.border));
-      expect(_shadow(tester), isEmpty);
+      expect(_shape(tester).side, BorderSide.none);
+      _expectFlat(tester);
     }
   });
 
-  testWidgets('Night: a toned card renders its content in Day text (plan R1)', (
+  // Soft grounds are dark in Night ("Flashcard Color Tokens" §2), so their
+  // content reads the current theme: nothing re-themes it to Day.
+  testWidgets('Night: every card variant renders its content in Night text', (
     tester,
   ) async {
     for (final card in const [
-      MxCard(isSuccess: true, child: _OnSurfaceText('toned')),
-      MxCard(isWarning: true, child: _OnSurfaceText('toned')),
+      MxCard(child: _OnSurfaceText('night')),
+      MxCard(isHero: true, child: _OnSurfaceText('night')),
+      MxCard(isRecessed: true, child: _OnSurfaceText('night')),
+      MxCard(isSuccess: true, child: _OnSurfaceText('night')),
+      MxCard(isWarning: true, child: _OnSurfaceText('night')),
+      MxCard(isDanger: true, child: _OnSurfaceText('night')),
     ]) {
       await pumpMx(tester, card, brightness: Brightness.dark);
       await tester.pumpAndSettle();
 
       expect(
-        tester.widget<Text>(find.text('toned')).style!.color,
-        const Color(0xFF282E3E),
-      );
-    }
-  });
-
-  // The danger card keeps its pre-Indigo tint, dark in Night (DEV-371).
-  testWidgets('Night: a raised, hero or danger card keeps Night text', (
-    tester,
-  ) async {
-    for (final card in const [
-      MxCard(child: _OnSurfaceText('plain')),
-      MxCard(isHero: true, child: _OnSurfaceText('plain')),
-      MxCard(isDanger: true, child: _OnSurfaceText('plain')),
-    ]) {
-      await pumpMx(tester, card, brightness: Brightness.dark);
-      await tester.pumpAndSettle();
-
-      expect(
-        tester.widget<Text>(find.text('plain')).style!.color,
-        const Color(0xFFF6F7FB),
+        tester.widget<Text>(find.text('night')).style!.color,
+        AppColorSchemes.dark.onSurface,
       );
     }
   });

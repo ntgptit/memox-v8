@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_deck_picker_sheet.dart';
@@ -24,27 +25,28 @@ MxDeckPickerSheet _picker(
 );
 
 void main() {
-  testWidgets('head: a 16/700 title and a 12 rule, 20 in and 4 down', (
-    tester,
-  ) async {
+  testWidgets('head: a titleSmall title and a bodyMedium rule, 24 in and 4 '
+      'down', (tester) async {
     await pumpMx(
       tester,
       _picker([MxPickerCandidate(label: 'Kana', onTap: () {})]),
     );
     final sheet = tester.getTopLeft(find.byType(MxBottomSheet));
+    final texts = Theme.of(tester.element(find.byType(MxBottomSheet)))
+        .textTheme;
+    final title = tester.widget<Text>(find.text('Move to deck')).style!;
+    final rule = tester
+        .widget<Text>(find.text('Cards keep their progress.'))
+        .style!;
 
-    expect(tester.widget<Text>(find.text('Move to deck')).style!.fontSize, 16);
-    expect(
-      tester
-          .widget<Text>(find.text('Cards keep their progress.'))
-          .style!
-          .fontSize,
-      12,
-    );
+    expect(title.fontSize, texts.titleSmall!.fontSize);
+    expect(title.fontWeight, texts.titleSmall!.fontWeight);
+    expect(rule.fontSize, texts.bodyMedium!.fontSize);
+    expect(rule.fontWeight, texts.bodyMedium!.fontWeight);
     // The grabber block is 8 + 4 + 4 = 16, then the head's 4.
     expect(
       tester.getTopLeft(find.text('Move to deck')) - sheet,
-      const Offset(20, 20),
+      const Offset(AppSpacing.card, 20),
     );
   });
 
@@ -129,7 +131,7 @@ void main() {
     expect(find.byType(MxSkeletonList), findsOneWidget);
     expect(
       tester.getTopLeft(find.text('Move to deck')) - sheet,
-      const Offset(20, 20),
+      const Offset(AppSpacing.card, 20),
     );
   });
 

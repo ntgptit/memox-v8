@@ -135,7 +135,9 @@ void main() {
     );
     final type = card.textSpan!.children!.first as TextSpan;
     expect(type.text, 'PostgrestException');
-    expect(type.style!.fontWeight, FontWeight.w600);
+    // The type is the rowTitle role (titleSmall, w500); the message under it
+    // is the code role at w400, so the weight still sets it apart.
+    expect(type.style!.fontWeight, FontWeight.w500);
   });
 
   // Impeccable 2026-09-29 F6: a new frame reads apart from a wrapped line.

@@ -35,11 +35,15 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxSemanticColors.dark.warning,
+      MxSemanticColors.dark.warningText,
     );
     expect(
       tester.widget<Text>(find.text('Ten tags at most')).style!.color,
-      MxSemanticColors.dark.warning,
+      MxSemanticColors.dark.warningText,
+    );
+    expect(
+      MxSemanticColors.dark.warningText,
+      isNot(MxSemanticColors.dark.warning),
     );
   });
 

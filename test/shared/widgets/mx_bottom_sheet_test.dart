@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
@@ -21,7 +24,7 @@ Widget _rows(int count) => Column(
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('surface: the card ground, top radius 20, the chrome shadow', (
+  testWidgets('surface: the card ground, top radius 28, the chrome shadow', (
     tester,
   ) async {
     await pumpMx(tester, MxBottomSheet(child: _rows(2)));
@@ -47,10 +50,10 @@ void main() {
           .first,
     );
 
-    expect(surface.color, scheme.surfaceContainerLowest);
+    expect(surface.color, MxSemanticColors.light.cardSurface);
     expect(
       (surface.shape! as RoundedRectangleBorder).borderRadius,
-      const BorderRadius.vertical(top: Radius.circular(20)),
+      const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
     );
     expect(shadow, AppShadows.chrome(scheme));
   });
@@ -266,8 +269,9 @@ void main() {
 
   // SW-REV-008: the head every sheet drew by hand, now the sheet's own.
   group('title and subtitle (SW-REV-008)', () {
-    testWidgets('the title 16/700 20 in and 4 below the grabber; the subtitle '
-        '12 under it, 4 apart; 12 above the content', (tester) async {
+    testWidgets('the title in the compact-title role 24 in and 4 below the '
+        'grabber; the subtitle in the note role under it, 4 apart; 12 above '
+        'the content', (tester) async {
       await pumpMx(
         tester,
         const MxBottomSheet(
@@ -281,24 +285,27 @@ void main() {
       final subtitle = tester.widget<Text>(
         find.text('Cards keep their progress.'),
       );
+      final texts = Theme.of(tester.element(find.byType(MxBottomSheet)))
+          .textTheme;
 
-      expect(title.style!.fontSize, 16);
-      expect(title.style!.fontWeight, FontWeight.w700);
-      expect(subtitle.style!.fontSize, 12);
+      expect(title.style!.fontSize, texts.titleSmall!.fontSize);
+      expect(title.style!.fontWeight, texts.titleSmall!.fontWeight);
+      expect(subtitle.style!.fontSize, texts.bodyMedium!.fontSize);
+      expect(subtitle.style!.fontWeight, texts.bodyMedium!.fontWeight);
       // The grabber block is 8 + 4 + 4 = 16, then the head's 4.
       expect(
         tester.getTopLeft(find.text('Move to deck')) - sheet,
-        const Offset(20, 20),
+        const Offset(AppSpacing.card, 20),
       );
       expect(
         tester.getTopLeft(find.text('Cards keep their progress.')).dy -
             tester.getBottomLeft(find.text('Move to deck')).dy,
-        4,
+        AppSpacing.micro,
       );
       expect(
         tester.getTopLeft(find.text('Content')).dy -
             tester.getBottomLeft(find.text('Cards keep their progress.')).dy,
-        12,
+        AppSpacing.grouped,
       );
     });
 

@@ -383,6 +383,9 @@ rules:
       - lib/features/study/presentation/widgets/sections/session_summary_hero_widget.dart
       # Three theme cards side by side (screen 25): their tops align.
       - lib/features/settings/presentation/screens/theme_screen.dart
+      # The overview's two content columns (Study home, "Flashcard Color
+      # Tokens" §5): their tops align.
+      - lib/features/study/presentation/widgets/support/study_home_overview_columns_widget.dart
     patterns:
       - '\bRow\((?:(?!\bchildren:)[\s\S]){0,240}?\bcrossAxisAlignment:\s*CrossAxisAlignment\.start\b'
     tags:

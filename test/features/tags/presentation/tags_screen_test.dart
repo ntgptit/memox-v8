@@ -188,20 +188,23 @@ void main() {
     expect(find.text('động từ'), findsNothing);
   });
 
-  libraryTest('Night: the merge panel is a soft ground, so its notice reads '
-      'Day\'s text (spec 2026-10-10 D4)', (tester, env) async {
-    await _pump(tester, env, brightness: Brightness.dark);
-    await _openRename(tester, 'động từ');
-    await _type(tester, 'NGỮ PHÁP');
+  libraryTest(
+    'Night: the merge panel is a dark soft ground, so its notice reads '
+    'Night\'s text (token spec §2)',
+    (tester, env) async {
+      await _pump(tester, env, brightness: Brightness.dark);
+      await _openRename(tester, 'động từ');
+      await _type(tester, 'NGỮ PHÁP');
 
-    expect(
-      tester
-          .widget<Text>(find.text(_en.tagsMergeNotice('ngữ pháp', 'động từ')))
-          .style
-          ?.color,
-      AppColorSchemes.light.onSurfaceVariant,
-    );
-  });
+      expect(
+        tester
+            .widget<Text>(find.text(_en.tagsMergeNotice('ngữ pháp', 'động từ')))
+            .style
+            ?.color,
+        AppColorSchemes.dark.onSurfaceVariant,
+      );
+    },
+  );
 
   libraryTest('nameTooLong: the counter and the field say so, and Rename is '
       'off; a blank name has its own message (E2)', (tester, env) async {

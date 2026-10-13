@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 
@@ -15,7 +16,7 @@ final _painted = find.descendant(
 void main() {
   final scheme = AppColorSchemes.light;
 
-  testWidgets('unselected: lowest fill, ghost edge, onSurface label', (
+  testWidgets('unselected: neutral-soft fill, on-neutral-soft label, no edge', (
     tester,
   ) async {
     await pumpMx(
@@ -24,13 +25,10 @@ void main() {
     );
     final material = tester.widget<Material>(_painted.first);
 
-    expect(tester.getSize(_painted.first).height, 28);
-    expect(material.color, scheme.surfaceContainerLowest);
-    expect(material.textStyle!.color, scheme.onSurface);
-    expect(
-      (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(color: MxSemanticColors.light.border),
-    );
+    expect(tester.getSize(_painted.first).height, AppSize.chip);
+    expect(material.color, MxSemanticColors.light.neutralSoft);
+    expect(material.textStyle!.color, MxSemanticColors.light.onNeutralSoft);
+    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
   });
 
   testWidgets('selected: primary fill, onPrimary label, no edge', (
@@ -61,7 +59,7 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text('12')).style!.color,
-      scheme.onSurface.withValues(alpha: 0.6),
+      MxSemanticColors.light.onNeutralSoft.withValues(alpha: 0.6),
     );
 
     await pumpMx(

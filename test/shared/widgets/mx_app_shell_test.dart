@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -127,7 +129,10 @@ void main() {
         tester,
         MxAppShell(
           body: MxScreenScroll(children: rows),
-          bottomBar: const SizedBox(key: _barKey, height: 80 + 20),
+          bottomBar: const SizedBox(
+            key: _barKey,
+            height: AppSize.bottomNavBlock + 20,
+          ),
         ),
         padding: const EdgeInsets.only(bottom: 20),
       );
@@ -143,7 +148,10 @@ void main() {
         MxAppShell(
           appBar: const MxAppBar(title: 'Library'),
           body: MxScreenScroll(children: rows),
-          bottomBar: const SizedBox(key: _barKey, height: 80 + 20),
+          bottomBar: const SizedBox(
+            key: _barKey,
+            height: AppSize.bottomNavBlock + 20,
+          ),
         ),
         padding: const EdgeInsets.only(bottom: 20),
       );
@@ -170,7 +178,10 @@ void main() {
       tester,
       MxAppShell(
         body: const SizedBox.expand(),
-        bottomBar: const SizedBox(key: _barKey, height: 80 + 20),
+        bottomBar: const SizedBox(
+          key: _barKey,
+          height: AppSize.bottomNavBlock + 20,
+        ),
         fab: _fab(),
       ),
       padding: const EdgeInsets.only(bottom: 20),
@@ -183,7 +194,7 @@ void main() {
     );
   });
 
-  testWidgets('wide: the column is 720 and centred; the ground fills the '
+  testWidgets('wide: the column is 1040 and centred; the ground fills the '
       'window (FE-C5)', (tester) async {
     await _pumpWide(
       tester,
@@ -194,16 +205,39 @@ void main() {
     );
 
     final body = tester.getRect(find.byKey(_bodyKey));
-    expect((body.left, body.width), ((1280 - 720) / 2, 720));
-    expect(tester.getRect(find.byKey(_barKey)).width, 720);
+    expect(
+      (body.left, body.width),
+      ((1280 - AppSize.contentMaxWidthWide) / 2, AppSize.contentMaxWidthWide),
+    );
+    expect(
+      tester.getRect(find.byKey(_barKey)).width,
+      AppSize.contentMaxWidthWide,
+    );
     expect(tester.getSize(find.byType(Scaffold)).width, 1280);
   });
 
-  testWidgets('wide: the FAB sits 16 in from the column edge, mirrored in '
-      'RTL (FE-C5)', (tester) async {
+  testWidgets('wide session: the column stays one 599 column, centred', (
+    tester,
+  ) async {
+    await _pumpWide(
+      tester,
+      const MxAppShell(isSession: true, body: SizedBox.expand(key: _bodyKey)),
+    );
+
+    final body = tester.getRect(find.byKey(_bodyKey));
+    expect(
+      (body.left, body.width),
+      ((1280 - AppSize.contentMaxWidth) / 2, AppSize.contentMaxWidth),
+    );
+  });
+
+  testWidgets('wide: the FAB sits one screen margin in from the column edge, '
+      'mirrored in RTL (FE-C5)', (tester) async {
+    const columnLeft = (1280 - AppSize.contentMaxWidthWide) / 2;
+    const columnRight = columnLeft + AppSize.contentMaxWidthWide;
     for (final (direction, left) in [
-      (TextDirection.ltr, 1000.0 - 16 - 52),
-      (TextDirection.rtl, 280.0 + 16),
+      (TextDirection.ltr, columnRight - AppSpacing.gutterMedium - 52),
+      (TextDirection.rtl, columnLeft + AppSpacing.gutterMedium),
     ]) {
       await _pumpWide(
         tester,

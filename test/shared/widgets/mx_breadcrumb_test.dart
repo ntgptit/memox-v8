@@ -26,16 +26,18 @@ void main() {
     expect(tapped, [1]);
   });
 
-  testWidgets('ancestor 500 onSurfaceVariant, current 700 onSurface', (
-    tester,
-  ) async {
+  testWidgets('ancestor labelMedium onSurfaceVariant, current titleSmall '
+      'onSurface', (tester) async {
     await pumpMx(tester, MxBreadcrumb(segments: _path(2)));
+    final texts = Theme.of(tester.element(find.byType(MxBreadcrumb))).textTheme;
 
     final ancestor = tester.widget<Text>(find.text('Level 1')).style!;
     final current = tester.widget<Text>(find.text('Level 2')).style!;
-    expect(ancestor.fontWeight, FontWeight.w500);
+    expect(ancestor.fontSize, texts.labelMedium!.fontSize);
+    expect(ancestor.fontWeight, texts.labelMedium!.fontWeight);
     expect(ancestor.color, scheme.onSurfaceVariant);
-    expect(current.fontWeight, FontWeight.w700);
+    expect(current.fontSize, texts.titleSmall!.fontSize);
+    expect(current.fontWeight, texts.titleSmall!.fontWeight);
     expect(current.color, scheme.onSurface);
   });
 
