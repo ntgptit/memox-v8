@@ -68,6 +68,9 @@ class AgreesWithTheGuardTest(unittest.TestCase):
          {"memox.design_token.no_raw_duration"}),
         ("lib/core/theme/sample_theme.dart", "side: BorderSide(color: ink, width: 2),\n",
          {"memox.design_token.no_raw_stroke_width"}),
+        (SCREEN, "final c = isDark ? a : b;\n", {"memox.design_token.no_brightness_branch"}),
+        ("lib/core/theme/sample_theme.dart", "typedef MxSemanticColors = MxColorsExtension;\n",
+         {"memox.design_token.no_theme_alias"}),
         ("lib/features/deck/domain/models/sample_model.dart", "final c = Colors.red;\n", set()),
         ("lib/shared/widgets/sample_widget.g.dart", "final c = Colors.red;\n", set()),
     )

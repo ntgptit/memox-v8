@@ -169,7 +169,7 @@ rules:
   # branch on brightness picks a colour or a size behind the theme's back,
   # and the two modes drift apart. `app_theme.dart` builds light and dark by
   # two calls, so it never branches either.
-  - id: memox_v8.design_token.no_brightness_branch
+  - id: memox.design_token.no_brightness_branch
     type: regex
     severity: error
     enabled: true
@@ -194,7 +194,7 @@ rules:
   # `tools/design/removed_symbols.json` (hook, check.py); this rule refuses the
   # shapes a comeback takes in the theme — a typedef, a deprecated alias, a
   # selective re-export, a getter that only forwards another name.
-  - id: memox_v8.design_token.no_theme_alias
+  - id: memox.design_token.no_theme_alias
     type: regex
     severity: error
     enabled: true

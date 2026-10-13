@@ -69,7 +69,7 @@ def test_no_raw_border_radius_is_an_error_now() -> None:
     assert _rule_config("memox.design_token.no_raw_border_radius")["severity"] == "error"
 
 
-BRIGHTNESS = "memox_v8.design_token.no_brightness_branch"
+BRIGHTNESS = "memox.design_token.no_brightness_branch"
 
 
 def test_no_brightness_branch_goes_red_on_a_mode_choice(tmp_path: Path) -> None:
@@ -93,7 +93,7 @@ def test_no_brightness_branch_leaves_prose_and_theme_mode_alone(
     assert not _violations(BRIGHTNESS, tmp_path, good)
 
 
-ALIAS = "memox_v8.design_token.no_theme_alias"
+ALIAS = "memox.design_token.no_theme_alias"
 
 
 def test_no_theme_alias_goes_red_on_every_comeback_shape(tmp_path: Path) -> None:
