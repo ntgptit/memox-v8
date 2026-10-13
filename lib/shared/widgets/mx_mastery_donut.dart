@@ -48,8 +48,9 @@ class MxMasteryDonut extends StatelessWidget {
         painter: _DonutPainter(
           fraction: fraction,
           arc: fill,
-          // Ruling S10: the contract's track, not the ramp's progress-track.
-          track: context.colors.surfaceContainer,
+          // Ruling S10: the contract's track, now the spec's neutral track
+          // ("Flashcard Color Tokens" §2.1), which holds on a card's ground.
+          track: context.semanticColors.neutralTrack,
         ),
         child: Center(
           child: SizedBox.square(

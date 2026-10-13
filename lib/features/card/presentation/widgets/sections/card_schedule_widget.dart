@@ -177,7 +177,7 @@ class _BoxRamp extends StatelessWidget {
                   color: switch (index.compareTo(box)) {
                     0 => colors.primary,
                     < 0 => context.semanticColors.primaryTrack,
-                    _ => colors.surfaceContainerHigh,
+                    _ => context.semanticColors.neutralTrack,
                   },
                   borderRadius: BorderRadius.circular(AppRadius.full),
                 ),

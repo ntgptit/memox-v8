@@ -123,7 +123,7 @@ class _Step extends StatelessWidget {
         ? semantic.mastery
         : isCurrent
         ? colors.primary
-        : colors.surfaceContainerHigh;
+        : semantic.neutralTrack;
     final foreground = isDone
         ? semantic.onMastery
         : isCurrent

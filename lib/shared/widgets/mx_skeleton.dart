@@ -111,7 +111,9 @@ class _MxSkeletonState extends State<MxSkeleton>
       height: widget.height,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: context.colors.surfaceContainerHigh,
+          // The neutral track ("Flashcard Color Tokens" §2.1): a container
+          // role at the card's own tone would leave the shape unseen.
+          color: context.semanticColors.neutralTrack,
           borderRadius: BorderRadius.circular(
             widget.isCircle ? AppRadius.full : MxSkeleton._radius,
           ),

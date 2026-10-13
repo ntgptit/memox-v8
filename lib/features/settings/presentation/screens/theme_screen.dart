@@ -81,10 +81,14 @@ class ThemeScreen extends ConsumerWidget {
                 if (share < ThemeChoiceCardWidget.minWidth(context)) {
                   return Column(spacing: AppSpacing.control, children: cards);
                 }
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.control,
-                  children: [for (final card in cards) Expanded(child: card)],
+                // One height for the three: a hint that wraps to a second
+                // line grows its neighbours with it.
+                return IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: AppSpacing.control,
+                    children: [for (final card in cards) Expanded(child: card)],
+                  ),
                 );
               },
             ),

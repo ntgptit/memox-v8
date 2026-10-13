@@ -4,6 +4,7 @@ import 'package:memox/features/settings/data/repositories/settings_repository_im
 import 'package:memox/features/settings/di/settings_repository_provider.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/screens/theme_screen.dart';
+import 'package:memox/features/settings/presentation/widgets/items/theme_choice_card_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -71,6 +72,13 @@ void main() {
       tester.getTopLeft(find.text(_en.settingsThemeLight)).dy,
       tester.getTopLeft(find.text(_en.settingsThemeSystem)).dy,
     );
+    // One height for the three, even when a hint wraps (golden audit
+    // 2026-10-13: Match phone wraps at the spec's type scale).
+    final heights = {
+      for (final card in tester.widgetList(find.byType(ThemeChoiceCardWidget)))
+        tester.getSize(find.byWidget(card)).height,
+    };
+    expect(heights, hasLength(1));
   });
 
   libraryTest('a failed read shows the error with Retry and no invented '

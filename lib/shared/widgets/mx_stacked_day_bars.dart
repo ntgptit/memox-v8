@@ -129,7 +129,7 @@ class MxStackedDayBars extends StatelessWidget {
               Container(
                 height: _emptyHeight,
                 decoration: BoxDecoration(
-                  color: context.colors.surfaceContainerHigh,
+                  color: context.semanticColors.neutralTrack,
                   borderRadius: const BorderRadius.all(round),
                 ),
               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../support/widget_harness.dart';
@@ -36,16 +36,24 @@ Widget _still(Widget child) => Builder(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final semantic = MxSemanticColors.light;
 
-  testWidgets('12 tall, radius 6, full width, surfaceContainerHigh', (
+  testWidgets('12 tall, radius 6, full width, the neutral track', (
     tester,
   ) async {
     await pumpMx(tester, const SizedBox(width: 300, child: MxSkeleton()));
 
     expect(tester.getSize(find.byType(MxSkeleton)), const Size(300, 12));
-    expect(_block(tester).color, scheme.surfaceContainerHigh);
+    expect(_block(tester).color, semantic.neutralTrack);
     expect(_block(tester).borderRadius, BorderRadius.circular(6));
+  });
+
+  // Golden audit 2026-10-13: surfaceContainerHigh is the card's own ground
+  // in dark, so the placeholder vanished on a card.
+  test('the shape differs from the card ground it sits on', () {
+    for (final colors in [MxSemanticColors.light, MxSemanticColors.dark]) {
+      expect(colors.neutralTrack, isNot(colors.cardSurface));
+    }
   });
 
   testWidgets('a circle is its height wide with a full radius', (tester) async {

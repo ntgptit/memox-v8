@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 
@@ -16,7 +15,6 @@ RenderObject _ring(WidgetTester tester) => tester.renderObject(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
   final semantic = MxSemanticColors.light;
 
   testWidgets('56 box; the arc in the ramp fill, the label in its text token', (
@@ -38,7 +36,7 @@ void main() {
       expect(
         _ring(tester),
         paints
-          ..circle(color: scheme.surfaceContainer, style: PaintingStyle.stroke)
+          ..circle(color: semantic.neutralTrack, style: PaintingStyle.stroke)
           ..arc(color: color, strokeCap: StrokeCap.round),
       );
     }
@@ -53,7 +51,7 @@ void main() {
       tester.widget<Text>(find.text('0%')).style!.color,
       semantic.learningText,
     );
-    expect(_ring(tester), paints..circle(color: scheme.surfaceContainer));
+    expect(_ring(tester), paints..circle(color: semantic.neutralTrack));
     expect(_ring(tester), isNot(paints..arc()));
   });
 

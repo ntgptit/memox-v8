@@ -66,7 +66,7 @@ class CardHistoryRailWidget extends StatelessWidget {
           top: isFirst ? dotCentre : 0,
           bottom: isLast ? null : 0,
           height: isLast ? dotCentre : null,
-          child: ColoredBox(color: colors.surfaceContainerHigh),
+          child: ColoredBox(color: context.semanticColors.neutralTrack),
         ),
         PositionedDirectional(
           start: _dotStart,
@@ -77,7 +77,7 @@ class CardHistoryRailWidget extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: foreground == null
-                  ? colors.surfaceContainerHigh
+                  ? context.semanticColors.neutralTrack
                   : colors.surface,
               // Non-text, so the edge holds 3:1 on the page (DESIGN.md, The
               // Contrast Floor Rule): the outcome's foreground, or the outline.
