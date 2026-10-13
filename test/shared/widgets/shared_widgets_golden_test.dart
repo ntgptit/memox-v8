@@ -161,7 +161,8 @@ void main() {
     );
   });
 
-  // FE-C2: an ellipsized line clips at its box; stacked marks must survive.
+  // FE-C2: an ellipsized line clips at its box; stacked marks must survive
+  // (MxTextStyles.ellipsized, ADR-022).
   testWidgets('ellipsized Vietnamese keeps its stacked marks', (tester) async {
     const long = 'Ẳng Ổn định Ỗ Ẫm thực · Nguyễn Hằng · Ẳ Ổ Ỗ Ẫ Ẳ Ổ Ỗ Ẫ';
     await expectThemedGoldens(
@@ -173,7 +174,7 @@ void main() {
           MxAppBar(title: long),
           MxListRow(title: long, subtitle: long),
           SizedBox(width: 160, child: MxTagChip(label: long)),
-          // A card row's back (screen 07): 1.45 holds the marks, measured.
+          // A card row's back (screen 07), cut as the row cuts it.
           _RowDescription('$long · $long'),
         ],
       ),
@@ -357,6 +358,6 @@ class _RowDescription extends StatelessWidget {
     text,
     maxLines: 1,
     overflow: TextOverflow.ellipsis,
-    style: context.textStyles.rowDescription,
+    style: context.textStyles.ellipsized(context.textStyles.rowDescription),
   );
 }
