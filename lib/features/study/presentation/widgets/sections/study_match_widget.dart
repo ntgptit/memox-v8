@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
@@ -53,7 +54,9 @@ class StudyMatchWidget extends StatefulWidget {
 }
 
 class _StudyMatchWidgetState extends State<StudyMatchWidget> {
-  static const Duration _flash = Duration(milliseconds: 600);
+  /// A wrong pair's flash before the tiles reset (BR-STUDY-064): the
+  /// spec's long transition ("Flashcard Color Tokens" §4.7).
+  static const Duration _flash = AppDurations.longTransition;
 
   /// The reading order's step between the two columns (C8).
   static const double _columnOrder = 100;
