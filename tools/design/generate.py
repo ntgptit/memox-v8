@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Generates the theme code from design/tokens.json (+ design/app_tokens.json).
 
-Writes lib/core/theme/generated/*.g.dart and formats them with `dart format`.
+Writes lib/core/theme/generated/*.g.dart (formatted with `dart format`), the
+YAML frontmatter of DESIGN.md (its prose is hand-written) and the
+.impeccable/design.json sidecar (its `narrative` is hand-written).
 Python >= 3.12, standard library only. Output is deterministic.
 
   generate.py            write into the repository
@@ -22,6 +24,8 @@ REPO_ROOT = HERE.parents[1]
 TOKENS_PATH = REPO_ROOT / "design" / "tokens.json"
 APP_TOKENS_PATH = REPO_ROOT / "design" / "app_tokens.json"
 GENERATED_DIR = REPO_ROOT / "lib" / "core" / "theme" / "generated"
+DESIGN_PATH = REPO_ROOT / "DESIGN.md"
+SIDECAR_PATH = REPO_ROOT / ".impeccable" / "design.json"
 
 HEADER = "// GENERATED from design/tokens.json by tools/design/generate.py. Do not edit."
 
@@ -210,6 +214,214 @@ def render_all(tokens: dict, app_tokens: dict) -> dict[str, str]:
     }
 
 
+DESIGN_NAME = "MemoX V8"
+DESIGN_DESCRIPTION = (
+    "A quiet, focused study space for spaced-repetition flashcards, "
+    "in a light and a dark theme generated from one token file."
+)
+FRONTMATTER_FENCE = "---\n"
+
+
+def kebab(name: str) -> str:
+    """'surfaceContainerHigh' / 'success-onColor' -> 'surface-container-high' / 'success-on-color'."""
+    return re.sub(r"(?<=[a-z0-9])([A-Z])", r"-\1", name).lower()
+
+
+def hex_upper(value: str) -> str:
+    return "#" + value.lstrip("#").upper()
+
+
+def design_colors(tokens: dict) -> list[tuple[str, dict]]:
+    """(frontmatter key, token) for the 46 Material roles, then the 16 extension fields."""
+    entries = [(kebab(role["name"]), role) for role in m3_roles(tokens)]
+    entries += [(kebab(field), token) for field, _, token in extension_fields(tokens)]
+    return entries
+
+
+def type_styles(tokens: dict) -> list[tuple[dict, str]]:
+    """(style, Flutter slot) for the twelve roles, in the Design System's order."""
+    return [
+        (style, SLOT_PATTERN.search(style["usage"]).group(1))
+        for group in tokens["type"]["groups"]
+        for style in group["styles"]
+    ]
+
+
+def token_value(tokens: dict, group: str, name: str) -> str:
+    return next(t["value"] for t in tokens[group]["tokens"] if t["name"] == name)
+
+
+def app_value(app_tokens: dict, name: str) -> str:
+    return f"{number(str(next(t['value'] for t in app_tokens['tokens'] if t['name'] == name)))}px"
+
+
+def style_of(tokens: dict, slot: str) -> str:
+    return next(style["name"] for style, found in type_styles(tokens) if found == slot)
+
+
+def design_components(tokens: dict, app_tokens: dict) -> list[tuple[str, dict[str, str]]]:
+    """The component themes of app_component_themes.dart, in the eight-prop schema."""
+    label = f"{{typography.{style_of(tokens, 'labelLarge')}}}"
+    meta = f"{{typography.{style_of(tokens, 'labelMedium')}}}"
+    body = f"{{typography.{style_of(tokens, 'bodyMedium')}}}"
+    button = token_value(tokens, "size", "size-button")
+    pad = token_value(tokens, "spacing", "space-24")
+    chip = app_value(app_tokens, "sizeChip")
+
+    def filled(fill: str, ink: str) -> dict[str, str]:
+        return {
+            "backgroundColor": f"{{colors.{fill}}}", "textColor": f"{{colors.{ink}}}",
+            "typography": label, "rounded": "{rounded.full}", "height": button, "padding": f"0 {pad}",
+        }  # fmt: skip
+
+    return [
+        ("button-primary", filled("primary", "on-primary")),
+        ("button-secondary", filled("surface-container", "on-surface")),
+        ("button-outline", {"textColor": "{colors.primary}", "typography": label,
+                            "rounded": "{rounded.full}", "height": button, "padding": f"0 {pad}"}),
+        ("button-destructive", filled("error", "on-error")),
+        ("card", {"backgroundColor": "{colors.card-surface}", "rounded": "{rounded.md}", "padding": pad}),
+        ("search-field", {"backgroundColor": "{colors.search-surface}", "textColor": "{colors.on-surface}",
+                          "typography": meta, "rounded": "{rounded.full}",
+                          "height": token_value(tokens, "size", "size-search")}),
+        ("text-field", {"backgroundColor": "{colors.surface-container-low}", "textColor": "{colors.on-surface}",
+                        "typography": body, "rounded": "{rounded.md}", "height": app_value(app_tokens, "sizeInput")}),
+        ("chip", {"backgroundColor": "{colors.secondary-container}",
+                  "textColor": "{colors.on-secondary-container}", "typography": meta,
+                  "rounded": "{rounded.sm}", "height": chip}),
+        ("filter-chip-selected", {"backgroundColor": "{colors.primary}", "textColor": "{colors.on-primary}",
+                                  "typography": label, "rounded": "{rounded.full}", "height": chip}),
+        ("nav-indicator", {"backgroundColor": "{colors.secondary-container}",
+                           "textColor": "{colors.on-secondary-container}", "rounded": "{rounded.full}",
+                           "width": token_value(tokens, "size", "size-nav-indicator-width"),
+                           "height": token_value(tokens, "size", "size-nav-indicator-height")}),
+    ]  # fmt: skip
+
+
+def yaml_string(value: str) -> str:
+    return json.dumps(value, ensure_ascii=False)
+
+
+def render_frontmatter(tokens: dict, app_tokens: dict) -> str:
+    sans = ", ".join(part.strip().strip('"') for part in tokens["type"]["families"]["sans"].split(","))
+    out = ["---", f"name: {DESIGN_NAME}", f"description: {DESIGN_DESCRIPTION}", "colors:"]
+    out += [f"  {key}: {yaml_string(hex_upper(token['value']['light']))}" for key, token in design_colors(tokens)]
+    out.append("typography:")
+    for style, _ in type_styles(tokens):
+        out += [f"  {style['name']}:", f"    fontFamily: {yaml_string(sans)}",
+                f"    fontSize: {yaml_string(style['fontSize'])}", f"    fontWeight: {style['fontWeight']}",
+                f"    lineHeight: {yaml_string(style['lineHeight'])}",
+                f"    letterSpacing: {yaml_string(style['letterSpacing'])}"]  # fmt: skip
+    out.append("rounded:")
+    out += [f"  {t['name'].removeprefix('radius-')}: {yaml_string(t['value'])}" for t in tokens["radius"]["tokens"]]
+    out.append("spacing:")
+    out += [f"  {t['name']}: {yaml_string(t['value'])}" for t in tokens["spacing"]["tokens"]]
+    out.append("components:")
+    for name, props in design_components(tokens, app_tokens):
+        out.append(f"  {name}:")
+        out += [f"    {prop}: {yaml_string(value)}" for prop, value in props.items()]
+    out.append("---")
+    return "\n".join(out) + "\n"
+
+
+def with_frontmatter(document: str, frontmatter: str) -> str:
+    """[document] with its leading YAML block replaced by [frontmatter]."""
+    if not document.startswith(FRONTMATTER_FENCE):
+        return frontmatter + "\n" + document
+    end = document.index("\n" + FRONTMATTER_FENCE, len(FRONTMATTER_FENCE)) + len(FRONTMATTER_FENCE) + 1
+    return frontmatter + document[end:]
+
+
+def frontmatter_of(document: str) -> str:
+    if not document.startswith(FRONTMATTER_FENCE):
+        return ""
+    end = document.index("\n" + FRONTMATTER_FENCE, len(FRONTMATTER_FENCE)) + len(FRONTMATTER_FENCE) + 1
+    return document[:end]
+
+
+def color_role(key: str) -> str:
+    for family in ("primary", "secondary", "tertiary", "error", "success", "warning", "info"):
+        if family in key:
+            return family
+    return "neutral"
+
+
+def resolve(tokens: dict, ref: str) -> str:
+    """'{colors.primary}' -> its light value; any other string unchanged."""
+    match = re.fullmatch(r"\{(\w+)\.([\w-]+)\}", ref)
+    if match is None:
+        return ref
+    group, key = match.groups()
+    if group == "colors":
+        return next(hex_upper(t["value"]["light"]) for k, t in design_colors(tokens) if k == key)
+    if group == "rounded":
+        return token_value(tokens, "radius", f"radius-{key}")
+    return ref
+
+
+def component_css(tokens: dict, name: str, props: dict[str, str]) -> str:
+    css = {"backgroundColor": "background", "textColor": "color", "rounded": "border-radius",
+           "padding": "padding", "height": "min-height", "width": "min-width"}  # fmt: skip
+    rules = [f"{css[prop]}: {resolve(tokens, value)}" for prop, value in props.items() if prop in css]
+    if name == "button-outline":
+        outline = next(hex_upper(t["value"]["light"]) for k, t in design_colors(tokens) if k == "outline")
+        rules.append(f"border: {token_value(tokens, 'stroke', 'stroke-hairline')} solid {outline}")
+    return f".ds-{name} {{ " + "; ".join(rules + ["display: inline-flex", "align-items: center"]) + "; }"
+
+
+_COMPONENT_KINDS = {"button": "button", "card": "card", "search": "input", "text": "input", "chip": "chip",
+                    "filter": "chip", "nav": "nav"}  # fmt: skip
+
+
+def render_sidecar(tokens: dict, app_tokens: dict, narrative: dict) -> str:
+    color_meta = {}
+    for key, token in design_colors(tokens):
+        light, dark = hex_upper(token["value"]["light"]), hex_upper(token["value"]["dark"])
+        color_meta[key] = {
+            "role": color_role(key), "displayName": key.replace("-", " ").title(), "canonical": light,
+            "light": light, "dark": dark, "tonalRamp": list(dict.fromkeys([light, dark])),
+            "usage": token.get("usage", ""),
+        }  # fmt: skip
+    typography_meta = {
+        style["name"]: {"displayName": style["name"].replace("-", " ").title(),
+                        "flutterRole": slot, "purpose": style["usage"]}
+        for style, slot in type_styles(tokens)
+    }  # fmt: skip
+    breakpoints = [
+        {"name": t["name"].removeprefix("breakpoint-"), "value": t["value"]}
+        for t in tokens["size"]["tokens"] if t["name"].startswith("breakpoint-")
+    ]  # fmt: skip
+    components = [
+        {"name": name.replace("-", " ").title(), "kind": _COMPONENT_KINDS[name.split("-")[0]], "refersTo": name,
+         "description": f"The {name.replace('-', ' ')} of the generated theme.",
+         "html": f'<span class="ds-{name}">Aa</span>', "css": component_css(tokens, name, props)}
+        for name, props in design_components(tokens, app_tokens)
+    ]  # fmt: skip
+    data = {
+        "schemaVersion": 2,
+        "title": f"Design System: {DESIGN_NAME}",
+        "extensions": {
+            "colorMeta": color_meta,
+            "typographyMeta": typography_meta,
+            "shadows": [{"name": t["name"], "value": t["value"]["light"], "dark": t["value"]["dark"],
+                         "purpose": t["usage"]} for t in tokens["shadow"]["tokens"]],
+            "motion": [{"name": t["name"], "value": t["value"], "purpose": t["usage"]}
+                       for t in tokens["motion"]["tokens"]],
+            "breakpoints": breakpoints,
+        },
+        "components": components,
+        "narrative": narrative,
+    }  # fmt: skip
+    return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+
+
+def write_design_docs(tokens: dict, app_tokens: dict) -> None:
+    document = DESIGN_PATH.read_text(encoding="utf-8")
+    DESIGN_PATH.write_text(with_frontmatter(document, render_frontmatter(tokens, app_tokens)), encoding="utf-8")
+    narrative = json.loads(SIDECAR_PATH.read_text(encoding="utf-8")).get("narrative", {})
+    SIDECAR_PATH.write_text(render_sidecar(tokens, app_tokens, narrative), encoding="utf-8")
+
+
 _NAME_PATTERNS = {
     "app_dimens.g.dart": ("dimens", re.compile(r"^  final double (\w+);", re.M)),
     "mx_colors_extension.g.dart": ("mxColors", re.compile(r"^  final Color (\w+);", re.M)),
@@ -260,6 +472,7 @@ def main(argv: list[str]) -> int:
     write_dart(files, out_dir)
     if "--out" not in argv:
         record_vanished(previous, {n: (out_dir / n).read_text(encoding="utf-8") for n in files})
+        write_design_docs(tokens, app_tokens)
     print(f"generate.py: wrote {len(files)} files to {out_dir}")
     return 0
 

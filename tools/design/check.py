@@ -130,6 +130,42 @@ def generated_problems(committed: Path = generate.GENERATED_DIR) -> list[str]:
     return problems
 
 
+# A value belongs to tokens.json; prose names tokens. Ratios such as 4.5:1 are
+# not token values and stay legal.
+PROSE_VALUE = re.compile(r"#[0-9A-Fa-f]{6}\b|\b\d+(?:\.\d+)?\s?(?:px|dp|sp|ms)\b|\b\d+(?:\.\d+)?%")
+
+
+def _strings(value: object) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, dict):
+        return [text for item in value.values() for text in _strings(item)]
+    if isinstance(value, list):
+        return [text for item in value for text in _strings(item)]
+    return []
+
+
+def design_doc_problems(document: str, sidecar: str) -> list[str]:
+    """DESIGN.md and .impeccable/design.json against a fresh generation, and no
+    token value written into the hand-written parts of either."""
+    tokens, app_tokens = generate_inputs()
+    problems: list[str] = []
+    front = generate.frontmatter_of(document)
+    if front != generate.render_frontmatter(tokens, app_tokens):
+        problems.append("DESIGN.md: frontmatter differs from design/tokens.json, run tools/design/generate.py")
+    for number, line in enumerate(document[len(front):].splitlines(), start=front.count("\n") + 1):
+        if match := PROSE_VALUE.search(line):
+            problems.append(f"DESIGN.md:{number}: a value in the prose ({match.group(0)}); name the token")
+    data = json.loads(sidecar)
+    narrative = data.get("narrative", {})
+    if sidecar != generate.render_sidecar(tokens, app_tokens, narrative):
+        problems.append(".impeccable/design.json: differs from design/tokens.json, run tools/design/generate.py")
+    for text in _strings(narrative):
+        if match := PROSE_VALUE.search(text):
+            problems.append(f".impeccable/design.json: a value in the narrative ({match.group(0)}); name the token")
+    return problems
+
+
 def main(argv: list[str]) -> int:
     problems = symbol_problems(REPO_ROOT)
     if "--symbols" not in argv:
@@ -137,6 +173,10 @@ def main(argv: list[str]) -> int:
         problems += unfilled_replacements(data)
         problems += structure_problems()
         problems += generated_problems()
+        problems += design_doc_problems(
+            generate.DESIGN_PATH.read_text(encoding="utf-8"),
+            generate.SIDECAR_PATH.read_text(encoding="utf-8"),
+        )
     for problem in problems:
         print(problem)
     if problems:
