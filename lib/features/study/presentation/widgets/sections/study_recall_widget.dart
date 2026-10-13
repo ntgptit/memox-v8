@@ -198,7 +198,7 @@ class _StudyRecallWidgetState extends State<StudyRecallWidget>
                     label: l10n.studyBrowseTerm,
                     child: StudyWholeWordTextWidget(
                       widget.item.front,
-                      style: context.texts.displaySmall,
+                      style: context.texts.displaySmall!,
                     ),
                   ),
                 ),

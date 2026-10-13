@@ -25,7 +25,7 @@ class SettingsSkeletonWidget extends StatelessWidget {
             for (final rows in _rowsPerSection) ...[
               Padding(
                 padding: EdgeInsets.symmetric(vertical: context.dimens.space8),
-                child: Align(
+                child: const Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: MxSkeleton(width: _headerWidth),
                 ),

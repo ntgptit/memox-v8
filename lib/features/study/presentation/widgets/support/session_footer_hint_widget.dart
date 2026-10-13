@@ -24,7 +24,7 @@ class SessionFooterHintWidget extends StatelessWidget {
     if (MxAppShell.isTypingOf(context)) {
       return const SizedBox.shrink();
     }
-    final style = context.texts.bodyMedium?.copyWith(
+    final style = context.texts.bodyMedium!.copyWith(
       color: context.colors.onSurfaceVariant,
     );
     return Padding(

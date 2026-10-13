@@ -165,7 +165,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           if (entries.isNotEmpty)
             MxButton(
               label: l10n.trashSelect,
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               tone: MxButtonTone.secondary,
               onPressed: _trash().startSelecting,
             ),

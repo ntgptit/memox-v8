@@ -79,8 +79,10 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 ),
                 trailing: Text(
                   l10n.summaryWrongOf(wrong, turns),
-                  style: context.textStyles.factValue(
-                    wrong > 0 ? context.mxColors.warning : colors.onSurface,
+                  style: context.texts.bodyLarge?.copyWith(
+                    color: wrong > 0
+                        ? context.mxColors.warning
+                        : colors.onSurface,
                   ),
                 ),
                 hasDivider: false,

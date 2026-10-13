@@ -149,8 +149,6 @@ class _Rows extends ConsumerWidget {
   final LogStatus? statusShownByFilter;
   final ValueChanged<String> onOpenLog;
 
-  static const double _prefetchExtent = 10 * context.dimens.sizeControl;
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
@@ -166,7 +164,8 @@ class _Rows extends ConsumerWidget {
       onNotification: (notification) {
         if (loaded.more == MonitoringMore.idle &&
             hasMore &&
-            notification.metrics.extentAfter < _prefetchExtent) {
+            notification.metrics.extentAfter <
+                (10 * context.dimens.sizeControl)) {
           unawaited(controller.loadMore());
         }
         return false;
@@ -215,7 +214,7 @@ class _End extends StatelessWidget {
         actions: [
           MxButton(
             label: l10n.commonRetry,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: () => unawaited(onRetry()),
           ),
         ],

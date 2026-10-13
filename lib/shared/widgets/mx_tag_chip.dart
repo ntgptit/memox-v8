@@ -24,9 +24,9 @@ class MxTagChip extends StatelessWidget {
       maxWidth: _maxWidth,
     ),
     child: DecoratedBox(
-      decoration: BoxDecoration(
+      decoration: ShapeDecoration(
         color: context.colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(AppRadius.full),
+        shape: const StadiumBorder(),
       ),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),

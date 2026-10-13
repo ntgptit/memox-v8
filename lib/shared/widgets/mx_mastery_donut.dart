@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The circular mastery indicator. The ring fills clockwise from twelve
 /// o'clock in the MasteryRamp colour, and the percentage uses the same
@@ -35,7 +36,7 @@ class MxMasteryDonut extends StatelessWidget {
   Widget build(BuildContext context) {
     // Ruling S10: 0% falls in the lowest band, so its label takes that colour.
     final ink =
-        MasteryRamp.fill(semantic, derived, fraction) ??
+        MasteryRamp.fill(context.mxColors, context.accentColor, fraction) ??
         context.mxColors.warning;
     final percent = NumberFormat.percentPattern(
       Localizations.localeOf(context).toString(),

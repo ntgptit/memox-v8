@@ -16,7 +16,7 @@ Future<T?> showMxDialog<T>(
   context: context,
   barrierDismissible: true,
   barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-  barrierColor: context.dialogBarrier,
+  barrierColor: DialogTheme.of(context).barrierColor!,
   transitionDuration: MediaQuery.disableAnimationsOf(context)
       ? Duration.zero
       : Durations.short4,
@@ -58,12 +58,16 @@ class MxDialog extends StatelessWidget {
   static const double _mediumWidth = 320;
   static const double _smallWidth = 300;
 
+  /// The Design System defines no shadow for a dialog; Material's own
+  /// elevation casts it, the same in light and dark.
+  static const double _elevation = 6;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     // The surface and radius are the theme's dialog (spec §4.6).
     final dialogs = DialogTheme.of(context);
-    final shape = context.dialogShape;
+    final shape = dialogs.shape! as RoundedRectangleBorder;
     final hasText = title != null || body != null || content != null;
     return Semantics(
       scopesRoute: true,
@@ -84,54 +88,50 @@ class MxDialog extends StatelessWidget {
                 MxDialogWidth.small => _smallWidth,
               },
             ),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: shape.borderRadius,
-                boxShadow: AppShadows.overlay(colors),
-              ),
-              child: Material(
-                color: dialogs.backgroundColor,
-                shape: shape,
-                clipBehavior: Clip.antiAlias,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (hasText)
-                      Flexible(
-                        child: SingleChildScrollView(
-                          // The text sits on the action pair's 16 edge, so
-                          // the pair keeps its width (DEV-166, The Short
-                          // Label Rule).
-                          padding: actions == null
-                              ? EdgeInsets.fromLTRB(
-                                  context.dimens.space16,
-                                  context.dimens.space24,
-                                  context.dimens.space16,
-                                  context.dimens.space24,
-                                )
-                              : EdgeInsetsDirectional.only(
-                                  start: context.dimens.space16,
-                                  end: context.dimens.space16,
-                                  top: context.dimens.space24,
-                                ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: context.dimens.space8,
-                            children: [
-                              if (title case final text?)
-                                Text(text, style: context.texts.titleSmall),
-                              if (body case final text?)
-                                Text(text, style: context.texts.bodyMedium),
-                              ?content,
-                            ],
-                          ),
+            child: Material(
+              color: dialogs.backgroundColor,
+              elevation: _elevation,
+              shadowColor: colors.shadow,
+              shape: shape,
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (hasText)
+                    Flexible(
+                      child: SingleChildScrollView(
+                        // The text sits on the action pair's 16 edge, so
+                        // the pair keeps its width (DEV-166, The Short
+                        // Label Rule).
+                        padding: actions == null
+                            ? EdgeInsets.fromLTRB(
+                                context.dimens.space16,
+                                context.dimens.space24,
+                                context.dimens.space16,
+                                context.dimens.space24,
+                              )
+                            : EdgeInsetsDirectional.only(
+                                start: context.dimens.space16,
+                                end: context.dimens.space16,
+                                top: context.dimens.space24,
+                              ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: context.dimens.space8,
+                          children: [
+                            if (title case final text?)
+                              Text(text, style: context.texts.titleSmall),
+                            if (body case final text?)
+                              Text(text, style: context.texts.bodyMedium),
+                            ?content,
+                          ],
                         ),
                       ),
-                    ?actions,
-                  ],
-                ),
+                    ),
+                  ?actions,
+                ],
               ),
             ),
           ),

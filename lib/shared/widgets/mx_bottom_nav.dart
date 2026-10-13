@@ -18,6 +18,9 @@ final class MxNavDestination {
   final String label;
 }
 
+/// Backdrop blur sigma behind the nav's glass surface.
+const double _glassBlur = 18;
+
 /// The top-level destinations on a translucent glass bar, with a tinted pill
 /// behind the current glyph. It is in-flow, never over the scroll, and adds
 /// the gesture inset below itself.
@@ -59,10 +62,7 @@ class MxBottomNav extends StatelessWidget {
       child: ClipRRect(
         borderRadius: radius,
         child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: AppEffects.glassBlur,
-            sigmaY: AppEffects.glassBlur,
-          ),
+          filter: ImageFilter.blur(sigmaX: _glassBlur, sigmaY: _glassBlur),
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: context.colors.surface,
@@ -127,9 +127,9 @@ class _Item extends StatelessWidget {
           spacing: context.dimens.space4,
           children: [
             DecoratedBox(
-              decoration: BoxDecoration(
+              decoration: ShapeDecoration(
                 color: isSelected ? pillTint : null,
-                borderRadius: BorderRadius.circular(AppRadius.full),
+                shape: const StadiumBorder(),
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(

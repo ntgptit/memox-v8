@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// A selectable filter (All · Cards · Decks). Its selection is exposed as
 /// state, not only as a look, so screen readers announce it. It never shrinks
@@ -40,21 +40,27 @@ class MxFilterChip extends StatelessWidget {
         selected: isSelected,
         child: TextButton(
           onPressed: select == null ? null : () => select(!isSelected),
-          style: appButtonStyle(
-            fill: isSelected ? colors.primary : colors.surfaceContainerLowest,
-            ink: ink,
-            edge: isSelected
-                ? BorderSide.none
-                : BorderSide(
-                    color: context.colors.outlineVariant,
-                    width: context.dimens.strokeHairline,
-                  ),
-            focusColor: context.accentColor,
-            height: context.dimens.sizeChip,
-            radius: AppRadius.full,
-            padding: context.dimens.space8,
-            label: context.texts.labelLarge,
-          ),
+          style:
+              buttonStyle(
+                ThemeTokens.of(context),
+                fill: isSelected
+                    ? colors.primary
+                    : colors.surfaceContainerLowest,
+                ink: ink,
+                edge: isSelected
+                    ? null
+                    : BorderSide(
+                        color: colors.outlineVariant,
+                        width: context.dimens.strokeHairline,
+                      ),
+              ).copyWith(
+                minimumSize: WidgetStatePropertyAll(
+                  Size(0, context.dimens.sizeChip),
+                ),
+                padding: WidgetStatePropertyAll(
+                  EdgeInsets.symmetric(horizontal: context.dimens.space8),
+                ),
+              ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             spacing: context.dimens.space4,

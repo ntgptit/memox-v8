@@ -282,8 +282,8 @@ class _Corrected extends StatelessWidget {
           textAlign: TextAlign.center,
           style: context.texts.displaySmall?.copyWith(
             color: context.colors.error,
-            decoration: true ? TextDecoration.lineThrough : null,
-            decorationColor: true ? context.colors.error : null,
+            decoration: TextDecoration.lineThrough,
+            decorationColor: context.colors.error,
           ),
         ),
         Text(
@@ -291,8 +291,6 @@ class _Corrected extends StatelessWidget {
           textAlign: TextAlign.center,
           style: context.texts.displaySmall?.copyWith(
             color: context.colors.onSurface,
-            decoration: false ? TextDecoration.lineThrough : null,
-            decorationColor: false ? context.colors.onSurface : null,
           ),
         ),
         Padding(

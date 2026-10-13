@@ -180,7 +180,7 @@ class CardTagEditorWidgetState extends State<CardTagEditorWidget> {
               // 3d-2, E8).
               trailing: MxButton(
                 label: l10n.cardTagConfirm,
-                size: MxButtonSize.compact,
+                size: MxButtonSize.small,
                 tone: MxButtonTone.text,
                 onPressed: _isPending ? () => _add(_input.text) : null,
               ),

@@ -63,7 +63,7 @@ class StudyEntryLearnWidget extends StatelessWidget {
     return MxButton(
       label: l10n.studyEntryLearn,
       icon: AppIcons.starterDecks,
-      size: MxButtonSize.compact,
+      size: MxButtonSize.small,
       tone: MxButtonTone.secondary,
       onPressed: onLearn,
     );

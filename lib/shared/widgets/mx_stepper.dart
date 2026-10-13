@@ -2,11 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:flutter/services.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+
+/// How long a stepper button is held before it starts repeating (FE-A3 D6).
+const Duration _repeatDelay = Duration(milliseconds: 400);
+
+/// The pace of a held stepper button, one step each (FE-A3 D6).
+const Duration _repeatInterval = Duration(milliseconds: 80);
 
 /// The bounded integer input (cards per session). It owns the invalid ring,
 /// the busy spinner and the disabled dim. The bounds, the clamping and the
@@ -64,7 +71,6 @@ class MxStepper extends StatefulWidget {
 
   /// So 1 and 200 occupy the same width.
   static const double _valueColumn = 48;
-  static const double _buttonPadding = 0;
 
   /// Cards per session tops out at 200.
   static const int _defaultMaxDigits = 3;
@@ -222,8 +228,8 @@ class _MxStepperState extends State<MxStepper> {
 }
 
 /// A − or + button. A hold repeats it, first after
-/// [AppDurations.stepperRepeatDelay] and then every
-/// [AppDurations.stepperRepeatInterval], until release or a null
+/// [_repeatDelay] and then every
+/// [_repeatInterval], until release or a null
 /// [onPressed] (the caller's bound).
 class _StepButton extends StatefulWidget {
   const _StepButton({
@@ -267,12 +273,9 @@ class _StepButtonState extends State<_StepButton> {
     _stop();
     _downAt = event.position;
     if (widget.onPressed == null) return;
-    _timer = Timer(AppDurations.stepperRepeatDelay, () {
+    _timer = Timer(_repeatDelay, () {
       _repeat();
-      _timer = Timer.periodic(
-        AppDurations.stepperRepeatInterval,
-        (_) => _repeat(),
-      );
+      _timer = Timer.periodic(_repeatInterval, (_) => _repeat());
     });
   }
 
@@ -323,19 +326,15 @@ class _StepButtonState extends State<_StepButton> {
         child: TextButton(
           onPressed: widget.onPressed == null ? null : _tap,
           style:
-              appButtonStyle(
+              buttonStyle(
+                ThemeTokens.of(context),
                 fill: colors.surfaceContainer,
                 ink: colors.onSurface,
-                edge: BorderSide.none,
-                focusColor: context.accentColor,
-                height: context.dimens.sizeButtonSmall,
-                radius: context.dimens.radiusMd,
-                padding: MxStepper._buttonPadding,
-                label: context.texts.labelLarge,
               ).copyWith(
                 fixedSize: WidgetStatePropertyAll(
                   Size.square(context.dimens.sizeButtonSmall),
                 ),
+                padding: const WidgetStatePropertyAll(EdgeInsets.zero),
               ),
           child: Icon(
             widget.icon,

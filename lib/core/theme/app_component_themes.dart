@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// What one mode's component themes are built from. Light and dark each get
 /// their own instance; no function here branches on the mode.
@@ -12,6 +14,16 @@ final class ThemeTokens {
     required this.accent,
     this.dimens = const AppDimens(),
   });
+
+  /// The tokens of the theme in scope, for a widget that builds a component
+  /// style the theme has no slot for.
+  factory ThemeTokens.of(BuildContext context) => ThemeTokens(
+    scheme: context.colors,
+    mx: context.mxColors,
+    texts: context.texts,
+    accent: context.accentColor,
+    dimens: context.dimens,
+  );
 
   final ColorScheme scheme;
   final MxColorsExtension mx;
@@ -96,10 +108,12 @@ InputDecorationTheme inputDecorationTheme(ThemeTokens t) {
   );
 }
 
-/// A Material button at the regular size in [fill] and [ink]: 40 tall, full
-/// radius, 24 side padding, the `labelLarge` label, state layers and the focus
-/// ring. A disabled one follows the Design System's disabled opacities.
-ButtonStyle _buttonStyle(
+/// A Material button at the regular size in [fill] and [ink]: 40 tall at
+/// least (a wrapped label or a larger text scale grows it), full radius, 24
+/// side padding, the `labelLarge` label, state layers and the focus ring. A
+/// disabled one follows the Design System's disabled opacities. `MxButton`
+/// builds its other tones from this too, so they never restyle a button.
+ButtonStyle buttonStyle(
   ThemeTokens t, {
   required Color? fill,
   required Color ink,
@@ -108,7 +122,6 @@ ButtonStyle _buttonStyle(
   final dimens = t.dimens;
   return ButtonStyle(
     minimumSize: WidgetStatePropertyAll(Size(0, dimens.sizeButton)),
-    fixedSize: WidgetStatePropertyAll(Size.fromHeight(dimens.sizeButton)),
     padding: WidgetStatePropertyAll(
       EdgeInsets.symmetric(horizontal: dimens.space24),
     ),
@@ -160,12 +173,12 @@ ButtonStyle _buttonStyle(
 }
 
 FilledButtonThemeData filledButtonTheme(ThemeTokens t) => FilledButtonThemeData(
-  style: _buttonStyle(t, fill: t.scheme.primary, ink: t.scheme.onPrimary),
+  style: buttonStyle(t, fill: t.scheme.primary, ink: t.scheme.onPrimary),
 );
 
 OutlinedButtonThemeData outlinedButtonTheme(ThemeTokens t) =>
     OutlinedButtonThemeData(
-      style: _buttonStyle(
+      style: buttonStyle(
         t,
         fill: null,
         ink: t.accent,
@@ -177,7 +190,7 @@ OutlinedButtonThemeData outlinedButtonTheme(ThemeTokens t) =>
     );
 
 TextButtonThemeData textButtonTheme(ThemeTokens t) =>
-    TextButtonThemeData(style: _buttonStyle(t, fill: null, ink: t.accent));
+    TextButtonThemeData(style: buttonStyle(t, fill: null, ink: t.accent));
 
 IconButtonThemeData iconButtonTheme(ThemeTokens t) {
   final dimens = t.dimens;

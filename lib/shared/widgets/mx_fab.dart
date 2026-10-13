@@ -16,6 +16,10 @@ class MxFab extends StatelessWidget {
   final String semanticLabel;
   final VoidCallback onPressed;
 
+  /// The Design System defines no shadow for the FAB; Material's own
+  /// elevation casts it, the same in light and dark.
+  static const double _elevation = 6;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -26,33 +30,29 @@ class MxFab extends StatelessWidget {
       label: semanticLabel,
       excludeSemantics: true,
       onTap: onPressed,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: radius,
-          boxShadow: AppShadows.fab(colors),
-        ),
-        child: Material(
-          color: colors.primary,
-          shape: shape,
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onPressed,
-            customBorder: shape,
-            overlayColor: WidgetStateProperty.resolveWith(
-              (states) => states.contains(WidgetState.pressed)
-                  ? colors.onPrimary.withValues(
-                      alpha: context.dimens.opacityPressed,
-                    )
-                  : null,
-            ),
-            child: SizedBox.square(
-              dimension: context.dimens.sizeFab,
-              child: Center(
-                child: Icon(
-                  icon,
-                  size: context.dimens.sizeIconCompact,
-                  color: colors.onPrimary,
-                ),
+      child: Material(
+        color: colors.primary,
+        elevation: _elevation,
+        shadowColor: colors.shadow,
+        shape: shape,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onPressed,
+          customBorder: shape,
+          overlayColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.pressed)
+                ? colors.onPrimary.withValues(
+                    alpha: context.dimens.opacityPressed,
+                  )
+                : null,
+          ),
+          child: SizedBox.square(
+            dimension: context.dimens.sizeFab,
+            child: Center(
+              child: Icon(
+                icon,
+                size: context.dimens.sizeIconCompact,
+                color: colors.onPrimary,
               ),
             ),
           ),

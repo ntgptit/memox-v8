@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
-/// The base surface. Light lifts it with the whisper shadow; dark draws the
-/// hairline ghost edge instead. It is a Material, so the ripple of a row
-/// inside paints on the card instead of under its fill (ruling S14).
+/// The base surface: a [Card], so it takes the theme's card colour, radius, and
+/// the absence of border and shadow. The tones below change only the ground. It
+/// is a Material, so the ripple of a row inside paints on the card instead of
+/// under its fill (ruling S14).
 class MxCard extends StatelessWidget {
   const MxCard({
     super.key,
@@ -31,87 +34,64 @@ class MxCard extends StatelessWidget {
   /// radius, so their dividers meet the corners.
   final bool isFullBleed;
 
-  /// The surface-hero tint, with the ghost edge in both themes.
+  /// The accent tint over the page surface.
   final bool isHero;
 
-  /// The warning-soft ground with the warning border (screen 02's locked
-  /// strip, owner decision D-O1).
+  /// The warning tint over the page surface (screen 02's locked strip, owner
+  /// decision D-O1).
   final bool isWarning;
 
   /// A primary edge at the control weight over the card's own ground: a
   /// picked row of a selection (screen 07).
   final bool isSelected;
 
-  /// The success-soft ground with the success border: a finished session
-  /// (FE-A6 D14).
+  /// The success tint over the page surface: a finished session (FE-A6 D14).
   final bool isSuccess;
 
-  /// The danger-soft ground with the destructive border: a session stopped
-  /// by an error (FE-A6 D14).
+  /// The error tint over the page surface: a session stopped by an error
+  /// (FE-A6 D14).
   final bool isDanger;
 
-  /// The container-low ground, flat, with the ghost edge: the answer face of
-  /// a study card (kit StudyFaceCard, screen 16a).
+  /// The container-low ground: the answer face of a study card (kit
+  /// StudyFaceCard, screen 16a).
   final bool isRecessed;
 
   @override
   Widget build(BuildContext context) {
-    final surface = switch ((
+    final colors = context.colors;
+    final dimens = context.dimens;
+    final ground = switch ((
       isHero,
       isWarning,
       isSuccess,
       isDanger,
       isRecessed,
     )) {
-      (true, _, _, _, _) => AppDecorations.heroCard(
-        context.colors,
-        context.derivedColors,
-      ),
-      (_, true, _, _, _) => AppDecorations.warningCard(
-        context.colors,
-        context.derivedColors,
-      ),
-      (_, _, true, _, _) => AppDecorations.successCard(
-        context.colors,
-        context.derivedColors,
-      ),
-      (_, _, _, true, _) => AppDecorations.dangerCard(
-        context.colors,
-        context.derivedColors,
-      ),
-      (_, _, _, _, true) => AppDecorations.recessedCard(
-        context.colors,
-        context.derivedColors,
-      ),
-      _ => AppDecorations.raisedCard(context.colors, context.derivedColors),
+      (true, _, _, _, _) => context.accentColor.tintOver(colors.surface),
+      (_, true, _, _, _) => context.mxColors.warning.tintOver(colors.surface),
+      (_, _, true, _, _) => context.mxColors.success.tintOver(colors.surface),
+      (_, _, _, true, _) => colors.error.tintOver(colors.surface),
+      (_, _, _, _, true) => colors.surfaceContainerLow,
+      _ => null,
     };
-    final radius = surface.borderRadius!;
-    final edge = isSelected
-        ? Border.all(
-            color: context.colors.primary,
-            width: context.dimens.strokeControl,
-          )
-        : surface.border as Border?;
     return SizedBox(
       width: double.infinity,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: radius,
-          boxShadow: surface.boxShadow,
-        ),
-        child: Material(
-          color: surface.color,
-          shape: RoundedRectangleBorder(
-            borderRadius: radius,
-            side: edge?.top ?? BorderSide.none,
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: Padding(
-            padding: isFullBleed
-                ? EdgeInsets.zero
-                : EdgeInsets.all(context.dimens.space24),
-            child: child,
-          ),
+      child: Card(
+        color: ground,
+        shape: isSelected
+            ? RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(dimens.radiusMd),
+                side: BorderSide(
+                  color: colors.primary,
+                  width: dimens.strokeControl,
+                ),
+              )
+            : null,
+        child: Padding(
+          padding: isFullBleed
+              ? EdgeInsets.zero
+              : EdgeInsets.all(dimens.space24),
+          child: child,
         ),
       ),
     );

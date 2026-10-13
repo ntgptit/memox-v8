@@ -35,7 +35,7 @@ class StudyHomeDecksWidget extends StatelessWidget {
           label: l10n.studyHomeDecks,
           trailing: MxButton(
             label: l10n.studyHomeLibrary,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             tone: MxButtonTone.secondary,
             onPressed: onOpenLibrary,
           ),

@@ -102,9 +102,9 @@ class _RailItem extends StatelessWidget {
             spacing: context.dimens.space4,
             children: [
               DecoratedBox(
-                decoration: BoxDecoration(
+                decoration: ShapeDecoration(
                   color: isSelected ? pillTint : null,
-                  borderRadius: BorderRadius.circular(AppRadius.full),
+                  shape: const StadiumBorder(),
                 ),
                 child: Padding(
                   padding: EdgeInsets.symmetric(

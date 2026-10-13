@@ -20,34 +20,31 @@ class MxListSectionHeader extends StatelessWidget {
   final bool isAfterFilterBand;
 
   static const double _afterFilterBandTop = 2;
-  static const _padding = EdgeInsetsDirectional.only(
-    start: context.dimens.space4,
-    end: context.dimens.space4,
-    bottom: context.dimens.space8,
-  );
-  static const _afterFilterBandPadding = EdgeInsetsDirectional.fromSTEB(
-    context.dimens.space4,
-    _afterFilterBandTop,
-    context.dimens.space4,
-    context.dimens.space8,
-  );
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: isAfterFilterBand ? _afterFilterBandPadding : _padding,
-    // A trailing too wide for the row (large text) moves under the label.
-    child: OverflowBar(
-      alignment: MainAxisAlignment.spaceBetween,
-      spacing: context.dimens.space8,
-      overflowSpacing: context.dimens.space8,
-      children: [
-        Text(
-          label.toUpperCase(),
-          semanticsLabel: label,
-          style: context.texts.labelSmall,
-        ),
-        ?trailing,
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final dimens = context.dimens;
+    return Padding(
+      padding: EdgeInsetsDirectional.fromSTEB(
+        dimens.space4,
+        isAfterFilterBand ? _afterFilterBandTop : 0,
+        dimens.space4,
+        dimens.space8,
+      ),
+      // A trailing too wide for the row (large text) moves under the label.
+      child: OverflowBar(
+        alignment: MainAxisAlignment.spaceBetween,
+        spacing: context.dimens.space8,
+        overflowSpacing: context.dimens.space8,
+        children: [
+          Text(
+            label.toUpperCase(),
+            semanticsLabel: label,
+            style: context.texts.labelSmall,
+          ),
+          ?trailing,
+        ],
+      ),
+    );
+  }
 }

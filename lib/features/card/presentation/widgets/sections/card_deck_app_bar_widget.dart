@@ -132,7 +132,7 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
           MxButton(
             label: l10n.cardSelectAllCount(total),
             tone: MxButtonTone.secondary,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: () => unawaited(_selectAll()),
           ),
       ],

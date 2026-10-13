@@ -35,7 +35,7 @@ void showDeckTrashedSnackbar(
       summary.cardCount,
     ),
     actionLabel: l10n.commonUndo,
-    duration: AppDurations.undoWindow,
+    duration: mxUndoWindow,
     onAction: () => unawaited(_undo(host, container, batchId, onOpenTrash)),
   );
 }

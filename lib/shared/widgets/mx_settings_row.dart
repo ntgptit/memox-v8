@@ -97,6 +97,7 @@ class MxSettingsRow extends StatelessWidget {
                     child: Center(
                       heightFactor: 1,
                       child: _dim(
+                        context,
                         MxIconTile(
                           icon: glyph,
                           size: MxIconTileSize.medium,
@@ -117,7 +118,10 @@ class MxSettingsRow extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _dim(Text(label, style: context.texts.titleSmall)),
+                      _dim(
+                        context,
+                        Text(label, style: context.texts.titleSmall),
+                      ),
                       if (subtitle case final text?) ...[
                         const SizedBox(height: _subtitleGap),
                         Text(
@@ -129,15 +133,17 @@ class MxSettingsRow extends StatelessWidget {
                       ],
                       if (below case final control?) ...[
                         SizedBox(height: context.dimens.space12),
-                        _dimControl(control),
+                        _dimControl(context, control),
                       ],
                     ],
                   ),
                 ),
               ),
-              if (!isStacked && trailing != null) _dimControl(trailing!),
+              if (!isStacked && trailing != null)
+                _dimControl(context, trailing!),
               if (isNavigable)
                 _dim(
+                  context,
                   Icon(
                     AppIcons.chevronRight,
                     size: context.dimens.sizeIconCompact,
@@ -160,10 +166,10 @@ class MxSettingsRow extends StatelessWidget {
     _ => false,
   };
 
-  Widget _dimControl(Widget control) =>
-      _drawsOwnDisabledState(control) ? control : _dim(control);
+  Widget _dimControl(BuildContext context, Widget control) =>
+      _drawsOwnDisabledState(control) ? control : _dim(context, control);
 
-  Widget _dim(Widget child) => isEnabled
+  Widget _dim(BuildContext context, Widget child) => isEnabled
       ? child
       : Opacity(opacity: context.dimens.opacityDisabledContent, child: child);
 }

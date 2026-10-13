@@ -118,7 +118,7 @@ class CardHistoryScrollWidget extends ConsumerWidget {
           actions: [
             MxButton(
               label: l10n.commonRetry,
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               onPressed: onLoadMore,
             ),
           ],
@@ -160,10 +160,10 @@ class _Marker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final style = isEnd
-        ? context.texts.bodyMedium?.copyWith(
+        ? context.texts.bodyMedium!.copyWith(
             color: context.colors.onSurfaceVariant,
           )
-        : context.texts.labelMedium;
+        : context.texts.labelMedium!;
     // A cycle mark keeps a section's space from the answer above; the end
     // mark sits close under the last answer, as the kit's does.
     final above = switch ((isFirst, isEnd)) {

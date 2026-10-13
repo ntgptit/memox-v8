@@ -53,14 +53,14 @@ class SyncNoticeWidget extends StatelessWidget {
       actions: [
         MxButton(
           label: l10n.syncKeepOnDevice,
-          size: MxButtonSize.compact,
+          size: MxButtonSize.small,
           tone: MxButtonTone.outline,
           isLoading: task == SyncTask.keep,
           onPressed: isIdle ? () => unawaited(_keep(context)) : null,
         ),
         MxButton(
           label: l10n.syncTryAgain,
-          size: MxButtonSize.compact,
+          size: MxButtonSize.small,
           isLoading: task == SyncTask.retry,
           onPressed: isIdle ? () => onRun(SyncTask.retry) : null,
         ),

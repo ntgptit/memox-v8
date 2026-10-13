@@ -20,7 +20,7 @@ class AccountReauthBannerWidget extends StatelessWidget {
       actions: [
         MxButton(
           label: l10n.accountSignIn,
-          size: MxButtonSize.compact,
+          size: MxButtonSize.small,
           onPressed: onSignIn,
         ),
       ],

@@ -180,7 +180,7 @@ void main() {
     );
     expect(
       (choose.tone, choose.size),
-      (MxButtonTone.primary, MxButtonSize.compact),
+      (MxButtonTone.primary, MxButtonSize.small),
     );
   });
 

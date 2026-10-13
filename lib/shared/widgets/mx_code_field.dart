@@ -156,7 +156,7 @@ class _MxCodeFieldState extends State<MxCodeField> {
             ExcludeSemantics(child: slots),
             Positioned.fill(
               child: Opacity(
-                opacity: AppOpacity.hidden,
+                opacity: 0,
                 // The field stays in the tree for TalkBack and autofill.
                 alwaysIncludeSemantics: true,
                 child: field.label == null
@@ -205,6 +205,9 @@ class _PasteReplacesFormatter extends TextInputFormatter {
 
 /// One digit's box: 48 wide at most (it shrinks in a narrow column), 56 tall
 /// at least, on the form fill.
+/// A code field's slot grows with the text scale from this minimum.
+const double _slotMinHeight = 56;
+
 class _CodeSlot extends StatelessWidget {
   const _CodeSlot({super.key, required this.digit, required this.edge});
 
@@ -215,7 +218,7 @@ class _CodeSlot extends StatelessWidget {
   Widget build(BuildContext context) => ConstrainedBox(
     constraints: BoxConstraints(
       maxWidth: context.dimens.sizeControl,
-      minHeight: AppSize.codeSlot,
+      minHeight: _slotMinHeight,
     ),
     child: DecoratedBox(
       decoration: BoxDecoration(

@@ -11,7 +11,7 @@ const _message = '2 changes are kept only on this device';
 Widget _width(Widget child) => SizedBox(width: 328, child: child);
 
 MxButton _action(String label) =>
-    MxButton(label: label, size: MxButtonSize.compact, onPressed: () {});
+    MxButton(label: label, size: MxButtonSize.small, onPressed: () {});
 
 BoxDecoration _ground(WidgetTester tester) =>
     tester

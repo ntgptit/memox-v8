@@ -130,7 +130,7 @@ class MxListRow extends StatelessWidget {
                       children: [
                         Text.rich(
                           _titleSpan(
-                            context.texts.titleSmall?.copyWith(
+                            context.texts.titleSmall!.copyWith(
                               color: context.accentColor,
                             ),
                           ),

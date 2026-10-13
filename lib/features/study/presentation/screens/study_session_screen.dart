@@ -317,7 +317,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
                 actions: [
                   MxButton(
                     label: l10n.commonRetry,
-                    size: MxButtonSize.compact,
+                    size: MxButtonSize.small,
                     onPressed: _retry,
                   ),
                 ],

@@ -100,7 +100,7 @@ class _MxSearchFieldState extends State<MxSearchField> {
     final hasQuery = _controller.text.isNotEmpty;
     // As in MxTextField: padding centres the line in the 52 floor, so the
     // decorator paints the full box and scaled text still grows it.
-    final valueStyle = context.texts.labelMedium;
+    final valueStyle = context.texts.labelMedium!;
     final lineHeight = valueStyle.fontSize! * valueStyle.height!;
     final field = TextField(
       controller: _controller,

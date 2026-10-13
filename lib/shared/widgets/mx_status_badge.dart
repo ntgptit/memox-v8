@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
@@ -29,7 +30,6 @@ class MxStatusBadge extends StatelessWidget {
 
   /// The dot sits closer to the start edge than the label to the end edge.
   static const double _startPadding = 6;
-  static const double _tint = 0.12;
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +54,9 @@ class MxStatusBadge extends StatelessWidget {
       );
     }
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: _tint),
-        borderRadius: BorderRadius.circular(AppRadius.full),
+      decoration: ShapeDecoration(
+        color: color.tintOver(context.colors.surface),
+        shape: const StadiumBorder(),
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: _height),

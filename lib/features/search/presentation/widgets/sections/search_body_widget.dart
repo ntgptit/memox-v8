@@ -48,7 +48,7 @@ class SearchBodyWidget extends ConsumerWidget {
             // The group header's place: a short bar, as the kit draws it.
             Padding(
               padding: EdgeInsets.symmetric(vertical: context.dimens.space8),
-              child: Align(
+              child: const Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: MxSkeleton(width: _skeletonHeaderWidth),
               ),

@@ -58,7 +58,13 @@ class StudyEntryBodyWidget extends ConsumerWidget {
     final start = ref.watch(studyEntryControllerProvider(deckId));
     final picked = ref.watch(reviewModePickControllerProvider(deckId));
     final content = switch (ref.watch(studyEntryProvider(deckId))) {
-      AsyncData(value: Ok(:final value)) => _loaded(ref, value, start, picked),
+      AsyncData(value: Ok(:final value)) => _loaded(
+        context,
+        ref,
+        value,
+        start,
+        picked,
+      ),
       // The screen leaves on notFound (UC-STUDY-001 E1).
       AsyncData() => const <Widget>[],
       AsyncError(:final isLoading) => [
@@ -82,6 +88,7 @@ class StudyEntryBodyWidget extends ConsumerWidget {
   }
 
   List<Widget> _loaded(
+    BuildContext context,
     WidgetRef ref,
     StudyEntry entry,
     StudyStartState start,
@@ -176,8 +183,8 @@ class _LoadingEntry extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: context.dimens.space12,
                 children: [
-                  MxSkeleton(width: _overlineWidth),
-                  MxSkeleton(height: _figuresHeight),
+                  const MxSkeleton(width: _overlineWidth),
+                  const MxSkeleton(height: _figuresHeight),
                 ],
               ),
             ),
@@ -190,7 +197,7 @@ class _LoadingEntry extends StatelessWidget {
                     Row(
                       spacing: context.dimens.space12,
                       children: [
-                        MxSkeleton(
+                        const MxSkeleton(
                           width: _radioSize,
                           height: _radioSize,
                           isCircle: true,
@@ -200,8 +207,8 @@ class _LoadingEntry extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             spacing: context.dimens.space4,
                             children: [
-                              MxSkeleton(width: _titleWidth),
-                              MxSkeleton(width: _lineWidth),
+                              const MxSkeleton(width: _titleWidth),
+                              const MxSkeleton(width: _lineWidth),
                             ],
                           ),
                         ),

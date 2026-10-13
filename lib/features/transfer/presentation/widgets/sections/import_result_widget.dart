@@ -144,7 +144,7 @@ class _SkippedRowsState extends State<_SkippedRows> {
             child: MxButton(
               label: l10n.importSkippedShowAll(rows.length),
               tone: MxButtonTone.text,
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               onPressed: () => setState(() => _isShowingAll = true),
             ),
           ),

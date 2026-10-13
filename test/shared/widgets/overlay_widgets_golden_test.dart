@@ -51,7 +51,7 @@ void main() {
               MxButton(
                 label: 'Retry',
                 icon: AppIcons.retry,
-                size: MxButtonSize.compact,
+                size: MxButtonSize.small,
                 onPressed: () {},
               ),
             ],

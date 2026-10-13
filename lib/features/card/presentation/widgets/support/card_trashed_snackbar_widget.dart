@@ -33,7 +33,7 @@ void showCardsTrashedSnackbar(
           ? l10n.cardsTrashedToast(1)
           : l10n.cardTrashedToast(front),
       actionLabel: l10n.commonUndo,
-      duration: AppDurations.undoWindow,
+      duration: mxUndoWindow,
       onAction: () => unawaited(_undo(host, container, batchId, onOpenTrash)),
     );
     return;

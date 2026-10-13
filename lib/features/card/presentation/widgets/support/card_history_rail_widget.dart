@@ -13,7 +13,7 @@ class CardHistoryRailWidget extends StatelessWidget {
     this.ink,
     this.isFirst = false,
     this.isLast = false,
-    this.gap = context.dimens.space12,
+    this.gap,
   });
 
   final Widget child;
@@ -29,14 +29,11 @@ class CardHistoryRailWidget extends StatelessWidget {
   final bool isFirst;
   final bool isLast;
 
-  /// The space under this node, which the rail crosses.
-  final double gap;
+  /// The space under this node, which the rail crosses; `space12` when null.
+  final double? gap;
 
-  /// The rail sits on the centre of the leading 24.
-  static const double _railStart =
-      (context.dimens.space24 - context.dimens.strokeIndicator) / 2;
-  static const double _dotStart =
-      (context.dimens.space24 - AppSize.timelineDot) / 2;
+  /// A node on the rail: the card history's answers and markers (DEV-170).
+  static const double _dotSize = 14;
 
   /// The dot's top that centres it on [lines] lines of text in [style].
   static double dotTopOn(
@@ -46,19 +43,23 @@ class CardHistoryRailWidget extends StatelessWidget {
   }) {
     final line = MediaQuery.textScalerOf(context)
         .scale(style.fontSize! * (style.height ?? 1));
-    final top = (line * lines - AppSize.timelineDot) / 2;
+    final top = (line * lines - _dotSize) / 2;
     return top < 0 ? 0 : top;
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final dotCentre = dotTop + AppSize.timelineDot / 2;
+    final dimens = context.dimens;
+    // The rail sits on the centre of the leading 24.
+    final railStart = (dimens.space24 - dimens.strokeIndicator) / 2;
+    final dotStart = (dimens.space24 - _dotSize) / 2;
+    final dotCentre = dotTop + _dotSize / 2;
     final ink = this.ink;
     return Stack(
       children: [
         PositionedDirectional(
-          start: _railStart,
+          start: railStart,
           width: context.dimens.strokeIndicator,
           top: isFirst ? dotCentre : 0,
           bottom: isLast ? null : 0,
@@ -66,11 +67,11 @@ class CardHistoryRailWidget extends StatelessWidget {
           child: ColoredBox(color: colors.surfaceContainerHigh),
         ),
         PositionedDirectional(
-          start: _dotStart,
+          start: dotStart,
           top: dotTop,
           child: Container(
-            width: AppSize.timelineDot,
-            height: AppSize.timelineDot,
+            width: _dotSize,
+            height: _dotSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: ink == null ? colors.surfaceContainerHigh : colors.surface,
@@ -86,7 +87,7 @@ class CardHistoryRailWidget extends StatelessWidget {
         Padding(
           padding: EdgeInsetsDirectional.only(
             start: context.dimens.space24,
-            bottom: gap,
+            bottom: gap ?? dimens.space12,
           ),
           child: child,
         ),

@@ -118,7 +118,7 @@ class MxStackedDayBars extends StatelessWidget {
     child: LayoutBuilder(
       builder: (context, constraints) {
         final unit = constraints.maxHeight / most;
-        const round = Radius.circular(context.dimens.radiusXs);
+        final round = Radius.circular(context.dimens.radiusXs);
         return Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.stretch,

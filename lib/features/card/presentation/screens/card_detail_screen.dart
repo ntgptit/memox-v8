@@ -60,7 +60,7 @@ class CardDetailScreen extends ConsumerWidget {
             MxButton(
               label: l10n.cardEditAction,
               icon: AppIcons.edit,
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               tone: MxButtonTone.secondary,
               onPressed: () => onEdit(cardId),
             ),

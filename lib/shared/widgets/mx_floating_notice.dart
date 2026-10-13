@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
@@ -24,11 +25,15 @@ class MxFloatingNotice extends StatelessWidget {
   /// a line of their own under it, at the end.
   final List<Widget> actions;
 
+  /// The Design System defines no shadow for a floating notice; Material's
+  /// own elevation casts it, the same in light and dark.
+  static const double _elevation = 3;
+
   @override
   Widget build(BuildContext context) {
     final scheme = context.colors;
-    final messageStyle = context.texts.labelMedium?.copyWith(
-      color: true ? context.colors.onSurface : context.colors.onSurfaceVariant,
+    final messageStyle = context.texts.labelMedium!.copyWith(
+      color: context.colors.onSurface,
     );
     // The glyph centres on the first line at any text scale.
     final firstLine =
@@ -60,11 +65,13 @@ class MxFloatingNotice extends StatelessWidget {
     return Semantics(
       liveRegion: true,
       container: true,
-      child: DecoratedBox(
-        decoration: AppDecorations.warningCard(
-          scheme,
-          context.derivedColors,
-        ).copyWith(boxShadow: AppShadows.overlay(scheme)),
+      child: Material(
+        color: context.mxColors.warning.tintOver(scheme.surface),
+        elevation: _elevation,
+        shadowColor: scheme.shadow,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(context.dimens.radiusMd),
+        ),
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
           child: Padding(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
@@ -16,8 +17,6 @@ class CardRemovableTagChipWidget extends StatelessWidget {
 
   final String name;
   final VoidCallback onRemove;
-
-  static const double _tint = 0.10;
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +35,9 @@ class CardRemovableTagChipWidget extends StatelessWidget {
           child: Center(
             widthFactor: 1,
             child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: _tint),
-                borderRadius: BorderRadius.circular(AppRadius.full),
+              decoration: ShapeDecoration(
+                color: context.accentColor.tintOver(colors.surface),
+                shape: const StadiumBorder(),
               ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: context.dimens.sizeChip),

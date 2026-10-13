@@ -35,10 +35,10 @@ class GalleryStatesSection extends StatelessWidget {
       Row(
         spacing: context.dimens.space16,
         children: [
-          MxSpinner(),
-          MxSpinner(size: MxSpinnerSize.compact),
-          MxSpinner(size: MxSpinnerSize.standard),
-          MxSpinner(size: MxSpinnerSize.large),
+          const MxSpinner(),
+          const MxSpinner(size: MxSpinnerSize.compact),
+          const MxSpinner(size: MxSpinnerSize.standard),
+          const MxSpinner(size: MxSpinnerSize.large),
         ],
       ),
       MxErrorState(

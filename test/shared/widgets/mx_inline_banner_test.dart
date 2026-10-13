@@ -170,12 +170,12 @@ void main() {
           actions: [
             MxButton(
               label: 'Retry',
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               onPressed: () {},
             ),
             MxButton(
               label: 'Details',
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               tone: MxButtonTone.outline,
               onPressed: () {},
             ),

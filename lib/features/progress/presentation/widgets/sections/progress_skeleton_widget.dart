@@ -38,8 +38,8 @@ class ProgressSkeletonWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: context.dimens.space12,
                     children: [
-                      MxSkeleton(width: _eyebrowWidth),
-                      MxSkeleton(height: _figureHeight),
+                      const MxSkeleton(width: _eyebrowWidth),
+                      const MxSkeleton(height: _figureHeight),
                     ],
                   ),
                 ),

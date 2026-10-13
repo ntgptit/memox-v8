@@ -64,14 +64,14 @@ class MxSegmentedTray<T> extends StatelessWidget {
     return () => onSelected(value);
   }
 
-  double get _padding =>
+  double _padding(BuildContext context) =>
       isWide ? context.dimens.space16 : context.dimens.space12;
 
   /// The one-line width: each option its label and padding, at least a
   /// touch target, plus the gaps and the tray's inset.
   double _naturalWidth(BuildContext context) {
     final style = context.texts.labelSmall?.copyWith(
-      color: true ? context.colors.onSurface : context.colors.onSurfaceVariant,
+      color: context.colors.onSurface,
     );
     final textScaler = MediaQuery.textScalerOf(context);
     final direction = Directionality.of(context);
@@ -85,7 +85,7 @@ class MxSegmentedTray<T> extends StatelessWidget {
       )..layout();
       width += math.max(
         context.dimens.sizeControl,
-        painter.width + _padding * 2,
+        painter.width + _padding(context) * 2,
       );
       painter.dispose();
     }
@@ -108,7 +108,7 @@ class MxSegmentedTray<T> extends StatelessWidget {
             _Segment(
               label: segment.label,
               isSelected: segment.value == selected,
-              padding: _padding,
+              padding: _padding(context),
               isStretched: true,
               onTap: _select(segment.value),
             ),
@@ -119,7 +119,7 @@ class MxSegmentedTray<T> extends StatelessWidget {
 
   Widget _inline(BuildContext context) {
     // Ruling I4: the tray paints 40 tall inside a 48 layout band.
-    const trayHeight =
+    final trayHeight =
         _thumbHeight + context.dimens.space4 + context.dimens.space4;
     return Stack(
       alignment: Alignment.center,
@@ -148,7 +148,7 @@ class MxSegmentedTray<T> extends StatelessWidget {
                 _Segment(
                   label: segment.label,
                   isSelected: segment.value == selected,
-                  padding: _padding,
+                  padding: _padding(context),
                   onTap: _select(segment.value),
                 ),
             ],
@@ -201,7 +201,6 @@ class _Segment extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isSelected ? colors.surfaceContainerLowest : null,
                   borderRadius: radius,
-                  boxShadow: isSelected ? AppShadows.whisper(colors) : null,
                 ),
                 child: SizedBox(
                   height: MxSegmentedTray._thumbHeight,

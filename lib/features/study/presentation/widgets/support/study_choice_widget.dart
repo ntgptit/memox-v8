@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
+
+/// How a choice reads in the round: untouched, picked, answered right or wrong.
+enum StudyChoiceTone { idle, selected, right, wrong }
 
 /// A toned, tappable surface of the round-based modes: a Guess option
 /// (screen 18) or a Match tile (screen 17). Study-local, as the kit keeps
@@ -44,25 +48,17 @@ class StudyChoiceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     final motion = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
         : Durations.short4;
     // The tone eases in, surface and ink together, so the content never
     // sits on a surface it was not drawn for (Impeccable after P3). Not an
     // AnimatedContainer: it would inset the content by the border.
-    final ink = AppDecorations.studyChoiceInk(colors, derived, tone);
+    final ink = _ink(context);
     final surface = ConstrainedBox(
       constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
       child: TweenAnimationBuilder<Decoration>(
-        tween: DecorationTween(
-          end: AppDecorations.studyChoice(
-            colors,
-            derived,
-            tone,
-            isRecessed: isRecessed,
-          ),
-        ),
+        tween: DecorationTween(end: _decoration(context)),
         duration: motion,
         curve: Easing.standard,
         builder: (context, decoration, child) =>
@@ -97,6 +93,42 @@ class StudyChoiceWidget extends StatelessWidget {
           child: surface,
         ),
       ),
+    );
+  }
+
+  /// The content colour of [tone].
+  Color _ink(BuildContext context) => switch (tone) {
+    StudyChoiceTone.idle => context.colors.onSurface,
+    StudyChoiceTone.selected => context.colors.onPrimary,
+    StudyChoiceTone.right => context.mxColors.success,
+    StudyChoiceTone.wrong => context.colors.error,
+  };
+
+  /// The surface of [tone]: the card ground at rest, the primary fill when
+  /// picked, a tint of the answer's colour over the page with that colour's
+  /// edge once answered.
+  BoxDecoration _decoration(BuildContext context) {
+    final colors = context.colors;
+    final dimens = context.dimens;
+    final (Color fill, Color edge) = switch (tone) {
+      StudyChoiceTone.idle => (
+        isRecessed ? colors.surfaceContainerLow : context.mxColors.cardSurface,
+        Colors.transparent,
+      ),
+      StudyChoiceTone.selected => (colors.primary, colors.primary),
+      StudyChoiceTone.right => (
+        context.mxColors.success.tintOver(colors.surface),
+        context.mxColors.success,
+      ),
+      StudyChoiceTone.wrong => (
+        colors.error.tintOver(colors.surface),
+        colors.error,
+      ),
+    };
+    return BoxDecoration(
+      color: fill,
+      borderRadius: BorderRadius.circular(dimens.radiusMd),
+      border: Border.all(color: edge, width: dimens.strokeHairline),
     );
   }
 }

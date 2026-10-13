@@ -41,7 +41,7 @@ class DeckReorderRowWidget extends StatelessWidget {
         index: index,
         child: SizedBox.square(
           dimension: context.dimens.sizeControl,
-          child: Icon(AppIcons.dragHandle),
+          child: const Icon(AppIcons.dragHandle),
         ),
       ),
       hasDivider: false,

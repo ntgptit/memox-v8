@@ -46,7 +46,11 @@ class AppTabShell extends StatelessWidget {
           ),
           Expanded(
             child: MediaQuery(
-              data: _besideRail(media, Directionality.of(context)),
+              data: _besideRail(
+                media,
+                Directionality.of(context),
+                context.dimens.sizeRail,
+              ),
               child: navigationShell,
             ),
           ),
@@ -65,16 +69,14 @@ class AppTabShell extends StatelessWidget {
   static MediaQueryData _besideRail(
     MediaQueryData media,
     TextDirection direction,
+    double railWidth,
   ) {
     final isLtr = direction == TextDirection.ltr;
     final startInset = isLtr ? media.padding.left : media.padding.right;
     EdgeInsets withoutStart(EdgeInsets insets) =>
         isLtr ? insets.copyWith(left: 0) : insets.copyWith(right: 0);
     return media.copyWith(
-      size: Size(
-        media.size.width - context.dimens.sizeRail - startInset,
-        media.size.height,
-      ),
+      size: Size(media.size.width - railWidth - startInset, media.size.height),
       padding: withoutStart(media.padding),
       viewPadding: withoutStart(media.viewPadding),
     );

@@ -61,7 +61,7 @@ class _LoadingHeader extends StatelessWidget {
             context.dimens.space16,
             context.dimens.space8,
           ),
-          child: Align(
+          child: const Align(
             alignment: AlignmentDirectional.centerStart,
             child: MxSkeleton(width: _pathWidth),
           ),

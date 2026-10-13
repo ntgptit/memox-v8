@@ -48,7 +48,7 @@ class MxNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final style = context.texts.bodyMedium?.copyWith(
+    final style = context.texts.bodyMedium!.copyWith(
       color: context.colors.onSurfaceVariant,
     );
     // The glyph centres on the first line at any text scale.

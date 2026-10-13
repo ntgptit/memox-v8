@@ -284,8 +284,8 @@ class _Tile extends StatelessWidget {
               child: StudyWholeWordTextWidget(
                 tile.text,
                 style: isTerm
-                    ? context.texts.headlineSmall?.copyWith(color: ink)
-                    : context.texts.bodySmall?.copyWith(color: ink),
+                    ? context.texts.headlineSmall!.copyWith(color: ink)
+                    : context.texts.bodySmall!.copyWith(color: ink),
               ),
             ),
           ],

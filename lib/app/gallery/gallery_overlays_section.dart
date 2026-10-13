@@ -45,7 +45,7 @@ class GalleryOverlaysSection extends StatelessWidget {
           MxButton(
             label: context.l10n.commonRetry,
             icon: AppIcons.retry,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: () {},
           ),
         ],
@@ -55,7 +55,7 @@ class GalleryOverlaysSection extends StatelessWidget {
         actions: [
           MxButton(
             label: context.l10n.studyHomeSyncDetails,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: () {},
           ),
         ],

@@ -150,13 +150,14 @@ class _GlyphStatement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final muted = context.colors.onSurfaceVariant;
-    if (terms.isEmpty)
+    if (terms.isEmpty) {
       return Text(
         fallback,
         style: context.texts.labelMedium?.copyWith(
           color: context.colors.onSurfaceVariant,
         ),
       );
+    }
     final statement = [for (final (count, label, _, _) in terms) label(count)]
         .join(MxWorkloadBreakdownLine._separator);
     return Semantics(

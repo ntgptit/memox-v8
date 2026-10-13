@@ -163,7 +163,7 @@ class _ImportSourceSectionWidgetState
               MxButton(
                 label: l10n.importChooseAnother,
                 icon: AppIcons.folderOpen,
-                size: MxButtonSize.compact,
+                size: MxButtonSize.small,
                 onPressed: widget.onChooseFile,
               ),
           ],

@@ -138,7 +138,7 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
                       label: l10n.studyGuessPrompt,
                       child: StudyWholeWordTextWidget(
                         widget.item.front,
-                        style: context.texts.displaySmall,
+                        style: context.texts.displaySmall!,
                       ),
                     ),
                   ),

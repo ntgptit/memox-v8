@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -38,7 +39,6 @@ class MxStudyTopBar extends StatelessWidget {
   /// Leaving mid-session is the screen's decision; this bar only reports it.
   final VoidCallback onClose;
 
-  static const double _badgeTint = 0.10;
   static const double _trackHeight = 4;
 
   /// The share of the bar's width the mode chip may take (FE-A6 P3 T1).
@@ -81,9 +81,9 @@ class MxStudyTopBar extends StatelessWidget {
                       maxWidth: constraints.maxWidth * _badgeShare,
                     ),
                     child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: accentColor.withValues(alpha: _badgeTint),
-                        borderRadius: BorderRadius.circular(AppRadius.full),
+                      decoration: ShapeDecoration(
+                        color: accentColor.tintOver(colors.surface),
+                        shape: const StadiumBorder(),
                       ),
                       child: Padding(
                         padding: EdgeInsets.symmetric(
@@ -103,7 +103,7 @@ class MxStudyTopBar extends StatelessWidget {
                   ),
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(AppRadius.full),
+                      borderRadius: BorderRadius.circular(_trackHeight / 2),
                       child: SizedBox(
                         height: _trackHeight,
                         child: ColoredBox(

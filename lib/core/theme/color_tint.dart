@@ -1,6 +1,5 @@
 import 'package:flutter/painting.dart';
 import 'package:memox/core/theme/generated/token_constants.g.dart';
-import 'package:memox/core/theme/color_tint.dart';
 
 extension ColorTint on Color {
   /// This colour at the Design System tint strength (`opacity-dragged`, 16%)

@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
 const double _verticalPadding = 10;
+
+/// How long a toast stays: the platform's 4 seconds.
+const Duration _toastDuration = Duration(seconds: 4);
+
+/// How long a toast offering Undo stays (FE-B1 D3).
+const Duration mxUndoWindow = Duration(seconds: 8);
 
 /// Shows the MemoX toast: a message and one optional action on the inverse
 /// surface, which does not flip with the theme. Tapping the action hides the
@@ -15,7 +23,7 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showMxSnackbar(
   required String message,
   String? actionLabel,
   VoidCallback? onAction,
-  Duration duration = AppDurations.toast,
+  Duration duration = _toastDuration,
 }) {
   final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
   return messenger.showSnackBar(
@@ -30,8 +38,8 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showMxSnackbar(
 }
 
 /// The toast's width on a wide window: the column less its gutters.
-const double _wideWidth =
-    context.dimens.sizeContentMax - 2 * context.dimens.space16;
+double _wideWidth(AppDimens dimens) =>
+    dimens.sizeContentMax - 2 * dimens.space16;
 
 /// The platform SnackBar that [showMxSnackbar] shows, configured with the
 /// contract's surface (ruling O9).
@@ -45,7 +53,7 @@ SnackBar buildMxSnackBar(
   required String message,
   String? actionLabel,
   VoidCallback? onAction,
-  Duration duration = AppDurations.toast,
+  Duration duration = _toastDuration,
 }) {
   final messenger = ScaffoldMessenger.of(context);
   // On a window wider than the screen column the toast is at most the
@@ -55,7 +63,7 @@ SnackBar buildMxSnackBar(
       MediaQuery.sizeOf(context).width > context.dimens.sizeContentMax;
   // The surface, float, inset and radius are the theme's (spec §4.6).
   return SnackBar(
-    width: isWide ? _wideWidth : null,
+    width: isWide ? _wideWidth(context.dimens) : null,
     duration: duration,
     persist: onAction != null && MediaQuery.accessibleNavigationOf(context),
     // Only the message carries the 10 vertical padding (MxSnackbarContent),
@@ -116,18 +124,19 @@ class MxSnackbarContent extends StatelessWidget {
               onPressed: onPressed,
               // Ruling O9: 32 painted inside the 48 target; the radius is
               // UNSPECIFIED and uses 8.
-              style: appButtonStyle(
-                fill: null,
-                ink: colors.inversePrimary,
-                edge: BorderSide.none,
-                focusColor: colors.inversePrimary,
-                height: context.dimens.sizeButtonSmall,
-                radius: context.dimens.radiusSm,
-                padding: context.dimens.space8,
-                label: context.texts.labelLarge?.copyWith(
-                  color: context.colors.inversePrimary,
-                ),
-              ),
+              style:
+                  buttonStyle(
+                    ThemeTokens.of(context),
+                    fill: null,
+                    ink: colors.inversePrimary,
+                  ).copyWith(
+                    minimumSize: WidgetStatePropertyAll(
+                      Size(0, context.dimens.sizeButtonSmall),
+                    ),
+                    padding: WidgetStatePropertyAll(
+                      EdgeInsets.symmetric(horizontal: context.dimens.space8),
+                    ),
+                  ),
               child: Text(label),
             ),
         ],

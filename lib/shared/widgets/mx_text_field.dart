@@ -113,7 +113,10 @@ class MxTextField extends StatelessWidget {
   /// The digits a sign-in code holds (auth spec O1).
   static const int codeLength = 6;
 
-  static _Geometry _geometry(MxTextFieldVariant variant) => switch (variant) {
+  static _Geometry _geometry(
+    BuildContext context,
+    MxTextFieldVariant variant,
+  ) => switch (variant) {
     MxTextFieldVariant.form || MxTextFieldVariant.code => (
       floor: context.dimens.sizeInput,
       horizontal: context.dimens.space12,
@@ -139,8 +142,8 @@ class MxTextField extends StatelessWidget {
 
   TextStyle _valueStyle(BuildContext context) {
     return switch (variant) {
-      MxTextFieldVariant.study => context.texts.displaySmall,
-      MxTextFieldVariant.code => context.texts.displaySmall,
+      MxTextFieldVariant.study ||
+      MxTextFieldVariant.code => context.texts.displaySmall!,
       _ => context.texts.bodyMedium!,
     };
   }
@@ -149,7 +152,7 @@ class MxTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     if (variant == MxTextFieldVariant.code) return MxCodeField(field: this);
     final controller = this.controller;
-    if (!_geometry(variant).isMultiline) return _field(context, null);
+    if (!_geometry(context, variant).isMultiline) return _field(context, null);
     // A multi-line box pads to its floor around what it holds, which follows
     // the text and the width.
     Widget sized() => LayoutBuilder(
@@ -172,7 +175,7 @@ class MxTextField extends StatelessWidget {
     TextStyle valueStyle,
     TextStyle hintStyle,
   ) {
-    final geometry = _geometry(variant);
+    final geometry = _geometry(context, variant);
     double lineOf(TextStyle style) => style.fontSize! * style.height!;
     if (width == null) {
       final scaler = MediaQuery.textScalerOf(context);
@@ -216,7 +219,7 @@ class MxTextField extends StatelessWidget {
   Widget _field(BuildContext context, double? width) {
     final colors = context.colors;
     final hasError = errorText != null;
-    final geometry = _geometry(variant);
+    final geometry = _geometry(context, variant);
     // The theme carries the field (spec §4.6): its fill, which lightens on
     // focus, and its edges; an error holds the error edge at rest too.
     final fields = Theme.of(context).inputDecorationTheme;
@@ -226,7 +229,7 @@ class MxTextField extends StatelessWidget {
     // the fill and edge around the text only); more lines or scaled text
     // grow the box.
     final textStyle = _valueStyle(context);
-    final hintStyle = context.fieldHint;
+    final hintStyle = fields.hintStyle!;
     final isBare = variant == MxTextFieldVariant.study;
     final field = TextField(
       controller: controller,

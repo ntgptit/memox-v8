@@ -69,7 +69,7 @@ class ReminderSettingsSectionWidget extends StatelessWidget {
             button: true,
             child: MxButton(
               label: time,
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               tone: isPickingTime
                   ? MxButtonTone.outline
                   : MxButtonTone.secondary,

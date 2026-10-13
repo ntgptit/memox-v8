@@ -25,8 +25,6 @@ class ThemeChoiceCardWidget extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onSelected;
 
-  static const double _padding = context.dimens.space8;
-
   /// The narrowest card that keeps every word whole: the longest word of a
   /// name beside the check, or of a hint, plus the padding. Narrower, the
   /// cards stack (UI-base row 123's rule, for the theme cards).
@@ -63,16 +61,16 @@ class ThemeChoiceCardWidget extends StatelessWidget {
         textScaler.scale(context.dimens.sizeIconCompact) +
         context.dimens.space4;
     final text = [
-      for (final name in names) widest(name, context.texts.titleSmall) + check,
+      for (final name in names) widest(name, context.texts.titleSmall!) + check,
       for (final hint in hints)
         widest(
           hint,
-          context.texts.bodyMedium?.copyWith(
+          context.texts.bodyMedium!.copyWith(
             color: context.colors.onSurfaceVariant,
           ),
         ),
     ].reduce(math.max);
-    return text + _padding * 2;
+    return text + context.dimens.space8 * 2;
   }
 
   @override
@@ -101,7 +99,7 @@ class ThemeChoiceCardWidget extends StatelessWidget {
         child: MxRowInk(
           onTap: onSelected,
           child: Padding(
-            padding: const EdgeInsets.all(_padding),
+            padding: EdgeInsets.all(context.dimens.space8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: context.dimens.space8,
@@ -165,11 +163,16 @@ class _Preview extends StatelessWidget {
           width: context.dimens.strokeHairline,
         ),
       ),
-      child: _clipped(main, dark, radius),
+      child: _clipped(context, main, dark, radius),
     );
   }
 
-  Widget _clipped(ColorScheme main, ColorScheme dark, BorderRadius radius) {
+  Widget _clipped(
+    BuildContext context,
+    ColorScheme main,
+    ColorScheme dark,
+    BorderRadius radius,
+  ) {
     return ClipRRect(
       borderRadius: radius,
       child: SizedBox(
@@ -192,10 +195,10 @@ class _Preview extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: context.dimens.space4,
                 children: [
-                  _block(main.primary, _tile, _tile),
+                  _block(context, main.primary, _tile, _tile),
                   SizedBox(height: context.dimens.space4),
-                  _block(main.outlineVariant, _longLine, _lineHeight),
-                  _block(main.outlineVariant, _shortLine, _lineHeight),
+                  _block(context, main.outlineVariant, _longLine, _lineHeight),
+                  _block(context, main.outlineVariant, _shortLine, _lineHeight),
                 ],
               ),
             ),
@@ -205,12 +208,16 @@ class _Preview extends StatelessWidget {
     );
   }
 
-  static Widget _block(Color color, double width, double height) =>
-      DecoratedBox(
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(context.dimens.radiusXs),
-        ),
-        child: SizedBox(width: width, height: height),
-      );
+  static Widget _block(
+    BuildContext context,
+    Color color,
+    double width,
+    double height,
+  ) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(context.dimens.radiusXs),
+    ),
+    child: SizedBox(width: width, height: height),
+  );
 }

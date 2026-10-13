@@ -59,11 +59,15 @@ class MxBottomSheet extends StatelessWidget {
   static const double _grabberWidth = 36;
   static const double _grabberHeight = 4;
 
+  /// The Design System defines no shadow for a sheet; Material's own
+  /// elevation casts it, the same in light and dark.
+  static const double _elevation = 3;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final sheets = Theme.of(context).bottomSheetTheme;
-    final shape = context.sheetShape;
+    final shape = sheets.shape! as RoundedRectangleBorder;
     // A field inside keeps above the keyboard (§9 row 64): the sheet sits on
     // the IME inset and caps itself within what is left.
     final inset = MediaQuery.viewInsetsOf(context).bottom;
@@ -72,59 +76,55 @@ class MxBottomSheet extends StatelessWidget {
         maxHeight:
             (MediaQuery.sizeOf(context).height - inset) * _maxHeightShare,
       ),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: shape.borderRadius,
-          boxShadow: AppShadows.chrome(colors),
-        ),
-        child: Material(
-          color: sheets.backgroundColor,
-          shape: shape,
-          clipBehavior: Clip.antiAlias,
-          child: SafeArea(
-            top: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (hasGrabber)
-                  // Material's drag-handle semantics: a screen reader can
-                  // dismiss by the grabber (§9 row 65).
-                  Semantics(
-                    key: const ValueKey('mx-sheet-grabber'),
-                    container: true,
-                    button: true,
-                    label: MaterialLocalizations.of(context)
-                        .modalBarrierDismissLabel,
-                    onTap: () => Navigator.of(context).maybePop(),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        top: context.dimens.space8,
-                        bottom: context.dimens.space4,
-                      ),
-                      child: Center(
-                        child: SizedBox(
-                          width: _grabberWidth,
-                          height: _grabberHeight,
-                          child: DecoratedBox(
-                            // Variant ink, 3:1 on the sheet; the kit's
-                            // outlineVariant is 1.30 (FE-C1).
-                            decoration: BoxDecoration(
-                              color: colors.onSurfaceVariant,
-                              borderRadius: BorderRadius.circular(
-                                AppRadius.full,
-                              ),
+      child: Material(
+        color: sheets.backgroundColor,
+        elevation: _elevation,
+        shadowColor: colors.shadow,
+        shape: shape,
+        clipBehavior: Clip.antiAlias,
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (hasGrabber)
+                // Material's drag-handle semantics: a screen reader can
+                // dismiss by the grabber (§9 row 65).
+                Semantics(
+                  key: const ValueKey('mx-sheet-grabber'),
+                  container: true,
+                  button: true,
+                  label: MaterialLocalizations.of(context)
+                      .modalBarrierDismissLabel,
+                  onTap: () => Navigator.of(context).maybePop(),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: context.dimens.space8,
+                      bottom: context.dimens.space4,
+                    ),
+                    child: Center(
+                      child: SizedBox(
+                        width: _grabberWidth,
+                        height: _grabberHeight,
+                        child: DecoratedBox(
+                          // Variant ink, 3:1 on the sheet; the kit's
+                          // outlineVariant is 1.30 (FE-C1).
+                          decoration: BoxDecoration(
+                            color: colors.onSurfaceVariant,
+                            borderRadius: BorderRadius.circular(
+                              _grabberHeight / 2,
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ?header,
-                Flexible(child: SingleChildScrollView(child: child)),
-                ?footer,
-              ],
-            ),
+                ),
+              ?header,
+              Flexible(child: SingleChildScrollView(child: child)),
+              ?footer,
+            ],
           ),
         ),
       ),

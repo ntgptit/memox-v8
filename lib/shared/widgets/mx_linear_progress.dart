@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A thin progress track (FE-A8 H2): the fill eases to [value] over the
 /// progress track, at once under Remove animations. Decorative: the text
@@ -41,11 +42,11 @@ class MxLinearProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final fill = isMastery
-        ? MasteryRamp.fill(context.semanticColors, context.derivedColors, value)
+        ? MasteryRamp.fill(context.mxColors, context.accentColor, value)
         : colors.primary;
     return ExcludeSemantics(
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.full),
+        borderRadius: BorderRadius.circular(_barHeight / 2),
         child: SizedBox(
           height: _barHeight,
           child: ColoredBox(

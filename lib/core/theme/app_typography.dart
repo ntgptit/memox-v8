@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/generated/text_theme.g.dart';
-import 'package:memox/core/theme/theme_context.dart';
 
 /// The Design System type scale bound to Material's [TextTheme].
 ///

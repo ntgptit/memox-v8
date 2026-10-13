@@ -47,7 +47,7 @@ void main() {
           ),
           MxButton(
             label: 'Compact',
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: () {},
           ),
           MxButton(label: 'Chip', size: MxButtonSize.chip, onPressed: () {}),

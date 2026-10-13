@@ -29,8 +29,6 @@ class MxActionPair extends StatelessWidget {
   /// the default text scale, as a count no shorter label can drop does.
   final bool canStack;
 
-  static const double _gap = context.dimens.space8;
-
   /// The phone width The Short Label Rule measures at; a narrower window
   /// may stack.
   static const double _ruleWidth = 360;
@@ -45,7 +43,7 @@ class MxActionPair extends StatelessWidget {
     if (leading == null) return trailing;
     return LayoutBuilder(
       builder: (context, constraints) {
-        final shared = constraints.maxWidth - _gap;
+        final shared = constraints.maxWidth - context.dimens.space8;
         final leadingShare =
             shared * leadingFlex / (leadingFlex + trailingFlex);
         final trailingShare = shared - leadingShare;
@@ -65,12 +63,12 @@ class MxActionPair extends StatelessWidget {
           );
           return Column(
             mainAxisSize: MainAxisSize.min,
-            spacing: _gap,
+            spacing: context.dimens.space8,
             children: [leading, trailing],
           );
         }
         return Row(
-          spacing: _gap,
+          spacing: context.dimens.space8,
           children: [
             Expanded(flex: leadingFlex, child: leading),
             Expanded(flex: trailingFlex, child: trailing),

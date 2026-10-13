@@ -13,14 +13,6 @@ class ImportStepTrackerWidget extends StatelessWidget {
 
   final CardImportStep current;
 
-  static const double _dot = context.dimens.sizeIconCompact;
-
-  /// The shortest connector a one-row tracker keeps; below it the steps wrap.
-  static const double _minLine = context.dimens.space8;
-
-  /// A connector's length when the steps wrap.
-  static const double _wrappedLine = context.dimens.space12;
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -45,13 +37,13 @@ class ImportStepTrackerWidget extends StatelessWidget {
                 _oneRowWidth(context, labels) <= constraints.maxWidth
                 ? Row(
                     spacing: context.dimens.space4,
-                    children: _children(labels, isOneRow: true),
+                    children: _children(context, labels, isOneRow: true),
                   )
                 : Wrap(
                     spacing: context.dimens.space4,
                     runSpacing: context.dimens.space4,
                     crossAxisAlignment: WrapCrossAlignment.center,
-                    children: _children(labels, isOneRow: false),
+                    children: _children(context, labels, isOneRow: false),
                   ),
           ),
         ),
@@ -61,7 +53,11 @@ class ImportStepTrackerWidget extends StatelessWidget {
 
   /// The steps with a connector between each pair: stretched to fill one
   /// row, or of a fixed length when they wrap (large text).
-  List<Widget> _children(List<String> labels, {required bool isOneRow}) => [
+  List<Widget> _children(
+    BuildContext context,
+    List<String> labels, {
+    required bool isOneRow,
+  }) => [
     for (final (index, step) in CardImportStep.values.indexed) ...[
       _Step(
         number: index + 1,
@@ -73,7 +69,7 @@ class ImportStepTrackerWidget extends StatelessWidget {
         isOneRow
             ? Expanded(child: _Line(isDone: step.index < current.index))
             : SizedBox(
-                width: _wrappedLine,
+                width: context.dimens.space12,
                 child: _Line(isDone: step.index < current.index),
               ),
     ],
@@ -83,9 +79,11 @@ class ImportStepTrackerWidget extends StatelessWidget {
   /// at the reader's text scale.
   double _oneRowWidth(BuildContext context, List<String> labels) {
     final style = context.texts.labelSmall?.copyWith(
-      color: true ? context.colors.onSurface : context.colors.onSurfaceVariant,
+      color: context.colors.onSurface,
     );
-    var width = (labels.length - 1) * (_minLine + 2 * context.dimens.space4);
+    var width =
+        (labels.length - 1) *
+        (context.dimens.space8 + 2 * context.dimens.space4);
     for (final label in labels) {
       final painter = TextPainter(
         text: TextSpan(text: label, style: style),
@@ -93,7 +91,10 @@ class ImportStepTrackerWidget extends StatelessWidget {
         textScaler: MediaQuery.textScalerOf(context),
         maxLines: 1,
       )..layout();
-      width += _dot + context.dimens.space4 + painter.width;
+      width +=
+          context.dimens.sizeIconCompact +
+          context.dimens.space4 +
+          painter.width;
       painter.dispose();
     }
     return width;
@@ -131,11 +132,11 @@ class _Step extends StatelessWidget {
       spacing: context.dimens.space4,
       children: [
         SizedBox.square(
-          dimension: ImportStepTrackerWidget._dot,
+          dimension: context.dimens.sizeIconCompact,
           child: DecoratedBox(
-            decoration: BoxDecoration(
+            decoration: ShapeDecoration(
               color: fill,
-              borderRadius: BorderRadius.circular(AppRadius.full),
+              shape: const CircleBorder(),
             ),
             child: Center(
               child: isDone

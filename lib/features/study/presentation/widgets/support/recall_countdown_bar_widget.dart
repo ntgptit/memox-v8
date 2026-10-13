@@ -74,7 +74,7 @@ class RecallCountdownBarWidget extends StatelessWidget {
               ],
             ),
             ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadius.full),
+              borderRadius: BorderRadius.circular(_trackHeight / 2),
               child: SizedBox(
                 height: _trackHeight,
                 child: ColoredBox(

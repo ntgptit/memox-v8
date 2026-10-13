@@ -39,6 +39,9 @@ class MxOptionRow extends StatelessWidget {
   final bool hasDivider;
 
   static const double _radioColumn = 22;
+
+  /// The selected radio's ring: it thickens, nothing moves.
+  static const double _selectedRing = 6;
   static const double _radioSize = 20;
   static const double _descriptionGap = 2;
 
@@ -76,6 +79,7 @@ class MxOptionRow extends StatelessWidget {
                   spacing: context.dimens.space12,
                   children: [
                     _dim(
+                      context,
                       isDim,
                       SizedBox(
                         width: _radioColumn,
@@ -92,7 +96,7 @@ class MxOptionRow extends StatelessWidget {
                                     ? context.accentColor
                                     : colors.outline,
                                 width: isSelected
-                                    ? AppStroke.selectedRing
+                                    ? _selectedRing
                                     : context.dimens.strokeControl,
                               ),
                             ),
@@ -107,6 +111,7 @@ class MxOptionRow extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _dim(
+                            context,
                             isDim,
                             Text(title, style: context.texts.titleSmall),
                           ),
@@ -133,7 +138,7 @@ class MxOptionRow extends StatelessWidget {
     );
   }
 
-  static Widget _dim(bool isDim, Widget child) => isDim
+  static Widget _dim(BuildContext context, bool isDim, Widget child) => isDim
       ? Opacity(opacity: context.dimens.opacityDisabledContent, child: child)
       : child;
 }

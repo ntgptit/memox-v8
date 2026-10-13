@@ -91,17 +91,17 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
       Row(
         spacing: context.dimens.space12,
         children: [
-          MxIconTile(
+          const MxIconTile(
             icon: AppIcons.check,
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.success,
           ),
-          MxIconTile(
+          const MxIconTile(
             icon: AppIcons.resetProgress,
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.caution,
           ),
-          MxIconTile(
+          const MxIconTile(
             icon: AppIcons.alert,
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.danger,

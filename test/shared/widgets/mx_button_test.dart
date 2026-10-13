@@ -24,7 +24,7 @@ void main() {
     const heights = {
       MxButtonSize.regular: 48.0,
       MxButtonSize.small: 36.0,
-      MxButtonSize.compact: 32.0,
+      MxButtonSize.small: 32.0,
       MxButtonSize.chip: 28.0,
       MxButtonSize.study: 48.0,
     };
@@ -130,7 +130,7 @@ void main() {
       () => MxButton(
         label: 'Go',
         detail: '6d',
-        size: MxButtonSize.compact,
+        size: MxButtonSize.small,
         onPressed: () {},
       ),
       throwsAssertionError,
@@ -287,7 +287,7 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         children: [
           MxButton(label: 'Pick', size: MxButtonSize.small, onPressed: () {}),
-          MxButton(label: 'Undo', size: MxButtonSize.compact, onPressed: () {}),
+          MxButton(label: 'Undo', size: MxButtonSize.small, onPressed: () {}),
           MxButton(label: 'Tag', size: MxButtonSize.chip, onPressed: () {}),
         ],
       ),

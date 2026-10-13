@@ -50,7 +50,7 @@ class _HiddenBar extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: context.colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(AppRadius.full),
+          borderRadius: BorderRadius.circular(_size.height / 2),
         ),
       ),
     ),

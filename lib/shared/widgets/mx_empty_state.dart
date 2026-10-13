@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
@@ -83,11 +84,8 @@ class MxEmptyState extends StatelessWidget {
           );
     return SizedBox(
       width: double.infinity,
-      child: DecoratedBox(
-        decoration: AppDecorations.raisedCard(
-          context.colors,
-          context.derivedColors,
-        ),
+      child: MxCard(
+        isFullBleed: true,
         child: Padding(
           padding: padding,
           child: Column(

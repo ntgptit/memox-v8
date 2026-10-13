@@ -160,10 +160,10 @@ class GalleryStatusSection extends StatelessWidget {
       Row(
         spacing: context.dimens.space16,
         children: [
-          MxMasteryDonut(fraction: 0),
-          MxMasteryDonut(fraction: 0.2),
-          MxMasteryDonut(fraction: 0.5),
-          MxMasteryDonut(fraction: 1),
+          const MxMasteryDonut(fraction: 0),
+          const MxMasteryDonut(fraction: 0.2),
+          const MxMasteryDonut(fraction: 0.5),
+          const MxMasteryDonut(fraction: 1),
         ],
       ),
     ],

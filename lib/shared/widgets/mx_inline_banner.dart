@@ -63,7 +63,7 @@ class MxInlineBanner extends StatelessWidget {
         context.colors.error,
       ),
     };
-    final messageStyle = context.texts.labelMedium?.copyWith(
+    final messageStyle = context.texts.labelMedium!.copyWith(
       color: title == null
           ? context.colors.onSurface
           : context.colors.onSurfaceVariant,

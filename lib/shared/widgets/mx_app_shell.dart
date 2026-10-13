@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The column every screen is: top chrome, one scroll body and a bottom bar,
@@ -106,6 +107,7 @@ class MxAppShell extends StatelessWidget {
       floatingActionButton: fab,
       floatingActionButtonLocation: _MxFabLocation(
         hasBottomBar: bottomBar != null,
+        dimens: context.dimens,
       ),
     );
   }
@@ -127,38 +129,41 @@ class _TypingScope extends InheritedWidget {
 /// 24 + gesture inset above the bottom, or 4 above the bottom bar, which
 /// already carries the inset.
 final class _MxFabLocation extends FloatingActionButtonLocation {
-  const _MxFabLocation({required this.hasBottomBar});
+  const _MxFabLocation({required this.hasBottomBar, required this.dimens});
 
   final bool hasBottomBar;
+  final AppDimens dimens;
 
   @override
   Offset getOffset(ScaffoldPrelayoutGeometry geometry) {
     final fab = geometry.floatingActionButtonSize;
     final width = geometry.scaffoldSize.width;
-    final column = math.min(width, context.dimens.sizeContentMax);
+    final column = math.min(width, dimens.sizeContentMax);
     final columnStart = (width - column) / 2;
     final columnEnd = columnStart + column;
     final x = switch (geometry.textDirection) {
       TextDirection.ltr =>
         math.min(columnEnd, width - geometry.minInsets.right) -
-            context.dimens.space16 -
+            dimens.space16 -
             fab.width,
       TextDirection.rtl =>
-        math.max(columnStart, geometry.minInsets.left) + context.dimens.space16,
+        math.max(columnStart, geometry.minInsets.left) + dimens.space16,
     };
     // The part of the gesture inset not already covered by a bottom widget.
     final bottomContent = geometry.scaffoldSize.height - geometry.contentBottom;
     final inset = math.max(0.0, geometry.minViewPadding.bottom - bottomContent);
-    final gap = hasBottomBar ? context.dimens.space4 : context.dimens.space24;
+    final gap = hasBottomBar ? dimens.space4 : dimens.space24;
     return Offset(x, geometry.contentBottom - fab.height - gap - inset);
   }
 
   @override
   bool operator ==(Object other) =>
-      other is _MxFabLocation && other.hasBottomBar == hasBottomBar;
+      other is _MxFabLocation &&
+      other.hasBottomBar == hasBottomBar &&
+      other.dimens == dimens;
 
   @override
-  int get hashCode => hasBottomBar.hashCode;
+  int get hashCode => Object.hash(hasBottomBar, dimens);
 }
 
 /// Floats [notice] over the bottom of [child] and pads [child] below by the

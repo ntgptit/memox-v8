@@ -247,7 +247,7 @@ void main() {
           isEnabled: false,
           trailing: MxButton(
             label: '20:00',
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: null,
           ),
         ),
@@ -294,7 +294,7 @@ void main() {
             button: true,
             child: const MxButton(
               label: '20:00',
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               onPressed: null,
             ),
           ),

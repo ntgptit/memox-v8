@@ -94,11 +94,11 @@ class MonitoringCodeCardWidget extends StatelessWidget {
       _CardKind.stackTrace => SelectionArea(
         child: _StackTrace(
           text: text,
-          style: context.texts.bodyMedium?.copyWith(
+          style: context.texts.bodyMedium!.copyWith(
             fontFamily: AppTypography.monoFamily,
           ),
-          frameStyle: context.texts.bodyMedium
-              ?.copyWith(fontFamily: AppTypography.monoFamily)
+          frameStyle: context.texts.bodyMedium!
+              .copyWith(fontFamily: AppTypography.monoFamily)
               .copyWith(color: context.accentColor),
         ),
       ),

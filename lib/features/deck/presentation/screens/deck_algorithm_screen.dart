@@ -185,7 +185,7 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
                   actions: [
                     MxButton(
                       label: l10n.commonRetry,
-                      size: MxButtonSize.compact,
+                      size: MxButtonSize.small,
                       onPressed: () => unawaited(_switchTo(view, retryTarget)),
                     ),
                   ],

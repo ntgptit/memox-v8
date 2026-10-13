@@ -40,7 +40,7 @@ class _MxToggleState extends State<MxToggle> {
   }
 
   BoxDecoration _edge(Color color, double width) => BoxDecoration(
-    borderRadius: BorderRadius.circular(AppRadius.full),
+    borderRadius: BorderRadius.circular(_trackHeight / 2),
     border: Border.all(color: color, width: width),
   );
 
@@ -60,7 +60,7 @@ class _MxToggleState extends State<MxToggle> {
       padding: const EdgeInsets.all(_thumbInset),
       decoration: BoxDecoration(
         color: widget.isOn ? colors.primary : colors.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(AppRadius.full),
+        borderRadius: BorderRadius.circular(_trackHeight / 2),
       ),
       // Foreground rings, so neither pads the thumb (ruling R5): focus, or
       // the off track's outline edge, 3:1 against the row where the kit's
@@ -79,7 +79,6 @@ class _MxToggleState extends State<MxToggle> {
             // there, where outline is 2.74 light and 1.96 dark (FE-C1).
             color: widget.isOn ? colors.surfaceBright : colors.onSurfaceVariant,
             shape: BoxShape.circle,
-            boxShadow: AppShadows.whisper(colors),
           ),
           child: const SizedBox.square(dimension: _thumbSize),
         ),

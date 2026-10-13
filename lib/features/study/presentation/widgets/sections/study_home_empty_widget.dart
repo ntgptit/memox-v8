@@ -69,8 +69,8 @@ class StudyHomeLoadingWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: context.dimens.space8,
             children: [
-              MxSkeleton(width: _overlineWidth),
-              MxSkeleton(width: _titleWidth, height: _titleHeight),
+              const MxSkeleton(width: _overlineWidth),
+              const MxSkeleton(width: _titleWidth, height: _titleHeight),
             ],
           ),
         ),

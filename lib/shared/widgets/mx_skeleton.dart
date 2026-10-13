@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
+/// One skeleton pulse, 0.45 to 0.75 opacity and back.
+const Duration _pulseDuration = Duration(milliseconds: 1400);
+
 /// One placeholder shape. It pulses: opacity travels 0.45 ↔ 0.75 over 1.4s,
 /// with no shimmer sweep. Under reduced motion it rests at 0.5.
 class MxSkeleton extends StatefulWidget {
@@ -90,7 +93,7 @@ class _MxSkeletonState extends State<MxSkeleton>
     }
     final own = _own ??= AnimationController(
       vsync: this,
-      duration: AppDurations.skeletonPulse,
+      duration: _pulseDuration,
     );
     _opacity ??= _pulseOf(own);
     _runUnlessStill(context, own);
@@ -111,7 +114,7 @@ class _MxSkeletonState extends State<MxSkeleton>
         decoration: BoxDecoration(
           color: context.colors.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(
-            widget.isCircle ? AppRadius.full : MxSkeleton._radius,
+            widget.isCircle ? widget.height / 2 : MxSkeleton._radius,
           ),
         ),
       ),
@@ -141,18 +144,18 @@ class MxSkeletonRow extends StatelessWidget {
     child: Row(
       spacing: context.dimens.space12,
       children: [
-        MxSkeleton(width: _tileSize, height: _tileSize),
+        const MxSkeleton(width: _tileSize, height: _tileSize),
         Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: context.dimens.space8,
             children: [
-              FractionallySizedBox(
+              const FractionallySizedBox(
                 widthFactor: _titleShare,
                 child: MxSkeleton(),
               ),
-              FractionallySizedBox(
+              const FractionallySizedBox(
                 widthFactor: _subtitleShare,
                 child: MxSkeleton(),
               ),
@@ -179,7 +182,7 @@ class _MxSkeletonPulseState extends State<MxSkeletonPulse>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulse = AnimationController(
     vsync: this,
-    duration: AppDurations.skeletonPulse,
+    duration: _pulseDuration,
   );
   late final Animation<double> _opacity = _pulseOf(_pulse);
 

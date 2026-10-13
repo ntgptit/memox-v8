@@ -63,7 +63,7 @@ class CardHistoryEventWidget extends StatelessWidget {
           context.dimens.space24 +
           CardHistoryRailWidget.dotTopOn(
             context,
-            context.texts.labelSmall?.copyWith(
+            context.texts.labelSmall!.copyWith(
               color: context.colors.onSurfaceVariant,
             ),
             lines: 2,

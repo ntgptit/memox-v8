@@ -37,7 +37,7 @@ class GalleryActionsSection extends StatelessWidget {
           ),
           MxButton(
             label: context.l10n.galleryCompact,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: () {},
           ),
           MxButton(

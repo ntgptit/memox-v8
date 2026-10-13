@@ -21,10 +21,9 @@ class StarterTemplateCardWidget extends StatelessWidget {
   final StarterLibraryEntry entry;
   final VoidCallback onAdd;
 
-  static const double _tileGap = context.dimens.space12;
-
   /// The facts and the actions line up with the title, past the tile.
-  static const double _indent = MxIconTile.mediumBox + _tileGap;
+  static double _indent(BuildContext context) =>
+      MxIconTile.mediumBox + context.dimens.space12;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,7 @@ class StarterTemplateCardWidget extends StatelessWidget {
                 // follows it, or drops below when the line is full
                 // (critique P3).
                 Row(
-                  spacing: _tileGap,
+                  spacing: context.dimens.space12,
                   children: [
                     const MxIconTile(
                       icon: AppIcons.starterDecks,
@@ -67,7 +66,7 @@ class StarterTemplateCardWidget extends StatelessWidget {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsetsDirectional.only(start: _indent),
+                  padding: EdgeInsetsDirectional.only(start: _indent(context)),
                   child: Text(
                     starterEntryFacts(l10n, entry),
                     style: context.texts.labelSmall?.copyWith(
@@ -82,7 +81,7 @@ class StarterTemplateCardWidget extends StatelessWidget {
           // The suggestion drops below the button, whole, when both do not
           // fit on one line (critique P2a).
           Padding(
-            padding: const EdgeInsetsDirectional.only(start: _indent),
+            padding: EdgeInsetsDirectional.only(start: _indent(context)),
             child: Wrap(
               spacing: context.dimens.space12,
               runSpacing: context.dimens.space8,

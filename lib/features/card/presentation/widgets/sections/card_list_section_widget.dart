@@ -369,7 +369,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           if (_failedFlag case (final ids, final isFlagged))
             MxButton(
               label: l10n.commonRetry,
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               isLoading: _isFlagging,
               onPressed: _isFlagging
                   ? null
