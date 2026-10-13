@@ -111,7 +111,7 @@ void main() {
 
     await pumpMx(
       tester,
-      MxButton(
+      const MxButton(
         label: '20:00',
         semanticLabel: 'Reminder time, 20:00',
         size: MxButtonSize.small,

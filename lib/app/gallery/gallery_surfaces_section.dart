@@ -123,7 +123,7 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.danger,
           ),
-          MxIconTile(
+          const MxIconTile(
             icon: AppIcons.streak,
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.neutral,
