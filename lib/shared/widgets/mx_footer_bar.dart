@@ -26,36 +26,39 @@ class MxFooterBar extends StatelessWidget {
     // While the keyboard is up the field needs the height; the caption is a
     // calm restatement of the rule and waits (audit 2026-09-29, pattern 1).
     final isTyping = MxAppShell.isTypingOf(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        border: Border(
-          top: BorderSide(
-            color: context.semanticColors.border,
-            width: AppStroke.hairline,
+    // A toast floats above the bar, never over its actions.
+    return MxToastClearance(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: context.colors.surface,
+          border: Border(
+            top: BorderSide(
+              color: context.semanticColors.border,
+              width: AppStroke.hairline,
+            ),
           ),
         ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          context.screenMargin,
-          AppSpacing.control,
-          context.screenMargin,
-          AppSpacing.gutter + inset,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.control,
-          children: [
-            child,
-            if (caption case final caption? when !isTyping)
-              Text(
-                caption,
-                textAlign: TextAlign.center,
-                style: context.textStyles.footerCaption,
-              ),
-          ],
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            context.screenMargin,
+            AppSpacing.control,
+            context.screenMargin,
+            AppSpacing.gutter + inset,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: AppSpacing.control,
+            children: [
+              child,
+              if (caption case final caption? when !isTyping)
+                Text(
+                  caption,
+                  textAlign: TextAlign.center,
+                  style: context.textStyles.footerCaption,
+                ),
+            ],
+          ),
         ),
       ),
     );

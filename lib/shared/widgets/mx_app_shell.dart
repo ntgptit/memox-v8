@@ -73,7 +73,7 @@ class MxAppShell extends StatelessWidget {
     // this shell's MediaQuery, so its scope answers first.
     return _TypingScope(
       isTyping: isTypingOf(context),
-      child: _scaffold(context, appBar),
+      child: _ToastHost(child: _scaffold(context, appBar)),
     );
   }
 
@@ -136,6 +136,149 @@ class _TypingScope extends InheritedWidget {
   @override
   bool updateShouldNotify(_TypingScope oldWidget) =>
       isTyping != oldWidget.isTyping;
+}
+
+/// Raises the toast over the footers on stage beneath it ([MxToastClearance]).
+///
+/// The ScaffoldMessenger shows a toast only in the outermost Scaffold of a
+/// nested set, and that Scaffold floats it above its own bottom bar alone: a
+/// footer is in-flow in a body, so no Scaffold knows it is there. Without
+/// this, the toast covered the lower half of a footer's action while it
+/// showed (a tab's form under the tab shell, a full-screen route alike). So
+/// the shell whose Scaffold is outermost lifts its snackbar inset by the
+/// tallest footer reported to it; a shell inside another Scaffold, as a tab's
+/// screen, leaves its footers to the shell around it.
+class _ToastHost extends StatefulWidget {
+  const _ToastHost({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_ToastHost> createState() => _ToastHostState();
+}
+
+class _ToastHostState extends State<_ToastHost> {
+  /// Each footer on stage, by its [MxToastClearance], and the height it needs.
+  final Map<Object, double> _clearances = {};
+
+  ThemeData? _base;
+  double _lift = 0;
+  ThemeData? _lifted;
+
+  void _clear(Object footer, double height) {
+    if (!mounted || _clearances[footer] == height) return;
+    setState(() => _clearances[footer] = height);
+  }
+
+  void _release(Object footer) {
+    if (!mounted || !_clearances.containsKey(footer)) return;
+    setState(() => _clearances.remove(footer));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // The same test as ScaffoldMessengerState._isRoot: a Scaffold above
+    // this one is where the toast shows.
+    if (Scaffold.maybeOf(context) != null) return widget.child;
+    final lift = _clearances.values.fold(0.0, math.max);
+    return _ToastScope(
+      host: this,
+      child: Theme(
+        data: _liftedBy(Theme.of(context), lift),
+        child: widget.child,
+      ),
+    );
+  }
+
+  /// [base] with the toast's bottom inset raised by [lift]; [base] itself
+  /// when nothing needs clearing, so no descendant rebuilds for it.
+  ThemeData _liftedBy(ThemeData base, double lift) {
+    if (lift == 0) return base;
+    final lifted = _lifted;
+    if (lifted != null && identical(base, _base) && lift == _lift) {
+      return lifted;
+    }
+    final inset = base.snackBarTheme.insetPadding ?? EdgeInsets.zero;
+    _base = base;
+    _lift = lift;
+    return _lifted = base.copyWith(
+      snackBarTheme: base.snackBarTheme.copyWith(
+        insetPadding: inset.copyWith(bottom: inset.bottom + lift),
+      ),
+    );
+  }
+}
+
+/// Hands [_ToastHostState] to the footers under the shell that hosts it.
+class _ToastScope extends InheritedWidget {
+  const _ToastScope({required this.host, required super.child});
+
+  final _ToastHostState host;
+
+  @override
+  bool updateShouldNotify(_ToastScope oldWidget) => host != oldWidget.host;
+}
+
+/// Keeps the shell's toast above [child], a bar at the bottom of the screen
+/// (MxFooterBar wraps itself in it): while [child] is on stage, the toast
+/// floats a gutter above its top edge instead of over its actions. The
+/// gesture inset [child] pads below itself is not counted, as the toast
+/// already stands above that inset. A bar off stage, on another tab or under
+/// a covering route, is not counted either.
+class MxToastClearance extends StatefulWidget {
+  const MxToastClearance({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<MxToastClearance> createState() => _MxToastClearanceState();
+}
+
+class _MxToastClearanceState extends State<MxToastClearance> {
+  _ToastHostState? _host;
+  bool _isOnStage = true;
+  double _inset = 0;
+  double _height = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final host = context
+        .dependOnInheritedWidgetOfExactType<_ToastScope>()
+        ?.host;
+    if (!identical(host, _host)) _releaseLater(_host);
+    _host = host;
+    _isOnStage = TickerMode.valuesOf(context).enabled;
+    _inset = MediaQuery.paddingOf(context).bottom;
+    // The host is an ancestor; it is told after this frame's build.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _report());
+  }
+
+  void _measured(Size size) {
+    _height = size.height;
+    _report();
+  }
+
+  void _report() {
+    if (!mounted) return;
+    _host?._clear(this, _isOnStage ? math.max(0.0, _height - _inset) : 0);
+  }
+
+  /// After the frame, since the tree is locked while it is torn down.
+  void _releaseLater(_ToastHostState? host) {
+    if (host == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) => host._release(this));
+  }
+
+  @override
+  void dispose() {
+    _releaseLater(_host);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      _SizeReporter(onSize: _measured, child: widget.child);
 }
 
 /// FAB placement (Fab contract, caller-owned): the screen margin from the
