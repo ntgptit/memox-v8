@@ -1,8 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// A top-level destination: an outlined resting glyph, a filled selected one.
 @immutable
@@ -18,12 +15,9 @@ final class MxNavDestination {
   final String label;
 }
 
-/// Backdrop blur sigma behind the nav's glass surface.
-const double _glassBlur = 18;
-
-/// The top-level destinations on a translucent glass bar, with a tinted pill
-/// behind the current glyph. It is in-flow, never over the scroll, and adds
-/// the gesture inset below itself.
+/// The top-level destinations on a flat bar: the page surface, a hairline
+/// `divider` on top, no shadow, and a pill behind the current glyph. It is
+/// in-flow, never over the scroll, and adds the gesture inset below itself.
 class MxBottomNav extends StatelessWidget {
   const MxBottomNav({
     super.key,
@@ -39,58 +33,37 @@ class MxBottomNav extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
-  static const double _pillTintLight = 0.14;
-  static const double _pillTintDark = 0.20;
-
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final inset = MediaQuery.paddingOf(context).bottom;
-    final pillTint = colors.primary.withValues(
-      alpha: colors.brightness == Brightness.dark
-          ? _pillTintDark
-          : _pillTintLight,
-    );
-    final radius = BorderRadius.circular(context.dimens.radiusLg);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        context.dimens.space8,
-        context.dimens.space4,
-        context.dimens.space8,
-        context.dimens.space12 + inset,
+    final dimens = context.dimens;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: Border(
+          top: BorderSide(
+            color: context.mxColors.divider,
+            width: dimens.strokeHairline,
+          ),
+        ),
       ),
-      child: ClipRRect(
-        borderRadius: radius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: _glassBlur, sigmaY: _glassBlur),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: context.colors.surface,
-              borderRadius: radius,
-              border: Border.all(
-                color: context.colors.outlineVariant,
-                width: context.dimens.strokeHairline,
-              ),
-            ),
-            // Ruling R3: 64 at minimum, grows with text scaling.
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: context.dimens.sizeNav),
-              child: Material(
-                type: MaterialType.transparency,
-                child: Row(
-                  children: [
-                    for (final (index, destination) in destinations.indexed)
-                      Expanded(
-                        child: _Item(
-                          destination: destination,
-                          isSelected: index == selectedIndex,
-                          pillTint: pillTint,
-                          onTap: () => onSelected(index),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+        // The bar is `sizeNav` at minimum and grows with the text scale.
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: dimens.sizeNav),
+          child: Material(
+            type: MaterialType.transparency,
+            child: Row(
+              children: [
+                for (final (index, destination) in destinations.indexed)
+                  Expanded(
+                    child: MxNavItem(
+                      destination: destination,
+                      isSelected: index == selectedIndex,
+                      onTap: () => onSelected(index),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
@@ -99,22 +72,25 @@ class MxBottomNav extends StatelessWidget {
   }
 }
 
-class _Item extends StatelessWidget {
-  const _Item({
+/// One destination of [MxBottomNav] and `MxNavRail`: the glyph on its
+/// `sizeNavIndicatorWidth` x `sizeNavIndicatorHeight` pill, and the label
+/// under it. The selected one sits on `secondaryContainer`.
+class MxNavItem extends StatelessWidget {
+  const MxNavItem({
+    super.key,
     required this.destination,
     required this.isSelected,
-    required this.pillTint,
     required this.onTap,
   });
 
   final MxNavDestination destination;
   final bool isSelected;
-  final Color pillTint;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final dimens = context.dimens;
     return Semantics(
       container: true,
       selected: isSelected,
@@ -124,23 +100,21 @@ class _Item extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          spacing: context.dimens.space4,
+          spacing: dimens.space4,
           children: [
             DecoratedBox(
               decoration: ShapeDecoration(
-                color: isSelected ? pillTint : null,
+                color: isSelected ? colors.secondaryContainer : null,
                 shape: const StadiumBorder(),
               ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.screenMargin,
-                  vertical: context.dimens.space4,
-                ),
+              child: SizedBox(
+                width: dimens.sizeNavIndicatorWidth,
+                height: dimens.sizeNavIndicatorHeight,
                 child: Icon(
                   isSelected ? destination.selectedIcon : destination.icon,
-                  size: context.dimens.sizeIconCompact,
+                  size: dimens.sizeIcon,
                   color: isSelected
-                      ? context.accentColor
+                      ? colors.onSecondaryContainer
                       : colors.onSurfaceVariant,
                 ),
               ),
@@ -150,9 +124,7 @@ class _Item extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.texts.labelSmall?.copyWith(
-                color: isSelected
-                    ? context.colors.onSurface
-                    : context.colors.onSurfaceVariant,
+                color: isSelected ? colors.onSurface : colors.onSurfaceVariant,
               ),
             ),
           ],

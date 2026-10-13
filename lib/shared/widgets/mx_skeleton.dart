@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// One skeleton pulse, 0.45 to 0.75 opacity and back.
 const Duration _pulseDuration = Duration(milliseconds: 1400);
@@ -138,7 +137,7 @@ class MxSkeletonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.symmetric(
-      horizontal: context.screenMargin,
+      horizontal: context.dimens.space16,
       vertical: context.dimens.space12,
     ),
     child: Row(

@@ -37,6 +37,7 @@ class StudyHomeWorkloadWidget extends StatelessWidget {
     // A summary card, not a hero: sessions start per deck, so it leads
     // nowhere (critique 2026-09-30 part 3c-1, R2).
     return MxCard(
+      isCompact: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: context.dimens.space4,

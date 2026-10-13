@@ -31,6 +31,7 @@ class ProgressStreakWidget extends StatelessWidget {
       StreakState.includesToday || StreakState.never => null,
     };
     return MxCard(
+      isCompact: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

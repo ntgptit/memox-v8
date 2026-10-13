@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The column every screen is: top chrome, one scroll body and a bottom bar,
 /// with the FAB layered above. The app bar and footer are in-flow siblings of
@@ -19,6 +20,7 @@ class MxAppShell extends StatelessWidget {
     this.footer,
     this.fab,
     this.notice,
+    this.isSession = false,
   }) : assert(
          fab == null || footer == null,
          'the Fab contract anchors a FAB to the bottom or above the nav, '
@@ -44,6 +46,10 @@ class MxAppShell extends StatelessWidget {
   /// by its height, so the end of a scroll clears it.
   final Widget? notice;
 
+  /// A study session keeps the `sizeContentMax` column, centred, in every
+  /// window size. Any other screen takes `sizeContentMaxWide` from medium up.
+  final bool isSession;
+
   /// Whether the keyboard is up. Its Scaffold resizes the body above the
   /// keyboard and strips the inset from the body's MediaQuery, so a widget
   /// in the body or footer asks here; outside a shell it reads MediaQuery.
@@ -62,11 +68,18 @@ class MxAppShell extends StatelessWidget {
     );
   }
 
+  double _columnWidth(BuildContext context) {
+    final dimens = context.dimens;
+    final isNarrow = isSession || context.windowSize == WindowSize.compact;
+    return isNarrow ? dimens.sizeContentMax : dimens.sizeContentMaxWide;
+  }
+
   Widget _scaffold(BuildContext context, Widget? appBar) {
     return Scaffold(
       backgroundColor: context.colors.surface,
-      // A wide window centres the column at [context.dimens.sizeContentMax]; the
-      // ground fills the rest (FE-C5). A phone gets its full width.
+      // A compact window gets its full width, up to `sizeContentMax`; from
+      // medium the column is centred at `sizeContentMaxWide`, or stays at
+      // `sizeContentMax` in a study session; the ground fills the rest (FE-C5).
       // A context below the Scaffold, whose MediaQuery has already lost the
       // bottom inset when a bottom nav owns it; the shell's own context would
       // hand that inset back to the body.
@@ -74,10 +87,7 @@ class MxAppShell extends StatelessWidget {
         builder: (bodyContext) => LayoutBuilder(
           builder: (_, constraints) => Center(
             child: SizedBox(
-              width: math.min(
-                constraints.maxWidth,
-                context.dimens.sizeContentMax,
-              ),
+              width: math.min(constraints.maxWidth, _columnWidth(context)),
               child: Column(
                 children: [
                   ?appBar,
@@ -108,6 +118,7 @@ class MxAppShell extends StatelessWidget {
       floatingActionButtonLocation: _MxFabLocation(
         hasBottomBar: bottomBar != null,
         dimens: context.dimens,
+        columnMax: _columnWidth(context),
       ),
     );
   }
@@ -129,16 +140,23 @@ class _TypingScope extends InheritedWidget {
 /// 24 + gesture inset above the bottom, or 4 above the bottom bar, which
 /// already carries the inset.
 final class _MxFabLocation extends FloatingActionButtonLocation {
-  const _MxFabLocation({required this.hasBottomBar, required this.dimens});
+  const _MxFabLocation({
+    required this.hasBottomBar,
+    required this.dimens,
+    required this.columnMax,
+  });
 
   final bool hasBottomBar;
   final AppDimens dimens;
+
+  /// The widest the content column grows.
+  final double columnMax;
 
   @override
   Offset getOffset(ScaffoldPrelayoutGeometry geometry) {
     final fab = geometry.floatingActionButtonSize;
     final width = geometry.scaffoldSize.width;
-    final column = math.min(width, dimens.sizeContentMax);
+    final column = math.min(width, columnMax);
     final columnStart = (width - column) / 2;
     final columnEnd = columnStart + column;
     final x = switch (geometry.textDirection) {
@@ -160,10 +178,11 @@ final class _MxFabLocation extends FloatingActionButtonLocation {
   bool operator ==(Object other) =>
       other is _MxFabLocation &&
       other.hasBottomBar == hasBottomBar &&
-      other.dimens == dimens;
+      other.dimens == dimens &&
+      other.columnMax == columnMax;
 
   @override
-  int get hashCode => Object.hash(hasBottomBar, dimens);
+  int get hashCode => Object.hash(hasBottomBar, dimens, columnMax);
 }
 
 /// Floats [notice] over the bottom of [child] and pads [child] below by the

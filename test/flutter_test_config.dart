@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// The face a test renders `MxTextStyles.code` in: the app asks for the
+/// The face a test renders the code text style in: the app asks for the
 /// system `monospace`, which a test host does not have, so it would paint
 /// Ahem boxes. DejaVu Sans Mono stands in; its licence sits beside it.
 const String _monospaceFamily = 'monospace';

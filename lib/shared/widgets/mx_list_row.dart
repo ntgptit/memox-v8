@@ -111,7 +111,7 @@ class MxListRow extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
+            padding: EdgeInsets.symmetric(horizontal: context.dimens.space16),
             child: Row(
               spacing: context.dimens.space12,
               children: [

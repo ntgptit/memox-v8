@@ -6,7 +6,6 @@ import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// A setting: a bigger label, a roomier lead column, and a trailing slot for
 /// a control. The chevron shows only when the row navigates and holds no
@@ -79,7 +78,7 @@ class MxSettingsRow extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
+          padding: EdgeInsets.symmetric(horizontal: context.dimens.space16),
           child: Row(
             spacing: context.dimens.space16,
             // Kit 23: beside a wide control the tile stays with the label.

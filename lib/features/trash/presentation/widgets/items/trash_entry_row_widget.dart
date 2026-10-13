@@ -11,7 +11,6 @@ import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// One Trash entry (kit 06): its kind, its name and time left, what went
 /// with it and when, and where it was (information only, BR-TRASH-012).
@@ -97,7 +96,7 @@ class TrashEntryRowWidget extends StatelessWidget {
                   onTap: onTap,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: context.screenMargin,
+                      horizontal: context.dimens.space16,
                       vertical: context.dimens.space12,
                     ),
                     child: lines,

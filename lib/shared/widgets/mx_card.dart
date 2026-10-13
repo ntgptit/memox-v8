@@ -12,6 +12,7 @@ class MxCard extends StatelessWidget {
     super.key,
     required this.child,
     this.isFullBleed = false,
+    this.isCompact = false,
     this.isHero = false,
     this.isWarning = false,
     this.isSelected = false,
@@ -33,6 +34,10 @@ class MxCard extends StatelessWidget {
   /// No padding, for rows that run edge to edge. The card clips them to its
   /// radius, so their dividers meet the corners.
   final bool isFullBleed;
+
+  /// The overview's tighter padding, `space16` instead of `space24`, so two
+  /// cards fit side by side on a phone.
+  final bool isCompact;
 
   /// The accent tint over the page surface.
   final bool isHero;
@@ -90,7 +95,7 @@ class MxCard extends StatelessWidget {
         child: Padding(
           padding: isFullBleed
               ? EdgeInsets.zero
-              : EdgeInsets.all(dimens.space24),
+              : EdgeInsets.all(isCompact ? dimens.space16 : dimens.space24),
           child: child,
         ),
       ),

@@ -72,7 +72,7 @@ class MxOptionRow extends StatelessWidget {
               ),
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: context.screenMargin,
+                  horizontal: context.dimens.space16,
                   vertical: context.dimens.space12,
                 ),
                 child: Row(

@@ -31,7 +31,7 @@ class CardAddDetailsWidget extends StatelessWidget {
         child: Container(
           constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
           padding: EdgeInsets.symmetric(
-            horizontal: context.screenMargin,
+            horizontal: context.dimens.space16,
             vertical: context.dimens.space8,
           ),
           decoration: BoxDecoration(

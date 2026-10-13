@@ -331,6 +331,9 @@ class _StepButtonState extends State<_StepButton> {
                 fill: colors.surfaceContainer,
                 ink: colors.onSurface,
               ).copyWith(
+                minimumSize: WidgetStatePropertyAll(
+                  Size.square(context.dimens.sizeButtonSmall),
+                ),
                 fixedSize: WidgetStatePropertyAll(
                   Size.square(context.dimens.sizeButtonSmall),
                 ),

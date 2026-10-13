@@ -284,6 +284,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     }
     final mode = l10n.studyMode(view.currentMode);
     return MxAppShell(
+      isSession: true,
       appBar: MxStudyTopBar(
         modeLabel: mode,
         current: min(progress.completed + 1, progress.total),

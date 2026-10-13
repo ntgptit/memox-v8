@@ -5,7 +5,6 @@ import 'package:memox/features/transfer/presentation/widgets/overlays/import_opt
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// One source column and the field it feeds (kit 11 mapping row): its
 /// position name, the header it had, its first value, and a picker of the
@@ -37,7 +36,7 @@ class ImportMappingRowWidget extends StatelessWidget {
     final letter = columnLetter(column);
     return Padding(
       padding: EdgeInsets.symmetric(
-        horizontal: context.screenMargin,
+        horizontal: context.dimens.space16,
         vertical: context.dimens.space12,
       ),
       child: Row(

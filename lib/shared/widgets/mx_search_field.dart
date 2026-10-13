@@ -98,10 +98,15 @@ class _MxSearchFieldState extends State<MxSearchField> {
     final colors = context.colors;
     final isFocused = _focusNode.hasFocus;
     final hasQuery = _controller.text.isNotEmpty;
-    // As in MxTextField: padding centres the line in the 52 floor, so the
+    // As in MxTextField: padding centres the line in the `sizeSearch` floor, so the
     // decorator paints the full box and scaled text still grows it.
     final valueStyle = context.texts.labelMedium!;
     final lineHeight = valueStyle.fontSize! * valueStyle.height!;
+    final edge = OutlineInputBorder(
+      gapPadding: 0,
+      borderRadius: BorderRadius.circular(context.dimens.sizeSearch / 2),
+      borderSide: BorderSide.none,
+    );
     final field = TextField(
       controller: _controller,
       focusNode: _focusNode,
@@ -117,13 +122,14 @@ class _MxSearchFieldState extends State<MxSearchField> {
         hintStyle: context.texts.labelMedium?.copyWith(
           color: context.colors.onSurfaceVariant,
         ),
-        // The edges are the theme's field (spec §4.6); the search keeps its
-        // own fill.
-        fillColor: isFocused
-            ? colors.surfaceContainerLowest
-            : colors.surfaceContainer,
+        // The search bar is a stadium on its own surface, with no edge in any
+        // state (Design System: SearchBar).
+        fillColor: context.mxColors.searchSurface,
+        border: edge,
+        enabledBorder: edge,
+        focusedBorder: edge,
         contentPadding: EdgeInsets.symmetric(
-          vertical: (context.dimens.sizeInput - lineHeight) / 2,
+          vertical: (context.dimens.sizeSearch - lineHeight) / 2,
         ),
         prefixIcon: Padding(
           padding: EdgeInsetsDirectional.only(
@@ -132,7 +138,7 @@ class _MxSearchFieldState extends State<MxSearchField> {
           ),
           child: Icon(
             AppIcons.search,
-            size: context.dimens.sizeIconCompact,
+            size: context.dimens.sizeIcon,
             color: isFocused ? context.accentColor : colors.onSurfaceVariant,
           ),
         ),

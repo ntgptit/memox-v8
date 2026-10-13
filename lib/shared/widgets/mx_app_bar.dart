@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
 /// Content bar (a back control and a deck/card name) or screen bar (a screen
-/// name). Both are 56 tall.
+/// name). Both are `sizeAppBar` tall and set the title in `titleLarge`.
 enum MxAppBarDensity { content, screen }
 
 /// The top chrome: leading control, flexible title, trailing actions. The
 /// title is the only slot that gives up width; it ellipsises on one line.
 ///
-/// Placed in-flow by MxAppShell. It is 56 tall at minimum and grows only when
+/// Placed in-flow by MxAppShell. It is `sizeAppBar` tall at minimum and grows only when
 /// text scaling makes the title taller (ruling R1).
 class MxAppBar extends StatelessWidget {
   const MxAppBar({
@@ -29,8 +30,8 @@ class MxAppBar extends StatelessWidget {
 
   /// Takes the title's place and its width, such as the search field of
   /// screen 04. It brings its own semantics; no header flag is added. A
-  /// search field keeps 8 above and below it, so the bar grows to 68 rather
-  /// than pressing a 52 field against its edges, and ends on the gutter so
+  /// search field keeps 8 above and below it, so the bar grows rather
+  /// than pressing a `sizeSearch` field against its edges, and ends on the screen margin so
   /// its border lines up with the content below.
   final Widget? titleWidget;
   final MxAppBarDensity density;
@@ -46,7 +47,8 @@ class MxAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isContent = density == MxAppBarDensity.content;
-    final side = isContent ? context.dimens.space8 : context.dimens.space16;
+    final margin = context.screenMargin;
+    final side = isContent ? context.dimens.space8 : margin;
     final endsOnText = actions.lastOrNull is MxButton;
     final holdsField = titleWidget is MxSearchField;
     return ColoredBox(
@@ -58,11 +60,11 @@ class MxAppBar extends StatelessWidget {
           child: Padding(
             padding: EdgeInsetsDirectional.only(
               // A bar without a leading control starts its title on the
-              // gutter, in line with the body (critique 2026-09-30 part
+              // screen margin, in line with the body (critique 2026-09-30 part
               // 3c-1).
-              start: leading == null ? context.dimens.space16 : side,
+              start: leading == null ? margin : side,
               top: holdsField ? context.dimens.space8 : 0,
-              end: endsOnText || holdsField ? context.dimens.space16 : side,
+              end: endsOnText || holdsField ? margin : side,
               bottom: holdsField ? context.dimens.space8 : 0,
             ),
             child: Row(
@@ -78,9 +80,7 @@ class MxAppBar extends StatelessWidget {
                           title!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: isContent
-                              ? context.texts.titleMedium
-                              : context.texts.titleLarge,
+                          style: context.texts.titleLarge,
                         ),
                       ),
                 ),

@@ -34,6 +34,7 @@ class ProgressTodayWidget extends StatelessWidget {
       _ => l10n.progressTodaySplit(today.learning, today.reviewing),
     };
     return MxCard(
+      isCompact: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

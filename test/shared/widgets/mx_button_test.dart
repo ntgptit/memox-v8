@@ -72,7 +72,7 @@ void main() {
     }
   });
 
-  testWidgets('dangerSoft paints the soft danger tint with the error ink '
+  testWidgets('dangerTint paints the soft danger tint with the error ink '
       '(FE-A6 P2, screen 16a)', (tester) async {
     await pumpMx(
       tester,

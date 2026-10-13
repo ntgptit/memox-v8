@@ -21,6 +21,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_two_columns.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
@@ -104,14 +105,14 @@ class StudyHomeScreen extends ConsumerWidget {
         onOpenLibrary: onOpenLibrary,
         onOpenStarterDecks: onOpenStarterDecks,
       ),
-      final RootDeckWorkload workload => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: context.dimens.space16,
-        children: [
+      final RootDeckWorkload workload => MxTwoColumns(
+        start: [
           StudyHomeWorkloadWidget(
             workload: workload,
             now: ref.watch(dayClockProvider).now(),
           ),
+        ],
+        end: [
           StudyHomeDecksWidget(
             decks: workload.decks,
             onOpenDeck: onOpenDeck,
