@@ -37,7 +37,7 @@ void main() {
   });
 
   testWidgets('default: the primary soft ground with its on-soft glyph, '
-      'light in both themes', (tester) async {
+      'each theme its own', (tester) async {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder));
     expect(_tile(tester).color, MxSemanticColors.light.primarySoft);
     expect(

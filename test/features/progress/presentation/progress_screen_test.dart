@@ -216,8 +216,8 @@ void main() {
     expect(find.text(_en.progressStreakDays(0)), findsOneWidget);
   });
 
-  // The tile's ground is light in both themes, so a glyph picked from the
-  // Night scheme vanished on it (whole-branch review, DEV-370).
+  // The tile's ground is each theme's own soft ground, so a glyph picked
+  // from the other scheme would vanish on it (whole-branch review, DEV-370).
   for (final brightness in Brightness.values) {
     libraryTest('a lost streak keeps a legible flame, ${brightness.name}', (
       tester,

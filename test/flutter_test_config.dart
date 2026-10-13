@@ -11,9 +11,9 @@ import 'package:flutter_test/flutter_test.dart';
 const String _monospaceFamily = 'monospace';
 const String _monospaceFile = 'test/support/fonts/DejaVuSansMono.ttf';
 
-/// Loads every font the app bundles (Plus Jakarta Sans, Material Icons) and
-/// a monospace stand-in, so text and glyphs render for real in every test
-/// instead of as Ahem boxes.
+/// Loads every font the app bundles (Be Vietnam Pro, Noto Sans KR, Material
+/// Icons) and a monospace stand-in, so text and glyphs render for real in
+/// every test instead of as Ahem boxes.
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   await _loadBundledFonts();

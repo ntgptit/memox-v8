@@ -7,9 +7,9 @@ import 'package:memox/core/theme/theme_context.dart';
 /// screen offers, [plain] states a fact, [muted] a figure nothing acts on.
 enum MxStatTileEmphasis { primary, plain, muted }
 
-/// [boxed]: left-aligned on the Muted Fill, as the Study Entry hero draws
-/// New and Due: the fill is one step below the plain card the hero became
-/// (ruling E5), so the box stays visible in both themes (DEV-231).
+/// [boxed]: left-aligned on the neutral soft ground, as the Study Entry hero
+/// draws New and Due, so the box stays visible on a card in both themes
+/// (DEV-231; owner 2026-10-13, ADR-022).
 /// [inline]: centred with no surface, as the session summary hero draws its
 /// three stats.
 enum MxStatTileLayout { boxed, inline }

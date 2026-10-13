@@ -56,8 +56,8 @@ class MxActionPair extends StatelessWidget {
                 MediaQuery.textScalerOf(context).scale(1) != 1 ||
                 MediaQuery.sizeOf(context).width < _ruleWidth,
             'A pair stacked at the default text scale: shorten '
-            '"${leading.label}" or "${trailing.label}" to fit its share '
-            '(DESIGN.md, The Short Label Rule).',
+            '"${leading.label}" or "${trailing.label}" so the two share the '
+            'row (DESIGN.md, The Short Label Rule).',
           );
           return Column(
             mainAxisSize: MainAxisSize.min,

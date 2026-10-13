@@ -16,7 +16,9 @@ class MxDashedNote extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     return CustomPaint(
-      foregroundPainter: _DashedBorder(color: colors.outlineVariant),
+      // The outline, since outlineVariant is the neutral soft ground itself
+      // in dark (#3B4661) and the dash would vanish on it.
+      foregroundPainter: _DashedBorder(color: colors.outline),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: context.semanticColors.neutralSoft,

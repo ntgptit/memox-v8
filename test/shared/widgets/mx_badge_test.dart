@@ -84,7 +84,7 @@ void main() {
   });
 
   testWidgets('success: the success soft ground under its on-soft label, '
-      'light in both themes (spec 2026-10-10 D4)', (tester) async {
+      'each theme its own (Flashcard Color Tokens §2.1)', (tester) async {
     await pumpMx(
       tester,
       const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),

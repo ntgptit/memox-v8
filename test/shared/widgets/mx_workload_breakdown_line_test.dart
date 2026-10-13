@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
@@ -108,9 +109,10 @@ void main() {
     );
 
     expect((text.maxLines, text.overflow), (1, TextOverflow.ellipsis));
+    // A line cut with "…" takes the raised line box (ADR-022).
     expect(
       tester.getSize(find.byType(MxWorkloadBreakdownLine)).height,
-      lineHeight,
+      closeTo(labelMeta.fontSize! * AppTypography.ellipsisLineHeight, 0.5),
     );
   });
 

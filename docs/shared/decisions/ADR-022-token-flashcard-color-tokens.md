@@ -36,7 +36,7 @@ thước, opacity, motion, bố cục theo cỡ cửa sổ và quy tắc compone
   - cặp nút footer giữ cạnh nhau khi hai nhãn cùng vừa hàng (chia theo bề rộng nhãn khi
     tỉ lệ flex không vừa); Trash từ 100 mục và kết quả Import tiếng Anh được xếp chồng
     như ngoại lệ ghi nhận.
-- Bốn quyết định của chủ dự án sau khi duyệt golden (2026-10-13):
+- Năm quyết định của chủ dự án sau khi duyệt golden (2026-10-13):
   - hàng 4 nút chấm điểm (Again · Hard · Good · Easy) dùng cỡ small (32, đệm 12) theo
     quy tắc mục 6 "nút cùng hàng với nội dung khác"; cỡ regular chỉ còn ~28 cho chữ ở
     360 nên nhãn vỡ giữa từ;

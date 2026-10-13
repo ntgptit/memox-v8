@@ -7,8 +7,9 @@ import 'package:memox/shared/widgets/mx_action_pair.dart';
 
 /// The footer every dialog and sheet ends with: Cancel and the confirm share
 /// the row 1 : 1, since the title names the object and the confirm is its
-/// verb alone (DEV-179); when a label cannot fit its half on one line, the
-/// two stack instead (MxActionPair, spec 2026-09-26 D3). A popup's buttons
+/// verb alone (DEV-179); when a label cannot fit its half, the row splits by
+/// the labels' widths, and the two stack only when they cannot share the row
+/// at all (MxActionPair, owner 2026-10-13). A popup's buttons
 /// carry no icon: the tone already tells the weight (DEV-179).
 class MxSheetActions extends StatelessWidget {
   const MxSheetActions({

@@ -90,7 +90,7 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 - **FE-B1 D7:** an Undo happens where the item was deleted. A refused Undo says
   "Can't undo. {reason} Restore it from Trash and choose a deck."; it carries no deck name.
 - **Owner ruling R4, amended 2026-10-10:** the < 34% mastery band is the learning
-  fill, `statusLearning` (#FF983A), in both themes; on Day's track it is a recorded
+  fill, `statusLearning` (#F59E0B since the token spec, ADR-022), in both themes; on Day's track it is a recorded
   contrast exception (spec 2026-10-10 D3).
 - **§9 rows 142, 145 (FE-C1):** the mastery bar's track is `surfaceContainerLow`.
 - **Library spec D7:** Reorder is in the root deck's action sheet too.

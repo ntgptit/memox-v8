@@ -117,9 +117,13 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
     // term the fallback still says nothing is due, and Scheduled follows it
     // (critique 2026-09-30 part 3b review).
     final isFallbackShown = !terms.any((term) => term.$4 != null);
+    // A line cut with "…" keeps its Vietnamese marks (ADR-022): every run
+    // takes the raised line box, so the line holds it whatever runs it has.
+    TextStyle cut(TextStyle style) =>
+        canWrap ? style : styles.ellipsized(style);
     return Text.rich(
       TextSpan(
-        style: styles.workloadText,
+        style: cut(styles.workloadText),
         children: [
           if (isFallbackShown) TextSpan(text: fallback),
           for (final (index, (count, label, foreground, _))
@@ -128,9 +132,11 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
               TextSpan(text: canWrap ? _gluedSeparator : _separator),
             TextSpan(
               text: _termText(label(count)),
-              style: count > 0
-                  ? styles.workloadTerm(foreground)
-                  : styles.workloadText,
+              style: cut(
+                count > 0
+                    ? styles.workloadTerm(foreground)
+                    : styles.workloadText,
+              ),
             ),
           ],
           if (suffix case final clause?) ...[

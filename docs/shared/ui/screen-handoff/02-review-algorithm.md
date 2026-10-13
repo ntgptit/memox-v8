@@ -56,7 +56,7 @@ Beyond the states above:
 
 - **UC-DECK-002 steps 3–4:** choosing the other algorithm asks for confirmation first; it never switches on the tap.
 - **M3 review 2026-09-28 B2:** while a reset runs the confirm button spins (`MxSheetActions.isConfirmLoading`), with no "Resetting…" text, as every async confirm.
-- **Spec A10, amended 2026-10-10:** "Kept" is written in `onSuccessSoft` (#12815A) on `successSoft` (#E6FCF4), 4.54:1, light in both themes.
+- **Spec A10, amended 2026-10-13 (token spec, ADR-022):** "Kept" is written in `onSuccessSoft` on `successSoft`: #006C49 on #D6E7E2 (5.06:1) in light, #5ADDA4 on #172A40 (8.54:1) in dark.
 - **D-L1:** a switch refused because the tree just locked shows the locked state from the stream, with the reason as a snackbar.
 - **Critique 2026-09-30:** each algorithm is described in one sentence.
 - **Critique 2026-09-30 tone pass (final review):** the reset dialog's Kept tile is success (a fine state), Lost stays warning.
