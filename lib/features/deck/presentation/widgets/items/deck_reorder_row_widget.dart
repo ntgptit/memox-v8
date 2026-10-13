@@ -37,9 +37,12 @@ class DeckReorderRowWidget extends StatelessWidget {
         deckTileMeta(tile, context.l10n),
         style: context.textStyles.rowSubtitle,
       ),
+      // The deck tile of the list it reorders (deck_row_widget), so a
+      // row keeps its tile when reordering starts.
       leading: MxIconTile(
         icon: deckTileGlyph(tile),
-        size: MxIconTileSize.large,
+        size: MxIconTileSize.deck,
+        tone: MxIconTileTone.deck,
       ),
       trailing: ReorderableDragStartListener(
         index: index,

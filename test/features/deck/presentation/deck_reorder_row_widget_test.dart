@@ -5,6 +5,7 @@ import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_reorder_row_widget.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_icon_tile.dart';
 
 import '../../../support/library_harness.dart';
 
@@ -75,5 +76,16 @@ void main() {
 
     expect(find.byIcon(AppIcons.cardDeck), findsOneWidget);
     expect(find.text(_en.deckCardCount(420)), findsOneWidget);
+  });
+
+  // Golden audit 2026-10-13: the browse row took the spec's 64 deck tile
+  // ("Flashcard Color Tokens" §4.3) and the reorder row kept the large step,
+  // so a row's tile shrank when reordering started.
+  libraryTest('the deck tile is the browse row\'s', (tester, env) async {
+    await pump(tester, env, _tile(subDecks: 0, cards: 420));
+
+    final tile = tester.widget<MxIconTile>(find.byType(MxIconTile));
+    expect(tile.size, MxIconTileSize.deck);
+    expect(tile.tone, MxIconTileTone.deck);
   });
 }
