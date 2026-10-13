@@ -188,8 +188,8 @@ void main() {
     expect(find.text('động từ'), findsNothing);
   });
 
-  libraryTest('Night: the merge panel is a soft ground, so its notice reads '
-      'Day\'s text (spec 2026-10-10 D4)', (tester, env) async {
+  libraryTest('Night: the merge panel is a tint over the Night surface, so '
+      'its notice reads Night\'s own text role (ADR-022)', (tester, env) async {
     await _pump(tester, env, brightness: Brightness.dark);
     await _openRename(tester, 'động từ');
     await _type(tester, 'NGỮ PHÁP');
@@ -199,7 +199,7 @@ void main() {
           .widget<Text>(find.text(_en.tagsMergeNotice('ngữ pháp', 'động từ')))
           .style
           ?.color,
-      lightColorScheme.onSurfaceVariant,
+      darkColorScheme.onSurfaceVariant,
     );
   });
 

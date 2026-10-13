@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -34,7 +35,11 @@ void main() {
     );
     expect(ground.color, mx.warning.tintOver(scheme.surface));
     expect(ground.elevation, greaterThan(0));
-    expect((glyph.size, glyph.color), (16, mx.warningContainer));
+    // A glyph takes the text colour, never the amber fill (SW-REV-001).
+    expect(
+      (glyph.size, glyph.color),
+      (const AppDimens().sizeIconInline, mx.warning),
+    );
   });
 
   testWidgets('one action sits on the message line, at the end', (

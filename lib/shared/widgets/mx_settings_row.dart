@@ -89,13 +89,12 @@ class MxSettingsRow extends StatelessWidget {
           child: _withMessage(
             context,
             Row(
-              spacing: context.dimens.space16,
               // Kit 23: beside a wide control the tile stays with the label.
               crossAxisAlignment: below == null
                   ? CrossAxisAlignment.center
                   : CrossAxisAlignment.start,
               children: [
-                if (icon case final glyph?)
+                if (icon case final glyph?) ...[
                   Padding(
                     padding: EdgeInsets.only(
                       top: below == null ? 0 : context.dimens.space12,
@@ -115,6 +114,8 @@ class MxSettingsRow extends StatelessWidget {
                       ),
                     ),
                   ),
+                  SizedBox(width: context.dimens.space16),
+                ],
                 // As in MxListRow, only the text carries the 12/12 inset, so a
                 // 48 toggle target sits inside the row instead of growing it.
                 Expanded(
@@ -147,9 +148,12 @@ class MxSettingsRow extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (!isStacked && trailing != null)
+                if (!isStacked && trailing != null) ...[
+                  SizedBox(width: _trailingGap(context, trailing!)),
                   _dimControl(context, trailing!),
-                if (isNavigable)
+                ],
+                if (isNavigable) ...[
+                  SizedBox(width: context.dimens.space16),
                   _dim(
                     context,
                     Icon(
@@ -158,6 +162,7 @@ class MxSettingsRow extends StatelessWidget {
                       color: context.colors.onSurfaceVariant,
                     ),
                   ),
+                ],
               ],
             ),
           ),
@@ -200,6 +205,24 @@ class MxSettingsRow extends StatelessWidget {
   static bool _drawsOwnDisabledState(Widget control) => switch (control) {
     MxButton() || MxToggle() || MxStepper() => true,
     Semantics(:final child?) => _drawsOwnDisabledState(child),
+    _ => false,
+  };
+
+  /// The clear space before a trailing control. MxStepper's step buttons
+  /// paint inside 48 targets that already leave clear space around them, so
+  /// the row adds only the rest, and its painted gap matches the other
+  /// controls': the label beside it keeps its width ("Per session" stays on
+  /// one line at 360dp).
+  static double _trailingGap(BuildContext context, Widget control) {
+    final dimens = context.dimens;
+    if (!_isStepper(control)) return dimens.space16;
+    final touchInset = (dimens.sizeControl - dimens.sizeButtonSmall) / 2;
+    return dimens.space16 - touchInset;
+  }
+
+  static bool _isStepper(Widget control) => switch (control) {
+    MxStepper() => true,
+    Semantics(:final child?) => _isStepper(child),
     _ => false,
   };
 

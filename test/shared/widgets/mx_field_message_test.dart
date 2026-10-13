@@ -21,9 +21,8 @@ void main() {
     );
   });
 
-  testWidgets('warning in dark: the amber is its own text colour (I1, T1)', (
-    tester,
-  ) async {
+  testWidgets('warning in dark: the glyph and the text take the warning text '
+      'colour, never the amber fill (SW-REV-001)', (tester) async {
     await pumpMx(
       tester,
       const MxFieldMessage(
@@ -35,7 +34,7 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxColorsExtension.dark.warningContainer,
+      MxColorsExtension.dark.warning,
     );
     expect(
       tester.widget<Text>(find.text('Ten tags at most')).style!.color,

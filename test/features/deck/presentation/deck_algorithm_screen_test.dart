@@ -169,8 +169,11 @@ void main() {
     expect(find.text(_en.algorithmResetAction), findsOneWidget);
   });
 
-  libraryTest('Night: the locked strip is a soft ground, so its title and '
-      'body read Day\'s text (spec 2026-10-10 D4)', (tester, env) async {
+  libraryTest('Night: the locked strip is a tint over the Night surface, so '
+      'its title and body read Night\'s own text roles (ADR-022)', (
+    tester,
+    env,
+  ) async {
     final korean = await env.decks.root('Korean', SchedulerType.sm2);
     await lockScheduler(env.db, korean.id);
     await pumpLibraryScreen(
@@ -183,10 +186,10 @@ void main() {
     Color? colorOf(String text) =>
         tester.widget<Text>(find.text(text)).style?.color;
 
-    expect(colorOf(_en.algorithmLockedTitle(1)), lightColorScheme.onSurface);
+    expect(colorOf(_en.algorithmLockedTitle(1)), darkColorScheme.onSurface);
     expect(
       colorOf(_en.algorithmLockedBody(date)),
-      lightColorScheme.onSurfaceVariant,
+      darkColorScheme.onSurfaceVariant,
     );
   });
 

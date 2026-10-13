@@ -89,8 +89,8 @@ void main() {
     expect((done, again), (1, 1));
   });
 
-  libraryTest('Night: a finished session is a soft ground, so its title reads '
-      'Day\'s text (spec 2026-10-10 D4)', (tester, env) async {
+  libraryTest('Night: a finished session is a tint over the Night surface, so '
+      'its title reads Night\'s own text role (ADR-022)', (tester, env) async {
     await _pump(
       tester,
       env,
@@ -101,7 +101,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text(_en.summaryReviewFinished)).style?.color,
-      lightColorScheme.onSurface,
+      darkColorScheme.onSurface,
     );
   });
 

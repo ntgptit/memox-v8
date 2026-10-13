@@ -959,7 +959,7 @@
   "@cardCaptionSaving": {
     "description": "Editor footer caption while saving."
   },
-  "cardCaptionEdit": "Editing content never changes the schedule or history.",
+  "cardCaptionEdit": "Edits never change the schedule or history.",
   "@cardCaptionEdit": {
     "description": "Edit footer caption when the card is valid."
   },
@@ -3209,7 +3209,7 @@
     },
     "description": "Screen handoff 14 (FE-A6 P2): footer caption under Review."
   },
-  "studyEntryNothingDueCaption": "Nothing is due. Review opens once cards come due.",
+  "studyEntryNothingDueCaption": "Nothing due. Review opens once cards are due.",
   "@studyEntryNothingDueCaption": {
     "description": "Screen handoff 14 (FE-A6 P2): footer caption under Learn with nothing due."
   },

@@ -1371,7 +1371,7 @@
   "accountContinueGoogle": "Tiếp tục với Google",
   "accountContinueEmail": "Tiếp tục với email",
   "accountContinueWithout": "Tiếp tục không cần tài khoản",
-  "accountOfflineNote": "Đăng nhập cần có mạng. Có thể làm sau trong Cài đặt.",
+  "accountOfflineNote": "Đăng nhập cần mạng. Làm sau trong Cài đặt.",
   "accountLinkLine": "Bộ thẻ vẫn ở trên điện thoại này và được gắn vào tài khoản.",
   "accountTargetLine": "Đăng nhập vào tài khoản mà điện thoại này sẽ chuyển sang.",
   "accountEmailHint": "ten@example.com",
