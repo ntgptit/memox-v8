@@ -54,7 +54,9 @@ class SearchCardHitRowWidget extends StatelessWidget {
                 maxLines: 1,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: context.textStyles.rowSubtitle,
+                style: context.textStyles.ellipsized(
+                  context.textStyles.rowSubtitle,
+                ),
               ),
             ),
           ],

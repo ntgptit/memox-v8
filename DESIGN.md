@@ -400,9 +400,9 @@ A soft ground is a colour at 16% over the theme's `surface`, precomputed as a so
 Every `MxTextStyles` style is exactly one of these roles; only its colour is the component's (spec §3.3).
 
 ### Named Rules
-**The Twelve Roles Rule.** Screens use the twelve roles above, untouched; a component picks a role and a colour, never a size, weight, height or tracking of its own.
+**The Twelve Roles Rule.** Screens use the twelve roles above, untouched; a component picks a role and a colour, never a size, weight, height or tracking of its own. The one exception is a line cut with "…", whose box is raised to hold Vietnamese marks (`ellipsized`).
 
-**The Text Grows Rule.** Text scale is never clamped and no fixed height wraps text. Heights are minimums (button 40, app bar 64, field 52, search 56) and grow with wrapped labels and OS text scaling; the settings row stacks its trailing control at large scale. At the spec's line heights a stacked Vietnamese capital (Ẳ, Ổ) rises about 0.12em above its line box, so a line cut by an ellipsis clips that mark (ADR-022).
+**The Text Grows Rule.** Text scale is never clamped and no fixed height wraps text. Heights are minimums (button 40, app bar 64, field 52, search 56) and grow with wrapped labels and OS text scaling; the settings row stacks its trailing control at large scale. At the spec's line heights a stacked Vietnamese capital (Ẳ, Ổ) rises above its line box, and a line cut with "…" clips at its box, so Ẳ would read as Ắ: such a line takes its role through `MxTextStyles.ellipsized`, the role in a 1.7 line box (owner 2026-10-13, ADR-022).
 
 ## Layout
 

@@ -58,14 +58,14 @@ class ImportMappingRowWidget extends StatelessWidget {
                     text,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: styles.contentTitle,
+                    style: styles.ellipsized(styles.contentTitle),
                   ),
                 if (sample case final text?)
                   Text(
                     text,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: styles.rowDescription,
+                    style: styles.ellipsized(styles.rowDescription),
                   ),
               ],
             ),

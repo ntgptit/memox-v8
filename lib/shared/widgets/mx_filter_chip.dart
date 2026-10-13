@@ -56,7 +56,7 @@ class MxFilterChip extends StatelessWidget {
             height: AppSize.chip,
             radius: AppRadius.full,
             padding: AppSpacing.control,
-            label: styles.buttonLabelSmall,
+            label: styles.ellipsized(styles.buttonLabelSmall),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

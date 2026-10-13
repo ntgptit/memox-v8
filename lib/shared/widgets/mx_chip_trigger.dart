@@ -37,7 +37,9 @@ class MxChipTrigger extends StatelessWidget {
         height: AppSize.chip,
         radius: AppRadius.full,
         padding: AppSpacing.control,
-        label: context.textStyles.buttonLabelSmall,
+        label: context.textStyles.ellipsized(
+          context.textStyles.buttonLabelSmall,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

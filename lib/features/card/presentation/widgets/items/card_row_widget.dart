@@ -92,13 +92,13 @@ class _Content extends StatelessWidget {
           item.front,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: styles.contentTitle,
+          style: styles.ellipsized(styles.contentTitle),
         ),
         Text(
           item.back,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: styles.rowDescription,
+          style: styles.ellipsized(styles.rowDescription),
         ),
         const SizedBox(height: AppSpacing.micro),
         // Wraps rather than clips, so large text keeps every word.

@@ -45,5 +45,7 @@ thước, opacity, motion, bố cục theo cỡ cửa sổ và quy tắc compone
   file token; spec Indigo 2026-10-10 (D3, D4) và §4 của spec UI base 2026-09-23 mang ghi
   chú "superseded by Flashcard Color Tokens 2026-10-13".
 - Với line-height của file token (ví dụ 20/14), dấu chồng tiếng Việt in hoa (Ẳ, Ổ) của
-  Be Vietnam Pro cao hơn hộp dòng khoảng 0,12em; một dòng bị cắt bằng ellipsis sẽ cắt
-  phần dấu đó. Đây là hệ quả đã biết của quyết định này.
+  Be Vietnam Pro cao hơn hộp dòng; một dòng bị cắt bằng "…" sẽ cắt phần dấu đó (Ẳ đọc
+  thành Ắ). Chủ dự án quyết định (2026-10-13) một ngoại lệ hẹp cho mục 3.3: dòng cắt
+  bằng "…" giữ role nhưng hộp dòng là `AppTypography.ellipsisLineHeight` (1,7, đo từ
+  font), qua `MxTextStyles.ellipsized`; cỡ, weight, tracking giữ nguyên.

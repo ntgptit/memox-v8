@@ -42,7 +42,9 @@ class MxTagChip extends StatelessWidget {
                 maxLines: 1,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: context.textStyles.tagLabel,
+                style: context.textStyles.ellipsized(
+                  context.textStyles.tagLabel,
+                ),
               ),
             ),
           ],

@@ -216,7 +216,7 @@ class _GroupHeader extends StatelessWidget {
               name,
               maxLines: _maxNameLines,
               overflow: TextOverflow.ellipsis,
-              style: styles.rowTitle,
+              style: styles.ellipsized(styles.rowTitle),
             ),
             Text(
               context.l10n.importDeckCards(cards),

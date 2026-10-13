@@ -15,6 +15,15 @@ abstract final class AppTypography {
   /// The Korean face, reached when Be Vietnam Pro has no glyph.
   static const List<String> fontFamilyFallback = ['NotoSansKR'];
 
+  /// The line box of a line cut with "…" (owner 2026-10-13, ADR-022): a cut
+  /// line clips at its box, and Be Vietnam Pro's stacked capitals rise
+  /// above a role's own box (Ẳ tops out at 1.207 em over a 1.0 / 0.265 em
+  /// ascent and descent), so Ẳ would read as Ắ and Ổ as Ố. With the leading
+  /// split evenly, the worst case, a box of h em holds a mark t em high when
+  /// (h - 1.265) / 2 + 1 >= t: 1.679 for Ẳ, rounded up; mx_text_styles_
+  /// ellipsis_test renders it. Size, weight and tracking stay the role's.
+  static const double ellipsisLineHeight = 1.7;
+
   /// Re-weights [style] and moves a variable font's `wght` axis with it (the
   /// Noto Sans KR fallback is variable); a static face ignores the axis.
   static TextStyle withWeight(TextStyle style, FontWeight weight) =>

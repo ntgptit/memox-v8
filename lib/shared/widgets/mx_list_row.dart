@@ -124,11 +124,11 @@ class MxListRow extends StatelessWidget {
                     children: [
                       _dim(
                         Text.rich(
-                          _titleSpan(styles.rowTitleMatch),
+                          _titleSpan(styles.ellipsized(styles.rowTitleMatch)),
                           maxLines: titleMaxLines,
                           softWrap: titleMaxLines > 1,
                           overflow: TextOverflow.ellipsis,
-                          style: styles.listRowTitle,
+                          style: styles.ellipsized(styles.listRowTitle),
                         ),
                       ),
                       if (subtitle case final text?) ...[
@@ -138,7 +138,7 @@ class MxListRow extends StatelessWidget {
                           maxLines: 1,
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
-                          style: styles.rowSubtitle,
+                          style: styles.ellipsized(styles.rowSubtitle),
                         ),
                       ],
                       if (meta case final slot?) ...[

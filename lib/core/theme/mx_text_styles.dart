@@ -1,11 +1,14 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 /// Component type treatments ("Flashcard Color Tokens" §3.3, ADR-022).
 ///
 /// Each style is exactly one of the twelve TextTheme roles, its size, line
 /// height, weight and tracking untouched; only the colour is the
-/// component's. They live in the theme so shared widgets never build or
+/// component's. A line cut with "…" takes its style through [ellipsized]. They live in the theme so shared widgets never build or
 /// restyle a TextStyle.
 @immutable
 final class MxTextStyles {
@@ -34,6 +37,13 @@ final class MxTextStyles {
   TextStyle get _buttonRole => _texts.labelLarge!;
   TextStyle get _metaRole => _texts.labelMedium!;
   TextStyle get _navRole => _texts.labelSmall!;
+
+  /// [style] for a line cut with "…": the same role in a line box tall
+  /// enough for a stacked Vietnamese mark ([AppTypography.ellipsisLineHeight];
+  /// owner 2026-10-13, ADR-022). Only the height changes.
+  TextStyle ellipsized(TextStyle style) => style.copyWith(
+    height: math.max(style.height ?? 0, AppTypography.ellipsisLineHeight),
+  );
 
   /// Button label at every size: labelLarge.
   TextStyle get buttonLabel => _buttonRole;

@@ -37,7 +37,7 @@ class SessionContextLineWidget extends StatelessWidget {
       maxLines: _maxLines,
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
-      style: context.textStyles.eyebrow,
+      style: context.textStyles.ellipsized(context.textStyles.eyebrow),
     ),
   );
 }

@@ -63,7 +63,9 @@ class CardRemovableTagChipWidget extends StatelessWidget {
                             name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textStyles.removableTagLabel,
+                            style: context.textStyles.ellipsized(
+                              context.textStyles.removableTagLabel,
+                            ),
                           ),
                         ),
                         const Icon(AppIcons.close),

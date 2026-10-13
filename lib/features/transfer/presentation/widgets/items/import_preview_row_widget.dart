@@ -52,13 +52,13 @@ class ImportPreviewRowWidget extends StatelessWidget {
                           : draft.front.trim(),
                       maxLines: _maxLines,
                       overflow: TextOverflow.ellipsis,
-                      style: styles.contentTitle,
+                      style: styles.ellipsized(styles.contentTitle),
                     ),
                     Text(
                       back.isEmpty ? l10n.importRowEmptyCell : back,
                       maxLines: _maxLines,
                       overflow: TextOverflow.ellipsis,
-                      style: styles.rowDescription,
+                      style: styles.ellipsized(styles.rowDescription),
                     ),
                   ],
                   if (note != null)

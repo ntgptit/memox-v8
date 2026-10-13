@@ -74,9 +74,11 @@ class MxAppBar extends StatelessWidget {
                           title!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: isContent
-                              ? styles.contentTitle
-                              : styles.screenTitle,
+                          style: styles.ellipsized(
+                            isContent
+                                ? styles.contentTitle
+                                : styles.screenTitle,
+                          ),
                         ),
                       ),
                 ),

@@ -106,7 +106,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
                         text,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: styles.rowSubtitle,
+                        style: styles.ellipsized(styles.rowSubtitle),
                       ),
                     ],
                   ],

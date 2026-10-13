@@ -96,7 +96,7 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
               group.name,
               maxLines: _maxNameLines,
               overflow: TextOverflow.ellipsis,
-              style: styles.contentTitle,
+              style: styles.ellipsized(styles.contentTitle),
             ),
           Row(
             spacing: AppSpacing.control,

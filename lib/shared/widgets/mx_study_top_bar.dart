@@ -96,7 +96,9 @@ class MxStudyTopBar extends StatelessWidget {
                           modeLabel.toUpperCase(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: styles.studyBadge(semantic.onPrimarySoft),
+                          style: styles.ellipsized(
+                            styles.studyBadge(semantic.onPrimarySoft),
+                          ),
                         ),
                       ),
                     ),

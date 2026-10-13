@@ -142,7 +142,9 @@ class MxNavItem extends StatelessWidget {
                 destination.label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: context.textStyles.navLabel(isSelected: isSelected),
+                style: context.textStyles.ellipsized(
+                  context.textStyles.navLabel(isSelected: isSelected),
+                ),
               ),
             ],
           ),

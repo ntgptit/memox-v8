@@ -51,7 +51,9 @@ class _BulkCommand extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: context.textStyles.rowDescription,
+                style: context.textStyles.ellipsized(
+                  context.textStyles.rowDescription,
+                ),
               ),
             ],
           ),

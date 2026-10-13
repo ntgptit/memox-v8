@@ -189,7 +189,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.textStyles.contentTitle,
+          style: context.textStyles.ellipsized(context.textStyles.contentTitle),
         ),
       ),
       density: MxAppBarDensity.content,
