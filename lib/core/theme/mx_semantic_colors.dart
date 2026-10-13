@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-/// Every MemoX colour Material has no role for (spec 2026-10-10 §5): status
-/// and semantic fills, the text tokens, the edges and tracks, and the soft
-/// grounds with their borders and text. Each is a literal per theme; nothing
-/// here is derived. Soft grounds are light in both themes (spec D4). Green
-/// means mastery or success, never decoration.
+/// Every MemoX colour Material has no role for ("Flashcard Color Tokens" §2,
+/// ADR-022): status and semantic fills, the text tokens, the edges and
+/// tracks, the soft grounds with their borders and text, and the tonal
+/// surfaces of cards, search and tiles. Each is a literal per theme; nothing
+/// is derived at run time. A soft ground is its colour at 16% over the
+/// theme's surface, precomputed: light in light, dark in dark. Green means
+/// mastery or success, never decoration.
 @immutable
 final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   const MxSemanticColors({
@@ -45,86 +47,107 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     required this.neutralSoft,
     required this.onNeutralSoft,
     required this.onSoft,
+    required this.cardSurface,
+    required this.searchSurface,
+    required this.tileSurface,
+    required this.divider,
+    required this.info,
+    required this.infoContainer,
+    required this.onInfoContainer,
   });
 
   static const MxSemanticColors light = MxSemanticColors(
-    mastery: Color(0xFF18AE79),
-    onMastery: Color(0xFFFFFFFF),
-    success: Color(0xFF12815A),
-    warning: Color(0xFFFFCD1F),
-    onWarning: Color(0xFF282E3E),
-    statusNew: Color(0xFF939BB4),
-    statusLearning: Color(0xFFFF983A),
-    statusReviewing: Color(0xFF4255FF),
-    statusMastered: Color(0xFF18AE79),
-    errorFill: Color(0xFFDC2D4E),
+    mastery: Color(0xFF17AE79),
+    onMastery: Color(0xFF003925),
+    success: Color(0xFF006C49),
+    warning: Color(0xFFF59E0B),
+    onWarning: Color(0xFF613B00),
+    statusNew: Color(0xFF6C7794),
+    statusLearning: Color(0xFFF59E0B),
+    statusReviewing: Color(0xFF564BCB),
+    statusMastered: Color(0xFF17AE79),
+    errorFill: Color(0xFFBA1A1A),
     onErrorFill: Color(0xFFFFFFFF),
-    streak: Color(0xFFF6406C),
-    primaryText: Color(0xFF4255FF),
-    masteryText: Color(0xFF12815A),
-    learningText: Color(0xFFCC4E00),
-    warningText: Color(0xFF997700),
-    focusRing: Color(0xFFA8B1FF),
-    border: Color(0xFFEDEFF4),
-    primaryTrack: Color(0xFFDBDFFF),
-    neutralTrack: Color(0xFF939BB4),
-    primarySoft: Color(0xFFEDEFFF),
-    onPrimarySoft: Color(0xFF4255FF),
-    successSoft: Color(0xFFE6FCF4),
-    successBorder: Color(0xFF98F1D1),
-    onSuccessSoft: Color(0xFF12815A),
-    learningSoft: Color(0xFFFFF6EF),
-    learningBorder: Color(0xFFFFC38C),
-    onLearningSoft: Color(0xFFCC4E00),
-    warningSoft: Color(0xFFFFEDAB),
-    warningBorder: Color(0xFFFFDC62),
-    onWarningSoft: Color(0xFF997700),
-    dangerSoft: Color(0x14C02447),
-    dangerBorder: Color(0x38C02447),
-    onDangerSoft: Color(0xFFAE2346),
-    neutralSoft: Color(0xFFEDEFFF),
-    onNeutralSoft: Color(0xFF2E3856),
-    onSoft: Color(0xFF282E3E),
+    streak: Color(0xFFF59E0B),
+    primaryText: Color(0xFF564BCB),
+    masteryText: Color(0xFF006C49),
+    learningText: Color(0xFF855300),
+    warningText: Color(0xFF855300),
+    focusRing: Color(0xFF564BCB),
+    border: Color(0xFFBBC6E6),
+    primaryTrack: Color(0xFF564BCB),
+    neutralTrack: Color(0xFFE8E8E8),
+    primarySoft: Color(0xFFE4E2F7),
+    onPrimarySoft: Color(0xFF564BCB),
+    successSoft: Color(0xFFD6E7E2),
+    successBorder: Color(0xFF006C49),
+    onSuccessSoft: Color(0xFF006C49),
+    learningSoft: Color(0xFFEBE3D6),
+    learningBorder: Color(0xFF855300),
+    onLearningSoft: Color(0xFF855300),
+    warningSoft: Color(0xFFEBE3D6),
+    warningBorder: Color(0xFF855300),
+    onWarningSoft: Color(0xFF855300),
+    dangerSoft: Color(0xFFF4DADA),
+    dangerBorder: Color(0xFFBA1A1A),
+    onDangerSoft: Color(0xFFBA1A1A),
+    neutralSoft: Color(0xFFD1DCFD),
+    onNeutralSoft: Color(0xFF55607C),
+    onSoft: Color(0xFF1C1B21),
+    cardSurface: Color(0xFFF1F1FB),
+    searchSurface: Color(0xFFF1F1FB),
+    tileSurface: Color(0xFFEDF8FF),
+    divider: Color(0xFFEEEEEE),
+    info: Color(0xFF006684),
+    infoContainer: Color(0xFF50CCFC),
+    onInfoContainer: Color(0xFF00546D),
   );
 
   static const MxSemanticColors dark = MxSemanticColors(
-    mastery: Color(0xFF18AE79),
-    onMastery: Color(0xFFFFFFFF),
-    success: Color(0xFF59E8B5),
-    warning: Color(0xFFFFCD1F),
-    onWarning: Color(0xFF282E3E),
-    statusNew: Color(0xFF586380),
-    statusLearning: Color(0xFFFF983A),
-    statusReviewing: Color(0xFF4255FF),
-    statusMastered: Color(0xFF18AE79),
-    errorFill: Color(0xFFB0485C),
-    onErrorFill: Color(0xFFFFFFFF),
-    streak: Color(0xFFF6406C),
-    primaryText: Color(0xFF7583FF),
-    masteryText: Color(0xFF59E8B5),
-    learningText: Color(0xFFFF983A),
-    warningText: Color(0xFFFFCD1F),
-    focusRing: Color(0xFFA8B1FF),
-    border: Color(0xFF282E3E),
-    primaryTrack: Color(0xFFDBDFFF),
-    neutralTrack: Color(0xFF939BB4),
-    primarySoft: Color(0xFFEDEFFF),
-    onPrimarySoft: Color(0xFF4255FF),
-    successSoft: Color(0xFFE6FCF4),
-    successBorder: Color(0xFF98F1D1),
-    onSuccessSoft: Color(0xFF12815A),
-    learningSoft: Color(0xFFFFF6EF),
-    learningBorder: Color(0xFFFFC38C),
-    onLearningSoft: Color(0xFFCC4E00),
-    warningSoft: Color(0xFFFFEDAB),
-    warningBorder: Color(0xFFFFDC62),
-    onWarningSoft: Color(0xFF997700),
-    dangerSoft: Color(0x29FF8FA3),
-    dangerBorder: Color(0x52FF8FA3),
-    onDangerSoft: Color(0xFFF7AABD),
-    neutralSoft: Color(0xFF586380),
-    onNeutralSoft: Color(0xFFF6F7FB),
-    onSoft: Color(0xFF282E3E),
+    mastery: Color(0xFF17AE79),
+    onMastery: Color(0xFF003925),
+    success: Color(0xFF5ADDA4),
+    warning: Color(0xFFF59E0B),
+    onWarning: Color(0xFF613B00),
+    statusNew: Color(0xFF8590AE),
+    statusLearning: Color(0xFFF59E0B),
+    statusReviewing: Color(0xFFC5C0FF),
+    statusMastered: Color(0xFF17AE79),
+    errorFill: Color(0xFFFFB4AB),
+    onErrorFill: Color(0xFF690005),
+    streak: Color(0xFFF59E0B),
+    primaryText: Color(0xFFC5C0FF),
+    masteryText: Color(0xFF5ADDA4),
+    learningText: Color(0xFFFFC174),
+    warningText: Color(0xFFFFC174),
+    focusRing: Color(0xFF564BCB),
+    border: Color(0xFF3B4661),
+    primaryTrack: Color(0xFF564BCB),
+    neutralTrack: Color(0xFF2D2C51),
+    primarySoft: Color(0xFF28254F),
+    onPrimarySoft: Color(0xFFC5C0FF),
+    successSoft: Color(0xFF172A40),
+    successBorder: Color(0xFF5ADDA4),
+    onSuccessSoft: Color(0xFF5ADDA4),
+    learningSoft: Color(0xFF312638),
+    learningBorder: Color(0xFFFFC174),
+    onLearningSoft: Color(0xFFFFC174),
+    warningSoft: Color(0xFF312638),
+    warningBorder: Color(0xFFFFC174),
+    onWarningSoft: Color(0xFFFFC174),
+    dangerSoft: Color(0xFF312441),
+    dangerBorder: Color(0xFFFFB4AB),
+    onDangerSoft: Color(0xFFFFB4AB),
+    neutralSoft: Color(0xFF3B4661),
+    onNeutralSoft: Color(0xFFAAB5D4),
+    onSoft: Color(0xFFE5E1E9),
+    cardSurface: Color(0xFF222145),
+    searchSurface: Color(0xFF222145),
+    tileSurface: Color(0xFF2E3953),
+    divider: Color(0xFF18173B),
+    info: Color(0xFFA9E3FF),
+    infoContainer: Color(0xFF50CCFC),
+    onInfoContainer: Color(0xFF00546D),
   );
 
   /// Mastery and progress green: the fill of a mastered band and a progress bar.
@@ -161,11 +184,12 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   /// Label on [errorFill].
   final Color onErrorFill;
 
-  /// The current streak's accent: the flame on Progress (FE-A9 D7).
+  /// The current streak's accent: the flame on Progress (FE-A9 D7), the
+  /// warning container's orange.
   final Color streak;
 
-  /// Primary as text and glyph (links, outline and text buttons, the selected
-  /// destination), never a fill.
+  /// Primary as text and glyph (links, outline and text buttons): primary in
+  /// light, primaryFixedDim in dark, where primary is 3.01:1. Never a fill.
   final Color primaryText;
 
   /// Mastery as text: a mastered status label, a ramp label.
@@ -180,7 +204,7 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   /// The 2dp focus ring of every control.
   final Color focusRing;
 
-  /// The 1px hairline of cards, sections, dividers and chrome.
+  /// The 1px hairline inside a card and of a control: outlineVariant.
   final Color border;
 
   /// A toggle's track when on.
@@ -222,16 +246,13 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
   /// Text and glyphs on [warningSoft].
   final Color onWarningSoft;
 
-  /// The danger ground: the pre-Indigo error red at 8% (Day) or 16%
-  /// (Night), translucent as before, so it is light in Day and dark in Night
-  /// (owner 2026-10-11, DEV-371).
+  /// The danger ground: error at 16% over the surface, solid.
   final Color dangerSoft;
 
-  /// The edge of [dangerSoft]: the same red at 22% or 32%.
+  /// The edge of [dangerSoft]: error.
   final Color dangerBorder;
 
-  /// Danger text on [dangerSoft] (a banner title): the error red pulled 10%
-  /// (Day) or 30% (Night) toward the old on-surface. Glyphs keep error.
+  /// Danger text and glyphs on [dangerSoft]: error.
   final Color onDangerSoft;
 
   /// The neutral soft ground (a count badge, the new status pill).
@@ -242,6 +263,29 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
 
   /// Body text on any soft ground.
   final Color onSoft;
+
+  /// The ground of every card: tonal elevation, no shadow and no edge.
+  final Color cardSurface;
+
+  /// The ground of MxSearchField, the card's tone, no shadow.
+  final Color searchSurface;
+
+  /// The ground of a deck's icon tile (DeckTile, DeckCard).
+  final Color tileSurface;
+
+  /// A rule on the page ground: the top edge of MxBottomNav, the trailing
+  /// edge of MxNavRail. A rule inside a card reads [border].
+  final Color divider;
+
+  /// Information as text or glyph on a plain ground, such as the hourglass of
+  /// a card waiting for Recall or Fill.
+  final Color info;
+
+  /// The information fill; a deck's glyph on [tileSurface] in dark.
+  final Color infoContainer;
+
+  /// Text on [infoContainer].
+  final Color onInfoContainer;
 
   @override
   MxSemanticColors copyWith({
@@ -282,6 +326,13 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     Color? neutralSoft,
     Color? onNeutralSoft,
     Color? onSoft,
+    Color? cardSurface,
+    Color? searchSurface,
+    Color? tileSurface,
+    Color? divider,
+    Color? info,
+    Color? infoContainer,
+    Color? onInfoContainer,
   }) => MxSemanticColors(
     mastery: mastery ?? this.mastery,
     onMastery: onMastery ?? this.onMastery,
@@ -320,6 +371,13 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
     neutralSoft: neutralSoft ?? this.neutralSoft,
     onNeutralSoft: onNeutralSoft ?? this.onNeutralSoft,
     onSoft: onSoft ?? this.onSoft,
+    cardSurface: cardSurface ?? this.cardSurface,
+    searchSurface: searchSurface ?? this.searchSurface,
+    tileSurface: tileSurface ?? this.tileSurface,
+    divider: divider ?? this.divider,
+    info: info ?? this.info,
+    infoContainer: infoContainer ?? this.infoContainer,
+    onInfoContainer: onInfoContainer ?? this.onInfoContainer,
   );
 
   @override
@@ -367,6 +425,13 @@ final class MxSemanticColors extends ThemeExtension<MxSemanticColors> {
       neutralSoft: Color.lerp(neutralSoft, other.neutralSoft, t)!,
       onNeutralSoft: Color.lerp(onNeutralSoft, other.onNeutralSoft, t)!,
       onSoft: Color.lerp(onSoft, other.onSoft, t)!,
+      cardSurface: Color.lerp(cardSurface, other.cardSurface, t)!,
+      searchSurface: Color.lerp(searchSurface, other.searchSurface, t)!,
+      tileSurface: Color.lerp(tileSurface, other.tileSurface, t)!,
+      divider: Color.lerp(divider, other.divider, t)!,
+      info: Color.lerp(info, other.info, t)!,
+      infoContainer: Color.lerp(infoContainer, other.infoContainer, t)!,
+      onInfoContainer: Color.lerp(onInfoContainer, other.onInfoContainer, t)!,
     );
   }
 }

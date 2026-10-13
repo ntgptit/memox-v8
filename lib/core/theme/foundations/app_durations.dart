@@ -1,16 +1,33 @@
-/// Every duration a V3 widget contract states, named by what moves.
+import 'package:flutter/material.dart';
+
+/// Every duration a widget contract states, named by what moves. The motion
+/// ones are Material 3's tokens ("Flashcard Color Tokens" §4.7).
 abstract final class AppDurations {
-  /// Toggle track colour and thumb offset.
-  static const Duration toggle = Duration(milliseconds: 160);
+  /// A selection and a state layer (`motion-duration-short2`).
+  static const Duration selection = Durations.short2;
 
-  /// Dialog scale-in, snackbar sheet-in, study progress fill.
-  static const Duration standard = Duration(milliseconds: 200);
+  /// A state's colour change, such as a toggle or a match tile
+  /// (`motion-duration-short3`).
+  static const Duration toggle = Durations.short3;
 
-  /// Modal scrim fade-in.
-  static const Duration scrimFade = Duration(milliseconds: 220);
+  /// A small exit or fade, a dialog's scale-in, a study progress fill
+  /// (`motion-duration-short4`).
+  static const Duration standard = Durations.short4;
 
-  /// Bottom sheet translate-in.
-  static const Duration sheet = Duration(milliseconds: 260);
+  /// Modal scrim fade-in (`motion-duration-short4`).
+  static const Duration scrimFade = Durations.short4;
+
+  /// A small enter or expand: a bottom sheet, a banner, the navigation pill
+  /// (`motion-duration-medium2`).
+  static const Duration sheet = Durations.medium2;
+
+  /// A card swipe, a page transition, and the hold after a right answer
+  /// (`motion-duration-medium4`).
+  static const Duration pageTransition = Durations.medium4;
+
+  /// A large transition, and the hold after a wrong match before the tiles
+  /// reset (`motion-duration-long4`).
+  static const Duration longTransition = Durations.long4;
 
   /// One spinner revolution.
   static const Duration spinnerCycle = Duration(milliseconds: 800);

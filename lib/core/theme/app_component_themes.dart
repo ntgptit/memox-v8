@@ -57,9 +57,10 @@ abstract final class AppComponentThemes {
     );
   }
 
-  /// A Material button at the regular V3 size in [fill] and [foreground]: 48 tall,
-  /// radius 12, gutter padding, the 14/600 label, the pressed overlay and
-  /// the focus ring. A disabled one dims under the global 0.38 rule.
+  /// A Material button at the regular size in [fill] and [foreground]: 40
+  /// tall in a 48 touch area, a full radius, 24 padding, the labelLarge
+  /// label, the pressed overlay and the focus ring. A disabled one dims under
+  /// the global 0.38 rule.
   static ButtonStyle _button(
     ColorScheme scheme,
     MxSemanticColors semantic,
@@ -74,8 +75,8 @@ abstract final class AppComponentThemes {
       edge: edge,
       focusColor: semantic.focusRing,
       height: AppSize.buttonRegular,
-      radius: AppRadius.md,
-      padding: AppSpacing.gutter,
+      radius: AppRadius.full,
+      padding: AppSpacing.section,
       label: MxTextStyles(texts, scheme, semantic).buttonLabel,
     );
     Color? dimmed(Color? color) =>
@@ -149,8 +150,8 @@ abstract final class AppComponentThemes {
   );
 
   /// IconButton (IconButton contract): a 20 glyph in a 36 round ink box with
-  /// a 48 touch area, the pressed overlay, and the focus ring on the
-  /// circle's edge (ruling R5).
+  /// a 48 touch area, the state layers, and the focus ring 2dp outside the
+  /// circle.
   static IconButtonThemeData iconButtons(
     ColorScheme scheme,
     MxSemanticColors semantic,
@@ -163,14 +164,10 @@ abstract final class AppComponentThemes {
             ? scheme.onSurface.withValues(alpha: AppOpacity.disabled)
             : scheme.onSurface,
       ),
-      overlayColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.pressed)
-            ? scheme.onSurface.withValues(alpha: AppOpacity.pressed)
-            : null,
-      ),
+      overlayColor: appStateLayer(scheme.onSurface),
       side: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.focused)
-            ? BorderSide(color: semantic.focusRing, width: AppStroke.focus)
+            ? appFocusRing(semantic.focusRing)
             : null,
       ),
       shape: const WidgetStatePropertyAll(CircleBorder()),
@@ -192,7 +189,7 @@ abstract final class AppComponentThemes {
     top: Radius.circular(AppRadius.xl),
   );
 
-  /// Dialog (Dialog contract): the card ground at radius 20, flat, over the
+  /// Dialog (Dialog contract): the card ground at radius 28, flat, over the
   /// 56% scrim, with the compact title and the dialog body.
   static DialogThemeData dialogs(
     ColorScheme scheme,
@@ -216,7 +213,7 @@ abstract final class AppComponentThemes {
     );
   }
 
-  /// BottomSheet (BottomSheet contract): the card ground, top radius 20,
+  /// BottomSheet (BottomSheet contract): the card ground, top radius 28,
   /// flat, over the 56% scrim.
   static BottomSheetThemeData sheets(ColorScheme scheme) =>
       BottomSheetThemeData(

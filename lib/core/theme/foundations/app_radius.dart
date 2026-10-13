@@ -1,23 +1,21 @@
-/// V3 radius roles. 24 and 28 exist in the kit but have no call site in V3,
-/// so they are not declared.
+/// The Material 3 shape scale ("Flashcard Color Tokens" §4.2).
 abstract final class AppRadius {
-  /// 20px checkbox.
+  /// Extra-small: a small detail, a 20px checkbox.
   static const double xs = 4;
 
-  /// 28 icon tile, compact button.
+  /// Small: a deck's icon tile, a banner.
   static const double sm = 8;
 
-  /// Card, button, input, note, banner, snackbar, 36–44 icon tile, small
-  /// controls: the one radius of in-flow surfaces (spec 2026-09-26 D2).
+  /// Medium: every card, a match tile, an input.
   static const double md = 12;
 
-  /// FAB, bottom-nav bar.
+  /// Large: a drawer's edge, a large sheet.
   static const double lg = 16;
 
-  /// Dialog, bottom-sheet top corners, 64 empty-state tile, the meaning and
-  /// term text fields: surfaces that float above the content.
-  static const double xl = 20;
+  /// Extra-large: a dialog, a bottom sheet's top corners.
+  static const double xl = 28;
 
-  /// Pill: chip, badge, toggle track, sheet grabber, progress track.
+  /// Full: a button, the search field, a progress track, the navigation
+  /// pill, a chip, a badge.
   static const double full = 999;
 }

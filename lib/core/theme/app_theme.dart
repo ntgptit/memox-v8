@@ -5,11 +5,11 @@ import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
-/// Indigo Day.
+/// The light theme ("Flashcard Color Tokens", ADR-022).
 ThemeData buildLightTheme() =>
     _build(AppColorSchemes.light, MxSemanticColors.light);
 
-/// Indigo Night. Authored, not a filter over Day.
+/// The dark theme. Authored, not a filter over the light one.
 ThemeData buildDarkTheme() =>
     _build(AppColorSchemes.dark, MxSemanticColors.dark);
 
@@ -41,10 +41,12 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
     bottomSheetTheme: AppComponentThemes.sheets(scheme),
     snackBarTheme: AppComponentThemes.snackbars(scheme, semantic, texts),
     tooltipTheme: AppComponentThemes.tooltips(scheme, texts),
-    // InkWell rows (MxRowInk, MxOptionRow, the tray, the nav) press in the
-    // theme's foreground at the buttons' 12% overlay, not Material's grey
-    // (SW-REV-007).
+    // InkWell rows (MxRowInk, MxOptionRow, the tray, the nav) take the
+    // Material 3 state layers in the theme's foreground, not Material's grey
+    // ("Flashcard Color Tokens" §4.6; SW-REV-007).
     splashColor: scheme.onSurface.withValues(alpha: AppOpacity.pressed),
     highlightColor: scheme.onSurface.withValues(alpha: AppOpacity.pressed),
+    focusColor: scheme.onSurface.withValues(alpha: AppOpacity.focus),
+    hoverColor: scheme.onSurface.withValues(alpha: AppOpacity.hover),
   );
 }

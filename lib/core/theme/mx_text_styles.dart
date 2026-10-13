@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/app_typography.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
-/// Component type treatments: the overrides of the nearest V3 role that a
-/// widget contract states (spec §4.3). They live in the theme so shared
-/// widgets never build or restyle a TextStyle.
+/// Component type treatments ("Flashcard Color Tokens" §3.3, ADR-022).
+///
+/// Each style is exactly one of the twelve TextTheme roles, its size, line
+/// height, weight and tracking untouched; only the colour is the
+/// component's. They live in the theme so shared widgets never build or
+/// restyle a TextStyle.
 @immutable
 final class MxTextStyles {
   const MxTextStyles(this._texts, this._scheme, this._semantic);
@@ -16,551 +18,325 @@ final class MxTextStyles {
   /// Primary as text: never the primary fill.
   Color get _primaryText => _semantic.primaryText;
 
-  static const double _labelTracking = 0.1;
-  static const double _titleTracking = -0.3;
-  static const double _screenTitleTracking = -0.5;
-
-  /// Line box for a single line that ellipsizes user content. An ellipsized
-  /// line clips at its box, and stacked Vietnamese marks (Ẳ, Ổ, Ỗ) rise above
-  /// the font's ascent: below 1.5 the box cuts them, and Ổ reads as Ố
-  /// (measured in the golden container; FE-C2).
-  static const double _singleLineHeight = 1.5;
-  static const double _emptyBodyHeight = 1.55;
-  static const double _rowTitleTracking = -0.1;
-  static const double _rowDescriptionHeight = 1.45;
-  static const double _overlineTracking = 0.6;
-  static const double _overlineSize = 13;
-  static const double _eyebrowSize = 12;
-  static const double _eyebrowTracking = 0.8;
-  static const double _fieldLabelSize = 14;
-  static const double _pillHeight = 1;
-  static const double _noteHeight = 1.5;
-  static const double _workloadHeight = 1.5;
-  static const double _donutLabelSize = 9;
-  static const double _compactTitleTracking = -0.2;
-  static const double _bannerHeight = 1.55;
-  static const double _snackbarHeight = 1.4;
   static const String _codeFamily = 'monospace';
   static const List<String> _codeFallback = ['Menlo', 'Courier New'];
-  static const List<FontFeature> _tabular = [FontFeature.tabularFigures()];
-  static const double _termTracking = -0.4;
-  static const double _badgeTracking = 1.2;
-  static const double _countTracking = 0.2;
-  static const double _termLongSize = 18;
-  static const double _studyTermSize = 32;
-  static const double _studyTermTracking = -0.5;
-  static const double _studyTermHeight = 1.15;
-  static const double _studyMeaningSize = 24;
-  static const double _studyMeaningTracking = -0.3;
-  static const double _hintTracking = 0.3;
-  static const double _summaryTitleSize = 24;
-  static const double _summaryTitleTracking = -0.4;
-  static const double _factValueSize = 16;
-  static const double _statValueHeight = 1.1;
-  static const double _buttonDetailHeight = 1.2;
-  static const double _optionSize = 16;
-  static const double _optionTracking = -0.1;
-  static const double _choiceHeight = 1.25;
-  static const double _studyPassageHeight = 1.55;
-  static const double _codeHeight = 1.5;
 
-  /// Button label: 14/600, 0.1 tracking (regular, small, study action).
-  TextStyle get buttonLabel => AppTypography.withWeight(
-    _texts.bodyMedium!,
-    FontWeight.w600,
-  ).copyWith(letterSpacing: _labelTracking);
+  // The twelve roles.
+  TextStyle get _termRole => _texts.displaySmall!;
+  TextStyle get _tileTermRole => _texts.headlineSmall!;
+  TextStyle get _statRole => _texts.displayMedium!;
+  TextStyle get _sectionRole => _texts.titleLarge!;
+  TextStyle get _cardTitleRole => _texts.titleMedium!;
+  TextStyle get _itemRole => _texts.titleSmall!;
+  TextStyle get _contentRole => _texts.bodyLarge!;
+  TextStyle get _bodyRole => _texts.bodyMedium!;
+  TextStyle get _tileBodyRole => _texts.bodySmall!;
+  TextStyle get _buttonRole => _texts.labelLarge!;
+  TextStyle get _metaRole => _texts.labelMedium!;
+  TextStyle get _navRole => _texts.labelSmall!;
 
-  /// Button label on the compact and chip sizes: 12/600, 0.1 tracking.
-  TextStyle get buttonLabelSmall =>
-      _texts.labelSmall!.copyWith(letterSpacing: _labelTracking);
+  /// Button label at every size: labelLarge.
+  TextStyle get buttonLabel => _buttonRole;
+
+  /// Button label on the small, compact and chip sizes: labelLarge (one
+  /// label style for every button).
+  TextStyle get buttonLabelSmall => _buttonRole;
 
   /// A button's second line, such as the interval a grade gives (screen
-  /// 16a): 12/500 tabular. Built without the role's colour, so the button's
+  /// 16a): labelMedium. Built without the role's colour, so the button's
   /// foreground reaches it through DefaultTextStyle.
-  TextStyle get buttonDetail {
-    final base = AppTypography.withWeight(_texts.labelSmall!, FontWeight.w500);
-    return TextStyle(
-      fontFamily: base.fontFamily,
-      fontFamilyFallback: base.fontFamilyFallback,
-      fontSize: base.fontSize,
-      fontWeight: base.fontWeight,
-      fontVariations: base.fontVariations,
-      letterSpacing: base.letterSpacing,
-      height: _buttonDetailHeight,
-      fontFeatures: _tabular,
-    );
-  }
-
-  /// App-bar content title (deck and card names): 16/700, -0.3.
-  TextStyle get contentTitle => AppTypography.withWeight(
-    _texts.bodyLarge!,
-    FontWeight.w700,
-  ).copyWith(letterSpacing: _titleTracking, color: _scheme.onSurface);
-
-  /// App-bar screen title: 24/700, -0.5, at the single-line height rather
-  /// than the headline's 1.2.
-  TextStyle get screenTitle => _texts.headlineSmall!.copyWith(
-    height: _singleLineHeight,
-    letterSpacing: _screenTitleTracking,
-    color: _scheme.onSurface,
+  TextStyle get buttonDetail => TextStyle(
+    fontFamily: _metaRole.fontFamily,
+    fontFamilyFallback: _metaRole.fontFamilyFallback,
+    fontSize: _metaRole.fontSize,
+    fontWeight: _metaRole.fontWeight,
+    fontVariations: _metaRole.fontVariations,
+    letterSpacing: _metaRole.letterSpacing,
+    height: _metaRole.height,
   );
 
-  /// EmptyState title: 20/700, -0.3.
-  TextStyle get emptyTitle => _texts.titleLarge!.copyWith(
-    letterSpacing: _titleTracking,
-    color: _scheme.onSurface,
-  );
+  /// App-bar content title (deck and card names): titleMedium.
+  TextStyle get contentTitle =>
+      _cardTitleRole.copyWith(color: _scheme.onSurface);
 
-  /// Compact EmptyState title: 16/700, -0.3.
-  TextStyle get emptyTitleCompact => contentTitle;
+  /// App-bar screen title: titleLarge.
+  TextStyle get screenTitle => _sectionRole.copyWith(color: _scheme.onSurface);
 
-  /// EmptyState body: 14 at line-height 1.55.
-  TextStyle get emptyBody => _texts.bodyMedium!.copyWith(
-    height: _emptyBodyHeight,
-    color: _scheme.onSurfaceVariant,
-  );
+  /// EmptyState title: titleMedium.
+  TextStyle get emptyTitle => _cardTitleRole.copyWith(color: _scheme.onSurface);
+
+  /// Compact EmptyState title: titleSmall.
+  TextStyle get emptyTitleCompact => _itemRole.copyWith(color: _scheme.onSurface);
+
+  /// EmptyState body: bodyMedium.
+  TextStyle get emptyBody =>
+      _bodyRole.copyWith(color: _scheme.onSurfaceVariant);
 
   /// The part of a lead the reader must check, such as the address a code
-  /// went to: the lead at 600 in on-surface foreground.
-  TextStyle get emptyBodyStrong => AppTypography.withWeight(
-    _texts.bodyMedium!,
-    FontWeight.w600,
-  ).copyWith(height: _emptyBodyHeight, color: _scheme.onSurface);
+  /// went to: titleSmall in on-surface.
+  TextStyle get emptyBodyStrong => _itemRole.copyWith(color: _scheme.onSurface);
 
-  /// Tappable breadcrumb level: 12/500, 0.1 tracking.
-  TextStyle get breadcrumbAncestor => AppTypography.withWeight(
-    _texts.labelSmall!,
-    FontWeight.w500,
-  ).copyWith(letterSpacing: _labelTracking, color: _scheme.onSurfaceVariant);
+  /// Tappable breadcrumb level: labelMedium.
+  TextStyle get breadcrumbAncestor =>
+      _metaRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// The level the user is on: 12/700, 0.1 tracking.
-  TextStyle get breadcrumbCurrent => AppTypography.withWeight(
-    _texts.labelSmall!,
-    FontWeight.w700,
-  ).copyWith(letterSpacing: _labelTracking, color: _scheme.onSurface);
+  /// The level the user is on: titleSmall.
+  TextStyle get breadcrumbCurrent => _itemRole.copyWith(color: _scheme.onSurface);
 
-  /// StudyTopBar mode badge: 12/700, 1.2 tracking, in the caller's accent.
-  TextStyle studyBadge(Color accent) =>
-      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
-        letterSpacing: _badgeTracking,
-        // It ellipsizes at large text, so it keeps the single-line height
-        // (UI-base §9 row 102; FE-A6 P3 T1).
-        height: _singleLineHeight,
-        color: accent,
-      );
+  /// StudyTopBar mode badge: labelSmall in the caller's accent.
+  TextStyle studyBadge(Color accent) => _navRole.copyWith(color: accent);
 
-  /// StudyTopBar n / total counter: 12/600, tabular numerals.
-  TextStyle get counter => _texts.labelSmall!.copyWith(
-    fontFeatures: const [FontFeature.tabularFigures()],
-    color: _scheme.onSurfaceVariant,
-  );
+  /// StudyTopBar n / total counter: labelSmall.
+  TextStyle get counter => _navRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// The import step tracker's label (kit 11): 12/600, onSurface once the
+  /// The import step tracker's label (kit 11): labelSmall, onSurface once the
   /// step is reached, onSurfaceVariant before.
-  TextStyle stepLabel({required bool isReached}) => _texts.labelSmall!.copyWith(
+  TextStyle stepLabel({required bool isReached}) => _navRole.copyWith(
     color: isReached ? _scheme.onSurface : _scheme.onSurfaceVariant,
   );
 
-  /// A day bar's label (kit 22): 12, onSurfaceVariant, at 700 on the current
-  /// day.
-  TextStyle dayLabel({required bool isCurrent}) => AppTypography.withWeight(
-    _texts.labelSmall!,
-    isCurrent ? FontWeight.w700 : FontWeight.w400,
-  ).copyWith(color: _scheme.onSurfaceVariant);
+  /// A day bar's label (kit 22): labelSmall, onSurface on the current day,
+  /// onSurfaceVariant on the rest.
+  TextStyle dayLabel({required bool isCurrent}) => _navRole.copyWith(
+    color: isCurrent ? _scheme.onSurface : _scheme.onSurfaceVariant,
+  );
 
   /// The number on an import step's dot (kit 11): the counter in [foreground].
   TextStyle stepNumber(Color foreground) => counter.copyWith(color: foreground);
 
-  /// BottomNav label: 12/600, primaryText on the current destination.
-  TextStyle navLabel({required bool isSelected}) => _texts.labelSmall!.copyWith(
-    color: isSelected ? _primaryText : _scheme.onSurfaceVariant,
+  /// BottomNav and NavRail label: labelSmall, onSurface on the current
+  /// destination, onSurfaceVariant on the rest.
+  TextStyle navLabel({required bool isSelected}) => _navRole.copyWith(
+    color: isSelected ? _scheme.onSurface : _scheme.onSurfaceVariant,
   );
 
-  /// FooterBar caption under the actions: 12, onSurfaceVariant.
+  /// FooterBar caption under the actions: labelSmall.
   TextStyle get footerCaption =>
-      _texts.labelSmall!.copyWith(color: _scheme.onSurfaceVariant);
+      _navRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// FilterChip count: 12/700 tabular, in the chip's foreground at its opacity, with
-  /// the label's 0.1 tracking so the pair reads as one line.
-  TextStyle chipCount(Color foreground) =>
-      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
-        letterSpacing: _labelTracking,
-        fontFeatures: _tabular,
-        color: foreground,
-      );
+  /// FilterChip count: labelSmall in the chip's foreground.
+  TextStyle chipCount(Color foreground) => _navRole.copyWith(color: foreground);
 
-  /// FieldMessage line: the caption role in the tone's foreground.
+  /// FieldMessage line: labelSmall in the tone's foreground.
   TextStyle fieldMessage(Color foreground) =>
-      _texts.labelSmall!.copyWith(color: foreground);
+      _navRole.copyWith(color: foreground);
 
-  /// TextField placeholder: 14, onSurfaceVariant.
+  /// TextField placeholder: bodyMedium.
   TextStyle get inputHint =>
-      _texts.bodyMedium!.copyWith(color: _scheme.onSurfaceVariant);
+      _bodyRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// A disclosure's label (kit card editor "Add details"): 12/600
+  /// A disclosure's label (kit card editor "Add details"): labelMedium in
   /// primaryText.
-  TextStyle get disclosureLabel =>
-      _texts.labelSmall!.copyWith(color: _primaryText);
+  TextStyle get disclosureLabel => _metaRole.copyWith(color: _primaryText);
 
-  /// A code slot's digit: the headline role with tabular figures. Each slot
-  /// holds one digit, so the line needs no wide tracking.
-  TextStyle get fieldCode => _texts.headlineSmall!.copyWith(
-    fontFeatures: _tabular,
-    color: _scheme.onSurface,
-  );
+  /// A code slot's digit: displaySmall.
+  TextStyle get fieldCode => _termRole.copyWith(color: _scheme.onSurface);
 
-  /// SearchField value: 16/400.
-  TextStyle get searchValue => AppTypography.withWeight(
-    _texts.bodyLarge!,
-    FontWeight.w400,
-  ).copyWith(color: _scheme.onSurface);
+  /// SearchField value: labelMedium.
+  TextStyle get searchValue => _metaRole.copyWith(color: _scheme.onSurface);
 
-  /// SearchField placeholder: the value style in onSurfaceVariant.
+  /// SearchField placeholder: labelMedium in onSurfaceVariant.
   TextStyle get searchHint =>
-      searchValue.copyWith(color: _scheme.onSurfaceVariant);
+      _metaRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// Row title (OptionRow, ActionSheetCommandRow): 14/600, -0.1.
-  TextStyle get rowTitle => AppTypography.withWeight(
-    _texts.bodyMedium!,
-    FontWeight.w600,
-  ).copyWith(letterSpacing: _rowTitleTracking, color: _scheme.onSurface);
+  /// Row title (OptionRow, ActionSheetCommandRow): titleSmall.
+  TextStyle get rowTitle => _itemRole.copyWith(color: _scheme.onSurface);
 
-  /// The matched part of a search hit's name (screen 04): the list row
-  /// title, bold, in primaryText, so it sits on the title's line unchanged.
-  TextStyle get rowTitleMatch => AppTypography.withWeight(
-    listRowTitle,
-    FontWeight.w700,
-  ).copyWith(color: _primaryText);
+  /// The matched part of a search hit's name (screen 04): titleSmall in
+  /// primaryText, so it sits on the title's line unchanged.
+  TextStyle get rowTitleMatch => _itemRole.copyWith(color: _primaryText);
 
-  /// Row description (OptionRow, SettingsRow sub): the caption role at
-  /// line-height 1.45 (I5, S5).
-  TextStyle get rowDescription => _texts.labelSmall!.copyWith(
-    height: _rowDescriptionHeight,
-    color: _scheme.onSurfaceVariant,
-  );
+  /// Row description (OptionRow, SettingsRow sub): bodyMedium.
+  TextStyle get rowDescription =>
+      _bodyRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// ListRow title: the row title at the single-line height, so every row in
-  /// a list is one height.
-  TextStyle get listRowTitle => rowTitle.copyWith(height: _singleLineHeight);
+  /// ListRow title: titleSmall.
+  TextStyle get listRowTitle => _itemRole.copyWith(color: _scheme.onSurface);
 
-  /// ListRow and ActionSheetCommandRow sub-line: the caption role in
-  /// onSurfaceVariant (S5), at the single-line height.
+  /// ListRow and ActionSheetCommandRow sub-line: bodyMedium.
   TextStyle get rowSubtitle =>
-      footerCaption.copyWith(height: _singleLineHeight);
+      _bodyRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// SettingsRow label: 16/600, -0.1.
-  TextStyle get settingsLabel => AppTypography.withWeight(
-    _texts.bodyLarge!,
-    FontWeight.w600,
-  ).copyWith(letterSpacing: _rowTitleTracking, color: _scheme.onSurface);
+  /// SettingsRow label: titleSmall.
+  TextStyle get settingsLabel => _itemRole.copyWith(color: _scheme.onSurface);
 
   /// ActionSheetCommandRow verb: the row title, error when destructive.
   TextStyle commandLabel({required bool isDestructive}) => rowTitle.copyWith(
     color: isDestructive ? _scheme.error : _scheme.onSurface,
   );
 
-  /// Section label: the overline that introduces a list or settings group,
-  /// and nothing else (critique 2026-09-30 part 2, P1): 13/700, 0.6
-  /// tracking, onSurface, so a group title reads as a boundary (spec
-  /// 2026-09-26 D5; kit: 12 onSurfaceVariant, register row 116). Tabular, so
-  /// a trailing static count lines up. The widget upper-cases the text.
-  TextStyle get overline =>
-      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
-        fontSize: _overlineSize,
-        letterSpacing: _overlineTracking,
-        fontFeatures: _tabular,
-        color: _scheme.onSurface,
-      );
+  /// Section label, the overline that introduces a list or settings group:
+  /// labelSmall in onSurface. The widget upper-cases the text.
+  TextStyle get overline => _navRole.copyWith(color: _scheme.onSurface);
 
-  /// Eyebrow: the context line above a big title or number (critique
-  /// 2026-09-30 part 2, P2). The caller upper-cases the app's own words,
-  /// never user data.
-  TextStyle get eyebrow =>
-      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w600).copyWith(
-        fontSize: _eyebrowSize,
-        letterSpacing: _eyebrowTracking,
-        fontFeatures: _tabular,
-        color: _scheme.onSurfaceVariant,
-      );
+  /// Eyebrow, the context line above a big title or number: labelSmall in
+  /// onSurfaceVariant. The caller upper-cases the app's own words, never
+  /// user data.
+  TextStyle get eyebrow => _navRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// Field label: names an input or a read-only field, in sentence case
-  /// (critique 2026-09-30 part 2, P3).
-  TextStyle get fieldLabel => AppTypography.withWeight(
-    _texts.labelLarge!,
-    FontWeight.w600,
-  ).copyWith(fontSize: _fieldLabelSize, color: _scheme.onSurface);
+  /// Field label, naming an input or a read-only field: labelMedium.
+  TextStyle get fieldLabel => _metaRole.copyWith(color: _scheme.onSurface);
 
-  /// A stat's figure (StatTile): the headline role at 700, tabular, tight
-  /// line box, in the foreground the tile's emphasis picks (FE-A6 D17).
-  TextStyle statValue(Color foreground) =>
-      AppTypography.withWeight(_texts.headlineSmall!, FontWeight.w700).copyWith(
-        height: _statValueHeight,
-        fontFeatures: _tabular,
-        color: foreground,
-      );
+  /// A stat's figure (StatTile): displayMedium, in the foreground the tile's
+  /// emphasis picks (FE-A6 D17).
+  TextStyle statValue(Color foreground) => _statRole.copyWith(color: foreground);
 
   /// A stat's label: the eyebrow. The widget upper-cases it.
   TextStyle get statLabel => eyebrow;
 
-  /// A card row's status label (screen 07): the overline's 12/700 and 0.6
-  /// tracking, in its status foreground. The widget upper-cases the text.
+  /// A card row's status label (screen 07): labelSmall in its status
+  /// foreground. The widget upper-cases the text.
   TextStyle statusLabel(Color foreground) =>
-      overline.copyWith(color: foreground);
+      _navRole.copyWith(color: foreground);
 
-  /// A field's "Required" caption: the optional caption's size in primary
-  /// foreground (critique 2026-09-30 part 2, P3).
-  TextStyle get requiredMarker => rowDescription.copyWith(color: _primaryText);
+  /// A field's "Required" caption: bodyMedium in primaryText.
+  TextStyle get requiredMarker => _bodyRole.copyWith(color: _primaryText);
 
-  /// A card field's count (kit FieldHeader): the counter at 0.2 tracking, in
-  /// error past the limit.
-  TextStyle fieldCount({required bool isOver}) => counter.copyWith(
-    letterSpacing: _countTracking,
-    color: isOver ? _scheme.error : null,
-  );
+  /// A card field's count (kit FieldHeader): the counter, in error past the
+  /// limit.
+  TextStyle fieldCount({required bool isOver}) =>
+      counter.copyWith(color: isOver ? _scheme.error : null);
 
-  /// A card history move ("Box 4 → 5"): the row description at 700 in the
-  /// outcome's foreground (DEV-170).
-  TextStyle historyMove(Color foreground) => AppTypography.withWeight(
-    rowDescription,
-    FontWeight.w700,
-  ).copyWith(color: foreground);
+  /// A card history move ("Box 4 → 5"): bodyMedium in the outcome's
+  /// foreground (DEV-170).
+  TextStyle historyMove(Color foreground) =>
+      _bodyRole.copyWith(color: foreground);
 
-  /// How long ago an answer was, over its date: the counter in on-surface
+  /// How long ago an answer was, over its date: labelSmall in on-surface
   /// (DEV-170).
-  TextStyle get historyAgo => counter.copyWith(color: _scheme.onSurface);
+  TextStyle get historyAgo => _navRole.copyWith(color: _scheme.onSurface);
 
-  /// A removable tag's label: the tag label on the primary soft ground.
+  /// A removable tag's label: labelSmall on the primary soft ground.
   TextStyle get removableTagLabel =>
-      tagLabel.copyWith(color: _semantic.onPrimarySoft);
+      _navRole.copyWith(color: _semantic.onPrimarySoft);
 
-  /// Badge and StatusBadge label: 12/700 tabular at line-height 1, with the
-  /// label's 0.1 tracking (S4).
-  TextStyle badgeLabel(Color foreground) =>
-      chipCount(foreground).copyWith(height: _pillHeight);
+  /// Badge and StatusBadge label: labelSmall in [foreground].
+  TextStyle badgeLabel(Color foreground) => _navRole.copyWith(color: foreground);
 
-  /// TagChip label: 12/600, 0.1 tracking (S4), at the single-line height, not
-  /// the contract's 1: an ellipsized tag clips to its text box.
-  TextStyle get tagLabel => _texts.labelSmall!.copyWith(
-    height: _singleLineHeight,
-    letterSpacing: _labelTracking,
-    color: _scheme.onSurfaceVariant,
-  );
+  /// TagChip label: labelSmall.
+  TextStyle get tagLabel => _navRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// Code, a stack trace or JSON (Monitoring, owner 2026-09-29): the system
-  /// monospace at bodySmall's size with no tracking, tabular figures, at the
-  /// single-line height. It sets no weight and no `wght` axis: the axis is
-  /// Plus Jakarta Sans's, and a system face has none.
-  TextStyle get code => _texts.bodySmall!.copyWith(
+  /// Code, a stack trace or JSON (Monitoring, owner 2026-09-29): bodyMedium
+  /// in the system monospace. It sets no `wght` axis: a system face has none.
+  TextStyle get code => _bodyRole.copyWith(
     fontFamily: _codeFamily,
     fontFamilyFallback: _codeFallback,
     fontVariations: const <FontVariation>[],
-    height: _codeHeight,
-    letterSpacing: 0,
-    fontFeatures: _tabular,
     color: _scheme.onSurface,
   );
 
-  /// Note text: the caption role at line-height 1.5 (S5).
-  TextStyle get noteText => _texts.labelSmall!.copyWith(
-    height: _noteHeight,
-    color: _scheme.onSurfaceVariant,
-  );
+  /// Note text: bodyMedium.
+  TextStyle get noteText => _bodyRole.copyWith(color: _scheme.onSurfaceVariant);
 
   /// Note text carrying a status in [foreground], such as the Study Entry's
-  /// overdue note in the warning foreground (screen 14): the note role at 600.
-  TextStyle statusNote(Color foreground) => AppTypography.withWeight(
-    noteText,
-    FontWeight.w600,
-  ).copyWith(color: foreground);
+  /// overdue note in the warning foreground (screen 14): bodyMedium.
+  TextStyle statusNote(Color foreground) =>
+      _bodyRole.copyWith(color: foreground);
 
-  /// A study card's term (kit Browse): 32/700 at 1.15, -0.5 tracking. It
-  /// wraps and never ellipsizes (FE-A6 D19).
-  TextStyle get studyTerm =>
-      AppTypography.withWeight(
-        _texts.headlineSmall!.copyWith(fontSize: _studyTermSize),
-        FontWeight.w700,
-      ).copyWith(
-        height: _studyTermHeight,
-        letterSpacing: _studyTermTracking,
-        color: _scheme.onSurface,
-      );
+  /// A study card's term: displaySmall. It wraps and never ellipsizes
+  /// (FE-A6 D19).
+  TextStyle get studyTerm => _termRole.copyWith(color: _scheme.onSurface);
 
-  /// A study card's meaning (kit Browse): 24/600, -0.3 tracking.
-  TextStyle get studyMeaning => AppTypography.withWeight(
-    _texts.headlineSmall!.copyWith(fontSize: _studyMeaningSize),
-    FontWeight.w600,
-  ).copyWith(letterSpacing: _studyMeaningTracking, color: _scheme.onSurface);
+  /// A study card's meaning: bodyLarge.
+  TextStyle get studyMeaning => _contentRole.copyWith(color: _scheme.onSurface);
 
-  /// A study card's pronunciation and example: 14/400 at 1.5, variant foreground.
-  TextStyle get studyDetail => AppTypography.withWeight(
-    _texts.bodyMedium!,
-    FontWeight.w400,
-  ).copyWith(height: _noteHeight, color: _scheme.onSurfaceVariant);
+  /// A study card's pronunciation and example: bodyMedium.
+  TextStyle get studyDetail =>
+      _bodyRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// A session's footer hint (kit SessionFooterHint): 12/400, 0.3 tracking.
-  TextStyle get sessionHint => AppTypography.withWeight(
-    _texts.labelSmall!,
-    FontWeight.w400,
-  ).copyWith(letterSpacing: _hintTracking, color: _scheme.onSurfaceVariant);
+  /// A session's footer hint (kit SessionFooterHint): bodyMedium.
+  TextStyle get sessionHint =>
+      _bodyRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// The session summary's title (kit SessionStatusHero): 24/700 at 1.15.
+  /// The session summary's title (kit SessionStatusHero): titleMedium.
   TextStyle get summaryTitle =>
-      AppTypography.withWeight(
-        _texts.headlineSmall!.copyWith(fontSize: _summaryTitleSize),
-        FontWeight.w700,
-      ).copyWith(
-        height: _studyTermHeight,
-        letterSpacing: _summaryTitleTracking,
-        color: _scheme.onSurface,
-      );
+      _cardTitleRole.copyWith(color: _scheme.onSurface);
 
-  /// The bold run of the summary's body, such as "20 cards" (kit).
-  TextStyle get summaryBodyStrong => AppTypography.withWeight(
-    emptyBody,
-    FontWeight.w700,
-  ).copyWith(color: _scheme.onSurface);
+  /// The strong run of the summary's body, such as "20 cards": titleSmall.
+  TextStyle get summaryBodyStrong =>
+      _itemRole.copyWith(color: _scheme.onSurface);
 
   /// A caption run in [foreground], such as a Progress row's learning and
-  /// reviewing counts (kit 22): 12/600.
-  TextStyle captionIn(Color foreground) =>
-      footerCaption.copyWith(color: foreground);
+  /// reviewing counts (kit 22): labelSmall.
+  TextStyle captionIn(Color foreground) => _navRole.copyWith(color: foreground);
 
-  /// A summary fact's value (kit ResultRow): 16/700 tabular, in [foreground].
-  TextStyle factValue(Color foreground) => AppTypography.withWeight(
-    _texts.bodyLarge!.copyWith(fontSize: _factValueSize),
-    FontWeight.w700,
-  ).copyWith(fontFeatures: _tabular, color: foreground);
+  /// A summary fact's value (kit ResultRow): titleMedium, a key number in a
+  /// compact stat, in [foreground].
+  TextStyle factValue(Color foreground) =>
+      _cardTitleRole.copyWith(color: foreground);
 
-  /// A guess option's meaning (kit GuessScreen): 16/500 at 1.25, -0.1
-  /// tracking, in its tone's [foreground] (FE-A6 P3).
+  /// A guess option's meaning (GuessScreen): bodySmall in its tone's
+  /// [foreground].
   TextStyle studyOption(Color foreground) =>
-      AppTypography.withWeight(
-        _texts.bodyLarge!.copyWith(fontSize: _optionSize),
-        FontWeight.w500,
-      ).copyWith(
-        height: _choiceHeight,
-        letterSpacing: _optionTracking,
-        color: foreground,
-      );
+      _tileBodyRole.copyWith(color: foreground);
 
-  /// A guess option's letter badge: 12/700 at height 1, in [foreground].
-  TextStyle studyOptionLetter(Color foreground) => AppTypography.withWeight(
-    _texts.labelSmall!,
-    FontWeight.w700,
-  ).copyWith(height: 1, letterSpacing: 0, color: foreground);
+  /// A guess option's letter badge: labelSmall in [foreground].
+  TextStyle studyOptionLetter(Color foreground) =>
+      _navRole.copyWith(color: foreground);
 
-  /// A match term tile (kit MatchScreen): 18/700 at 1.25, -0.4, in [foreground].
+  /// A match term tile (MatchScreen): headlineSmall in [foreground].
   TextStyle matchTerm(Color foreground) =>
-      AppTypography.withWeight(
-        _texts.bodyLarge!.copyWith(fontSize: _termLongSize),
-        FontWeight.w700,
-      ).copyWith(
-        height: _choiceHeight,
-        letterSpacing: _termTracking,
-        color: foreground,
-      );
+      _tileTermRole.copyWith(color: foreground);
 
-  /// A match meaning tile: 14/600 at 1.25, in [foreground].
-  TextStyle matchMeaning(Color foreground) => AppTypography.withWeight(
-    _texts.bodyMedium!,
-    FontWeight.w600,
-  ).copyWith(height: _choiceHeight, letterSpacing: 0, color: foreground);
+  /// A match meaning tile: bodySmall in [foreground].
+  TextStyle matchMeaning(Color foreground) =>
+      _tileBodyRole.copyWith(color: foreground);
 
-  /// A study face's running text (kit Recall's meaning, Fill's prompt):
-  /// 16/400 at 1.55. One role for both; the kit's 14 on Fill is ruled up to
-  /// 16 for legibility (FE-A6 P4).
-  TextStyle get studyPassage => AppTypography.withWeight(
-    _texts.bodyLarge!.copyWith(fontSize: _optionSize),
-    FontWeight.w400,
-  ).copyWith(height: _studyPassageHeight, color: _scheme.onSurface);
+  /// A study face's running text (Recall's meaning, Fill's prompt):
+  /// bodyLarge.
+  TextStyle get studyPassage => _contentRole.copyWith(color: _scheme.onSurface);
 
-  /// A checked Fill answer (kit Fill `wrong`): 24/700 at -0.3, in [foreground];
-  /// the typed answer is struck through in its own foreground when [isStruck].
+  /// A checked Fill answer: displaySmall, the term role, in [foreground]; the
+  /// typed answer is struck through in its own foreground when [isStruck].
   TextStyle fillAnswer(Color foreground, {required bool isStruck}) =>
-      AppTypography.withWeight(
-        _texts.headlineSmall!.copyWith(fontSize: _studyMeaningSize),
-        FontWeight.w700,
-      ).copyWith(
-        letterSpacing: _studyMeaningTracking,
+      _termRole.copyWith(
         color: foreground,
         decoration: isStruck ? TextDecoration.lineThrough : null,
         decorationColor: isStruck ? foreground : null,
       );
 
-  /// WorkloadBreakdownLine connectives and fallback: 12/400 tabular, 0.1
-  /// tracking (S4), line-height 1.5 for the 18 band.
+  /// WorkloadBreakdownLine connectives and fallback: labelMedium.
   TextStyle get workloadText =>
-      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w400).copyWith(
-        height: _workloadHeight,
-        letterSpacing: _labelTracking,
-        fontFeatures: _tabular,
-        color: _scheme.onSurfaceVariant,
-      );
+      _metaRole.copyWith(color: _scheme.onSurfaceVariant);
 
-  /// WorkloadBreakdownLine term: the connective style at 600 in its colour.
-  TextStyle workloadTerm(Color foreground) => AppTypography.withWeight(
-    workloadText,
-    FontWeight.w600,
-  ).copyWith(color: foreground);
+  /// WorkloadBreakdownLine term: labelMedium in its colour.
+  TextStyle workloadTerm(Color foreground) =>
+      _metaRole.copyWith(color: foreground);
 
-  /// MasteryDonut label: 9/700 at line-height 1, 0.1 tracking (S4), in the
-  /// arc colour. Below the 12 floor as the contract states (row 8).
-  TextStyle donutLabel(Color foreground) =>
-      AppTypography.withWeight(_texts.labelSmall!, FontWeight.w700).copyWith(
-        fontSize: _donutLabelSize,
-        height: _pillHeight,
-        letterSpacing: _labelTracking,
-        color: foreground,
-      );
+  /// MasteryDonut label: labelSmall, the 12 floor, in the arc colour.
+  TextStyle donutLabel(Color foreground) => _navRole.copyWith(color: foreground);
 
-  /// Compact title (ErrorState, DeckPickerSheet head, Dialog): 16/700, -0.2.
-  TextStyle get compactTitle => AppTypography.withWeight(
-    _texts.bodyLarge!,
-    FontWeight.w700,
-  ).copyWith(letterSpacing: _compactTitleTracking, color: _scheme.onSurface);
+  /// Compact title (ErrorState, DeckPickerSheet head, Dialog): titleSmall.
+  TextStyle get compactTitle => _itemRole.copyWith(color: _scheme.onSurface);
 
-  /// Dialog body: 14 in onSurface (O5).
-  TextStyle get dialogBody =>
-      _texts.bodyMedium!.copyWith(color: _scheme.onSurface);
+  /// Dialog body: bodyMedium in onSurface (O5).
+  TextStyle get dialogBody => _bodyRole.copyWith(color: _scheme.onSurface);
 
-  /// InlineBanner title: 12/700 at line-height 1.55, onSurface; the banner
-  /// recolours it with its tone's foreground (critique 2026-09-30 tone pass).
-  TextStyle get bannerTitle => AppTypography.withWeight(
-    _texts.labelSmall!,
-    FontWeight.w700,
-  ).copyWith(height: _bannerHeight, color: _scheme.onSurface);
+  /// InlineBanner title: labelMedium in onSurface; the banner recolours it
+  /// with its tone's foreground.
+  TextStyle get bannerTitle => _metaRole.copyWith(color: _scheme.onSurface);
 
-  /// InlineBanner message: the caption role at 1.55 (I5, O6). It is the
-  /// onSurface lead without a title, and the onSurfaceVariant detail under
-  /// one.
-  TextStyle bannerMessage({required bool isLead}) =>
-      _texts.labelSmall!.copyWith(
-        height: _bannerHeight,
-        color: isLead ? _scheme.onSurface : _scheme.onSurfaceVariant,
-      );
-
-  /// Snackbar message: 14 at line-height 1.4 on the inverse surface.
-  TextStyle get snackbarMessage => _texts.bodyMedium!.copyWith(
-    height: _snackbarHeight,
-    color: _scheme.onInverseSurface,
+  /// InlineBanner message: labelMedium, the onSurface lead without a title,
+  /// and the onSurfaceVariant detail under one.
+  TextStyle bannerMessage({required bool isLead}) => _metaRole.copyWith(
+    color: isLead ? _scheme.onSurface : _scheme.onSurfaceVariant,
   );
 
-  /// Snackbar action: 14/700 in inversePrimary.
-  TextStyle get snackbarAction => AppTypography.withWeight(
-    _texts.bodyMedium!,
-    FontWeight.w700,
-  ).copyWith(color: _scheme.inversePrimary);
+  /// Snackbar message: bodyMedium on the inverse surface.
+  TextStyle get snackbarMessage =>
+      _bodyRole.copyWith(color: _scheme.onInverseSurface);
 
-  /// SegmentedTray label: the caption role, onSurface when selected (I5).
-  TextStyle trayLabel({required bool isSelected}) =>
-      _texts.labelSmall!.copyWith(
-        color: isSelected ? _scheme.onSurface : _scheme.onSurfaceVariant,
-      );
+  /// Snackbar action: labelLarge in inversePrimary.
+  TextStyle get snackbarAction =>
+      _buttonRole.copyWith(color: _scheme.inversePrimary);
 
-  /// Stepper value: 16/700 tabular, error when invalid.
-  TextStyle stepperValue({required bool isInvalid}) =>
-      AppTypography.withWeight(_texts.bodyLarge!, FontWeight.w700).copyWith(
-        fontFeatures: _tabular,
-        color: isInvalid ? _scheme.error : _scheme.onSurface,
-      );
+  /// SegmentedTray label: labelSmall, onSurface when selected (I5).
+  TextStyle trayLabel({required bool isSelected}) => _navRole.copyWith(
+    color: isSelected ? _scheme.onSurface : _scheme.onSurfaceVariant,
+  );
+
+  /// Stepper value: titleMedium, a key number, in error when invalid.
+  TextStyle stepperValue({required bool isInvalid}) => _cardTitleRole.copyWith(
+    color: isInvalid ? _scheme.error : _scheme.onSurface,
+  );
 }

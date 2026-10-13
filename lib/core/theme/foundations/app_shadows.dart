@@ -1,20 +1,14 @@
 import 'package:flutter/material.dart';
 
-/// V3 shadow treatments (02-theme-binding DECORATION), named by semantic
-/// rather than by source token: the kit's `shadow-card` is the dialog's
-/// [overlay] shadow, and the Card uses [whisper].
+/// Shadow treatments (02-theme-binding DECORATION), named by semantic.
 ///
-/// The theme owns these values; the component contract owns which one it uses
-/// per theme and state. Shadows are neutral, built on the scheme's `shadow`
-/// role and never tinted with the brand colour.
+/// Nothing rests on a shadow ("Flashcard Color Tokens" §4.8): cards, the
+/// search field and the navigation rise by their tone. Only what floats
+/// above the content casts one. Shadows are neutral, built on the scheme's
+/// `shadow` role and never tinted with the brand colour.
 abstract final class AppShadows {
-  /// card-whisper-shadow: Card, Toggle thumb. None in dark, which draws the
-  /// hairline edge instead.
-  static List<BoxShadow> whisper(ColorScheme scheme) =>
-      switch (scheme.brightness) {
-        Brightness.light => [_shadow(scheme, dy: 1, blur: 2, alpha: 0.04)],
-        Brightness.dark => const [],
-      };
+  /// The resting shadow (`shadow-raised`): none, in both themes.
+  static List<BoxShadow> whisper(ColorScheme scheme) => const [];
 
   /// overlay-shadow: Dialog.
   static List<BoxShadow> overlay(ColorScheme scheme) =>

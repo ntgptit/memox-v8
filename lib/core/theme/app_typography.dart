@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
 
-/// The V3 type scale bound to Material's TextTheme (01-foundations.md).
+/// The type scale bound to Material's TextTheme ("Flashcard Color Tokens"
+/// §3, ADR-022).
 ///
-/// Seven roles, one family. A component's own treatment (the button label, the
-/// app-bar title) overrides the nearest role in that component; it never adds a
-/// global style here.
+/// Twelve roles, one family (Be Vietnam Pro) with Noto Sans KR behind it for
+/// Korean. `height` is the role's line height over its size. Interface text
+/// is 14; the study content (a term, a meaning) keeps its own size and no
+/// tracking. Only titleLarge is bold (600); titles, item names and
+/// navigation labels are 500; everything else, a button's label included,
+/// is 400. Nothing is below 12.
 abstract final class AppTypography {
-  static const String fontFamily = 'PlusJakartaSans';
+  static const String fontFamily = 'BeVietnamPro';
 
-  static const double _tightTracking = -0.64;
+  /// The Korean face, reached when Be Vietnam Pro has no glyph.
+  static const List<String> fontFamilyFallback = ['NotoSansKR'];
 
-  /// Re-weights [style] and moves the variable font's `wght` axis with it.
-  /// On a variable font, fontWeight alone reports one weight and paints the
-  /// font's default instance.
+  /// Re-weights [style] and moves a variable font's `wght` axis with it (the
+  /// Noto Sans KR fallback is variable); a static face ignores the axis.
   static TextStyle withWeight(TextStyle style, FontWeight weight) =>
       style.copyWith(
         fontWeight: weight,
         fontVariations: [FontVariation.weight(weight.value.toDouble())],
       );
 
-  /// [base] with the seven V3 roles merged over it and every slot's `wght`
-  /// axis synced to its weight, so the slots V3 does not define still render
-  /// at the weight they declare.
+  /// [base] with the twelve roles merged over it, every slot in the family
+  /// and its fallback, and every slot's `wght` axis synced to its weight, so
+  /// the slots the scale does not define keep Material's size in the family.
   static TextTheme bind(TextTheme base) {
-    final merged = base.merge(_roles).apply(fontFamily: fontFamily);
+    final merged = base
+        .merge(_roles)
+        .apply(fontFamily: fontFamily, fontFamilyFallback: fontFamilyFallback);
     return merged.copyWith(
       displayLarge: _synced(merged.displayLarge),
       displayMedium: _synced(merged.displayMedium),
@@ -44,56 +50,79 @@ abstract final class AppTypography {
   }
 
   static final TextTheme _roles = TextTheme(
-    // stat: large metric, tabular numerals.
+    // display-term: the word being studied on a flashcard.
+    displaySmall: _role(size: 24, line: 32, weight: FontWeight.w400),
+    // term-tile: the Korean word in a match tile.
+    headlineSmall: _role(size: 20, line: 28, weight: FontWeight.w400),
+    // display-stat: a key number that replaces a sentence; tabular.
     displayMedium: _role(
-      size: 40,
-      weight: FontWeight.w600,
-      height: 1.0,
-      tracking: _tightTracking,
+      size: 28,
+      line: 36,
+      weight: FontWeight.w500,
       isTabular: true,
     ),
-    // display: hero figure.
-    displaySmall: _role(
-      size: 32,
-      weight: FontWeight.w800,
-      height: 1.1,
-      tracking: _tightTracking,
+    // title-section: a section heading.
+    titleLarge: _role(size: 20, line: 28, weight: FontWeight.w600),
+    // title-card: a card's title, a compact stat's number.
+    titleMedium: _role(
+      size: 18,
+      line: 24,
+      weight: FontWeight.w500,
+      tracking: 0.15,
     ),
-    // headline: screen headline.
-    headlineSmall: _role(
-      size: 24,
-      weight: FontWeight.w700,
-      height: 1.2,
-      tracking: _tightTracking,
+    // title-item: an item or row title.
+    titleSmall: _role(
+      size: 14,
+      line: 20,
+      weight: FontWeight.w500,
+      tracking: 0.1,
     ),
-    // title: section and screen titles.
-    titleLarge: _role(
-      size: 20,
-      weight: FontWeight.w700,
-      height: 1.2,
-      tracking: _tightTracking,
+    // body-content: the card content the learner reads.
+    bodyLarge: _role(size: 16, line: 24, weight: FontWeight.w400),
+    // body: interface copy.
+    bodyMedium: _role(
+      size: 14,
+      line: 20,
+      weight: FontWeight.w400,
+      tracking: 0.25,
     ),
-    // body large: list titles, emphasised body.
-    bodyLarge: _role(size: 16, weight: FontWeight.w500, height: 1.5),
-    // body: default running text.
-    bodyMedium: _role(size: 14, weight: FontWeight.w400, height: 1.5),
-    // caption: metadata, counts, chips. 12 is a hard floor. Tracking belongs
-    // to the roles that want it (overline 0.6, field count 0.2, the study
-    // mode badge 1.2): the kit's 12px sentences carry none.
-    labelSmall: _role(size: 12, weight: FontWeight.w600, height: 1.4),
+    // body-tile: a meaning in a match tile or a guess option.
+    bodySmall: _role(size: 13, line: 16, weight: FontWeight.w400),
+    // label-button: a button's label at both sizes.
+    labelLarge: _role(
+      size: 14,
+      line: 20,
+      weight: FontWeight.w400,
+      tracking: 0.1,
+    ),
+    // label-meta: progress text, a placeholder, a banner, a count.
+    labelMedium: _role(
+      size: 14,
+      line: 20,
+      weight: FontWeight.w400,
+      tracking: 0.5,
+    ),
+    // label-nav: a navigation label; the 12 floor.
+    labelSmall: _role(
+      size: 12,
+      line: 16,
+      weight: FontWeight.w500,
+      tracking: 0.5,
+    ),
   );
 
   static TextStyle _role({
     required double size,
+    required double line,
     required FontWeight weight,
-    required double height,
     double tracking = 0,
     bool isTabular = false,
   }) => withWeight(
     TextStyle(
       fontFamily: fontFamily,
+      fontFamilyFallback: fontFamilyFallback,
       fontSize: size,
-      height: height,
+      height: line / size,
       letterSpacing: tracking,
       fontFeatures: isTabular ? const [FontFeature.tabularFigures()] : null,
     ),
