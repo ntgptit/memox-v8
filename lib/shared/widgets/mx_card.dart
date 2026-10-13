@@ -3,11 +3,11 @@ import 'package:memox/core/theme/app_decorations.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_soft_ground.dart';
 
-/// The base surface: the card ground with the border hairline in both themes
-/// and the whisper shadow where the theme casts one. It is a Material, so the ripple of a row
-/// inside paints on the card instead of under its fill (ruling S14).
+/// The base surface: the card ground at radius 12, with no edge and no
+/// shadow in either theme ("Flashcard Color Tokens" §6). It is a Material, so
+/// the ripple of a row inside paints on the card instead of under its fill
+/// (ruling S14).
 class MxCard extends StatelessWidget {
   const MxCard({
     super.key,
@@ -19,6 +19,7 @@ class MxCard extends StatelessWidget {
     this.isSuccess = false,
     this.isDanger = false,
     this.isRecessed = false,
+    this.isCompact = false,
   }) : assert(
          (isHero ? 1 : 0) +
                  (isWarning ? 1 : 0) +
@@ -35,28 +36,30 @@ class MxCard extends StatelessWidget {
   /// radius, so their dividers meet the corners.
   final bool isFullBleed;
 
-  /// The primary container, with the border hairline in both themes.
+  /// The primary container.
   final bool isHero;
 
-  /// The warning-soft ground with the warning border (screen 02's locked
-  /// strip, owner decision D-O1).
+  /// The warning-soft ground (screen 02's locked strip, owner decision
+  /// D-O1).
   final bool isWarning;
 
   /// A primary edge at the control weight over the card's own ground: a
   /// picked row of a selection (screen 07).
   final bool isSelected;
 
-  /// The success-soft ground with the success border: a finished session
-  /// (FE-A6 D14).
+  /// The success-soft ground: a finished session (FE-A6 D14).
   final bool isSuccess;
 
-  /// The danger-soft ground with the destructive border: a session stopped
-  /// by an error (FE-A6 D14).
+  /// The danger-soft ground: a session stopped by an error (FE-A6 D14).
   final bool isDanger;
 
-  /// The container-low ground, flat, with the border hairline: the answer face of
-  /// a study card (kit StudyFaceCard, screen 16a).
+  /// The container-low ground: the answer face of a study card (kit
+  /// StudyFaceCard, screen 16a).
   final bool isRecessed;
+
+  /// The overview screen's padding ([AppSpacing.cardCompact]) in place of
+  /// [AppSpacing.card].
+  final bool isCompact;
 
   @override
   Widget build(BuildContext context) {
@@ -91,35 +94,20 @@ class MxCard extends StatelessWidget {
     };
     final radius = surface.borderRadius!;
     final edge = isSelected
-        ? Border.all(color: context.colors.primary, width: AppStroke.control)
-        : surface.border as Border?;
-    final padded = Padding(
-      padding: isFullBleed
-          ? EdgeInsets.zero
-          : const EdgeInsets.all(AppSpacing.card),
-      child: child,
-    );
-    // A toned card is a soft ground, light in both themes: its content
-    // renders in Day (spec 2026-10-10 D4). The danger card keeps its
-    // pre-Indigo tint, dark in Night, so its content stays in the current
-    // theme (DEV-371).
-    final isSoft = isWarning || isSuccess;
+        ? BorderSide(color: context.colors.primary, width: AppStroke.control)
+        : BorderSide.none;
+    final padding = switch ((isFullBleed, isCompact)) {
+      (true, _) => EdgeInsets.zero,
+      (_, true) => const EdgeInsets.all(AppSpacing.cardCompact),
+      _ => const EdgeInsets.all(AppSpacing.card),
+    };
     return SizedBox(
       width: double.infinity,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: radius,
-          boxShadow: surface.boxShadow,
-        ),
-        child: Material(
-          color: surface.color,
-          shape: RoundedRectangleBorder(
-            borderRadius: radius,
-            side: edge?.top ?? BorderSide.none,
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: isSoft ? MxSoftGround(child: padded) : padded,
-        ),
+      child: Material(
+        color: surface.color,
+        shape: RoundedRectangleBorder(borderRadius: radius, side: edge),
+        clipBehavior: Clip.antiAlias,
+        child: Padding(padding: padding, child: child),
       ),
     );
   }

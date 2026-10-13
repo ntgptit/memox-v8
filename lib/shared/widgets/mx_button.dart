@@ -32,7 +32,6 @@ typedef _Geometry = ({
   double height,
   double radius,
   double padding,
-  bool isSmallType,
   bool canWrap,
 });
 
@@ -103,17 +102,10 @@ class MxButton extends StatelessWidget {
   /// A caller-constrained label wraps to at most this many lines.
   static const int _maxWrappedLines = 2;
 
-  /// Study action horizontal padding (contract: 0 36).
-  static const double _studyPadding = 36;
-
   @override
   Widget build(BuildContext context) {
     final paint = _paintFor(context);
-    final geometry = _geometryFor(
-      size,
-      hasIcon: icon != null || mark != null,
-      isBlock: isBlock,
-    );
+    final geometry = _geometryFor(size);
     final button = TextButton(
       onPressed: isLoading ? null : onPressed,
       autofocus: isAutofocused,
@@ -125,9 +117,7 @@ class MxButton extends StatelessWidget {
         height: geometry.height,
         radius: geometry.radius,
         padding: geometry.padding,
-        label: geometry.isSmallType
-            ? context.textStyles.buttonLabelSmall
-            : context.textStyles.buttonLabel,
+        label: context.textStyles.buttonLabel,
       ),
       child: _content(
         paint.foreground,
@@ -164,14 +154,8 @@ class MxButton extends StatelessWidget {
   /// its style and the context's text scale, the icon and its gap, and the
   /// horizontal padding on both sides.
   double naturalWidth(BuildContext context) {
-    final geometry = _geometryFor(
-      size,
-      hasIcon: icon != null || mark != null,
-      isBlock: isBlock,
-    );
-    final style = geometry.isSmallType
-        ? context.textStyles.buttonLabelSmall
-        : context.textStyles.buttonLabel;
+    final geometry = _geometryFor(size);
+    final style = context.textStyles.buttonLabel;
     final painter = TextPainter(
       text: TextSpan(text: label, style: style),
       textDirection: Directionality.of(context),
@@ -229,11 +213,11 @@ class MxButton extends StatelessWidget {
         foreground: context.semanticColors.onErrorFill,
         edge: BorderSide.none,
       ),
-      // The danger tint with the error label, as before Indigo (DEV-371);
-      // the solid pair above stays the destructive action's.
+      // The danger soft ground and its edge; the solid pair above stays the
+      // destructive action's.
       MxButtonTone.dangerSoft => (
         fill: context.semanticColors.dangerSoft,
-        foreground: colors.error,
+        foreground: context.semanticColors.onDangerSoft,
         edge: BorderSide(
           color: context.semanticColors.dangerBorder,
           width: AppStroke.hairline,
@@ -248,47 +232,29 @@ class MxButton extends StatelessWidget {
     };
   }
 
-  static _Geometry _geometryFor(
-    MxButtonSize size, {
-    required bool hasIcon,
-    required bool isBlock,
-  }) => switch (size) {
-    MxButtonSize.regular => (
+  /// Two sizes ("Flashcard Color Tokens" §6): regular, 40 tall with 24 of
+  /// padding, for a button standing alone or the width of its card; small,
+  /// 32 tall with 12, for one in a row with other content. A card uses one
+  /// size. [MxButtonSize.compact] is the small size, [MxButtonSize.study]
+  /// the regular one, and [MxButtonSize.chip] the chip's 28 geometry. Every
+  /// size is a pill with the labelLarge label in a 48 touch area.
+  static _Geometry _geometryFor(MxButtonSize size) => switch (size) {
+    MxButtonSize.regular || MxButtonSize.study => (
       height: AppSize.buttonRegular,
-      radius: AppRadius.md,
-      padding: AppSpacing.gutter,
-      isSmallType: false,
-      canWrap: true,
+      radius: AppRadius.full,
+      padding: AppSpacing.section,
+      canWrap: size == MxButtonSize.regular,
     ),
-    MxButtonSize.small => (
+    MxButtonSize.small || MxButtonSize.compact => (
       height: AppSize.buttonSmall,
-      radius: AppRadius.md,
-      padding: hasIcon ? AppSpacing.gutter : AppSpacing.grouped,
-      isSmallType: false,
-      canWrap: false,
-    ),
-    MxButtonSize.compact => (
-      height: AppSize.buttonCompact,
-      radius: AppRadius.sm,
+      radius: AppRadius.full,
       padding: AppSpacing.grouped,
-      isSmallType: true,
       canWrap: false,
     ),
     MxButtonSize.chip => (
       height: AppSize.chip,
       radius: AppRadius.full,
       padding: AppSpacing.control,
-      isSmallType: true,
-      canWrap: false,
-    ),
-    MxButtonSize.study => (
-      height: AppSize.buttonRegular,
-      radius: AppRadius.full,
-      // The contract's 36 sizes a pill that hugs its label; a block
-      // action is given its width by its row, and needs the room for
-      // the label (FE-A6 P4: "Remembered" in a two-up row).
-      padding: isBlock ? AppSpacing.gutter : _studyPadding,
-      isSmallType: false,
       canWrap: false,
     ),
   };

@@ -109,7 +109,7 @@ class _StudyBrowseWidgetState extends State<StudyBrowseWidget> {
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
             child: Semantics(
               container: true,
               customSemanticsActions: {

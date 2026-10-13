@@ -137,9 +137,7 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
           SliverFillRemaining(
             hasScrollBody: false,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.gutter,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 spacing: AppSpacing.control,

@@ -38,12 +38,37 @@ abstract final class AppSpacing {
   static const double pageEnd = 48;
 }
 
-/// The screen's side margin for the window in scope (§4.1, §5).
+/// The window's width, for a subtree whose MediaQuery an ancestor narrowed
+/// to its own area: the tab shell beside its rail (FE-C5). The window size
+/// class ("Flashcard Color Tokens" §5) is the window's, not the area's.
+class WindowWidthScope extends InheritedWidget {
+  const WindowWidthScope({
+    super.key,
+    required this.width,
+    required super.child,
+  });
+
+  final double width;
+
+  /// The nearest scope's width, or the MediaQuery's where there is none.
+  static double of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<WindowWidthScope>()?.width ??
+      MediaQuery.sizeOf(context).width;
+
+  @override
+  bool updateShouldNotify(WindowWidthScope oldWidget) =>
+      width != oldWidget.width;
+}
+
+/// The window size class and the screen's side margin it sets (§4.1, §5).
 extension ScreenMargin on BuildContext {
-  /// [AppSpacing.gutter] below [AppSize.navRailBreakpoint],
-  /// [AppSpacing.gutterMedium] from it.
+  /// Whether the window is compact: narrower than
+  /// [AppSize.navRailBreakpoint].
+  bool get isCompactWindow =>
+      WindowWidthScope.of(this) < AppSize.navRailBreakpoint;
+
+  /// [AppSpacing.gutter] on a compact window, [AppSpacing.gutterMedium] from
+  /// [AppSize.navRailBreakpoint].
   double get screenMargin =>
-      MediaQuery.sizeOf(this).width < AppSize.navRailBreakpoint
-      ? AppSpacing.gutter
-      : AppSpacing.gutterMedium;
+      isCompactWindow ? AppSpacing.gutter : AppSpacing.gutterMedium;
 }

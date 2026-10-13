@@ -28,10 +28,10 @@ class SessionFooterHintWidget extends StatelessWidget {
     }
     final style = context.textStyles.sessionHint;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.gutter,
+      padding: EdgeInsets.fromLTRB(
+        context.screenMargin,
         AppSpacing.control,
-        AppSpacing.gutter,
+        context.screenMargin,
         AppSpacing.gutter,
       ),
       child: Text.rich(

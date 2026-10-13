@@ -24,10 +24,10 @@ class StudyCtaRowWidget extends StatelessWidget {
         children.length > 1 &&
         MediaQuery.textScalerOf(context).scale(1) >= _stackTextScale;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
+      padding: EdgeInsets.fromLTRB(
+        context.screenMargin,
         AppSpacing.gutter,
-        AppSpacing.gutter,
-        AppSpacing.gutter,
+        context.screenMargin,
         0,
       ),
       child: switch (children) {

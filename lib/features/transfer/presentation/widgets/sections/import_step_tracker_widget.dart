@@ -38,10 +38,10 @@ class ImportStepTrackerWidget extends StatelessWidget {
       ),
       child: ExcludeSemantics(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.gutter,
+          padding: EdgeInsets.fromLTRB(
+            context.screenMargin,
             0,
-            AppSpacing.gutter,
+            context.screenMargin,
             AppSpacing.grouped,
           ),
           child: LayoutBuilder(

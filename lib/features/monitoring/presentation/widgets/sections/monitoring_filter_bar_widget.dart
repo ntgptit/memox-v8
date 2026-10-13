@@ -47,7 +47,7 @@ class MonitoringFilterBarWidget extends StatelessWidget {
       axis: Axis.horizontal,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+        padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
         child: Row(
           spacing: AppSpacing.control,
           children: [

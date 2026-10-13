@@ -20,6 +20,7 @@ class MxAppShell extends StatelessWidget {
     this.footer,
     this.fab,
     this.notice,
+    this.isSession = false,
   }) : assert(
          fab == null || footer == null,
          'the Fab contract anchors a FAB to the bottom or above the nav, '
@@ -40,10 +41,23 @@ class MxAppShell extends StatelessWidget {
   /// The pinned action (MxFab), anchored by the contract's placement rule.
   final Widget? fab;
 
-  /// A standing MxFloatingNotice over the bottom of the body, 16 in from
-  /// each side and above the bottom edge (SB-U1). The body is padded below
+  /// A standing MxFloatingNotice over the bottom of the body, the screen
+  /// margin in from each side and above the bottom edge (SB-U1). The body is padded below
   /// by its height, so the end of a scroll clears it.
   final Widget? notice;
+
+  /// A full-screen study session: one column of at most
+  /// [AppSize.contentMaxWidth] at every window size ("Flashcard Color
+  /// Tokens" §5).
+  final bool isSession;
+
+  /// The widest the column grows: [AppSize.contentMaxWidth] on a compact
+  /// window and in a session, [AppSize.contentMaxWidthWide] from
+  /// [AppSize.navRailBreakpoint].
+  double _columnMaxWidth(BuildContext context) =>
+      isSession || context.isCompactWindow
+      ? AppSize.contentMaxWidth
+      : AppSize.contentMaxWidthWide;
 
   /// Whether the keyboard is up. Its Scaffold resizes the body above the
   /// keyboard and strips the inset from the body's MediaQuery, so a widget
@@ -64,10 +78,11 @@ class MxAppShell extends StatelessWidget {
   }
 
   Widget _scaffold(BuildContext context, Widget? appBar) {
+    final columnMaxWidth = _columnMaxWidth(context);
     return Scaffold(
       backgroundColor: context.colors.surface,
-      // A wide window centres the column at [AppSize.contentMaxWidth]; the
-      // ground fills the rest (FE-C5). A phone gets its full width.
+      // A wide window centres the column at its maximum; the ground fills
+      // the rest (FE-C5). A phone gets its full width.
       // A context below the Scaffold, whose MediaQuery has already lost the
       // bottom inset when a bottom nav owns it; the shell's own context would
       // hand that inset back to the body.
@@ -75,7 +90,7 @@ class MxAppShell extends StatelessWidget {
         builder: (bodyContext) => LayoutBuilder(
           builder: (_, constraints) => Center(
             child: SizedBox(
-              width: math.min(constraints.maxWidth, AppSize.contentMaxWidth),
+              width: math.min(constraints.maxWidth, columnMaxWidth),
               child: Column(
                 children: [
                   ?appBar,
@@ -105,6 +120,8 @@ class MxAppShell extends StatelessWidget {
       floatingActionButton: fab,
       floatingActionButtonLocation: _MxFabLocation(
         hasBottomBar: bottomBar != null,
+        columnMaxWidth: columnMaxWidth,
+        margin: context.screenMargin,
       ),
     );
   }
@@ -121,29 +138,35 @@ class _TypingScope extends InheritedWidget {
       isTyping != oldWidget.isTyping;
 }
 
-/// FAB placement (Fab contract, caller-owned): 16 from the column's trailing
-/// edge, which on a phone is the screen's (FE-C5);
+/// FAB placement (Fab contract, caller-owned): the screen margin from the
+/// column's trailing edge, which on a phone is the screen's (FE-C5);
 /// 24 + gesture inset above the bottom, or 4 above the bottom bar, which
 /// already carries the inset.
 final class _MxFabLocation extends FloatingActionButtonLocation {
-  const _MxFabLocation({required this.hasBottomBar});
+  const _MxFabLocation({
+    required this.hasBottomBar,
+    required this.columnMaxWidth,
+    required this.margin,
+  });
 
   final bool hasBottomBar;
+  final double columnMaxWidth;
+  final double margin;
 
   @override
   Offset getOffset(ScaffoldPrelayoutGeometry geometry) {
     final fab = geometry.floatingActionButtonSize;
     final width = geometry.scaffoldSize.width;
-    final column = math.min(width, AppSize.contentMaxWidth);
+    final column = math.min(width, columnMaxWidth);
     final columnStart = (width - column) / 2;
     final columnEnd = columnStart + column;
     final x = switch (geometry.textDirection) {
       TextDirection.ltr =>
         math.min(columnEnd, width - geometry.minInsets.right) -
-            AppSpacing.gutter -
+            margin -
             fab.width,
       TextDirection.rtl =>
-        math.max(columnStart, geometry.minInsets.left) + AppSpacing.gutter,
+        math.max(columnStart, geometry.minInsets.left) + margin,
     };
     // The part of the gesture inset not already covered by a bottom widget.
     final bottomContent = geometry.scaffoldSize.height - geometry.contentBottom;
@@ -154,10 +177,13 @@ final class _MxFabLocation extends FloatingActionButtonLocation {
 
   @override
   bool operator ==(Object other) =>
-      other is _MxFabLocation && other.hasBottomBar == hasBottomBar;
+      other is _MxFabLocation &&
+      other.hasBottomBar == hasBottomBar &&
+      other.columnMaxWidth == columnMaxWidth &&
+      other.margin == margin;
 
   @override
-  int get hashCode => hasBottomBar.hashCode;
+  int get hashCode => Object.hash(hasBottomBar, columnMaxWidth, margin);
 }
 
 /// Floats [notice] over the bottom of [child] and pads [child] below by the
@@ -166,6 +192,7 @@ class _NoticeLayer extends StatefulWidget {
   const _NoticeLayer({required this.notice, required this.child});
 
   final Widget? notice;
+
   final Widget child;
 
   @override
@@ -188,7 +215,7 @@ class _NoticeLayerState extends State<_NoticeLayer> {
     final inset = media.padding.bottom;
     final reserve = _noticeHeight == 0
         ? 0.0
-        : _noticeHeight + AppSpacing.gutter;
+        : _noticeHeight + context.screenMargin;
     return Stack(
       children: [
         Positioned.fill(
@@ -200,9 +227,9 @@ class _NoticeLayerState extends State<_NoticeLayer> {
           ),
         ),
         PositionedDirectional(
-          start: AppSpacing.gutter,
-          end: AppSpacing.gutter,
-          bottom: AppSpacing.gutter + inset,
+          start: context.screenMargin,
+          end: context.screenMargin,
+          bottom: context.screenMargin + inset,
           child: _SizeReporter(onSize: _measured, child: notice),
         ),
       ],

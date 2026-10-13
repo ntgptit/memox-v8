@@ -24,6 +24,17 @@ abstract final class AppComponentThemes {
     borderSide: BorderSide(color: color, width: AppStroke.hairline),
   );
 
+  /// The search field's edge ("Flashcard Color Tokens" §6): a pill with no
+  /// stroke at rest, and the focus ring's colour and width on focus.
+  static OutlineInputBorder searchEdge({required Color? focusColor}) =>
+      OutlineInputBorder(
+        gapPadding: 0,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        borderSide: focusColor == null
+            ? BorderSide.none
+            : BorderSide(color: focusColor, width: AppStroke.focus),
+      );
+
   /// Every form field (TextField contract): the muted fill that lightens on
   /// focus, the outline at rest (the border hairline when disabled), the
   /// focus ring on focus, error in error, the 14 hint.

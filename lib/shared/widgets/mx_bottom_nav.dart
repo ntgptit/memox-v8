@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/foundations/app_durations.dart';
+import 'package:memox/core/theme/foundations/app_easing.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
@@ -20,10 +22,10 @@ final class MxNavDestination {
   final String label;
 }
 
-/// The top-level destinations on a bar of the page surface with the ghost
-/// edge, a tinted pill behind the current glyph. It is in-flow, never over
-/// the scroll (so a backdrop blur had nothing to blur, DEV-302), and adds
-/// the gesture inset below itself.
+/// The top-level destinations on a 64 bar of the page surface, edged on top
+/// by the hairline divider, with no shadow ("Flashcard Color Tokens" §6). It
+/// is in-flow, never over the scroll, and adds the gesture inset below
+/// itself.
 class MxBottomNav extends StatelessWidget {
   const MxBottomNav({
     super.key,
@@ -41,47 +43,35 @@ class MxBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     final inset = MediaQuery.paddingOf(context).bottom;
-    // The selected ground (spec 2026-10-10 §4).
-    final pillGround = colors.primaryContainer;
-    final radius = BorderRadius.circular(AppRadius.lg);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.control,
-        AppSpacing.micro,
-        AppSpacing.control,
-        AppSpacing.grouped + inset,
-      ),
-      child: ClipRRect(
-        borderRadius: radius,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: radius,
-            border: Border.all(
-              color: context.semanticColors.border,
-              width: AppStroke.hairline,
-            ),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: Border(
+          top: BorderSide(
+            color: context.semanticColors.divider,
+            width: AppStroke.hairline,
           ),
-          // Ruling R3: 64 at minimum, grows with text scaling.
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: AppSize.bottomNavBar),
-            child: Material(
-              type: MaterialType.transparency,
-              child: Row(
-                children: [
-                  for (final (index, destination) in destinations.indexed)
-                    Expanded(
-                      child: _Item(
-                        destination: destination,
-                        isSelected: index == selectedIndex,
-                        pillGround: pillGround,
-                        onTap: () => onSelected(index),
-                      ),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: inset),
+        // Ruling R3: 64 at minimum, grows with text scaling.
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: AppSize.bottomNavBar),
+          child: Material(
+            type: MaterialType.transparency,
+            child: Row(
+              children: [
+                for (final (index, destination) in destinations.indexed)
+                  Expanded(
+                    child: MxNavItem(
+                      destination: destination,
+                      isSelected: index == selectedIndex,
+                      onTap: () => onSelected(index),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ),
         ),
@@ -90,59 +80,72 @@ class MxBottomNav extends StatelessWidget {
   }
 }
 
-class _Item extends StatelessWidget {
-  const _Item({
+/// One destination of [MxBottomNav] and MxNavRail: the glyph on its pill
+/// above the label. The current one sits on a 56 × 32 pill of the secondary
+/// container, its glyph in on-secondary-container and its label in
+/// on-surface; the rest read on-surface-variant. The pill fades in over
+/// [AppDurations.sheet] on the standard easing.
+class MxNavItem extends StatelessWidget {
+  const MxNavItem({
+    super.key,
     required this.destination,
     required this.isSelected,
-    required this.pillGround,
     required this.onTap,
   });
 
   final MxNavDestination destination;
   final bool isSelected;
-  final Color pillGround;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final duration = MediaQuery.disableAnimationsOf(context)
+        ? Duration.zero
+        : AppDurations.sheet;
     return Semantics(
       container: true,
       selected: isSelected,
       button: true,
       child: InkWell(
         onTap: onTap,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: AppSpacing.micro,
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: isSelected ? pillGround : null,
-                borderRadius: BorderRadius.circular(AppRadius.full),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.gutter,
-                  vertical: AppSpacing.micro,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.micro,
+            vertical: AppSpacing.micro,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: AppSpacing.micro,
+            children: [
+              AnimatedContainer(
+                duration: duration,
+                curve: AppEasing.standard,
+                width: AppSize.navIndicatorWidth,
+                height: AppSize.navIndicatorHeight,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? colors.secondaryContainer
+                      : colors.secondaryContainer.withValues(alpha: 0),
+                  borderRadius: BorderRadius.circular(AppRadius.full),
                 ),
                 child: Icon(
                   isSelected ? destination.selectedIcon : destination.icon,
-                  size: AppIconSize.compact,
+                  size: AppIconSize.standard,
                   color: isSelected
-                      ? context.semanticColors.primaryText
+                      ? colors.onSecondaryContainer
                       : colors.onSurfaceVariant,
                 ),
               ),
-            ),
-            Text(
-              destination.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.textStyles.navLabel(isSelected: isSelected),
-            ),
-          ],
+              Text(
+                destination.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textStyles.navLabel(isSelected: isSelected),
+              ),
+            ],
+          ),
         ),
       ),
     );

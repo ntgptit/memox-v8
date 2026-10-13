@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
+import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
-/// The top-level destinations in a rail on the leading edge, for windows of
-/// [AppSize.navRailBreakpoint] and wider (FE-C5). The kit draws no rail: it
-/// takes MxBottomNav's glyphs, pill and label so the two read as one
-/// control. It takes the insets on its own side and scrolls when the window
-/// is short.
+/// The top-level destinations in an 80-wide rail on the leading edge, for
+/// windows of [AppSize.navRailBreakpoint] and wider (FE-C5): the page
+/// surface, edged on its trailing side by the hairline divider, with
+/// MxBottomNav's items, so the two read as one control ("Flashcard Color
+/// Tokens" §6). It takes the insets on its own side and scrolls when the
+/// window is short.
 class MxNavRail extends StatelessWidget {
   const MxNavRail({
     super.key,
@@ -28,13 +28,18 @@ class MxNavRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    // The selected ground (spec 2026-10-10 §4).
-    final pillGround = colors.primaryContainer;
     // SafeArea's sides are physical: the rail takes only the one it sits on.
     final isLtr = Directionality.of(context) == TextDirection.ltr;
-    return ColoredBox(
-      color: colors.surfaceContainerLow,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: BorderDirectional(
+          end: BorderSide(
+            color: context.semanticColors.divider,
+            width: AppStroke.hairline,
+          ),
+        ),
+      ),
       child: SafeArea(
         left: isLtr,
         right: !isLtr,
@@ -48,87 +53,17 @@ class MxNavRail extends StatelessWidget {
                 spacing: AppSpacing.micro,
                 children: [
                   for (final (index, destination) in destinations.indexed)
-                    _RailItem(
-                      destination: destination,
-                      isSelected: index == selectedIndex,
-                      pillGround: pillGround,
-                      onTap: () => onSelected(index),
+                    SizedBox(
+                      width: AppSize.navRail,
+                      child: MxNavItem(
+                        destination: destination,
+                        isSelected: index == selectedIndex,
+                        onTap: () => onSelected(index),
+                      ),
                     ),
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RailItem extends StatelessWidget {
-  const _RailItem({
-    required this.destination,
-    required this.isSelected,
-    required this.pillGround,
-    required this.onTap,
-  });
-
-  final MxNavDestination destination;
-  final bool isSelected;
-  final Color pillGround;
-  final VoidCallback onTap;
-
-  static const double _minHeight = 56;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Semantics(
-      container: true,
-      selected: isSelected,
-      button: true,
-      child: InkWell(
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: _minHeight,
-            minWidth: AppSize.navRail,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: AppSpacing.micro,
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: isSelected ? pillGround : null,
-                  borderRadius: BorderRadius.circular(AppRadius.full),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                    vertical: AppSpacing.micro,
-                  ),
-                  child: Icon(
-                    isSelected ? destination.selectedIcon : destination.icon,
-                    size: AppIconSize.compact,
-                    color: isSelected
-                        ? context.semanticColors.primaryText
-                        : colors.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.micro,
-                ),
-                child: Text(
-                  destination.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textStyles.navLabel(isSelected: isSelected),
-                ),
-              ),
-            ],
           ),
         ),
       ),

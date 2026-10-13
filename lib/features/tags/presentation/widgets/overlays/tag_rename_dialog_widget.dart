@@ -211,9 +211,8 @@ class _MergePanel extends StatelessWidget {
     final l10n = context.l10n;
     return MxCard(
       isWarning: true,
-      // A soft ground: its styles are read from inside it, so they resolve
-      // Day's (spec 2026-10-10 D4); the glyphs take the on-soft warning.
-      child: Builder(builder: (ground) => _content(ground, l10n)),
+      // The glyphs take the on-soft warning.
+      child: _content(context, l10n),
     );
   }
 

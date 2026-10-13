@@ -41,18 +41,14 @@ class DeckLockStripWidget extends StatelessWidget {
               size: MxIconTileSize.medium,
               tone: isLocked ? MxIconTileTone.warning : MxIconTileTone.primary,
             ),
-            // A locked strip is a soft ground: its text styles are read from
-            // inside it, so they resolve Day's (spec 2026-10-10 D4).
             Expanded(
-              child: Builder(
-                builder: (ground) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.micro,
-                  children: [
-                    Text(title, style: ground.textStyles.rowTitle),
-                    Text(body, style: ground.textStyles.rowDescription),
-                  ],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: AppSpacing.micro,
+                children: [
+                  Text(title, style: context.textStyles.rowTitle),
+                  Text(body, style: context.textStyles.rowDescription),
+                ],
               ),
             ),
           ],

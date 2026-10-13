@@ -43,9 +43,7 @@ class MxBreadcrumb extends StatelessWidget {
             child: ConstrainedBox(
               constraints: BoxConstraints(minWidth: constraints.maxWidth),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.gutter,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   spacing: AppSpacing.micro,

@@ -43,6 +43,7 @@ class SessionSummaryWidget extends StatelessWidget {
     final l10n = context.l10n;
     final summary = view.summary;
     return MxAppShell(
+      isSession: true,
       appBar: MxAppBar(
         title: l10n.summaryAppBar,
         density: MxAppBarDensity.content,

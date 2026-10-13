@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
@@ -101,7 +102,7 @@ class _MxSearchFieldState extends State<MxSearchField> {
     final styles = context.textStyles;
     final isFocused = _focusNode.hasFocus;
     final hasQuery = _controller.text.isNotEmpty;
-    // As in MxTextField: padding centres the line in the 52 floor, so the
+    // As in MxTextField: padding centres the line in the 56 floor, so the
     // decorator paints the full box and scaled text still grows it.
     final valueStyle = styles.searchValue;
     final lineHeight = valueStyle.fontSize! * valueStyle.height!;
@@ -118,13 +119,18 @@ class _MxSearchFieldState extends State<MxSearchField> {
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: styles.searchHint,
-        // The edges are the theme's field (spec §4.6); the search keeps its
-        // own fill.
-        fillColor: isFocused
-            ? colors.surfaceContainerLowest
-            : colors.surfaceContainer,
+        // A pill on the search ground, no edge and no shadow ("Flashcard
+        // Color Tokens" §6); the focus ring shows on focus.
+        filled: true,
+        fillColor: context.semanticColors.searchSurface,
+        border: AppComponentThemes.searchEdge(focusColor: null),
+        enabledBorder: AppComponentThemes.searchEdge(focusColor: null),
+        disabledBorder: AppComponentThemes.searchEdge(focusColor: null),
+        focusedBorder: AppComponentThemes.searchEdge(
+          focusColor: context.semanticColors.focusRing,
+        ),
         contentPadding: EdgeInsets.symmetric(
-          vertical: (AppSize.input - lineHeight) / 2,
+          vertical: (AppSize.search - lineHeight) / 2,
         ),
         prefixIcon: Padding(
           padding: const EdgeInsetsDirectional.only(
@@ -133,7 +139,7 @@ class _MxSearchFieldState extends State<MxSearchField> {
           ),
           child: Icon(
             AppIcons.search,
-            size: AppIconSize.compact,
+            size: AppIconSize.standard,
             color: isFocused
                 ? context.semanticColors.primaryText
                 : colors.onSurfaceVariant,

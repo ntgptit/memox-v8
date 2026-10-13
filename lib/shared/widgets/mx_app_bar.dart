@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
-/// Content bar (a back control and a deck/card name) or screen bar (a screen
-/// name). Both are 56 tall.
+/// Content bar (a back control and a deck/card name, titleMedium) or screen
+/// bar (a screen name, titleLarge). Both are 64 tall.
 enum MxAppBarDensity { content, screen }
 
 /// The top chrome: leading control, flexible title, trailing actions. The
 /// title is the only slot that gives up width; it ellipsises on one line.
 ///
-/// Placed in-flow by MxAppShell. It is 56 tall at minimum and grows only when
-/// text scaling makes the title taller (ruling R1).
+/// Placed in-flow by MxAppShell. It is 64 tall at minimum and grows only when
+/// text scaling makes the title taller (ruling R1). Its sides are the
+/// screen's margin ("Flashcard Color Tokens" §6).
 class MxAppBar extends StatelessWidget {
   const MxAppBar({
     super.key,
@@ -31,26 +31,22 @@ class MxAppBar extends StatelessWidget {
 
   /// Takes the title's place and its width, such as the search field of
   /// screen 04. It brings its own semantics; no header flag is added. A
-  /// search field keeps 8 above and below it, so the bar grows to 68 rather
-  /// than pressing a 52 field against its edges, and ends on the gutter so
-  /// its border lines up with the content below.
+  /// search field keeps 4 above and below it, so the 56 field fills the 64
+  /// bar, and its sides line up with the content below.
   final Widget? titleWidget;
   final MxAppBarDensity density;
 
   /// Usually an MxIconButton (back, or close in selection mode).
   final Widget? leading;
 
-  /// MxIconButtons or compact MxButtons; never dropped for the title. A
-  /// trailing MxButton ends on the gutter, as the kit's text actions do; an
-  /// icon's 48 touch area already insets its glyph.
+  /// MxIconButtons or compact MxButtons; never dropped for the title.
   final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
     final isContent = density == MxAppBarDensity.content;
     final styles = context.textStyles;
-    final side = isContent ? AppSpacing.control : AppSpacing.gutter;
-    final endsOnText = actions.lastOrNull is MxButton;
+    final side = context.screenMargin;
     final holdsField = titleWidget is MxSearchField;
     return ColoredBox(
       color: context.colors.surface,
@@ -60,13 +56,10 @@ class MxAppBar extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: AppSize.appBar),
           child: Padding(
             padding: EdgeInsetsDirectional.only(
-              // A bar without a leading control starts its title on the
-              // gutter, in line with the body (critique 2026-09-30 part
-              // 3c-1).
-              start: leading == null ? AppSpacing.gutter : side,
-              top: holdsField ? AppSpacing.control : 0,
-              end: endsOnText || holdsField ? AppSpacing.gutter : side,
-              bottom: holdsField ? AppSpacing.control : 0,
+              start: side,
+              top: holdsField ? AppSpacing.micro : 0,
+              end: side,
+              bottom: holdsField ? AppSpacing.micro : 0,
             ),
             child: Row(
               spacing: AppSpacing.micro,

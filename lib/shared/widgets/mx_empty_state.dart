@@ -186,8 +186,7 @@ class _Tile extends StatelessWidget {
         semantic.warningSoft,
         semantic.onWarningSoft,
       ),
-      // The error glyph on its tint, as before Indigo (DEV-371).
-      MxEmptyStateTone.danger => (semantic.dangerSoft, context.colors.error),
+      MxEmptyStateTone.danger => (semantic.dangerSoft, semantic.onDangerSoft),
     };
     return SizedBox.square(
       dimension: isCompact

@@ -52,18 +52,18 @@ class _LoadingHeader extends StatelessWidget {
     // The bars say nothing; the header is heard once as loading.
     container: true,
     label: context.l10n.commonLoading,
-    child: const ExcludeSemantics(
+    child: ExcludeSemantics(
       child: MxSkeletonPulse(
         child: Padding(
           padding: EdgeInsets.fromLTRB(
-            AppSpacing.gutter,
+            context.screenMargin,
             AppSpacing.control,
-            AppSpacing.gutter,
+            context.screenMargin,
             AppSpacing.control,
           ),
-          child: Align(
+          child: const Align(
             alignment: AlignmentDirectional.centerStart,
-            child: MxSkeleton(width: _pathWidth),
+            child: const MxSkeleton(width: _pathWidth),
           ),
         ),
       ),

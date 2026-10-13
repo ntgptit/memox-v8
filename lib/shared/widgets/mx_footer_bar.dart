@@ -38,9 +38,9 @@ class MxFooterBar extends StatelessWidget {
       ),
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          AppSpacing.gutter,
+          context.screenMargin,
           AppSpacing.control,
-          AppSpacing.gutter,
+          context.screenMargin,
           AppSpacing.gutter + inset,
         ),
         child: Column(

@@ -306,7 +306,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
     final page = switch (viewAsync) {
       AsyncData(value: Ok(:final value)) => _pageOf(value, turn),
       // The deck is gone: the listener leaves.
-      AsyncData() => const MxAppShell(body: SizedBox.shrink()),
+      AsyncData() => const MxAppShell(isSession: true, body: SizedBox.shrink()),
       AsyncError(:final isLoading) => StudySessionErrorWidget(
         onClose: () => widget.onLeave(null),
         onRetry: _reload,
@@ -343,7 +343,10 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
         onDone: () => widget.onDone(view.deckId),
         onStudyDeck: () => widget.onStudyDeck(view.deckId),
       ),
-      LeaveStale() => const MxAppShell(body: SizedBox.shrink()),
+      LeaveStale() => const MxAppShell(
+        isSession: true,
+        body: SizedBox.shrink(),
+      ),
       null => _sessionPage(context, view, turn),
     };
   }
@@ -367,6 +370,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
         .value
         ?.language;
     return MxAppShell(
+      isSession: true,
       appBar: MxStudyTopBar(
         modeLabel: mode,
         current: min(progress.completed + 1, progress.total),
@@ -387,10 +391,10 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
           ),
           if (turn.unsaved != null)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
+              padding: EdgeInsets.fromLTRB(
+                context.screenMargin,
                 0,
-                AppSpacing.gutter,
+                context.screenMargin,
                 AppSpacing.grouped,
               ),
               child: MxInlineBanner(

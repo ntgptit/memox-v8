@@ -90,9 +90,9 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
   Widget build(BuildContext context) => ReorderableListView.builder(
     buildDefaultDragHandles: false,
     padding: EdgeInsets.fromLTRB(
+      context.screenMargin,
       AppSpacing.gutter,
-      AppSpacing.gutter,
-      AppSpacing.gutter,
+      context.screenMargin,
       AppSpacing.section + MediaQuery.paddingOf(context).bottom,
     ),
     itemCount: _order.length,

@@ -30,8 +30,8 @@ class MxScreenScroll extends StatelessWidget {
     };
     return ListView(
       padding: EdgeInsetsDirectional.only(
-        start: AppSpacing.gutter,
-        end: AppSpacing.gutter,
+        start: context.screenMargin,
+        end: context.screenMargin,
         bottom: tail + MediaQuery.paddingOf(context).bottom,
       ),
       children: children,

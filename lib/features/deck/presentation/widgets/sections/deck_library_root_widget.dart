@@ -104,10 +104,10 @@ class DeckLibraryRootWidget extends ConsumerWidget {
           // summary and the sort pill (critique 2026-09-30 part 3d-2, E3).
           if (hasDecks && !isReordering)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
+              padding: EdgeInsets.fromLTRB(
+                context.screenMargin,
                 AppSpacing.micro,
-                AppSpacing.gutter,
+                context.screenMargin,
                 AppSpacing.control,
               ),
               child: MxSearchField.trigger(

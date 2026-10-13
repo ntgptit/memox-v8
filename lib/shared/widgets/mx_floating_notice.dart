@@ -7,9 +7,7 @@ import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_soft_ground.dart';
 
 /// A standing notice that floats over the page, above its content: one
 /// sentence and the compact Buttons that resolve it (SB-U1; owner ruling
@@ -34,8 +32,6 @@ class MxFloatingNotice extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = context.colors;
     final semantic = context.semanticColors;
-    // A soft ground, light in both themes (spec 2026-10-10 D4): the message
-    // reads Day's banner style from inside the ground.
     final messageStyle = context.textStyles.bannerMessage(isLead: true);
     // The glyph centres on the first line at any text scale.
     final firstLine =
@@ -61,21 +57,14 @@ class MxFloatingNotice extends StatelessWidget {
             color: semantic.onWarningSoft,
           ),
         ),
-        Expanded(
-          child: Builder(
-            builder: (day) => Text(
-              message,
-              style: day.textStyles.bannerMessage(isLead: true),
-            ),
-          ),
-        ),
+        Expanded(child: Text(message, style: messageStyle)),
         if (isOneLine) actions.single,
       ],
     );
     return Semantics(
       liveRegion: true,
       container: true,
-      child: MxSoftGround(
+      child: DecoratedBox(
         decoration: AppDecorations.warningCard(
           scheme,
           semantic,
@@ -83,10 +72,9 @@ class MxFloatingNotice extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
           child: Padding(
-            // A DecoratedBox border does not inset its child.
             padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.gutter + AppStroke.hairline,
-              vertical: AppSpacing.control + AppStroke.hairline,
+              horizontal: AppSpacing.gutter,
+              vertical: AppSpacing.control,
             ),
             child: actions.length < 2
                 ? line

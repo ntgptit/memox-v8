@@ -79,8 +79,8 @@ class _ChooseAllRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.gutter,
+      padding: EdgeInsets.symmetric(
+        horizontal: context.screenMargin,
         vertical: AppSpacing.grouped,
       ),
       child: Column(

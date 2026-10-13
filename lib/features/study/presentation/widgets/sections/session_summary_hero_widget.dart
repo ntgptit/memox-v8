@@ -59,25 +59,19 @@ class SessionSummaryHeroWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.grouped),
-          // A toned card is a soft ground: its text styles are read from
-          // inside it, so they resolve Day's (spec 2026-10-10 D4).
-          Builder(
-            builder: (ground) => Text(
-              shown,
-              semanticsLabel: overline,
-              textAlign: TextAlign.center,
-              style: ground.textStyles.eyebrow,
-            ),
+          Text(
+            shown,
+            semanticsLabel: overline,
+            textAlign: TextAlign.center,
+            style: context.textStyles.eyebrow,
           ),
           const SizedBox(height: AppSpacing.micro),
           Semantics(
             header: true,
-            child: Builder(
-              builder: (ground) => Text(
-                _titleOf(l10n),
-                textAlign: TextAlign.center,
-                style: ground.textStyles.summaryTitle,
-              ),
+            child: Text(
+              _titleOf(l10n),
+              textAlign: TextAlign.center,
+              style: context.textStyles.summaryTitle,
             ),
           ),
           const SizedBox(height: AppSpacing.micro),

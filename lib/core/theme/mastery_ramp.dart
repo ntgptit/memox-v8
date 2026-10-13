@@ -45,6 +45,7 @@ abstract final class MasteryRamp {
     }
   }
 
-  /// The unfilled track: surfaceContainerLow.
-  static Color track(ColorScheme scheme) => scheme.surfaceContainerLow;
+  /// The unfilled track: surfaceContainerHighest ("Flashcard Color Tokens"
+  /// §6).
+  static Color track(ColorScheme scheme) => scheme.surfaceContainerHighest;
 }

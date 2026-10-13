@@ -41,7 +41,11 @@ class DeckRowWidget extends StatelessWidget {
       child: Row(
         spacing: AppSpacing.gutter,
         children: [
-          MxIconTile(icon: deckTileGlyph(tile), size: MxIconTileSize.large),
+          MxIconTile(
+            icon: deckTileGlyph(tile),
+            size: MxIconTileSize.deck,
+            tone: MxIconTileTone.deck,
+          ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

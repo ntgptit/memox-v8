@@ -52,10 +52,10 @@ class MonitoringServerTabWidget extends ConsumerWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.gutter,
+          padding: EdgeInsets.fromLTRB(
+            context.screenMargin,
             AppSpacing.grouped,
-            AppSpacing.gutter,
+            context.screenMargin,
             AppSpacing.control,
           ),
           child: MxSearchField(

@@ -18,8 +18,8 @@ class StudyCentredScrollWidget extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
         padding: EdgeInsetsDirectional.only(
-          start: AppSpacing.gutter,
-          end: AppSpacing.gutter,
+          start: context.screenMargin,
+          end: context.screenMargin,
           bottom: AppSpacing.section + bottomInset,
         ),
         child: ConstrainedBox(

@@ -66,7 +66,8 @@ final class MxTextStyles {
   TextStyle get emptyTitle => _cardTitleRole.copyWith(color: _scheme.onSurface);
 
   /// Compact EmptyState title: titleSmall.
-  TextStyle get emptyTitleCompact => _itemRole.copyWith(color: _scheme.onSurface);
+  TextStyle get emptyTitleCompact =>
+      _itemRole.copyWith(color: _scheme.onSurface);
 
   /// EmptyState body: bodyMedium.
   TextStyle get emptyBody =>
@@ -81,7 +82,8 @@ final class MxTextStyles {
       _metaRole.copyWith(color: _scheme.onSurfaceVariant);
 
   /// The level the user is on: titleSmall.
-  TextStyle get breadcrumbCurrent => _itemRole.copyWith(color: _scheme.onSurface);
+  TextStyle get breadcrumbCurrent =>
+      _itemRole.copyWith(color: _scheme.onSurface);
 
   /// StudyTopBar mode badge: labelSmall in the caller's accent.
   TextStyle studyBadge(Color accent) => _navRole.copyWith(color: accent);
@@ -179,7 +181,8 @@ final class MxTextStyles {
 
   /// A stat's figure (StatTile): displayMedium, in the foreground the tile's
   /// emphasis picks (FE-A6 D17).
-  TextStyle statValue(Color foreground) => _statRole.copyWith(color: foreground);
+  TextStyle statValue(Color foreground) =>
+      _statRole.copyWith(color: foreground);
 
   /// A stat's label: the eyebrow. The widget upper-cases it.
   TextStyle get statLabel => eyebrow;
@@ -211,7 +214,8 @@ final class MxTextStyles {
       _navRole.copyWith(color: _semantic.onPrimarySoft);
 
   /// Badge and StatusBadge label: labelSmall in [foreground].
-  TextStyle badgeLabel(Color foreground) => _navRole.copyWith(color: foreground);
+  TextStyle badgeLabel(Color foreground) =>
+      _navRole.copyWith(color: foreground);
 
   /// TagChip label: labelSmall.
   TextStyle get tagLabel => _navRole.copyWith(color: _scheme.onSurfaceVariant);
@@ -304,7 +308,8 @@ final class MxTextStyles {
       _metaRole.copyWith(color: foreground);
 
   /// MasteryDonut label: labelSmall, the 12 floor, in the arc colour.
-  TextStyle donutLabel(Color foreground) => _navRole.copyWith(color: foreground);
+  TextStyle donutLabel(Color foreground) =>
+      _navRole.copyWith(color: foreground);
 
   /// Compact title (ErrorState, DeckPickerSheet head, Dialog): titleSmall.
   TextStyle get compactTitle => _itemRole.copyWith(color: _scheme.onSurface);

@@ -82,10 +82,10 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
+            padding: EdgeInsets.fromLTRB(
+              context.screenMargin,
               AppSpacing.control,
-              AppSpacing.gutter,
+              context.screenMargin,
               0,
             ),
             child: MxSegmentedTray<MonitoringTab>(

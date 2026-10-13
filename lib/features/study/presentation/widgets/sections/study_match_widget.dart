@@ -143,8 +143,8 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
                 SliverFillRemaining(
                   hasScrollBody: false,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.gutter,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.screenMargin,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,

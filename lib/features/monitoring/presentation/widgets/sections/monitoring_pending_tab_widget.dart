@@ -51,10 +51,10 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
         // Only while logs wait: an empty buffer says so below.
         if (state.logs.value case final logs? when logs.total > 0)
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
+            padding: EdgeInsets.fromLTRB(
+              context.screenMargin,
               AppSpacing.grouped,
-              AppSpacing.gutter,
+              context.screenMargin,
               0,
             ),
             child: MxNote(text: l10n.monitoringPendingNote),
@@ -62,7 +62,7 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+            padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
             child: MxChipTrigger(
               label: monitoringChipLabel(
                 l10n,

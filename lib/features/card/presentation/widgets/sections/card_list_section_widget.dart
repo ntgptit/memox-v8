@@ -369,7 +369,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   Widget _bulkFailedBanner() {
     final l10n = context.l10n;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+      padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
       child: MxInlineBanner(
         tone: MxBannerTone.danger,
         title: l10n.cardBulkFailedTitle,

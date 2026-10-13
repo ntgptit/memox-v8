@@ -25,10 +25,10 @@ class SessionContextLineWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      AppSpacing.gutter,
+    padding: EdgeInsets.fromLTRB(
+      context.screenMargin,
       0,
-      AppSpacing.gutter,
+      context.screenMargin,
       AppSpacing.gutter,
     ),
     child: Text(

@@ -5,9 +5,7 @@ import 'package:memox/core/theme/foundations/app_icon_size.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/shared/widgets/mx_soft_ground.dart';
 
 /// Warning is a refusal or a limit, and nothing was lost. Danger means an
 /// operation failed.
@@ -50,26 +48,12 @@ class MxInlineBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final semantic = context.semanticColors;
     final styles = context.textStyles;
-    // The warning banner is a soft ground, light in both themes (spec
-    // 2026-10-10 D4): the glyph and the title read its on-soft token and the
-    // message reads Day's banner style from inside the ground. The danger
-    // banner keeps its pre-Indigo tint, dark in Night: the glyph in error,
-    // the title in the danger text, the message in the current theme
-    // (DEV-371).
-    final isDanger = tone == MxBannerTone.danger;
-    final (ground, edge, glyph, foreground) = switch (tone) {
-      MxBannerTone.warning => (
-        semantic.warningSoft,
-        semantic.warningBorder,
-        semantic.onWarningSoft,
-        semantic.onWarningSoft,
-      ),
-      MxBannerTone.danger => (
-        semantic.dangerSoft,
-        semantic.dangerBorder,
-        context.colors.error,
-        semantic.onDangerSoft,
-      ),
+    // A soft ground with no edge ("Flashcard Color Tokens" §6): the glyph
+    // and the title read the tone's on-soft token, the message stays
+    // neutral.
+    final (ground, foreground) = switch (tone) {
+      MxBannerTone.warning => (semantic.warningSoft, semantic.onWarningSoft),
+      MxBannerTone.danger => (semantic.dangerSoft, semantic.onDangerSoft),
     };
     final messageStyle = styles.bannerMessage(isLead: title == null);
     // The glyph centres on the first line at any text scale.
@@ -77,16 +61,14 @@ class MxInlineBanner extends StatelessWidget {
         MediaQuery.textScalerOf(context).scale(messageStyle.fontSize!) *
         messageStyle.height!;
     final glyphInset = math.max(0.0, (firstLine - AppIconSize.inline) / 2);
-    // A DecoratedBox border does not inset its child: the padding starts
-    // after the hairline, as in the kit's CSS box (and MxNote).
     final padding = isInCommitBar
         ? const EdgeInsets.symmetric(
-            horizontal: AppSpacing.grouped + AppStroke.hairline,
-            vertical: AppSpacing.control + AppStroke.hairline,
+            horizontal: AppSpacing.grouped,
+            vertical: AppSpacing.control,
           )
         : const EdgeInsets.symmetric(
-            horizontal: AppSpacing.gutter + AppStroke.hairline,
-            vertical: AppSpacing.grouped + AppStroke.hairline,
+            horizontal: AppSpacing.gutter,
+            vertical: AppSpacing.grouped,
           );
     return Padding(
       padding: isInCommitBar || !hasBottomMargin
@@ -94,12 +76,10 @@ class MxInlineBanner extends StatelessWidget {
           : const EdgeInsets.only(bottom: AppSpacing.gutter),
       child: Semantics(
         liveRegion: true,
-        child: MxSoftGround(
-          isDay: !isDanger,
+        child: DecoratedBox(
           decoration: BoxDecoration(
             color: ground,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: edge, width: AppStroke.hairline),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: Padding(
             padding: padding,
@@ -107,13 +87,14 @@ class MxInlineBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: AppSpacing.control,
               children: [
-                // The title and the message share the 12 × 1.55 first line.
+                // The glyph centres on the first line of the title or the
+                // message.
                 Padding(
                   padding: EdgeInsets.only(top: glyphInset),
                   child: Icon(
                     AppIcons.alert,
                     size: AppIconSize.inline,
-                    color: glyph,
+                    color: foreground,
                   ),
                 ),
                 Expanded(
@@ -131,14 +112,7 @@ class MxInlineBanner extends StatelessWidget {
                         ),
                         const SizedBox(height: _titleGap),
                       ],
-                      Builder(
-                        builder: (day) => Text(
-                          message,
-                          style: day.textStyles.bannerMessage(
-                            isLead: title == null,
-                          ),
-                        ),
-                      ),
+                      Text(message, style: messageStyle),
                       if (actions.isNotEmpty) ...[
                         const SizedBox(height: AppSpacing.control),
                         Wrap(

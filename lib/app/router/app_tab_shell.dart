@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -46,9 +47,13 @@ class AppTabShell extends StatelessWidget {
             onSelected: _onSelected,
           ),
           Expanded(
-            child: MediaQuery(
-              data: _besideRail(media, Directionality.of(context)),
-              child: navigationShell,
+            // The branch keeps the window's size class for its margins.
+            child: WindowWidthScope(
+              width: media.size.width,
+              child: MediaQuery(
+                data: _besideRail(media, Directionality.of(context)),
+                child: navigationShell,
+              ),
             ),
           ),
         ],
