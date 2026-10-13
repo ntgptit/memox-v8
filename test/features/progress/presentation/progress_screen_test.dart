@@ -222,14 +222,53 @@ void main() {
     expect(find.text(_en.progressStreakDays(0)), findsOneWidget);
   });
 
-  // The tile's ground is light in both themes, so a glyph picked from the
-  // Night scheme vanished on it (whole-branch review, DEV-370).
+  // A glyph picked from the wrong scheme vanished on its tile (whole-branch
+  // review, DEV-370).
   for (final brightness in Brightness.values) {
     libraryTest('a lost streak keeps a legible flame, ${brightness.name}', (
       tester,
       env,
     ) async {
       await progressLibrary(env, lastDaysAgo: 2);
+      await pumpLibraryScreen(
+        tester,
+        env,
+        _screen(_Taps()),
+        brightness: brightness,
+      );
+      await _settle(tester);
+
+      final tile = find.ancestor(
+        of: find.byIcon(AppIcons.streak),
+        matching: find.byType(MxIconTile),
+      );
+      final ground =
+          (tester
+                      .widget<DecoratedBox>(
+                        find
+                            .descendant(
+                              of: tile,
+                              matching: find.byType(DecoratedBox),
+                            )
+                            .first,
+                      )
+                      .decoration
+                  as BoxDecoration)
+              .color!;
+      final glyph = tester.widget<Icon>(find.byIcon(AppIcons.streak)).color!;
+      expect(_ratio(glyph, ground), greaterThanOrEqualTo(3));
+    });
+  }
+
+  // A live flame is a glyph on its own tint: it takes the warning text
+  // colour, never the amber fill, which reads under 3:1 on that tint in
+  // light (SW-REV-001's mechanism, DEV-372 check similar).
+  for (final brightness in Brightness.values) {
+    libraryTest('a live streak keeps a legible flame, ${brightness.name}', (
+      tester,
+      env,
+    ) async {
+      await progressLibrary(env);
       await pumpLibraryScreen(
         tester,
         env,

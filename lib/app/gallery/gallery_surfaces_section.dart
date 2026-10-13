@@ -91,7 +91,7 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
           const MxIconTile(icon: AppIcons.library, size: MxIconTileSize.large),
           MxIconTile(
             icon: AppIcons.folder,
-            seed: context.mxColors.warningContainer,
+            seed: context.mxColors.warning,
           ),
           const MxIconTile(
             icon: AppIcons.lockOpen,

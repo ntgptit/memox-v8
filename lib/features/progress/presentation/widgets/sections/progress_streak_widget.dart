@@ -59,12 +59,13 @@ class ProgressStreakWidget extends StatelessWidget {
   Widget _tiles(BuildContext context) {
     final l10n = context.l10n;
     final streak = overview.streak;
-    // A live streak burns in the streak accent; a lost one goes idle on the
+    // A live streak burns in the warning text colour on its tint (a glyph
+    // never takes the amber fill, SW-REV-001); a lost one goes idle on the
     // neutral ground, legible in both themes.
     final isLive = streak.days > 0;
     final current = _StreakTile(
       icon: AppIcons.streak,
-      tint: isLive ? context.mxColors.warningContainer : null,
+      tint: isLive ? context.mxColors.warning : null,
       tone: isLive ? MxIconTileTone.tinted : MxIconTileTone.neutral,
       label: l10n.progressStreakCurrent,
       value: l10n.progressStreakDays(streak.days),
