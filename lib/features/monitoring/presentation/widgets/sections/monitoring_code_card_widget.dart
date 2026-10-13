@@ -12,7 +12,7 @@ enum _CardKind { code, prose, error, stackTrace }
 
 /// One block of text under a title: the message, the error, a stack trace, or
 /// the context as JSON. The text is selectable, and long lines wrap. Code is
-/// set in the monospace [MxTextStyles.code]. It is a `SelectableText` (a
+/// set in the monospace family. It is a `SelectableText` (a
 /// stack trace, rows in a `SelectionArea`), not a plain `Text`: a log is the one place the app shows an error's own words, on
 /// purpose (ADR-018 §1; BR-CORE-005 is about what a user sees).
 class MonitoringCodeCardWidget extends StatelessWidget {

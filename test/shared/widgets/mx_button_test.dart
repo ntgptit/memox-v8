@@ -70,7 +70,7 @@ void main() {
     final derived = MxDerivedColors.resolve(scheme, MxSemanticColors.light);
     await pumpMx(
       tester,
-      MxButton(label: 'Again', tone: MxButtonTone.dangerSoft, onPressed: () {}),
+      MxButton(label: 'Again', tone: MxButtonTone.dangerTint, onPressed: () {}),
     );
     final material = _material(tester);
 

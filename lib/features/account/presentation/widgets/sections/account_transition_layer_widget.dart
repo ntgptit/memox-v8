@@ -327,7 +327,7 @@ class _SignOutNow extends ConsumerWidget {
     if (count == null) return const SizedBox.shrink();
     return MxButton(
       label: context.l10n.accountSignOutLosing(count),
-      tone: MxButtonTone.dangerSoft,
+      tone: MxButtonTone.dangerTint,
       isBlock: true,
       onPressed: () => unawaited(_signOutNow(ref)),
     );

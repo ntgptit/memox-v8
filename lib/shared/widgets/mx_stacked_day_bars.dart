@@ -128,7 +128,7 @@ class MxStackedDayBars extends StatelessWidget {
                 height: _emptyHeight,
                 decoration: BoxDecoration(
                   color: context.colors.surfaceContainerHigh,
-                  borderRadius: const BorderRadius.all(round),
+                  borderRadius: BorderRadius.all(round),
                 ),
               ),
             if (day.top > 0)
@@ -136,7 +136,7 @@ class MxStackedDayBars extends StatelessWidget {
                 height: day.top * unit,
                 decoration: BoxDecoration(
                   color: top.color,
-                  borderRadius: const BorderRadius.vertical(top: round),
+                  borderRadius: BorderRadius.vertical(top: round),
                 ),
               ),
             if (day.base > 0)
@@ -145,8 +145,8 @@ class MxStackedDayBars extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: base.color,
                   borderRadius: day.top > 0
-                      ? const BorderRadius.vertical(bottom: round)
-                      : const BorderRadius.all(round),
+                      ? BorderRadius.vertical(bottom: round)
+                      : BorderRadius.all(round),
                 ),
               ),
           ],

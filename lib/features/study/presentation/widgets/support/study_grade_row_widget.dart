@@ -72,7 +72,7 @@ class StudyGradeRowWidget extends StatelessWidget {
         label: grade,
         detail: span == null ? null : l10n.studyIntervalShort(span, locale),
         tone: action == Sm2Action.again
-            ? MxButtonTone.dangerSoft
+            ? MxButtonTone.dangerTint
             : MxButtonTone.secondary,
         isBlock: true,
         onPressed: () => onGrade(action),

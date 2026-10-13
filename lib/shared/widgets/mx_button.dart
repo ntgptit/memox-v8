@@ -16,7 +16,7 @@ enum MxButtonTone {
   outline,
   text,
   destructive,
-  dangerSoft,
+  dangerTint,
   warning,
 }
 
@@ -197,7 +197,7 @@ class MxButton extends StatelessWidget {
       ),
       // The soft danger tint MxInlineBanner and MxCard.isDanger draw
       // (FE-A6 D14); the solid pair above stays the destructive action's.
-      MxButtonTone.dangerSoft => (
+      MxButtonTone.dangerTint => (
         fill: context.colors.error.tintOver(context.colors.surface),
         ink: colors.error,
         edge: BorderSide(
