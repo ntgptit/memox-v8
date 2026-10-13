@@ -65,6 +65,7 @@ class StudyHomeLoadingWidget extends StatelessWidget {
     children: [
       const MxSkeletonPulse(
         child: MxCard(
+          isCompact: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: AppSpacing.control,
@@ -76,6 +77,7 @@ class StudyHomeLoadingWidget extends StatelessWidget {
         ),
       ),
       MxCard(
+        isCompact: true,
         isFullBleed: true,
         child: MxSkeletonList(
           rows: _rows,

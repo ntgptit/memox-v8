@@ -69,6 +69,11 @@ abstract final class AppSize {
   /// columns).
   static const double contentMaxWidthWide = 1040;
 
+  /// The narrowest column of the overview's two (Study home): it splits in
+  /// two once its content area holds two of these and the section gap
+  /// ("Flashcard Color Tokens" §5: 672 with the 24 margins).
+  static const double overviewColumnMin = 300;
+
   /// A linear progress track's height.
   static const double progressTrack = 4;
 

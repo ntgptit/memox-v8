@@ -45,6 +45,7 @@ class StudyHomeResumeWidget extends StatelessWidget {
       children: [
         MxDotOverline(label: l10n.studyHomeResumeOverline),
         MxCard(
+          isCompact: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: AppSpacing.grouped,

@@ -7,6 +7,7 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/controllers/study_home_controller.dart';
@@ -104,22 +105,28 @@ class StudyHomeScreen extends ConsumerWidget {
         onOpenLibrary: onOpenLibrary,
         onOpenStarterDecks: onOpenStarterDecks,
       ),
-      final RootDeckWorkload workload => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.gutter,
-        children: [
+      final RootDeckWorkload workload => _OverviewColumns(
+        lead: [
+          if (session != null)
+            StudyHomeResumeWidget(
+              session: session,
+              isResuming: ref.watch(studyHomeControllerProvider),
+              onResume: () =>
+                  unawaited(_resume(context, ref, session.sessionId)),
+            ),
           StudyHomeWorkloadWidget(
             workload: workload,
             now: ref.watch(dayClockProvider).now(),
           ),
-          StudyHomeDecksWidget(
-            decks: workload.decks,
-            onOpenDeck: onOpenDeck,
-            onOpenLibrary: onOpenLibrary,
-          ),
         ],
+        trail: StudyHomeDecksWidget(
+          decks: workload.decks,
+          onOpenDeck: onOpenDeck,
+          onOpenLibrary: onOpenLibrary,
+        ),
       ),
     };
+    if (home.content is RootDeckWorkload) return [body];
     return [
       if (session != null) ...[
         StudyHomeResumeWidget(
@@ -156,4 +163,46 @@ class StudyHomeScreen extends ConsumerWidget {
         break;
     }
   }
+}
+
+/// The overview's content ("Flashcard Color Tokens" §5): one column, or two
+/// side by side once the content area holds two [AppSize.overviewColumnMin]
+/// columns and the section gap. It measures its own area, not the window.
+class _OverviewColumns extends StatelessWidget {
+  const _OverviewColumns({required this.lead, required this.trail});
+
+  /// The resume card, when a session waits, and the workload.
+  final List<Widget> lead;
+
+  /// The decks.
+  final Widget trail;
+
+  static const double _splitWidth =
+      2 * AppSize.overviewColumnMin + AppSpacing.section;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final leadColumn = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: AppSpacing.gutter,
+        children: lead,
+      );
+      if (constraints.maxWidth < _splitWidth) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: AppSpacing.gutter,
+          children: [leadColumn, trail],
+        );
+      }
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: AppSpacing.section,
+        children: [
+          Expanded(child: leadColumn),
+          Expanded(child: trail),
+        ],
+      );
+    },
+  );
 }

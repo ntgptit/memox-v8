@@ -61,6 +61,7 @@ Every state above is built.
 - `MxEmptyState` actions carry no glyph.
 - **Account UI spec R2, B5:** the re-auth notice takes the slot over the sync notice.
 - **SB-U1 (sync status spec R2, UI-base row 143):** a floating sync notice shows under the sync status rules (ADR-015).
+- **"Flashcard Color Tokens" §4.1, §5 (owner 2026-10-13, ADR-022):** Study home is the overview. Its cards take the 16 interior (`MxCard.isCompact`). Once its content area holds two 300 columns and the 24 gap (672 with the 24 margins of a medium window), the Resume card and the workload hero stand in a lead column with the decks beside them; narrower, one column. The spec's rule for a button beside a progress ring has no counterpart here (the Resume card already ends in a block regular button).
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** "Continue studying" and "Waiting for you" are eyebrows; Waiting for you no longer borrows the Required style, and its glyph follows the eyebrow's colour.
 
 ## Accessibility

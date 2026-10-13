@@ -42,6 +42,7 @@ class StudyHomeDecksWidget extends StatelessWidget {
           ),
         ),
         MxCard(
+          isCompact: true,
           isFullBleed: true,
           child: MxDividedColumn(
             children: [
