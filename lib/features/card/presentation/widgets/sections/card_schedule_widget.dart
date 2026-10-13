@@ -160,7 +160,9 @@ class CardScheduleWidget extends StatelessWidget {
   }
 }
 
-/// Eight bars: the boxes behind the card tinted, its box full and taller.
+/// Eight bars: the boxes up to the card's filled, its own box taller, the
+/// rest on the track. The fill is one colour (a translucent primary is not a
+/// Design System tint), so the current box is marked by its height.
 /// The overline above says the same in words, so the ramp is not read out.
 class _BoxRamp extends StatelessWidget {
   const _BoxRamp({required this.box, required this.count});
@@ -183,11 +185,9 @@ class _BoxRamp extends StatelessWidget {
               child: Container(
                 height: index == box ? _currentBarHeight : _barHeight,
                 decoration: BoxDecoration(
-                  color: switch (index.compareTo(box)) {
-                    0 => colors.primary,
-                    < 0 => context.colors.primary,
-                    _ => colors.surfaceContainerHigh,
-                  },
+                  color: index <= box
+                      ? colors.primary
+                      : colors.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(
                     (index == box ? _currentBarHeight : _barHeight) / 2,
                   ),

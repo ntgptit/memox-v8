@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// Opens [builder] (usually an MxBottomSheet) on the platform modal route
-/// over the theme's scrim, sliding up over `Durations.medium2`. It opens instantly under reduced
-/// motion (ruling O7). A scrim tap or a drag down dismisses it.
+/// over the theme's scrim, sliding up over `Durations.medium2`. It opens
+/// instantly under reduced motion (ruling O7). A scrim tap or a drag down
+/// dismisses it.
 Future<T?> showMxBottomSheet<T>(
   BuildContext context, {
   required WidgetBuilder builder,
