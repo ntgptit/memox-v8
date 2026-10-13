@@ -31,10 +31,10 @@ void main() {
       expectFlat(box);
     });
 
-    test('hero card fills primaryContainer, flat, in $theme', () {
+    test('hero card fills primarySoft, flat, in $theme', () {
       final hero = AppDecorations.heroCard(scheme, semantic);
 
-      expect(hero.color, scheme.primaryContainer);
+      expect(hero.color, semantic.primarySoft);
       expectFlat(hero);
     });
 

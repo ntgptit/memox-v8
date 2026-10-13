@@ -36,7 +36,7 @@ class MxCard extends StatelessWidget {
   /// radius, so their dividers meet the corners.
   final bool isFullBleed;
 
-  /// The primary container.
+  /// The primary soft ground (AppDecorations.heroCard).
   final bool isHero;
 
   /// The warning-soft ground (screen 02's locked strip, owner decision

@@ -3,8 +3,8 @@ import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 /// Two footer actions (spec 2026-09-26 D3): side by side when both labels
-/// fit their share on one line, otherwise stacked full width, [leading] on
-/// top. Stacking is the last resort: a caller shortens its labels first
+/// fit the row on one line, in their flex shares when each fits its own,
+/// otherwise stacked full width, [leading] on top. Stacking is the last resort: a caller shortens its labels first
 /// (DESIGN.md, The Short Label Rule). A paired label never wraps or ellipsizes, so its icon stays on the
 /// line. Both buttons are built with `isBlock: true, isSingleLine: true`.
 class MxActionPair extends StatelessWidget {
@@ -46,13 +46,9 @@ class MxActionPair extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final shared = constraints.maxWidth - _gap;
-        final leadingShare =
-            shared * leadingFlex / (leadingFlex + trailingFlex);
-        final trailingShare = shared - leadingShare;
-        final fits =
-            leading.naturalWidth(context) <= leadingShare &&
-            trailing.naturalWidth(context) <= trailingShare;
-        if (!fits) {
+        final leadingWidth = leading.naturalWidth(context);
+        final trailingWidth = trailing.naturalWidth(context);
+        if (leadingWidth + trailingWidth > shared) {
           // Stacking answers a reader's larger text or a phone narrower
           // than 360, never a long label (DESIGN.md, The Short Label Rule).
           assert(
@@ -69,11 +65,25 @@ class MxActionPair extends StatelessWidget {
             children: [leading, trailing],
           );
         }
+        final flexTotal = leadingFlex + trailingFlex;
+        final leadingShare = shared * leadingFlex / flexTotal;
+        final fitsShares =
+            leadingWidth <= leadingShare &&
+            trailingWidth <= shared - leadingShare;
+        // The flex shares when both labels fit them; otherwise each button
+        // takes its label's width and the rest is split by the flexes, so
+        // the pair stays side by side whenever it fits at all.
+        final leadingSlot = fitsShares
+            ? leadingShare
+            : leadingWidth +
+                  (shared - leadingWidth - trailingWidth) *
+                      leadingFlex /
+                      flexTotal;
         return Row(
           spacing: _gap,
           children: [
-            Expanded(flex: leadingFlex, child: leading),
-            Expanded(flex: trailingFlex, child: trailing),
+            SizedBox(width: leadingSlot, child: leading),
+            Expanded(child: trailing),
           ],
         );
       },

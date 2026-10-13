@@ -22,11 +22,14 @@ abstract final class AppDecorations {
     MxSemanticColors semantic,
   ) => _card(scheme.surfaceContainerLow);
 
-  /// The hero Card: the primary container.
+  /// The hero Card: the primary soft ground, the accent at 16% over the
+  /// surface. The spec's primaryContainer is the solid accent, which a
+  /// primary button and the content's text tokens cannot sit on (owner
+  /// 2026-10-13, ADR-022).
   static BoxDecoration heroCard(
     ColorScheme scheme,
     MxSemanticColors semantic,
-  ) => _card(scheme.primaryContainer);
+  ) => _card(semantic.primarySoft);
 
   /// The warning Card, for a state that asks for care such as a locked
   /// review algorithm (screen 02, owner decision D-O1): the warning soft

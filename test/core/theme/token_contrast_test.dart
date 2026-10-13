@@ -43,6 +43,9 @@ const _exceptions = <String, double>{
   // The focus ring is primary in both themes (spec §6).
   'dark/focusRing on card': 2.38,
   'dark/focusRing on low': 2.77,
+  // The accent fill on the dark hero ground: the button's label carries it
+  // (onPrimary on primary passes).
+  'dark/primary button on the hero': 2.22,
   // Spec §2.3: primary is 3.01:1 on the dark page; text and glyphs there
   // read primaryText.
   'dark/primary on page': 3.0,
@@ -151,6 +154,20 @@ List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
       ('onSurface on $name', scheme.onSurface, ground, _text),
       ('onSurfaceVariant on $name', scheme.onSurfaceVariant, ground, _text),
     ],
+    // The hero card is the primary soft ground (owner 2026-10-13): the
+    // donut's band labels, the primary button and the row text on it.
+    for (final (fore, name) in [
+      (semantic.learningText, 'learning label'),
+      (semantic.primaryText, 'reviewing label'),
+      (semantic.masteryText, 'mastered label'),
+    ])
+      ('$name on the hero', fore, semantic.primarySoft, _text),
+    (
+      'primary button on the hero',
+      scheme.primary,
+      semantic.primarySoft,
+      _nonText,
+    ),
     ('onSoft on warningSoft', semantic.onSoft, semantic.warningSoft, _text),
     ('onSoft on successSoft', semantic.onSoft, semantic.successSoft, _text),
     // A seeded icon tile's glyph on its primary soft ground (MxIconTile).

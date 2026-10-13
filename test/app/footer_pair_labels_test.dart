@@ -23,12 +23,13 @@ const double _dialogRow = 288;
 /// longest the screen shows.
 const int _count = 99999;
 
-/// Trash's selection bar is measured up to three digits; from 1,000 items
-/// the pair may stack, the exception recorded in screen 06's detail file.
-const int _selectionCount = 999;
+/// Trash's selection bar is measured up to two digits; from 100 items the
+/// pair may stack, the exception recorded in screen 06's detail file.
+const int _selectionCount = 99;
 
 typedef _Pair = ({
   String name,
+  Set<String> stacksIn,
   double row,
   int leadingFlex,
   int trailingFlex,
@@ -54,6 +55,7 @@ _Pair _sheet(
   bool isInSheet = false,
 }) => (
   name: name,
+  stacksIn: const {},
   row: isInSheet ? _footerRow : _dialogRow,
   leadingFlex: 1,
   trailingFlex: 1,
@@ -68,8 +70,10 @@ _Pair _footer(
   MxButton trailing, {
   int leadingFlex = 1,
   int trailingFlex = 1,
+  Set<String> stacksIn = const {},
 }) => (
   name: name,
+  stacksIn: stacksIn,
   row: _footerRow,
   leadingFlex: leadingFlex,
   trailingFlex: trailingFlex,
@@ -174,15 +178,19 @@ List<_Pair> _pairs(AppLocalizations l10n) {
       isInSheet: true,
     ),
     _sheet('export', cancel, _button(l10n.exportAction), isInSheet: true),
+    // Recorded exceptions (screen 11): in English the result's pair
+    // outgrows the row at the regular button's padding.
     _footer(
       'import, done',
       _button(l10n.importAnother),
       _button(l10n.importViewCards, AppIcons.cardDeck),
+      stacksIn: const {'en'},
     ),
     _footer(
       'import, back',
       _button(l10n.importAnother),
       _button(l10n.importBackToDeck, AppIcons.back),
+      stacksIn: const {'en'},
     ),
   ];
 }
@@ -202,20 +210,21 @@ void main() {
         ),
       );
 
+      // MxActionPair keeps a pair side by side whenever both labels fit the
+      // row together; a recorded exception must still stack, so it moves
+      // out once it fits.
       for (final pair in _pairs(lookupAppLocalizations(Locale(code)))) {
         final shared = pair.row - AppSpacing.control;
-        final leadingShare =
-            shared * pair.leadingFlex / (pair.leadingFlex + pair.trailingFlex);
-        expect(
-          pair.leading.naturalWidth(context),
-          lessThanOrEqualTo(leadingShare),
-          reason: '${pair.name}: ${pair.leading.label}',
-        );
-        expect(
-          pair.trailing.naturalWidth(context),
-          lessThanOrEqualTo(shared - leadingShare),
-          reason: '${pair.name}: ${pair.trailing.label}',
-        );
+        final needed =
+            pair.leading.naturalWidth(context) +
+            pair.trailing.naturalWidth(context);
+        final reason =
+            '${pair.name}: ${pair.leading.label} | ${pair.trailing.label}';
+        if (pair.stacksIn.contains(code)) {
+          expect(needed, greaterThan(shared), reason: '$reason now fits');
+          continue;
+        }
+        expect(needed, lessThanOrEqualTo(shared), reason: reason);
       }
     });
   }

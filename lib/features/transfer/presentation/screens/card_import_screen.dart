@@ -210,6 +210,10 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
             isSingleLine: true,
             onPressed: primary.$2,
           ),
+          // "Import another file" beside "View the cards" or "Back to deck"
+          // outgrows a 360 row in English at the regular button's padding
+          // ("Flashcard Color Tokens" §6): a recorded exception, screen 11.
+          canStack: true,
         ),
       ),
     );
