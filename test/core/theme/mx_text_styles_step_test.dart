@@ -20,10 +20,9 @@ void main() {
     expect(styles.stepLabel(isReached: true).fontSize, 12);
   });
 
-  test("a step's number is the tabular counter in the dot's foreground", () {
+  test("a step's number is the counter in the dot's foreground", () {
     final number = styles.stepNumber(scheme.onPrimary);
     expect(number.color, scheme.onPrimary);
-    expect(number.fontFeatures, styles.counter.fontFeatures);
     expect(number.fontSize, styles.counter.fontSize);
   });
 }

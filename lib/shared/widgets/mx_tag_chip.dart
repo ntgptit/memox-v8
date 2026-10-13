@@ -27,7 +27,8 @@ class MxTagChip extends StatelessWidget {
     ),
     child: DecoratedBox(
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainer,
+        // A neutral chip ("Flashcard Color Tokens" §6).
+        color: context.semanticColors.neutralSoft,
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
       child: Padding(

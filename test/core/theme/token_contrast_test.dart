@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 // The palette's text and edge pairs, worked from the tokens (Flutter's
 // textContrastGuideline misreads anti-aliased 12px text). A pair at its
-// WCAG 2.2 AA floor is asserted at that floor. The palette is fixed (owner
-// 2026-10-10, spec D3), so a pair below it is a named exception asserted
-// at its measured floor: a palette edit that worsens it, or a new pair that
-// fails, turns this red, and an exception that comes to pass must move out.
+// WCAG 2.2 AA floor is asserted at that floor. The palette is fixed
+// ("Flashcard Color Tokens" §2.3, owner 2026-10-13, ADR-022), so a pair
+// below it is a named exception asserted at its measured ratio: a palette
+// edit that worsens it, or a new pair that fails, turns this red, and an
+// exception that comes to pass must move out.
 
 const double _text = 4.5;
 const double _nonText = 3;
@@ -27,52 +29,33 @@ Color _tint(Color color, double alpha, Color ground) =>
 
 typedef _Pair = (String name, Color fore, Color ground, double minimum);
 
-/// The measured floors of the pairs below AA (owner 2026-10-10, spec D3).
+/// The measured ratios of the pairs below AA, each floored to two places
+/// (spec §2.3: the owner accepted them with the palette).
 const _exceptions = <String, double>{
-  'day/warningText on page': 4.20,
-  'day/warningText on row': 4.20,
-  'day/warningText on low': 3.92,
-  'day/learningText on low': 4.20,
-  'day/outline on page': 2.76,
-  'day/outline on row': 2.76,
-  'day/outline on low': 2.58,
-  'day/focusRing on page': 2.01,
-  'day/focusRing on row': 2.01,
-  'day/focusRing on low': 1.88,
-  'day/learning fill on its track': 1.99,
-  'day/learning bars on the card': 2.13,
-  'day/onMastery on mastery': 2.84,
-  'day/mastered fill on its track': 2.65,
-  'day/toggle off thumb on its track': 2.76,
-  'day/learning label on the hero': 3.94,
-  'day/mastered label on the hero': 4.25,
-  'day/onLearningSoft on learningSoft': 4.22,
-  'day/onWarningSoft on warningSoft': 3.59,
-  'day/outline on the warning ground': 2.36,
-  'night/primaryText on low': 3.54,
-  'night/outline on row': 2.61,
-  'night/outline on low': 1.92,
-  'night/reviewing bars on the card': 2.95,
-  'night/progress fill on its track': 2.18,
-  'night/toggle off thumb on its track': 2.76,
-  'night/onMastery on mastery': 2.84,
-  'night/onLearningSoft on learningSoft': 4.22,
-  'night/onWarningSoft on warningSoft': 3.59,
-  'night/outline on the warning ground': 2.36,
+  // Status fills and glyphs on the light card and track: the warning and
+  // success containers are mid-tone fills, never text (spec §2.1).
+  'light/learning bars on the card': 1.91,
+  'light/mastered bars on the card': 2.54,
+  'light/progress fill on its track': 2.32,
+  'light/learning fill on its track': 1.75,
+  'light/mastered fill on its track': 2.32,
+  'light/streak glyph on its tile': 1.68,
+  // The focus ring is primary in both themes (spec §6).
+  'dark/focusRing on card': 2.38,
+  'dark/focusRing on low': 2.77,
+  // Spec §2.3: primary is 3.01:1 on the dark page; text and glyphs there
+  // read primaryText.
+  'dark/primary on page': 3.0,
 };
 
-List<_Pair> _pairs(
-  ColorScheme scheme,
-  MxSemanticColors semantic,
-  ColorScheme day,
-) {
+List<_Pair> _pairs(ColorScheme scheme, MxSemanticColors semantic) {
   final page = scheme.surface;
-  final row = scheme.surfaceContainerLowest;
+  final card = semantic.cardSurface;
   final low = scheme.surfaceContainerLow;
   return [
     for (final (ground, where) in [
       (page, 'page'),
-      (row, 'row'),
+      (card, 'card'),
       (low, 'low'),
     ]) ...[
       ('onSurface on $where', scheme.onSurface, ground, _text),
@@ -83,20 +66,28 @@ List<_Pair> _pairs(
       ('learningText on $where', semantic.learningText, ground, _text),
       ('warningText on $where', semantic.warningText, ground, _text),
       ('success on $where', semantic.success, ground, _text),
+      ('info on $where', semantic.info, ground, _text),
       ('outline on $where', scheme.outline, ground, _nonText),
       ('focusRing on $where', semantic.focusRing, ground, _nonText),
     ],
-    ('reviewing bars on the card', semantic.statusReviewing, row, _nonText),
-    ('learning bars on the card', semantic.statusLearning, row, _nonText),
-    ('progress fill on its track', scheme.primary, low, _nonText),
-    ('learning fill on its track', semantic.statusLearning, low, _nonText),
-    ('mastered fill on its track', semantic.statusMastered, low, _nonText),
+    // Spec §2.3: primary is a fill; on the dark page it is not a text colour.
+    ('primary on page', scheme.primary, page, _text),
+    ('reviewing bars on the card', semantic.statusReviewing, card, _nonText),
+    ('learning bars on the card', semantic.statusLearning, card, _nonText),
+    ('mastered bars on the card', semantic.statusMastered, card, _nonText),
+    // MxLinearProgress (spec §6) and the donut's arcs on their track.
+    for (final (fill, name) in [
+      (semantic.mastery, 'progress'),
+      (semantic.statusLearning, 'learning'),
+      (semantic.statusReviewing, 'reviewing'),
+      (semantic.statusMastered, 'mastered'),
+    ])
+      ('$name fill on its track', fill, MasteryRamp.track(scheme), _nonText),
     ('snackbar message', scheme.onInverseSurface, scheme.inverseSurface, _text),
     ('snackbar action', scheme.inversePrimary, scheme.inverseSurface, _text),
     ('onPrimary on primary', scheme.onPrimary, scheme.primary, _text),
     ('onWarning on warning', semantic.onWarning, semantic.warning, _text),
-    // A done import step's glyph on its fill.
-    ('onMastery on mastery', semantic.onMastery, semantic.mastery, _nonText),
+    ('onMastery on mastery', semantic.onMastery, semantic.mastery, _text),
     (
       'onErrorFill on errorFill',
       semantic.onErrorFill,
@@ -105,107 +96,63 @@ List<_Pair> _pairs(
     ),
     (
       'toggle off thumb on its track',
-      scheme.onPrimary,
+      scheme.outline,
       semantic.neutralTrack,
       _nonText,
     ),
     (
       'toggle on thumb on its track',
-      scheme.primary,
+      scheme.onPrimary,
       semantic.primaryTrack,
       _nonText,
     ),
-    ('sheet grabber', scheme.onSurfaceVariant, row, _nonText),
-    // The donut's 9px label sits on the hero card.
+    ('sheet grabber', scheme.onSurfaceVariant, card, _nonText),
+    // The selected navigation destination (spec §6).
     (
-      'learning label on the hero',
-      semantic.learningText,
-      scheme.primaryContainer,
-      _text,
-    ),
-    (
-      'reviewing label on the hero',
-      semantic.primaryText,
-      scheme.primaryContainer,
-      _text,
-    ),
-    (
-      'mastered label on the hero',
-      semantic.masteryText,
-      scheme.primaryContainer,
-      _text,
-    ),
-    // Soft grounds are light in both themes (D4).
-    (
-      'onPrimarySoft on primarySoft',
-      semantic.onPrimarySoft,
-      semantic.primarySoft,
-      _text,
-    ),
-    (
-      'onSuccessSoft on successSoft',
-      semantic.onSuccessSoft,
-      semantic.successSoft,
-      _text,
-    ),
-    (
-      'onLearningSoft on learningSoft',
-      semantic.onLearningSoft,
-      semantic.learningSoft,
-      _text,
-    ),
-    (
-      'onWarningSoft on warningSoft',
-      semantic.onWarningSoft,
-      semantic.warningSoft,
-      _text,
-    ),
-    (
-      'onNeutralSoft on neutralSoft',
-      semantic.onNeutralSoft,
-      semantic.neutralSoft,
-      _text,
-    ),
-    ('onSoft on warningSoft', semantic.onSoft, semantic.warningSoft, _text),
-    ('onSoft on successSoft', semantic.onSoft, semantic.successSoft, _text),
-    // A soft ground renders its content in Day (R1), so an outline button
-    // inside a warning card carries Day's outline in both themes.
-    (
-      'outline on the warning ground',
-      day.outline,
-      semantic.warningSoft,
+      'nav glyph on its pill',
+      scheme.onSecondaryContainer,
+      scheme.secondaryContainer,
       _nonText,
     ),
-    // Content on a soft ground reads Day's tokens in both themes (R1): the
-    // detail line, the eyebrow, and an outline or text button's label.
-    for (final (ground, where) in [
-      (semantic.primarySoft, 'primarySoft'),
-      (semantic.successSoft, 'successSoft'),
-      (semantic.learningSoft, 'learningSoft'),
-      (semantic.warningSoft, 'warningSoft'),
+    (
+      'search placeholder',
+      scheme.onSurfaceVariant,
+      semantic.searchSurface,
+      _text,
+    ),
+    // A deck's tile (spec §2.2): the info glyph in light, the info container
+    // in dark.
+    (
+      'deck glyph on its tile',
+      scheme.brightness == Brightness.dark
+          ? semantic.infoContainer
+          : semantic.info,
+      semantic.tileSurface,
+      _nonText,
+    ),
+    (
+      'onInfoContainer on infoContainer',
+      semantic.onInfoContainer,
+      semantic.infoContainer,
+      _text,
+    ),
+    // Soft grounds are their colour at 16% over the surface, in both
+    // themes (spec §2): the tone's text, and the neutral message a banner
+    // or a toned card keeps.
+    for (final (fore, ground, name) in [
+      (semantic.onPrimarySoft, semantic.primarySoft, 'primarySoft'),
+      (semantic.onSuccessSoft, semantic.successSoft, 'successSoft'),
+      (semantic.onLearningSoft, semantic.learningSoft, 'learningSoft'),
+      (semantic.onWarningSoft, semantic.warningSoft, 'warningSoft'),
+      (semantic.onDangerSoft, semantic.dangerSoft, 'dangerSoft'),
+      (semantic.onNeutralSoft, semantic.neutralSoft, 'neutralSoft'),
     ]) ...[
-      ('Day onSurfaceVariant on $where', day.onSurfaceVariant, ground, _text),
-      (
-        'Day primaryText on $where',
-        MxSemanticColors.light.primaryText,
-        ground,
-        _text,
-      ),
+      ('on$name on $name', fore, ground, _text),
+      ('onSurface on $name', scheme.onSurface, ground, _text),
+      ('onSurfaceVariant on $name', scheme.onSurfaceVariant, ground, _text),
     ],
-    // The danger ground keeps its pre-Indigo translucent tint, dark in
-    // Night, and its content the current theme (DEV-371): read over the card.
-    for (final (fore, name, minimum) in [
-      (semantic.onDangerSoft, 'onDangerSoft', _text),
-      (scheme.error, 'error', _text),
-      (scheme.onSurface, 'onSurface', _text),
-      (scheme.onSurfaceVariant, 'onSurfaceVariant', _text),
-    ])
-      (
-        '$name on the danger tint',
-        fore,
-        Color.alphaBlend(semantic.dangerSoft, row),
-        minimum,
-      ),
+    ('onSoft on warningSoft', semantic.onSoft, semantic.warningSoft, _text),
+    ('onSoft on successSoft', semantic.onSoft, semantic.successSoft, _text),
     // A seeded icon tile's glyph on its primary soft ground (MxIconTile).
     (
       'streak glyph on its tile',
@@ -217,24 +164,24 @@ List<_Pair> _pairs(
     (
       'faded choice text',
       _tint(scheme.onSurface, AppOpacity.muted, page),
-      _tint(row, AppOpacity.muted, page),
+      _tint(card, AppOpacity.muted, page),
       _text,
     ),
   ];
 }
 
 const _themes = [
-  ('day', MxSemanticColors.light),
-  ('night', MxSemanticColors.dark),
+  ('light', MxSemanticColors.light),
+  ('dark', MxSemanticColors.dark),
 ];
 
 ColorScheme _scheme(String theme) =>
-    theme == 'day' ? AppColorSchemes.light : AppColorSchemes.dark;
+    theme == 'light' ? AppColorSchemes.light : AppColorSchemes.dark;
 
 void main() {
   for (final (theme, semantic) in _themes) {
     group('$theme palette contrast', () {
-      final pairs = _pairs(_scheme(theme), semantic, AppColorSchemes.light);
+      final pairs = _pairs(_scheme(theme), semantic);
       for (final (name, fore, ground, minimum) in pairs) {
         final ratio = _contrast(fore, ground);
         final reason =
@@ -255,14 +202,104 @@ void main() {
     });
   }
 
+  // Spec §2.3, the owner's measured table: each ratio to two places.
+  group('spec §2.3 ratios', () {
+    final light = AppColorSchemes.light;
+    final dark = AppColorSchemes.dark;
+    const day = MxSemanticColors.light;
+    const night = MxSemanticColors.dark;
+    final table = <(String, double, double)>[
+      (
+        'onSurface on surface',
+        _contrast(light.onSurface, light.surface),
+        _contrast(dark.onSurface, dark.surface),
+      ),
+      (
+        'onSurfaceVariant on surface',
+        _contrast(light.onSurfaceVariant, light.surface),
+        _contrast(dark.onSurfaceVariant, dark.surface),
+      ),
+      (
+        'onSurface on cardSurface',
+        _contrast(light.onSurface, day.cardSurface),
+        _contrast(dark.onSurface, night.cardSurface),
+      ),
+      (
+        'onSurfaceVariant on cardSurface',
+        _contrast(light.onSurfaceVariant, day.cardSurface),
+        _contrast(dark.onSurfaceVariant, night.cardSurface),
+      ),
+      (
+        'onSuccessSoft on successSoft',
+        _contrast(day.onSuccessSoft, day.successSoft),
+        _contrast(night.onSuccessSoft, night.successSoft),
+      ),
+      (
+        'onWarningSoft on warningSoft',
+        _contrast(day.onWarningSoft, day.warningSoft),
+        _contrast(night.onWarningSoft, night.warningSoft),
+      ),
+      (
+        'onDangerSoft on dangerSoft',
+        _contrast(day.onDangerSoft, day.dangerSoft),
+        _contrast(night.onDangerSoft, night.dangerSoft),
+      ),
+      (
+        'onPrimarySoft on primarySoft',
+        _contrast(day.onPrimarySoft, day.primarySoft),
+        _contrast(night.onPrimarySoft, night.primarySoft),
+      ),
+      (
+        'onNeutralSoft on neutralSoft',
+        _contrast(day.onNeutralSoft, day.neutralSoft),
+        _contrast(night.onNeutralSoft, night.neutralSoft),
+      ),
+      (
+        'onMastery on mastery',
+        _contrast(day.onMastery, day.mastery),
+        _contrast(night.onMastery, night.mastery),
+      ),
+      (
+        'onWarning on warning',
+        _contrast(day.onWarning, day.warning),
+        _contrast(night.onWarning, night.warning),
+      ),
+      (
+        'onErrorFill on errorFill',
+        _contrast(day.onErrorFill, day.errorFill),
+        _contrast(night.onErrorFill, night.errorFill),
+      ),
+    ];
+    const expected = <String, (double, double)>{
+      'onSurface on surface': (17.10, 15.00),
+      'onSurfaceVariant on surface': (9.40, 11.36),
+      'onSurface on cardSurface': (15.24, 11.87),
+      'onSurfaceVariant on cardSurface': (8.38, 8.99),
+      'onSuccessSoft on successSoft': (5.06, 8.54),
+      'onWarningSoft on warningSoft': (5.10, 8.96),
+      'onDangerSoft on dangerSoft': (4.89, 8.48),
+      'onPrimarySoft on primarySoft': (5.06, 8.42),
+      'onNeutralSoft on neutralSoft': (4.59, 4.60),
+      'onMastery on mastery': (4.57, 4.57),
+      'onWarning on warning': (4.58, 4.58),
+      'onErrorFill on errorFill': (6.46, 7.72),
+    };
+    for (final (name, lightRatio, darkRatio) in table) {
+      test(name, () {
+        final (wantLight, wantDark) = expected[name]!;
+        expect(lightRatio, closeTo(wantLight, 0.01), reason: 'light');
+        expect(darkRatio, closeTo(wantDark, 0.01), reason: 'dark');
+      });
+    }
+    test('primary on the dark surface is 3.01', () {
+      expect(_contrast(dark.primary, dark.surface), closeTo(3.01, 0.01));
+    });
+  });
+
   test('every exception names a checked pair', () {
     final names = {
       for (final (theme, semantic) in _themes)
-        for (final pair in _pairs(
-          _scheme(theme),
-          semantic,
-          AppColorSchemes.light,
-        ))
+        for (final pair in _pairs(_scheme(theme), semantic))
           '$theme/${pair.$1}',
     };
     expect(names.containsAll(_exceptions.keys), isTrue);

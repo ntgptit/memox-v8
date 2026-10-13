@@ -217,8 +217,8 @@ final class MxTextStyles {
   TextStyle badgeLabel(Color foreground) =>
       _navRole.copyWith(color: foreground);
 
-  /// TagChip label: labelSmall.
-  TextStyle get tagLabel => _navRole.copyWith(color: _scheme.onSurfaceVariant);
+  /// TagChip label: labelSmall on the neutral soft ground.
+  TextStyle get tagLabel => _navRole.copyWith(color: _semantic.onNeutralSoft);
 
   /// Code, a stack trace or JSON (Monitoring, owner 2026-09-29): bodyMedium
   /// in the system monospace. It sets no `wght` axis: a system face has none.

@@ -52,11 +52,7 @@ final _schemeRoles = <String, (Color Function(ColorScheme), int, int)>{
   'tertiary': ((s) => s.tertiary, 0xFF723700, 0xFFFFB785),
   'onTertiary': ((s) => s.onTertiary, 0xFFFFFFFF, 0xFF502400),
   'tertiaryContainer': ((s) => s.tertiaryContainer, 0xFF964A00, 0xFF964A00),
-  'onTertiaryContainer': (
-    (s) => s.onTertiaryContainer,
-    0xFFFFD0B2,
-    0xFFFFD0B2,
-  ),
+  'onTertiaryContainer': ((s) => s.onTertiaryContainer, 0xFFFFD0B2, 0xFFFFD0B2),
   'tertiaryFixed': ((s) => s.tertiaryFixed, 0xFFFFDCC6, 0xFFFFDCC6),
   'tertiaryFixedDim': ((s) => s.tertiaryFixedDim, 0xFFFFB785, 0xFFFFB785),
   'onTertiaryFixed': ((s) => s.onTertiaryFixed, 0xFF301400, 0xFF301400),
@@ -78,11 +74,7 @@ final _schemeRoles = <String, (Color Function(ColorScheme), int, int)>{
     0xFFFFFFFF,
     0xFF040227,
   ),
-  'surfaceContainerLow': (
-    (s) => s.surfaceContainerLow,
-    0xFFF9F9F9,
-    0xFF141337,
-  ),
+  'surfaceContainerLow': ((s) => s.surfaceContainerLow, 0xFFF9F9F9, 0xFF141337),
   'surfaceContainer': ((s) => s.surfaceContainer, 0xFFF3F3F3, 0xFF18173B),
   'surfaceContainerHigh': (
     (s) => s.surfaceContainerHigh,
@@ -535,7 +527,10 @@ void main() {
       expect(AppDurations.skeletonPulse, const Duration(milliseconds: 1400));
       expect(AppDurations.toast, const Duration(milliseconds: 4000));
       expect(AppDurations.undoWindow, const Duration(seconds: 8));
-      expect(AppDurations.stepperRepeatDelay, const Duration(milliseconds: 400));
+      expect(
+        AppDurations.stepperRepeatDelay,
+        const Duration(milliseconds: 400),
+      );
       expect(
         AppDurations.stepperRepeatInterval,
         const Duration(milliseconds: 80),

@@ -3,54 +3,84 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_typography.dart';
 
-// (slot, size, weight, height, letterSpacing) for the seven V3 roles.
+// (slot, size, weight, line height, letterSpacing) for the twelve roles of
+// "Flashcard Color Tokens" §3.2; height is line / size.
 final _roles =
     <
       String,
       (TextStyle? Function(TextTheme), double, FontWeight, double, double)
     >{
-      'stat → displayMedium': (
-        (t) => t.displayMedium,
-        40,
-        FontWeight.w600,
-        1.0,
-        -0.64,
-      ),
-      'display → displaySmall': (
+      'display-term → displaySmall': (
         (t) => t.displaySmall,
-        32,
-        FontWeight.w800,
-        1.1,
-        -0.64,
-      ),
-      'headline → headlineSmall': (
-        (t) => t.headlineSmall,
         24,
-        FontWeight.w700,
-        1.2,
-        -0.64,
+        FontWeight.w400,
+        32,
+        0,
       ),
-      'title → titleLarge': (
+      'term-tile → headlineSmall': (
+        (t) => t.headlineSmall,
+        20,
+        FontWeight.w400,
+        28,
+        0,
+      ),
+      'display-stat → displayMedium': (
+        (t) => t.displayMedium,
+        28,
+        FontWeight.w500,
+        36,
+        0,
+      ),
+      'title-section → titleLarge': (
         (t) => t.titleLarge,
         20,
-        FontWeight.w700,
-        1.2,
-        -0.64,
+        FontWeight.w600,
+        28,
+        0,
       ),
-      'body large → bodyLarge': (
+      'title-card → titleMedium': (
+        (t) => t.titleMedium,
+        18,
+        FontWeight.w500,
+        24,
+        0.15,
+      ),
+      'title-item → titleSmall': (
+        (t) => t.titleSmall,
+        14,
+        FontWeight.w500,
+        20,
+        0.1,
+      ),
+      'body-content → bodyLarge': (
         (t) => t.bodyLarge,
         16,
-        FontWeight.w500,
-        1.5,
+        FontWeight.w400,
+        24,
         0,
       ),
-      'body → bodyMedium': ((t) => t.bodyMedium, 14, FontWeight.w400, 1.5, 0),
-      'caption → labelSmall': (
+      'body → bodyMedium': ((t) => t.bodyMedium, 14, FontWeight.w400, 20, 0.25),
+      'body-tile → bodySmall': ((t) => t.bodySmall, 13, FontWeight.w400, 16, 0),
+      'label-button → labelLarge': (
+        (t) => t.labelLarge,
+        14,
+        FontWeight.w400,
+        20,
+        0.1,
+      ),
+      'label-meta → labelMedium': (
+        (t) => t.labelMedium,
+        14,
+        FontWeight.w400,
+        20,
+        0.5,
+      ),
+      'label-nav → labelSmall': (
         (t) => t.labelSmall,
         12,
-        FontWeight.w600,
-        1.4,
-        0,
+        FontWeight.w500,
+        16,
+        0.5,
       ),
     };
 
@@ -79,23 +109,45 @@ void main() {
     Typography.material2021(platform: TargetPlatform.android).englishLike,
   );
 
-  for (final MapEntry(key: name, value: (read, size, weight, height, spacing))
+  for (final MapEntry(key: name, value: (read, size, weight, line, spacing))
       in _roles.entries) {
-    test('$name is ${size.toInt()}/${weight.value}/$height/$spacing', () {
-      final style = read(bound)!;
-      expect(style.fontFamily, AppTypography.fontFamily);
-      expect(style.fontSize, size);
-      expect(style.fontWeight, weight);
-      expect(style.height, height);
-      expect(style.letterSpacing, spacing);
-    });
+    test(
+      '$name is ${size.toInt()}/${line.toInt()}/${weight.value}/$spacing',
+      () {
+        final style = read(bound)!;
+        expect(style.fontFamily, AppTypography.fontFamily);
+        expect(style.fontFamilyFallback, AppTypography.fontFamilyFallback);
+        expect(style.fontSize, size);
+        expect(style.fontWeight, weight);
+        expect(style.height, closeTo(line / size, 1e-9));
+        expect(style.letterSpacing, spacing);
+      },
+    );
   }
 
-  test('the stat role uses tabular figures', () {
-    expect(
-      bound.displayMedium!.fontFeatures,
-      contains(const FontFeature.tabularFigures()),
-    );
+  test('only the stat role uses tabular figures', () {
+    expect(bound.displayMedium!.fontFeatures, const [
+      FontFeature.tabularFigures(),
+    ]);
+    for (final MapEntry(key: name, value: (read, _, _, _, _))
+        in _roles.entries) {
+      if (name.endsWith('displayMedium')) continue;
+      expect(read(bound)!.fontFeatures ?? const [], isEmpty, reason: name);
+    }
+  });
+
+  test('every slot is in the family with its fallback', () {
+    for (final style in _allSlots(bound)) {
+      expect(style!.fontFamily, 'BeVietnamPro');
+      expect(style.fontFamilyFallback, ['NotoSansKR']);
+    }
+  });
+
+  test('nothing is below 12', () {
+    for (final MapEntry(key: name, value: (read, _, _, _, _))
+        in _roles.entries) {
+      expect(read(bound)!.fontSize, greaterThanOrEqualTo(12), reason: name);
+    }
   });
 
   test('every slot moves the wght axis with its weight', () {
@@ -116,10 +168,15 @@ void main() {
     expect(style.fontVariations, [const FontVariation.weight(700)]);
   });
 
-  test('the font asset is bundled', () async {
-    final data = await rootBundle.load(
-      'assets/fonts/PlusJakartaSans-Variable.ttf',
-    );
-    expect(data.lengthInBytes, greaterThan(0));
-  });
+  for (final asset in [
+    'assets/fonts/BeVietnamPro-Regular.ttf',
+    'assets/fonts/BeVietnamPro-Medium.ttf',
+    'assets/fonts/BeVietnamPro-SemiBold.ttf',
+    'assets/fonts/NotoSansKR-Variable.ttf',
+  ]) {
+    test('$asset is bundled', () async {
+      final data = await rootBundle.load(asset);
+      expect(data.lengthInBytes, greaterThan(0));
+    });
+  }
 }

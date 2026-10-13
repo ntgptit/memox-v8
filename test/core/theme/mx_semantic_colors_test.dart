@@ -2,53 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 
-// Every MxSemanticColors token (spec 2026-10-10 §5), Day then Night.
+// Every MxSemanticColors token ("Flashcard Color Tokens" §2), light then dark.
 final _expected = <String, (Color Function(MxSemanticColors), int, int)>{
-  'mastery': ((c) => c.mastery, 0xFF18AE79, 0xFF18AE79),
-  'onMastery': ((c) => c.onMastery, 0xFFFFFFFF, 0xFFFFFFFF),
-  'success': ((c) => c.success, 0xFF12815A, 0xFF59E8B5),
-  'warning': ((c) => c.warning, 0xFFFFCD1F, 0xFFFFCD1F),
-  'onWarning': ((c) => c.onWarning, 0xFF282E3E, 0xFF282E3E),
-  'statusNew': ((c) => c.statusNew, 0xFF939BB4, 0xFF586380),
-  'statusLearning': ((c) => c.statusLearning, 0xFFFF983A, 0xFFFF983A),
-  'statusReviewing': ((c) => c.statusReviewing, 0xFF4255FF, 0xFF4255FF),
-  'statusMastered': ((c) => c.statusMastered, 0xFF18AE79, 0xFF18AE79),
-  // The destructive fill keeps its pre-Indigo values (DEV-371).
-  'errorFill': ((c) => c.errorFill, 0xFFDC2D4E, 0xFFB0485C),
-  'onErrorFill': ((c) => c.onErrorFill, 0xFFFFFFFF, 0xFFFFFFFF),
-  'streak': ((c) => c.streak, 0xFFF6406C, 0xFFF6406C),
-  'primaryText': ((c) => c.primaryText, 0xFF4255FF, 0xFF7583FF),
-  'masteryText': ((c) => c.masteryText, 0xFF12815A, 0xFF59E8B5),
-  'learningText': ((c) => c.learningText, 0xFFCC4E00, 0xFFFF983A),
-  'warningText': ((c) => c.warningText, 0xFF997700, 0xFFFFCD1F),
-  'focusRing': ((c) => c.focusRing, 0xFFA8B1FF, 0xFFA8B1FF),
-  'border': ((c) => c.border, 0xFFEDEFF4, 0xFF282E3E),
-  'primaryTrack': ((c) => c.primaryTrack, 0xFFDBDFFF, 0xFFDBDFFF),
-  'neutralTrack': ((c) => c.neutralTrack, 0xFF939BB4, 0xFF939BB4),
-  'primarySoft': ((c) => c.primarySoft, 0xFFEDEFFF, 0xFFEDEFFF),
-  'onPrimarySoft': ((c) => c.onPrimarySoft, 0xFF4255FF, 0xFF4255FF),
-  'successSoft': ((c) => c.successSoft, 0xFFE6FCF4, 0xFFE6FCF4),
-  'successBorder': ((c) => c.successBorder, 0xFF98F1D1, 0xFF98F1D1),
-  'onSuccessSoft': ((c) => c.onSuccessSoft, 0xFF12815A, 0xFF12815A),
-  'learningSoft': ((c) => c.learningSoft, 0xFFFFF6EF, 0xFFFFF6EF),
-  'learningBorder': ((c) => c.learningBorder, 0xFFFFC38C, 0xFFFFC38C),
-  'onLearningSoft': ((c) => c.onLearningSoft, 0xFFCC4E00, 0xFFCC4E00),
-  'warningSoft': ((c) => c.warningSoft, 0xFFFFEDAB, 0xFFFFEDAB),
-  'warningBorder': ((c) => c.warningBorder, 0xFFFFDC62, 0xFFFFDC62),
-  'onWarningSoft': ((c) => c.onWarningSoft, 0xFF997700, 0xFF997700),
-  // The danger family keeps its pre-Indigo values (DEV-371).
-  'dangerSoft': ((c) => c.dangerSoft, 0x14C02447, 0x29FF8FA3),
-  'dangerBorder': ((c) => c.dangerBorder, 0x38C02447, 0x52FF8FA3),
-  'onDangerSoft': ((c) => c.onDangerSoft, 0xFFAE2346, 0xFFF7AABD),
-  'neutralSoft': ((c) => c.neutralSoft, 0xFFEDEFFF, 0xFF586380),
-  'onNeutralSoft': ((c) => c.onNeutralSoft, 0xFF2E3856, 0xFFF6F7FB),
-  'onSoft': ((c) => c.onSoft, 0xFF282E3E, 0xFF282E3E),
+  'mastery': ((c) => c.mastery, 0xFF17AE79, 0xFF17AE79),
+  'onMastery': ((c) => c.onMastery, 0xFF003925, 0xFF003925),
+  'success': ((c) => c.success, 0xFF006C49, 0xFF5ADDA4),
+  'warning': ((c) => c.warning, 0xFFF59E0B, 0xFFF59E0B),
+  'onWarning': ((c) => c.onWarning, 0xFF613B00, 0xFF613B00),
+  'statusNew': ((c) => c.statusNew, 0xFF6C7794, 0xFF8590AE),
+  'statusLearning': ((c) => c.statusLearning, 0xFFF59E0B, 0xFFF59E0B),
+  'statusReviewing': ((c) => c.statusReviewing, 0xFF564BCB, 0xFFC5C0FF),
+  'statusMastered': ((c) => c.statusMastered, 0xFF17AE79, 0xFF17AE79),
+  'errorFill': ((c) => c.errorFill, 0xFFBA1A1A, 0xFFFFB4AB),
+  'onErrorFill': ((c) => c.onErrorFill, 0xFFFFFFFF, 0xFF690005),
+  'streak': ((c) => c.streak, 0xFFF59E0B, 0xFFF59E0B),
+  'primaryText': ((c) => c.primaryText, 0xFF564BCB, 0xFFC5C0FF),
+  'masteryText': ((c) => c.masteryText, 0xFF006C49, 0xFF5ADDA4),
+  'learningText': ((c) => c.learningText, 0xFF855300, 0xFFFFC174),
+  'warningText': ((c) => c.warningText, 0xFF855300, 0xFFFFC174),
+  'focusRing': ((c) => c.focusRing, 0xFF564BCB, 0xFF564BCB),
+  'border': ((c) => c.border, 0xFFBBC6E6, 0xFF3B4661),
+  'primaryTrack': ((c) => c.primaryTrack, 0xFF564BCB, 0xFF564BCB),
+  'neutralTrack': ((c) => c.neutralTrack, 0xFFE8E8E8, 0xFF2D2C51),
+  'primarySoft': ((c) => c.primarySoft, 0xFFE4E2F7, 0xFF28254F),
+  'onPrimarySoft': ((c) => c.onPrimarySoft, 0xFF564BCB, 0xFFC5C0FF),
+  'successSoft': ((c) => c.successSoft, 0xFFD6E7E2, 0xFF172A40),
+  'successBorder': ((c) => c.successBorder, 0xFF006C49, 0xFF5ADDA4),
+  'onSuccessSoft': ((c) => c.onSuccessSoft, 0xFF006C49, 0xFF5ADDA4),
+  'learningSoft': ((c) => c.learningSoft, 0xFFEBE3D6, 0xFF312638),
+  'learningBorder': ((c) => c.learningBorder, 0xFF855300, 0xFFFFC174),
+  'onLearningSoft': ((c) => c.onLearningSoft, 0xFF855300, 0xFFFFC174),
+  'warningSoft': ((c) => c.warningSoft, 0xFFEBE3D6, 0xFF312638),
+  'warningBorder': ((c) => c.warningBorder, 0xFF855300, 0xFFFFC174),
+  'onWarningSoft': ((c) => c.onWarningSoft, 0xFF855300, 0xFFFFC174),
+  'dangerSoft': ((c) => c.dangerSoft, 0xFFF4DADA, 0xFF312441),
+  'dangerBorder': ((c) => c.dangerBorder, 0xFFBA1A1A, 0xFFFFB4AB),
+  'onDangerSoft': ((c) => c.onDangerSoft, 0xFFBA1A1A, 0xFFFFB4AB),
+  'neutralSoft': ((c) => c.neutralSoft, 0xFFD1DCFD, 0xFF3B4661),
+  'onNeutralSoft': ((c) => c.onNeutralSoft, 0xFF55607C, 0xFFAAB5D4),
+  'onSoft': ((c) => c.onSoft, 0xFF1C1B21, 0xFFE5E1E9),
+  // §2.2.
+  'cardSurface': ((c) => c.cardSurface, 0xFFF1F1FB, 0xFF222145),
+  'searchSurface': ((c) => c.searchSurface, 0xFFF1F1FB, 0xFF222145),
+  'tileSurface': ((c) => c.tileSurface, 0xFFEDF8FF, 0xFF2E3953),
+  'divider': ((c) => c.divider, 0xFFEEEEEE, 0xFF18173B),
+  'info': ((c) => c.info, 0xFF006684, 0xFFA9E3FF),
+  'infoContainer': ((c) => c.infoContainer, 0xFF50CCFC, 0xFF50CCFC),
+  'onInfoContainer': ((c) => c.onInfoContainer, 0xFF00546D, 0xFF00546D),
 };
 
 void main() {
   for (final MapEntry(key: name, value: (read, light, dark))
       in _expected.entries) {
-    test('$name is the Indigo value in both themes', () {
+    test('$name is the spec value in both themes', () {
       expect(read(MxSemanticColors.light).toARGB32(), light);
       expect(read(MxSemanticColors.dark).toARGB32(), dark);
     });

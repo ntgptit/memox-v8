@@ -4,7 +4,6 @@ import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/app_button_style.dart';
 
@@ -39,7 +38,10 @@ class MxFilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final styles = context.textStyles;
-    final foreground = isSelected ? colors.onPrimary : colors.onSurface;
+    final semantic = context.semanticColors;
+    // Selected, the primary fill; at rest, the neutral chip ("Flashcard
+    // Color Tokens" §6).
+    final foreground = isSelected ? colors.onPrimary : semantic.onNeutralSoft;
     final select = onSelected;
     final chip = MergeSemantics(
       child: Semantics(
@@ -47,15 +49,10 @@ class MxFilterChip extends StatelessWidget {
         child: TextButton(
           onPressed: select == null ? null : () => select(!isSelected),
           style: appButtonStyle(
-            fill: isSelected ? colors.primary : colors.surfaceContainerLowest,
+            fill: isSelected ? colors.primary : semantic.neutralSoft,
             foreground: foreground,
-            edge: isSelected
-                ? BorderSide.none
-                : BorderSide(
-                    color: context.semanticColors.border,
-                    width: AppStroke.hairline,
-                  ),
-            focusColor: context.semanticColors.focusRing,
+            edge: BorderSide.none,
+            focusColor: semantic.focusRing,
             height: AppSize.chip,
             radius: AppRadius.full,
             padding: AppSpacing.control,

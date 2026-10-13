@@ -38,7 +38,7 @@ ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
     textButtonTheme: AppComponentThemes.textButtons(scheme, semantic, texts),
     iconButtonTheme: AppComponentThemes.iconButtons(scheme, semantic),
     dialogTheme: AppComponentThemes.dialogs(scheme, semantic, texts),
-    bottomSheetTheme: AppComponentThemes.sheets(scheme),
+    bottomSheetTheme: AppComponentThemes.sheets(scheme, semantic),
     snackBarTheme: AppComponentThemes.snackbars(scheme, semantic, texts),
     tooltipTheme: AppComponentThemes.tooltips(scheme, texts),
     // InkWell rows (MxRowInk, MxOptionRow, the tray, the nav) take the

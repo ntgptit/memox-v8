@@ -28,8 +28,8 @@ void main() {
         expect(theme.scaffoldBackgroundColor, scheme.surface);
       });
 
-      test('$name binds the V3 type scale in the theme family', () {
-        expect(theme.textTheme.displayMedium!.fontSize, 40);
+      test('$name binds the spec type scale in the theme family', () {
+        expect(theme.textTheme.displayMedium!.fontSize, 28);
         expect(theme.textTheme.bodySmall!.fontFamily, AppTypography.fontFamily);
       });
 
@@ -114,10 +114,10 @@ void main() {
       final context = await pumpUnder(tester, buildDarkTheme());
 
       expect(context.colors, AppColorSchemes.dark);
-      expect(context.texts.displayMedium!.fontSize, 40);
+      expect(context.texts.displayMedium!.fontSize, 28);
       expect(context.semanticColors, MxSemanticColors.dark);
       expect(
-        context.textStyles.navLabel(isSelected: true).color,
+        context.textStyles.disclosureLabel.color,
         MxSemanticColors.dark.primaryText,
       );
     });

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/foundations/app_radius.dart';
+import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/mx_semantic_colors.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
@@ -77,7 +79,7 @@ void main() {
         expect(fields.hintStyle!.fontSize, 14);
       });
 
-      testWidgets('raw buttons take the V3 shape, height and tones', (
+      testWidgets('raw buttons take the spec pill, height and tones', (
         tester,
       ) async {
         await pump(
@@ -97,10 +99,14 @@ void main() {
             matching: find.byType(Material),
           );
           final material = tester.widget<Material>(box.first);
-          expect(tester.getSize(box.first).height, 48, reason: label);
+          expect(
+            tester.getSize(box.first).height,
+            AppSize.buttonRegular,
+            reason: label,
+          );
           expect(
             (material.shape! as RoundedRectangleBorder).borderRadius,
-            BorderRadius.circular(12),
+            BorderRadius.circular(AppRadius.full),
             reason: label,
           );
         }
@@ -136,7 +142,7 @@ void main() {
         expect(tester.getSize(find.byType(IconButton)), const Size.square(48));
       });
 
-      testWidgets('a framework dialog takes the V3 surface and scrim', (
+      testWidgets('a framework dialog takes the card surface and scrim', (
         tester,
       ) async {
         await pump(
@@ -159,11 +165,11 @@ void main() {
               .ancestor(of: find.text('Title'), matching: find.byType(Material))
               .first,
         );
-        expect(surface.color, scheme.surfaceContainerLowest);
+        expect(surface.color, semantic.cardSurface);
         expect(surface.elevation, 0);
         expect(
           (surface.shape! as RoundedRectangleBorder).borderRadius,
-          BorderRadius.circular(20),
+          BorderRadius.circular(AppRadius.xl),
         );
         final barrier = tester.widget<ModalBarrier>(
           find.byType(ModalBarrier).last,
@@ -171,7 +177,7 @@ void main() {
         expect(barrier.color, scheme.scrim.withValues(alpha: 0.56));
       });
 
-      testWidgets('a framework sheet takes the V3 surface and top radius', (
+      testWidgets('a framework sheet takes the card surface and top radius', (
         tester,
       ) async {
         await pump(
@@ -194,12 +200,12 @@ void main() {
             .bottomSheetTheme;
         expect(
           sheet.backgroundColor ?? sheets.backgroundColor,
-          scheme.surfaceContainerLowest,
+          semantic.cardSurface,
         );
         expect(sheets.elevation, 0);
         expect(
           (sheets.shape! as RoundedRectangleBorder).borderRadius,
-          const BorderRadius.vertical(top: Radius.circular(20)),
+          const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
         );
         expect(sheets.modalBarrierColor, scheme.scrim.withValues(alpha: 0.56));
       });

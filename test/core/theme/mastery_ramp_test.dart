@@ -74,9 +74,9 @@ void main() {
     );
   });
 
-  test('the track is surfaceContainerLow', () {
+  test('the track is surfaceContainerHighest (spec §6)', () {
     for (final scheme in [AppColorSchemes.light, AppColorSchemes.dark]) {
-      expect(MasteryRamp.track(scheme), scheme.surfaceContainerLow);
+      expect(MasteryRamp.track(scheme), scheme.surfaceContainerHighest);
     }
   });
 }

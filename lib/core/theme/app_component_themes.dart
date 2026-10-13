@@ -209,7 +209,7 @@ abstract final class AppComponentThemes {
   ) {
     final styles = MxTextStyles(texts, scheme, semantic);
     return DialogThemeData(
-      backgroundColor: scheme.surfaceContainerLowest,
+      backgroundColor: semantic.cardSurface,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -226,15 +226,17 @@ abstract final class AppComponentThemes {
 
   /// BottomSheet (BottomSheet contract): the card ground, top radius 28,
   /// flat, over the 56% scrim.
-  static BottomSheetThemeData sheets(ColorScheme scheme) =>
-      BottomSheetThemeData(
-        backgroundColor: scheme.surfaceContainerLowest,
-        modalBackgroundColor: scheme.surfaceContainerLowest,
-        elevation: 0,
-        modalElevation: 0,
-        shape: const RoundedRectangleBorder(borderRadius: _sheetRadius),
-        modalBarrierColor: _scrim(scheme),
-      );
+  static BottomSheetThemeData sheets(
+    ColorScheme scheme,
+    MxSemanticColors semantic,
+  ) => BottomSheetThemeData(
+    backgroundColor: semantic.cardSurface,
+    modalBackgroundColor: semantic.cardSurface,
+    elevation: 0,
+    modalElevation: 0,
+    shape: const RoundedRectangleBorder(borderRadius: _sheetRadius),
+    modalBarrierColor: _scrim(scheme),
+  );
 
   /// SnackBar (Snackbar contract): the inverse surface, floating a gutter in,
   /// radius 12, the snackbar message style.

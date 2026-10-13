@@ -23,8 +23,8 @@ void main() {
   final light = AppColorSchemes.light;
   final dark = AppColorSchemes.dark;
 
-  test('whisper: card and toggle thumb, none in dark', () {
-    expectShadow(AppShadows.whisper(light), light, dy: 1, blur: 2, alpha: 0.04);
+  test('whisper: no resting shadow in either theme (spec §4.8)', () {
+    expect(AppShadows.whisper(light), isEmpty);
     expect(AppShadows.whisper(dark), isEmpty);
   });
 

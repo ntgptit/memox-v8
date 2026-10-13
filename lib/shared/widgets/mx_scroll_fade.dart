@@ -77,7 +77,7 @@ class _MxScrollFadeState extends State<MxScrollFade> {
 
   Color _ground(BuildContext context) => switch (widget.ground) {
     MxScrollFadeGround.page => context.colors.surface,
-    MxScrollFadeGround.raised => context.colors.surfaceContainerLowest,
+    MxScrollFadeGround.raised => context.semanticColors.cardSurface,
     MxScrollFadeGround.recessed => context.colors.surfaceContainerLow,
   };
 

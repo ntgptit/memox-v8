@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/core/theme/foundations/app_opacity.dart';
 import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
 import 'package:memox/core/theme/foundations/app_size.dart';
 import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -77,11 +76,10 @@ class _MxToggleState extends State<MxToggle> {
         child: DecoratedBox(
           key: const ValueKey('mx-toggle-thumb'),
           decoration: BoxDecoration(
-            // On, the primary thumb on the light primary track; off, the
-            // white thumb on the neutral track (spec 2026-10-10 §5.2).
-            color: widget.isOn ? colors.primary : colors.onPrimary,
+            // On, the on-primary thumb on the primary track; off, the
+            // outline thumb on the neutral track (Material 3's switch).
+            color: widget.isOn ? colors.onPrimary : colors.outline,
             shape: BoxShape.circle,
-            boxShadow: AppShadows.whisper(colors),
           ),
           child: const SizedBox.square(dimension: _thumbSize),
         ),

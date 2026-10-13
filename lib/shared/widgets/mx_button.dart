@@ -175,14 +175,12 @@ class MxButton extends StatelessWidget {
   _Paint _paintFor(BuildContext context) {
     final colors = context.colors;
     if (size == MxButtonSize.chip) {
-      // Chip geometry paints its own surface whatever the tone (ruling R2).
+      // Chip geometry paints the neutral chip whatever the tone (ruling R2;
+      // "Flashcard Color Tokens" §6).
       return (
-        fill: colors.surfaceContainerLowest,
-        foreground: colors.onSurface,
-        edge: BorderSide(
-          color: context.semanticColors.border,
-          width: AppStroke.hairline,
-        ),
+        fill: context.semanticColors.neutralSoft,
+        foreground: context.semanticColors.onNeutralSoft,
+        edge: BorderSide.none,
       );
     }
     return switch (tone) {

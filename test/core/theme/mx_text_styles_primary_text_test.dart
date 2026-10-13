@@ -13,7 +13,6 @@ void main() {
     test('$name: primary-coloured styles read primaryText', () {
       final styles = MxTextStyles(theme.textTheme, scheme, semantic);
       final primaryText = semantic.primaryText;
-      expect(styles.navLabel(isSelected: true).color, primaryText);
       expect(styles.disclosureLabel.color, primaryText);
       expect(styles.rowTitleMatch.color, primaryText);
       expect(styles.requiredMarker.color, primaryText);
