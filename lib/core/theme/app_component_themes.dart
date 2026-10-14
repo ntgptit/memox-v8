@@ -312,6 +312,37 @@ IconButtonThemeData iconButtonTheme(ThemeTokens t) {
   );
 }
 
+/// The Design System defines no shadow for the FAB; Material's own elevation
+/// casts it, the same in light and dark (Material 3: 6, and 8 when hovered).
+const double _fabElevation = 6;
+const double _fabHoverElevation = 8;
+
+/// The FAB as the Material 3 regular FAB: a 56 square, radius `radiusLg`,
+/// elevation 6 resting and 8 hovered, an `onPrimary` 24 glyph on `primary`.
+/// `MxFab` swaps the shape for one that also draws the focus ring, which this
+/// theme cannot (a theme shape is not state-aware).
+FloatingActionButtonThemeData floatingActionButtonTheme(ThemeTokens t) {
+  final dimens = t.dimens;
+  final onPrimary = t.scheme.onPrimary;
+  return FloatingActionButtonThemeData(
+    backgroundColor: t.scheme.primary,
+    foregroundColor: onPrimary,
+    hoverColor: onPrimary.withValues(alpha: dimens.opacityHover),
+    focusColor: onPrimary.withValues(alpha: dimens.opacityFocus),
+    splashColor: onPrimary.withValues(alpha: dimens.opacityPressed),
+    elevation: _fabElevation,
+    focusElevation: _fabElevation,
+    highlightElevation: _fabElevation,
+    hoverElevation: _fabHoverElevation,
+    iconSize: dimens.sizeIcon,
+    sizeConstraints: BoxConstraints.tightFor(
+      width: dimens.sizeFab,
+      height: dimens.sizeFab,
+    ),
+    shape: RoundedRectangleBorder(borderRadius: t.radius(dimens.radiusLg)),
+  );
+}
+
 NavigationBarThemeData navigationBarTheme(ThemeTokens t) {
   final scheme = t.scheme;
   return NavigationBarThemeData(

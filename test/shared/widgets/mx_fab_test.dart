@@ -1,4 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -9,42 +11,81 @@ import '../../support/widget_harness.dart';
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('a square 52 primary box, radius 16, 20 onPrimary glyph', (
+  Future<void> pumpFab(WidgetTester tester) => pumpMx(
+    tester,
+    MxFab(icon: AppIcons.add, semanticLabel: 'New deck', onPressed: () {}),
+  );
+
+  Material fabMaterial(WidgetTester tester) => tester.widget<Material>(
+    find
+        .descendant(of: find.byType(MxFab), matching: find.byType(Material))
+        .first,
+  );
+
+  testWidgets('a square 56 primary box, radius 16, 24 onPrimary glyph', (
     tester,
   ) async {
-    await pumpMx(
-      tester,
-      MxFab(icon: AppIcons.add, semanticLabel: 'New deck', onPressed: () {}),
-    );
-    final material = tester.widget<Material>(
-      find.descendant(of: find.byType(MxFab), matching: find.byType(Material)),
-    );
+    await pumpFab(tester);
+    final material = fabMaterial(tester);
 
-    expect(tester.getSize(find.byType(MxFab)), const Size.square(52));
+    expect(tester.getSize(find.byType(MxFab)), const Size.square(56));
     expect(material.color, scheme.primary);
     expect(
       (material.shape! as RoundedRectangleBorder).borderRadius,
       BorderRadius.circular(16),
     );
     expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.add)).color,
+      IconTheme.of(tester.element(find.byIcon(AppIcons.add))).color,
       scheme.onPrimary,
     );
-    expect(tester.getSize(find.byIcon(AppIcons.add)).width, 20);
+    expect(tester.getSize(find.byIcon(AppIcons.add)).width, 24);
   });
 
-  testWidgets('lifted by the fab shadow', (tester) async {
-    await pumpMx(
-      tester,
-      MxFab(icon: AppIcons.add, semanticLabel: 'New deck', onPressed: () {}),
-    );
-    final material = tester.widget<Material>(
-      find
-          .descendant(of: find.byType(MxFab), matching: find.byType(Material))
-          .first,
+  testWidgets('rests at elevation 6 and lifts to 8 under a mouse', (
+    tester,
+  ) async {
+    await pumpFab(tester);
+    expect(fabMaterial(tester).elevation, 6);
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: Offset.zero);
+    addTearDown(mouse.removePointer);
+    await mouse.moveTo(tester.getCenter(find.byType(MxFab)));
+    await tester.pumpAndSettle();
+
+    expect(fabMaterial(tester).elevation, 8);
+  });
+
+  testWidgets('state layers are onPrimary at hover 8%, focus 10%, press 10%', (
+    tester,
+  ) async {
+    await pumpFab(tester);
+    final ink = tester.widget<InkWell>(
+      find.descendant(of: find.byType(MxFab), matching: find.byType(InkWell)),
     );
 
-    expect(material.elevation, greaterThan(0));
+    expect(ink.hoverColor, scheme.onPrimary.withValues(alpha: 0.08));
+    expect(ink.focusColor, scheme.onPrimary.withValues(alpha: 0.1));
+    expect(ink.splashColor, scheme.onPrimary.withValues(alpha: 0.1));
+  });
+
+  testWidgets('keyboard focus draws a primary ring 2 outside the box', (
+    tester,
+  ) async {
+    await pumpFab(tester);
+    expect(
+      (fabMaterial(tester).shape! as MxFocusRingRoundedBorder).ring.style,
+      BorderStyle.none,
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pumpAndSettle();
+    final shape = fabMaterial(tester).shape! as MxFocusRingRoundedBorder;
+
+    expect(shape.ring.color, scheme.primary);
+    expect(shape.ring.width, 2);
+    expect(shape.gap, 2);
+    expect(shape.borderRadius, BorderRadius.circular(16));
   });
 
   testWidgets('the label is its accessible name, never painted', (

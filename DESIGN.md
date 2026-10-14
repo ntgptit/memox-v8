@@ -345,7 +345,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 
 ### Actions
 - **MxButton**: tones primary, secondary, outline (an `outline` edge, the accent text), text (no fill and no edge), destructive, dangerTint (the error tint with an error label) and warning; sizes regular (`sizeButton`) and small (`sizeButtonSmall`), plus the app's chip and study variants. The label is `labelLarge` at every size, the radius full, the touch area `sizeControl`. A leading glyph is `sizeIconButton` with `space8` before the label; the side padding is `space24` (`space16` on the glyph's side), and the text tone's is `space12` (`space16` after a glyph). A button alone or across a card is regular; a button sharing a row with other content is small; one card uses one size. `isLoading` swaps the label for a spinner at the same width and is never dimmed; disabled follows the Design System's disabled opacities; `semanticLabel` names the button to TalkBack on its own node, with its tap and state.
-- **MxIconButton**: an icon at `sizeIcon` in a `sizeControl` circle; its long-press tooltip is on the inverse surface. **MxFab**: square, icon only.
+- **MxIconButton**: an icon at `sizeIcon` in a `sizeControl` circle; its long-press tooltip is on the inverse surface. **MxFab**: the Material 3 regular FAB, square at `sizeFab`, icon only at `sizeIcon`, corner `radiusLg`; it lifts a step when hovered and draws the offset focus ring.
 - **MxActionPair** (a screen footer's pair, The Footer Pair Rule) and **MxSheetActions** (the pair of a dialog or a sheet, Cancel and the confirm sharing the row; the confirm is the verb alone and neither action carries an icon; `MxSheetActions.single` is one action across the row).
 
 ### Containers

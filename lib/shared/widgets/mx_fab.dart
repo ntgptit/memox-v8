@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'dart:ui' show lerpDouble;
 
-/// The one pinned action: a square, icon-only 52 box. V3 has no extended FAB.
-/// [semanticLabel] is the accessible name and is never painted. Placement
-/// belongs to MxAppShell.
-class MxFab extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
+
+/// The one pinned action: the Material 3 regular FAB, a square icon-only box
+/// styled by the theme's `FloatingActionButtonThemeData`. V3 has no extended
+/// FAB. [semanticLabel] is the accessible name and is never painted.
+/// Placement belongs to MxAppShell.
+class MxFab extends StatefulWidget {
   const MxFab({
     super.key,
     required this.icon,
@@ -16,48 +19,122 @@ class MxFab extends StatelessWidget {
   final String semanticLabel;
   final VoidCallback onPressed;
 
-  /// The Design System defines no shadow for the FAB; Material's own
-  /// elevation casts it, the same in light and dark.
-  static const double _elevation = 6;
+  @override
+  State<MxFab> createState() => _MxFabState();
+}
+
+class _MxFabState extends State<MxFab> {
+  bool _focused = false;
+
+  MxFocusRingRoundedBorder _shape(ThemeTokens t) => MxFocusRingRoundedBorder(
+    borderRadius: t.radius(t.dimens.radiusLg),
+    ring: _focused
+        ? BorderSide(color: t.scheme.primary, width: t.dimens.strokeFocus)
+        : BorderSide.none,
+    gap: t.dimens.strokeFocusGap,
+  );
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final radius = BorderRadius.circular(context.dimens.radiusLg);
-    final shape = RoundedRectangleBorder(borderRadius: radius);
     return Semantics(
       button: true,
-      label: semanticLabel,
+      label: widget.semanticLabel,
       excludeSemantics: true,
-      onTap: onPressed,
-      child: Material(
-        color: colors.primary,
-        elevation: _elevation,
-        shadowColor: colors.shadow,
-        shape: shape,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onPressed,
-          customBorder: shape,
-          overlayColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.pressed)
-                ? colors.onPrimary.withValues(
-                    alpha: context.dimens.opacityPressed,
-                  )
-                : null,
-          ),
-          child: SizedBox.square(
-            dimension: context.dimens.sizeFab,
-            child: Center(
-              child: Icon(
-                icon,
-                size: context.dimens.sizeIconCompact,
-                color: colors.onPrimary,
-              ),
-            ),
-          ),
+      onTap: widget.onPressed,
+      // The theme's shape is not state-aware, so the focus ring is set here.
+      child: Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        onFocusChange: (focused) => setState(() => _focused = focused),
+        child: FloatingActionButton(
+          onPressed: widget.onPressed,
+          // The default tag is shared, so two FABs in one route would clash.
+          heroTag: null,
+          shape: _shape(ThemeTokens.of(context)),
+          child: Icon(widget.icon),
         ),
       ),
     );
   }
+}
+
+/// [MxFocusRingBorder] for a rounded rectangle: the same offset ring on a
+/// container with a fixed corner radius, such as the FAB.
+class MxFocusRingRoundedBorder extends RoundedRectangleBorder {
+  const MxFocusRingRoundedBorder({
+    super.side,
+    super.borderRadius,
+    this.ring = BorderSide.none,
+    this.gap = 0,
+  });
+
+  final BorderSide ring;
+
+  /// Distance between the container's edge and the ring's inner edge.
+  final double gap;
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
+    super.paint(canvas, rect, textDirection: textDirection);
+    if (ring.style == BorderStyle.none) return;
+    final grow = gap + ring.width / 2;
+    final outer = borderRadius
+        .resolve(textDirection)
+        .toRRect(rect)
+        .inflate(grow);
+    canvas.drawRRect(outer, ring.toPaint());
+  }
+
+  @override
+  MxFocusRingRoundedBorder copyWith({
+    BorderSide? side,
+    BorderRadiusGeometry? borderRadius,
+  }) => MxFocusRingRoundedBorder(
+    side: side ?? this.side,
+    borderRadius: borderRadius ?? this.borderRadius,
+    ring: ring,
+    gap: gap,
+  );
+
+  @override
+  ShapeBorder scale(double t) => MxFocusRingRoundedBorder(
+    side: side.scale(t),
+    borderRadius: borderRadius * t,
+    ring: ring.scale(t),
+    gap: gap * t,
+  );
+
+  @override
+  ShapeBorder? lerpFrom(ShapeBorder? a, double t) =>
+      a is MxFocusRingRoundedBorder ? _lerp(a, this, t) : super.lerpFrom(a, t);
+
+  @override
+  ShapeBorder? lerpTo(ShapeBorder? b, double t) =>
+      b is MxFocusRingRoundedBorder ? _lerp(this, b, t) : super.lerpTo(b, t);
+
+  static MxFocusRingRoundedBorder _lerp(
+    MxFocusRingRoundedBorder a,
+    MxFocusRingRoundedBorder b,
+    double t,
+  ) => MxFocusRingRoundedBorder(
+    side: BorderSide.lerp(a.side, b.side, t),
+    borderRadius: BorderRadiusGeometry.lerp(a.borderRadius, b.borderRadius, t)!,
+    ring: BorderSide.lerp(a.ring, b.ring, t),
+    gap: lerpDouble(a.gap, b.gap, t)!,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      other is MxFocusRingRoundedBorder &&
+      other.side == side &&
+      other.borderRadius == borderRadius &&
+      other.ring == ring &&
+      other.gap == gap;
+
+  @override
+  int get hashCode => Object.hash(side, borderRadius, ring, gap);
+
+  @override
+  String toString() =>
+      'MxFocusRingRoundedBorder($side, $borderRadius, ring: $ring, gap: $gap)';
 }

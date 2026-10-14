@@ -51,6 +51,7 @@ ThemeData _build({
     outlinedButtonTheme: outlinedButtonTheme(tokens),
     textButtonTheme: textButtonTheme(tokens),
     iconButtonTheme: iconButtonTheme(tokens),
+    floatingActionButtonTheme: floatingActionButtonTheme(tokens),
     navigationBarTheme: navigationBarTheme(tokens),
     navigationRailTheme: navigationRailTheme(tokens),
     progressIndicatorTheme: progressIndicatorTheme(tokens),

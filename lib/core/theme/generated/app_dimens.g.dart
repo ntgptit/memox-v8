@@ -51,7 +51,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
     // App-only — not yet in the design system.
     this.sizeChip = 28,
     this.sizeInput = 52,
-    this.sizeFab = 52,
+    this.sizeFab = 56,
     this.sizeAppBar = 64,
     this.sizeIconInline = 16,
     this.sizeIconCompact = 20,
@@ -112,7 +112,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
   /// Text field height.
   final double sizeInput;
 
-  /// Floating action button, square, icon only.
+  /// Floating action button, square, icon only, as the Material 3 FAB container.
   final double sizeFab;
 
   /// App bar height (48 + 2 x 8).
@@ -121,13 +121,13 @@ class AppDimens extends ThemeExtension<AppDimens> {
   /// Icon inside body text; the smallest icon.
   final double sizeIconInline;
 
-  /// Dense rows, metadata, nav glyphs, FAB glyph.
+  /// Dense rows, metadata, nav glyphs.
   final double sizeIconCompact;
 
   /// The leading glyph of a button, as the Material 3 button icon size; its gap to the label is space8.
   final double sizeIconButton;
 
-  /// Gap between a control and its focus ring (tokens.json: focus ring in primary, offset 2px). Only buttons draw an offset ring today.
+  /// Gap between a control and its focus ring (tokens.json: focus ring in primary, offset 2px). Buttons and the FAB draw an offset ring.
   final double strokeFocusGap;
 
   /// Unselected radio ring and checkbox border.
