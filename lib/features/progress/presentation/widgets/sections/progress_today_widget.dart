@@ -108,7 +108,9 @@ class ProgressTodayWidget extends StatelessWidget {
       ),
       top: MxBarSeries(
         label: l10n.progressLearning,
-        // The learning fill, as the mastery ramp's (spec 2026-10-10 §5.1).
+        // The learning status fill, as MxStatusBadge's dot. The mastery
+        // ramp draws its learning band in `warning` instead, to hold 3:1 on
+        // its track (deck mastery spec R4).
         color: context.mxColors.warningContainer,
       ),
     );
