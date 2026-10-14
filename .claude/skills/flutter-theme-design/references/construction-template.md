@@ -162,7 +162,7 @@ ChipTheme               ↔ MxFilterChip / MxTagChip / MxChipTrigger (chưa có 
 NavigationBarTheme      ↔ MxBottomNav       (không dùng NavigationBar; chưa có slot)
 CheckboxTheme           ↔ MxSelectionCheckbox (chưa có slot)
 RadioTheme              ↔ MxOptionRow       (chưa có slot)
-SwitchTheme             ↔ MxToggle          (chưa có slot)
+SwitchTheme             ↔ MxToggle          (đã có slot: switchTheme)
 ProgressIndicatorTheme  ↔ MxSpinner / MxLinearProgress / MxSkeleton* (chưa có slot)
 SegmentedButtonTheme    ↔ MxSegmentedTray   (chưa có slot)
 PopupMenuTheme          ↔ — (chưa dựng)

@@ -56,6 +56,7 @@ ThemeData _build({
     navigationRailTheme: navigationRailTheme(tokens),
     progressIndicatorTheme: progressIndicatorTheme(tokens),
     chipTheme: chipTheme(tokens),
+    switchTheme: switchTheme(tokens),
     inputDecorationTheme: inputDecorationTheme(tokens),
     dialogTheme: dialogTheme(tokens),
     bottomSheetTheme: bottomSheetTheme(tokens),

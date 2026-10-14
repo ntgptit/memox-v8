@@ -68,6 +68,19 @@ List<_Pair> _pairs(String mode) {
     c('inverseSurface'),
   );
   add('primary on surface', c('primary'), surface);
+  // The switch's handle on its track (MxToggle, Material 3): non-text, 3:1.
+  add(
+    'switch handle (onPrimary) on track (primary)',
+    c('onPrimary'),
+    c('primary'),
+    _nonText,
+  );
+  add(
+    'switch handle (outline) on track (surfaceContainerHighest)',
+    c('outline'),
+    c('surfaceContainerHighest'),
+    _nonText,
+  );
   // A tint is laid over the ground directly beneath it (MxTintBase): the
   // page, a card, or a sheet or dialog.
   for (final (base, where) in [

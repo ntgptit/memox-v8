@@ -192,6 +192,61 @@ void main() {
         );
       });
 
+      // MxToggle is a Material Switch that reads this theme: Material 3's
+      // 52x32 switch.
+      test('switch: M3 handle and track colours per state', () {
+        final sw = theme.switchTheme;
+        const on = {WidgetState.selected};
+        const off = <WidgetState>{};
+        const disabledOn = {WidgetState.selected, WidgetState.disabled};
+        const disabledOff = {WidgetState.disabled};
+
+        expect(sw.thumbColor!.resolve(on), scheme.onPrimary);
+        expect(sw.thumbColor!.resolve(off), scheme.outline);
+        expect(
+          sw.thumbColor!.resolve({...on, WidgetState.pressed}),
+          scheme.primaryContainer,
+        );
+        expect(
+          sw.thumbColor!.resolve({WidgetState.focused}),
+          scheme.onSurfaceVariant,
+        );
+        expect(sw.trackColor!.resolve(on), scheme.primary);
+        expect(sw.trackColor!.resolve(off), scheme.surfaceContainerHighest);
+        // Disabled: the track is 12%, the unselected handle 38%.
+        expect(
+          sw.trackColor!.resolve(disabledOn),
+          scheme.onSurface.withValues(alpha: dimens.opacityDisabledContainer),
+        );
+        expect(
+          sw.trackColor!.resolve(disabledOff),
+          scheme.surfaceContainerHighest.withValues(
+            alpha: dimens.opacityDisabledContainer,
+          ),
+        );
+        expect(sw.thumbColor!.resolve(disabledOn), scheme.surface);
+        expect(
+          sw.thumbColor!.resolve(disabledOff),
+          scheme.onSurface.withValues(alpha: dimens.opacityDisabledContent),
+        );
+      });
+
+      test('switch: a 2 outline edge off, none on, a 48 box', () {
+        final sw = theme.switchTheme;
+
+        expect(sw.trackOutlineWidth!.resolve({}), dimens.strokeControl);
+        expect(sw.trackOutlineColor!.resolve({}), scheme.outline);
+        expect(
+          sw.trackOutlineColor!.resolve({WidgetState.selected}),
+          Colors.transparent,
+        );
+        expect(
+          sw.trackOutlineColor!.resolve({WidgetState.disabled}),
+          scheme.onSurface.withValues(alpha: dimens.opacityDisabledContainer),
+        );
+        expect(sw.materialTapTargetSize, MaterialTapTargetSize.padded);
+      });
+
       test('dialog, sheet and snack bar carry their tokens', () {
         expect(theme.dialogTheme.backgroundColor, scheme.surfaceContainerHigh);
         expect(

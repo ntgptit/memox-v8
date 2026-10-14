@@ -373,6 +373,48 @@ ChipThemeData chipTheme(ThemeTokens t) => ChipThemeData(
   labelPadding: EdgeInsets.symmetric(horizontal: t.dimens.space8),
 );
 
+/// The Material 3 switch (`MxToggle` is a `Switch`): a `primary` track with an
+/// `onPrimary` handle when on; a `surfaceContainerHighest` track with a
+/// `strokeControl` `outline` edge and an `outline` handle when off. A pressed,
+/// hovered or focused handle takes `primaryContainer` (on) or
+/// `onSurfaceVariant` (off). Disabled, the track is 12% and the off handle
+/// 38%, the on handle `surface`; the switch dims itself. Size, handle radii
+/// (16, 24, 28), the 40 state layer (primary or onSurface at the hover, pressed
+/// and focus opacities) and the motion are Material's own M3 defaults.
+SwitchThemeData switchTheme(ThemeTokens t) {
+  final scheme = t.scheme;
+  final dimens = t.dimens;
+  final on = WidgetState.selected;
+  final disabled = WidgetState.disabled;
+  final engaged =
+      WidgetState.pressed | WidgetState.hovered | WidgetState.focused;
+  Color faint(Color color) =>
+      color.withValues(alpha: dimens.opacityDisabledContainer);
+  return SwitchThemeData(
+    materialTapTargetSize: MaterialTapTargetSize.padded,
+    trackOutlineWidth: WidgetStatePropertyAll(dimens.strokeControl),
+    thumbColor: WidgetStateProperty.fromMap({
+      disabled & on: scheme.surface,
+      disabled: t.onSurfaceAt(dimens.opacityDisabledContent),
+      on & engaged: scheme.primaryContainer,
+      on: scheme.onPrimary,
+      engaged: scheme.onSurfaceVariant,
+      WidgetState.any: scheme.outline,
+    }),
+    trackColor: WidgetStateProperty.fromMap({
+      disabled & on: faint(scheme.onSurface),
+      disabled: faint(scheme.surfaceContainerHighest),
+      on: scheme.primary,
+      WidgetState.any: scheme.surfaceContainerHighest,
+    }),
+    trackOutlineColor: WidgetStateProperty.fromMap({
+      on: Colors.transparent,
+      disabled & ~on: faint(scheme.onSurface),
+      WidgetState.any: scheme.outline,
+    }),
+  );
+}
+
 DialogThemeData dialogTheme(ThemeTokens t) => DialogThemeData(
   backgroundColor: t.scheme.surfaceContainerHigh,
   surfaceTintColor: Colors.transparent,
