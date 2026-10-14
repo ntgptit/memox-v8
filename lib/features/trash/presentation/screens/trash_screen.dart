@@ -331,7 +331,7 @@ class _Filters extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          spacing: context.dimens.space4,
+          spacing: context.dimens.space8,
           children: [
             for (final filter in TrashFilter.values)
               MxFilterChip(

@@ -70,4 +70,59 @@ void main() {
     expect(removed, 1);
     handle.dispose();
   });
+
+  // Material 3 input chip: 32 tall, an 8 corner with a 1dp outlineVariant
+  // edge, an 18 remove glyph, and the whole 48 area removes the tag.
+  libraryTest('a removable tag chip: the M3 input chip geometry', (
+    tester,
+    env,
+  ) async {
+    var removed = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Scaffold(
+        body: Center(
+          child: CardRemovableTagChipWidget(
+            name: 'verb',
+            onRemove: () => removed++,
+          ),
+        ),
+      ),
+    );
+    final chip = find.descendant(
+      of: find.byType(CardRemovableTagChipWidget),
+      matching: find.byType(DecoratedBox),
+    );
+    final decoration =
+        tester.widget<DecoratedBox>(chip.first).decoration as ShapeDecoration;
+
+    expect(tester.getSize(chip.first).height, 32);
+    expect(
+      decoration.shape,
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: lightColorScheme.outlineVariant),
+      ),
+    );
+    expect(
+      tester
+          .getSize(
+            find.descendant(
+              of: find.byType(CardRemovableTagChipWidget),
+              matching: find.byType(Icon),
+            ),
+          )
+          .width,
+      18,
+    );
+    expect(
+      tester.getSize(find.byType(CardRemovableTagChipWidget)).height,
+      greaterThanOrEqualTo(48),
+    );
+    // A tap on the chip's top edge, outside the 32 box but inside the 48
+    // area, still removes the tag.
+    await tester.tapAt(tester.getTopLeft(chip.first) + const Offset(20, -6));
+    expect(removed, 1);
+  });
 }

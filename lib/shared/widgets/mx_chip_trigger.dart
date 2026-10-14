@@ -22,13 +22,18 @@ class MxChipTrigger extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tokens = ThemeTokens.of(context);
+    final chip = Theme.of(context).chipTheme;
     return TextButton(
       onPressed: onPressed,
-      style: chipButtonStyle(tokens, isGhost: true, hasTrailing: true),
+      style: chipButtonStyle(
+        ThemeTokens.of(context),
+        chip,
+        isGhost: true,
+        hasTrailing: true,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        spacing: chipGap(tokens),
+        spacing: chipGap(chip),
         children: [
           // A label wider than the column ends in an ellipsis, as
           // MxTagChip's does (SW-REV-010).

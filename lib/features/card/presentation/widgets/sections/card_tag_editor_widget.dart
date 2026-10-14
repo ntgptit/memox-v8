@@ -148,7 +148,7 @@ class CardTagEditorWidgetState extends State<CardTagEditorWidget> {
             ),
           ),
           Wrap(
-            spacing: context.dimens.space4,
+            spacing: context.dimens.space8,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               for (final tag in widget.tags)

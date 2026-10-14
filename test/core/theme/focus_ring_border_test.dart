@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
 
 // The border behind the focus ring: the plain base shape for clipping, the
 // ring only on top of it, and a ring that animates in and out. One class

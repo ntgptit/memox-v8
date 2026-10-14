@@ -31,6 +31,11 @@ màu, chữ, kích thước và bố cục, nên cả hai vấn đề phải gi�
   `theme_rules.dart` (`accentColor`, `deckIconColor`, `screenMargin`, `windowSize`),
   nơi duy nhất ở phía widget được rẽ nhánh theo `brightness`. Nền tint chỉ tính qua
   `ColorTint.tintOver`.
+- **Danh sách file theme đóng**, guard và `tools/design/check.py` giữ: `app_theme.dart`,
+  `app_component_themes.dart`, `app_typography.dart`, `app_icons.dart`, `color_tint.dart`,
+  `theme_rules.dart`, `theme_context.dart`, `mastery_ramp.dart` và `focus_ring_border.dart`
+  (`MxFocusRingBorder`: viền bọc một `OutlinedBorder` và vẽ vòng focus lệch khỏi khung,
+  dùng cho nút, FAB và chip), cộng `generated/*.g.dart`.
 - **Rào chặn tạo lại token cũ:** `tools/design/removed_symbols.json` liệt kê tên đã
   xoá; hook `block_removed_theme_symbols.py`, một bước của `dod_check.sh` và các rule
   guard chặn viết lại chúng. Xoá class cũ trước, lấy lỗi compile làm danh sách việc;

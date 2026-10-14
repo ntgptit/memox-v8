@@ -286,11 +286,13 @@ def design_components(tokens: dict, app_tokens: dict) -> list[tuple[str, dict[st
                           "height": token_value(tokens, "size", "size-search")}),
         ("text-field", {"backgroundColor": "{colors.surface-container-low}", "textColor": "{colors.on-surface}",
                         "typography": body, "rounded": "{rounded.md}", "height": app_value(app_tokens, "sizeInput")}),
-        ("chip", {"backgroundColor": "{colors.secondary-container}",
-                  "textColor": "{colors.on-secondary-container}", "typography": meta,
-                  "rounded": "{rounded.sm}", "height": chip}),
-        ("filter-chip-selected", {"backgroundColor": "{colors.primary}", "textColor": "{colors.on-primary}",
-                                  "typography": label, "rounded": "{rounded.full}", "height": chip}),
+        # The Material 3 flat filter chip (chipTheme): no fill and an
+        # outline-variant edge at rest, secondary-container when selected.
+        ("filter-chip", {"textColor": "{colors.on-surface-variant}", "typography": label,
+                         "rounded": "{rounded.sm}", "height": chip}),
+        ("filter-chip-selected", {"backgroundColor": "{colors.secondary-container}",
+                                  "textColor": "{colors.on-secondary-container}", "typography": label,
+                                  "rounded": "{rounded.sm}", "height": chip}),
         ("nav-indicator", {"backgroundColor": "{colors.secondary-container}",
                            "textColor": "{colors.on-secondary-container}", "rounded": "{rounded.full}",
                            "width": token_value(tokens, "size", "size-nav-indicator-width"),

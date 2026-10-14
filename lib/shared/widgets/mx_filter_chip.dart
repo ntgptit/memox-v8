@@ -36,7 +36,8 @@ class MxFilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = ThemeTokens.of(context);
-    final foreground = chipPaint(tokens, isSelected: isSelected).foreground;
+    final chip = Theme.of(context).chipTheme;
+    final foreground = chipPaint(chip, isSelected: isSelected).foreground;
     final leading = isSelected ? AppIcons.check : icon;
     final select = onSelected;
     return MergeSemantics(
@@ -46,12 +47,13 @@ class MxFilterChip extends StatelessWidget {
           onPressed: select == null ? null : () => select(!isSelected),
           style: chipButtonStyle(
             tokens,
+            chip,
             isSelected: isSelected,
             hasLeading: leading != null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: chipGap(tokens),
+            spacing: chipGap(chip),
             children: [
               if (leading case final glyph?) Icon(glyph),
               // A label wider than the column ends in an ellipsis, as

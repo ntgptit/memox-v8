@@ -78,7 +78,7 @@ class CardListToolbarWidget extends ConsumerWidget {
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            spacing: context.dimens.space4,
+            spacing: context.dimens.space8,
             children: [
               for (final filter in CardListFilter.values)
                 MxFilterChip(

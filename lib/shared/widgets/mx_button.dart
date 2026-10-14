@@ -107,10 +107,14 @@ class MxButton extends StatelessWidget {
     final tokens = ThemeTokens.of(context);
     final paint = _paintFor(context);
     final hasIcon = icon != null || mark != null;
-    final geometry = _geometryFor(tokens, hasIcon: hasIcon);
+    final geometry = _geometryFor(context, hasIcon: hasIcon);
     final edge = paint.edge.style == BorderStyle.none ? null : paint.edge;
     final base = size == MxButtonSize.chip
-        ? chipButtonStyle(tokens, hasLeading: hasIcon)
+        ? chipButtonStyle(
+            tokens,
+            Theme.of(context).chipTheme,
+            hasLeading: hasIcon,
+          )
         : buttonStyle(
             tokens,
             fill: paint.fill,
@@ -163,7 +167,7 @@ class MxButton extends StatelessWidget {
   /// horizontal padding on both sides.
   double naturalWidth(BuildContext context) {
     final geometry = _geometryFor(
-      ThemeTokens.of(context),
+      context,
       hasIcon: icon != null || mark != null,
     );
     final painter = TextPainter(
@@ -185,7 +189,9 @@ class MxButton extends StatelessWidget {
   _Paint _paintFor(BuildContext context) {
     final colors = context.colors;
     // A chip paints the chip theme whatever the tone (ruling R2).
-    if (size == MxButtonSize.chip) return chipPaint(ThemeTokens.of(context));
+    if (size == MxButtonSize.chip) {
+      return chipPaint(Theme.of(context).chipTheme);
+    }
     return switch (tone) {
       MxButtonTone.primary => (
         fill: colors.primary,
@@ -236,8 +242,9 @@ class MxButton extends StatelessWidget {
     };
   }
 
-  _Geometry _geometryFor(ThemeTokens tokens, {required bool hasIcon}) {
-    final dimens = tokens.dimens;
+  _Geometry _geometryFor(BuildContext context, {required bool hasIcon}) {
+    final dimens = context.dimens;
+    final chip = Theme.of(context).chipTheme;
     return switch (size) {
       // Material 3: a filled or outlined button with a leading glyph takes
       // 24 to 16 on the start side; the quiet text tone sits closer to its
@@ -263,8 +270,8 @@ class MxButton extends StatelessWidget {
       // The chip theme's insets: 8 to a leading glyph, else 16.
       MxButtonSize.chip => (
         height: dimens.sizeChip,
-        start: chipStartInset(tokens, hasLeading: hasIcon),
-        end: chipEndInset(tokens, hasTrailing: false),
+        start: chipStartInset(chip, hasLeading: hasIcon),
+        end: chipEndInset(chip, hasTrailing: false),
         canWrap: false,
       ),
       // The contract's 36 sizes a pill that hugs its label; a block

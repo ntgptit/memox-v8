@@ -4,11 +4,13 @@ import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_chip_style.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
-/// A tag on the card being edited (kit `RemovableTagChip`): a primary-tinted
-/// pill with an ✕. Its whole 48 area removes the tag (ruling P4a-L8); the
-/// read-only `MxTagChip` is a different control.
+/// A tag on the card being edited (kit `RemovableTagChip`): a Material 3 input
+/// chip, 32 tall with the `chipTheme` corner, `outlineVariant` edge and insets,
+/// tinted primary, with an 18 ✕ after the label. Its whole 48 area removes the
+/// tag (ruling P4a-L8); the read-only `MxTagChip` is a different control.
 class CardRemovableTagChipWidget extends StatelessWidget {
   const CardRemovableTagChipWidget({
     super.key,
@@ -21,6 +23,7 @@ class CardRemovableTagChipWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chip = Theme.of(context).chipTheme;
     // Its own node, or the tag editor's row merges every chip into one.
     return Semantics(
       container: true,
@@ -37,34 +40,32 @@ class CardRemovableTagChipWidget extends StatelessWidget {
           child: Center(
             widthFactor: 1,
             child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: context.accentColor.tintOver(MxTintBase.of(context)),
-                borderRadius: BorderRadius.circular(
-                  context.dimens.sizeChip / 2,
-                ),
+              decoration: chipDecoration(
+                chip,
+                fill: context.accentColor.tintOver(MxTintBase.of(context)),
               ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: context.dimens.sizeChip),
                 child: Padding(
                   padding: EdgeInsetsDirectional.only(
-                    start: context.dimens.space12,
-                    end: context.dimens.space8,
+                    start: chipStartInset(chip, hasLeading: false),
+                    end: chipEndInset(chip, hasTrailing: true),
                   ),
                   child: IconTheme.merge(
                     data: IconThemeData(
                       color: context.accentColor,
-                      size: context.dimens.sizeIconInline,
+                      size: chip.iconTheme!.size,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      spacing: context.dimens.space4,
+                      spacing: chipGap(chip),
                       children: [
                         Flexible(
                           child: Text(
                             name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.texts.labelSmall?.copyWith(
+                            style: chip.labelStyle?.copyWith(
                               color: context.accentColor,
                             ),
                           ),

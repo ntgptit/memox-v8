@@ -198,17 +198,16 @@ components:
     typography: "{typography.body}"
     rounded: "{rounded.md}"
     height: "52px"
-  chip:
-    backgroundColor: "{colors.secondary-container}"
-    textColor: "{colors.on-secondary-container}"
-    typography: "{typography.label-meta}"
+  filter-chip:
+    textColor: "{colors.on-surface-variant}"
+    typography: "{typography.label-button}"
     rounded: "{rounded.sm}"
     height: "32px"
   filter-chip-selected:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
+    backgroundColor: "{colors.secondary-container}"
+    textColor: "{colors.on-secondary-container}"
     typography: "{typography.label-button}"
-    rounded: "{rounded.full}"
+    rounded: "{rounded.sm}"
     height: "32px"
   nav-indicator:
     backgroundColor: "{colors.secondary-container}"

@@ -927,12 +927,12 @@
       "css": ".ds-text-field { background: #F9F9F9; color: #1C1B21; border-radius: 12px; min-height: 52px; display: inline-flex; align-items: center; }"
     },
     {
-      "name": "Chip",
+      "name": "Filter Chip",
       "kind": "chip",
-      "refersTo": "chip",
-      "description": "The chip of the generated theme.",
-      "html": "<span class=\"ds-chip\">Aa</span>",
-      "css": ".ds-chip { background: #D1DCFD; color: #55607C; border-radius: 8px; min-height: 32px; display: inline-flex; align-items: center; }"
+      "refersTo": "filter-chip",
+      "description": "The filter chip of the generated theme.",
+      "html": "<span class=\"ds-filter-chip\">Aa</span>",
+      "css": ".ds-filter-chip { color: #3B4661; border-radius: 8px; min-height: 32px; display: inline-flex; align-items: center; }"
     },
     {
       "name": "Filter Chip Selected",
@@ -940,7 +940,7 @@
       "refersTo": "filter-chip-selected",
       "description": "The filter chip selected of the generated theme.",
       "html": "<span class=\"ds-filter-chip-selected\">Aa</span>",
-      "css": ".ds-filter-chip-selected { background: #564BCB; color: #FFFFFF; border-radius: 9999px; min-height: 32px; display: inline-flex; align-items: center; }"
+      "css": ".ds-filter-chip-selected { background: #D1DCFD; color: #55607C; border-radius: 8px; min-height: 32px; display: inline-flex; align-items: center; }"
     },
     {
       "name": "Nav Indicator",

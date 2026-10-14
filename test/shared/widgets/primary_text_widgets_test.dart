@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
 import '../../support/theme_expect.dart';
