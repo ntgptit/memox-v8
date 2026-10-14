@@ -56,6 +56,9 @@ class AppDimens extends ThemeExtension<AppDimens> {
     this.sizeIconInline = 16,
     this.sizeIconCompact = 20,
     this.sizeIconButton = 18,
+    this.sizeSelectionControl = 18,
+    this.sizeRadioDot = 9,
+    this.radiusCheckbox = 2,
     this.strokeFocusGap = 2,
     this.strokeControl = 2,
     this.strokeIndicator = 2,
@@ -126,6 +129,15 @@ class AppDimens extends ThemeExtension<AppDimens> {
 
   /// The leading glyph of a button, as the Material 3 button icon size; its gap to the label is space8.
   final double sizeIconButton;
+
+  /// The radio ring and the checkbox box, as the Material 3 selection controls (Checkbox.width; the radio ring is stroked at the centre of a 16 circle).
+  final double sizeSelectionControl;
+
+  /// The selected radio dot, as the Material 3 inner radius of 4.5.
+  final double sizeRadioDot;
+
+  /// The checkbox corner, as the Material 3 checkbox shape.
+  final double radiusCheckbox;
 
   /// Gap between a control and its focus ring (tokens.json: focus ring in primary, offset 2px). Buttons and the FAB draw an offset ring.
   final double strokeFocusGap;

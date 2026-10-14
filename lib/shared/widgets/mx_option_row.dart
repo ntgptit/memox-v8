@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
-/// A single-choice row (algorithm, study mode, direction). The radio is a ring
-/// that thickens when selected, so nothing moves between states. The whole
-/// row is the target. Dividers are the list's (`MxDividedColumn`, DEV-305).
+/// A single-choice row (algorithm, study mode, direction). The radio is the
+/// Material 3 one: an `onSurfaceVariant` ring, and in the accent colour a ring
+/// with a dot when selected. The whole row is the target. Dividers are the list's (`MxDividedColumn`, DEV-305).
 class MxOptionRow extends StatelessWidget {
   const MxOptionRow({
     super.key,
@@ -35,15 +35,10 @@ class MxOptionRow extends StatelessWidget {
   final Widget? trailing;
 
   static const double _radioColumn = 22;
-
-  /// The selected radio's ring: it thickens, nothing moves.
-  static const double _selectedRing = 6;
-  static const double _radioSize = 20;
   static const double _descriptionGap = 2;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     final isDim = isDimmed ?? (onSelected == null && !isSelected);
     return MergeSemantics(
       child: Semantics(
@@ -70,23 +65,7 @@ class MxOptionRow extends StatelessWidget {
                       width: _radioColumn,
                       child: Center(
                         heightFactor: 1,
-                        child: DecoratedBox(
-                          key: const ValueKey('mx-option-radio'),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              // A stroke glyph, so primaryInk (spec
-                              // 2026-09-27): it reads 3:1 on a sheet.
-                              color: isSelected
-                                  ? context.accentColor
-                                  : colors.outline,
-                              width: isSelected
-                                  ? _selectedRing
-                                  : context.dimens.strokeControl,
-                            ),
-                          ),
-                          child: const SizedBox.square(dimension: _radioSize),
-                        ),
+                        child: _Radio(isSelected: isSelected),
                       ),
                     ),
                   ),
@@ -125,4 +104,44 @@ class MxOptionRow extends StatelessWidget {
   static Widget _dim(BuildContext context, bool isDim, Widget child) => isDim
       ? Opacity(opacity: context.dimens.opacityDisabledContent, child: child)
       : child;
+}
+
+/// The Material 3 radio, drawn rather than built from `Radio` (whose 40 box
+/// would grow every row): a ring stroked `strokeControl`, and a dot when
+/// selected. A stroke glyph, so the selected colour is the accent (it reads 3:1
+/// on a sheet where dark `primary` does not).
+class _Radio extends StatelessWidget {
+  const _Radio({required this.isSelected});
+
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final dimens = context.dimens;
+    final color = isSelected
+        ? context.accentColor
+        : context.colors.onSurfaceVariant;
+    return DecoratedBox(
+      key: const ValueKey('mx-option-radio'),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: color, width: dimens.strokeControl),
+      ),
+      child: SizedBox.square(
+        dimension: dimens.sizeSelectionControl,
+        child: isSelected
+            ? Center(
+                child: DecoratedBox(
+                  key: const ValueKey('mx-option-radio-dot'),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: color,
+                  ),
+                  child: SizedBox.square(dimension: dimens.sizeRadioDot),
+                ),
+              )
+            : null,
+      ),
+    );
+  }
 }

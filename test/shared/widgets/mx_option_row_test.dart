@@ -9,6 +9,7 @@ import 'package:memox/shared/widgets/mx_option_row.dart';
 import '../../support/widget_harness.dart';
 
 const _radioKey = ValueKey('mx-option-radio');
+const _dotKey = ValueKey('mx-option-radio-dot');
 
 Border _ring(WidgetTester tester) =>
     (tester.widget<DecoratedBox>(find.byKey(_radioKey)).decoration
@@ -16,36 +17,67 @@ Border _ring(WidgetTester tester) =>
             .border!
         as Border;
 
+BoxDecoration _dot(WidgetTester tester) =>
+    tester.widget<DecoratedBox>(find.byKey(_dotKey)).decoration
+        as BoxDecoration;
+
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('unselected 2px outline ring; selected 6px accent', (
+  // Material 3 radio: an 18 ring stroked 2, a 9 dot (inner radius 4.5) when
+  // selected; the unselected ring is onSurfaceVariant.
+  testWidgets('unselected: a 2px onSurfaceVariant ring, no dot', (
     tester,
   ) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
     );
-    expect(_ring(tester).top, BorderSide(color: scheme.outline, width: 2));
-    expect(tester.getSize(find.byKey(_radioKey)), const Size.square(20));
+    expect(
+      _ring(tester).top,
+      BorderSide(color: scheme.onSurfaceVariant, width: 2),
+    );
+    expect(tester.getSize(find.byKey(_radioKey)), const Size.square(18));
+    expect(find.byKey(_dotKey), findsNothing);
+  });
 
+  testWidgets('selected: the same 2px ring and a 9 dot, both accent', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () {}),
     );
-    expect(_ring(tester).top, BorderSide(color: accentOf(scheme), width: 6));
-    expect(tester.getSize(find.byKey(_radioKey)), const Size.square(20));
+    expect(_ring(tester).top, BorderSide(color: accentOf(scheme), width: 2));
+    expect(tester.getSize(find.byKey(_radioKey)), const Size.square(18));
+    expect(tester.getSize(find.byKey(_dotKey)), const Size.square(9));
+    expect(_dot(tester).color, accentOf(scheme));
+    expect(_dot(tester).shape, BoxShape.circle);
+    expect(
+      tester.getCenter(find.byKey(_dotKey)),
+      tester.getCenter(find.byKey(_radioKey)),
+    );
   });
 
   // The ring is a stroke glyph, so it reads the accent colour.
   // The dark primary reads 2.46:1 on a sheet, below the 3:1 of a state.
-  testWidgets('dark: the selected ring is the accent colour', (tester) async {
+  testWidgets('dark: the selected ring and dot are the accent colour', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () {}),
       brightness: Brightness.dark,
     );
     expect(_ring(tester).top.color, accentOf(darkColorScheme));
+    expect(_dot(tester).color, accentOf(darkColorScheme));
+
+    await pumpMx(
+      tester,
+      MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
+      brightness: Brightness.dark,
+    );
+    expect(_ring(tester).top.color, darkColorScheme.onSurfaceVariant);
   });
 
   testWidgets('at least 48 tall; a description wraps and grows the row', (

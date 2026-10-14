@@ -20,17 +20,22 @@ BoxDecoration _box(WidgetTester tester) =>
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('unchecked: a 20 box with a 2px outline edge, no fill', (
+  // Material 3 checkbox: an 18 box, a 2 corner, a 2px onSurfaceVariant edge.
+  testWidgets('unchecked: an 18 box, 2 corner, 2px onSurfaceVariant edge', (
     tester,
   ) async {
     await pumpMx(tester, const MxSelectionCheckbox(isChecked: false));
 
     expect(
       tester.getSize(find.byType(MxSelectionCheckbox)),
-      const Size.square(20),
+      const Size.square(18),
     );
     expect(_box(tester).color, isNull);
-    expect(_box(tester).border, Border.all(color: scheme.outline, width: 2));
+    expect(
+      _box(tester).border,
+      Border.all(color: scheme.onSurfaceVariant, width: 2),
+    );
+    expect(_box(tester).borderRadius, BorderRadius.circular(2));
     expect(find.byIcon(AppIcons.check), findsNothing);
   });
 
@@ -41,6 +46,7 @@ void main() {
 
     expect(_box(tester).color, scheme.primary);
     expect(_box(tester).border, isNull);
+    expect(_box(tester).borderRadius, BorderRadius.circular(2));
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.check)).color,
       scheme.onPrimary,
