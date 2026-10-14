@@ -83,12 +83,6 @@ List<_Pair> _pairs(String mode) {
     ]) {
       add('$name on its tint over $where', ink, ink.tintOver(base));
     }
-    // MxBadge and the command rows tint primary and write the accent on it.
-    add(
-      'accent on the primary tint over $where',
-      accent,
-      c('primary').tintOver(base),
-    );
   }
   return pairs;
 }

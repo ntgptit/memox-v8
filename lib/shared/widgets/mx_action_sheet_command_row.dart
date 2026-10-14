@@ -71,7 +71,9 @@ class MxActionSheetCommandRow extends StatelessWidget {
                             ? context.colors.error.tintOver(
                                 MxTintBase.of(context),
                               )
-                            : colors.primary.tintOver(MxTintBase.of(context)),
+                            : context.accentColor.tintOver(
+                                MxTintBase.of(context),
+                              ),
                         borderRadius: BorderRadius.circular(
                           context.dimens.radiusSm,
                         ),

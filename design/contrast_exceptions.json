@@ -35,12 +35,6 @@
       "mode": "light",
       "ratio": 4.27,
       "reason": "A tint is laid over the ground directly beneath it (DESIGN.md Tint Rule, MxTintBase): the sheet or dialog surface. Over that darker ground the light error tint and its error text fall just short of 4.5:1. The values are the Design System's (design/tokens.json); the owner accepted this gap on DEV-372 and fixes it in the Design System, not in code."
-    },
-    {
-      "pair": "accent on the primary tint over surfaceContainerHigh",
-      "mode": "light",
-      "ratio": 4.42,
-      "reason": "A tint is laid over the ground directly beneath it (DESIGN.md Tint Rule, MxTintBase): the sheet or dialog surface. Over that darker ground the light primary tint and its primary text fall just short of 4.5:1. The values are the Design System's (design/tokens.json); the owner accepted this gap on DEV-372 and fixes it in the Design System, not in code."
     }
   ]
 }

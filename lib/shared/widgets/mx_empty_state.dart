@@ -167,7 +167,7 @@ class MxEmptyState extends StatelessWidget {
   }
 
   Color _toneColor(BuildContext context) => switch (tone) {
-    MxEmptyStateTone.primary => context.colors.primary,
+    MxEmptyStateTone.primary => context.accentColor,
     MxEmptyStateTone.neutral => context.colors.onSurfaceVariant,
     MxEmptyStateTone.success => context.mxColors.success,
     MxEmptyStateTone.warning => context.mxColors.warningContainer,
@@ -188,9 +188,9 @@ class _Tile extends StatelessWidget {
   /// The tint's base.
   final Color color;
 
-  /// The glyph: primaryInk for the primary tone (spec 2026-09-27 D2),
-  /// successInk for success (critique 2026-09-30 tone pass, T7), warningInk
-  /// for warning (part 3d-2, E14).
+  /// The glyph: the accent for the primary tone (spec 2026-09-27 D2), the
+  /// success text colour for success (critique 2026-09-30 tone pass, T7), the
+  /// warning text colour for warning (part 3d-2, E14).
   final Color foreground;
   final bool isCompact;
 

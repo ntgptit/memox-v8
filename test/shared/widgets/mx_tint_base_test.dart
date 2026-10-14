@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -39,7 +40,14 @@ void main() {
 
         expect(
           _badgeFill(tester),
-          context.colors.primary.tintOver(context.colors.surface),
+          context.accentColor.tintOver(context.colors.surface),
+        );
+        // The token spec's precomputed primary tint over the page.
+        expect(
+          _badgeFill(tester),
+          brightness == Brightness.light
+              ? const Color(0xFFE4E2F7)
+              : const Color(0xFF28254F),
         );
       });
 
@@ -54,7 +62,7 @@ void main() {
         expect(MxTintBase.of(context), context.mxColors.cardSurface);
         expect(
           _badgeFill(tester),
-          context.colors.primary.tintOver(context.mxColors.cardSurface),
+          context.accentColor.tintOver(context.mxColors.cardSurface),
         );
       });
 
@@ -85,9 +93,7 @@ void main() {
           expect(MxTintBase.of(context), context.colors.surfaceContainerHigh);
           expect(
             _badgeFill(tester),
-            context.colors.primary.tintOver(
-              context.colors.surfaceContainerHigh,
-            ),
+            context.accentColor.tintOver(context.colors.surfaceContainerHigh),
           );
         });
       }

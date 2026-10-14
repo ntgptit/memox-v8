@@ -62,7 +62,13 @@ class MxBadge extends StatelessWidget {
     };
     return DecoratedBox(
       decoration: ShapeDecoration(
-        color: isSolid ? toneColor : toneColor.tintOver(MxTintBase.of(context)),
+        // The primary tint is the accent's, as the token spec computes it.
+        color: isSolid
+            ? toneColor
+            : switch (tone) {
+                MxBadgeTone.primary => context.accentColor,
+                _ => toneColor,
+              }.tintOver(MxTintBase.of(context)),
         shape: const StadiumBorder(),
       ),
       child: ConstrainedBox(
