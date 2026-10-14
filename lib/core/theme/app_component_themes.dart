@@ -1,3 +1,5 @@
+import 'dart:ui' show lerpDouble;
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
@@ -108,24 +110,104 @@ InputDecorationTheme inputDecorationTheme(ThemeTokens t) {
   );
 }
 
+/// A full-radius border that also draws the focus ring: [ring] painted [gap]
+/// outside the container, so it shows on any fill, a `primary` one included.
+/// A [ring] of [BorderSide.none] draws nothing.
+///
+/// `ButtonStyle` has no focus-indicator slot, and a `side` is drawn on the
+/// container's own edge, so the ring rides on the shape: the Material paints
+/// it unclipped, outside the container, and the ink still clips to
+/// [getOuterPath], which is the plain stadium.
+class MxFocusRingBorder extends StadiumBorder {
+  const MxFocusRingBorder({
+    super.side,
+    this.ring = BorderSide.none,
+    this.gap = 0,
+  });
+
+  final BorderSide ring;
+
+  /// Distance between the container's edge and the ring's inner edge.
+  final double gap;
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
+    super.paint(canvas, rect, textDirection: textDirection);
+    if (ring.style == BorderStyle.none) return;
+    final centre = rect.inflate(gap + ring.width / 2);
+    canvas.drawPath(getOuterPath(centre), ring.toPaint());
+  }
+
+  @override
+  MxFocusRingBorder copyWith({BorderSide? side}) =>
+      MxFocusRingBorder(side: side ?? this.side, ring: ring, gap: gap);
+
+  @override
+  ShapeBorder scale(double t) =>
+      MxFocusRingBorder(side: side.scale(t), ring: ring.scale(t), gap: gap * t);
+
+  @override
+  ShapeBorder? lerpFrom(ShapeBorder? a, double t) =>
+      a is MxFocusRingBorder ? _lerp(a, this, t) : super.lerpFrom(a, t);
+
+  @override
+  ShapeBorder? lerpTo(ShapeBorder? b, double t) =>
+      b is MxFocusRingBorder ? _lerp(this, b, t) : super.lerpTo(b, t);
+
+  static MxFocusRingBorder _lerp(
+    MxFocusRingBorder a,
+    MxFocusRingBorder b,
+    double t,
+  ) => MxFocusRingBorder(
+    side: BorderSide.lerp(a.side, b.side, t),
+    ring: BorderSide.lerp(a.ring, b.ring, t),
+    gap: lerpDouble(a.gap, b.gap, t)!,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      other is MxFocusRingBorder &&
+      other.side == side &&
+      other.ring == ring &&
+      other.gap == gap;
+
+  @override
+  int get hashCode => Object.hash(side, ring, gap);
+
+  @override
+  String toString() => 'MxFocusRingBorder($side, ring: $ring, gap: $gap)';
+}
+
 /// A Material button at the regular size in [fill] and [foreground]: 40 tall at
-/// least (a wrapped label or a larger text scale grows it), full radius, 24
-/// side padding, the `labelLarge` label, state layers and the focus ring. A
-/// disabled one follows the Design System's disabled opacities. `MxButton`
-/// builds its other tones from this too, so they never restyle a button.
+/// least (a wrapped label or a larger text scale grows it), full radius,
+/// [padding] on the sides (24 by default), the `labelLarge` label, an 18 glyph,
+/// state layers and the focus ring. A focused one draws the ring in `primary`
+/// 2 outside its container ([MxFocusRingBorder]), so it shows on a `primary`
+/// fill too. A disabled one follows the Design System's disabled opacities.
+/// `MxButton` builds its other tones from this too, so they never restyle a
+/// button.
 ButtonStyle buttonStyle(
   ThemeTokens t, {
   required Color? fill,
   required Color foreground,
   BorderSide? edge,
+  double? padding,
 }) {
   final dimens = t.dimens;
   return ButtonStyle(
     minimumSize: WidgetStatePropertyAll(Size(0, dimens.sizeButton)),
     padding: WidgetStatePropertyAll(
-      EdgeInsets.symmetric(horizontal: dimens.space24),
+      EdgeInsets.symmetric(horizontal: padding ?? dimens.space24),
     ),
-    shape: WidgetStatePropertyAll(t.stadium),
+    iconSize: WidgetStatePropertyAll(dimens.sizeIconButton),
+    shape: WidgetStateProperty.resolveWith(
+      (states) => MxFocusRingBorder(
+        ring: states.contains(WidgetState.focused)
+            ? BorderSide(color: t.scheme.primary, width: dimens.strokeFocus)
+            : BorderSide.none,
+        gap: dimens.strokeFocusGap,
+      ),
+    ),
     elevation: const WidgetStatePropertyAll(0),
     tapTargetSize: MaterialTapTargetSize.padded,
     textStyle: WidgetStatePropertyAll(t.texts.labelLarge),
@@ -159,9 +241,6 @@ ButtonStyle buttonStyle(
       return null;
     }),
     side: WidgetStateProperty.resolveWith((states) {
-      if (states.contains(WidgetState.focused)) {
-        return BorderSide(color: t.scheme.primary, width: dimens.strokeFocus);
-      }
       if (states.contains(WidgetState.disabled) && edge != null) {
         return edge.copyWith(
           color: t.onSurfaceAt(dimens.opacityDisabledContainer),
@@ -190,7 +269,12 @@ OutlinedButtonThemeData outlinedButtonTheme(ThemeTokens t) =>
     );
 
 TextButtonThemeData textButtonTheme(ThemeTokens t) => TextButtonThemeData(
-  style: buttonStyle(t, fill: null, foreground: t.accent),
+  style: buttonStyle(
+    t,
+    fill: null,
+    foreground: t.accent,
+    padding: t.dimens.space12,
+  ),
 );
 
 IconButtonThemeData iconButtonTheme(ThemeTokens t) {

@@ -27,7 +27,7 @@ enum MxButtonTone {
 enum MxButtonSize { regular, small, chip, study }
 
 typedef _Paint = ({Color? fill, Color foreground, BorderSide edge});
-typedef _Geometry = ({double height, double padding, bool canWrap});
+typedef _Geometry = ({double height, double start, double end, bool canWrap});
 
 /// The one button contract: height, radius, padding and label type come from
 /// [size], colours from [tone]. The caller owns placement and width; [isBlock]
@@ -63,7 +63,7 @@ class MxButton extends StatelessWidget {
   final MxButtonTone tone;
   final MxButtonSize size;
 
-  /// Optional leading glyph, painted at 16.
+  /// Optional leading glyph, painted at `sizeIconButton`.
   final IconData? icon;
 
   /// A brand's own mark in place of [icon], such as Google's G (account UI
@@ -120,7 +120,7 @@ class MxButton extends StatelessWidget {
     final sized = base.copyWith(
       minimumSize: WidgetStatePropertyAll(Size(0, geometry.height)),
       padding: WidgetStatePropertyAll(
-        EdgeInsets.symmetric(horizontal: geometry.padding),
+        EdgeInsetsDirectional.only(start: geometry.start, end: geometry.end),
       ),
     );
     // A loading button keeps its resting paint, fill, edge and foreground;
@@ -173,11 +173,11 @@ class MxButton extends StatelessWidget {
       maxLines: 1,
     )..layout();
     final leadWidth = switch ((icon, mark)) {
-      (_?, _) => context.dimens.sizeIconInline + context.dimens.space4,
-      (_, _?) => _brandMarkSize + context.dimens.space4,
+      (_?, _) => context.dimens.sizeIconButton + context.dimens.space8,
+      (_, _?) => _brandMarkSize + context.dimens.space8,
       _ => 0.0,
     };
-    final width = painter.width + leadWidth + geometry.padding * 2;
+    final width = painter.width + leadWidth + geometry.start + geometry.end;
     painter.dispose();
     return width.ceilToDouble();
   }
@@ -247,19 +247,31 @@ class MxButton extends StatelessWidget {
 
   _Geometry _geometryFor(AppDimens dimens, {required bool hasIcon}) =>
       switch (size) {
+        // Material 3: a filled or outlined button with a leading glyph takes
+        // 24 to 16 on the start side; the quiet text tone sits closer to its
+        // label (12), and 16 on the end beside a glyph.
+        MxButtonSize.regular when tone == MxButtonTone.text => (
+          height: dimens.sizeButton,
+          start: dimens.space12,
+          end: hasIcon ? dimens.space16 : dimens.space12,
+          canWrap: true,
+        ),
         MxButtonSize.regular => (
           height: dimens.sizeButton,
-          padding: dimens.space24,
+          start: hasIcon ? dimens.space16 : dimens.space24,
+          end: dimens.space24,
           canWrap: true,
         ),
         MxButtonSize.small => (
           height: dimens.sizeButtonSmall,
-          padding: hasIcon ? dimens.space16 : dimens.space12,
+          start: hasIcon ? dimens.space16 : dimens.space12,
+          end: hasIcon ? dimens.space16 : dimens.space12,
           canWrap: false,
         ),
         MxButtonSize.chip => (
           height: dimens.sizeChip,
-          padding: dimens.space8,
+          start: dimens.space8,
+          end: dimens.space8,
           canWrap: false,
         ),
         // The contract's 36 sizes a pill that hugs its label; a block
@@ -267,7 +279,8 @@ class MxButton extends StatelessWidget {
         // the label (FE-A6 P4: "Remembered" in a two-up row).
         MxButtonSize.study => (
           height: dimens.sizeButton,
-          padding: isBlock ? dimens.space16 : _studyPadding,
+          start: isBlock ? dimens.space16 : _studyPadding,
+          end: isBlock ? dimens.space16 : _studyPadding,
           canWrap: false,
         ),
       };
@@ -299,7 +312,7 @@ class MxButton extends StatelessWidget {
         ? text
         : Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: context.dimens.space4,
+            spacing: context.dimens.space8,
             children: [
               lead,
               Flexible(child: text),
@@ -324,7 +337,7 @@ class MxButton extends StatelessWidget {
   /// The glyph or the brand mark before the label, if any.
   Widget? _lead(BuildContext context) {
     if (icon case final glyph?) {
-      return Icon(glyph, size: context.dimens.sizeIconInline);
+      return Icon(glyph, size: context.dimens.sizeIconButton);
     }
     if (mark case final image?) {
       return Image(

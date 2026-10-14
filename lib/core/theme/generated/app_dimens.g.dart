@@ -55,6 +55,8 @@ class AppDimens extends ThemeExtension<AppDimens> {
     this.sizeAppBar = 64,
     this.sizeIconInline = 16,
     this.sizeIconCompact = 20,
+    this.sizeIconButton = 18,
+    this.strokeFocusGap = 2,
     this.strokeControl = 2,
     this.strokeIndicator = 2,
     this.opacityMuted = 0.7,
@@ -121,6 +123,12 @@ class AppDimens extends ThemeExtension<AppDimens> {
 
   /// Dense rows, metadata, nav glyphs, FAB glyph.
   final double sizeIconCompact;
+
+  /// The leading glyph of a button, as the Material 3 button icon size; its gap to the label is space8.
+  final double sizeIconButton;
+
+  /// Gap between a control and its focus ring (tokens.json: focus ring in primary, offset 2px). Only buttons draw an offset ring today.
+  final double strokeFocusGap;
 
   /// Unselected radio ring and checkbox border.
   final double strokeControl;

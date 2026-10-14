@@ -7,6 +7,8 @@
     {"name": "sizeAppBar", "value": 64, "usage": "App bar height (48 + 2 x 8)."},
     {"name": "sizeIconInline", "value": 16, "usage": "Icon inside body text; the smallest icon."},
     {"name": "sizeIconCompact", "value": 20, "usage": "Dense rows, metadata, nav glyphs, FAB glyph."},
+    {"name": "sizeIconButton", "value": 18, "usage": "The leading glyph of a button, as the Material 3 button icon size; its gap to the label is space8."},
+    {"name": "strokeFocusGap", "value": 2, "usage": "Gap between a control and its focus ring (tokens.json: focus ring in primary, offset 2px). Only buttons draw an offset ring today."},
     {"name": "strokeControl", "value": 2, "usage": "Unselected radio ring and checkbox border."},
     {"name": "strokeIndicator", "value": 2, "usage": "Spinner arc and other progress strokes."},
     {"name": "opacityMuted", "value": 0.7, "usage": "Readable content that steps back: an answered choice out of play, a footer caption."},

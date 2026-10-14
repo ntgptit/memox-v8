@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 
@@ -55,15 +56,32 @@ void main() {
             theme.textButtonTheme.style!,
           ]) {
             expect(style.foregroundColor!.resolve({}), accent);
+            // The focus ring rides on the shape, offset from the container.
+            final ring =
+                style.shape!.resolve({WidgetState.focused})!
+                    as MxFocusRingBorder;
+            expect(ring.ring.color, scheme.primary);
+            expect(ring.ring.width, dimens.strokeFocus);
+            expect(ring.gap, dimens.strokeFocusGap);
             expect(
-              style.side!.resolve({WidgetState.focused})!.color,
-              scheme.primary,
+              (style.shape!.resolve({})! as MxFocusRingBorder).ring,
+              BorderSide.none,
             );
-            expect(
-              style.side!.resolve({WidgetState.focused})!.width,
-              dimens.strokeFocus,
-            );
+            expect(style.iconSize!.resolve({}), dimens.sizeIconButton);
           }
+          // Material 3 text button: 12 on the sides; the others keep 24.
+          expect(
+            theme.textButtonTheme.style!.padding!.resolve({}),
+            EdgeInsets.symmetric(horizontal: dimens.space12),
+          );
+          expect(
+            theme.outlinedButtonTheme.style!.padding!.resolve({}),
+            EdgeInsets.symmetric(horizontal: dimens.space24),
+          );
+          expect(
+            theme.filledButtonTheme.style!.padding!.resolve({}),
+            EdgeInsets.symmetric(horizontal: dimens.space24),
+          );
           expect(
             theme.filledButtonTheme.style!.backgroundColor!.resolve({}),
             scheme.primary,

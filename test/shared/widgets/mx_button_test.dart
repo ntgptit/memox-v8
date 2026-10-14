@@ -7,7 +7,6 @@ import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
 import '../../support/theme_expect.dart';
 
-import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
@@ -262,15 +261,6 @@ void main() {
     );
   });
 
-  testWidgets('a leading glyph is painted at 16', (tester) async {
-    await pumpMx(
-      tester,
-      MxButton(label: 'Add', icon: AppIcons.add, onPressed: () {}),
-    );
-
-    expect(tester.getSize(find.byIcon(AppIcons.add)).width, 16);
-  });
-
   testWidgets('block fills the parent width', (tester) async {
     await pumpMx(
       tester,
@@ -395,6 +385,11 @@ void main() {
     final image = find.byType(Image);
 
     expect(tester.getSize(image), const Size.square(18));
+    expect(
+      tester.getRect(find.text('Continue with Google')).left -
+          tester.getRect(image).right,
+      const AppDimens().space8,
+    );
     expect(tester.widget<Image>(image).excludeFromSemantics, isTrue);
     expect(find.bySemanticsLabel('Continue with Google'), findsOneWidget);
   });
@@ -417,7 +412,13 @@ void main() {
       ),
     );
 
-    expect(marked - plain, 18 + 4);
+    // The mark and its 8 gap, less the 8 a leading glyph takes off the start
+    // padding (24 to 16).
+    const dimens = AppDimens();
+    expect(
+      marked - plain,
+      18 + dimens.space8 - (dimens.space24 - dimens.space16),
+    );
   });
 }
 

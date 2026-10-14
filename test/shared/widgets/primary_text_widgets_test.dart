@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
 import '../../support/theme_expect.dart';
@@ -55,12 +56,15 @@ void main() {
             ),
           )
           .style!;
-      const focused = {WidgetState.focused};
+      // The focus ring rides on the shape, outside the container.
+      BorderSide ringOf(ButtonStyle style) =>
+          (style.shape!.resolve({WidgetState.focused})! as MxFocusRingBorder)
+              .ring;
       expect(style('Outline').foregroundColor!.resolve({}), ink);
-      expect(style('Outline').side!.resolve(focused)!.color, scheme.primary);
+      expect(ringOf(style('Outline')).color, scheme.primary);
       expect(style('Fill').backgroundColor!.resolve({}), scheme.primary);
       expect(style('Fill').foregroundColor!.resolve({}), scheme.onPrimary);
-      expect(style('Fill').side!.resolve(focused)!.color, scheme.primary);
+      expect(ringOf(style('Fill')).color, scheme.primary);
     },
   );
 
