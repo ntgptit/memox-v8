@@ -104,7 +104,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('a 28 pill with a 48 target; disabled at 0.38', (tester) async {
+  testWidgets('a 28 pill with a 48 target', (tester) async {
     await pumpMx(
       tester,
       MxFilterChip(
@@ -115,22 +115,28 @@ void main() {
       ),
     );
     await expectAccessibleTargets(tester);
+  });
 
+  // DEV-372: the button resolves its own disabled colours; a wrapper dimming
+  // it again left 4.6% container and 14% content.
+  testWidgets('disabled paints the theme disabled colours, dimmed once', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const MxFilterChip(label: 'Cards', isSelected: false, onSelected: null),
     );
+
     expect(
-      tester
-          .widget<Opacity>(
-            find.ancestor(
-              of: find.byType(TextButton),
-              matching: find.byType(Opacity),
-            ),
-          )
-          .opacity,
-      0.38,
+      find.ancestor(
+        of: find.byType(TextButton),
+        matching: find.byType(Opacity),
+      ),
+      findsNothing,
     );
+    final material = tester.widget<Material>(_painted.first);
+    expect(material.color, scheme.onSurface.withValues(alpha: 0.12));
+    expect(material.textStyle!.color, scheme.onSurface.withValues(alpha: 0.38));
   });
 
   // SW-REV-010: a label wider than the column ends in an ellipsis.

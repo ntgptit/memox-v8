@@ -132,7 +132,7 @@ class _MxStepperState extends State<MxStepper> {
 
   @override
   Widget build(BuildContext context) {
-    final control = Row(
+    return Row(
       mainAxisSize: MainAxisSize.min,
       spacing: context.dimens.space4,
       children: [
@@ -148,11 +148,6 @@ class _MxStepperState extends State<MxStepper> {
           onPressed: _step(widget.onIncrement),
         ),
       ],
-    );
-    if (widget.isEnabled) return control;
-    return Opacity(
-      opacity: context.dimens.opacityDisabledContent,
-      child: control,
     );
   }
 
@@ -206,7 +201,12 @@ class _MxStepperState extends State<MxStepper> {
         ),
       ),
     );
-    if (_isEditing) return box;
+    // Only the value is dimmed here: the step buttons resolve their own
+    // disabled colours, and dimming them too would stack the two.
+    final value = widget.isEnabled
+        ? box
+        : Opacity(opacity: context.dimens.opacityDisabledContent, child: box);
+    if (_isEditing) return value;
     return Semantics(
       container: true,
       excludeSemantics: true,
@@ -226,7 +226,7 @@ class _MxStepperState extends State<MxStepper> {
         // The box stays button-small; the tap target is a full one.
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
-          child: Center(widthFactor: 1, heightFactor: 1, child: box),
+          child: Center(widthFactor: 1, heightFactor: 1, child: value),
         ),
       ),
     );

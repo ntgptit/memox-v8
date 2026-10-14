@@ -34,7 +34,7 @@ class MxFilterChip extends StatelessWidget {
     final colors = context.colors;
     final foreground = isSelected ? colors.onPrimary : colors.onSurface;
     final select = onSelected;
-    final chip = MergeSemantics(
+    return MergeSemantics(
       child: Semantics(
         selected: isSelected,
         child: TextButton(
@@ -93,7 +93,5 @@ class MxFilterChip extends StatelessWidget {
         ),
       ),
     );
-    if (select != null) return chip;
-    return Opacity(opacity: context.dimens.opacityDisabledContent, child: chip);
   }
 }

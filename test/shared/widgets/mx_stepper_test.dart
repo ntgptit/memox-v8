@@ -30,6 +30,17 @@ MxStepper _stepper({
   isEnabled: isEnabled,
 );
 
+/// The product of every [Opacity] above [finder], the dim a widget paints
+/// under.
+double _opacityAbove(WidgetTester tester, Finder finder) {
+  var opacity = 1.0;
+  for (final wrapper
+      in find.ancestor(of: finder, matching: find.byType(Opacity)).evaluate()) {
+    opacity *= (wrapper.widget as Opacity).opacity;
+  }
+  return opacity;
+}
+
 void main() {
   final scheme = lightColorScheme;
 
@@ -132,25 +143,45 @@ void main() {
     );
   });
 
-  testWidgets('disabled dims the whole control and ignores taps', (
-    tester,
-  ) async {
+  testWidgets('disabled ignores taps and dims the value once', (tester) async {
     var taps = 0;
     await pumpMx(tester, _stepper(isEnabled: false, onIncrement: () => taps++));
     await tester.tap(find.byTooltip('More cards'), warnIfMissed: false);
 
     expect(taps, 0);
-    expect(
-      tester
-          .widget<Opacity>(
-            find.ancestor(
-              of: find.byKey(_valueKey),
-              matching: find.byType(Opacity),
-            ),
-          )
-          .opacity,
-      0.38,
-    );
+    expect(_opacityAbove(tester, find.byKey(_valueKey)), 0.38);
+  });
+
+  // DEV-372: the step buttons resolve their own disabled colours, so no
+  // wrapper may dim them a second time.
+  testWidgets('a disabled step button paints the theme disabled colours only', (
+    tester,
+  ) async {
+    await pumpMx(tester, _stepper(isEnabled: false));
+
+    final buttons = find.byType(TextButton);
+    expect(buttons, findsNWidgets(2));
+    for (final button in buttons.evaluate()) {
+      final target = find.byElementPredicate((element) => element == button);
+      expect(_opacityAbove(tester, target), 1);
+      final material = tester.widget<Material>(
+        find.descendant(of: target, matching: find.byType(Material)).first,
+      );
+      expect(material.color, scheme.onSurface.withValues(alpha: 0.12));
+      final icon = find.descendant(of: target, matching: find.byType(Icon));
+      expect(
+        IconTheme.of(tester.element(icon)).color,
+        scheme.onSurface.withValues(alpha: 0.38),
+      );
+    }
+  });
+
+  testWidgets('an enabled stepper is not dimmed anywhere', (tester) async {
+    await pumpMx(tester, _stepper());
+
+    expect(_opacityAbove(tester, find.byType(MxStepper)), 1);
+    expect(_opacityAbove(tester, find.byKey(_valueKey)), 1);
+    expect(_opacityAbove(tester, find.byType(TextButton).first), 1);
   });
 
   testWidgets('minDigits pads the value and what it reads as (critique '
