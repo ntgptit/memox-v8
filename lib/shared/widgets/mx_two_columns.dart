@@ -11,6 +11,8 @@ class MxTwoColumns extends StatelessWidget {
   final List<Widget> start;
 
   /// The blocks of the trailing column; they follow [start] in one column.
+  /// With none, [start] keeps the full width rather than half of it beside a
+  /// blank half.
   final List<Widget> end;
 
   /// The content width from which two columns of 300 or more fit with a
@@ -22,7 +24,7 @@ class MxTwoColumns extends StatelessWidget {
     final dimens = context.dimens;
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < minWidth) {
+        if (constraints.maxWidth < minWidth || end.isEmpty) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: dimens.space16,

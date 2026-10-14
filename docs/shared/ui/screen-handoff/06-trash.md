@@ -22,7 +22,7 @@ bar (D2). Opening it runs the auto-purge, as the app's start and every resume do
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` | Back, "Trash" and "Select" (a compact secondary `MxButton`; hidden when the Trash is empty). While selecting: close, then "Select entries", "{n} cards selected" or "{n} decks selected". |
+| App bar | `MxAppBar` | Back, "Trash" and "Select" (a small secondary `MxButton`; hidden when the Trash is empty). While selecting: close, then "Select entries", "{n} cards selected" or "{n} decks selected". |
 | Note | `MxNote` (history icon), dismissible | "Kept for 30 days from deletion, then removed automatically. Restoring asks where the item should go." Hidden while selecting. |
 | Filters | `MxFilterChip` × 3 | All · Cards · Decks, each with its count (A6). Hidden while selecting. |
 | Header | `MxListSectionHeader` | "{n} entries · newest first"; while selecting, the kind's total, "{m} cards" or "{m} decks": the title states the selection (critique 2026-09-30 part 3b). |
@@ -64,7 +64,7 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 - **Invariant 36 (spec D6):** a blocked restore says "“X” still contains an entry deleted earlier (“Y”)" in a warning banner, one per blocked batch.
 - **P3-L8:** a restore target shows its path, as the move sheets do; targets carry no counts.
 - **BR-TRASH-006:** a deck has its own restore sheet and rule, with "Top level" for a top-level deck.
-- **E-L3:** "Select" is a compact secondary `MxButton`.
+- **E-L3:** "Select" is a small secondary `MxButton`.
 - **O11:** the no-target state is `MxDeckPickerSheet`'s empty state (the neutral folder, a filled OK), shared with the move sheets.
 - **Spec §6:** a refused restore closes the sheet and shows a toast; the list follows the store.
 - **Owner 2026-09-26 (UI refinements phase 2):** the selection bar reads "Restore ({n})" · "Delete ({n})"; "Delete" is a filled destructive `MxButton`.

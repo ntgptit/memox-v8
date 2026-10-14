@@ -67,8 +67,8 @@ growth; a short face is centred in its half.
 next in {interval}", and a 2 × 2 grid from text scale 1.3. The preview is
 `PreviewSelfAssessIntervalsUseCase` (FE-A6 D11b): the card's stored schedule through the
 same `SrsScheduler.next` the write runs; null on a learning or relearning turn. Footer
-hints as the other session screens: "Recall the answer, then show it" / "Be honest —
-grade how well you remembered". After "Show answer" leaves, the answer face is the next
+hints as the other session screens: "Recall the answer, then show it" / "Grade how
+well you remembered". After "Show answer" leaves, the answer face is the next
 node TalkBack reads. Goldens:
 `test/features/study/presentation/goldens/study_self_assess_{prompt,revealed,relearning,meaning_first}_*`.
 

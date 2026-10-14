@@ -10,7 +10,7 @@ current schedule), BR-CARD-015/017 (paginated, generation-grouped history).
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) | Back; title "Card"; trailing compact secondary `MxButton` "Edit" (shown only once the card has loaded). |
+| App bar | `MxAppBar` (content density) | Back; title "Card"; trailing small secondary `MxButton` "Edit" (shown only once the card has loaded). |
 | Deck path | `DeckContextHeaderWidget` | Library › ancestors › deck › "Card"; shown only once the card (and so its `deckId`) has loaded — see Rulings. |
 | Content | `CardDetailContentWidget` (`MxCard`, `MxStatusBadge`, `MxTagChip`) | Status badge + flag glyph in their own row above the front/back (§9 row 89); front, back; only the optional fields that hold a value (BR-CARD-014); tag chips. |
 | Schedule | `CardScheduleWidget` (`MxCard`, `MxIconTile` × n) | "Current schedule · Box {n} of 8" + an 8-bar ramp (eight_box), or "Current schedule · SM-2" (sm2, no ramp); fact tiles Due, Learned, Last answered, Answers, Lapses, Algorithm (Last answered, Answers and Lapses only once the card has an answer, critique 2026-09-30), plus Ease/Interval/Repetitions for SM-2. The paired facts come first; "Algorithm" takes a full-width row of its own after them. |
