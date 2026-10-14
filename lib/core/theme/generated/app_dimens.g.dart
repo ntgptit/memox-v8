@@ -142,7 +142,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
   /// Gap between a control and its focus ring (tokens.json: focus ring in primary, offset 2px). Buttons and the FAB draw an offset ring.
   final double strokeFocusGap;
 
-  /// Unselected radio ring and checkbox border.
+  /// Radio ring (unselected and selected) and unselected checkbox border.
   final double strokeControl;
 
   /// Spinner arc and other progress strokes.

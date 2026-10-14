@@ -15,6 +15,13 @@ extension ThemeRules on BuildContext {
     Brightness.dark => colors.primaryFixedDim,
   };
 
+  /// The glyph on a fill in the accent colour (the check in a checked box):
+  /// `onPrimary` on light `primary`, `onPrimaryFixed` on dark `primaryFixedDim`.
+  Color get onAccentColor => switch (Theme.of(this).brightness) {
+    Brightness.light => colors.onPrimary,
+    Brightness.dark => colors.onPrimaryFixed,
+  };
+
   /// The deck icon on its tile surface: `info` on the light tile, the lighter
   /// `infoContainer` on the dark one (DS README, Colour).
   Color get deckIconColor => switch (Theme.of(this).brightness) {

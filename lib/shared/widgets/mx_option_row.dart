@@ -4,7 +4,8 @@ import 'package:memox/core/theme/theme_rules.dart';
 
 /// A single-choice row (algorithm, study mode, direction). The radio is the
 /// Material 3 one: an `onSurfaceVariant` ring, and in the accent colour a ring
-/// with a dot when selected. The whole row is the target. Dividers are the list's (`MxDividedColumn`, DEV-305).
+/// with a dot when selected. The whole row is the target. Dividers are the
+/// list's (`MxDividedColumn`, DEV-305).
 class MxOptionRow extends StatelessWidget {
   const MxOptionRow({
     super.key,

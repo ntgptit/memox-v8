@@ -22,6 +22,7 @@ List<_Pair> _pairs(String mode) {
   final surface = c('surface');
   final card = c('cardSurface');
   final accent = mode == 'light' ? c('primary') : c('primaryFixedDim');
+  final onAccent = mode == 'light' ? c('onPrimary') : c('onPrimaryFixed');
   final pairs = <_Pair>[];
   void add(String name, Color ink, Color ground, [double min = _text]) =>
       pairs.add((name, ink, ground, min));
@@ -81,6 +82,15 @@ List<_Pair> _pairs(String mode) {
     c('surfaceContainerHighest'),
     _nonText,
   );
+  // The checked checkbox (MxSelectionCheckbox): the accent fill against the
+  // card or sheet it sits on, and its check against the fill. Non-text, 3:1.
+  for (final (ground, where) in [
+    (card, 'cardSurface'),
+    (c('surfaceContainerHigh'), 'surfaceContainerHigh'),
+  ]) {
+    add('checkbox fill (accent) on $where', accent, ground, _nonText);
+  }
+  add('checkbox check (onAccent) on fill (accent)', onAccent, accent, _nonText);
   // A tint is laid over the ground directly beneath it (MxTintBase): the
   // page, a card, or a sheet or dialog.
   for (final (base, where) in [

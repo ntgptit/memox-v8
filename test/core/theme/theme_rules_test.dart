@@ -21,19 +21,31 @@ Future<BuildContext> contextOf(WidgetTester tester, ThemeData theme) async {
 }
 
 void main() {
-  testWidgets('light: accent is primary, deck icon is info', (tester) async {
-    final context = await contextOf(tester, buildLightTheme());
-    expect(context.accentColor, Theme.of(context).colorScheme.primary);
-    expect(context.deckIconColor, context.mxColors.info);
-  });
+  testWidgets(
+    'light: accent and its on-colour are primary and onPrimary, deck icon is info',
+    (tester) async {
+      final context = await contextOf(tester, buildLightTheme());
+      expect(context.accentColor, Theme.of(context).colorScheme.primary);
+      expect(context.onAccentColor, Theme.of(context).colorScheme.onPrimary);
+      expect(context.deckIconColor, context.mxColors.info);
+    },
+  );
 
-  testWidgets('dark: accent is primaryFixedDim, deck icon is infoContainer', (
-    tester,
-  ) async {
-    final context = await contextOf(tester, buildDarkTheme());
-    expect(context.accentColor, Theme.of(context).colorScheme.primaryFixedDim);
-    expect(context.deckIconColor, context.mxColors.infoContainer);
-  });
+  testWidgets(
+    'dark: accent and its on-colour are the fixed steps, deck icon is infoContainer',
+    (tester) async {
+      final context = await contextOf(tester, buildDarkTheme());
+      expect(
+        context.accentColor,
+        Theme.of(context).colorScheme.primaryFixedDim,
+      );
+      expect(
+        context.onAccentColor,
+        Theme.of(context).colorScheme.onPrimaryFixed,
+      );
+      expect(context.deckIconColor, context.mxColors.infoContainer);
+    },
+  );
 
   testWidgets('screen margin follows the window width', (tester) async {
     tester.view.devicePixelRatio = 1;
