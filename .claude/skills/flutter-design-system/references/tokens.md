@@ -21,7 +21,8 @@ lib/core/theme/
 │   ├── text_theme.g.dart             #   the 12 TextTheme roles
 │   └── token_constants.g.dart        #   constants needed outside a BuildContext
 ├── app_theme.dart                    # buildLightTheme() / buildDarkTheme()
-├── app_component_themes.dart         # component themes, tokens only
+├── app_component_themes.dart         # ThemeTokens, buttons, FAB, chip, switch
+├── app_surface_themes.dart           # card, fields, navigation, dialog, sheet, snackbar, tooltip
 ├── app_typography.dart               # binds the roles, mono family
 ├── color_tint.dart                   # Color.tintOver
 ├── theme_rules.dart                  # accentColor, deckIconColor, screenMargin, windowSize

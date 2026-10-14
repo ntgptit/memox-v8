@@ -53,7 +53,8 @@ def symbol_problems(root: Path) -> list[str]:
 THEME_DIR = Path("lib/core/theme")
 # ADR-022: the closed list of hand-written theme files, and the generator's.
 THEME_FILES = frozenset({
-    "app_theme.dart", "app_component_themes.dart", "app_typography.dart", "app_icons.dart",
+    "app_theme.dart", "app_component_themes.dart", "app_surface_themes.dart", "app_typography.dart",
+    "app_icons.dart",
     "color_tint.dart", "theme_rules.dart", "theme_context.dart", "mastery_ramp.dart",
     "focus_ring_border.dart",
 })  # fmt: skip

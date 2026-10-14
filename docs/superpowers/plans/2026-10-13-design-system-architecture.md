@@ -45,7 +45,7 @@
 
 **Delete:** `foundations/*` (except icons → moved), `mx_text_styles.dart`, `mx_semantic_colors.dart`, `mx_derived_colors.dart` (not named in the brief; its `*Soft`/`*Border` derivations are replaced by `tintOver`, and it is not in the allowed-file list — reported), `app_decorations.dart`, `app_button_style.dart`, `app_color_schemes.dart`, `PlusJakartaSans-Variable.ttf`, old theme tests.
 
-**Allowed files in `lib/core/theme/`** (closed list enforced by guard): `app_theme.dart, app_component_themes.dart, app_typography.dart, app_icons.dart, color_tint.dart, theme_rules.dart, theme_context.dart, mastery_ramp.dart, focus_ring_border.dart, generated/*.g.dart`.
+**Allowed files in `lib/core/theme/`** (closed list enforced by guard): `app_theme.dart, app_component_themes.dart, app_surface_themes.dart, app_typography.dart, app_icons.dart, color_tint.dart, theme_rules.dart, theme_context.dart, mastery_ramp.dart, focus_ring_border.dart, generated/*.g.dart`.
 
 ---
 
