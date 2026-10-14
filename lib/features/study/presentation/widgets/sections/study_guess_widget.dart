@@ -218,7 +218,7 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
         StudyChoiceTone.idle || StudyChoiceTone.selected => label,
       },
       padding: EdgeInsets.symmetric(
-        horizontal: context.screenMargin,
+        horizontal: context.dimens.space16,
         vertical: context.dimens.space8,
       ),
       onTap: _isAnswered || widget.isBusy

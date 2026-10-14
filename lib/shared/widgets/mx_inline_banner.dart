@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// Warning is a refusal or a limit, and nothing was lost. Danger means an
@@ -85,7 +84,7 @@ class MxInlineBanner extends StatelessWidget {
             vertical: context.dimens.space8 + context.dimens.strokeHairline,
           )
         : EdgeInsets.symmetric(
-            horizontal: context.screenMargin + context.dimens.strokeHairline,
+            horizontal: context.dimens.space16 + context.dimens.strokeHairline,
             vertical: context.dimens.space12 + context.dimens.strokeHairline,
           );
     return Padding(

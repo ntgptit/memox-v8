@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 /// The place a chart or a figure takes once there is something to show
 /// (kit 22's per-chart empty, FE-A9 D6): one centred line in a muted box
@@ -26,7 +25,7 @@ class MxDashedNote extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: context.screenMargin,
+            horizontal: context.dimens.space16,
             vertical: context.dimens.space24,
           ),
           child: Text(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/theme_rules.dart';
 
 const double _verticalPadding = 10;
 
@@ -68,7 +67,7 @@ SnackBar buildMxSnackBar(
     persist: onAction != null && MediaQuery.accessibleNavigationOf(context),
     // Only the message carries the 10 vertical padding (MxSnackbarContent),
     // so the action's 48 target sits inside the 48 toast.
-    padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
+    padding: EdgeInsets.symmetric(horizontal: context.dimens.space16),
     content: MxSnackbarContent(
       message: message,
       actionLabel: actionLabel,
