@@ -97,9 +97,10 @@ class MonitoringCodeCardWidget extends StatelessWidget {
           style: context.texts.bodyMedium!.copyWith(
             fontFamily: AppTypography.monoFamily,
           ),
-          frameStyle: context.texts.bodyMedium!
-              .copyWith(fontFamily: AppTypography.monoFamily)
-              .copyWith(color: context.accentColor),
+          frameStyle: context.texts.bodyMedium!.copyWith(
+            fontFamily: AppTypography.monoFamily,
+            color: context.accentColor,
+          ),
         ),
       ),
     };

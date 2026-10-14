@@ -160,6 +160,15 @@ def test_no_text_restyle_refuses_anything_but_a_colour_or_the_mono_face(
     """,
         "style: context.texts.bodyMedium?.copyWith(fontFamily: 'Roboto'),",
         "style: Theme.of(context).textTheme.bodySmall?.copyWith(color: c),",
+        # A second call after an allowed one restyles all the same.
+        "style: context.texts.bodyMedium?.copyWith(color: c).copyWith(fontSize: 40),",
+        """
+    frameStyle: context.texts.bodyMedium!
+        .copyWith(fontFamily: AppTypography.monoFamily)
+        .copyWith(fontWeight: FontWeight.w700),
+    """,
+        "style: context.texts.bodyMedium?.apply(fontSizeFactor: 2),",
+        "style: context.texts.bodyMedium!.copyWith(color: c).apply(color: d),",
     ):
         assert _violations(RESTYLE, tmp_path, bad), bad
 
@@ -177,6 +186,14 @@ def test_no_text_restyle_accepts_a_colour_the_mono_face_and_prose(
           : foreground.withValues(alpha: _countOpacityResting),
     ),
     style: context.texts.bodyMedium?.copyWith(
+      fontFamily: AppTypography.monoFamily,
+    ),
+    frameStyle: context.texts.bodyMedium!.copyWith(
+      fontFamily: AppTypography.monoFamily,
+      color: context.accentColor,
+    ),
+    style: context.texts.bodyMedium?.copyWith(
+      color: colors.onSurfaceVariant,
       fontFamily: AppTypography.monoFamily,
     ),
     """

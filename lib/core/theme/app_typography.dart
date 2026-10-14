@@ -18,7 +18,7 @@ abstract final class AppTypography {
   /// Re-weights [style] and moves a variable font's `wght` axis with it.
   /// On a variable font, fontWeight alone reports one weight and paints the
   /// font's default instance; on a static font the variation is harmless.
-  static TextStyle withWeight(TextStyle style, FontWeight weight) =>
+  static TextStyle _withWeight(TextStyle style, FontWeight weight) =>
       style.copyWith(
         fontWeight: weight,
         fontVariations: [FontVariation.weight(weight.value.toDouble())],
@@ -56,6 +56,6 @@ abstract final class AppTypography {
 
   static TextStyle? _synced(TextStyle? style) {
     if (style == null) return null;
-    return withWeight(style, style.fontWeight ?? FontWeight.w400);
+    return _withWeight(style, style.fontWeight ?? FontWeight.w400);
   }
 }

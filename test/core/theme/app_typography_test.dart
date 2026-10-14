@@ -105,8 +105,12 @@ void main() {
     }
   });
 
-  test('withWeight sets fontWeight and the wght axis together', () {
-    final style = AppTypography.withWeight(const TextStyle(), FontWeight.w700);
+  // A Material slot the Design System leaves out keeps the weight it
+  // declares, and its wght axis is that weight alone.
+  test('bind sets fontWeight and the wght axis together', () {
+    final style = AppTypography.bind(
+      const TextTheme(displayLarge: TextStyle(fontWeight: FontWeight.w700)),
+    ).displayLarge!;
     expect(style.fontWeight, FontWeight.w700);
     expect(style.fontVariations, [const FontVariation.weight(700)]);
   });
