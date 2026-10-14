@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The size steps, each with one role: small leads content rows, medium
 /// leads settings rows, large leads deck rows.
@@ -80,7 +81,7 @@ class MxIconTile extends StatelessWidget {
     };
     final (fill, ink) = switch (tone) {
       MxIconTileTone.tinted => (
-        tinted.tintOver(colors.surface),
+        tinted.tintOver(MxTintBase.of(context)),
         seed ?? context.accentColor,
       ),
       MxIconTileTone.primary => (colors.primary, colors.onPrimary),
@@ -89,15 +90,15 @@ class MxIconTile extends StatelessWidget {
         context.mxColors.onWarningContainer,
       ),
       MxIconTileTone.success => (
-        context.mxColors.success.tintOver(context.colors.surface),
+        context.mxColors.success.tintOver(MxTintBase.of(context)),
         context.mxColors.success,
       ),
       MxIconTileTone.caution => (
-        context.mxColors.warning.tintOver(context.colors.surface),
+        context.mxColors.warning.tintOver(MxTintBase.of(context)),
         context.mxColors.warning,
       ),
       MxIconTileTone.danger => (
-        context.colors.error.tintOver(context.colors.surface),
+        context.colors.error.tintOver(MxTintBase.of(context)),
         context.colors.error,
       ),
       // An idle glyph, such as a lost streak's (DEV-370).

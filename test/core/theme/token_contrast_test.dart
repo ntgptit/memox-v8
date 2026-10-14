@@ -68,13 +68,27 @@ List<_Pair> _pairs(String mode) {
     c('inverseSurface'),
   );
   add('primary on surface', c('primary'), surface);
-  for (final (name, ink) in [
-    ('accent', accent),
-    ('success', c('success-color')),
-    ('warning', c('warning-color')),
-    ('error', c('error')),
+  // A tint is laid over the ground directly beneath it (MxTintBase): the
+  // page, a card, or a sheet or dialog.
+  for (final (base, where) in [
+    (surface, 'surface'),
+    (card, 'cardSurface'),
+    (c('surfaceContainerHigh'), 'surfaceContainerHigh'),
   ]) {
-    add('$name on its tint over surface', ink, ink.tintOver(surface));
+    for (final (name, ink) in [
+      ('accent', accent),
+      ('success', c('success-color')),
+      ('warning', c('warning-color')),
+      ('error', c('error')),
+    ]) {
+      add('$name on its tint over $where', ink, ink.tintOver(base));
+    }
+    // MxBadge and the command rows tint primary and write the accent on it.
+    add(
+      'accent on the primary tint over $where',
+      accent,
+      c('primary').tintOver(base),
+    );
   }
   return pairs;
 }

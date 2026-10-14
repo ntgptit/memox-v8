@@ -5,6 +5,7 @@ import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// Session chrome for the study modes: close, mode badge, a thin progress
 /// track and a counter. Indigo in every mode (critique 2026-09-30 part 3c-2,
@@ -82,7 +83,7 @@ class MxStudyTopBar extends StatelessWidget {
                     ),
                     child: DecoratedBox(
                       decoration: ShapeDecoration(
-                        color: accentColor.tintOver(colors.surface),
+                        color: accentColor.tintOver(MxTintBase.of(context)),
                         shape: const StadiumBorder(),
                       ),
                       child: Padding(

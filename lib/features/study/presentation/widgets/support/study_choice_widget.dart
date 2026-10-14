@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// How a choice reads in the round: untouched, picked, answered right or wrong.
 enum StudyChoiceTone { idle, selected, right, wrong }
@@ -119,11 +120,11 @@ class StudyChoiceWidget extends StatelessWidget {
       StudyChoiceTone.idle => (rest, rest),
       StudyChoiceTone.selected => (colors.primary, colors.primary),
       StudyChoiceTone.right => (
-        context.mxColors.success.tintOver(colors.surface),
+        context.mxColors.success.tintOver(MxTintBase.of(context)),
         context.mxColors.success,
       ),
       StudyChoiceTone.wrong => (
-        colors.error.tintOver(colors.surface),
+        colors.error.tintOver(MxTintBase.of(context)),
         colors.error,
       ),
     };

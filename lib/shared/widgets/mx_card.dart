@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The base surface: a [Card], so it takes the theme's card colour, radius, and
 /// the absence of border and shadow. The tones below change only the ground. It
@@ -72,10 +73,16 @@ class MxCard extends StatelessWidget {
       isDanger,
       isRecessed,
     )) {
-      (true, _, _, _, _) => context.accentColor.tintOver(colors.surface),
-      (_, true, _, _, _) => context.mxColors.warning.tintOver(colors.surface),
-      (_, _, true, _, _) => context.mxColors.success.tintOver(colors.surface),
-      (_, _, _, true, _) => colors.error.tintOver(colors.surface),
+      (true, _, _, _, _) => context.accentColor.tintOver(
+        MxTintBase.of(context),
+      ),
+      (_, true, _, _, _) => context.mxColors.warning.tintOver(
+        MxTintBase.of(context),
+      ),
+      (_, _, true, _, _) => context.mxColors.success.tintOver(
+        MxTintBase.of(context),
+      ),
+      (_, _, _, true, _) => colors.error.tintOver(MxTintBase.of(context)),
       (_, _, _, _, true) => colors.surfaceContainerLow,
       _ => null,
     };
@@ -92,11 +99,15 @@ class MxCard extends StatelessWidget {
                 ),
               )
             : null,
-        child: Padding(
-          padding: isFullBleed
-              ? EdgeInsets.zero
-              : EdgeInsets.all(isCompact ? dimens.space16 : dimens.space24),
-          child: child,
+        // What the card holds is tinted over the card's own ground.
+        child: MxTintBase(
+          color: ground ?? context.mxColors.cardSurface,
+          child: Padding(
+            padding: isFullBleed
+                ? EdgeInsets.zero
+                : EdgeInsets.all(isCompact ? dimens.space16 : dimens.space24),
+            child: child,
+          ),
         ),
       ),
     );

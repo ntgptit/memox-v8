@@ -392,3 +392,26 @@ rules:
     tags:
       - memox-v8
       - design-system
+
+  - id: memox_v8.design_system.tint_reads_its_base
+    type: regex
+    severity: error
+    enabled: true
+    mode: file
+    message: >-
+      A tint is laid over the surface directly beneath it (DESIGN.md Tint
+      Rule): `role.tintOver(MxTintBase.of(context))`. A fixed base such as
+      `colors.surface` paints a tint inside a card, a sheet or a dialog over
+      the wrong ground. MxCard, MxBottomSheet and MxDialog set the base for
+      what they hold; a new surface that holds tints wraps its child in
+      `MxTintBase`.
+    scopes:
+      - dart_lib
+    exclude:
+      # The extension itself.
+      - lib/core/theme/color_tint.dart
+    patterns:
+      - '^(?!\s*(?://|\*)).*\.tintOver\((?!\s*MxTintBase\.of\(context\),?\s*\))'
+    tags:
+      - memox-v8
+      - design-system

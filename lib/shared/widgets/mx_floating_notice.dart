@@ -5,6 +5,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// A standing notice that floats over the page, above its content: one
 /// sentence and the compact Buttons that resolve it (SB-U1; owner ruling
@@ -67,7 +68,7 @@ class MxFloatingNotice extends StatelessWidget {
       liveRegion: true,
       container: true,
       child: Material(
-        color: context.mxColors.warning.tintOver(scheme.surface),
+        color: context.mxColors.warning.tintOver(MxTintBase.of(context)),
         elevation: _elevation,
         shadowColor: scheme.shadow,
         shape: RoundedRectangleBorder(

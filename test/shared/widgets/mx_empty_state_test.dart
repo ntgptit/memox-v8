@@ -77,9 +77,10 @@ void main() {
       );
       final tile = tester.widget<DecoratedBox>(_tile(AppIcons.inbox));
 
+      // The tile sits in the state's card: its tint is over cardSurface.
       expect(
         (tile.decoration as BoxDecoration).color,
-        color.tintOver(scheme.surface),
+        color.tintOver(MxColorsExtension.light.cardSurface),
         reason: '$tone',
       );
       // The primary glyph reads in primaryInk (spec 2026-09-27 D2), the

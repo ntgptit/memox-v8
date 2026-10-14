@@ -198,3 +198,30 @@ def test_no_text_restyle_accepts_a_colour_the_mono_face_and_prose(
     ),
     """
     assert not _violations(RESTYLE, tmp_path, good)
+
+
+TINT_BASE = "memox_v8.design_system.tint_reads_its_base"
+
+
+def test_tint_reads_its_base_refuses_a_fixed_base(tmp_path: Path) -> None:
+    for bad in (
+        "color: colors.primary.tintOver(colors.surface),",
+        "color: context.mxColors.warning.tintOver(context.mxColors.cardSurface),",
+        """
+    color: context.colors.error.tintOver(
+      context.colors.surface,
+    ),
+    """,
+    ):
+        assert _violations(TINT_BASE, tmp_path, bad), bad
+
+
+def test_tint_reads_its_base_accepts_the_base_and_prose(tmp_path: Path) -> None:
+    good = """
+    // A tint over colors.surface: tintOver(colors.surface) is refused.
+    color: colors.primary.tintOver(MxTintBase.of(context)),
+    color: context.colors.error.tintOver(
+      MxTintBase.of(context),
+    ),
+    """
+    assert not _violations(TINT_BASE, tmp_path, good)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The width cap: 340, 320 or 300, never wider than the column.
 enum MxDialogWidth { small, medium, large }
@@ -127,50 +128,55 @@ class MxDialog extends StatelessWidget {
               MxDialogWidth.small => _smallWidth,
             },
           ),
-          child: Material(
-            color: dialogs.backgroundColor,
-            elevation: _elevation,
-            shadowColor: colors.shadow,
-            shape: shape,
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (hasText)
-                  Flexible(
-                    child: SingleChildScrollView(
-                      // The text sits on the action pair's 16 edge, so
-                      // the pair keeps its width (DEV-166, The Short
-                      // Label Rule).
-                      padding: actions == null
-                          ? EdgeInsets.fromLTRB(
-                              context.dimens.space16,
-                              context.dimens.space24,
-                              context.dimens.space16,
-                              context.dimens.space24,
-                            )
-                          : EdgeInsetsDirectional.only(
-                              start: context.dimens.space16,
-                              end: context.dimens.space16,
-                              top: context.dimens.space24,
-                            ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: context.dimens.space8,
-                        children: [
-                          if (title case final text?)
-                            Text(text, style: context.texts.titleSmall),
-                          if (body case final text?)
-                            Text(text, style: context.texts.bodyMedium),
-                          ?content,
-                        ],
+          child: MxTintBase(
+            // What the dialog holds is tinted over its own ground.
+            color:
+                dialogs.backgroundColor ?? context.colors.surfaceContainerHigh,
+            child: Material(
+              color: dialogs.backgroundColor,
+              elevation: _elevation,
+              shadowColor: colors.shadow,
+              shape: shape,
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (hasText)
+                    Flexible(
+                      child: SingleChildScrollView(
+                        // The text sits on the action pair's 16 edge, so
+                        // the pair keeps its width (DEV-166, The Short
+                        // Label Rule).
+                        padding: actions == null
+                            ? EdgeInsets.fromLTRB(
+                                context.dimens.space16,
+                                context.dimens.space24,
+                                context.dimens.space16,
+                                context.dimens.space24,
+                              )
+                            : EdgeInsetsDirectional.only(
+                                start: context.dimens.space16,
+                                end: context.dimens.space16,
+                                top: context.dimens.space24,
+                              ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: context.dimens.space8,
+                          children: [
+                            if (title case final text?)
+                              Text(text, style: context.texts.titleSmall),
+                            if (body case final text?)
+                              Text(text, style: context.texts.bodyMedium),
+                            ?content,
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ?actions,
-              ],
+                  ?actions,
+                ],
+              ),
             ),
           ),
         ),

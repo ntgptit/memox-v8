@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// What an outcome keeps or loses (the reset dialog of screen 02, D-O2).
 enum MxOutcomeTone { kept, lost }
@@ -24,12 +25,12 @@ class MxOutcomeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final (ground, edge, ink) = switch (tone) {
       MxOutcomeTone.kept => (
-        context.mxColors.success.tintOver(context.colors.surface),
+        context.mxColors.success.tintOver(MxTintBase.of(context)),
         context.colors.outlineVariant,
         context.mxColors.success,
       ),
       MxOutcomeTone.lost => (
-        context.mxColors.warning.tintOver(context.colors.surface),
+        context.mxColors.warning.tintOver(MxTintBase.of(context)),
         context.mxColors.warning,
         context.mxColors.warning,
       ),

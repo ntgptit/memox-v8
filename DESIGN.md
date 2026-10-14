@@ -272,7 +272,7 @@ A violet-indigo accent on a neutral field, a green that only ever means progress
 
 **The Text Colour Rule.** Text and glyphs read a text role (`onSurface`, `onSurfaceVariant`, `context.accentColor`, `success`, `warning`, `info`, `error`, an `on…` role), never a fill. A control edge reads `outline`, a hairline `divider` or `outlineVariant`, focus `primary`.
 
-**The Tint Rule.** A tinted ground is a role tinted over the surface directly beneath it, `color.tintOver(base)`, at the Design System's tint strength (`opacity-dragged`). Nothing else lays a colour over a ground at an alpha.
+**The Tint Rule.** A tinted ground is a role tinted over the surface directly beneath it, `color.tintOver(MxTintBase.of(context))`, at the Design System's tint strength (`opacity-dragged`). `MxCard`, `MxBottomSheet` and `MxDialog` set that base to the ground they paint; on the page it is `surface`. Nothing else lays a colour over a ground at an alpha.
 
 **The Mode Rule.** A widget never chooses a colour or a size by brightness. A choice that differs by mode is a getter in `theme_rules.dart` (`context.accentColor`, `context.deckIconColor`), or a role the two generated themes already set differently.
 

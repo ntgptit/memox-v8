@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The tone a count carries. There is no streak tone (ruling S1). Mastery is
 /// learning progress; success is a right answer or a finished, fine state
@@ -61,7 +62,7 @@ class MxBadge extends StatelessWidget {
     };
     return DecoratedBox(
       decoration: ShapeDecoration(
-        color: isSolid ? toneColor : toneColor.tintOver(context.colors.surface),
+        color: isSolid ? toneColor : toneColor.tintOver(MxTintBase.of(context)),
         shape: const StadiumBorder(),
       ),
       child: ConstrainedBox(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The card lifecycle, in order.
 enum MxCardStatus { newCard, learning, reviewing, mastered }
@@ -55,7 +56,7 @@ class MxStatusBadge extends StatelessWidget {
     }
     return DecoratedBox(
       decoration: ShapeDecoration(
-        color: color.tintOver(context.colors.surface),
+        color: color.tintOver(MxTintBase.of(context)),
         shape: const StadiumBorder(),
       ),
       child: ConstrainedBox(

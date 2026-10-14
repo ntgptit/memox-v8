@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// Opens [builder] (usually an MxBottomSheet) on the platform modal route
 /// over the theme's scrim, sliding up over `Durations.medium2`. It opens
@@ -90,58 +91,62 @@ class MxBottomSheet extends StatelessWidget {
         maxHeight:
             (MediaQuery.sizeOf(context).height - inset) * _maxHeightShare,
       ),
-      child: Material(
-        color: sheets.backgroundColor,
-        elevation: _elevation,
-        shadowColor: colors.shadow,
-        shape: shape,
-        clipBehavior: Clip.antiAlias,
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (hasGrabber)
-                // Material's drag-handle semantics: a screen reader can
-                // dismiss by the grabber (§9 row 65).
-                Semantics(
-                  key: const ValueKey('mx-sheet-grabber'),
-                  container: true,
-                  button: true,
-                  label: MaterialLocalizations.of(context)
-                      .modalBarrierDismissLabel,
-                  onTap: () => Navigator.of(context).maybePop(),
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top: context.dimens.space8,
-                      bottom: context.dimens.space4,
-                    ),
-                    child: Center(
-                      child: SizedBox(
-                        width: _grabberWidth,
-                        height: _grabberHeight,
-                        child: DecoratedBox(
-                          // Variant ink, 3:1 on the sheet; the kit's
-                          // outlineVariant is 1.30 (FE-C1).
-                          decoration: BoxDecoration(
-                            color: colors.onSurfaceVariant,
-                            borderRadius: BorderRadius.circular(
-                              _grabberHeight / 2,
+      child: MxTintBase(
+        // What the sheet holds is tinted over its own ground.
+        color: sheets.backgroundColor ?? context.colors.surfaceContainerHigh,
+        child: Material(
+          color: sheets.backgroundColor,
+          elevation: _elevation,
+          shadowColor: colors.shadow,
+          shape: shape,
+          clipBehavior: Clip.antiAlias,
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (hasGrabber)
+                  // Material's drag-handle semantics: a screen reader can
+                  // dismiss by the grabber (§9 row 65).
+                  Semantics(
+                    key: const ValueKey('mx-sheet-grabber'),
+                    container: true,
+                    button: true,
+                    label: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    onTap: () => Navigator.of(context).maybePop(),
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: context.dimens.space8,
+                        bottom: context.dimens.space4,
+                      ),
+                      child: Center(
+                        child: SizedBox(
+                          width: _grabberWidth,
+                          height: _grabberHeight,
+                          child: DecoratedBox(
+                            // Variant ink, 3:1 on the sheet; the kit's
+                            // outlineVariant is 1.30 (FE-C1).
+                            decoration: BoxDecoration(
+                              color: colors.onSurfaceVariant,
+                              borderRadius: BorderRadius.circular(
+                                _grabberHeight / 2,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              if (title case final text?)
-                _SheetHead(title: text, subtitle: subtitle)
-              else
-                ?header,
-              Flexible(child: SingleChildScrollView(child: child)),
-              ?footer,
-            ],
+                if (title case final text?)
+                  _SheetHead(title: text, subtitle: subtitle)
+                else
+                  ?header,
+                Flexible(child: SingleChildScrollView(child: child)),
+                ?footer,
+              ],
+            ),
           ),
         ),
       ),

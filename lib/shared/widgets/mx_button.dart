@@ -5,6 +5,7 @@ import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// Colour role of a button: the contract's four shipped tones, the soft
 /// danger tint of a grade that marks a lapse (screen 16a), the warning
@@ -228,7 +229,7 @@ class MxButton extends StatelessWidget {
       // The soft danger tint MxInlineBanner and MxCard.isDanger draw
       // (FE-A6 D14); the solid pair above stays the destructive action's.
       MxButtonTone.dangerTint => (
-        fill: context.colors.error.tintOver(context.colors.surface),
+        fill: context.colors.error.tintOver(MxTintBase.of(context)),
         foreground: colors.error,
         edge: BorderSide(
           color: context.colors.error,

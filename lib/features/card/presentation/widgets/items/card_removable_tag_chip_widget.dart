@@ -4,6 +4,7 @@ import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// A tag on the card being edited (kit `RemovableTagChip`): a primary-tinted
 /// pill with an ✕. Its whole 48 area removes the tag (ruling P4a-L8); the
@@ -37,7 +38,7 @@ class CardRemovableTagChipWidget extends StatelessWidget {
             widthFactor: 1,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: context.accentColor.tintOver(context.colors.surface),
+                color: context.accentColor.tintOver(MxTintBase.of(context)),
                 borderRadius: BorderRadius.circular(
                   context.dimens.sizeChip / 2,
                 ),

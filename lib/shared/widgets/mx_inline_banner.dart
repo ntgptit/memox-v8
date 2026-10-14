@@ -5,6 +5,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// Warning is a refusal or a limit, and nothing was lost. Danger means an
 /// operation failed.
@@ -48,7 +49,7 @@ class MxInlineBanner extends StatelessWidget {
     final colors = context.colors;
     final (ground, edge, ink, titleInk) = switch (tone) {
       MxBannerTone.warning => (
-        context.mxColors.warning.tintOver(context.colors.surface),
+        context.mxColors.warning.tintOver(MxTintBase.of(context)),
         context.mxColors.warning,
         // The kit's amber glyph is 1.87:1 on the soft ground (FE-C1).
         context.mxColors.warning,
@@ -57,7 +58,7 @@ class MxInlineBanner extends StatelessWidget {
       // The glyph needs 3:1 and keeps error; the title is text and reads in
       // the danger ink, 4.5:1 even inside a sheet (tone pass, final review).
       MxBannerTone.danger => (
-        context.colors.error.tintOver(context.colors.surface),
+        context.colors.error.tintOver(MxTintBase.of(context)),
         context.colors.error,
         colors.error,
         context.colors.error,

@@ -4,6 +4,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// One command in a bottom-sheet action list: a 30 tile in a 32 lead column
 /// and a 14/600 verb. It is neither a SettingsRow nor a ListRow. The sheet
@@ -68,9 +69,9 @@ class MxActionSheetCommandRow extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: isDestructive
                             ? context.colors.error.tintOver(
-                                context.colors.surface,
+                                MxTintBase.of(context),
                               )
-                            : colors.primary.tintOver(context.colors.surface),
+                            : colors.primary.tintOver(MxTintBase.of(context)),
                         borderRadius: BorderRadius.circular(
                           context.dimens.radiusSm,
                         ),

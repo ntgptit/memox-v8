@@ -4,6 +4,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// An inline load failure with a Retry. It has EmptyState's anatomy at a
 /// smaller scale and a danger tone. The body says first that nothing was
@@ -62,7 +63,7 @@ class MxErrorState extends StatelessWidget {
               dimension: _tileSize,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: context.colors.error.tintOver(context.colors.surface),
+                  color: context.colors.error.tintOver(MxTintBase.of(context)),
                   borderRadius: BorderRadius.circular(context.dimens.radiusLg),
                 ),
                 child: Center(

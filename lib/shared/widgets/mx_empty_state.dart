@@ -5,6 +5,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// What the surface's emptiness means: action-led, a plain fact, a calm
 /// finish, something to act on, or a failed outcome.
@@ -200,7 +201,7 @@ class _Tile extends StatelessWidget {
         : MxEmptyState._tileSize,
     child: DecoratedBox(
       decoration: BoxDecoration(
-        color: color.tintOver(context.colors.surface),
+        color: color.tintOver(MxTintBase.of(context)),
         borderRadius: BorderRadius.circular(
           isCompact ? context.dimens.radiusLg : context.dimens.radiusXl,
         ),
