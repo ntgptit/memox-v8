@@ -56,6 +56,11 @@ Future<void> expectThemedGoldens(
 ) async {
   await tester.binding.setSurfaceSize(phoneSize);
   addTearDown(() => tester.binding.setSurfaceSize(null));
+  // The view too, or MediaQuery reports the default 800-wide test window and
+  // what follows the window size (the screen margin) draws a medium window.
+  tester.view.physicalSize = phoneSize;
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
   await withRealShadows(() async {
     for (final (suffix, theme) in [
       ('light', buildLightTheme()),
