@@ -79,6 +79,10 @@ void main() {
       findsNothing,
     );
     expect(
+      tester.widget<Text>(find.text('12 cards selected')).style!.color!.a,
+      1,
+    );
+    expect(
       tester.widget<Text>(find.text('12 cards selected')).textAlign,
       TextAlign.center,
     );

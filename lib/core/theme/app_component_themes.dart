@@ -346,6 +346,9 @@ SnackBarThemeData snackBarTheme(ThemeTokens t) => SnackBarThemeData(
   contentTextStyle: t.texts.bodyMedium?.copyWith(
     color: t.scheme.onInverseSurface,
   ),
+  // Flat: the inverse surface sets it apart; only cards, dialogs, sheets and
+  // the FAB are raised (SW-REV-007).
+  elevation: 0,
 );
 
 TooltipThemeData tooltipTheme(ThemeTokens t) => TooltipThemeData(

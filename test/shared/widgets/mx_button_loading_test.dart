@@ -14,24 +14,34 @@ final _painted = find.descendant(
 
 void main() {
   // Work in progress is not a control that cannot be used: a caller that
-  // also nulls onPressed while loading still gets the full-strength spinner
-  // (shared widgets review 2026-10-07, SW-REV-003).
+  // also nulls onPressed while loading still gets the button at full
+  // strength, its fill, its edge and its foreground as at rest (shared
+  // widgets review 2026-10-07, SW-REV-003).
   testWidgets('loading is never dimmed, even with onPressed null', (
     tester,
   ) async {
-    await pumpMx(
-      tester,
-      const MxButton(label: 'Save', isLoading: true, onPressed: null),
-    );
+    for (final tone in MxButtonTone.values) {
+      await pumpMx(
+        tester,
+        MxButton(label: 'Save', tone: tone, onPressed: () {}),
+      );
+      final resting = tester.widget<Material>(_painted.first);
 
-    expect(find.byType(MxSpinner), findsOneWidget);
-    expect(
-      find.ancestor(
-        of: find.byType(TextButton),
-        matching: find.byType(Opacity),
-      ),
-      findsNothing,
-    );
+      await pumpMx(
+        tester,
+        MxButton(label: 'Save', tone: tone, isLoading: true, onPressed: null),
+      );
+      final loading = tester.widget<Material>(_painted.first);
+
+      expect(find.byType(MxSpinner), findsOneWidget, reason: '$tone');
+      expect(loading.color, resting.color, reason: '$tone fill');
+      expect(loading.shape, resting.shape, reason: '$tone edge');
+      expect(
+        loading.textStyle?.color,
+        resting.textStyle?.color,
+        reason: '$tone',
+      );
+    }
   });
 
   testWidgets('loading keeps the width, shows a spinner and ignores taps', (

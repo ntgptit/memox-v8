@@ -39,6 +39,10 @@ ThemeData _build({
     // Read directly by CircleAvatar, FlexibleSpaceBar and others.
     primaryTextTheme: AppTypography.bind(base.primaryTextTheme),
     scaffoldBackgroundColor: scheme.surface,
+    // InkWell rows (MxRowInk and the rows built on it) press in the theme's
+    // foreground at the pressed overlay, not Material's grey (SW-REV-007).
+    splashColor: tokens.onSurfaceAt(tokens.dimens.opacityPressed),
+    highlightColor: tokens.onSurfaceAt(tokens.dimens.opacityPressed),
     extensions: [mx, tokens.dimens],
     cardTheme: cardTheme(tokens),
     searchBarTheme: searchBarTheme(tokens),

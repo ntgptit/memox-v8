@@ -109,23 +109,29 @@ class MxButton extends StatelessWidget {
       tokens.dimens,
       hasIcon: icon != null || mark != null,
     );
+    final edge = paint.edge.style == BorderStyle.none ? null : paint.edge;
     final base = buttonStyle(
       tokens,
       fill: paint.fill,
       foreground: paint.foreground,
-      edge: paint.edge.style == BorderStyle.none ? null : paint.edge,
+      edge: edge,
     );
-    final style = base.copyWith(
+    final sized = base.copyWith(
       minimumSize: WidgetStatePropertyAll(Size(0, geometry.height)),
       padding: WidgetStatePropertyAll(
         EdgeInsets.symmetric(horizontal: geometry.padding),
       ),
-      // A loading button keeps its colours; only its presses are blocked.
-      backgroundColor: isLoading ? WidgetStatePropertyAll(paint.fill) : null,
-      foregroundColor: isLoading
-          ? WidgetStatePropertyAll(paint.foreground)
-          : null,
     );
+    // A loading button keeps its resting paint, fill, edge and foreground;
+    // only its presses are blocked (SW-REV-003).
+    final style = isLoading
+        ? sized.copyWith(
+            backgroundColor: WidgetStatePropertyAll(paint.fill),
+            foregroundColor: WidgetStatePropertyAll(paint.foreground),
+            iconColor: WidgetStatePropertyAll(paint.foreground),
+            side: WidgetStatePropertyAll(edge),
+          )
+        : sized;
     final button = TextButton(
       onPressed: isLoading ? null : onPressed,
       autofocus: isAutofocused,
