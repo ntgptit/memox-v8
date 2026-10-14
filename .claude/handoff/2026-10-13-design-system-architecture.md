@@ -30,7 +30,15 @@ Token source and spec; barrier hook; generator (`tools/design/generate.py`, `che
 - **Check similar** (`03f12783`): a live streak flame seeded with `warningContainer` read 1.89:1 on its tint; now `mxColors.warning` (test RED→GREEN). Other fill-for-glyph mappings checked: badges, status badge, empty state, icon tile keep a separate text colour.
 - **Gates (run):** `generate.py` twice → clean; `check.py` clean; full `dod_check.sh` → all green except format of one file, fixed (`acf76590`); suite 3845 pass, 1 skip (master's opt-in bulk test). `run_goldens.sh --update` rewrote 546 PNGs (`745426ef`), then `run_goldens.sh` → 508 pass. Hook proof: Write of `MxSemanticColors` into `lib/` refused with the replacement text. golden-compare pages: parts 1–4 (artifact links in the final report).
 - **Last run (HEAD `d455c681`):** `run_auth_it.sh` 13 pass; full `dod_check.sh` exit 0 ("mechanical gates passed", suite 3845 pass / 1 opt-in skip).
-- **BLOCKED:** the Opus final whole-branch review stopped on the weekly usage limit (resets 15:00 UTC). Re-run it first: `bash .claude/skills/subagent-driven-development/scripts/review-package docs/superpowers/plans/2026-10-13-design-system-architecture.md $(git merge-base origin/master HEAD) HEAD`, Agent description `Final whole-branch review …`, `model: opus`; then one fix pass, `finishing-a-development-branch`, delete this file before the merge.
+- **Opus final whole-branch review ran** (2026-10-14, 4773fcb1..1397311a): not ready, 1 Critical, 6 Important, 9 Minor. One fix pass, every finding verified on the code first:
+  - C1 SW-REV-007 lost in the merge: splash/highlight onSurface@opacityPressed and the flat snackbar restored, three tests back (`54bcfd80`).
+  - I1 a loading MxButton dimmed its edge; SW-REV-003 test retargeted to the painted fill/edge/foreground (`54bcfd80`).
+  - I3 `no_text_restyle` let chained copyWith/apply through; patterns tightened, `withWeight` private, VERSION `0.1.0-memox.3` (`dd592be1`).
+  - I4 scrim 0.45 kept, reason recorded in `app_tokens.json`: 0.56 came with Indigo's #010110 scrim (`d5d44668`).
+  - I2 tints laid over the page inside cards/sheets/dialogs: `MxTintBase` + guard `tint_reads_its_base`; owner ruled "follow the spec + record exceptions": 5 light pairs 4.27–4.46 in `contrast_exceptions.json` (`b12cca40`).
+  - I5 `MxTwoColumns` keeps one column with no end blocks + tests; detail files 13/22 state the two-column layout, stale "compact" button docs, 16a copy, 22 flame (`b3d745a3`).
+  - M7 dropped tests restored (stat tile boxed fill, floating notice dark, outline disabled edge, mono face); Minors M2 (component padding space16), M3 (comment; ramp learning = `warning` per deck-mastery R4, pushback), primary tint = accent tint (`6814bb22`), M5, M6 (`0edbedc4`, `3867f6ee`, `ef063072`).
+  - Not fixed, for the owner: M4 banner keeps a 1dp edge (spec §6 says none); M8 `study_fill_widget.dart` excluded whole from `no_text_restyle`; M9 icon button paints 48 (spec §9 keeps `iconButtonInk` 36); M1 not reachable (solid badge asserts primary).
 - golden-compare pages: part 1 https://claude.ai/artifact/LUsgn8u1dBeummQcijgtzW · 2 https://claude.ai/artifact/B6wsBzugtL5B68tR1r5pv7 · 3 https://claude.ai/artifact/BCfDMp5v4EN1dBtqgWuTrg · 4 https://claude.ai/artifact/YLBiwjsFUgx61nQW5t7bWr
 
 ## Next steps (in order)
@@ -42,7 +50,7 @@ Token source and spec; barrier hook; generator (`tools/design/generate.py`, `che
 6. Docs: screen-handoff files still mentioning `dangerSoft` / Short Label Rule (`30-sign-in.md`, `16a-study-self-assess.md`, `06-trash.md`, `05-tags.md`, `11-card-import.md`); ADR-019 pointer; CI `gate` job running `check.py`.
 7. Check degrade + check similar (CLAUDE.md "Fixing bugs"): classify consumers/states touched; record the `copyWith(decoration…)` exception and remaining alpha tints.
 8. Final gates: `python3 tools/design/generate.py` twice with clean `git status`; `check.py` green; full `dod_check.sh` (no `--fast`); `run_goldens.sh --update`, then a `golden-compare` page for the owner, then a non-update golden run that is green; hook-block proof (write `MxSemanticColors` into a Dart file, capture output, revert); grep removed names over lib/test.
-9. Final whole-branch review on Opus with the plan's Review Focus; one fix pass; `finishing-a-development-branch`; push; **delete this handoff file before merge**.
+9. ~~Final whole-branch review on Opus~~ done, fix pass done. Left: full gate, goldens `--update` + golden-compare page + green rerun, owner approves goldens, `finishing-a-development-branch`; **delete this handoff file before merge**.
 10. Linear: DEV-372/373/374 need the owner (quota blocker noted earlier); comment evidence per `linear-templates.md`.
 
 ## Final report (Vietnamese, with tables)
