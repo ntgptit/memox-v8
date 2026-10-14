@@ -86,7 +86,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('the current day is labelled in the full ink', (tester) async {
+  testWidgets('the current day is labelled at full strength', (tester) async {
     await pumpMx(
       tester,
       _chart([_day('S', 1, 0), _day('Today', 1, 0, now: true)]),

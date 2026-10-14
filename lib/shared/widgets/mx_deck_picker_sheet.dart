@@ -173,7 +173,7 @@ class MxDeckPickerErrorSheet extends StatelessWidget {
     title: title,
     subtitle: rule,
     // Retry is the decision's one primary; the way out beside it is outline
-    // (The One Indigo Rule).
+    // (The One Accent Rule).
     footer: MxSheetActions.single(
       isInSheet: true,
       label: dismissLabel,

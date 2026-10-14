@@ -229,47 +229,48 @@ void main() {
     expect(_plain(tester), '0 overdue · 0 today · 0 new');
   });
 
-  testWidgets('with icons each term leads with its own glyph in its ink, on '
-      'the same line, and is read as its words only (BR-STUDY-076)', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      SizedBox(
-        width: 320,
-        child: _line(today: 0, shouldKeepZeroTerms: true, hasIcons: true),
-      ),
-    );
+  testWidgets(
+    'with icons each term leads with its own glyph in its foreground, on '
+    'the same line, and is read as its words only (BR-STUDY-076)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        SizedBox(
+          width: 320,
+          child: _line(today: 0, shouldKeepZeroTerms: true, hasIcons: true),
+        ),
+      );
 
-    final glyphs = tester
-        .widgetList<Icon>(
-          find.descendant(
-            of: find.byType(MxWorkloadBreakdownLine),
-            matching: find.byType(Icon),
-          ),
-        )
-        .map((icon) => (icon.icon, icon.color))
-        .toList();
-    expect(glyphs, [
-      (AppIcons.overdue, mx.warning),
-      (AppIcons.dueNow, scheme.onSurfaceVariant),
-      (AppIcons.newCards, scheme.onSurfaceVariant),
-    ]);
-    final semantics = tester.widget<Semantics>(
-      find
-          .descendant(
-            of: find.byType(MxWorkloadBreakdownLine),
-            matching: find.byType(Semantics),
+      final glyphs = tester
+          .widgetList<Icon>(
+            find.descendant(
+              of: find.byType(MxWorkloadBreakdownLine),
+              matching: find.byType(Icon),
+            ),
           )
-          .first,
-    );
-    expect(semantics.properties.label, '3 overdue · 0 today · 2 new');
-    expect(semantics.excludeSemantics, isTrue);
-    expect(
-      tester.getSize(find.byType(MxWorkloadBreakdownLine)).height,
-      _lineHeight(tester),
-    );
-  });
+          .map((icon) => (icon.icon, icon.color))
+          .toList();
+      expect(glyphs, [
+        (AppIcons.overdue, mx.warning),
+        (AppIcons.dueNow, scheme.onSurfaceVariant),
+        (AppIcons.newCards, scheme.onSurfaceVariant),
+      ]);
+      final semantics = tester.widget<Semantics>(
+        find
+            .descendant(
+              of: find.byType(MxWorkloadBreakdownLine),
+              matching: find.byType(Semantics),
+            )
+            .first,
+      );
+      expect(semantics.properties.label, '3 overdue · 0 today · 2 new');
+      expect(semantics.excludeSemantics, isTrue);
+      expect(
+        tester.getSize(find.byType(MxWorkloadBreakdownLine)).height,
+        _lineHeight(tester),
+      );
+    },
+  );
 
   testWidgets('a plain line draws no icon', (tester) async {
     await pumpMx(tester, _line());

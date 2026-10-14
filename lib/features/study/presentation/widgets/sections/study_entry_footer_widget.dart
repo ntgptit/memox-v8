@@ -36,7 +36,7 @@ class StudyEntryFooterWidget extends ConsumerWidget {
     final l10n = context.l10n;
     final start = ref.watch(studyEntryControllerProvider(deckId));
     // An open session leads with Continue in its card; the footer's start
-    // (or its Try again) yields (DESIGN.md One Indigo; critique 2026-09-30
+    // (or its Try again) yields (DESIGN.md One Accent; critique 2026-09-30
     // part 1).
     final tone = entry.resumable == null
         ? MxButtonTone.primary

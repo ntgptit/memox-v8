@@ -39,7 +39,7 @@ class CardHistoryEventWidget extends StatelessWidget {
     final action = entry.action;
     final isLapse =
         action == EightBoxAction.forgotten || action == Sm2Action.again;
-    // A right answer is success, never mastery or the action Indigo
+    // A right answer is success, never mastery or the action primary
     // (DESIGN.md; critique 2026-09-30 tone pass, T5). The dot and the
     // moves read in the same tone's foreground.
     final (tone, icon, foreground) = switch (entry.kind) {

@@ -23,28 +23,29 @@ void main() {
   const mx = MxColorsExtension.light;
   final scheme = lightColorScheme;
 
-  testWidgets('the status fixes the dot and fill; the label is its ink', (
-    tester,
-  ) async {
-    for (final (status, color, ink) in [
-      (MxCardStatus.newCard, scheme.outline, scheme.onSurfaceVariant),
-      (MxCardStatus.learning, mx.warningContainer, mx.warning),
-      (MxCardStatus.reviewing, accentOf(scheme), accentOf(scheme)),
-      (MxCardStatus.mastered, mx.successContainer, mx.success),
-    ]) {
-      await pumpMx(tester, MxStatusBadge(status: status, label: 'State'));
-      final pill = find
-          .descendant(
-            of: find.byType(MxStatusBadge),
-            matching: find.byType(DecoratedBox),
-          )
-          .first;
+  testWidgets(
+    'the status fixes the dot and fill; the label is its foreground',
+    (tester) async {
+      for (final (status, color, ink) in [
+        (MxCardStatus.newCard, scheme.outline, scheme.onSurfaceVariant),
+        (MxCardStatus.learning, mx.warningContainer, mx.warning),
+        (MxCardStatus.reviewing, accentOf(scheme), accentOf(scheme)),
+        (MxCardStatus.mastered, mx.successContainer, mx.success),
+      ]) {
+        await pumpMx(tester, MxStatusBadge(status: status, label: 'State'));
+        final pill = find
+            .descendant(
+              of: find.byType(MxStatusBadge),
+              matching: find.byType(DecoratedBox),
+            )
+            .first;
 
-      expect(_fill(tester, pill), color.tintOver(scheme.surface));
-      expect(_fill(tester, find.byKey(_dotKey)), color);
-      expect(tester.widget<Text>(find.text('State')).style!.color, ink);
-    }
-  });
+        expect(_fill(tester, pill), color.tintOver(scheme.surface));
+        expect(_fill(tester, find.byKey(_dotKey)), color);
+        expect(tester.widget<Text>(find.text('State')).style!.color, ink);
+      }
+    },
+  );
 
   testWidgets('pill: 22 tall, 6 before the 6 dot, 4 gap, 8 after', (
     tester,

@@ -68,7 +68,7 @@ void main() {
     );
   });
 
-  testWidgets('edges: outline edge at rest, primaryInk focused, ghost '
+  testWidgets('edges: outline edge at rest, the accent focused, ghost '
       'disabled (DEV-166)', (tester) async {
     final rest = scheme.outline;
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));

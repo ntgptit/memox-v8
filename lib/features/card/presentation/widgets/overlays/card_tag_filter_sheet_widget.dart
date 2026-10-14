@@ -72,7 +72,7 @@ class _CardTagFilterSheetWidgetState
       AsyncData(:final value) when value.isEmpty => _none(l10n),
       AsyncData(:final value) => _picker(l10n, value),
       // The head stays, so TalkBack names the sheet; Retry is the one
-      // primary, and Close beside it is outline (The One Indigo Rule).
+      // primary, and Close beside it is outline (The One Accent Rule).
       AsyncError(:final isLoading) => MxBottomSheet(
         title: l10n.cardTagFilterTitle,
         footer: MxSheetActions.single(
@@ -111,7 +111,7 @@ class _CardTagFilterSheetWidgetState
   Widget _none(AppLocalizations l10n) => MxBottomSheet(
     title: l10n.cardTagFilterTitle,
     subtitle: l10n.cardTagFilterEmpty,
-    // A lone Close stays primary (The One Indigo Rule, R8).
+    // A lone Close stays primary (The One Accent Rule, R8).
     footer: MxSheetActions.single(
       isInSheet: true,
       label: l10n.cardTagFilterClose,

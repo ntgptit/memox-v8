@@ -31,21 +31,24 @@ void main() {
   final scheme = lightColorScheme;
   const mx = MxColorsExtension.light;
 
-  testWidgets('warning: amber ground, warning border, warning-ink 16 glyph '
-      '(FE-C1)', (tester) async {
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(tone: MxBannerTone.warning, message: _message),
-      ),
-    );
-    final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
+  testWidgets(
+    'warning: amber ground, warning border, warning text colour 16 glyph '
+    '(FE-C1)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        _width(
+          const MxInlineBanner(tone: MxBannerTone.warning, message: _message),
+        ),
+      );
+      final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
 
-    expect(_ground(tester).color, mx.warning.tintOver(scheme.surface));
-    expect(_ground(tester).border, Border.all(color: mx.warning));
-    expect(_ground(tester).borderRadius, BorderRadius.circular(12));
-    expect((glyph.size, glyph.color), (16, mx.warning));
-  });
+      expect(_ground(tester).color, mx.warning.tintOver(scheme.surface));
+      expect(_ground(tester).border, Border.all(color: mx.warning));
+      expect(_ground(tester).borderRadius, BorderRadius.circular(12));
+      expect((glyph.size, glyph.color), (16, mx.warning));
+    },
+  );
 
   testWidgets('danger: red ground, danger border, error glyph', (tester) async {
     await pumpMx(
@@ -209,7 +212,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('the title reads in its tone ink; an untitled lead stays '
+  testWidgets('the title reads in its tone foreground; an untitled lead stays '
       'onSurface (critique 2026-09-30 tone pass, T2)', (tester) async {
     for (final (tone, ink) in [
       (MxBannerTone.warning, mx.warning),

@@ -82,6 +82,11 @@ void main() {
           filled.backgroundColor!.resolve(disabled),
           scheme.onSurface.withValues(alpha: dimens.opacityDisabledContainer),
         );
+        // The whole control dims: an outline's edge too.
+        expect(
+          theme.outlinedButtonTheme.style!.side!.resolve(disabled)!.color,
+          scheme.onSurface.withValues(alpha: dimens.opacityDisabledContainer),
+        );
       });
 
       test(

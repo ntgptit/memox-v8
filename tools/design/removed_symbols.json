@@ -19,7 +19,7 @@
     "AppEffects": "a private constant in the widget, or design/app_tokens.json",
     "AppShadows": "a private constant in the widget, or design/app_tokens.json",
     "AppDecorations": "component theme (Card, …) or an Mx* widget parameter",
-    "appButtonStyle": "filledButtonTheme / outlinedButtonTheme / textButtonTheme in app_theme.dart",
+    "appButtonStyle": "filledButtonTheme / outlinedButtonTheme / textButtonTheme in app_component_themes.dart",
     "primaryText": "context.accentColor",
     "masteryText": "context.mxColors.success",
     "learningText": "context.mxColors.warning",

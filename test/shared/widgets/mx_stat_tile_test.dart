@@ -22,7 +22,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('primary takes the primary ink, muted the variant ink, plain '
+  testWidgets('primary takes the primary text, muted the variant text, plain '
       'the surface ink', (tester) async {
     await pumpMx(
       tester,
@@ -49,6 +49,26 @@ void main() {
     expect(ink('1'), accentOf(scheme));
     expect(ink('2'), scheme.onSurface);
     expect(ink('3'), scheme.onSurfaceVariant);
+  });
+
+  // DEV-231 (UI-REV-002): a boxed tile sits on the muted fill, not the
+  // card's own ground, so it stays a visible box on the study-entry card.
+  testWidgets('a boxed tile fills with surfaceContainerLow', (tester) async {
+    await pumpMx(
+      tester,
+      const MxStatTile(
+        value: '4',
+        label: 'Due',
+        layout: MxStatTileLayout.boxed,
+      ),
+    );
+    final box = tester.widget<DecoratedBox>(
+      find.ancestor(of: find.text('4'), matching: find.byType(DecoratedBox)),
+    );
+    expect(
+      (box.decoration as BoxDecoration).color,
+      lightColorScheme.surfaceContainerLow,
+    );
   });
 
   testWidgets('the label is upper-cased and a boxed tile does not clip', (

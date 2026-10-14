@@ -46,7 +46,7 @@ void main() {
     }
   });
 
-  testWidgets('tones paint their fill, ink and edge', (tester) async {
+  testWidgets('tones paint their fill, foreground and edge', (tester) async {
     final expected = {
       MxButtonTone.primary: (scheme.primary, scheme.onPrimary, BorderSide.none),
       MxButtonTone.secondary: (
@@ -71,45 +71,58 @@ void main() {
     }
   });
 
-  testWidgets('dangerTint paints the soft danger tint with the error ink '
-      '(FE-A6 P2, screen 16a)', (tester) async {
-    await pumpMx(
-      tester,
-      MxButton(label: 'Again', tone: MxButtonTone.dangerTint, onPressed: () {}),
-    );
-    final material = _material(tester);
-
-    expect(material.color, scheme.error.tintOver(scheme.surface));
-    expect(material.textStyle!.color, scheme.error);
-    expect(
-      (material.shape! as OutlinedBorder).side,
-      BorderSide(color: scheme.error, width: const AppDimens().strokeHairline),
-    );
-  });
-
-  testWidgets('warning paints the warning role with its ink, above 4.5:1 in '
-      'both themes (spec D15)', (tester) async {
-    await pumpMx(
-      tester,
-      MxButton(label: 'Merge', tone: MxButtonTone.warning, onPressed: () {}),
-    );
-    final material = _material(tester);
-
-    expect(material.color, MxColorsExtension.light.warningContainer);
-    expect(
-      material.textStyle!.color,
-      MxColorsExtension.light.onWarningContainer,
-    );
-    expect((material.shape! as OutlinedBorder).side, BorderSide.none);
-    for (final colors in [MxColorsExtension.light, MxColorsExtension.dark]) {
-      expect(
-        _ratio(colors.warningContainer, colors.onWarningContainer),
-        greaterThanOrEqualTo(4.5),
+  testWidgets(
+    'dangerTint paints the soft danger tint with the error foreground '
+    '(FE-A6 P2, screen 16a)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        MxButton(
+          label: 'Again',
+          tone: MxButtonTone.dangerTint,
+          onPressed: () {},
+        ),
       );
-    }
-  });
+      final material = _material(tester);
 
-  testWidgets('a detail line sits under the label in the button ink '
+      expect(material.color, scheme.error.tintOver(scheme.surface));
+      expect(material.textStyle!.color, scheme.error);
+      expect(
+        (material.shape! as OutlinedBorder).side,
+        BorderSide(
+          color: scheme.error,
+          width: const AppDimens().strokeHairline,
+        ),
+      );
+    },
+  );
+
+  testWidgets(
+    'warning paints the warning role with its foreground, above 4.5:1 in '
+    'both themes (spec D15)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        MxButton(label: 'Merge', tone: MxButtonTone.warning, onPressed: () {}),
+      );
+      final material = _material(tester);
+
+      expect(material.color, MxColorsExtension.light.warningContainer);
+      expect(
+        material.textStyle!.color,
+        MxColorsExtension.light.onWarningContainer,
+      );
+      expect((material.shape! as OutlinedBorder).side, BorderSide.none);
+      for (final colors in [MxColorsExtension.light, MxColorsExtension.dark]) {
+        expect(
+          _ratio(colors.warningContainer, colors.onWarningContainer),
+          greaterThanOrEqualTo(4.5),
+        );
+      }
+    },
+  );
+
+  testWidgets('a detail line sits under the label in the button foreground '
       '(FE-A6 P2, screen 16a)', (tester) async {
     await pumpMx(
       tester,
@@ -145,7 +158,7 @@ void main() {
     );
   });
 
-  testWidgets('outline tone has no fill, primaryInk, 1px outlineEdge', (
+  testWidgets('outline tone has no fill, the accent, 1px outline', (
     tester,
   ) async {
     await pumpMx(
@@ -167,7 +180,7 @@ void main() {
 
   // Critique 2026-09-30 part 1 (R7): outlineVariant nearly vanished on the
   // dark sheet (1.05:1).
-  testWidgets('dark: the outline edge is the dark outlineEdge', (tester) async {
+  testWidgets('dark: the outline edge is the dark outline', (tester) async {
     await pumpMx(
       tester,
       MxButton(label: 'Go', tone: MxButtonTone.outline, onPressed: () {}),
@@ -355,7 +368,7 @@ void main() {
     );
     expect(loading, idle);
   });
-  testWidgets('text tone has no fill and no edge, in primaryInk', (
+  testWidgets('text tone has no fill and no edge, in the accent', (
     tester,
   ) async {
     await pumpMx(

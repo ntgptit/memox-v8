@@ -66,7 +66,7 @@ class ProgressTodayWidget extends StatelessWidget {
             MxButton(
               label: l10n.progressStartStudying,
               icon: AppIcons.play,
-              // The screen's only action (One Indigo; critique 2026-09-30
+              // The screen's only action (One Accent; critique 2026-09-30
               // part 3d-1).
               tone: MxButtonTone.primary,
               isBlock: true,

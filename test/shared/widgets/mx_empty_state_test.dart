@@ -221,20 +221,23 @@ void main() {
     );
   });
 
-  testWidgets('in dark the warning glyph reads in warning ink too (critique '
-      '2026-09-30 part 3d-2, E14)', (tester) async {
-    await pumpMx(
-      tester,
-      const MxEmptyState(
-        icon: AppIcons.inbox,
-        title: 'T',
-        tone: MxEmptyStateTone.warning,
-      ),
-      brightness: Brightness.dark,
-    );
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color,
-      tester.element(find.byIcon(AppIcons.inbox)).mxColors.warning,
-    );
-  });
+  testWidgets(
+    'in dark the warning glyph reads in warning foreground too (critique '
+    '2026-09-30 part 3d-2, E14)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        const MxEmptyState(
+          icon: AppIcons.inbox,
+          title: 'T',
+          tone: MxEmptyStateTone.warning,
+        ),
+        brightness: Brightness.dark,
+      );
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color,
+        tester.element(find.byIcon(AppIcons.inbox)).mxColors.warning,
+      );
+    },
+  );
 }

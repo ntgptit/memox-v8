@@ -33,7 +33,7 @@ class SyncScreen extends ConsumerWidget {
 
   /// Sync now leads only when something waits or the last run failed, no
   /// row was refused, and the network is not what failed: with refused rows
-  /// the banner's Try again is the one primary (DESIGN.md One Indigo;
+  /// the banner's Try again is the one primary (DESIGN.md One Accent;
   /// critique 2026-09-30 part 1), and offline a manual run cannot help
   /// (critique 2026-10-02, F8).
   static bool _leadsSyncNow(SyncStatus status) =>

@@ -40,7 +40,7 @@ void main() {
     }
   });
 
-  testWidgets('default: the accent tinted over the surface, primaryInk glyph', (
+  testWidgets('default: the accent tinted over the surface, the accent glyph', (
     tester,
   ) async {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder));

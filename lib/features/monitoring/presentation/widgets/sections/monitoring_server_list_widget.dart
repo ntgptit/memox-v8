@@ -150,6 +150,9 @@ class _Rows extends ConsumerWidget {
   final LogStatus? statusShownByFilter;
   final ValueChanged<String> onOpenLog;
 
+  /// The next page loads while this many rows are still below the fold.
+  static const int _prefetchRows = 10;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
@@ -166,7 +169,7 @@ class _Rows extends ConsumerWidget {
         if (loaded.more == MonitoringMore.idle &&
             hasMore &&
             notification.metrics.extentAfter <
-                (10 * context.dimens.sizeControl)) {
+                _prefetchRows * context.dimens.sizeControl) {
           unawaited(controller.loadMore());
         }
         return false;

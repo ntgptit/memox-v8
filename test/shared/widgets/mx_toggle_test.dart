@@ -58,25 +58,28 @@ void main() {
     expect(_thumbOffset(tester), 21);
   });
 
-  testWidgets('off: a 2 outline edge, 3:1 on the row, and a variant-ink '
-      'thumb, 3:1 on the track; '
-      'on: no edge, a bright thumb (FE-C1)', (tester) async {
-    await pumpMx(
-      tester,
-      MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
-    );
-    expect(_ring(tester), Border.all(color: scheme.outline, width: 2));
-    // The thumb sits on the track's fill: variant ink, 3:1 there.
-    expect(_thumbColor(tester), scheme.onSurfaceVariant);
+  testWidgets(
+    'off: a 2 outline edge, 3:1 on the row, and a variant text colour '
+    'thumb, 3:1 on the track; '
+    'on: no edge, a bright thumb (FE-C1)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        MxToggle(isOn: false, onChanged: (_) {}, semanticLabel: 'Reminders'),
+      );
+      expect(_ring(tester), Border.all(color: scheme.outline, width: 2));
+      // The thumb sits on the track's fill: variant ink, 3:1 there.
+      expect(_thumbColor(tester), scheme.onSurfaceVariant);
 
-    await pumpMx(
-      tester,
-      MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Reminders'),
-    );
-    await tester.pumpAndSettle();
-    expect(_ring(tester), isNull);
-    expect(_thumbColor(tester), scheme.surfaceBright);
-  });
+      await pumpMx(
+        tester,
+        MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Reminders'),
+      );
+      await tester.pumpAndSettle();
+      expect(_ring(tester), isNull);
+      expect(_thumbColor(tester), scheme.surfaceBright);
+    },
+  );
 
   testWidgets('a tap reports the flipped value', (tester) async {
     bool? reported;

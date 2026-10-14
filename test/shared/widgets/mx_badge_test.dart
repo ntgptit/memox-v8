@@ -53,7 +53,7 @@ void main() {
     expect(_ink(tester, '23 due'), scheme.onPrimary);
   });
 
-  testWidgets('each tone; a tonal warning reads in warning-ink (S3), a '
+  testWidgets('each tone; a tonal warning reads in warning text colour (S3), a '
       'tonal mastery in the mastered ink (FE-C1)', (tester) async {
     for (final (tone, fill, ink) in [
       (MxBadgeTone.mastery, mx.successContainer, mx.success),
@@ -87,27 +87,30 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('success: the success tint under a success-ink label, in both '
-      'themes (critique 2026-09-30 tone pass, T6)', (tester) async {
-    await pumpMx(
-      tester,
-      const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),
-    );
-    expect(_pill(tester).color, mx.success.tintOver(scheme.surface));
-    expect(_ink(tester, 'Ready · 2'), mx.success);
+  testWidgets(
+    'success: the success tint under a success text colour label, in both '
+    'themes (critique 2026-09-30 tone pass, T6)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),
+      );
+      expect(_pill(tester).color, mx.success.tintOver(scheme.surface));
+      expect(_ink(tester, 'Ready · 2'), mx.success);
 
-    const darkSemantic = MxColorsExtension.dark;
-    await pumpMx(
-      tester,
-      const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),
-      brightness: Brightness.dark,
-    );
-    // The theme change animates.
-    await tester.pumpAndSettle();
-    expect(
-      _pill(tester).color,
-      darkSemantic.success.tintOver(darkColorScheme.surface),
-    );
-    expect(_ink(tester, 'Ready · 2'), darkSemantic.success);
-  });
+      const darkSemantic = MxColorsExtension.dark;
+      await pumpMx(
+        tester,
+        const MxBadge(label: 'Ready · 2', tone: MxBadgeTone.success),
+        brightness: Brightness.dark,
+      );
+      // The theme change animates.
+      await tester.pumpAndSettle();
+      expect(
+        _pill(tester).color,
+        darkSemantic.success.tintOver(darkColorScheme.surface),
+      );
+      expect(_ink(tester, 'Ready · 2'), darkSemantic.success);
+    },
+  );
 }

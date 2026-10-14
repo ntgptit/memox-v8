@@ -24,7 +24,7 @@ class MxSheetActions extends StatelessWidget {
        _singleTone = null;
 
   /// One action across the row: a lone Close, Done or OK (SW-REV-008). A
-  /// lone Close stays primary (The One Indigo Rule, R8); a dismiss beside
+  /// lone Close stays primary (The One Accent Rule, R8); a dismiss beside
   /// choices is outline.
   const MxSheetActions.single({
     super.key,

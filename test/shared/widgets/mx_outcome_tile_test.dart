@@ -55,26 +55,29 @@ void main() {
     }
   }
 
-  testWidgets('kept reads in the success ink, lost in the warning ink '
-      '(critique 2026-09-30 tone pass, final review)', (tester) async {
-    await pumpMx(
-      tester,
-      const Column(
-        children: [
-          MxOutcomeTile(label: 'Kept', body: 'a', tone: MxOutcomeTone.kept),
-          MxOutcomeTile(label: 'Lost', body: 'b', tone: MxOutcomeTone.lost),
-        ],
-      ),
-    );
-    final context = tester.element(find.text('Kept'));
+  testWidgets(
+    'kept reads in the success foreground, lost in the warning foreground '
+    '(critique 2026-09-30 tone pass, final review)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        const Column(
+          children: [
+            MxOutcomeTile(label: 'Kept', body: 'a', tone: MxOutcomeTone.kept),
+            MxOutcomeTile(label: 'Lost', body: 'b', tone: MxOutcomeTone.lost),
+          ],
+        ),
+      );
+      final context = tester.element(find.text('Kept'));
 
-    expect(
-      tester.widget<Text>(find.text('Kept')).style!.color,
-      context.mxColors.success,
-    );
-    expect(
-      tester.widget<Text>(find.text('Lost')).style!.color,
-      context.mxColors.warning,
-    );
-  });
+      expect(
+        tester.widget<Text>(find.text('Kept')).style!.color,
+        context.mxColors.success,
+      );
+      expect(
+        tester.widget<Text>(find.text('Lost')).style!.color,
+        context.mxColors.warning,
+      );
+    },
+  );
 }

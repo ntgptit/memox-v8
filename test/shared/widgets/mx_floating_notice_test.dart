@@ -42,6 +42,36 @@ void main() {
     );
   });
 
+  testWidgets('dark: the dark warning tint, its glyph and the dark text', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(const MxFloatingNotice(message: _message)),
+      brightness: Brightness.dark,
+    );
+    await tester.pumpAndSettle();
+    const night = MxColorsExtension.dark;
+    final ground = tester.widget<Material>(
+      find
+          .descendant(
+            of: find.byType(MxFloatingNotice),
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+
+    expect(ground.color, night.warning.tintOver(darkColorScheme.surface));
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
+      night.warning,
+    );
+    expect(
+      tester.widget<Text>(find.text(_message)).style!.color,
+      darkColorScheme.onSurface,
+    );
+  });
+
   testWidgets('one action sits on the message line, at the end', (
     tester,
   ) async {
