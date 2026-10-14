@@ -10,6 +10,6 @@
     {"name": "strokeControl", "value": 2, "usage": "Unselected radio ring and checkbox border."},
     {"name": "strokeIndicator", "value": 2, "usage": "Spinner arc and other progress strokes."},
     {"name": "opacityMuted", "value": 0.7, "usage": "Readable content that steps back: an answered choice out of play, a footer caption."},
-    {"name": "opacityScrim", "value": 0.45, "usage": "Alpha of the scrim behind a dialog or a bottom sheet."}
+    {"name": "opacityScrim", "value": 0.45, "usage": "Alpha of the scrim behind a dialog or a bottom sheet. The value from before the Indigo palette: Indigo raised it together with its tinted scrim colour, and the Design System replaced both (ADR-022)."}
   ]
 }

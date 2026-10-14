@@ -131,7 +131,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
   /// Readable content that steps back: an answered choice out of play, a footer caption.
   final double opacityMuted;
 
-  /// Alpha of the scrim behind a dialog or a bottom sheet.
+  /// Alpha of the scrim behind a dialog or a bottom sheet. The value from before the Indigo palette: Indigo raised it together with its tinted scrim colour, and the Design System replaced both (ADR-022).
   final double opacityScrim;
 
   @override
