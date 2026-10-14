@@ -29,7 +29,8 @@ MxChipPaint chipPaint(
 }
 
 /// The painted box of a chip that is not a button (the tag editor's removable
-/// chip): the `chip` theme's corner and resting edge around [fill].
+/// chip): the `chip` theme's corner and resting edge around [fill], none by
+/// default.
 ShapeDecoration chipDecoration(ChipThemeData chip, {Color? fill}) =>
     ShapeDecoration(
       color: fill,

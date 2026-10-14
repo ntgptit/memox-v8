@@ -9,7 +9,7 @@ import 'package:memox/features/card/presentation/widgets/items/card_removable_ta
 
 import '../../../support/library_harness.dart';
 
-// A glyph reads in the accent colour; the tag chip's tint stays primary.
+// A glyph reads in the accent colour; the tag chip is the Material 3 input chip.
 void main() {
   final accent = accentOf(darkColorScheme);
 
@@ -31,20 +31,43 @@ void main() {
     expect(glyphColor(tester, CardAddDetailsWidget), accent);
   });
 
-  libraryTest('a removable tag chip: the glyph is the accent', (
-    tester,
-    env,
-  ) async {
-    await pumpLibraryScreen(
-      tester,
-      env,
-      Scaffold(
-        body: CardRemovableTagChipWidget(name: 'verb', onRemove: () {}),
-      ),
-      brightness: Brightness.dark,
-    );
-    expect(glyphColor(tester, CardRemovableTagChipWidget), accent);
-  });
+  // Material 3 unselected input chip: no fill, onSurfaceVariant label and
+  // remove glyph.
+  libraryTest(
+    'a removable tag chip: no fill, onSurfaceVariant label and glyph',
+    (tester, env) async {
+      await pumpLibraryScreen(
+        tester,
+        env,
+        Scaffold(
+          body: CardRemovableTagChipWidget(name: 'verb', onRemove: () {}),
+        ),
+        brightness: Brightness.dark,
+      );
+      final fill =
+          tester
+                  .widget<DecoratedBox>(
+                    find
+                        .descendant(
+                          of: find.byType(CardRemovableTagChipWidget),
+                          matching: find.byType(DecoratedBox),
+                        )
+                        .first,
+                  )
+                  .decoration
+              as ShapeDecoration;
+
+      expect(fill.color, isNull);
+      expect(
+        glyphColor(tester, CardRemovableTagChipWidget),
+        darkColorScheme.onSurfaceVariant,
+      );
+      expect(
+        tester.widget<Text>(find.text('verb')).style!.color,
+        darkColorScheme.onSurfaceVariant,
+      );
+    },
+  );
 
   // SW-REV-005: the chip's one TalkBack node keeps the tap that removes it.
   libraryTest('a removable tag chip: TalkBack keeps its tap', (
