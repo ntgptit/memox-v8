@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
@@ -31,8 +32,8 @@ void main() {
     expect(tester.getSize(find.byType(MxFab)), const Size.square(56));
     expect(material.color, scheme.primary);
     expect(
-      (material.shape! as RoundedRectangleBorder).borderRadius,
-      BorderRadius.circular(16),
+      (material.shape! as MxFocusRingBorder).base,
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     );
     expect(
       IconTheme.of(tester.element(find.byIcon(AppIcons.add))).color,
@@ -74,18 +75,21 @@ void main() {
   ) async {
     await pumpFab(tester);
     expect(
-      (fabMaterial(tester).shape! as MxFocusRingRoundedBorder).ring.style,
+      (fabMaterial(tester).shape! as MxFocusRingBorder).ring.style,
       BorderStyle.none,
     );
 
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
-    final shape = fabMaterial(tester).shape! as MxFocusRingRoundedBorder;
+    final shape = fabMaterial(tester).shape! as MxFocusRingBorder;
 
     expect(shape.ring.color, scheme.primary);
     expect(shape.ring.width, 2);
     expect(shape.gap, 2);
-    expect(shape.borderRadius, BorderRadius.circular(16));
+    expect(
+      shape.base,
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    );
   });
 
   testWidgets('the label is its accessible name, never painted', (

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_chip_style.dart';
 
-/// A selectable filter (All · Cards · Decks). Its selection is exposed as
-/// state, not only as a look, so screen readers announce it. It never shrinks
-/// or wraps: the caller's row scrolls.
+/// A selectable filter (All · Cards · Decks), the Material 3 flat filter chip:
+/// an outlined 32 chip at rest, `secondaryContainer` with a leading check when
+/// selected, all read from `chipTheme`. Its selection is exposed as state, not
+/// only as a look, so screen readers announce it. It never shrinks or wraps:
+/// the caller's row scrolls.
 class MxFilterChip extends StatelessWidget {
   const MxFilterChip({
     super.key,
@@ -24,48 +28,32 @@ class MxFilterChip extends StatelessWidget {
   /// Shown after the label, lighter than it.
   final int? count;
 
-  /// Optional leading glyph at 16.
+  /// Optional leading glyph at 18; a selected chip shows the check instead.
   final IconData? icon;
 
   static const double _countOpacityResting = 0.6;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final foreground = isSelected ? colors.onPrimary : colors.onSurface;
+    final tokens = ThemeTokens.of(context);
+    final foreground = chipPaint(tokens, isSelected: isSelected).foreground;
+    final leading = isSelected ? AppIcons.check : icon;
     final select = onSelected;
     return MergeSemantics(
       child: Semantics(
         selected: isSelected,
         child: TextButton(
           onPressed: select == null ? null : () => select(!isSelected),
-          style:
-              buttonStyle(
-                ThemeTokens.of(context),
-                fill: isSelected
-                    ? colors.primary
-                    : colors.surfaceContainerLowest,
-                foreground: foreground,
-                edge: isSelected
-                    ? null
-                    : BorderSide(
-                        color: colors.outlineVariant,
-                        width: context.dimens.strokeHairline,
-                      ),
-              ).copyWith(
-                minimumSize: WidgetStatePropertyAll(
-                  Size(0, context.dimens.sizeChip),
-                ),
-                padding: WidgetStatePropertyAll(
-                  EdgeInsets.symmetric(horizontal: context.dimens.space8),
-                ),
-              ),
+          style: chipButtonStyle(
+            tokens,
+            isSelected: isSelected,
+            hasLeading: leading != null,
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: context.dimens.space4,
+            spacing: chipGap(tokens),
             children: [
-              if (icon case final glyph?)
-                Icon(glyph, size: context.dimens.sizeIconInline),
+              if (leading case final glyph?) Icon(glyph),
               // A label wider than the column ends in an ellipsis, as
               // MxTagChip's does (SW-REV-010).
               Flexible(
@@ -79,8 +67,8 @@ class MxFilterChip extends StatelessWidget {
               if (count case final value?)
                 Text(
                   value.toString(),
-                  // On the primary fill a dimmed count loses its contrast, so
-                  // the selected count keeps the label's foreground
+                  // On the container fill a dimmed count loses its contrast,
+                  // so the selected count keeps the label's foreground
                   // (SW-REV-001).
                   style: context.texts.labelSmall?.copyWith(
                     color: isSelected

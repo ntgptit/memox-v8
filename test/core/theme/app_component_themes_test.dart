@@ -158,9 +158,38 @@ void main() {
         expect(progress.linearTrackColor, scheme.surfaceContainerHighest);
       });
 
-      test('neutral chip is secondaryContainer on onSecondaryContainer', () {
-        expect(theme.chipTheme.backgroundColor, scheme.secondaryContainer);
-        expect(theme.chipTheme.labelStyle!.color, scheme.onSecondaryContainer);
+      // The Mx chips read this theme: Material 3's flat filter chip.
+      test('chip: flat, an 8 corner, secondaryContainer when selected', () {
+        final chip = theme.chipTheme;
+        const selected = {WidgetState.selected};
+
+        expect(chip.color!.resolve({}), isNull);
+        expect(chip.color!.resolve(selected), scheme.secondaryContainer);
+        final edge = chip.side! as WidgetStateBorderSide;
+        expect(
+          edge.resolve({}),
+          BorderSide(
+            color: scheme.outlineVariant,
+            width: dimens.strokeHairline,
+          ),
+        );
+        expect(edge.resolve(selected), BorderSide.none);
+        expect(
+          chip.shape,
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(dimens.radiusSm),
+          ),
+        );
+        expect(chip.labelStyle!.color, scheme.onSurfaceVariant);
+        expect(chip.secondaryLabelStyle!.color, scheme.onSecondaryContainer);
+        expect(chip.checkmarkColor, scheme.onSecondaryContainer);
+        expect(chip.iconTheme!.color, scheme.primary);
+        expect(chip.iconTheme!.size, dimens.sizeIconButton);
+        expect(chip.padding, EdgeInsets.all(dimens.space8));
+        expect(
+          chip.labelPadding,
+          EdgeInsets.symmetric(horizontal: dimens.space8),
+        );
       });
 
       test('dialog, sheet and snack bar carry their tokens', () {
@@ -207,7 +236,11 @@ void main() {
               greaterThanOrEqualTo(dimens.sizeButton),
               reason: label,
             );
-            expect(material.shape, isA<StadiumBorder>(), reason: label);
+            expect(
+              (material.shape! as MxFocusRingBorder).base,
+              isA<StadiumBorder>(),
+              reason: label,
+            );
           }
         },
       );

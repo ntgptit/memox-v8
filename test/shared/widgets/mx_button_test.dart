@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
@@ -194,7 +195,7 @@ void main() {
     );
   });
 
-  testWidgets('chip size paints its own surface and ghost edge (R2)', (
+  testWidgets('chip size is the flat unselected chip: no fill, 8 corners', (
     tester,
   ) async {
     await pumpMx(
@@ -203,11 +204,20 @@ void main() {
     );
     final material = _material(tester);
 
-    expect(material.color, scheme.surfaceContainerLowest);
-    expect(material.textStyle!.color, scheme.onSurface);
+    expect(tester.getSize(_painted.first).height, 32);
+    expect(material.color?.a ?? 0, 0);
+    expect(material.textStyle!.color, scheme.onSurfaceVariant);
     expect(
-      (material.shape! as OutlinedBorder).side,
-      BorderSide(color: scheme.outlineVariant),
+      (material.shape! as MxFocusRingBorder).base,
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+    );
+    expect(
+      tester.getTopLeft(find.text('Tag')).dx -
+          tester.getTopLeft(_painted.first).dx,
+      16,
     );
   });
 

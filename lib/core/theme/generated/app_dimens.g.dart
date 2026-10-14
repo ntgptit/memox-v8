@@ -49,7 +49,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
     this.opacityDisabledContent = 0.38,
     this.opacityDisabledContainer = 0.12,
     // App-only — not yet in the design system.
-    this.sizeChip = 28,
+    this.sizeChip = 32,
     this.sizeInput = 52,
     this.sizeFab = 56,
     this.sizeAppBar = 64,
@@ -106,7 +106,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
   final double opacityDisabledContent;
   final double opacityDisabledContainer;
   // App-only — not yet in the design system.
-  /// Chip and filter chip height. A chip never wraps, its row scrolls.
+  /// Chip and filter chip height, as the Material 3 chip container. A chip never wraps, its row scrolls.
   final double sizeChip;
 
   /// Text field height.

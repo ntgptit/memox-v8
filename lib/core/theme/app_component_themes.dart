@@ -110,41 +110,70 @@ InputDecorationTheme inputDecorationTheme(ThemeTokens t) {
   );
 }
 
-/// A full-radius border that also draws the focus ring: [ring] painted [gap]
-/// outside the container, so it shows on any fill, a `primary` one included.
-/// A [ring] of [BorderSide.none] draws nothing.
+/// Wraps any [OutlinedBorder] [base] (a stadium for buttons, a rounded
+/// rectangle for the FAB and the chips) and also draws the focus ring: [ring]
+/// painted [gap] outside the container, so it shows on any fill, a `primary`
+/// one included. A [ring] of [BorderSide.none] draws nothing.
 ///
 /// `ButtonStyle` has no focus-indicator slot, and a `side` is drawn on the
 /// container's own edge, so the ring rides on the shape: the Material paints
 /// it unclipped, outside the container, and the ink still clips to
-/// [getOuterPath], which is the plain stadium.
-class MxFocusRingBorder extends StadiumBorder {
-  const MxFocusRingBorder({
-    super.side,
+/// [getOuterPath], which is the plain [base].
+class MxFocusRingBorder extends OutlinedBorder {
+  // The side is the base's, so a ButtonStyle's `copyWith(side:)` and the
+  // default [dimensions] read it.
+  MxFocusRingBorder({
+    required this.base,
     this.ring = BorderSide.none,
     this.gap = 0,
-  });
+  }) : super(side: base.side);
 
+  final OutlinedBorder base;
   final BorderSide ring;
 
   /// Distance between the container's edge and the ring's inner edge.
   final double gap;
 
   @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
+      base.getInnerPath(rect, textDirection: textDirection);
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) =>
+      base.getOuterPath(rect, textDirection: textDirection);
+
+  @override
   void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
-    super.paint(canvas, rect, textDirection: textDirection);
+    base.paint(canvas, rect, textDirection: textDirection);
     if (ring.style == BorderStyle.none) return;
-    final centre = rect.inflate(gap + ring.width / 2);
-    canvas.drawPath(getOuterPath(centre), ring.toPaint());
+    final grow = gap + ring.width / 2;
+    // A rounded corner grows with the ring, so the ring stays concentric.
+    if (base case RoundedRectangleBorder(:final borderRadius)) {
+      canvas.drawRRect(
+        borderRadius.resolve(textDirection).toRRect(rect).inflate(grow),
+        ring.toPaint(),
+      );
+      return;
+    }
+    canvas.drawPath(
+      base.getOuterPath(rect.inflate(grow), textDirection: textDirection),
+      ring.toPaint(),
+    );
   }
 
   @override
-  MxFocusRingBorder copyWith({BorderSide? side}) =>
-      MxFocusRingBorder(side: side ?? this.side, ring: ring, gap: gap);
+  MxFocusRingBorder copyWith({BorderSide? side}) => MxFocusRingBorder(
+    base: base.copyWith(side: side),
+    ring: ring,
+    gap: gap,
+  );
 
   @override
-  ShapeBorder scale(double t) =>
-      MxFocusRingBorder(side: side.scale(t), ring: ring.scale(t), gap: gap * t);
+  ShapeBorder scale(double t) => MxFocusRingBorder(
+    base: base.scale(t) as OutlinedBorder,
+    ring: ring.scale(t),
+    gap: gap * t,
+  );
 
   @override
   ShapeBorder? lerpFrom(ShapeBorder? a, double t) =>
@@ -159,7 +188,7 @@ class MxFocusRingBorder extends StadiumBorder {
     MxFocusRingBorder b,
     double t,
   ) => MxFocusRingBorder(
-    side: BorderSide.lerp(a.side, b.side, t),
+    base: OutlinedBorder.lerp(a.base, b.base, t)!,
     ring: BorderSide.lerp(a.ring, b.ring, t),
     gap: lerpDouble(a.gap, b.gap, t)!,
   );
@@ -167,19 +196,20 @@ class MxFocusRingBorder extends StadiumBorder {
   @override
   bool operator ==(Object other) =>
       other is MxFocusRingBorder &&
-      other.side == side &&
+      other.base == base &&
       other.ring == ring &&
       other.gap == gap;
 
   @override
-  int get hashCode => Object.hash(side, ring, gap);
+  int get hashCode => Object.hash(base, ring, gap);
 
   @override
-  String toString() => 'MxFocusRingBorder($side, ring: $ring, gap: $gap)';
+  String toString() => 'MxFocusRingBorder($base, ring: $ring, gap: $gap)';
 }
 
 /// A Material button at the regular size in [fill] and [foreground]: 40 tall at
-/// least (a wrapped label or a larger text scale grows it), full radius,
+/// least (a wrapped label or a larger text scale grows it), full radius (or
+/// the [shape] given),
 /// [padding] on the sides (24 by default), the `labelLarge` label, an 18 glyph,
 /// state layers and the focus ring. A focused one draws the ring in `primary`
 /// 2 outside its container ([MxFocusRingBorder]), so it shows on a `primary`
@@ -192,6 +222,7 @@ ButtonStyle buttonStyle(
   required Color foreground,
   BorderSide? edge,
   double? padding,
+  OutlinedBorder shape = const StadiumBorder(),
 }) {
   final dimens = t.dimens;
   return ButtonStyle(
@@ -202,6 +233,7 @@ ButtonStyle buttonStyle(
     iconSize: WidgetStatePropertyAll(dimens.sizeIconButton),
     shape: WidgetStateProperty.resolveWith(
       (states) => MxFocusRingBorder(
+        base: shape,
         ring: states.contains(WidgetState.focused)
             ? BorderSide(color: t.scheme.primary, width: dimens.strokeFocus)
             : BorderSide.none,
@@ -405,16 +437,38 @@ ProgressIndicatorThemeData progressIndicatorTheme(ThemeTokens t) =>
       borderRadius: t.radius(t.dimens.sizeTrack / 2),
     );
 
-/// Neutral chip: `secondaryContainer` with `onSecondaryContainer`.
+/// The Material 3 flat filter chip, read by every Mx chip (`chipButtonStyle`):
+/// no fill and a `outlineVariant` hairline at rest, `secondaryContainer` with
+/// no edge when selected, an 8 corner, `labelLarge`, an 18 glyph, 8 around the
+/// chip and 8 around the label. `secondaryLabelStyle` and `checkmarkColor` are
+/// the selected label and check. A disabled chip is the button style's.
 ChipThemeData chipTheme(ThemeTokens t) => ChipThemeData(
-  backgroundColor: t.scheme.secondaryContainer,
-  selectedColor: t.scheme.secondaryContainer,
-  side: BorderSide.none,
+  color: WidgetStateProperty.resolveWith(
+    (states) => states.contains(WidgetState.selected)
+        ? t.scheme.secondaryContainer
+        : null,
+  ),
+  side: WidgetStateBorderSide.resolveWith(
+    (states) => states.contains(WidgetState.selected)
+        ? BorderSide.none
+        : BorderSide(
+            color: t.scheme.outlineVariant,
+            width: t.dimens.strokeHairline,
+          ),
+  ),
   shape: RoundedRectangleBorder(borderRadius: t.radius(t.dimens.radiusSm)),
-  labelStyle: t.texts.labelMedium?.copyWith(
+  showCheckmark: true,
+  labelStyle: t.texts.labelLarge?.copyWith(color: t.scheme.onSurfaceVariant),
+  secondaryLabelStyle: t.texts.labelLarge?.copyWith(
     color: t.scheme.onSecondaryContainer,
   ),
-  iconTheme: IconThemeData(color: t.scheme.onSecondaryContainer),
+  checkmarkColor: t.scheme.onSecondaryContainer,
+  iconTheme: IconThemeData(
+    color: t.scheme.primary,
+    size: t.dimens.sizeIconButton,
+  ),
+  padding: EdgeInsets.all(t.dimens.space8),
+  labelPadding: EdgeInsets.symmetric(horizontal: t.dimens.space8),
 );
 
 DialogThemeData dialogTheme(ThemeTokens t) => DialogThemeData(

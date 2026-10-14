@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_chip_style.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/color_tint.dart';
-import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
@@ -106,17 +106,17 @@ class MxButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = ThemeTokens.of(context);
     final paint = _paintFor(context);
-    final geometry = _geometryFor(
-      tokens.dimens,
-      hasIcon: icon != null || mark != null,
-    );
+    final hasIcon = icon != null || mark != null;
+    final geometry = _geometryFor(tokens, hasIcon: hasIcon);
     final edge = paint.edge.style == BorderStyle.none ? null : paint.edge;
-    final base = buttonStyle(
-      tokens,
-      fill: paint.fill,
-      foreground: paint.foreground,
-      edge: edge,
-    );
+    final base = size == MxButtonSize.chip
+        ? chipButtonStyle(tokens, hasLeading: hasIcon)
+        : buttonStyle(
+            tokens,
+            fill: paint.fill,
+            foreground: paint.foreground,
+            edge: edge,
+          );
     final sized = base.copyWith(
       minimumSize: WidgetStatePropertyAll(Size(0, geometry.height)),
       padding: WidgetStatePropertyAll(
@@ -163,7 +163,7 @@ class MxButton extends StatelessWidget {
   /// horizontal padding on both sides.
   double naturalWidth(BuildContext context) {
     final geometry = _geometryFor(
-      context.dimens,
+      ThemeTokens.of(context),
       hasIcon: icon != null || mark != null,
     );
     final painter = TextPainter(
@@ -184,17 +184,8 @@ class MxButton extends StatelessWidget {
 
   _Paint _paintFor(BuildContext context) {
     final colors = context.colors;
-    if (size == MxButtonSize.chip) {
-      // Chip geometry paints its own surface whatever the tone (ruling R2).
-      return (
-        fill: colors.surfaceContainerLowest,
-        foreground: colors.onSurface,
-        edge: BorderSide(
-          color: context.colors.outlineVariant,
-          width: context.dimens.strokeHairline,
-        ),
-      );
-    }
+    // A chip paints the chip theme whatever the tone (ruling R2).
+    if (size == MxButtonSize.chip) return chipPaint(ThemeTokens.of(context));
     return switch (tone) {
       MxButtonTone.primary => (
         fill: colors.primary,
@@ -245,45 +236,48 @@ class MxButton extends StatelessWidget {
     };
   }
 
-  _Geometry _geometryFor(AppDimens dimens, {required bool hasIcon}) =>
-      switch (size) {
-        // Material 3: a filled or outlined button with a leading glyph takes
-        // 24 to 16 on the start side; the quiet text tone sits closer to its
-        // label (12), and 16 on the end beside a glyph.
-        MxButtonSize.regular when tone == MxButtonTone.text => (
-          height: dimens.sizeButton,
-          start: dimens.space12,
-          end: hasIcon ? dimens.space16 : dimens.space12,
-          canWrap: true,
-        ),
-        MxButtonSize.regular => (
-          height: dimens.sizeButton,
-          start: hasIcon ? dimens.space16 : dimens.space24,
-          end: dimens.space24,
-          canWrap: true,
-        ),
-        MxButtonSize.small => (
-          height: dimens.sizeButtonSmall,
-          start: hasIcon ? dimens.space16 : dimens.space12,
-          end: hasIcon ? dimens.space16 : dimens.space12,
-          canWrap: false,
-        ),
-        MxButtonSize.chip => (
-          height: dimens.sizeChip,
-          start: dimens.space8,
-          end: dimens.space8,
-          canWrap: false,
-        ),
-        // The contract's 36 sizes a pill that hugs its label; a block
-        // action is given its width by its row, and needs the room for
-        // the label (FE-A6 P4: "Remembered" in a two-up row).
-        MxButtonSize.study => (
-          height: dimens.sizeButton,
-          start: isBlock ? dimens.space16 : _studyPadding,
-          end: isBlock ? dimens.space16 : _studyPadding,
-          canWrap: false,
-        ),
-      };
+  _Geometry _geometryFor(ThemeTokens tokens, {required bool hasIcon}) {
+    final dimens = tokens.dimens;
+    return switch (size) {
+      // Material 3: a filled or outlined button with a leading glyph takes
+      // 24 to 16 on the start side; the quiet text tone sits closer to its
+      // label (12), and 16 on the end beside a glyph.
+      MxButtonSize.regular when tone == MxButtonTone.text => (
+        height: dimens.sizeButton,
+        start: dimens.space12,
+        end: hasIcon ? dimens.space16 : dimens.space12,
+        canWrap: true,
+      ),
+      MxButtonSize.regular => (
+        height: dimens.sizeButton,
+        start: hasIcon ? dimens.space16 : dimens.space24,
+        end: dimens.space24,
+        canWrap: true,
+      ),
+      MxButtonSize.small => (
+        height: dimens.sizeButtonSmall,
+        start: hasIcon ? dimens.space16 : dimens.space12,
+        end: hasIcon ? dimens.space16 : dimens.space12,
+        canWrap: false,
+      ),
+      // The chip theme's insets: 8 to a leading glyph, else 16.
+      MxButtonSize.chip => (
+        height: dimens.sizeChip,
+        start: chipStartInset(tokens, hasLeading: hasIcon),
+        end: chipEndInset(tokens, hasTrailing: false),
+        canWrap: false,
+      ),
+      // The contract's 36 sizes a pill that hugs its label; a block
+      // action is given its width by its row, and needs the room for
+      // the label (FE-A6 P4: "Remembered" in a two-up row).
+      MxButtonSize.study => (
+        height: dimens.sizeButton,
+        start: isBlock ? dimens.space16 : _studyPadding,
+        end: isBlock ? dimens.space16 : _studyPadding,
+        canWrap: false,
+      ),
+    };
+  }
 
   Widget _content(BuildContext context, Color foreground, _Geometry geometry) {
     final canWrap = geometry.canWrap && !isSingleLine;

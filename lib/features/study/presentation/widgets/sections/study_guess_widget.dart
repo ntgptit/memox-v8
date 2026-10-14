@@ -266,9 +266,13 @@ class _Letter extends StatelessWidget {
 
   static const double _ring = 1.5;
 
+  /// The letter circle's diameter. It is not a chip, so it does not follow
+  /// `sizeChip`.
+  static const double _size = 28;
+
   @override
   Widget build(BuildContext context) => SizedBox.square(
-    dimension: context.dimens.sizeChip,
+    dimension: _size,
     child: DecoratedBox(
       decoration: BoxDecoration(
         shape: BoxShape.circle,

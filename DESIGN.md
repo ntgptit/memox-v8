@@ -203,13 +203,13 @@ components:
     textColor: "{colors.on-secondary-container}"
     typography: "{typography.label-meta}"
     rounded: "{rounded.sm}"
-    height: "28px"
+    height: "32px"
   filter-chip-selected:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     typography: "{typography.label-button}"
     rounded: "{rounded.full}"
-    height: "28px"
+    height: "32px"
   nav-indicator:
     backgroundColor: "{colors.secondary-container}"
     textColor: "{colors.on-secondary-container}"
@@ -247,7 +247,7 @@ MemoX should feel like a quiet, focused study space. One structure ships two the
 A violet-indigo accent on a neutral field, a green that only ever means progress, an amber for warning and a blue for information. The frontmatter holds the light values; `.impeccable/design.json` `colorMeta` carries both themes. The Material roles are the generated `ColorScheme` (`context.colors`); the Design System's own colours are `MxColorsExtension` (`context.mxColors`).
 
 ### Primary
-- **Accent** (`primary`): the fill of the primary button, the FAB, the selected filter chip, the selected radio and progress indicators, and the focus ring. It is the same in both themes.
+- **Accent** (`primary`): the fill of the primary button, the FAB, the selected radio and progress indicators, and the focus ring. It is the same in both themes.
 - **Accent Text** (`context.accentColor`): the accent as text or glyph: outline and text buttons, links, a matched search term, the selected destination's glyph. It is `primary` in light and `primaryFixedDim` in dark, where `primary` on the page is too dim for text.
 - **Accent Tint** (`context.accentColor.tintOver(colors.surface)`): the hero card and the accent's tinted tiles.
 
@@ -337,14 +337,14 @@ Tonal, not shadowed. Cards and the search field are raised by their surface role
 
 ## Shapes
 
-The Material 3 shape scale: `radiusMd` for cards, fields, notes, banners and snackbars; `radiusXs` for small marks and tooltips; `radiusSm` for chips and the smallest tiles; `radiusLg` for the larger tiles; `radiusXl` for surfaces that float (dialogs, the sheet's top corners). A full radius (a `StadiumBorder`) for buttons, the search field, filter chips, badges, the navigation indicator, toggle tracks and progress tracks. Hairlines are `strokeHairline`; the focus ring is `strokeFocus`, in `primary`, drawn `strokeFocusGap` outside a button's container so it shows on any fill; radio and checkbox controls use `strokeControl`, and a selected radio thickens its ring without moving.
+The Material 3 shape scale: `radiusMd` for cards, fields, notes, banners and snackbars; `radiusXs` for small marks and tooltips; `radiusSm` for chips and the smallest tiles; `radiusLg` for the larger tiles; `radiusXl` for surfaces that float (dialogs, the sheet's top corners). A full radius (a `StadiumBorder`) for buttons, the search field, badges, the navigation indicator, toggle tracks and progress tracks. Hairlines are `strokeHairline`; the focus ring is `strokeFocus`, in `primary`, drawn `strokeFocusGap` outside a button's container so it shows on any fill; radio and checkbox controls use `strokeControl`, and a selected radio thickens its ring without moving.
 
 ## Components
 
 Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no copy (callers pass localized strings) and read every colour, size and style from the theme.
 
 ### Actions
-- **MxButton**: tones primary, secondary, outline (an `outline` edge, the accent text), text (no fill and no edge), destructive, dangerTint (the error tint with an error label) and warning; sizes regular (`sizeButton`) and small (`sizeButtonSmall`), plus the app's chip and study variants. The label is `labelLarge` at every size, the radius full, the touch area `sizeControl`. A leading glyph is `sizeIconButton` with `space8` before the label; the side padding is `space24` (`space16` on the glyph's side), and the text tone's is `space12` (`space16` after a glyph). A button alone or across a card is regular; a button sharing a row with other content is small; one card uses one size. `isLoading` swaps the label for a spinner at the same width and is never dimmed; disabled follows the Design System's disabled opacities; `semanticLabel` names the button to TalkBack on its own node, with its tap and state.
+- **MxButton**: tones primary, secondary, outline (an `outline` edge, the accent text), text (no fill and no edge), destructive, dangerTint (the error tint with an error label) and warning; sizes regular (`sizeButton`) and small (`sizeButtonSmall`), plus the app's chip (the unselected filter chip, below) and study variants. The label is `labelLarge` at every size, the radius full, the touch area `sizeControl`. A leading glyph is `sizeIconButton` with `space8` before the label; the side padding is `space24` (`space16` on the glyph's side), and the text tone's is `space12` (`space16` after a glyph). A button alone or across a card is regular; a button sharing a row with other content is small; one card uses one size. `isLoading` swaps the label for a spinner at the same width and is never dimmed; disabled follows the Design System's disabled opacities; `semanticLabel` names the button to TalkBack on its own node, with its tap and state.
 - **MxIconButton**: an icon at `sizeIcon` in a `sizeControl` circle; its long-press tooltip is on the inverse surface. **MxFab**: the Material 3 regular FAB, square at `sizeFab`, icon only at `sizeIcon`, corner `radiusLg`; it lifts a step when hovered and draws the offset focus ring.
 - **MxActionPair** (a screen footer's pair, The Footer Pair Rule) and **MxSheetActions** (the pair of a dialog or a sheet, Cancel and the confirm sharing the row; the confirm is the verb alone and neither action carries an icon; `MxSheetActions.single` is one action across the row).
 
@@ -356,7 +356,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 ### Inputs
 - **MxTextField**: one box for every entry: `sizeInput` at least, `surfaceContainerLow` that lightens to `surfaceContainerLowest` on focus, `radiusMd`, `bodyMedium`, an `outline` edge at rest, `primary` at `strokeFocus` on focus, `error` with an **MxFieldMessage** below on error, `outlineVariant` when disabled. Variants form, detail, term, code (six slots) and study (bare).
 - **MxSearchField**: `searchSurface`, full radius, `sizeSearch` tall, no edge, no shadow; the hint and value in `labelMedium`.
-- **MxStepper** (a bounded integer with press-and-hold repeat), **MxToggle**, **MxOptionRow** (a single-choice radio row; a dimmed row dims only its radio and title), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** (`sizeChip`, full radius; selected fills `primary`), **MxChipTrigger**.
+- **MxStepper** (a bounded integer with press-and-hold repeat), **MxToggle**, **MxOptionRow** (a single-choice radio row; a dimmed row dims only its radio and title), **MxSelectionCheckbox**, **MxSegmentedTray**, **MxFilterChip** and **MxChipTrigger** (the Material 3 flat filter chip, read from `chipTheme`: `sizeChip` tall, `radiusSm` corners, `labelLarge`, a `sizeIconButton` glyph, `space8` around the chip and around the label; at rest no fill and a `strokeHairline` `outlineVariant` edge with an `onSurfaceVariant` label; selected `secondaryContainer` with an `onSecondaryContainer` label, no edge and a leading check in place of the glyph; the trigger is the ghost variant, no fill and no edge, with its glyph after the label; the touch area is `sizeControl`; the focus ring follows the corners). `MxButton`'s chip size is the same unselected chip.
 
 ### Navigation
 - **MxAppBar**: `sizeAppBar`, `titleLarge`, `context.screenMargin` at the sides; a form's single save lives in its footer.
