@@ -543,7 +543,7 @@ Each check below names the rows of 4.1 to 4.6 it rests on. Probe lines are Task 
 | Leading `onSurface`, trailing `onSurfaceVariant`, both slots | PASS | the same production-root tests (leading glyph and first bar icon `onSurface`, last bar icon `onSurfaceVariant`, at both offsets, light and dark); `mx_app_bar_test.dart::the leading icon is onSurface, the trailing ones onSurfaceVariant` |
 | `actionsIconTheme` precedence | N/A | there is no `AppBarTheme`; the trailing colour is an `IconButtonTheme` scoped to the actions row (`mx_app_bar.dart:95`..`:96`, `:111`..`:125`) |
 | Material elevation, tint, shadow | N/A | custom bar, DSD-26 |
-| Route announced on push | FIXED(M3F-08) for `title`; `titleWidget` routes study entry and library search open (DEV-393) | `mx_app_bar_test.dart::M3F-08: the title names the route on android`; one node per route: `account_screen_test.dart`, `sign_in_screen_test.dart`, `code_screen_test.dart` (`routeNamingNodes` is 1) |
+| Route announced on push | FIXED(M3F-08) for `title`; `titleWidget` routes study entry and library search, and the study session route (`MxStudyTopBar`), open (DEV-393) | `mx_app_bar_test.dart::M3F-08: the title names the route on android`; one node per route: `account_screen_test.dart`, `sign_in_screen_test.dart`, `code_screen_test.dart` (`routeNamingNodes` is 1) |
 | Status and navigation bar icon style | UNVERIFIED M3U-01 | no `SystemUiOverlayStyle` published |
 | Title type | CONFLICT M3C-02 | `titleLarge` 20/28 w600 |
 
