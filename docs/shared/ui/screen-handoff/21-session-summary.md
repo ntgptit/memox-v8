@@ -62,7 +62,7 @@ A session that ended before its first turn shows the hero without stats and no F
   the app returns to the deck list (UC-STUDY-001 E4; it is not folded into `reset`).
   `reset` here is `scheduler_reset` only.
 - "Study again" opens Study entry (14); both ship in FE-A6.
-- The app bar title uses the content bar's title role; the hero glyph is `MxIconTile` large (44) in the outcome tone.
+- The app bar title is the app bar's own title (`titleLarge`); the hero glyph is `MxIconTile` large (44) in the outcome tone.
 - Fact rows are `MxListRow`; the wrong-turns sub-line wraps in the note role in the row's sub-line slot.
 - `SessionSummary` carries "answered" and "total turns" (FE-A6) for the hero's three stats: finished, answered, wrong/total.
 - **Critique 2026-09-30:** the wrong-turns value reads "{wrong} of {total}" ("{wrong} trên {total}").

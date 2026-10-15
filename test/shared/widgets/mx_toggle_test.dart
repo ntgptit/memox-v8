@@ -159,6 +159,38 @@ void main() {
     expect(tester.getRect(_switch()), before);
   });
 
+  testWidgets('a focused toggle drops its ring when it is rebuilt disabled', (
+    tester,
+  ) async {
+    final onChanged = ValueNotifier<ValueChanged<bool>?>((_) {});
+    addTearDown(onChanged.dispose);
+    await pumpMx(
+      tester,
+      ValueListenableBuilder(
+        valueListenable: onChanged,
+        builder: (_, callback, _) => MxToggle(
+          isOn: false,
+          onChanged: callback,
+          semanticLabel: 'Reminders',
+        ),
+      ),
+    );
+    FocusManager.instance.highlightStrategy =
+        FocusHighlightStrategy.alwaysTraditional;
+    addTearDown(
+      () => FocusManager.instance.highlightStrategy =
+          FocusHighlightStrategy.automatic,
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pumpAndSettle();
+    expect(find.byKey(_ringKey), findsOneWidget);
+
+    onChanged.value = null;
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(_ringKey), findsNothing);
+  });
+
   testWidgets('disabled: no second dim, the switch dims itself', (
     tester,
   ) async {

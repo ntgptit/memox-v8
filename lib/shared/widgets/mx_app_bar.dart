@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
-import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/shared/widgets/mx_search_field.dart';
 
 /// The top chrome: leading control, flexible title, trailing actions. The
 /// title is the only slot that gives up width; it ellipsises on one line.
@@ -22,6 +20,8 @@ class MxAppBar extends StatelessWidget {
     this.titleWidget,
     this.leading,
     this.actions = const [],
+    this.isLastActionText = false,
+    this.isTitleField = false,
   }) : assert(
          (title == null) != (titleWidget == null),
          'MxAppBar takes a title or a titleWidget, not both',
@@ -30,19 +30,28 @@ class MxAppBar extends StatelessWidget {
   final String? title;
 
   /// Takes the title's place and its width, such as the search field of
-  /// screen 04. It brings its own semantics; no header flag is added. A
-  /// search field keeps 8 above and below it, so the bar grows rather
-  /// than pressing a `sizeSearch` field against its edges, and ends on the screen margin so
-  /// its border lines up with the content below.
+  /// screen 04. It brings its own semantics; no header flag is added. Say
+  /// [isTitleField] when it is a search field.
   final Widget? titleWidget;
 
   /// Usually an MxIconButton (back, or close in selection mode).
   final Widget? leading;
 
-  /// MxIconButtons or compact MxButtons; never dropped for the title. A
-  /// trailing MxButton ends on the gutter, as the kit's text actions do; an
-  /// icon's 48 touch area already insets its glyph.
+  /// MxIconButtons or compact MxButtons; never dropped for the title. They
+  /// may be wrapper widgets, so the bar is told what the last one is rather
+  /// than reading its type.
   final List<Widget> actions;
+
+  /// The last of [actions] is a text button. It ends on the screen margin, as
+  /// the kit's text actions do; without this the last action is an icon,
+  /// whose 48 touch area already insets its glyph.
+  final bool isLastActionText;
+
+  /// The [titleWidget] is a search field. The bar keeps `space8` above and
+  /// below it, so it grows rather than pressing a `sizeSearch` field against
+  /// its edges, and the field ends on the screen margin so its border lines
+  /// up with the content below.
+  final bool isTitleField;
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +60,7 @@ class MxAppBar extends StatelessWidget {
     // A control's touch area reaches past its glyph by this much, so the
     // glyph, not the touch area, lands on the margin.
     final glyphInset = (dimens.sizeControl - dimens.sizeIcon) / 2;
-    final endsOnIcon = actions.isNotEmpty && actions.last is! MxButton;
-    final holdsField = titleWidget is MxSearchField;
+    final endsOnIcon = actions.isNotEmpty && !isLastActionText;
     return SafeArea(
       bottom: false,
       child: ConstrainedBox(
@@ -62,9 +70,9 @@ class MxAppBar extends StatelessWidget {
             // A bar without a leading control starts its title on the screen
             // margin, in line with the body (critique 2026-09-30 part 3c-1).
             start: leading == null ? margin : margin - glyphInset,
-            top: holdsField ? dimens.space8 : 0,
-            end: endsOnIcon && !holdsField ? margin - glyphInset : margin,
-            bottom: holdsField ? dimens.space8 : 0,
+            top: isTitleField ? dimens.space8 : 0,
+            end: endsOnIcon && !isTitleField ? margin - glyphInset : margin,
+            bottom: isTitleField ? dimens.space8 : 0,
           ),
           child: Row(
             spacing: dimens.space4,

@@ -368,6 +368,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
         ?.language;
     return MxAppShell(
       isSession: true,
+      hasOwnAppBarGround: true,
       appBar: MxStudyTopBar(
         modeLabel: mode,
         current: min(progress.completed + 1, progress.total),

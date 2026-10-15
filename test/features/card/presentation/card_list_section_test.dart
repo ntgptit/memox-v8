@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/features/card/presentation/states/card_search_open_state.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/providers/card_list_provider.dart';
@@ -27,6 +29,7 @@ import 'package:memox/shared/widgets/mx_status_badge.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/paint_clip.dart';
 import '../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
@@ -241,6 +244,27 @@ void main() {
     await _openSearch(tester, deckId);
     expect(find.byType(CardDeckSummaryWidget), findsNothing);
     expect(find.byType(CardListToolbarWidget), findsOneWidget);
+  });
+
+  libraryTest('the first filter chip keeps its focus ring inside the scroll '
+      'row', (tester, env) async {
+    final deckId = await _seed(env);
+    await pumpLibraryScreen(tester, env, _section(deckId));
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pumpAndSettle();
+    final chip = find
+        .descendant(
+          of: find.widgetWithText(MxFilterChip, _en.cardFilterAll),
+          matching: find.byType(Material),
+        )
+        .first;
+    const dimens = AppDimens();
+    final reach = dimens.strokeFocusGap + dimens.strokeFocus;
+
+    expect(
+      clipsAway(tester, chip, tester.getRect(chip).inflate(reach)),
+      isFalse,
+    );
   });
 
   libraryTest('a search with no hit names the term', (tester, env) async {

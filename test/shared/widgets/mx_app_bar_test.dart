@@ -145,6 +145,7 @@ void main() {
       tester,
       MxAppBar(
         title: 'Words',
+        isLastActionText: true,
         actions: [MxButton(label: 'Done', onPressed: () {})],
       ),
     );
@@ -155,6 +156,63 @@ void main() {
       tester.element(find.byType(MxAppBar)).screenMargin,
     );
   });
+  testWidgets('a text action in a wrapper widget ends on the gutter', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxAppBar(
+        title: 'Words',
+        isLastActionText: true,
+        actions: [_DoneAction(onPressed: () {})],
+      ),
+    );
+
+    expect(
+      tester.getTopRight(find.byType(MxAppBar)).dx -
+          tester.getTopRight(find.byType(MxButton)).dx,
+      tester.element(find.byType(MxAppBar)).screenMargin,
+    );
+  });
+
+  testWidgets('an icon glyph in a wrapper widget sits on the margin', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxAppBar(
+        title: 'Words',
+        actions: [_MoreAction(onPressed: () {})],
+      ),
+    );
+
+    expect(
+      tester.getTopRight(find.byType(MxAppBar)).dx -
+          tester.getTopRight(find.byIcon(AppIcons.more)).dx,
+      tester.element(find.byType(MxAppBar)).screenMargin,
+    );
+  });
+
+  testWidgets('a search field in a wrapper widget keeps the bar padding', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxAppBar(
+        isTitleField: true,
+        titleWidget: _FieldSlot(controller: TextEditingController()),
+      ),
+    );
+    final bar = tester.getRect(find.byType(MxAppBar));
+    final field = tester.getRect(find.byType(MxSearchField));
+
+    expect(field.top - bar.top, const AppDimens().space8);
+    expect(
+      bar.right - field.right,
+      tester.element(find.byType(MxAppBar)).screenMargin,
+    );
+  });
+
   testWidgets(
     'a search field in the bar keeps 8 above and below it and ends on the gutter',
     (tester) async {
@@ -166,6 +224,7 @@ void main() {
             semanticLabel: 'Back',
             onPressed: () {},
           ),
+          isTitleField: true,
           titleWidget: MxSearchField(
             controller: TextEditingController(),
             hintText: 'Search',
@@ -294,4 +353,43 @@ void main() {
       findsNothing,
     );
   });
+}
+
+/// A feature widget that returns a compact text button, as the reorder bar's
+/// Done does.
+class _DoneAction extends StatelessWidget {
+  const _DoneAction({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) =>
+      MxButton(label: 'Done', size: MxButtonSize.small, onPressed: onPressed);
+}
+
+/// A feature widget that returns an icon button, as the deck menu does.
+class _MoreAction extends StatelessWidget {
+  const _MoreAction({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => MxIconButton(
+    icon: AppIcons.more,
+    semanticLabel: 'More',
+    onPressed: onPressed,
+  );
+}
+
+class _FieldSlot extends StatelessWidget {
+  const _FieldSlot({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) => MxSearchField(
+    controller: controller,
+    hintText: 'Search',
+    clearLabel: 'Clear',
+  );
 }

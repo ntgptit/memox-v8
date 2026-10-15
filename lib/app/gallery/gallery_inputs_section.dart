@@ -58,6 +58,7 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
           semanticLabel: context.l10n.commonBack,
           onPressed: () {},
         ),
+        isTitleField: true,
         titleWidget: MxSearchField(
           controller: _search,
           hintText: context.l10n.gallerySearchDecks,

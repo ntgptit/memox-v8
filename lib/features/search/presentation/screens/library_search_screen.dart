@@ -69,6 +69,7 @@ class _LibrarySearchScreenState extends ConsumerState<LibrarySearchScreen> {
           semanticLabel: l10n.commonBack,
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
+        isTitleField: true,
         titleWidget: MxSearchField(
           controller: _query,
           focusNode: _focus,

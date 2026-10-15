@@ -5,7 +5,6 @@ import 'package:flutter/rendering.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
-import 'package:memox/shared/widgets/mx_app_bar.dart';
 
 /// The column every screen is: top chrome, one scroll body and a bottom bar,
 /// with the FAB layered above. The app bar and footer are in-flow siblings of
@@ -22,6 +21,7 @@ class MxAppShell extends StatelessWidget {
     this.fab,
     this.notice,
     this.isSession = false,
+    this.hasOwnAppBarGround = false,
   }) : assert(
          fab == null || footer == null,
          'the Fab contract anchors a FAB to the bottom or above the nav, '
@@ -30,7 +30,7 @@ class MxAppShell extends StatelessWidget {
 
   final Widget body;
 
-  /// MxAppBar or MxStudyTopBar.
+  /// MxAppBar or MxStudyTopBar, or a widget that builds one.
   final Widget? appBar;
 
   /// The navigation bar (MxBottomNav). It owns its own gesture inset.
@@ -50,6 +50,10 @@ class MxAppShell extends StatelessWidget {
   /// A study session keeps the `sizeContentMax` column, centred, in every
   /// window size. Any other screen takes `sizeContentMaxWide` from medium up.
   final bool isSession;
+
+  /// The [appBar] paints its own ground (MxStudyTopBar does), so the shell
+  /// does not step it to `surfaceContainer` when the body scrolls under it.
+  final bool hasOwnAppBarGround;
 
   /// Whether the keyboard is up. Its Scaffold resizes the body above the
   /// keyboard and strips the inset from the body's MediaQuery, so a widget
@@ -99,9 +103,9 @@ class MxAppShell extends StatelessWidget {
       // hand that inset back to the body.
       body: Builder(
         builder: (bodyContext) => _ScrolledUnderScope(
-          // Only the app bar takes the scrolled-under ground; the study bar
-          // paints its own, and no bar has nothing to colour.
-          isEnabled: appBar is MxAppBar,
+          // A bar that paints its own ground keeps it, and no bar has nothing
+          // to colour.
+          isEnabled: appBar != null && !hasOwnAppBarGround,
           bodyIdentity: (body.runtimeType, body.key),
           builder: (isScrolledUnder) => Column(
             children: [

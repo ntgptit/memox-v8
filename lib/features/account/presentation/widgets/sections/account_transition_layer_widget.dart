@@ -103,6 +103,7 @@ class _LayerPage extends ConsumerWidget {
     final appBar = hasCancel
         ? MxAppBar(
             titleWidget: const SizedBox.shrink(),
+            isLastActionText: true,
             actions: [
               MxButton(
                 label: context.l10n.commonCancel,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
-import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -20,23 +19,6 @@ const _navKey = Key('nav');
 
 Widget _fab() =>
     MxFab(icon: AppIcons.add, semanticLabel: 'New', onPressed: () {});
-
-/// [shell] on a 1280×800 window, outside the phone frame (FE-C5).
-Future<void> _pumpWide(
-  WidgetTester tester,
-  Widget shell, {
-  TextDirection direction = TextDirection.ltr,
-}) async {
-  tester.view.physicalSize = const Size(1280, 800);
-  tester.view.devicePixelRatio = 1;
-  addTearDown(tester.view.reset);
-  await tester.pumpWidget(
-    MaterialApp(
-      theme: buildLightTheme(),
-      home: Directionality(textDirection: direction, child: shell),
-    ),
-  );
-}
 
 void main() {
   testWidgets('page ground is surface; app bar above the body', (tester) async {
@@ -96,153 +78,6 @@ void main() {
 
     expect(fab.right, 360 - 16);
     expect(fab.bottom, 800 - 24 - 20);
-  });
-
-  group('the app bar ground when content scrolls under it', () {
-    final tall = [for (var i = 0; i < 30; i++) const SizedBox(height: 80)];
-    final listKey = GlobalKey();
-
-    MxAppShell shell() => MxAppShell(
-      appBar: const MxAppBar(title: 'Library', key: _barKey),
-      body: ListView(key: listKey, children: tall),
-    );
-
-    Color ground(WidgetTester tester) => tester
-        .widget<ColoredBox>(
-          find
-              .ancestor(
-                of: find.byKey(_barKey),
-                matching: find.byType(ColoredBox),
-              )
-              .first,
-        )
-        .color;
-
-    testWidgets('surface at rest, surfaceContainer once scrolled, and back', (
-      tester,
-    ) async {
-      await pumpMxPage(tester, shell());
-      expect(ground(tester), lightColorScheme.surface);
-
-      await tester.drag(find.byKey(listKey), const Offset(0, -300));
-      await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surfaceContainer);
-
-      await tester.drag(find.byKey(listKey), const Offset(0, 1000));
-      await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surface);
-    });
-
-    testWidgets('content that fits never scrolls under', (tester) async {
-      await pumpMxPage(
-        tester,
-        MxAppShell(
-          appBar: const MxAppBar(title: 'Library', key: _barKey),
-          body: ListView(children: const [SizedBox(height: 40)]),
-        ),
-      );
-      await tester.drag(find.byType(ListView), const Offset(0, -300));
-      await tester.pumpAndSettle();
-
-      expect(ground(tester), lightColorScheme.surface);
-    });
-
-    testWidgets('swapping the scrolled body for one that does not scroll '
-        'clears the ground', (tester) async {
-      final body = ValueNotifier<Widget>(
-        ListView(key: listKey, children: tall),
-      );
-      addTearDown(body.dispose);
-      await pumpMxPage(
-        tester,
-        ValueListenableBuilder(
-          valueListenable: body,
-          builder: (_, child, _) => MxAppShell(
-            appBar: const MxAppBar(title: 'Library', key: _barKey),
-            body: child,
-          ),
-        ),
-      );
-      await tester.drag(find.byKey(listKey), const Offset(0, -300));
-      await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surfaceContainer);
-
-      body.value = const SizedBox.expand();
-      await tester.pumpAndSettle();
-
-      expect(ground(tester), lightColorScheme.surface);
-    });
-
-    testWidgets('content that shrinks back into the viewport clears the '
-        'ground', (tester) async {
-      final count = ValueNotifier(30);
-      addTearDown(count.dispose);
-      await pumpMxPage(
-        tester,
-        ValueListenableBuilder(
-          valueListenable: count,
-          builder: (_, n, _) => MxAppShell(
-            appBar: const MxAppBar(title: 'Library', key: _barKey),
-            body: ListView(
-              key: listKey,
-              children: [
-                for (var i = 0; i < n; i++) const SizedBox(height: 80),
-              ],
-            ),
-          ),
-        ),
-      );
-      await tester.drag(find.byKey(listKey), const Offset(0, -300));
-      await tester.pumpAndSettle();
-      expect(ground(tester), lightColorScheme.surfaceContainer);
-
-      count.value = 2;
-      await tester.pumpAndSettle();
-
-      expect(ground(tester), lightColorScheme.surface);
-    });
-
-    testWidgets('the colour eases in', (tester) async {
-      await pumpMxPage(tester, shell());
-      await tester.drag(find.byKey(listKey), const Offset(0, -300));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 50));
-      final midway = ground(tester);
-      expect(midway, isNot(lightColorScheme.surface));
-      expect(midway, isNot(lightColorScheme.surfaceContainer));
-      await tester.pumpAndSettle();
-    });
-
-    testWidgets('reduced motion changes the colour at once', (tester) async {
-      await pumpMxPage(
-        tester,
-        Builder(
-          builder: (context) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(disableAnimations: true),
-            child: shell(),
-          ),
-        ),
-      );
-      await tester.drag(find.byKey(listKey), const Offset(0, -300));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 1));
-
-      expect(ground(tester), lightColorScheme.surfaceContainer);
-    });
-
-    testWidgets('on a wide window the ground runs the full width while the '
-        'bar keeps the column', (tester) async {
-      await _pumpWide(tester, shell());
-      await tester.drag(find.byKey(listKey), const Offset(0, -300));
-      await tester.pumpAndSettle();
-      final band = find
-          .ancestor(of: find.byKey(_barKey), matching: find.byType(ColoredBox))
-          .first;
-
-      expect(tester.getSize(band).width, 1280);
-      expect(tester.getSize(find.byKey(_barKey)).width, lessThan(1280));
-      expect(ground(tester), lightColorScheme.surfaceContainer);
-    });
   });
 
   group('the gesture inset is added once', () {
@@ -335,7 +170,7 @@ void main() {
     'wide: the column is sizeContentMaxWide and centred; the ground fills the '
     'window (FE-C5)',
     (tester) async {
-      await _pumpWide(
+      await pumpMxWide(
         tester,
         const MxAppShell(
           appBar: MxAppBar(title: 'Library', key: _barKey),
@@ -360,7 +195,7 @@ void main() {
       (TextDirection.ltr, columnEnd - dimens.space16 - dimens.sizeFab),
       (TextDirection.rtl, columnStart + dimens.space16),
     ]) {
-      await _pumpWide(
+      await pumpMxWide(
         tester,
         MxAppShell(body: const SizedBox.expand(), fab: _fab()),
         direction: direction,

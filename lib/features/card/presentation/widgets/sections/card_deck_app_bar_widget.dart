@@ -126,6 +126,7 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
           style: context.texts.titleSmall,
         ),
       ),
+      isLastActionText: true,
       actions: [
         if (total != null)
           MxButton(

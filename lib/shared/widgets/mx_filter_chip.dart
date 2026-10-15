@@ -8,7 +8,7 @@ import 'package:memox/shared/widgets/mx_chip_style.dart';
 /// an outlined 32 chip at rest, `secondaryContainer` with a leading check when
 /// selected, all read from `chipTheme`. Its selection is exposed as state, not
 /// only as a look, so screen readers announce it. It never shrinks or wraps:
-/// the caller's row scrolls.
+/// MxChipRow scrolls a row of them.
 class MxFilterChip extends StatelessWidget {
   const MxFilterChip({
     super.key,

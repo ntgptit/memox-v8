@@ -124,8 +124,8 @@ class MxSnackbarContent extends StatelessWidget {
     }
     final action = TextButton(
       onPressed: onPressed,
-      // Ruling O9: 32 painted inside the 48 target; the radius is
-      // UNSPECIFIED and uses 8. The focus ring is inversePrimary, the
+      // Ruling O9: 32 painted inside the 48 target, in a full-radius shape
+      // as Material 3's text button. The focus ring is inversePrimary, the
       // action's own ink, since primary is not seen on the inverse surface.
       style:
           buttonStyle(

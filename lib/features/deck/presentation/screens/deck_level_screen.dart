@@ -363,6 +363,7 @@ class _OpenDeckContent extends ConsumerWidget {
           : MxAppBar(
               title: deck.name,
               leading: const _BackButton(),
+              isLastActionText: isReordering,
               actions: isReordering
                   ? [DeckReorderDoneWidget(parentId: deck.id)]
                   : [deckActions],

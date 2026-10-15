@@ -23,6 +23,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_chip_row.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
@@ -160,6 +161,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           semanticLabel: l10n.commonBack,
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
+        isLastActionText: true,
         actions: [
           if (entries.isNotEmpty)
             MxButton(
@@ -326,24 +328,20 @@ class _Filters extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: context.dimens.space8),
       // The chips never shrink or wrap, so their row scrolls.
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          spacing: context.dimens.space8,
-          children: [
-            for (final filter in TrashFilter.values)
-              MxFilterChip(
-                label: switch (filter) {
-                  TrashFilter.all => l10n.trashFilterAll,
-                  TrashFilter.cards => l10n.trashFilterCards,
-                  TrashFilter.decks => l10n.trashFilterDecks,
-                },
-                count: entries.where(filter.accepts).length,
-                isSelected: filter == selected,
-                onSelected: (_) => onSelected(filter),
-              ),
-          ],
-        ),
+      child: MxChipRow(
+        children: [
+          for (final filter in TrashFilter.values)
+            MxFilterChip(
+              label: switch (filter) {
+                TrashFilter.all => l10n.trashFilterAll,
+                TrashFilter.cards => l10n.trashFilterCards,
+                TrashFilter.decks => l10n.trashFilterDecks,
+              },
+              count: entries.where(filter.accepts).length,
+              isSelected: filter == selected,
+              onSelected: (_) => onSelected(filter),
+            ),
+        ],
       ),
     );
   }

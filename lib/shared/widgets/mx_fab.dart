@@ -25,13 +25,18 @@ class MxFab extends StatefulWidget {
 class _MxFabState extends State<MxFab> {
   bool _focused = false;
 
-  MxFocusRingBorder _shape(ThemeTokens t) => MxFocusRingBorder(
-    base: RoundedRectangleBorder(borderRadius: t.radius(t.dimens.radiusLg)),
-    ring: _focused
-        ? BorderSide(color: t.scheme.primary, width: t.dimens.strokeFocus)
-        : BorderSide.none,
-    gap: t.dimens.strokeFocusGap,
-  );
+  /// The theme's FAB corner, with the focus ring drawn around it.
+  MxFocusRingBorder _shape(BuildContext context) {
+    final t = ThemeTokens.of(context);
+    return MxFocusRingBorder(
+      base:
+          Theme.of(context).floatingActionButtonTheme.shape! as OutlinedBorder,
+      ring: _focused
+          ? BorderSide(color: t.scheme.primary, width: t.dimens.strokeFocus)
+          : BorderSide.none,
+      gap: t.dimens.strokeFocusGap,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +54,7 @@ class _MxFabState extends State<MxFab> {
           onPressed: widget.onPressed,
           // The default tag is shared, so two FABs in one route would clash.
           heroTag: null,
-          shape: _shape(ThemeTokens.of(context)),
+          shape: _shape(context),
           child: Icon(widget.icon),
         ),
       ),

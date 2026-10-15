@@ -54,6 +54,7 @@ class CardDetailScreen extends ConsumerWidget {
           semanticLabel: l10n.commonBack,
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
+        isLastActionText: true,
         actions: [
           if (detail case AsyncData(value: Ok()))
             MxButton(

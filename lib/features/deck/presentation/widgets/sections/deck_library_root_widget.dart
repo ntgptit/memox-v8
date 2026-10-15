@@ -68,6 +68,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.navLibrary,
+        isLastActionText: isReordering,
         actions: isReordering
             ? const [DeckReorderDoneWidget(parentId: null)]
             // Kit 01: Starter decks, Tags, Trash (spec D2).
