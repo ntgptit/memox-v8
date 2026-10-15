@@ -46,12 +46,39 @@ OutlineInputBorder fieldEdge(ThemeTokens t, Color color, {double? width}) =>
       ),
     );
 
+/// The edge an outlined field paints in [states]: `onSurface` at the container
+/// disabled opacity when disabled; the focus width in `primary`, or `error` in
+/// error, when focused; `onErrorContainer` when an error is hovered; `error`
+/// in error; `outline` otherwise. A hover without an error keeps `outline`.
+OutlineInputBorder _fieldEdgeFor(ThemeTokens t, Set<WidgetState> states) {
+  final scheme = t.scheme;
+  final isError = states.contains(WidgetState.error);
+  if (states.contains(WidgetState.disabled)) {
+    return fieldEdge(
+      t,
+      scheme.onSurface.withValues(alpha: t.dimens.opacityDisabledContainer),
+    );
+  }
+  if (states.contains(WidgetState.focused)) {
+    return fieldEdge(
+      t,
+      isError ? scheme.error : scheme.primary,
+      width: t.dimens.strokeFocus,
+    );
+  }
+  if (isError && states.contains(WidgetState.hovered)) {
+    return fieldEdge(t, scheme.onErrorContainer);
+  }
+  return fieldEdge(t, isError ? scheme.error : scheme.outline);
+}
+
 /// The Material 3 outlined text field, with no fill: the sheet and page
-/// grounds are the field's ground. The edge is `outline` at rest, `primary`
-/// at the focus width when focused, `error` in error, and `onSurface` at the
-/// container disabled opacity when disabled; the hint is `onSurfaceVariant`,
-/// and `onSurface` at the content disabled opacity when disabled. The input
-/// role is `bodyLarge`.
+/// grounds are the field's ground. The edge is one state-resolved border
+/// ([_fieldEdgeFor]), so the decorator's own states (hover, focus, error,
+/// disabled) reach it; the hint is `onSurfaceVariant`. A glyph in the suffix
+/// slot is `onSurface`, `error` in error and `onErrorContainer` when an error
+/// is hovered. The hint and the glyph are `onSurface` at the content disabled
+/// opacity when disabled. The input role is `bodyLarge`.
 InputDecorationTheme inputDecorationTheme(ThemeTokens t) {
   final scheme = t.scheme;
   final hint = t.texts.bodyLarge!;
@@ -67,15 +94,18 @@ InputDecorationTheme inputDecorationTheme(ThemeTokens t) {
             : scheme.onSurfaceVariant,
       ),
     ),
-    border: fieldEdge(t, scheme.outline),
-    enabledBorder: fieldEdge(t, scheme.outline),
-    disabledBorder: fieldEdge(
-      t,
-      scheme.onSurface.withValues(alpha: t.dimens.opacityDisabledContainer),
+    suffixIconColor: WidgetStateColor.resolveWith((states) {
+      if (states.contains(WidgetState.disabled)) {
+        return t.onSurfaceAt(t.dimens.opacityDisabledContent);
+      }
+      if (!states.contains(WidgetState.error)) return scheme.onSurface;
+      return states.contains(WidgetState.hovered)
+          ? scheme.onErrorContainer
+          : scheme.error;
+    }),
+    border: WidgetStateInputBorder.resolveWith(
+      (states) => _fieldEdgeFor(t, states),
     ),
-    focusedBorder: fieldEdge(t, scheme.primary, width: t.dimens.strokeFocus),
-    errorBorder: fieldEdge(t, scheme.error),
-    focusedErrorBorder: fieldEdge(t, scheme.error, width: t.dimens.strokeFocus),
   );
 }
 

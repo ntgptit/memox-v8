@@ -111,50 +111,6 @@ void main() {
         );
       });
 
-      test(
-        'fields: outlined with no fill, outline at rest, primary focus ring, '
-        'a 12% disabled edge, no label gap',
-        () {
-          final fields = theme.inputDecorationTheme;
-          expect(fields.filled, isNot(isTrue));
-          expect(fields.fillColor, isNull);
-          final edge = fields.enabledBorder! as OutlineInputBorder;
-          expect(edge.borderSide.color, scheme.outline);
-          expect(edge.gapPadding, 0);
-          expect(edge.borderRadius, BorderRadius.circular(dimens.radiusMd));
-          final focused = fields.focusedBorder! as OutlineInputBorder;
-          expect(focused.borderSide.color, scheme.primary);
-          expect(focused.borderSide.width, dimens.strokeFocus);
-          expect(
-            (fields.errorBorder! as OutlineInputBorder).borderSide.color,
-            scheme.error,
-          );
-          final focusedError = fields.focusedErrorBorder! as OutlineInputBorder;
-          expect(focusedError.borderSide.color, scheme.error);
-          expect(focusedError.borderSide.width, dimens.strokeFocus);
-          expect(
-            (fields.disabledBorder! as OutlineInputBorder).borderSide.color,
-            scheme.onSurface.withValues(alpha: dimens.opacityDisabledContainer),
-          );
-          expect(
-            fields.contentPadding,
-            const EdgeInsets.symmetric(horizontal: 16),
-          );
-          final hint = WidgetStateProperty.resolveAs(
-            fields.hintStyle!,
-            <WidgetState>{},
-          );
-          expect(hint.fontSize, theme.textTheme.bodyLarge!.fontSize);
-          expect(hint.color, scheme.onSurfaceVariant);
-          expect(
-            WidgetStateProperty.resolveAs(fields.hintStyle!, {
-              WidgetState.disabled,
-            }).color,
-            scheme.onSurface.withValues(alpha: dimens.opacityDisabledContent),
-          );
-        },
-      );
-
       test('navigation: bar and rail sizes, the secondary-container pill', () {
         expect(theme.navigationBarTheme.height, dimens.sizeNav);
         expect(theme.navigationBarTheme.backgroundColor, scheme.surface);

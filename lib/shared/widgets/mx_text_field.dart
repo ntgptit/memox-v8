@@ -39,11 +39,12 @@ typedef _Geometry = ({
 });
 
 /// Every form field: the Material 3 outlined field, with no fill. The edge is
-/// the outline at rest, the focus ring on focus and the error tone in error;
-/// the label sits above it, and a supporting row below holds the supporting
-/// text or the error message, with the counter at its trailing end. Focus,
-/// selection and IME are the platform's; the caret turns to the error tone
-/// with the edge. Validation and the message text are the caller's.
+/// the outline at rest, the focus ring on focus and the error tone in error
+/// (the error container's on-colour while the pointer is over it); the label
+/// sits above it, and a supporting row below holds the supporting text or the
+/// error message, with the counter at its trailing end. Focus, selection and
+/// IME are the platform's; the caret turns to the error tone with the edge.
+/// Validation and the message text are the caller's.
 class MxTextField extends StatelessWidget {
   const MxTextField({
     super.key,
@@ -248,11 +249,11 @@ class MxTextField extends StatelessWidget {
     final colors = context.colors;
     final hasError = errorText != null;
     final geometry = _geometry(context, variant);
-    // The theme carries the field (spec §4.6): its edges and hint; an error
-    // holds the error edge at rest too, and a disabled field takes the
-    // theme's disabled edge and hint once, with no wrapper dimming them again.
+    // The theme carries the field (spec §4.6): its edge, suffix glyph and
+    // hint resolve from the decorator's own states, and a disabled field takes
+    // the theme's disabled edge and hint once, with no wrapper dimming them
+    // again.
     final fields = Theme.of(context).inputDecorationTheme;
-    final restingEdge = hasError ? fields.errorBorder : fields.enabledBorder;
     // The box height is a floor painted by the decorator itself, reached by
     // padding (InputDecoration.constraints reserves the height but paints
     // the fill and edge around the text only); more lines or scaled text
@@ -335,12 +336,10 @@ class MxTextField extends StatelessWidget {
                       child: trailing,
                     ),
               suffixIconConstraints: const BoxConstraints(),
-              border: restingEdge,
-              enabledBorder: restingEdge,
-              disabledBorder: fields.disabledBorder,
-              focusedBorder: hasError
-                  ? fields.focusedErrorBorder
-                  : fields.focusedBorder,
+              // The decorator is in error, so its states reach the edge and
+              // the suffix glyph; the message is the supporting row's, and a
+              // widget of no size adds no line of its own.
+              error: hasError ? const SizedBox.shrink() : null,
             ),
     );
     // A bare field has no padded box to reach its floor with: the floor

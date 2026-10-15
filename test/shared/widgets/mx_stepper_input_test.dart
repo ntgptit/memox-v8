@@ -110,6 +110,29 @@ void main() {
     expect(find.byType(TextField), findsNothing);
   });
 
+  testWidgets('the number being typed has no edge of its own: the box draws '
+      'the one edge, and the theme\'s field edges do not reach it (M3F-16)', (
+    tester,
+  ) async {
+    await pumpMx(tester, _Bounded(onSubmitted: (_) {}));
+    await tester.tap(find.byKey(_valueKey));
+    await tester.pump();
+
+    final decoration = tester
+        .widget<InputDecorator>(find.byType(InputDecorator))
+        .decoration;
+    expect(decoration.border, InputBorder.none);
+    for (final border in [
+      decoration.enabledBorder,
+      decoration.focusedBorder,
+      decoration.disabledBorder,
+      decoration.errorBorder,
+      decoration.focusedErrorBorder,
+    ]) {
+      expect(border, isNull);
+    }
+  });
+
   testWidgets('leaving the field submits what was typed; only digits go in', (
     tester,
   ) async {
