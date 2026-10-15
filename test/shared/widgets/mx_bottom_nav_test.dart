@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
@@ -279,8 +280,69 @@ void main() {
     expect(picked, 2);
     expect(
       tester.getSemantics(find.text('Library')),
-      isSemantics(label: 'Library', isSelected: true, isButton: true),
+      // M3F-09: the label now ends with the destination's position.
+      isSemantics(
+        label: 'Library\nTab 1 of 4',
+        isSelected: true,
+        isButton: true,
+      ),
     );
+    handle.dispose();
+  });
+
+  // M3F-09: the SDK NavigationBar gives each destination the tab role and
+  // "Tab i of n", and the bar the tab bar role. Selected and button stay.
+  testWidgets('M3F-09: each destination is a tab named with its position', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _nav(selected: 1));
+
+    expect(
+      tester.getSemantics(find.text('Study')),
+      isSemantics(
+        label: 'Study\nTab 2 of 4',
+        role: SemanticsRole.tab,
+        isButton: true,
+        isSelected: true,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+    expect(
+      tester.getSemantics(find.text('Settings')),
+      isSemantics(
+        label: 'Settings\nTab 4 of 4',
+        role: SemanticsRole.tab,
+        isButton: true,
+        isSelected: false,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('M3F-09: the bar is a tab bar whose children are the tabs', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _nav());
+
+    final bar = tester.getSemantics(
+      find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.role == SemanticsRole.tabBar,
+      ),
+    );
+    expect(bar.getSemanticsData().role, SemanticsRole.tabBar);
+    var tabs = 0;
+    bar.visitChildren((child) {
+      expect(child.getSemanticsData().role, SemanticsRole.tab);
+      tabs++;
+      return true;
+    });
+    expect(tabs, _destinations.length);
+    expect(tester.takeException(), isNull);
     handle.dispose();
   });
 

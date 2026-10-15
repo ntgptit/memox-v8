@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
@@ -82,6 +83,7 @@ class MxAppBar extends StatelessWidget {
                 child:
                     titleWidget ??
                     Semantics(
+                      namesRoute: _namesRoute,
                       header: true,
                       child: Text(
                         title!,
@@ -106,6 +108,16 @@ class MxAppBar extends StatelessWidget {
       ),
     );
   }
+
+  /// The framework `AppBar` title names the route everywhere but on Apple
+  /// platforms, so a screen reader announces the new screen on each push.
+  bool? get _namesRoute => switch (defaultTargetPlatform) {
+    TargetPlatform.android ||
+    TargetPlatform.fuchsia ||
+    TargetPlatform.linux ||
+    TargetPlatform.windows => true,
+    TargetPlatform.iOS || TargetPlatform.macOS => null,
+  };
 
   /// The ambient icon button, with the trailing icons in `onSurfaceVariant`.
   IconButtonThemeData _actionsTheme(BuildContext context) {

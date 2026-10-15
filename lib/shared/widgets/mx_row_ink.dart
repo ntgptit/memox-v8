@@ -7,7 +7,9 @@ import 'package:memox/core/theme/theme_context.dart';
 /// - the global 0.38 dim when disabled.
 ///
 /// A row without [onTap] is static: no ripple, and not focusable. A control
-/// inside the row keeps its own semantics node and its own tap.
+/// inside the row keeps its own semantics node and its own tap. A row that is
+/// a choice says [isSelected], and the row's one node carries it with its
+/// label and tap.
 class MxRowInk extends StatefulWidget {
   const MxRowInk({
     super.key,
@@ -17,6 +19,7 @@ class MxRowInk extends StatefulWidget {
     this.borderRadius,
     this.isEnabled = true,
     this.shouldDimWhenDisabled = true,
+    this.isSelected,
   });
 
   final VoidCallback? onTap;
@@ -36,6 +39,9 @@ class MxRowInk extends StatefulWidget {
   /// blocked.
   final bool shouldDimWhenDisabled;
 
+  /// Whether the row is the chosen one; null is a row with no selected state.
+  final bool? isSelected;
+
   @override
   State<MxRowInk> createState() => _MxRowInkState();
 }
@@ -50,16 +56,28 @@ class _MxRowInkState extends State<MxRowInk> {
     if (widget.onTap == null || !widget.isEnabled) _hasFocus = false;
   }
 
+  /// A row with no tap still says whether it is the chosen one.
+  Widget _static() {
+    final isSelected = widget.isSelected;
+    if (isSelected == null) return widget.child;
+    return Semantics(
+      container: true,
+      selected: isSelected,
+      child: widget.child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final onTap = widget.onTap;
     if (!widget.isEnabled) {
       final disabled = onTap == null
-          ? widget.child
+          ? _static()
           : Semantics(
               container: true,
               button: true,
               enabled: false,
+              selected: widget.isSelected,
               child: widget.child,
             );
       if (!widget.shouldDimWhenDisabled) return disabled;
@@ -68,10 +86,11 @@ class _MxRowInkState extends State<MxRowInk> {
         child: disabled,
       );
     }
-    if (onTap == null) return widget.child;
+    if (onTap == null) return _static();
     return Semantics(
       container: true,
       button: true,
+      selected: widget.isSelected,
       child: InkWell(
         onTap: onTap,
         onLongPress: widget.onLongPress,

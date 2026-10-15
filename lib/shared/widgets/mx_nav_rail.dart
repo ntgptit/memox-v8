@@ -59,6 +59,8 @@ class MxNavRail extends StatelessWidget {
                       ),
                       child: MxNavItem(
                         destination: destination,
+                        index: index,
+                        count: destinations.length,
                         isSelected: index == selectedIndex,
                         onTap: () => onSelected(index),
                       ),

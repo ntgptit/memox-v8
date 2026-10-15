@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
@@ -140,7 +141,8 @@ void main() {
     expect(
       tester.getSemantics(_item('Library')),
       isSemantics(
-        label: 'Library',
+        // M3F-09: the label now ends with the destination's position.
+        label: 'Library\nTab 1 of 4',
         isButton: true,
         isSelected: true,
         hasSelectedState: true,
@@ -149,6 +151,41 @@ void main() {
     );
     handle.dispose();
     await expectAccessibleTargets(tester);
+  });
+
+  // M3F-09: the rail shares MxNavItem, so its destinations are tabs with a
+  // position too. The SDK NavigationRail sets no tab bar role, so neither
+  // does this rail.
+  testWidgets('M3F-09: each destination is a tab named with its position', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _rail(selected: 2));
+
+    expect(
+      tester.getSemantics(_item('Progress')),
+      isSemantics(
+        label: 'Progress\nTab 3 of 4',
+        role: SemanticsRole.tab,
+        isButton: true,
+        isSelected: true,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+    expect(
+      tester.getSemantics(_item('Library')),
+      isSemantics(
+        label: 'Library\nTab 1 of 4',
+        role: SemanticsRole.tab,
+        isButton: true,
+        isSelected: false,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    handle.dispose();
   });
 
   testWidgets('it takes the start inset only: left in LTR, right in RTL', (

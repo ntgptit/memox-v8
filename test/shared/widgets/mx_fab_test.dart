@@ -112,4 +112,31 @@ void main() {
     handle.dispose();
     await expectAccessibleTargets(tester);
   });
+  // M3F-11: the SDK slot `tooltip` shows the name on hover and long-press; the
+  // outer `excludeSemantics` keeps the name on one node.
+  testWidgets('M3F-11: the label is also the tooltip, and one node names it', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpFab(tester);
+
+    expect(find.byTooltip('New deck'), findsOneWidget);
+    expect(find.bySemanticsLabel('New deck'), findsOneWidget);
+    expect(
+      tester.getSemantics(find.byTooltip('New deck')),
+      isSemantics(label: 'New deck', isButton: true, hasTapAction: true),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('M3F-11: a long-press shows the label as the tooltip', (
+    tester,
+  ) async {
+    await pumpFab(tester);
+    expect(find.text('New deck'), findsNothing);
+    await tester.longPress(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    expect(find.text('New deck'), findsOneWidget);
+  });
 }

@@ -52,6 +52,7 @@ class _MxFabState extends State<MxFab> {
         onFocusChange: (focused) => setState(() => _focused = focused),
         child: FloatingActionButton(
           onPressed: widget.onPressed,
+          tooltip: widget.semanticLabel,
           // The default tag is shared, so two FABs in one route would clash.
           heroTag: null,
           shape: _shape(context),
