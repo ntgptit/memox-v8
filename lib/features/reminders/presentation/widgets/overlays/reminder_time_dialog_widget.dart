@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/reminders/presentation/widgets/sections/reminder_settings_section_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -59,7 +58,7 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
       title: l10n.reminderTimeDialogTitle,
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           _labelled(
             context,
@@ -115,7 +114,7 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
           ),
           Text(
             reminderTimeLabel(context, _chosen),
-            style: context.textStyles.contentTitle,
+            style: context.texts.titleMedium,
           ),
         ],
       ),
@@ -130,7 +129,7 @@ class _ReminderTimeDialogWidgetState extends State<ReminderTimeDialogWidget> {
 
   Widget _labelled(BuildContext context, String label, Widget stepper) => Row(
     children: [
-      Expanded(child: Text(label, style: context.textStyles.settingsLabel)),
+      Expanded(child: Text(label, style: context.texts.titleSmall)),
       stepper,
     ],
   );

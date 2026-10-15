@@ -28,7 +28,7 @@ FE-B8; ADR-018 §6 to §8; spec
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) + back `MxIconButton` | "Monitoring". |
+| App bar | `MxAppBar` + back `MxIconButton` | "Monitoring". |
 | Tabs | `MxSegmentedTray` | "Server" · "Not sent ({n})"; n is every row of the device buffer. |
 | Search (Server) | `MxSearchField` | "Search event or message"; asks 400 ms after the last keystroke. |
 | Filters (Server) | `MxChipTrigger` × 5 in a row that scrolls | Level (default warning + error) · Status (default open) · Category · Time · Device / user. A chip that holds a choice shows it, naming one or two and counting from three: "Level · Warning, Error", "Status · Open", "Time · Last 24 hours", "Level · 3"; Device / user counts a pair, since its choices are ids (critique 2026-09-30 part 3b). |
@@ -36,7 +36,7 @@ FE-B8; ADR-018 §6 to §8; spec
 | Rows | `MxListRow` | Leading `MxIconTile` with a glyph per level (debug bug, info circle, warning triangle, error circle) on the tint of its level; title `event`; subtitle the first line of the message, or else of the error message, or else the error type; trailing `HH:mm` today or "Sep 26", and under it an `MxBadge` "Open" / "Fixed" for warnings and errors, except a row whose status is the one the Status filter holds: the chip and the header say it (critique 2026-09-30 part 3b). TalkBack: "{level}, {event}, {time}, {status}". |
 | End | `MxSpinner` / `MxInlineBanner` / caption | The next 100 rows load when the last 10 come into view; a spinner while they do; "Couldn't load more logs." with Retry; "No more logs". |
 | Not sent | the SQL log switch row (`MxSettingsRow` + `MxToggle`, the same row as screen 23's, first, above the note; SQL log switch spec 2026-10-07) + `MxNote` + one `MxChipTrigger` (Level, default warning + error) + rows | "These logs wait on this device. They are sent when MemoX is online." (the tab states how many), then the header "{n} at these levels" over the rows shown (critique 2026-09-30 part 3b). The rows are the device buffer, watched, without a status. |
-| Filter sheets | `MxBottomSheet` | Level, Status and Category: a toggle per value (`MxSettingsRow` + `MxToggle`). Time: an `MxOptionRow` per window (last hour, 24 hours, 7 days, 30 days, all time). Device / user: two `MxTextField`s and an `MxNote`. Each has Reset (outline) and Apply. |
+| Filter sheets | `MxBottomSheet` | Level, Status and Category: a toggle per value (`MxSettingsRow` + `MxToggle`). Time: an `MxOptionRow` per window (last hour, 24 hours, 7 days, 30 days, all time). Device / user: two `MxTextField`s, each painting its name as the label above the box (no placeholder repeats it), and an `MxNote`. Each has Reset (outline) and Apply. |
 
 Choosing Debug or Info, or no level at all (every level), clears the status filter: those rows have no status and it would
 hide them. Category rows show the stored code (`db`, `sync`, `network`) and come from
@@ -50,7 +50,7 @@ reload from the first page.
 | App bar | `MxAppBar` + back, action `MxIconButton` | Title: the event. The action copies the whole log as JSON; `MxSnackbar` "Copied". |
 | Head | `MxIconTile` + text + `MxBadge` | The level's glyph tile and name, the full time (date and `HH:mm:ss`, local) under it, and "Open" / "Fixed" for a warning or error. |
 | Message, Error | `MxListSectionHeader` + `MxCard` | Selectable text. Error: the type on its own line in the row-title weight, then its message. |
-| Stack trace, Context | `MxListSectionHeader` + `MxCard`, `code` style | Selectable; one frame per row, its `#n` (`primaryText`) in a fixed-width cell so a wrapped line hangs under the frame's text; the context is pretty-printed JSON. Hidden when empty. A context can be 256 kB. |
+| Stack trace, Context | `MxListSectionHeader` + `MxCard`, `code` style | Selectable; one frame per row, its `#n` (`context.accentColor`) in a fixed-width cell so a wrapped line hangs under the frame's text; the context is pretty-printed JSON. Hidden when empty. A context can be 256 kB. |
 | Details | `MxSection` of label/value rows, last | Fixed by, Fixed at (a fixed log only), Note, Category, Source, Device, App ("8.0.0 (12)"), Platform, User. A short value sits beside its caption label on one 48 row; the note under its label; an id under its label in the `code` style, wrapping between its groups, with its own copy button ("Copy device ID", "Copy user ID"; `MxSnackbar` "Copied"). A row the log does not have is left out. |
 | Triage | `MxFooterBar` + `MxButton` (primary, block) | "Mark fixed", or "Reopen" for a fixed one; for a warning or error of the server only. It opens an `MxBottomSheet` titled "Mark fixed" or "Reopen" with an optional note (`MxTextField`) and Cancel · "Save" (DEV-179). |
 | Toasts | `MxSnackbar` | "Marked fixed"; "Reopened"; "Couldn't change that. Nothing changed." · Retry. |
@@ -88,11 +88,11 @@ Goldens: `test/features/monitoring/presentation/goldens/monitoring_{list_loaded,
 - **Plan ruling 4:** the device / user filter is a sheet of two text fields, a device id and a user id.
 - **Plan ruling 12:** the offline state offers Retry above Not sent.
 - **Plan ruling 13:** rows sit directly in the page's scroll, with no card around them.
-- **Owner 2026-09-29, UI-base row 147:** code uses `MxTextStyles.code`: the system monospace at `bodySmall` size, tabular figures.
+- **Owner 2026-09-29, UI-base row 147:** code uses `bodyMedium` in `AppTypography.monoFamily`, the system monospace.
 - **Owner 2026-09-29 (Impeccable audit):** the detail shows the level and status first, then the message, error, trace and context, then compact Details without an Event row.
 - **Spec §3.2, §3.5 (ADR-008):** a row shows `HH:mm` today and "Sep 26" before; the detail shows the full date and `HH:mm:ss`, 24-hour in every language.
 - **Critique 2026-09-30 tone pass, T7:** a Fixed log is success; the empty lists' success state tints with success.
-- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the list header counts logs with any filter ("{n} logs" / "{n}+ logs"; the filter chip, e.g. "Status · Open", names the filter); a stack trace lays out one frame per row with the `#n` in a fixed-width cell, so wrapped lines hang under the frame's text, and it stays selectable with the `#n` in the `primaryText`.
+- **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the list header counts logs with any filter ("{n} logs" / "{n}+ logs"; the filter chip, e.g. "Status · Open", names the filter); a stack trace lays out one frame per row with the `#n` in a fixed-width cell, so wrapped lines hang under the frame's text, and it stays selectable with the `#n` in `context.accentColor`.
 
 ## Copy
 

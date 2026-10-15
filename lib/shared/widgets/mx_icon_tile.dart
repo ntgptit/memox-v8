@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The size steps, each with one role: small leads content rows, medium
 /// leads settings rows, large leads deck rows.
 enum MxIconTileSize { small, medium, large }
 
-/// The fill: the primary soft ground (default), or a solid primary or
+/// The fill: the primary or seed tint (default), or a solid primary or
 /// warning square whose glyph takes the matching on-colour (screen 02's lock
 /// strip, owner decision D-O1). [success], [caution] and [danger] are soft
-/// grounds with a legible glyph: the session summary's outcomes (FE-A6 D14).
-/// [neutral] is the neutral soft ground for an idle glyph, such as a lost
+/// tints with a legible glyph: the session summary's outcomes (FE-A6 D14).
+/// [neutral] is the neutral container for an idle glyph, such as a lost
 /// streak.
 enum MxIconTileTone {
   tinted,
@@ -45,10 +46,8 @@ class MxIconTile extends StatelessWidget {
   final Widget? child;
   final MxIconTileSize size;
 
-  /// The glyph's colour over the primary soft ground, which is light in
-  /// both themes (spec 2026-10-10 D4). It must be a theme-invariant accent
-  /// that holds 3:1 on that ground, never a colour of the outer scheme.
-  /// Null takes the on-primary-soft glyph.
+  /// A per-deck colour from the caller's data (ruling S16). Null tints with
+  /// primary.
   final Color? seed;
   final MxIconTileTone tone;
 
@@ -62,25 +61,51 @@ class MxIconTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final semantic = context.semanticColors;
+    final tinted = seed ?? context.accentColor;
     final (box, radius, glyph) = switch (size) {
-      MxIconTileSize.small => (smallBox, AppRadius.sm, AppIconSize.inline),
-      MxIconTileSize.medium => (mediumBox, AppRadius.md, AppIconSize.compact),
-      MxIconTileSize.large => (_largeBox, AppRadius.md, AppIconSize.compact),
+      MxIconTileSize.small => (
+        smallBox,
+        context.dimens.radiusSm,
+        context.dimens.sizeIconInline,
+      ),
+      MxIconTileSize.medium => (
+        mediumBox,
+        context.dimens.radiusMd,
+        context.dimens.sizeIconCompact,
+      ),
+      MxIconTileSize.large => (
+        _largeBox,
+        context.dimens.radiusMd,
+        context.dimens.sizeIconCompact,
+      ),
     };
-    // Each soft tone sits on its soft ground with the on-soft glyph; a seed
-    // keeps its own glyph on the primary soft ground.
-    final (fill, foreground) = switch (tone) {
+    final (fill, ink) = switch (tone) {
       MxIconTileTone.tinted => (
-        semantic.primarySoft,
-        seed ?? semantic.onPrimarySoft,
+        tinted.tintOver(MxTintBase.of(context)),
+        seed ?? context.accentColor,
       ),
       MxIconTileTone.primary => (colors.primary, colors.onPrimary),
-      MxIconTileTone.warning => (semantic.warning, semantic.onWarning),
-      MxIconTileTone.success => (semantic.successSoft, semantic.onSuccessSoft),
-      MxIconTileTone.caution => (semantic.warningSoft, semantic.onWarningSoft),
-      MxIconTileTone.danger => (semantic.dangerSoft, colors.error),
-      MxIconTileTone.neutral => (semantic.neutralSoft, semantic.onNeutralSoft),
+      MxIconTileTone.warning => (
+        context.mxColors.warningContainer,
+        context.mxColors.onWarningContainer,
+      ),
+      MxIconTileTone.success => (
+        context.mxColors.success.tintOver(MxTintBase.of(context)),
+        context.mxColors.success,
+      ),
+      MxIconTileTone.caution => (
+        context.mxColors.warning.tintOver(MxTintBase.of(context)),
+        context.mxColors.warning,
+      ),
+      MxIconTileTone.danger => (
+        context.colors.error.tintOver(MxTintBase.of(context)),
+        context.colors.error,
+      ),
+      // An idle glyph, such as a lost streak's (DEV-370).
+      MxIconTileTone.neutral => (
+        colors.secondaryContainer,
+        colors.onSecondaryContainer,
+      ),
     };
     return SizedBox.square(
       dimension: box,
@@ -90,7 +115,7 @@ class MxIconTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(radius),
         ),
         child: Center(
-          child: child ?? Icon(icon, size: glyph, color: foreground),
+          child: child ?? Icon(icon, size: glyph, color: ink),
         ),
       ),
     );

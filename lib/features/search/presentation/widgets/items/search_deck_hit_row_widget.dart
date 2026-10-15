@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/text/path_label.dart';
 import 'package:memox/core/text/search_match.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/search/domain/models/search_hit_model.dart';
 import 'package:memox/l10n/l10n_context.dart';

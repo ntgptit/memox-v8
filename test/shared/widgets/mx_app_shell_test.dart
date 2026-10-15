@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -20,23 +20,6 @@ const _navKey = Key('nav');
 Widget _fab() =>
     MxFab(icon: AppIcons.add, semanticLabel: 'New', onPressed: () {});
 
-/// [shell] on a 1280×800 window, outside the phone frame (FE-C5).
-Future<void> _pumpWide(
-  WidgetTester tester,
-  Widget shell, {
-  TextDirection direction = TextDirection.ltr,
-}) async {
-  tester.view.physicalSize = const Size(1280, 800);
-  tester.view.devicePixelRatio = 1;
-  addTearDown(tester.view.reset);
-  await tester.pumpWidget(
-    MaterialApp(
-      theme: buildLightTheme(),
-      home: Directionality(textDirection: direction, child: shell),
-    ),
-  );
-}
-
 void main() {
   testWidgets('page ground is surface; app bar above the body', (tester) async {
     await pumpMxPage(
@@ -49,7 +32,7 @@ void main() {
 
     expect(
       tester.widget<Scaffold>(find.byType(Scaffold)).backgroundColor,
-      AppColorSchemes.light.surface,
+      lightColorScheme.surface,
     );
     expect(
       tester.getTopLeft(find.byKey(_bodyKey)).dy,
@@ -183,29 +166,36 @@ void main() {
     );
   });
 
-  testWidgets('wide: the column is 720 and centred; the ground fills the '
-      'window (FE-C5)', (tester) async {
-    await _pumpWide(
-      tester,
-      const MxAppShell(
-        appBar: MxAppBar(title: 'Library', key: _barKey),
-        body: SizedBox.expand(key: _bodyKey),
-      ),
-    );
+  testWidgets(
+    'wide: the column is sizeContentMaxWide and centred; the ground fills the '
+    'window (FE-C5)',
+    (tester) async {
+      await pumpMxWide(
+        tester,
+        const MxAppShell(
+          appBar: MxAppBar(title: 'Library', key: _barKey),
+          body: SizedBox.expand(key: _bodyKey),
+        ),
+      );
 
-    final body = tester.getRect(find.byKey(_bodyKey));
-    expect((body.left, body.width), ((1280 - 720) / 2, 720));
-    expect(tester.getRect(find.byKey(_barKey)).width, 720);
-    expect(tester.getSize(find.byType(Scaffold)).width, 1280);
-  });
+      final body = tester.getRect(find.byKey(_bodyKey));
+      final column = const AppDimens().sizeContentMaxWide;
+      expect((body.left, body.width), ((1280 - column) / 2, column));
+      expect(tester.getRect(find.byKey(_barKey)).width, column);
+      expect(tester.getSize(find.byType(Scaffold)).width, 1280);
+    },
+  );
 
-  testWidgets('wide: the FAB sits 16 in from the column edge, mirrored in '
+  testWidgets('wide: the FAB sits space16 in from the column edge, mirrored in '
       'RTL (FE-C5)', (tester) async {
+    const dimens = AppDimens();
+    final columnStart = (1280 - dimens.sizeContentMaxWide) / 2;
+    final columnEnd = columnStart + dimens.sizeContentMaxWide;
     for (final (direction, left) in [
-      (TextDirection.ltr, 1000.0 - 16 - 52),
-      (TextDirection.rtl, 280.0 + 16),
+      (TextDirection.ltr, columnEnd - dimens.space16 - dimens.sizeFab),
+      (TextDirection.rtl, columnStart + dimens.space16),
     ]) {
-      await _pumpWide(
+      await pumpMxWide(
         tester,
         MxAppShell(body: const SizedBox.expand(), fab: _fab()),
         direction: direction,

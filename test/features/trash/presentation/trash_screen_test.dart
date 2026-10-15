@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/trash/presentation/providers/trash_entries_provider.dart';
 import 'package:memox/features/trash/presentation/screens/trash_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -84,7 +84,7 @@ void main() {
     expect(
       tester.getTopLeft(find.byType(MxEmptyState)).dy -
           tester.getBottomLeft(find.byType(MxAppBar)).dy,
-      AppSpacing.control,
+      const AppDimens().space8,
     );
     expect(find.text(_en.trashNote), findsNothing);
     expect(find.byType(MxFilterChip), findsNothing);

@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_user.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/account/di/user_role_repository_provider.dart';
 import 'package:memox/features/account/presentation/screens/users_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';

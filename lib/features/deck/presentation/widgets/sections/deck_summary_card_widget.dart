@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
@@ -31,7 +30,6 @@ class DeckSummaryCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final due = level.overdueCount + level.dueTodayCount;
     final cards = due + level.newCount + level.scheduledCount;
     final overline = l10n.deckSummaryMastered(
@@ -41,10 +39,10 @@ class DeckSummaryCardWidget extends StatelessWidget {
       isHero: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.grouped,
+        spacing: context.dimens.space12,
         children: [
           Row(
-            spacing: AppSpacing.gutter,
+            spacing: context.dimens.space16,
             children: [
               MxMasteryDonut(
                 fraction: level.masteryFraction,
@@ -53,19 +51,21 @@ class DeckSummaryCardWidget extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.micro,
+                  spacing: context.dimens.space4,
                   children: [
                     Text(
                       overline.toUpperCase(),
                       semanticsLabel: overline,
-                      style: styles.eyebrow,
+                      style: context.texts.labelSmall?.copyWith(
+                        color: context.colors.onSurfaceVariant,
+                      ),
                     ),
                     Text(
                       l10n.deckRowMeta(
                         l10n.deckSubDeckCount(level.deckCount),
                         l10n.deckCardCount(cards),
                       ),
-                      style: styles.rowTitle,
+                      style: context.texts.titleSmall,
                     ),
                     MxWorkloadBreakdownLine(
                       overdueCount: level.overdueCount,

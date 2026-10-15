@@ -1,266 +1,372 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/app_button_style.dart';
-import 'package:memox/core/theme/foundations/app_effects.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
-import 'package:memox/core/theme/mx_text_styles.dart';
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
-/// The Material component themes (spec UI base §4.6): the V3 defaults a raw
-/// Material widget, or one the framework builds, picks up. A MemoX variant
-/// richer than a Material theme can express stays in its `Mx*` widget, which
-/// reads these defaults and overrides only what differs.
-abstract final class AppComponentThemes {
-  /// A field's edge in [color]: hairline, radius 12, and no label gap —
-  /// fields never float a label, and Material 3 would otherwise add the gap
-  /// to each side of the text.
-  static OutlineInputBorder fieldEdge(Color color) => OutlineInputBorder(
-    gapPadding: 0,
-    borderRadius: BorderRadius.circular(AppRadius.md),
-    borderSide: BorderSide(color: color, width: AppStroke.hairline),
+/// What one mode's component themes are built from. Light and dark each get
+/// their own instance; no function here branches on the mode.
+final class ThemeTokens {
+  const ThemeTokens({
+    required this.scheme,
+    required this.mx,
+    required this.texts,
+    required this.accent,
+    this.dimens = const AppDimens(),
+  });
+
+  /// The tokens of the theme in scope, for a widget that builds a component
+  /// style the theme has no slot for.
+  factory ThemeTokens.of(BuildContext context) => ThemeTokens(
+    scheme: context.colors,
+    mx: context.mxColors,
+    texts: context.texts,
+    accent: context.accentColor,
+    dimens: context.dimens,
   );
 
-  /// Every form field (TextField contract): the muted fill that lightens on
-  /// focus, the outline at rest (the border hairline when disabled), the
-  /// focus ring on focus, error in error, the 14 hint.
-  static InputDecorationTheme fields(
-    ColorScheme scheme,
-    MxSemanticColors semantic,
-    TextTheme texts,
-  ) {
-    final ghost = semantic.border;
-    // Every edged field rests on the outline; a disabled one keeps the
-    // border hairline, as SC 1.4.11 exempts it.
-    final rest = scheme.outline;
-    return InputDecorationTheme(
-      filled: true,
-      isDense: true,
-      fillColor: WidgetStateColor.resolveWith(
-        (states) => states.contains(WidgetState.focused)
-            ? scheme.surfaceContainerLowest
-            : scheme.surfaceContainerLow,
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.grouped,
-      ),
-      hintStyle: MxTextStyles(texts, scheme, semantic).inputHint,
-      border: fieldEdge(rest),
-      enabledBorder: fieldEdge(rest),
-      disabledBorder: fieldEdge(ghost),
-      focusedBorder: fieldEdge(semantic.focusRing),
-      errorBorder: fieldEdge(scheme.error),
-      focusedErrorBorder: fieldEdge(scheme.error),
-    );
-  }
+  final ColorScheme scheme;
+  final MxColorsExtension mx;
+  final TextTheme texts;
 
-  /// A Material button at the regular V3 size in [fill] and [foreground]: 48 tall,
-  /// radius 12, gutter padding, the 14/600 label, the pressed overlay and
-  /// the focus ring. A disabled one dims under the global 0.38 rule.
-  static ButtonStyle _button(
-    ColorScheme scheme,
-    MxSemanticColors semantic,
-    TextTheme texts, {
-    required Color? fill,
-    required Color foreground,
-    required BorderSide edge,
-  }) {
-    final style = appButtonStyle(
-      fill: fill,
-      foreground: foreground,
-      edge: edge,
-      focusColor: semantic.focusRing,
-      height: AppSize.buttonRegular,
-      radius: AppRadius.md,
-      padding: AppSpacing.gutter,
-      label: MxTextStyles(texts, scheme, semantic).buttonLabel,
-    );
-    Color? dimmed(Color? color) =>
-        color?.withValues(alpha: color.a * AppOpacity.disabled);
-    final dimmedEdge = edge == BorderSide.none
-        ? edge
-        : edge.copyWith(color: dimmed(edge.color));
-    return style.copyWith(
-      side: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.disabled)
-            ? dimmedEdge
-            : style.side?.resolve(states),
-      ),
-      backgroundColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.disabled) ? dimmed(fill) : fill,
-      ),
-      foregroundColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.disabled)
-            ? dimmed(foreground)
-            : foreground,
-      ),
-    );
-  }
+  /// Icon and text colour of the accent (see `ThemeRules.accentColor`).
+  final Color accent;
+  final AppDimens dimens;
 
-  /// FilledButton: the primary tone.
-  static FilledButtonThemeData filledButtons(
-    ColorScheme scheme,
-    MxSemanticColors semantic,
-    TextTheme texts,
-  ) => FilledButtonThemeData(
-    style: _button(
-      scheme,
-      semantic,
-      texts,
-      fill: scheme.primary,
-      foreground: scheme.onPrimary,
-      edge: BorderSide.none,
+  OutlinedBorder get stadium => const StadiumBorder();
+
+  BorderRadius radius(double value) => BorderRadius.circular(value);
+
+  Color get scrim => scheme.scrim.withValues(alpha: dimens.opacityScrim);
+
+  Color onSurfaceAt(double opacity) =>
+      scheme.onSurface.withValues(alpha: opacity);
+}
+
+/// A Material button at the regular size in [fill] and [foreground]: 40 tall at
+/// least (a wrapped label or a larger text scale grows it), full radius (or
+/// the [shape] given),
+/// [padding] on the sides (24 by default), the `labelLarge` label, an 18 glyph,
+/// state layers and the focus ring. A focused one draws the ring in `primary`
+/// (or [ringColor], for a button on a surface where `primary` is not seen,
+/// as the toast's) 2 outside its container ([MxFocusRingBorder]), so it shows
+/// on a `primary` fill too. A disabled one follows the Design System's disabled opacities.
+/// `MxButton` builds its other tones from this too, so they never restyle a
+/// button.
+ButtonStyle buttonStyle(
+  ThemeTokens t, {
+  required Color? fill,
+  required Color foreground,
+  BorderSide? edge,
+  double? padding,
+  OutlinedBorder shape = const StadiumBorder(),
+  Color? ringColor,
+}) {
+  final dimens = t.dimens;
+  return ButtonStyle(
+    minimumSize: WidgetStatePropertyAll(Size(0, dimens.sizeButton)),
+    padding: WidgetStatePropertyAll(
+      EdgeInsets.symmetric(horizontal: padding ?? dimens.space24),
     ),
-  );
-
-  /// OutlinedButton: the outline tone.
-  static OutlinedButtonThemeData outlinedButtons(
-    ColorScheme scheme,
-    MxSemanticColors semantic,
-    TextTheme texts,
-  ) => OutlinedButtonThemeData(
-    style: _button(
-      scheme,
-      semantic,
-      texts,
-      fill: null,
-      foreground: semantic.primaryText,
-      edge: BorderSide(color: scheme.outline, width: AppStroke.hairline),
+    iconSize: WidgetStatePropertyAll(dimens.sizeIconButton),
+    shape: WidgetStateProperty.resolveWith(
+      (states) => MxFocusRingBorder(
+        base: shape,
+        ring: states.contains(WidgetState.focused)
+            ? BorderSide(
+                color: ringColor ?? t.scheme.primary,
+                width: dimens.strokeFocus,
+              )
+            : BorderSide.none,
+        gap: dimens.strokeFocusGap,
+      ),
     ),
-  );
-
-  /// TextButton: primary text, no fill — the framework's dialog actions.
-  static TextButtonThemeData textButtons(
-    ColorScheme scheme,
-    MxSemanticColors semantic,
-    TextTheme texts,
-  ) => TextButtonThemeData(
-    style: _button(
-      scheme,
-      semantic,
-      texts,
-      fill: null,
-      foreground: semantic.primaryText,
-      edge: BorderSide.none,
+    elevation: const WidgetStatePropertyAll(0),
+    tapTargetSize: MaterialTapTargetSize.padded,
+    textStyle: WidgetStatePropertyAll(t.texts.labelLarge),
+    backgroundColor: WidgetStateProperty.resolveWith(
+      (states) => states.contains(WidgetState.disabled)
+          ? (fill == null
+                ? null
+                : t.onSurfaceAt(dimens.opacityDisabledContainer))
+          : fill,
     ),
+    foregroundColor: WidgetStateProperty.resolveWith(
+      (states) => states.contains(WidgetState.disabled)
+          ? t.onSurfaceAt(dimens.opacityDisabledContent)
+          : foreground,
+    ),
+    iconColor: WidgetStateProperty.resolveWith(
+      (states) => states.contains(WidgetState.disabled)
+          ? t.onSurfaceAt(dimens.opacityDisabledContent)
+          : foreground,
+    ),
+    overlayColor: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.pressed)) {
+        return foreground.withValues(alpha: dimens.opacityPressed);
+      }
+      if (states.contains(WidgetState.focused)) {
+        return foreground.withValues(alpha: dimens.opacityFocus);
+      }
+      if (states.contains(WidgetState.hovered)) {
+        return foreground.withValues(alpha: dimens.opacityHover);
+      }
+      return null;
+    }),
+    side: WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.disabled) && edge != null) {
+        return edge.copyWith(
+          color: t.onSurfaceAt(dimens.opacityDisabledContainer),
+        );
+      }
+      return edge;
+    }),
   );
+}
 
-  /// IconButton (IconButton contract): a 20 glyph in a 36 round ink box with
-  /// a 48 touch area, the pressed overlay, and the focus ring on the
-  /// circle's edge (ruling R5).
-  static IconButtonThemeData iconButtons(
-    ColorScheme scheme,
-    MxSemanticColors semantic,
-  ) => IconButtonThemeData(
+FilledButtonThemeData filledButtonTheme(ThemeTokens t) => FilledButtonThemeData(
+  style: buttonStyle(t, fill: t.scheme.primary, foreground: t.scheme.onPrimary),
+);
+
+OutlinedButtonThemeData outlinedButtonTheme(ThemeTokens t) =>
+    OutlinedButtonThemeData(
+      style: buttonStyle(
+        t,
+        fill: null,
+        foreground: t.accent,
+        edge: BorderSide(
+          color: t.scheme.outline,
+          width: t.dimens.strokeHairline,
+        ),
+      ),
+    );
+
+TextButtonThemeData textButtonTheme(ThemeTokens t) => TextButtonThemeData(
+  style: buttonStyle(
+    t,
+    fill: null,
+    foreground: t.accent,
+    padding: t.dimens.space12,
+  ),
+);
+
+IconButtonThemeData iconButtonTheme(ThemeTokens t) {
+  final dimens = t.dimens;
+  return IconButtonThemeData(
     style: ButtonStyle(
-      iconSize: const WidgetStatePropertyAll(AppIconSize.compact),
-      // A disabled one dims under the global 0.38 rule.
+      iconSize: WidgetStatePropertyAll(dimens.sizeIcon),
       foregroundColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.disabled)
-            ? scheme.onSurface.withValues(alpha: AppOpacity.disabled)
-            : scheme.onSurface,
+            ? t.onSurfaceAt(dimens.opacityDisabledContent)
+            : t.scheme.onSurface,
       ),
-      overlayColor: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.pressed)
-            ? scheme.onSurface.withValues(alpha: AppOpacity.pressed)
-            : null,
-      ),
+      overlayColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.pressed)) {
+          return t.onSurfaceAt(dimens.opacityPressed);
+        }
+        if (states.contains(WidgetState.focused)) {
+          return t.onSurfaceAt(dimens.opacityFocus);
+        }
+        if (states.contains(WidgetState.hovered)) {
+          return t.onSurfaceAt(dimens.opacityHover);
+        }
+        return null;
+      }),
       side: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.focused)
-            ? BorderSide(color: semantic.focusRing, width: AppStroke.focus)
+            ? BorderSide(color: t.scheme.primary, width: dimens.strokeFocus)
             : null,
       ),
       shape: const WidgetStatePropertyAll(CircleBorder()),
-      fixedSize: const WidgetStatePropertyAll(
-        Size.square(AppSize.iconButtonInk),
-      ),
-      minimumSize: const WidgetStatePropertyAll(
-        Size.square(AppSize.iconButtonInk),
-      ),
+      fixedSize: WidgetStatePropertyAll(Size.square(dimens.sizeControl)),
+      minimumSize: WidgetStatePropertyAll(Size.square(dimens.sizeControl)),
       padding: const WidgetStatePropertyAll(EdgeInsets.zero),
-      tapTargetSize: MaterialTapTargetSize.padded,
     ),
   );
+}
 
-  static Color _scrim(ColorScheme scheme) =>
-      scheme.scrim.withValues(alpha: AppEffects.scrimOpacity);
+/// The Design System defines no shadow for the FAB; Material's own elevation
+/// casts it, the same in light and dark (Material 3: 6, and 8 when hovered).
+const double _fabElevation = 6;
+const double _fabHoverElevation = 8;
 
-  static const _sheetRadius = BorderRadius.vertical(
-    top: Radius.circular(AppRadius.xl),
+/// The FAB as the Material 3 regular FAB: a 56 square, radius `radiusLg`,
+/// elevation 6 resting and 8 hovered, an `onPrimary` 24 glyph on `primary`.
+/// `MxFab` swaps the shape for one that also draws the focus ring, which this
+/// theme cannot (a theme shape is not state-aware).
+FloatingActionButtonThemeData floatingActionButtonTheme(ThemeTokens t) {
+  final dimens = t.dimens;
+  final onPrimary = t.scheme.onPrimary;
+  return FloatingActionButtonThemeData(
+    backgroundColor: t.scheme.primary,
+    foregroundColor: onPrimary,
+    hoverColor: onPrimary.withValues(alpha: dimens.opacityHover),
+    focusColor: onPrimary.withValues(alpha: dimens.opacityFocus),
+    splashColor: onPrimary.withValues(alpha: dimens.opacityPressed),
+    elevation: _fabElevation,
+    focusElevation: _fabElevation,
+    highlightElevation: _fabElevation,
+    hoverElevation: _fabHoverElevation,
+    iconSize: dimens.sizeIcon,
+    sizeConstraints: BoxConstraints.tightFor(
+      width: dimens.sizeFab,
+      height: dimens.sizeFab,
+    ),
+    shape: RoundedRectangleBorder(borderRadius: t.radius(dimens.radiusLg)),
   );
+}
 
-  /// Dialog (Dialog contract): the card ground at radius 20, flat, over the
-  /// 56% scrim, with the compact title and the dialog body.
-  static DialogThemeData dialogs(
-    ColorScheme scheme,
-    MxSemanticColors semantic,
-    TextTheme texts,
-  ) {
-    final styles = MxTextStyles(texts, scheme, semantic);
-    return DialogThemeData(
-      backgroundColor: scheme.surfaceContainerLowest,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-      ),
-      barrierColor: _scrim(scheme),
-      titleTextStyle: styles.compactTitle,
-      contentTextStyle: styles.dialogBody,
-      insetPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.card,
-        vertical: AppSpacing.section,
-      ),
-    );
+/// The Material 3 flat filter chip, read by every Mx chip (`chipButtonStyle`):
+/// no fill and a `outlineVariant` hairline at rest, `secondaryContainer` with
+/// no edge when selected, an 8 corner, `labelLarge`, an 18 glyph, 8 around the
+/// chip and 8 around the label. `secondaryLabelStyle` and `checkmarkColor` are
+/// the selected label and check. A disabled chip is the button style's.
+ChipThemeData chipTheme(ThemeTokens t) => ChipThemeData(
+  color: WidgetStateProperty.resolveWith(
+    (states) => states.contains(WidgetState.selected)
+        ? t.scheme.secondaryContainer
+        : null,
+  ),
+  side: WidgetStateBorderSide.resolveWith(
+    (states) => states.contains(WidgetState.selected)
+        ? BorderSide.none
+        : BorderSide(
+            color: t.scheme.outlineVariant,
+            width: t.dimens.strokeHairline,
+          ),
+  ),
+  shape: RoundedRectangleBorder(borderRadius: t.radius(t.dimens.radiusSm)),
+  showCheckmark: true,
+  labelStyle: t.texts.labelLarge?.copyWith(color: t.scheme.onSurfaceVariant),
+  secondaryLabelStyle: t.texts.labelLarge?.copyWith(
+    color: t.scheme.onSecondaryContainer,
+  ),
+  checkmarkColor: t.scheme.onSecondaryContainer,
+  iconTheme: IconThemeData(
+    color: t.scheme.primary,
+    size: t.dimens.sizeIconButton,
+  ),
+  padding: EdgeInsets.all(t.dimens.space8),
+  labelPadding: EdgeInsets.symmetric(horizontal: t.dimens.space8),
+);
+
+/// The Material 3 switch (`MxToggle` is a `Switch`): a `primary` track with an
+/// `onPrimary` handle when on; a `surfaceContainerHighest` track with a
+/// `strokeControl` `outline` edge and an `outline` handle when off. A pressed,
+/// hovered or focused handle takes `primaryContainer` (on) or
+/// `onSurfaceVariant` (off). Disabled, the track is 12% and the off handle
+/// 38%, the on handle `surface`; the switch dims itself. Size, handle radii
+/// (16, 24, 28), the 40 state layer (primary or onSurface at the hover, pressed
+/// and focus opacities) and the motion are Material's own M3 defaults.
+SwitchThemeData switchTheme(ThemeTokens t) {
+  final scheme = t.scheme;
+  final dimens = t.dimens;
+  final on = WidgetState.selected;
+  final disabled = WidgetState.disabled;
+  final engaged =
+      WidgetState.pressed | WidgetState.hovered | WidgetState.focused;
+  Color faint(Color color) =>
+      color.withValues(alpha: dimens.opacityDisabledContainer);
+  return SwitchThemeData(
+    materialTapTargetSize: MaterialTapTargetSize.padded,
+    trackOutlineWidth: WidgetStatePropertyAll(dimens.strokeControl),
+    thumbColor: WidgetStateProperty.fromMap({
+      disabled & on: scheme.surface,
+      disabled: t.onSurfaceAt(dimens.opacityDisabledContent),
+      on & engaged: scheme.primaryContainer,
+      on: scheme.onPrimary,
+      engaged: scheme.onSurfaceVariant,
+      WidgetState.any: scheme.outline,
+    }),
+    trackColor: WidgetStateProperty.fromMap({
+      disabled & on: faint(scheme.onSurface),
+      disabled: faint(scheme.surfaceContainerHighest),
+      on: scheme.primary,
+      WidgetState.any: scheme.surfaceContainerHighest,
+    }),
+    trackOutlineColor: WidgetStateProperty.fromMap({
+      on: Colors.transparent,
+      disabled & ~on: faint(scheme.onSurface),
+      WidgetState.any: scheme.outline,
+    }),
+  );
+}
+
+/// The Material 3 segmented button (`MxSegmentedTray` is a `SegmentedButton`):
+/// a stadium 40 tall (in a 48 touch band) with a `strokeHairline` `outline`
+/// edge round and between the segments, the `labelLarge` label and an 18 check
+/// before the chosen one. The chosen label takes the accent colour and the
+/// others `onSurface`; tokens keep `secondaryContainer` off buttons, so no
+/// segment is filled: the background is set to transparent here, because a
+/// null slot falls back to the SDK default, which fills the chosen segment
+/// with `secondaryContainer`. Disabled, the label is 38% and the edge 12%. State
+/// layers are the label colour at the hover, pressed and focus opacities, and
+/// the focus ring rides on the shape, offset like a button's.
+SegmentedButtonThemeData segmentedButtonTheme(ThemeTokens t) {
+  final dimens = t.dimens;
+  final selected = WidgetState.selected;
+  final disabled = WidgetState.disabled;
+  Color labelColor(Set<WidgetState> states) {
+    if (states.contains(disabled)) {
+      return t.onSurfaceAt(dimens.opacityDisabledContent);
+    }
+    return states.contains(selected) ? t.accent : t.scheme.onSurface;
   }
 
-  /// BottomSheet (BottomSheet contract): the card ground, top radius 20,
-  /// flat, over the 56% scrim.
-  static BottomSheetThemeData sheets(ColorScheme scheme) =>
-      BottomSheetThemeData(
-        backgroundColor: scheme.surfaceContainerLowest,
-        modalBackgroundColor: scheme.surfaceContainerLowest,
-        elevation: 0,
-        modalElevation: 0,
-        shape: const RoundedRectangleBorder(borderRadius: _sheetRadius),
-        modalBarrierColor: _scrim(scheme),
-      );
-
-  /// SnackBar (Snackbar contract): the inverse surface, floating a gutter in,
-  /// radius 12, the snackbar message style.
-  static SnackBarThemeData snackbars(
-    ColorScheme scheme,
-    MxSemanticColors semantic,
-    TextTheme texts,
-  ) => SnackBarThemeData(
-    backgroundColor: scheme.inverseSurface,
-    behavior: SnackBarBehavior.floating,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppRadius.md),
-    ),
-    // Even sides, so no direction is needed.
-    insetPadding: const EdgeInsets.fromLTRB(
-      AppSpacing.gutter,
-      0,
-      AppSpacing.gutter,
-      AppSpacing.gutter,
-    ),
-    contentTextStyle: MxTextStyles(texts, scheme, semantic).snackbarMessage,
-    // Flat: the inverse surface sets it apart; DESIGN.md gives shadows
-    // to cards, dialogs, sheets and the FAB only (SW-REV-007).
-    elevation: 0,
-  );
-
-  /// Tooltip (MxIconButton's long-press name): the caption on the inverse
-  /// surface, as the snackbar, radius 8 (SW-REV-007).
-  static TooltipThemeData tooltips(ColorScheme scheme, TextTheme texts) =>
-      TooltipThemeData(
-        decoration: BoxDecoration(
-          color: scheme.inverseSurface,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
+  return SegmentedButtonThemeData(
+    selectedIcon: const Icon(AppIcons.check),
+    style: ButtonStyle(
+      padding: WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: dimens.space12),
+      ),
+      iconSize: WidgetStatePropertyAll(dimens.sizeIconButton),
+      tapTargetSize: MaterialTapTargetSize.padded,
+      elevation: const WidgetStatePropertyAll(0),
+      textStyle: WidgetStatePropertyAll(t.texts.labelLarge),
+      backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+      foregroundColor: WidgetStateProperty.resolveWith(labelColor),
+      iconColor: WidgetStateProperty.resolveWith(labelColor),
+      overlayColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(disabled)) return null;
+        final color = labelColor(states);
+        if (states.contains(WidgetState.pressed)) {
+          return color.withValues(alpha: dimens.opacityPressed);
+        }
+        if (states.contains(WidgetState.focused)) {
+          return color.withValues(alpha: dimens.opacityFocus);
+        }
+        if (states.contains(WidgetState.hovered)) {
+          return color.withValues(alpha: dimens.opacityHover);
+        }
+        return null;
+      }),
+      side: WidgetStateProperty.resolveWith(
+        (states) => BorderSide(
+          color: states.contains(disabled)
+              ? t.onSurfaceAt(dimens.opacityDisabledContainer)
+              : t.scheme.outline,
+          width: dimens.strokeHairline,
         ),
-        textStyle: texts.labelSmall!.copyWith(color: scheme.onInverseSurface),
-      );
+      ),
+      shape: segmentedButtonShape(t, t.stadium),
+    ),
+  );
 }
+
+/// The segmented button's outline, with the focus ring when a segment holds
+/// the keyboard focus. [base] is a stadium in a row; the stacked column takes
+/// a rounded rectangle instead, since a stadium round a tall column bulges.
+WidgetStateProperty<OutlinedBorder> segmentedButtonShape(
+  ThemeTokens t,
+  OutlinedBorder base,
+) => WidgetStateProperty.resolveWith(
+  (states) => MxFocusRingBorder(
+    base: base,
+    ring: states.contains(WidgetState.focused)
+        ? BorderSide(color: t.scheme.primary, width: t.dimens.strokeFocus)
+        : BorderSide.none,
+    gap: t.dimens.strokeFocusGap,
+  ),
+);

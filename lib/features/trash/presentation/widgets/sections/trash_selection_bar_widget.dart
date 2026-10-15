@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -47,7 +47,6 @@ class TrashSelectionBarWidget extends StatelessWidget {
         leadingFlex: _restoreShare,
         trailingFlex: _purgeShare,
         // From 1,000 selected the counts outgrow their shares (screen 06).
-        canStack: true,
       ),
     );
   }

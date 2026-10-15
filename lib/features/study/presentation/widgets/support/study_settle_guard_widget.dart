@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// A session screen's actions after an in-place swap (critique 2026-09-30
 /// part 3c-2, R1): when [phase] changes, the row takes no tap for [settle]
@@ -65,7 +65,7 @@ class _StudySettleGuardWidgetState extends State<StudySettleGuardWidget>
           opacity: isStill
               ? 1
               : lerpDouble(
-                  AppOpacity.muted,
+                  context.dimens.opacityMuted,
                   1,
                   Easing.standard.transform(_settle.value),
                 )!,

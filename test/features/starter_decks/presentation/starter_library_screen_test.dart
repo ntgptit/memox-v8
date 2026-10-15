@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 import 'dart:async';
 
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/starter_decks/presentation/screens/starter_library_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -334,8 +335,11 @@ void main() {
 
     final label = find.text(_en.starterSheetAlgorithmLabel);
     final required = find.text(_en.starterSheetRequired);
-    final styles = tester.element(label).textStyles;
-    expect(tester.widget<Text>(label).style, styles.fieldLabel);
-    expect(tester.widget<Text>(required).style, styles.requiredMarker);
+    final texts = tester.element(label).texts;
+    expect(tester.widget<Text>(label).style, texts.labelMedium);
+    expect(
+      tester.widget<Text>(required).style,
+      texts.bodyMedium?.copyWith(color: tester.element(label).accentColor),
+    );
   });
 }

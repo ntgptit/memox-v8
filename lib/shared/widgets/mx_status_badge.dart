@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The card lifecycle, in order.
 enum MxCardStatus { newCard, learning, reviewing, mastered }
@@ -33,20 +34,18 @@ class MxStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final semantic = context.semanticColors;
     final color = switch (status) {
-      MxCardStatus.newCard => semantic.statusNew,
-      MxCardStatus.learning => semantic.statusLearning,
-      MxCardStatus.reviewing => semantic.statusReviewing,
-      MxCardStatus.mastered => semantic.statusMastered,
+      MxCardStatus.newCard => context.colors.outline,
+      MxCardStatus.learning => context.mxColors.warningContainer,
+      MxCardStatus.reviewing => context.accentColor,
+      MxCardStatus.mastered => context.mxColors.successContainer,
     };
-    // The pill is the status's soft ground and its label the on-soft token;
-    // the dot keeps the status colour.
-    final (ground, foreground) = switch (status) {
-      MxCardStatus.newCard => (semantic.neutralSoft, semantic.onNeutralSoft),
-      MxCardStatus.learning => (semantic.learningSoft, semantic.onLearningSoft),
-      MxCardStatus.reviewing => (semantic.primarySoft, semantic.onPrimarySoft),
-      MxCardStatus.mastered => (semantic.successSoft, semantic.onSuccessSoft),
+    // The label reads in the status ink (AA); dot and fill keep the colour.
+    final ink = switch (status) {
+      MxCardStatus.newCard => context.colors.onSurfaceVariant,
+      MxCardStatus.learning => context.mxColors.warning,
+      MxCardStatus.reviewing => context.accentColor,
+      MxCardStatus.mastered => context.mxColors.success,
     };
     if (isDot) {
       return Semantics(
@@ -56,27 +55,27 @@ class MxStatusBadge extends StatelessWidget {
       );
     }
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: ground,
-        borderRadius: BorderRadius.circular(AppRadius.full),
+      decoration: ShapeDecoration(
+        color: color.tintOver(MxTintBase.of(context)),
+        shape: const StadiumBorder(),
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: _height),
         child: Padding(
-          padding: const EdgeInsetsDirectional.only(
+          padding: EdgeInsetsDirectional.only(
             start: _startPadding,
-            end: AppSpacing.control,
+            end: context.dimens.space8,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
               _Dot(color: color, size: _pillDot),
               Text(
                 label,
                 maxLines: 1,
                 softWrap: false,
-                style: context.textStyles.badgeLabel(foreground),
+                style: context.texts.labelSmall?.copyWith(color: ink),
               ),
             ],
           ),

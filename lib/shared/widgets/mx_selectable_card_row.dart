@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// One item of a list drawn as a card the person can open, long-press into
 /// selection and tick: a deck (screen 01), a card (07), a Trash entry (06).
@@ -56,12 +55,12 @@ class MxSelectableCardRow extends StatelessWidget {
       isEnabled: isEnabled,
       shouldDimWhenDisabled: false,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.gutter,
-          vertical: AppSpacing.grouped,
+        padding: EdgeInsets.symmetric(
+          horizontal: context.dimens.space16,
+          vertical: context.dimens.space12,
         ),
         child: Row(
-          spacing: AppSpacing.grouped,
+          spacing: context.dimens.space12,
           children: [
             if (isSelecting) MxSelectionCheckbox(isChecked: isSelected),
             Expanded(child: child),
@@ -97,8 +96,8 @@ class MxSelectableCardRow extends StatelessWidget {
               children: [
                 Expanded(child: target),
                 Padding(
-                  padding: const EdgeInsetsDirectional.only(
-                    end: AppSpacing.micro,
+                  padding: EdgeInsetsDirectional.only(
+                    end: context.dimens.space4,
                   ),
                   child: trailing,
                 ),
@@ -106,6 +105,6 @@ class MxSelectableCardRow extends StatelessWidget {
             ),
     );
     if (isEnabled) return card;
-    return Opacity(opacity: AppOpacity.disabled, child: card);
+    return Opacity(opacity: context.dimens.opacityDisabledContent, child: card);
   }
 }

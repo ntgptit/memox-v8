@@ -220,6 +220,9 @@ void main() {
       await tester.enterText(find.byType(EditableText).at(1), back);
       await tester.pump();
       await _tap(tester, find.widgetWithText(MxButton, _en.cardSaveCard));
+      // The toast floats over the footer's Save until it times out.
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
     }
     await _tap(tester, find.byTooltip(_en.cardClose));
 

@@ -125,7 +125,7 @@ void main() {
 
     final note = tester.widget<Text>(find.text(_en.studyEntryOverdue(1)));
     final context = tester.element(find.text(_en.studyEntryOverdue(1)));
-    expect(note.style?.color, context.semanticColors.warningText);
+    expect(note.style?.color, context.mxColors.warning);
   });
 
   libraryTest('Eight boxes lists its four review modes, each with its count '
@@ -321,7 +321,11 @@ void main() {
     final overline = find.text(_en.deckSchedulerEightBox.toUpperCase());
     expect(
       tester.widget<Text>(overline).style,
-      tester.element(overline).textStyles.eyebrow,
+      tester
+          .element(overline)
+          .texts
+          .labelSmall
+          ?.copyWith(color: tester.element(overline).colors.onSurfaceVariant),
     );
   });
 

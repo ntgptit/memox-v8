@@ -62,8 +62,14 @@ void main() {
           .style,
       tester
           .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
-          .textStyles
-          .eyebrow,
+          .texts
+          .labelSmall
+          ?.copyWith(
+            color: tester
+                .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
+                .colors
+                .onSurfaceVariant,
+          ),
     );
     expect(find.text(_en.cardMasteredOf(80, 420)), findsOneWidget);
     expect(
@@ -182,8 +188,12 @@ void main() {
     final label = tester.widget<Text>(
       find.text(_en.cardDeckProgress('SM-2').toUpperCase()),
     );
-    expect(label.style!.fontSize, 12);
-    expect(label.style!.fontWeight, FontWeight.w600);
+    final role = tester
+        .element(find.text(_en.cardDeckProgress('SM-2').toUpperCase()))
+        .texts
+        .labelSmall!;
+    expect(label.style!.fontSize, role.fontSize);
+    expect(label.style!.fontWeight, role.fontWeight);
   });
 
   // SW-REV-011: a hero statement wraps between whole terms, never "…",

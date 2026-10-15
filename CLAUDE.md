@@ -19,6 +19,11 @@ Each layer answers one question; none takes over another's.
 - **Impeccable judges UI against `DESIGN.md`, not against its own taste.**
   `DESIGN.md` is the design authority ([UI source of truth](#project-invariants)).
   Impeccable checks the work against it and against the quality floor.
+  `DESIGN.md`'s frontmatter is generated from `design/tokens.json`, so
+  Impeccable grades against the same source the code is built from.
+- **Impeccable does not change tokens.** A finding that asks for a different
+  token value, or that contradicts `design/tokens.json`, is not a bug to fix
+  in code: record it and tell the owner.
 - **Repo rules hold project invariants only**, such as the architecture,
   stack, data rules and quality bars. They never restate a workflow.
 - **ECC skills are read on demand** by whoever does the task. They are never
@@ -55,7 +60,8 @@ Each layer answers one question; none takes over another's.
 | Knowledge | Home |
 |---|---|
 | Architecture and product decisions | an ADR in `docs/shared/decisions/` (read its `status:`) |
-| The visual system | `DESIGN.md` |
+| The visual system | `design/tokens.json` (exported from the Design System); `DESIGN.md` is generated from it |
+| How to change the look | [docs/agent/visual-change.md](docs/agent/visual-change.md) |
 | A screen's layout, states, transitions, rulings and copy | its detail file in `docs/shared/ui/screen-handoff/` |
 | Known UI debt | the UI-base register (§9 of `docs/superpowers/specs/2026-09-23-flutter-ui-base-design.md`) |
 | Work progress | the Linear project MemoX, team `DEV`: epics (label `Epic`) and their sub-issues (label group `WBS`: `BE`, `FE`, `Supabase`) ([ADR-021](docs/shared/decisions/ADR-021-linear-theo-doi-tien-do.md), `flutter-workflow`); the `docs/wbs_*.md` files are frozen history |
@@ -145,12 +151,19 @@ asked. Without the connector, tell the owner and record progress nowhere else.
   tables have RLS on, no policy and no client privilege. Its gate is
   `npx supabase db start` then `npx supabase test db`.
   `memox-api-services/` is frozen: a reference only, out of CI, not developed.
-- **The app is the UI authority** ([ADR-019](docs/shared/decisions/ADR-019-app-la-chuan-ui.md)):
-  `DESIGN.md` and the reviewed goldens. The "Mobile UI Kit v3" artifact is
-  retired and never read. A BR or UC beats `DESIGN.md`; `DESIGN.md` and the
-  goldens beat a screen's detail file. A PR that changes the visual system
-  updates `DESIGN.md`; one that changes a screen updates its detail file and
-  its row in the screen index.
+- **The app is the UI authority** ([ADR-019](docs/shared/decisions/ADR-019-app-la-chuan-ui.md),
+  [ADR-022](docs/shared/decisions/ADR-022-mot-nguon-token-va-theme-flutter.md)):
+  `design/tokens.json` (exported from the Design System) > the reviewed goldens
+  > a screen's detail file. The "Mobile UI Kit v3" artifact is retired and
+  never read. A BR or UC beats all three. `DESIGN.md` is generated from
+  `tokens.json`; a PR that changes the visual system changes `tokens.json` and
+  runs `tools/design/generate.py`, and one that changes a screen updates its
+  detail file and its row in the screen index.
+- **Removed theme names stay removed.** Never declare a name listed in
+  `tools/design/removed_symbols.json` again, in any form (alias, typedef,
+  re-export, forwarding getter, a "compat" or "legacy" class), not even
+  temporarily. A compile error after a removal is the work list: fix every
+  use, with `tools/design/codemod.py` for the mechanical renames.
 - **Stack and layers:** the layer architecture and folder names follow
   [ADR-010](docs/shared/decisions/ADR-010-kien-truc-lop-v8-va-tooling.md);
   Riverpod and Drift, not BLoC or Freezed, whatever an ECC skill shows.

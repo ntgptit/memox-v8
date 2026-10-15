@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/monitoring/presentation/controllers/monitoring_list_controller.dart';
 import 'package:memox/features/monitoring/presentation/controllers/pending_logs_controller.dart';
 import 'package:memox/features/monitoring/presentation/states/monitoring_tab_state.dart';
@@ -14,6 +13,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 28, Monitoring (ADR-018 §8): the admin reads the app's logs and
 /// triages them. Not in the kit; shaped with Impeccable 2026-09-29. Two
@@ -72,7 +72,6 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.monitoringTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,
@@ -82,10 +81,10 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.gutter,
-              AppSpacing.control,
-              AppSpacing.gutter,
+            padding: EdgeInsets.fromLTRB(
+              context.dimens.space16,
+              context.dimens.space8,
+              context.dimens.space16,
               0,
             ),
             child: MxSegmentedTray<MonitoringTab>(

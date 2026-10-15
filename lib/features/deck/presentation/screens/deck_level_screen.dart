@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_content_type_model.dart';
 import 'package:memox/features/deck/domain/models/deck_create_option_model.dart';
@@ -200,11 +200,7 @@ class _OpenDeck extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final provider = deckViewProvider(deckId);
-    final bar = MxAppBar(
-      title: l10n.navLibrary,
-      density: MxAppBarDensity.content,
-      leading: const _BackButton(),
-    );
+    final bar = MxAppBar(title: l10n.navLibrary, leading: const _BackButton());
     return switch (ref.watch(provider)) {
       AsyncData(value: Ok(:final value)) => _OpenDeckContent(
         view: value,
@@ -366,8 +362,8 @@ class _OpenDeckContent extends ConsumerWidget {
           ? cardAppBar(view, const _BackButton(), deckActions)
           : MxAppBar(
               title: deck.name,
-              density: MxAppBarDensity.content,
               leading: const _BackButton(),
+              isLastActionText: isReordering,
               actions: isReordering
                   ? [DeckReorderDoneWidget(parentId: deck.id)]
                   : [deckActions],

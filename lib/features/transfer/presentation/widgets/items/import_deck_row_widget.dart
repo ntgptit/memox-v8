@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
@@ -59,30 +58,21 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final group = widget.group;
     final clash = group.clash;
     final isExisting = group.destination is IntoExistingDeck;
     final isUndecided = group.destination is Undecided;
     final problem = group.nameProblem;
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.gutter,
-        vertical: AppSpacing.grouped,
+      padding: EdgeInsets.symmetric(
+        horizontal: context.dimens.space16,
+        vertical: context.dimens.space12,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           if (group.isDefault) ...[
-            // MxTextField's label is for TalkBack; the caller shows its own
-            // (critique 2026-10-08, F2).
-            ExcludeSemantics(
-              child: Text(
-                l10n.importDeckNameLabel,
-                style: styles.rowDescription,
-              ),
-            ),
             MxTextField(
               controller: _name,
               label: l10n.importDeckNameLabel,
@@ -96,10 +86,10 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
               group.name,
               maxLines: _maxNameLines,
               overflow: TextOverflow.ellipsis,
-              style: styles.contentTitle,
+              style: context.texts.titleMedium,
             ),
           Row(
-            spacing: AppSpacing.control,
+            spacing: context.dimens.space8,
             children: [
               // Undecided is neither New nor Existing until the user
               // chooses (critique 2026-10-08, F1).
@@ -115,7 +105,9 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
                   widget.willWrite == 0
                       ? l10n.importDeckNothing
                       : l10n.importDeckCards(widget.willWrite),
-                  style: styles.rowDescription,
+                  style: context.texts.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],
@@ -144,7 +136,12 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
               onSelected: widget.onChoose,
             ),
             if (_consequenceOf(group, l10n) case final consequence?)
-              Text(consequence, style: styles.rowDescription),
+              Text(
+                consequence,
+                style: context.texts.bodyMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
+              ),
           ],
           if (clash != null && !clash.canHoldCards)
             MxNote.hint(text: l10n.importDeckHoldsDecksNote),

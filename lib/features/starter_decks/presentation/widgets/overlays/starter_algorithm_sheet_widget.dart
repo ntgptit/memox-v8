@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/starter_decks/domain/models/starter_library_entry_model.dart';
@@ -15,6 +14,7 @@ import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The scheduler a copy of [entry] studies under (UC-STARTER-001 step 6;
 /// kit 03 `choose`). Completes with what the add did, or null when the
@@ -68,39 +68,51 @@ class _StarterAlgorithmSheetWidgetState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final state = ref.watch(starterAddControllerProvider);
     final isAdding = state.isAdding;
     const schedulers = [SchedulerType.sm2, SchedulerType.eightBox];
     return MxBottomSheet(
       isHeld: isAdding,
       header: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.card,
-          AppSpacing.micro,
-          AppSpacing.card,
-          AppSpacing.control,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space24,
+          context.dimens.space4,
+          context.dimens.space24,
+          context.dimens.space8,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
           children: [
             Text(
               l10n.starterSheetTitle(widget.entry.title),
-              style: styles.compactTitle,
+              style: context.texts.titleSmall,
             ),
             // The lock, before the choice (BR-SRS-003; critique 2026-09-30
             // part 3d-2, E6). The card above states the counts.
-            Text(l10n.deckSchedulerNote, style: styles.footerCaption),
-            const SizedBox(height: AppSpacing.control),
+            Text(
+              l10n.deckSchedulerNote,
+              style: context.texts.labelSmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
+            SizedBox(height: context.dimens.space8),
             // A field label and its Required caption (critique 2026-09-30
             // part 2, P3).
             Wrap(
-              spacing: AppSpacing.micro,
+              spacing: context.dimens.space4,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Text(l10n.starterSheetAlgorithmLabel, style: styles.fieldLabel),
-                Text(l10n.starterSheetRequired, style: styles.requiredMarker),
+                Text(
+                  l10n.starterSheetAlgorithmLabel,
+                  style: context.texts.labelMedium,
+                ),
+                Text(
+                  l10n.starterSheetRequired,
+                  style: context.texts.bodyMedium?.copyWith(
+                    color: context.accentColor,
+                  ),
+                ),
               ],
             ),
           ],
@@ -133,11 +145,11 @@ class _StarterAlgorithmSheetWidgetState
           ),
           if (state.hasFailed)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
-                AppSpacing.control,
-                AppSpacing.gutter,
-                AppSpacing.control,
+              padding: EdgeInsets.fromLTRB(
+                context.dimens.space16,
+                context.dimens.space8,
+                context.dimens.space16,
+                context.dimens.space8,
               ),
               child: MxInlineBanner(
                 tone: MxBannerTone.danger,

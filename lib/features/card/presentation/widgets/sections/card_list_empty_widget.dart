@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/presentation/states/card_list_request_state.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';

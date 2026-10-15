@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/presentation/controllers/code_controller.dart';
 import 'package:memox/features/account/presentation/states/code_state.dart';
@@ -98,27 +96,31 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
       codeControllerProvider(widget.email, widget.purpose),
     );
     final problem = state.problem;
-    final styles = context.textStyles;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Semantics(
           header: true,
           namesRoute: true,
-          child: Text(l10n.accountCodeTitle, style: styles.screenTitle),
+          child: Text(l10n.accountCodeTitle, style: context.texts.titleLarge),
         ),
-        const SizedBox(height: AppSpacing.control),
+        SizedBox(height: context.dimens.space8),
         // TalkBack reads the lead and its address as one sentence (DEV-168).
         MergeSemantics(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l10n.accountCodeSentTo, style: styles.emptyBody),
-              Text(widget.email, style: styles.emptyBodyStrong),
+              Text(
+                l10n.accountCodeSentTo,
+                style: context.texts.bodyMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
+              ),
+              Text(widget.email, style: context.texts.titleSmall),
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.section),
+        SizedBox(height: context.dimens.space24),
         MxTextField(
           controller: _code,
           variant: MxTextFieldVariant.code,
@@ -128,7 +130,7 @@ class _CodeFormWidgetState extends ConsumerState<CodeFormWidget> {
           onChanged: (text) => unawaited(_changed(text)),
           errorText: problem == null ? null : signInProblemText(l10n, problem),
         ),
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         _WaitLine(
           isVerifying: state.isVerifying,
           // A resend in flight has no wait left: the button shows and spins.
@@ -171,13 +173,15 @@ class _WaitLine extends StatelessWidget {
     final l10n = context.l10n;
     final wait = this.wait;
     return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
+      constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
       child: Center(
         child: switch ((isVerifying, wait)) {
           (true, _) => MxSpinner(semanticLabel: l10n.commonLoading),
           (false, final String time) => Text(
             l10n.accountResendIn(time),
-            style: context.textStyles.footerCaption,
+            style: context.texts.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
           // A polite live region on the button's own node, so TalkBack
           // speaks its label when the wait ends (DEV-168, final review I1).

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/search/presentation/controllers/search_screen_controller.dart';
 import 'package:memox/features/search/presentation/widgets/sections/search_body_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -64,12 +64,12 @@ class _LibrarySearchScreenState extends ConsumerState<LibrarySearchScreen> {
     final l10n = context.l10n;
     return MxAppShell(
       appBar: MxAppBar(
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
+        isTitleField: true,
         titleWidget: MxSearchField(
           controller: _query,
           focusNode: _focus,

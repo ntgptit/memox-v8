@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/progress/domain/models/progress_level_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_range_provider.dart';
@@ -68,14 +67,16 @@ class ProgressLevelListWidget extends ConsumerWidget {
           ),
         ),
         if (note != null) ...[
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
           MxNote(text: note),
         ],
-        const SizedBox(height: AppSpacing.gutter),
+        SizedBox(height: context.dimens.space16),
         Text(
           l10n.progressFooter,
           textAlign: TextAlign.center,
-          style: context.textStyles.footerCaption,
+          style: context.texts.labelSmall?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
         ),
       ],
     );

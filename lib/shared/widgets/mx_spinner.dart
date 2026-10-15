@@ -1,10 +1,11 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+
+/// One spinner revolution.
+const Duration _cycle = Duration(milliseconds: 800);
 
 /// The icon step a spinner is drawn at, so it drops into a button, a row or a
 /// card without a new number.
@@ -39,7 +40,7 @@ class _MxSpinnerState extends State<MxSpinner>
     with SingleTickerProviderStateMixin {
   late final AnimationController _turns = AnimationController(
     vsync: this,
-    duration: AppDurations.spinnerCycle,
+    duration: _cycle,
   )..repeat();
 
   @override
@@ -52,10 +53,10 @@ class _MxSpinnerState extends State<MxSpinner>
   Widget build(BuildContext context) {
     final colors = context.colors;
     final dimension = switch (widget.size) {
-      MxSpinnerSize.inline => AppIconSize.inline,
-      MxSpinnerSize.compact => AppIconSize.compact,
-      MxSpinnerSize.standard => AppIconSize.standard,
-      MxSpinnerSize.large => AppIconSize.large,
+      MxSpinnerSize.inline => context.dimens.sizeIconInline,
+      MxSpinnerSize.compact => context.dimens.sizeIconCompact,
+      MxSpinnerSize.standard => context.dimens.sizeIcon,
+      MxSpinnerSize.large => context.dimens.sizeIconTile,
     };
     final ring = SizedBox.square(
       dimension: dimension,
@@ -63,9 +64,8 @@ class _MxSpinnerState extends State<MxSpinner>
         turns: _turns,
         child: CustomPaint(
           painter: _RingPainter(
-            color: widget.isOnFill
-                ? colors.onPrimary
-                : context.semanticColors.primaryText,
+            color: widget.isOnFill ? colors.onPrimary : context.accentColor,
+            stroke: context.dimens.strokeIndicator,
           ),
         ),
       ),
@@ -77,9 +77,10 @@ class _MxSpinnerState extends State<MxSpinner>
 }
 
 class _RingPainter extends CustomPainter {
-  const _RingPainter({required this.color});
+  const _RingPainter({required this.color, required this.stroke});
 
   final Color color;
+  final double stroke;
 
   /// Three quarters drawn, one open.
   static const double _sweep = 1.5 * math.pi;
@@ -87,7 +88,7 @@ class _RingPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final ring = (Offset.zero & size).deflate(AppStroke.indicator / 2);
+    final ring = (Offset.zero & size).deflate(stroke / 2);
     canvas.drawArc(
       ring,
       _start,
@@ -96,7 +97,7 @@ class _RingPainter extends CustomPainter {
       Paint()
         ..color = color
         ..style = PaintingStyle.stroke
-        ..strokeWidth = AppStroke.indicator,
+        ..strokeWidth = stroke,
     );
   }
 

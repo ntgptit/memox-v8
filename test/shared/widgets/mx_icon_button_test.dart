@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
 import '../../support/widget_harness.dart';
@@ -12,7 +14,7 @@ final _painted = find.descendant(
 );
 
 void main() {
-  testWidgets('a 36 ink circle, a 20 glyph and a 48 target', (tester) async {
+  testWidgets('a round sizeControl box with a sizeIcon glyph', (tester) async {
     await pumpMx(
       tester,
       MxIconButton(
@@ -22,11 +24,15 @@ void main() {
       ),
     );
 
-    expect(tester.getSize(_painted.first), const Size.square(36));
-    expect(tester.getSize(find.byIcon(AppIcons.more)), const Size.square(20));
+    const dimens = AppDimens();
+    expect(tester.getSize(_painted.first), Size.square(dimens.sizeControl));
+    expect(
+      tester.getSize(find.byIcon(AppIcons.more)),
+      Size.square(dimens.sizeIcon),
+    );
     expect(
       tester.getSize(find.byType(IconButton)).height,
-      greaterThanOrEqualTo(48),
+      greaterThanOrEqualTo(dimens.sizeControl),
     );
     await expectAccessibleTargets(tester);
   });
@@ -42,7 +48,7 @@ void main() {
     );
     final glyph = tester.element(find.byIcon(AppIcons.search));
 
-    expect(IconTheme.of(glyph).color, AppColorSchemes.light.onSurface);
+    expect(IconTheme.of(glyph).color, lightColorScheme.onSurface);
     expect(tester.widget<Material>(_painted.first).color?.a ?? 0, 0);
   });
 
@@ -71,7 +77,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('disabled dims to 0.38', (tester) async {
+  testWidgets('disabled follows the disabled opacity', (tester) async {
     await pumpMx(
       tester,
       const MxIconButton(
@@ -80,17 +86,13 @@ void main() {
         onPressed: null,
       ),
     );
+    final context = tester.element(find.byIcon(AppIcons.close));
 
     expect(
-      tester
-          .widget<Opacity>(
-            find.ancestor(
-              of: find.byType(IconButton),
-              matching: find.byType(Opacity),
-            ),
-          )
-          .opacity,
-      0.38,
+      IconTheme.of(context).color,
+      context.colors.onSurface.withValues(
+        alpha: context.dimens.opacityDisabledContent,
+      ),
     );
   });
 }

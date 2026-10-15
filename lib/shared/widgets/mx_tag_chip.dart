@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A tag as read-only metadata, in two densities: 22 on its own line, 18
@@ -26,12 +24,12 @@ class MxTagChip extends StatelessWidget {
       maxWidth: _maxWidth,
     ),
     child: DecoratedBox(
-      decoration: BoxDecoration(
+      decoration: ShapeDecoration(
         color: context.colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(AppRadius.full),
+        shape: const StadiumBorder(),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+        padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -41,7 +39,9 @@ class MxTagChip extends StatelessWidget {
                 maxLines: 1,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: context.textStyles.tagLabel,
+                style: context.texts.labelSmall?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
             ),
           ],

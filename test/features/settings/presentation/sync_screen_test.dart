@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_failure.dart';
 import 'package:memox/core/sync/sync_status.dart';
@@ -323,7 +323,7 @@ void main() {
     expect(syncCheck(), findsOneWidget);
     expect(
       tester.widget<Icon>(syncCheck()).color,
-      tester.element(syncCheck()).semanticColors.success,
+      tester.element(syncCheck()).mxColors.success,
     );
   });
 

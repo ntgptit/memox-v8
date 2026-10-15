@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -21,7 +23,7 @@ void main() {
   });
 
   testWidgets('primary takes the primary text, muted the variant text, plain '
-      'the surface text', (tester) async {
+      'the surface ink', (tester) async {
     await pumpMx(
       tester,
       const Column(
@@ -40,13 +42,33 @@ void main() {
         ],
       ),
     );
-    Color? foreground(String value) =>
+    Color? ink(String value) =>
         tester.widget<Text>(find.text(value)).style?.color;
-    final scheme = AppColorSchemes.light;
+    final scheme = lightColorScheme;
 
-    expect(foreground('1'), MxSemanticColors.light.primaryText);
-    expect(foreground('2'), scheme.onSurface);
-    expect(foreground('3'), scheme.onSurfaceVariant);
+    expect(ink('1'), accentOf(scheme));
+    expect(ink('2'), scheme.onSurface);
+    expect(ink('3'), scheme.onSurfaceVariant);
+  });
+
+  // DEV-231 (UI-REV-002): a boxed tile sits on the muted fill, not the
+  // card's own ground, so it stays a visible box on the study-entry card.
+  testWidgets('a boxed tile fills with surfaceContainerLow', (tester) async {
+    await pumpMx(
+      tester,
+      const MxStatTile(
+        value: '4',
+        label: 'Due',
+        layout: MxStatTileLayout.boxed,
+      ),
+    );
+    final box = tester.widget<DecoratedBox>(
+      find.ancestor(of: find.text('4'), matching: find.byType(DecoratedBox)),
+    );
+    expect(
+      (box.decoration as BoxDecoration).color,
+      lightColorScheme.surfaceContainerLow,
+    );
   });
 
   testWidgets('the label is upper-cased and a boxed tile does not clip', (
@@ -90,27 +112,6 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  // DEV-231 (UI-REV-002): a boxed tile sits on the Muted Fill, not the
-  // card's own surface, so it stays a visible box on the plain study-entry
-  // card (ruling E5 made the hero a plain card on surfaceContainerLowest).
-  testWidgets('a boxed tile fills with the Muted Fill', (tester) async {
-    await pumpMx(
-      tester,
-      const MxStatTile(
-        value: '4',
-        label: 'Due',
-        layout: MxStatTileLayout.boxed,
-      ),
-    );
-    final box = tester.widget<DecoratedBox>(
-      find.ancestor(of: find.text('4'), matching: find.byType(DecoratedBox)),
-    );
-    expect(
-      (box.decoration as BoxDecoration).color,
-      AppColorSchemes.light.surfaceContainerLow,
-    );
-  });
-
   testWidgets('the label is an eyebrow (critique 2026-09-30 part 2, P1)', (
     tester,
   ) async {
@@ -118,7 +119,11 @@ void main() {
     final label = find.text('WRONG TURNS');
     expect(
       tester.widget<Text>(label).style,
-      tester.element(label).textStyles.eyebrow,
+      tester
+          .element(label)
+          .texts
+          .labelSmall
+          ?.copyWith(color: tester.element(label).colors.onSurfaceVariant),
     );
   });
 }

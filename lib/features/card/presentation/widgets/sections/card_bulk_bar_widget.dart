@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
@@ -40,10 +39,10 @@ class _BulkCommand extends StatelessWidget {
         onTap: action.onTap,
         isEnabled: action.onTap != null,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.control),
+          padding: EdgeInsets.symmetric(vertical: context.dimens.space8),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
               Icon(action.icon),
               Text(
@@ -51,7 +50,9 @@ class _BulkCommand extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: context.textStyles.rowDescription,
+                style: context.texts.bodyMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
             ],
           ),

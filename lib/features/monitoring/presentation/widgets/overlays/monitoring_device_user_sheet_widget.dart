@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The two ids of the device and user sheet; empty text is no id.
 typedef DeviceUserChoice = ({String device, String user});
@@ -86,19 +87,14 @@ class _MonitoringDeviceUserSheetWidgetState
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+        padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
         child: Column(
-          spacing: AppSpacing.grouped,
+          spacing: context.dimens.space12,
           children: [
-            MxTextField(
-              controller: _device,
-              label: l10n.monitoringDeviceLabel,
-              hintText: l10n.monitoringDeviceLabel,
-            ),
+            MxTextField(controller: _device, label: l10n.monitoringDeviceLabel),
             MxTextField(
               controller: _user,
               label: l10n.monitoringUserLabel,
-              hintText: l10n.monitoringUserLabel,
               errorText: _hasUserError ? l10n.monitoringUserInvalid : null,
               onChanged: (_) {
                 if (_hasUserError) setState(() => _hasUserError = false);

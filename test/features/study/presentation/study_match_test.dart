@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -243,7 +242,12 @@ void main() {
     final scheme = Theme.of(tester.element(find.text('apple'))).colorScheme;
 
     expect(_groundOf(tester, 'apple'), scheme.surfaceContainerLow);
-    expect(_groundOf(tester, 'term 1'), scheme.surfaceContainerLowest);
+    expect(
+      _groundOf(tester, 'term 1'),
+      Theme.of(tester.element(find.text('apple')))
+          .extension<MxColorsExtension>()!
+          .cardSurface,
+    );
   });
 
   libraryTest('tiles take no tap while a wrong pair flashes (BR-STUDY-004)', (
@@ -433,7 +437,7 @@ void main() {
         matching: find.byType(TweenAnimationBuilder<Decoration>),
       ),
     );
-    expect(box.duration, AppDurations.standard);
+    expect(box.duration, Durations.short4);
   });
 
   libraryTest('a tile keeps its content in place as its tone changes, and '
@@ -450,7 +454,7 @@ void main() {
 
     await tester.tap(find.text('term 1'));
     await tester.pump();
-    await tester.pump(AppDurations.standard ~/ 2);
+    await tester.pump(Durations.short4 ~/ 2);
     final midForeground = foregroundOf();
     await tester.pumpAndSettle();
 

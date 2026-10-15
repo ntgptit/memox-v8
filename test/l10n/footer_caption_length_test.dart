@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
-import 'package:memox/core/theme/mx_text_styles.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 // Every MxFooterBar caption stays on one line at a 360dp phone, in English
@@ -40,12 +38,8 @@ Map<String, String> _captions(AppLocalizations l10n) => {
 
 void main() {
   final theme = buildLightTheme();
-  final style = MxTextStyles(
-    theme.textTheme,
-    theme.colorScheme,
-    theme.extension<MxSemanticColors>()!,
-  ).footerCaption;
-  const width = _phone - 2 * AppSpacing.gutter;
+  final style = theme.textTheme.labelSmall!;
+  final width = _phone - 2 * const AppDimens().space16;
 
   for (final locale in const [Locale('en'), Locale('vi')]) {
     final l10n = lookupAppLocalizations(locale);

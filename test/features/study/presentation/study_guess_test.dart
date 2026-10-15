@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_guess_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -129,7 +128,7 @@ void main() {
           )
           .first,
     );
-    expect(cherry.opacity, AppOpacity.muted);
+    expect(cherry.opacity, const AppDimens().opacityMuted);
     expect(tester.takeAnnouncements().map((a) => a.message), [
       _en.studyGuessAnnounceWrong('apple'),
     ]);
@@ -225,7 +224,7 @@ void main() {
       final body = tester.getRect(find.byType(StudyGuessWidget));
       expect(
         tester.getCenter(find.byType(MxErrorState)).dy,
-        closeTo(body.center.dy - AppSpacing.section / 2, 1),
+        closeTo(body.center.dy - const AppDimens().space24 / 2, 1),
       );
       expect(
         find.descendant(

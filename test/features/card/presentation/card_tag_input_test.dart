@@ -54,7 +54,13 @@ Future<List<String>> _tagsOf(LibraryEnv env, String front) async => [
 ];
 
 Future<void> _openTag(WidgetTester tester, String name) async {
-  await tester.ensureVisible(find.text(_en.cardAddTag));
+  // The form is a lazy list: the chip may be built below the viewport, where a
+  // finder skips it as offstage.
+  await tester.scrollUntilVisible(
+    find.text(_en.cardAddTag, skipOffstage: false),
+    100,
+    scrollable: find.byType(Scrollable).first,
+  );
   await tester.pumpAndSettle();
   await tester.tap(find.text(_en.cardAddTag));
   await tester.pump();

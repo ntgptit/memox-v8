@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_action_pair.dart';
@@ -26,7 +24,7 @@ class MxSheetActions extends StatelessWidget {
        _singleTone = null;
 
   /// One action across the row: a lone Close, Done or OK (SW-REV-008). A
-  /// lone Close stays primary (The One Indigo Rule, R8); a dismiss beside
+  /// lone Close stays primary (The One Accent Rule, R8); a dismiss beside
   /// choices is outline.
   const MxSheetActions.single({
     super.key,
@@ -81,8 +79,8 @@ class MxSheetActions extends StatelessWidget {
   /// (MxDialog.isHeld, MxBottomSheet.isHeld), so Back and the scrim wait too.
   final bool isConfirmLoading;
 
-  /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of
-  /// the dialog's 16 all round.
+  /// The sheet form: a divider rule on top and 8 16 16 padding, instead of
+  /// the dialog's 24 on the sides and below (the theme's actionsPadding).
   final bool isInSheet;
   final List<Widget> children;
 
@@ -106,7 +104,7 @@ class MxSheetActions extends StatelessWidget {
             ],
           )
         : children.isNotEmpty
-        ? Row(spacing: AppSpacing.control, children: children)
+        ? Row(spacing: context.dimens.space8, children: children)
         : MxActionPair(
             leading: MxButton(
               label: cancelLabel!,
@@ -129,10 +127,9 @@ class MxSheetActions extends StatelessWidget {
             ),
           );
     if (!isInSheet) {
-      // A dialog's pair, 16 in on the edge its title and body share
-      // (DEV-166).
+      // A dialog's pair, on the edge its title and body share (DEV-166).
       return Padding(
-        padding: const EdgeInsets.all(AppSpacing.gutter),
+        padding: DialogTheme.of(context).actionsPadding!,
         child: row,
       );
     }
@@ -140,17 +137,17 @@ class MxSheetActions extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: context.semanticColors.border,
-            width: AppStroke.hairline,
+            color: context.mxColors.divider,
+            width: context.dimens.strokeHairline,
           ),
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.gutter,
-          AppSpacing.control,
-          AppSpacing.gutter,
-          AppSpacing.gutter,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space16,
+          context.dimens.space8,
+          context.dimens.space16,
+          context.dimens.space16,
         ),
         child: row,
       ),

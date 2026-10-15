@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
@@ -11,7 +11,7 @@ Finder _button(String label) => find.widgetWithText(MxButton, label);
 Widget _width(Widget child) => SizedBox(width: 340, child: child);
 
 void main() {
-  testWidgets('cancel outline at 1 share, confirm primary at 1.3; 16 inset', (
+  testWidgets('cancel outline at 1 share, confirm primary at 1.3; 24 inset', (
     tester,
   ) async {
     await pumpMx(
@@ -25,9 +25,9 @@ void main() {
         ),
       ),
     );
-    // 340 − 16 − 16 − 8 = 300, split 1 : 1 (DEV-179).
-    expect(tester.getSize(_button('Cancel')).width, closeTo(150, 0.01));
-    expect(tester.getSize(_button('Move')).width, closeTo(150, 0.01));
+    // 340 − 24 − 24 − 8 = 284, split 1 : 1 (DEV-179).
+    expect(tester.getSize(_button('Cancel')).width, closeTo(142, 0.01));
+    expect(tester.getSize(_button('Move')).width, closeTo(142, 0.01));
     expect(
       tester.widget<MxButton>(_button('Cancel')).tone,
       MxButtonTone.outline,
@@ -36,7 +36,7 @@ void main() {
     expect(
       tester.getTopLeft(_button('Cancel')) -
           tester.getTopLeft(find.byType(MxSheetActions)),
-      const Offset(16, 16),
+      const Offset(24, 0),
     );
   });
 
@@ -142,8 +142,10 @@ void main() {
     expect(cancels, 1);
   });
 
-  testWidgets('in a sheet: a ghost rule on top, then 8 16 16', (tester) async {
-    final ghost = MxSemanticColors.light.border;
+  testWidgets('in a sheet: a divider rule on top, then 8 16 16', (
+    tester,
+  ) async {
+    final rule = MxColorsExtension.light.divider;
     await pumpMx(
       tester,
       _width(
@@ -171,7 +173,7 @@ void main() {
                 .border!
             as Border;
 
-    expect(edge.top, BorderSide(color: ghost));
+    expect(edge.top, BorderSide(color: rule));
     expect(
       tester.getTopLeft(_button('Cancel')) -
           tester.getTopLeft(find.byType(MxSheetActions)),

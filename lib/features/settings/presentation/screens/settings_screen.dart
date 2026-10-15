@@ -6,7 +6,7 @@ import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/sync/sync_status.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/states/settings_state.dart';

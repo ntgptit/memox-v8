@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
 
-/// The on/off switch (Settings, Reminder). One size ships; the thumb slides,
-/// it does not resize. Its 44×26 track sits inside a 48 touch area.
+/// The on/off switch (Settings, Reminder): Material 3's `Switch`, styled by
+/// the theme's `switchTheme`. A 52×32 track in a 48 tall touch box; the handle
+/// is 16 off, 24 on and 28 while pressed. A focused one also draws the focus
+/// ring round the track, as the buttons and chips do.
 class MxToggle extends StatefulWidget {
   const MxToggle({
     super.key,
@@ -28,86 +25,48 @@ class MxToggle extends StatefulWidget {
 }
 
 class _MxToggleState extends State<MxToggle> {
-  static const double _trackWidth = 44;
-  static const double _trackHeight = 26;
-  static const double _thumbSize = 20;
-  static const double _thumbInset = 3;
+  /// Material's M3 switch track, which the focus ring has to hug. The Switch
+  /// owns these numbers and exposes no focus indicator of its own.
+  static const _track = Size(52, 32);
 
   var _hasFocus = false;
 
-  /// The focus ring, drawn over the track so it never pads the thumb.
-  BoxDecoration? _ring(BuildContext context) {
-    if (!_hasFocus) return null;
-    return BoxDecoration(
-      borderRadius: BorderRadius.circular(AppRadius.full),
-      border: Border.all(
-        color: context.semanticColors.focusRing,
-        width: AppStroke.focus,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final semantic = context.semanticColors;
-    final onChanged = widget.onChanged;
-    final duration = MediaQuery.disableAnimationsOf(context)
-        ? Duration.zero
-        : AppDurations.toggle;
-    final track = AnimatedContainer(
-      key: const ValueKey('mx-toggle-track'),
-      duration: duration,
-      curve: Easing.standard,
-      width: _trackWidth,
-      height: _trackHeight,
-      padding: const EdgeInsets.all(_thumbInset),
-      decoration: BoxDecoration(
-        color: widget.isOn ? semantic.primaryTrack : semantic.neutralTrack,
-        borderRadius: BorderRadius.circular(AppRadius.full),
-      ),
-      // A foreground ring, so it never pads the thumb (ruling R5).
-      foregroundDecoration: _ring(context),
-      child: AnimatedAlign(
-        duration: duration,
-        curve: Easing.standard,
-        alignment: widget.isOn
-            ? AlignmentDirectional.centerEnd
-            : AlignmentDirectional.centerStart,
-        child: DecoratedBox(
-          key: const ValueKey('mx-toggle-thumb'),
-          decoration: BoxDecoration(
-            // On, the primary thumb on the light primary track; off, the
-            // white thumb on the neutral track (spec 2026-10-10 §5.2).
-            color: widget.isOn ? colors.primary : colors.onPrimary,
-            shape: BoxShape.circle,
-            boxShadow: AppShadows.whisper(colors),
-          ),
-          child: const SizedBox.square(dimension: _thumbSize),
-        ),
-      ),
-    );
-    final control = MergeSemantics(
+    final t = ThemeTokens.of(context);
+    return MergeSemantics(
       child: Semantics(
-        toggled: widget.isOn,
-        // A toggle that cannot change says so (SW-REV-006).
-        enabled: onChanged != null,
         label: widget.semanticLabel,
-        child: InkWell(
-          onTap: onChanged == null ? null : () => onChanged(!widget.isOn),
-          onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
-          customBorder: const StadiumBorder(),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: AppSize.touchTarget,
-              minHeight: AppSize.touchTarget,
+        child: Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            // The Switch dims itself when disabled: no Opacity here.
+            Switch(
+              value: widget.isOn,
+              onChanged: widget.onChanged,
+              onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
             ),
-            child: Center(widthFactor: 1, heightFactor: 1, child: track),
-          ),
+            if (_hasFocus)
+              IgnorePointer(
+                child: DecoratedBox(
+                  key: const ValueKey('mx-toggle-focus-ring'),
+                  decoration: ShapeDecoration(
+                    shape: MxFocusRingBorder(
+                      base: const StadiumBorder(),
+                      ring: BorderSide(
+                        color: t.scheme.primary,
+                        width: t.dimens.strokeFocus,
+                      ),
+                      gap: t.dimens.strokeFocusGap,
+                    ),
+                  ),
+                  child: SizedBox.fromSize(size: _track),
+                ),
+              ),
+          ],
         ),
       ),
     );
-    if (onChanged != null) return control;
-    return Opacity(opacity: AppOpacity.disabled, child: control);
   }
 }

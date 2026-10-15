@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// Opens [builder] (usually an MxBottomSheet) on the platform modal route
-/// over a 56% scrim, sliding up over 260ms. It opens instantly under reduced
-/// motion (ruling O7). A scrim tap or a drag down dismisses it.
+/// over the theme's scrim, sliding up over `Durations.medium2`. It opens
+/// instantly under reduced motion (ruling O7). A scrim tap or a drag down
+/// dismisses it.
 Future<T?> showMxBottomSheet<T>(
   BuildContext context, {
   required WidgetBuilder builder,
@@ -21,7 +19,7 @@ Future<T?> showMxBottomSheet<T>(
     sheetAnimationStyle: AnimationStyle(
       duration: MediaQuery.disableAnimationsOf(context)
           ? Duration.zero
-          : AppDurations.sheet,
+          : Durations.medium2,
       curve: Easing.standard,
     ),
   );
@@ -33,7 +31,8 @@ Future<T?> showMxBottomSheet<T>(
 ///   O12);
 /// - the fill runs under the gesture bar, and the content stays above it.
 ///
-/// It is a Material, so the ripple of a row inside is visible.
+/// It is a Material, so the ripple of a row inside is visible. Its surface,
+/// elevation (1, no drawn shadow) and drag handle are the theme's sheet.
 class MxBottomSheet extends StatelessWidget {
   const MxBottomSheet({
     super.key,
@@ -53,7 +52,7 @@ class MxBottomSheet extends StatelessWidget {
   /// (a chip, a 16 inset); most sheets pass [title] instead.
   final Widget? header;
 
-  /// The sheet's head: the compact title 20 in, at most two lines, and
+  /// The sheet's head: the compact title 24 in, at most two lines, and
   /// [subtitle] under it in the note role (SW-REV-008). The title is a
   /// heading to TalkBack; it names the route on iOS only, since on Android
   /// the modal route's own "Dialog" label wins.
@@ -73,14 +72,11 @@ class MxBottomSheet extends StatelessWidget {
   final bool isHeld;
 
   static const double _maxHeightShare = 0.85;
-  static const double _grabberWidth = 36;
-  static const double _grabberHeight = 4;
-
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     final sheets = Theme.of(context).bottomSheetTheme;
-    final shape = context.sheetShape;
+    final shape = sheets.shape! as RoundedRectangleBorder;
+    final handle = sheets.dragHandleSize!;
     // A field inside keeps above the keyboard (§9 row 64): the sheet sits on
     // the IME inset and caps itself within what is left.
     final inset = MediaQuery.viewInsetsOf(context).bottom;
@@ -89,13 +85,13 @@ class MxBottomSheet extends StatelessWidget {
         maxHeight:
             (MediaQuery.sizeOf(context).height - inset) * _maxHeightShare,
       ),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: shape.borderRadius,
-          boxShadow: AppShadows.chrome(colors),
-        ),
+      child: MxTintBase(
+        // What the sheet holds is tinted over its own ground.
+        color: sheets.backgroundColor ?? context.colors.surfaceContainerLow,
         child: Material(
           color: sheets.backgroundColor,
+          elevation: sheets.modalElevation!,
+          shadowColor: sheets.shadowColor,
           shape: shape,
           clipBehavior: Clip.antiAlias,
           child: SafeArea(
@@ -107,28 +103,27 @@ class MxBottomSheet extends StatelessWidget {
                 if (hasGrabber)
                   // Material's drag-handle semantics: a screen reader can
                   // dismiss by the grabber (§9 row 65).
-                  Semantics(
-                    key: const ValueKey('mx-sheet-grabber'),
-                    container: true,
-                    button: true,
-                    label: MaterialLocalizations.of(context)
-                        .modalBarrierDismissLabel,
-                    onTap: () => Navigator.of(context).maybePop(),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: AppSpacing.control,
-                        bottom: AppSpacing.micro,
-                      ),
-                      child: Center(
-                        child: SizedBox(
-                          width: _grabberWidth,
-                          height: _grabberHeight,
-                          child: DecoratedBox(
-                            // The variant text colour, 3:1 on the sheet.
-                            decoration: BoxDecoration(
-                              color: colors.onSurfaceVariant,
-                              borderRadius: BorderRadius.circular(
-                                AppRadius.full,
+                  Center(
+                    child: Semantics(
+                      key: const ValueKey('mx-sheet-grabber'),
+                      container: true,
+                      button: true,
+                      label: MaterialLocalizations.of(context)
+                          .modalBarrierDismissLabel,
+                      onTap: () => Navigator.of(context).maybePop(),
+                      child: SizedBox.square(
+                        dimension: context.dimens.sizeControl,
+                        child: Center(
+                          child: SizedBox.fromSize(
+                            size: handle,
+                            child: DecoratedBox(
+                              // Variant ink, 3:1 on the sheet; the kit's
+                              // outlineVariant is 1.30 (FE-C1).
+                              decoration: BoxDecoration(
+                                color: sheets.dragHandleColor,
+                                borderRadius: BorderRadius.circular(
+                                  handle.height / 2,
+                                ),
                               ),
                             ),
                           ),
@@ -177,18 +172,17 @@ class _SheetHead extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.card,
-        AppSpacing.micro,
-        AppSpacing.card,
-        AppSpacing.grouped,
+      padding: EdgeInsets.fromLTRB(
+        context.dimens.space24,
+        context.dimens.space4,
+        context.dimens.space24,
+        context.dimens.space12,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.micro,
+        spacing: context.dimens.space4,
         children: [
           // A user's name (a deck, an entry) stops at two lines. A heading;
           // the route's name on iOS (Android keeps the route's own label).
@@ -199,10 +193,16 @@ class _SheetHead extends StatelessWidget {
               title,
               maxLines: _titleMaxLines,
               overflow: TextOverflow.ellipsis,
-              style: styles.compactTitle,
+              style: context.texts.titleSmall,
             ),
           ),
-          if (subtitle case final text?) Text(text, style: styles.noteText),
+          if (subtitle case final text?)
+            Text(
+              text,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
         ],
       ),
     );

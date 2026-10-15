@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
@@ -79,17 +78,17 @@ class _ChooseAllRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.gutter,
-        vertical: AppSpacing.grouped,
+      padding: EdgeInsets.symmetric(
+        horizontal: context.dimens.space16,
+        vertical: context.dimens.space12,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           Text(
             l10n.importDecksTakenNames(groups.length),
-            style: context.textStyles.contentTitle,
+            style: context.texts.titleMedium,
           ),
           MxSegmentedTray<ImportSectionChoice>(
             segments: [

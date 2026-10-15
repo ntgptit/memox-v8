@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/monitoring/presentation/controllers/monitoring_list_controller.dart';
 import 'package:memox/features/monitoring/presentation/states/monitoring_list_state.dart';
 import 'package:memox/features/monitoring/presentation/states/monitoring_load_failure_state.dart';
@@ -8,6 +7,7 @@ import 'package:memox/features/monitoring/presentation/widgets/sections/monitori
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_server_list_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// The Server tab: the search field and the filters above the list, which
 /// alone scrolls. The search field's text is the screen's, so a reset of
@@ -52,11 +52,11 @@ class MonitoringServerTabWidget extends ConsumerWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.gutter,
-            AppSpacing.grouped,
-            AppSpacing.gutter,
-            AppSpacing.control,
+          padding: EdgeInsets.fromLTRB(
+            context.dimens.space16,
+            context.dimens.space12,
+            context.dimens.space16,
+            context.dimens.space8,
           ),
           child: MxSearchField(
             controller: search,

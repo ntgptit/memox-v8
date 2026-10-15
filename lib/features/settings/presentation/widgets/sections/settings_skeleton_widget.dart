@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// A settings page loading as its sections: cards of rows on one pulse
 /// (critique 2026-09-30 part 3d-2, E12).
@@ -37,9 +37,9 @@ class SettingsSkeletonWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             for (final rows in rowsPerSection) ...[
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: AppSpacing.control),
-                child: Align(
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: context.dimens.space8),
+                child: const Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: MxSkeleton(width: _headerWidth),
                 ),

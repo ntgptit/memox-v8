@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/search/presentation/controllers/search_screen_controller.dart';
 import 'package:memox/features/search/presentation/states/search_screen_state.dart';
 import 'package:memox/features/search/presentation/widgets/sections/search_hints_widget.dart';
@@ -13,6 +12,7 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 04's body: one widget per [SearchScreenState] (spec D4, D14).
 class SearchBodyWidget extends ConsumerWidget {
@@ -42,13 +42,13 @@ class SearchBodyWidget extends ConsumerWidget {
       // never upper-cased (critique 2026-09-30 part 2, P4).
       SearchScreenLoading() => MxScreenScroll(
         children: [
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           MxListSectionHeader(label: l10n.searchSearching),
           for (var group = 0; group < _skeletonGroups; group++) ...[
             // The group header's place: a short bar, as the kit draws it.
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: AppSpacing.control),
-              child: Align(
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: context.dimens.space8),
+              child: const Align(
                 alignment: AlignmentDirectional.centerStart,
                 child: MxSkeleton(width: _skeletonHeaderWidth),
               ),
@@ -69,7 +69,7 @@ class SearchBodyWidget extends ConsumerWidget {
       ),
       SearchScreenNoResults(:final term) => MxScreenScroll(
         children: [
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           MxEmptyState(
             icon: AppIcons.searchOff,
             title: l10n.searchNoMatchesTitle(term),
@@ -81,7 +81,7 @@ class SearchBodyWidget extends ConsumerWidget {
       ),
       SearchScreenFailed() => MxScreenScroll(
         children: [
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           MxErrorState(
             title: l10n.searchErrorTitle,
             body: l10n.searchErrorBody,

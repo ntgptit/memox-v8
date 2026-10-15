@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/features/card/presentation/widgets/sections/card_editor_form_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
@@ -163,11 +162,13 @@ void main() {
     await tester.enterText(find.byType(EditableText).at(1), 'cooked rice');
     await tester.pump();
     // The More card is the editor's last block (kit 09).
-    await tester.drag(
-      find.byType(CardEditorFormWidget),
-      const Offset(0, -2000),
-    );
-    await tester.pumpAndSettle();
+    // Dragged from the side margin (a drag that starts on a field selects
+    // text), in two turns: the list's extent grows as the lower blocks are
+    // built.
+    for (var turn = 0; turn < 2; turn++) {
+      await tester.dragFrom(const Offset(4, 400), const Offset(0, -2000));
+      await tester.pumpAndSettle();
+    }
     await _tap(tester, find.widgetWithText(MxButton, _en.cardMoveToTrash));
     expect(find.text(_en.cardDeleteTitle(1)), findsOneWidget);
     await _tap(

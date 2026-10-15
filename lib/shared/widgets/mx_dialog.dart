@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The width cap: 340, 320 or 300, never wider than the column.
 enum MxDialogWidth { small, medium, large }
 
 const double _enterScale = 0.94;
 
-/// Opens [builder] (usually an MxDialog) over a 56% scrim. The dialog fades
-/// in and scales from 0.94 over 200ms; it opens instantly under reduced
+/// Opens [builder] (usually an MxDialog) over the theme's scrim. The dialog
+/// fades in and scales from 0.94 over 200ms; it opens instantly under reduced
 /// motion (ruling O7). A scrim tap dismisses it with null, unless the dialog
 /// is held (MxDialog.isHeld).
 Future<T?> showMxDialog<T>(
@@ -21,10 +19,10 @@ Future<T?> showMxDialog<T>(
   context: context,
   barrierDismissible: true,
   barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-  barrierColor: context.dialogBarrier,
+  barrierColor: DialogTheme.of(context).barrierColor!,
   transitionDuration: MediaQuery.disableAnimationsOf(context)
       ? Duration.zero
-      : AppDurations.standard,
+      : Durations.short4,
   pageBuilder: (dialogContext, _, _) => builder(dialogContext),
   transitionBuilder: (_, animation, _, child) {
     final curved = CurvedAnimation(parent: animation, curve: Easing.standard);
@@ -75,9 +73,11 @@ Future<bool> showMxConfirm(
     ) ??
     false;
 
-/// The centred modal for confirmations and short forms. The text sits 20 in
-/// (ruling O5) and scrolls if it outgrows the screen; [actions], usually
-/// MxSheetActions, stay below it.
+/// The centred modal for confirmations and short forms, as Material 3's
+/// AlertDialog: the text sits 24 in, the title over the body 16 apart, and
+/// scrolls if it outgrows the screen; [actions], usually MxSheetActions, stay
+/// below it, 24 under the text. Title and body read the theme's dialog
+/// (headlineSmall in onSurface, bodyMedium in onSurfaceVariant).
 class MxDialog extends StatelessWidget {
   const MxDialog({
     super.key,
@@ -107,33 +107,33 @@ class MxDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final styles = context.textStyles;
-    // The surface and radius are the theme's dialog (spec §4.6).
+    // The surface, radius, elevation and text roles are the theme's dialog
+    // (spec §4.6).
     final dialogs = DialogTheme.of(context);
-    final shape = context.dialogShape;
+    final shape = dialogs.shape! as RoundedRectangleBorder;
     final hasText = title != null || body != null || content != null;
     final centred = Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.card,
-          vertical: AppSpacing.section,
+        padding: EdgeInsets.symmetric(
+          horizontal: context.dimens.space24,
+          vertical: context.dimens.space24,
         ),
         child: ConstrainedBox(
-          constraints: BoxConstraints(
+          constraints: dialogs.constraints!.copyWith(
             maxWidth: switch (width) {
               MxDialogWidth.large => _largeWidth,
               MxDialogWidth.medium => _mediumWidth,
               MxDialogWidth.small => _smallWidth,
             },
           ),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: shape.borderRadius,
-              boxShadow: AppShadows.overlay(colors),
-            ),
+          child: MxTintBase(
+            // What the dialog holds is tinted over its own ground.
+            color:
+                dialogs.backgroundColor ?? context.colors.surfaceContainerHigh,
             child: Material(
               color: dialogs.backgroundColor,
+              elevation: dialogs.elevation!,
+              shadowColor: dialogs.shadowColor,
               shape: shape,
               clipBehavior: Clip.antiAlias,
               child: Column(
@@ -143,30 +143,18 @@ class MxDialog extends StatelessWidget {
                   if (hasText)
                     Flexible(
                       child: SingleChildScrollView(
-                        // The text sits on the action pair's 16 edge, so
-                        // the pair keeps its width (DEV-166, The Short
-                        // Label Rule).
-                        padding: actions == null
-                            ? const EdgeInsets.fromLTRB(
-                                AppSpacing.gutter,
-                                AppSpacing.card,
-                                AppSpacing.gutter,
-                                AppSpacing.card,
-                              )
-                            : const EdgeInsetsDirectional.only(
-                                start: AppSpacing.gutter,
-                                end: AppSpacing.gutter,
-                                top: AppSpacing.card,
-                              ),
+                        // The text sits on the action pair's edge
+                        // (DEV-166); the pair is 24 below it.
+                        padding: EdgeInsets.all(context.dimens.space24),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: AppSpacing.control,
+                          spacing: context.dimens.space16,
                           children: [
                             if (title case final text?)
-                              Text(text, style: styles.compactTitle),
+                              Text(text, style: dialogs.titleTextStyle),
                             if (body case final text?)
-                              Text(text, style: styles.dialogBody),
+                              Text(text, style: dialogs.contentTextStyle),
                             ?content,
                           ],
                         ),
@@ -195,7 +183,7 @@ class MxDialog extends StatelessWidget {
           padding: MediaQuery.viewInsetsOf(context),
           duration: MediaQuery.disableAnimationsOf(context)
               ? Duration.zero
-              : AppDurations.standard,
+              : Durations.short4,
           curve: Easing.standard,
           child: centred,
         ),

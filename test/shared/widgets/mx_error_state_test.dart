@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
@@ -13,7 +14,7 @@ const _title = 'Could not load decks';
 const _body = 'Nothing was lost. Try again in a moment.';
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('a 52 danger-soft tile with a 24 error glyph, 40 from the top', (
     tester,
@@ -25,7 +26,7 @@ void main() {
         (widget) =>
             widget is DecoratedBox &&
             (widget.decoration as BoxDecoration).color ==
-                MxSemanticColors.light.dangerSoft,
+                scheme.error.tintOver(scheme.surface),
       ),
     );
 
@@ -36,31 +37,39 @@ void main() {
       BorderRadius.circular(16),
     );
     final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
-    expect((glyph.size, glyph.color), (24, AppColorSchemes.light.error));
+    expect((glyph.size, glyph.color), (24, lightColorScheme.error));
     expect(
       tester.getTopLeft(tile).dy - tester.getTopLeft(find.byType(MxCard)).dy,
       40,
     );
   });
 
-  testWidgets('title 16/700, 4 above a 14 body at 1.55; no Retry by default', (
-    tester,
-  ) async {
-    await pumpMx(tester, const MxErrorState(title: _title, body: _body));
-    final title = tester.widget<Text>(find.text(_title)).style!;
-    final body = tester.widget<Text>(find.text(_body)).style!;
+  testWidgets(
+    'titleSmall title, 4 above a bodyMedium body; no Retry by default',
+    (tester) async {
+      await pumpMx(tester, const MxErrorState(title: _title, body: _body));
+      final title = tester.widget<Text>(find.text(_title)).style!;
+      final body = tester.widget<Text>(find.text(_body)).style!;
 
-    expect((title.fontSize, title.fontWeight), (16, FontWeight.w700));
-    expect(title.color, scheme.onSurface);
-    expect((body.fontSize, body.height), (14, 1.55));
-    expect(body.color, scheme.onSurfaceVariant);
-    expect(
-      tester.getTopLeft(find.text(_body)).dy -
-          tester.getBottomLeft(find.text(_title)).dy,
-      4,
-    );
-    expect(find.byType(MxButton), findsNothing);
-  });
+      final texts = tester.element(find.text(_title)).texts;
+      expect(
+        (title.fontSize, title.fontWeight),
+        (texts.titleSmall!.fontSize, texts.titleSmall!.fontWeight),
+      );
+      expect(title.color, scheme.onSurface);
+      expect(
+        (body.fontSize, body.height),
+        (texts.bodyMedium!.fontSize, texts.bodyMedium!.height),
+      );
+      expect(body.color, scheme.onSurfaceVariant);
+      expect(
+        tester.getTopLeft(find.text(_body)).dy -
+            tester.getBottomLeft(find.text(_title)).dy,
+        4,
+      );
+      expect(find.byType(MxButton), findsNothing);
+    },
+  );
 
   testWidgets('a primary Retry with the refresh glyph, 16 below the body', (
     tester,

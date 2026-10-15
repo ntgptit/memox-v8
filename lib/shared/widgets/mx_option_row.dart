@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
-/// A single-choice row (algorithm, study mode, direction). The radio is a ring
-/// that thickens when selected, so nothing moves between states. The whole
-/// row is the target. Dividers are the list's (`MxDividedColumn`, DEV-305).
+/// A single-choice row (algorithm, study mode, direction). The radio is the
+/// Material 3 one: an `onSurfaceVariant` ring, and in the accent colour a ring
+/// with a dot when selected. The whole row is the target. Dividers are the
+/// list's (`MxDividedColumn`, DEV-305). Its height is the Material 3 list
+/// item: 56 with a title alone, 72 with a description.
 class MxOptionRow extends StatelessWidget {
   const MxOptionRow({
     super.key,
@@ -38,12 +37,10 @@ class MxOptionRow extends StatelessWidget {
   final Widget? trailing;
 
   static const double _radioColumn = 22;
-  static const double _radioSize = 20;
   static const double _descriptionGap = 2;
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final isDim = isDimmed ?? (onSelected == null && !isSelected);
     return MergeSemantics(
       child: Semantics(
@@ -54,39 +51,27 @@ class MxOptionRow extends StatelessWidget {
         child: InkWell(
           onTap: onSelected,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
+            constraints: BoxConstraints(
+              minHeight: description == null
+                  ? context.dimens.sizeListRow
+                  : context.dimens.sizeListRowTwoLine,
+            ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.gutter,
-                vertical: AppSpacing.grouped,
+              padding: EdgeInsets.symmetric(
+                horizontal: context.dimens.space16,
+                vertical: context.dimens.space12,
               ),
               child: Row(
-                spacing: AppSpacing.grouped,
+                spacing: context.dimens.space12,
                 children: [
                   _dim(
+                    context,
                     isDim,
                     SizedBox(
                       width: _radioColumn,
                       child: Center(
                         heightFactor: 1,
-                        child: DecoratedBox(
-                          key: const ValueKey('mx-option-radio'),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              // A stroke glyph, so primaryText; the empty
-                              // ring is a control edge, the outline (spec
-                              // 2026-10-10 §4-5).
-                              color: isSelected
-                                  ? context.semanticColors.primaryText
-                                  : context.colors.outline,
-                              width: isSelected
-                                  ? AppStroke.selectedRing
-                                  : AppStroke.control,
-                            ),
-                          ),
-                          child: const SizedBox.square(dimension: _radioSize),
-                        ),
+                        child: _Radio(isSelected: isSelected),
                       ),
                     ),
                   ),
@@ -95,10 +80,19 @@ class MxOptionRow extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _dim(isDim, Text(title, style: styles.rowTitle)),
+                        _dim(
+                          context,
+                          isDim,
+                          Text(title, style: context.texts.titleSmall),
+                        ),
                         if (description case final text?) ...[
                           const SizedBox(height: _descriptionGap),
-                          Text(text, style: styles.rowDescription),
+                          Text(
+                            text,
+                            style: context.texts.bodyMedium?.copyWith(
+                              color: context.colors.onSurfaceVariant,
+                            ),
+                          ),
                         ],
                       ],
                     ),
@@ -113,6 +107,47 @@ class MxOptionRow extends StatelessWidget {
     );
   }
 
-  static Widget _dim(bool isDim, Widget child) =>
-      isDim ? Opacity(opacity: AppOpacity.disabled, child: child) : child;
+  static Widget _dim(BuildContext context, bool isDim, Widget child) => isDim
+      ? Opacity(opacity: context.dimens.opacityDisabledContent, child: child)
+      : child;
+}
+
+/// The Material 3 radio, drawn rather than built from `Radio` (whose 40 box
+/// would grow every row): a ring stroked `strokeControl`, and a dot when
+/// selected. A stroke glyph, so the selected colour is the accent (it reads 3:1
+/// on a sheet where dark `primary` does not).
+class _Radio extends StatelessWidget {
+  const _Radio({required this.isSelected});
+
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final dimens = context.dimens;
+    final color = isSelected
+        ? context.accentColor
+        : context.colors.onSurfaceVariant;
+    return DecoratedBox(
+      key: const ValueKey('mx-option-radio'),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: color, width: dimens.strokeControl),
+      ),
+      child: SizedBox.square(
+        dimension: dimens.sizeSelectionControl,
+        child: isSelected
+            ? Center(
+                child: DecoratedBox(
+                  key: const ValueKey('mx-option-radio-dot'),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: color,
+                  ),
+                  child: SizedBox.square(dimension: dimens.sizeRadioDot),
+                ),
+              )
+            : null,
+      ),
+    );
+  }
 }

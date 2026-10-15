@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
 import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
@@ -31,6 +30,7 @@ import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 02: a root deck's review algorithm, and the reset that opens a
 /// new cycle (spec §4.2; UC-DECK-002, UC-SRS-001). A sub-deck has none
@@ -111,7 +111,6 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.deckReviewAlgorithm,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,
@@ -172,10 +171,10 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
         Expanded(
           child: MxScreenScroll(
             children: [
-              const SizedBox(height: AppSpacing.micro),
+              SizedBox(height: context.dimens.space4),
               DeckLockStripWidget(view: view),
               if (failedFrom != null && retryTarget != null) ...[
-                const SizedBox(height: AppSpacing.grouped),
+                SizedBox(height: context.dimens.space12),
                 MxInlineBanner(
                   tone: MxBannerTone.danger,
                   title: l10n.algorithmSwitchFailedTitle,
@@ -185,13 +184,13 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
                   actions: [
                     MxButton(
                       label: l10n.commonRetry,
-                      size: MxButtonSize.compact,
+                      size: MxButtonSize.small,
                       onPressed: () => unawaited(_switchTo(view, retryTarget)),
                     ),
                   ],
                 ),
               ],
-              const SizedBox(height: AppSpacing.grouped),
+              SizedBox(height: context.dimens.space12),
               MxListSectionHeader(label: l10n.algorithmHeader),
               // The consequence is read before the choice (critique
               // 2026-09-30).
@@ -201,14 +200,14 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
                     : l10n.algorithmSwitchNote,
                 icon: isLocked ? AppIcons.lock : AppIcons.info,
               ),
-              const SizedBox(height: AppSpacing.grouped),
+              SizedBox(height: context.dimens.space12),
               DeckAlgorithmOptionsWidget(
                 current: view.schedulerType,
                 isLocked: isLocked,
                 switchingTo: _switchingTo,
                 onSelected: (type) => unawaited(_onSelected(view, type)),
               ),
-              const SizedBox(height: AppSpacing.grouped),
+              SizedBox(height: context.dimens.space12),
               MxListSectionHeader(label: l10n.algorithmStartOverHeader),
               DeckStartOverWidget(
                 onReset: () =>

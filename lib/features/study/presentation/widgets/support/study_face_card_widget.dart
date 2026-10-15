@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
@@ -33,16 +32,18 @@ class StudyFaceCardWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.card,
-              AppSpacing.gutter,
-              AppSpacing.card,
+            padding: EdgeInsets.fromLTRB(
+              context.dimens.space24,
+              context.dimens.space16,
+              context.dimens.space24,
               0,
             ),
             child: Text(
               label.toUpperCase(),
               semanticsLabel: label,
-              style: context.textStyles.eyebrow,
+              style: context.texts.labelSmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
             ),
           ),
           Expanded(
@@ -53,7 +54,7 @@ class StudyFaceCardWidget extends StatelessWidget {
                   : MxScrollFadeGround.raised,
               child: Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(AppSpacing.gutter),
+                  padding: EdgeInsets.all(context.dimens.space16),
                   child: child,
                 ),
               ),

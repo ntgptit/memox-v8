@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// One level of a deck path. The id travels in [onTap]'s closure.
 @immutable
@@ -33,7 +31,7 @@ class MxBreadcrumb extends StatelessWidget {
     final chevronColor = context.colors.outline;
     // Ruling R4: the row is a 48 touch band, not 2 + text + 8.
     return SizedBox(
-      height: AppSize.touchTarget,
+      height: context.dimens.sizeControl,
       child: LayoutBuilder(
         builder: (context, constraints) => MxScrollFade(
           axis: Axis.horizontal,
@@ -43,18 +41,16 @@ class MxBreadcrumb extends StatelessWidget {
             child: ConstrainedBox(
               constraints: BoxConstraints(minWidth: constraints.maxWidth),
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.gutter,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  spacing: AppSpacing.micro,
+                  spacing: context.dimens.space4,
                   children: [
                     for (final (index, segment) in segments.indexed) ...[
                       if (index > 0)
                         Icon(
                           AppIcons.chevronRight,
-                          size: AppIconSize.inline,
+                          size: context.dimens.sizeIconInline,
                           color: chevronColor,
                         ),
                       _Segment(
@@ -81,9 +77,8 @@ class _Segment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     if (isCurrent) {
-      return Text(segment.label, style: styles.breadcrumbCurrent);
+      return Text(segment.label, style: context.texts.titleSmall);
     }
     // A button to TalkBack, reachable even while scrolled out of view
     // (DEV-306).
@@ -92,13 +87,18 @@ class _Segment extends StatelessWidget {
       child: InkWell(
         onTap: segment.onTap,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minWidth: AppSize.touchTarget,
-            minHeight: AppSize.touchTarget,
+          constraints: BoxConstraints(
+            minWidth: context.dimens.sizeControl,
+            minHeight: context.dimens.sizeControl,
           ),
           child: Center(
             widthFactor: 1,
-            child: Text(segment.label, style: styles.breadcrumbAncestor),
+            child: Text(
+              segment.label,
+              style: context.texts.labelMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
           ),
         ),
       ),

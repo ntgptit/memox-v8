@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
 import 'package:memox/features/transfer/domain/models/import_summary_model.dart';
@@ -53,11 +52,11 @@ class ImportResultWidget extends StatelessWidget {
             ),
           },
           if (summary.kind != ImportSummaryKind.none) ...[
-            const SizedBox(height: AppSpacing.gutter),
+            SizedBox(height: context.dimens.space16),
             _Counts(summary: summary),
           ],
           if (summary.decks.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.gutter),
+            SizedBox(height: context.dimens.space16),
             _Decks(decks: summary.decks),
           ],
           if (summary.skipped.isNotEmpty) _SkippedRows(rows: summary.skipped),
@@ -89,7 +88,9 @@ class _Counts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final count = context.textStyles.counter;
+    final count = context.texts.labelSmall?.copyWith(
+      color: context.colors.onSurfaceVariant,
+    );
     MxListRow row(IconData icon, String label, int value) => MxListRow(
       title: label,
       leading: MxIconTile(icon: icon),
@@ -175,7 +176,7 @@ class _SkippedRowsState extends State<_SkippedRows> {
             child: MxButton(
               label: l10n.importSkippedShowAll(rows.length),
               tone: MxButtonTone.text,
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               onPressed: () => setState(() => _isShowingAll = true),
             ),
           ),

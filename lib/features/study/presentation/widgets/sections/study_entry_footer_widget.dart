@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study/presentation/controllers/review_mode_pick_controller.dart';
 import 'package:memox/features/study/presentation/controllers/study_entry_controller.dart';
@@ -36,7 +36,7 @@ class StudyEntryFooterWidget extends ConsumerWidget {
     final l10n = context.l10n;
     final start = ref.watch(studyEntryControllerProvider(deckId));
     // An open session leads with Continue in its card; the footer's start
-    // (or its Try again) yields (DESIGN.md One Indigo; critique 2026-09-30
+    // (or its Try again) yields (DESIGN.md One Accent; critique 2026-09-30
     // part 1).
     final tone = entry.resumable == null
         ? MxButtonTone.primary

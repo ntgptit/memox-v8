@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
+
+/// One skeleton pulse, 0.45 to 0.75 opacity and back.
+const Duration _pulseDuration = Duration(milliseconds: 1400);
 
 /// One placeholder shape. It pulses: opacity travels 0.45 ↔ 0.75 over 1.4s,
 /// with no shimmer sweep. Under reduced motion it rests at 0.5.
@@ -23,8 +24,6 @@ class MxSkeleton extends StatefulWidget {
 
   static const double _defaultHeight = 12;
 
-  /// Ruling O3: the contract's 6 has no radius token.
-  static const double _radius = 6;
   static const double _restingOpacity = 0.5;
   static const double _lowOpacity = 0.45;
   static const double _highOpacity = 0.75;
@@ -92,7 +91,7 @@ class _MxSkeletonState extends State<MxSkeleton>
     }
     final own = _own ??= AnimationController(
       vsync: this,
-      duration: AppDurations.skeletonPulse,
+      duration: _pulseDuration,
     );
     _opacity ??= _pulseOf(own);
     _runUnlessStill(context, own);
@@ -104,6 +103,17 @@ class _MxSkeletonState extends State<MxSkeleton>
     super.dispose();
   }
 
+  /// One tonal step off the ground the bar sits on. On the page that is
+  /// `surfaceContainerHigh`; a card, a sheet and a dialog are grounds at or
+  /// beside that step, where it would vanish, so they take the next one.
+  Color _barColor(BuildContext context) {
+    final colors = context.colors;
+    if (MxTintBase.of(context) == colors.surface) {
+      return colors.surfaceContainerHigh;
+    }
+    return colors.surfaceContainerHighest;
+  }
+
   @override
   Widget build(BuildContext context) {
     final shape = SizedBox(
@@ -111,9 +121,9 @@ class _MxSkeletonState extends State<MxSkeleton>
       height: widget.height,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: context.colors.surfaceContainerHigh,
+          color: _barColor(context),
           borderRadius: BorderRadius.circular(
-            widget.isCircle ? AppRadius.full : MxSkeleton._radius,
+            widget.isCircle ? widget.height / 2 : context.dimens.radiusSm,
           ),
         ),
       ),
@@ -126,7 +136,8 @@ class _MxSkeletonState extends State<MxSkeleton>
 }
 
 /// The standard list placeholder (ruling O3): a tile and two bars at 70% and
-/// 45% of the text column, on ListRow's padding and gap.
+/// 45% of the text column, on ListRow's padding and gap and as tall as a
+/// two-line ListRow, so the list does not jump when it loads.
 class MxSkeletonRow extends StatelessWidget {
   const MxSkeletonRow({super.key});
 
@@ -135,33 +146,36 @@ class MxSkeletonRow extends StatelessWidget {
   static const double _subtitleShare = 0.45;
 
   @override
-  Widget build(BuildContext context) => const Padding(
-    padding: EdgeInsets.symmetric(
-      horizontal: AppSpacing.gutter,
-      vertical: AppSpacing.grouped,
-    ),
-    child: Row(
-      spacing: AppSpacing.grouped,
-      children: [
-        MxSkeleton(width: _tileSize, height: _tileSize),
-        Expanded(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.control,
-            children: [
-              FractionallySizedBox(
-                widthFactor: _titleShare,
-                child: MxSkeleton(),
-              ),
-              FractionallySizedBox(
-                widthFactor: _subtitleShare,
-                child: MxSkeleton(),
-              ),
-            ],
+  Widget build(BuildContext context) => ConstrainedBox(
+    constraints: BoxConstraints(minHeight: context.dimens.sizeListRowTwoLine),
+    child: Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.dimens.space16,
+        vertical: context.dimens.space12,
+      ),
+      child: Row(
+        spacing: context.dimens.space12,
+        children: [
+          const MxSkeleton(width: _tileSize, height: _tileSize),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: context.dimens.space8,
+              children: [
+                const FractionallySizedBox(
+                  widthFactor: _titleShare,
+                  child: MxSkeleton(),
+                ),
+                const FractionallySizedBox(
+                  widthFactor: _subtitleShare,
+                  child: MxSkeleton(),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }
@@ -181,7 +195,7 @@ class _MxSkeletonPulseState extends State<MxSkeletonPulse>
     with SingleTickerProviderStateMixin {
   late final AnimationController _pulse = AnimationController(
     vsync: this,
-    duration: AppDurations.skeletonPulse,
+    duration: _pulseDuration,
   );
   late final Animation<double> _opacity = _pulseOf(_pulse);
 

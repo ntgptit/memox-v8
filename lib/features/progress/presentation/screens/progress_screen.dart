@@ -3,8 +3,7 @@ import 'package:memox/features/progress/presentation/widgets/sections/progress_s
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/domain/models/progress_overview_model.dart';
 import 'package:memox/features/progress/presentation/providers/progress_provider.dart';
@@ -18,6 +17,7 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/shared/widgets/mx_two_columns.dart';
 
 /// Screen 22, the Progress tab (UC-PROGRESS-001, UC-PROGRESS-002 at the
 /// library level): Today with the last seven days, the streak, the range,
@@ -73,26 +73,30 @@ class ProgressScreen extends ConsumerWidget {
         ),
       ];
     }
+    final hasHistory = progress.overview.streak.state != StreakState.never;
     return [
-      ProgressTodayWidget(
-        overview: progress.overview,
-        onStartStudying: onStartStudying,
+      MxTwoColumns(
+        start: [
+          ProgressTodayWidget(
+            overview: progress.overview,
+            onStartStudying: onStartStudying,
+          ),
+          ProgressStreakWidget(overview: progress.overview),
+        ],
+        // Never studied, every row would read 0: the list waits for the first
+        // study day (critique 2026-09-30). Above the list it changes; Today
+        // and Streak never do (FE-A9 D10).
+        end: [
+          if (hasHistory) ...[
+            const ProgressRangeWidget(),
+            ProgressLevelListWidget(
+              level: progress.level,
+              isDeckLevel: false,
+              onOpenDeck: onOpenDeck,
+            ),
+          ],
+        ],
       ),
-      const SizedBox(height: AppSpacing.gutter),
-      ProgressStreakWidget(overview: progress.overview),
-      // Never studied, every row would read 0: the list waits for the first
-      // study day (critique 2026-09-30).
-      if (progress.overview.streak.state != StreakState.never) ...[
-        const SizedBox(height: AppSpacing.gutter),
-        // Above the list it changes; Today and Streak never do (FE-A9 D10).
-        const ProgressRangeWidget(),
-        const SizedBox(height: AppSpacing.gutter),
-        ProgressLevelListWidget(
-          level: progress.level,
-          isDeckLevel: false,
-          onOpenDeck: onOpenDeck,
-        ),
-      ],
     ];
   }
 }

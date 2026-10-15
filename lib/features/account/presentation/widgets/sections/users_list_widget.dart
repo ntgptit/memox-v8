@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/domain/models/managed_user_model.dart';
 import 'package:memox/features/account/presentation/controllers/users_controller.dart';
@@ -52,7 +50,7 @@ class UsersListWidget extends ConsumerWidget {
       ),
       UsersFailed(:final failure) => MxScreenScroll(
         children: [
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           switch (failure) {
             UsersLoadFailure.notAdmin => MxEmptyState(
               icon: AppIcons.lock,
@@ -82,7 +80,7 @@ class UsersListWidget extends ConsumerWidget {
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             MxEmptyState(
               icon: AppIcons.searchOff,
               title: state.query.trim().isEmpty
@@ -117,7 +115,9 @@ class _Rows extends ConsumerWidget {
   final String? selfId;
   final ValueChanged<ManagedUser> onOpenUser;
 
-  static const double _prefetchExtent = 10 * AppSize.listRowMin;
+  /// The next page loads while this many rows (two-line list rows) are still
+  /// below the fold.
+  static const int _prefetchRows = 10;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -126,7 +126,8 @@ class _Rows extends ConsumerWidget {
       onNotification: (notification) {
         if (loaded.more == UsersMore.idle &&
             loaded.next != null &&
-            notification.metrics.extentAfter < _prefetchExtent) {
+            notification.metrics.extentAfter <
+                _prefetchRows * context.dimens.sizeListRowTwoLine) {
           unawaited(controller.loadMore());
         }
         return false;
@@ -135,7 +136,7 @@ class _Rows extends ConsumerWidget {
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             MxListSectionHeader(label: context.l10n.usersSection),
             // Lazy, as the list grows with every load-more.
             ...MxDividedColumn.divided([
@@ -146,7 +147,7 @@ class _Rows extends ConsumerWidget {
                   onTap: () => onOpenUser(user),
                 ),
             ]),
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
             _End(loaded: loaded, onRetry: controller.loadMore),
           ],
         ),
@@ -176,7 +177,7 @@ class _End extends StatelessWidget {
         actions: [
           MxButton(
             label: l10n.commonRetry,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: () => unawaited(onRetry()),
           ),
         ],
@@ -184,7 +185,9 @@ class _End extends StatelessWidget {
       (_, null) => Text(
         l10n.usersNoMore,
         textAlign: TextAlign.center,
-        style: context.textStyles.footerCaption,
+        style: context.texts.labelSmall?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
       ),
       _ => const SizedBox.shrink(),
     };

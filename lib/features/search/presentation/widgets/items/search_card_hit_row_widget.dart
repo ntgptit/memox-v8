@@ -1,8 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/text/path_label.dart';
 import 'package:memox/core/text/search_match.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/search/domain/models/search_hit_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -45,7 +44,7 @@ class SearchCardHitRowWidget extends StatelessWidget {
         // Always the meta slot, so tag rows and plain rows are one style
         // and one height (spec D21).
         meta: Row(
-          spacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
           children: [
             if (tag != null) MxTagChip(label: tag, isDense: true),
             Flexible(
@@ -54,7 +53,9 @@ class SearchCardHitRowWidget extends StatelessWidget {
                 maxLines: 1,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: context.textStyles.rowSubtitle,
+                style: context.texts.bodyMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
             ),
           ],

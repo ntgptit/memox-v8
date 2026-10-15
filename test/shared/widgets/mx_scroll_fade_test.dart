@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 
 import '../../support/widget_harness.dart';
@@ -40,7 +40,7 @@ Color _lastStop(WidgetTester tester, Key key) {
 }
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('content that fits shows no fade', (tester) async {
     await pumpMx(tester, _horizontal(content: 100));

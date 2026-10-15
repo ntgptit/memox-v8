@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/error/outcome.dart';
@@ -67,7 +70,7 @@ void main() {
     // A read-only field label: sentence case (critique 2026-09-30 part 2).
     expect(
       tester.widget<Text>(label).style,
-      tester.element(label).textStyles.fieldLabel,
+      tester.element(label).texts.labelMedium,
     );
     final field = find.ancestor(of: label, matching: find.byType(Row)).first;
     expectCentredOn(tester, field, [
@@ -107,6 +110,43 @@ void main() {
     },
   );
 
+  libraryTest('the unfilled boxes read the progress track, not the card ground '
+      'they sit on (dark)', (tester, env) async {
+    final deckId = await _words(env);
+    await insertCard(
+      env.db,
+      id: 'c',
+      deckId: deckId,
+      learnedAt: DateTime(2026, 9, 1),
+      dueAt: DateTime(2026, 9, 28),
+      box: 3,
+    );
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host('c', (detail) => [CardScheduleWidget(detail: detail)]),
+      brightness: Brightness.dark,
+    );
+    await tester.pumpAndSettle();
+    int bars(Color color) => tester
+        .widgetList<Container>(find.byType(Container))
+        .where(
+          (box) =>
+              box.decoration is BoxDecoration &&
+              (box.decoration! as BoxDecoration).color == color,
+        )
+        .length;
+    final scheme = darkColorScheme;
+
+    expect(
+      MxColorsExtension.dark.cardSurface,
+      isNot(MasteryRamp.track(scheme)),
+    );
+    // Boxes 1-3 are filled; 4-8 are the track.
+    expect(bars(scheme.primary), 3);
+    expect(bars(MasteryRamp.track(scheme)), 5);
+  });
+
   libraryTest('an eight-box card shows its box on the ramp and its facts', (
     tester,
     env,
@@ -135,8 +175,14 @@ void main() {
           .style,
       tester
           .element(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
-          .textStyles
-          .eyebrow,
+          .texts
+          .labelSmall
+          ?.copyWith(
+            color: tester
+                .element(find.text(_en.cardScheduleBox(3, 8).toUpperCase()))
+                .colors
+                .onSurfaceVariant,
+          ),
     );
     expect(find.text(_en.cardBoxRampStart), findsOneWidget);
     expect(

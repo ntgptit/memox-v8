@@ -67,3 +67,54 @@ def test_no_raw_stroke_width_accepts_tokens_and_the_default(tmp_path: Path) -> N
 
 def test_no_raw_border_radius_is_an_error_now() -> None:
     assert _rule_config("memox.design_token.no_raw_border_radius")["severity"] == "error"
+
+
+BRIGHTNESS = "memox.design_token.no_brightness_branch"
+
+
+def test_no_brightness_branch_goes_red_on_a_mode_choice(tmp_path: Path) -> None:
+    for bad in (
+        "final c = theme.brightness == Brightness.dark ? a : b;",
+        "if (Theme.of(context).brightness != Brightness.light) return;",
+        "final isDark = MediaQuery.platformBrightnessOf(context);",
+        "color: isDarkMode ? scheme.surface : scheme.onSurface,",
+    ):
+        assert _violations(BRIGHTNESS, tmp_path, bad), bad
+
+
+def test_no_brightness_branch_leaves_prose_and_theme_mode_alone(
+    tmp_path: Path,
+) -> None:
+    good = """
+    // Brightness.dark reads the lighter fixed step (theme_rules.dart).
+    themeMode: ThemeMode.dark,
+    color: context.accentColor,
+    """
+    assert not _violations(BRIGHTNESS, tmp_path, good)
+
+
+ALIAS = "memox.design_token.no_theme_alias"
+
+
+def test_no_theme_alias_goes_red_on_every_comeback_shape(tmp_path: Path) -> None:
+    for bad in (
+        "typedef MxSemanticColors = MxColorsExtension;",
+        "@Deprecated('use mxColors') Color get warningSoft => warning;",
+        "export 'generated/color_schemes.g.dart' show lightColorScheme;",
+        "Color get primaryText => primary;",
+        "Color get primaryText => colors.primary;",
+    ):
+        assert _violations(ALIAS, tmp_path, bad), bad
+
+
+def test_no_theme_alias_leaves_real_getters_and_prose_alone(tmp_path: Path) -> None:
+    good = """
+    // A typedef here would be an alias; so would `get x => y;`.
+    ColorScheme get colors => Theme.of(this).colorScheme;
+    Color get accentColor => switch (colors.brightness) {
+      Brightness.light => colors.primary,
+      Brightness.dark => colors.primaryFixedDim,
+    };
+    export 'app_icons.dart';
+    """
+    assert not _violations(ALIAS, tmp_path, good)

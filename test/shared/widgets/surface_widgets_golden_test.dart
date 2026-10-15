@@ -3,8 +3,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
@@ -38,8 +38,13 @@ class _RowContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: context.textStyles.rowTitle),
-            Text(subtitle, style: context.textStyles.rowSubtitle),
+            Text(title, style: context.texts.titleSmall),
+            Text(
+              subtitle,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ),

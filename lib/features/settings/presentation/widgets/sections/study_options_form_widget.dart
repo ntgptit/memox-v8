@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/speech/di/speech_providers.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/settings/domain/models/effective_study_options_model.dart';
 import 'package:memox/features/settings/domain/models/study_options_model.dart';
@@ -60,7 +59,6 @@ class StudyOptionsFormWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final isSaving = ref.watch(
       studyOptionsControllerProvider(deckId).select((s) => s.isSaving),
     );
@@ -79,13 +77,13 @@ class StudyOptionsFormWidget extends ConsumerWidget {
         ),
         // MxSection keeps its own 16 below; a note or banner above needs the
         // same (audit P1, pattern 4).
-        const SizedBox(height: AppSpacing.gutter),
+        SizedBox(height: context.dimens.space16),
         if (stored.source == StudyOptionsSource.unreadableRootOverride) ...[
           MxInlineBanner(
             tone: MxBannerTone.warning,
             message: l10n.studyOptionsUnreadable,
           ),
-          const SizedBox(height: AppSpacing.gutter),
+          SizedBox(height: context.dimens.space16),
         ],
         if (save == StudyOptionsSave.failed) ...[
           // A failed save leads the page, not a muted caption (critique
@@ -98,7 +96,7 @@ class StudyOptionsFormWidget extends ConsumerWidget {
               studyOptionsOrderName(l10n, stored.options.newCardOrder),
             ),
           ),
-          const SizedBox(height: AppSpacing.gutter),
+          SizedBox(height: context.dimens.space16),
         ],
         MxSection(
           children: [
@@ -137,13 +135,13 @@ class StudyOptionsFormWidget extends ConsumerWidget {
                   ? null
                   : Text(
                       l10n.studyCount(options.cardLimit),
-                      style: styles.settingsLabel,
+                      style: context.texts.titleSmall,
                     ),
               wideControl: !isEditable
                   ? null
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: AppSpacing.micro,
+                      spacing: context.dimens.space4,
                       children: [
                         MxStepper(
                           value: options.cardLimit,
@@ -183,7 +181,7 @@ class StudyOptionsFormWidget extends ConsumerWidget {
                   ? null
                   : Text(
                       _orderLabel(l10n, options.newCardOrder),
-                      style: styles.settingsLabel,
+                      style: context.texts.titleSmall,
                     ),
               wideControl: !isEditable
                   ? null

@@ -243,8 +243,8 @@ scopes:
   #
   # `ui_surfaces` excludes `lib/core/theme/**` because a raw colour or radius
   # there IS the token — linting it would be flagging the definition as the
-  # crime. A duration is not like that. `AppDurations` declares every duration
-  # as a *named* constant, and so does every legitimate non-motion duration in
+  # crime. A duration is not like that. Motion reads Flutter's `Durations`,
+  # and every legitimate non-motion duration is a *named* constant in
   # the repo, so the theme directory has nothing that needs the exemption — and
   # a component theme is exactly where an anonymous `Duration(milliseconds: …)`
   # hides. A rule scoped to `ui_surfaces` alone could not see it there.
@@ -289,6 +289,16 @@ scopes:
     include:
       - lib/core/theme/**/*.dart
     exclude:
+      - '**/*.g.dart'
+      - '**/*.freezed.dart'
+
+  # Every Dart file in lib/ but `theme_rules.dart`, the one place a widget-side
+  # rule may choose a role by brightness (ADR-022).
+  brightness_branch_surfaces:
+    include:
+      - lib/**/*.dart
+    exclude:
+      - lib/core/theme/theme_rules.dart
       - '**/*.g.dart'
       - '**/*.freezed.dart'
 

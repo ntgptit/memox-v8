@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/card/presentation/providers/card_tag_filter_provider.dart';
@@ -73,7 +72,7 @@ class _CardTagFilterSheetWidgetState
       AsyncData(:final value) when value.isEmpty => _none(l10n),
       AsyncData(:final value) => _picker(l10n, value),
       // The head stays, so TalkBack names the sheet; Retry is the one
-      // primary, and Close beside it is outline (The One Indigo Rule).
+      // primary, and Close beside it is outline (The One Accent Rule).
       AsyncError(:final isLoading) => MxBottomSheet(
         title: l10n.cardTagFilterTitle,
         footer: MxSheetActions.single(
@@ -83,10 +82,10 @@ class _CardTagFilterSheetWidgetState
           tone: MxButtonTone.outline,
         ),
         child: Padding(
-          padding: const EdgeInsetsDirectional.only(
-            start: AppSpacing.control,
-            end: AppSpacing.control,
-            bottom: AppSpacing.control,
+          padding: EdgeInsetsDirectional.only(
+            start: context.dimens.space8,
+            end: context.dimens.space8,
+            bottom: context.dimens.space8,
           ),
           child: MxErrorState(
             title: l10n.cardTagFilterLoadError,
@@ -112,7 +111,7 @@ class _CardTagFilterSheetWidgetState
   Widget _none(AppLocalizations l10n) => MxBottomSheet(
     title: l10n.cardTagFilterTitle,
     subtitle: l10n.cardTagFilterEmpty,
-    // A lone Close stays primary (The One Indigo Rule, R8).
+    // A lone Close stays primary (The One Accent Rule, R8).
     footer: MxSheetActions.single(
       isInSheet: true,
       label: l10n.cardTagFilterClose,
@@ -141,11 +140,11 @@ class _CardTagFilterSheetWidgetState
         children: [
           if (tags.length > _searchAbove)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
+              padding: EdgeInsets.fromLTRB(
+                context.dimens.space16,
                 0,
-                AppSpacing.gutter,
-                AppSpacing.control,
+                context.dimens.space16,
+                context.dimens.space8,
               ),
               child: MxSearchField(
                 controller: _search,
@@ -194,7 +193,9 @@ class _TagRow extends StatelessWidget {
         title: tag.name,
         trailing: Text(
           context.l10n.cardTagFilterCount(tag.cardCount),
-          style: context.textStyles.counter,
+          style: context.texts.labelSmall?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
         ),
         onTap: onTap,
       ),

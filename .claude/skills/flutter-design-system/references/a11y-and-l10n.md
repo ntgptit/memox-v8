@@ -106,7 +106,7 @@ Row(children: [
 
 ```dart
 final disableAnimations = MediaQuery.disableAnimationsOf(context);
-final duration = disableAnimations ? Duration.zero : AppDurations.normal;
+final duration = disableAnimations ? Duration.zero : Durations.short4;
 ```
 
 **Touch target** — pad rather than enlarging the icon:

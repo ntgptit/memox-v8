@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -19,25 +20,11 @@ Widget _rows(int count) => Column(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
-  testWidgets('surface: the card ground, top radius 20, the chrome shadow', (
-    tester,
-  ) async {
+  testWidgets('surface: the low container, radiusXl on top, elevation 1 '
+      'with no shadow', (tester) async {
     await pumpMx(tester, MxBottomSheet(child: _rows(2)));
-    final shadow =
-        (tester
-                    .widget<DecoratedBox>(
-                      find
-                          .descendant(
-                            of: find.byType(MxBottomSheet),
-                            matching: find.byType(DecoratedBox),
-                          )
-                          .first,
-                    )
-                    .decoration
-                as BoxDecoration)
-            .boxShadow;
     final surface = tester.widget<Material>(
       find
           .descendant(
@@ -47,15 +34,35 @@ void main() {
           .first,
     );
 
-    expect(surface.color, scheme.surfaceContainerLowest);
+    expect(surface.color, scheme.surfaceContainerLow);
     expect(
       (surface.shape! as RoundedRectangleBorder).borderRadius,
-      const BorderRadius.vertical(top: Radius.circular(20)),
+      BorderRadius.vertical(top: Radius.circular(const AppDimens().radiusXl)),
     );
-    expect(shadow, AppShadows.chrome(scheme));
+    expect(surface.elevation, 1);
+    expect(surface.shadowColor, Colors.transparent);
   });
 
-  testWidgets('a 36×4 onSurfaceVariant grabber, 8 above and 4 below '
+  testWidgets('what the sheet holds is tinted over the low container', (
+    tester,
+  ) async {
+    late Color base;
+    await pumpMx(
+      tester,
+      MxBottomSheet(
+        child: Builder(
+          builder: (context) {
+            base = MxTintBase.of(context);
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+
+    expect(base, scheme.surfaceContainerLow);
+  });
+
+  testWidgets('a 32×4 onSurfaceVariant handle centred in a 48×48 target '
       '(FE-C1)', (tester) async {
     await pumpMx(tester, MxBottomSheet(child: _rows(1)));
     final bar = find.descendant(
@@ -63,12 +70,13 @@ void main() {
       matching: find.byType(DecoratedBox),
     );
 
-    expect(tester.getSize(bar), const Size(36, 4));
+    expect(tester.getSize(bar), const Size(32, 4));
     expect(
       (tester.widget<DecoratedBox>(bar).decoration as BoxDecoration).color,
       scheme.onSurfaceVariant,
     );
-    expect(tester.getSize(find.byKey(_grabberKey)).height, 16);
+    expect(tester.getSize(find.byKey(_grabberKey)), const Size(48, 48));
+    expect(tester.getCenter(bar), tester.getCenter(find.byKey(_grabberKey)));
 
     await pumpMx(tester, MxBottomSheet(hasGrabber: false, child: _rows(1)));
     expect(find.byKey(_grabberKey), findsNothing);
@@ -148,9 +156,8 @@ void main() {
     );
   });
 
-  testWidgets('showMxBottomSheet: a 56% scrim; a scrim tap closes it (RF2)', (
-    tester,
-  ) async {
+  testWidgets('showMxBottomSheet: the theme\'s scrim; a scrim tap closes it '
+      '(RF2)', (tester) async {
     await pumpMx(
       tester,
       Builder(
@@ -169,7 +176,7 @@ void main() {
     expect(find.byType(MxBottomSheet), findsOneWidget);
     expect(
       tester.widget<ModalBarrier>(find.byType(ModalBarrier).last).color,
-      scheme.scrim.withValues(alpha: 0.56),
+      scheme.scrim.withValues(alpha: const AppDimens().opacityScrim),
     );
     await tester.tapAt(const Offset(8, 8));
     await tester.pumpAndSettle();
@@ -266,8 +273,9 @@ void main() {
 
   // SW-REV-008: the head every sheet drew by hand, now the sheet's own.
   group('title and subtitle (SW-REV-008)', () {
-    testWidgets('the title 16/700 20 in and 4 below the grabber; the subtitle '
-        '12 under it, 4 apart; 12 above the content', (tester) async {
+    testWidgets('the title in titleSmall, space24 in and space4 below the '
+        'grabber; the subtitle in the variant bodyMedium space4 under it; '
+        'space12 above the content', (tester) async {
       await pumpMx(
         tester,
         const MxBottomSheet(
@@ -276,29 +284,34 @@ void main() {
           child: SizedBox(height: 40, child: Text('Content')),
         ),
       );
+      const dimens = AppDimens();
+      final texts = Theme.of(tester.element(find.byType(MxBottomSheet)))
+          .textTheme;
       final sheet = tester.getTopLeft(find.byType(MxBottomSheet));
+      final grabber = tester.getSize(find.byKey(_grabberKey)).height;
       final title = tester.widget<Text>(find.text('Move to deck'));
       final subtitle = tester.widget<Text>(
         find.text('Cards keep their progress.'),
       );
 
-      expect(title.style!.fontSize, 16);
-      expect(title.style!.fontWeight, FontWeight.w700);
-      expect(subtitle.style!.fontSize, 12);
-      // The grabber block is 8 + 4 + 4 = 16, then the head's 4.
+      expect(title.style, texts.titleSmall);
+      expect(
+        subtitle.style,
+        texts.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+      );
       expect(
         tester.getTopLeft(find.text('Move to deck')) - sheet,
-        const Offset(20, 20),
+        Offset(dimens.space24, grabber + dimens.space4),
       );
       expect(
         tester.getTopLeft(find.text('Cards keep their progress.')).dy -
             tester.getBottomLeft(find.text('Move to deck')).dy,
-        4,
+        dimens.space4,
       );
       expect(
         tester.getTopLeft(find.text('Content')).dy -
             tester.getBottomLeft(find.text('Cards keep their progress.')).dy,
-        12,
+        dimens.space12,
       );
     });
 

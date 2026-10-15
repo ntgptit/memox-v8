@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/progress/domain/models/progress_overview_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -33,21 +31,24 @@ class ProgressStreakWidget extends StatelessWidget {
       StreakState.includesToday || StreakState.never => null,
     };
     return MxCard(
+      isCompact: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             l10n.progressStreak.toUpperCase(),
             semanticsLabel: l10n.progressStreak,
-            style: context.textStyles.eyebrow,
+            style: context.texts.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
           if (streak.state == StreakState.never)
             MxDashedNote(text: l10n.progressNeverStreak)
           else
             _tiles(context),
           if (note != null) ...[
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
             MxNote(text: note),
           ],
         ],
@@ -58,12 +59,13 @@ class ProgressStreakWidget extends StatelessWidget {
   Widget _tiles(BuildContext context) {
     final l10n = context.l10n;
     final streak = overview.streak;
-    // A live streak burns in the streak accent; a lost one goes idle on the
+    // A live streak burns in the warning text colour on its tint (a glyph
+    // never takes the amber fill, SW-REV-001); a lost one goes idle on the
     // neutral ground, legible in both themes.
     final isLive = streak.days > 0;
     final current = _StreakTile(
       icon: AppIcons.streak,
-      tint: isLive ? context.semanticColors.streak : null,
+      tint: isLive ? context.mxColors.warning : null,
       tone: isLive ? MxIconTileTone.tinted : MxIconTileTone.neutral,
       label: l10n.progressStreakCurrent,
       value: l10n.progressStreakDays(streak.days),
@@ -123,18 +125,17 @@ class _StreakTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     // The kit's tile: the recessed ground at a 12 inset, tighter than a card,
     // so two fit side by side on a phone.
     return DecoratedBox(
-      decoration: AppDecorations.recessedCard(
-        context.colors,
-        context.semanticColors,
+      decoration: BoxDecoration(
+        color: context.colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(context.dimens.radiusMd),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.grouped),
+        padding: EdgeInsets.all(context.dimens.space12),
         child: Row(
-          spacing: AppSpacing.control,
+          spacing: context.dimens.space8,
           children: [
             MxIconTile(icon: icon, seed: tint, tone: tone),
             Expanded(
@@ -144,11 +145,18 @@ class _StreakTile extends StatelessWidget {
                   Text(
                     label.toUpperCase(),
                     semanticsLabel: label,
-                    style: styles.eyebrow,
+                    style: context.texts.labelSmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.micro),
-                  Text(value, style: styles.summaryBodyStrong),
-                  Text(sub, style: styles.footerCaption),
+                  SizedBox(height: context.dimens.space4),
+                  Text(value, style: context.texts.titleSmall),
+                  Text(
+                    sub,
+                    style: context.texts.labelSmall?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),

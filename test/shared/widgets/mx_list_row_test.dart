@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -17,9 +20,11 @@ const _second = ValueKey('row-2');
 Widget _width(Widget child) => SizedBox(width: 360, child: child);
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
-  testWidgets('one-line title and sub; 16 inset; 48 floor', (tester) async {
+  testWidgets('one-line title and sub; 16 inset; 72 two-line floor', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       _width(
@@ -47,10 +52,25 @@ void main() {
           tester.getBottomLeft(find.text('Kanji N5')).dy,
       2,
     );
-    expect(
-      tester.getSize(find.byType(MxListRow)).height,
-      greaterThanOrEqualTo(48),
+    expect(tester.getSize(find.byType(MxListRow)).height, 72);
+  });
+
+  testWidgets('M3 list item heights: 56 for one line, 72 with a supporting '
+      'line or a meta slot', (tester) async {
+    await pumpMx(tester, _width(const MxListRow(title: 'Kanji N5')));
+    expect(tester.getSize(find.byType(MxListRow)).height, 56);
+
+    await pumpMx(
+      tester,
+      _width(const MxListRow(title: 'Kanji N5', subtitle: '42 cards')),
     );
+    expect(tester.getSize(find.byType(MxListRow)).height, 72);
+
+    await pumpMx(
+      tester,
+      _width(const MxListRow(title: 'Kanji N5', meta: Text('42 cards'))),
+    );
+    expect(tester.getSize(find.byType(MxListRow)).height, 72);
   });
 
   testWidgets('a long title stays one line; rows keep one height', (
@@ -292,8 +312,11 @@ void main() {
     final spans = (title.textSpan! as TextSpan).children!.cast<TextSpan>();
 
     expect([for (final span in spans) span.text], ['Academic ', 'words', '']);
-    expect(spans[1].style!.fontWeight, FontWeight.w700);
-    expect(spans[1].style!.color, MxSemanticColors.light.primaryText);
+    expect(
+      spans[1].style!.fontWeight,
+      tester.element(find.text('Academic words')).texts.titleSmall!.fontWeight,
+    );
+    expect(spans[1].style!.color, accentOf(scheme));
     expect((title.maxLines, title.overflow), (1, TextOverflow.ellipsis));
   });
 
@@ -326,7 +349,7 @@ void main() {
     expect(text.softWrap, isTrue);
     expect(
       tester.getSize(find.byType(MxListRow)).height,
-      greaterThanOrEqualTo(AppSize.listRowMin),
+      greaterThanOrEqualTo(const AppDimens().sizeControl),
     );
   });
 }

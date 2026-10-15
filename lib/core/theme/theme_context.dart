@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
-import 'package:memox/core/theme/mx_text_styles.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 
 /// The one way UI code reads the theme.
 extension ThemeContext on BuildContext {
@@ -8,42 +8,16 @@ extension ThemeContext on BuildContext {
 
   TextTheme get texts => Theme.of(this).textTheme;
 
-  MxSemanticColors get semanticColors {
-    final semantic = Theme.of(this).extension<MxSemanticColors>();
-    if (semantic == null) {
-      throw StateError(
-        'MxSemanticColors is missing from the ThemeData in scope. Build it '
-        'with buildLightTheme() or buildDarkTheme() from '
-        'core/theme/app_theme.dart.',
-      );
-    }
-    return semantic;
-  }
+  MxColorsExtension get mxColors => _extension<MxColorsExtension>();
 
-  MxTextStyles get textStyles => MxTextStyles(texts, colors, semanticColors);
+  AppDimens get dimens => _extension<AppDimens>();
 
-  /// The TextField hint the theme's fields carry (spec §4.6).
-  TextStyle get fieldHint =>
-      _themed(Theme.of(this).inputDecorationTheme.hintStyle, 'field hint');
-
-  /// The dialog surface's shape the theme carries (spec §4.6).
-  RoundedRectangleBorder get dialogShape =>
-      _themed(DialogTheme.of(this).shape, 'dialog shape');
-
-  /// The scrim behind a dialog (spec §4.6).
-  Color get dialogBarrier =>
-      _themed(DialogTheme.of(this).barrierColor, 'dialog scrim');
-
-  /// The bottom sheet's shape the theme carries (spec §4.6).
-  RoundedRectangleBorder get sheetShape =>
-      _themed(Theme.of(this).bottomSheetTheme.shape, 'sheet shape');
-
-  /// [value] as the MemoX theme sets it; a theme built elsewhere lacks the
-  /// component themes, and says how to fix that.
-  T _themed<T>(Object? value, String what) {
-    if (value is T) return value;
+  /// [T] from the ThemeData in scope; a theme built elsewhere lacks it.
+  T _extension<T extends ThemeExtension<T>>() {
+    final found = Theme.of(this).extension<T>();
+    if (found != null) return found;
     throw StateError(
-      'The MemoX $what is missing from the ThemeData in scope. Build it with '
+      '$T is missing from the ThemeData in scope. Build it with '
       'buildLightTheme() or buildDarkTheme() from core/theme/app_theme.dart.',
     );
   }

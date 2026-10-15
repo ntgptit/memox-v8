@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/scheduler_type_label_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// What the deck action sheet can start (spec §6.2).
 enum DeckAction {
@@ -80,7 +80,7 @@ class DeckActionSheetWidget extends StatelessWidget {
     return MxBottomSheet(
       title: deck.name,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+        padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
         child: Column(children: _rows(context)),
       ),
     );

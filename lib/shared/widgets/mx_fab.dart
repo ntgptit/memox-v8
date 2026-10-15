@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 
-/// The one pinned action: a square, icon-only 52 box. V3 has no extended FAB.
-/// [semanticLabel] is the accessible name and is never painted. Placement
-/// belongs to MxAppShell.
-class MxFab extends StatelessWidget {
+/// The one pinned action: the Material 3 regular FAB, a square icon-only box
+/// styled by the theme's `FloatingActionButtonThemeData`. V3 has no extended
+/// FAB. [semanticLabel] is the accessible name and is never painted.
+/// Placement belongs to MxAppShell.
+class MxFab extends StatefulWidget {
   const MxFab({
     super.key,
     required this.icon,
@@ -22,43 +19,43 @@ class MxFab extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
+  State<MxFab> createState() => _MxFabState();
+}
+
+class _MxFabState extends State<MxFab> {
+  bool _focused = false;
+
+  /// The theme's FAB corner, with the focus ring drawn around it.
+  MxFocusRingBorder _shape(BuildContext context) {
+    final t = ThemeTokens.of(context);
+    return MxFocusRingBorder(
+      base:
+          Theme.of(context).floatingActionButtonTheme.shape! as OutlinedBorder,
+      ring: _focused
+          ? BorderSide(color: t.scheme.primary, width: t.dimens.strokeFocus)
+          : BorderSide.none,
+      gap: t.dimens.strokeFocusGap,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final radius = BorderRadius.circular(AppRadius.lg);
-    final shape = RoundedRectangleBorder(borderRadius: radius);
     return Semantics(
       button: true,
-      label: semanticLabel,
+      label: widget.semanticLabel,
       excludeSemantics: true,
-      onTap: onPressed,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: radius,
-          boxShadow: AppShadows.fab(colors),
-        ),
-        child: Material(
-          color: colors.primary,
-          shape: shape,
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onPressed,
-            customBorder: shape,
-            overlayColor: WidgetStateProperty.resolveWith(
-              (states) => states.contains(WidgetState.pressed)
-                  ? colors.onPrimary.withValues(alpha: AppOpacity.pressed)
-                  : null,
-            ),
-            child: SizedBox.square(
-              dimension: AppSize.fab,
-              child: Center(
-                child: Icon(
-                  icon,
-                  size: AppIconSize.compact,
-                  color: colors.onPrimary,
-                ),
-              ),
-            ),
-          ),
+      onTap: widget.onPressed,
+      // The theme's shape is not state-aware, so the focus ring is set here.
+      child: Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        onFocusChange: (focused) => setState(() => _focused = focused),
+        child: FloatingActionButton(
+          onPressed: widget.onPressed,
+          // The default tag is shared, so two FABs in one route would clash.
+          heroTag: null,
+          shape: _shape(context),
+          child: Icon(widget.icon),
         ),
       ),
     );

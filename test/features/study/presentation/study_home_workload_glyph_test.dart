@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/widgets/sections/study_home_workload_widget.dart';
@@ -43,7 +43,7 @@ void main() {
     final glyph = find.byIcon(AppIcons.dueNow).first;
     expect(
       IconTheme.of(tester.element(glyph)).color,
-      AppColorSchemes.dark.onSurfaceVariant,
+      darkColorScheme.onSurfaceVariant,
     );
   });
 }

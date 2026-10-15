@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/account_user.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/account/domain/models/managed_user_model.dart';
 import 'package:memox/features/account/presentation/controllers/users_controller.dart';
 import 'package:memox/features/account/presentation/states/users_state.dart';
@@ -14,6 +13,7 @@ import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Opens [user]'s role sheet (users spec §3).
 Future<void> showUserRoleSheet(BuildContext context, ManagedUser user) =>
@@ -124,10 +124,10 @@ class _UserRoleSheetWidgetState extends ConsumerState<UserRoleSheetWidget> {
           ),
           if (_problem case final text?)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
-                AppSpacing.grouped,
-                AppSpacing.gutter,
+              padding: EdgeInsets.fromLTRB(
+                context.dimens.space16,
+                context.dimens.space12,
+                context.dimens.space16,
                 0,
               ),
               // Nothing changed, so the warning tone.

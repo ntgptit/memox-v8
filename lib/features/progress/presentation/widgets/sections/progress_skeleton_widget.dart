@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 22 loading in its own shape: the Today card, the Streak card and
 /// the deck list, on one pulse (critique 2026-09-30 part 3d-2, E12). A
@@ -29,17 +29,17 @@ class ProgressSkeletonWidget extends StatelessWidget {
       child: MxSkeletonPulse(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: AppSpacing.gutter,
+          spacing: context.dimens.space16,
           children: [
             if (hasSummary)
               for (var i = 0; i < 2; i++)
-                const MxCard(
+                MxCard(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: AppSpacing.grouped,
+                    spacing: context.dimens.space12,
                     children: [
-                      MxSkeleton(width: _eyebrowWidth),
-                      MxSkeleton(height: _figureHeight),
+                      const MxSkeleton(width: _eyebrowWidth),
+                      const MxSkeleton(height: _figureHeight),
                     ],
                   ),
                 ),

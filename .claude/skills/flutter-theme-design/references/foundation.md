@@ -32,7 +32,8 @@ Cho phép:
 
 ```dart
 context.colors
-context.semanticColors
+context.mxColors
+context.dimens
 ```
 
 chỉ trong shared/design-system layer.
@@ -72,14 +73,13 @@ Nên có semantic accessors:
 - `MxText.label`
 - `MxText.caption`
 
-Hoặc một lớp vai chữ đặt tên (V8: `MxTextStyles` trong
-`lib/core/theme/mx_text_styles.dart`), nhưng feature không
-`.copyWith(fontSize: ...)`.
+V8 dùng thẳng role `TextTheme` (`context.texts.titleSmall`, 12 role sinh từ
+`design/tokens.json`); feature chỉ `copyWith(color: …)` (hoặc `fontFamily:
+AppTypography.monoFamily` cho mã), không đổi cỡ, weight, tracking, height.
 
-Guard `no_text_restyle` cấm `texts.*.copyWith` lẫn đường vòng
-`withWeight(...).copyWith`; `withWeight` thuần (nhấn không đổi màu) vẫn hợp lệ.
-Tổ hợp nào vai chữ không nói được là một vai còn thiếu — thêm vào
-`lib/core/theme`, không lắp tại chỗ.
+Guard `no_text_restyle` chỉ cho `copyWith(color: …)` và
+`copyWith(fontFamily: AppTypography.monoFamily)`. Tổ hợp nào role không nói được là
+một finding gửi chủ dự án (Design System thiếu role), không lắp tại chỗ.
 
 **Bẫy variable font:** font của app là variable font có trục `wght`; một
 `copyWith(fontWeight:)` trần báo weight mới cho test và vẽ weight cũ trên máy.
@@ -98,13 +98,13 @@ không chỉ `fontWeight`.
 
 ### Icon
 
-V8 không có `MxIcon`: glyph lấy từ `AppIcons`, cỡ từ `AppIconSize`
-(`lib/core/theme/foundations/`), và `Icon` trần hợp lệ trong slot đã theme
+V8 không có `MxIcon`: glyph lấy từ `AppIcons`, cỡ từ `context.dimens.sizeIcon*`
+(`AppDimens`), và `Icon` trần hợp lệ trong slot đã theme
 (leading của button/tile). Guard `no_raw_icon_color` cấm `Icon(color:)` mở —
 ngoại lệ duy nhất là màu đọc qua `.resolve(context)` cho size không có bậc.
 
 - [ ] Glyph từ `AppIcons`, không `Icons.*` rải trong feature.
-- [ ] Cỡ từ `AppIconSize`, không số trần.
+- [ ] Cỡ từ `context.dimens`, không số trần.
 - [ ] Màu từ role của theme, không raw color.
 - [ ] Decorative icon được exclude semantics đúng cách.
 - [ ] Chỉ tạo `MxIcon` khi có tone/size lặp lại mà các token trên không đủ.

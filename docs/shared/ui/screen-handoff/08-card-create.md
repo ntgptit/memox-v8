@@ -10,11 +10,11 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) | Close (✕); title "New card". No Save here: the single Save is the footer's "Save card" (critique 2026-09-30 part 3a records it). |
+| App bar | `MxAppBar` | Close (✕); title "New card". No Save here: the single Save is the footer's "Save card" (critique 2026-09-30 part 3a records it). |
 | Deck path | `DeckContextHeaderWidget` (`MxBreadcrumb`), injected by `app/` (ruling P4a-L7) | Library › ancestors › deck › "New card": the deck is named once (critique 2026-09-30). Not a picker: the card belongs to the deck it was opened from. |
 | Deck-rejects banner | `MxInlineBanner` (warning) | "This deck no longer accepts cards." / "It now holds sub-decks."; shown only once the target deck can no longer hold a card. |
-| Front | `CardFieldWidget` (`MxTextField`, `MxTextFieldVariant.term`) | Overline "Front · Term", "Required", live "{count} / 60"; inline error once the field is touched (ruling P4a-L2). |
-| Back | `CardFieldWidget` (`MxTextFieldVariant.detail`) | Overline "Back · Meaning", "Required", "{count} / 240"; inline error once touched. |
+| Front | `CardFieldWidget` (`MxTextField`, `MxTextFieldVariant.term`) | Label "Front · Term" above the box with "Required" beside it, live "{count} / 60" at the trailing end of the row under the box; inline error once the field is touched (ruling P4a-L2). |
+| Back | `CardFieldWidget` (`MxTextFieldVariant.detail`) | Label "Back · Meaning" with "Required", "{count} / 240" under the box; inline error once touched. |
 | Optional details | `CardAddDetailsWidget` disclosure → `CardOptionalFieldsWidget` (3 × `CardFieldWidget`, `MxTextFieldVariant.detail`) | "Add details · example · hint · pronunciation"; opens example, hint, pronunciation, each "· optional", "{count} / 240". |
 | Tags | `CardTagEditorWidget` (`CardRemovableTagChipWidget` × n, `MxButton` "Add tag", `MxFieldMessage`) | "Tags · optional · {n} / 10"; removable chips, an inline add input with an "Add" button beside it (enabled while the field holds text; Done adds too). At 10 tags, Add tag is withdrawn and a warning message shows (BR-TAG-002). |
 | Footer | `CardEditorFooterWidget` (`MxFooterBar`, `MxActionPair` 1 : 1) | Caption line; Cancel (`MxButton` outline) + a primary "Save card" / "Retry save", sharing the row equally (DEV-169); a danger `MxInlineBanner` after a failed save. |
@@ -44,13 +44,13 @@ card?") when leaving a dirty new-card form without saving.
 
 ## Rulings
 
-- **DEV-169 (owner 2026-10-05):** every card field (term, meaning, example, hint, pronunciation) is the app's form field: muted fill that lightens on focus, r12, 12 padding, 52 floor, the body role. The footer pair shares the row 1 : 1 like every footer pair.
+- **DEV-169 (owner 2026-10-05):** every card field (term, meaning, example, hint, pronunciation) is the app's form field: muted fill that lightens on focus, r12, 12 padding, 52 floor, the body role. The footer pair shares the row 1 : 1 like every footer pair. **DEV-372 (Material 3):** the field is the outlined M3 field: no fill (the page ground shows through), 16 text inset, 56 floor, the input in `bodyLarge`; the field paints its label above the box (4 clear, `labelMedium`, `onSurfaceVariant`, `error` in error) with the optional field's glyph before it and "Required" or "· optional" after it, and the count "{count} / {limit}" moves from the header to the trailing end of the supporting row under the box (`error` with the field's error); the caret turns `error` in error.
 - **§9 row 81 (P4a-L7):** the deck chip is not a picker, so a deck that rejects cards says "This deck can't take cards now." / "It now holds sub-decks." with no "choose another deck".
 - **§9 row 101:** "Add details" has a solid edge, 48 tall (touch floor); the edge is the outline, as the fields beside it (DEV-166, was `outlineVariant` at about 1.5:1).
 - **§9 row 81 (P4a-L8):** "Add tag" is an outline `MxButton` chip; there is no dashed-border token.
 - **§9 row 81:** `DeckContextHeaderWidget` sits outside the scroll as a persistent header.
 - **§9 row 46 (plan O2):** while saving, `MxButton` swaps its label for the spinner; the words live only in the caption line.
-- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in `primaryText` beside them; Optional details stays a section label.
+- **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** field headers are field labels in sentence case (14/600); Required is a caption in `context.accentColor` beside them; Optional details stays a section label.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the tag field has an "Add" button (`cardTagConfirm`) beside it, enabled while the field holds text; Done or Add adds the tag through the same checks (BR-TAG-001, BR-TAG-002); Save first adds the tag still typed, and an invalid one shows its error and saves nothing; "Save and add another" clears the tag field with the rest of the form.
 
 ## Copy

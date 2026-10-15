@@ -27,7 +27,7 @@ void main() {
     expect(padding.bottom, 24 + 20);
   });
 
-  testWidgets('FAB tail: 24 + 52 + 24 + inset', (tester) async {
+  testWidgets('FAB tail: 24 + 56 + 24 + inset', (tester) async {
     await pumpMxPage(
       tester,
       Scaffold(
@@ -36,10 +36,10 @@ void main() {
       padding: const EdgeInsets.only(bottom: 20),
     );
 
-    expect(_padding(tester).bottom, 24 + 52 + 24 + 20);
+    expect(_padding(tester).bottom, 24 + 56 + 24 + 20);
   });
 
-  testWidgets('FAB above nav tail: 4 + 52 + 24 + inset', (tester) async {
+  testWidgets('FAB above nav tail: 4 + 56 + 24 + inset', (tester) async {
     await pumpMxPage(
       tester,
       Scaffold(
@@ -51,6 +51,6 @@ void main() {
       padding: const EdgeInsets.only(bottom: 20),
     );
 
-    expect(_padding(tester).bottom, 4 + 52 + 24 + 20);
+    expect(_padding(tester).bottom, 4 + 56 + 24 + 20);
   });
 }

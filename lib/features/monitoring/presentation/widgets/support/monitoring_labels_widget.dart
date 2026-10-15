@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/logging/log_entry.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/features/monitoring/domain/models/log_window_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';

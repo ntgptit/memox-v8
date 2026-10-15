@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study/presentation/controllers/review_mode_pick_controller.dart';
@@ -60,7 +60,6 @@ class StudyEntryScreen extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         titleWidget: title,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

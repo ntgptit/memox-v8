@@ -135,6 +135,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(EditableText), 'card');
     await tester.pumpAndSettle();
+    // At 360 the chip row scrolls: Flagged sits at its right edge.
+    await tester.ensureVisible(
+      find.widgetWithText(MxFilterChip, _en.cardFilterFlagged),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(MxFilterChip, _en.cardFilterFlagged));
     await tester.pumpAndSettle();
 

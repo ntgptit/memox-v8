@@ -67,6 +67,11 @@ MxFilterChip _tagsChip(WidgetTester tester) => tester.widget<MxFilterChip>(
 );
 
 Future<void> _openSheet(WidgetTester tester) async {
+  // At 360 the chip row scrolls: Tags sits past the right edge.
+  await tester.ensureVisible(
+    find.widgetWithText(MxFilterChip, _en.cardFilterTags),
+  );
+  await tester.pumpAndSettle();
   await tester.tap(find.widgetWithText(MxFilterChip, _en.cardFilterTags));
   await tester.pumpAndSettle();
 }

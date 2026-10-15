@@ -1,7 +1,6 @@
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -12,6 +11,7 @@ import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 14's review modes (UC-STUDY-001 step 4): each with its card count,
 /// or its reason when the due cards cannot run it (BR-STUDY-044,
@@ -64,7 +64,7 @@ class StudyEntryReviewWidget extends StatelessWidget {
           ),
         ),
         if (hasUnavailable) ...[
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
           MxNote(text: l10n.studyEntryUnavailableNote),
         ],
       ],

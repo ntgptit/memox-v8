@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
 import 'package:memox/features/card/domain/models/card_due_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
@@ -80,9 +80,9 @@ void main() {
           (w) =>
               w is Padding &&
               w.padding ==
-                  const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                    vertical: AppSpacing.grouped,
+                  EdgeInsets.symmetric(
+                    horizontal: const AppDimens().space16,
+                    vertical: const AppDimens().space12,
                   ),
         ),
       ),

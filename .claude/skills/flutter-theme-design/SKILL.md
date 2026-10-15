@@ -108,11 +108,11 @@ MxAppShell(
   body: MxScreenScroll(
     children: [
       MxSearchField(...),
-      const SizedBox(height: AppSpacing.gutter),
+      SizedBox(height: context.dimens.space16),
       MxCard(
         child: MxListRow(...),
       ),
-      const SizedBox(height: AppSpacing.section),
+      SizedBox(height: context.dimens.space24),
       MxButton(label: ..., onPressed: ...),
     ],
   ),

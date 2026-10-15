@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/features/study/presentation/widgets/sections/session_summary_hero_widget.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/study/domain/models/session_status_model.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
@@ -89,8 +89,8 @@ void main() {
     expect((done, again), (1, 1));
   });
 
-  libraryTest('Night: a finished session is a soft ground, so its title reads '
-      'Day\'s text (spec 2026-10-10 D4)', (tester, env) async {
+  libraryTest('Night: a finished session is a tint over the Night surface, so '
+      'its title reads Night\'s own text role (ADR-022)', (tester, env) async {
     await _pump(
       tester,
       env,
@@ -101,7 +101,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text(_en.summaryReviewFinished)).style?.color,
-      AppColorSchemes.light.onSurface,
+      darkColorScheme.onSurface,
     );
   });
 
@@ -341,7 +341,10 @@ void main() {
     final bar = tester.getRect(find.byType(MxAppBar));
     final footer = tester.getRect(find.byType(MxFooterBar));
     final spaceCentre = (bar.bottom + footer.top) / 2;
-    expect((hero.center.dy - spaceCentre).abs(), lessThan(AppSpacing.gutter));
+    expect(
+      (hero.center.dy - spaceCentre).abs(),
+      lessThan(const AppDimens().space16),
+    );
   });
 
   libraryTest('a long summary still scrolls from the top, clipping nothing', (
@@ -357,7 +360,7 @@ void main() {
     );
     final hero = tester.getRect(find.byType(SessionSummaryHeroWidget));
     final bar = tester.getRect(find.byType(MxAppBar));
-    expect(hero.top - bar.bottom, lessThan(AppSpacing.section));
+    expect(hero.top - bar.bottom, lessThan(const AppDimens().space24));
     expect(tester.takeException(), isNull);
   });
 
@@ -397,7 +400,14 @@ void main() {
     expect(overline, findsOneWidget);
     expect(find.text('REVIEW SESSION · NHÀ HÀNG'), findsNothing);
     final text = tester.widget<Text>(overline);
-    expect(text.style, tester.element(overline).textStyles.eyebrow);
+    expect(
+      text.style,
+      tester
+          .element(overline)
+          .texts
+          .labelSmall
+          ?.copyWith(color: tester.element(overline).colors.onSurfaceVariant),
+    );
     expect(
       text.semanticsLabel,
       _en.summaryOverline(_en.summaryKindReview, 'Nhà hàng'),

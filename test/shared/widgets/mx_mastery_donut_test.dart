@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 
 import '../../support/widget_harness.dart';
@@ -16,16 +20,15 @@ RenderObject _ring(WidgetTester tester) => tester.renderObject(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
-  final semantic = MxSemanticColors.light;
+  final scheme = lightColorScheme;
+  const mx = MxColorsExtension.light;
 
-  testWidgets('56 box; the arc in the ramp fill, the label in its text token', (
-    tester,
-  ) async {
+  testWidgets('56 box; the arc in the ramp fill, the label in its band\'s '
+      'text colour (SW-REV-001)', (tester) async {
     for (final (fraction, text, color, label) in [
-      (0.2, '20%', semantic.statusLearning, semantic.learningText),
-      (0.42, '42%', semantic.statusReviewing, semantic.primaryText),
-      (0.9, '90%', semantic.statusMastered, semantic.masteryText),
+      (0.2, '20%', mx.warning, mx.warning),
+      (0.42, '42%', accentOf(scheme), accentOf(scheme)),
+      (0.9, '90%', mx.successContainer, mx.success),
     ]) {
       await pumpMx(tester, MxMasteryDonut(fraction: fraction));
 
@@ -33,13 +36,36 @@ void main() {
         tester.getSize(find.byType(MxMasteryDonut)),
         const Size.square(56),
       );
-      // The arc is the fill; the label is text, so it takes the text token.
       expect(tester.widget<Text>(find.text(text)).style!.color, label);
       expect(
         _ring(tester),
         paints
-          ..circle(color: scheme.surfaceContainer, style: PaintingStyle.stroke)
+          ..circle(
+            color: scheme.surfaceContainerHighest,
+            style: PaintingStyle.stroke,
+          )
           ..arc(color: color, strokeCap: StrokeCap.round),
+      );
+    }
+  });
+
+  testWidgets('the track is the ramp\'s progress track in both themes (token: '
+      'progress and countdown ring track)', (tester) async {
+    for (final (brightness, colors) in [
+      (Brightness.light, lightColorScheme),
+      (Brightness.dark, darkColorScheme),
+    ]) {
+      await pumpMx(
+        tester,
+        const MxMasteryDonut(fraction: 0.5),
+        brightness: brightness,
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        _ring(tester),
+        paints..circle(color: MasteryRamp.track(colors)),
+        reason: '$brightness',
       );
     }
   });
@@ -49,22 +75,20 @@ void main() {
   ) async {
     await pumpMx(tester, const MxMasteryDonut(fraction: 0));
 
+    expect(tester.widget<Text>(find.text('0%')).style!.color, mx.warning);
     expect(
-      tester.widget<Text>(find.text('0%')).style!.color,
-      semantic.learningText,
+      _ring(tester),
+      paints..circle(color: scheme.surfaceContainerHighest),
     );
-    expect(_ring(tester), paints..circle(color: scheme.surfaceContainer));
     expect(_ring(tester), isNot(paints..arc()));
   });
 
-  testWidgets('100%: the full ring at the top colour', (tester) async {
+  testWidgets('100%: the full ring at the top colour, the label in its '
+      'text colour', (tester) async {
     await pumpMx(tester, const MxMasteryDonut(fraction: 1));
 
-    expect(
-      tester.widget<Text>(find.text('100%')).style!.color,
-      semantic.masteryText,
-    );
-    expect(_ring(tester), paints..arc(color: semantic.statusMastered));
+    expect(tester.widget<Text>(find.text('100%')).style!.color, mx.success);
+    expect(_ring(tester), paints..arc(color: mx.successContainer));
   });
 
   testWidgets('the label never rounds to a lie: 99.6% reads 99%, 0.4% reads '

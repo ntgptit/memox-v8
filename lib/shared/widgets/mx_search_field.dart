@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The library search input: a leading glyph, a single-line query, and a
 /// clear button that appears only once there is something to clear. What the
@@ -98,17 +97,24 @@ class _MxSearchFieldState extends State<MxSearchField> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
     final isFocused = _focusNode.hasFocus;
     final hasQuery = _controller.text.isNotEmpty;
-    // As in MxTextField: padding centres the line in the 52 floor, so the
+    // As in MxTextField: padding centres the line in the `sizeSearch` floor, so the
     // decorator paints the full box and scaled text still grows it.
-    final valueStyle = styles.searchValue;
+    final valueStyle = context.texts.labelMedium!;
     final lineHeight = valueStyle.fontSize! * valueStyle.height!;
+    final stadium = BorderRadius.circular(context.dimens.sizeSearch / 2);
+    final edge = OutlineInputBorder(
+      gapPadding: 0,
+      borderRadius: stadium,
+      borderSide: BorderSide.none,
+    );
     final field = TextField(
       controller: _controller,
       focusNode: _focusNode,
       readOnly: widget.onTap != null,
+      // A trigger's one tab stop is its ink, not the field under it.
+      canRequestFocus: widget.onTap == null,
       onChanged: widget.onChanged,
       maxLines: 1,
       textInputAction: TextInputAction.search,
@@ -117,35 +123,36 @@ class _MxSearchFieldState extends State<MxSearchField> {
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: widget.hintText,
-        hintStyle: styles.searchHint,
-        // The edges are the theme's field (spec §4.6); the search keeps its
-        // own fill.
-        fillColor: isFocused
-            ? colors.surfaceContainerLowest
-            : colors.surfaceContainer,
+        hintStyle: context.texts.labelMedium?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
+        // The search bar is a stadium on its own surface, with no edge in any
+        // state (Design System: SearchBar).
+        // The theme's field is outlined with no fill: the bar fills itself.
+        filled: true,
+        fillColor: context.mxColors.searchSurface,
+        border: edge,
+        enabledBorder: edge,
+        focusedBorder: edge,
         contentPadding: EdgeInsets.symmetric(
-          vertical: (AppSize.input - lineHeight) / 2,
+          vertical: (context.dimens.sizeSearch - lineHeight) / 2,
         ),
         prefixIcon: Padding(
-          padding: const EdgeInsetsDirectional.only(
-            start: AppSpacing.gutter,
-            end: AppSpacing.control,
+          padding: EdgeInsetsDirectional.only(
+            start: context.dimens.space16,
+            end: context.dimens.space8,
           ),
           child: Icon(
             AppIcons.search,
-            size: AppIconSize.compact,
-            color: isFocused
-                ? context.semanticColors.primaryText
-                : colors.onSurfaceVariant,
+            size: context.dimens.sizeIcon,
+            color: isFocused ? context.accentColor : colors.onSurfaceVariant,
           ),
         ),
         prefixIconConstraints: const BoxConstraints(),
         // The clear button owns its inset; an empty field keeps a 12 spacer.
         suffixIcon: hasQuery
             ? Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  end: AppSpacing.micro,
-                ),
+                padding: EdgeInsetsDirectional.only(end: context.dimens.space4),
                 child: MxIconButton(
                   icon: AppIcons.close,
                   // A trigger never holds a query, so a clear button always
@@ -154,7 +161,7 @@ class _MxSearchFieldState extends State<MxSearchField> {
                   onPressed: _clear,
                 ),
               )
-            : const SizedBox(width: AppSpacing.grouped),
+            : SizedBox(width: context.dimens.space12),
         suffixIconConstraints: const BoxConstraints(),
       ),
     );
@@ -165,10 +172,22 @@ class _MxSearchFieldState extends State<MxSearchField> {
       label: widget.hintText,
       excludeSemantics: true,
       onTap: onTap,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: IgnorePointer(child: field),
+      child: Stack(
+        children: [
+          IgnorePointer(child: field),
+          // Its own Material, above the filled field, so the ripple and the
+          // hover and pressed layers show over the search surface.
+          Positioned.fill(
+            child: Material(
+              type: MaterialType.transparency,
+              child: MxRowInk(
+                onTap: onTap,
+                borderRadius: stadium,
+                child: const SizedBox.expand(),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

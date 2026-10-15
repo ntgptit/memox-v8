@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_display_status_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
@@ -10,6 +8,7 @@ import 'package:memox/features/card/presentation/widgets/support/card_list_label
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_selectable_card_row.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Tags a row names before "+N" (screen 07, spec A15).
 const int _shownTags = 2;
@@ -38,7 +37,7 @@ class CardRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: AppSpacing.control),
+    padding: EdgeInsets.only(bottom: context.dimens.space8),
     // The frame is the shared card row (DEV-304): the checkbox while
     // selecting, the ink, 16/12 and one node with the checked state. No
     // status dot: the status line states it once (critique 2026-09-30 part
@@ -49,7 +48,7 @@ class CardRowWidget extends StatelessWidget {
       isSelecting: isSelecting,
       isSelected: isSelected,
       child: Row(
-        spacing: AppSpacing.grouped,
+        spacing: context.dimens.space12,
         children: [
           Expanded(child: _Content(item: item)),
           _Trailing(item: item),
@@ -68,56 +67,60 @@ class _Content extends StatelessWidget {
     BuildContext context,
     CardDisplayStatus status,
   ) {
-    final semantic = context.semanticColors;
     return switch (status) {
       CardDisplayStatus.newCard => context.colors.onSurfaceVariant,
-      CardDisplayStatus.beginning => semantic.learningText,
-      CardDisplayStatus.reviewing => semantic.primaryText,
-      CardDisplayStatus.mastered => semantic.masteryText,
+      CardDisplayStatus.beginning => context.mxColors.warning,
+      CardDisplayStatus.reviewing => context.accentColor,
+      CardDisplayStatus.mastered => context.mxColors.success,
     };
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final status = item.displayStatus;
     final label = l10n.cardStatus(status);
     final tags = item.tags;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.micro,
+      spacing: context.dimens.space4,
       children: [
         Text(
           item.front,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: styles.contentTitle,
+          style: context.texts.titleMedium,
         ),
         Text(
           item.back,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: styles.rowDescription,
+          style: context.texts.bodyMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
         ),
-        const SizedBox(height: AppSpacing.micro),
+        SizedBox(height: context.dimens.space4),
         // Wraps rather than clips, so large text keeps every word.
         Wrap(
-          spacing: AppSpacing.micro,
-          runSpacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
+          runSpacing: context.dimens.space4,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(
               label.toUpperCase(),
               semanticsLabel: label,
-              style: styles.statusLabel(_statusForeground(context, status)),
+              style: context.texts.labelSmall?.copyWith(
+                color: _statusForeground(context, status),
+              ),
             ),
             for (final tag in tags.take(_shownTags))
               MxTagChip(label: tag.name, isDense: true),
             if (tags.length > _shownTags)
               Text(
                 l10n.cardMoreTags(tags.length - _shownTags),
-                style: styles.rowDescription,
+                style: context.texts.bodyMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
           ],
         ),
@@ -137,13 +140,13 @@ class _Trailing extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.end,
-    spacing: AppSpacing.micro,
+    spacing: context.dimens.space4,
     children: [
       if (item.isFlagged)
         IconTheme.merge(
           data: IconThemeData(
             color: context.colors.onSurface,
-            size: AppIconSize.inline,
+            size: context.dimens.sizeIconInline,
           ),
           child: Icon(
             AppIcons.flagged,

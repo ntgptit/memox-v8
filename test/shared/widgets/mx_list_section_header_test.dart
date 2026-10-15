@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 
 import '../../support/widget_harness.dart';
@@ -9,21 +10,21 @@ const _countKey = ValueKey('count');
 Widget _width(Widget child) => SizedBox(width: 360, child: child);
 
 void main() {
-  testWidgets('an uppercase 13/700 overline that reads the original label', (
-    tester,
-  ) async {
-    final handle = tester.ensureSemantics();
-    await pumpMx(tester, _width(const MxListSectionHeader(label: 'Hôm nay')));
-    final text = tester.widget<Text>(find.text('HÔM NAY'));
+  testWidgets(
+    'an uppercase labelSmall overline that reads the original label',
+    (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpMx(tester, _width(const MxListSectionHeader(label: 'Hôm nay')));
+      final text = tester.widget<Text>(find.text('HÔM NAY'));
 
-    expect(text.style!.fontSize, 13);
-    expect(text.style!.fontWeight, FontWeight.w700);
-    expect(
-      tester.getSemantics(find.text('HÔM NAY')),
-      isSemantics(label: 'Hôm nay'),
-    );
-    handle.dispose();
-  });
+      expect(text.style, tester.element(find.text('HÔM NAY')).texts.labelSmall);
+      expect(
+        tester.getSemantics(find.text('HÔM NAY')),
+        isSemantics(label: 'Hôm nay'),
+      );
+      handle.dispose();
+    },
+  );
 
   testWidgets('the label is a heading for screen readers (audit 2026-10-07)', (
     tester,

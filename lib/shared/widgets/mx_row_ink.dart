@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// What the tappable rows share (spec §4.5, ruling S13):
@@ -16,6 +14,7 @@ class MxRowInk extends StatefulWidget {
     required this.onTap,
     required this.child,
     this.onLongPress,
+    this.borderRadius,
     this.isEnabled = true,
     this.shouldDimWhenDisabled = true,
   });
@@ -26,6 +25,10 @@ class MxRowInk extends StatefulWidget {
   /// row's own ink and in its TalkBack node (SW-REV-005).
   final VoidCallback? onLongPress;
   final Widget child;
+
+  /// The corners the ripple, the state layers and the focus ring follow; null
+  /// is the row's square edge. A pill-shaped control passes its own radius.
+  final BorderRadius? borderRadius;
   final bool isEnabled;
 
   /// False leaves the dim to the child, which dims only what is unavailable
@@ -60,7 +63,10 @@ class _MxRowInkState extends State<MxRowInk> {
               child: widget.child,
             );
       if (!widget.shouldDimWhenDisabled) return disabled;
-      return Opacity(opacity: AppOpacity.disabled, child: disabled);
+      return Opacity(
+        opacity: context.dimens.opacityDisabledContent,
+        child: disabled,
+      );
     }
     if (onTap == null) return widget.child;
     return Semantics(
@@ -69,14 +75,16 @@ class _MxRowInkState extends State<MxRowInk> {
       child: InkWell(
         onTap: onTap,
         onLongPress: widget.onLongPress,
+        borderRadius: widget.borderRadius,
         onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
         child: DecoratedBox(
           position: DecorationPosition.foreground,
           decoration: BoxDecoration(
+            borderRadius: widget.borderRadius,
             border: _hasFocus
                 ? Border.all(
-                    color: context.semanticColors.focusRing,
-                    width: AppStroke.focus,
+                    color: context.colors.primary,
+                    width: context.dimens.strokeFocus,
                   )
                 : null,
           ),

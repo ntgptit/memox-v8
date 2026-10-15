@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/clock/di/day_clock_provider.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/monitoring/presentation/controllers/monitoring_list_controller.dart';
 import 'package:memox/features/monitoring/presentation/states/monitoring_list_state.dart';
@@ -54,7 +52,7 @@ class MonitoringServerListWidget extends ConsumerWidget {
       ),
       MonitoringListFailed(:final failure) => MxScreenScroll(
         children: [
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           _failure(context, failure, controller),
         ],
       ),
@@ -62,7 +60,7 @@ class MonitoringServerListWidget extends ConsumerWidget {
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             if (state.filter.isDefault)
               MxEmptyState(
                 icon: AppIcons.learned,
@@ -109,7 +107,7 @@ class MonitoringServerListWidget extends ConsumerWidget {
         isCompact: true,
       ),
       MonitoringLoadFailure.offline => Column(
-        spacing: AppSpacing.grouped,
+        spacing: context.dimens.space12,
         children: [
           MxErrorState(
             icon: AppIcons.offline,
@@ -152,7 +150,9 @@ class _Rows extends ConsumerWidget {
   final LogStatus? statusShownByFilter;
   final ValueChanged<String> onOpenLog;
 
-  static const double _prefetchExtent = 10 * AppSize.listRowMin;
+  /// The next page loads while this many rows (two-line list rows) are still
+  /// below the fold.
+  static const int _prefetchRows = 10;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -169,7 +169,8 @@ class _Rows extends ConsumerWidget {
       onNotification: (notification) {
         if (loaded.more == MonitoringMore.idle &&
             hasMore &&
-            notification.metrics.extentAfter < _prefetchExtent) {
+            notification.metrics.extentAfter <
+                _prefetchRows * context.dimens.sizeListRowTwoLine) {
           unawaited(controller.loadMore());
         }
         return false;
@@ -178,7 +179,7 @@ class _Rows extends ConsumerWidget {
         onRefresh: controller.refresh,
         child: MxScreenScroll(
           children: [
-            const SizedBox(height: AppSpacing.control),
+            SizedBox(height: context.dimens.space8),
             MxListSectionHeader(label: header),
             // Lazy, as the list grows with every load-more.
             ...MxDividedColumn.divided([
@@ -190,7 +191,7 @@ class _Rows extends ConsumerWidget {
                   statusShownByFilter: statusShownByFilter,
                 ),
             ]),
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
             _End(loaded: loaded, onRetry: controller.loadMore),
           ],
         ),
@@ -220,7 +221,7 @@ class _End extends StatelessWidget {
         actions: [
           MxButton(
             label: l10n.commonRetry,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: () => unawaited(onRetry()),
           ),
         ],
@@ -228,7 +229,9 @@ class _End extends StatelessWidget {
       (_, null) => Text(
         l10n.monitoringNoMore,
         textAlign: TextAlign.center,
-        style: context.textStyles.footerCaption,
+        style: context.texts.labelSmall?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
       ),
       _ => const SizedBox.shrink(),
     };

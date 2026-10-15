@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -36,7 +36,7 @@ class StudyHomeDecksWidget extends StatelessWidget {
           label: l10n.studyHomeDecks,
           trailing: MxButton(
             label: l10n.studyHomeLibrary,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             tone: MxButtonTone.secondary,
             onPressed: onOpenLibrary,
           ),

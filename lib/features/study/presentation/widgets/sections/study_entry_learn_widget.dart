@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_entry_model.dart';
 import 'package:memox/features/study/presentation/states/study_entry_offer_state.dart';
@@ -40,7 +40,12 @@ class StudyEntryLearnWidget extends StatelessWidget {
       child: MxListRow(
         title: l10n.studyEntryLearnTitle,
         // The kit wraps the line; the row's own subtitle is one line.
-        meta: Text(line, style: context.textStyles.noteText),
+        meta: Text(
+          line,
+          style: context.texts.bodyMedium?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
+        ),
         trailing: _trailing(context),
       ),
     );
@@ -57,7 +62,7 @@ class StudyEntryLearnWidget extends StatelessWidget {
     return MxButton(
       label: l10n.studyEntryLearn,
       icon: AppIcons.starterDecks,
-      size: MxButtonSize.compact,
+      size: MxButtonSize.small,
       tone: MxButtonTone.secondary,
       onPressed: onLearn,
     );

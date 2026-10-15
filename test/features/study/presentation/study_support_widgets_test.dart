@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
@@ -170,6 +169,35 @@ void main() {
     );
   });
 
+  libraryTest('a hint keeps the window\'s screen margin at its sides', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      WindowWidthScope(
+        width: 700,
+        child: _host(
+          const SessionFooterHintWidget(icon: AppIcons.check, text: 'Tap'),
+        ),
+      ),
+    );
+    final padding = tester.widget<Padding>(
+      find
+          .descendant(
+            of: find.byType(SessionFooterHintWidget),
+            matching: find.byType(Padding),
+          )
+          .first,
+    );
+
+    expect(
+      padding.padding.resolve(TextDirection.ltr).horizontal,
+      2 * const AppDimens().marginScreenMedium,
+    );
+  });
+
   libraryTest('a hint is as tall as its own lines: no empty reserved line '
       'under a one-line hint, and a wrapped one still grows (owner, critique '
       '2026-09-30 part 3c-2 golden review; amends R6)', (tester, env) async {
@@ -198,7 +226,10 @@ void main() {
               .first,
         )
         .height;
-    expect(shortHeight, line + AppSpacing.control + AppSpacing.gutter);
+    expect(
+      shortHeight,
+      line + const AppDimens().space8 + const AppDimens().space16,
+    );
     expect(await heightOf(long), greaterThan(shortHeight));
     expect(await heightOf(short, textScale: 2), greaterThan(shortHeight));
   });
@@ -240,7 +271,7 @@ void main() {
     );
 
     final fade = tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity));
-    expect(fade.opacity, AppOpacity.muted);
+    expect(fade.opacity, const AppDimens().opacityMuted);
   });
 
   libraryTest('one action spans the width of a two-action row, not its own '
@@ -257,7 +288,7 @@ void main() {
 
     expect(
       tester.getSize(find.byType(MxButton)).width,
-      2 * 160 + AppSpacing.control,
+      2 * 160 + const AppDimens().space8,
     );
   });
 
@@ -285,7 +316,11 @@ void main() {
       final label = find.text(text);
       expect(
         tester.widget<Text>(label).style,
-        tester.element(label).textStyles.eyebrow,
+        tester
+            .element(label)
+            .texts
+            .labelSmall
+            ?.copyWith(color: tester.element(label).colors.onSurfaceVariant),
         reason: text,
       );
     }

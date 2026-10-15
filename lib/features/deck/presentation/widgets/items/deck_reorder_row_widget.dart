@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_tile_signs_widget.dart';
@@ -35,7 +34,9 @@ class DeckReorderRowWidget extends StatelessWidget {
       // (critique 2026-09-30).
       meta: Text(
         deckTileMeta(tile, context.l10n),
-        style: context.textStyles.rowSubtitle,
+        style: context.texts.bodyMedium?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
       ),
       leading: MxIconTile(
         icon: deckTileGlyph(tile),
@@ -43,9 +44,9 @@ class DeckReorderRowWidget extends StatelessWidget {
       ),
       trailing: ReorderableDragStartListener(
         index: index,
-        child: const SizedBox.square(
-          dimension: AppSize.touchTarget,
-          child: Icon(AppIcons.dragHandle),
+        child: SizedBox.square(
+          dimension: context.dimens.sizeControl,
+          child: const Icon(AppIcons.dragHandle),
         ),
       ),
     ),

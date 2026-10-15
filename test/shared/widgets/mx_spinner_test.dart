@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_spinner.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -33,7 +35,7 @@ Widget _still(Widget child) => Builder(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('four sizes off the icon scale; 16 by default', (tester) async {
     for (final (size, box) in [
@@ -50,14 +52,14 @@ void main() {
     expect(tester.getSize(find.byType(MxSpinner)), const Size.square(16));
   });
 
-  testWidgets('a 2px ring: primaryText on a surface, onPrimary on a fill', (
+  testWidgets('a 2px ring: the accent on a surface, onPrimary on a fill', (
     tester,
   ) async {
     await pumpMx(tester, const MxSpinner());
     expect(
       _ring(tester),
       paints..arc(
-        color: MxSemanticColors.light.primaryText,
+        color: accentOf(scheme),
         strokeWidth: 2,
         style: PaintingStyle.stroke,
       ),

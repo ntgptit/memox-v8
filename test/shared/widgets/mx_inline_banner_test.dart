@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
@@ -26,85 +28,12 @@ BoxDecoration _ground(WidgetTester tester) =>
         as BoxDecoration;
 
 void main() {
-  final scheme = AppColorSchemes.light;
-  final semantic = MxSemanticColors.light;
-
-  testWidgets('warning: the warning soft ground, its border, an on-soft 16 '
-      'glyph', (tester) async {
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(tone: MxBannerTone.warning, message: _message),
-      ),
-    );
-    final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
-
-    expect(_ground(tester).color, semantic.warningSoft);
-    expect(_ground(tester).border, Border.all(color: semantic.warningBorder));
-    expect(_ground(tester).borderRadius, BorderRadius.circular(12));
-    expect((glyph.size, glyph.color), (16, semantic.onWarningSoft));
-  });
+  final scheme = lightColorScheme;
+  const mx = MxColorsExtension.light;
 
   testWidgets(
-    'danger: the danger tint, its border, the error glyph (DEV-371)',
-    (tester) async {
-      await pumpMx(
-        tester,
-        _width(
-          const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
-        ),
-      );
-
-      expect(_ground(tester).color, semantic.dangerSoft);
-      expect(_ground(tester).border, Border.all(color: semantic.dangerBorder));
-      expect(
-        tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-        AppColorSchemes.light.error,
-      );
-    },
-  );
-
-  testWidgets('titled: a 700 title 2 above the detail; untitled: the lead', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(
-          tone: MxBannerTone.danger,
-          title: 'Export failed',
-          message: _message,
-        ),
-      ),
-    );
-    expect(
-      tester.widget<Text>(find.text('Export failed')).style!.fontWeight,
-      FontWeight.w700,
-    );
-    expect(
-      tester.widget<Text>(find.text(_message)).style!.color,
-      scheme.onSurfaceVariant,
-    );
-    expect(
-      tester.getTopLeft(find.text(_message)).dy -
-          tester.getBottomLeft(find.text('Export failed')).dy,
-      2,
-    );
-
-    await pumpMx(
-      tester,
-      _width(
-        const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
-      ),
-    );
-    expect(
-      tester.widget<Text>(find.text(_message)).style!.color,
-      scheme.onSurface,
-    );
-  });
-
-  testWidgets(
-    'padding 12 16 after the hairline, 16 below; 8 12 and 0 in a bar',
+    'warning: amber ground, no border, 8 corner, warning text colour 16 '
+    'glyph (FE-C1)',
     (tester) async {
       await pumpMx(
         tester,
@@ -112,54 +41,129 @@ void main() {
           const MxInlineBanner(tone: MxBannerTone.warning, message: _message),
         ),
       );
-      final banner = tester.getTopLeft(find.byType(MxInlineBanner));
-      expect(tester.getTopLeft(find.byType(Icon)).dx - banner.dx, 17);
-      expect(
-        tester.getTopLeft(find.text(_message)) - banner,
-        const Offset(41, 13),
+      final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
+
+      expect(_ground(tester).color, mx.warning.tintOver(scheme.surface));
+      expect(_ground(tester).border, isNull);
+      expect(_ground(tester).borderRadius, BorderRadius.circular(8));
+      expect((glyph.size, glyph.color), (16, mx.warning));
+    },
+  );
+
+  testWidgets('danger: red ground, no border, error glyph', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
+      ),
+    );
+
+    expect(_ground(tester).color, scheme.error.tintOver(scheme.surface));
+    expect(_ground(tester).border, isNull);
+    expect(
+      tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
+      scheme.error,
+    );
+  });
+
+  testWidgets(
+    'titled: a labelMedium title 2 above the detail; untitled: the lead',
+    (tester) async {
+      await pumpMx(
+        tester,
+        _width(
+          const MxInlineBanner(
+            tone: MxBannerTone.danger,
+            title: 'Export failed',
+            message: _message,
+          ),
+        ),
       );
       expect(
-        tester.getSize(find.byType(MxInlineBanner)).height -
-            tester
-                .getSize(
-                  find
-                      .descendant(
-                        of: find.byType(MxInlineBanner),
-                        matching: find.byType(DecoratedBox),
-                      )
-                      .first,
-                )
-                .height,
-        16,
+        tester.widget<Text>(find.text('Export failed')).style!.fontWeight,
+        tester
+            .element(find.text('Export failed'))
+            .texts
+            .labelMedium!
+            .fontWeight,
+      );
+      expect(
+        tester.widget<Text>(find.text(_message)).style!.color,
+        scheme.onSurfaceVariant,
+      );
+      expect(
+        tester.getTopLeft(find.text(_message)).dy -
+            tester.getBottomLeft(find.text('Export failed')).dy,
+        2,
       );
 
       await pumpMx(
         tester,
         _width(
-          const MxInlineBanner(
-            tone: MxBannerTone.warning,
-            message: _message,
-            isInCommitBar: true,
-          ),
+          const MxInlineBanner(tone: MxBannerTone.danger, message: _message),
         ),
       );
-      final bar = tester.getTopLeft(find.byType(MxInlineBanner));
-      expect(tester.getTopLeft(find.text(_message)) - bar, const Offset(37, 9));
       expect(
-        tester.getBottomLeft(find.byType(MxInlineBanner)).dy,
-        tester
-            .getBottomLeft(
-              find
-                  .descendant(
-                    of: find.byType(MxInlineBanner),
-                    matching: find.byType(DecoratedBox),
-                  )
-                  .first,
-            )
-            .dy,
+        tester.widget<Text>(find.text(_message)).style!.color,
+        scheme.onSurface,
       );
     },
   );
+
+  testWidgets('padding 12 16, 16 below; 8 12 and 0 in a bar', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(tone: MxBannerTone.warning, message: _message),
+      ),
+    );
+    final banner = tester.getTopLeft(find.byType(MxInlineBanner));
+    expect(tester.getTopLeft(find.byType(Icon)).dx - banner.dx, 16);
+    expect(
+      tester.getTopLeft(find.text(_message)) - banner,
+      const Offset(40, 12),
+    );
+    expect(
+      tester.getSize(find.byType(MxInlineBanner)).height -
+          tester
+              .getSize(
+                find
+                    .descendant(
+                      of: find.byType(MxInlineBanner),
+                      matching: find.byType(DecoratedBox),
+                    )
+                    .first,
+              )
+              .height,
+      16,
+    );
+
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(
+          tone: MxBannerTone.warning,
+          message: _message,
+          isInCommitBar: true,
+        ),
+      ),
+    );
+    final bar = tester.getTopLeft(find.byType(MxInlineBanner));
+    expect(tester.getTopLeft(find.text(_message)) - bar, const Offset(36, 8));
+    expect(
+      tester.getBottomLeft(find.byType(MxInlineBanner)).dy,
+      tester
+          .getBottomLeft(
+            find
+                .descendant(
+                  of: find.byType(MxInlineBanner),
+                  matching: find.byType(DecoratedBox),
+                )
+                .first,
+          )
+          .dy,
+    );
+  });
 
   testWidgets('actions sit 8 under the message, 8 apart; a live region', (
     tester,
@@ -174,12 +178,12 @@ void main() {
           actions: [
             MxButton(
               label: 'Retry',
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               onPressed: () {},
             ),
             MxButton(
               label: 'Details',
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               tone: MxButtonTone.outline,
               onPressed: () {},
             ),
@@ -205,11 +209,11 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('the title reads its tone\'s on-soft token; the message reads '
-      'Day\'s banner style, in Night too (spec 2026-10-10 D4)', (tester) async {
-    for (final (tone, foreground) in [
-      (MxBannerTone.warning, semantic.onWarningSoft),
-      (MxBannerTone.danger, semantic.onDangerSoft),
+  testWidgets('the title reads in its tone foreground; an untitled lead stays '
+      'onSurface (critique 2026-09-30 tone pass, T2)', (tester) async {
+    for (final (tone, ink) in [
+      (MxBannerTone.warning, mx.warning),
+      (MxBannerTone.danger, scheme.error),
     ]) {
       await pumpMx(
         tester,
@@ -217,7 +221,7 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text('Title')).style!.color,
-        foreground,
+        ink,
         reason: '$tone',
       );
       await pumpMx(
@@ -226,12 +230,10 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text(_message)).style!.color,
-        semantic.onSoft,
+        scheme.onSurface,
         reason: '$tone untitled',
       );
     }
-
-    const night = MxSemanticColors.dark;
     await pumpMx(
       tester,
       _width(
@@ -247,11 +249,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       tester.widget<Text>(find.text('Title')).style!.color,
-      night.onWarningSoft,
-    );
-    expect(
-      tester.widget<Text>(find.text(_message)).style!.color,
-      AppColorSchemes.light.onSurfaceVariant,
+      MxColorsExtension.dark.warning,
     );
   });
 

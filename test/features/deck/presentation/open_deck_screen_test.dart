@@ -385,7 +385,16 @@ void main() {
     // An eyebrow (critique 2026-09-30 part 2, P2).
     expect(
       tester.widget<Text>(find.text(overline.toUpperCase())).style,
-      tester.element(find.text(overline.toUpperCase())).textStyles.eyebrow,
+      tester
+          .element(find.text(overline.toUpperCase()))
+          .texts
+          .labelSmall
+          ?.copyWith(
+            color: tester
+                .element(find.text(overline.toUpperCase()))
+                .colors
+                .onSurfaceVariant,
+          ),
     );
   });
 

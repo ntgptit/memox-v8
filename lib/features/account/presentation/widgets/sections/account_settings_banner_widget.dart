@@ -2,8 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_reauth_banner_widget.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// An expired sign-in, above the hub's "Account & sync" overline (P3b plan
 /// ruling 1; settings hub spec D7): the banner with the section's gap
@@ -20,7 +20,7 @@ class AccountSettingsBannerWidget extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+      padding: EdgeInsets.only(bottom: context.dimens.space16),
       child: AccountReauthBannerWidget(onSignIn: onSignIn),
     );
   }

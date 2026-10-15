@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
 import 'package:memox/features/card/presentation/widgets/support/tag_rejection_message_widget.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
@@ -12,6 +11,7 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Adds one tag, by name, to every card of [cardIds] (UC-CARD-001 A8).
 /// Completes true once it landed. Ruling P3-L9 chose a dialog when only it
@@ -100,12 +100,11 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.grouped,
+        spacing: context.dimens.space12,
         children: [
           MxTextField(
             controller: _name,
             label: l10n.cardTagHint,
-            hintText: l10n.cardTagHint,
             errorText: switch (_rejection) {
               null => null,
               final reason => l10n.tagRejection(reason),

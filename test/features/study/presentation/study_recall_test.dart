@@ -2,11 +2,11 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/core/database/app_database.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
@@ -268,10 +268,10 @@ void main() {
       matching: find.text(_en.studyMode(StudyMode.recall).toUpperCase()),
     );
 
-    expect(fill.color, AppColorSchemes.light.primary);
+    expect(fill.color, lightColorScheme.primary);
     expect(
       tester.widget<Text>(chip).style?.color,
-      tester.element(chip).semanticColors.onPrimarySoft,
+      tester.element(chip).accentColor,
     );
   });
 

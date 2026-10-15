@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_list_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Between parts of the summary line.
 const String _separator = ' · ';
@@ -37,7 +37,7 @@ class CardEditSummaryWidget extends StatelessWidget {
         l10n.cardSummaryDue(DateFormat.MMMd(locale).format(dueAt.toLocal())),
     ];
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+      padding: EdgeInsets.only(bottom: context.dimens.space16),
       child: MxCard(
         isFullBleed: true,
         child: MxListRow(

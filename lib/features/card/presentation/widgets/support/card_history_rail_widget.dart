@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// One node of the card history's timeline (DEV-170, kit "Flashcard
@@ -16,7 +13,7 @@ class CardHistoryRailWidget extends StatelessWidget {
     this.foreground,
     this.isFirst = false,
     this.isLast = false,
-    this.gap = AppSpacing.grouped,
+    this.gap,
   });
 
   final Widget child;
@@ -32,14 +29,11 @@ class CardHistoryRailWidget extends StatelessWidget {
   final bool isFirst;
   final bool isLast;
 
-  /// The space under this node, which the rail crosses.
-  final double gap;
+  /// The space under this node, which the rail crosses; `space12` when null.
+  final double? gap;
 
-  /// The rail sits on the centre of the leading 24.
-  static const double _railStart =
-      (AppSpacing.section - AppStroke.indicator) / 2;
-  static const double _dotStart =
-      (AppSpacing.section - AppSize.timelineDot) / 2;
+  /// A node on the rail: the card history's answers and markers (DEV-170).
+  static const double _dotSize = 14;
 
   /// The dot's top that centres it on [lines] lines of text in [style].
   static double dotTopOn(
@@ -49,31 +43,35 @@ class CardHistoryRailWidget extends StatelessWidget {
   }) {
     final line = MediaQuery.textScalerOf(context)
         .scale(style.fontSize! * (style.height ?? 1));
-    final top = (line * lines - AppSize.timelineDot) / 2;
+    final top = (line * lines - _dotSize) / 2;
     return top < 0 ? 0 : top;
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final dotCentre = dotTop + AppSize.timelineDot / 2;
+    final dimens = context.dimens;
+    // The rail sits on the centre of the leading 24.
+    final railStart = (dimens.space24 - dimens.strokeIndicator) / 2;
+    final dotStart = (dimens.space24 - _dotSize) / 2;
+    final dotCentre = dotTop + _dotSize / 2;
     final foreground = this.foreground;
     return Stack(
       children: [
         PositionedDirectional(
-          start: _railStart,
-          width: AppStroke.indicator,
+          start: railStart,
+          width: context.dimens.strokeIndicator,
           top: isFirst ? dotCentre : 0,
           bottom: isLast ? null : 0,
           height: isLast ? dotCentre : null,
           child: ColoredBox(color: colors.surfaceContainerHigh),
         ),
         PositionedDirectional(
-          start: _dotStart,
+          start: dotStart,
           top: dotTop,
           child: Container(
-            width: AppSize.timelineDot,
-            height: AppSize.timelineDot,
+            width: _dotSize,
+            height: _dotSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: foreground == null
@@ -83,15 +81,15 @@ class CardHistoryRailWidget extends StatelessWidget {
               // Contrast Floor Rule): the outcome's foreground, or the outline.
               border: Border.all(
                 color: foreground ?? colors.outline,
-                width: AppStroke.control,
+                width: context.dimens.strokeControl,
               ),
             ),
           ),
         ),
         Padding(
           padding: EdgeInsetsDirectional.only(
-            start: AppSpacing.section,
-            bottom: gap,
+            start: context.dimens.space24,
+            bottom: gap ?? dimens.space12,
           ),
           child: child,
         ),

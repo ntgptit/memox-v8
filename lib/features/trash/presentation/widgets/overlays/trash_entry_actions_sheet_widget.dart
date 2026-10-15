@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/widgets/support/trash_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/l10n/relative_time.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// A Trash entry's two commands (kit 06 actions).
 enum TrashEntryAction { restore, purge }
@@ -47,7 +47,7 @@ class TrashEntryActionsSheetWidget extends StatelessWidget {
         TrashDeckEntry() => l10n.trashDeckActionsMeta(ago, parent),
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+        padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
         child: Column(
           children: [
             MxActionSheetCommandRow(

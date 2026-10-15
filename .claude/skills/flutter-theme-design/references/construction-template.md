@@ -147,8 +147,8 @@ Cho mỗi component pair:
 
 ```
 TextButtonTheme         ↔ MxButton (mọi tone: primary, secondary, outline,
-                          destructive, dangerSoft, warning; TextButton +
-                          appButtonStyle)
+                          destructive, dangerTint, warning; TextButton +
+                          buttonStyle)
 FilledButtonTheme       ↔ — (slot có trong app_theme.dart; V8 không có Mx riêng,
 OutlinedButtonTheme     ↔    MxButton phủ cả hai)
 IconButtonTheme         ↔ MxIconButton
@@ -162,9 +162,9 @@ ChipTheme               ↔ MxFilterChip / MxTagChip / MxChipTrigger (chưa có 
 NavigationBarTheme      ↔ MxBottomNav       (không dùng NavigationBar; chưa có slot)
 CheckboxTheme           ↔ MxSelectionCheckbox (chưa có slot)
 RadioTheme              ↔ MxOptionRow       (chưa có slot)
-SwitchTheme             ↔ MxToggle          (chưa có slot)
+SwitchTheme             ↔ MxToggle          (đã có slot: switchTheme)
 ProgressIndicatorTheme  ↔ MxSpinner / MxLinearProgress / MxSkeleton* (chưa có slot)
-SegmentedButtonTheme    ↔ MxSegmentedTray   (chưa có slot)
+SegmentedButtonTheme    ↔ MxSegmentedTray   (đã có slot: segmentedButtonTheme)
 PopupMenuTheme          ↔ — (chưa dựng)
 SliderTheme             ↔ — (chưa dựng)
 TabBarTheme             ↔ — (chưa dựng)

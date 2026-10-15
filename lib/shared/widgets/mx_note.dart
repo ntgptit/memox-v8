@@ -1,11 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
@@ -52,20 +48,25 @@ class MxNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final style = context.textStyles.noteText;
+    final style = context.texts.bodyMedium!.copyWith(
+      color: context.colors.onSurfaceVariant,
+    );
     // The glyph centres on the first line at any text scale.
     final firstLine =
         MediaQuery.textScalerOf(context).scale(style.fontSize!) * style.height!;
-    final glyphInset = math.max(0.0, (firstLine - AppIconSize.inline) / 2);
+    final glyphInset = math.max(
+      0.0,
+      (firstLine - context.dimens.sizeIconInline) / 2,
+    );
     final line = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.control,
+      spacing: context.dimens.space8,
       children: [
         Padding(
           padding: EdgeInsets.only(top: glyphInset),
           child: Icon(
             icon,
-            size: AppIconSize.inline,
+            size: context.dimens.sizeIconInline,
             color: colors.onSurfaceVariant,
           ),
         ),
@@ -80,25 +81,25 @@ class MxNote extends StatelessWidget {
     );
     if (isHint) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.micro),
+        padding: EdgeInsets.symmetric(vertical: context.dimens.space4),
         child: line,
       );
     }
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: BorderRadius.circular(context.dimens.radiusMd),
         border: Border.all(
-          color: context.semanticColors.border,
-          width: AppStroke.hairline,
+          color: context.colors.outlineVariant,
+          width: context.dimens.strokeHairline,
         ),
       ),
       child: Padding(
         // A DecoratedBox border does not inset its child, so the padding
         // starts after the hairline, as in the kit's CSS box.
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.grouped + AppStroke.hairline,
-          vertical: _verticalPadding + AppStroke.hairline,
+        padding: EdgeInsets.symmetric(
+          horizontal: context.dimens.space12 + context.dimens.strokeHairline,
+          vertical: _verticalPadding + context.dimens.strokeHairline,
         ),
         child: line,
       ),

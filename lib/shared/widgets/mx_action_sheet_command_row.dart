@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// One command in a bottom-sheet action list: a 30 tile in a 32 lead column
 /// and a 14/600 verb. It is neither a SettingsRow nor a ListRow. The sheet
-/// supplies the outer gutter.
+/// supplies the outer gutter. Its height is the Material 3 list item: 56 with
+/// a verb alone, 72 with a subtitle.
 class MxActionSheetCommandRow extends StatelessWidget {
   const MxActionSheetCommandRow({
     super.key,
@@ -45,25 +45,23 @@ class MxActionSheetCommandRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
-    final semantic = context.semanticColors;
-    // The lead tile is a soft ground with its on-soft glyph; a destructive
-    // one keeps the error glyph on its tint (DEV-371).
-    final (ground, foreground) = isDestructive
-        ? (semantic.dangerSoft, colors.error)
-        : (semantic.primarySoft, semantic.onPrimarySoft);
+    final ink = isDestructive ? colors.error : context.accentColor;
     return MxRowInk(
       onTap: onTap,
       isEnabled: isEnabled,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
+        constraints: BoxConstraints(
+          minHeight: subtitle == null
+              ? context.dimens.sizeListRow
+              : context.dimens.sizeListRowTwoLine,
+        ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.control,
-            vertical: AppSpacing.grouped,
+          padding: EdgeInsets.symmetric(
+            horizontal: context.dimens.space8,
+            vertical: context.dimens.space12,
           ),
           child: Row(
-            spacing: AppSpacing.grouped,
+            spacing: context.dimens.space12,
             children: [
               SizedBox(
                 width: _leadColumn,
@@ -74,16 +72,24 @@ class MxActionSheetCommandRow extends StatelessWidget {
                     child: DecoratedBox(
                       key: const ValueKey('mx-command-tile'),
                       decoration: BoxDecoration(
-                        color: ground,
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        color: isDestructive
+                            ? context.colors.error.tintOver(
+                                MxTintBase.of(context),
+                              )
+                            : context.accentColor.tintOver(
+                                MxTintBase.of(context),
+                              ),
+                        borderRadius: BorderRadius.circular(
+                          context.dimens.radiusSm,
+                        ),
                       ),
                       // Ruling S7: the glyph size is UNSPECIFIED; the small
                       // IconTile step.
                       child: Center(
                         child: Icon(
                           icon,
-                          size: AppIconSize.inline,
-                          color: foreground,
+                          size: context.dimens.sizeIconInline,
+                          color: ink,
                         ),
                       ),
                     ),
@@ -97,7 +103,11 @@ class MxActionSheetCommandRow extends StatelessWidget {
                   children: [
                     Text(
                       label,
-                      style: styles.commandLabel(isDestructive: isDestructive),
+                      style: context.texts.titleSmall?.copyWith(
+                        color: isDestructive
+                            ? context.colors.error
+                            : context.colors.onSurface,
+                      ),
                     ),
                     if (subtitle case final text?) ...[
                       const SizedBox(height: _subtitleGap),
@@ -107,7 +117,9 @@ class MxActionSheetCommandRow extends StatelessWidget {
                         text,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: styles.rowSubtitle,
+                        style: context.texts.bodyMedium?.copyWith(
+                          color: context.colors.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ],
@@ -116,7 +128,7 @@ class MxActionSheetCommandRow extends StatelessWidget {
               if (hasChevron)
                 Icon(
                   AppIcons.chevronRight,
-                  size: AppIconSize.compact,
+                  size: context.dimens.sizeIconCompact,
                   color: colors.onSurfaceVariant,
                 ),
             ],

@@ -2,7 +2,7 @@ import 'package:drift/drift.dart' show Variable;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/presentation/states/card_selection_state.dart';
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';

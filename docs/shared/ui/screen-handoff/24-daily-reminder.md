@@ -18,8 +18,8 @@ UC-REMINDER-001; spec
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) + back `MxIconButton` | "Daily reminder". |
-| Reminder section | `MxSection` with note, two `MxSettingsRow`s | Row bell "Daily reminder" with `MxToggle` (an `MxSpinner` while turning on or off); row clock "Time" with a compact `MxButton` "{HH:mm}", disabled while off. The note: "Fires once a day, only when cards are due. Never for new cards, never twice." |
+| App bar | `MxAppBar` + back `MxIconButton` | "Daily reminder". |
+| Reminder section | `MxSection` with note, two `MxSettingsRow`s | Row bell "Daily reminder" with `MxToggle` (an `MxSpinner` while turning on or off); row clock "Time" with a small `MxButton` "{HH:mm}", disabled while off. The note: "Fires once a day, only when cards are due. Never for new cards, never twice." |
 | Banner | `MxInlineBanner` | Only after an operation left a problem: E1 `warning`, E3 `danger`, E6 `warning`. |
 | What it says | `MxSection` "What it says", one `MxSettingsRow` | The notification's own sentence, from the strings the notification uses, over the live workload read when the screen opens (`ReadReminderPreviewUseCase` behind `reminderPreviewDigestProvider`); "Nothing is due right now, so today's reminder would stay silent." when nothing is due or the read fails (critique 2026-09-30 part 1); while the read runs the row keeps its place with its hint and shows no error; the line that it never carries a card, a tag or history. |
 | Time dialog | `MxDialog` + two `MxStepper`s + `MxSheetActions` | "Reminder time": Hour 0–23, Minute 0–59 shown in two digits ("07" : "05"; hold repeats, tap to type), the chosen "HH:mm", Cancel / Save. |
@@ -69,7 +69,7 @@ turns the reminder on.
 - **UC-REMINDER-001 E3:** a refused Change time says "Couldn't change the time. The reminder stays at {HH:mm}." and the reminder stays on.
 - **Owner 2026-09-28 (spec D2), UC A1:** the time is chosen in an `MxDialog` with Hour and Minute `MxStepper`s.
 - **UI-base ruling O3 (spec D10):** loading is `MxSkeletonList`.
-- The note is the section's `MxNote.hint` footnote (critique 2026-09-30); the time button is a compact `MxButton`.
+- The note is the section's `MxNote.hint` footnote (critique 2026-09-30); the time button is a small `MxButton`.
 - "What it says" is built from the notification's own strings, in en and vi, so it matches what is shown.
 
 ## Accessibility

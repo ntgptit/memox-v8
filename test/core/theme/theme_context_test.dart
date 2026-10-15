@@ -1,38 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 void main() {
-  testWidgets('semanticColors follows a theme switch', (tester) async {
-    final mode = ValueNotifier(ThemeMode.light);
-    addTearDown(mode.dispose);
-    late Color primaryText;
+  testWidgets('the four getters read the ThemeData in scope', (tester) async {
+    late BuildContext captured;
     await tester.pumpWidget(
-      ValueListenableBuilder(
-        valueListenable: mode,
-        builder: (_, value, _) => MaterialApp(
-          theme: buildLightTheme(),
-          darkTheme: buildDarkTheme(),
-          themeMode: value,
-          home: Builder(
-            builder: (context) {
-              primaryText = context.semanticColors.primaryText;
-              return const SizedBox();
-            },
-          ),
+      MaterialApp(
+        theme: buildDarkTheme(),
+        home: Builder(
+          builder: (context) {
+            captured = context;
+            return const SizedBox();
+          },
         ),
       ),
     );
-    expect(primaryText, MxSemanticColors.light.primaryText);
+    final theme = Theme.of(captured);
+    expect(captured.colors, theme.colorScheme);
+    expect(captured.texts, theme.textTheme);
+    expect(captured.mxColors, MxColorsExtension.dark);
+    expect(captured.dimens, isA<AppDimens>());
+  });
 
-    mode.value = ThemeMode.dark;
-    await tester.pumpAndSettle();
-    expect(primaryText, MxSemanticColors.dark.primaryText);
-
-    mode.value = ThemeMode.light;
-    await tester.pumpAndSettle();
-    expect(primaryText, MxSemanticColors.light.primaryText);
+  testWidgets('both built themes carry both extensions', (tester) async {
+    for (final theme in [buildLightTheme(), buildDarkTheme()]) {
+      expect(theme.extension<MxColorsExtension>(), isNotNull);
+      expect(theme.extension<AppDimens>(), isNotNull);
+    }
   });
 }

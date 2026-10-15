@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Opens the triage sheet for changing a log to [target] and returns the
 /// note typed (empty for none) once confirmed, or null when it is dismissed.
@@ -54,7 +54,7 @@ class _MonitoringStatusSheetWidgetState
         onConfirm: () => Navigator.of(context).pop(_note.text.trim()),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+        padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
         child: MxTextField(
           controller: _note,
           label: l10n.monitoringNoteLabel,

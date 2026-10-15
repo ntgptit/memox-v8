@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/presentation/states/interval_span_state.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 16a's grades, Again · Hard · Good · Easy (sm2's supportedActions,
 /// BR-STUDY-009), each with the interval it would give on a scheduled turn.
@@ -38,19 +38,19 @@ class StudyGradeRowWidget extends StatelessWidget {
     final isGrid = MediaQuery.textScalerOf(context).scale(1) >= _gridTextScale;
     final layout = isGrid
         ? Column(
-            spacing: AppSpacing.control,
+            spacing: context.dimens.space8,
             children: [
               Row(
-                spacing: AppSpacing.control,
+                spacing: context.dimens.space8,
                 children: buttons.sublist(0, _perGridRow),
               ),
               Row(
-                spacing: AppSpacing.control,
+                spacing: context.dimens.space8,
                 children: buttons.sublist(_perGridRow),
               ),
             ],
           )
-        : Row(spacing: AppSpacing.control, children: buttons);
+        : Row(spacing: context.dimens.space8, children: buttons);
     return AbsorbPointer(absorbing: isBusy, child: layout);
   }
 
@@ -72,7 +72,7 @@ class StudyGradeRowWidget extends StatelessWidget {
         label: grade,
         detail: span == null ? null : l10n.studyIntervalShort(span, locale),
         tone: action == Sm2Action.again
-            ? MxButtonTone.dangerSoft
+            ? MxButtonTone.dangerTint
             : MxButtonTone.secondary,
         isBlock: true,
         onPressed: () => onGrade(action),

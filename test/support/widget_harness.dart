@@ -95,3 +95,20 @@ void expectCentredOn(WidgetTester tester, Finder whole, List<Finder> parts) {
     );
   }
 }
+
+/// [shell] on a 1280×800 window, outside the phone frame (FE-C5).
+Future<void> pumpMxWide(
+  WidgetTester tester,
+  Widget shell, {
+  TextDirection direction = TextDirection.ltr,
+}) async {
+  tester.view.physicalSize = const Size(1280, 800);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+  await tester.pumpWidget(
+    MaterialApp(
+      theme: buildLightTheme(),
+      home: Directionality(textDirection: direction, child: shell),
+    ),
+  );
+}

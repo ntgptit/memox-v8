@@ -30,7 +30,7 @@ class ReminderBannersWidget extends StatelessWidget {
         MxButton(
           label: label,
           tone: tone,
-          size: MxButtonSize.compact,
+          size: MxButtonSize.small,
           onPressed: isBusy ? null : onRetry,
         );
     return switch (problem) {
@@ -44,7 +44,7 @@ class ReminderBannersWidget extends StatelessWidget {
           action(l10n.reminderTryAgain, tone: MxButtonTone.outline),
           MxButton(
             label: l10n.reminderOpenSystemSettings,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: onOpenSettings,
           ),
         ],

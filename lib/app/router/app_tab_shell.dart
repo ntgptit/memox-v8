@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -10,10 +10,13 @@ import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_nav_rail.dart';
 
 /// The top-level destinations around the current branch: a bottom nav on a
-/// phone, a rail from [AppSize.navRailBreakpoint] (FE-C5). Beside the rail
-/// the branch gets its own width and loses the inset the rail took, so what
-/// it lays out and centres (the column, sheets, snackbars) is measured
-/// against its own area.
+/// phone, a rail from [context.dimens.breakpointMedium] (FE-C5). A window short
+/// of [context.dimens.breakpointCompactHeight] keeps the bar at any width, as
+/// Material 3 asks for a bar when the width or the height is compact. Beside
+/// the rail the branch gets its own width and loses the inset the rail took, so
+/// what it lays out and centres (the column, sheets, snackbars) is measured
+/// against its own area; its window size class and screen margin still follow
+/// the whole window ([WindowWidthScope]).
 class AppTabShell extends StatelessWidget {
   const AppTabShell({super.key, required this.navigationShell});
 
@@ -24,7 +27,8 @@ class AppTabShell extends StatelessWidget {
     final destinations = _destinations(context.l10n);
     final selectedIndex = navigationShell.currentIndex;
     final media = MediaQuery.of(context);
-    if (media.size.width < AppSize.navRailBreakpoint) {
+    final isShort = media.size.height < context.dimens.breakpointCompactHeight;
+    if (context.windowSize == WindowSize.compact || isShort) {
       return MxAppShell(
         body: navigationShell,
         bottomBar: MxBottomNav(
@@ -47,8 +51,15 @@ class AppTabShell extends StatelessWidget {
           ),
           Expanded(
             child: MediaQuery(
-              data: _besideRail(media, Directionality.of(context)),
-              child: navigationShell,
+              data: _besideRail(
+                media,
+                Directionality.of(context),
+                context.dimens.sizeRail,
+              ),
+              child: WindowWidthScope(
+                width: media.size.width,
+                child: navigationShell,
+              ),
             ),
           ),
         ],
@@ -66,16 +77,14 @@ class AppTabShell extends StatelessWidget {
   static MediaQueryData _besideRail(
     MediaQueryData media,
     TextDirection direction,
+    double railWidth,
   ) {
     final isLtr = direction == TextDirection.ltr;
     final startInset = isLtr ? media.padding.left : media.padding.right;
     EdgeInsets withoutStart(EdgeInsets insets) =>
         isLtr ? insets.copyWith(left: 0) : insets.copyWith(right: 0);
     return media.copyWith(
-      size: Size(
-        media.size.width - AppSize.navRail - startInset,
-        media.size.height,
-      ),
+      size: Size(media.size.width - railWidth - startInset, media.size.height),
       padding: withoutStart(media.padding),
       viewPadding: withoutStart(media.viewPadding),
     );

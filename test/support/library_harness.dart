@@ -239,12 +239,8 @@ DeckLevelScreen deckScreen({
   cardContent: cardContent ?? (_) => const SizedBox.shrink(),
   cardAppBar:
       cardAppBar ??
-      (view, back, actions) => MxAppBar(
-        title: view.deck.name,
-        density: MxAppBarDensity.content,
-        leading: back,
-        actions: [actions],
-      ),
+      (view, back, actions) =>
+          MxAppBar(title: view.deck.name, leading: back, actions: [actions]),
   cardBreadcrumb: cardBreadcrumb ?? (_, breadcrumb) => breadcrumb,
   cardFab: cardFab ?? (_) => const SizedBox.shrink(),
 );

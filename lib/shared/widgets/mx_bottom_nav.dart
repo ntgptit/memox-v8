@@ -1,9 +1,6 @@
+import 'dart:ui' show lerpDouble;
+
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A top-level destination: an outlined resting glyph, a filled selected one.
@@ -20,10 +17,9 @@ final class MxNavDestination {
   final String label;
 }
 
-/// The top-level destinations on a bar of the page surface with the ghost
-/// edge, a tinted pill behind the current glyph. It is in-flow, never over
-/// the scroll (so a backdrop blur had nothing to blur, DEV-302), and adds
-/// the gesture inset below itself.
+/// The top-level destinations on a flat bar: the page surface, a hairline
+/// `divider` on top, no shadow, and a pill behind the current glyph. It is
+/// in-flow, never over the scroll, and adds the gesture inset below itself.
 class MxBottomNav extends StatelessWidget {
   const MxBottomNav({
     super.key,
@@ -41,48 +37,38 @@ class MxBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final inset = MediaQuery.paddingOf(context).bottom;
-    // The selected ground (spec 2026-10-10 §4).
-    final pillGround = colors.primaryContainer;
-    final radius = BorderRadius.circular(AppRadius.lg);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.control,
-        AppSpacing.micro,
-        AppSpacing.control,
-        AppSpacing.grouped + inset,
-      ),
-      child: ClipRRect(
-        borderRadius: radius,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: radius,
-            border: Border.all(
-              color: context.semanticColors.border,
-              width: AppStroke.hairline,
-            ),
+    final dimens = context.dimens;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: Border(
+          top: BorderSide(
+            color: context.mxColors.divider,
+            width: dimens.strokeHairline,
           ),
-          // Ruling R3: 64 at minimum, grows with text scaling.
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: AppSize.bottomNavBar),
-            child: Material(
-              type: MaterialType.transparency,
-              child: Row(
-                children: [
-                  for (final (index, destination) in destinations.indexed)
-                    Expanded(
-                      child: _Item(
-                        destination: destination,
-                        isSelected: index == selectedIndex,
-                        pillGround: pillGround,
-                        onTap: () => onSelected(index),
-                      ),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
+        child: Material(
+          type: MaterialType.transparency,
+          child: Row(
+            children: [
+              for (final (index, destination) in destinations.indexed)
+                Expanded(
+                  // The bar is `sizeNav` at minimum and grows with the text
+                  // scale; each cell is as tall as the bar, so its tap target
+                  // spans the whole cell.
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: dimens.sizeNav),
+                    child: MxNavItem(
+                      destination: destination,
+                      isSelected: index == selectedIndex,
+                      onTap: () => onSelected(index),
                     ),
-                ],
-              ),
-            ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
@@ -90,61 +76,128 @@ class MxBottomNav extends StatelessWidget {
   }
 }
 
-class _Item extends StatelessWidget {
-  const _Item({
+/// One destination of [MxBottomNav] and `MxNavRail`: the glyph on its
+/// `sizeNavIndicatorWidth` x `sizeNavIndicatorHeight` pill, and the label
+/// under it. The selected one sits on `secondaryContainer`.
+///
+/// The pill grows in and fades in over `Durations.medium2` (at once when the
+/// platform asks for reduced motion). The whole cell is the tap target, and
+/// the ink is clipped to the pill, as the Material 3 navigation bar does.
+class MxNavItem extends StatefulWidget {
+  const MxNavItem({
+    super.key,
     required this.destination,
     required this.isSelected,
-    required this.pillGround,
     required this.onTap,
   });
 
   final MxNavDestination destination;
   final bool isSelected;
-  final Color pillGround;
   final VoidCallback onTap;
+
+  @override
+  State<MxNavItem> createState() => _MxNavItemState();
+}
+
+/// The share of its width the pill has when it starts to grow in: the
+/// Material 3 indicator scales in from 40%.
+const double _pillRestWidthShare = 0.4;
+
+class _MxNavItemState extends State<MxNavItem> {
+  /// Locates the pill for the ink's rectangle.
+  final _pillKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
+    final dimens = context.dimens;
+    final destination = widget.destination;
+    final isSelected = widget.isSelected;
+    final pillColor = colors.secondaryContainer;
     return Semantics(
       container: true,
       selected: isSelected,
       button: true,
-      child: InkWell(
-        onTap: onTap,
+      child: _PillInkWell(
+        pillKey: _pillKey,
+        onTap: widget.onTap,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          spacing: AppSpacing.micro,
+          spacing: dimens.space4,
           children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: isSelected ? pillGround : null,
-                borderRadius: BorderRadius.circular(AppRadius.full),
+            TweenAnimationBuilder<double>(
+              tween: Tween(end: isSelected ? 1 : 0),
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : Durations.medium2,
+              curve: Easing.standard,
+              builder: (_, progress, icon) => SizedBox(
+                key: _pillKey,
+                width: dimens.sizeNavIndicatorWidth,
+                height: dimens.sizeNavIndicatorHeight,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Ink, so the splash paints over the pill, not under it.
+                    Ink(
+                      width: lerpDouble(
+                        dimens.sizeNavIndicatorWidth * _pillRestWidthShare,
+                        dimens.sizeNavIndicatorWidth,
+                        progress,
+                      ),
+                      height: dimens.sizeNavIndicatorHeight,
+                      decoration: ShapeDecoration(
+                        shape: const StadiumBorder(),
+                        color: Color.lerp(
+                          pillColor.withValues(alpha: 0),
+                          pillColor,
+                          progress,
+                        ),
+                      ),
+                    ),
+                    ?icon,
+                  ],
+                ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.gutter,
-                  vertical: AppSpacing.micro,
-                ),
-                child: Icon(
-                  isSelected ? destination.selectedIcon : destination.icon,
-                  size: AppIconSize.compact,
-                  color: isSelected
-                      ? context.semanticColors.primaryText
-                      : colors.onSurfaceVariant,
-                ),
+              child: Icon(
+                isSelected ? destination.selectedIcon : destination.icon,
+                size: dimens.sizeIcon,
+                color: isSelected
+                    ? colors.onSecondaryContainer
+                    : colors.onSurfaceVariant,
               ),
             ),
             Text(
               destination.label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: context.textStyles.navLabel(isSelected: isSelected),
+              style: context.texts.labelSmall?.copyWith(
+                color: isSelected ? colors.onSurface : colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+/// An ink well over the whole cell whose ripple and state layers are drawn on
+/// the pill only (`_IndicatorInkWell` of the SDK's NavigationBar).
+class _PillInkWell extends InkWell {
+  const _PillInkWell({
+    required this.pillKey,
+    required super.onTap,
+    required super.child,
+  }) : super(customBorder: const StadiumBorder());
+
+  final GlobalKey pillKey;
+
+  @override
+  RectCallback? getRectCallback(RenderBox referenceBox) => () {
+    final pill = pillKey.currentContext!.findRenderObject()! as RenderBox;
+    final rect = pill.localToGlobal(Offset.zero) & pill.size;
+    return referenceBox.globalToLocal(rect.topLeft) & pill.size;
+  };
 }

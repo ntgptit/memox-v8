@@ -6,7 +6,7 @@ import 'package:memox/features/srs/domain/models/review_kind_model.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/domain/models/review_history_model.dart';
 import 'package:memox/features/card/domain/repositories/card_repository.dart';
 import 'package:memox/features/card/domain/usecases/load_card_history_page_use_case.dart';
@@ -429,9 +429,9 @@ void main() {
       find.byType(CardHistoryRailWidget),
     );
     final context = tester.element(find.byType(CardHistoryEventWidget));
-    expect(rail.foreground, context.semanticColors.warningText);
+    expect(rail.foreground, context.mxColors.warning);
     final move = tester.widget<Text>(find.text(_en.cardHistoryBoxMove(4, 1)));
-    expect(move.style!.color, context.semanticColors.warningText);
+    expect(move.style!.color, context.mxColors.warning);
     expect(find.text(_en.cardHistoryTimedOut), findsOneWidget);
     expect(find.byIcon(AppIcons.timeout), findsOneWidget);
   });

@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/presentation/states/deck_reorder_mode_state.dart';
 import 'package:memox/features/deck/presentation/states/library_root_state.dart';
 import 'package:memox/features/deck/presentation/widgets/overlays/create_root_deck_dialog_widget.dart';
@@ -16,6 +15,7 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// The roots with today's work first (UC-DECK-003). Its chrome follows
 /// `libraryRootProvider` (The Content Gate Rule, DESIGN.md).
@@ -68,6 +68,7 @@ class DeckLibraryRootWidget extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.navLibrary,
+        isLastActionText: isReordering,
         actions: isReordering
             ? const [DeckReorderDoneWidget(parentId: null)]
             // Kit 01: Starter decks, Tags, Trash (spec D2).
@@ -104,11 +105,11 @@ class DeckLibraryRootWidget extends ConsumerWidget {
           // summary and the sort pill (critique 2026-09-30 part 3d-2, E3).
           if (hasDecks && !isReordering)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
-                AppSpacing.micro,
-                AppSpacing.gutter,
-                AppSpacing.control,
+              padding: EdgeInsets.fromLTRB(
+                context.dimens.space16,
+                context.dimens.space4,
+                context.dimens.space16,
+                context.dimens.space8,
               ),
               child: MxSearchField.trigger(
                 hintText: l10n.searchFieldHint,

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/monitoring/domain/entities/log_record_entity.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/features/monitoring/presentation/controllers/monitoring_detail_controller.dart';
@@ -74,7 +74,6 @@ class _MonitoringDetailScreenState
     return MxAppShell(
       appBar: MxAppBar(
         title: record?.event ?? l10n.monitoringDetailTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

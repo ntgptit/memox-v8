@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/shared/widgets/mx_chip_style.dart';
 
-/// A tag on the card being edited (kit `RemovableTagChip`): a primary-tinted
-/// pill with an ✕. Its whole 48 area removes the tag (ruling P4a-L8); the
-/// read-only `MxTagChip` is a different control.
+/// A tag on the card being edited (kit `RemovableTagChip`): a Material 3 input
+/// chip as `chipTheme` sets it unselected: 32 tall, an 8 corner, no fill and an
+/// `outlineVariant` edge, an `onSurfaceVariant` label and an 18 ✕ after it.
+/// Its whole 48 area removes the tag (ruling P4a-L8); the read-only `MxTagChip`
+/// is a different control.
 class CardRemovableTagChipWidget extends StatelessWidget {
   const CardRemovableTagChipWidget({
     super.key,
@@ -22,6 +21,8 @@ class CardRemovableTagChipWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chip = Theme.of(context).chipTheme;
+    final foreground = chipPaint(chip).foreground;
     // Its own node, or the tag editor's row merges every chip into one.
     return Semantics(
       container: true,
@@ -34,36 +35,33 @@ class CardRemovableTagChipWidget extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: onRemove,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
+          constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
           child: Center(
             widthFactor: 1,
             child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: context.semanticColors.primarySoft,
-                borderRadius: BorderRadius.circular(AppRadius.full),
-              ),
+              decoration: chipDecoration(chip),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: AppSize.chip),
+                constraints: BoxConstraints(minHeight: context.dimens.sizeChip),
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.only(
-                    start: AppSpacing.grouped,
-                    end: AppSpacing.control,
+                  padding: EdgeInsetsDirectional.only(
+                    start: chipStartInset(chip, hasLeading: false),
+                    end: chipEndInset(chip, hasTrailing: true),
                   ),
                   child: IconTheme.merge(
                     data: IconThemeData(
-                      color: context.semanticColors.onPrimarySoft,
-                      size: AppIconSize.inline,
+                      color: foreground,
+                      size: chip.iconTheme!.size,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      spacing: AppSpacing.micro,
+                      spacing: chipGap(chip),
                       children: [
                         Flexible(
                           child: Text(
                             name,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: context.textStyles.removableTagLabel,
+                            style: chip.labelStyle,
                           ),
                         ),
                         const Icon(AppIcons.close),
