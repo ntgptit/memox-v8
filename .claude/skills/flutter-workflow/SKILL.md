@@ -43,6 +43,7 @@ the owner and records progress nowhere else.
 | Folder structure, layer boundaries, lint config, naming, code conventions | `flutter-architecture` |
 | Design tokens, theming, shared components, responsive, localization, a11y | `flutter-design-system` |
 | A component theme in `lib/core/theme/`, an `Mx*` widget's API, admitting a new Material widget, theme ↔ widget parity | `flutter-theme-design` |
+| Material 3 conformance of shared widgets or themes (build, audit, fix) | `material3-shared-widgets` |
 | Routes, guards, deep links, nested shells, back behaviour | `flutter-navigation` |
 | Providers, controllers, UI state modelling, side effects | `flutter-state-riverpod` |
 | Retrofit API clients on the shared Dio (ADR-012), repository shape, DTO/entity split, cache, sync, secure storage | `flutter-data-layer` |
