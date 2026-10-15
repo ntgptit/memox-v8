@@ -1,0 +1,88 @@
+import '../tables/topik.drift';
+
+-- Rows of topik_attempt and topik_attempt_answer (TOPIK spec 2026-10-15
+-- §13.1). Writes run inside the repository's transaction.
+
+-- The attempt :id, or none.
+topikAttemptById(:id AS TEXT):
+SELECT * FROM topik_attempt WHERE id = :id;
+
+-- The attempt of :test_id in progress on this device, or none (BR-TOPIK-011;
+-- idx_topik_attempt_one_open).
+openTopikAttemptOfTest(:test_id AS TEXT):
+SELECT * FROM topik_attempt WHERE test_id = :test_id AND status = 'in_progress';
+
+-- Every attempt of :test_id, newest first; the id (UUID v7) breaks a tie
+-- inside one second (BR-TOPIK-021; idx_topik_attempt_test_started).
+topikAttemptsOfTest(:test_id AS TEXT):
+SELECT * FROM topik_attempt WHERE test_id = :test_id
+ORDER BY started_at DESC, id DESC;
+
+-- Every attempt on this device, for the test list (BR-TOPIK-022).
+allTopikAttempts:
+SELECT * FROM topik_attempt ORDER BY test_id, started_at DESC, id DESC;
+
+-- The answers of :attempt_id in question order.
+topikAnswersOfAttempt(:attempt_id AS TEXT):
+SELECT * FROM topik_attempt_answer WHERE attempt_id = :attempt_id
+ORDER BY question_no;
+
+insertTopikAttempt(:id AS TEXT, :test_id AS TEXT, :level AS TEXT,
+  :section AS TEXT, :round AS INTEGER, :mode AS TEXT, :started_at AS DATETIME,
+  :current_question_no AS INTEGER, :question_count AS INTEGER,
+  :max_score AS INTEGER, :content_version AS INTEGER):
+INSERT INTO topik_attempt (id, test_id, level, section, round, mode, status,
+  started_at, updated_at, total_time_ms, current_question_no, question_count,
+  max_score, content_version)
+VALUES (:id, :test_id, :level, :section, :round, :mode, 'in_progress',
+  :started_at, :started_at, 0, :current_question_no, :question_count,
+  :max_score, :content_version);
+
+insertTopikAnswer(:attempt_id AS TEXT, :question_no AS INTEGER):
+INSERT INTO topik_attempt_answer (attempt_id, question_no)
+VALUES (:attempt_id, :question_no);
+
+-- Adds :elapsed_ms to question :question_no (BR-TOPIK-015).
+addTopikAnswerTime(:attempt_id AS TEXT, :question_no AS INTEGER,
+  :elapsed_ms AS INTEGER):
+UPDATE topik_attempt_answer SET time_spent_ms = time_spent_ms + :elapsed_ms
+WHERE attempt_id = :attempt_id AND question_no = :question_no;
+
+-- Adds :elapsed_ms to the total and makes :question_no current
+-- (BR-TOPIK-015).
+advanceTopikAttempt(:id AS TEXT, :elapsed_ms AS INTEGER,
+  :question_no AS INTEGER, :updated_at AS DATETIME):
+UPDATE topik_attempt SET total_time_ms = total_time_ms + :elapsed_ms,
+  current_question_no = :question_no, updated_at = :updated_at
+WHERE id = :id;
+
+-- The new choice replaces the old one (BR-TOPIK-012).
+chooseTopikAnswer(:attempt_id AS TEXT, :question_no AS INTEGER,
+  :selected_idx AS INTEGER, :answered_at AS DATETIME):
+UPDATE topik_attempt_answer SET selected_idx = :selected_idx,
+  answered_at = :answered_at
+WHERE attempt_id = :attempt_id AND question_no = :question_no;
+
+-- The submit snapshot of one answer (BR-TOPIK-013).
+snapshotTopikAnswer(:attempt_id AS TEXT, :question_no AS INTEGER,
+  :correct_idx AS INTEGER, :points AS INTEGER, :points_earned AS INTEGER,
+  :question_type AS TEXT):
+UPDATE topik_attempt_answer SET correct_idx = :correct_idx, points = :points,
+  points_earned = :points_earned, question_type = :question_type
+WHERE attempt_id = :attempt_id AND question_no = :question_no;
+
+-- Submit: the attempt becomes completed with its snapshot (BR-TOPIK-013);
+-- topik_attempt_sync_complete queues it in this transaction (BR-TOPIK-026).
+completeTopikAttempt(:id AS TEXT, :completed_at AS DATETIME,
+  :score AS INTEGER, :max_score AS INTEGER, :correct_count AS INTEGER,
+  :answered_count AS INTEGER, :question_count AS INTEGER,
+  :content_version AS INTEGER):
+UPDATE topik_attempt SET status = 'completed', completed_at = :completed_at,
+  updated_at = :completed_at, score = :score, max_score = :max_score,
+  correct_count = :correct_count, answered_count = :answered_count,
+  question_count = :question_count, content_version = :content_version
+WHERE id = :id;
+
+-- The answers go by cascade (BR-TOPIK-018).
+deleteTopikAttempt(:id AS TEXT):
+DELETE FROM topik_attempt WHERE id = :id;
