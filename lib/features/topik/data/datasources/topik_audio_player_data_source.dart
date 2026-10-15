@@ -32,6 +32,7 @@ abstract interface class TopikAudioPlayerDataSource {
 
   Future<void> setSpeed(double speed);
 
+  /// Stops and returns to the start of the clip.
   Future<void> stop();
 
   Future<void> dispose();

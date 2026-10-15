@@ -6,10 +6,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'topik_audio_repository_provider.g.dart';
 
-/// The plugin door; tests override it with a fake.
+/// The plugin door, released with it; tests override it with a fake.
 @riverpod
-TopikAudioPlayerDataSource topikAudioPlayerDataSource(Ref ref) =>
-    PluginTopikAudioPlayerDataSource();
+TopikAudioPlayerDataSource topikAudioPlayerDataSource(Ref ref) {
+  final door = PluginTopikAudioPlayerDataSource();
+  ref.onDispose(door.dispose);
+  return door;
+}
 
 /// One player per attempt screen; released with it.
 @riverpod

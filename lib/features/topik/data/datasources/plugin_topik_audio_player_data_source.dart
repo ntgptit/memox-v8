@@ -6,9 +6,10 @@ import 'package:memox/features/topik/data/datasources/topik_audio_player_data_so
 /// The one door to `just_audio` (spec §13.8, guard
 /// `topik_audio_plugin_has_one_door`): a group's range plays natively
 /// through `ClippingAudioSource`. `AudioPlayer.play` completes only when
-/// playback stops, so [play] does not wait for it; a failure it or the
-/// plugin's streams report later reaches [snapshots] as an error, never the
-/// zone (BR-TOPIK-017).
+/// playback stops, so [play] does not wait for it. A failure reaches
+/// [snapshots] as an error, never the zone (BR-TOPIK-017): `play`'s own,
+/// and every one on the plugin's `errorStream`, the only channel just_audio
+/// 0.10 reports a playback error on (its other streams swallow it).
 final class PluginTopikAudioPlayerDataSource
     implements TopikAudioPlayerDataSource {
   PluginTopikAudioPlayerDataSource({AudioPlayer? player})
@@ -19,7 +20,7 @@ final class PluginTopikAudioPlayerDataSource
     onListen: _listenToPlayer,
     onCancel: _stopListening,
   );
-  final _subscriptions = <StreamSubscription<Object>>[];
+  final _subscriptions = <StreamSubscription<Object?>>[];
 
   /// The latest report of each plugin stream, combined into one snapshot.
   PlayerState? _state;
@@ -60,8 +61,13 @@ final class PluginTopikAudioPlayerDataSource
   @override
   Future<void> setSpeed(double speed) => _player.setSpeed(speed);
 
+  /// Stops and returns to the start: just_audio keeps the position across
+  /// `stop`, so the next play would resume mid-clip.
   @override
-  Future<void> stop() => _player.stop();
+  Future<void> stop() async {
+    await _player.stop();
+    await _player.seek(Duration.zero);
+  }
 
   @override
   Future<void> dispose() async {
@@ -83,7 +89,8 @@ final class PluginTopikAudioPlayerDataSource
           _position = position;
           _report();
         }, onError: _addError),
-      );
+      )
+      ..add(_player.errorStream.listen(_addError, onError: _addError));
   }
 
   Future<void> _stopListening() async {

@@ -39,12 +39,12 @@ void main() {
     expect(audio.state.isPlaying, isTrue);
   });
 
-  test('another group stops the previous one and loads its own', () async {
+  test('another group pauses the previous one and loads its own', () async {
     await audio.load(_clip);
     await audio.play();
     await audio.load(_next);
     expect(player.calls.skip(3), [
-      'stop',
+      'pause',
       'setClip:l.mp3:40000-70000',
       'speed:1.0',
     ]);
@@ -155,17 +155,71 @@ void main() {
     expect(audio.state.status, TopikAudioStatus.failed);
   });
 
-  test('stop returns to the start; dispose releases the plugin', () async {
-    await audio.load(_clip);
-    await audio.stop();
-    expect(audio.state.positionMs, 0);
-    expect(audio.state.status, TopikAudioStatus.ready);
-    await audio.dispose();
-    expect(player.calls.last, 'dispose');
-  });
+  test(
+    'stop returns to the start; dispose leaves the plugin to its owner',
+    () async {
+      await audio.load(_clip);
+      await audio.stop();
+      expect(audio.state.positionMs, 0);
+      expect(audio.state.status, TopikAudioStatus.ready);
+      await audio.dispose();
+      expect(player.calls, isNot(contains('dispose')));
+    },
+  );
 
   test('watchState starts with the current state', () async {
     await audio.load(_clip);
     expect((await audio.watchState().first).clip, _clip);
+  });
+
+  test('watchState misses no change made just after listening', () async {
+    for (var hops = 0; hops < 4; hops++) {
+      final speeds = <double>[];
+      final subscription = audio.watchState().listen(
+        (s) => speeds.add(s.speed),
+      );
+      var wait = Future<void>.value();
+      for (var i = 0; i < hops; i++) {
+        wait = wait.then((_) => Future<void>.microtask(() {}));
+      }
+      await wait;
+      await audio.setSpeed(topikAudioSpeeds[hops]);
+      await pumpEventQueue();
+      expect(speeds.last, topikAudioSpeeds[hops], reason: 'after $hops hops');
+      await subscription.cancel();
+    }
+  });
+
+  test('A, B, then A again quickly: the first A failing late changes '
+      'nothing', () async {
+    final first = Completer<void>();
+    player.setClipGate = first;
+    final firstA = audio.load(_clip);
+    await pumpEventQueue();
+    player.setClipGate = null;
+    await Future.wait([audio.load(_next), audio.load(_clip)]);
+    player.failSetClip = true;
+    first.complete();
+    await firstA;
+
+    expect(audio.state.clip, _clip);
+    expect(audio.state.status, TopikAudioStatus.ready);
+  });
+
+  test('a load still pending at dispose is not a failure', () async {
+    final gate = Completer<void>();
+    player.setClipGate = gate;
+    final loading = audio.load(_clip);
+    await pumpEventQueue();
+    final states = <TopikAudioStatus>[];
+    audio.watchState().listen((s) => states.add(s.status));
+    await pumpEventQueue();
+    await audio.dispose();
+    player.failSetClip = true;
+    gate.complete();
+    await loading;
+
+    expect(states, isNot(contains(TopikAudioStatus.failed)));
+    expect(audio.state.status, isNot(TopikAudioStatus.failed));
   });
 }

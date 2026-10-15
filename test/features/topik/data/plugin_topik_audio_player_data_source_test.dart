@@ -29,6 +29,12 @@ class _FakePlayer extends AudioPlayer {
   @override
   Stream<Duration> get positionStream => positions.stream;
 
+  /// Where just_audio 0.10 reports a playback error.
+  final errors = StreamController<PlayerException>.broadcast();
+
+  @override
+  Stream<PlayerException> get errorStream => errors.stream;
+
   @override
   Future<Duration?> setAudioSource(
     AudioSource source, {
@@ -88,7 +94,15 @@ void main() {
     await door.setSpeed(0.75);
     await door.stop();
 
-    expect(player.calls, ['play', 'pause', 'seek:2500', 'speed:0.75', 'stop']);
+    // Stop returns to the start: just_audio keeps the position across it.
+    expect(player.calls, [
+      'play',
+      'pause',
+      'seek:2500',
+      'speed:0.75',
+      'stop',
+      'seek:0',
+    ]);
   });
 
   test('state and position reports become one snapshot', () async {
@@ -127,9 +141,9 @@ void main() {
     addTearDown(subscription.cancel);
 
     await door.play();
-    player.states.addError(StateError('stream'));
+    player.errors.add(PlayerException(1, 'decoder', 0));
     await pumpEventQueue();
 
-    expect(errors, [isStateError, isStateError]);
+    expect(errors, [isStateError, isA<PlayerException>()]);
   });
 }
