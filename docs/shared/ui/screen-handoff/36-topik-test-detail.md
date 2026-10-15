@@ -36,30 +36,35 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 | loading | `topik_detail_loading_light.png` | `topik_detail_loading_dark.png` | Skeletons; no FAB. |
 | error | `topik_detail_error_light.png` | `topik_detail_error_dark.png` | `MxErrorState` with Retry; no FAB. |
 
-**Not built yet (status `shaped`).** Goldens are the planned names under `test/features/topik/presentation/goldens/`; every transition's evidence is the rule it implements and the widget or controller test the screen's plan adds. Each row turns `VERIFIED` only with an executed test.
+**Built (plan 6a, 2026-10-15).** Every state has its light and dark golden under `test/features/topik/presentation/goldens/`. A transition is VERIFIED by the executed test it names (`topik_test_detail_screen_test.dart`, `test/app/topik_routes_test.dart`); a row no test executes says UNVERIFIED and why.
 
 ## Transitions
 
 | From | Event | To | Evidence |
 |---|---|---|---|
-| overview | tap History | history | UC-TOPIK-002 step 2 |
-| overviewEmpty / overview | FAB, no attempt in progress | 37 (new attempt) | UC-TOPIK-003 step 1 |
-| overview / history | FAB, an attempt in progress | continueOrNew | BR-TOPIK-011 |
-| continueOrNew | Continue | 37 at its current question | BR-TOPIK-011 |
-| continueOrNew | Start new, confirmed | 37 (new attempt); the old one deleted in one transaction | BR-TOPIK-011 |
-| history | delete, confirmed | history without the row; numbers and Overall Progress recomputed | BR-TOPIK-018, BR-TOPIK-021 |
-| deleteConfirm | Cancel | history unchanged | UC-TOPIK-002 A4 |
-| history | delete fails | history unchanged + snackbar, nothing was lost | UC-TOPIK-002 E3 |
-| any loaded | attempt synced from another device | rows and figures update | UC-TOPIK-002 A3 |
-| any loaded | account switched | overviewEmpty, then synced attempts arrive | UC-TOPIK-002 A5, BR-TOPIK-027 |
-| history | Summary / Review / Continue | 38 / 39 / 37 | UC-TOPIK-002 step 3 |
-| loading | test unknown | testMissing | UC-TOPIK-002 E1 |
+| overview | tap History | history | UC-TOPIK-002 step 2. VERIFIED `topik_test_detail_screen_test.dart::History: delete asks, then removes the row and renumbers (BR-TOPIK-018, -021)` |
+| overviewEmpty / overview | FAB or Start, no attempt in progress | 37 (new attempt) | UC-TOPIK-003 step 1. VERIFIED `::no attempt: the empty card starts one, and there is no FAB (BR-TOPIK-020, critique F2)`, `::a second tap while starting opens one attempt` |
+| overview / history | FAB, an attempt in progress | continueOrNew | BR-TOPIK-011. VERIFIED `::the FAB with an attempt in progress asks; Continue opens it (BR-TOPIK-011)` |
+| continueOrNew | Continue | 37 at its current question | BR-TOPIK-011. VERIFIED same test |
+| continueOrNew | dismissed | no change | BR-TOPIK-011. VERIFIED `::the dialog dismissed changes nothing` |
+| continueOrNew | Start new, confirmed | 37 (new attempt); the old one deleted in one transaction | BR-TOPIK-011. VERIFIED `::Start new asks again, then replaces the attempt in progress` |
+| history | delete, confirmed | history without the row; numbers and Overall Progress recomputed | BR-TOPIK-018, BR-TOPIK-021. VERIFIED `::History: delete asks, then removes the row and renumbers (BR-TOPIK-018, -021)` |
+| deleteConfirm | Cancel | history unchanged | UC-TOPIK-002 A4. VERIFIED same test |
+| history | delete fails | history unchanged + snackbar, nothing was lost | UC-TOPIK-002 E3. VERIFIED `::a delete that fails keeps the row and says nothing was lost (UC-TOPIK-002 E3)` |
+| any loaded | attempt synced from another device | rows and figures update | UC-TOPIK-002 A3. VERIFIED at the stream (`topik_use_cases_test.dart::the catalog and the detail follow every later write`); the screen re-renders from it (the delete test above) |
+| any loaded | account switched | overviewEmpty, then synced attempts arrive | UC-TOPIK-002 A5, BR-TOPIK-027. UNVERIFIED on this screen: the switch clears the store (`LocalDataReset`, plan 2) and the stream re-emits empty; no screen test drives an account switch |
+| history | Summary / Review / Continue | 38 / 39 / 37 | UC-TOPIK-002 step 3. VERIFIED `::History: Summary, Review and Continue open their screens` (the routes of 37–39 come with plans 6b, 6c) |
+| loading | test unknown | testMissing | UC-TOPIK-002 E1. VERIFIED `::an unknown test: missing, with Back to tests and no FAB (UC-TOPIK-002 E1)`, `topik_routes_test.dart::deep links: …` |
 
 ## Rulings
 
 - **Brief 2026-10-15:** Overview and History are an `MxSegmentedTray`, not bottom tabs; Words (Phase B) joins the tray.
 - **Brief 2026-10-15:** the carousel of the reference app is dropped while there is one card (Overall Progress); Score Trend and Needs Review (Phase B) bring it back as stacked cards first.
 - One number per element: Best and Average are tiles; the row repeats a score only as that attempt's own.
+- **Plan 6a (2026-10-15):** a History row is three lines: "#n" with its status badge (Completed in `success`, In progress neutral), then when · "{correct}/{count}" · how long, then its actions as small outline buttons and the delete button at the end (critique F1).
+- **Plan 6a:** on an empty Overview the empty state's Start is the one action; the FAB is absent there and present on History, empty or not (critique F2).
+- **Plan 6a:** Best and Average are the score alone; Accuracy is a percent; a figure with nothing to show is a dash (critique F8). A completed recent attempt opens its Summary; one in progress continues.
+- **Plan 6a:** `testMissing` hides History, as above (owner question Q-P4-4 asks whether a removed test keeps it).
 
 ## Copy
 

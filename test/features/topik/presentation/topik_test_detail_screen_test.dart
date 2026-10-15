@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/error/failure.dart';
+import 'package:memox/core/error/outcome.dart';
+import 'package:memox/features/topik/domain/failures/topik_failure.dart';
+import 'package:memox/features/topik/domain/repositories/topik_attempt_repository.dart';
+import 'package:memox/features/topik/domain/usecases/delete_topik_attempt_use_case.dart';
+import 'package:memox/features/topik/presentation/providers/delete_topik_attempt_use_case_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_detail_screen.dart';
@@ -8,6 +14,16 @@ import 'package:memox/shared/widgets/mx_fab.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/topik_content_fixtures.dart';
 import '../../../support/topik_screen_fixtures.dart';
+
+/// The attempt store with a delete that fails, as a locked database does.
+final class _FailingDelete implements TopikAttemptRepository {
+  @override
+  Future<Outcome<void, TopikRejection>> delete(String attemptId) async =>
+      throw const DatabaseLockedFailure(cause: 'locked');
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 final class _Taps {
   final attempts = <String>[];
@@ -223,5 +239,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(MxEmptyState), findsOneWidget);
     expect(find.byType(MxFab), findsOneWidget);
+  });
+
+  libraryTest('a delete that fails keeps the row and says nothing was lost '
+      '(UC-TOPIK-002 E3)', (tester, env) async {
+    await topikSeedCompleted(env, test, startedAt: libraryToday);
+    final taps = _Taps();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(taps),
+      overrides: [
+        ...topikContentOverrides([test]),
+        deleteTopikAttemptUseCaseProvider.overrideWith(
+          (ref) => DeleteTopikAttemptUseCase(_FailingDelete()),
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('History'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Delete attempt'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('#1'), findsOneWidget);
+    expect(find.byType(SnackBar), findsOneWidget);
   });
 }

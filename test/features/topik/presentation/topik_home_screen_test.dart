@@ -1,3 +1,5 @@
+import 'package:flutter/widgets.dart';
+
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -99,5 +101,21 @@ void main() {
       overrides: [topikCatalogProvider.overrideWith((ref) => pending.stream)],
     );
     expect(find.bySemanticsLabel('Loading tests'), findsOneWidget);
+  });
+
+  libraryTest('in Vietnamese, the same screen relabelled (UC-TOPIK-003 A4)', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      TopikHomeScreen(onOpenLevel: (_) {}),
+      overrides: topikContentOverrides(topikScreenTests()),
+      locale: const Locale('vi'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(findPlainText('Cấp 1–2 · Đọc, Nghe · 3 đề'), findsOneWidget);
   });
 }

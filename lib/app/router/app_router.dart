@@ -12,6 +12,7 @@ import 'package:memox/app/router/app_tab_shell.dart';
 import 'package:memox/app/router/log_navigator_observer.dart';
 import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/app/router/study_route_screens.dart';
+import 'package:memox/app/router/topik_routes.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_detail_screen.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_admin_gate_widget.dart';
 import 'package:memox/features/monitoring/presentation/screens/monitoring_screen.dart';
@@ -212,7 +213,10 @@ GoRouter buildAppRouter({
                   // lands on Settings (SB-U1).
                   onOpenSync: () => context.go(AppRoutes.settingsSync),
                   reauthNotice: accountReauthNotice(context),
+                  practiceEntry: topikPracticeEntry(context),
                 ),
+                // Screens 34–36 keep the tab bar (TOPIK spec §8).
+                routes: [topikRoute()],
               ),
             ],
           ),

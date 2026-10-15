@@ -29,24 +29,27 @@ Level drills and Simulated exams are absent until they exist (index rule: contro
 | loading | `topik_home_loading_light.png` | `topik_home_loading_dark.png` | `MxSkeletonRow` ×2 in the card. |
 | error | `topik_home_error_light.png` | `topik_home_error_dark.png` | `MxErrorState` with Retry; the body says nothing was lost. |
 
-**Not built yet (status `shaped`).** Goldens are the planned names under `test/features/topik/presentation/goldens/`; every transition's evidence is the rule it implements and the widget or controller test the screen's plan adds. Each row turns `VERIFIED` only with an executed test.
+**Built (plan 6a, 2026-10-15).** Every state has its light and dark golden under `test/features/topik/presentation/goldens/`. A transition is VERIFIED by the executed test it names (`topik_home_screen_test.dart`, `test/app/topik_routes_test.dart`); a row no test executes says UNVERIFIED and why.
 
 ## Transitions
 
 | From | Event | To | Evidence |
 |---|---|---|---|
-| loading | catalog read | loaded / noTests | UC-TOPIK-001 step 1; BR-TOPIK-008 |
-| loading | read fails | error | UC-TOPIK-001 E1 |
-| error | Retry | loading | UC-TOPIK-001 E1 |
-| loaded | tap a level with tests | 35 (that level, Reading) | UC-TOPIK-001 step 2 |
-| loaded | tap a level without tests | no change (no tap target) | BR-TOPIK-008 |
-| any | Back | 13 | navigation |
-| any | language changes | same state, relabelled | UC-TOPIK-003 A4 (applies to every TOPIK screen) |
+| loading | catalog read | loaded / noTests | UC-TOPIK-001 step 1; BR-TOPIK-008. VERIFIED `topik_home_screen_test.dart::each level with its count; a tap opens it`, `::a level with no valid test says so and is not a button (BR-TOPIK-008)` |
+| loading | read fails | error | UC-TOPIK-001 E1. VERIFIED `::a failed read says nothing was lost; Retry reads again` |
+| error | Retry | loading | UC-TOPIK-001 E1. VERIFIED same test |
+| loaded | tap a level with tests | 35 (that level, Reading) | UC-TOPIK-001 step 2. VERIFIED `test/app/topik_routes_test.dart::Study home → TOPIK → a level → a test under the tab bar; Back climbs one level each time` |
+| loaded | tap a level without tests | no change (no tap target) | BR-TOPIK-008. VERIFIED `::a level with no valid test says so and is not a button (BR-TOPIK-008)` |
+| any | Back | 13 | navigation. VERIFIED `topik_routes_test.dart::Study home → TOPIK → …` |
+| any | language changes | same state, relabelled | UC-TOPIK-003 A4. VERIFIED `::in Vietnamese, the same screen relabelled (UC-TOPIK-003 A4)` (rendered in vi; a live switch is the app's locale provider, shared with every screen) |
 
 ## Rulings
 
 - **Brief 2026-10-15:** the page is a plain `MxSection`; no hero, since nothing here is a decision.
 - **Brief 2026-10-15:** the Korean exam name is a subtitle line of the app bar, so the title stays on one line (The One Line Rule).
+- **Plan 6a (2026-10-15):** the meta line is terms joined so it breaks only between them (The Wrap Rule): grades ("Levels 3–6") and sections ("Reading, Listening") are separate keys.
+- **Plan 6a:** a level without tests is information, not a disabled control: no chevron, no tap, not dimmed (critique F5).
+- **Plan 6a:** the Korean subtitle is a TOPIK title widget passed as `MxAppBar`'s `titleWidget` until `MxAppBar` has a subtitle (owner question Q-P6-2); the level glyph is `AppIcons.fileText` (Q-P6-3).
 
 ## Copy
 

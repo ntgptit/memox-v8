@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
+import 'package:memox/features/topik/presentation/providers/topik_catalog_provider.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
@@ -148,5 +151,31 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Not started'), findsNWidgets(2));
+  });
+
+  libraryTest('a failed read says nothing was lost; Retry reads again, and '
+      'the section tray stays', (tester, env) async {
+    var reads = 0;
+    await pumpLibraryScreen(
+      tester,
+      env,
+      TopikTestListScreen(level: TopikLevel.topik2, onOpenTest: (_) {}),
+      overrides: [
+        topikCatalogProvider.overrideWith((ref) {
+          reads++;
+          return reads == 1
+              ? Stream<List<TopikCatalogEntry>>.error(StateError('read'))
+              : Stream.value(const []);
+        }),
+      ],
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(MxErrorState), findsOneWidget);
+    expect(find.text('Listening'), findsOneWidget);
+
+    await tester.tap(find.text('Retry'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxErrorState), findsNothing);
+    expect(reads, 2);
   });
 }
