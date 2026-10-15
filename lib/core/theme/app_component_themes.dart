@@ -295,6 +295,38 @@ SwitchThemeData switchTheme(ThemeTokens t) {
   );
 }
 
+/// The seek bar's colours (spec §13.8, DSD-23): Material 3's year2023
+/// roles pinned explicitly, so the appearance flag never changes a colour.
+/// Inactive track `surfaceContainerHighest` (owner 2026-10-15).
+SliderThemeData sliderTheme(ThemeTokens t) {
+  final scheme = t.scheme;
+  final dimens = t.dimens;
+  return SliderThemeData(
+    activeTrackColor: scheme.primary,
+    inactiveTrackColor: scheme.surfaceContainerHighest,
+    thumbColor: scheme.primary,
+    disabledActiveTrackColor: t.onSurfaceAt(dimens.opacityDisabledContent),
+    disabledInactiveTrackColor: t.onSurfaceAt(dimens.opacityDisabledContainer),
+    disabledThumbColor: Color.alphaBlend(
+      t.onSurfaceAt(dimens.opacityDisabledContent),
+      scheme.surface,
+    ),
+    overlayColor: WidgetStateColor.resolveWith((states) {
+      // The SDK's year2023 order: dragged, then hovered, then focused.
+      if (states.contains(WidgetState.dragged)) {
+        return scheme.primary.withValues(alpha: dimens.opacityPressed);
+      }
+      if (states.contains(WidgetState.hovered)) {
+        return scheme.primary.withValues(alpha: dimens.opacityHover);
+      }
+      if (states.contains(WidgetState.focused)) {
+        return scheme.primary.withValues(alpha: dimens.opacityFocus);
+      }
+      return Colors.transparent;
+    }),
+  );
+}
+
 /// The Material 3 segmented button (`MxSegmentedTray` is a `SegmentedButton`):
 /// a stadium 40 tall (in a 48 touch band) with a `strokeHairline` `outline`
 /// edge round and between the segments, the `labelLarge` label and an 18 check

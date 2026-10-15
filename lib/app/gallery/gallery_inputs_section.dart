@@ -5,6 +5,7 @@ import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
+import 'package:memox/shared/widgets/mx_slider.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
@@ -26,12 +27,14 @@ class GalleryInputsSection extends StatefulWidget {
 class _GalleryInputsSectionState extends State<GalleryInputsSection> {
   static const int _minCards = 1;
   static const int _maxCards = 200;
+  static const double _seekLength = 100;
 
   final _search = TextEditingController();
   var _isReminderOn = true;
   var _scheduler = 0;
   var _theme = 2;
   var _cards = 20;
+  var _seekPosition = 40.0;
 
   @override
   void dispose() {
@@ -93,6 +96,12 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
           const MxSelectionCheckbox(isChecked: false),
           const MxSelectionCheckbox(isChecked: true),
         ],
+      ),
+      MxSlider(
+        value: _seekPosition,
+        max: _seekLength,
+        onChanged: (value) => setState(() => _seekPosition = value),
+        semanticLabel: context.l10n.gallerySeekBar,
       ),
       MxDividedColumn(
         children: [
