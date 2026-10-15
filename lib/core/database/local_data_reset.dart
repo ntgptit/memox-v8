@@ -7,7 +7,8 @@ import 'package:memox/core/database/tables/sync_keys.dart';
 /// The capture triggers are silenced with `applying_remote`, so the deletes
 /// queue nothing. Cards go first: their schedules, tag links, reviews and
 /// study rows go with them by cascade, and reviews cannot be deleted while
-/// their card exists. The synced settings go back to their defaults, through
+/// their card exists. TOPIK attempts take their answers with them the same
+/// way (BR-TOPIK-027). The synced settings go back to their defaults, through
 /// the settings feature the root hands in, while the triggers are still
 /// silent (DEV-173). Then sync's keys (all but
 /// the device id), the outbox and the refusals.
@@ -29,7 +30,13 @@ class LocalDataReset {
         'INSERT OR REPLACE INTO sync_state (name, value) VALUES (?, ?)',
         [syncApplyingRemoteKey, '1'],
       );
-      for (final table in ['card', 'deck', 'delete_batches', 'tags']) {
+      for (final table in [
+        'card',
+        'deck',
+        'delete_batches',
+        'tags',
+        'topik_attempt',
+      ]) {
         await _db.customStatement('DELETE FROM $table');
       }
       await _resetSyncedSettings();
@@ -52,6 +59,8 @@ class LocalDataReset {
       _db.studySession,
       _db.studyQueueItems,
       _db.studyGuessOptions,
+      _db.topikAttempt,
+      _db.topikAttemptAnswer,
       _db.appSettings,
       _db.syncState,
       _db.syncOutbox,

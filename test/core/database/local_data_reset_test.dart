@@ -22,6 +22,10 @@ Future<void> _seed(AppDatabase db) async {
     "INSERT INTO card_tags (card_id, tag_id) VALUES ('K', 't')",
     "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, answer_count, lapse_count, current_box) VALUES ('K', 'eight_box', 1, 1, 1, 0, 1)",
     "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, \"action\", answered_at) VALUES ('V', 'K', 's', 'eight_box', 1, 'learning', 'self_assess', 'remembered', 1)",
+    "INSERT INTO topik_attempt (id, test_id, level, section, round, mode, status, started_at, updated_at, current_question_no, question_count, max_score, content_version) VALUES ('TA', 'topik2-96-reading', 'topik2', 'reading', 96, 'practice', 'in_progress', 0, 0, 1, 1, 2, 1), ('TB', 'topik2-96-listening', 'topik2', 'listening', 96, 'practice', 'in_progress', 0, 0, 1, 1, 2, 1)",
+    "INSERT INTO topik_attempt_answer (attempt_id, question_no) VALUES ('TA', 1), ('TB', 1)",
+    "UPDATE topik_attempt_answer SET correct_idx = 1, points = 2, points_earned = 0, question_type = 'L2_picture' WHERE attempt_id = 'TB'",
+    "UPDATE topik_attempt SET status = 'completed', completed_at = 1, updated_at = 1, score = 0, correct_count = 0, answered_count = 0 WHERE id = 'TB'",
     "UPDATE app_settings SET card_limit = 35, theme_mode = 'dark', language = 'vi', new_card_order = 'random', reminder_enabled = 1, reminder_minute_of_day = 480, welcome_seen = 1, log_sql_statements = 0",
     "INSERT INTO sync_rejection (entity_type, entity_id, code, rejected_at) VALUES ('deck', 'R', 'CONFLICT', 0)",
     "INSERT OR REPLACE INTO sync_state (name, value) VALUES ('since', '42'), ('device_id', 'dev-1'), ('last_success_at', '9')",
@@ -54,6 +58,8 @@ void main() {
       'delete_batches',
       'sync_outbox',
       'sync_rejection',
+      'topik_attempt',
+      'topik_attempt_answer',
     ]) {
       expect(await _count(db, table), 0, reason: table);
     }
@@ -123,5 +129,28 @@ void main() {
 
     expect(decks.last, 0);
     expect(settings.last, 'system');
+  });
+
+  test('BR-TOPIK-027: a watched attempt list sees the attempts go', () async {
+    final db = openTestDatabase();
+    addTearDown(db.close);
+    await _seed(db);
+    final counts = <int>[];
+    final watch = db
+        .select(db.topikAttempt)
+        .watch()
+        .listen((rows) => counts.add(rows.length));
+    addTearDown(watch.cancel);
+    await pumpEventQueue();
+
+    await LocalDataReset(
+      db,
+      resetSyncedSettings: () =>
+          SettingsDao(db).resetSyncedDefaults(DateTime.utc(2026)),
+    ).run();
+    await pumpEventQueue();
+
+    expect(counts.first, 2);
+    expect(counts.last, 0);
   });
 }
