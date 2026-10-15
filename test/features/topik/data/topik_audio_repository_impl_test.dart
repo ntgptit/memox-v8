@@ -135,6 +135,19 @@ void main() {
     expect(audio.state.status, TopikAudioStatus.ready);
   });
 
+  test(
+    'a failure reported while playing is a state, and Retry recovers',
+    () async {
+      await audio.load(_clip);
+      await audio.play();
+      player.reportError(StateError('decoder'));
+      await pumpEventQueue();
+      expect(audio.state.status, TopikAudioStatus.failed);
+      await audio.load(_clip);
+      expect(audio.state.status, TopikAudioStatus.ready);
+    },
+  );
+
   test('a failure to play is a state, never an exception', () async {
     await audio.load(_clip);
     player.failPlay = true;

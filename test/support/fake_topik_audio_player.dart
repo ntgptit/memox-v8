@@ -19,6 +19,9 @@ final class FakeTopikAudioPlayer implements TopikAudioPlayerDataSource {
   }) =>
       _snapshots.add((playing: playing, phase: phase, positionMs: positionMs));
 
+  /// A playback failure the plugin reports after loading.
+  void reportError(Object error) => _snapshots.addError(error);
+
   @override
   Stream<TopikPlayerSnapshot> get snapshots => _snapshots.stream;
 

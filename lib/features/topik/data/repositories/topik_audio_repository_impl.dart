@@ -10,7 +10,10 @@ import 'package:memox/features/topik/domain/repositories/topik_audio_repository.
 /// seek, four speeds, and a failure kept as a state with one warning.
 final class TopikAudioRepositoryImpl implements TopikAudioRepository {
   TopikAudioRepositoryImpl(this._source) {
-    _reports = _source.snapshots.listen(_onSnapshot);
+    _reports = _source.snapshots.listen(
+      _onSnapshot,
+      onError: (Object error) => _onFailure(error),
+    );
   }
 
   final TopikAudioPlayerDataSource _source;
@@ -135,18 +138,24 @@ final class TopikAudioRepositoryImpl implements TopikAudioRepository {
       await call();
       return true;
     } catch (error) {
-      appLogger.warning(
-        'topik.audio_failed',
-        category: LogCategory.state,
-        context: {
-          'asset': _state.clip?.asset,
-          'error': error.runtimeType.toString(),
-        },
-      );
-      if (forClip == null || forClip == _state.clip) {
-        _emit(_state.copyWith(status: TopikAudioStatus.failed));
-      }
+      _onFailure(error, forClip: forClip);
       return false;
+    }
+  }
+
+  /// One warning naming the asset, and the failed state unless the failure
+  /// belongs to a clip no longer loaded (BR-TOPIK-017).
+  void _onFailure(Object error, {TopikAudioClip? forClip}) {
+    appLogger.warning(
+      'topik.audio_failed',
+      category: LogCategory.state,
+      context: {
+        'asset': (forClip ?? _state.clip)?.asset,
+        'error': error.runtimeType.toString(),
+      },
+    );
+    if (forClip == null || forClip == _state.clip) {
+      _emit(_state.copyWith(status: TopikAudioStatus.failed));
     }
   }
 

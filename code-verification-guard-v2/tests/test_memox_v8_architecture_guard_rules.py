@@ -107,3 +107,16 @@ def test_tts_plugin_is_imported_by_its_door_only(tmp_path: Path) -> None:
         {"lib/features/study/presentation/screens/study_session_screen.dart": line},
     )
     assert not _violations_at(TTS_PLUGIN, tmp_path / "door", {SPEECH_DOOR: line})
+
+
+AUDIO_PLUGIN = "memox_v8.architecture.topik_audio_plugin_has_one_door"
+AUDIO_DOOR = "lib/features/topik/data/datasources/plugin_topik_audio_player_data_source.dart"
+
+
+def test_audio_plugin_is_imported_by_its_door_only(tmp_path: Path) -> None:
+    line = "import 'package:just_audio/just_audio.dart';\n"
+    assert _violations_at(
+        AUDIO_PLUGIN, tmp_path / "leak",
+        {"lib/features/topik/presentation/screens/topik_attempt_screen.dart": line},
+    )
+    assert not _violations_at(AUDIO_PLUGIN, tmp_path / "door", {AUDIO_DOOR: line})
