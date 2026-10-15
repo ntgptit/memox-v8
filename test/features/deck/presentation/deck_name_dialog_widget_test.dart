@@ -43,6 +43,21 @@ void main() {
     expect((await env.decks.findById(korean.id))!.name, 'Hàn Quốc');
   });
 
+  libraryTest('the name field paints its label once, above the box', (
+    tester,
+    env,
+  ) async {
+    final korean = await env.decks.root('Korean');
+    await pumpLibraryScreen(tester, env, _host(korean));
+    await open(tester);
+
+    expect(find.text(_en.deckNameHint), findsOneWidget);
+    expect(
+      tester.getBottomLeft(find.text(_en.deckNameHint)).dy,
+      lessThan(tester.getTopLeft(find.byType(TextField)).dy),
+    );
+  });
+
   libraryTest('a blank name stays in the dialog, under the field', (
     tester,
     env,

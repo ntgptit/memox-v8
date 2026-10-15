@@ -193,11 +193,10 @@ components:
     rounded: "{rounded.full}"
     height: "56px"
   text-field:
-    backgroundColor: "{colors.surface-container-low}"
     textColor: "{colors.on-surface}"
-    typography: "{typography.body}"
+    typography: "{typography.body-content}"
     rounded: "{rounded.md}"
-    height: "52px"
+    height: "56px"
   filter-chip:
     textColor: "{colors.on-surface-variant}"
     typography: "{typography.label-button}"
@@ -253,7 +252,7 @@ A violet-indigo accent on a neutral field, a green that only ever means progress
 ### Neutral
 - **Page** (`surface`): the screen, the app bar, the bottom bar and the rail.
 - **Card** (`cardSurface`): cards and the rows that are cards. **Search** (`searchSurface`): the search field. **Tile** (`tileSurface`): the deck tile behind its glyph (`context.deckIconColor`).
-- **Containers** (`surfaceContainerLow` … `surfaceContainerHighest`): the field fill, the recessed study face, the secondary button, tracks, skeletons. A skeleton bar is one step off its ground: `surfaceContainerHigh` on the page, `surfaceContainerHighest` on a card, a sheet or a dialog. A dialog is `surfaceContainerHigh`; a bottom sheet is `surfaceContainerLow`, as in Material 3.
+- **Containers** (`surfaceContainerLow` … `surfaceContainerHighest`): the recessed study face, the secondary button, tracks, skeletons. A skeleton bar is one step off its ground: `surfaceContainerHigh` on the page, `surfaceContainerHighest` on a card, a sheet or a dialog. A dialog is `surfaceContainerHigh`; a bottom sheet is `surfaceContainerLow`, as in Material 3.
 - **Text** (`onSurface`, `onSurfaceVariant`): primary and secondary text.
 - **Edges** (`outline`, `outlineVariant`, `divider`): `outline` for every control edge at rest (fields, the outline button, code slots; the unchecked radio ring and checkbox box are `onSurfaceVariant`, as Material 3 draws them), `outlineVariant` for an inner rule and a disabled edge, `divider` for every hairline that separates: between list rows, above a footer or a sheet's actions, beside the navigation. `outlineVariant` is never a divider line.
 - **Inverse** (`inverseSurface`, `onInverseSurface`, `inversePrimary`): the snackbar and the tooltip.
@@ -290,9 +289,9 @@ A violet-indigo accent on a neutral field, a green that only ever means progress
 - **Section title** (`titleLarge`, `title-section`): screen and section headings, the app bar title.
 - **Card title** (`titleMedium`, `title-card`): card titles and compact stats.
 - **Item title** (`titleSmall`, `title-item`): list and settings rows and sheet titles (a dialog title is `headlineSmall`, as in Material 3).
-- **Content** (`bodyLarge`, `body-content`): a card's meaning, a study passage.
-- **Body** (`bodyMedium`, `body`): default running text, field text, notes.
-- **Tile body** (`bodySmall`, `body-tile`): a meaning inside a match tile, a study option.
+- **Content** (`bodyLarge`, `body-content`): a card's meaning, a study passage, the text typed in a field and its hint (Material 3 wins over the earlier body role).
+- **Body** (`bodyMedium`, `body`): default running text, notes.
+- **Tile body** (`bodySmall`, `body-tile`): a meaning inside a match tile, a study option, a field's supporting text, message and counter.
 - **Button** (`labelLarge`, `label-button`): every button label, at every size.
 - **Meta** (`labelMedium`, `label-meta`): metadata, the search field, field labels.
 - **Nav** (`labelSmall`, `label-nav`): navigation labels, captions, counts, overlines.
@@ -353,7 +352,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxDividedColumn** (rows with a `divider` hairline between them, none after the last, inset `space16` at each end as the Material 3 inset divider is: the one owner of list dividers), **MxNote** (one calm info line; `MxNote.hint` is the footnote form under a card, a section or an empty state), **MxDashedNote**, **MxFooterBar** (the in-flow commit bar, its sides on `context.screenMargin`; its caption fits one line on the narrowest supported phone in English and Vietnamese, as `test/l10n/footer_caption_length_test.dart` asserts), **MxScrollFade** (a fade over the edge of a scroll view while more lies past it), **MxTwoColumns**.
 
 ### Inputs
-- **MxTextField**: one box for every entry: `sizeInput` at least, `surfaceContainerLow` that lightens to `surfaceContainerLowest` on focus, `radiusMd`, `bodyMedium`, an `outline` edge at rest, `primary` at `strokeFocus` on focus, `error` with an **MxFieldMessage** below on error, `outlineVariant` when disabled. Variants form, detail, term, code (six slots) and study (bare).
+- **MxTextField**: the Material 3 outlined field, with no fill (the sheet or page ground shows through): `sizeInput` at least, `radiusMd`, a `space16` text inset, `bodyLarge`, an `outline` edge at rest, `primary` at `strokeFocus` on focus, `error` (the caret too) when it holds an error, and `onSurface` at `opacityDisabledContainer` when disabled, with its text and hint at `opacityDisabledContent`, drawn once with no wrapper dimming them again. The `label` is painted above the box, `space4` clear of it and on the text inset, in `labelMedium` and `onSurfaceVariant` (`error` in error), with an optional glyph before it and marker after it. Under the box a supporting row holds the supporting text, or the **MxFieldMessage** in its place on error, both on the text inset in `bodySmall`, with the counter at the trailing end (`error` in error). Variants form, detail, term, code (six slots, no fill, no painted label) and study (bare, no painted label).
 - **MxSearchField**: `searchSurface`, full radius, `sizeSearch` tall, no edge, no shadow; the hint and value in `labelMedium`.
 - **MxStepper** (a bounded integer with press-and-hold repeat), **MxToggle** (the Material 3 switch, a `Switch` read from `switchTheme`: a full-radius track, `primary` with an `onPrimary` handle when on, `surfaceContainerHighest` with a `strokeControl` `outline` edge and an `outline` handle when off; the handle grows from small to large when it turns on and a little more while pressed; disabled, the track steps back to `opacityDisabledContainer` and the handle to `opacityDisabledContent`, and the switch dims itself; the touch area is `sizeControl` tall; the focus ring is `strokeFocus` in `primary`, `strokeFocusGap` outside the track, over the Material state layer), **MxOptionRow** (a single-choice radio row with the Material 3 radio: an `onSurfaceVariant` ring, and the accent colour for the ring and dot when selected; a dimmed row dims only its radio and title), **MxSelectionCheckbox** (the Material 3 checkbox, painted only: an `onSurfaceVariant` edge when clear, the accent colour with an `onAccentColor` check when checked), **MxSegmentedTray** (the Material 3 segmented button, a `SegmentedButton` read from `segmentedButtonTheme`: a full-radius edge `sizeButton` tall in a `sizeControl` touch band, a `strokeHairline` `outline` edge round and between the options, `labelLarge`, a `sizeIconButton` check before the chosen option; the chosen label takes the accent colour and the others `onSurface`; no option is filled, because the token rules keep `secondaryContainer` off buttons; disabled, the labels step back to `opacityDisabledContent` and the edge to `opacityDisabledContainer`; state layers are the label colour at the hover, pressed and focus opacities; the focus ring is `strokeFocus` in `primary`, `strokeFocusGap` outside the edge; when the labels do not fit on one line the options stack, one `sizeControl` line each, inside a `radiusMd` edge), **MxFilterChip** and **MxChipTrigger** (the Material 3 flat filter chip, read from `chipTheme`: `sizeChip` tall, `radiusSm` corners, `labelLarge`, a `sizeIconButton` glyph, `space8` around the chip and around the label; at rest no fill and a `strokeHairline` `outlineVariant` edge with an `onSurfaceVariant` label; selected `secondaryContainer` with an `onSecondaryContainer` label, no edge and a leading check in place of the glyph; the trigger is the ghost variant, no fill and no edge, with its glyph after the label; the touch area is `sizeControl`; the focus ring follows the corners). `MxButton`'s chip size is the same unselected chip.
 

@@ -86,11 +86,13 @@ class _MxCodeFieldState extends State<MxCodeField> {
         width: context.dimens.strokeFocus,
       );
     }
-    // A disabled code rests on the border hairline, as a disabled field does.
+    // A disabled code takes the disabled edge, as a disabled field does.
     return BorderSide(
       color: widget.field.isEnabled
           ? context.colors.outline
-          : context.colors.outlineVariant,
+          : context.colors.onSurface.withValues(
+              alpha: context.dimens.opacityDisabledContainer,
+            ),
       width: context.dimens.strokeHairline,
     );
   }
@@ -105,6 +107,8 @@ class _MxCodeFieldState extends State<MxCodeField> {
       'MxTextField(variant: MxTextFieldVariant.code)',
     );
     final hidden = TextField(
+      // Autofocus is read once, on mount: see MxTextField.
+      key: ValueKey(field.isEnabled),
       controller: _controller,
       focusNode: _focus,
       autofocus: field.isAutofocused,
@@ -139,13 +143,14 @@ class _MxCodeFieldState extends State<MxCodeField> {
                   key: MxCodeField.slotKey(i),
                   digit: i < text.length ? text[i] : '',
                   edge: _edge(context, i),
+                  isEnabled: field.isEnabled,
                 ),
               ),
           ],
         );
       },
     );
-    final column = Column(
+    return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -168,11 +173,6 @@ class _MxCodeFieldState extends State<MxCodeField> {
         if (field.errorText case final message?)
           MxFieldMessage(message: message),
       ],
-    );
-    if (field.isEnabled) return column;
-    return Opacity(
-      opacity: context.dimens.opacityDisabledContent,
-      child: column,
     );
   }
 }
@@ -202,30 +202,43 @@ class _PasteReplacesFormatter extends TextInputFormatter {
   }
 }
 
-/// One digit's box: 48 wide at most (it shrinks in a narrow column), 56 tall
-/// at least, on the form fill.
-/// A code field's slot grows with the text scale from this minimum.
-const double _slotMinHeight = 56;
-
+/// One digit's box: 48 wide at most (it shrinks in a narrow column), as tall
+/// as a field at least and growing with the text scale, outlined with no fill.
 class _CodeSlot extends StatelessWidget {
-  const _CodeSlot({super.key, required this.digit, required this.edge});
+  const _CodeSlot({
+    super.key,
+    required this.digit,
+    required this.edge,
+    required this.isEnabled,
+  });
 
   final String digit;
   final BorderSide edge;
+  final bool isEnabled;
 
   @override
   Widget build(BuildContext context) => ConstrainedBox(
     constraints: BoxConstraints(
       maxWidth: context.dimens.sizeControl,
-      minHeight: _slotMinHeight,
+      minHeight: context.dimens.sizeInput,
     ),
     child: DecoratedBox(
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(context.dimens.radiusMd),
         border: Border.fromBorderSide(edge),
       ),
-      child: Center(child: Text(digit, style: context.texts.displaySmall)),
+      child: Center(
+        child: Text(
+          digit,
+          style: context.texts.displaySmall?.copyWith(
+            color: isEnabled
+                ? null
+                : context.colors.onSurface.withValues(
+                    alpha: context.dimens.opacityDisabledContent,
+                  ),
+          ),
+        ),
+      ),
     ),
   );
 }

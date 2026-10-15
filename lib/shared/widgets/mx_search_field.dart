@@ -128,6 +128,8 @@ class _MxSearchFieldState extends State<MxSearchField> {
         ),
         // The search bar is a stadium on its own surface, with no edge in any
         // state (Design System: SearchBar).
+        // The theme's field is outlined with no fill: the bar fills itself.
+        filled: true,
         fillColor: context.mxColors.searchSurface,
         border: edge,
         enabledBorder: edge,

@@ -105,7 +105,6 @@ class _CardTagDialogWidgetState extends ConsumerState<CardTagDialogWidget> {
           MxTextField(
             controller: _name,
             label: l10n.cardTagHint,
-            hintText: l10n.cardTagHint,
             errorText: switch (_rejection) {
               null => null,
               final reason => l10n.tagRejection(reason),

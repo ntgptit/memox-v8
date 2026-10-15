@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
 import '../../support/widget_harness.dart';
@@ -76,6 +77,29 @@ void main() {
     expect(text.maxLines, isNull);
     expect(text.overflow, isNull);
     expect(tester.getSize(find.byType(Text)).height, greaterThan(20));
+  });
+
+  testWidgets('starts on the field text inset, 16, with the glyph', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 300,
+        child: MxFieldMessage(message: 'Name is required'),
+      ),
+    );
+
+    expect(
+      tester.getTopLeft(find.byIcon(AppIcons.alert)).dx -
+          tester.getTopLeft(find.byType(MxFieldMessage)).dx,
+      16,
+    );
+    final style = tester.widget<Text>(find.text('Name is required')).style!;
+    expect(
+      style.fontSize,
+      tester.element(find.text('Name is required')).texts.bodySmall!.fontSize,
+    );
   });
 
   testWidgets('announced as a live region', (tester) async {

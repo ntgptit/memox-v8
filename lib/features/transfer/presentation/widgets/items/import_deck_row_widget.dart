@@ -73,16 +73,6 @@ class _ImportDeckRowWidgetState extends State<ImportDeckRowWidget> {
         spacing: context.dimens.space8,
         children: [
           if (group.isDefault) ...[
-            // MxTextField's label is for TalkBack; the caller shows its own
-            // (critique 2026-10-08, F2).
-            ExcludeSemantics(
-              child: Text(
-                l10n.importDeckNameLabel,
-                style: context.texts.bodyMedium?.copyWith(
-                  color: context.colors.onSurfaceVariant,
-                ),
-              ),
-            ),
             MxTextField(
               controller: _name,
               label: l10n.importDeckNameLabel,

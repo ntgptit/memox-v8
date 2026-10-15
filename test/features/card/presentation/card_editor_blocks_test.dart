@@ -78,6 +78,40 @@ void main() {
     expect(find.text(_en.cardRequiredLegend), findsOneWidget);
   });
 
+  libraryTest('the count ends the row under the box, in the error tone with '
+      'the field\'s error', (tester, env) async {
+    final controller = TextEditingController(text: 'a' * 61);
+    addTearDown(controller.dispose);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        CardFieldWidget(
+          label: _en.cardFieldFront,
+          hint: _en.cardFrontHint,
+          limit: 60,
+          controller: controller,
+          isRequired: true,
+          errorText: _en.cardRejectionFrontTooLong,
+        ),
+      ),
+    );
+
+    final count = find.text(_en.cardFieldCount(61, 60));
+    expect(
+      tester.getTopLeft(count).dy,
+      greaterThanOrEqualTo(tester.getBottomLeft(find.byType(TextField)).dy),
+    );
+    expect(
+      tester.getTopRight(count).dx,
+      tester.getTopRight(find.byType(TextField)).dx - 16,
+    );
+    expect(
+      tester.widget<Text>(count).style!.color,
+      tester.element(count).colors.error,
+    );
+  });
+
   libraryTest('an optional field shows its count once typed', (
     tester,
     env,
@@ -369,20 +403,22 @@ void main() {
     );
 
     for (final (text, role) in [
-      (_en.cardFieldFront, 'fieldLabel'),
+      (_en.cardFieldFront, 'paintedLabel'),
       (_en.cardTags, 'fieldLabel'),
       (_en.cardRequiredLegend, 'requiredMarker'),
     ]) {
       final label = find.text(text);
-      final texts = tester.element(label).texts;
-      final accent = tester.element(label).accentColor;
-      expect(
-        tester.widget<Text>(label).style,
-        role == 'fieldLabel'
-            ? texts.labelMedium
-            : texts.bodyMedium?.copyWith(color: accent),
-        reason: text,
-      );
+      final element = tester.element(label);
+      final texts = element.texts;
+      // A field paints its own label in onSurfaceVariant; the section
+      // header's stays on the default ink.
+      expect(tester.widget<Text>(label).style, switch (role) {
+        'paintedLabel' => texts.labelMedium?.copyWith(
+          color: element.colors.onSurfaceVariant,
+        ),
+        'fieldLabel' => texts.labelMedium,
+        _ => texts.bodyMedium?.copyWith(color: element.accentColor),
+      }, reason: text);
     }
     expect(find.text(_en.cardFieldFront.toUpperCase()), findsNothing);
   });

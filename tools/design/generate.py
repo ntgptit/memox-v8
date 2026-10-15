@@ -263,7 +263,7 @@ def design_components(tokens: dict, app_tokens: dict) -> list[tuple[str, dict[st
     """The component themes of app_component_themes.dart, in the eight-prop schema."""
     label = f"{{typography.{style_of(tokens, 'labelLarge')}}}"
     meta = f"{{typography.{style_of(tokens, 'labelMedium')}}}"
-    body = f"{{typography.{style_of(tokens, 'bodyMedium')}}}"
+    content = f"{{typography.{style_of(tokens, 'bodyLarge')}}}"
     button = token_value(tokens, "size", "size-button")
     pad = token_value(tokens, "spacing", "space-24")
     chip = app_value(app_tokens, "sizeChip")
@@ -284,8 +284,9 @@ def design_components(tokens: dict, app_tokens: dict) -> list[tuple[str, dict[st
         ("search-field", {"backgroundColor": "{colors.search-surface}", "textColor": "{colors.on-surface}",
                           "typography": meta, "rounded": "{rounded.full}",
                           "height": token_value(tokens, "size", "size-search")}),
-        ("text-field", {"backgroundColor": "{colors.surface-container-low}", "textColor": "{colors.on-surface}",
-                        "typography": body, "rounded": "{rounded.md}", "height": app_value(app_tokens, "sizeInput")}),
+        # The Material 3 outlined text field: no fill, an outline edge.
+        ("text-field", {"textColor": "{colors.on-surface}", "typography": content, "rounded": "{rounded.md}",
+                        "height": app_value(app_tokens, "sizeInput")}),
         # The Material 3 flat filter chip (chipTheme): no fill and an
         # outline-variant edge at rest, secondary-container when selected.
         ("filter-chip", {"textColor": "{colors.on-surface-variant}", "typography": label,

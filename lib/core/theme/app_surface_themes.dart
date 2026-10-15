@@ -34,8 +34,8 @@ DividerThemeData dividerTheme(ThemeTokens t) => DividerThemeData(
   space: t.dimens.strokeHairline,
 );
 
-/// A field's edge in [color] at [width]; no label gap, because fields never
-/// float a label and Material 3 would otherwise add the gap to each side.
+/// A field's edge in [color] at [width]; no label gap, because the label is
+/// painted above the field and never floats on the edge.
 OutlineInputBorder fieldEdge(ThemeTokens t, Color color, {double? width}) =>
     OutlineInputBorder(
       gapPadding: 0,
@@ -46,21 +46,33 @@ OutlineInputBorder fieldEdge(ThemeTokens t, Color color, {double? width}) =>
       ),
     );
 
+/// The Material 3 outlined text field, with no fill: the sheet and page
+/// grounds are the field's ground. The edge is `outline` at rest, `primary`
+/// at the focus width when focused, `error` in error, and `onSurface` at the
+/// container disabled opacity when disabled; the hint is `onSurfaceVariant`,
+/// and `onSurface` at the content disabled opacity when disabled. The input
+/// role is `bodyLarge`.
 InputDecorationTheme inputDecorationTheme(ThemeTokens t) {
   final scheme = t.scheme;
+  final hint = t.texts.bodyLarge!;
   return InputDecorationTheme(
-    filled: true,
     isDense: true,
-    fillColor: WidgetStateColor.resolveWith(
-      (states) => states.contains(WidgetState.focused)
-          ? scheme.surfaceContainerLowest
-          : scheme.surfaceContainerLow,
+    contentPadding: EdgeInsets.symmetric(horizontal: t.dimens.space16),
+    hintStyle: WidgetStateTextStyle.resolveWith(
+      (states) => hint.copyWith(
+        color: states.contains(WidgetState.disabled)
+            ? scheme.onSurface.withValues(
+                alpha: t.dimens.opacityDisabledContent,
+              )
+            : scheme.onSurfaceVariant,
+      ),
     ),
-    contentPadding: EdgeInsets.symmetric(horizontal: t.dimens.space12),
-    hintStyle: t.texts.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
     border: fieldEdge(t, scheme.outline),
     enabledBorder: fieldEdge(t, scheme.outline),
-    disabledBorder: fieldEdge(t, scheme.outlineVariant),
+    disabledBorder: fieldEdge(
+      t,
+      scheme.onSurface.withValues(alpha: t.dimens.opacityDisabledContainer),
+    ),
     focusedBorder: fieldEdge(t, scheme.primary, width: t.dimens.strokeFocus),
     errorBorder: fieldEdge(t, scheme.error),
     focusedErrorBorder: fieldEdge(t, scheme.error, width: t.dimens.strokeFocus),

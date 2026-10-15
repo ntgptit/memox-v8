@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -183,10 +185,11 @@ class MxSettingsRow extends StatelessWidget {
     final labelStart = icon == null
         ? 0.0
         : _leadColumn + context.dimens.space16;
-    // MxFieldMessage insets its glyph by micro, as under a field: pulled
-    // back so the glyph lines up with the label (audit 2026-10-07).
+    // MxFieldMessage insets its glyph by the field's text inset, as under a
+    // field: pulled back so the glyph lines up with the label (audit
+    // 2026-10-07).
     final indent = line is MxFieldMessage
-        ? labelStart - context.dimens.space4
+        ? math.max(0.0, labelStart - context.dimens.space16)
         : labelStart;
     return Column(
       mainAxisSize: MainAxisSize.min,

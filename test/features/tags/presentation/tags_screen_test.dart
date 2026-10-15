@@ -349,9 +349,14 @@ void main() {
     await _openRename(tester, 'động từ');
 
     final label = find.text(_en.tagsNewName);
+    // The field paints its label: the field-label role in onSurfaceVariant.
     expect(
       tester.widget<Text>(label).style,
-      tester.element(label).texts.labelMedium,
+      tester
+          .element(label)
+          .texts
+          .labelMedium
+          ?.copyWith(color: tester.element(label).colors.onSurfaceVariant),
     );
     expect(find.text(_en.tagsNewName.toUpperCase()), findsNothing);
   });

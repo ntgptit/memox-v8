@@ -411,7 +411,7 @@ void main() {
     expect(size(_en.commonCancel).width, size(_en.cardSaveCard).width);
   });
 
-  libraryTest('the front and back of a card sit on the form field\'s 52 '
+  libraryTest('the front and back of a card sit on the form field\'s 56 '
       '(DEV-169)', (tester, env) async {
     final deckId = await _words(env);
     await pumpLibraryScreen(tester, env, _create(deckId));
@@ -419,8 +419,8 @@ void main() {
     await tester.enterText(_field(1), 'thank you');
     await tester.pump();
 
-    expect(tester.getSize(find.byType(TextField).at(0)).height, 52);
-    expect(tester.getSize(find.byType(TextField).at(1)).height, 52);
+    expect(tester.getSize(find.byType(TextField).at(0)).height, 56);
+    expect(tester.getSize(find.byType(TextField).at(1)).height, 56);
   });
 
   libraryTest('the editor saves from the footer only and marks the required '

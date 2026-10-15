@@ -163,11 +163,13 @@ void main() {
     await tester.enterText(find.byType(EditableText).at(1), 'cooked rice');
     await tester.pump();
     // The More card is the editor's last block (kit 09).
-    await tester.drag(
-      find.byType(CardEditorFormWidget),
-      const Offset(0, -2000),
-    );
-    await tester.pumpAndSettle();
+    // Dragged from the side margin (a drag that starts on a field selects
+    // text), in two turns: the list's extent grows as the lower blocks are
+    // built.
+    for (var turn = 0; turn < 2; turn++) {
+      await tester.dragFrom(const Offset(4, 400), const Offset(0, -2000));
+      await tester.pumpAndSettle();
+    }
     await _tap(tester, find.widgetWithText(MxButton, _en.cardMoveToTrash));
     expect(find.text(_en.cardDeleteTitle(1)), findsOneWidget);
     await _tap(

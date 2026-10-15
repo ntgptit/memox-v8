@@ -206,28 +206,16 @@ class _ImportSourceSectionWidgetState
     final lines = _pasted.text.trim().isEmpty
         ? 0
         : _pasted.text.trim().split('\n').length;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: context.dimens.space4,
-      children: [
-        MxTextField(
-          controller: _pasted,
-          label: l10n.importSourcePaste,
-          hintText: l10n.importPasteHint,
-          variant: MxTextFieldVariant.detail,
-          onChanged: (text) {
-            widget.onPaste(text);
-            setState(() {});
-          },
-        ),
-        if (lines > 0)
-          Text(
-            l10n.importPastedLines(lines),
-            style: context.texts.bodyMedium?.copyWith(
-              color: context.colors.onSurfaceVariant,
-            ),
-          ),
-      ],
+    return MxTextField(
+      controller: _pasted,
+      label: l10n.importSourcePaste,
+      hintText: l10n.importPasteHint,
+      supportingText: lines > 0 ? l10n.importPastedLines(lines) : null,
+      variant: MxTextFieldVariant.detail,
+      onChanged: (text) {
+        widget.onPaste(text);
+        setState(() {});
+      },
     );
   }
 }

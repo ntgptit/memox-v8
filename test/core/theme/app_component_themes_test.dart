@@ -110,20 +110,12 @@ void main() {
       });
 
       test(
-        'fields: filled, outline at rest, primary focus ring, no label gap',
+        'fields: outlined with no fill, outline at rest, primary focus ring, '
+        'a 12% disabled edge, no label gap',
         () {
           final fields = theme.inputDecorationTheme;
-          expect(fields.filled, isTrue);
-          expect(
-            WidgetStateProperty.resolveAs(fields.fillColor!, <WidgetState>{}),
-            scheme.surfaceContainerLow,
-          );
-          expect(
-            WidgetStateProperty.resolveAs(fields.fillColor!, {
-              WidgetState.focused,
-            }),
-            scheme.surfaceContainerLowest,
-          );
+          expect(fields.filled, isNot(isTrue));
+          expect(fields.fillColor, isNull);
           final edge = fields.enabledBorder! as OutlineInputBorder;
           expect(edge.borderSide.color, scheme.outline);
           expect(edge.gapPadding, 0);
@@ -135,7 +127,29 @@ void main() {
             (fields.errorBorder! as OutlineInputBorder).borderSide.color,
             scheme.error,
           );
-          expect(fields.hintStyle!.color, scheme.onSurfaceVariant);
+          final focusedError = fields.focusedErrorBorder! as OutlineInputBorder;
+          expect(focusedError.borderSide.color, scheme.error);
+          expect(focusedError.borderSide.width, dimens.strokeFocus);
+          expect(
+            (fields.disabledBorder! as OutlineInputBorder).borderSide.color,
+            scheme.onSurface.withValues(alpha: dimens.opacityDisabledContainer),
+          );
+          expect(
+            fields.contentPadding,
+            const EdgeInsets.symmetric(horizontal: 16),
+          );
+          final hint = WidgetStateProperty.resolveAs(
+            fields.hintStyle!,
+            <WidgetState>{},
+          );
+          expect(hint.fontSize, theme.textTheme.bodyLarge!.fontSize);
+          expect(hint.color, scheme.onSurfaceVariant);
+          expect(
+            WidgetStateProperty.resolveAs(fields.hintStyle!, {
+              WidgetState.disabled,
+            }).color,
+            scheme.onSurface.withValues(alpha: dimens.opacityDisabledContent),
+          );
         },
       );
 

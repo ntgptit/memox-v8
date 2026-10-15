@@ -145,37 +145,27 @@ class _TagRenameDialogWidgetState extends ConsumerState<TagRenameDialogWidget> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: context.dimens.space8,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(l10n.tagsNewName, style: context.texts.labelMedium),
-              ),
-              if (isTooLong)
-                Text(
-                  l10n.tagsLength(_length, TagEntity.maxNameLength),
-                  style: context.texts.labelSmall?.copyWith(
-                    color: context.colors.error,
-                  ),
-                ),
-            ],
-          ),
           MxTextField(
             controller: _name,
             label: l10n.tagsNewName,
+            // The count shows while the name breaks the length rule; with a
+            // merge it joins the line on the unique names.
+            counter: isTooLong
+                ? l10n.tagsLength(_length, TagEntity.maxNameLength)
+                : null,
+            supportingText: switch ((rejection, merge)) {
+              (null, null) => l10n.tagsCaseHint,
+              (null, _) => l10n.tagsLengthUnique(
+                _length,
+                TagEntity.maxNameLength,
+              ),
+              _ => null,
+            },
             errorText: _message(l10n, rejection),
             textInputAction: TextInputAction.done,
             onChanged: _changed,
             onSubmitted: (_) => confirm?.call(),
           ),
-          if (rejection == null)
-            Text(
-              merge == null
-                  ? l10n.tagsCaseHint
-                  : l10n.tagsLengthUnique(_length, TagEntity.maxNameLength),
-              style: context.texts.labelSmall?.copyWith(
-                color: context.colors.onSurfaceVariant,
-              ),
-            ),
           if (merge != null) _MergePanel(source: widget.tag, merge: merge),
         ],
       ),

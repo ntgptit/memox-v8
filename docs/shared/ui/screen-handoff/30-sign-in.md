@@ -130,7 +130,7 @@ The images are the goldens.
 
 ## Copy
 
-- "Sign in" · "Your decks stay on this phone and join the account." · "Email address" (painted label) · "name@example.com" (hint) · "Send code" · "Continue with Google". "or" is gone.
+- "Sign in" · "Your decks stay on this phone and join the account." · "Email address" (the field's painted label, 4 above the box on its 16 text inset) · "name@example.com" (hint) · "Send code" · "Continue with Google". "or" is gone.
 - Problems: "Enter an email address, like name@example.com." · "Too many tries. Wait a minute, then try again." · "No connection. Nothing changed; try again when you're online." · "Couldn't sign in. Nothing changed; try again."
 - Offline caption: "Signing in needs a connection. Try later in Settings."
 - Re-auth: "SIGNED OUT · {email}" (eyebrow) · "Sign in again" · "This phone was signed out, so syncing paused. Your decks are still here." · "Continue without this account" · "Continue without this account?"; the loss confirm "Lose {n} changes"; the dialogs as in the table above.

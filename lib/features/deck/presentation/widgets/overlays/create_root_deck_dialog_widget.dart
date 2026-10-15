@@ -113,7 +113,6 @@ class _CreateRootDeckDialogWidgetState
           MxTextField(
             controller: _name,
             label: l10n.deckNameHint,
-            hintText: l10n.deckNameHint,
             errorText: switch (_rejection) {
               null => null,
               final reason => l10n.deckRejection(reason),

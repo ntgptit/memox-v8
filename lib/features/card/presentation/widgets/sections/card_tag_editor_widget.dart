@@ -172,7 +172,6 @@ class CardTagEditorWidgetState extends State<CardTagEditorWidget> {
               controller: _input,
               focusNode: _focus,
               label: l10n.cardTagHint,
-              hintText: l10n.cardTagHint,
               errorText: _error,
               textInputAction: TextInputAction.done,
               onSubmitted: (name) => _add(name),

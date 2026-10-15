@@ -91,15 +91,10 @@ class _MonitoringDeviceUserSheetWidgetState
         child: Column(
           spacing: context.dimens.space12,
           children: [
-            MxTextField(
-              controller: _device,
-              label: l10n.monitoringDeviceLabel,
-              hintText: l10n.monitoringDeviceLabel,
-            ),
+            MxTextField(controller: _device, label: l10n.monitoringDeviceLabel),
             MxTextField(
               controller: _user,
               label: l10n.monitoringUserLabel,
-              hintText: l10n.monitoringUserLabel,
               errorText: _hasUserError ? l10n.monitoringUserInvalid : null,
               onChanged: (_) {
                 if (_hasUserError) setState(() => _hasUserError = false);

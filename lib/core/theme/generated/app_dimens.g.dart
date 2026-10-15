@@ -50,7 +50,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
     this.opacityDisabledContainer = 0.12,
     // App-only — not yet in the design system.
     this.sizeChip = 32,
-    this.sizeInput = 52,
+    this.sizeInput = 56,
     this.sizeListRow = 56,
     this.sizeListRowTwoLine = 72,
     this.sizeFab = 56,
@@ -115,7 +115,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
   /// Chip and filter chip height, as the Material 3 chip container. A chip never wraps, its row scrolls.
   final double sizeChip;
 
-  /// Text field height.
+  /// Text field height, as the Material 3 text field container.
   final double sizeInput;
 
   /// Minimum height of a one-line list row, as the Material 3 list item container. Content rows, settings rows, option rows and sheet commands share it.

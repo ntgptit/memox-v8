@@ -53,6 +53,14 @@ void main() {
         field.decoration!.fillColor,
         MxColorsExtension.light.searchSurface,
       );
+      // The theme's field has no fill: the bar asks for its own.
+      expect(
+        tester
+            .widget<InputDecorator>(find.byType(InputDecorator))
+            .decoration
+            .filled,
+        isTrue,
+      );
       expect(
         tester.widget<Icon>(find.byIcon(AppIcons.search)).color,
         scheme.onSurfaceVariant,

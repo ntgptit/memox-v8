@@ -5,9 +5,10 @@ import 'package:memox/core/theme/theme_context.dart';
 /// A failure, or a limit reached (not a failure).
 enum MxFieldMessageTone { error, warning }
 
-/// The single validation line under a field: an alert glyph and the message.
-/// It wraps rather than truncating, because it is the one thing the user must
-/// read in full, and it is announced when it appears.
+/// The single validation line under a field: an alert glyph and the message,
+/// in the supporting-text role (`bodySmall`), starting on the field's text
+/// inset. It wraps rather than truncating, because it is the one thing the
+/// user must read in full, and it is announced when it appears.
 class MxFieldMessage extends StatelessWidget {
   const MxFieldMessage({
     super.key,
@@ -31,10 +32,10 @@ class MxFieldMessage extends StatelessWidget {
     return Semantics(
       liveRegion: true,
       child: Padding(
-        padding: EdgeInsets.only(
-          left: context.dimens.space4,
+        padding: EdgeInsetsDirectional.only(
+          start: context.dimens.space16,
           top: context.dimens.space4,
-          right: context.dimens.space4,
+          end: context.dimens.space16,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +49,7 @@ class MxFieldMessage extends StatelessWidget {
             Expanded(
               child: Text(
                 message,
-                style: context.texts.labelSmall?.copyWith(color: foreground),
+                style: context.texts.bodySmall?.copyWith(color: foreground),
               ),
             ),
           ],

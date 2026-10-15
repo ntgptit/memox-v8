@@ -224,11 +224,6 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
             ),
           ),
           SizedBox(height: context.dimens.space24),
-          // The field announces the same label; TalkBack reads it once.
-          ExcludeSemantics(
-            child: Text(l10n.accountEmail, style: context.texts.labelMedium),
-          ),
-          SizedBox(height: context.dimens.space8),
           MxTextField(
             controller: _email,
             label: l10n.accountEmail,

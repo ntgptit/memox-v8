@@ -177,11 +177,18 @@ void main() {
     );
   });
 
-  testWidgets('a disabled code rests its slots on the ghost edge, as a '
-      'disabled field does (DEV-166)', (tester) async {
+  testWidgets('a disabled code takes the M3 disabled values once: a 12% '
+      'edge and 38% digits, with no wrapper dimming them again (DEV-166, '
+      'DEV-372 R2)', (tester) async {
+    final controller = TextEditingController(text: '4');
+    addTearDown(controller.dispose);
     await pumpMx(
       tester,
-      const MxTextField(variant: MxTextFieldVariant.code, isEnabled: false),
+      MxTextField(
+        controller: controller,
+        variant: MxTextFieldVariant.code,
+        isEnabled: false,
+      ),
     );
     final slot =
         tester
@@ -193,7 +200,45 @@ void main() {
                 )
                 .decoration
             as BoxDecoration;
-    expect((slot.border! as Border).top.color, scheme.outlineVariant);
+    expect(
+      (slot.border! as Border).top.color,
+      scheme.onSurface.withValues(alpha: 0.12),
+    );
+    expect(
+      tester
+          .widget<Text>(
+            find.descendant(
+              of: find.byKey(MxCodeField.slotKey(0)),
+              matching: find.text('4'),
+            ),
+          )
+          .style!
+          .color,
+      scheme.onSurface.withValues(alpha: 0.38),
+    );
+    expect(
+      find.ancestor(
+        of: find.byKey(MxCodeField.slotKey(0)),
+        matching: find.byWidgetPredicate((w) => w is Opacity && w.opacity != 0),
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets('a slot has no fill: the ground shows through', (tester) async {
+    await pumpMx(tester, const MxTextField(variant: MxTextFieldVariant.code));
+    final slot =
+        tester
+                .widget<DecoratedBox>(
+                  find.descendant(
+                    of: find.byKey(MxCodeField.slotKey(0)),
+                    matching: find.byType(DecoratedBox),
+                  ),
+                )
+                .decoration
+            as BoxDecoration;
+
+    expect(slot.color, isNull);
   });
 
   testWidgets('a tap on a slot focuses the code', (tester) async {
