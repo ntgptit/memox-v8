@@ -584,6 +584,12 @@ screen is decided in the design mapping.
   active track `primary`, inactive track `surfaceContainerHighest` set explicitly (the M3
   spec leaves it `D=Check`; this matches `MxLinearProgress`), a ledger row in
   `docs/shared/design/m3-adoption-ledger.md`, tests for every state and light and dark goldens.
+- Built (plan 5): `TopikAudioRepository` and `topik_audio_model.dart` (domain);
+  `TopikAudioPlayerDataSource` with its door `PluginTopikAudioPlayerDataSource` and
+  `TopikAudioRepositoryImpl` (data); `topikAudioRepositoryProvider` (di); the guard rule is
+  `memox_v8.architecture.topik_audio_plugin_has_one_door`. A playback failure, at load or
+  later, is the `failed` state with one `topik.audio_failed` warning; a load overtaken by
+  another group changes nothing. `MxSlider` with `sliderTheme`.
 
 ### 13.9 Phase 2 plans
 
