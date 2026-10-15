@@ -26,7 +26,7 @@ Project values (what the app chose) are in the ledger, not here.
 ### 2. AppBar action icons: precedence and `foregroundColor`
 
 **SDK evidence**
-- `material/app_bar.dart:964`..`:970` the actions icon theme is, in order: `AppBar.actionsIconTheme`, `AppBarTheme.actionsIconTheme`, `AppBar.iconTheme`, `AppBarTheme.iconTheme`, then `defaults.actionsIconTheme` copied with `actionForegroundColor`, then the leading icon theme.
+- `material/app_bar.dart:964`..`:970` the actions icon theme is, in order: `AppBar.actionsIconTheme`, `AppBarTheme.actionsIconTheme`, `AppBar.iconTheme`, `AppBarTheme.iconTheme`, then `defaults.actionsIconTheme` copied with `actionForegroundColor`, then the overall icon theme (`material/app_bar.dart:958`).
 - `material/app_bar.dart:963` `actionForegroundColor` is `AppBar.foregroundColor ?? AppBarTheme.foregroundColor`, or null.
 - `material/app_bar.dart:2554`..`:2557` the M3 default `actionsIconTheme` colour is `onSurfaceVariant`; `:2548`..`:2551` the leading `iconTheme` is `onSurface`.
 
@@ -64,7 +64,7 @@ Project values (what the app chose) are in the ledger, not here.
 
 **Do**
 - Set the barrier in the dialog and sheet themes only; pass no `barrierColor` to the standard helpers (`M3L04`, planned).
-- Prove the barrier on the pushed route: `ModalRoute.barrierColor` (`test/app/m3_overlay_barrier_test.dart`, planned).
+- Prove the barrier on the pushed route: `ModalRoute.barrierColor` (the production-root overlay barrier test, Task 4, planned).
 
 ### 5. `showGeneralDialog` and `RawDialogRoute` take no theme barrier
 
@@ -132,7 +132,7 @@ Project values (what the app chose) are in the ledger, not here.
 ### 9. `ListTile.textColor` is shared, and `selectedTileColor` ignores `enabled`
 
 **SDK evidence**
-- `material/list_tile.dart:878` `effectiveColor` is one value, used for the title (`:922`), the subtitle (`:937`) and leading and trailing text (`:906`).
+- `material/list_tile.dart:878` `effectiveColor` is one value, used for the title (`:922`), the subtitle (`:938`) and leading and trailing text (`:906`).
 - `material/list_tile.dart:1218`..`:1228` `_IndividualOverrides.resolve`: a plain `Color` `textColor` returns `disabledColor` when disabled. The three overrides at `:878`..`:883` pass none, so a disabled tile falls through to `theme.disabledColor` (`:884`..`:889`).
 - `material/list_tile.dart:826`..`:830` `effectiveTileColor` depends on `selected` only. `enabled` is not consulted. It is painted at `:1002`.
 
@@ -196,7 +196,7 @@ Project values (what the app chose) are in the ledger, not here.
 **SDK evidence**
 - `flutter_test/lib/src/window.dart:1205`..`:1210` `TestFlutterView.viewInsets` is a `FakeViewPadding`, a `ViewPadding`, i.e. physical pixels.
 - `widgets/media_query.dart:309` `MediaQueryData.viewInsets` is `EdgeInsets.fromViewPadding(view.viewInsets, view.devicePixelRatio)`: logical = physical / `devicePixelRatio`.
-- The repo harness pins `tester.view.devicePixelRatio = 1` (`test/support/widget_harness.dart:10`), where the two coincide.
+- The repo harness pins `tester.view.devicePixelRatio = 1` (`widget_harness.dart:10` in `test/support/`), where the two coincide.
 
 **Consequence** At any other pixel ratio a keyboard of `FakeViewPadding(bottom: 300)` is 300 / dpr logical pixels, and a test sized in logical pixels checks the wrong thing. Setting `MediaQueryData(viewInsets:)` instead is logical and skips this path.
 
@@ -212,7 +212,7 @@ Project values (what the app chose) are in the ledger, not here.
 - `flutter_test/lib/src/accessibility.dart:461`..`:463` the ratio is measured from sampled pixels, with a `-0.01` tolerance (`:312`). The constant's doc (`:806`..`:817`) calls the partition "very naive".
 
 **Consequence**
-- Anti-aliased small text and text on filled buttons can fail it for a pair that the token maths passes, and a 20 px `w600` title is held to 3:1, not 4.5:1.
+- Anti-aliased small text and text on filled buttons can fail it for a pair that the token maths passes, and a 20 px title of any weight is held to 3:1, not 4.5:1.
 - It is not a proof of a token pair's contrast.
 
 **Do**

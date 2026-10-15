@@ -30,7 +30,8 @@ rejects.
 
 ## 2. The 12 mandatory steps
 
-Every BUILD, AUDIT and FIX walks all twelve, in order. `references/workflows.md`
+BUILD and FIX walk all twelve, in order. AUDIT walks steps 1 to 5, 7 (only
+the tests that expose findings), and 9 to 12; it does not fix. `references/workflows.md`
 says what each step means for each workflow.
 
 1. Read specs and decisions.
@@ -50,9 +51,9 @@ says what each step means for each workflow.
 
 | Workflow | Read |
 |---|---|
-| BUILD | `references/workflows.md#build`, the spec section for the component, flutter-theme-design's reference for it |
-| AUDIT | `references/workflows.md#audit`, `references/flutter-m3-pitfalls.md`, the ledger |
-| FIX | `references/workflows.md#fix`, `references/flutter-m3-pitfalls.md`, `superpowers:systematic-debugging` |
+| BUILD | `references/workflows.md` section BUILD, the spec section for the component, flutter-theme-design's reference for it |
+| AUDIT | `references/workflows.md` section AUDIT, `references/flutter-m3-pitfalls.md`, the ledger |
+| FIX | `references/workflows.md` section FIX, `references/flutter-m3-pitfalls.md`, `superpowers:systematic-debugging` |
 | Gates | `references/gates.md`, every time a check is claimed |
 
 ## 4. Definition of done

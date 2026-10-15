@@ -60,9 +60,9 @@ and findings, written into ledger sections 3 to 5.
 3. **Ownership and call sites.** For each component: theme owner and consumers (`rg -n "<Symbol>\(" lib`). A slot with no consumer is classed in the row, not dropped.
 4. **Pinned SDK behaviour.** For each material widget a slot configures, read its defaults and resolve order in the pinned source (`rg -n "class _\w+DefaultsM3" /root/.flutter-sdk/3.47.5/flutter/packages/flutter/lib/src/material/<file>.dart`). Cite `file:line`. Never cite from memory.
 5. **Classify.** For each cell of the spec's role map and state matrix, take the class from the ledger. The project value wins over the spec in `CONFLICT` rows; record the existing value as observed and mark `CONFLICT`, not `FAIL`.
-6. **Design the correction.** Only for `FAIL` cells: the owner layer and the smallest change, as a finding. Do not fix during an audit.
-7. **Regression tests first.** Where a cell is `UNVERIFIED` and a test can prove it, write the test and run it. A failing test is the evidence for the finding. Do not turn a failing test green by weakening it.
-8. **The smallest shared-layer fix.** Out of scope for AUDIT. Each `FAIL` becomes a finding that names the lowest shared owner (see Finding). The FIX workflow does the change.
+6. **Design the correction.** Not walked: an audit does not design or make fixes. For each `FAIL` cell the finding names the fix owner layer (see Finding).
+7. **Tests that expose findings.** Where a cell is `UNVERIFIED` and a test can prove it, write the test and run it. A failing test is the evidence for the finding. Do not turn a failing test green by weakening it.
+8. **The smallest shared-layer fix.** Not walked: an audit does not fix. The FIX workflow does the change from the finding.
 9. **Targeted verification.**
    - Run what you rely on: `bash .claude/skills/flutter-workflow/scripts/run_tests.sh <file>` and `dart run tools/m3_lint/m3_lint.dart`.
    - Every cell is `PASS` only with an executed test or a golden. Code you read is evidence marked "read"; a cell proved only by reading is `UNVERIFIED` unless the fact is static (a literal in a theme file).
@@ -122,7 +122,7 @@ ID `M3F-nn` (two digits, in order of discovery).
 
 ## Severity
 
-Copied from spec 9.4, with its three levels mapped to the project's names.
+Adapted from spec 9.4, with `transparent` removed per M3C-11 and its three levels mapped to the project's names.
 
 - **Critical** (the spec's "Blocked if any of"): a missing approved 45-role palette or scrim alpha when modal barriers are in scope; missing pinned SDK verification; a missing explicit `surfaceTint` declaration or assertion; an AppBar scrolled-under contract failure; missing Dialog, BottomSheet or Drawer theme scrim wiring, or a missing effective route or drawer scrim test; an adaptive or Cupertino modal bypass, or an overlay bypass through an unapproved route constructor; a missing AppBar action-icon precedence test; a missing SearchView elevation override when `SearchAnchor` is used; a Critical UI or accessibility violation; an unreviewed theme override; an unresolved design conflict; a missing relevant component-state test.
 - **Major**: a mismatch in component role mapping, repeated arbitrary radii or spacing, double padding, a competing primary CTA, or a golden diff that was not reviewed.
