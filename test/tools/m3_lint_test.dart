@@ -51,15 +51,42 @@ void main() {
     const expected = {
       'm3l01_overlay_bypass.dart': 7,
       'm3l02_cupertino_adaptive.dart': 17,
-      'm3l04_literal_barrier.dart': 4,
+      'm3l04_literal_barrier.dart': 5,
       'm3l05_theme_platform.dart': 2,
       'm3l06_seed_scheme.dart': 2,
     };
     for (final entry in expected.entries) {
-      final count = violations.where((v) => v.path.endsWith(entry.key));
+      final rule = entry.key.substring(0, 5).toUpperCase();
+      final count = violations.where(
+        (v) => v.path.endsWith(entry.key) && v.rule == rule,
+      );
       expect(count.length, entry.value, reason: entry.key);
     }
   }, timeout: const Timeout(Duration(minutes: 3)));
+
+  test('a Windows path becomes a forward-slash path relative to the root', () {
+    const found = r'C:\x\lib\core\theme\f.dart';
+    expect(relativeToRoot(found, r'C:\x'), 'lib/core/theme/f.dart');
+    expect(relativeToRoot(found, 'C:\\x\\'), 'lib/core/theme/f.dart');
+    expect(relativeToRoot('/x/lib/a.dart', '/x'), 'lib/a.dart');
+  });
+
+  test('an allowlist entry matches a path whichever separator it uses', () {
+    const violation = M3Violation(
+      rule: 'M3L01',
+      path: 'lib/shared/widgets/mx_dialog.dart',
+      line: 18,
+      message: 'm',
+    );
+    const entry = AllowEntry(
+      file: r'lib\shared\widgets\mx_dialog.dart',
+      rule: 'M3L01',
+      reason: 'r',
+      owner: 'o',
+      review: '2027-01-01',
+    );
+    expect(applyAllowlist([violation], [entry]), isEmpty);
+  });
 
   test('an allowlist entry without a reason is rejected', () {
     final file = File('${Directory.systemTemp.createTempSync().path}/a.json')

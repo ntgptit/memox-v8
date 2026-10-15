@@ -15,6 +15,12 @@ Future<void> openSheetWithBarrier(BuildContext context) =>
       builder: _empty,
     );
 
+Route<void> sheetWithModalBarrier() => ModalBottomSheetRoute<void>(
+  builder: _empty,
+  isScrollControlled: false,
+  modalBarrierColor: const Color(0x80000000),
+);
+
 Widget tintedCard() => const Card(surfaceTintColor: Color(0xFF6750A4));
 
 Widget modalBarrier() =>

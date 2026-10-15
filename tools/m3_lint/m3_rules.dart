@@ -146,7 +146,7 @@ Future<List<M3Violation>> lintPaths(
       }
       _requireResolvedImports(result, path);
       final visitor = _M3Visitor(
-        relativePath: _relative(path, root),
+        relativePath: relativeToRoot(path, root),
         lineInfo: result.lineInfo,
         out: found,
       );
@@ -155,7 +155,7 @@ Future<List<M3Violation>> lintPaths(
   } finally {
     await collection.dispose();
   }
-  return _applyAllowlist(found, allowlist);
+  return applyAllowlist(found, allowlist);
 }
 
 // `dart run` finds its SDK by itself; `flutter test` runs inside
@@ -167,11 +167,13 @@ String? _dartSdkPath() {
   final candidates = [
     File(Platform.resolvedExecutable).parent.parent.path,
     if (flutterRoot != null) '$flutterRoot/bin/cache/dart-sdk',
-    for (final dir in (Platform.environment['PATH'] ?? '').split(':'))
+    for (final dir in (Platform.environment['PATH'] ?? '').split(
+      Platform.isWindows ? ';' : ':',
+    ))
       if (File('$dir/dart').existsSync())
         File('$dir/dart')
             .resolveSymbolicLinksSync()
-            .replaceFirst(RegExp(r'/bin/dart$'), ''),
+            .replaceFirst(RegExp(r'[\\/]bin[\\/]dart$'), ''),
   ];
   return candidates.where(isSdk).firstOrNull;
 }
@@ -185,17 +187,28 @@ void _requireResolvedImports(ResolvedUnitResult result, String path) {
   }
 }
 
-String _relative(String path, String root) {
-  final prefix = root.endsWith('/') ? root : '$root/';
-  return path.startsWith(prefix) ? path.substring(prefix.length) : path;
+/// [path] relative to [root], with `/` separators on every platform, so it
+/// compares equal to the allowlist's `file` and to `lib/core/theme/`.
+String relativeToRoot(String path, String root) {
+  final slashed = _slashes(path);
+  final base = _slashes(root);
+  final prefix = base.endsWith('/') ? base : '$base/';
+  return slashed.startsWith(prefix)
+      ? slashed.substring(prefix.length)
+      : slashed;
 }
 
-List<M3Violation> _applyAllowlist(
+String _slashes(String path) => path.replaceAll(r'\', '/');
+
+/// Drops the violations an entry covers (same file and rule, whatever the
+/// separator the entry was written with) and adds an M3L00 per entry that
+/// covered nothing.
+List<M3Violation> applyAllowlist(
   List<M3Violation> found,
   List<AllowEntry> allowlist,
 ) {
   bool covers(AllowEntry e, M3Violation v) =>
-      e.file == v.path && e.rule == v.rule;
+      _slashes(e.file) == v.path && e.rule == v.rule;
   final kept = [
     for (final v in found)
       if (!allowlist.any((e) => covers(e, v))) v,
