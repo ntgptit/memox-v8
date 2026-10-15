@@ -11,7 +11,7 @@ touch the study state or history).
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) | Back; title "Edit card"; a flag `MxIconButton` that toggles here, edit only (ruling P4a-L6, §9 row 80); Save writes the content first, then the flag only when it was toggled here (`setFlagged`, BR-CARD-009, DEV-220), so a flag set elsewhere while the editor was open is kept. No Save here: the single Save is the footer's "Save changes" (`DESIGN.md` › `MxAppBar`, as 08 records it; DEV-233). |
+| App bar | `MxAppBar` | Back; title "Edit card"; a flag `MxIconButton` that toggles here, edit only (ruling P4a-L6, §9 row 80); Save writes the content first, then the flag only when it was toggled here (`setFlagged`, BR-CARD-009, DEV-220), so a flag set elsewhere while the editor was open is kept. No Save here: the single Save is the footer's "Save changes" (`DESIGN.md` › `MxAppBar`, as 08 records it; DEV-233). |
 | Deck path | `DeckContextHeaderWidget` | Library › ancestors › deck › "Edit". |
 | History summary | `CardEditSummaryWidget` (full-bleed `MxCard`, `MxListRow`, `MxIconTile`) | "{status} · {n} answers · {n} lapses · due {date}"; its chevron opens the card detail, which closes the editor underneath it (ruling P4a-L10, §9 row 82). |
 | Front / Back | `CardFieldWidget` | Same fields as create, prefilled from the card: the app's form field box and body type (DEV-169). |

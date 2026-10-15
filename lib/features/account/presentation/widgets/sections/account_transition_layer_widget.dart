@@ -103,7 +103,6 @@ class _LayerPage extends ConsumerWidget {
     final appBar = hasCancel
         ? MxAppBar(
             titleWidget: const SizedBox.shrink(),
-            density: MxAppBarDensity.content,
             actions: [
               MxButton(
                 label: context.l10n.commonCancel,
@@ -185,7 +184,6 @@ class _LayerCodePage extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         titleWidget: const SizedBox.shrink(),
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

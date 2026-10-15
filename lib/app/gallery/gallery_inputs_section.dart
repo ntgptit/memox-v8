@@ -53,7 +53,6 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
         onTap: () {},
       ),
       MxAppBar(
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: context.l10n.commonBack,

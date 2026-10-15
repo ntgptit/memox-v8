@@ -48,6 +48,17 @@ class MxStudyTopBar extends StatelessWidget {
   /// The share the counter may take before it shrinks (P3 final review).
   static const double _counterShare = 0.25;
 
+  /// The close glyph and the counter sit on the screen margin; the touch area
+  /// reaches past the margin by the glyph's inset.
+  EdgeInsetsDirectional _sidePadding(BuildContext context) {
+    final glyphInset =
+        (context.dimens.sizeControl - context.dimens.sizeIcon) / 2;
+    return EdgeInsetsDirectional.only(
+      start: context.screenMargin - glyphInset,
+      end: context.screenMargin,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -65,7 +76,7 @@ class MxStudyTopBar extends StatelessWidget {
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: context.dimens.sizeAppBar),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
+            padding: _sidePadding(context),
             // The chip is capped so a long mode name at large text ellipsizes
             // instead of squeezing the track away (FE-A6 P3 ruling T1).
             child: LayoutBuilder(

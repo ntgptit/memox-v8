@@ -26,9 +26,7 @@ void main() {
     );
   });
 
-  testWidgets('screen density: titleLarge title, screen margin', (
-    tester,
-  ) async {
+  testWidgets('titleLarge title, screen margin', (tester) async {
     await pumpMx(tester, const MxAppBar(title: 'Library'));
     final context = tester.element(find.text('Library'));
 
@@ -43,14 +41,11 @@ void main() {
     );
   });
 
-  testWidgets('content density: titleLarge title after the leading control', (
-    tester,
-  ) async {
+  testWidgets('titleLarge title after the leading control', (tester) async {
     await pumpMx(
       tester,
       MxAppBar(
         title: 'Japanese N5',
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: 'Back',
@@ -73,7 +68,6 @@ void main() {
       tester,
       MxAppBar(
         title: title,
-        density: MxAppBarDensity.content,
         actions: [
           MxIconButton(
             icon: AppIcons.search,
@@ -113,7 +107,6 @@ void main() {
       await pumpMx(
         tester,
         MxAppBar(
-          density: MxAppBarDensity.content,
           leading: MxIconButton(
             icon: AppIcons.back,
             semanticLabel: 'Back',
@@ -147,26 +140,20 @@ void main() {
     expect(MxAppBar.new, throwsAssertionError);
   });
 
-  testWidgets('a text action ends on the gutter, in either density', (
-    tester,
-  ) async {
-    for (final density in MxAppBarDensity.values) {
-      await pumpMx(
-        tester,
-        MxAppBar(
-          title: 'Words',
-          density: density,
-          actions: [MxButton(label: 'Done', onPressed: () {})],
-        ),
-      );
+  testWidgets('a text action ends on the gutter', (tester) async {
+    await pumpMx(
+      tester,
+      MxAppBar(
+        title: 'Words',
+        actions: [MxButton(label: 'Done', onPressed: () {})],
+      ),
+    );
 
-      expect(
-        tester.getTopRight(find.byType(MxAppBar)).dx -
-            tester.getTopRight(find.byType(MxButton)).dx,
-        tester.element(find.byType(MxAppBar)).screenMargin,
-        reason: density.name,
-      );
-    }
+    expect(
+      tester.getTopRight(find.byType(MxAppBar)).dx -
+          tester.getTopRight(find.byType(MxButton)).dx,
+      tester.element(find.byType(MxAppBar)).screenMargin,
+    );
   });
   testWidgets(
     'a search field in the bar keeps 8 above and below it and ends on the gutter',
@@ -174,7 +161,6 @@ void main() {
       await pumpMx(
         tester,
         MxAppBar(
-          density: MxAppBarDensity.content,
           leading: MxIconButton(
             icon: AppIcons.back,
             semanticLabel: 'Back',
@@ -202,13 +188,7 @@ void main() {
 
   testWidgets('a content bar without a leading control starts its title on '
       'the gutter (critique 2026-09-30 part 3c-1)', (tester) async {
-    await pumpMx(
-      tester,
-      const MxAppBar(
-        title: 'Session summary',
-        density: MxAppBarDensity.content,
-      ),
-    );
+    await pumpMx(tester, const MxAppBar(title: 'Session summary'));
     expect(
       tester.getTopLeft(find.text('Session summary')).dx,
       tester.element(find.byType(MxAppBar)).screenMargin,
@@ -216,9 +196,8 @@ void main() {
   });
 
   group('icon glyphs line up with the body margin', () {
-    Widget bar(MxAppBarDensity density) => MxAppBar(
+    Widget bar() => MxAppBar(
       title: 'Words',
-      density: density,
       leading: MxIconButton(
         icon: AppIcons.back,
         semanticLabel: 'Back',
@@ -238,31 +217,26 @@ void main() {
       ],
     );
 
-    for (final density in MxAppBarDensity.values) {
-      for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
-        testWidgets('${density.name} bar, ${width.toInt()} wide window: glyphs '
-            'sit on the $margin margin', (tester) async {
-          await pumpMx(
-            tester,
-            WindowWidthScope(width: width, child: bar(density)),
-          );
-          final barRect = tester.getRect(find.byType(MxAppBar));
+    for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
+      testWidgets('${width.toInt()} wide window: glyphs sit on the $margin '
+          'margin', (tester) async {
+        await pumpMx(tester, WindowWidthScope(width: width, child: bar()));
+        final barRect = tester.getRect(find.byType(MxAppBar));
 
-          expect(
-            tester.getTopLeft(find.byIcon(AppIcons.back)).dx - barRect.left,
-            margin,
-          );
-          expect(
-            barRect.right - tester.getTopRight(find.byIcon(AppIcons.more)).dx,
-            margin,
-          );
-        });
-      }
+        expect(
+          tester.getTopLeft(find.byIcon(AppIcons.back)).dx - barRect.left,
+          margin,
+        );
+        expect(
+          barRect.right - tester.getTopRight(find.byIcon(AppIcons.more)).dx,
+          margin,
+        );
+      });
     }
 
     testWidgets('the leading icon is onSurface, the trailing ones '
         'onSurfaceVariant', (tester) async {
-      await pumpMx(tester, bar(MxAppBarDensity.screen));
+      await pumpMx(tester, bar());
       Color? glyph(IconData icon) =>
           IconTheme.of(tester.element(find.byIcon(icon))).color;
 

@@ -25,7 +25,6 @@ class GalleryChromeSection extends StatelessWidget {
         MxAppBar(title: context.l10n.navLibrary),
         MxAppBar(
           title: context.l10n.galleryJapaneseN5VerbsOfMotion,
-          density: MxAppBarDensity.content,
           leading: MxIconButton(
             icon: AppIcons.back,
             semanticLabel: context.l10n.commonBack,

@@ -28,7 +28,7 @@ FE-B8; ADR-018 §6 to §8; spec
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) + back `MxIconButton` | "Monitoring". |
+| App bar | `MxAppBar` + back `MxIconButton` | "Monitoring". |
 | Tabs | `MxSegmentedTray` | "Server" · "Not sent ({n})"; n is every row of the device buffer. |
 | Search (Server) | `MxSearchField` | "Search event or message"; asks 400 ms after the last keystroke. |
 | Filters (Server) | `MxChipTrigger` × 5 in a row that scrolls | Level (default warning + error) · Status (default open) · Category · Time · Device / user. A chip that holds a choice shows it, naming one or two and counting from three: "Level · Warning, Error", "Status · Open", "Time · Last 24 hours", "Level · 3"; Device / user counts a pair, since its choices are ids (critique 2026-09-30 part 3b). |

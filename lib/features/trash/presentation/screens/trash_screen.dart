@@ -155,7 +155,6 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
     if (!state.isSelecting) {
       return MxAppBar(
         title: l10n.libraryTrash,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,
@@ -191,7 +190,6 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           style: context.texts.titleMedium,
         ),
       ),
-      density: MxAppBarDensity.content,
       leading: MxIconButton(
         icon: AppIcons.close,
         semanticLabel: l10n.trashSelectionClose,

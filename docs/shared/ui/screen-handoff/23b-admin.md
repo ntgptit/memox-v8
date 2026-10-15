@@ -23,7 +23,7 @@ Spec [2026-10-07-settings-hub-design.md](../../../superpowers/specs/2026-10-07-s
 | Region | Widget | Design |
 |---|---|---|
 | Gate | `MonitoringAdminGateWidget` (title "Admin") | A non-admin sees the gate's refusal; while the account is being confirmed, a skeleton list. |
-| App bar | `MxAppBar` (content density) + Back | "Admin". |
+| App bar | `MxAppBar` + Back | "Admin". |
 | Logs | `MxSection` + rows | "Logs". "Monitoring" / "Logs of the app and the server" (monitor tile, opens 28); "Log SQL statements" / "Each statement the app runs is logged, for performance checks. Turn off to keep the log small." with a trailing `MxToggle` on the debug-level tile (the account's value, synced; disabled while its save runs; a refused save shows "Couldn't change that. The switch is unchanged." with the row unchanged). |
 | People | `MxSection` + row | "People". "Users" / "Who can manage the app" (people tile, opens 33). |
 

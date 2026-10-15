@@ -219,6 +219,16 @@ void main() {
       );
     });
 
+    testWidgets('the keyboard reaches it at one tab stop', (tester) async {
+      await pumpTrigger(tester, () {});
+      final scope = FocusScope.of(tester.element(find.byType(MxSearchField)));
+
+      expect(
+        scope.traversalDescendants.where((n) => n.canRequestFocus),
+        hasLength(1),
+      );
+    });
+
     testWidgets('reads as a button named by the hint, with no clear button', (
       tester,
     ) async {

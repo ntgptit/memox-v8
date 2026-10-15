@@ -137,7 +137,6 @@ void main() {
           const MxAppBar(title: 'Library'),
           MxAppBar(
             title: 'Japanese N5 · Verbs of motion and a very long name',
-            density: MxAppBarDensity.content,
             leading: MxIconButton(
               icon: AppIcons.back,
               semanticLabel: 'Back',

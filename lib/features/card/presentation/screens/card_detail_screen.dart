@@ -49,7 +49,6 @@ class CardDetailScreen extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.cardDetailTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

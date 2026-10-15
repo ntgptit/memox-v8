@@ -91,7 +91,6 @@ class DeckProgressScreen extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         title: path == null ? l10n.progressTitle : path.last.name,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

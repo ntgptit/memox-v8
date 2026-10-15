@@ -51,7 +51,6 @@ class ThemeScreen extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.settingsTheme,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

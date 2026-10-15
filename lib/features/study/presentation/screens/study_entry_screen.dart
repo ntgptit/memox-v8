@@ -60,7 +60,6 @@ class StudyEntryScreen extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         titleWidget: title,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

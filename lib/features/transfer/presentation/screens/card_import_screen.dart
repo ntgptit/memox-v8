@@ -80,7 +80,6 @@ class _CardImportScreenState extends ConsumerState<CardImportScreen> {
 
   Widget _appBar(BuildContext context, String title) => MxAppBar(
     title: title,
-    density: MxAppBarDensity.content,
     leading: MxIconButton(
       icon: AppIcons.close,
       semanticLabel: context.l10n.importClose,

@@ -64,7 +64,6 @@ class _LibrarySearchScreenState extends ConsumerState<LibrarySearchScreen> {
     final l10n = context.l10n;
     return MxAppShell(
       appBar: MxAppBar(
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

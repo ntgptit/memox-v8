@@ -200,11 +200,7 @@ class _OpenDeck extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final provider = deckViewProvider(deckId);
-    final bar = MxAppBar(
-      title: l10n.navLibrary,
-      density: MxAppBarDensity.content,
-      leading: const _BackButton(),
-    );
+    final bar = MxAppBar(title: l10n.navLibrary, leading: const _BackButton());
     return switch (ref.watch(provider)) {
       AsyncData(value: Ok(:final value)) => _OpenDeckContent(
         view: value,
@@ -366,7 +362,6 @@ class _OpenDeckContent extends ConsumerWidget {
           ? cardAppBar(view, const _BackButton(), deckActions)
           : MxAppBar(
               title: deck.name,
-              density: MxAppBarDensity.content,
               leading: const _BackButton(),
               actions: isReordering
                   ? [DeckReorderDoneWidget(parentId: deck.id)]

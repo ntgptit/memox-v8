@@ -147,6 +147,61 @@ void main() {
       expect(ground(tester), lightColorScheme.surface);
     });
 
+    testWidgets('swapping the scrolled body for one that does not scroll '
+        'clears the ground', (tester) async {
+      final body = ValueNotifier<Widget>(
+        ListView(key: listKey, children: tall),
+      );
+      addTearDown(body.dispose);
+      await pumpMxPage(
+        tester,
+        ValueListenableBuilder(
+          valueListenable: body,
+          builder: (_, child, _) => MxAppShell(
+            appBar: const MxAppBar(title: 'Library', key: _barKey),
+            body: child,
+          ),
+        ),
+      );
+      await tester.drag(find.byKey(listKey), const Offset(0, -300));
+      await tester.pumpAndSettle();
+      expect(ground(tester), lightColorScheme.surfaceContainer);
+
+      body.value = const SizedBox.expand();
+      await tester.pumpAndSettle();
+
+      expect(ground(tester), lightColorScheme.surface);
+    });
+
+    testWidgets('content that shrinks back into the viewport clears the '
+        'ground', (tester) async {
+      final count = ValueNotifier(30);
+      addTearDown(count.dispose);
+      await pumpMxPage(
+        tester,
+        ValueListenableBuilder(
+          valueListenable: count,
+          builder: (_, n, _) => MxAppShell(
+            appBar: const MxAppBar(title: 'Library', key: _barKey),
+            body: ListView(
+              key: listKey,
+              children: [
+                for (var i = 0; i < n; i++) const SizedBox(height: 80),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.drag(find.byKey(listKey), const Offset(0, -300));
+      await tester.pumpAndSettle();
+      expect(ground(tester), lightColorScheme.surfaceContainer);
+
+      count.value = 2;
+      await tester.pumpAndSettle();
+
+      expect(ground(tester), lightColorScheme.surface);
+    });
+
     testWidgets('the colour eases in', (tester) async {
       await pumpMxPage(tester, shell());
       await tester.drag(find.byKey(listKey), const Offset(0, -300));

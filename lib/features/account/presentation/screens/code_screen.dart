@@ -37,7 +37,6 @@ class CodeScreen extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         titleWidget: const SizedBox.shrink(),
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

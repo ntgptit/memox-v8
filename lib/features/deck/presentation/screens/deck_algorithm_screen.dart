@@ -111,7 +111,6 @@ class _DeckAlgorithmScreenState extends ConsumerState<DeckAlgorithmScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.deckReviewAlgorithm,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

@@ -97,7 +97,6 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.settingsLanguage,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

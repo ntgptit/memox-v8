@@ -105,7 +105,6 @@ class _StarterLibraryScreenState extends ConsumerState<StarterLibraryScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.starterTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

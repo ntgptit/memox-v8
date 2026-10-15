@@ -129,7 +129,6 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.tagsTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

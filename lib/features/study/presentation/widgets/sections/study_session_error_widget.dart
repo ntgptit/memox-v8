@@ -28,7 +28,6 @@ class StudySessionErrorWidget extends StatelessWidget {
       isSession: true,
       appBar: MxAppBar(
         title: l10n.navStudy,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.close,
           semanticLabel: l10n.studySessionClose,

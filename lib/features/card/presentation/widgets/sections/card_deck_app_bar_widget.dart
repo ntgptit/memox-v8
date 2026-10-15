@@ -110,7 +110,6 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
     final l10n = context.l10n;
     final total = _total(ref.watch(cardListRequestProvider(_deckId)));
     return MxAppBar(
-      density: MxAppBarDensity.content,
       leading: MxIconButton(
         icon: AppIcons.close,
         semanticLabel: l10n.cardSelectionClose,
@@ -144,7 +143,6 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
     final isSearchOpen = ref.watch(cardSearchOpenProvider(_deckId));
     return MxAppBar(
       title: widget.view.deck.name,
-      density: MxAppBarDensity.content,
       leading: widget.back,
       actions: [
         MxIconButton(

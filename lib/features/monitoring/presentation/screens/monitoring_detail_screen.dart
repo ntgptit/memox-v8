@@ -74,7 +74,6 @@ class _MonitoringDetailScreenState
     return MxAppShell(
       appBar: MxAppBar(
         title: record?.event ?? l10n.monitoringDetailTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

@@ -113,6 +113,8 @@ class _MxSearchFieldState extends State<MxSearchField> {
       controller: _controller,
       focusNode: _focusNode,
       readOnly: widget.onTap != null,
+      // A trigger's one tab stop is its ink, not the field under it.
+      canRequestFocus: widget.onTap == null,
       onChanged: widget.onChanged,
       maxLines: 1,
       textInputAction: TextInputAction.search,

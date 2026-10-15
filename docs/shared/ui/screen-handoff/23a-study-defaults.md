@@ -21,7 +21,7 @@ step 2; specs [2026-09-26-settings-ui-design.md](../../../superpowers/specs/2026
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) + Back | "Study options". |
+| App bar | `MxAppBar` + Back | "Study options". |
 | Session | `MxSection` + `MxSettingsRow` × 2, note | "Session". "Cards" / "Per session" with an `MxStepper` in the trailing slot, beside the label: −/+, a hold repeats, a tap on the number types one (FE-A3 D6); the stepper keeps "Cards per session" as its spoken name, and moves under the label from text scale 1.5. "New-card order" / "In order" or "Random" (shuffle tile, the value and a chevron), a tap opening the new-card order sheet (owner 2026-10-07). The note: "Changes apply to sessions you start from now on. A deck with its own study options keeps them." (BR-SETTINGS-004). |
 | Card limit message | `MxFieldMessage` (error) in the row's `message` slot | "Enter a number from 1 to 200", under the label and the stepper, from the label's start to the row's end, while a typed value is out of range (UC E1). |
 | New-card order sheet | `MxBottomSheet` + `MxOptionRow` × 2 | "New-card order": "In order", "Random", the current one selected; a pick closes the sheet and saves at once, as the speech language sheet does. |

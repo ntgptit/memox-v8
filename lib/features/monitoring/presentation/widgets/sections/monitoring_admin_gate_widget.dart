@@ -41,7 +41,6 @@ class MonitoringAdminGateWidget extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         title: title ?? l10n.monitoringTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

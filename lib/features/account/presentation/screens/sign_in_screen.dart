@@ -54,7 +54,6 @@ class SignInScreen extends ConsumerWidget {
     return SignInFormWidget(
       appBar: MxAppBar(
         titleWidget: const SizedBox.shrink(),
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

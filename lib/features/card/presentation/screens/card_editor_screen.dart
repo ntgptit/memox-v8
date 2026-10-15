@@ -77,7 +77,6 @@ class _EditLoader extends ConsumerWidget {
     void back() => unawaited(Navigator.of(context).maybePop());
     final bar = MxAppBar(
       title: l10n.cardEditTitle,
-      density: MxAppBarDensity.content,
       leading: MxIconButton(
         icon: AppIcons.back,
         semanticLabel: l10n.commonBack,

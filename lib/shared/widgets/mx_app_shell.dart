@@ -99,13 +99,15 @@ class MxAppShell extends StatelessWidget {
       // hand that inset back to the body.
       body: Builder(
         builder: (bodyContext) => _ScrolledUnderScope(
+          // Only the app bar takes the scrolled-under ground; the study bar
+          // paints its own, and no bar has nothing to colour.
+          isEnabled: appBar is MxAppBar,
+          bodyIdentity: (body.runtimeType, body.key),
           builder: (isScrolledUnder) => Column(
             children: [
               if (appBar != null)
                 _AppBarGround(
-                  // Only the app bar takes the scrolled-under ground; the
-                  // study bar paints its own.
-                  isScrolledUnder: isScrolledUnder && appBar is MxAppBar,
+                  isScrolledUnder: isScrolledUnder,
                   child: _inColumn(context, appBar),
                 ),
               Expanded(
@@ -151,9 +153,22 @@ class MxAppShell extends StatelessWidget {
 /// Tells [builder] whether the body's scroll has moved content under the app
 /// bar: its vertical scroll, not a nested or sideways one (Material 3: the
 /// bar steps from `surface` to `surfaceContainer`).
+///
+/// The flag follows scroll updates (a position clamped by content that shrinks
+/// back into the viewport is one), and clears when [bodyIdentity] changes,
+/// since the scroll view it described is gone. With no [isEnabled] it listens
+/// to nothing.
 class _ScrolledUnderScope extends StatefulWidget {
-  const _ScrolledUnderScope({required this.builder});
+  const _ScrolledUnderScope({
+    required this.isEnabled,
+    required this.bodyIdentity,
+    required this.builder,
+  });
 
+  final bool isEnabled;
+
+  /// Equal while the body is the same widget in the same slot.
+  final Object bodyIdentity;
   final Widget Function(bool isScrolledUnder) builder;
 
   @override
@@ -167,15 +182,30 @@ class _ScrolledUnderScopeState extends State<_ScrolledUnderScope> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _observer?.removeListener(_onScroll);
-    _observer = ScrollNotificationObserver.maybeOf(context)
-      ?..addListener(_onScroll);
+    _listen();
+  }
+
+  @override
+  void didUpdateWidget(_ScrolledUnderScope oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isEnabled != oldWidget.isEnabled) _listen();
+    if (widget.bodyIdentity != oldWidget.bodyIdentity || !widget.isEnabled) {
+      _isScrolledUnder = false;
+    }
   }
 
   @override
   void dispose() {
     _observer?.removeListener(_onScroll);
     super.dispose();
+  }
+
+  void _listen() {
+    _observer?.removeListener(_onScroll);
+    _observer = widget.isEnabled
+        ? ScrollNotificationObserver.maybeOf(context)
+        : null;
+    _observer?.addListener(_onScroll);
   }
 
   void _onScroll(ScrollNotification notification) {

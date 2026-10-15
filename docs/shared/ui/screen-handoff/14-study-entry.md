@@ -9,7 +9,7 @@ between Learn and Review before a session opens. UC-STUDY-001, UC-STUDY-003.
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) | Back, deck name (composed by `app/` from the deck feature, FE-A6 spec D16), and the trailing "Study options" icon, which opens screen 15 (FE-A3 D3). |
+| App bar | `MxAppBar` | Back, deck name (composed by `app/` from the deck feature, FE-A6 spec D16), and the trailing "Study options" icon, which opens screen 15 (FE-A3 D3). |
 | Breadcrumb | `MxBreadcrumb` | Library › ancestors › deck. |
 | Hero | `MxCard` (plain, not a hero card: a summary, not a door) + `MxStatTile` × 2 (FE-A6 spec D17) | The overline names the algorithm alone ("EIGHT BOXES", "SM-2"); a plain line under it reads "Up to {n} cards per session" (BR-STUDY-024), so no word is left alone on a wrapped line (critique 2026-09-30 part 3c-1, R5); two stat tiles, New and Due, boxed on the Muted Fill so they read as boxes on the plain card (DEV-231): Due above zero in primary, New above zero muted, a zero in plain text colour (BR-STUDY-047, BR-STUDY-051 — the two sets never merge); "{n} of the due cards are overdue" note, in the warning text, when any are overdue. |
 | Resume banner | `MxCard` | "Session from today" overline with a pulse dot, "{kind} · {mode} · {done} of {total} cards", a line explaining Continue vs. starting fresh, "Continue" (`MxButton`, primary block). Shown only per BR-STUDY-072's in-progress, same-day session. |

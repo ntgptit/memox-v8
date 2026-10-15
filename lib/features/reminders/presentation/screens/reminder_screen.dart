@@ -64,7 +64,6 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.reminderTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

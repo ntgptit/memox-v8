@@ -9,7 +9,7 @@ One recursive screen for the Library root (`/decks`) and any open deck
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (screen density) | "Library", then Starter decks (sparkles, screen 03), Tags (tag, screen 05; only with decks, The Content Gate Rule, DEV-309) and Trash (screen 06, always: the way back) (FE-B2 + FE-B4 D2). |
+| App bar | `MxAppBar` | "Library", then Starter decks (sparkles, screen 03), Tags (tag, screen 05; only with decks, The Content Gate Rule, DEV-309) and Trash (screen 06, always: the way back) (FE-B2 + FE-B4 D2). |
 | Search | `MxSearchField`, trigger mode | Hint "Search decks, cards, tags", the same string as screen 04 (`searchFieldHint`; DEV-233). A tap pushes `/decks/search` (screen 04). Only with decks (The Content Gate Rule, DEV-309). |
 | Due strip | `MxCard` (hero) + `MxIconTile` + `MxWorkloadBreakdownLine` | Bolt tile on primary, "N cards due", overdue · today (New is not due, BR-STUDY-068). A tap opens Study home; a trailing chevron says so (critique 2026-09-30, R4). Hidden when the library holds no card. |
 | Section header | `MxListSectionHeader` + `MxChipTrigger` | "N DECKS"; ghost chip "Manual ⌄", or "Manual · Due only" tinted primary with the filter on. |

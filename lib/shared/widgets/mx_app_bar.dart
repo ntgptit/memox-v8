@@ -4,12 +4,6 @@ import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
-/// Content bar (a back control and a deck/card name) or screen bar (a screen
-/// name). Both are `sizeAppBar` tall, set the title in `titleLarge` and put
-/// their icon glyphs on the screen margin; the name says which screen the bar
-/// belongs to.
-enum MxAppBarDensity { content, screen }
-
 /// The top chrome: leading control, flexible title, trailing actions. The
 /// title is the only slot that gives up width; it ellipsises on one line.
 ///
@@ -26,7 +20,6 @@ class MxAppBar extends StatelessWidget {
     super.key,
     this.title,
     this.titleWidget,
-    this.density = MxAppBarDensity.screen,
     this.leading,
     this.actions = const [],
   }) : assert(
@@ -42,7 +35,6 @@ class MxAppBar extends StatelessWidget {
   /// than pressing a `sizeSearch` field against its edges, and ends on the screen margin so
   /// its border lines up with the content below.
   final Widget? titleWidget;
-  final MxAppBarDensity density;
 
   /// Usually an MxIconButton (back, or close in selection mode).
   final Widget? leading;

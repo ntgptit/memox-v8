@@ -42,7 +42,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
       child: MxAppShell(
         appBar: MxAppBar(
           title: context.l10n.galleryGallery,
-          density: MxAppBarDensity.content,
           leading: MxIconButton(
             icon: AppIcons.back,
             semanticLabel: context.l10n.commonBack,

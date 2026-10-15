@@ -10,7 +10,7 @@ snapshot. UC-STUDY-002.
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (screen density) | "Study"; no date (see Rulings). |
+| App bar | `MxAppBar` | "Study"; no date (see Rulings). |
 | Resume card | `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` | "Continue studying" overline with a live pulse dot; "{deckOrSession name}", "{kind} · {mode} · {done} / {total} cards", a thin progress track, "Resume" (`MxButton`, primary). Shown only when BR-STUDY-075's four read-only conditions all hold. |
 | Workload card | `MxCard` (no hero: a summary, not a door; sessions start per deck, critique 2026-09-30 part 3c-1, R2) + `MxWorkloadBreakdownLine` | "Waiting for you", "{n} cards due", then overdue · today · new "across {k} decks" (BR-STUDY-068). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
 | Section header | `MxListSectionHeader` + trailing `MxButton` (small secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |

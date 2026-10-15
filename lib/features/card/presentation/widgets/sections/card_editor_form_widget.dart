@@ -368,7 +368,6 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
 
   MxAppBar _appBar(AppLocalizations l10n) => MxAppBar(
     title: _isCreating ? l10n.cardAddTitle : l10n.cardEditTitle,
-    density: MxAppBarDensity.content,
     leading: MxIconButton(
       icon: _isCreating ? AppIcons.close : AppIcons.back,
       semanticLabel: _isCreating ? l10n.cardClose : l10n.commonBack,

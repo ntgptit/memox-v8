@@ -44,10 +44,7 @@ class SessionSummaryWidget extends StatelessWidget {
     final summary = view.summary;
     return MxAppShell(
       isSession: true,
-      appBar: MxAppBar(
-        title: l10n.summaryAppBar,
-        density: MxAppBarDensity.content,
-      ),
+      appBar: MxAppBar(title: l10n.summaryAppBar),
       body: StudyCentredScrollWidget(
         children: [
           SizedBox(height: context.dimens.space4),

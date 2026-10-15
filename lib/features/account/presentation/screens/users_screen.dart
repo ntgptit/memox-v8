@@ -54,7 +54,6 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.usersTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

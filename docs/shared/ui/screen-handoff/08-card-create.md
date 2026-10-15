@@ -10,7 +10,7 @@ Adding a card to an open `card` deck: `CardEditorScreen.create` →
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) | Close (✕); title "New card". No Save here: the single Save is the footer's "Save card" (critique 2026-09-30 part 3a records it). |
+| App bar | `MxAppBar` | Close (✕); title "New card". No Save here: the single Save is the footer's "Save card" (critique 2026-09-30 part 3a records it). |
 | Deck path | `DeckContextHeaderWidget` (`MxBreadcrumb`), injected by `app/` (ruling P4a-L7) | Library › ancestors › deck › "New card": the deck is named once (critique 2026-09-30). Not a picker: the card belongs to the deck it was opened from. |
 | Deck-rejects banner | `MxInlineBanner` (warning) | "This deck no longer accepts cards." / "It now holds sub-decks."; shown only once the target deck can no longer hold a card. |
 | Front | `CardFieldWidget` (`MxTextField`, `MxTextFieldVariant.term`) | Overline "Front · Term", "Required", live "{count} / 60"; inline error once the field is touched (ruling P4a-L2). |

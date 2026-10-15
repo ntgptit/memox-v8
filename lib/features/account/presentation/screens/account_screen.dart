@@ -73,7 +73,6 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.accountTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,
