@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart' show AppDatabase;
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
+import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
+import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/domain/usecases/answer_topik_question_use_case.dart';
 import 'package:memox/features/topik/domain/usecases/delete_topik_attempt_use_case.dart';
 import 'package:memox/features/topik/domain/usecases/start_topik_attempt_use_case.dart';
@@ -83,6 +85,80 @@ void main() {
       expect(detail.inProgress!.attempt.id, open.id);
       expect(detail.progress.sessions, 2);
       expect(detail.recent, hasLength(2));
+    },
+  );
+
+  test('the catalog and the detail follow every later write', () async {
+    final start = StartTopikAttemptUseCase(catalog, attempts);
+    final submit = SubmitTopikAttemptUseCase(catalog, attempts);
+    final listed = <List<TopikCatalogEntry>>[];
+    final details = <TopikTestDetail>[];
+    final subscriptions = [
+      WatchTopikCatalogUseCase(catalog, attempts)().listen(listed.add),
+      WatchTopikTestDetailUseCase(catalog, attempts)(content.testId)
+          .listen(details.add),
+    ];
+    addTearDown(() async {
+      for (final subscription in subscriptions) {
+        await subscription.cancel();
+      }
+    });
+    await pumpEventQueue();
+    expect(listed.last.single.status, isNull);
+    expect(details.last.attempts, isEmpty);
+
+    final first = topikOk(await start(content.testId));
+    topikOk(
+      await submit(attemptId: first.id, testId: content.testId, elapsedMs: 0),
+    );
+    final second = topikOk(await start(content.testId));
+    await pumpEventQueue();
+    expect(listed.last.single.status!.hasInProgress, isTrue);
+    expect(
+      [for (final n in details.last.attempts) (n.attempt.id, n.number)],
+      [(second.id, 2), (first.id, 1)],
+    );
+
+    topikOk(await DeleteTopikAttemptUseCase(attempts)(first.id));
+    await pumpEventQueue();
+    expect(
+      [for (final n in details.last.attempts) (n.attempt.id, n.number)],
+      [(second.id, 1)],
+    );
+    expect(details.last.progress.sessions, 1);
+  });
+
+  test('the detail and the attempt still stream once the test is gone '
+      '(BR-TOPIK-019)', () async {
+    final attempt = topikOk(
+      await StartTopikAttemptUseCase(catalog, attempts)(content.testId),
+    );
+    catalog.tests = [];
+
+    final detail = await WatchTopikTestDetailUseCase(catalog, attempts)(
+      content.testId,
+    ).first;
+    final view = (await WatchTopikAttemptUseCase(catalog, attempts)(attempt.id)
+        .first)!;
+
+    expect(detail.test, isNull);
+    expect(detail.inProgress!.attempt.id, attempt.id);
+    expect(view.test, isNull);
+    expect(view.detail.attempt.id, attempt.id);
+  });
+
+  test(
+    'a catalog read that fails reaches the screen, and Retry recovers',
+    () async {
+      catalog.failure = StateError('asset bundle');
+      await expectLater(
+        WatchTopikCatalogUseCase(catalog, attempts)(),
+        emitsError(isStateError),
+      );
+
+      catalog.failure = null;
+      final entries = await WatchTopikCatalogUseCase(catalog, attempts)().first;
+      expect(entries.single.test.testId, content.testId);
     },
   );
 
