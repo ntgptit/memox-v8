@@ -5,6 +5,7 @@ import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 import 'package:memox/features/topik/domain/models/topik_test_status_model.dart';
+import 'package:memox/features/topik/domain/models/topik_text_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 const String _nonBreakingSpace = '\u00A0';
@@ -86,6 +87,11 @@ extension TopikLabels on AppLocalizations {
   /// "0.75" ("0,75" in Vietnamese).
   String topikSpeedText(double speed) =>
       NumberFormat('0.##', localeName).format(speed);
+
+  /// A translation of the content in the UI language (Korean is never
+  /// translated: this is the content's own vi or en text).
+  String topikText(TopikText text) =>
+      localeName.startsWith('vi') ? text.vi : text.en;
 }
 
 /// An audio position as minutes and seconds, "1:33" (spec §5.5); the
