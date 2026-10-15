@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/l10n/l10n_context.dart';
 
@@ -49,9 +50,9 @@ class RecallCountdownBarWidget extends StatelessWidget {
       excludeSemantics: true,
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          context.dimens.space16,
+          context.screenMargin,
           0,
-          context.dimens.space16,
+          context.screenMargin,
           context.dimens.space12,
         ),
         child: Column(

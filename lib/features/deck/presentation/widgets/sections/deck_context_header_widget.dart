@@ -6,6 +6,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Where a card operation writes: the deck's path ending in the deck and the
 /// operation, so the deck is named once (critique 2026-09-30). It is not a
@@ -56,9 +57,9 @@ class _LoadingHeader extends StatelessWidget {
       child: MxSkeletonPulse(
         child: Padding(
           padding: EdgeInsets.fromLTRB(
-            context.dimens.space16,
+            context.screenMargin,
             context.dimens.space8,
-            context.dimens.space16,
+            context.screenMargin,
             context.dimens.space8,
           ),
           child: const Align(

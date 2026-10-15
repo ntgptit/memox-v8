@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The centred overline under the session's top bar naming deck, kind,
 /// stage and mode (kit SessionContextLine). Study-local, not shared: it
@@ -25,9 +26,9 @@ class SessionContextLineWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.fromLTRB(
-      context.dimens.space16,
+      context.screenMargin,
       0,
-      context.dimens.space16,
+      context.screenMargin,
       context.dimens.space16,
     ),
     child: Text(

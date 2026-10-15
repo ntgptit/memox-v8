@@ -16,6 +16,7 @@ import 'package:memox/shared/widgets/mx_fab.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The roots with today's work first (UC-DECK-003). Its chrome follows
 /// `libraryRootProvider` (The Content Gate Rule, DESIGN.md).
@@ -106,9 +107,9 @@ class DeckLibraryRootWidget extends ConsumerWidget {
           if (hasDecks && !isReordering)
             Padding(
               padding: EdgeInsets.fromLTRB(
-                context.dimens.space16,
+                context.screenMargin,
                 context.dimens.space4,
-                context.dimens.space16,
+                context.screenMargin,
                 context.dimens.space8,
               ),
               child: MxSearchField.trigger(

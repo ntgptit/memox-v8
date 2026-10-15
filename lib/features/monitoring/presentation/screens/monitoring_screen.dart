@@ -14,6 +14,7 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Screen 28, Monitoring (ADR-018 §8): the admin reads the app's logs and
 /// triages them. Not in the kit; shaped with Impeccable 2026-09-29. Two
@@ -82,9 +83,9 @@ class _MonitoringScreenState extends ConsumerState<MonitoringScreen> {
         children: [
           Padding(
             padding: EdgeInsets.fromLTRB(
-              context.dimens.space16,
+              context.screenMargin,
               context.dimens.space8,
-              context.dimens.space16,
+              context.screenMargin,
               0,
             ),
             child: MxSegmentedTray<MonitoringTab>(
