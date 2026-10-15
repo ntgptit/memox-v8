@@ -79,3 +79,11 @@ Finder findPlainText(String text) => find.byWidgetPredicate(
       widget is Text &&
       widget.data?.replaceAll('\u00A0', ' ').replaceAll('\u2060', '') == text,
 );
+
+/// [findPlainText] for a [Text] whose plain reading contains [text].
+Finder findPlainTextContaining(String text) => find.byWidgetPredicate(
+  (widget) =>
+      widget is Text &&
+      (widget.data?.replaceAll('\u00A0', ' ').replaceAll('\u2060', '') ?? '')
+          .contains(text),
+);
