@@ -164,13 +164,13 @@ override — that is exactly where seeded guarantees stop applying.
 
 ```bash
 # hardcoded colours in feature code
-grep -rnE 'Colors\.[a-z]|Color\(0x' lib/features lib/shared
+rg -n 'Colors\.[a-z]|Color\(0x' lib/features lib/shared
 
 # hardcoded text styles
-grep -rn 'TextStyle(' lib/features
+rg -nF 'TextStyle(' lib/features
 
 # raw padding values
-grep -rnE 'EdgeInsets\.(all|symmetric|only)\([^)]*[0-9]' lib/features
+rg -n 'EdgeInsets\.(all|symmetric|only)\([^)]*[0-9]' lib/features
 ```
 
 Hits in `core/theme/` are expected and fine — that is where the values are

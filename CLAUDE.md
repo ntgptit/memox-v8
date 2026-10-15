@@ -66,6 +66,13 @@ Each layer answers one question; none takes over another's.
 Do not add another store. Anything meant to outlive a session and bind the
 project goes into the repo through a PR.
 
+## Searching code
+
+Search the repository with ripgrep: `rg` (or the Grep and Glob tools, which
+run it), never `grep -r`, `git grep`, `find` or `Select-String`, scoped to the
+relevant paths and types, and every reference found before a change
+([docs/agent/code-search.md](docs/agent/code-search.md)).
+
 ## The gate
 
 - `bash .claude/skills/flutter-workflow/scripts/dod_check.sh` is the gate:
