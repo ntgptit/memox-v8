@@ -88,8 +88,10 @@ loader and the gate's lint run the same code (§4.3).
 `AnswerTopikQuestionUseCase`, `MoveTopikQuestionUseCase` (records time and the
 current question), `RecordTopikTimeUseCase` (background, exit),
 `SubmitTopikAttemptUseCase`, `DeleteTopikAttemptUseCase`,
-`WatchTopikSummaryUseCase`, `WatchTopikReviewUseCase`. Exact names are fixed by
-the plan.
+`WatchTopikSummaryUseCase`, `WatchTopikReviewUseCase`, as built in
+`lib/features/topik/domain/usecases/` (plan `2026-10-15-topik-statistics-use-cases.md`).
+Start new is `StartTopikAttemptUseCase(…, replaceInProgress: true)`; a test the
+catalog no longer has is refused `testUnavailable` (BR-TOPIK-019).
 
 ## 4. Content
 

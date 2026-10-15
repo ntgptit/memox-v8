@@ -1477,16 +1477,15 @@
   },
   "commonDurationSeconds": "{seconds}s",
   "@commonDurationSeconds": {
-    "description": "A duration under a minute (BR-TOPIK-025).",
     "placeholders": {
       "seconds": {
         "type": "int"
       }
-    }
+    },
+    "description": "A duration under a minute (BR-TOPIK-025)."
   },
   "commonDurationMinutes": "{minutes}m {seconds}s",
   "@commonDurationMinutes": {
-    "description": "A duration under an hour; seconds is two digits (BR-TOPIK-025).",
     "placeholders": {
       "minutes": {
         "type": "int"
@@ -1494,11 +1493,11 @@
       "seconds": {
         "type": "String"
       }
-    }
+    },
+    "description": "A duration under an hour; seconds is two digits (BR-TOPIK-025)."
   },
   "commonDurationHours": "{hours}h {minutes}m {seconds}s",
   "@commonDurationHours": {
-    "description": "A duration of an hour or more; minutes and seconds are two digits (BR-TOPIK-025).",
     "placeholders": {
       "hours": {
         "type": "int"
@@ -1509,7 +1508,8 @@
       "seconds": {
         "type": "String"
       }
-    }
+    },
+    "description": "A duration of an hour or more; minutes and seconds are two digits (BR-TOPIK-025)."
   },
   "trashWasIn": "Was in {path}",
   "@trashWasIn": {
