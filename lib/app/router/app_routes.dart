@@ -31,8 +31,14 @@ abstract final class AppRoutes {
   static const String topikTestChild = 'test/:$topikTestIdParam';
   static String topikTest(String testId) => '$topik/test/$testId';
 
-  /// An attempt (screen 37), its Summary (38) and its Review (39): routes of
-  /// plans 6b and 6c; screen 36 already leads there.
+  /// The path parameter that names an attempt.
+  static const String topikAttemptIdParam = 'attemptId';
+
+  /// An attempt (screen 37), relative to [topik]; on the root navigator.
+  static const String topikAttemptChild = 'attempt/:$topikAttemptIdParam';
+
+  /// An attempt (screen 37), its Summary (38) and its Review (39); 38 and
+  /// 39 are plan 6c's routes, and land on the not-found screen until then.
   static String topikAttempt(String attemptId) => '$topik/attempt/$attemptId';
   static String topikSummary(String attemptId) =>
       '${topikAttempt(attemptId)}/summary';
