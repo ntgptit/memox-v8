@@ -7,6 +7,7 @@ import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/presentation/screens/topik_attempt_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_home_screen.dart';
+import 'package:memox/features/topik/presentation/screens/topik_review_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_summary_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_detail_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_list_screen.dart';
@@ -34,6 +35,22 @@ GoRoute topikRoute(GlobalKey<NavigatorState> rootNavigator) => GoRoute(
             context.push(AppRoutes.topikReview(id, questionNo: no)),
           ),
           onDone: () => _leave(context),
+        );
+      },
+    ),
+    // An attempt's Review (spec §8): `?q=` opens a question.
+    GoRoute(
+      path: AppRoutes.topikReviewChild,
+      parentNavigatorKey: rootNavigator,
+      builder: (context, state) {
+        final id = state.pathParameters[AppRoutes.topikAttemptIdParam]!;
+        return TopikReviewScreen(
+          attemptId: id,
+          initialQuestionNo: int.tryParse(
+            state.uri.queryParameters[AppRoutes.topikReviewQuestionParam] ?? '',
+          ),
+          onBack: () => _leave(context),
+          onBackToSummary: () => context.go(AppRoutes.topikSummary(id)),
         );
       },
     ),

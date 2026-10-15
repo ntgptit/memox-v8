@@ -8,6 +8,7 @@ import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/di/topik_audio_repository_provider.dart';
 import 'package:memox/features/topik/presentation/screens/topik_home_screen.dart';
+import 'package:memox/features/topik/presentation/screens/topik_review_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_summary_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_detail_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_list_screen.dart';
@@ -174,5 +175,29 @@ void main() {
     expect(find.byType(TopikAttemptScreen), findsNothing);
     await _tap(tester, find.text(_en.topikDone));
     expect(find.byType(TopikTestDetailScreen), findsOneWidget);
+  });
+
+  libraryTest('from the summary a row opens Review at its question; Back '
+      'returns to the summary (UC-TOPIK-004 step 7)', (tester, env) async {
+    final tests = topikScreenTests();
+    final done = await topikSeedSubmitted(env, tests.first);
+    await pumpMemoxApp(tester, env, overrides: topikContentOverrides(tests));
+    await _go(tester, AppRoutes.topikSummary(done.id));
+    expect(find.byType(TopikSummaryScreen), findsOneWidget);
+
+    // The rows sit below the hero, the figures and the chart.
+    await tester.scrollUntilVisible(
+      find.text(_en.topikQuestionTitle(33)),
+      300,
+      scrollable: find.byWidgetPredicate(
+        (widget) =>
+            widget is Scrollable && widget.axisDirection == AxisDirection.down,
+      ),
+    );
+    await _tap(tester, find.text(_en.topikQuestionTitle(33)));
+    expect(find.byType(TopikReviewScreen), findsOneWidget);
+    expect(find.text(_en.topikReviewTitle(33, 70)), findsOneWidget);
+    await _tap(tester, find.byTooltip(_en.commonBack));
+    expect(find.byType(TopikSummaryScreen), findsOneWidget);
   });
 }
