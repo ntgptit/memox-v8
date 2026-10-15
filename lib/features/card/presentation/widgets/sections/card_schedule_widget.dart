@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
@@ -187,7 +188,7 @@ class _BoxRamp extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: index <= box
                       ? colors.primary
-                      : colors.surfaceContainerHigh,
+                      : MasteryRamp.track(colors),
                   borderRadius: BorderRadius.circular(
                     (index == box ? _currentBarHeight : _barHeight) / 2,
                   ),

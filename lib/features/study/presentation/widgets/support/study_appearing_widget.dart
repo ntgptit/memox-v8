@@ -49,7 +49,9 @@ class _HiddenBar extends StatelessWidget {
       size: _size,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: context.colors.surfaceContainerHigh,
+          // One step off the face it sits on (cardSurface or the recessed
+          // ground), where surfaceContainerHigh equals cardSurface in dark.
+          color: context.colors.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(_size.height / 2),
         ),
       ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_stacked_day_bars.dart';
 
 import '../../support/widget_harness.dart';
@@ -69,6 +72,30 @@ void main() {
     );
 
     expect(baseline, findsOneWidget);
+  });
+
+  testWidgets('the empty-day mark is the progress track, visible on the card '
+      'it sits in, light and dark', (tester) async {
+    for (final (brightness, scheme, mx) in [
+      (Brightness.light, lightColorScheme, MxColorsExtension.light),
+      (Brightness.dark, darkColorScheme, MxColorsExtension.dark),
+    ]) {
+      await pumpMx(
+        tester,
+        MxCard(child: _chart([_day('F', 0, 0), _day('S', 3, 0)])),
+        brightness: brightness,
+      );
+      await tester.pump(const Duration(milliseconds: 400));
+      final baseline = tester.widget<Container>(
+        find.byWidgetPredicate(
+          (widget) => widget is Container && widget.constraints?.maxHeight == 2,
+        ),
+      );
+      final mark = (baseline.decoration! as BoxDecoration).color;
+
+      expect(mark, MasteryRamp.track(scheme), reason: '$brightness');
+      expect(mark, isNot(mx.cardSurface), reason: '$brightness');
+    }
   });
 
   testWidgets('each bar is one TalkBack node; labels and legend say nothing '

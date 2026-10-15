@@ -115,7 +115,8 @@ class _Rows extends ConsumerWidget {
   final String? selfId;
   final ValueChanged<ManagedUser> onOpenUser;
 
-  /// The next page loads while this many rows are still below the fold.
+  /// The next page loads while this many rows (two-line list rows) are still
+  /// below the fold.
   static const int _prefetchRows = 10;
 
   @override
@@ -126,7 +127,7 @@ class _Rows extends ConsumerWidget {
         if (loaded.more == UsersMore.idle &&
             loaded.next != null &&
             notification.metrics.extentAfter <
-                _prefetchRows * context.dimens.sizeControl) {
+                _prefetchRows * context.dimens.sizeListRowTwoLine) {
           unawaited(controller.loadMore());
         }
         return false;

@@ -150,7 +150,8 @@ class _Rows extends ConsumerWidget {
   final LogStatus? statusShownByFilter;
   final ValueChanged<String> onOpenLog;
 
-  /// The next page loads while this many rows are still below the fold.
+  /// The next page loads while this many rows (two-line list rows) are still
+  /// below the fold.
   static const int _prefetchRows = 10;
 
   @override
@@ -169,7 +170,7 @@ class _Rows extends ConsumerWidget {
         if (loaded.more == MonitoringMore.idle &&
             hasMore &&
             notification.metrics.extentAfter <
-                _prefetchRows * context.dimens.sizeControl) {
+                _prefetchRows * context.dimens.sizeListRowTwoLine) {
           unawaited(controller.loadMore());
         }
         return false;

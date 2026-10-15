@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// One series of an MxStackedDayBars: its legend label and its fill.
@@ -131,7 +132,7 @@ class MxStackedDayBars extends StatelessWidget {
               Container(
                 height: _emptyHeight,
                 decoration: BoxDecoration(
-                  color: context.colors.surfaceContainerHigh,
+                  color: MasteryRamp.track(context.colors),
                   borderRadius: BorderRadius.all(round),
                 ),
               ),
