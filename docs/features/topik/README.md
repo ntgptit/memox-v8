@@ -1,6 +1,6 @@
 ---
 feature: topik
-code: [lib/features/topik/domain, lib/features/topik/data, lib/features/topik/di, lib/core/database/tables/topik.drift, lib/core/database/queries/topik_queries.drift, tools/topik]
+code: [lib/features/topik/domain, lib/features/topik/data, lib/features/topik/di, lib/core/database/tables/topik.drift, lib/core/database/queries/topik_queries.drift, lib/core/database/queries/sync_topik_attempt_queries.drift, tools/topik]
 depends_on: []
 ---
 ## Phạm vi

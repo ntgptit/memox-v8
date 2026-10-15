@@ -14,6 +14,7 @@ import 'package:memox/core/sync/sync_store.dart';
 import 'package:memox/features/srs/data/datasources/review_log_sync_dao.dart';
 import 'package:memox/features/tags/data/datasources/tag_sync_dao.dart';
 import 'package:memox/features/settings/data/datasources/settings_dao.dart';
+import 'package:memox/features/topik/data/datasources/topik_attempt_sync_dao.dart';
 
 /// The synced tables the app ships, parent before child: the list order is
 /// the push and the apply order (DEV-173).
@@ -29,6 +30,7 @@ List<EntitySyncAdapter> appSyncAdaptersOf(
   CardScheduleSyncDao(db, store, now: now),
   ReviewLogSyncDao(db),
   AccountSettingsSyncDao(db),
+  TopikAttemptSyncDao(db),
 ];
 
 /// [appSyncAdaptersOf] over the app's database, store and clock.

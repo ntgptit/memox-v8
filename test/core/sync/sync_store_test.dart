@@ -190,6 +190,10 @@ void main() {
         "INSERT INTO tags (id, name, name_folded, created_at) VALUES ('t', 'T', 't', 0)",
         "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, answer_count, lapse_count, current_box) VALUES ('K', 'eight_box', 1, 1, 1, 0, 1)",
         "INSERT INTO review_log (id, card_id, session_id, scheduler_type, generation, kind, mode, \"action\", answered_at) VALUES ('V', 'K', 's', 'eight_box', 1, 'learning', 'self_assess', 'remembered', 1)",
+        "INSERT INTO topik_attempt (id, test_id, level, section, round, mode, status, started_at, updated_at, current_question_no, question_count, max_score, content_version) VALUES ('TA', 'topik2-96-reading', 'topik2', 'reading', 96, 'practice', 'in_progress', 0, 0, 1, 1, 2, 1), ('TB', 'topik2-96-listening', 'topik2', 'listening', 96, 'practice', 'in_progress', 0, 0, 1, 1, 2, 1)",
+        "INSERT INTO topik_attempt_answer (attempt_id, question_no) VALUES ('TA', 1), ('TB', 1)",
+        "UPDATE topik_attempt_answer SET correct_idx = 1, points = 2, points_earned = 0, question_type = 'L2_picture' WHERE attempt_id = 'TB'",
+        "UPDATE topik_attempt SET status = 'completed', completed_at = 5, updated_at = 5, score = 0, correct_count = 0, answered_count = 0 WHERE id = 'TB'",
       ]) {
         await db.customStatement(sql);
       }
@@ -218,11 +222,12 @@ void main() {
         'card:K:upsert',
         'card_schedule:K:upsert',
         'review_log:V:upsert',
+        'topik_attempt:TB:upsert',
         'account_settings:00000000-0000-0000-0000-000000000000:upsert',
       ],
     );
     expect(await store.since(), 0);
-    expect(await store.pendingCount(), 8);
+    expect(await store.pendingCount(), 9);
   });
 
   // The chain a local write takes to a sync run starts here (app deck-sync

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(84);
+select plan(86);
 
 -- Auth spec 2026-09-30 §2 (20261010000000_accounts.sql).
 create function public.t_user(p_id uuid, p_email text, p_anonymous boolean) returns uuid
@@ -8,13 +8,14 @@ create function public.t_user(p_id uuid, p_email text, p_anonymous boolean) retu
   insert into auth.users (id, email, is_anonymous) values (p_id, p_email, p_anonymous) returning id $$;
 
 -- One user's whole library, written as postgres: root and child deck, a card tagged p_tag,
--- a review, a schedule, a trash batch, settings when asked, a log. Versions come from the
+-- a review, a schedule, a trash batch, a submitted TOPIK attempt with one answer, settings when asked,
+-- a log. Versions come from the
 -- user's counter, as sync_push would take them.
 create function public.t_seed(p_user uuid, p_tag text, p_settings boolean) returns void
   language plpgsql as $$
 declare
-  v_top bigint := private.allocate_versions(p_user, 8);
-  v_base bigint := v_top - 8;
+  v_top bigint := private.allocate_versions(p_user, 9);
+  v_base bigint := v_top - 9;
   v_root uuid := md5(p_user::text || 'root')::uuid;
   v_child uuid := md5(p_user::text || 'child')::uuid;
   v_card uuid := md5(p_user::text || 'card')::uuid;
@@ -44,6 +45,14 @@ begin
   insert into public.delete_batch (id, user_id, item_type, root_item_id, deleted_at, server_version,
     last_device_id)
   values (md5(p_user::text || 'batch')::uuid, p_user, 'deck', v_root, now(), v_base + 7, v_dev);
+  insert into public.topik_attempt (id, user_id, test_id, level, section, round, mode, status, started_at,
+    completed_at, updated_at, total_time_ms, current_question_no, question_count, max_score, score,
+    correct_count, answered_count, content_version, server_version, last_device_id)
+  values (md5(p_user::text || 'topik')::uuid, p_user, 'topik2-96-reading', 'topik2', 'reading', 96,
+    'practice', 'completed', now(), now(), now(), 1000, 1, 1, 2, 2, 1, 1, 1, v_base + 9, v_dev);
+  insert into public.topik_attempt_answer (attempt_id, question_no, selected_idx, time_spent_ms, answered_at,
+    correct_idx, points, points_earned, question_type)
+  values (md5(p_user::text || 'topik')::uuid, 1, 2, 1000, now(), 2, 2, 2, 'R2_fill_blank');
   if p_settings then
     insert into public.account_settings (user_id, card_limit, new_card_order, theme_mode, language,
       updated_at, server_version, last_device_id)
@@ -63,6 +72,7 @@ create function public.t_owned(p_user uuid) returns int language sql as $$
     + (select count(*) from public.card_schedule where user_id = p_user)
     + (select count(*) from public.delete_batch where user_id = p_user)
     + (select count(*) from public.account_settings where user_id = p_user)
+    + (select count(*) from public.topik_attempt where user_id = p_user)
     + (select count(*) from public.user_sync_version where user_id = p_user)
     + (select count(*) from public.app_log where user_id = p_user))::int $$;
 
@@ -129,7 +139,7 @@ select public.t_seed('12000000-0000-0000-0000-000000000005', 'Noun', true);
 select lives_ok($$ delete from auth.users where id = '12000000-0000-0000-0000-000000000004' $$,
   'a user who owns a whole library can be deleted');
 select is(public.t_owned('12000000-0000-0000-0000-000000000004'), 0, 'nothing of it is left');
-select is(public.t_owned('12000000-0000-0000-0000-000000000005'), 10, 'another user keeps all of theirs');
+select is(public.t_owned('12000000-0000-0000-0000-000000000005'), 11, 'another user keeps all of theirs');
 
 -- An access token outlives its user (spec §10): sync_push refuses the whole call for want of
 -- a profile (DEV-192, 14_sync_requires_profile.sql), and nothing is stored.
@@ -251,9 +261,10 @@ select is(public.account_merge(current_setting('t.token')::uuid, '12000000-0000-
 select throws_ok($$ select public.account_merge(current_setting('t.token')::uuid,
   '12000000-0000-0000-0000-0000000000c2') $$, 'P0001', 'CLAIM_INVALID',
   'a used token with another operation is refused');
--- Moved: the batch, two decks, the tombstoned tag, the card, its schedule and its review (the
--- live "Verb" merged into the account's tag and the settings gave way to the account's).
-select is(jsonb_array_length(public.sync_changes(current_setting('t.top')::bigint, 500)->'changes'), 7,
+-- Moved: the batch, two decks, the tombstoned tag, the card, its schedule, its review and the
+-- TOPIK attempt (the live "Verb" merged into the account's tag and the settings gave way to the
+-- account's).
+select is(jsonb_array_length(public.sync_changes(current_setting('t.top')::bigint, 500)->'changes'), 8,
   'the moved rows reach the account''s other devices as new changes');
 select set_config('request.jwt.claims', jsonb_build_object('sub', '12000000-0000-0000-0000-000000000013',
   'role', 'authenticated')::text, true);
@@ -269,6 +280,12 @@ select ok(not exists (select 1 from auth.users where id = '12000000-0000-0000-00
 select is(public.t_owned('12000000-0000-0000-0000-000000000011'), 0, 'it owns nothing any more');
 select is((select count(*)::int from public.deck where user_id = '12000000-0000-0000-0000-000000000012'), 4,
   'the account has both libraries');
+select is((select count(*)::int from public.topik_attempt where user_id = '12000000-0000-0000-0000-000000000012'), 2,
+  'the account has both users'' TOPIK attempts');
+select is((select count(*)::int from public.topik_attempt_answer x
+    join public.topik_attempt a on a.id = x.attempt_id
+  where a.user_id = '12000000-0000-0000-0000-000000000012'), 2,
+  'and their answers with them');
 select is((select count(*)::int from public.tags where user_id = '12000000-0000-0000-0000-000000000012'
   and deleted_at is null and name_folded = 'verb'), 1, 'live tags with the same name become one');
 select is((select tag_id from public.card_tags

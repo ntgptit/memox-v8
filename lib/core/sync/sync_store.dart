@@ -207,6 +207,7 @@ class SyncStore extends DatabaseAccessor<AppDatabase> with _$SyncStoreMixin {
     await seedCardOutbox();
     await seedCardScheduleOutbox();
     await seedReviewLogOutbox();
+    await seedTopikAttemptOutbox();
     await seedAccountSettingsOutbox(accountSettingsEntityId, appSettingsRowId);
     await setSince(0);
   });
