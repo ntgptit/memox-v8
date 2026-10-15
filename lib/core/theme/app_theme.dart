@@ -58,6 +58,7 @@ ThemeData _build({
     progressIndicatorTheme: progressIndicatorTheme(tokens),
     chipTheme: chipTheme(tokens),
     switchTheme: switchTheme(tokens),
+    segmentedButtonTheme: segmentedButtonTheme(tokens),
     inputDecorationTheme: inputDecorationTheme(tokens),
     dialogTheme: dialogTheme(tokens),
     bottomSheetTheme: bottomSheetTheme(tokens),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/focus_ring_border.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
@@ -287,3 +288,77 @@ SwitchThemeData switchTheme(ThemeTokens t) {
     }),
   );
 }
+
+/// The Material 3 segmented button (`MxSegmentedTray` is a `SegmentedButton`):
+/// a stadium 40 tall (in a 48 touch band) with a `strokeHairline` `outline`
+/// edge round and between the segments, the `labelLarge` label and an 18 check
+/// before the chosen one. The chosen label takes the accent colour and the
+/// others `onSurface`; tokens keep `secondaryContainer` off buttons, so no
+/// segment is filled. Disabled, the label is 38% and the edge 12%. State
+/// layers are the label colour at the hover, pressed and focus opacities, and
+/// the focus ring rides on the shape, offset like a button's.
+SegmentedButtonThemeData segmentedButtonTheme(ThemeTokens t) {
+  final dimens = t.dimens;
+  final selected = WidgetState.selected;
+  final disabled = WidgetState.disabled;
+  Color labelColor(Set<WidgetState> states) {
+    if (states.contains(disabled)) {
+      return t.onSurfaceAt(dimens.opacityDisabledContent);
+    }
+    return states.contains(selected) ? t.accent : t.scheme.onSurface;
+  }
+
+  return SegmentedButtonThemeData(
+    selectedIcon: const Icon(AppIcons.check),
+    style: ButtonStyle(
+      padding: WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: dimens.space12),
+      ),
+      iconSize: WidgetStatePropertyAll(dimens.sizeIconButton),
+      tapTargetSize: MaterialTapTargetSize.padded,
+      elevation: const WidgetStatePropertyAll(0),
+      textStyle: WidgetStatePropertyAll(t.texts.labelLarge),
+      foregroundColor: WidgetStateProperty.resolveWith(labelColor),
+      iconColor: WidgetStateProperty.resolveWith(labelColor),
+      overlayColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(disabled)) return null;
+        final color = labelColor(states);
+        if (states.contains(WidgetState.pressed)) {
+          return color.withValues(alpha: dimens.opacityPressed);
+        }
+        if (states.contains(WidgetState.focused)) {
+          return color.withValues(alpha: dimens.opacityFocus);
+        }
+        if (states.contains(WidgetState.hovered)) {
+          return color.withValues(alpha: dimens.opacityHover);
+        }
+        return null;
+      }),
+      side: WidgetStateProperty.resolveWith(
+        (states) => BorderSide(
+          color: states.contains(disabled)
+              ? t.onSurfaceAt(dimens.opacityDisabledContainer)
+              : t.scheme.outline,
+          width: dimens.strokeHairline,
+        ),
+      ),
+      shape: segmentedButtonShape(t, t.stadium),
+    ),
+  );
+}
+
+/// The segmented button's outline, with the focus ring when a segment holds
+/// the keyboard focus. [base] is a stadium in a row; the stacked column takes
+/// a rounded rectangle instead, since a stadium round a tall column bulges.
+WidgetStateProperty<OutlinedBorder> segmentedButtonShape(
+  ThemeTokens t,
+  OutlinedBorder base,
+) => WidgetStateProperty.resolveWith(
+  (states) => MxFocusRingBorder(
+    base: base,
+    ring: states.contains(WidgetState.focused)
+        ? BorderSide(color: t.scheme.primary, width: t.dimens.strokeFocus)
+        : BorderSide.none,
+    gap: t.dimens.strokeFocusGap,
+  ),
+);

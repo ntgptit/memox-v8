@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/focus_ring_border.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
@@ -245,6 +246,63 @@ void main() {
           scheme.onSurface.withValues(alpha: dimens.opacityDisabledContainer),
         );
         expect(sw.materialTapTargetSize, MaterialTapTargetSize.padded);
+      });
+
+      // MxSegmentedTray is a Material SegmentedButton that reads this theme.
+      // Tokens keep secondaryContainer off buttons, so no segment is filled.
+      test('segmented button: outline edge, accent label, check, no fill', () {
+        final seg = theme.segmentedButtonTheme;
+        final style = seg.style!;
+        final accent = name == 'light'
+            ? scheme.primary
+            : scheme.primaryFixedDim;
+        const chosen = {WidgetState.selected};
+
+        expect(style.foregroundColor!.resolve(chosen), accent);
+        expect(style.foregroundColor!.resolve({}), scheme.onSurface);
+        expect(
+          style.foregroundColor!.resolve({WidgetState.disabled}),
+          scheme.onSurface.withValues(alpha: dimens.opacityDisabledContent),
+        );
+        expect(style.backgroundColor, isNull);
+        expect(style.side!.resolve({})?.color, scheme.outline);
+        expect(style.side!.resolve({})?.width, dimens.strokeHairline);
+        expect(
+          style.side!.resolve({WidgetState.disabled})?.color,
+          scheme.onSurface.withValues(alpha: dimens.opacityDisabledContainer),
+        );
+        expect(style.iconSize!.resolve({}), dimens.sizeIconButton);
+        expect(style.tapTargetSize, MaterialTapTargetSize.padded);
+        expect(style.textStyle!.resolve({}), theme.textTheme.labelLarge);
+        expect((seg.selectedIcon! as Icon).icon, AppIcons.check);
+      });
+
+      test('segmented button: state layers and the offset focus ring', () {
+        final style = theme.segmentedButtonTheme.style!;
+        final accent = name == 'light'
+            ? scheme.primary
+            : scheme.primaryFixedDim;
+
+        expect(
+          style.overlayColor!.resolve({WidgetState.pressed}),
+          scheme.onSurface.withValues(alpha: dimens.opacityPressed),
+        );
+        expect(
+          style.overlayColor!.resolve({
+            WidgetState.selected,
+            WidgetState.hovered,
+          }),
+          accent.withValues(alpha: dimens.opacityHover),
+        );
+        expect(style.overlayColor!.resolve({WidgetState.disabled}), isNull);
+        final resting = style.shape!.resolve({}) as MxFocusRingBorder;
+        final focused =
+            style.shape!.resolve({WidgetState.focused}) as MxFocusRingBorder;
+        expect(resting.base, isA<StadiumBorder>());
+        expect(resting.ring, BorderSide.none);
+        expect(focused.ring.color, scheme.primary);
+        expect(focused.ring.width, dimens.strokeFocus);
+        expect(focused.gap, dimens.strokeFocusGap);
       });
 
       test('dialog, sheet and snack bar carry their tokens', () {
