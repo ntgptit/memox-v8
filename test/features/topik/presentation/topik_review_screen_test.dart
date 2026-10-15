@@ -119,6 +119,45 @@ void main() {
     expect(exits.backs, 1);
   });
 
+  libraryTest('a filter opens its first question, even when the one shown is '
+      'in it (UC-TOPIK-005 A3)', (tester, env) async {
+    final done = await topikSeedSubmitted(
+      env,
+      reading,
+      answers: mixed(reading),
+    );
+    await pump(tester, env, done.id, questionNo: 5);
+    expect(find.text('Review · 5 / 50'), findsOneWidget);
+
+    final unanswered = find.widgetWithText(MxFilterChip, 'Unanswered');
+    await tester.ensureVisible(unanswered);
+    await tester.tap(unanswered);
+    await tester.pumpAndSettle();
+    expect(find.text('Review · 4 / 50'), findsOneWidget);
+  });
+
+  libraryTest('the selected filter tapped again keeps the place', (
+    tester,
+    env,
+  ) async {
+    final done = await topikSeedSubmitted(
+      env,
+      reading,
+      answers: mixed(reading),
+    );
+    await pump(tester, env, done.id);
+
+    final wrong = find.widgetWithText(MxFilterChip, 'Wrong');
+    await tester.tap(wrong);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Next'));
+    await tester.pumpAndSettle();
+    expect(find.text('Review · 3 / 50'), findsOneWidget);
+    await tester.tap(wrong);
+    await tester.pumpAndSettle();
+    expect(find.text('Review · 3 / 50'), findsOneWidget);
+  });
+
   libraryTest('a filter with no question cannot be picked', (
     tester,
     env,

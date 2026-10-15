@@ -61,10 +61,14 @@ void main() {
 
   /// Scrolls the screen's body (the vertical scroll) until [finder] shows:
   /// the rows sit below the hero, the figures and the chart.
-  Future<void> reveal(WidgetTester tester, Finder finder) async {
+  Future<void> reveal(
+    WidgetTester tester,
+    Finder finder, {
+    double delta = 300,
+  }) async {
     await tester.scrollUntilVisible(
       finder,
-      300,
+      delta,
       scrollable: find.byWidgetPredicate(
         (widget) =>
             widget is Scrollable && widget.axisDirection == AxisDirection.down,
@@ -121,9 +125,41 @@ void main() {
     await tester.tap(find.widgetWithText(MxFilterChip, 'Wrong'));
     await tester.pumpAndSettle();
     await reveal(tester, find.text('No wrong answers'));
+    final unanswered = find.widgetWithText(MxFilterChip, 'Unanswered');
+    await reveal(tester, unanswered, delta: -300);
+    await tester.ensureVisible(unanswered);
+    await tester.tap(unanswered);
+    await tester.pumpAndSettle();
+    expect(find.text('No unanswered questions'), findsOneWidget);
+
+    // Another filter with rows leaves the empty state (filterEmpty → loaded).
+    final all = find.widgetWithText(MxFilterChip, 'All');
+    await tester.ensureVisible(all);
+    await tester.tap(all);
+    await tester.pumpAndSettle();
+    expect(find.text('No unanswered questions'), findsNothing);
+    await reveal(tester, find.text('Question 1'));
     // MxSection paints its title upper-case.
     await reveal(tester, find.text('BY QUESTION TYPE'));
     expect(find.text('Weakest'), findsNothing);
+  });
+
+  libraryTest('a zero result: Wrong and Correct are empty and say so '
+      '(BR-TOPIK-023, UC-TOPIK-004 A1)', (tester, env) async {
+    final zero = await topikSeedSubmitted(env, reading, answers: const {});
+    await pump(tester, env, zero.id);
+
+    for (final (chip, empty) in [
+      ('Correct', 'No correct answers yet'),
+      ('Wrong', 'No wrong answers'),
+    ]) {
+      final filter = find.widgetWithText(MxFilterChip, chip);
+      await reveal(tester, filter);
+      await tester.ensureVisible(filter);
+      await tester.tap(filter);
+      await tester.pumpAndSettle();
+      expect(find.text(empty), findsOneWidget);
+    }
   });
 
   libraryTest('the eye hides the right answers, and shows them again '

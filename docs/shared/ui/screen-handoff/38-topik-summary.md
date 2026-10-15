@@ -48,8 +48,8 @@ BR-TOPIK-019, BR-TOPIK-023…BR-TOPIK-025). Shape: the [TOPIK spec](../../../sup
 | 37 | Submit | loaded (37 replaced in the stack) | UC-TOPIK-003 step 6. VERIFIED `topik_routes_test.dart::Submit on 37 replaces it with the summary; Done lands on the test (UC-TOPIK-003 step 6)` |
 | loading | read done | loaded | UC-TOPIK-004. VERIFIED `topik_summary_screen_test.dart::the result from the snapshot: score, rows per question; a row, Review answers and Done lead out (UC-TOPIK-004)` |
 | loaded | filter chip | loaded, chart and rows filtered | UC-TOPIK-004 step 5. VERIFIED `::a filter narrows the chart and the rows; an empty one says so (UC-TOPIK-004 step 5, A1)` |
-| loaded | filter with no rows | filterEmpty | UC-TOPIK-004 A1. VERIFIED same test, `::a perfect result: Wrong is empty and says so; no weakest type (BR-TOPIK-024)` |
-| filterEmpty | another filter | loaded | UC-TOPIK-004 step 5. VERIFIED `::a filter narrows the chart and the rows; an empty one says so (UC-TOPIK-004 step 5, A1)` |
+| loaded | filter with no rows | filterEmpty | UC-TOPIK-004 A1. VERIFIED `::a perfect result: Wrong is empty and says so; no weakest type (BR-TOPIK-024)` (Wrong, Unanswered), `::a zero result: Wrong and Correct are empty and say so (BR-TOPIK-023, UC-TOPIK-004 A1)` |
+| filterEmpty | another filter with rows | loaded | UC-TOPIK-004 step 5. VERIFIED `::a perfect result: Wrong is empty and says so; no weakest type (BR-TOPIK-024)` (Unanswered → All) |
 | loaded | eye | correctHidden, and back | UC-TOPIK-004 step 6. VERIFIED `::the eye hides the right answers, and shows them again (UC-TOPIK-004 step 6)` |
 | loaded | answer row / Review answers | 39 at that question / at the first | UC-TOPIK-004 step 7. VERIFIED `::the result from the snapshot: …`, `topik_routes_test.dart::from the summary a row opens Review at its question; Back returns to the summary (UC-TOPIK-004 step 7)` |
 | loaded | chart bar | 39 at that question | S4. VERIFIED `topik_summary_widgets_test.dart::the chart: a bar per question with its real number, one node each, and a tap opens it (critique S4)` (the callback); the route is the row's |
@@ -57,7 +57,7 @@ BR-TOPIK-019, BR-TOPIK-023…BR-TOPIK-025). Shape: the [TOPIK spec](../../../sup
 | any | attempt deleted elsewhere | attemptMissing | UC-TOPIK-004 E1. VERIFIED `::the attempt deleted elsewhere: missing, Back to the test (UC-TOPIK-004 E1)` |
 | any | account switched | attemptMissing | UC-TOPIK-004 E1, BR-TOPIK-027. UNVERIFIED on this screen: the switch clears the store (`LocalDataReset`) and the stream emits null, the path the delete row exercises; no screen test drives a switch (as on 36 and 37) |
 | deep link | attempt still in progress | attemptMissing | UC-TOPIK-004. VERIFIED `::an attempt in progress has no summary` |
-| error | Retry | loading → loaded | S10. VERIFIED `::a read that fails: Retry reads again` |
+| error | Retry | error (retrying) → the state of the next read | S10. VERIFIED `::a read that fails: Retry reads again` (the second read lands on attemptMissing; the error stays up with its retry in progress, no skeleton) |
 | attemptMissing | Back to the test | 36 (or TOPIK when opened alone) | navigation. VERIFIED `::the attempt deleted elsewhere: missing, Back to the test (UC-TOPIK-004 E1)` (the callback) |
 | loaded | Done / Back | 36 (or TOPIK when opened alone) | S11. VERIFIED `topik_routes_test.dart::Submit on 37 replaces it with the summary; Done lands on the test (UC-TOPIK-003 step 6)` |
 

@@ -45,7 +45,8 @@ Each question of a submitted attempt with the right answer and the supporting co
 |---|---|---|---|
 | loading | read done | the question asked (`?q=`, under All), or the first when the number is unknown | V9, UC-TOPIK-005 A3. VERIFIED `topik_review_screen_test.dart::opens the question asked, with its real number; an unknown number opens the first (UC-TOPIK-005, A3)`, `::TOPIK I reading: ?q=31 opens question 31 (BR-TOPIK-001)` |
 | any loaded | Next / Previous | the next or previous question in the filter | UC-TOPIK-005 step 4. VERIFIED `::Next and Previous walk the filter; a filter opens its first question; the last says Done (UC-TOPIK-005 step 4)` |
-| any loaded | filter | the filter's first question | V5. VERIFIED same test |
+| any loaded | another filter | the filter's first question, even when the one shown is in it | V5, UC-TOPIK-005 A3. VERIFIED `::a filter opens its first question, even when the one shown is in it (UC-TOPIK-005 A3)` |
+| any loaded | the selected filter again | no change: the place is kept | V5. VERIFIED `::the selected filter tapped again keeps the place` |
 | any loaded | a filter with no question | no change (the chip is off) | V5. VERIFIED `::a filter with no question cannot be picked` |
 | any loaded | tap an option | no change, nothing written | BR-TOPIK-010. VERIFIED `::an option tapped changes nothing and writes nothing (BR-TOPIK-010)` |
 | loading | content version differs | contentUpdated | BR-TOPIK-019. VERIFIED `::content updated after the attempt: the banner (BR-TOPIK-019)` |
@@ -54,8 +55,10 @@ Each question of a submitted attempt with the right answer and the supporting co
 | any | attempt deleted elsewhere | attemptMissing | UC-TOPIK-005 E2. VERIFIED `::the attempt deleted elsewhere, or still in progress: missing (UC-TOPIK-005 E2)` |
 | deep link | attempt still in progress | attemptMissing | V8. VERIFIED same test |
 | any | account switched | attemptMissing | UC-TOPIK-005 E2, BR-TOPIK-027. UNVERIFIED on this screen: the switch clears the store (`LocalDataReset`) and the stream emits null, the path the delete row exercises; no screen test drives a switch (as on 36 and 37) |
-| error | Retry | loading → loaded | V8. VERIFIED `::a read that fails: Retry reads again` |
+| error | Retry | error (retrying) → the state of the next read | V8. VERIFIED `::a read that fails: Retry reads again` (the second read lands on attemptMissing; the error stays up with its retry in progress, no skeleton) |
 | listening question | show | the audio bar loaded, not playing; the script open | BR-TOPIK-017. VERIFIED `::listening: the audio bar and the script, open (BR-TOPIK-017)` |
+| any loaded | collapse / expand the group pane | the material folds to its instruction (audio kept), and back | V1. VERIFIED on the shared pane `topik_attempt_widgets_test.dart::the group pane: instruction, passage; collapsed it keeps the instruction on one line`, `::a listening group: the audio stays when collapsed; the script shows with its translation in the UI language`; UNVERIFIED on 39 itself: no 39 test taps the collapse |
+| any loaded | Hide / Show script | the group's script hidden or shown, remembered per group while 39 is open | V1. UNVERIFIED on 39: the shared pane's toggle is tested on 37 (`topik_attempt_widgets_test.dart`); 39's per-group memory (`_scriptChoice`) is read from the code only |
 | any loaded | Back / Done on the last | where it came from (38 or 36; TOPIK when opened alone) | navigation. VERIFIED `topik_routes_test.dart::from the summary a row opens Review at its question; Back returns to the summary (UC-TOPIK-004 step 7)`; Done shares Back's callback (`::Next and Previous walk the filter; …`) |
 
 ## Rulings

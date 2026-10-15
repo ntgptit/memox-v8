@@ -164,10 +164,15 @@ class _TopikReviewScreenState extends ConsumerState<TopikReviewScreen> {
               summary: summary,
               selected: _filter,
               isEmptyDisabled: true,
-              onSelected: (filter) => setState(() {
-                _filter = filter;
-                _no = summary.answersFor(filter).first.questionNo;
-              }),
+              onSelected: (filter) {
+                // The chip already picked keeps the place; another opens
+                // its first question (UC-TOPIK-005 A3).
+                if (filter == _filter) return;
+                setState(() {
+                  _filter = filter;
+                  _no = summary.answersFor(filter).first.questionNo;
+                });
+              },
             ),
           ),
           Expanded(

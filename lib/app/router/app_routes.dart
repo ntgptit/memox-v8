@@ -49,8 +49,7 @@ abstract final class AppRoutes {
   /// The query parameter that names the question Review opens.
   static const String topikReviewQuestionParam = 'q';
 
-  /// An attempt (screen 37), its Summary (38) and its Review (39); 38 and
-  /// 39 are plan 6c's routes, and land on the not-found screen until then.
+  /// An attempt (screen 37), its Summary (38) and its Review (39).
   static String topikAttempt(String attemptId) => '$topik/attempt/$attemptId';
   static String topikSummary(String attemptId) =>
       '${topikAttempt(attemptId)}/summary';
