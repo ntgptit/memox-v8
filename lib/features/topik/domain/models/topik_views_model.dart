@@ -35,6 +35,16 @@ final class TopikAttemptView {
 
   final TopikAttemptDetail detail;
   final TopikTest? test;
+
+  /// The attempt cannot go on: its test is gone, or no longer has exactly the
+  /// attempt's questions (BR-TOPIK-019; the store refuses its submit then).
+  bool get isContentMissing {
+    final current = test;
+    if (current == null) return true;
+    final stored = {for (final answer in detail.answers) answer.questionNo};
+    final numbers = {for (final question in current.questions) question.no};
+    return stored.length != numbers.length || !stored.containsAll(numbers);
+  }
 }
 
 /// Summary (screen 38): from the snapshot alone; [test] only names it.

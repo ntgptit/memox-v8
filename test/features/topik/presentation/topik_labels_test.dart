@@ -73,4 +73,17 @@ void main() {
       'Levels\u00A01\u2060–\u20602\u00A0· No\u00A0tests\u00A0yet',
     );
   });
+
+  test('audio clock, speed and option numbers (screen 37)', () {
+    expect(topikClockText(0), '0:00');
+    expect(topikClockText(42999), '0:42');
+    expect(topikClockText(93000), '1:33');
+    expect(en.topikSpeedText(1), '1');
+    expect(en.topikSpeedText(0.75), '0.75');
+    expect(vi.topikSpeedText(1.25), '1,25');
+    expect(
+      [for (var idx = 1; idx <= 4; idx++) topikCircled(idx)].join(),
+      '①②③④',
+    );
+  });
 }
