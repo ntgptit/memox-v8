@@ -8,7 +8,8 @@ import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// One command in a bottom-sheet action list: a 30 tile in a 32 lead column
 /// and a 14/600 verb. It is neither a SettingsRow nor a ListRow. The sheet
-/// supplies the outer gutter.
+/// supplies the outer gutter. Its height is the Material 3 list item: 56 with
+/// a verb alone, 72 with a subtitle.
 class MxActionSheetCommandRow extends StatelessWidget {
   const MxActionSheetCommandRow({
     super.key,
@@ -49,7 +50,11 @@ class MxActionSheetCommandRow extends StatelessWidget {
       onTap: onTap,
       isEnabled: isEnabled,
       child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
+        constraints: BoxConstraints(
+          minHeight: subtitle == null
+              ? context.dimens.sizeListRow
+              : context.dimens.sizeListRowTwoLine,
+        ),
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: context.dimens.space8,

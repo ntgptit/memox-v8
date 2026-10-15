@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
 
 import '../../support/theme_expect.dart';
 
@@ -39,8 +40,32 @@ void main() {
       expect(
         _ring(tester),
         paints
-          ..circle(color: scheme.surfaceContainer, style: PaintingStyle.stroke)
+          ..circle(
+            color: scheme.surfaceContainerHighest,
+            style: PaintingStyle.stroke,
+          )
           ..arc(color: color, strokeCap: StrokeCap.round),
+      );
+    }
+  });
+
+  testWidgets('the track is the ramp\'s progress track in both themes (token: '
+      'progress and countdown ring track)', (tester) async {
+    for (final (brightness, colors) in [
+      (Brightness.light, lightColorScheme),
+      (Brightness.dark, darkColorScheme),
+    ]) {
+      await pumpMx(
+        tester,
+        const MxMasteryDonut(fraction: 0.5),
+        brightness: brightness,
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        _ring(tester),
+        paints..circle(color: MasteryRamp.track(colors)),
+        reason: '$brightness',
       );
     }
   });
@@ -51,7 +76,10 @@ void main() {
     await pumpMx(tester, const MxMasteryDonut(fraction: 0));
 
     expect(tester.widget<Text>(find.text('0%')).style!.color, mx.warning);
-    expect(_ring(tester), paints..circle(color: scheme.surfaceContainer));
+    expect(
+      _ring(tester),
+      paints..circle(color: scheme.surfaceContainerHighest),
+    );
     expect(_ring(tester), isNot(paints..arc()));
   });
 

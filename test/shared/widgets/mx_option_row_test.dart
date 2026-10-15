@@ -80,7 +80,7 @@ void main() {
     expect(_ring(tester).top.color, darkColorScheme.onSurfaceVariant);
   });
 
-  testWidgets('at least 48 tall; a description wraps and grows the row', (
+  testWidgets('56 tall, 72 with a description; a long one grows the row', (
     tester,
   ) async {
     await pumpMx(
@@ -95,7 +95,21 @@ void main() {
       ),
     );
     final short = tester.getSize(find.byType(MxOptionRow)).height;
-    expect(short, greaterThanOrEqualTo(48));
+    expect(short, 56);
+
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 360,
+        child: MxOptionRow(
+          title: 'Eight box',
+          description: 'Eight intervals',
+          isSelected: false,
+          onSelected: () {},
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(MxOptionRow)).height, 72);
 
     await pumpMx(
       tester,
@@ -111,7 +125,7 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(MxOptionRow)).height, greaterThan(short));
+    expect(tester.getSize(find.byType(MxOptionRow)).height, greaterThan(72));
   });
 
   testWidgets('a tap selects; announced as a checked exclusive option', (

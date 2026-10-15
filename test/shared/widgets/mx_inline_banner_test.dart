@@ -32,8 +32,8 @@ void main() {
   const mx = MxColorsExtension.light;
 
   testWidgets(
-    'warning: amber ground, warning border, warning text colour 16 glyph '
-    '(FE-C1)',
+    'warning: amber ground, no border, 8 corner, warning text colour 16 '
+    'glyph (FE-C1)',
     (tester) async {
       await pumpMx(
         tester,
@@ -44,13 +44,13 @@ void main() {
       final glyph = tester.widget<Icon>(find.byIcon(AppIcons.alert));
 
       expect(_ground(tester).color, mx.warning.tintOver(scheme.surface));
-      expect(_ground(tester).border, Border.all(color: mx.warning));
-      expect(_ground(tester).borderRadius, BorderRadius.circular(12));
+      expect(_ground(tester).border, isNull);
+      expect(_ground(tester).borderRadius, BorderRadius.circular(8));
       expect((glyph.size, glyph.color), (16, mx.warning));
     },
   );
 
-  testWidgets('danger: red ground, danger border, error glyph', (tester) async {
+  testWidgets('danger: red ground, no border, error glyph', (tester) async {
     await pumpMx(
       tester,
       _width(
@@ -59,7 +59,7 @@ void main() {
     );
 
     expect(_ground(tester).color, scheme.error.tintOver(scheme.surface));
-    expect(_ground(tester).border, Border.all(color: scheme.error));
+    expect(_ground(tester).border, isNull);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
       scheme.error,
@@ -110,63 +110,60 @@ void main() {
     },
   );
 
-  testWidgets(
-    'padding 12 16 after the hairline, 16 below; 8 12 and 0 in a bar',
-    (tester) async {
-      await pumpMx(
-        tester,
-        _width(
-          const MxInlineBanner(tone: MxBannerTone.warning, message: _message),
-        ),
-      );
-      final banner = tester.getTopLeft(find.byType(MxInlineBanner));
-      expect(tester.getTopLeft(find.byType(Icon)).dx - banner.dx, 17);
-      expect(
-        tester.getTopLeft(find.text(_message)) - banner,
-        const Offset(41, 13),
-      );
-      expect(
-        tester.getSize(find.byType(MxInlineBanner)).height -
-            tester
-                .getSize(
-                  find
-                      .descendant(
-                        of: find.byType(MxInlineBanner),
-                        matching: find.byType(DecoratedBox),
-                      )
-                      .first,
-                )
-                .height,
-        16,
-      );
+  testWidgets('padding 12 16, 16 below; 8 12 and 0 in a bar', (tester) async {
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(tone: MxBannerTone.warning, message: _message),
+      ),
+    );
+    final banner = tester.getTopLeft(find.byType(MxInlineBanner));
+    expect(tester.getTopLeft(find.byType(Icon)).dx - banner.dx, 16);
+    expect(
+      tester.getTopLeft(find.text(_message)) - banner,
+      const Offset(40, 12),
+    );
+    expect(
+      tester.getSize(find.byType(MxInlineBanner)).height -
+          tester
+              .getSize(
+                find
+                    .descendant(
+                      of: find.byType(MxInlineBanner),
+                      matching: find.byType(DecoratedBox),
+                    )
+                    .first,
+              )
+              .height,
+      16,
+    );
 
-      await pumpMx(
-        tester,
-        _width(
-          const MxInlineBanner(
-            tone: MxBannerTone.warning,
-            message: _message,
-            isInCommitBar: true,
-          ),
+    await pumpMx(
+      tester,
+      _width(
+        const MxInlineBanner(
+          tone: MxBannerTone.warning,
+          message: _message,
+          isInCommitBar: true,
         ),
-      );
-      final bar = tester.getTopLeft(find.byType(MxInlineBanner));
-      expect(tester.getTopLeft(find.text(_message)) - bar, const Offset(37, 9));
-      expect(
-        tester.getBottomLeft(find.byType(MxInlineBanner)).dy,
-        tester
-            .getBottomLeft(
-              find
-                  .descendant(
-                    of: find.byType(MxInlineBanner),
-                    matching: find.byType(DecoratedBox),
-                  )
-                  .first,
-            )
-            .dy,
-      );
-    },
-  );
+      ),
+    );
+    final bar = tester.getTopLeft(find.byType(MxInlineBanner));
+    expect(tester.getTopLeft(find.text(_message)) - bar, const Offset(36, 8));
+    expect(
+      tester.getBottomLeft(find.byType(MxInlineBanner)).dy,
+      tester
+          .getBottomLeft(
+            find
+                .descendant(
+                  of: find.byType(MxInlineBanner),
+                  matching: find.byType(DecoratedBox),
+                )
+                .first,
+          )
+          .dy,
+    );
+  });
 
   testWidgets('actions sit 8 under the message, 8 apart; a live region', (
     tester,

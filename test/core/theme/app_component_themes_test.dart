@@ -5,6 +5,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
 
 // The Material component themes carry the Design System defaults, so a raw
 // Material widget, or one the framework builds, looks like MemoX. Sizes and
@@ -152,11 +153,16 @@ void main() {
         );
       });
 
-      test('progress: a track tall, success fill on the highest container', () {
+      // The Mx indicators paint their own colours (MxSpinner the accent,
+      // MxLinearProgress the success container or the mastery ramp); the
+      // theme keeps no fill of its own, so a framework indicator takes
+      // Material 3's `primary`, and only the track agrees with them.
+      test('progress: a track tall on the highest container, no fill', () {
         final progress = theme.progressIndicatorTheme;
         expect(progress.linearMinHeight, dimens.sizeTrack);
-        expect(progress.color, mx.successContainer);
-        expect(progress.linearTrackColor, scheme.surfaceContainerHighest);
+        expect(progress.color, isNull);
+        expect(progress.linearTrackColor, MasteryRamp.track(scheme));
+        expect(progress.circularTrackColor, MasteryRamp.track(scheme));
       });
 
       // The Mx chips read this theme: Material 3's flat filter chip.

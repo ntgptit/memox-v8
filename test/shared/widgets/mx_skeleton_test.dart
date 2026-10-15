@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 import '../../support/widget_harness.dart';
@@ -38,14 +41,56 @@ Widget _still(Widget child) => Builder(
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('12 tall, radius 6, full width, surfaceContainerHigh', (
-    tester,
-  ) async {
+  testWidgets('12 tall, radius 8 (radiusSm), full width, surfaceContainerHigh '
+      'on the page', (tester) async {
     await pumpMx(tester, const SizedBox(width: 300, child: MxSkeleton()));
 
     expect(tester.getSize(find.byType(MxSkeleton)), const Size(300, 12));
     expect(_block(tester).color, scheme.surfaceContainerHigh);
-    expect(_block(tester).borderRadius, BorderRadius.circular(6));
+    expect(_block(tester).borderRadius, BorderRadius.circular(8));
+  });
+
+  testWidgets('the bar is one step off the ground it sits on, on every '
+      'ground, light and dark', (tester) async {
+    for (final (brightness, colors, mx) in [
+      (Brightness.light, lightColorScheme, MxColorsExtension.light),
+      (Brightness.dark, darkColorScheme, MxColorsExtension.dark),
+    ]) {
+      // The grounds MxTintBase carries: the page, a card, a sheet, a dialog.
+      for (final (name, ground, bar) in [
+        ('page', colors.surface, colors.surfaceContainerHigh),
+        ('card', mx.cardSurface, colors.surfaceContainerHighest),
+        ('sheet', colors.surfaceContainerLow, colors.surfaceContainerHighest),
+        ('dialog', colors.surfaceContainerHigh, colors.surfaceContainerHighest),
+      ]) {
+        await pumpMx(
+          tester,
+          MxTintBase(
+            color: ground,
+            child: const SizedBox(width: 300, child: MxSkeleton()),
+          ),
+          brightness: brightness,
+        );
+        // The theme change animates; the pulse never settles.
+        await tester.pump(const Duration(milliseconds: 400));
+
+        expect(_block(tester).color, bar, reason: '$brightness $name');
+        expect(
+          _block(tester).color,
+          isNot(ground),
+          reason: '$brightness $name',
+        );
+      }
+    }
+  });
+
+  testWidgets('inside an MxCard the bar reads the card ground', (tester) async {
+    await pumpMx(
+      tester,
+      const SizedBox(width: 300, child: MxCard(child: MxSkeleton())),
+    );
+
+    expect(_block(tester).color, scheme.surfaceContainerHighest);
   });
 
   testWidgets('a circle is its height wide with a full radius', (tester) async {
@@ -110,6 +155,14 @@ void main() {
       const Size(288 * 0.7, 12),
       const Size(288 * 0.45, 12),
     ]);
+  });
+
+  testWidgets('a skeleton row is as tall as a two-line list row', (
+    tester,
+  ) async {
+    await pumpMx(tester, const SizedBox(width: 360, child: MxSkeletonRow()));
+
+    expect(tester.getSize(find.byType(MxSkeletonRow)).height, 72);
   });
 
   testWidgets('a list says Loading once and runs one ticker', (tester) async {

@@ -227,7 +227,7 @@ class _Card extends StatelessWidget {
                 ),
                 child: SizedBox(
                   height: context.dimens.strokeHairline,
-                  child: ColoredBox(color: context.colors.outlineVariant),
+                  child: ColoredBox(color: context.mxColors.divider),
                 ),
               ),
               Expanded(

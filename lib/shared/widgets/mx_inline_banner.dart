@@ -12,7 +12,9 @@ enum MxBannerTone { warning, danger }
 
 /// One in-place message about an operation or an object, with the compact
 /// Buttons that resolve it. It is not a Note (info, no action) and not an
-/// ErrorState (a whole-card load failure). It wraps and never truncates.
+/// ErrorState (a whole-card load failure). It wraps and never truncates. A
+/// tinted ground, the tone on the glyph and the title, and no edge: the
+/// tone is not carried by a border.
 class MxInlineBanner extends StatelessWidget {
   const MxInlineBanner({
     super.key,
@@ -46,10 +48,9 @@ class MxInlineBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final (ground, edge, ink, titleInk) = switch (tone) {
+    final (ground, ink, titleInk) = switch (tone) {
       MxBannerTone.warning => (
         context.mxColors.warning.tintOver(MxTintBase.of(context)),
-        context.mxColors.warning,
         // The kit's amber glyph is 1.87:1 on the soft ground (FE-C1).
         context.mxColors.warning,
         context.mxColors.warning,
@@ -58,7 +59,6 @@ class MxInlineBanner extends StatelessWidget {
       // the danger ink, 4.5:1 even inside a sheet (tone pass, final review).
       MxBannerTone.danger => (
         context.colors.error.tintOver(MxTintBase.of(context)),
-        context.colors.error,
         colors.error,
         context.colors.error,
       ),
@@ -76,16 +76,14 @@ class MxInlineBanner extends StatelessWidget {
       0.0,
       (firstLine - context.dimens.sizeIconInline) / 2,
     );
-    // A DecoratedBox border does not inset its child: the padding starts
-    // after the hairline, as in the kit's CSS box (and MxNote).
     final padding = isInCommitBar
         ? EdgeInsets.symmetric(
-            horizontal: context.dimens.space12 + context.dimens.strokeHairline,
-            vertical: context.dimens.space8 + context.dimens.strokeHairline,
+            horizontal: context.dimens.space12,
+            vertical: context.dimens.space8,
           )
         : EdgeInsets.symmetric(
-            horizontal: context.dimens.space16 + context.dimens.strokeHairline,
-            vertical: context.dimens.space12 + context.dimens.strokeHairline,
+            horizontal: context.dimens.space16,
+            vertical: context.dimens.space12,
           );
     return Padding(
       padding: isInCommitBar || !hasBottomMargin
@@ -96,11 +94,7 @@ class MxInlineBanner extends StatelessWidget {
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: ground,
-            borderRadius: BorderRadius.circular(context.dimens.radiusMd),
-            border: Border.all(
-              color: edge,
-              width: context.dimens.strokeHairline,
-            ),
+            borderRadius: BorderRadius.circular(context.dimens.radiusSm),
           ),
           child: Padding(
             padding: padding,

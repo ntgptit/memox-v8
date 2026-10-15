@@ -79,7 +79,7 @@ class MxSheetActions extends StatelessWidget {
   /// (MxDialog.isHeld, MxBottomSheet.isHeld), so Back and the scrim wait too.
   final bool isConfirmLoading;
 
-  /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of
+  /// The sheet form: a divider rule on top and 8 16 16 padding, instead of
   /// the dialog's 24 on the sides and below (the theme's actionsPadding).
   final bool isInSheet;
   final List<Widget> children;
@@ -137,7 +137,7 @@ class MxSheetActions extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: context.colors.outlineVariant,
+            color: context.mxColors.divider,
             width: context.dimens.strokeHairline,
           ),
         ),

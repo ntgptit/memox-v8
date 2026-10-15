@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/mastery_ramp.dart';
 
 /// Card: tonal surface, no border, no shadow.
 CardThemeData cardTheme(ThemeTokens t) => CardThemeData(
@@ -119,11 +120,13 @@ NavigationRailThemeData navigationRailTheme(ThemeTokens t) {
   );
 }
 
+/// Only the track and the height: MxSpinner and MxLinearProgress paint their
+/// own fills (the accent, the success container, the mastery ramp), so the
+/// theme sets none and a framework indicator keeps Material 3's `primary`.
 ProgressIndicatorThemeData progressIndicatorTheme(ThemeTokens t) =>
     ProgressIndicatorThemeData(
-      color: t.mx.successContainer,
-      linearTrackColor: t.scheme.surfaceContainerHighest,
-      circularTrackColor: t.scheme.surfaceContainerHighest,
+      linearTrackColor: MasteryRamp.track(t.scheme),
+      circularTrackColor: MasteryRamp.track(t.scheme),
       linearMinHeight: t.dimens.sizeTrack,
       borderRadius: t.radius(t.dimens.sizeTrack / 2),
     );

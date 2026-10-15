@@ -71,7 +71,7 @@ Every state above is built.
 ## Accessibility
 
 - The dot and the glyphs, the workload terms' included, are decorative (no node of their own); the progress track says nothing, as the line beside it states "{done} of {total} cards" (FE-A8 S3, S7).
-- A deck with no card is shown dimmed and read as a disabled button (S4); every row is at least 48 tall.
+- A deck with no card is shown dimmed and read as a disabled button (S4); every row is a two-line list row, at least `sizeListRowTwoLine` (72) tall.
 - The hero title and "across {n} decks" are plurals (S5).
 - A row's breakdown wraps between whole terms (glyph, count, word and dot stay together) instead of ellipsizing, so all three counts show at any text size (BR-STUDY-076; replaces S6's one-line ellipsis). The hero's breakdown wraps the same way.
 

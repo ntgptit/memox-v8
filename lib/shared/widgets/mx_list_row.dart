@@ -7,7 +7,9 @@ import 'package:memox/core/theme/theme_rules.dart';
 
 /// A content row: decks, search results, tags, move targets and cards. The
 /// title is one line by default and the sub one line, each with an
-/// ellipsis, so every row in a list is one height. It is not a SettingsRow: this is a piece of content.
+/// ellipsis, so every row in a list is one height. It is not a SettingsRow:
+/// this is a piece of content. Its height is the Material 3 list item: 56
+/// with a title alone, 72 with a subtitle or meta.
 ///
 /// A disabled row dims its leading, title and end (chevron, trailing or
 /// spinner), never the subtitle or meta that says why, as MxSettingsRow and
@@ -99,7 +101,11 @@ class MxListRow extends StatelessWidget {
       isEnabled: isEnabled,
       shouldDimWhenDisabled: false,
       child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
+        constraints: BoxConstraints(
+          minHeight: subtitle == null && meta == null
+              ? context.dimens.sizeListRow
+              : context.dimens.sizeListRowTwoLine,
+        ),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: context.dimens.space16),
           child: Row(

@@ -48,6 +48,35 @@ void main() {
     await expectAccessibleTargets(tester);
   });
 
+  testWidgets('M3 list item heights: 56 for a verb, 72 with a subtitle', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      _width(
+        MxActionSheetCommandRow(
+          icon: AppIcons.edit,
+          label: 'Rename',
+          onTap: () {},
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(MxActionSheetCommandRow)).height, 56);
+
+    await pumpMx(
+      tester,
+      _width(
+        MxActionSheetCommandRow(
+          icon: AppIcons.edit,
+          label: 'Rename',
+          subtitle: 'Change the deck name',
+          onTap: () {},
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(MxActionSheetCommandRow)).height, 72);
+  });
+
   testWidgets('destructive: danger-soft tile, error glyph and verb', (
     tester,
   ) async {

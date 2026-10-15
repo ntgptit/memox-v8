@@ -22,7 +22,9 @@ Widget _width(Widget child) => SizedBox(width: 360, child: child);
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('one-line title and sub; 16 inset; 48 floor', (tester) async {
+  testWidgets('one-line title and sub; 16 inset; 72 two-line floor', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       _width(
@@ -50,10 +52,25 @@ void main() {
           tester.getBottomLeft(find.text('Kanji N5')).dy,
       2,
     );
-    expect(
-      tester.getSize(find.byType(MxListRow)).height,
-      greaterThanOrEqualTo(48),
+    expect(tester.getSize(find.byType(MxListRow)).height, 72);
+  });
+
+  testWidgets('M3 list item heights: 56 for one line, 72 with a supporting '
+      'line or a meta slot', (tester) async {
+    await pumpMx(tester, _width(const MxListRow(title: 'Kanji N5')));
+    expect(tester.getSize(find.byType(MxListRow)).height, 56);
+
+    await pumpMx(
+      tester,
+      _width(const MxListRow(title: 'Kanji N5', subtitle: '42 cards')),
     );
+    expect(tester.getSize(find.byType(MxListRow)).height, 72);
+
+    await pumpMx(
+      tester,
+      _width(const MxListRow(title: 'Kanji N5', meta: Text('42 cards'))),
+    );
+    expect(tester.getSize(find.byType(MxListRow)).height, 72);
   });
 
   testWidgets('a long title stays one line; rows keep one height', (

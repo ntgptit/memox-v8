@@ -3,6 +3,8 @@
   "tokens": [
     {"name": "sizeChip", "value": 32, "usage": "Chip and filter chip height, as the Material 3 chip container. A chip never wraps, its row scrolls."},
     {"name": "sizeInput", "value": 52, "usage": "Text field height."},
+    {"name": "sizeListRow", "value": 56, "usage": "Minimum height of a one-line list row, as the Material 3 list item container. Content rows, settings rows, option rows and sheet commands share it."},
+    {"name": "sizeListRowTwoLine", "value": 72, "usage": "Minimum height of a list row with a supporting line (subtitle or meta), as the Material 3 two-line list item container."},
     {"name": "sizeFab", "value": 56, "usage": "Floating action button, square, icon only, as the Material 3 FAB container."},
     {"name": "sizeAppBar", "value": 64, "usage": "App bar height (48 + 2 x 8)."},
     {"name": "sizeIconInline", "value": 16, "usage": "Icon inside body text; the smallest icon."},

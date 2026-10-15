@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
@@ -142,8 +142,10 @@ void main() {
     expect(cancels, 1);
   });
 
-  testWidgets('in a sheet: a ghost rule on top, then 8 16 16', (tester) async {
-    final ghost = lightColorScheme.outlineVariant;
+  testWidgets('in a sheet: a divider rule on top, then 8 16 16', (
+    tester,
+  ) async {
+    final rule = MxColorsExtension.light.divider;
     await pumpMx(
       tester,
       _width(
@@ -171,7 +173,7 @@ void main() {
                 .border!
             as Border;
 
-    expect(edge.top, BorderSide(color: ghost));
+    expect(edge.top, BorderSide(color: rule));
     expect(
       tester.getTopLeft(_button('Cancel')) -
           tester.getTopLeft(find.byType(MxSheetActions)),

@@ -51,6 +51,8 @@ class AppDimens extends ThemeExtension<AppDimens> {
     // App-only — not yet in the design system.
     this.sizeChip = 32,
     this.sizeInput = 52,
+    this.sizeListRow = 56,
+    this.sizeListRowTwoLine = 72,
     this.sizeFab = 56,
     this.sizeAppBar = 64,
     this.sizeIconInline = 16,
@@ -114,6 +116,12 @@ class AppDimens extends ThemeExtension<AppDimens> {
 
   /// Text field height.
   final double sizeInput;
+
+  /// Minimum height of a one-line list row, as the Material 3 list item container. Content rows, settings rows, option rows and sheet commands share it.
+  final double sizeListRow;
+
+  /// Minimum height of a list row with a supporting line (subtitle or meta), as the Material 3 two-line list item container.
+  final double sizeListRowTwoLine;
 
   /// Floating action button, square, icon only, as the Material 3 FAB container.
   final double sizeFab;

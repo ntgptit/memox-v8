@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -34,7 +35,7 @@ void main() {
     expect(bar.bottom - button.bottom, 16 + 20);
   });
 
-  testWidgets('surface fill with a 1px ghost top border', (tester) async {
+  testWidgets('surface fill with a 1px divider top border', (tester) async {
     await pumpMx(tester, const MxFooterBar(child: SizedBox(height: 48)));
     final decoration =
         tester
@@ -52,7 +53,7 @@ void main() {
     expect(decoration.color, scheme.surface);
     expect(
       (decoration.border! as Border).top,
-      BorderSide(color: scheme.outlineVariant),
+      BorderSide(color: MxColorsExtension.light.divider),
     );
   });
 

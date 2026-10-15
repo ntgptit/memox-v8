@@ -45,12 +45,22 @@ void main() {
             tester.getBottomLeft(find.text('Daily reminder')).dy,
         4,
       );
-      expect(
-        tester.getSize(find.byType(MxSettingsRow)).height,
-        greaterThanOrEqualTo(48),
-      );
+      expect(tester.getSize(find.byType(MxSettingsRow)).height, 72);
     },
   );
+
+  testWidgets('M3 list item heights: 56 for one line, 72 with a subtitle', (
+    tester,
+  ) async {
+    await pumpMx(tester, _width(const MxSettingsRow(label: 'Version')));
+    expect(tester.getSize(find.byType(MxSettingsRow)).height, 56);
+
+    await pumpMx(
+      tester,
+      _width(const MxSettingsRow(label: 'Version', subtitle: '1.0.0')),
+    );
+    expect(tester.getSize(find.byType(MxSettingsRow)).height, 72);
+  });
 
   testWidgets('the chevron shows only on a row that navigates', (tester) async {
     await pumpMx(
@@ -80,7 +90,7 @@ void main() {
       _width(MxSettingsRow(label: 'Daily reminder', trailing: _toggle())),
     );
 
-    expect(plain, 48);
+    expect(plain, 56);
     expect(tester.getSize(find.byType(MxSettingsRow)).height, plain);
   });
 

@@ -5,7 +5,8 @@ import 'package:memox/core/theme/theme_rules.dart';
 /// A single-choice row (algorithm, study mode, direction). The radio is the
 /// Material 3 one: an `onSurfaceVariant` ring, and in the accent colour a ring
 /// with a dot when selected. The whole row is the target. Dividers are the
-/// list's (`MxDividedColumn`, DEV-305).
+/// list's (`MxDividedColumn`, DEV-305). Its height is the Material 3 list
+/// item: 56 with a title alone, 72 with a description.
 class MxOptionRow extends StatelessWidget {
   const MxOptionRow({
     super.key,
@@ -50,7 +51,11 @@ class MxOptionRow extends StatelessWidget {
         child: InkWell(
           onTap: onSelected,
           child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
+            constraints: BoxConstraints(
+              minHeight: description == null
+                  ? context.dimens.sizeListRow
+                  : context.dimens.sizeListRowTwoLine,
+            ),
             child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: context.dimens.space16,

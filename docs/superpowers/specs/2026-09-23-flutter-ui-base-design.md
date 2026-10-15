@@ -446,7 +446,7 @@ item names where it comes from.
 | 33 | StatusBadge's four names come from the caller, since `shared/` cannot import `l10n/`; the bare dot announces the same name | phase 5 plan S6 |
 | 34 | ActionSheetCommandRow's glyph (16) and label→sub gap (2) are UNSPECIFIED and use the small IconTile step and the ListRow gap | phase 5 plan S7 |
 | 35 | Section draws the ghost dividers between its rows, renders its note as MxNote, and keeps its 16 bottom gap although §5 gives outer spacing to the caller | phase 5 plan S8, S9 |
-| 36 | MasteryDonut's track is `surfaceContainer` as its contract states, not MasteryRamp's progress-track; at 0% the label takes the lowest band colour; the label scales down to stay inside the ring | phase 5 plan S10 |
+| 36 | MasteryDonut's track was `surfaceContainer`, not MasteryRamp's progress-track (superseded by DEV-372: tokens.json names `surfaceContainerHighest` for the countdown ring track, so the donut reads `MasteryRamp.track`); at 0% the label takes the lowest band colour; the label scales down to stay inside the ring | phase 5 plan S10 |
 | 37 | Badge, StatusBadge and TagChip heights (22, 18) are minimums that text scaling grows | phase 5 plan S11 |
 | 38 | WorkloadBreakdownLine paints no top margin; the row that stacks it owns the 2 gap. The suffix follows the terms after a space | phase 5 plan S12 |
 | 39 | IconTile's `seed` is the one `Color` parameter among the shared widgets: per-deck data the contract passes per instance | phase 5 plan S16 |
@@ -457,7 +457,7 @@ item names where it comes from.
 | 44 | TagChip's label keeps the caption line-height 1.4, not the contract's 1: an ellipsized label clips to its text box, and a 12px box cut the descenders | phase 5 execution |
 | 45 | MxSpinner is a fixed three-quarter 2px ring turning once every 0.8s, not Material's growing arc, and it keeps turning under reduced motion because it is the only sign of work in flight | phase 6 plan O1 |
 | 46 | Row 16's spinner half is resolved: MxButton, MxListRow and MxStepper spin MxSpinner, onPrimary inside a filled button and primary elsewhere, so a loading outline or secondary button spins in primary | phase 6 plan O2 |
-| 47 | Skeleton's radius 6 is a component constant; the skeleton row ships as MxSkeletonRow on ListRow geometry, with an UNSPECIFIED 8 between its bars | phase 6 plan O3 |
+| 47 | Skeleton's radius was 6, a component constant (superseded by DEV-372: `radiusSm`, and the bar steps off its ground); the skeleton row ships as MxSkeletonRow on ListRow geometry, with an UNSPECIFIED 8 between its bars | phase 6 plan O3 |
 | 48 | ErrorState's tile → title gap is UNSPECIFIED and uses EmptyState's 16 | phase 6 plan O4 |
 | 49 | Dialog title and body typography and insets are UNSPECIFIED: `compactTitle` (the ErrorState and DeckPickerSheet title), a 14 onSurface body, 20 in, 8 apart, scrolling when the text outgrows the screen | phase 6 plan O5 |
 | 50 | InlineBanner's warning border is a new derived `warningBorder` at the contract's 26% / 32% (the theme gap it reports); actions always sit under the message, so the single-line trailing-action form is not built; its text keeps the caption role at 1.55 (extends row 24) | phase 6 plan O6 |
