@@ -14,6 +14,7 @@ import 'package:memox/features/study/presentation/widgets/sections/study_browse_
 import 'package:memox/features/study/presentation/widgets/sections/study_recall_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
+import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import '../../../support/card_fixtures.dart';
@@ -213,6 +214,23 @@ void main() {
     expect(find.text(_en.studyAnswerBusyTitle), findsNothing);
     expect(_front(tester), isNot(front));
   });
+
+  for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
+    libraryTest('M3F-19: the unsaved-answer banner keeps the $margin screen '
+        'margin at ${width.toInt()} wide', (tester, env) async {
+      final id = await _session(env, ['a', 'b']);
+      env.sessions.isLocked = true;
+      await _pumpScreen(tester, env, id);
+      tester.view.physicalSize = Size(width, 800);
+      await tester.pumpAndSettle();
+      await _swipeLeft(tester);
+
+      final banner = find.byType(MxInlineBanner);
+      final page = tester.getRect(find.byType(MxStudyTopBar));
+      expect(tester.getTopLeft(banner).dx - page.left, margin);
+      expect(page.right - tester.getTopRight(banner).dx, margin);
+    });
+  }
 
   libraryTest('the deck moved to the Trash leaves once, for the Library, '
       'with a message (UC-STUDY-001 A5)', (tester, env) async {

@@ -320,6 +320,16 @@ else
   FAILED+=("design tooling tests unavailable: $DESIGN_TESTS")
 fi
 
+# Material 3 static rules (M3L00..M3L08), resolved against package:flutter, so
+# an alias or a local function of the same name changes nothing. Fixtures and
+# the allowlist live in tools/m3_lint; the rule table is in
+# docs/shared/design/m3-adoption-ledger.md.
+if command -v dart >/dev/null 2>&1; then
+  plan m3_lint "Material 3 AST rules (tools/m3_lint)" "dart run tools/m3_lint/m3_lint.dart"
+else
+  FAILED+=("m3_lint unavailable: dart is not on PATH")
+fi
+
 # The guard's own probes, and they belong wherever the guard runs. A rule that
 # has been excluded, disabled or deleted leaves the guard green: the guard does
 # not go red when the thing being edited is itself, so its verdict is evidence

@@ -92,6 +92,57 @@ List<_Pair> _pairs(String mode) {
     add('checkbox fill (accent) on $where', accent, ground, _nonText);
   }
   add('checkbox check (onAccent) on fill (accent)', onAccent, accent, _nonText);
+  // The loading spinner (MxButton, M3F-02) is drawn in the tone's own
+  // foreground on the tone's fill. Non-text, 3:1. Several of these pairs also
+  // sit above as text pairs; they are named here by the widget that draws them.
+  add(
+    'loading spinner (onPrimary) on primary fill',
+    c('onPrimary'),
+    c('primary'),
+    _nonText,
+  );
+  add(
+    'loading spinner (onSurface) on secondary fill (surfaceContainer)',
+    c('onSurface'),
+    c('surfaceContainer'),
+    _nonText,
+  );
+  add(
+    'loading spinner (onError) on destructive fill (error)',
+    c('onError'),
+    c('error'),
+    _nonText,
+  );
+  add(
+    'loading spinner (onWarningContainer) on warning fill (warningContainer)',
+    c('warning-onContainer'),
+    c('warning-container'),
+    _nonText,
+  );
+  for (final (ground, where) in [(surface, 'surface'), (card, 'cardSurface')]) {
+    add('loading spinner (accent) on $where', accent, ground, _nonText);
+    add(
+      'loading spinner (error) on danger tint fill over $where',
+      c('error'),
+      c('error').tintOver(ground),
+      _nonText,
+    );
+  }
+  // The filter chip count (MxFilterChip, M3F-03) is text: the resting count
+  // is the unblended onSurfaceVariant on the page or a card, the selected
+  // count is onSecondaryContainer on its fill.
+  for (final (ground, where) in [(surface, 'surface'), (card, 'cardSurface')]) {
+    add(
+      'filter chip count (onSurfaceVariant) on $where',
+      c('onSurfaceVariant'),
+      ground,
+    );
+  }
+  add(
+    'filter chip count (onSecondaryContainer) on selected fill (secondaryContainer)',
+    c('onSecondaryContainer'),
+    c('secondaryContainer'),
+  );
   // A tint is laid over the ground directly beneath it (MxTintBase): the
   // page, a card, a sheet (surfaceContainerLow) or a dialog
   // (surfaceContainerHigh).

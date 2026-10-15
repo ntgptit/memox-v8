@@ -82,6 +82,7 @@ class MxAppBar extends StatelessWidget {
                 child:
                     titleWidget ??
                     Semantics(
+                      namesRoute: _namesRoute(context),
                       header: true,
                       child: Text(
                         title!,
@@ -106,6 +107,18 @@ class MxAppBar extends StatelessWidget {
       ),
     );
   }
+
+  /// The framework `AppBar` title names the route everywhere but on Apple
+  /// platforms (read from the theme's platform, as it does), so a screen
+  /// reader announces the new screen on each push.
+  bool? _namesRoute(BuildContext context) =>
+      switch (Theme.of(context).platform) {
+        TargetPlatform.android ||
+        TargetPlatform.fuchsia ||
+        TargetPlatform.linux ||
+        TargetPlatform.windows => true,
+        TargetPlatform.iOS || TargetPlatform.macOS => null,
+      };
 
   /// The ambient icon button, with the trailing icons in `onSurfaceVariant`.
   IconButtonThemeData _actionsTheme(BuildContext context) {

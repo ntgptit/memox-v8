@@ -1,0 +1,16 @@
+[
+  {
+    "file": "lib/shared/widgets/mx_dialog.dart",
+    "rule": "M3L01",
+    "reason": "The one Material overlay adapter (showMxDialog). It passes barrierColor from DialogTheme.of(context) at mx_dialog.dart:22, which app_surface_themes.dart:174 sets to the scrim token.",
+    "owner": "flutter-lead",
+    "review": "2027-04-15"
+  },
+  {
+    "file": "lib/shared/widgets/mx_dialog.dart",
+    "rule": "M3L04",
+    "reason": "barrierColor: reads the theme (DialogTheme.of(context).barrierColor!, mx_dialog.dart:22), not a literal. Task 4's barrier test checks the value at runtime.",
+    "owner": "flutter-lead",
+    "review": "2027-04-15"
+  }
+]

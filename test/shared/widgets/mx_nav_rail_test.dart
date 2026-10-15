@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
@@ -8,6 +10,8 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_nav_rail.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/paint_clip.dart';
 import '../../support/widget_harness.dart';
 
 // FE-C5: the rail the tab shell shows from 600 dp (spec
@@ -137,7 +141,8 @@ void main() {
     expect(
       tester.getSemantics(_item('Library')),
       isSemantics(
-        label: 'Library',
+        // M3F-09: the label now ends with the destination's position.
+        label: 'Library\nTab 1 of 4',
         isButton: true,
         isSelected: true,
         hasSelectedState: true,
@@ -146,6 +151,41 @@ void main() {
     );
     handle.dispose();
     await expectAccessibleTargets(tester);
+  });
+
+  // M3F-09: the rail shares MxNavItem, so its destinations are tabs with a
+  // position too. The SDK NavigationRail sets no tab bar role, so neither
+  // does this rail.
+  testWidgets('M3F-09: each destination is a tab named with its position', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _rail(selected: 2));
+
+    expect(
+      tester.getSemantics(_item('Progress')),
+      isSemantics(
+        label: 'Progress\nTab 3 of 4',
+        role: SemanticsRole.tab,
+        isButton: true,
+        isSelected: true,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+    expect(
+      tester.getSemantics(_item('Library')),
+      isSemantics(
+        label: 'Library\nTab 1 of 4',
+        role: SemanticsRole.tab,
+        isButton: true,
+        isSelected: false,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    handle.dispose();
   });
 
   testWidgets('it takes the start inset only: left in LTR, right in RTL', (
@@ -162,4 +202,48 @@ void main() {
     );
     expect(tester.getSize(find.byType(MxNavRail)).width, 80 + 24);
   });
+
+  // M3F-05: the rail shares MxNavItem with the bar, so it draws the same
+  // pill ring; the rail's scroll view and edge must not cut it.
+  for (final brightness in Brightness.values) {
+    final focusScheme = brightness == Brightness.light
+        ? lightColorScheme
+        : darkColorScheme;
+    testWidgets('M3F-05: a focused destination draws the 2px primary ring '
+        'and nothing clips it (${brightness.name})', (tester) async {
+      const dimens = AppDimens();
+      int? picked;
+      await pumpMx(
+        tester,
+        _rail(onSelected: (i) => picked = i),
+        brightness: brightness,
+      );
+      useKeyboardFocusHighlight();
+      expect(
+        tester.renderObject(find.byType(MxNavRail)),
+        isNot(paintsFocusRing(focusScheme.primary)),
+      );
+
+      await tabTo(tester, find.text('Library'));
+
+      expect(focusedRender(tester), paintsFocusRing(focusScheme.primary));
+      final cell = find.ancestor(
+        of: find.text('Library'),
+        matching: find.bySubtype<InkWell>(),
+      );
+      final pill = tester.getRect(
+        find.descendant(of: cell, matching: find.byType(Ink)),
+      );
+      expect(
+        clipsAway(
+          tester,
+          cell,
+          pill.inflate(dimens.strokeFocusGap + dimens.strokeFocus),
+        ),
+        isFalse,
+      );
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      expect(picked, 0);
+    });
+  }
 }

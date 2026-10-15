@@ -1,6 +1,8 @@
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A top-level destination: an outlined resting glyph, a filled selected one.
@@ -52,23 +54,32 @@ class MxBottomNav extends StatelessWidget {
         padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
         child: Material(
           type: MaterialType.transparency,
-          child: Row(
-            children: [
-              for (final (index, destination) in destinations.indexed)
-                Expanded(
-                  // The bar is `sizeNav` at minimum and grows with the text
-                  // scale; each cell is as tall as the bar, so its tap target
-                  // spans the whole cell.
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: dimens.sizeNav),
-                    child: MxNavItem(
-                      destination: destination,
-                      isSelected: index == selectedIndex,
-                      onTap: () => onSelected(index),
+          // The tab bar of the SDK's NavigationBar: a group whose children
+          // are the tabs.
+          child: Semantics(
+            role: SemanticsRole.tabBar,
+            explicitChildNodes: true,
+            container: true,
+            child: Row(
+              children: [
+                for (final (index, destination) in destinations.indexed)
+                  Expanded(
+                    // The bar is `sizeNav` at minimum and grows with the text
+                    // scale; each cell is as tall as the bar, so its tap
+                    // target spans the whole cell.
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: dimens.sizeNav),
+                      child: MxNavItem(
+                        destination: destination,
+                        index: index,
+                        count: destinations.length,
+                        isSelected: index == selectedIndex,
+                        onTap: () => onSelected(index),
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -83,15 +94,24 @@ class MxBottomNav extends StatelessWidget {
 /// The pill grows in and fades in over `Durations.medium2` (at once when the
 /// platform asks for reduced motion). The whole cell is the tap target, and
 /// the ink is clipped to the pill, as the Material 3 navigation bar does.
+/// Keyboard focus draws the shared 2px `primary` ring around the pill,
+/// `strokeFocusGap` outside it ([MxFocusRingBorder]).
+///
+/// It is a tab named with its place, "Tab [index] of [count]", as the SDK
+/// NavigationBar destination is; [index] is zero-based.
 class MxNavItem extends StatefulWidget {
   const MxNavItem({
     super.key,
     required this.destination,
+    required this.index,
+    required this.count,
     required this.isSelected,
     required this.onTap,
-  });
+  }) : assert(index >= 0 && index < count, 'index must be within count');
 
   final MxNavDestination destination;
+  final int index;
+  final int count;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -107,6 +127,8 @@ class _MxNavItemState extends State<MxNavItem> {
   /// Locates the pill for the ink's rectangle.
   final _pillKey = GlobalKey();
 
+  var _hasFocus = false;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -116,11 +138,13 @@ class _MxNavItemState extends State<MxNavItem> {
     final pillColor = colors.secondaryContainer;
     return Semantics(
       container: true,
+      role: SemanticsRole.tab,
       selected: isSelected,
       button: true,
       child: _PillInkWell(
         pillKey: _pillKey,
         onTap: widget.onTap,
+        onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -157,6 +181,24 @@ class _MxNavItemState extends State<MxNavItem> {
                       ),
                     ),
                     ?icon,
+                    if (_hasFocus)
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: DecoratedBox(
+                            key: const ValueKey('mx-nav-focus-ring'),
+                            decoration: ShapeDecoration(
+                              shape: MxFocusRingBorder(
+                                base: const StadiumBorder(),
+                                ring: BorderSide(
+                                  color: colors.primary,
+                                  width: dimens.strokeFocus,
+                                ),
+                                gap: dimens.strokeFocusGap,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -168,17 +210,53 @@ class _MxNavItemState extends State<MxNavItem> {
                     : colors.onSurfaceVariant,
               ),
             ),
-            Text(
-              destination.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.texts.labelSmall?.copyWith(
-                color: isSelected ? colors.onSurface : colors.onSurfaceVariant,
-              ),
+            _NavLabel(
+              label: destination.label,
+              index: widget.index,
+              count: widget.count,
+              isSelected: isSelected,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The destination's label and, after it, its place for a screen reader, as
+/// the SDK bar does: "Study, Tab 2 of 4".
+class _NavLabel extends StatelessWidget {
+  const _NavLabel({
+    required this.label,
+    required this.index,
+    required this.count,
+    required this.isSelected,
+  });
+
+  final String label;
+  final int index;
+  final int count;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: context.texts.labelSmall?.copyWith(
+            color: isSelected ? colors.onSurface : colors.onSurfaceVariant,
+          ),
+        ),
+        Semantics(
+          label: MaterialLocalizations.of(context)
+              .tabLabel(tabIndex: index + 1, tabCount: count),
+        ),
+      ],
     );
   }
 }
@@ -189,6 +267,7 @@ class _PillInkWell extends InkWell {
   const _PillInkWell({
     required this.pillKey,
     required super.onTap,
+    required super.onFocusChange,
     required super.child,
   }) : super(customBorder: const StadiumBorder());
 

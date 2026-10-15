@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
@@ -123,6 +124,41 @@ void main() {
       expect(bar.right - tester.getTopRight(find.text('3 / 10')).dx, margin);
     });
   }
+
+  testWidgets('M3F-18: the track is sizeTrack tall, read from the theme', (
+    tester,
+  ) async {
+    Finder track() => find.descendant(
+      of: find.byType(MxStudyTopBar),
+      matching: find.byType(ClipRRect),
+    );
+
+    await pumpMx(tester, _bar());
+    expect(tester.getSize(track()).height, const AppDimens().sizeTrack);
+
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
+          return Theme(
+            data: theme.copyWith(
+              extensions: [
+                ...theme.extensions.values.where((e) => e is! AppDimens),
+                const AppDimens(sizeTrack: 10),
+              ],
+            ),
+            child: _bar(),
+          );
+        },
+      ),
+    );
+    expect(tester.getSize(track()).height, 10);
+    expect(
+      tester.widget<ClipRRect>(track()).borderRadius,
+      BorderRadius.circular(5),
+    );
+  });
 
   test('current outside [1, total] or an empty session is rejected', () {
     expect(() => _bar(current: 0), throwsAssertionError);

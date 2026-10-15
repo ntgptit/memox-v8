@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A session screen's actions, centred under the faces. Two share the row,
 /// each up to 160 wide, and stack full width at large text, as 16a's grades
@@ -25,9 +26,9 @@ class StudyCtaRowWidget extends StatelessWidget {
         MediaQuery.textScalerOf(context).scale(1) >= _stackTextScale;
     return Padding(
       padding: EdgeInsets.fromLTRB(
+        context.screenMargin,
         context.dimens.space16,
-        context.dimens.space16,
-        context.dimens.space16,
+        context.screenMargin,
         0,
       ),
       child: switch (children) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/transfer/presentation/states/card_import_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/support/import_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -27,9 +28,9 @@ class ImportStepTrackerWidget extends StatelessWidget {
       child: ExcludeSemantics(
         child: Padding(
           padding: EdgeInsets.fromLTRB(
-            context.dimens.space16,
+            context.screenMargin,
             0,
-            context.dimens.space16,
+            context.screenMargin,
             context.dimens.space12,
           ),
           child: LayoutBuilder(

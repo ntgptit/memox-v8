@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/l10n/l10n_context.dart';
 
@@ -24,15 +25,13 @@ class RecallCountdownBarWidget extends StatelessWidget {
   final int remainingMs;
   final bool isTimedOut;
 
-  /// The app's thin track (MxLinearProgress, MxStudyTopBar), M3's 4dp
-  /// (ruling M3-F2).
-  static const double _trackHeight = 4;
   static const int _msPerSecond = 1000;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final colors = context.colors;
+    final trackHeight = context.dimens.sizeTrack;
     final left = remainingMs.clamp(0, recallTurnMs);
     final seconds = (left / _msPerSecond).ceil();
     final fraction = MediaQuery.disableAnimationsOf(context)
@@ -51,9 +50,9 @@ class RecallCountdownBarWidget extends StatelessWidget {
       excludeSemantics: true,
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          context.dimens.space16,
+          context.screenMargin,
           0,
-          context.dimens.space16,
+          context.screenMargin,
           context.dimens.space12,
         ),
         child: Column(
@@ -78,9 +77,9 @@ class RecallCountdownBarWidget extends StatelessWidget {
               ],
             ),
             ClipRRect(
-              borderRadius: BorderRadius.circular(_trackHeight / 2),
+              borderRadius: BorderRadius.circular(trackHeight / 2),
               child: SizedBox(
-                height: _trackHeight,
+                height: trackHeight,
                 child: ColoredBox(
                   color: MasteryRamp.track(colors),
                   child: Align(

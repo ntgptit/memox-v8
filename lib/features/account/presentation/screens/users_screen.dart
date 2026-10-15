@@ -14,6 +14,7 @@ import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// Screen 33, Users (users spec §3, auth spec O9): an admin finds any
 /// signed-in account by email and makes it an admin or a user. The search
@@ -66,9 +67,9 @@ class _UsersScreenState extends ConsumerState<UsersScreen> {
               children: [
                 Padding(
                   padding: EdgeInsets.fromLTRB(
-                    context.dimens.space16,
+                    context.screenMargin,
                     context.dimens.space12,
-                    context.dimens.space16,
+                    context.screenMargin,
                     context.dimens.space8,
                   ),
                   child: MxSearchField(

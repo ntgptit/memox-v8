@@ -35,8 +35,9 @@ class MxSelectableCardRow extends StatelessWidget {
   final bool isSelecting;
   final bool isSelected;
 
-  /// False dims the whole card to the disabled opacity and blocks its taps:
-  /// an item that cannot join the selection (BR-TRASH-011).
+  /// False dims the whole card to the disabled opacity and blocks its taps,
+  /// the [trailing] control's included: an item that cannot join the
+  /// selection (BR-TRASH-011).
   final bool isEnabled;
 
   /// A control of the item's own, usually an MxIconButton; outside the ink.
@@ -99,7 +100,7 @@ class MxSelectableCardRow extends StatelessWidget {
                   padding: EdgeInsetsDirectional.only(
                     end: context.dimens.space4,
                   ),
-                  child: trailing,
+                  child: isEnabled ? trailing : IgnorePointer(child: trailing),
                 ),
               ],
             ),

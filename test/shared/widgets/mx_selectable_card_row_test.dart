@@ -145,6 +145,46 @@ void main() {
     );
   });
 
+  for (final label in <String?>[null, 'Korean deck']) {
+    testWidgets('M3F-17: disabled blocks the trailing control and the node '
+        'says disabled (label: $label)', (tester) async {
+      final handle = tester.ensureSemantics();
+      var taps = 0;
+      var menu = 0;
+      await pumpMx(
+        tester,
+        _row(
+          onTap: () => taps++,
+          isEnabled: false,
+          semanticLabel: label,
+          trailing: MxIconButton(
+            icon: AppIcons.more,
+            semanticLabel: 'More',
+            onPressed: () => menu++,
+          ),
+        ),
+      );
+      await tester.tap(find.byTooltip('More'), warnIfMissed: false);
+      await tester.tap(find.text('Korean'), warnIfMissed: false);
+      expect((taps, menu), (0, 0));
+      expect(
+        tester.getSemantics(find.byTooltip('More')),
+        isSemantics(tooltip: 'More', hasTapAction: false),
+      );
+      expect(
+        tester.getSemantics(find.text('Korean')),
+        isSemantics(
+          label: label ?? 'Korean',
+          hasEnabledState: true,
+          isEnabled: false,
+          hasTapAction: false,
+          hasLongPressAction: false,
+        ),
+      );
+      handle.dispose();
+    });
+  }
+
   testWidgets('tappable row and trailing control are 48 targets with names', (
     tester,
   ) async {

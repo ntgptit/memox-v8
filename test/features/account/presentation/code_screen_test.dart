@@ -17,6 +17,7 @@ import 'package:memox/shared/widgets/mx_spinner.dart';
 import '../../../support/account_harness.dart';
 import '../../../support/fake_auth_server.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/route_naming.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -68,6 +69,8 @@ void main() {
     final node = tester.getSemantics(find.text(_en.accountCodeTitle));
     expect(node.hasFlag(SemanticsFlag.namesRoute), isTrue);
     expect(node.hasFlag(SemanticsFlag.isHeader), isTrue);
+    // M3F-08: the bar's title slot is empty here, so this is the only one.
+    expect(routeNamingNodes(tester), 1);
     handle.dispose();
   });
 

@@ -12,6 +12,7 @@ import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 
 import '../../../support/account_harness.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/route_naming.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -31,6 +32,25 @@ void main() {
   setUp(() => signIns = 0);
 
   Widget screen() => AccountScreen(onSignInAgain: () => signIns++);
+
+  // M3F-08: a screen titled by the bar names its route once, from the bar.
+  accountTest('M3F-08: the bar title names the route, once', (
+    tester,
+    env,
+    world,
+  ) async {
+    await linkEmail(world);
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(),
+      overrides: accountOverrides(world),
+    );
+
+    expect(routeNamingNodes(tester), 1);
+    handle.dispose();
+  });
 
   accountTest('the account, how it signs in, and three commands', (
     tester,

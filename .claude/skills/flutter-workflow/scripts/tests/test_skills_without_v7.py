@@ -37,6 +37,7 @@ REPO_OWNED_SKILLS = (
     "flutter-theme-design",
     "flutter-workflow",
     "golden-compare",
+    "material3-shared-widgets",
     "project-documentation",
     "spring-boot-mybatis-review",
 )

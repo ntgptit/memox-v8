@@ -185,8 +185,9 @@ void main() {
     expect(textColor(tester, 'MATCH'), ink);
   });
 
-  testWidgets('MxSpinner: off a fill the arc is the accent; on a fill it is '
-      'onPrimary', (tester) async {
+  testWidgets('MxSpinner: the arc is the accent unless a colour is given', (
+    tester,
+  ) async {
     RenderObject ring() => tester.renderObject(
       find
           .descendant(
@@ -197,7 +198,7 @@ void main() {
     );
     await pumpDark(tester, const MxSpinner());
     expect(ring(), paints..arc(color: ink));
-    await pumpDark(tester, const MxSpinner(isOnFill: true));
+    await pumpDark(tester, MxSpinner(color: scheme.onPrimary));
     expect(ring(), paints..arc(color: scheme.onPrimary));
   });
 }

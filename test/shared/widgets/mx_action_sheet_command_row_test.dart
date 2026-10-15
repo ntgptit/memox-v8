@@ -177,6 +177,29 @@ void main() {
     );
     semantics.dispose();
   });
+  testWidgets('M3F-17: a disabled command has no tap action', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      MxActionSheetCommandRow(
+        icon: AppIcons.play,
+        label: 'Study this deck',
+        onTap: () {},
+        isEnabled: false,
+      ),
+    );
+    expect(
+      tester.getSemantics(find.text('Study this deck')),
+      isSemantics(
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: false,
+        hasTapAction: false,
+      ),
+    );
+    semantics.dispose();
+  });
+
   testWidgets('a long subtitle keeps two lines', (tester) async {
     const warning =
         'Renaming onto an existing name merges the two tags into one, '

@@ -174,12 +174,16 @@ IconButtonThemeData iconButtonTheme(ThemeTokens t) {
         }
         return null;
       }),
-      side: WidgetStateProperty.resolveWith(
-        (states) => states.contains(WidgetState.focused)
-            ? BorderSide(color: t.scheme.primary, width: dimens.strokeFocus)
-            : null,
+      // The ring rides on the shape, offset like the buttons' (M3F-07).
+      shape: WidgetStateProperty.resolveWith(
+        (states) => MxFocusRingBorder(
+          base: const CircleBorder(),
+          ring: states.contains(WidgetState.focused)
+              ? BorderSide(color: t.scheme.primary, width: dimens.strokeFocus)
+              : BorderSide.none,
+          gap: dimens.strokeFocusGap,
+        ),
       ),
-      shape: const WidgetStatePropertyAll(CircleBorder()),
       fixedSize: WidgetStatePropertyAll(Size.square(dimens.sizeControl)),
       minimumSize: WidgetStatePropertyAll(Size.square(dimens.sizeControl)),
       padding: const WidgetStatePropertyAll(EdgeInsets.zero),
@@ -244,10 +248,7 @@ ChipThemeData chipTheme(ThemeTokens t) => ChipThemeData(
     color: t.scheme.onSecondaryContainer,
   ),
   checkmarkColor: t.scheme.onSecondaryContainer,
-  iconTheme: IconThemeData(
-    color: t.scheme.primary,
-    size: t.dimens.sizeIconButton,
-  ),
+  iconTheme: IconThemeData(color: t.accent, size: t.dimens.sizeIconButton),
   padding: EdgeInsets.all(t.dimens.space8),
   labelPadding: EdgeInsets.symmetric(horizontal: t.dimens.space8),
 );
@@ -255,11 +256,12 @@ ChipThemeData chipTheme(ThemeTokens t) => ChipThemeData(
 /// The Material 3 switch (`MxToggle` is a `Switch`): a `primary` track with an
 /// `onPrimary` handle when on; a `surfaceContainerHighest` track with a
 /// `strokeControl` `outline` edge and an `outline` handle when off. A pressed,
-/// hovered or focused handle takes `primaryContainer` (on) or
-/// `onSurfaceVariant` (off). Disabled, the track is 12% and the off handle
-/// 38%, the on handle `surface`; the switch dims itself. Size, handle radii
-/// (16, 24, 28), the 40 state layer (primary or onSurface at the hover, pressed
-/// and focus opacities) and the motion are Material's own M3 defaults.
+/// hovered or focused off handle takes `onSurfaceVariant`; the on handle stays
+/// `onPrimary`, as `primaryContainer` equals the track here (M3F-15).
+/// Disabled, the track is 12% and the off handle 38%, the on handle `surface`;
+/// the switch dims itself. Size, handle radii (16, 24, 28), the 40 state layer
+/// (primary or onSurface at the hover, pressed and focus opacities) and the
+/// motion are Material's own M3 defaults.
 SwitchThemeData switchTheme(ThemeTokens t) {
   final scheme = t.scheme;
   final dimens = t.dimens;
@@ -275,7 +277,6 @@ SwitchThemeData switchTheme(ThemeTokens t) {
     thumbColor: WidgetStateProperty.fromMap({
       disabled & on: scheme.surface,
       disabled: t.onSurfaceAt(dimens.opacityDisabledContent),
-      on & engaged: scheme.primaryContainer,
       on: scheme.onPrimary,
       engaged: scheme.onSurfaceVariant,
       WidgetState.any: scheme.outline,

@@ -43,6 +43,36 @@ void main() {
         expect(theme.highlightColor, pressed);
       });
 
+      // M3F-12: an Icon with no IconTheme ancestor read the SDK's black 87%
+      // or white; a supporting glyph is onSurfaceVariant (owner 2026-10-15).
+      test('M3F-12: the ambient icon is onSurfaceVariant at sizeIcon', () {
+        expect(theme.iconTheme.color, theme.colorScheme.onSurfaceVariant);
+        expect(theme.iconTheme.size, theme.extension<AppDimens>()!.sizeIcon);
+      });
+
+      // M3F-13: hover and focus fell to the SDK's black or white at 4% and
+      // 12%; the buttons already use the token layers.
+      test('M3F-13: rows hover at opacityHover and focus at opacityFocus', () {
+        final scheme = theme.colorScheme;
+        final dimens = theme.extension<AppDimens>()!;
+
+        expect(
+          theme.hoverColor,
+          scheme.onSurface.withValues(alpha: dimens.opacityHover),
+        );
+        expect(
+          theme.focusColor,
+          scheme.onSurface.withValues(alpha: dimens.opacityFocus),
+        );
+      });
+
+      // M3F-14: density and tap size were the platform's, so Linux, Windows
+      // and macOS (the Web review lane) rendered compact.
+      test('M3F-14: standard density and a padded tap target', () {
+        expect(theme.visualDensity, VisualDensity.standard);
+        expect(theme.materialTapTargetSize, MaterialTapTargetSize.padded);
+      });
+
       test('snackbar is flat: the inverse surface carries it', () {
         expect(theme.snackBarTheme.elevation, 0);
       });

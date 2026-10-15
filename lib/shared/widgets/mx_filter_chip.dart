@@ -31,8 +31,6 @@ class MxFilterChip extends StatelessWidget {
   /// Optional leading glyph at 18; a selected chip shows the check instead.
   final IconData? icon;
 
-  static const double _countOpacityResting = 0.6;
-
   @override
   Widget build(BuildContext context) {
     final tokens = ThemeTokens.of(context);
@@ -69,14 +67,9 @@ class MxFilterChip extends StatelessWidget {
               if (count case final value?)
                 Text(
                   value.toString(),
-                  // On the container fill a dimmed count loses its contrast,
-                  // so the selected count keeps the label's foreground
-                  // (SW-REV-001).
-                  style: context.texts.labelSmall?.copyWith(
-                    color: isSelected
-                        ? foreground
-                        : foreground.withValues(alpha: _countOpacityResting),
-                  ),
+                  // The count keeps the label's foreground: a dimmed one falls
+                  // under 4.5:1, so labelSmall alone makes it quieter (M3F-03).
+                  style: context.texts.labelSmall?.copyWith(color: foreground),
                 ),
             ],
           ),

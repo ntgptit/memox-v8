@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
@@ -10,6 +11,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
+import '../../support/route_naming.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
@@ -98,6 +100,55 @@ void main() {
       tester.getSemantics(find.text('Library')),
       isSemantics(label: 'Library', isHeader: true),
     );
+    handle.dispose();
+  });
+
+  // M3F-08: the SDK AppBar wraps its title in `namesRoute` on every platform
+  // but iOS and macOS, so TalkBack announces the new screen on each push.
+  for (final (platform, announces) in [
+    (TargetPlatform.android, true),
+    (TargetPlatform.linux, true),
+    (TargetPlatform.windows, true),
+    (TargetPlatform.fuchsia, true),
+    (TargetPlatform.iOS, false),
+    (TargetPlatform.macOS, false),
+  ]) {
+    testWidgets('M3F-08: the title ${announces ? 'names' : 'does not name'} '
+        'the route on ${platform.name}', (tester) async {
+      debugDefaultTargetPlatformOverride = platform;
+      final handle = tester.ensureSemantics();
+      await pumpMx(tester, const MxAppBar(title: 'Library'));
+      final title = tester.getSemantics(find.text('Library'));
+      // Reset in the body: the binding checks it before any teardown runs.
+      debugDefaultTargetPlatformOverride = null;
+
+      expect(
+        title,
+        isSemantics(label: 'Library', isHeader: true, namesRoute: announces),
+      );
+      expect(routeNamingNodes(tester), announces ? 1 : 0);
+      handle.dispose();
+    });
+  }
+
+  testWidgets('M3F-08: the theme platform decides, as in the SDK AppBar', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+          child: const MxAppBar(title: 'Library'),
+        ),
+      ),
+    );
+    expect(
+      tester.getSemantics(find.text('Library')),
+      isSemantics(label: 'Library', isHeader: true, namesRoute: false),
+    );
+    expect(routeNamingNodes(tester), 0);
     handle.dispose();
   });
 

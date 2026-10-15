@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_row_ink.dart';
 
 /// A single-choice row (algorithm, study mode, direction). The radio is the
 /// Material 3 one: an `onSurfaceVariant` ring, and in the accent colour a ring
 /// with a dot when selected. The whole row is the target. Dividers are the
 /// list's (`MxDividedColumn`, DEV-305). Its height is the Material 3 list
-/// item: 56 with a title alone, 72 with a description.
+/// item: 56 with a title alone, 72 with a description. Focus draws the
+/// shared row ring (`MxRowInk`).
 class MxOptionRow extends StatelessWidget {
   const MxOptionRow({
     super.key,
@@ -48,8 +50,12 @@ class MxOptionRow extends StatelessWidget {
         inMutuallyExclusiveGroup: true,
         // A row that cannot be picked says so (SW-REV-006).
         enabled: onSelected != null,
-        child: InkWell(
+        child: MxRowInk(
           onTap: onSelected,
+          // A row that cannot be picked is blocked, trailing included; it
+          // dims only what `isDimmed` says.
+          isEnabled: onSelected != null,
+          shouldDimWhenDisabled: false,
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: description == null
