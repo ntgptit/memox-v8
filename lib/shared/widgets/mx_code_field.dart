@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
@@ -80,21 +75,25 @@ class _MxCodeFieldState extends State<MxCodeField> {
     if (widget.field.errorText != null) {
       return BorderSide(
         color: colors.error,
-        width: isNext ? AppStroke.focus : AppStroke.hairline,
+        width: isNext
+            ? context.dimens.strokeFocus
+            : context.dimens.strokeHairline,
       );
     }
     if (isNext) {
       return BorderSide(
-        color: context.semanticColors.focusRing,
-        width: AppStroke.focus,
+        color: context.colors.primary,
+        width: context.dimens.strokeFocus,
       );
     }
-    // A disabled code rests on the border hairline, as a disabled field does.
+    // A disabled code takes the disabled edge, as a disabled field does.
     return BorderSide(
       color: widget.field.isEnabled
           ? context.colors.outline
-          : context.semanticColors.border,
-      width: AppStroke.hairline,
+          : context.colors.onSurface.withValues(
+              alpha: context.dimens.opacityDisabledContainer,
+            ),
+      width: context.dimens.strokeHairline,
     );
   }
 
@@ -108,6 +107,8 @@ class _MxCodeFieldState extends State<MxCodeField> {
       'MxTextField(variant: MxTextFieldVariant.code)',
     );
     final hidden = TextField(
+      // Autofocus is read once, on mount: see MxTextField.
+      key: ValueKey(field.isEnabled),
       controller: _controller,
       focusNode: _focus,
       autofocus: field.isAutofocused,
@@ -125,7 +126,7 @@ class _MxCodeFieldState extends State<MxCodeField> {
       ],
       autofillHints: const [AutofillHints.oneTimeCode],
       showCursor: false,
-      style: context.textStyles.fieldCode,
+      style: context.texts.displaySmall,
       decoration: const InputDecoration.collapsed(hintText: null),
     );
     final slots = ListenableBuilder(
@@ -134,7 +135,7 @@ class _MxCodeFieldState extends State<MxCodeField> {
         final text = _controller.text;
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          spacing: AppSpacing.control,
+          spacing: context.dimens.space8,
           children: [
             for (var i = 0; i < MxTextField.codeLength; i++)
               Flexible(
@@ -142,13 +143,14 @@ class _MxCodeFieldState extends State<MxCodeField> {
                   key: MxCodeField.slotKey(i),
                   digit: i < text.length ? text[i] : '',
                   edge: _edge(context, i),
+                  isEnabled: field.isEnabled,
                 ),
               ),
           ],
         );
       },
     );
-    final column = Column(
+    return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -158,7 +160,7 @@ class _MxCodeFieldState extends State<MxCodeField> {
             ExcludeSemantics(child: slots),
             Positioned.fill(
               child: Opacity(
-                opacity: AppOpacity.hidden,
+                opacity: 0,
                 // The field stays in the tree for TalkBack and autofill.
                 alwaysIncludeSemantics: true,
                 child: field.label == null
@@ -172,8 +174,6 @@ class _MxCodeFieldState extends State<MxCodeField> {
           MxFieldMessage(message: message),
       ],
     );
-    if (field.isEnabled) return column;
-    return Opacity(opacity: AppOpacity.disabled, child: column);
   }
 }
 
@@ -202,27 +202,43 @@ class _PasteReplacesFormatter extends TextInputFormatter {
   }
 }
 
-/// One digit's box: 48 wide at most (it shrinks in a narrow column), 56 tall
-/// at least, on the form fill.
+/// One digit's box: 48 wide at most (it shrinks in a narrow column), as tall
+/// as a field at least and growing with the text scale, outlined with no fill.
 class _CodeSlot extends StatelessWidget {
-  const _CodeSlot({super.key, required this.digit, required this.edge});
+  const _CodeSlot({
+    super.key,
+    required this.digit,
+    required this.edge,
+    required this.isEnabled,
+  });
 
   final String digit;
   final BorderSide edge;
+  final bool isEnabled;
 
   @override
   Widget build(BuildContext context) => ConstrainedBox(
-    constraints: const BoxConstraints(
-      maxWidth: AppSize.touchTarget,
-      minHeight: AppSize.codeSlot,
+    constraints: BoxConstraints(
+      maxWidth: context.dimens.sizeControl,
+      minHeight: context.dimens.sizeInput,
     ),
     child: DecoratedBox(
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadius.md),
+        borderRadius: BorderRadius.circular(context.dimens.radiusMd),
         border: Border.fromBorderSide(edge),
       ),
-      child: Center(child: Text(digit, style: context.textStyles.fieldCode)),
+      child: Center(
+        child: Text(
+          digit,
+          style: context.texts.displaySmall?.copyWith(
+            color: isEnabled
+                ? null
+                : context.colors.onSurface.withValues(
+                    alpha: context.dimens.opacityDisabledContent,
+                  ),
+          ),
+        ),
+      ),
     ),
   );
 }

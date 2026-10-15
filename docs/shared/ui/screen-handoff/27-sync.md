@@ -20,7 +20,7 @@ last failed run, and the rows the server refused. Shaped by Impeccable before th
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (content density) + back `MxIconButton` | "Sync". |
+| App bar | `MxAppBar` + back `MxIconButton` | "Sync". |
 | Problem | `MxInlineBanner` (warning); a network failure is an `MxNote` (critique 2026-10-02) | Under the status card, above Sync now (critique 2026-09-30; it was a floating notice). Refused rows win: the title "{n} changes weren't accepted" (critique 2026-09-30 part 3a, R3) over the message "The server didn't accept them. They're safe here. Try again, or keep them on this device only; they won't sync to your other devices.", then Keep on device (outline) · Try again (primary, the screen's one primary) under it. Keep opens the Keep dialog first (critique 2026-09-30 part 1, R4). Otherwise the last failed run's sentence (spec §5.4), local-first, with no code, id or message. None when all is well. |
 | Status | `MxSection` + two `MxSettingsRow`s + note | "Last synced" · "{Today, 14:32}" or "Not yet"; "Waiting to sync" · "{n} changes" or "Nothing waiting", or "No other changes waiting" when only refused rows remain (critique 2026-09-30 part 1); the note "MemoX syncs on its own when you're online. Your study never waits for it." |
 | Sync now | `MxButton` (block, cloud-sync glyph): primary while changes wait or a run failed and no row was refused; outline otherwise, since sync is automatic (critique 2026-09-30) and, with refused rows, the banner's Try again is the one primary (critique 2026-09-30 part 1) | While a run it started is going, a spinner and "Syncing…" take its place, in a row of the button's height (`AppSize.buttonRegular`; critique 2026-09-30 part 3d-1, D5, part 3d-2). |

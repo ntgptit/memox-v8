@@ -1,13 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/app_button_style.dart';
+import 'package:memox/shared/widgets/mx_chip_style.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// Colour role of a button: the contract's four shipped tones, the soft
 /// danger tint of a grade that marks a lapse (screen 16a), the warning
@@ -19,22 +19,17 @@ enum MxButtonTone {
   outline,
   text,
   destructive,
-  dangerSoft,
+  dangerTint,
   warning,
 }
 
-/// Painted geometry. [chip] and [study] are the contract's geometry variants;
-/// the touch area is 48 for every size.
-enum MxButtonSize { regular, small, compact, chip, study }
+/// Painted geometry. The Design System has two button sizes, [regular] (40) and
+/// [small] (32); [chip] and [study] are this app's variants. The touch area is
+/// 48 for every size.
+enum MxButtonSize { regular, small, chip, study }
 
 typedef _Paint = ({Color? fill, Color foreground, BorderSide edge});
-typedef _Geometry = ({
-  double height,
-  double radius,
-  double padding,
-  bool isSmallType,
-  bool canWrap,
-});
+typedef _Geometry = ({double height, double start, double end, bool canWrap});
 
 /// The one button contract: height, radius, padding and label type come from
 /// [size], colours from [tone]. The caller owns placement and width; [isBlock]
@@ -70,11 +65,11 @@ class MxButton extends StatelessWidget {
   final MxButtonTone tone;
   final MxButtonSize size;
 
-  /// Optional leading glyph, painted at 16.
+  /// Optional leading glyph, painted at `sizeIconButton`.
   final IconData? icon;
 
   /// A brand's own mark in place of [icon], such as Google's G (account UI
-  /// spec U6), painted at [AppIconSize.brandMark] and never read aloud: the
+  /// spec U6), painted at [_brandMarkSize] and never read aloud: the
   /// label names the action.
   final ImageProvider? mark;
   final bool isBlock;
@@ -106,58 +101,67 @@ class MxButton extends StatelessWidget {
   /// Study action horizontal padding (contract: 0 36).
   static const double _studyPadding = 36;
 
+  /// The size a brand's guidelines set for its mark beside a label.
+  static const double _brandMarkSize = 18;
+
   @override
   Widget build(BuildContext context) {
+    final tokens = ThemeTokens.of(context);
     final paint = _paintFor(context);
-    final geometry = _geometryFor(
-      size,
-      hasIcon: icon != null || mark != null,
-      isBlock: isBlock,
+    final hasIcon = icon != null || mark != null;
+    final geometry = _geometryFor(context, hasIcon: hasIcon);
+    final edge = paint.edge.style == BorderStyle.none ? null : paint.edge;
+    final base = size == MxButtonSize.chip
+        ? chipButtonStyle(
+            tokens,
+            Theme.of(context).chipTheme,
+            hasLeading: hasIcon,
+          )
+        : buttonStyle(
+            tokens,
+            fill: paint.fill,
+            foreground: paint.foreground,
+            edge: edge,
+          );
+    final sized = base.copyWith(
+      minimumSize: WidgetStatePropertyAll(Size(0, geometry.height)),
+      padding: WidgetStatePropertyAll(
+        EdgeInsetsDirectional.only(start: geometry.start, end: geometry.end),
+      ),
     );
+    // A loading button keeps its resting paint, fill, edge and foreground;
+    // only its presses are blocked (SW-REV-003).
+    final style = isLoading
+        ? sized.copyWith(
+            backgroundColor: WidgetStatePropertyAll(paint.fill),
+            foregroundColor: WidgetStatePropertyAll(paint.foreground),
+            iconColor: WidgetStatePropertyAll(paint.foreground),
+            side: WidgetStatePropertyAll(edge),
+          )
+        : sized;
     final button = TextButton(
       onPressed: isLoading ? null : onPressed,
       autofocus: isAutofocused,
-      style: appButtonStyle(
-        fill: paint.fill,
-        foreground: paint.foreground,
-        edge: paint.edge,
-        focusColor: context.semanticColors.focusRing,
-        height: geometry.height,
-        radius: geometry.radius,
-        padding: geometry.padding,
-        label: geometry.isSmallType
-            ? context.textStyles.buttonLabelSmall
-            : context.textStyles.buttonLabel,
-      ),
-      child: _content(
-        paint.foreground,
-        geometry,
-        context.textStyles.buttonDetail,
-      ),
+      style: style,
+      child: _content(context, paint.foreground, geometry),
     );
     final block = isBlock
         ? SizedBox(width: double.infinity, child: button)
         : button;
+    final label = semanticLabel;
+    if (label == null) return block;
+    // Its own node: without one, the label melts into the row's and its
+    // siblings' (as the reminder's time did; SW-REV-005).
     final canPress = onPressed != null && !isLoading;
-    final sized = switch (semanticLabel) {
-      null => block,
-      // Its own node: without one, the label melts into the row's and its
-      // siblings' (as the reminder's time did).
-      final label => Semantics(
-        container: true,
-        label: label,
-        button: true,
-        enabled: canPress,
-        onTap: canPress ? onPressed : null,
-        excludeSemantics: true,
-        child: block,
-      ),
-    };
-    // Work in progress is not a control that cannot be used: loading wins
-    // over the disabled dim, whatever the caller passes as onPressed
-    // (SW-REV-003).
-    if (onPressed != null || isLoading) return sized;
-    return Opacity(opacity: AppOpacity.disabled, child: sized);
+    return Semantics(
+      container: true,
+      label: label,
+      button: true,
+      enabled: canPress,
+      onTap: canPress ? onPressed : null,
+      excludeSemantics: true,
+      child: block,
+    );
   }
 
   /// The width this button needs to show its label on one line: the label at
@@ -165,41 +169,30 @@ class MxButton extends StatelessWidget {
   /// horizontal padding on both sides.
   double naturalWidth(BuildContext context) {
     final geometry = _geometryFor(
-      size,
+      context,
       hasIcon: icon != null || mark != null,
-      isBlock: isBlock,
     );
-    final style = geometry.isSmallType
-        ? context.textStyles.buttonLabelSmall
-        : context.textStyles.buttonLabel;
     final painter = TextPainter(
-      text: TextSpan(text: label, style: style),
+      text: TextSpan(text: label, style: context.texts.labelLarge),
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
       maxLines: 1,
     )..layout();
     final leadWidth = switch ((icon, mark)) {
-      (_?, _) => AppIconSize.inline + AppSpacing.micro,
-      (_, _?) => AppIconSize.brandMark + AppSpacing.micro,
+      (_?, _) => context.dimens.sizeIconButton + context.dimens.space8,
+      (_, _?) => _brandMarkSize + context.dimens.space8,
       _ => 0.0,
     };
-    final width = painter.width + leadWidth + geometry.padding * 2;
+    final width = painter.width + leadWidth + geometry.start + geometry.end;
     painter.dispose();
     return width.ceilToDouble();
   }
 
   _Paint _paintFor(BuildContext context) {
     final colors = context.colors;
+    // A chip paints the chip theme whatever the tone (ruling R2).
     if (size == MxButtonSize.chip) {
-      // Chip geometry paints its own surface whatever the tone (ruling R2).
-      return (
-        fill: colors.surfaceContainerLowest,
-        foreground: colors.onSurface,
-        edge: BorderSide(
-          color: context.semanticColors.border,
-          width: AppStroke.hairline,
-        ),
-      );
+      return chipPaint(Theme.of(context).chipTheme);
     }
     return switch (tone) {
       MxButtonTone.primary => (
@@ -214,86 +207,88 @@ class MxButton extends StatelessWidget {
       ),
       MxButtonTone.outline => (
         fill: null,
-        foreground: context.semanticColors.primaryText,
-        edge: BorderSide(color: colors.outline, width: AppStroke.hairline),
+        foreground: context.accentColor,
+        edge: BorderSide(
+          color: colors.outline,
+          width: context.dimens.strokeHairline,
+        ),
       ),
       // The quiet action beside a decision's fill (account UI spec U2): the
       // outline's foreground without its edge.
       MxButtonTone.text => (
         fill: null,
-        foreground: context.semanticColors.primaryText,
+        foreground: context.accentColor,
         edge: BorderSide.none,
       ),
       MxButtonTone.destructive => (
-        fill: context.semanticColors.errorFill,
-        foreground: context.semanticColors.onErrorFill,
+        fill: context.colors.error,
+        foreground: context.colors.onError,
         edge: BorderSide.none,
       ),
-      // The danger tint with the error label, as before Indigo (DEV-371);
-      // the solid pair above stays the destructive action's.
-      MxButtonTone.dangerSoft => (
-        fill: context.semanticColors.dangerSoft,
+      // The soft danger tint MxInlineBanner and MxCard.isDanger draw
+      // (FE-A6 D14); the solid pair above stays the destructive action's.
+      MxButtonTone.dangerTint => (
+        fill: context.colors.error.tintOver(MxTintBase.of(context)),
         foreground: colors.error,
         edge: BorderSide(
-          color: context.semanticColors.dangerBorder,
-          width: AppStroke.hairline,
+          color: context.colors.error,
+          width: context.dimens.strokeHairline,
         ),
       ),
       // The warning fill and the text on it (FE-B2 spec D15).
       MxButtonTone.warning => (
-        fill: context.semanticColors.warning,
-        foreground: context.semanticColors.onWarning,
+        fill: context.mxColors.warningContainer,
+        foreground: context.mxColors.onWarningContainer,
         edge: BorderSide.none,
       ),
     };
   }
 
-  static _Geometry _geometryFor(
-    MxButtonSize size, {
-    required bool hasIcon,
-    required bool isBlock,
-  }) => switch (size) {
-    MxButtonSize.regular => (
-      height: AppSize.buttonRegular,
-      radius: AppRadius.md,
-      padding: AppSpacing.gutter,
-      isSmallType: false,
-      canWrap: true,
-    ),
-    MxButtonSize.small => (
-      height: AppSize.buttonSmall,
-      radius: AppRadius.md,
-      padding: hasIcon ? AppSpacing.gutter : AppSpacing.grouped,
-      isSmallType: false,
-      canWrap: false,
-    ),
-    MxButtonSize.compact => (
-      height: AppSize.buttonCompact,
-      radius: AppRadius.sm,
-      padding: AppSpacing.grouped,
-      isSmallType: true,
-      canWrap: false,
-    ),
-    MxButtonSize.chip => (
-      height: AppSize.chip,
-      radius: AppRadius.full,
-      padding: AppSpacing.control,
-      isSmallType: true,
-      canWrap: false,
-    ),
-    MxButtonSize.study => (
-      height: AppSize.buttonRegular,
-      radius: AppRadius.full,
+  _Geometry _geometryFor(BuildContext context, {required bool hasIcon}) {
+    final dimens = context.dimens;
+    final chip = Theme.of(context).chipTheme;
+    return switch (size) {
+      // Material 3: a filled or outlined button with a leading glyph takes
+      // 24 to 16 on the start side; the quiet text tone sits closer to its
+      // label (12), and 16 on the end beside a glyph.
+      MxButtonSize.regular when tone == MxButtonTone.text => (
+        height: dimens.sizeButton,
+        start: dimens.space12,
+        end: hasIcon ? dimens.space16 : dimens.space12,
+        canWrap: true,
+      ),
+      MxButtonSize.regular => (
+        height: dimens.sizeButton,
+        start: hasIcon ? dimens.space16 : dimens.space24,
+        end: dimens.space24,
+        canWrap: true,
+      ),
+      MxButtonSize.small => (
+        height: dimens.sizeButtonSmall,
+        start: hasIcon ? dimens.space16 : dimens.space12,
+        end: hasIcon ? dimens.space16 : dimens.space12,
+        canWrap: false,
+      ),
+      // The chip theme's insets: 8 to a leading glyph, else 16.
+      MxButtonSize.chip => (
+        height: dimens.sizeChip,
+        start: chipStartInset(chip, hasLeading: hasIcon),
+        end: chipEndInset(chip, hasTrailing: false),
+        canWrap: false,
+      ),
       // The contract's 36 sizes a pill that hugs its label; a block
       // action is given its width by its row, and needs the room for
       // the label (FE-A6 P4: "Remembered" in a two-up row).
-      padding: isBlock ? AppSpacing.gutter : _studyPadding,
-      isSmallType: false,
-      canWrap: false,
-    ),
-  };
+      MxButtonSize.study => (
+        height: dimens.sizeButton,
+        start: isBlock ? dimens.space16 : _studyPadding,
+        end: isBlock ? dimens.space16 : _studyPadding,
+        canWrap: false,
+      ),
+    };
+  }
 
-  Widget _content(Color foreground, _Geometry geometry, TextStyle detailStyle) {
+  Widget _content(BuildContext context, Color foreground, _Geometry geometry) {
     final canWrap = geometry.canWrap && !isSingleLine;
     final labelText = Text(
       label,
@@ -308,15 +303,19 @@ class MxButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               labelText,
-              Text(detail, textAlign: TextAlign.center, style: detailStyle),
+              Text(
+                detail,
+                textAlign: TextAlign.center,
+                style: context.texts.labelMedium,
+              ),
             ],
           );
-    final lead = _lead();
+    final lead = _lead(context);
     final body = lead == null
         ? text
         : Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space8,
             children: [
               lead,
               Flexible(child: text),
@@ -324,28 +323,42 @@ class MxButton extends StatelessWidget {
           );
     if (!isLoading) return body;
 
+    // The content box sits between the start and end padding, which differ
+    // beside a glyph, so its centre is off the button's by half the
+    // difference. Padding the spinner on the short side by the whole
+    // difference moves it back by that half, in either text direction.
+    final offCentre = geometry.end - geometry.start;
     // The hidden label holds the width the button already had.
     return Stack(
       alignment: Alignment.center,
       children: [
         Visibility.maintain(visible: false, child: body),
-        // Ruling O2: onPrimary inside a filled button, primary on the rest.
-        MxSpinner(
-          isOnFill:
-              tone == MxButtonTone.primary || tone == MxButtonTone.destructive,
+        Padding(
+          padding: EdgeInsetsDirectional.only(
+            start: math.max(0, offCentre),
+            end: math.max(0, -offCentre),
+          ),
+          // Ruling O2: onPrimary inside a filled button, primary on the rest.
+          child: MxSpinner(
+            isOnFill:
+                tone == MxButtonTone.primary ||
+                tone == MxButtonTone.destructive,
+          ),
         ),
       ],
     );
   }
 
   /// The glyph or the brand mark before the label, if any.
-  Widget? _lead() {
-    if (icon case final glyph?) return Icon(glyph, size: AppIconSize.inline);
+  Widget? _lead(BuildContext context) {
+    if (icon case final glyph?) {
+      return Icon(glyph, size: context.dimens.sizeIconButton);
+    }
     if (mark case final image?) {
       return Image(
         image: image,
-        width: AppIconSize.brandMark,
-        height: AppIconSize.brandMark,
+        width: _brandMarkSize,
+        height: _brandMarkSize,
         excludeFromSemantics: true,
       );
     }

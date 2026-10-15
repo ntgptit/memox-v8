@@ -26,7 +26,7 @@ sheet as a CSV, TSV or XLSX file. UC-TRANSFER-002; spec
 | Footer | `MxSheetActions` (sheet form) | Cancel · "Export", no icon (the title names the cards, DEV-179); "Preparing…" spinning while the file is built and shared (A4); "Try again" after a failure it can fix; Close alone when it cannot. |
 | Toast | `MxSnackbar` | "Handed {n} cards to the system." once the share sheet took the file. |
 
-The overline, the banner and the note line up with the title (20 dp).
+The overline, the banner and the note line up with the title (24 dp).
 
 ## States
 

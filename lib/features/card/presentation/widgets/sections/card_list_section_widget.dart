@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/domain/models/card_list_view_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
@@ -35,6 +34,8 @@ import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A deck's cards (screen 07, UC-CARD-001): the search the app bar reveals,
 /// the deck summary, the filters, the header ("Cards", or "Showing n of
@@ -369,7 +370,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
   Widget _bulkFailedBanner() {
     final l10n = context.l10n;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+      padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
       child: MxInlineBanner(
         tone: MxBannerTone.danger,
         title: l10n.cardBulkFailedTitle,
@@ -378,7 +379,7 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
           if (_failedFlag case (final ids, final isFlagged))
             MxButton(
               label: l10n.commonRetry,
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               isLoading: _isFlagging,
               onPressed: _isFlagging
                   ? null
@@ -402,11 +403,11 @@ class _CardListSectionWidgetState extends ConsumerState<CardListSectionWidget> {
     final isSelecting = selection.isSelecting;
     final total = view.counts.of(request.filter);
     return [
-      const SizedBox(height: AppSpacing.control),
+      SizedBox(height: context.dimens.space8),
       // Selecting hides the field; its term stays and comes back with it.
       if (isSearchOpen && !isSelecting)
         Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.grouped),
+          padding: EdgeInsets.only(bottom: context.dimens.space12),
           child: MxSearchField(
             controller: _query,
             hintText: l10n.cardSearchHint,

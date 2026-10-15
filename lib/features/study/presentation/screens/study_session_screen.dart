@@ -7,7 +7,6 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/speech/di/speech_providers.dart';
 import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/speech/speech_synthesizer.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/settings/domain/models/speech_settings_model.dart';
 import 'package:memox/features/srs/domain/models/review_action_model.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
@@ -39,6 +38,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// The session route (spec D2): the open session's stage in its shell, and
 /// once it has ended, its summary on the same route (D3). ✕ and system Back
@@ -367,6 +367,8 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
         .value
         ?.language;
     return MxAppShell(
+      isSession: true,
+      hasOwnAppBarGround: true,
       appBar: MxStudyTopBar(
         modeLabel: mode,
         current: min(progress.completed + 1, progress.total),
@@ -387,11 +389,11 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
           ),
           if (turn.unsaved != null)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
+              padding: EdgeInsets.fromLTRB(
+                context.dimens.space16,
                 0,
-                AppSpacing.gutter,
-                AppSpacing.grouped,
+                context.dimens.space16,
+                context.dimens.space12,
               ),
               child: MxInlineBanner(
                 tone: MxBannerTone.danger,
@@ -400,7 +402,7 @@ class _StudySessionScreenState extends ConsumerState<StudySessionScreen> {
                 actions: [
                   MxButton(
                     label: l10n.commonRetry,
-                    size: MxButtonSize.compact,
+                    size: MxButtonSize.small,
                     onPressed: _retry,
                   ),
                 ],

@@ -1,46 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/app_typography.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/text_theme.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 void main() {
-  group('buildLightTheme / buildDarkTheme', () {
-    final themes = {
-      'light': (
-        buildLightTheme(),
-        AppColorSchemes.light,
-        MxSemanticColors.light,
-      ),
-      'dark': (buildDarkTheme(), AppColorSchemes.dark, MxSemanticColors.dark),
-    };
-
-    for (final MapEntry(key: name, value: (theme, scheme, semantic))
-        in themes.entries) {
-      test('$name carries its scheme, extension and page ground', () {
+  for (final (name, theme) in [
+    ('light', buildLightTheme()),
+    ('dark', buildDarkTheme()),
+  ]) {
+    group(name, () {
+      test('is Material 3 and inks its text onSurface', () {
         expect(theme.useMaterial3, isTrue);
-        expect(theme.colorScheme, scheme);
-        expect(theme.extension<MxSemanticColors>(), semantic);
-        expect(theme.scaffoldBackgroundColor, scheme.surface);
-      });
-
-      test('$name binds the V3 type scale in the theme family', () {
-        expect(theme.textTheme.displayMedium!.fontSize, 40);
-        expect(theme.textTheme.bodySmall!.fontFamily, AppTypography.fontFamily);
+        expect(theme.textTheme.bodyMedium!.color, theme.colorScheme.onSurface);
       });
 
       // CircleAvatar, FlexibleSpaceBar and UserAccountsDrawerHeader read
       // primaryTextTheme directly, not textTheme.
-      test('$name primaryTextTheme is bound to the theme family too', () {
+      test('primaryTextTheme is bound to the theme family too', () {
         final style = theme.primaryTextTheme.bodyMedium!;
         final weight = style.fontWeight ?? FontWeight.w400;
 
-        expect(style.fontFamily, AppTypography.fontFamily);
-        expect(style.fontSize, 14);
+        expect(style.fontFamily, kFontFamily);
         expect(
           style.fontVariations,
           contains(FontVariation.weight(weight.value.toDouble())),
@@ -50,93 +33,78 @@ void main() {
       // SW-REV-007: the slots Material paints through when no component
       // theme says otherwise; left at their defaults they drew grey ripples,
       // a raised snackbar and a grey tooltip in both themes.
-      test('$name rows press in onSurface at the 12% pressed overlay', () {
-        final pressed = scheme.onSurface.withValues(alpha: AppOpacity.pressed);
+      test('rows press in onSurface at the pressed overlay', () {
+        final scheme = theme.colorScheme;
+        final pressed = scheme.onSurface.withValues(
+          alpha: theme.extension<AppDimens>()!.opacityPressed,
+        );
+
         expect(theme.splashColor, pressed);
         expect(theme.highlightColor, pressed);
       });
 
-      test('$name snackbar is flat: the inverse surface carries it', () {
+      test('snackbar is flat: the inverse surface carries it', () {
         expect(theme.snackBarTheme.elevation, 0);
       });
 
-      test('$name tooltip: the caption on the inverse surface, radius 8', () {
+      test('tooltip: the caption on the inverse surface, radiusXs', () {
+        final scheme = theme.colorScheme;
+        final dimens = theme.extension<AppDimens>()!;
+
         expect(
           theme.tooltipTheme.decoration,
           BoxDecoration(
             color: scheme.inverseSurface,
-            borderRadius: BorderRadius.circular(AppRadius.sm),
+            borderRadius: BorderRadius.circular(dimens.radiusXs),
           ),
         );
         expect(theme.tooltipTheme.textStyle!.color, scheme.onInverseSurface);
-        expect(theme.tooltipTheme.textStyle!.fontSize, 12);
+        expect(
+          theme.tooltipTheme.textStyle!.fontSize,
+          theme.textTheme.bodySmall!.fontSize,
+        );
       });
-
-      test('$name text colour is onSurface', () {
-        expect(theme.textTheme.bodyMedium!.color, scheme.onSurface);
-      });
-    }
-  });
+    });
+  }
 
   test('light to dark lerp keeps the extension (theme animation)', () {
     final mid = ThemeData.lerp(buildLightTheme(), buildDarkTheme(), 0.5);
 
     expect(
-      mid.extension<MxSemanticColors>()!.mastery,
+      mid.extension<MxColorsExtension>()!.successContainer,
       Color.lerp(
-        MxSemanticColors.light.mastery,
-        MxSemanticColors.dark.mastery,
+        MxColorsExtension.light.successContainer,
+        MxColorsExtension.dark.successContainer,
         0.5,
       ),
     );
   });
 
-  group('ThemeContext', () {
-    Future<BuildContext> pumpUnder(WidgetTester tester, ThemeData theme) async {
-      late BuildContext captured;
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: theme,
-          home: Builder(
-            builder: (context) {
-              captured = context;
-              return const SizedBox.shrink();
-            },
-          ),
+  testWidgets('a theme without the extension fails with the fix named', (
+    tester,
+  ) async {
+    late BuildContext context;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(),
+        home: Builder(
+          builder: (c) {
+            context = c;
+            return const SizedBox.shrink();
+          },
         ),
-      );
-      return captured;
-    }
+      ),
+    );
 
-    testWidgets('reads the scheme, text theme and MemoX colours', (
-      tester,
-    ) async {
-      final context = await pumpUnder(tester, buildDarkTheme());
-
-      expect(context.colors, AppColorSchemes.dark);
-      expect(context.texts.displayMedium!.fontSize, 40);
-      expect(context.semanticColors, MxSemanticColors.dark);
-      expect(
-        context.textStyles.navLabel(isSelected: true).color,
-        MxSemanticColors.dark.primaryText,
-      );
-    });
-
-    testWidgets('a theme without the extension fails with the fix named', (
-      tester,
-    ) async {
-      final context = await pumpUnder(tester, ThemeData());
-
-      expect(
-        () => context.semanticColors,
-        throwsA(
-          isA<StateError>().having(
-            (e) => e.message,
-            'message',
-            contains('buildLightTheme'),
-          ),
+    expect(
+      () => context.mxColors,
+      throwsA(
+        isA<StateError>().having(
+          (e) => e.message,
+          'message',
+          contains('buildLightTheme'),
         ),
-      );
-    });
+      ),
+    );
   });
 }

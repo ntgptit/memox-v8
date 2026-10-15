@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_workload_line_widget.dart';
@@ -31,9 +29,9 @@ class DeckDueStripWidget extends StatelessWidget {
       child: MxRowInk(
         onTap: onOpen,
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.card),
+          padding: EdgeInsets.all(context.dimens.space24),
           child: Row(
-            spacing: AppSpacing.grouped,
+            spacing: context.dimens.space12,
             children: [
               const MxIconTile(
                 icon: AppIcons.dueNow,
@@ -42,11 +40,11 @@ class DeckDueStripWidget extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.micro,
+                  spacing: context.dimens.space4,
                   children: [
                     Text(
                       l10n.libraryDueTitle(due),
-                      style: context.textStyles.rowTitle,
+                      style: context.texts.titleSmall,
                     ),
                     DeckWorkloadLineWidget(
                       overdueCount: level.overdueCount,
@@ -63,7 +61,7 @@ class DeckDueStripWidget extends StatelessWidget {
                 IconTheme(
                   data: IconThemeData(
                     color: context.colors.onSurfaceVariant,
-                    size: AppIconSize.compact,
+                    size: context.dimens.sizeIconCompact,
                   ),
                   child: const ExcludeSemantics(
                     child: Icon(AppIcons.chevronRight),

@@ -27,9 +27,9 @@ Raw: `FilledButton`, `FilledButton.tonal`.
 ### Shared widget: `MxButton`
 
 V8 có **một** widget nút chữ, `MxButton` (`lib/shared/widgets/mx_button.dart`):
-`TextButton` + `appButtonStyle` cho mọi tone. Tone là `MxButtonTone`
-(`primary`, `secondary`, `outline`, `destructive`, `dangerSoft`, `warning`), cỡ
-là `MxButtonSize` (`regular`, `small`, `compact`, `chip`, `study`).
+`TextButton` + `buttonStyle(ThemeTokens.of(context), …)` (cùng hàm dựng style với `filledButtonTheme`/`outlinedButtonTheme`/`textButtonTheme`) cho mọi tone. Tone là `MxButtonTone`
+(`primary`, `secondary`, `outline`, `destructive`, `dangerTint`, `warning`), cỡ
+là `MxButtonSize` (`regular` 40, `small` 32, `chip`, `study`; Design System chỉ có hai cỡ nút).
 
 - [ ] Variant là semantic, không phải color.
 - [ ] Optional leading icon.

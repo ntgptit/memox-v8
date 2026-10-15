@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
+
+/// How a choice reads in the round: untouched, picked, answered right or wrong.
+enum StudyChoiceTone { idle, selected, right, wrong }
 
 /// A toned, tappable surface of the round-based modes: a Guess option
 /// (screen 18) or a Match tile (screen 17). Study-local, as the kit keeps
@@ -48,30 +49,17 @@ class StudyChoiceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final semantic = context.semanticColors;
     final motion = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
-        : AppDurations.standard;
+        : Durations.short4;
     // The tone eases in, surface and foreground together, so the content never
     // sits on a surface it was not drawn for (Impeccable after P3). Not an
     // AnimatedContainer: it would inset the content by the border.
-    final foreground = AppDecorations.studyChoiceForeground(
-      colors,
-      semantic,
-      tone,
-    );
+    final foreground = _foreground(context);
     final surface = ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
+      constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
       child: TweenAnimationBuilder<Decoration>(
-        tween: DecorationTween(
-          end: AppDecorations.studyChoice(
-            colors,
-            semantic,
-            tone,
-            isRecessed: isRecessed,
-          ),
-        ),
+        tween: DecorationTween(end: _decoration(context)),
         duration: motion,
         curve: Easing.standard,
         builder: (context, decoration, child) =>
@@ -101,11 +89,49 @@ class StudyChoiceWidget extends StatelessWidget {
         excludeFromSemantics: true,
         // The fade eases in with the tones, at once under Remove animations.
         child: AnimatedOpacity(
-          opacity: isFaded ? AppOpacity.muted : 1,
+          opacity: isFaded ? context.dimens.opacityMuted : 1,
           duration: motion,
           child: surface,
         ),
       ),
+    );
+  }
+
+  /// The content colour of [tone].
+  Color _foreground(BuildContext context) => switch (tone) {
+    StudyChoiceTone.idle => context.colors.onSurface,
+    StudyChoiceTone.selected => context.colors.onPrimary,
+    StudyChoiceTone.right => context.mxColors.success,
+    StudyChoiceTone.wrong => context.colors.error,
+  };
+
+  /// The surface of [tone]: the card ground at rest, the primary fill when
+  /// picked, a tint of the answer's colour over the page with that colour's
+  /// edge once answered.
+  BoxDecoration _decoration(BuildContext context) {
+    final colors = context.colors;
+    final dimens = context.dimens;
+    final rest = isRecessed
+        ? colors.surfaceContainerLow
+        : context.mxColors.cardSurface;
+    // At rest the edge is the fill itself, so the tone eases in without a
+    // border appearing from nothing.
+    final (Color fill, Color edge) = switch (tone) {
+      StudyChoiceTone.idle => (rest, rest),
+      StudyChoiceTone.selected => (colors.primary, colors.primary),
+      StudyChoiceTone.right => (
+        context.mxColors.success.tintOver(MxTintBase.of(context)),
+        context.mxColors.success,
+      ),
+      StudyChoiceTone.wrong => (
+        colors.error.tintOver(MxTintBase.of(context)),
+        colors.error,
+      ),
+    };
+    return BoxDecoration(
+      color: fill,
+      borderRadius: BorderRadius.circular(dimens.radiusMd),
+      border: Border.all(color: edge, width: dimens.strokeHairline),
     );
   }
 }

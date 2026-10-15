@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../support/widget_harness.dart';
 
-/// The Short Label Rule (DESIGN.md, owner 2026-10-05): every pair of
-/// actions stays side by side in English and Vietnamese on a 360 dp phone
-/// at the default text scale. MxActionPair asserts it wherever a test pumps
-/// a pair; this test also measures the Vietnamese labels, which few screen
-/// tests pump.
+/// A pair of actions sits side by side when both labels fit their share and
+/// stacks full width otherwise (MxActionPair). Either way a label is never
+/// wider than the row it stands in, so it never wraps or ellipsizes; this
+/// measures the English and Vietnamese labels on a 360 dp phone, which few
+/// screen tests pump.
 
 /// The footer row of a 360 dp phone: the width less two gutters.
 const double _footerRow = 328;
@@ -23,8 +22,7 @@ const double _dialogRow = 288;
 /// longest the screen shows.
 const int _count = 99999;
 
-/// Trash's selection bar is measured up to three digits; from 1,000 items
-/// the pair may stack, the exception recorded in screen 06's detail file.
+/// Trash's selection bar is measured up to three digits.
 const int _selectionCount = 999;
 
 typedef _Pair = ({
@@ -189,8 +187,8 @@ List<_Pair> _pairs(AppLocalizations l10n) {
 
 void main() {
   for (final code in ['en', 'vi']) {
-    testWidgets('$code: every pair of actions fits side by side on a 360 dp '
-        'phone', (tester) async {
+    testWidgets('$code: no label of a pair is wider than its row on a 360 dp '
+        'phone, side by side or stacked', (tester) async {
       late BuildContext context;
       await pumpMx(
         tester,
@@ -203,19 +201,13 @@ void main() {
       );
 
       for (final pair in _pairs(lookupAppLocalizations(Locale(code)))) {
-        final shared = pair.row - AppSpacing.control;
-        final leadingShare =
-            shared * pair.leadingFlex / (pair.leadingFlex + pair.trailingFlex);
-        expect(
-          pair.leading.naturalWidth(context),
-          lessThanOrEqualTo(leadingShare),
-          reason: '${pair.name}: ${pair.leading.label}',
-        );
-        expect(
-          pair.trailing.naturalWidth(context),
-          lessThanOrEqualTo(shared - leadingShare),
-          reason: '${pair.name}: ${pair.trailing.label}',
-        );
+        for (final button in [pair.leading, pair.trailing]) {
+          expect(
+            button.naturalWidth(context),
+            lessThanOrEqualTo(pair.row),
+            reason: '${pair.name}: ${button.label}',
+          );
+        }
       }
     });
   }

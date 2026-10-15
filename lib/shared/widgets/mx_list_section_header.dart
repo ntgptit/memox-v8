@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The overline that introduces a list, with one optional trailing
@@ -21,26 +20,20 @@ class MxListSectionHeader extends StatelessWidget {
   final bool isAfterFilterBand;
 
   static const double _afterFilterBandTop = 2;
-  static const _padding = EdgeInsetsDirectional.only(
-    start: AppSpacing.micro,
-    end: AppSpacing.micro,
-    bottom: AppSpacing.control,
-  );
-  static const _afterFilterBandPadding = EdgeInsetsDirectional.fromSTEB(
-    AppSpacing.micro,
-    _afterFilterBandTop,
-    AppSpacing.micro,
-    AppSpacing.control,
-  );
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: isAfterFilterBand ? _afterFilterBandPadding : _padding,
+    padding: EdgeInsetsDirectional.fromSTEB(
+      context.dimens.space4,
+      isAfterFilterBand ? _afterFilterBandTop : 0,
+      context.dimens.space4,
+      context.dimens.space8,
+    ),
     // A trailing too wide for the row (large text) moves under the label.
     child: OverflowBar(
       alignment: MainAxisAlignment.spaceBetween,
-      spacing: AppSpacing.control,
-      overflowSpacing: AppSpacing.control,
+      spacing: context.dimens.space8,
+      overflowSpacing: context.dimens.space8,
       children: [
         // A heading for screen readers, so a list of sections can be
         // skimmed by its overlines.
@@ -49,7 +42,7 @@ class MxListSectionHeader extends StatelessWidget {
           child: Text(
             label.toUpperCase(),
             semanticsLabel: label,
-            style: context.textStyles.overline,
+            style: context.texts.labelSmall,
           ),
         ),
         ?trailing,

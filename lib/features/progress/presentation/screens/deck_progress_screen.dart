@@ -5,8 +5,7 @@ import 'package:memox/features/progress/presentation/widgets/sections/progress_s
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/progress/domain/models/progress_model.dart';
 import 'package:memox/features/progress/presentation/providers/deck_progress_provider.dart';
 import 'package:memox/features/progress/presentation/widgets/sections/progress_level_list_widget.dart';
@@ -19,6 +18,7 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 22 inside a deck (UC-PROGRESS-002 at a deck's level): the deck's
 /// path, the range, the deck's total and a row per direct child, each
@@ -67,7 +67,7 @@ class DeckProgressScreen extends ConsumerWidget {
       _ when level != null => MxScreenScroll(
         children: [
           const ProgressRangeWidget(),
-          const SizedBox(height: AppSpacing.gutter),
+          SizedBox(height: context.dimens.space16),
           ProgressLevelListWidget(
             level: level.level,
             isDeckLevel: true,
@@ -79,7 +79,7 @@ class DeckProgressScreen extends ConsumerWidget {
       _ => MxScreenScroll(
         children: [
           const ProgressRangeWidget(),
-          const SizedBox(height: AppSpacing.gutter),
+          SizedBox(height: context.dimens.space16),
           ProgressSkeletonWidget(
             semanticLabel: l10n.progressLoading,
             hasSummary: false,
@@ -91,7 +91,6 @@ class DeckProgressScreen extends ConsumerWidget {
     return MxAppShell(
       appBar: MxAppBar(
         title: path == null ? l10n.progressTitle : path.last.name,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,

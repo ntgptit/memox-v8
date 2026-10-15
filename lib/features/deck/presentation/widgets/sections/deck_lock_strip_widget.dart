@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -34,25 +33,26 @@ class DeckLockStripWidget extends StatelessWidget {
         isWarning: isLocked,
         // The tile centres on the title and body (owner 2026-09-26).
         child: Row(
-          spacing: AppSpacing.grouped,
+          spacing: context.dimens.space12,
           children: [
             MxIconTile(
               icon: isLocked ? AppIcons.lock : AppIcons.lockOpen,
               size: MxIconTileSize.medium,
               tone: isLocked ? MxIconTileTone.warning : MxIconTileTone.primary,
             ),
-            // A locked strip is a soft ground: its text styles are read from
-            // inside it, so they resolve Day's (spec 2026-10-10 D4).
             Expanded(
-              child: Builder(
-                builder: (ground) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: AppSpacing.micro,
-                  children: [
-                    Text(title, style: ground.textStyles.rowTitle),
-                    Text(body, style: ground.textStyles.rowDescription),
-                  ],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: context.dimens.space4,
+                children: [
+                  Text(title, style: context.texts.titleSmall),
+                  Text(
+                    body,
+                    style: context.texts.bodyMedium?.copyWith(
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

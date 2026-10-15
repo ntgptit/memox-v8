@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_option_row.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
 
 import '../../support/widget_harness.dart';
 
 const _radioKey = ValueKey('mx-option-radio');
+const _dotKey = ValueKey('mx-option-radio-dot');
 
 Border _ring(WidgetTester tester) =>
     (tester.widget<DecoratedBox>(find.byKey(_radioKey)).decoration
@@ -14,42 +17,70 @@ Border _ring(WidgetTester tester) =>
             .border!
         as Border;
 
-void main() {
-  final scheme = AppColorSchemes.light;
+BoxDecoration _dot(WidgetTester tester) =>
+    tester.widget<DecoratedBox>(find.byKey(_dotKey)).decoration
+        as BoxDecoration;
 
-  testWidgets('unselected 2px outline ring; selected 6px primaryText', (
+void main() {
+  final scheme = lightColorScheme;
+
+  // Material 3 radio: an 18 ring stroked 2, a 9 dot (inner radius 4.5) when
+  // selected; the unselected ring is onSurfaceVariant.
+  testWidgets('unselected: a 2px onSurfaceVariant ring, no dot', (
     tester,
   ) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
     );
-    expect(_ring(tester).top, BorderSide(color: scheme.outline, width: 2));
-    expect(tester.getSize(find.byKey(_radioKey)), const Size.square(20));
+    expect(
+      _ring(tester).top,
+      BorderSide(color: scheme.onSurfaceVariant, width: 2),
+    );
+    expect(tester.getSize(find.byKey(_radioKey)), const Size.square(18));
+    expect(find.byKey(_dotKey), findsNothing);
+  });
 
+  testWidgets('selected: the same 2px ring and a 9 dot, both accent', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () {}),
     );
+    expect(_ring(tester).top, BorderSide(color: accentOf(scheme), width: 2));
+    expect(tester.getSize(find.byKey(_radioKey)), const Size.square(18));
+    expect(tester.getSize(find.byKey(_dotKey)), const Size.square(9));
+    expect(_dot(tester).color, accentOf(scheme));
+    expect(_dot(tester).shape, BoxShape.circle);
     expect(
-      _ring(tester).top,
-      BorderSide(color: MxSemanticColors.light.primaryText, width: 6),
+      tester.getCenter(find.byKey(_dotKey)),
+      tester.getCenter(find.byKey(_radioKey)),
     );
-    expect(tester.getSize(find.byKey(_radioKey)), const Size.square(20));
   });
 
-  // The ring is a stroke glyph, so it reads primaryText.
+  // The ring is a stroke glyph, so it reads the accent colour.
   // The dark primary reads 2.46:1 on a sheet, below the 3:1 of a state.
-  testWidgets('dark: the selected ring is primaryText', (tester) async {
+  testWidgets('dark: the selected ring and dot are the accent colour', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxOptionRow(title: 'SM-2', isSelected: true, onSelected: () {}),
       brightness: Brightness.dark,
     );
-    expect(_ring(tester).top.color, MxSemanticColors.dark.primaryText);
+    expect(_ring(tester).top.color, accentOf(darkColorScheme));
+    expect(_dot(tester).color, accentOf(darkColorScheme));
+
+    await pumpMx(
+      tester,
+      MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () {}),
+      brightness: Brightness.dark,
+    );
+    expect(_ring(tester).top.color, darkColorScheme.onSurfaceVariant);
   });
 
-  testWidgets('at least 48 tall; a description wraps and grows the row', (
+  testWidgets('56 tall, 72 with a description; a long one grows the row', (
     tester,
   ) async {
     await pumpMx(
@@ -64,7 +95,21 @@ void main() {
       ),
     );
     final short = tester.getSize(find.byType(MxOptionRow)).height;
-    expect(short, greaterThanOrEqualTo(48));
+    expect(short, 56);
+
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 360,
+        child: MxOptionRow(
+          title: 'Eight box',
+          description: 'Eight intervals',
+          isSelected: false,
+          onSelected: () {},
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(MxOptionRow)).height, 72);
 
     await pumpMx(
       tester,
@@ -80,7 +125,7 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(MxOptionRow)).height, greaterThan(short));
+    expect(tester.getSize(find.byType(MxOptionRow)).height, greaterThan(72));
   });
 
   testWidgets('a tap selects; announced as a checked exclusive option', (

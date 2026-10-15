@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
@@ -30,6 +29,7 @@ import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 enum _Field { front, back, example, hint, pronunciation }
 
@@ -368,7 +368,6 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
 
   MxAppBar _appBar(AppLocalizations l10n) => MxAppBar(
     title: _isCreating ? l10n.cardAddTitle : l10n.cardEditTitle,
-    density: MxAppBarDensity.content,
     leading: MxIconButton(
       icon: _isCreating ? AppIcons.close : AppIcons.back,
       semanticLabel: _isCreating ? l10n.cardClose : l10n.commonBack,
@@ -394,7 +393,7 @@ class _CardEditorFormWidgetState extends ConsumerState<CardEditorFormWidget> {
   );
 
   List<Widget> _fields(AppLocalizations l10n, Map<_Field, String?> errors) => [
-    const SizedBox(height: AppSpacing.control),
+    SizedBox(height: context.dimens.space8),
     if (_deckRejects)
       MxInlineBanner(
         tone: MxBannerTone.warning,

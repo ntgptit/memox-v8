@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 /// The top-level destinations in a rail on the leading edge, for windows of
-/// [AppSize.navRailBreakpoint] and wider (FE-C5). The kit draws no rail: it
-/// takes MxBottomNav's glyphs, pill and label so the two read as one
-/// control. It takes the insets on its own side and scrolls when the window
-/// is short.
+/// `breakpointMedium` and wider (FE-C5): the page surface, a hairline `divider`
+/// on its inner edge, and the same glyph, pill and label as [MxBottomNav], so
+/// the two read as one control. It takes the insets on its own side and scrolls
+/// when the window is short.
 class MxNavRail extends StatelessWidget {
   const MxNavRail({
     super.key,
@@ -26,109 +22,50 @@ class MxNavRail extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
+  /// A destination keeps this height so the pill and label have room.
+  static const double _itemMinHeight = 56;
+
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    // The selected ground (spec 2026-10-10 §4).
-    final pillGround = colors.primaryContainer;
+    final dimens = context.dimens;
     // SafeArea's sides are physical: the rail takes only the one it sits on.
     final isLtr = Directionality.of(context) == TextDirection.ltr;
-    return ColoredBox(
-      color: colors.surfaceContainerLow,
+    final edge = BorderSide(
+      color: context.mxColors.divider,
+      width: dimens.strokeHairline,
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: BorderDirectional(end: edge),
+      ),
       child: SafeArea(
         left: isLtr,
         right: !isLtr,
         child: SizedBox(
-          width: AppSize.navRail,
+          width: dimens.sizeRail,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.control),
+            padding: EdgeInsets.symmetric(vertical: dimens.space8),
             child: Material(
               type: MaterialType.transparency,
               child: Column(
-                spacing: AppSpacing.micro,
+                spacing: dimens.space4,
                 children: [
                   for (final (index, destination) in destinations.indexed)
-                    _RailItem(
-                      destination: destination,
-                      isSelected: index == selectedIndex,
-                      pillGround: pillGround,
-                      onTap: () => onSelected(index),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: _itemMinHeight,
+                        minWidth: dimens.sizeRail,
+                      ),
+                      child: MxNavItem(
+                        destination: destination,
+                        isSelected: index == selectedIndex,
+                        onTap: () => onSelected(index),
+                      ),
                     ),
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RailItem extends StatelessWidget {
-  const _RailItem({
-    required this.destination,
-    required this.isSelected,
-    required this.pillGround,
-    required this.onTap,
-  });
-
-  final MxNavDestination destination;
-  final bool isSelected;
-  final Color pillGround;
-  final VoidCallback onTap;
-
-  static const double _minHeight = 56;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Semantics(
-      container: true,
-      selected: isSelected,
-      button: true,
-      child: InkWell(
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: _minHeight,
-            minWidth: AppSize.navRail,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            spacing: AppSpacing.micro,
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: isSelected ? pillGround : null,
-                  borderRadius: BorderRadius.circular(AppRadius.full),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.gutter,
-                    vertical: AppSpacing.micro,
-                  ),
-                  child: Icon(
-                    isSelected ? destination.selectedIcon : destination.icon,
-                    size: AppIconSize.compact,
-                    color: isSelected
-                        ? context.semanticColors.primaryText
-                        : colors.onSurfaceVariant,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.micro,
-                ),
-                child: Text(
-                  destination.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: context.textStyles.navLabel(isSelected: isSelected),
-                ),
-              ),
-            ],
           ),
         ),
       ),

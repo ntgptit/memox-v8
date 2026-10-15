@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
@@ -58,32 +57,28 @@ class SessionSummaryHeroWidget extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.grouped),
-          // A toned card is a soft ground: its text styles are read from
-          // inside it, so they resolve Day's (spec 2026-10-10 D4).
-          Builder(
-            builder: (ground) => Text(
-              shown,
-              semanticsLabel: overline,
-              textAlign: TextAlign.center,
-              style: ground.textStyles.eyebrow,
+          SizedBox(height: context.dimens.space12),
+          Text(
+            shown,
+            semanticsLabel: overline,
+            textAlign: TextAlign.center,
+            style: context.texts.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: AppSpacing.micro),
+          SizedBox(height: context.dimens.space4),
           Semantics(
             header: true,
-            child: Builder(
-              builder: (ground) => Text(
-                _titleOf(l10n),
-                textAlign: TextAlign.center,
-                style: ground.textStyles.summaryTitle,
-              ),
+            child: Text(
+              _titleOf(l10n),
+              textAlign: TextAlign.center,
+              style: context.texts.titleMedium,
             ),
           ),
-          const SizedBox(height: AppSpacing.micro),
+          SizedBox(height: context.dimens.space4),
           _BodyText(body: body, strong: strong),
           if (outcome.drawsStats && summary.hasAnswers) ...[
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
             _Stats(
               view: view,
               summary: summary,
@@ -175,18 +170,25 @@ class _BodyText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final run = strong;
     final start = run == null ? -1 : body.indexOf(run);
     if (run == null || start < 0) {
-      return Text(body, textAlign: TextAlign.center, style: styles.emptyBody);
+      return Text(
+        body,
+        textAlign: TextAlign.center,
+        style: context.texts.bodyMedium?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
+      );
     }
     return Text.rich(
       TextSpan(
-        style: styles.emptyBody,
+        style: context.texts.bodyMedium?.copyWith(
+          color: context.colors.onSurfaceVariant,
+        ),
         children: [
           TextSpan(text: body.substring(0, start)),
-          TextSpan(text: run, style: styles.summaryBodyStrong),
+          TextSpan(text: run, style: context.texts.titleSmall),
           TextSpan(text: body.substring(start + run.length)),
         ],
       ),
@@ -223,11 +225,11 @@ class _Stats extends StatelessWidget {
     final answered = summary.answeredCardCount;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.micro,
+      spacing: context.dimens.space4,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: AppSpacing.control,
+          spacing: context.dimens.space8,
           children: [
             if (!isFinishedStated)
               Expanded(
@@ -260,7 +262,9 @@ class _Stats extends StatelessWidget {
           Text(
             l10n.summaryWrongExplained,
             textAlign: TextAlign.center,
-            style: context.textStyles.emptyBody,
+            style: context.texts.bodyMedium?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
       ],
     );

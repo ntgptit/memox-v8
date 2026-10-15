@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/settings/presentation/controllers/study_options_controller.dart';
 import 'package:memox/features/settings/presentation/states/study_options_state.dart';
 import 'package:memox/l10n/l10n_context.dart';

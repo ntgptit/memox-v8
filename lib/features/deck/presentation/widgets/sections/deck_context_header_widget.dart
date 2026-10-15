@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Where a card operation writes: the deck's path ending in the deck and the
 /// operation, so the deck is named once (critique 2026-09-30). It is not a
@@ -52,16 +52,16 @@ class _LoadingHeader extends StatelessWidget {
     // The bars say nothing; the header is heard once as loading.
     container: true,
     label: context.l10n.commonLoading,
-    child: const ExcludeSemantics(
+    child: ExcludeSemantics(
       child: MxSkeletonPulse(
         child: Padding(
           padding: EdgeInsets.fromLTRB(
-            AppSpacing.gutter,
-            AppSpacing.control,
-            AppSpacing.gutter,
-            AppSpacing.control,
+            context.dimens.space16,
+            context.dimens.space8,
+            context.dimens.space16,
+            context.dimens.space8,
           ),
-          child: Align(
+          child: const Align(
             alignment: AlignmentDirectional.centerStart,
             child: MxSkeleton(width: _pathWidth),
           ),

@@ -9,6 +9,7 @@ import 'package:memox/features/deck/presentation/providers/delete_deck_use_case_
 import 'package:memox/features/deck/presentation/screens/deck_level_screen.dart';
 import 'package:memox/features/deck/presentation/states/deck_level_query_state.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_reorder_done_widget.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -154,6 +155,22 @@ void main() {
     expect(find.byTooltip(_en.libraryTags), findsNothing);
     expect(find.text(_en.searchFieldHint), findsNothing);
     expect(find.byType(MxFab), findsNothing);
+  });
+
+  libraryTest('reorder: the Done pill ends on the screen margin, like any text '
+      'action in the bar', (tester, env) async {
+    await _seed(env);
+    await pumpLibraryScreen(tester, env, deckScreen());
+    await tester.tap(find.byTooltip(_en.deckMoreActions('Korean')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(_en.deckReorder));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getTopRight(find.byType(MxAppBar)).dx -
+          tester.getTopRight(find.byType(DeckReorderDoneWidget)).dx,
+      tester.element(find.byType(MxAppBar)).screenMargin,
+    );
   });
 
   libraryTest(

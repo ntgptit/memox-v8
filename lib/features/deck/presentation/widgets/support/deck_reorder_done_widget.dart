@@ -16,7 +16,7 @@ class DeckReorderDoneWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => MxButton(
     label: context.l10n.libraryReorderDone,
-    size: MxButtonSize.compact,
+    size: MxButtonSize.small,
     onPressed: () => _finish(ref),
   );
 }

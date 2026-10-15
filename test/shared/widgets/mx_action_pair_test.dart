@@ -75,8 +75,8 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('at the default text scale a label too long for its share '
-      'fails: shorten it first (The Short Label Rule)', (tester) async {
+  testWidgets('labels too long for their share stack full width, leading on '
+      'top', (tester) async {
     await pumpMx(
       tester,
       _bar(
@@ -87,7 +87,14 @@ void main() {
       ),
     );
 
-    expect(tester.takeException(), isAssertionError);
+    final leading = tester.getRect(find.text('Học lại bộ thẻ này'));
+    final trailing = tester.getRect(find.text('Xoá vĩnh viễn khỏi thùng rác'));
+    expect(leading.bottom, lessThanOrEqualTo(trailing.top));
+    expect(
+      tester.getSize(find.byType(MxButton).first).width,
+      tester.getSize(find.byType(MxButton).last).width,
+    );
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('no leading: the trailing button alone, full width', (

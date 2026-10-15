@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// The tone a count carries. There is no streak tone (ruling S1). Mastery is
 /// learning progress; success is a right answer or a finished, fine state
@@ -39,55 +40,52 @@ class MxBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final semantic = context.semanticColors;
-    // A tonal badge sits on its tone's soft ground and reads its on-soft
-    // token (spec 2026-10-10 §5.3); a solid badge is primary.
-    final (ground, foreground) = switch ((isSolid, tone)) {
-      (true, _) => (colors.primary, colors.onPrimary),
-      (false, MxBadgeTone.primary) => (
-        semantic.primarySoft,
-        semantic.onPrimarySoft,
-      ),
-      (false, MxBadgeTone.mastery) => (
-        semantic.successSoft,
-        semantic.onSuccessSoft,
-      ),
-      (false, MxBadgeTone.success) => (
-        semantic.successSoft,
-        semantic.onSuccessSoft,
-      ),
-      (false, MxBadgeTone.warning) => (
-        semantic.warningSoft,
-        semantic.onWarningSoft,
-      ),
-      // Danger keeps its pre-Indigo look: the error red on its tint
-      // (DEV-371).
-      (false, MxBadgeTone.danger) => (semantic.dangerSoft, colors.error),
-      (false, MxBadgeTone.neutral) => (
-        semantic.neutralSoft,
-        semantic.onNeutralSoft,
-      ),
+    final toneColor = switch (tone) {
+      MxBadgeTone.primary => colors.primary,
+      MxBadgeTone.mastery => context.mxColors.successContainer,
+      MxBadgeTone.success => context.mxColors.success,
+      MxBadgeTone.warning => context.mxColors.warningContainer,
+      MxBadgeTone.danger => colors.error,
+      // Ruling S2: the contract names no neutral colour.
+      MxBadgeTone.neutral => colors.onSurfaceVariant,
+    };
+    // Ruling S3: tonal warning text reads in warning-ink, because the amber
+    // fails as 12px text on a light surface; the mastery green likewise
+    // reads in its ink (3.56:1 on its tint in light, FE-C1).
+    final ink = switch ((isSolid, tone)) {
+      (true, _) => colors.onPrimary,
+      (false, MxBadgeTone.warning) => context.mxColors.warning,
+      (false, MxBadgeTone.primary) => context.accentColor,
+      (false, MxBadgeTone.mastery) => context.mxColors.success,
+      (false, MxBadgeTone.success) => context.mxColors.success,
+      (false, _) => toneColor,
     };
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: ground,
-        borderRadius: BorderRadius.circular(AppRadius.full),
+      decoration: ShapeDecoration(
+        // The primary tint is the accent's, as the token spec computes it.
+        color: isSolid
+            ? toneColor
+            : switch (tone) {
+                MxBadgeTone.primary => context.accentColor,
+                _ => toneColor,
+              }.tintOver(MxTintBase.of(context)),
+        shape: const StadiumBorder(),
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: _height),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+          padding: EdgeInsets.symmetric(horizontal: context.dimens.space8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: AppSpacing.micro,
+            spacing: context.dimens.space4,
             children: [
               if (icon case final glyph?)
-                Icon(glyph, size: _glyphSize, color: foreground),
+                Icon(glyph, size: _glyphSize, color: ink),
               Text(
                 label,
                 maxLines: 1,
                 softWrap: false,
-                style: context.textStyles.badgeLabel(foreground),
+                style: context.texts.labelSmall?.copyWith(color: ink),
               ),
             ],
           ),

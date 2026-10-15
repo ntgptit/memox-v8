@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 
 import '../../support/widget_harness.dart';
@@ -36,13 +40,17 @@ void main() {
     }
   });
 
-  testWidgets('default: the primary soft ground with its on-soft glyph, '
-      'light in both themes', (tester) async {
+  testWidgets('default: the accent tinted over the surface, the accent glyph', (
+    tester,
+  ) async {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder));
-    expect(_tile(tester).color, MxSemanticColors.light.primarySoft);
+    expect(
+      _tile(tester).color,
+      accentOf(lightColorScheme).tintOver(lightColorScheme.surface),
+    );
     expect(
       tester.widget<Icon>(find.byType(Icon)).color,
-      MxSemanticColors.light.onPrimarySoft,
+      accentOf(lightColorScheme),
     );
 
     await pumpMx(
@@ -52,15 +60,18 @@ void main() {
     );
     // The theme animates from light when the same app re-pumps dark.
     await tester.pumpAndSettle();
-    expect(_tile(tester).color, MxSemanticColors.dark.primarySoft);
+    expect(
+      _tile(tester).color,
+      accentOf(darkColorScheme).tintOver(darkColorScheme.surface),
+    );
   });
 
-  testWidgets('seeded: the seed glyph on the primary soft ground', (
+  testWidgets('seeded: the seed tinted over the surface with a seed glyph', (
     tester,
   ) async {
     await pumpMx(tester, const MxIconTile(icon: AppIcons.folder, seed: _seed));
 
-    expect(_tile(tester).color, MxSemanticColors.light.primarySoft);
+    expect(_tile(tester).color, _seed.tintOver(lightColorScheme.surface));
     expect(tester.widget<Icon>(find.byType(Icon)).color, _seed);
   });
 
@@ -96,7 +107,7 @@ void main() {
         tester,
         const MxIconTile(icon: AppIcons.lockOpen, tone: MxIconTileTone.primary),
       );
-      final scheme = AppColorSchemes.light;
+      final scheme = lightColorScheme;
 
       expect(_tile(tester).color, scheme.primary);
       expect(
@@ -114,10 +125,10 @@ void main() {
         const MxIconTile(icon: AppIcons.lock, tone: MxIconTileTone.warning),
       );
 
-      expect(_tile(tester).color, MxSemanticColors.light.warning);
+      expect(_tile(tester).color, MxColorsExtension.light.warningContainer);
       expect(
         tester.widget<Icon>(find.byIcon(AppIcons.lock)).color,
-        MxSemanticColors.light.onWarning,
+        MxColorsExtension.light.onWarningContainer,
       );
     },
   );
@@ -138,35 +149,26 @@ void main() {
       MxIconTileTone.success,
       MxIconTileTone.caution,
       MxIconTileTone.danger,
-      MxIconTileTone.neutral,
     ]) {
-      testWidgets('${tone.name}, ${brightness.name}: its soft ground, and the '
-          'glyph reads 3:1 on it (FE-A6 D14)', (tester) async {
+      testWidgets('${tone.name}, ${brightness.name}: a soft tint, and the '
+          'glyph reads 3:1 on it over the surface (FE-A6 D14)', (tester) async {
         await pumpMx(
           tester,
           MxIconTile(icon: AppIcons.check, tone: tone),
           brightness: brightness,
         );
-        final semantic = brightness == Brightness.light
-            ? MxSemanticColors.light
-            : MxSemanticColors.dark;
+        final scheme = brightness == Brightness.light
+            ? lightColorScheme
+            : darkColorScheme;
         final fill = _tile(tester).color!;
         final glyph = tester.widget<Icon>(find.byIcon(AppIcons.check)).color!;
 
-        expect(fill, switch (tone) {
-          MxIconTileTone.success => semantic.successSoft,
-          MxIconTileTone.caution => semantic.warningSoft,
-          MxIconTileTone.neutral => semantic.neutralSoft,
-          _ => semantic.dangerSoft,
-        });
-        // The danger tint is translucent (DEV-371): read it over the card.
-        final card = brightness == Brightness.light
-            ? AppColorSchemes.light.surfaceContainerLowest
-            : AppColorSchemes.dark.surfaceContainerLowest;
         expect(
-          _ratio(glyph, Color.alphaBlend(fill, card)),
-          greaterThanOrEqualTo(3),
+          _ratio(fill, scheme.surface),
+          lessThan(1.5),
+          reason: 'a soft tint, not a solid fill',
         );
+        expect(_ratio(glyph, fill), greaterThanOrEqualTo(3));
       });
     }
   }

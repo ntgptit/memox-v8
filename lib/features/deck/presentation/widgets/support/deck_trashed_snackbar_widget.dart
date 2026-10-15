@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
 import 'package:memox/features/deck/domain/models/deck_deletion_summary_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
 import 'package:memox/features/deck/presentation/widgets/support/deck_rejection_message_widget.dart';
@@ -36,7 +35,7 @@ void showDeckTrashedSnackbar(
       summary.cardCount,
     ),
     actionLabel: l10n.commonUndo,
-    duration: AppDurations.undoWindow,
+    duration: mxUndoWindow,
     onAction: () => unawaited(_undo(host, container, batchId, onOpenTrash)),
   );
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 

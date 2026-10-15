@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// Session chrome for the study modes: close, mode badge, a thin progress
-/// track and a counter. Indigo in every mode (critique 2026-09-30 part 3c-2,
+/// track and a counter. Primary in every mode (critique 2026-09-30 part 3c-2,
 /// R8): the badge, its tint and the fill.
 class MxStudyTopBar extends StatelessWidget {
   const MxStudyTopBar({
@@ -49,30 +48,40 @@ class MxStudyTopBar extends StatelessWidget {
   /// The share the counter may take before it shrinks (P3 final review).
   static const double _counterShare = 0.25;
 
+  /// The close glyph and the counter sit on the screen margin; the touch area
+  /// reaches past the margin by the glyph's inset.
+  EdgeInsetsDirectional _sidePadding(BuildContext context) {
+    final glyphInset =
+        (context.dimens.sizeControl - context.dimens.sizeIcon) / 2;
+    return EdgeInsetsDirectional.only(
+      start: context.screenMargin - glyphInset,
+      end: context.screenMargin,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final accentColor = colors.primary;
-    // The mode badge is the primary soft ground with its on-soft text.
-    final semantic = context.semanticColors;
-    final styles = context.textStyles;
+    // The badge text is ink: primaryInk on the primary tint.
+    final accentInk = context.accentColor;
     final duration = MediaQuery.disableAnimationsOf(context)
         ? Duration.zero
-        : AppDurations.standard;
+        : Durations.short4;
     return ColoredBox(
       color: colors.surface,
       child: SafeArea(
         bottom: false,
         // Ruling R1: 56 at minimum, grows with text scaling.
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSize.appBar),
+          constraints: BoxConstraints(minHeight: context.dimens.sizeAppBar),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.control),
+            padding: _sidePadding(context),
             // The chip is capped so a long mode name at large text ellipsizes
             // instead of squeezing the track away (FE-A6 P3 ruling T1).
             child: LayoutBuilder(
               builder: (context, constraints) => Row(
-                spacing: AppSpacing.control,
+                spacing: context.dimens.space8,
                 children: [
                   MxIconButton(
                     icon: AppIcons.close,
@@ -84,27 +93,29 @@ class MxStudyTopBar extends StatelessWidget {
                       maxWidth: constraints.maxWidth * _badgeShare,
                     ),
                     child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: semantic.primarySoft,
-                        borderRadius: BorderRadius.circular(AppRadius.full),
+                      decoration: ShapeDecoration(
+                        color: accentColor.tintOver(MxTintBase.of(context)),
+                        shape: const StadiumBorder(),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.control,
-                          vertical: AppSpacing.micro,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.dimens.space8,
+                          vertical: context.dimens.space4,
                         ),
                         child: Text(
                           modeLabel.toUpperCase(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: styles.studyBadge(semantic.onPrimarySoft),
+                          style: context.texts.labelSmall?.copyWith(
+                            color: accentInk,
+                          ),
                         ),
                       ),
                     ),
                   ),
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(AppRadius.full),
+                      borderRadius: BorderRadius.circular(_trackHeight / 2),
                       child: SizedBox(
                         height: _trackHeight,
                         child: ColoredBox(
@@ -134,7 +145,12 @@ class MxStudyTopBar extends StatelessWidget {
                     ),
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
-                      child: Text(counterLabel, style: styles.counter),
+                      child: Text(
+                        counterLabel,
+                        style: context.texts.labelSmall?.copyWith(
+                          color: context.colors.onSurfaceVariant,
+                        ),
+                      ),
                     ),
                   ),
                 ],

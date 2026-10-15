@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/presentation/widgets/items/card_add_details_widget.dart';
 import 'package:memox/features/card/presentation/widgets/overlays/card_discard_dialog_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_footer_widget.dart';
@@ -75,6 +76,40 @@ void main() {
 
     expect(find.text(_en.cardFieldCount(3, 60)), findsOneWidget);
     expect(find.text(_en.cardRequiredLegend), findsOneWidget);
+  });
+
+  libraryTest('the count ends the row under the box, in the error tone with '
+      'the field\'s error', (tester, env) async {
+    final controller = TextEditingController(text: 'a' * 61);
+    addTearDown(controller.dispose);
+    await pumpLibraryScreen(
+      tester,
+      env,
+      _host(
+        CardFieldWidget(
+          label: _en.cardFieldFront,
+          hint: _en.cardFrontHint,
+          limit: 60,
+          controller: controller,
+          isRequired: true,
+          errorText: _en.cardRejectionFrontTooLong,
+        ),
+      ),
+    );
+
+    final count = find.text(_en.cardFieldCount(61, 60));
+    expect(
+      tester.getTopLeft(count).dy,
+      greaterThanOrEqualTo(tester.getBottomLeft(find.byType(TextField)).dy),
+    );
+    expect(
+      tester.getTopRight(count).dx,
+      tester.getTopRight(find.byType(TextField)).dx - 16,
+    );
+    expect(
+      tester.widget<Text>(count).style!.color,
+      tester.element(count).colors.error,
+    );
   });
 
   libraryTest('an optional field shows its count once typed', (
@@ -341,7 +376,7 @@ void main() {
                 )
                 .decoration!
             as BoxDecoration;
-    expect((box.border! as Border).top.color, AppColorSchemes.light.outline);
+    expect((box.border! as Border).top.color, lightColorScheme.outline);
   });
 
   libraryTest('field labels are sentence case; Required is a caption '
@@ -368,17 +403,22 @@ void main() {
     );
 
     for (final (text, role) in [
-      (_en.cardFieldFront, 'fieldLabel'),
+      (_en.cardFieldFront, 'paintedLabel'),
       (_en.cardTags, 'fieldLabel'),
       (_en.cardRequiredLegend, 'requiredMarker'),
     ]) {
       final label = find.text(text);
-      final styles = tester.element(label).textStyles;
-      expect(
-        tester.widget<Text>(label).style,
-        role == 'fieldLabel' ? styles.fieldLabel : styles.requiredMarker,
-        reason: text,
-      );
+      final element = tester.element(label);
+      final texts = element.texts;
+      // A field paints its own label in onSurfaceVariant; the section
+      // header's stays on the default ink.
+      expect(tester.widget<Text>(label).style, switch (role) {
+        'paintedLabel' => texts.labelMedium?.copyWith(
+          color: element.colors.onSurfaceVariant,
+        ),
+        'fieldLabel' => texts.labelMedium,
+        _ => texts.bodyMedium?.copyWith(color: element.accentColor),
+      }, reason: text);
     }
     expect(find.text(_en.cardFieldFront.toUpperCase()), findsNothing);
   });

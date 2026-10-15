@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/app_decorations.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 /// What the surface's emptiness means: action-led, a plain fact, a calm
 /// finish, something to act on, or a failed outcome.
@@ -73,56 +73,69 @@ class MxEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
+    final toneColor = _toneColor(context);
     final padding = isCompact
-        ? const EdgeInsets.symmetric(
-            horizontal: AppSpacing.section,
-            vertical: AppSpacing.major,
+        ? EdgeInsets.symmetric(
+            horizontal: context.dimens.space24,
+            vertical: context.dimens.space32,
           )
-        : const EdgeInsets.fromLTRB(
-            AppSpacing.section,
+        : EdgeInsets.fromLTRB(
+            context.dimens.space24,
             _topPadding,
-            AppSpacing.section,
-            AppSpacing.major,
+            context.dimens.space24,
+            context.dimens.space32,
           );
     return SizedBox(
       width: double.infinity,
-      child: DecoratedBox(
-        decoration: AppDecorations.raisedCard(
-          context.colors,
-          context.semanticColors,
-        ),
+      child: MxCard(
+        isFullBleed: true,
         child: Padding(
           padding: padding,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _Tile(icon: icon, tone: tone, isCompact: isCompact),
+              _Tile(
+                icon: icon,
+                color: toneColor,
+                foreground: switch (tone) {
+                  MxEmptyStateTone.primary => context.accentColor,
+                  MxEmptyStateTone.success => context.mxColors.success,
+                  // As the caution tile and the warning banner (critique
+                  // 2026-09-30 part 3d-2, E14).
+                  MxEmptyStateTone.warning => context.mxColors.warning,
+                  _ => toneColor,
+                },
+                isCompact: isCompact,
+              ),
               // Ruling R7: the tile→title and title→body gaps are
               // UNSPECIFIED in the contract.
-              const SizedBox(height: AppSpacing.gutter),
+              SizedBox(height: context.dimens.space16),
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: isCompact ? styles.emptyTitleCompact : styles.emptyTitle,
+                style: isCompact
+                    ? context.texts.titleSmall
+                    : context.texts.titleMedium,
               ),
               if (body case final body?) ...[
-                const SizedBox(height: AppSpacing.control),
+                SizedBox(height: context.dimens.space8),
                 Text(
                   body,
                   textAlign: TextAlign.center,
-                  style: styles.emptyBody,
+                  style: context.texts.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
               ],
               if ((actionLabel, onAction) case (
                 final label?,
                 final onPressed?,
               )) ...[
-                const SizedBox(height: AppSpacing.card),
+                SizedBox(height: context.dimens.space24),
                 MxButton(label: label, onPressed: onPressed, isBlock: true),
               ],
               if (secondaryActionLabel case final label?) ...[
-                const SizedBox(height: AppSpacing.control),
+                SizedBox(height: context.dimens.space8),
                 MxButton(
                   label: label,
                   tone: MxButtonTone.secondary,
@@ -134,7 +147,7 @@ class MxEmptyState extends StatelessWidget {
                 final label?,
                 final onPressed?,
               )) ...[
-                const SizedBox(height: AppSpacing.control),
+                SizedBox(height: context.dimens.space8),
                 MxButton(
                   label: label,
                   tone: MxButtonTone.outline,
@@ -143,7 +156,7 @@ class MxEmptyState extends StatelessWidget {
                 ),
               ],
               if (footnote case final rule?) ...[
-                const SizedBox(height: AppSpacing.card),
+                SizedBox(height: context.dimens.space24),
                 MxNote.hint(text: rule),
               ],
             ],
@@ -152,62 +165,56 @@ class MxEmptyState extends StatelessWidget {
       ),
     );
   }
+
+  Color _toneColor(BuildContext context) => switch (tone) {
+    MxEmptyStateTone.primary => context.accentColor,
+    MxEmptyStateTone.neutral => context.colors.onSurfaceVariant,
+    MxEmptyStateTone.success => context.mxColors.success,
+    MxEmptyStateTone.warning => context.mxColors.warningContainer,
+    MxEmptyStateTone.danger => context.colors.error,
+  };
 }
 
 class _Tile extends StatelessWidget {
   const _Tile({
     required this.icon,
-    required this.tone,
+    required this.color,
+    required this.foreground,
     required this.isCompact,
   });
 
   final IconData icon;
-  final MxEmptyStateTone tone;
+
+  /// The tint's base.
+  final Color color;
+
+  /// The glyph: the accent for the primary tone (spec 2026-09-27 D2), the
+  /// success text colour for success (critique 2026-09-30 tone pass, T7), the
+  /// warning text colour for warning (part 3d-2, E14).
+  final Color foreground;
   final bool isCompact;
 
   @override
-  Widget build(BuildContext context) {
-    final semantic = context.semanticColors;
-    // The tone's soft ground with its on-soft glyph (spec 2026-10-10 §5.3).
-    final (ground, foreground) = switch (tone) {
-      MxEmptyStateTone.primary => (
-        semantic.primarySoft,
-        semantic.onPrimarySoft,
-      ),
-      MxEmptyStateTone.neutral => (
-        semantic.neutralSoft,
-        semantic.onNeutralSoft,
-      ),
-      MxEmptyStateTone.success => (
-        semantic.successSoft,
-        semantic.onSuccessSoft,
-      ),
-      MxEmptyStateTone.warning => (
-        semantic.warningSoft,
-        semantic.onWarningSoft,
-      ),
-      // The error glyph on its tint, as before Indigo (DEV-371).
-      MxEmptyStateTone.danger => (semantic.dangerSoft, context.colors.error),
-    };
-    return SizedBox.square(
-      dimension: isCompact
-          ? MxEmptyState._compactTileSize
-          : MxEmptyState._tileSize,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: ground,
-          borderRadius: BorderRadius.circular(
-            isCompact ? AppRadius.lg : AppRadius.xl,
-          ),
-        ),
-        child: Center(
-          child: Icon(
-            icon,
-            size: isCompact ? AppIconSize.standard : AppIconSize.large,
-            color: foreground,
-          ),
+  Widget build(BuildContext context) => SizedBox.square(
+    dimension: isCompact
+        ? MxEmptyState._compactTileSize
+        : MxEmptyState._tileSize,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.tintOver(MxTintBase.of(context)),
+        borderRadius: BorderRadius.circular(
+          isCompact ? context.dimens.radiusLg : context.dimens.radiusXl,
         ),
       ),
-    );
-  }
+      child: Center(
+        child: Icon(
+          icon,
+          size: isCompact
+              ? context.dimens.sizeIcon
+              : context.dimens.sizeIconTile,
+          color: foreground,
+        ),
+      ),
+    ),
+  );
 }

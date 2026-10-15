@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/reminders/presentation/states/reminder_action_state.dart';
 import 'package:memox/features/settings/domain/models/reminder_settings_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -66,7 +66,7 @@ class ReminderSettingsSectionWidget extends StatelessWidget {
           trailing: MxButton(
             label: time,
             semanticLabel: l10n.reminderTimeButton(time),
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             tone: isPickingTime ? MxButtonTone.outline : MxButtonTone.secondary,
             isLoading: action.running == ReminderOperation.changeTime,
             onPressed: isOn && !action.isBusy ? onPickTime : null,

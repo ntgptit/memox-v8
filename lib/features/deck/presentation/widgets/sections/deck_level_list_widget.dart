@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/domain/models/deck_level_model.dart';
 import 'package:memox/features/deck/domain/models/deck_level_query_model.dart';
@@ -18,6 +17,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// A loaded level: today's work first, then the decks (spec §6.1, D3).
 class DeckLevelListWidget extends ConsumerWidget {
@@ -96,7 +96,7 @@ class DeckLevelListWidget extends ConsumerWidget {
       return MxScreenScroll(
         clearance: MxScrollClearance.fabAboveNav,
         children: [
-          const SizedBox(height: AppSpacing.gutter),
+          SizedBox(height: context.dimens.space16),
           emptyState,
         ],
       );
@@ -115,10 +115,10 @@ class DeckLevelListWidget extends ConsumerWidget {
             schedulerType: algorithm,
             onStudy: () => onOpenStudy(deckId),
           ),
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
         ] else if (_hasCards) ...[
           DeckDueStripWidget(level: level, onOpen: onOpenStudyHome),
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
         ],
         DeckLevelHeaderWidget(
           parentId: parentId,
@@ -136,7 +136,7 @@ class DeckLevelListWidget extends ConsumerWidget {
           )
         else
           Column(
-            spacing: AppSpacing.control,
+            spacing: context.dimens.space8,
             children: [
               for (final tile in tiles)
                 DeckRowWidget(

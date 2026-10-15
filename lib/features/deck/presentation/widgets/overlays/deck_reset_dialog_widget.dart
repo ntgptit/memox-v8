@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/controllers/deck_actions_controller.dart';
 import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
@@ -24,6 +23,7 @@ import 'package:memox/shared/widgets/mx_outcome_tile.dart';
 import 'package:memox/shared/widgets/mx_sheet_actions.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Asks before a root's learning progress is reset (UC-SRS-001).
 Future<void> showResetLearningDialog(
@@ -131,7 +131,7 @@ class _DeckResetDialogWidgetState extends ConsumerState<DeckResetDialogWidget> {
             MxSkeletonList(semanticLabel: context.l10n.commonLoading, rows: 1),
           if (summary != null && summary.hasProgressToLose) ...[
             _Consequences(summary: summary, cycle: view.deck.generation!),
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
           ],
           MxListSectionHeader(label: l10n.resetAlgorithmHeader),
           _AlgorithmChoice(
@@ -175,7 +175,7 @@ class _Consequences extends StatelessWidget {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           Expanded(
             child: MxOutcomeTile(

@@ -1,50 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
 import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/app_surface_themes.dart';
 import 'package:memox/core/theme/app_typography.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 
-/// Indigo Day.
-ThemeData buildLightTheme() =>
-    _build(AppColorSchemes.light, MxSemanticColors.light);
+/// The light theme: its scheme, its extension and its accent.
+ThemeData buildLightTheme() => _build(
+  scheme: lightColorScheme,
+  mx: MxColorsExtension.light,
+  accent: lightColorScheme.primary,
+);
 
-/// Indigo Night. Authored, not a filter over Day.
-ThemeData buildDarkTheme() =>
-    _build(AppColorSchemes.dark, MxSemanticColors.dark);
+/// The dark theme, authored on its own rather than as a filter over light.
+/// Its accent is the lighter fixed step, as `primary` on the dark page is
+/// only 3.01:1.
+ThemeData buildDarkTheme() => _build(
+  scheme: darkColorScheme,
+  mx: MxColorsExtension.dark,
+  accent: darkColorScheme.primaryFixedDim,
+);
 
-ThemeData _build(ColorScheme scheme, MxSemanticColors semantic) {
+ThemeData _build({
+  required ColorScheme scheme,
+  required MxColorsExtension mx,
+  required Color accent,
+}) {
   // The base supplies Material's default slots, already inked onSurface.
   final base = ThemeData(colorScheme: scheme);
   final texts = AppTypography.bind(base.textTheme);
+  final tokens = ThemeTokens(
+    scheme: scheme,
+    mx: mx,
+    texts: texts,
+    accent: accent,
+  );
   return base.copyWith(
     textTheme: texts,
     // Read directly by CircleAvatar, FlexibleSpaceBar and others.
     primaryTextTheme: AppTypography.bind(base.primaryTextTheme),
     scaffoldBackgroundColor: scheme.surface,
-    extensions: [semantic],
-    // Spec §4.6: the V3 defaults of the Material components.
-    inputDecorationTheme: AppComponentThemes.fields(scheme, semantic, texts),
-    filledButtonTheme: AppComponentThemes.filledButtons(
-      scheme,
-      semantic,
-      texts,
-    ),
-    outlinedButtonTheme: AppComponentThemes.outlinedButtons(
-      scheme,
-      semantic,
-      texts,
-    ),
-    textButtonTheme: AppComponentThemes.textButtons(scheme, semantic, texts),
-    iconButtonTheme: AppComponentThemes.iconButtons(scheme, semantic),
-    dialogTheme: AppComponentThemes.dialogs(scheme, semantic, texts),
-    bottomSheetTheme: AppComponentThemes.sheets(scheme),
-    snackBarTheme: AppComponentThemes.snackbars(scheme, semantic, texts),
-    tooltipTheme: AppComponentThemes.tooltips(scheme, texts),
-    // InkWell rows (MxRowInk, MxOptionRow, the tray, the nav) press in the
-    // theme's foreground at the buttons' 12% overlay, not Material's grey
-    // (SW-REV-007).
-    splashColor: scheme.onSurface.withValues(alpha: AppOpacity.pressed),
-    highlightColor: scheme.onSurface.withValues(alpha: AppOpacity.pressed),
+    // InkWell rows (MxRowInk and the rows built on it) press in the theme's
+    // foreground at the pressed overlay, not Material's grey (SW-REV-007).
+    splashColor: tokens.onSurfaceAt(tokens.dimens.opacityPressed),
+    highlightColor: tokens.onSurfaceAt(tokens.dimens.opacityPressed),
+    extensions: [mx, tokens.dimens],
+    cardTheme: cardTheme(tokens),
+    searchBarTheme: searchBarTheme(tokens),
+    dividerTheme: dividerTheme(tokens),
+    filledButtonTheme: filledButtonTheme(tokens),
+    outlinedButtonTheme: outlinedButtonTheme(tokens),
+    textButtonTheme: textButtonTheme(tokens),
+    iconButtonTheme: iconButtonTheme(tokens),
+    floatingActionButtonTheme: floatingActionButtonTheme(tokens),
+    navigationBarTheme: navigationBarTheme(tokens),
+    navigationRailTheme: navigationRailTheme(tokens),
+    progressIndicatorTheme: progressIndicatorTheme(tokens),
+    chipTheme: chipTheme(tokens),
+    switchTheme: switchTheme(tokens),
+    segmentedButtonTheme: segmentedButtonTheme(tokens),
+    inputDecorationTheme: inputDecorationTheme(tokens),
+    dialogTheme: dialogTheme(tokens),
+    bottomSheetTheme: bottomSheetTheme(tokens),
+    snackBarTheme: snackBarTheme(tokens),
+    tooltipTheme: tooltipTheme(tokens),
   );
 }

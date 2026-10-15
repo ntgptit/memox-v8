@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A content row: decks, search results, tags, move targets and cards. The
 /// title is one line by default and the sub one line, each with an
-/// ellipsis, so every row in a list is one height. It is not a SettingsRow: this is a piece of content.
+/// ellipsis, so every row in a list is one height. It is not a SettingsRow:
+/// this is a piece of content. Its height is the Material 3 list item: 56
+/// with a title alone, 72 with a subtitle or meta.
 ///
 /// A disabled row dims its leading, title and end (chevron, trailing or
 /// spinner), never the subtitle or meta that says why, as MxSettingsRow and
@@ -88,12 +87,11 @@ class MxListRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final styles = context.textStyles;
     final end = switch ((isBusy, hasChevron)) {
       (true, _) => const MxSpinner(),
       (false, true) => Icon(
         AppIcons.chevronRight,
-        size: AppIconSize.compact,
+        size: context.dimens.sizeIconCompact,
         color: colors.onSurfaceVariant,
       ),
       (false, false) => trailing,
@@ -103,32 +101,41 @@ class MxListRow extends StatelessWidget {
       isEnabled: isEnabled,
       shouldDimWhenDisabled: false,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
+        constraints: BoxConstraints(
+          minHeight: subtitle == null && meta == null
+              ? context.dimens.sizeListRow
+              : context.dimens.sizeListRowTwoLine,
+        ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+          padding: EdgeInsets.symmetric(horizontal: context.dimens.space16),
           child: Row(
-            spacing: AppSpacing.grouped,
+            spacing: context.dimens.space12,
             children: [
-              if (leading case final lead?) _dim(lead),
+              if (leading case final lead?) _dim(context, lead),
               // Only the text carries the 12/12 inset, so a 48 trailing
               // control sits inside the text height instead of growing the
               // row: every row in a list stays one height.
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.grouped,
+                  padding: EdgeInsets.symmetric(
+                    vertical: context.dimens.space12,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _dim(
+                        context,
                         Text.rich(
-                          _titleSpan(styles.rowTitleMatch),
+                          _titleSpan(
+                            context.texts.titleSmall!.copyWith(
+                              color: context.accentColor,
+                            ),
+                          ),
                           maxLines: titleMaxLines,
                           softWrap: titleMaxLines > 1,
                           overflow: TextOverflow.ellipsis,
-                          style: styles.listRowTitle,
+                          style: context.texts.titleSmall,
                         ),
                       ),
                       if (subtitle case final text?) ...[
@@ -138,7 +145,9 @@ class MxListRow extends StatelessWidget {
                           maxLines: 1,
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
-                          style: styles.rowSubtitle,
+                          style: context.texts.bodyMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
+                          ),
                         ),
                       ],
                       if (meta case final slot?) ...[
@@ -149,7 +158,7 @@ class MxListRow extends StatelessWidget {
                   ),
                 ),
               ),
-              if (end case final slot?) _dim(slot),
+              if (end case final slot?) _dim(context, slot),
             ],
           ),
         ),
@@ -157,6 +166,7 @@ class MxListRow extends StatelessWidget {
     );
   }
 
-  Widget _dim(Widget child) =>
-      isEnabled ? child : Opacity(opacity: AppOpacity.disabled, child: child);
+  Widget _dim(BuildContext context, Widget child) => isEnabled
+      ? child
+      : Opacity(opacity: context.dimens.opacityDisabledContent, child: child);
 }

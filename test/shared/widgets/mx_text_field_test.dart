@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
@@ -15,20 +18,20 @@ Color _edge(InputBorder? border) =>
     (border! as OutlineInputBorder).borderSide.color;
 
 void main() {
-  final scheme = AppColorSchemes.light;
-  const semantic = MxSemanticColors.light;
-  final ghost = semantic.border;
+  final scheme = lightColorScheme;
+  // The M3 disabled edge: onSurface at the container opacity.
+  final ghost = scheme.onSurface.withValues(alpha: 0.12);
 
-  testWidgets('single line is 52 tall', (tester) async {
+  testWidgets('single line is 56 tall', (tester) async {
     await pumpMx(
       tester,
       const SizedBox(width: 300, child: MxTextField(hintText: 'Deck name')),
     );
 
-    expect(tester.getSize(find.byType(TextField)).height, 52);
+    expect(tester.getSize(find.byType(TextField)).height, 56);
   });
 
-  testWidgets('detail starts at the form field\'s 52 and grows with the text', (
+  testWidgets('detail starts at the form field\'s 56 and grows with the text', (
     tester,
   ) async {
     final controller = TextEditingController();
@@ -43,35 +46,27 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(TextField)).height, 52);
+    expect(tester.getSize(find.byType(TextField)).height, 56);
 
     controller.text = 'one\ntwo\nthree\nfour';
     await tester.pump();
     expect(tester.getSize(find.byType(TextField)).height, greaterThan(60));
   });
 
-  testWidgets('fill: surface-muted at rest, lowest when focused', (
-    tester,
-  ) async {
+  testWidgets('outlined, no fill: the sheet ground shows through, focused '
+      'or not', (tester) async {
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));
-    final fill = _decoration(tester).fillColor!;
 
-    expect(
-      WidgetStateProperty.resolveAs(fill, <WidgetState>{}),
-      scheme.surfaceContainerLow,
-    );
-    expect(
-      WidgetStateProperty.resolveAs(fill, {WidgetState.focused}),
-      scheme.surfaceContainerLowest,
-    );
+    expect(_decoration(tester).filled, isNot(isTrue));
+    expect(_decoration(tester).fillColor, isNull);
   });
 
-  testWidgets('edges: the outline at rest, the focus ring focused, the '
-      'border hairline disabled', (tester) async {
+  testWidgets('edges: outline edge at rest, the accent focused, ghost '
+      'disabled (DEV-166)', (tester) async {
     final rest = scheme.outline;
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));
     expect(_edge(_decoration(tester).enabledBorder), rest);
-    expect(_edge(_decoration(tester).focusedBorder), semantic.focusRing);
+    expect(_edge(_decoration(tester).focusedBorder), accentOf(scheme));
 
     await pumpMx(
       tester,
@@ -116,7 +111,7 @@ void main() {
       tester.getTopLeft(find.byType(MxFieldMessage)).dy,
       greaterThanOrEqualTo(tester.getBottomLeft(find.byType(TextField)).dy),
     );
-    expect(tester.getSize(find.byType(TextField)).height, 52);
+    expect(tester.getSize(find.byType(TextField)).height, 56);
   });
 
   testWidgets('typing reports the value', (tester) async {
@@ -128,26 +123,6 @@ void main() {
     await tester.enterText(find.byType(TextField), 'Verbs');
 
     expect(typed, 'Verbs');
-  });
-
-  testWidgets('disabled dims the whole field', (tester) async {
-    await pumpMx(
-      tester,
-      const SizedBox(width: 300, child: MxTextField(isEnabled: false)),
-    );
-
-    expect(
-      tester
-          .widget<Opacity>(
-            find.ancestor(
-              of: find.byType(TextField),
-              matching: find.byType(Opacity),
-            ),
-          )
-          .opacity,
-      0.38,
-    );
-    expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
   });
 
   testWidgets('a filled field keeps its name for TalkBack', (tester) async {
@@ -178,9 +153,7 @@ void main() {
     MxTextFieldVariant.detail,
     MxTextFieldVariant.term,
   ]) {
-    testWidgets('${variant.name}: the form box, fill, edge and type', (
-      tester,
-    ) async {
+    testWidgets('${variant.name}: the form box, edge and type', (tester) async {
       await pumpMx(
         tester,
         SizedBox(
@@ -189,28 +162,19 @@ void main() {
         ),
       );
 
-      expect(tester.getSize(find.byType(TextField)).height, 52);
+      expect(tester.getSize(find.byType(TextField)).height, 56);
       final decoration = _decoration(tester);
-      expect(
-        WidgetStateProperty.resolveAs(decoration.fillColor!, <WidgetState>{}),
-        scheme.surfaceContainerLow,
-      );
-      expect(
-        WidgetStateProperty.resolveAs(decoration.fillColor!, {
-          WidgetState.focused,
-        }),
-        scheme.surfaceContainerLowest,
-      );
+      expect(decoration.fillColor, isNull);
       final edge = decoration.enabledBorder! as OutlineInputBorder;
       expect(edge.borderSide.color, scheme.outline);
       expect(edge.borderRadius, BorderRadius.circular(12));
       final style = tester.widget<EditableText>(find.byType(EditableText));
-      expect(style.style.fontSize, 14);
+      expect(style.style.fontSize, 16);
       expect(style.style.fontWeight, FontWeight.w400);
     });
   }
 
-  testWidgets('term: wraps and grows, in the body role', (tester) async {
+  testWidgets('term: wraps and grows, in the input role', (tester) async {
     final controller = TextEditingController(text: 'a' * 60);
     addTearDown(controller.dispose);
     await pumpMx(
@@ -226,8 +190,8 @@ void main() {
 
     final text = tester.widget<EditableText>(find.byType(EditableText));
     expect(text.maxLines, isNull);
-    expect(text.style.fontSize, 14);
-    expect(tester.getSize(find.byType(TextField)).height, greaterThan(52));
+    expect(text.style.fontSize, 16);
+    expect(tester.getSize(find.byType(TextField)).height, greaterThan(56));
   });
 
   testWidgets('term: Enter moves on and adds no newline', (tester) async {
@@ -290,7 +254,7 @@ void main() {
       ),
     );
     final typed = tester.getSize(find.byType(TextField)).height;
-    expect(typed, greaterThan(52));
+    expect(typed, greaterThan(56));
 
     controller.clear();
     await tester.pump();
@@ -298,7 +262,7 @@ void main() {
 
     controller.text = 'nunchi';
     await tester.pump();
-    expect(tester.getSize(find.byType(TextField)).height, 52);
+    expect(tester.getSize(find.byType(TextField)).height, 56);
   });
 
   testWidgets('a long detail grows past its floor on the 12 padding', (
@@ -334,7 +298,7 @@ void main() {
     await tester.enterText(find.byType(EditableText), 'a' * 80);
     await tester.pump();
 
-    expect(tester.getSize(find.byType(TextField)).height, greaterThan(52));
+    expect(tester.getSize(find.byType(TextField)).height, greaterThan(56));
   });
 
   test('only a form field takes leading and trailing slots', () {
@@ -373,7 +337,10 @@ void main() {
     final field = tester.widget<TextField>(find.byType(TextField));
     expect(field.textAlign, TextAlign.center);
     expect(field.maxLines, 1);
-    expect(field.style!.fontSize, 32);
+    expect(
+      field.style!.fontSize,
+      tester.element(find.byType(TextField)).texts.displaySmall!.fontSize,
+    );
     expect(
       tester.getSize(find.byType(TextField)).height,
       greaterThanOrEqualTo(48),

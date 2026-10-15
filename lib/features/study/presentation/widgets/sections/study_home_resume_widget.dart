@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_labels_widget.dart';
@@ -32,7 +31,6 @@ class StudyHomeResumeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final kind = switch (session.kind) {
       SessionKind.learning => l10n.studyKindLearning,
       SessionKind.reviewing => l10n.studyKindReview,
@@ -41,16 +39,17 @@ class StudyHomeResumeWidget extends StatelessWidget {
     final progress = session.progress;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      spacing: AppSpacing.control,
+      spacing: context.dimens.space8,
       children: [
         MxDotOverline(label: l10n.studyHomeResumeOverline),
         MxCard(
+          isCompact: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            spacing: AppSpacing.grouped,
+            spacing: context.dimens.space12,
             children: [
               Row(
-                spacing: AppSpacing.grouped,
+                spacing: context.dimens.space12,
                 children: [
                   const ExcludeSemantics(
                     child: MxIconTile(
@@ -62,9 +61,9 @@ class StudyHomeResumeWidget extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      spacing: AppSpacing.micro,
+                      spacing: context.dimens.space4,
                       children: [
-                        Text(session.deckName, style: styles.rowTitle),
+                        Text(session.deckName, style: context.texts.titleSmall),
                         Text(
                           progress == null
                               ? l10n.studyEntryResumeLineNoProgress(kind, mode)
@@ -74,7 +73,9 @@ class StudyHomeResumeWidget extends StatelessWidget {
                                   progress.completed,
                                   progress.total,
                                 ),
-                          style: styles.noteText,
+                          style: context.texts.bodyMedium?.copyWith(
+                            color: context.colors.onSurfaceVariant,
+                          ),
                         ),
                         if (progress != null && progress.total > 0)
                           MxLinearProgress(

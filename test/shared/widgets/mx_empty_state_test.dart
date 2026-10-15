@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -14,6 +20,8 @@ Finder _tile(IconData icon) => find
     .first;
 
 void main() {
+  final scheme = lightColorScheme;
+
   testWidgets('title, body and a block primary action', (tester) async {
     var taps = 0;
     await pumpMx(
@@ -52,29 +60,38 @@ void main() {
     );
   });
 
-  testWidgets('the tone paints its soft ground and on-soft glyph', (
+  testWidgets('tone tints the tile at 10% and paints the glyph', (
     tester,
   ) async {
-    const semantic = MxSemanticColors.light;
     final tones = {
-      MxEmptyStateTone.primary: (semantic.primarySoft, semantic.onPrimarySoft),
-      MxEmptyStateTone.neutral: (semantic.neutralSoft, semantic.onNeutralSoft),
-      MxEmptyStateTone.success: (semantic.successSoft, semantic.onSuccessSoft),
-      MxEmptyStateTone.warning: (semantic.warningSoft, semantic.onWarningSoft),
-      // Danger keeps its pre-Indigo error glyph (DEV-371).
-      MxEmptyStateTone.danger: (
-        semantic.dangerSoft,
-        AppColorSchemes.light.error,
-      ),
+      MxEmptyStateTone.primary: scheme.primary,
+      MxEmptyStateTone.neutral: scheme.onSurfaceVariant,
+      MxEmptyStateTone.success: MxColorsExtension.light.success,
+      MxEmptyStateTone.warning: MxColorsExtension.light.warningContainer,
+      MxEmptyStateTone.danger: scheme.error,
     };
-    for (final MapEntry(key: tone, value: (ground, glyph)) in tones.entries) {
+    for (final MapEntry(key: tone, value: color) in tones.entries) {
       await pumpMx(
         tester,
         MxEmptyState(icon: AppIcons.inbox, title: 'T', tone: tone),
       );
       final tile = tester.widget<DecoratedBox>(_tile(AppIcons.inbox));
 
-      expect((tile.decoration as BoxDecoration).color, ground, reason: '$tone');
+      // The tile sits in the state's card: its tint is over cardSurface.
+      expect(
+        (tile.decoration as BoxDecoration).color,
+        color.tintOver(MxColorsExtension.light.cardSurface),
+        reason: '$tone',
+      );
+      // The primary glyph reads in primaryInk (spec 2026-09-27 D2), the
+      // success glyph in its ink (critique 2026-09-30 tone pass, T7).
+      final glyph = switch (tone) {
+        MxEmptyStateTone.primary => accentOf(scheme),
+        MxEmptyStateTone.success => MxColorsExtension.light.success,
+        // Warning reads in its ink too (critique 2026-09-30 part 3d-2, E14).
+        MxEmptyStateTone.warning => MxColorsExtension.light.warning,
+        _ => color,
+      };
       expect(tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color, glyph);
     }
   });
@@ -94,7 +111,9 @@ void main() {
     expect(tester.getSize(find.byIcon(AppIcons.inbox)).width, 24);
   });
 
-  testWidgets('a footnote sits 20 below the action as a note', (tester) async {
+  testWidgets('a footnote sits space24 below the action as a note', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       MxEmptyState(
@@ -109,11 +128,8 @@ void main() {
     expect(
       tester.getTopLeft(find.byType(MxNote)).dy -
           tester.getBottomLeft(find.byType(MxButton)).dy,
-      20,
+      const AppDimens().space24,
     );
-    // The footnote form, with no fill and no edge: a boxed note inside the
-    // raised card was two ghost edges in dark (audit 2026-10-08 F-02).
-    expect(tester.widget<MxNote>(find.byType(MxNote)).isHint, isTrue);
   });
 
   testWidgets('a secondary action sits between the action and the footnote', (
@@ -205,20 +221,23 @@ void main() {
     );
   });
 
-  testWidgets('in Night the warning glyph reads its on-soft token on the '
-      'light soft ground (spec 2026-10-10 D4)', (tester) async {
-    await pumpMx(
-      tester,
-      const MxEmptyState(
-        icon: AppIcons.inbox,
-        title: 'T',
-        tone: MxEmptyStateTone.warning,
-      ),
-      brightness: Brightness.dark,
-    );
-    expect(
-      tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color,
-      MxSemanticColors.dark.onWarningSoft,
-    );
-  });
+  testWidgets(
+    'in dark the warning glyph reads in warning foreground too (critique '
+    '2026-09-30 part 3d-2, E14)',
+    (tester) async {
+      await pumpMx(
+        tester,
+        const MxEmptyState(
+          icon: AppIcons.inbox,
+          title: 'T',
+          tone: MxEmptyStateTone.warning,
+        ),
+        brightness: Brightness.dark,
+      );
+      expect(
+        tester.widget<Icon>(find.byIcon(AppIcons.inbox)).color,
+        tester.element(find.byIcon(AppIcons.inbox)).mxColors.warning,
+      );
+    },
+  );
 }

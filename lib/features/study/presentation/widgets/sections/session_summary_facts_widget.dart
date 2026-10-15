@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/states/session_ending_state.dart';
@@ -27,7 +27,6 @@ class SessionSummaryFactsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final colors = context.colors;
     final isLearning = view.kind == SessionKind.learning;
     final wrong = summary.wrongTurnCount;
@@ -48,7 +47,9 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 leading: const MxIconTile(icon: AppIcons.learned),
                 trailing: Text(
                   l10n.studyCount(summaryFinishedCount(view, summary)),
-                  style: styles.factValue(colors.onSurface),
+                  style: context.texts.bodyLarge?.copyWith(
+                    color: colors.onSurface,
+                  ),
                 ),
               ),
               MxListRow(
@@ -56,7 +57,9 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 leading: const MxIconTile(icon: AppIcons.cardDeck),
                 trailing: Text(
                   l10n.studyCount(summary.answeredCardCount),
-                  style: styles.factValue(colors.onSurface),
+                  style: context.texts.bodyLarge?.copyWith(
+                    color: colors.onSurface,
+                  ),
                 ),
               ),
               MxListRow(
@@ -64,7 +67,9 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 // The kit wraps this line; the row's own subtitle is one.
                 meta: Text(
                   l10n.summaryFactWrongSub(turns),
-                  style: styles.noteText,
+                  style: context.texts.bodyMedium?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                  ),
                 ),
                 // The glyph takes its value's tone (kit ResultRow).
                 leading: MxIconTile(
@@ -75,9 +80,9 @@ class SessionSummaryFactsWidget extends StatelessWidget {
                 ),
                 trailing: Text(
                   l10n.summaryWrongOf(wrong, turns),
-                  style: styles.factValue(
-                    wrong > 0
-                        ? context.semanticColors.warningText
+                  style: context.texts.bodyLarge?.copyWith(
+                    color: wrong > 0
+                        ? context.mxColors.warning
                         : colors.onSurface,
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
@@ -17,37 +18,48 @@ MxToggle _toggle() =>
     MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Daily reminder');
 
 void main() {
-  testWidgets('a 36 tile centred in the 40 column; label 16; sub 4 below', (
+  testWidgets(
+    'a 36 tile centred in the 40 column; titleSmall label; sub 4 below',
+    (tester) async {
+      await pumpMx(
+        tester,
+        _width(
+          const MxSettingsRow(
+            label: 'Daily reminder',
+            subtitle: 'One nudge a day',
+            icon: AppIcons.reminder,
+          ),
+        ),
+      );
+      final row = tester.getTopLeft(find.byType(MxSettingsRow));
+
+      expect(tester.getSize(find.byType(MxIconTile)), const Size.square(36));
+      expect(tester.getTopLeft(find.byType(MxIconTile)).dx - row.dx, 18);
+      expect(tester.getTopLeft(find.text('Daily reminder')).dx - row.dx, 72);
+      expect(
+        tester.widget<Text>(find.text('Daily reminder')).style,
+        tester.element(find.text('Daily reminder')).texts.titleSmall,
+      );
+      expect(
+        tester.getTopLeft(find.text('One nudge a day')).dy -
+            tester.getBottomLeft(find.text('Daily reminder')).dy,
+        4,
+      );
+      expect(tester.getSize(find.byType(MxSettingsRow)).height, 72);
+    },
+  );
+
+  testWidgets('M3 list item heights: 56 for one line, 72 with a subtitle', (
     tester,
   ) async {
+    await pumpMx(tester, _width(const MxSettingsRow(label: 'Version')));
+    expect(tester.getSize(find.byType(MxSettingsRow)).height, 56);
+
     await pumpMx(
       tester,
-      _width(
-        const MxSettingsRow(
-          label: 'Daily reminder',
-          subtitle: 'One nudge a day',
-          icon: AppIcons.reminder,
-        ),
-      ),
+      _width(const MxSettingsRow(label: 'Version', subtitle: '1.0.0')),
     );
-    final row = tester.getTopLeft(find.byType(MxSettingsRow));
-
-    expect(tester.getSize(find.byType(MxIconTile)), const Size.square(36));
-    expect(tester.getTopLeft(find.byType(MxIconTile)).dx - row.dx, 18);
-    expect(tester.getTopLeft(find.text('Daily reminder')).dx - row.dx, 72);
-    expect(
-      tester.widget<Text>(find.text('Daily reminder')).style!.fontSize,
-      16,
-    );
-    expect(
-      tester.getTopLeft(find.text('One nudge a day')).dy -
-          tester.getBottomLeft(find.text('Daily reminder')).dy,
-      4,
-    );
-    expect(
-      tester.getSize(find.byType(MxSettingsRow)).height,
-      greaterThanOrEqualTo(48),
-    );
+    expect(tester.getSize(find.byType(MxSettingsRow)).height, 72);
   });
 
   testWidgets('the chevron shows only on a row that navigates', (tester) async {
@@ -78,7 +90,7 @@ void main() {
       _width(MxSettingsRow(label: 'Daily reminder', trailing: _toggle())),
     );
 
-    expect(plain, 48);
+    expect(plain, 56);
     expect(tester.getSize(find.byType(MxSettingsRow)).height, plain);
   });
 
@@ -248,7 +260,7 @@ void main() {
           isEnabled: false,
           trailing: MxButton(
             label: '20:00',
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: null,
           ),
         ),
@@ -256,7 +268,7 @@ void main() {
     );
     expect(
       find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
-      findsOneWidget,
+      findsNothing,
     );
   });
 
@@ -295,7 +307,7 @@ void main() {
             button: true,
             child: const MxButton(
               label: '20:00',
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               onPressed: null,
             ),
           ),
@@ -304,7 +316,7 @@ void main() {
     );
     expect(
       find.ancestor(of: find.text('20:00'), matching: find.byType(Opacity)),
-      findsOneWidget,
+      findsNothing,
     );
   });
 

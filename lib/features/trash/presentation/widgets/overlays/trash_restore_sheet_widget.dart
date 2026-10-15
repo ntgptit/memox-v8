@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/deck/domain/models/deck_path_model.dart';
 import 'package:memox/features/deck/domain/models/deck_restore_targets_model.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';

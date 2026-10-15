@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 
 import '../../support/widget_harness.dart';
@@ -13,9 +14,9 @@ final _painted = find.descendant(
 );
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
-  testWidgets('unselected: lowest fill, ghost edge, onSurface label', (
+  testWidgets('unselected: flat, outlineVariant edge, 32 tall, 8 corners', (
     tester,
   ) async {
     await pumpMx(
@@ -23,17 +24,22 @@ void main() {
       MxFilterChip(label: 'Due', isSelected: false, onSelected: (_) {}),
     );
     final material = tester.widget<Material>(_painted.first);
+    final shape = material.shape! as MxFocusRingBorder;
 
-    expect(tester.getSize(_painted.first).height, 28);
-    expect(material.color, scheme.surfaceContainerLowest);
-    expect(material.textStyle!.color, scheme.onSurface);
+    expect(tester.getSize(_painted.first).height, 32);
+    expect(material.color?.a ?? 0, 0);
+    expect(material.textStyle!.color, scheme.onSurfaceVariant);
     expect(
-      (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(color: MxSemanticColors.light.border),
+      shape.base,
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
     );
+    expect(find.byIcon(AppIcons.check), findsNothing);
   });
 
-  testWidgets('selected: primary fill, onPrimary label, no edge', (
+  testWidgets('selected: secondaryContainer, no edge, a leading check', (
     tester,
   ) async {
     await pumpMx(
@@ -42,9 +48,85 @@ void main() {
     );
     final material = tester.widget<Material>(_painted.first);
 
-    expect(material.color, scheme.primary);
-    expect(material.textStyle!.color, scheme.onPrimary);
-    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
+    expect(material.color, scheme.secondaryContainer);
+    expect(material.textStyle!.color, scheme.onSecondaryContainer);
+    expect((material.shape! as OutlinedBorder).side, BorderSide.none);
+    expect(tester.getSize(find.byIcon(AppIcons.check)).width, 18);
+    expect(
+      IconTheme.of(tester.element(find.byIcon(AppIcons.check))).color,
+      scheme.onSecondaryContainer,
+    );
+  });
+
+  // Material 3: 8 around the chip, 8 around the label, so 16 to a bare label;
+  // a leading glyph sits 8 in and 8 before the label.
+  testWidgets('the label is inset 16, or 8 + 18 + 8 after a glyph', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxFilterChip(label: 'Due', isSelected: false, onSelected: (_) {}),
+    );
+    final bare = tester.getTopLeft(_painted.first).dx;
+    expect(tester.getTopLeft(find.text('Due')).dx - bare, 16);
+    expect(
+      tester.getTopRight(_painted.first).dx -
+          tester.getTopRight(find.text('Due')).dx,
+      16,
+    );
+
+    await pumpMx(
+      tester,
+      MxFilterChip(
+        label: 'Due',
+        icon: AppIcons.filter,
+        isSelected: false,
+        onSelected: (_) {},
+      ),
+    );
+    final left = tester.getTopLeft(_painted.first).dx;
+    expect(tester.getTopLeft(find.byIcon(AppIcons.filter)).dx - left, 8);
+    expect(tester.getTopLeft(find.text('Due')).dx - left, 8 + 18 + 8);
+    expect(
+      IconTheme.of(tester.element(find.byIcon(AppIcons.filter))).color,
+      scheme.primary,
+    );
+  });
+
+  testWidgets('selecting swaps the glyph for the check', (tester) async {
+    await pumpMx(
+      tester,
+      MxFilterChip(
+        label: 'Due',
+        icon: AppIcons.filter,
+        isSelected: true,
+        onSelected: (_) {},
+      ),
+    );
+
+    expect(find.byIcon(AppIcons.check), findsOneWidget);
+    expect(find.byIcon(AppIcons.filter), findsNothing);
+  });
+
+  testWidgets('keyboard focus draws a primary ring around the 8 corners', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxFilterChip(label: 'Due', isSelected: false, onSelected: (_) {}),
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pumpAndSettle();
+    final shape =
+        tester.widget<Material>(_painted.first).shape! as MxFocusRingBorder;
+
+    expect(shape.ring.color, scheme.primary);
+    expect(shape.ring.width, 2);
+    expect(shape.gap, 2);
+    expect(
+      (shape.base as RoundedRectangleBorder).borderRadius,
+      BorderRadius.circular(8),
+    );
   });
 
   testWidgets('the count sits at 60% resting and at full strength selected', (
@@ -61,7 +143,7 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text('12')).style!.color,
-      scheme.onSurface.withValues(alpha: 0.6),
+      scheme.onSurfaceVariant.withValues(alpha: 0.6),
     );
 
     await pumpMx(
@@ -73,7 +155,10 @@ void main() {
         onSelected: (_) {},
       ),
     );
-    expect(tester.widget<Text>(find.text('12')).style!.color, scheme.onPrimary);
+    expect(
+      tester.widget<Text>(find.text('12')).style!.color,
+      scheme.onSecondaryContainer,
+    );
   });
 
   testWidgets('a tap reports the flipped selection', (tester) async {
@@ -105,7 +190,7 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('a 28 pill with a 48 target; disabled at 0.38', (tester) async {
+  testWidgets('a 32 chip with a 48 target', (tester) async {
     await pumpMx(
       tester,
       MxFilterChip(
@@ -116,21 +201,40 @@ void main() {
       ),
     );
     await expectAccessibleTargets(tester);
+  });
 
+  // DEV-372: the button resolves its own disabled colours; a wrapper dimming
+  // it again left 4.6% container and 14% content.
+  testWidgets('disabled paints the theme disabled colours, dimmed once', (
+    tester,
+  ) async {
     await pumpMx(
       tester,
       const MxFilterChip(label: 'Cards', isSelected: false, onSelected: null),
     );
+
     expect(
-      tester
-          .widget<Opacity>(
-            find.ancestor(
-              of: find.byType(TextButton),
-              matching: find.byType(Opacity),
-            ),
-          )
-          .opacity,
-      0.38,
+      find.ancestor(
+        of: find.byType(TextButton),
+        matching: find.byType(Opacity),
+      ),
+      findsNothing,
+    );
+    final material = tester.widget<Material>(_painted.first);
+    expect(material.color?.a ?? 0, 0);
+    expect(material.textStyle!.color, scheme.onSurface.withValues(alpha: 0.38));
+    expect(
+      (material.shape! as OutlinedBorder).side.color,
+      scheme.onSurface.withValues(alpha: 0.12),
+    );
+
+    await pumpMx(
+      tester,
+      const MxFilterChip(label: 'Cards', isSelected: true, onSelected: null),
+    );
+    expect(
+      tester.widget<Material>(_painted.first).color,
+      scheme.onSurface.withValues(alpha: 0.12),
     );
   });
 

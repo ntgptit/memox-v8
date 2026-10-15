@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// The structural unit of Settings and Reminder: an overline, a card that
 /// holds a group of rows, and an optional note under it. It keeps its own 16
@@ -23,7 +23,7 @@ class MxSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.gutter),
+      padding: EdgeInsets.only(bottom: context.dimens.space16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -32,10 +32,10 @@ class MxSection extends StatelessWidget {
           MxCard(isFullBleed: true, child: MxDividedColumn(children: children)),
           if (note case final text?)
             Padding(
-              padding: const EdgeInsetsDirectional.only(
-                start: AppSpacing.micro,
-                end: AppSpacing.micro,
-                top: AppSpacing.control,
+              padding: EdgeInsetsDirectional.only(
+                start: context.dimens.space4,
+                end: context.dimens.space4,
+                top: context.dimens.space8,
               ),
               child: MxNote.hint(text: text),
             ),

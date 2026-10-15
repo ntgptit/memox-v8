@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/app/app_bootstrap.dart';
 import 'package:memox/core/theme/app_theme.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -75,7 +74,7 @@ class _StartupFailureScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.section),
+          padding: EdgeInsets.all(context.dimens.space24),
           children: [
             MxErrorState(
               title: l10n.startupDatabaseErrorTitle,
@@ -84,11 +83,13 @@ class _StartupFailureScreen extends StatelessWidget {
               onRetry: onRetry,
               isRetrying: isRetrying,
             ),
-            const SizedBox(height: AppSpacing.gutter),
+            SizedBox(height: context.dimens.space16),
             if (isReportQueued)
               Text(
                 l10n.startupReportQueued,
-                style: context.textStyles.emptyBody,
+                style: context.texts.bodyMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               )
             else

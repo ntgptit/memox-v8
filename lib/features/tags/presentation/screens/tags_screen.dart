@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/domain/models/tag_count_model.dart';
 import 'package:memox/features/tags/presentation/controllers/tag_actions_controller.dart';
@@ -130,7 +129,6 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.tagsTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,
@@ -139,7 +137,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
       ),
       body: MxScreenScroll(
         children: [
-          const SizedBox(height: AppSpacing.control),
+          SizedBox(height: context.dimens.space8),
           // Nothing to search in a catalog with no tags (critique 2026-09-30
           // part 3d-2).
           if (catalog case AsyncData(:final value) when value.isEmpty)
@@ -151,7 +149,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
               clearLabel: l10n.tagsSearchClear,
               onChanged: (_) => setState(() {}),
             ),
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
             ...switch (catalog) {
               AsyncData(:final value) => _catalog(l10n, value),
               AsyncError(:final isLoading) => [
@@ -186,7 +184,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     final busy = ref.watch(tagActionsControllerProvider);
     final header = MxListSectionHeader(
       label: shown.isEmpty ? l10n.tagsNoMatches : l10n.tagsCount(shown.length),
-      trailing: Text(l10n.tagsOrder, style: context.textStyles.overline),
+      trailing: Text(l10n.tagsOrder, style: context.texts.labelSmall),
     );
     // No tag at all: the empty state alone, no header saying it twice
     // (critique 2026-09-30 part 3d-2).

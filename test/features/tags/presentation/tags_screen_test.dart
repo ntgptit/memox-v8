@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
 import 'package:memox/features/tags/presentation/widgets/overlays/tag_rename_dialog_widget.dart';
@@ -188,8 +188,8 @@ void main() {
     expect(find.text('động từ'), findsNothing);
   });
 
-  libraryTest('Night: the merge panel is a soft ground, so its notice reads '
-      'Day\'s text (spec 2026-10-10 D4)', (tester, env) async {
+  libraryTest('Night: the merge panel is a tint over the Night surface, so '
+      'its notice reads Night\'s own text role (ADR-022)', (tester, env) async {
     await _pump(tester, env, brightness: Brightness.dark);
     await _openRename(tester, 'động từ');
     await _type(tester, 'NGỮ PHÁP');
@@ -199,7 +199,7 @@ void main() {
           .widget<Text>(find.text(_en.tagsMergeNotice('ngữ pháp', 'động từ')))
           .style
           ?.color,
-      AppColorSchemes.light.onSurfaceVariant,
+      darkColorScheme.onSurfaceVariant,
     );
   });
 
@@ -349,9 +349,14 @@ void main() {
     await _openRename(tester, 'động từ');
 
     final label = find.text(_en.tagsNewName);
+    // The field paints its label: the field-label role in onSurfaceVariant.
     expect(
       tester.widget<Text>(label).style,
-      tester.element(label).textStyles.fieldLabel,
+      tester
+          .element(label)
+          .texts
+          .labelMedium
+          ?.copyWith(color: tester.element(label).colors.onSurfaceVariant),
     );
     expect(find.text(_en.tagsNewName.toUpperCase()), findsNothing);
   });

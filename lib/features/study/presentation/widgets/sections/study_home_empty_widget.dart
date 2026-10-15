@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_skeleton.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 13 before there is anything to study (BR-STUDY-077): no root deck,
 /// where the Starter Library comes first and the Library second (UC-STUDY-002
@@ -61,16 +61,16 @@ class StudyHomeLoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
-    spacing: AppSpacing.gutter,
+    spacing: context.dimens.space16,
     children: [
-      const MxSkeletonPulse(
+      MxSkeletonPulse(
         child: MxCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: AppSpacing.control,
+            spacing: context.dimens.space8,
             children: [
-              MxSkeleton(width: _overlineWidth),
-              MxSkeleton(width: _titleWidth, height: _titleHeight),
+              const MxSkeleton(width: _overlineWidth),
+              const MxSkeleton(width: _titleWidth, height: _titleHeight),
             ],
           ),
         ),

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/features/account/presentation/screens/sign_in_screen.dart';
 import 'package:memox/features/account/presentation/states/sign_in_state.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -40,11 +40,11 @@ void main() {
         .decoration;
     expect(
       (decoration.enabledBorder! as OutlineInputBorder).borderSide.color,
-      AppColorSchemes.light.outline,
+      lightColorScheme.outline,
     );
   });
 
-  accountTest('the way-out dialog leaves 16 dp between its banner and the '
+  accountTest('the way-out dialog leaves 24 dp between its banner and the '
       'actions, as a dialog without a note does (2026-10-05 L3)', (
     tester,
     env,
@@ -78,7 +78,7 @@ void main() {
     );
     expect(
       tester.getTopLeft(cancel).dy - tester.getBottomLeft(painted).dy,
-      closeTo(16, 0.5),
+      closeTo(24, 0.5),
     );
   });
 

@@ -29,7 +29,7 @@ class SearchLoadMoreWidget extends StatelessWidget {
         actions: [
           MxButton(
             label: l10n.commonRetry,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: onRetry,
           ),
         ],

@@ -9,7 +9,7 @@ import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -53,12 +53,12 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
         onTap: () {},
       ),
       MxAppBar(
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: context.l10n.commonBack,
           onPressed: () {},
         ),
+        isTitleField: true,
         titleWidget: MxSearchField(
           controller: _search,
           hintText: context.l10n.gallerySearchDecks,

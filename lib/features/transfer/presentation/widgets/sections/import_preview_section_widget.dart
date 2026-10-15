@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/transfer/domain/models/import_plan_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
@@ -65,19 +64,19 @@ class ImportPreviewSectionWidget extends StatelessWidget {
               MxButton(
                 label: l10n.importPreviewAgain,
                 tone: MxButtonTone.text,
-                size: MxButtonSize.compact,
+                size: MxButtonSize.small,
                 onPressed: onPreviewAgain,
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
         ],
         // The chips below carry the breakdown: no total beside the title
         // (critique 2026-09-30 part 3b).
         MxListSectionHeader(label: l10n.importSectionPreview),
         Wrap(
-          spacing: AppSpacing.micro,
-          runSpacing: AppSpacing.micro,
+          spacing: context.dimens.space4,
+          runSpacing: context.dimens.space4,
           children: [
             if (preview.ready > 0)
               MxBadge(
@@ -105,7 +104,7 @@ class ImportPreviewSectionWidget extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         // Before the rows it governs (critique 2026-09-30 part 3d-2, E10).
         if (preview.duplicates > 0)
           MxSection(
@@ -133,7 +132,7 @@ class ImportPreviewSectionWidget extends StatelessWidget {
             onChooseAll: onChooseAllSections,
             onRename: onRenameDefault,
           ),
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
         ],
         ..._rowSections(context, preview),
       ],
@@ -198,29 +197,30 @@ class _GroupHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     return Padding(
-      padding: const EdgeInsetsDirectional.only(
-        start: AppSpacing.micro,
-        end: AppSpacing.micro,
-        bottom: AppSpacing.control,
+      padding: EdgeInsetsDirectional.only(
+        start: context.dimens.space4,
+        end: context.dimens.space4,
+        bottom: context.dimens.space8,
       ),
       child: Semantics(
         header: true,
         child: OverflowBar(
           alignment: MainAxisAlignment.spaceBetween,
-          spacing: AppSpacing.control,
-          overflowSpacing: AppSpacing.micro,
+          spacing: context.dimens.space8,
+          overflowSpacing: context.dimens.space4,
           children: [
             Text(
               name,
               maxLines: _maxNameLines,
               overflow: TextOverflow.ellipsis,
-              style: styles.rowTitle,
+              style: context.texts.titleSmall,
             ),
             Text(
               context.l10n.importDeckCards(cards),
-              style: styles.rowDescription,
+              style: context.texts.bodyMedium?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
             ),
           ],
         ),

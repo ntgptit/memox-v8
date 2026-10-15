@@ -10,13 +10,18 @@ snapshot. UC-STUDY-002.
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` (screen density) | "Study"; no date (see Rulings). |
+| App bar | `MxAppBar` | "Study"; no date (see Rulings). |
 | Resume card | `MxCard` (hero) + `MxIconTile` + new: `MxLinearProgress` | "Continue studying" overline with a live pulse dot; "{deckOrSession name}", "{kind} · {mode} · {done} / {total} cards", a thin progress track, "Resume" (`MxButton`, primary). Shown only when BR-STUDY-075's four read-only conditions all hold. |
 | Workload card | `MxCard` (no hero: a summary, not a door; sessions start per deck, critique 2026-09-30 part 3c-1, R2) + `MxWorkloadBreakdownLine` | "Waiting for you", "{n} cards due", then overdue · today · new "across {k} decks" (BR-STUDY-068). Zero workload swaps to a calm `MxEmptyState`-shaped card: "Nothing due right now" (BR-STUDY-008) — not an error, not an achievement. |
-| Section header | `MxListSectionHeader` + trailing `MxButton` (compact secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |
-| Sync notice | `MxFloatingNotice` in `MxAppShell.notice` + compact `MxButton` | SB-U1: floats over the bottom of the loaded page when a change has waited more than 24 h or the server refused a row (sync status spec R2, §5.3; owner ruling 2026-09-28: short, over the content). "Details" (outline, a link out of a warning, not the screen's decision; critique 2026-09-30 part 1) on the message line opens screen 27. No close button (R7). Hidden without Supabase, while loading, on a read error and when the status stream fails. |
-| Re-auth notice | `MxFloatingNotice` in the same slot + compact `MxButton` | FE-B10 (account UI spec §5.7, R2, B5): while the sign-in is refused, "Your sign-in expired. Your decks are still on this phone." · "Sign in", which opens screen 30 `reauth` under Settings and returns here once signed in. It takes the slot over the sync notice, since the expired sign-in is why sync stopped. The account feature builds it; `app/` hands it in as `reauthNotice`. |
+| Section header | `MxListSectionHeader` + trailing `MxButton` (small secondary, ruling E-L3) | "Your decks" · "Library" (opens the Library root, screen 01). |
+| Sync notice | `MxFloatingNotice` in `MxAppShell.notice` + small `MxButton` | SB-U1: floats over the bottom of the loaded page when a change has waited more than 24 h or the server refused a row (sync status spec R2, §5.3; owner ruling 2026-09-28: short, over the content). "Details" (outline, a link out of a warning, not the screen's decision; critique 2026-09-30 part 1) on the message line opens screen 27. No close button (R7). Hidden without Supabase, while loading, on a read error and when the status stream fails. |
+| Re-auth notice | `MxFloatingNotice` in the same slot + small `MxButton` | FE-B10 (account UI spec §5.7, R2, B5): while the sign-in is refused, "Your sign-in expired. Your decks are still on this phone." · "Sign in", which opens screen 30 `reauth` under Settings and returns here once signed in. It takes the slot over the sync notice, since the expired sign-in is why sync stopped. The account feature builds it; `app/` hands it in as `reauthNotice`. |
 | Rows | full-bleed `MxCard` of `MxListRow`s | leading `MxIconTile` ("layers"); title = deck name; meta = `MxWorkloadBreakdownLine` (overdue · today · new, always shown even at 0, each led by its glyph; "No cards yet" for a deck with no card — BR-STUDY-076, BR-STUDY-077); a chevron on every row that can be studied; the due counts are in the meta line, so there is no due badge (critique 2026-09-30). A deck with no card (`canStudy = false`) gets no chevron and no tap target (BR-STUDY-076). Rows are ordered Overdue ↓ Due today ↓ New ↓ name (BR-STUDY-076). |
+
+From a content width of 672 (`MxTwoColumns.minWidth`, a medium window with the
+rail taken off) the Workload card and the deck list sit side by side, each column
+starting at the top; below it they stack, Workload first. The Resume card stays
+above both at full width.
 
 ## States
 
@@ -55,7 +60,7 @@ Every state above is built.
 - **FE-A8 ruling S2, BR-STUDY-074:** the zero-workload body says "…tomorrow." on the next local day, "…on {date}." later, and "Every card is resting." with no next date.
 - **FE-A6 spec D14:** the zero card's check tile uses the `success` tone; green is mastery's alone.
 - **FE-A8 ruling S9:** Resume is a primary block `MxButton` with the play glyph; "Go to Library" in noDecks is `MxEmptyState`'s neutral secondary action; `primary-soft` is preserve-only.
-- **E-L3:** "Library" is a compact secondary `MxButton`.
+- **E-L3:** "Library" is a small secondary `MxButton`.
 - **BR-STUDY-076:** the hero and row breakdowns wrap between whole terms, never cut; a deck with cards always states its three counts, a zero term muted, each led by its glyph (history, zap, sparkles) in its text token; a deck with no card reads "No cards yet".
 - **UI-base ruling O3:** loading uses a two-bar hero skeleton and the standard `MxSkeletonList` rows.
 - `MxEmptyState` actions carry no glyph.
@@ -66,7 +71,7 @@ Every state above is built.
 ## Accessibility
 
 - The dot and the glyphs, the workload terms' included, are decorative (no node of their own); the progress track says nothing, as the line beside it states "{done} of {total} cards" (FE-A8 S3, S7).
-- A deck with no card is shown dimmed and read as a disabled button (S4); every row is at least 48 tall.
+- A deck with no card is shown dimmed and read as a disabled button (S4); every row is a two-line list row, at least `sizeListRowTwoLine` (72) tall.
 - The hero title and "across {n} decks" are plurals (S5).
 - A row's breakdown wraps between whole terms (glyph, count, word and dot stay together) instead of ellipsizing, so all three counts show at any text size (BR-STUDY-076; replaces S6's one-line ellipsis). The hero's breakdown wraps the same way.
 

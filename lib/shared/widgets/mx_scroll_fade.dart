@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The ground a fade dissolves into: the page, a raised card, or the
@@ -32,8 +31,6 @@ class MxScrollFade extends StatefulWidget {
   /// The fade over the end edge (right, or bottom), for tests.
   @visibleForTesting
   static const Key trailingKey = ValueKey('mx-scroll-fade-trailing');
-
-  static const double _extent = AppSpacing.section;
 
   @override
   State<MxScrollFade> createState() => _MxScrollFadeState();
@@ -77,7 +74,8 @@ class _MxScrollFadeState extends State<MxScrollFade> {
 
   Color _ground(BuildContext context) => switch (widget.ground) {
     MxScrollFadeGround.page => context.colors.surface,
-    MxScrollFadeGround.raised => context.colors.surfaceContainerLowest,
+    // The card's own ground, so the fade dissolves into the card.
+    MxScrollFadeGround.raised => context.mxColors.cardSurface,
     MxScrollFadeGround.recessed => context.colors.surfaceContainerLow,
   };
 
@@ -140,8 +138,8 @@ class _Fade extends StatelessWidget {
       right: isVertical || isAtEnd ? 0 : null,
       top: !isVertical || !isAtEnd ? 0 : null,
       bottom: !isVertical || isAtEnd ? 0 : null,
-      width: isVertical ? null : MxScrollFade._extent,
-      height: isVertical ? MxScrollFade._extent : null,
+      width: isVertical ? null : context.dimens.space24,
+      height: isVertical ? context.dimens.space24 : null,
       child: IgnorePointer(
         child: ExcludeSemantics(
           child: DecoratedBox(decoration: BoxDecoration(gradient: gradient)),

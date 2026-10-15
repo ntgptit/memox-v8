@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/search/presentation/states/search_screen_state.dart';
 import 'package:memox/features/search/presentation/widgets/items/search_card_hit_row_widget.dart';
@@ -42,7 +41,7 @@ class SearchResultsWidget extends StatelessWidget {
         isMore ? l10n.searchGroupCountMore(rows) : l10n.searchGroupCount(rows);
     return MxScreenScroll(
       children: [
-        const SizedBox(height: AppSpacing.control),
+        SizedBox(height: context.dimens.space8),
         if (decks.isNotEmpty) ...[
           MxListSectionHeader(
             label: l10n.searchDecksGroup,
@@ -66,7 +65,7 @@ class SearchResultsWidget extends StatelessWidget {
           ),
         ],
         if (cards.isNotEmpty) ...[
-          if (decks.isNotEmpty) const SizedBox(height: AppSpacing.grouped),
+          if (decks.isNotEmpty) SizedBox(height: context.dimens.space12),
           MxListSectionHeader(
             label: l10n.searchCardsGroup,
             trailing: MxBadge(
@@ -89,18 +88,20 @@ class SearchResultsWidget extends StatelessWidget {
           ),
         ],
         if (results.hasMore || results.more == SearchMoreStatus.failed) ...[
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space12),
           SearchLoadMoreWidget(
             status: results.more,
             onLoadMore: onLoadMore,
             onRetry: onRetry,
           ),
         ],
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
         Text(
           l10n.searchFooter,
           textAlign: TextAlign.center,
-          style: context.textStyles.footerCaption,
+          style: context.texts.labelSmall?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
         ),
       ],
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/domain/failures/card_failure.dart';
 import 'package:memox/features/card/domain/models/card_draft_model.dart';
 import 'package:memox/features/transfer/domain/models/import_preview_model.dart';
@@ -99,7 +99,7 @@ void main() {
     // The mark takes its colour from an IconTheme around the glyph.
     expect(
       IconTheme.of(tester.element(mark)).color,
-      tester.element(mark).semanticColors.success,
+      tester.element(mark).mxColors.success,
     );
   });
 }

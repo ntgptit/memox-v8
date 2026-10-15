@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/reminders/domain/models/reminder_platform_model.dart';
 import 'package:memox/features/reminders/domain/models/reminder_status_model.dart';
 import 'package:memox/features/reminders/presentation/providers/reminder_status_provider.dart';
@@ -388,9 +389,22 @@ void main() {
       of: find.byType(MxButton),
       matching: find.text('20:00'),
     );
+    final context = tester.element(time);
+    final style = tester
+        .widget<TextButton>(
+          find.ancestor(of: time, matching: find.byType(TextButton)),
+        )
+        .style!;
+    // The button's own style dims it, once; no Opacity wraps it as well.
+    expect(
+      style.foregroundColor!.resolve({WidgetState.disabled}),
+      context.colors.onSurface.withValues(
+        alpha: context.dimens.opacityDisabledContent,
+      ),
+    );
     expect(
       find.ancestor(of: time, matching: find.byType(Opacity)),
-      findsOneWidget,
+      findsNothing,
     );
   });
 

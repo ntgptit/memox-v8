@@ -52,7 +52,7 @@ the whole page.
 | Title | "Sign in again". |
 | Lead | "This phone was signed out, so syncing paused. Your decks are still here." |
 | Email | Filled with the last account's email (the usual case signs in again to it). |
-| Way out | `major` (32) under the field, in the body and out of the footer's thumb path (S9): "Continue without this account" (`MxButton` text, block). Opens "Continue without this account?" · "This phone's decks from {email} are removed. Sign in to {email} later to get them back." With changes unsent, a danger `MxInlineBanner` names them: "{n} changes on this phone aren't sent and will be lost." (final review I2), with no margin below it, so the actions sit 16 under it as under a body (L3). Cancel · "Continue" (destructive; the title asks the whole question, The Short Label Rule, DEV-169), an even pair (L2). Then `continueWithoutAccount()`; the layer clears; the flow lands on 23. Welcome keeps "Continue without an account": that skip removes nothing. |
+| Way out | `major` (32) under the field, in the body and out of the footer's thumb path (S9): "Continue without this account" (`MxButton` text, block). Opens "Continue without this account?" · "This phone's decks from {email} are removed. Sign in to {email} later to get them back." With changes unsent, a danger `MxInlineBanner` names them: "{n} changes on this phone aren't sent and will be lost." (final review I2), with no margin below it, so the actions sit 24 under it as under a body (L3, the Material 3 dialog gap). Cancel · "Continue" (destructive; the title asks the whole question, The Footer Pair Rule, DEV-169), an even pair (L2). Then `continueWithoutAccount()`; the layer clears; the flow lands on 23. Welcome keeps "Continue without an account": that skip removes nothing. |
 | Footer | As in the link table above. |
 | Another account, changes unsent | A dialog "Lose {n} changes?" · "{n} changes on this phone aren't sent and will be lost." · Cancel · "Lose" (destructive; the title names what it loses, DEV-179), an even pair, then the same command with the loss confirmed (B8). The same address asks nothing. Cancel forgets the Google account picked, so the next press shows the picker again (final review I1). |
 | Code step (31) | A resend to another account names the unsent changes again, in the same dialog: a link may open 31 without passing here (P3b minor M7, which retires plan ruling 8). |
@@ -64,7 +64,7 @@ the whole page.
 | Title | `compactTitle` | "{email} already has an account" or "This Google account is already in use" (plan ruling 12). |
 | Choices | `MxOptionRow` × 2 | "Merge into the account" (selected) · "Your {n} decks and {m} cards join it." (or "This phone's decks and cards join it." when the count failed); "Discard this phone's data" · "They're removed from this phone. The account's decks come down instead." |
 | Warning | `MxInlineBanner` (danger) | "This phone's decks and progress go for good." Only while Discard is chosen (plan ruling 14). |
-| Footer | `MxSheetActions` | Cancel · "Continue" (primary) or "Discard data" (destructive), an even pair (L2) on one row (The Short Label Rule, DEV-169; it was "Discard and continue"). The title starts 16 in, the edge of the rows and the banner (L4). |
+| Footer | `MxSheetActions` | Cancel · "Continue" (primary) or "Discard data" (destructive), an even pair (L2) on one row (The Footer Pair Rule, DEV-169; it was "Discard and continue"). The title starts 16 in, the edge of the rows and the banner (L4). |
 
 A phone with no live deck skips the sheet and moves at once (R6).
 
@@ -85,8 +85,8 @@ centred in the page; the target sign-in follows the sign-in frame (F1 below).
 | Running | `MxSpinner` (large), the step in `screenTitle` ("Sending your changes…", "Getting your decks ready…", "Merging…", "Downloading your decks…", "Signing out…", "Deleting your account…") as a live region, "Nothing is lost if you close the app." |
 | Network error | `MxInlineBanner` (warning) "No connection. Your data is safe on this phone." centred; Retry (primary) in the `MxFooterBar` (L5). |
 | Other error | "Something went wrong. Your data is safe on this phone." + Retry. |
-| Sign-out stopped offline | "No connection. Nothing has been removed yet." centred; Retry and "Sign out now and lose {n} changes" (`dangerSoft`) in the footer (L5); Cancel at the top (critique 2026-10-02). |
-| Merge stopped on refused changes | "{n} changes on this phone were refused by the server and can't be merged." centred; Retry and "Continue and lose {n} changes" (`dangerSoft`, keeps them on the device then retries) in the footer (L5); Cancel at the top. Retry alone would repeat the refusal (DEV-191). A discard switch goes on without stopping. |
+| Sign-out stopped offline | "No connection. Nothing has been removed yet." centred; Retry and "Sign out now and lose {n} changes" (`dangerTint`) in the footer (L5); Cancel at the top (critique 2026-10-02). |
+| Merge stopped on refused changes | "{n} changes on this phone were refused by the server and can't be merged." centred; Retry and "Continue and lose {n} changes" (`dangerTint`, keeps them on the device then retries) in the footer (L5); Cancel at the top. Retry alone would repeat the refusal (DEV-191). A discard switch goes on without stopping. |
 | Target sign-in | The sign-in frame in target mode: "Cancel" (text) at the top in place of the back arrow, title "Sign in", lead "Sign in to the account this phone moves to.", the address pre-filled, the footer (Send code, Google) at the layer's bottom above the keyboard; the code step on the layer's own navigator. |
 | Stuck | "Something went wrong while moving your account. Your data is safe on this phone." centred; Retry only, in the footer (L5). |
 | Before the target signs in | "Cancel" at the top returns to where the switch started. |
@@ -130,7 +130,7 @@ The images are the goldens.
 
 ## Copy
 
-- "Sign in" · "Your decks stay on this phone and join the account." · "Email address" (painted label) · "name@example.com" (hint) · "Send code" · "Continue with Google". "or" is gone.
+- "Sign in" · "Your decks stay on this phone and join the account." · "Email address" (the field's painted label, 4 above the box on its 16 text inset) · "name@example.com" (hint) · "Send code" · "Continue with Google". "or" is gone.
 - Problems: "Enter an email address, like name@example.com." · "Too many tries. Wait a minute, then try again." · "No connection. Nothing changed; try again when you're online." · "Couldn't sign in. Nothing changed; try again."
 - Offline caption: "Signing in needs a connection. Try later in Settings."
 - Re-auth: "SIGNED OUT · {email}" (eyebrow) · "Sign in again" · "This phone was signed out, so syncing paused. Your decks are still here." · "Continue without this account" · "Continue without this account?"; the loss confirm "Lose {n} changes"; the dialogs as in the table above.

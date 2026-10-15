@@ -5,7 +5,6 @@ import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
 import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/account/domain/models/local_library_model.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
@@ -140,17 +139,17 @@ class _MergeChoiceSheetWidgetState extends State<MergeChoiceSheetWidget> {
     return MxBottomSheet(
       header: Padding(
         // The rows, the banner and the footer start 16 in (L4).
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.gutter,
-          AppSpacing.micro,
-          AppSpacing.gutter,
-          AppSpacing.grouped,
+        padding: EdgeInsets.fromLTRB(
+          context.dimens.space16,
+          context.dimens.space4,
+          context.dimens.space16,
+          context.dimens.space12,
         ),
         child: Text(
           email == null
               ? l10n.accountTakenGoogle
               : l10n.accountTakenEmail(email),
-          style: context.textStyles.compactTitle,
+          style: context.texts.titleSmall,
         ),
       ),
       footer: MxSheetActions(
@@ -186,10 +185,10 @@ class _MergeChoiceSheetWidgetState extends State<MergeChoiceSheetWidget> {
           ),
           if (_isDiscarding)
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.gutter,
-                AppSpacing.grouped,
-                AppSpacing.gutter,
+              padding: EdgeInsets.fromLTRB(
+                context.dimens.space16,
+                context.dimens.space12,
+                context.dimens.space16,
                 0,
               ),
               // Something is lost here, so the danger tone, not a note.

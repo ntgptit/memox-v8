@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:memox/core/logging/log_entry.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/monitoring/domain/models/log_filter_model.dart';
 import 'package:memox/features/monitoring/domain/models/log_status_model.dart';
 import 'package:memox/features/monitoring/domain/models/log_window_model.dart';
@@ -13,6 +12,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The Server tab's filters (monitoring spec §3.2): five chips in a row that
 /// scrolls, each opening its sheet. A chip that holds a choice shows it, and
@@ -47,9 +48,9 @@ class MonitoringFilterBarWidget extends StatelessWidget {
       axis: Axis.horizontal,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+        padding: EdgeInsets.symmetric(horizontal: context.screenMargin),
         child: Row(
-          spacing: AppSpacing.control,
+          spacing: context.dimens.space8,
           children: [
             _chip(
               l10n,

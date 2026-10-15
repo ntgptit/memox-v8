@@ -1,177 +1,86 @@
 # Design tokens
 
-Location: `core/theme/`.
+**The values are not written here.** The single source is `design/tokens.json`,
+exported from the Design System "Flashcard Color Tokens". Everything under
+`lib/core/theme/generated/` and the `DESIGN.md` frontmatter are generated from it
+(`python3 tools/design/generate.py`); how to change the look is
+`docs/agent/visual-change.md`
+([ADR-022](../../../../docs/shared/decisions/ADR-022-mot-nguon-token-va-theme-flutter.md)).
+Never copy a hex, a size or a duration into code, a test or a document.
+
+## Where things live
 
 ```
-core/theme/
-├── app_theme.dart          # buildLightTheme() / buildDarkTheme()
-├── app_colors.dart         # semantic colour tokens
-├── app_typography.dart     # TextTheme construction
-├── app_spacing.dart        # spacing scale
-├── app_radius.dart         # corner radii
-├── app_elevation.dart      # elevation steps
-├── app_durations.dart      # animation durations
-├── app_breakpoints.dart    # responsive breakpoints
-└── app_semantic_colors.dart # ThemeExtension for success/warning/info
+design/tokens.json                    # the source (never hand-edited)
+design/app_tokens.json                # values the app has and the DS does not
+lib/core/theme/
+├── generated/                        # written by tools/design/generate.py
+│   ├── color_schemes.g.dart          #   const ColorScheme light / dark (46 roles)
+│   ├── mx_colors_extension.g.dart    #   MxColorsExtension (16 fields)
+│   ├── app_dimens.g.dart             #   AppDimens (spacing, shape, size, stroke, opacity)
+│   ├── text_theme.g.dart             #   the 12 TextTheme roles
+│   └── token_constants.g.dart        #   constants needed outside a BuildContext
+├── app_theme.dart                    # buildLightTheme() / buildDarkTheme()
+├── app_component_themes.dart         # ThemeTokens, buttons, FAB, chip, switch
+├── app_surface_themes.dart           # card, fields, navigation, dialog, sheet, snackbar, tooltip
+├── app_typography.dart               # binds the roles, mono family
+├── color_tint.dart                   # Color.tintOver
+├── theme_rules.dart                  # accentColor, deckIconColor, screenMargin, windowSize
+├── theme_context.dart                # colors, texts, mxColors, dimens
+├── mastery_ramp.dart
+├── focus_ring_border.dart            # MxFocusRingBorder: the offset focus ring around any OutlinedBorder
+└── app_icons.dart
 ```
 
-## Scales
+Nothing else belongs in `lib/core/theme/`; the guard keeps the list closed.
+
+## Reading the theme
 
 ```dart
-abstract final class AppSpacing {
-  static const double xs = 4;
-  static const double sm = 8;
-  static const double md = 12;
-  static const double lg = 16;
-  static const double xl = 24;
-  static const double xxl = 32;
-}
-
-abstract final class AppRadius {
-  static const double sm = 4;
-  static const double md = 8;
-  static const double lg = 16;
-  static const double full = 999;
-}
-
-abstract final class AppIconSize {
-  static const double sm = 16;
-  static const double md = 24;   // Material default
-  static const double lg = 32;
-}
-
-abstract final class AppDurations {
-  static const fast = Duration(milliseconds: 150);
-  static const normal = Duration(milliseconds: 250);
-  static const slow = Duration(milliseconds: 400);
-}
-
-abstract final class AppBreakpoints {
-  static const double compact = 600;    // phone
-  static const double medium = 840;     // tablet / foldable
-  static const double expanded = 1200;  // desktop
+extension ThemeContext on BuildContext {
+  ColorScheme get colors;        // Theme.of(this).colorScheme
+  TextTheme get texts;           // Theme.of(this).textTheme
+  MxColorsExtension get mxColors;
+  AppDimens get dimens;
 }
 ```
 
-`abstract final class` is the idiomatic Dart namespace for constants — it cannot
-be instantiated or extended, which is exactly what you want from a token holder.
+That is the whole extension. The Design System rules of the form "this mode uses
+role A, that mode role B" are `accentColor` and `deckIconColor`, plus
+`screenMargin` and `windowSize`, in `theme_rules.dart`: the only widget-facing
+file that branches on `brightness`.
 
-## Semantic colours
+- **Colour:** a `ColorScheme` role when one exists. `MxColorsExtension` holds only
+  the DS tokens that have no role: `success`, `warning`, `info` (each with `on…`,
+  `…Container`, `on…Container`), `cardSurface`, `searchSurface`, `tileSurface`,
+  `divider`. A tinted ground is `colour.tintOver(base)` where `base` is the
+  surface right beneath (`colors.surface` on the page, `mxColors.cardSurface`
+  inside a card); never `withValues(alpha:)` or `Color.lerp` for a ground.
+- **Text:** the role itself, `context.texts.titleSmall`, changing only the
+  colour, `copyWith(color: …)`, or for code `copyWith(fontFamily:
+  AppTypography.monoFamily)`. Size, weight, tracking and height are the token's.
+  A single-line label cut with an ellipsis needs a line height of at least 1.5, or
+  stacked Vietnamese diacritics (Ẳ, Ổ, Ỗ) are clipped; the height stays what the
+  token says, and a screen that clips is reported, not patched.
+- **Dimensions:** `context.dimens.space16`, `radiusMd`, `sizeControl`,
+  `strokeHairline`, `opacityPressed`… A full radius is `StadiumBorder()`. Motion is
+  Flutter's own: `Durations.short4`, `Easing.standard`.
+- **A value one widget needs and the DS lacks:** a private constant in that widget
+  with a doc comment. One several widgets need goes into `design/app_tokens.json`.
 
-`ColorScheme` covers primary/secondary/tertiary/error and their containers. It
-has no success, warning or info, so add them as a `ThemeExtension` rather than
-as loose constants — an extension is theme-aware, so it changes with light/dark
-automatically, and it survives `Theme.of(context)` lookups.
+## Component themes
 
-```dart
-@immutable
-final class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
-  const AppSemanticColors({
-    required this.success,
-    required this.onSuccess,
-    required this.warning,
-    required this.onWarning,
-    required this.info,
-    required this.onInfo,
-  });
-
-  final Color success;
-  final Color onSuccess;
-  final Color warning;
-  final Color onWarning;
-  final Color info;
-  final Color onInfo;
-
-  @override
-  AppSemanticColors copyWith({Color? success, /* ... */}) => AppSemanticColors(
-        success: success ?? this.success,
-        // ...
-      );
-
-  @override
-  AppSemanticColors lerp(AppSemanticColors? other, double t) {
-    if (other == null) return this;
-    return AppSemanticColors(
-      success: Color.lerp(success, other.success, t)!,
-      // ...
-    );
-  }
-
-  static const light = AppSemanticColors(/* ... */);
-  static const dark = AppSemanticColors(/* ... */);
-}
-```
-
-Read it with a short extension so call sites stay clean:
-
-```dart
-extension ThemeContextX on BuildContext {
-  ColorScheme get colors => Theme.of(this).colorScheme;
-  TextTheme get texts => Theme.of(this).textTheme;
-  AppSemanticColors get semanticColors =>
-      Theme.of(this).extension<AppSemanticColors>()!;
-}
-```
-
-This is the one extension worth having on `BuildContext`. Resist adding more —
-the checklist's "không lạm dụng extension" exists because a `BuildContext` with
-thirty extension getters becomes impossible to discover.
-
-## Typography
-
-Build a `TextTheme` once and let widgets read roles from it. Never construct a
-`TextStyle` inside a feature widget.
-
-```dart
-Text('Title', style: context.texts.titleLarge)                    // yes
-Text('Title', style: TextStyle(fontSize: 22, color: Colors.black)) // no
-```
-
-Two reasons this matters beyond consistency: a hardcoded `fontSize` does not
-respond to the platform text-scale setting the same way, and a hardcoded
-`Colors.black` is invisible in dark mode.
-
-When a variant is needed, derive it: `context.texts.bodyMedium?.copyWith(color:
-context.colors.error)`.
-
-## Theme construction
-
-```dart
-ThemeData buildLightTheme() {
-  final scheme = ColorScheme.fromSeed(
-    seedColor: AppColors.seed,
-    brightness: Brightness.light,
-  );
-  return ThemeData(
-    useMaterial3: true,
-    colorScheme: scheme,
-    textTheme: buildTextTheme(scheme),
-    extensions: const [AppSemanticColors.light],
-    appBarTheme: /* ... */,
-    cardTheme: /* ... */,
-    inputDecorationTheme: /* ... */,
-    filledButtonTheme: /* ... */,
-    // ... and the rest of the component themes
-  );
-}
-```
-
-Seeding produces a coherent, contrast-checked palette for free. Override
-individual roles where the brand requires it, but re-check contrast after each
-override — that is exactly where seeded guarantees stop applying.
+A Material widget's defaults are set once in `app_component_themes.dart` from
+tokens (card, search bar, divider, buttons, navigation bar and rail, progress,
+chip, input, dialog, sheet, snack bar, tooltip). An `Mx*` widget composes layout
+and reads those; it does not rebuild the colour, text or radius the theme has.
 
 ## Verifying tokens are actually used
 
 ```bash
-# hardcoded colours in feature code
+python3 tools/design/check.py          # generated code in sync, no removed name left
 rg -n 'Colors\.[a-z]|Color\(0x' lib/features lib/shared
-
-# hardcoded text styles
 rg -nF 'TextStyle(' lib/features
-
-# raw padding values
-rg -n 'EdgeInsets\.(all|symmetric|only)\([^)]*[0-9]' lib/features
 ```
 
-Hits in `core/theme/` are expected and fine — that is where the values are
-supposed to live. Hits anywhere else are the defect.
+Hits in `lib/core/theme/` are expected; anywhere else they are the defect.

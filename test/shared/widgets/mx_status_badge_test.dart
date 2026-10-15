@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 
 import '../../support/widget_harness.dart';
@@ -8,52 +13,39 @@ import '../../support/widget_harness.dart';
 const _dotKey = ValueKey('mx-status-dot');
 
 Color? _fill(WidgetTester tester, Finder finder) =>
-    (tester.widget<DecoratedBox>(finder).decoration as BoxDecoration).color;
+    switch (tester.widget<DecoratedBox>(finder).decoration) {
+      final ShapeDecoration shape => shape.color,
+      final BoxDecoration box => box.color,
+      _ => null,
+    };
 
 void main() {
-  final semantic = MxSemanticColors.light;
+  const mx = MxColorsExtension.light;
+  final scheme = lightColorScheme;
 
-  testWidgets('the status fixes the dot; the pill is its soft ground and the '
-      'label its on-soft token', (tester) async {
-    for (final (status, color, ground, foreground) in [
-      (
-        MxCardStatus.newCard,
-        semantic.statusNew,
-        semantic.neutralSoft,
-        semantic.onNeutralSoft,
-      ),
-      (
-        MxCardStatus.learning,
-        semantic.statusLearning,
-        semantic.learningSoft,
-        semantic.onLearningSoft,
-      ),
-      (
-        MxCardStatus.reviewing,
-        semantic.statusReviewing,
-        semantic.primarySoft,
-        semantic.onPrimarySoft,
-      ),
-      (
-        MxCardStatus.mastered,
-        semantic.statusMastered,
-        semantic.successSoft,
-        semantic.onSuccessSoft,
-      ),
-    ]) {
-      await pumpMx(tester, MxStatusBadge(status: status, label: 'State'));
-      final pill = find
-          .descendant(
-            of: find.byType(MxStatusBadge),
-            matching: find.byType(DecoratedBox),
-          )
-          .first;
+  testWidgets(
+    'the status fixes the dot and fill; the label is its foreground',
+    (tester) async {
+      for (final (status, color, ink) in [
+        (MxCardStatus.newCard, scheme.outline, scheme.onSurfaceVariant),
+        (MxCardStatus.learning, mx.warningContainer, mx.warning),
+        (MxCardStatus.reviewing, accentOf(scheme), accentOf(scheme)),
+        (MxCardStatus.mastered, mx.successContainer, mx.success),
+      ]) {
+        await pumpMx(tester, MxStatusBadge(status: status, label: 'State'));
+        final pill = find
+            .descendant(
+              of: find.byType(MxStatusBadge),
+              matching: find.byType(DecoratedBox),
+            )
+            .first;
 
-      expect(_fill(tester, pill), ground);
-      expect(_fill(tester, find.byKey(_dotKey)), color);
-      expect(tester.widget<Text>(find.text('State')).style!.color, foreground);
-    }
-  });
+        expect(_fill(tester, pill), color.tintOver(scheme.surface));
+        expect(_fill(tester, find.byKey(_dotKey)), color);
+        expect(tester.widget<Text>(find.text('State')).style!.color, ink);
+      }
+    },
+  );
 
   testWidgets('pill: 22 tall, 6 before the 6 dot, 4 gap, 8 after', (
     tester,

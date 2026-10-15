@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A hidden study face (16a, 19): the kit's still placeholder bar until
@@ -22,7 +20,7 @@ class StudyAppearingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final isStill = MediaQuery.disableAnimationsOf(context);
     return AnimatedSwitcher(
-      duration: isStill ? Duration.zero : AppDurations.standard,
+      duration: isStill ? Duration.zero : Durations.short4,
       switchInCurve: Easing.standard,
       transitionBuilder: (child, animation) => FadeTransition(
         opacity: animation,
@@ -51,8 +49,10 @@ class _HiddenBar extends StatelessWidget {
       size: _size,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: context.colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(AppRadius.full),
+          // One step off the face it sits on (cardSurface or the recessed
+          // ground), where surfaceContainerHigh equals cardSurface in dark.
+          color: context.colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(_size.height / 2),
         ),
       ),
     ),

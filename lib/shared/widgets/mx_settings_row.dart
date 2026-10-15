@@ -1,9 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
@@ -15,7 +13,8 @@ import 'package:memox/shared/widgets/mx_toggle.dart';
 /// A setting: a bigger label, a roomier lead column, and a trailing slot for
 /// a control. The chevron shows only when the row navigates and holds no
 /// control, so a row with a toggle never implies a destination. Inside an
-/// MxSection, the section draws the dividers.
+/// MxSection, the section draws the dividers. Its height is the Material 3
+/// list item: 56 with a label alone, 72 with a subtitle.
 class MxSettingsRow extends StatelessWidget {
   const MxSettingsRow({
     super.key,
@@ -76,7 +75,6 @@ class MxSettingsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final styles = context.textStyles;
     final isNavigable =
         onTap != null && !isAction && trailing == null && wideControl == null;
     final isStacked =
@@ -88,27 +86,32 @@ class MxSettingsRow extends StatelessWidget {
       isEnabled: isEnabled,
       shouldDimWhenDisabled: false,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: AppSize.listRowMin),
+        constraints: BoxConstraints(
+          minHeight: subtitle == null
+              ? context.dimens.sizeListRow
+              : context.dimens.sizeListRowTwoLine,
+        ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+          padding: EdgeInsets.symmetric(horizontal: context.dimens.space16),
           child: _withMessage(
+            context,
             Row(
-              spacing: AppSpacing.gutter,
               // Kit 23: beside a wide control the tile stays with the label.
               crossAxisAlignment: below == null
                   ? CrossAxisAlignment.center
                   : CrossAxisAlignment.start,
               children: [
-                if (icon case final glyph?)
+                if (icon case final glyph?) ...[
                   Padding(
                     padding: EdgeInsets.only(
-                      top: below == null ? 0 : AppSpacing.grouped,
+                      top: below == null ? 0 : context.dimens.space12,
                     ),
                     child: SizedBox(
                       width: _leadColumn,
                       child: Center(
                         heightFactor: 1,
                         child: _dim(
+                          context,
                           MxIconTile(
                             icon: glyph,
                             size: MxIconTileSize.medium,
@@ -118,39 +121,55 @@ class MxSettingsRow extends StatelessWidget {
                       ),
                     ),
                   ),
+                  SizedBox(width: context.dimens.space16),
+                ],
                 // As in MxListRow, only the text carries the 12/12 inset, so a
                 // 48 toggle target sits inside the row instead of growing it.
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppSpacing.grouped,
+                    padding: EdgeInsets.symmetric(
+                      vertical: context.dimens.space12,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _dim(Text(label, style: styles.settingsLabel)),
+                        _dim(
+                          context,
+                          Text(label, style: context.texts.titleSmall),
+                        ),
                         if (subtitle case final text?) ...[
                           const SizedBox(height: _subtitleGap),
-                          Text(text, style: styles.rowDescription),
+                          Text(
+                            text,
+                            style: context.texts.bodyMedium?.copyWith(
+                              color: context.colors.onSurfaceVariant,
+                            ),
+                          ),
                         ],
                         if (below case final control?) ...[
-                          const SizedBox(height: AppSpacing.grouped),
-                          _dimControl(control),
+                          SizedBox(height: context.dimens.space12),
+                          _dimControl(context, control),
                         ],
                       ],
                     ),
                   ),
                 ),
-                if (!isStacked && trailing != null) _dimControl(trailing!),
-                if (isNavigable)
+                if (!isStacked && trailing != null) ...[
+                  SizedBox(width: _trailingGap(context, trailing!)),
+                  _dimControl(context, trailing!),
+                ],
+                if (isNavigable) ...[
+                  SizedBox(width: context.dimens.space16),
                   _dim(
+                    context,
                     Icon(
                       AppIcons.chevronRight,
-                      size: AppIconSize.compact,
+                      size: context.dimens.sizeIconCompact,
                       color: context.colors.onSurfaceVariant,
                     ),
                   ),
+                ],
               ],
             ),
           ),
@@ -160,14 +179,17 @@ class MxSettingsRow extends StatelessWidget {
   }
 
   /// The row, then [message] under it, indented to the label's start.
-  Widget _withMessage(Widget row) {
+  Widget _withMessage(BuildContext context, Widget row) {
     final line = message;
     if (line == null) return row;
-    final labelStart = icon == null ? 0.0 : _leadColumn + AppSpacing.gutter;
-    // MxFieldMessage insets its glyph by micro, as under a field: pulled
-    // back so the glyph lines up with the label (audit 2026-10-07).
+    final labelStart = icon == null
+        ? 0.0
+        : _leadColumn + context.dimens.space16;
+    // MxFieldMessage insets its glyph by the field's text inset, as under a
+    // field: pulled back so the glyph lines up with the label (audit
+    // 2026-10-07).
     final indent = line is MxFieldMessage
-        ? labelStart - AppSpacing.micro
+        ? math.max(0.0, labelStart - context.dimens.space16)
         : labelStart;
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -177,7 +199,7 @@ class MxSettingsRow extends StatelessWidget {
         Padding(
           padding: EdgeInsetsDirectional.only(
             start: indent,
-            bottom: AppSpacing.grouped,
+            bottom: context.dimens.space12,
           ),
           child: line,
         ),
@@ -194,9 +216,28 @@ class MxSettingsRow extends StatelessWidget {
     _ => false,
   };
 
-  Widget _dimControl(Widget control) =>
-      _drawsOwnDisabledState(control) ? control : _dim(control);
+  /// The clear space before a trailing control. MxStepper's step buttons
+  /// paint inside 48 targets that already leave clear space around them, so
+  /// the row adds only the rest, and its painted gap matches the other
+  /// controls': the label beside it keeps its width ("Per session" stays on
+  /// one line at 360dp).
+  static double _trailingGap(BuildContext context, Widget control) {
+    final dimens = context.dimens;
+    if (!_isStepper(control)) return dimens.space16;
+    final touchInset = (dimens.sizeControl - dimens.sizeButtonSmall) / 2;
+    return dimens.space16 - touchInset;
+  }
 
-  Widget _dim(Widget child) =>
-      isEnabled ? child : Opacity(opacity: AppOpacity.disabled, child: child);
+  static bool _isStepper(Widget control) => switch (control) {
+    MxStepper() => true,
+    Semantics(:final child?) => _isStepper(child),
+    _ => false,
+  };
+
+  Widget _dimControl(BuildContext context, Widget control) =>
+      _drawsOwnDisabledState(control) ? control : _dim(context, control);
+
+  Widget _dim(BuildContext context, Widget child) => isEnabled
+      ? child
+      : Opacity(opacity: context.dimens.opacityDisabledContent, child: child);
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// The centred overline under the session's top bar naming deck, kind,
@@ -25,11 +24,11 @@ class SessionContextLineWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      AppSpacing.gutter,
+    padding: EdgeInsets.fromLTRB(
+      context.dimens.space16,
       0,
-      AppSpacing.gutter,
-      AppSpacing.gutter,
+      context.dimens.space16,
+      context.dimens.space16,
     ),
     child: Text(
       shown,
@@ -37,7 +36,9 @@ class SessionContextLineWidget extends StatelessWidget {
       maxLines: _maxLines,
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
-      style: context.textStyles.eyebrow,
+      style: context.texts.labelSmall?.copyWith(
+        color: context.colors.onSurfaceVariant,
+      ),
     ),
   );
 }

@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 import 'package:memox/features/tags/domain/failures/tag_failure.dart';
@@ -131,7 +130,6 @@ class _TagRenameDialogWidgetState extends ConsumerState<TagRenameDialogWidget> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final rejection = _rejection;
     final isTooLong = rejection == TagRejection.nameTooLong;
     final merge = switch (_plan) {
@@ -145,33 +143,29 @@ class _TagRenameDialogWidgetState extends ConsumerState<TagRenameDialogWidget> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
-          Row(
-            children: [
-              Expanded(child: Text(l10n.tagsNewName, style: styles.fieldLabel)),
-              if (isTooLong)
-                Text(
-                  l10n.tagsLength(_length, TagEntity.maxNameLength),
-                  style: styles.captionIn(context.colors.error),
-                ),
-            ],
-          ),
           MxTextField(
             controller: _name,
             label: l10n.tagsNewName,
+            // The count shows while the name breaks the length rule; with a
+            // merge it joins the line on the unique names.
+            counter: isTooLong
+                ? l10n.tagsLength(_length, TagEntity.maxNameLength)
+                : null,
+            supportingText: switch ((rejection, merge)) {
+              (null, null) => l10n.tagsCaseHint,
+              (null, _) => l10n.tagsLengthUnique(
+                _length,
+                TagEntity.maxNameLength,
+              ),
+              _ => null,
+            },
             errorText: _message(l10n, rejection),
             textInputAction: TextInputAction.done,
             onChanged: _changed,
             onSubmitted: (_) => confirm?.call(),
           ),
-          if (rejection == null)
-            Text(
-              merge == null
-                  ? l10n.tagsCaseHint
-                  : l10n.tagsLengthUnique(_length, TagEntity.maxNameLength),
-              style: styles.footerCaption,
-            ),
           if (merge != null) _MergePanel(source: widget.tag, merge: merge),
         ],
       ),
@@ -218,16 +212,18 @@ class _MergePanel extends StatelessWidget {
   }
 
   Widget _content(BuildContext context, AppLocalizations l10n) {
-    final note = context.textStyles.noteText;
-    final foreground = context.semanticColors.onWarningSoft;
+    final note = context.texts.bodyMedium?.copyWith(
+      color: context.colors.onSurfaceVariant,
+    );
+    final foreground = context.mxColors.warning;
     return IconTheme.merge(
       data: IconThemeData(color: foreground),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           Row(
-            spacing: AppSpacing.control,
+            spacing: context.dimens.space8,
             children: [
               const Icon(AppIcons.merge),
               Expanded(
@@ -239,8 +235,8 @@ class _MergePanel extends StatelessWidget {
             ],
           ),
           Wrap(
-            spacing: AppSpacing.control,
-            runSpacing: AppSpacing.micro,
+            spacing: context.dimens.space8,
+            runSpacing: context.dimens.space4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               MxTagChip(label: tagWithCount(source.name, source.cardCount)),

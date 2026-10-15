@@ -10,7 +10,7 @@ sheet. UC-DECK-002 (change scheduler), UC-SRS-001 (reset learning progress).
 | Region | Widget | Design |
 |---|---|---|
 | App bar, breadcrumb | `MxAppBar`, `MxBreadcrumb` | Back, "Review algorithm"; Library › root › Review algorithm. |
-| Lock strip | `MxCard` + `MxIconTile` | Unlocked: plain card, open lock on primary, "Can still be changed" / "Locks once the first card finishes learning." Locked: warning-soft ground, lock on warning, "Locked · cycle {n}" / "The first card finished learning on {date}. Only a reset opens a new cycle." The lock is named in words, not colour alone. |
+| Lock strip | `MxCard` + `MxIconTile` | Unlocked: plain card, open lock on primary, "Can still be changed" / "Locks once the first card finishes learning." Locked: the warning tint, lock on warning, "Locked · cycle {n}" / "The first card finished learning on {date}. Only a reset opens a new cycle." The lock is named in words, not colour alone. |
 | ALGORITHM | `MxListSectionHeader`, `MxCard` of two `MxOptionRow`s | The current algorithm selected; both disabled when locked. |
 | Note | `MxNote`, above the options (critique 2026-09-30) | Unlocked: "Switching resets every card's schedule in this tree and closes any open study session. Choosing the current algorithm changes nothing." Locked (lock icon): "To change the algorithm now, reset learning progress below and choose the algorithm for the new cycle." |
 | START OVER | `MxListSectionHeader`, `MxCard`, `MxButton` (outline) | "Reset learning progress" / "Every card in this tree becomes new and a new cycle begins. You choose the algorithm for it. Decks, cards, tags and past history are kept." / "Reset learning progress…". |
@@ -29,7 +29,7 @@ Algorithm descriptions:
 | switching | no golden | no golden | Reached **after** the confirmation dialog (UC-DECK-002 steps 3–4). |
 | switched | no golden | no golden | Snackbar "Switched to {algorithm} · every card starts fresh". |
 | switchFailed | no golden | no golden | Danger banner with Retry (UC-DECK-002 E2). |
-| resetConfirm | `library_algorithm_reset_light.png` | `library_algorithm_reset_dark.png` | "Kept" in `onSuccessSoft` on the success soft ground (spec 2026-10-10); "the open session" only when a session is open. |
+| resetConfirm | `library_algorithm_reset_light.png` | `library_algorithm_reset_dark.png` | "Kept" in `success` on the success tint (ADR-022); "the open session" only when a session is open. |
 | resetting | no golden | no golden | The confirm spins and Cancel is off (M3 review B2). |
 | resetDone | no golden | no golden | Then the unlocked state. |
 | nothingToLose | no golden | no golden | When `hasProgressToLose` is false (UC-SRS-001 A2). |
@@ -56,7 +56,7 @@ Beyond the states above:
 
 - **UC-DECK-002 steps 3–4:** choosing the other algorithm asks for confirmation first; it never switches on the tap.
 - **M3 review 2026-09-28 B2:** while a reset runs the confirm button spins (`MxSheetActions.isConfirmLoading`), with no "Resetting…" text, as every async confirm.
-- **Spec A10, amended 2026-10-10:** "Kept" is written in `onSuccessSoft` (#12815A) on `successSoft` (#E6FCF4), 4.54:1, light in both themes.
+- **Spec A10, amended 2026-10-10:** "Kept" is written in `success` on the success tint (superseded 2026-10-13 by ADR-022, which tints over each theme's own surface).
 - **D-L1:** a switch refused because the tree just locked shows the locked state from the stream, with the reason as a snackbar.
 - **Critique 2026-09-30:** each algorithm is described in one sentence.
 - **Critique 2026-09-30 tone pass (final review):** the reset dialog's Kept tile is success (a fine state), Lost stays warning.

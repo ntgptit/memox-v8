@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -11,6 +10,7 @@ import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import 'package:memox/shared/widgets/mx_status_badge.dart';
 import 'package:memox/shared/widgets/mx_tag_chip.dart';
 import 'package:memox/shared/widgets/mx_workload_breakdown_line.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Group E: counts, lifecycle, tags, rules and the workload and mastery
 /// indicators.
@@ -22,8 +22,8 @@ class GalleryStatusSection extends StatelessWidget {
     title: context.l10n.galleryEStatusMetadata,
     children: [
       Wrap(
-        spacing: AppSpacing.control,
-        runSpacing: AppSpacing.control,
+        spacing: context.dimens.space8,
+        runSpacing: context.dimens.space8,
         children: [
           MxBadge(label: context.l10n.gallery23Due),
           MxBadge(
@@ -45,7 +45,7 @@ class GalleryStatusSection extends StatelessWidget {
         ],
       ),
       Row(
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           Expanded(
             child: MxOutcomeTile(
@@ -64,7 +64,7 @@ class GalleryStatusSection extends StatelessWidget {
         ],
       ),
       Row(
-        spacing: AppSpacing.control,
+        spacing: context.dimens.space8,
         children: [
           Expanded(
             child: MxStatTile(
@@ -100,8 +100,8 @@ class GalleryStatusSection extends StatelessWidget {
         ],
       ),
       Wrap(
-        spacing: AppSpacing.control,
-        runSpacing: AppSpacing.control,
+        spacing: context.dimens.space8,
+        runSpacing: context.dimens.space8,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           MxStatusBadge(
@@ -128,8 +128,8 @@ class GalleryStatusSection extends StatelessWidget {
         ],
       ),
       Wrap(
-        spacing: AppSpacing.control,
-        runSpacing: AppSpacing.control,
+        spacing: context.dimens.space8,
+        runSpacing: context.dimens.space8,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           MxTagChip(label: context.l10n.galleryVerbs),
@@ -157,13 +157,13 @@ class GalleryStatusSection extends StatelessWidget {
         newLabel: context.l10n.galleryNewCount,
         fallback: context.l10n.gallery42CardsNothingDue,
       ),
-      const Row(
-        spacing: AppSpacing.gutter,
+      Row(
+        spacing: context.dimens.space16,
         children: [
-          MxMasteryDonut(fraction: 0),
-          MxMasteryDonut(fraction: 0.2),
-          MxMasteryDonut(fraction: 0.5),
-          MxMasteryDonut(fraction: 1),
+          const MxMasteryDonut(fraction: 0),
+          const MxMasteryDonut(fraction: 0.2),
+          const MxMasteryDonut(fraction: 0.5),
+          const MxMasteryDonut(fraction: 1),
         ],
       ),
     ],

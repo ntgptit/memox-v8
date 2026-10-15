@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/failure.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_list_query_model.dart';
 import 'package:memox/features/card/presentation/controllers/card_actions_controller.dart';
@@ -110,7 +110,6 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
     final l10n = context.l10n;
     final total = _total(ref.watch(cardListRequestProvider(_deckId)));
     return MxAppBar(
-      density: MxAppBarDensity.content,
       leading: MxIconButton(
         icon: AppIcons.close,
         semanticLabel: l10n.cardSelectionClose,
@@ -124,15 +123,16 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
           l10n.cardSelectedCount(count),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.textStyles.compactTitle,
+          style: context.texts.titleSmall,
         ),
       ),
+      isLastActionText: true,
       actions: [
         if (total != null)
           MxButton(
             label: l10n.cardSelectAllCount(total),
             tone: MxButtonTone.secondary,
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: () => unawaited(_selectAll()),
           ),
       ],
@@ -144,7 +144,6 @@ class _CardDeckAppBarWidgetState extends ConsumerState<CardDeckAppBarWidget> {
     final isSearchOpen = ref.watch(cardSearchOpenProvider(_deckId));
     return MxAppBar(
       title: widget.view.deck.name,
-      density: MxAppBarDensity.content,
       leading: widget.back,
       actions: [
         MxIconButton(

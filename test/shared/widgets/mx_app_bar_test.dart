@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
@@ -10,37 +13,39 @@ import 'package:memox/shared/widgets/mx_search_field.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
-  testWidgets('56 tall on the page ground, below the status inset', (
-    tester,
-  ) async {
+  testWidgets('sizeAppBar tall, below the status inset', (tester) async {
     await pumpMx(
       tester,
       const MxAppBar(title: 'Library'),
       padding: const EdgeInsets.only(top: 24),
     );
 
-    expect(tester.getSize(find.byType(MxAppBar)).height, 56 + 24);
-  });
-
-  testWidgets('screen density: 24 title, 16 gutter', (tester) async {
-    await pumpMx(tester, const MxAppBar(title: 'Library'));
-
-    expect(tester.widget<Text>(find.text('Library')).style!.fontSize, 24);
     expect(
-      tester.getTopLeft(find.text('Library')).dx -
-          tester.getTopLeft(find.byType(MxAppBar)).dx,
-      16,
+      tester.getSize(find.byType(MxAppBar)).height,
+      const AppDimens().sizeAppBar + 24,
     );
   });
 
-  testWidgets('content density: 16 title after the leading control', (
-    tester,
-  ) async {
+  testWidgets('titleLarge title, screen margin', (tester) async {
+    await pumpMx(tester, const MxAppBar(title: 'Library'));
+    final context = tester.element(find.text('Library'));
+
+    expect(
+      tester.widget<Text>(find.text('Library')).style,
+      context.texts.titleLarge,
+    );
+    expect(
+      tester.getTopLeft(find.text('Library')).dx -
+          tester.getTopLeft(find.byType(MxAppBar)).dx,
+      context.screenMargin,
+    );
+  });
+
+  testWidgets('titleLarge title after the leading control', (tester) async {
     await pumpMx(
       tester,
       MxAppBar(
         title: 'Japanese N5',
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: 'Back',
@@ -49,7 +54,10 @@ void main() {
       ),
     );
 
-    expect(tester.widget<Text>(find.text('Japanese N5')).style!.fontSize, 16);
+    expect(
+      tester.widget<Text>(find.text('Japanese N5')).style,
+      tester.element(find.text('Japanese N5')).texts.titleLarge,
+    );
   });
 
   testWidgets('a long title ellipsises and the actions keep their width', (
@@ -60,7 +68,6 @@ void main() {
       tester,
       MxAppBar(
         title: title,
-        density: MxAppBarDensity.content,
         actions: [
           MxIconButton(
             icon: AppIcons.search,
@@ -100,7 +107,6 @@ void main() {
       await pumpMx(
         tester,
         MxAppBar(
-          density: MxAppBarDensity.content,
           leading: MxIconButton(
             icon: AppIcons.back,
             semanticLabel: 'Back',
@@ -134,39 +140,91 @@ void main() {
     expect(MxAppBar.new, throwsAssertionError);
   });
 
-  testWidgets('a text action ends on the gutter, in either density', (
+  testWidgets('a text action ends on the gutter', (tester) async {
+    await pumpMx(
+      tester,
+      MxAppBar(
+        title: 'Words',
+        isLastActionText: true,
+        actions: [MxButton(label: 'Done', onPressed: () {})],
+      ),
+    );
+
+    expect(
+      tester.getTopRight(find.byType(MxAppBar)).dx -
+          tester.getTopRight(find.byType(MxButton)).dx,
+      tester.element(find.byType(MxAppBar)).screenMargin,
+    );
+  });
+  testWidgets('a text action in a wrapper widget ends on the gutter', (
     tester,
   ) async {
-    for (final density in MxAppBarDensity.values) {
-      await pumpMx(
-        tester,
-        MxAppBar(
-          title: 'Words',
-          density: density,
-          actions: [MxButton(label: 'Done', onPressed: () {})],
-        ),
-      );
+    await pumpMx(
+      tester,
+      MxAppBar(
+        title: 'Words',
+        isLastActionText: true,
+        actions: [_DoneAction(onPressed: () {})],
+      ),
+    );
 
-      expect(
-        tester.getTopRight(find.byType(MxAppBar)).dx -
-            tester.getTopRight(find.byType(MxButton)).dx,
-        16,
-        reason: density.name,
-      );
-    }
+    expect(
+      tester.getTopRight(find.byType(MxAppBar)).dx -
+          tester.getTopRight(find.byType(MxButton)).dx,
+      tester.element(find.byType(MxAppBar)).screenMargin,
+    );
   });
+
+  testWidgets('an icon glyph in a wrapper widget sits on the margin', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxAppBar(
+        title: 'Words',
+        actions: [_MoreAction(onPressed: () {})],
+      ),
+    );
+
+    expect(
+      tester.getTopRight(find.byType(MxAppBar)).dx -
+          tester.getTopRight(find.byIcon(AppIcons.more)).dx,
+      tester.element(find.byType(MxAppBar)).screenMargin,
+    );
+  });
+
+  testWidgets('a search field in a wrapper widget keeps the bar padding', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxAppBar(
+        isTitleField: true,
+        titleWidget: _FieldSlot(controller: TextEditingController()),
+      ),
+    );
+    final bar = tester.getRect(find.byType(MxAppBar));
+    final field = tester.getRect(find.byType(MxSearchField));
+
+    expect(field.top - bar.top, const AppDimens().space8);
+    expect(
+      bar.right - field.right,
+      tester.element(find.byType(MxAppBar)).screenMargin,
+    );
+  });
+
   testWidgets(
     'a search field in the bar keeps 8 above and below it and ends on the gutter',
     (tester) async {
       await pumpMx(
         tester,
         MxAppBar(
-          density: MxAppBarDensity.content,
           leading: MxIconButton(
             icon: AppIcons.back,
             semanticLabel: 'Back',
             onPressed: () {},
           ),
+          isTitleField: true,
           titleWidget: MxSearchField(
             controller: TextEditingController(),
             hintText: 'Search',
@@ -177,43 +235,161 @@ void main() {
       final bar = tester.getRect(find.byType(MxAppBar));
       final field = tester.getRect(find.byType(MxSearchField));
 
-      expect(field.top - bar.top, 8);
-      expect(bar.bottom - field.bottom, 8);
-      // A bordered field lines up with the content's 16 gutter below it.
-      expect(bar.right - field.right, 16);
+      expect(field.top - bar.top, const AppDimens().space8);
+      expect(bar.bottom - field.bottom, const AppDimens().space8);
+      // The field lines up with the content's screen margin below it.
+      expect(
+        bar.right - field.right,
+        tester.element(find.byType(MxAppBar)).screenMargin,
+      );
     },
   );
 
   testWidgets('a content bar without a leading control starts its title on '
       'the gutter (critique 2026-09-30 part 3c-1)', (tester) async {
-    await pumpMx(
-      tester,
-      const MxAppBar(
-        title: 'Session summary',
-        density: MxAppBarDensity.content,
-      ),
-    );
+    await pumpMx(tester, const MxAppBar(title: 'Session summary'));
     expect(
       tester.getTopLeft(find.text('Session summary')).dx,
-      AppSpacing.gutter,
+      tester.element(find.byType(MxAppBar)).screenMargin,
     );
   });
 
-  testWidgets('with a leading control the content bar keeps its 8 start', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxAppBar(
-        title: 'Words',
-        density: MxAppBarDensity.content,
-        leading: MxIconButton(
-          icon: AppIcons.back,
-          semanticLabel: 'Back',
+  group('icon glyphs line up with the body margin', () {
+    Widget bar() => MxAppBar(
+      title: 'Words',
+      leading: MxIconButton(
+        icon: AppIcons.back,
+        semanticLabel: 'Back',
+        onPressed: () {},
+      ),
+      actions: [
+        MxIconButton(
+          icon: AppIcons.search,
+          semanticLabel: 'Search',
           onPressed: () {},
         ),
-      ),
+        MxIconButton(
+          icon: AppIcons.more,
+          semanticLabel: 'More',
+          onPressed: () {},
+        ),
+      ],
     );
-    expect(tester.getTopLeft(find.byType(MxIconButton)).dx, AppSpacing.control);
+
+    for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
+      testWidgets('${width.toInt()} wide window: glyphs sit on the $margin '
+          'margin', (tester) async {
+        await pumpMx(tester, WindowWidthScope(width: width, child: bar()));
+        final barRect = tester.getRect(find.byType(MxAppBar));
+
+        expect(
+          tester.getTopLeft(find.byIcon(AppIcons.back)).dx - barRect.left,
+          margin,
+        );
+        expect(
+          barRect.right - tester.getTopRight(find.byIcon(AppIcons.more)).dx,
+          margin,
+        );
+      });
+    }
+
+    testWidgets('the leading icon is onSurface, the trailing ones '
+        'onSurfaceVariant', (tester) async {
+      await pumpMx(tester, bar());
+      Color? glyph(IconData icon) =>
+          IconTheme.of(tester.element(find.byIcon(icon))).color;
+
+      expect(glyph(AppIcons.back), lightColorScheme.onSurface);
+      expect(glyph(AppIcons.search), lightColorScheme.onSurfaceVariant);
+      expect(glyph(AppIcons.more), lightColorScheme.onSurfaceVariant);
+    });
+
+    testWidgets('a disabled trailing icon dims onSurfaceVariant', (
+      tester,
+    ) async {
+      await pumpMx(
+        tester,
+        const MxAppBar(
+          title: 'Words',
+          actions: [
+            MxIconButton(
+              icon: AppIcons.search,
+              semanticLabel: 'Search',
+              onPressed: null,
+            ),
+          ],
+        ),
+      );
+
+      expect(
+        IconTheme.of(tester.element(find.byIcon(AppIcons.search))).color,
+        lightColorScheme.onSurfaceVariant.withValues(
+          alpha: const AppDimens().opacityDisabledContent,
+        ),
+      );
+    });
+
+    testWidgets('a bar without a leading control still starts its title on '
+        'the margin', (tester) async {
+      await pumpMx(tester, const MxAppBar(title: 'Library'));
+
+      expect(
+        tester.getTopLeft(find.text('Library')).dx,
+        tester.element(find.byType(MxAppBar)).screenMargin,
+      );
+    });
   });
+
+  testWidgets('the bar paints no ground of its own; the shell does', (
+    tester,
+  ) async {
+    await pumpMx(tester, const MxAppBar(title: 'Library'));
+
+    expect(
+      find.descendant(
+        of: find.byType(MxAppBar),
+        matching: find.byType(ColoredBox),
+      ),
+      findsNothing,
+    );
+  });
+}
+
+/// A feature widget that returns a compact text button, as the reorder bar's
+/// Done does.
+class _DoneAction extends StatelessWidget {
+  const _DoneAction({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) =>
+      MxButton(label: 'Done', size: MxButtonSize.small, onPressed: onPressed);
+}
+
+/// A feature widget that returns an icon button, as the deck menu does.
+class _MoreAction extends StatelessWidget {
+  const _MoreAction({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => MxIconButton(
+    icon: AppIcons.more,
+    semanticLabel: 'More',
+    onPressed: onPressed,
+  );
+}
+
+class _FieldSlot extends StatelessWidget {
+  const _FieldSlot({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) => MxSearchField(
+    controller: controller,
+    hintText: 'Search',
+    clearLabel: 'Clear',
+  );
 }

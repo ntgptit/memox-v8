@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
 import '../../support/widget_harness.dart';
@@ -13,17 +14,16 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      AppColorSchemes.light.error,
+      lightColorScheme.error,
     );
     expect(
       tester.widget<Text>(find.text('Name is required')).style!.color,
-      AppColorSchemes.light.error,
+      lightColorScheme.error,
     );
   });
 
-  testWidgets('warning in dark: the amber is its own text colour (I1, T1)', (
-    tester,
-  ) async {
+  testWidgets('warning in dark: the glyph and the text take the warning text '
+      'colour, never the amber fill (SW-REV-001)', (tester) async {
     await pumpMx(
       tester,
       const MxFieldMessage(
@@ -35,11 +35,11 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxSemanticColors.dark.warning,
+      MxColorsExtension.dark.warning,
     );
     expect(
       tester.widget<Text>(find.text('Ten tags at most')).style!.color,
-      MxSemanticColors.dark.warning,
+      MxColorsExtension.dark.warning,
     );
   });
 
@@ -58,7 +58,7 @@ void main() {
 
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.alert)).color,
-      MxSemanticColors.light.warningText,
+      MxColorsExtension.light.warning,
     );
   });
 
@@ -77,6 +77,29 @@ void main() {
     expect(text.maxLines, isNull);
     expect(text.overflow, isNull);
     expect(tester.getSize(find.byType(Text)).height, greaterThan(20));
+  });
+
+  testWidgets('starts on the field text inset, 16, with the glyph', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const SizedBox(
+        width: 300,
+        child: MxFieldMessage(message: 'Name is required'),
+      ),
+    );
+
+    expect(
+      tester.getTopLeft(find.byIcon(AppIcons.alert)).dx -
+          tester.getTopLeft(find.byType(MxFieldMessage)).dx,
+      16,
+    );
+    final style = tester.widget<Text>(find.text('Name is required')).style!;
+    expect(
+      style.fontSize,
+      tester.element(find.text('Name is required')).texts.bodySmall!.fontSize,
+    );
   });
 
   testWidgets('announced as a live region', (tester) async {

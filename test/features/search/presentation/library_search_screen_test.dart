@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/search/data/repositories/search_repository_impl.dart';
 import 'package:memox/features/search/di/search_repository_provider.dart';
@@ -253,7 +253,7 @@ void main() {
     expect(
       tester.getTopLeft(find.byType(MxEmptyState)).dy -
           tester.getBottomLeft(find.byType(MxAppBar)).dy,
-      AppSpacing.control,
+      const AppDimens().space8,
     );
 
     await tester.tap(

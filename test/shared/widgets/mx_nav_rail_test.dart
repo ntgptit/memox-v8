@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_nav_rail.dart';
 
@@ -48,59 +50,71 @@ Widget _rail({
 );
 
 Finder _item(String label) =>
-    find.ancestor(of: find.text(label), matching: find.byType(InkWell));
+    find.ancestor(of: find.text(label), matching: find.bySubtype<InkWell>());
+
+Finder _pill(String label) =>
+    find.descendant(of: _item(label), matching: find.byType(Ink));
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
-  testWidgets('80 wide on surfaceContainerLow; every item at least 48×56', (
-    tester,
-  ) async {
+  testWidgets('sizeRail wide on the surface with a divider edge; every item '
+      'at least control wide and 56 tall', (tester) async {
     await pumpMx(tester, _rail());
 
-    expect(tester.getSize(find.byType(MxNavRail)).width, 80);
     expect(
-      tester
-          .widget<ColoredBox>(
-            find
-                .descendant(
-                  of: find.byType(MxNavRail),
-                  matching: find.byType(ColoredBox),
-                )
-                .first,
+      tester.getSize(find.byType(MxNavRail)).width,
+      const AppDimens().sizeRail,
+    );
+    final rail = tester.widget<DecoratedBox>(
+      find
+          .descendant(
+            of: find.byType(MxNavRail),
+            matching: find.byType(DecoratedBox),
           )
-          .color,
-      scheme.surfaceContainerLow,
+          .first,
+    );
+    final decoration = rail.decoration as BoxDecoration;
+    expect(decoration.color, scheme.surface);
+    expect(
+      (decoration.border! as BorderDirectional).end.color,
+      MxColorsExtension.light.divider,
     );
     for (final d in _destinations) {
       final size = tester.getSize(_item(d.label));
-      expect(size.width, greaterThanOrEqualTo(48), reason: d.label);
+      expect(
+        size.width,
+        greaterThanOrEqualTo(const AppDimens().sizeControl),
+        reason: d.label,
+      );
       expect(size.height, greaterThanOrEqualTo(56), reason: d.label);
     }
   });
 
-  testWidgets('the selected item: filled glyph in primaryText on the pill; '
-      'the rest outlined in onSurfaceVariant', (tester) async {
+  testWidgets('the selected item: filled glyph on the secondary-container '
+      'pill; the rest outlined in onSurfaceVariant', (tester) async {
     await pumpMx(tester, _rail(selected: 1));
 
     expect(find.byIcon(AppIcons.study), findsNothing);
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.studySelected)).color,
-      MxSemanticColors.light.primaryText,
+      scheme.onSecondaryContainer,
     );
     expect(
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
       scheme.onSurfaceVariant,
     );
-    final pill = tester.widget<DecoratedBox>(
-      find
-          .ancestor(
-            of: find.byIcon(AppIcons.studySelected),
-            matching: find.byType(DecoratedBox),
-          )
-          .first,
+    expect(
+      (tester.widget<Ink>(_pill('Study')).decoration! as ShapeDecoration).color,
+      scheme.secondaryContainer,
     );
-    expect((pill.decoration as BoxDecoration).color, scheme.primaryContainer);
+    expect(
+      tester.getSize(_pill('Study')),
+      Size(
+        const AppDimens().sizeNavIndicatorWidth,
+        const AppDimens().sizeNavIndicatorHeight,
+      ),
+    );
   });
 
   testWidgets('a tap reports its index, a re-tap of the current one too', (

@@ -85,7 +85,7 @@ The goldens are in `test/features/card/presentation/goldens/`.
 - **FE-B2 D14 (critique P1b):** Tags is a filter chip, selected while tags are applied.
 - **BR-DECK-015, E-L1:** an empty card list makes the deck unset again; screen 01's unset state shows.
 - **E-L2:** the flag uses the warning colour; the theme has no streak token. Superseded by critique 2026-10-02 (F6): plain text colour.
-- **E-L3:** "Select all" is a compact secondary `MxButton`.
+- **E-L3:** "Select all" is a small secondary `MxButton`.
 - **E-L4:** the due chip is an `MxBadge`: overdue warning, today primary, else neutral.
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the deck summary's progress line is an eyebrow.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the add FAB steps aside while search is open; a failed bulk flag's banner offers Retry, repeating the same cards and choice.

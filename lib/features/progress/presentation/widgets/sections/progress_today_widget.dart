@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/progress/domain/models/progress_overview_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -27,7 +26,6 @@ class ProgressTodayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
     final today = overview.today;
     final isNever = !overview.hasLifetimeActivity;
     final sub = switch ((isNever, today.total)) {
@@ -36,29 +34,39 @@ class ProgressTodayWidget extends StatelessWidget {
       _ => l10n.progressTodaySplit(today.learning, today.reviewing),
     };
     return MxCard(
+      isCompact: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             l10n.progressToday.toUpperCase(),
             semanticsLabel: l10n.progressToday,
-            style: styles.eyebrow,
+            style: context.texts.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
           ),
-          const SizedBox(height: AppSpacing.micro),
+          SizedBox(height: context.dimens.space4),
           Text(
             '${today.total}',
-            style: styles.statValue(context.colors.onSurface),
+            style: context.texts.displayMedium?.copyWith(
+              color: context.colors.onSurface,
+            ),
           ),
-          const SizedBox(height: AppSpacing.micro),
-          Text(sub, style: styles.footerCaption),
-          const SizedBox(height: AppSpacing.grouped),
+          SizedBox(height: context.dimens.space4),
+          Text(
+            sub,
+            style: context.texts.labelSmall?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
+          ),
+          SizedBox(height: context.dimens.space12),
           if (isNever) ...[
             MxDashedNote(text: l10n.progressNeverChart),
-            const SizedBox(height: AppSpacing.grouped),
+            SizedBox(height: context.dimens.space12),
             MxButton(
               label: l10n.progressStartStudying,
               icon: AppIcons.play,
-              // The screen's only action (One Indigo; critique 2026-09-30
+              // The screen's only action (One Accent; critique 2026-09-30
               // part 3d-1).
               tone: MxButtonTone.primary,
               isBlock: true,
@@ -100,8 +108,10 @@ class ProgressTodayWidget extends StatelessWidget {
       ),
       top: MxBarSeries(
         label: l10n.progressLearning,
-        // The learning fill, as the mastery ramp's (spec 2026-10-10 §5.1).
-        color: context.semanticColors.statusLearning,
+        // The learning status fill, as MxStatusBadge's dot. The mastery
+        // ramp draws its learning band in `warning` instead, to hold 3:1 on
+        // its track (deck mastery spec R4).
+        color: context.mxColors.warningContainer,
       ),
     );
   }

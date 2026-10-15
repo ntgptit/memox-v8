@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
@@ -81,10 +81,10 @@ class MxDeckPickerSheet extends StatelessWidget {
         tone: isEmpty ? MxButtonTone.primary : MxButtonTone.outline,
       ),
       child: Padding(
-        padding: const EdgeInsetsDirectional.only(
-          start: AppSpacing.control,
-          end: AppSpacing.control,
-          bottom: AppSpacing.control,
+        padding: EdgeInsetsDirectional.only(
+          start: context.dimens.space8,
+          end: context.dimens.space8,
+          bottom: context.dimens.space8,
         ),
         child: isEmpty
             ? MxEmptyState(
@@ -173,7 +173,7 @@ class MxDeckPickerErrorSheet extends StatelessWidget {
     title: title,
     subtitle: rule,
     // Retry is the decision's one primary; the way out beside it is outline
-    // (The One Indigo Rule).
+    // (The One Accent Rule).
     footer: MxSheetActions.single(
       isInSheet: true,
       label: dismissLabel,
@@ -181,10 +181,10 @@ class MxDeckPickerErrorSheet extends StatelessWidget {
       tone: MxButtonTone.outline,
     ),
     child: Padding(
-      padding: const EdgeInsetsDirectional.only(
-        start: AppSpacing.control,
-        end: AppSpacing.control,
-        bottom: AppSpacing.control,
+      padding: EdgeInsetsDirectional.only(
+        start: context.dimens.space8,
+        end: context.dimens.space8,
+        bottom: context.dimens.space8,
       ),
       child: MxErrorState(
         title: errorTitle,

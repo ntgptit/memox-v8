@@ -95,6 +95,20 @@ void main() {
     await tester.pump();
   }
 
+  libraryTest('the name field paints its label once, above the box', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(tester, env, _host());
+    await open(tester);
+
+    expect(find.text(_en.deckNameHint), findsOneWidget);
+    expect(
+      tester.getBottomLeft(find.text(_en.deckNameHint)).dy,
+      lessThan(tester.getTopLeft(find.byType(TextField)).dy),
+    );
+  });
+
   libraryTest('a blank name is refused under the field; nothing is written', (
     tester,
     env,

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_action_sheet_command_row.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
@@ -82,7 +81,7 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
         child: Text(context.l10n.gallerySelectableRowPicked),
       ),
       Row(
-        spacing: AppSpacing.grouped,
+        spacing: context.dimens.space12,
         children: [
           const MxIconTile(icon: AppIcons.library),
           const MxIconTile(
@@ -90,10 +89,7 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
             size: MxIconTileSize.medium,
           ),
           const MxIconTile(icon: AppIcons.library, size: MxIconTileSize.large),
-          MxIconTile(
-            icon: AppIcons.folder,
-            seed: context.semanticColors.streak,
-          ),
+          MxIconTile(icon: AppIcons.folder, seed: context.mxColors.warning),
           const MxIconTile(
             icon: AppIcons.lockOpen,
             size: MxIconTileSize.medium,
@@ -106,25 +102,25 @@ class _GallerySurfacesSectionState extends State<GallerySurfacesSection> {
           ),
         ],
       ),
-      const Row(
-        spacing: AppSpacing.grouped,
+      Row(
+        spacing: context.dimens.space12,
         children: [
-          MxIconTile(
+          const MxIconTile(
             icon: AppIcons.check,
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.success,
           ),
-          MxIconTile(
+          const MxIconTile(
             icon: AppIcons.resetProgress,
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.caution,
           ),
-          MxIconTile(
+          const MxIconTile(
             icon: AppIcons.alert,
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.danger,
           ),
-          MxIconTile(
+          const MxIconTile(
             icon: AppIcons.streak,
             size: MxIconTileSize.medium,
             tone: MxIconTileTone.neutral,

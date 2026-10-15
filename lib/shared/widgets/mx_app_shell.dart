@@ -2,9 +2,9 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The column every screen is: top chrome, one scroll body and a bottom bar,
 /// with the FAB layered above. The app bar and footer are in-flow siblings of
@@ -20,6 +20,8 @@ class MxAppShell extends StatelessWidget {
     this.footer,
     this.fab,
     this.notice,
+    this.isSession = false,
+    this.hasOwnAppBarGround = false,
   }) : assert(
          fab == null || footer == null,
          'the Fab contract anchors a FAB to the bottom or above the nav, '
@@ -28,7 +30,7 @@ class MxAppShell extends StatelessWidget {
 
   final Widget body;
 
-  /// MxAppBar or MxStudyTopBar.
+  /// MxAppBar or MxStudyTopBar, or a widget that builds one.
   final Widget? appBar;
 
   /// The navigation bar (MxBottomNav). It owns its own gesture inset.
@@ -44,6 +46,14 @@ class MxAppShell extends StatelessWidget {
   /// each side and above the bottom edge (SB-U1). The body is padded below
   /// by its height, so the end of a scroll clears it.
   final Widget? notice;
+
+  /// A study session keeps the `sizeContentMax` column, centred, in every
+  /// window size. Any other screen takes `sizeContentMaxWide` from medium up.
+  final bool isSession;
+
+  /// The [appBar] paints its own ground (MxStudyTopBar does), so the shell
+  /// does not step it to `surfaceContainer` when the body scrolls under it.
+  final bool hasOwnAppBarGround;
 
   /// Whether the keyboard is up. Its Scaffold resizes the body above the
   /// keyboard and strips the inset from the body's MediaQuery, so a widget
@@ -63,41 +73,73 @@ class MxAppShell extends StatelessWidget {
     );
   }
 
+  double _columnWidth(BuildContext context) {
+    final dimens = context.dimens;
+    final isNarrow = isSession || context.windowSize == WindowSize.compact;
+    return isNarrow ? dimens.sizeContentMax : dimens.sizeContentMaxWide;
+  }
+
+  /// [child] centred in the window, no wider than the shell's column.
+  Widget _inColumn(BuildContext context, Widget child) {
+    final width = _columnWidth(context);
+    return LayoutBuilder(
+      builder: (_, constraints) => Center(
+        child: SizedBox(
+          width: math.min(constraints.maxWidth, width),
+          child: child,
+        ),
+      ),
+    );
+  }
+
   Widget _scaffold(BuildContext context, Widget? appBar) {
     return Scaffold(
       backgroundColor: context.colors.surface,
-      // A wide window centres the column at [AppSize.contentMaxWidth]; the
-      // ground fills the rest (FE-C5). A phone gets its full width.
+      // A compact window gets its full width, up to `sizeContentMax`; from
+      // medium the column is centred at `sizeContentMaxWide`, or stays at
+      // `sizeContentMax` in a study session; the ground fills the rest (FE-C5).
       // A context below the Scaffold, whose MediaQuery has already lost the
       // bottom inset when a bottom nav owns it; the shell's own context would
       // hand that inset back to the body.
       body: Builder(
-        builder: (bodyContext) => LayoutBuilder(
-          builder: (_, constraints) => Center(
-            child: SizedBox(
-              width: math.min(constraints.maxWidth, AppSize.contentMaxWidth),
-              child: Column(
-                children: [
-                  ?appBar,
-                  Expanded(
-                    // The app bar owns the top inset; a footer owns the
-                    // bottom one.
-                    child: MediaQuery.removePadding(
-                      context: bodyContext,
-                      removeTop: appBar != null,
-                      removeBottom: footer != null,
-                      child: _NoticeLayer(
-                        notice: notice,
-                        child: appBar == null
-                            ? SafeArea(bottom: false, child: body)
-                            : body,
+        builder: (bodyContext) => _ScrolledUnderScope(
+          // A bar that paints its own ground keeps it, and no bar has nothing
+          // to colour.
+          isEnabled: appBar != null && !hasOwnAppBarGround,
+          bodyIdentity: (body.runtimeType, body.key),
+          builder: (isScrolledUnder) => Column(
+            children: [
+              if (appBar != null)
+                _AppBarGround(
+                  isScrolledUnder: isScrolledUnder,
+                  child: _inColumn(context, appBar),
+                ),
+              Expanded(
+                child: _inColumn(
+                  context,
+                  Column(
+                    children: [
+                      Expanded(
+                        // The app bar owns the top inset; a footer owns the
+                        // bottom one.
+                        child: MediaQuery.removePadding(
+                          context: bodyContext,
+                          removeTop: appBar != null,
+                          removeBottom: footer != null,
+                          child: _NoticeLayer(
+                            notice: notice,
+                            child: appBar == null
+                                ? SafeArea(bottom: false, child: body)
+                                : body,
+                          ),
+                        ),
                       ),
-                    ),
+                      ?footer,
+                    ],
                   ),
-                  ?footer,
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -105,7 +147,110 @@ class MxAppShell extends StatelessWidget {
       floatingActionButton: fab,
       floatingActionButtonLocation: _MxFabLocation(
         hasBottomBar: bottomBar != null,
+        dimens: context.dimens,
+        columnMax: _columnWidth(context),
       ),
+    );
+  }
+}
+
+/// Tells [builder] whether the body's scroll has moved content under the app
+/// bar: its vertical scroll, not a nested or sideways one (Material 3: the
+/// bar steps from `surface` to `surfaceContainer`).
+///
+/// The flag follows scroll updates (a position clamped by content that shrinks
+/// back into the viewport is one), and clears when [bodyIdentity] changes,
+/// since the scroll view it described is gone. With no [isEnabled] it listens
+/// to nothing.
+class _ScrolledUnderScope extends StatefulWidget {
+  const _ScrolledUnderScope({
+    required this.isEnabled,
+    required this.bodyIdentity,
+    required this.builder,
+  });
+
+  final bool isEnabled;
+
+  /// Equal while the body is the same widget in the same slot.
+  final Object bodyIdentity;
+  final Widget Function(bool isScrolledUnder) builder;
+
+  @override
+  State<_ScrolledUnderScope> createState() => _ScrolledUnderScopeState();
+}
+
+class _ScrolledUnderScopeState extends State<_ScrolledUnderScope> {
+  ScrollNotificationObserverState? _observer;
+  var _isScrolledUnder = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _listen();
+  }
+
+  @override
+  void didUpdateWidget(_ScrolledUnderScope oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isEnabled != oldWidget.isEnabled) _listen();
+    if (widget.bodyIdentity != oldWidget.bodyIdentity || !widget.isEnabled) {
+      _isScrolledUnder = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    _observer?.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _listen() {
+    _observer?.removeListener(_onScroll);
+    _observer = widget.isEnabled
+        ? ScrollNotificationObserver.maybeOf(context)
+        : null;
+    _observer?.addListener(_onScroll);
+  }
+
+  void _onScroll(ScrollNotification notification) {
+    if (notification is! ScrollUpdateNotification) return;
+    if (!defaultScrollNotificationPredicate(notification)) return;
+    final metrics = notification.metrics;
+    final isScrolledUnder = switch (metrics.axisDirection) {
+      AxisDirection.up => metrics.extentAfter > 0,
+      AxisDirection.down => metrics.extentBefore > 0,
+      AxisDirection.left || AxisDirection.right => _isScrolledUnder,
+    };
+    if (isScrolledUnder == _isScrolledUnder) return;
+    setState(() => _isScrolledUnder = isScrolledUnder);
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(_isScrolledUnder);
+}
+
+/// The app bar's ground, full-bleed behind the capped column: `surface`, or
+/// `surfaceContainer` once content scrolls under it. The colour eases over
+/// `Durations.short4` unless the platform asks for reduced motion.
+class _AppBarGround extends StatelessWidget {
+  const _AppBarGround({required this.isScrolledUnder, required this.child});
+
+  final bool isScrolledUnder;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return TweenAnimationBuilder<Color?>(
+      tween: ColorTween(
+        end: isScrolledUnder ? colors.surfaceContainer : colors.surface,
+      ),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : Durations.short4,
+      curve: Easing.standard,
+      builder: (_, color, child) => ColoredBox(color: color!, child: child),
+      child: child,
     );
   }
 }
@@ -126,38 +271,49 @@ class _TypingScope extends InheritedWidget {
 /// 24 + gesture inset above the bottom, or 4 above the bottom bar, which
 /// already carries the inset.
 final class _MxFabLocation extends FloatingActionButtonLocation {
-  const _MxFabLocation({required this.hasBottomBar});
+  const _MxFabLocation({
+    required this.hasBottomBar,
+    required this.dimens,
+    required this.columnMax,
+  });
 
   final bool hasBottomBar;
+  final AppDimens dimens;
+
+  /// The widest the content column grows.
+  final double columnMax;
 
   @override
   Offset getOffset(ScaffoldPrelayoutGeometry geometry) {
     final fab = geometry.floatingActionButtonSize;
     final width = geometry.scaffoldSize.width;
-    final column = math.min(width, AppSize.contentMaxWidth);
+    final column = math.min(width, columnMax);
     final columnStart = (width - column) / 2;
     final columnEnd = columnStart + column;
     final x = switch (geometry.textDirection) {
       TextDirection.ltr =>
         math.min(columnEnd, width - geometry.minInsets.right) -
-            AppSpacing.gutter -
+            dimens.space16 -
             fab.width,
       TextDirection.rtl =>
-        math.max(columnStart, geometry.minInsets.left) + AppSpacing.gutter,
+        math.max(columnStart, geometry.minInsets.left) + dimens.space16,
     };
     // The part of the gesture inset not already covered by a bottom widget.
     final bottomContent = geometry.scaffoldSize.height - geometry.contentBottom;
     final inset = math.max(0.0, geometry.minViewPadding.bottom - bottomContent);
-    final gap = hasBottomBar ? AppSpacing.micro : AppSpacing.section;
+    final gap = hasBottomBar ? dimens.space4 : dimens.space24;
     return Offset(x, geometry.contentBottom - fab.height - gap - inset);
   }
 
   @override
   bool operator ==(Object other) =>
-      other is _MxFabLocation && other.hasBottomBar == hasBottomBar;
+      other is _MxFabLocation &&
+      other.hasBottomBar == hasBottomBar &&
+      other.dimens == dimens &&
+      other.columnMax == columnMax;
 
   @override
-  int get hashCode => hasBottomBar.hashCode;
+  int get hashCode => Object.hash(hasBottomBar, dimens, columnMax);
 }
 
 /// Floats [notice] over the bottom of [child] and pads [child] below by the
@@ -188,7 +344,7 @@ class _NoticeLayerState extends State<_NoticeLayer> {
     final inset = media.padding.bottom;
     final reserve = _noticeHeight == 0
         ? 0.0
-        : _noticeHeight + AppSpacing.gutter;
+        : _noticeHeight + context.dimens.space16;
     return Stack(
       children: [
         Positioned.fill(
@@ -200,9 +356,9 @@ class _NoticeLayerState extends State<_NoticeLayer> {
           ),
         ),
         PositionedDirectional(
-          start: AppSpacing.gutter,
-          end: AppSpacing.gutter,
-          bottom: AppSpacing.gutter + inset,
+          start: context.dimens.space16,
+          end: context.dimens.space16,
+          bottom: context.dimens.space16 + inset,
           child: _SizeReporter(onSize: _measured, child: notice),
         ),
       ],

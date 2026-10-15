@@ -7,8 +7,7 @@ import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/notes/di/dismissed_notes_providers.dart';
 import 'package:memox/core/notes/note_keys.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/trash/domain/entities/trash_entry_entity.dart';
 import 'package:memox/features/trash/presentation/controllers/trash_controller.dart';
 import 'package:memox/features/trash/presentation/providers/trash_entries_provider.dart';
@@ -24,6 +23,7 @@ import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_chip_row.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
@@ -110,7 +110,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
         body: switch (entries) {
           AsyncData(:final value) when value.isEmpty => MxScreenScroll(
             children: [
-              const SizedBox(height: AppSpacing.control),
+              SizedBox(height: context.dimens.space8),
               MxEmptyState(
                 icon: AppIcons.delete,
                 title: l10n.trashEmptyTitle,
@@ -123,7 +123,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           ),
           AsyncError(:final isLoading) => MxScreenScroll(
             children: [
-              const SizedBox(height: AppSpacing.control),
+              SizedBox(height: context.dimens.space8),
               MxErrorState(
                 title: l10n.trashLoadErrorTitle,
                 body: l10n.libraryLoadErrorBody,
@@ -156,17 +156,17 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
     if (!state.isSelecting) {
       return MxAppBar(
         title: l10n.libraryTrash,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,
           onPressed: () => unawaited(Navigator.of(context).maybePop()),
         ),
+        isLastActionText: true,
         actions: [
           if (entries.isNotEmpty)
             MxButton(
               label: l10n.trashSelect,
-              size: MxButtonSize.compact,
+              size: MxButtonSize.small,
               tone: MxButtonTone.secondary,
               onPressed: _trash().startSelecting,
             ),
@@ -189,10 +189,9 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: context.textStyles.contentTitle,
+          style: context.texts.titleMedium,
         ),
       ),
-      density: MxAppBarDensity.content,
       leading: MxIconButton(
         icon: AppIcons.close,
         semanticLabel: l10n.trashSelectionClose,
@@ -223,7 +222,7 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
         MxInlineBanner(tone: MxBannerTone.warning, message: note),
     ];
     return [
-      const SizedBox(height: AppSpacing.control),
+      SizedBox(height: context.dimens.space8),
       // Read before selecting; the selection gives the list the room.
       // Critique 2026-09-30: a note the person hid stays hidden.
       if (!state.isSelecting && _showsNote(NoteKeys.trashRetention)) ...[
@@ -233,13 +232,13 @@ class _TrashScreenState extends ConsumerState<TrashScreen> {
           dismissLabel: l10n.commonDismissNote,
           onDismiss: () => _dismissNote(NoteKeys.trashRetention),
         ),
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
       ],
       // Why the other kind waits and what a purge skipped, above the rows
       // they are about (critique 2026-09-30 part 3d-1, D4).
       for (final notice in notices) ...[
         notice,
-        const SizedBox(height: AppSpacing.grouped),
+        SizedBox(height: context.dimens.space12),
       ],
       if (!state.isSelecting)
         _Filters(
@@ -327,26 +326,22 @@ class _Filters extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.control),
+      padding: EdgeInsets.only(bottom: context.dimens.space8),
       // The chips never shrink or wrap, so their row scrolls.
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          spacing: AppSpacing.micro,
-          children: [
-            for (final filter in TrashFilter.values)
-              MxFilterChip(
-                label: switch (filter) {
-                  TrashFilter.all => l10n.trashFilterAll,
-                  TrashFilter.cards => l10n.trashFilterCards,
-                  TrashFilter.decks => l10n.trashFilterDecks,
-                },
-                count: entries.where(filter.accepts).length,
-                isSelected: filter == selected,
-                onSelected: (_) => onSelected(filter),
-              ),
-          ],
-        ),
+      child: MxChipRow(
+        children: [
+          for (final filter in TrashFilter.values)
+            MxFilterChip(
+              label: switch (filter) {
+                TrashFilter.all => l10n.trashFilterAll,
+                TrashFilter.cards => l10n.trashFilterCards,
+                TrashFilter.decks => l10n.trashFilterDecks,
+              },
+              count: entries.where(filter.accepts).length,
+              isSelected: filter == selected,
+              onSelected: (_) => onSelected(filter),
+            ),
+        ],
       ),
     );
   }

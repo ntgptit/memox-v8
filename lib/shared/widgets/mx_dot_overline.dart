@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// An eyebrow led by a static primary dot: the Resume banners' marker
@@ -14,7 +13,7 @@ class MxDotOverline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-    spacing: AppSpacing.micro,
+    spacing: context.dimens.space4,
     children: [
       ExcludeSemantics(
         child: SizedBox.square(
@@ -31,7 +30,9 @@ class MxDotOverline extends StatelessWidget {
         child: Text(
           label.toUpperCase(),
           semanticsLabel: label,
-          style: context.textStyles.eyebrow,
+          style: context.texts.labelSmall?.copyWith(
+            color: context.colors.onSurfaceVariant,
+          ),
         ),
       ),
     ],

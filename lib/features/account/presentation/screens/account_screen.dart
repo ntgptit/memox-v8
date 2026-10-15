@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/auth/auth_state.dart';
 import 'package:memox/core/auth/di/auth_providers.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/account/presentation/controllers/account_manage_controller.dart';
 import 'package:memox/features/account/presentation/providers/device_account_provider.dart';
 import 'package:memox/features/account/presentation/widgets/overlays/account_confirm_dialog_widget.dart';
@@ -19,6 +18,7 @@ import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// Screen 32 (account UI spec §5.6, §9, §9.1): the account this phone's
 /// data belongs to, then switch, sign out and delete. The commands need a
@@ -73,7 +73,6 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
     return MxAppShell(
       appBar: MxAppBar(
         title: l10n.accountTitle,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.back,
           semanticLabel: l10n.commonBack,
@@ -84,10 +83,10 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
         children: [
           if (state is ReauthRequired) ...[
             AccountReauthBannerWidget(onSignIn: widget.onSignInAgain),
-            const SizedBox(height: AppSpacing.gutter),
+            SizedBox(height: context.dimens.space16),
           ] else if (state is Validating) ...[
             MxNote(text: l10n.accountNeedsConnection),
-            const SizedBox(height: AppSpacing.gutter),
+            SizedBox(height: context.dimens.space16),
           ],
           MxSection(
             title: l10n.accountSection,

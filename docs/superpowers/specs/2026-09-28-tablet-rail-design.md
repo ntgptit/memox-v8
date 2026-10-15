@@ -32,7 +32,8 @@ spacing on tablets, a tablet-specific kit, per-screen wide layouts. PRODUCT.md's
 | D4 | The FAB anchors to the column's trailing edge (16 in), not the window's | It stays next to the content it acts on, as on a phone |
 | D5 | A floating snackbar is at most the column wide, centred | A 1200 dp snackbar reads as a banner, not a message |
 | D6 | Sheets and dialogs are unchanged: a modal sheet is already capped at 640 dp by Material 3, `MxDialog` has its own widths | Nothing to add |
-| D7 | Phone landscape counts by width: a phone at 800 × 360 gets the rail | Same rule as Material; the rail scrolls if the height is short |
+| D7 | The rail needs a window that is medium or wider in width **and** at least 480 dp tall (`breakpointCompactHeight`); a window compact in either gets the bottom bar. A phone at 800 × 360 gets the bar. (Revised 2026-10-14, DEV-372, Material 3 "bar when width or height is compact"; first written as "phone landscape counts by width: the rail".) | Same rule as Material and Android: a short window has no room for a column of four destinations, and the bar costs 64 dp of height where the rail costs 80 dp of width |
+| D8 | A screen's window size class and screen margin follow the whole window, not the area beside the rail: the tab shell publishes the window width (`WindowWidthScope`) and `windowSize` reads it. `MxTwoColumns` stays pane-relative | At a 620 dp window the pane is 540, which alone would read as compact; the margin would switch to 24 only at 680 |
 
 ## 3. `MxNavRail` (Impeccable shape — the kit does not draw a rail)
 

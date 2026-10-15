@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/color_tint.dart';
+import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
@@ -17,17 +22,17 @@ Material _material(WidgetTester tester) =>
     tester.widget<Material>(_painted.first);
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('each size paints its height and keeps a 48 target', (
     tester,
   ) async {
-    const heights = {
-      MxButtonSize.regular: 48.0,
-      MxButtonSize.small: 36.0,
-      MxButtonSize.compact: 32.0,
-      MxButtonSize.chip: 28.0,
-      MxButtonSize.study: 48.0,
+    const dimens = AppDimens();
+    final heights = {
+      MxButtonSize.regular: dimens.sizeButton,
+      MxButtonSize.small: dimens.sizeButtonSmall,
+      MxButtonSize.chip: dimens.sizeChip,
+      MxButtonSize.study: dimens.sizeButton,
     };
     for (final MapEntry(key: size, value: height) in heights.entries) {
       await pumpMx(tester, MxButton(label: 'Go', size: size, onPressed: () {}));
@@ -50,51 +55,47 @@ void main() {
         BorderSide.none,
       ),
       MxButtonTone.destructive: (
-        MxSemanticColors.light.errorFill,
-        MxSemanticColors.light.onErrorFill,
+        lightColorScheme.error,
+        lightColorScheme.onError,
         BorderSide.none,
       ),
     };
-    for (final MapEntry(key: tone, value: (fill, foreground, edge))
+    for (final MapEntry(key: tone, value: (fill, ink, edge))
         in expected.entries) {
       await pumpMx(tester, MxButton(label: 'Go', tone: tone, onPressed: () {}));
       final material = _material(tester);
 
       expect(material.color, fill, reason: '$tone');
-      expect(material.textStyle!.color, foreground, reason: '$tone');
-      expect((material.shape! as RoundedRectangleBorder).side, edge);
+      expect(material.textStyle!.color, ink, reason: '$tone');
+      expect((material.shape! as OutlinedBorder).side, edge);
     }
   });
 
-  for (final brightness in Brightness.values) {
-    testWidgets('dangerSoft paints the danger tint with the error label, '
-        '${brightness.name} '
-        '(FE-A6 P2, screen 16a, DEV-371)', (tester) async {
-      final semantic = brightness == Brightness.light
-          ? MxSemanticColors.light
-          : MxSemanticColors.dark;
+  testWidgets(
+    'dangerTint paints the soft danger tint with the error foreground '
+    '(FE-A6 P2, screen 16a)',
+    (tester) async {
       await pumpMx(
         tester,
         MxButton(
           label: 'Again',
-          tone: MxButtonTone.dangerSoft,
+          tone: MxButtonTone.dangerTint,
           onPressed: () {},
         ),
-        brightness: brightness,
       );
       final material = _material(tester);
 
-      final error = brightness == Brightness.light
-          ? AppColorSchemes.light.error
-          : AppColorSchemes.dark.error;
-      expect(material.color, semantic.dangerSoft);
-      expect(material.textStyle!.color, error);
+      expect(material.color, scheme.error.tintOver(scheme.surface));
+      expect(material.textStyle!.color, scheme.error);
       expect(
-        (material.shape! as RoundedRectangleBorder).side,
-        BorderSide(color: semantic.dangerBorder),
+        (material.shape! as OutlinedBorder).side,
+        BorderSide(
+          color: scheme.error,
+          width: const AppDimens().strokeHairline,
+        ),
       );
-    });
-  }
+    },
+  );
 
   testWidgets(
     'warning paints the warning role with its foreground, above 4.5:1 in '
@@ -106,12 +107,15 @@ void main() {
       );
       final material = _material(tester);
 
-      expect(material.color, MxSemanticColors.light.warning);
-      expect(material.textStyle!.color, MxSemanticColors.light.onWarning);
-      expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
-      for (final colors in [MxSemanticColors.light, MxSemanticColors.dark]) {
+      expect(material.color, MxColorsExtension.light.warningContainer);
+      expect(
+        material.textStyle!.color,
+        MxColorsExtension.light.onWarningContainer,
+      );
+      expect((material.shape! as OutlinedBorder).side, BorderSide.none);
+      for (final colors in [MxColorsExtension.light, MxColorsExtension.dark]) {
         expect(
-          _ratio(colors.warning, colors.onWarning),
+          _ratio(colors.warningContainer, colors.onWarningContainer),
           greaterThanOrEqualTo(4.5),
         );
       }
@@ -138,7 +142,7 @@ void main() {
     expect(DefaultTextStyle.of(context).style.color, scheme.onSurface);
     expect(
       tester.widget<Text>(find.text('6d')).style,
-      context.textStyles.buttonDetail,
+      context.texts.labelMedium,
     );
   });
 
@@ -147,14 +151,14 @@ void main() {
       () => MxButton(
         label: 'Go',
         detail: '6d',
-        size: MxButtonSize.compact,
+        size: MxButtonSize.chip,
         onPressed: () {},
       ),
       throwsAssertionError,
     );
   });
 
-  testWidgets('outline tone has no fill, primaryText, a 1px outline edge', (
+  testWidgets('outline tone has no fill, the accent, 1px outline', (
     tester,
   ) async {
     await pumpMx(
@@ -164,10 +168,13 @@ void main() {
     final material = _material(tester);
 
     expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, MxSemanticColors.light.primaryText);
+    expect(material.textStyle!.color, accentOf(scheme));
     expect(
-      (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(color: scheme.outline),
+      (material.shape! as OutlinedBorder).side,
+      BorderSide(
+        color: scheme.outline,
+        width: const AppDimens().strokeHairline,
+      ),
     );
   });
 
@@ -180,12 +187,15 @@ void main() {
       brightness: Brightness.dark,
     );
     expect(
-      (_material(tester).shape! as RoundedRectangleBorder).side,
-      BorderSide(color: AppColorSchemes.dark.outline),
+      (_material(tester).shape! as OutlinedBorder).side,
+      BorderSide(
+        color: darkColorScheme.outline,
+        width: const AppDimens().strokeHairline,
+      ),
     );
   });
 
-  testWidgets('chip size paints its own surface and ghost edge (R2)', (
+  testWidgets('chip size is the flat unselected chip: no fill, 8 corners', (
     tester,
   ) async {
     await pumpMx(
@@ -193,13 +203,21 @@ void main() {
       MxButton(label: 'Tag', size: MxButtonSize.chip, onPressed: () {}),
     );
     final material = _material(tester);
-    final derived = MxSemanticColors.light;
 
-    expect(material.color, scheme.surfaceContainerLowest);
-    expect(material.textStyle!.color, scheme.onSurface);
+    expect(tester.getSize(_painted.first).height, 32);
+    expect(material.color?.a ?? 0, 0);
+    expect(material.textStyle!.color, scheme.onSurfaceVariant);
     expect(
-      (material.shape! as RoundedRectangleBorder).side,
-      BorderSide(color: derived.border),
+      (material.shape! as MxFocusRingBorder).base,
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+    );
+    expect(
+      tester.getTopLeft(find.text('Tag')).dx -
+          tester.getTopLeft(_painted.first).dx,
+      16,
     );
   });
 
@@ -232,27 +250,25 @@ void main() {
     expect(taps, 1);
   });
 
-  testWidgets('disabled dims the whole control to 0.38 and ignores taps', (
+  testWidgets('disabled follows the disabled opacities and ignores taps', (
     tester,
   ) async {
     await pumpMx(tester, const MxButton(label: 'Go', onPressed: null));
+    final context = tester.element(find.text('Go'));
+    final style = tester.widget<TextButton>(find.byType(TextButton)).style!;
 
-    final opacity = tester.widget<Opacity>(
-      find.ancestor(
-        of: find.byType(TextButton),
-        matching: find.byType(Opacity),
+    expect(
+      style.foregroundColor!.resolve({WidgetState.disabled}),
+      context.colors.onSurface.withValues(
+        alpha: context.dimens.opacityDisabledContent,
       ),
     );
-    expect(opacity.opacity, 0.38);
-  });
-
-  testWidgets('a leading glyph is painted at 16', (tester) async {
-    await pumpMx(
-      tester,
-      MxButton(label: 'Add', icon: AppIcons.add, onPressed: () {}),
+    expect(
+      style.backgroundColor!.resolve({WidgetState.disabled}),
+      context.colors.onSurface.withValues(
+        alpha: context.dimens.opacityDisabledContainer,
+      ),
     );
-
-    expect(tester.getSize(find.byIcon(AppIcons.add)).width, 16);
   });
 
   testWidgets('block fills the parent width', (tester) async {
@@ -276,7 +292,7 @@ void main() {
         mainAxisSize: MainAxisSize.min,
         children: [
           MxButton(label: 'Pick', size: MxButtonSize.small, onPressed: () {}),
-          MxButton(label: 'Undo', size: MxButtonSize.compact, onPressed: () {}),
+          MxButton(label: 'Undo', size: MxButtonSize.small, onPressed: () {}),
           MxButton(label: 'Tag', size: MxButtonSize.chip, onPressed: () {}),
         ],
       ),
@@ -352,7 +368,7 @@ void main() {
     );
     expect(loading, idle);
   });
-  testWidgets('text tone has no fill and no edge, in primaryText', (
+  testWidgets('text tone has no fill and no edge, in the accent', (
     tester,
   ) async {
     await pumpMx(
@@ -362,8 +378,8 @@ void main() {
     final material = _material(tester);
 
     expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, MxSemanticColors.light.primaryText);
-    expect((material.shape! as RoundedRectangleBorder).side, BorderSide.none);
+    expect(material.textStyle!.color, accentOf(scheme));
+    expect((material.shape! as OutlinedBorder).side, BorderSide.none);
   });
 
   testWidgets('a brand mark is painted at 18 in the icon\'s place, and '
@@ -379,6 +395,11 @@ void main() {
     final image = find.byType(Image);
 
     expect(tester.getSize(image), const Size.square(18));
+    expect(
+      tester.getRect(find.text('Continue with Google')).left -
+          tester.getRect(image).right,
+      const AppDimens().space8,
+    );
     expect(tester.widget<Image>(image).excludeFromSemantics, isTrue);
     expect(find.bySemanticsLabel('Continue with Google'), findsOneWidget);
   });
@@ -401,7 +422,13 @@ void main() {
       ),
     );
 
-    expect(marked - plain, 18 + 4);
+    // The mark and its 8 gap, less the 8 a leading glyph takes off the start
+    // padding (24 to 16).
+    const dimens = AppDimens();
+    expect(
+      marked - plain,
+      18 + dimens.space8 - (dimens.space24 - dimens.space16),
+    );
   });
 }
 

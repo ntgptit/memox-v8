@@ -3,6 +3,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/progress/domain/models/progress_level_model.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// One row of a Progress level (kit 22): a deck, or the level's total
 /// (FE-A9 D2), with the four numbers of the range (BR-PROGRESS-001). A deck
@@ -29,9 +30,9 @@ class ProgressDeckRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final styles = context.textStyles;
-    final semantic = context.semanticColors;
-    final caption = styles.footerCaption;
+    final caption = context.texts.labelSmall?.copyWith(
+      color: context.colors.onSurfaceVariant,
+    );
     final isActive = numbers.hasActivity;
     return MxListRow(
       titleMaxLines: 2,
@@ -56,14 +57,18 @@ class ProgressDeckRowWidget extends StatelessWidget {
                         text: l10n.progressRowLearning(
                           numbers.learningCardDays,
                         ),
-                        style: styles.captionIn(semantic.learningText),
+                        style: context.texts.labelSmall?.copyWith(
+                          color: context.mxColors.warning,
+                        ),
                       ),
                       const TextSpan(text: _separator),
                       TextSpan(
                         text: l10n.progressRowReviewing(
                           numbers.reviewingCardDays,
                         ),
-                        style: styles.captionIn(semantic.primaryText),
+                        style: context.texts.labelSmall?.copyWith(
+                          color: context.accentColor,
+                        ),
                       ),
                     ],
                   ),

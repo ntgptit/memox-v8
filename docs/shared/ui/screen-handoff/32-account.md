@@ -21,7 +21,7 @@ delete. FE-B10, SB-A5; spec
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` (content) + back | "Account". |
-| Re-auth banner | `MxInlineBanner` (warning) | Only in `ReauthRequired`: "Your sign-in expired. Your decks are still on this phone." · "Sign in" (compact primary) → 30 `reauth`, back to 32. |
+| Re-auth banner | `MxInlineBanner` (warning) | Only in `ReauthRequired`: "Your sign-in expired. Your decks are still on this phone." · "Sign in" (small primary) → 30 `reauth`, back to 32. |
 | Connection note | `MxNote` | Only in `Validating`: "Managing your account needs a connection. Your decks are safe on this phone." |
 | Account | `MxSection` "ACCOUNT" + `MxSettingsRow` | The person tile, the email (wraps, P3b plan ruling 2), "Signed in with Google" / "with email" / "with Google and email" from the session's identities (B1). Not tappable. |
 | This phone | `MxSection` "THIS PHONE" | "Switch account" · "Move this phone to another account"; "Sign out" · "Removes this phone's data · sign in again to get it back" (critique 2026-10-02). |

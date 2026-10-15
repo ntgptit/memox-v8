@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -25,9 +25,9 @@ class StudySessionErrorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     return MxAppShell(
+      isSession: true,
       appBar: MxAppBar(
         title: l10n.navStudy,
-        density: MxAppBarDensity.content,
         leading: MxIconButton(
           icon: AppIcons.close,
           semanticLabel: l10n.studySessionClose,
@@ -57,6 +57,7 @@ class StudySessionLoadingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MxAppShell(
+    isSession: true,
     body: Center(child: MxSpinner(semanticLabel: context.l10n.commonLoading)),
   );
 }

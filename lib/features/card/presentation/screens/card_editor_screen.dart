@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memox/core/error/outcome.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/card/presentation/providers/card_detail_provider.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_editor_form_widget.dart';
 import 'package:memox/features/card/presentation/widgets/sections/card_gone_widget.dart';
@@ -77,7 +77,6 @@ class _EditLoader extends ConsumerWidget {
     void back() => unawaited(Navigator.of(context).maybePop());
     final bar = MxAppBar(
       title: l10n.cardEditTitle,
-      density: MxAppBarDensity.content,
       leading: MxIconButton(
         icon: AppIcons.back,
         semanticLabel: l10n.commonBack,

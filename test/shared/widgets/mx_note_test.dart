@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 
@@ -10,12 +10,11 @@ import '../../support/widget_harness.dart';
 const _rule = 'Changes apply to future sessions.';
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('muted fill, ghost hairline, radius 12, padding 10 12', (
     tester,
   ) async {
-    final derived = MxSemanticColors.light;
     await pumpMx(
       tester,
       const SizedBox(width: 328, child: MxNote(text: _rule)),
@@ -33,7 +32,7 @@ void main() {
     final note = tester.getTopLeft(find.byType(MxNote));
 
     expect(box.color, scheme.surfaceContainerLow);
-    expect(box.border, Border.all(color: derived.border));
+    expect(box.border, Border.all(color: scheme.outlineVariant));
     expect(box.borderRadius, BorderRadius.circular(12));
     expect(tester.getTopLeft(find.byType(Icon)).dx - note.dx, 13);
     expect(tester.getTopLeft(find.text(_rule)) - note, const Offset(37, 11));
@@ -47,7 +46,8 @@ void main() {
   testWidgets('the glyph centres on the first line', (tester) async {
     final long = List.filled(12, _rule).join(' ');
     await pumpMx(tester, SizedBox(width: 328, child: MxNote(text: long)));
-    const firstLine = 12 * 1.5;
+    final role = tester.element(find.text(long)).texts.bodyMedium!;
+    final firstLine = role.fontSize! * role.height!;
 
     expect(
       tester.getCenter(find.byType(Icon)).dy,

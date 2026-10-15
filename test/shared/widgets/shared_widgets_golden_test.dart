@@ -3,7 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
@@ -47,7 +47,7 @@ void main() {
           ),
           MxButton(
             label: 'Compact',
-            size: MxButtonSize.compact,
+            size: MxButtonSize.small,
             onPressed: () {},
           ),
           MxButton(label: 'Chip', size: MxButtonSize.chip, onPressed: () {}),
@@ -137,7 +137,6 @@ void main() {
           const MxAppBar(title: 'Library'),
           MxAppBar(
             title: 'Japanese N5 · Verbs of motion and a very long name',
-            density: MxAppBarDensity.content,
             leading: MxIconButton(
               icon: AppIcons.back,
               semanticLabel: 'Back',
@@ -357,6 +356,8 @@ class _RowDescription extends StatelessWidget {
     text,
     maxLines: 1,
     overflow: TextOverflow.ellipsis,
-    style: context.textStyles.rowDescription,
+    style: context.texts.bodyMedium?.copyWith(
+      color: context.colors.onSurfaceVariant,
+    ),
   );
 }

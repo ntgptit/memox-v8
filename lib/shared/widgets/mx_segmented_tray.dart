@@ -1,11 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_shadows.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// One option of an MxSegmentedTray.
@@ -17,10 +13,12 @@ final class MxSegment<T> {
   final String label;
 }
 
-/// A two- or three-option exclusive switch: a recessed tray with a raised
-/// thumb behind the active option. When the labels stop fitting on one line
-/// (long copy, large text), the options stack, one per line (FE-A3 ruling).
-/// Beyond three options, use MxOptionRow instead.
+/// A two- or three-option exclusive switch: Material 3's `SegmentedButton`,
+/// styled by the theme's `segmentedButtonTheme`. A stadium 40 tall in a 48
+/// touch band, a `outline` edge round and between the options, and a check
+/// before the chosen one. When the labels stop fitting on one line (long copy,
+/// large text), the options stack, one per line (FE-A3 ruling). Beyond three
+/// options, use MxOptionRow instead.
 class MxSegmentedTray<T> extends StatelessWidget {
   const MxSegmentedTray({
     super.key,
@@ -39,8 +37,8 @@ class MxSegmentedTray<T> extends StatelessWidget {
   /// default (BR-SRS-001).
   final T? selected;
 
-  /// Null disables the tray: no option takes a tap, and it dims like a
-  /// disabled MxStepper (ruling M3-E1).
+  /// Null disables the tray: no option takes a tap, and it takes Material's
+  /// disabled colours.
   final ValueChanged<T>? onSelected;
 
   /// The Progress range tray's wider option padding (16 instead of 12).
@@ -48,182 +46,96 @@ class MxSegmentedTray<T> extends StatelessWidget {
 
   static const int _minSegments = 2;
   static const int _maxSegments = 3;
-  static const double _thumbHeight = 32;
-  static const double _segmentGap = 2;
 
   @override
-  Widget build(BuildContext context) {
-    final tray = LayoutBuilder(
-      builder: (context, constraints) =>
-          _naturalWidth(context) > constraints.maxWidth
-          ? _stacked(context)
-          : _inline(context),
-    );
-    if (onSelected != null) return tray;
-    return Opacity(opacity: AppOpacity.disabled, child: tray);
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) =>
+        _naturalWidth(context) > constraints.maxWidth
+        ? _stacked(context)
+        : _inline(context),
+  );
+
+  void _report(Set<T> choice) {
+    // Tapping the chosen option empties the set: report it again, as a radio.
+    final value = choice.isEmpty ? selected : choice.first;
+    if (value is T) onSelected?.call(value);
   }
 
-  VoidCallback? _select(T value) {
-    final onSelected = this.onSelected;
-    if (onSelected == null) return null;
-    return () => onSelected(value);
-  }
+  double _padding(BuildContext context) =>
+      isWide ? context.dimens.space16 : context.dimens.space12;
 
-  double get _padding => isWide ? AppSpacing.gutter : AppSpacing.grouped;
-
-  /// The one-line width: each option its label and padding, at least a
-  /// touch target, plus the gaps and the tray's inset.
+  /// The one-line width: the widest option's label, padding and check slot,
+  /// times the options (the segmented button gives each the widest width).
+  /// The check is counted for every option so the choice never changes the
+  /// layout between inline and stacked.
   double _naturalWidth(BuildContext context) {
-    final style = context.textStyles.trayLabel(isSelected: true);
+    final dimens = context.dimens;
     final textScaler = MediaQuery.textScalerOf(context);
     final direction = Directionality.of(context);
-    var width = AppSpacing.micro * 2 + _segmentGap * (segments.length - 1);
+    var widest = 0.0;
     for (final segment in segments) {
       final painter = TextPainter(
-        text: TextSpan(text: segment.label, style: style),
+        text: TextSpan(text: segment.label, style: context.texts.labelLarge),
         textDirection: direction,
         textScaler: textScaler,
         maxLines: 1,
       )..layout();
-      width += math.max(AppSize.touchTarget, painter.width + _padding * 2);
+      widest = math.max(widest, painter.width);
       painter.dispose();
     }
-    return width;
+    final check = dimens.sizeIconButton + dimens.space8 + dimens.space4;
+    return (widest + _padding(context) * 2 + check) * segments.length;
   }
 
-  Widget _stacked(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: context.colors.surfaceContainer,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(AppSpacing.micro),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        spacing: _segmentGap,
-        children: [
-          for (final segment in segments)
-            _Segment(
-              label: segment.label,
-              isSelected: segment.value == selected,
-              padding: _padding,
-              isStretched: true,
-              onTap: _select(segment.value),
+  Widget _inline(BuildContext context) =>
+      _button(Axis.horizontal, _style(context));
+
+  /// One option per 48 tall line. The edge is a rounded rectangle: a stadium
+  /// round a tall column would bulge.
+  Widget _stacked(BuildContext context) {
+    final tokens = ThemeTokens.of(context);
+    return SizedBox(
+      width: double.infinity,
+      child: _button(
+        Axis.vertical,
+        _style(
+          context,
+          shape: segmentedButtonShape(
+            tokens,
+            RoundedRectangleBorder(
+              borderRadius: tokens.radius(tokens.dimens.radiusMd),
             ),
-        ],
+          ),
+        ),
       ),
-    ),
+    );
+  }
+
+  /// The theme's segmented button, with the wide padding when asked.
+  ButtonStyle _style(
+    BuildContext context, {
+    WidgetStateProperty<OutlinedBorder>? shape,
+  }) => ButtonStyle(
+    shape: shape,
+    padding: isWide
+        ? WidgetStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: _padding(context)),
+          )
+        : null,
   );
 
-  Widget _inline(BuildContext context) {
-    // Ruling I4: the tray paints 40 tall inside a 48 layout band.
-    const trayHeight = _thumbHeight + AppSpacing.micro + AppSpacing.micro;
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Positioned.fill(
-          child: Center(
-            child: SizedBox(
-              height: trayHeight,
-              width: double.infinity,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: context.colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                ),
-              ),
-            ),
-          ),
+  Widget _button(Axis direction, ButtonStyle style) => SegmentedButton<T>(
+    direction: direction,
+    style: style,
+    emptySelectionAllowed: true,
+    segments: [
+      for (final segment in segments)
+        ButtonSegment(
+          value: segment.value,
+          label: Text(segment.label, maxLines: 1, softWrap: false),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.micro),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: _segmentGap,
-            children: [
-              for (final segment in segments)
-                _Segment(
-                  label: segment.label,
-                  isSelected: segment.value == selected,
-                  padding: _padding,
-                  onTap: _select(segment.value),
-                ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _Segment extends StatelessWidget {
-  const _Segment({
-    required this.label,
-    required this.isSelected,
-    required this.padding,
-    required this.onTap,
-    this.isStretched = false,
-  });
-
-  final String label;
-  final bool isSelected;
-  final double padding;
-  final VoidCallback? onTap;
-
-  /// Stacked: the thumb spans the tray's width.
-  final bool isStretched;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final radius = BorderRadius.circular(AppRadius.sm);
-    return MergeSemantics(
-      child: Semantics(
-        selected: isSelected,
-        button: true,
-        enabled: onTap != null,
-        inMutuallyExclusiveGroup: true,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: radius,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              minWidth: AppSize.touchTarget,
-              minHeight: AppSize.touchTarget,
-            ),
-            child: Center(
-              heightFactor: 1,
-              widthFactor: isStretched ? null : 1,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: isSelected ? colors.surfaceContainerLowest : null,
-                  borderRadius: radius,
-                  boxShadow: isSelected ? AppShadows.whisper(colors) : null,
-                ),
-                child: SizedBox(
-                  height: MxSegmentedTray._thumbHeight,
-                  width: isStretched ? double.infinity : null,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: padding),
-                    child: Center(
-                      widthFactor: 1,
-                      child: Text(
-                        label,
-                        maxLines: 1,
-                        softWrap: false,
-                        style: context.textStyles.trayLabel(
-                          isSelected: isSelected,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+    ],
+    selected: selected == null ? const {} : {selected as T},
+    onSelectionChanged: onSelected == null ? null : _report,
+  );
 }

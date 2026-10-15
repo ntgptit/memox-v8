@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/mx_semantic_colors.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+
+import '../../support/theme_expect.dart';
+
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../support/widget_harness.dart';
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
   testWidgets('the code variant asks for digits and offers the one-time '
       'code', (tester) async {
@@ -76,7 +78,6 @@ void main() {
 
   testWidgets('the slot that takes the next digit carries the focus edge; '
       'the rest the outline edge; an error edges every slot', (tester) async {
-    final derived = MxSemanticColors.light;
     final controller = TextEditingController(text: '12');
     addTearDown(controller.dispose);
     Border edgeOf(int i) =>
@@ -101,7 +102,7 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(edgeOf(2).top.color, derived.focusRing);
+    expect(edgeOf(2).top.color, accentOf(scheme));
     expect(edgeOf(2).top.width, 2);
     expect(edgeOf(3).top.color, scheme.outline);
 
@@ -167,19 +168,27 @@ void main() {
       find.ancestor(
         of: find.byKey(MxCodeField.slotKey(0)),
         matching: find.byWidgetPredicate(
-          (w) => w is Opacity && w.opacity == AppOpacity.disabled,
+          (w) =>
+              w is Opacity &&
+              w.opacity == const AppDimens().opacityDisabledContent,
         ),
       ),
       findsNothing,
     );
   });
 
-  testWidgets('a disabled code rests its slots on the ghost edge, as a '
-      'disabled field does (DEV-166)', (tester) async {
-    final derived = MxSemanticColors.light;
+  testWidgets('a disabled code takes the M3 disabled values once: a 12% '
+      'edge and 38% digits, with no wrapper dimming them again (DEV-166, '
+      'DEV-372 R2)', (tester) async {
+    final controller = TextEditingController(text: '4');
+    addTearDown(controller.dispose);
     await pumpMx(
       tester,
-      const MxTextField(variant: MxTextFieldVariant.code, isEnabled: false),
+      MxTextField(
+        controller: controller,
+        variant: MxTextFieldVariant.code,
+        isEnabled: false,
+      ),
     );
     final slot =
         tester
@@ -191,7 +200,45 @@ void main() {
                 )
                 .decoration
             as BoxDecoration;
-    expect((slot.border! as Border).top.color, derived.border);
+    expect(
+      (slot.border! as Border).top.color,
+      scheme.onSurface.withValues(alpha: 0.12),
+    );
+    expect(
+      tester
+          .widget<Text>(
+            find.descendant(
+              of: find.byKey(MxCodeField.slotKey(0)),
+              matching: find.text('4'),
+            ),
+          )
+          .style!
+          .color,
+      scheme.onSurface.withValues(alpha: 0.38),
+    );
+    expect(
+      find.ancestor(
+        of: find.byKey(MxCodeField.slotKey(0)),
+        matching: find.byWidgetPredicate((w) => w is Opacity && w.opacity != 0),
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets('a slot has no fill: the ground shows through', (tester) async {
+    await pumpMx(tester, const MxTextField(variant: MxTextFieldVariant.code));
+    final slot =
+        tester
+                .widget<DecoratedBox>(
+                  find.descendant(
+                    of: find.byKey(MxCodeField.slotKey(0)),
+                    matching: find.byType(DecoratedBox),
+                  ),
+                )
+                .decoration
+            as BoxDecoration;
+
+    expect(slot.color, isNull);
   });
 
   testWidgets('a tap on a slot focuses the code', (tester) async {

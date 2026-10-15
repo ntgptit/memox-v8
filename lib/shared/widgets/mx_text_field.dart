@@ -1,16 +1,13 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_code_field.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 
 /// How a field takes its text. Every boxed variant shares one box and one
-/// type: the form fill, radius 12, padding 12, 52 tall, the body role
-/// (DEV-169).
+/// type: the Material 3 outlined field, radius 12, padding 16, 56 tall, the
+/// input role (DEV-169, DEV-372).
 enum MxTextFieldVariant {
   /// A form or dialog entry: one line.
   form,
@@ -23,7 +20,7 @@ enum MxTextFieldVariant {
   /// Enter still moves on.
   term,
 
-  /// A typed study answer (kit Fill): bare — no fill, no edge in any state —
+  /// A typed study answer (kit Fill): bare — no edge in any state —
   /// one centred line in the study term role, inside the answer face that
   /// frames it (FE-A6 P4 F1).
   study,
@@ -41,17 +38,23 @@ typedef _Geometry = ({
   bool isMultiline,
 });
 
-/// Every form field: a filled surface on the outline at rest (the border
-/// hairline when disabled), the focus ring on focus, and an error edge with an MxFieldMessage below. Focus, caret,
-/// selection and IME are the platform's. Validation and the message text are
-/// the caller's.
+/// Every form field: the Material 3 outlined field, with no fill. The edge is
+/// the outline at rest, the focus ring on focus and the error tone in error;
+/// the label sits above it, and a supporting row below holds the supporting
+/// text or the error message, with the counter at its trailing end. Focus,
+/// selection and IME are the platform's; the caret turns to the error tone
+/// with the edge. Validation and the message text are the caller's.
 class MxTextField extends StatelessWidget {
   const MxTextField({
     super.key,
     this.controller,
     this.focusNode,
     this.label,
+    this.labelLeading,
+    this.labelTrailing,
     this.hintText,
+    this.supportingText,
+    this.counter,
     this.errorText,
     this.variant = MxTextFieldVariant.form,
     this.isEnabled = true,
@@ -74,7 +77,11 @@ class MxTextField extends StatelessWidget {
   MxTextField._on(MxTextField field, TextEditingController this.controller)
     : focusNode = field.focusNode,
       label = field.label,
+      labelLeading = field.labelLeading,
+      labelTrailing = field.labelTrailing,
       hintText = field.hintText,
+      supportingText = field.supportingText,
+      counter = field.counter,
       errorText = field.errorText,
       variant = field.variant,
       isEnabled = field.isEnabled,
@@ -89,10 +96,28 @@ class MxTextField extends StatelessWidget {
   final TextEditingController? controller;
   final FocusNode? focusNode;
 
-  /// The field's name for TalkBack, announced with its value. Never painted:
-  /// the caller shows its own label, and a hint disappears once typed.
+  /// The field's name: painted above the box, 4 clear of it and on its text
+  /// inset, in `onSurfaceVariant` (the error tone in error), and announced
+  /// by TalkBack with the value. A hint disappears once typed, so a field
+  /// that needs a name always gets a label. The bare study field and the code
+  /// slots paint none: the screen around them names them.
   final String? label;
+
+  /// A glyph before the painted [label], such as an optional field's mark.
+  /// It takes the label's colour; the caller sizes it.
+  final Widget? labelLeading;
+
+  /// A marker after the painted [label], such as "Required".
+  final Widget? labelTrailing;
   final String? hintText;
+
+  /// A line under the box on its text inset, in the supporting-text role. An
+  /// [errorText] takes its place.
+  final String? supportingText;
+
+  /// The count against a limit, such as "12 / 60", at the trailing end of the
+  /// supporting row. It takes the error tone with the field.
+  final String? counter;
 
   /// Non-null turns the field to its error tone and shows this message below.
   final String? errorText;
@@ -116,10 +141,13 @@ class MxTextField extends StatelessWidget {
   /// The digits a sign-in code holds (auth spec O1).
   static const int codeLength = 6;
 
-  static _Geometry _geometry(MxTextFieldVariant variant) => switch (variant) {
+  static _Geometry _geometry(
+    BuildContext context,
+    MxTextFieldVariant variant,
+  ) => switch (variant) {
     MxTextFieldVariant.form || MxTextFieldVariant.code => (
-      floor: AppSize.input,
-      horizontal: AppSpacing.grouped,
+      floor: context.dimens.sizeInput,
+      horizontal: context.dimens.space16,
       // Centred by the floor: see _field.
       vertical: 0,
       isMultiline: false,
@@ -127,13 +155,13 @@ class MxTextField extends StatelessWidget {
     // One line sits exactly as a form field does; more lines keep 12 above
     // and below.
     MxTextFieldVariant.detail || MxTextFieldVariant.term => (
-      floor: AppSize.input,
-      horizontal: AppSpacing.grouped,
-      vertical: AppSpacing.grouped,
+      floor: context.dimens.sizeInput,
+      horizontal: context.dimens.space16,
+      vertical: context.dimens.space12,
       isMultiline: true,
     ),
     MxTextFieldVariant.study => (
-      floor: AppSize.touchTarget,
+      floor: context.dimens.sizeControl,
       horizontal: 0,
       vertical: 0,
       isMultiline: false,
@@ -141,11 +169,10 @@ class MxTextField extends StatelessWidget {
   };
 
   TextStyle _valueStyle(BuildContext context) {
-    final styles = context.textStyles;
     return switch (variant) {
-      MxTextFieldVariant.study => styles.studyTerm,
-      MxTextFieldVariant.code => styles.fieldCode,
-      _ => context.texts.bodyMedium!,
+      MxTextFieldVariant.study ||
+      MxTextFieldVariant.code => context.texts.displaySmall!,
+      _ => context.texts.bodyLarge!,
     };
   }
 
@@ -153,7 +180,7 @@ class MxTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     if (variant == MxTextFieldVariant.code) return MxCodeField(field: this);
     final controller = this.controller;
-    if (!_geometry(variant).isMultiline) return _field(context, null);
+    if (!_geometry(context, variant).isMultiline) return _field(context, null);
     // A multi-line box pads to its floor around what it holds, which follows
     // the text and the width.
     Widget sized() => LayoutBuilder(
@@ -176,7 +203,7 @@ class MxTextField extends StatelessWidget {
     TextStyle valueStyle,
     TextStyle hintStyle,
   ) {
-    final geometry = _geometry(variant);
+    final geometry = _geometry(context, variant);
     double lineOf(TextStyle style) => style.fontSize! * style.height!;
     if (width == null) {
       final scaler = MediaQuery.textScalerOf(context);
@@ -206,7 +233,7 @@ class MxTextField extends StatelessWidget {
 
     final value = controller?.text ?? '';
     // A typed value sizes the box alone: the hint is hidden and holds no
-    // room (maintainHintSize off), so a short value sits on the 52 floor
+    // room (maintainHintSize off), so a short value sits on the 56 floor
     // beside the other fields. An empty value still holds one line.
     final hint = hintText;
     final shown = measure(value.isEmpty ? ' ' : value, valueStyle);
@@ -220,19 +247,32 @@ class MxTextField extends StatelessWidget {
   Widget _field(BuildContext context, double? width) {
     final colors = context.colors;
     final hasError = errorText != null;
-    final geometry = _geometry(variant);
-    // The theme carries the field (spec §4.6): its fill, which lightens on
-    // focus, and its edges; an error holds the error edge at rest too.
+    final geometry = _geometry(context, variant);
+    // The theme carries the field (spec §4.6): its edges and hint; an error
+    // holds the error edge at rest too, and a disabled field takes the
+    // theme's disabled edge and hint once, with no wrapper dimming them again.
     final fields = Theme.of(context).inputDecorationTheme;
     final restingEdge = hasError ? fields.errorBorder : fields.enabledBorder;
     // The box height is a floor painted by the decorator itself, reached by
     // padding (InputDecoration.constraints reserves the height but paints
     // the fill and edge around the text only); more lines or scaled text
     // grow the box.
-    final textStyle = _valueStyle(context);
-    final hintStyle = context.fieldHint;
+    final textStyle = _valueStyle(context).copyWith(
+      color: isEnabled
+          ? null
+          : colors.onSurface.withValues(
+              alpha: context.dimens.opacityDisabledContent,
+            ),
+    );
+    final hintStyle = WidgetStateProperty.resolveAs(
+      fields.hintStyle!,
+      <WidgetState>{},
+    );
     final isBare = variant == MxTextFieldVariant.study;
     final field = TextField(
+      // Autofocus is read once, on mount: a field that was disabled when
+      // first built takes the focus when it is enabled, so the flip remounts.
+      key: ValueKey(isEnabled),
       controller: controller,
       focusNode: focusNode,
       autofocus: isAutofocused,
@@ -249,7 +289,7 @@ class MxTextField extends StatelessWidget {
       },
       style: textStyle,
       textAlign: isBare ? TextAlign.center : TextAlign.start,
-      cursorColor: colors.primary,
+      cursorColor: hasError ? colors.error : colors.primary,
       textAlignVertical: TextAlignVertical.center,
       decoration: isBare
           ? const InputDecoration(
@@ -265,7 +305,6 @@ class MxTextField extends StatelessWidget {
             )
           : InputDecoration(
               hintText: hintText,
-              hintStyle: hintStyle,
               maintainHintSize: false,
               contentPadding: EdgeInsets.symmetric(
                 horizontal: geometry.horizontal,
@@ -279,9 +318,9 @@ class MxTextField extends StatelessWidget {
               prefixIcon: leading == null
                   ? null
                   : Padding(
-                      padding: const EdgeInsetsDirectional.only(
-                        start: AppSpacing.grouped,
-                        end: AppSpacing.control,
+                      padding: EdgeInsetsDirectional.only(
+                        start: context.dimens.space12,
+                        end: context.dimens.space8,
                       ),
                       child: leading,
                     ),
@@ -289,9 +328,9 @@ class MxTextField extends StatelessWidget {
               suffixIcon: trailing == null
                   ? null
                   : Padding(
-                      padding: const EdgeInsetsDirectional.only(
-                        start: AppSpacing.control,
-                        end: AppSpacing.grouped,
+                      padding: EdgeInsetsDirectional.only(
+                        start: context.dimens.space8,
+                        end: context.dimens.space12,
                       ),
                       child: trailing,
                     ),
@@ -312,20 +351,143 @@ class MxTextField extends StatelessWidget {
             child: field,
           )
         : field;
-    final column = Column(
+    final heading = _paintedLabel(context, hasError);
+    final supporting = _supportingRow(context);
+    return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        ?heading,
         if (label case final name?)
           Semantics(label: name, child: target)
         else
           target,
-        if (errorText case final message?) MxFieldMessage(message: message),
+        ?supporting,
       ],
     );
-    if (isEnabled) return column;
-    return Opacity(opacity: AppOpacity.disabled, child: column);
   }
+
+  /// The label above the box, or null when this field paints none.
+  Widget? _paintedLabel(BuildContext context, bool hasError) {
+    final name = label;
+    if (name == null) return null;
+    if (variant == MxTextFieldVariant.study) return null;
+    final color = _supportColor(
+      context,
+      hasError: hasError,
+      isEnabled: isEnabled,
+    );
+    final leading = labelLeading;
+    return Padding(
+      padding: EdgeInsetsDirectional.only(
+        start: context.dimens.space16,
+        end: context.dimens.space16,
+        bottom: context.dimens.space4,
+      ),
+      child: IconTheme.merge(
+        data: IconThemeData(color: color),
+        child: Row(
+          spacing: context.dimens.space4,
+          children: [
+            ?leading,
+            // The label and its marker take the room there is, and wrap as
+            // a pair rather than splitting the label.
+            Expanded(
+              child: Wrap(
+                spacing: context.dimens.space4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  // The field below carries the name, so TalkBack reads it
+                  // once.
+                  ExcludeSemantics(
+                    child: Text(
+                      name,
+                      style: context.texts.labelMedium?.copyWith(color: color),
+                    ),
+                  ),
+                  ?labelTrailing,
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// The row under the box: the error message, or the supporting text, with
+  /// the counter at its trailing end; null when there is none of them.
+  Widget? _supportingRow(BuildContext context) {
+    final message = errorText;
+    final support = supportingText;
+    final count = counter;
+    if (message == null && support == null && count == null) return null;
+    final hasError = message != null;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: switch ((message, support)) {
+            (final message?, _) => MxFieldMessage(message: message),
+            (_, final support?) => _SupportingLine(
+              text: support,
+              color: _supportColor(
+                context,
+                hasError: false,
+                isEnabled: isEnabled,
+              ),
+            ),
+            _ => const SizedBox.shrink(),
+          },
+        ),
+        if (count != null)
+          _SupportingLine(
+            text: count,
+            color: _supportColor(
+              context,
+              hasError: hasError,
+              isEnabled: isEnabled,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// The colour of a field's label, supporting text and counter: the variant
+/// tone, the error tone in error, the disabled content tone when disabled.
+Color _supportColor(
+  BuildContext context, {
+  required bool hasError,
+  required bool isEnabled,
+}) {
+  final colors = context.colors;
+  return switch ((isEnabled, hasError)) {
+    (false, _) => colors.onSurface.withValues(
+      alpha: context.dimens.opacityDisabledContent,
+    ),
+    (_, true) => colors.error,
+    _ => colors.onSurfaceVariant,
+  };
+}
+
+/// A line of the supporting row, on the field's text inset, in the
+/// supporting-text role (`bodySmall`): the supporting text and the counter.
+class _SupportingLine extends StatelessWidget {
+  const _SupportingLine({required this.text, required this.color});
+
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsetsDirectional.only(
+      start: context.dimens.space16,
+      top: context.dimens.space4,
+      end: context.dimens.space16,
+    ),
+    child: Text(text, style: context.texts.bodySmall?.copyWith(color: color)),
+  );
 }
 
 /// Owns the controller a multi-line box listens to when its caller passed none.

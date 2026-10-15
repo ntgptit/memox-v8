@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 
 import '../../support/widget_harness.dart';
 
 void main() {
-  final scheme = AppColorSchemes.light;
+  final scheme = lightColorScheme;
 
-  testWidgets('a floating inverse toast: radius 12, 16 sides', (tester) async {
+  testWidgets('a floating inverse toast: radiusXs, 16 sides', (tester) async {
     late SnackBar bar;
     late SnackBarThemeData theme;
     await pumpMx(
@@ -28,17 +31,135 @@ void main() {
     expect(bar.behavior ?? theme.behavior, SnackBarBehavior.floating);
     expect(
       ((bar.shape ?? theme.shape)! as RoundedRectangleBorder).borderRadius,
-      BorderRadius.circular(12),
+      BorderRadius.circular(const AppDimens().radiusXs),
     );
     expect(
       bar.margin ?? theme.insetPadding,
       const EdgeInsets.fromLTRB(16, 0, 16, 16),
     );
-    // The message carries the 10 vertical padding itself.
+    // The message carries the 14 vertical padding itself.
     expect(bar.padding, const EdgeInsets.symmetric(horizontal: 16));
   });
 
-  testWidgets('14 message on the inverse surface; a 32 action in 48', (
+  testWidgets(
+    'bodyMedium message on the inverse surface; a small action in the control box',
+    (tester) async {
+      await pumpMx(
+        tester,
+        SizedBox(
+          width: 328,
+          child: MxSnackbarContent(
+            message: 'Moved to Trash',
+            actionLabel: 'Undo',
+            onAction: () {},
+          ),
+        ),
+      );
+      final message = tester.widget<Text>(find.text('Moved to Trash')).style!;
+      final painted = find.descendant(
+        of: find.byType(TextButton),
+        matching: find.byType(Material),
+      );
+
+      final role = tester
+          .element(find.text('Moved to Trash'))
+          .texts
+          .bodyMedium!;
+      expect((message.fontSize, message.height), (role.fontSize, role.height));
+      expect(message.color, scheme.onInverseSurface);
+      expect(
+        tester.getSize(painted.first).height,
+        const AppDimens().sizeButtonSmall,
+      );
+      expect(
+        tester.getTopLeft(find.byType(TextButton)).dx -
+            tester.getTopRight(find.text('Moved to Trash')).dx,
+        12,
+      );
+      await expectAccessibleTargets(tester);
+    },
+  );
+
+  testWidgets('in the platform SnackBar a message alone spans the toast', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => buildMxSnackBar(
+          context,
+          message: 'Deck saved',
+        ).withAnimation(kAlwaysCompleteAnimation),
+      ),
+    );
+
+    // The SDK puts the content in an Expanded: the phone's 360 less the
+    // theme's 16 on each side, less the toast's own 16 on each side.
+    final toast = tester.getRect(find.byType(Material).last);
+    final content = tester.getRect(find.byType(MxSnackbarContent));
+    expect(toast.width, 360 - 2 * 16);
+    expect(content.left - toast.left, 16);
+    expect(toast.right - content.right, 16);
+  });
+
+  testWidgets('a message alone has 14 above and below its line', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const SizedBox(width: 328, child: MxSnackbarContent(message: 'Saved')),
+    );
+    final message = tester.getRect(find.text('Saved'));
+    final content = tester.getRect(find.byType(MxSnackbarContent));
+
+    expect(message.top - content.top, 14);
+    expect(content.bottom - message.bottom, 14);
+  });
+
+  group('an action wider than 25% of the toast goes on its own line', () {
+    // The toast is the content (328) and its 16 sides: 360 wide.
+    Future<void> pumpAction(WidgetTester tester, String label) => pumpMx(
+      tester,
+      SizedBox(
+        width: 328,
+        child: MxSnackbarContent(
+          message: 'Moved to Trash',
+          actionLabel: label,
+          onAction: () {},
+        ),
+      ),
+    );
+
+    testWidgets('a short label stays beside the message', (tester) async {
+      await pumpAction(tester, 'Undo');
+
+      expect(
+        tester.getCenter(find.byType(TextButton)).dy,
+        tester.getCenter(find.text('Moved to Trash')).dy,
+      );
+    });
+
+    testWidgets('a long label drops under the message, at the end', (
+      tester,
+    ) async {
+      await pumpAction(tester, 'Open the trash');
+      final button = tester.getRect(find.byType(TextButton));
+      final message = tester.getRect(find.text('Moved to Trash'));
+
+      expect(button.top, greaterThanOrEqualTo(message.bottom));
+      expect(
+        button.right,
+        tester.getRect(find.byType(MxSnackbarContent)).right,
+      );
+      expect(
+        message.top - tester.getRect(find.byType(MxSnackbarContent)).top,
+        14,
+      );
+      await expectAccessibleTargets(tester);
+    });
+  });
+
+  testWidgets('the action\'s focus ring is inversePrimary on the toast', (
     tester,
   ) async {
     await pumpMx(
@@ -52,21 +173,11 @@ void main() {
         ),
       ),
     );
-    final message = tester.widget<Text>(find.text('Moved to Trash')).style!;
-    final painted = find.descendant(
-      of: find.byType(TextButton),
-      matching: find.byType(Material),
-    );
+    final style = tester.widget<TextButton>(find.byType(TextButton)).style!;
+    final focused =
+        style.shape!.resolve({WidgetState.focused})! as MxFocusRingBorder;
 
-    expect((message.fontSize, message.height), (14, 1.4));
-    expect(message.color, scheme.onInverseSurface);
-    expect(tester.getSize(painted.first).height, 32);
-    expect(
-      tester.getTopLeft(find.byType(TextButton)).dx -
-          tester.getTopRight(find.text('Moved to Trash')).dx,
-      12,
-    );
-    await expectAccessibleTargets(tester);
+    expect(focused.ring.color, scheme.inversePrimary);
   });
 
   testWidgets('Undo hides the toast and calls onAction once (RF5)', (
@@ -116,7 +227,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // The action's 48 target sits inside the toast instead of adding the
-    // message's 10 + 10 around it.
+    // message's 14 + 14 around it.
     expect(
       tester
           .getSize(
@@ -275,7 +386,9 @@ void main() {
       await tester.pumpAndSettle();
 
       final rect = toast(tester);
-      expect((rect.left, rect.width), ((1280 - 688) / 2, 720 - 2 * 16));
+      const dimens = AppDimens();
+      final width = dimens.sizeContentMax - 2 * dimens.space16;
+      expect((rect.left, rect.width), ((1280 - width) / 2, width));
     });
 
     testWidgets('a phone: the theme inset, as before', (tester) async {

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/app_button_style.dart';
+import 'package:memox/shared/widgets/mx_chip_style.dart';
 
-/// A selectable filter (All · Cards · Decks). Its selection is exposed as
-/// state, not only as a look, so screen readers announce it. It never shrinks
-/// or wraps: the caller's row scrolls.
+/// A selectable filter (All · Cards · Decks), the Material 3 flat filter chip:
+/// an outlined 32 chip at rest, `secondaryContainer` with a leading check when
+/// selected, all read from `chipTheme`. Its selection is exposed as state, not
+/// only as a look, so screen readers announce it. It never shrinks or wraps:
+/// MxChipRow scrolls a row of them.
 class MxFilterChip extends StatelessWidget {
   const MxFilterChip({
     super.key,
@@ -30,42 +28,34 @@ class MxFilterChip extends StatelessWidget {
   /// Shown after the label, lighter than it.
   final int? count;
 
-  /// Optional leading glyph at 16.
+  /// Optional leading glyph at 18; a selected chip shows the check instead.
   final IconData? icon;
 
   static const double _countOpacityResting = 0.6;
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    final styles = context.textStyles;
-    final foreground = isSelected ? colors.onPrimary : colors.onSurface;
+    final tokens = ThemeTokens.of(context);
+    final chip = Theme.of(context).chipTheme;
+    final foreground = chipPaint(chip, isSelected: isSelected).foreground;
+    final leading = isSelected ? AppIcons.check : icon;
     final select = onSelected;
-    final chip = MergeSemantics(
+    return MergeSemantics(
       child: Semantics(
         selected: isSelected,
         child: TextButton(
           onPressed: select == null ? null : () => select(!isSelected),
-          style: appButtonStyle(
-            fill: isSelected ? colors.primary : colors.surfaceContainerLowest,
-            foreground: foreground,
-            edge: isSelected
-                ? BorderSide.none
-                : BorderSide(
-                    color: context.semanticColors.border,
-                    width: AppStroke.hairline,
-                  ),
-            focusColor: context.semanticColors.focusRing,
-            height: AppSize.chip,
-            radius: AppRadius.full,
-            padding: AppSpacing.control,
-            label: styles.buttonLabelSmall,
+          style: chipButtonStyle(
+            tokens,
+            chip,
+            isSelected: isSelected,
+            hasLeading: leading != null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            spacing: AppSpacing.micro,
+            spacing: chipGap(chip),
             children: [
-              if (icon case final glyph?) Icon(glyph, size: AppIconSize.inline),
+              if (leading case final glyph?) Icon(glyph),
               // A label wider than the column ends in an ellipsis, as
               // MxTagChip's does (SW-REV-010).
               Flexible(
@@ -79,10 +69,11 @@ class MxFilterChip extends StatelessWidget {
               if (count case final value?)
                 Text(
                   value.toString(),
-                  // On the primary fill even full white is only 5.28:1, so
-                  // the selected count keeps the label's foreground (SW-REV-001).
-                  style: styles.chipCount(
-                    isSelected
+                  // On the container fill a dimmed count loses its contrast,
+                  // so the selected count keeps the label's foreground
+                  // (SW-REV-001).
+                  style: context.texts.labelSmall?.copyWith(
+                    color: isSelected
                         ? foreground
                         : foreground.withValues(alpha: _countOpacityResting),
                   ),
@@ -92,7 +83,5 @@ class MxFilterChip extends StatelessWidget {
         ),
       ),
     );
-    if (select != null) return chip;
-    return Opacity(opacity: AppOpacity.disabled, child: chip);
   }
 }

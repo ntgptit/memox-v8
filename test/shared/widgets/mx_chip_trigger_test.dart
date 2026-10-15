@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 
 import '../../support/widget_harness.dart';
@@ -18,11 +19,29 @@ void main() {
     await pumpMx(tester, MxChipTrigger(label: 'Sort: Due', onPressed: () {}));
     final material = tester.widget<Material>(_painted.first);
 
-    expect(tester.getSize(_painted.first).height, 28);
+    expect(tester.getSize(_painted.first).height, 32);
     expect(material.color?.a ?? 0, 0);
-    expect(material.textStyle!.color, AppColorSchemes.light.onSurfaceVariant);
+    expect(material.textStyle!.color, lightColorScheme.onSurfaceVariant);
     expect(find.byIcon(AppIcons.chevronDown), findsOneWidget);
-    expect(tester.getSize(find.byIcon(AppIcons.chevronDown)).width, 16);
+    expect(tester.getSize(find.byIcon(AppIcons.chevronDown)).width, 18);
+  });
+
+  testWidgets('chip geometry: 8 corners, the label inset 16, no edge', (
+    tester,
+  ) async {
+    await pumpMx(tester, MxChipTrigger(label: 'Sort: Due', onPressed: () {}));
+    final shape =
+        tester.widget<Material>(_painted.first).shape! as MxFocusRingBorder;
+
+    expect(
+      shape.base,
+      RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    );
+    expect(
+      tester.getTopLeft(find.text('Sort: Due')).dx -
+          tester.getTopLeft(_painted.first).dx,
+      16,
+    );
   });
 
   testWidgets('opens its menu on tap and meets the 48 target', (tester) async {

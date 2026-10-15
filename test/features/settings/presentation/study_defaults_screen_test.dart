@@ -382,8 +382,12 @@ void main() {
       final perSession = find.text(l10n.settingsCardLimitPerSession);
 
       expect(perSession, findsOneWidget);
-      // rowDescription is one line of 14 × 1.5.
-      expect(tester.getSize(perSession).height, lessThan(24));
+      // One line of its own style ("Per session" is fixed by layout).
+      final style = tester.widget<Text>(perSession).style!;
+      expect(
+        tester.getSize(perSession).height,
+        moreOrLessEquals(style.fontSize! * style.height!, epsilon: 0.5),
+      );
       Finder rowOf(String label) => find.ancestor(
         of: find.text(label),
         matching: find.byType(MxSettingsRow),

@@ -2,19 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/app_component_themes.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-import 'package:memox/core/theme/foundations/app_durations.dart';
-import 'package:memox/core/theme/foundations/app_icon_size.dart';
-import 'package:memox/core/theme/foundations/app_icons.dart';
-import 'package:memox/core/theme/foundations/app_opacity.dart';
-import 'package:memox/core/theme/foundations/app_radius.dart';
-import 'package:memox/core/theme/foundations/app_size.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
-import 'package:memox/core/theme/foundations/app_stroke.dart';
+import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
-import 'package:memox/core/theme/app_button_style.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
+import 'package:memox/core/theme/theme_rules.dart';
+
+/// How long a stepper button is held before it starts repeating (FE-A3 D6).
+const Duration mxStepperRepeatDelay = Duration(milliseconds: 400);
+
+/// The pace of a held stepper button, one step each (FE-A3 D6).
+const Duration mxStepperRepeatInterval = Duration(milliseconds: 80);
 
 /// The bounded integer input (cards per session). It owns the invalid ring,
 /// the busy spinner and the disabled dim. The bounds, the clamping and the
@@ -72,7 +72,6 @@ class MxStepper extends StatefulWidget {
 
   /// So 1 and 200 occupy the same width.
   static const double _valueColumn = 48;
-  static const double _buttonPadding = 0;
 
   /// Cards per session tops out at 200.
   static const int _defaultMaxDigits = 3;
@@ -133,9 +132,9 @@ class _MxStepperState extends State<MxStepper> {
 
   @override
   Widget build(BuildContext context) {
-    final control = Row(
+    return Row(
       mainAxisSize: MainAxisSize.min,
-      spacing: AppSpacing.micro,
+      spacing: context.dimens.space4,
       children: [
         _StepButton(
           icon: AppIcons.remove,
@@ -150,30 +149,28 @@ class _MxStepperState extends State<MxStepper> {
         ),
       ],
     );
-    if (widget.isEnabled) return control;
-    return Opacity(opacity: AppOpacity.disabled, child: control);
   }
 
   Widget _value(BuildContext context) {
     final colors = context.colors;
-    final style = context.textStyles.stepperValue(isInvalid: widget.isInvalid);
+    final style = context.texts.bodyLarge?.copyWith(
+      color: widget.isInvalid ? context.colors.error : context.colors.onSurface,
+    );
     final box = ConstrainedBox(
-      constraints: const BoxConstraints(
+      constraints: BoxConstraints(
         minWidth: MxStepper._valueColumn,
-        minHeight: AppSize.buttonSmall,
+        minHeight: context.dimens.sizeButtonSmall,
       ),
       child: DecoratedBox(
         key: const ValueKey('mx-stepper-value'),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderRadius: BorderRadius.circular(context.dimens.radiusMd),
           // Ruling I3. A null border when valid and not typing: turning
           // invalid adds colour, never layout.
           border: widget.isInvalid || _isEditing
               ? Border.all(
-                  color: widget.isInvalid
-                      ? colors.error
-                      : context.semanticColors.focusRing,
-                  width: AppStroke.hairline,
+                  color: widget.isInvalid ? colors.error : context.accentColor,
+                  width: context.dimens.strokeHairline,
                 )
               : null,
         ),
@@ -204,7 +201,12 @@ class _MxStepperState extends State<MxStepper> {
         ),
       ),
     );
-    if (_isEditing) return box;
+    // Only the value is dimmed here: the step buttons resolve their own
+    // disabled colours, and dimming them too would stack the two.
+    final value = widget.isEnabled
+        ? box
+        : Opacity(opacity: context.dimens.opacityDisabledContent, child: box);
+    if (_isEditing) return value;
     return Semantics(
       container: true,
       excludeSemantics: true,
@@ -223,8 +225,8 @@ class _MxStepperState extends State<MxStepper> {
         onTap: _canEdit ? _edit : null,
         // The box stays button-small; the tap target is a full one.
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: AppSize.touchTarget),
-          child: Center(widthFactor: 1, heightFactor: 1, child: box),
+          constraints: BoxConstraints(minHeight: context.dimens.sizeControl),
+          child: Center(widthFactor: 1, heightFactor: 1, child: value),
         ),
       ),
     );
@@ -232,8 +234,8 @@ class _MxStepperState extends State<MxStepper> {
 }
 
 /// A − or + button. A hold repeats it, first after
-/// [AppDurations.stepperRepeatDelay] and then every
-/// [AppDurations.stepperRepeatInterval], until release or a null
+/// [mxStepperRepeatDelay] and then every
+/// [mxStepperRepeatInterval], until release or a null
 /// [onPressed] (the caller's bound).
 class _StepButton extends StatefulWidget {
   const _StepButton({
@@ -277,12 +279,9 @@ class _StepButtonState extends State<_StepButton> {
     _stop();
     _downAt = event.position;
     if (widget.onPressed == null) return;
-    _timer = Timer(AppDurations.stepperRepeatDelay, () {
+    _timer = Timer(mxStepperRepeatDelay, () {
       _repeat();
-      _timer = Timer.periodic(
-        AppDurations.stepperRepeatInterval,
-        (_) => _repeat(),
-      );
+      _timer = Timer.periodic(mxStepperRepeatInterval, (_) => _repeat());
     });
   }
 
@@ -333,23 +332,22 @@ class _StepButtonState extends State<_StepButton> {
         child: TextButton(
           onPressed: widget.onPressed == null ? null : _tap,
           style:
-              appButtonStyle(
+              buttonStyle(
+                ThemeTokens.of(context),
                 fill: colors.surfaceContainer,
                 foreground: colors.onSurface,
-                edge: BorderSide.none,
-                focusColor: context.semanticColors.focusRing,
-                height: AppSize.buttonSmall,
-                radius: AppRadius.md,
-                padding: MxStepper._buttonPadding,
-                label: context.textStyles.buttonLabel,
               ).copyWith(
-                fixedSize: const WidgetStatePropertyAll(
-                  Size.square(AppSize.buttonSmall),
+                minimumSize: WidgetStatePropertyAll(
+                  Size.square(context.dimens.sizeButtonSmall),
                 ),
+                fixedSize: WidgetStatePropertyAll(
+                  Size.square(context.dimens.sizeButtonSmall),
+                ),
+                padding: const WidgetStatePropertyAll(EdgeInsets.zero),
               ),
           child: Icon(
             widget.icon,
-            size: AppIconSize.compact,
+            size: context.dimens.sizeIconCompact,
             semanticLabel: widget.label,
           ),
         ),

@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:memox/core/theme/foundations/app_spacing.dart';
 import 'package:memox/features/monitoring/domain/entities/log_record_entity.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_code_card_widget.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_detail_header_widget.dart';
 import 'package:memox/features/monitoring/presentation/widgets/sections/monitoring_detail_summary_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
+import 'package:memox/core/theme/theme_context.dart';
 
 /// The detail's page (monitoring spec §3.3, reordered by Impeccable
 /// 2026-09-29 F1): the level and status, then what triage reads (the
@@ -62,7 +62,7 @@ class _MonitoringDetailBodyWidgetState
     final trace = record.stackTrace?.trim() ?? '';
     return MxScreenScroll(
       children: [
-        const SizedBox(height: AppSpacing.control),
+        SizedBox(height: context.dimens.space8),
         MonitoringDetailHeaderWidget(record: record),
         for (final card in [
           if (message.isNotEmpty)
@@ -81,7 +81,7 @@ class _MonitoringDetailBodyWidgetState
               title: l10n.monitoringContext,
               text: _context,
             ),
-        ]) ...[card, const SizedBox(height: AppSpacing.gutter)],
+        ]) ...[card, SizedBox(height: context.dimens.space16)],
         MonitoringDetailSummaryWidget(record: record),
       ],
     );

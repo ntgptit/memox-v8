@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/theme/app_color_schemes.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
+import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_study_top_bar.dart';
 
 import '../../support/widget_harness.dart';
@@ -48,7 +50,7 @@ void main() {
           .color;
 
       await pumpMx(tester, _bar());
-      expect(fillColor(), AppColorSchemes.light.primary);
+      expect(fillColor(), lightColorScheme.primary);
     },
   );
 
@@ -63,7 +65,7 @@ void main() {
           .first,
     );
 
-    expect(track.color, AppColorSchemes.light.surfaceContainerLow);
+    expect(track.color, lightColorScheme.surfaceContainerHighest);
   });
 
   testWidgets('the fill animates over 200ms unless motion is reduced', (
@@ -107,6 +109,20 @@ void main() {
     expect(closed, 1);
     await expectAccessibleTargets(tester);
   });
+
+  for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
+    testWidgets('${width.toInt()} wide window: the close glyph starts and the '
+        'counter ends on the $margin screen margin', (tester) async {
+      await pumpMx(tester, WindowWidthScope(width: width, child: _bar()));
+      final bar = tester.getRect(find.byType(MxStudyTopBar));
+
+      expect(
+        tester.getTopLeft(find.byIcon(AppIcons.close)).dx - bar.left,
+        margin,
+      );
+      expect(bar.right - tester.getTopRight(find.text('3 / 10')).dx, margin);
+    });
+  }
 
   test('current outside [1, total] or an empty session is rejected', () {
     expect(() => _bar(current: 0), throwsAssertionError);

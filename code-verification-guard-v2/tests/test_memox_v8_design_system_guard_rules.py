@@ -146,54 +146,82 @@ def test_no_raw_loading_indicator_leaves_the_family_and_prose_alone(tmp_path: Pa
     assert not _violations(LOADING, tmp_path, good)
 
 
-def test_no_text_restyle_sees_all_four_spellings_across_lines(tmp_path: Path) -> None:
+def test_no_text_restyle_refuses_anything_but_a_colour_or_the_mono_face(
+    tmp_path: Path,
+) -> None:
     for bad in (
-        "style: context.texts.bodySmall?.copyWith(color: colors.error),",
-        "style: context.textStyles.rowTitle.copyWith(color: colors.onSurfaceVariant),",
-        "style: Theme.of(context).textTheme.bodySmall?.copyWith(color: c),",
+        "style: context.texts.bodySmall?.copyWith(fontSize: 12),",
+        "style: context.texts.labelSmall?.copyWith(height: 1.2),",
         """
-    style: AppTypography.withWeight(
-      context.texts.labelMedium!,
-      FontWeight.w600,
-    ).copyWith(
-      color: ink,
+    style: context.texts.titleSmall!.copyWith(
+      color: colors.error,
+      fontWeight: FontWeight.w700,
     ),
     """,
+        "style: context.texts.bodyMedium?.copyWith(fontFamily: 'Roboto'),",
+        "style: Theme.of(context).textTheme.bodySmall?.copyWith(color: c),",
+        # A second call after an allowed one restyles all the same.
+        "style: context.texts.bodyMedium?.copyWith(color: c).copyWith(fontSize: 40),",
+        """
+    frameStyle: context.texts.bodyMedium!
+        .copyWith(fontFamily: AppTypography.monoFamily)
+        .copyWith(fontWeight: FontWeight.w700),
+    """,
+        "style: context.texts.bodyMedium?.apply(fontSizeFactor: 2),",
+        "style: context.texts.bodyMedium!.copyWith(color: c).apply(color: d),",
     ):
         assert _violations(RESTYLE, tmp_path, bad), bad
 
 
-def test_no_text_restyle_accepts_named_styles_and_prose(tmp_path: Path) -> None:
+def test_no_text_restyle_accepts_a_colour_the_mono_face_and_prose(
+    tmp_path: Path,
+) -> None:
     good = """
-    // texts.bodySmall!.copyWith( is the spelling this rule refuses.
-    style: context.textStyles.rowTitle,
-    style: AppTypography.withWeight(
-      context.texts.labelMedium!,
-      FontWeight.w600,
+    // texts.bodySmall!.copyWith(fontSize: 12) is the spelling this rule refuses.
+    style: context.texts.titleSmall,
+    style: context.texts.bodySmall?.copyWith(color: colors.error),
+    style: context.texts.labelSmall?.copyWith(
+      color: isSelected
+          ? foreground
+          : foreground.withValues(alpha: _countOpacityResting),
+    ),
+    style: context.texts.bodyMedium?.copyWith(
+      fontFamily: AppTypography.monoFamily,
+    ),
+    frameStyle: context.texts.bodyMedium!.copyWith(
+      fontFamily: AppTypography.monoFamily,
+      color: context.accentColor,
+    ),
+    style: context.texts.bodyMedium?.copyWith(
+      color: colors.onSurfaceVariant,
+      fontFamily: AppTypography.monoFamily,
     ),
     """
     assert not _violations(RESTYLE, tmp_path, good)
 
 
-def test_no_text_restyle_sees_the_hint_style(tmp_path: Path) -> None:
-    # `MxTextStyles.inputHint` is a resolved style like the others; a
-    # `.copyWith(` on it is the same restyle, however the styles are reached.
-    assert _violations(
-        RESTYLE,
-        tmp_path,
-        "final s = context.textStyles.inputHint.copyWith(color: Colors.red);\n",
-    )
-    violations = _violations(
-        RESTYLE,
-        tmp_path,
-        "final s = MxTextStyles(texts, scheme).inputHint.copyWith(color: ink);\n",
-    )
-    assert len(violations) == 1
+TINT_BASE = "memox_v8.design_system.tint_reads_its_base"
 
 
-def test_no_text_restyle_leaves_the_hint_style_alone(tmp_path: Path) -> None:
+def test_tint_reads_its_base_refuses_a_fixed_base(tmp_path: Path) -> None:
+    for bad in (
+        "color: colors.primary.tintOver(colors.surface),",
+        "color: context.mxColors.warning.tintOver(context.mxColors.cardSurface),",
+        """
+    color: context.colors.error.tintOver(
+      context.colors.surface,
+    ),
+    """,
+    ):
+        assert _violations(TINT_BASE, tmp_path, bad), bad
+
+
+def test_tint_reads_its_base_accepts_the_base_and_prose(tmp_path: Path) -> None:
     good = """
-    hintStyle: MxTextStyles(texts, scheme).inputHint,
-    style: context.textStyles.inputHint,
+    // A tint over colors.surface: tintOver(colors.surface) is refused.
+    color: colors.primary.tintOver(MxTintBase.of(context)),
+    color: context.colors.error.tintOver(
+      MxTintBase.of(context),
+    ),
     """
-    assert not _violations(RESTYLE, tmp_path, good)
+    assert not _violations(TINT_BASE, tmp_path, good)
