@@ -53,6 +53,7 @@ Every state above is built.
 
 ## Rulings
 
+- **TOPIK entry (owner brief 2026-10-15, DEV-394; not built yet):** a "Practice" `MxListSectionHeader` after the deck list and one `MxCard` holding one `MxListRow` (leading `MxIconTile`, "TOPIK past papers", meta "{n} tests", chevron) that opens screen 34. The screen takes it as an optional slot `practiceEntry` from `lib/app/`, so `study` does not import `topik` ([ADR-023](../../decisions/ADR-023-luyen-de-topik.md)). It shows in every state with data, `noDecks` and `noCards` included, and is absent while loading and on error. When built, each affected golden is re-rendered and goes through the golden review.
 - **BR-STUDY-068 (owner 2026-09-30):** the hero states "{n} cards due" over its two halves, overdue · today (`MxWorkloadBreakdownLine`); new and scheduled cards are not in the hero, new ones show in each deck row.
 - **UI-base row 28:** the resume dot and paused tile use primary; there is no streak tone.
 - The app bar carries no date: `MxAppBar.actions` takes buttons only and no BR/UC calls for one.

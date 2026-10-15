@@ -49,7 +49,7 @@ This is not a market product. It is a personal app its owner builds so they can 
   - Error messages never expose SQL, paths or ids (`BR-CORE-005`).
   - The database is not encrypted at MVP, and its open path is centralized for later encryption (`ADR-002`).
   - Datetimes are stored in UTC (`ADR-008`).
-- **Cards are text only.** Audio and images are out of MVP.
+- **Cards are text only.** Audio and images are out of MVP. The one exception is the TOPIK practice feature, whose bundled past papers carry audio and images (`ADR-023`); cards stay text only.
 - **In scope for V8.0 (`docs/features/*/README.md`):** deck, card, srs, study-mode, study, progress, settings, search (`ADR-009`), card tags (`ADR-009`).
 - **Built after V8.0:** full tag management, starter decks (development fixtures, not production content), daily reminders (opt-in, off by default; Android only, the on-device check pending), CSV/TSV/XLSX import and export, and Trash (a delete is recoverable for 30 days, `BR-TRASH-009`). Progress: the Linear project MemoX (ADR-021).
 - **No V7 data compatibility or migration.** V7 is an architecture reference only (`ADR-011`).

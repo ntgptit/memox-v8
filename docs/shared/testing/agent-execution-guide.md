@@ -106,6 +106,18 @@ số lượng `Due` hoặc huy hiệu đến hạn. Nếu môi trường không 
 
 Nếu không chứng minh được gói ứng dụng là bản kiểm thử, agent MUST dừng; không được xoá dữ liệu.
 
+### SETUP-TOPIK-PACK
+
+1. Với `HOST-FLOW` và `HOST-WIDGET`: test thay `topikCatalogProvider` bằng gói fixture tổng hợp (`test/support/topik_content_fixtures.dart`), kể cả bản lỗi kịch bản cần, và mở database in-memory rỗng.
+2. Với `DEVICE-E2E`: bản dựng phát triển có gói trong `assets/topik/` đã qua lint; chạy `SETUP-EMPTY`.
+3. Xác nhận màn 34 hiện đúng số đề hợp lệ của gói.
+
+### SETUP-TOPIK-HISTORY
+
+1. Chạy `SETUP-TOPIK-PACK` với các đề kỳ 91 và 96 của TOPIK I và II.
+2. Test ghi trực tiếp vào database in-memory các lượt kịch bản nêu (trạng thái, đáp án, điểm, thời gian) qua repository của feature, với đồng hồ inject; không có lượt nào khác.
+3. `DEVICE-E2E` không dùng mã này: lượt chỉ được tạo qua giao diện.
+
 ### SETUP-D-EB
 
 1. Chạy `SETUP-EMPTY`.

@@ -64,6 +64,9 @@ flutter:
     # files, not its subfolders, so each folder is listed.
     - assets/templates/
     - assets/templates/en/
+    # The TOPIK content packs (ADR-023, spec §13.4); each pack and asset
+    # folder is listed, and test/tools/topik_content_assets_test.dart checks it.
+    - assets/topik/
     # Google's G for "Continue with Google" (account UI spec U6), rendered
     # from the official path at 1x–4x; Flutter picks the density variant.
     - assets/brand/
