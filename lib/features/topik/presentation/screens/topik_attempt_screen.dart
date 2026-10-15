@@ -8,8 +8,6 @@ import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
 import 'package:memox/features/topik/domain/models/topik_audio_model.dart';
-import 'package:memox/features/topik/domain/models/topik_question_group_model.dart';
-import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/presentation/controllers/topik_attempt_controller.dart';
 import 'package:memox/features/topik/presentation/providers/topik_attempt_provider.dart';
@@ -219,7 +217,7 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
           top: TopikGroupPaneWidget(
             key: ValueKey(group.groupId),
             group: group,
-            audio: _clipOf(test, group),
+            audio: topikGroupClip(test, group),
             isCollapsed: _isCollapsed,
             isScriptShown: isScriptShown,
             onToggleCollapsed: () =>
@@ -250,18 +248,6 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
           isSubmitting: isSubmitting,
         ),
       ),
-    );
-  }
-
-  /// The group's clip of its section's audio file; null without either.
-  static TopikAudioClip? _clipOf(TopikTest test, TopikQuestionGroup group) {
-    final asset = test.audioAsset;
-    final audio = group.audio;
-    if (asset == null || audio == null) return null;
-    return TopikAudioClip(
-      asset: asset,
-      startMs: audio.startMs,
-      endMs: audio.endMs,
     );
   }
 
