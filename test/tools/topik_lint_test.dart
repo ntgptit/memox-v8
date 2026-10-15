@@ -112,4 +112,64 @@ void main() {
     expect(report.passes, isFalse);
     expect(report.issues.single.testId, 'manifest.json');
   });
+
+  group('declared asset folders (spec §13.4)', () {
+    test('a pack or audio folder not declared in pubspec fails', () {
+      writePack(
+        'topik2/96/listening.json',
+        topikTestJson(section: TopikSection.listening),
+      );
+      writeManifest(['topik2/96/listening.json']);
+      final report = lintTopikContent(
+        contentRoot: content,
+        bundleRoot: bundle,
+        declaredAssetFolders: {'assets/topik/'},
+      );
+      expect(report.passes, isFalse);
+      expect(
+        report.issues.map((issue) => issue.detail).join('\n'),
+        allOf(
+          contains('assets/topik/topik2/96/'),
+          contains('assets/topik/fixture/'),
+        ),
+      );
+    });
+
+    test('every folder declared passes', () {
+      writePack(
+        'topik2/96/listening.json',
+        topikTestJson(section: TopikSection.listening),
+      );
+      writeManifest(['topik2/96/listening.json']);
+      final report = lintTopikContent(
+        contentRoot: content,
+        bundleRoot: bundle,
+        declaredAssetFolders: {
+          'assets/topik/',
+          'assets/topik/topik2/96/',
+          'assets/topik/fixture/',
+        },
+      );
+      expect(report.issues, isEmpty);
+    });
+  });
+
+  test('pubspec asset folders are read, comments and files aside', () {
+    const yaml = '''
+name: memox
+flutter:
+  generate: true
+  assets:
+    # The starter templates.
+    - assets/templates/
+    - assets/fonts/OFL-BeVietnamPro.txt
+      - assets/topik/   # packs
+  fonts:
+    - family: BeVietnamPro
+''';
+    expect(declaredAssetFoldersOf(yaml), {
+      'assets/templates/',
+      'assets/topik/',
+    });
+  });
 }

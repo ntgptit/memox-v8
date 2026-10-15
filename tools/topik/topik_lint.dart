@@ -28,10 +28,12 @@ final class TopikLintReport {
 TopikLintReport lintTopikContent({
   required Directory contentRoot,
   required Directory bundleRoot,
+  Set<String>? declaredAssetFolders,
 }) {
   final fileIssues = <TopikContentIssue>[];
   final files = <TopikPackFile>[];
-  for (final entry in _manifestEntries(contentRoot, fileIssues)) {
+  final entries = _manifestEntries(contentRoot, fileIssues);
+  for (final entry in entries) {
     final json = _decode(File('${contentRoot.path}/$entry'), entry, fileIssues);
     if (json == null) continue;
     files.add((origin: entry, json: json));
@@ -41,7 +43,69 @@ TopikLintReport lintTopikContent({
     assetExists: (path) => File('${bundleRoot.path}/$path').existsSync(),
     fileIssues: fileIssues,
   );
-  return TopikLintReport(issues: load.issues, testCount: load.readCount);
+  final folderIssues = declaredAssetFolders == null
+      ? const <TopikContentIssue>[]
+      : _undeclaredFolders(load, entries, declaredAssetFolders);
+  return TopikLintReport(
+    issues: [...load.issues, ...folderIssues],
+    testCount: load.readCount,
+  );
+}
+
+const String _bundleFolder = 'assets/topik/';
+
+/// Flutter reads a declared folder's files, not its subfolders: every folder
+/// holding a pack or an asset the packs name must be declared.
+List<TopikContentIssue> _undeclaredFolders(
+  TopikContentLoad load,
+  List<String> entries,
+  Set<String> declared,
+) {
+  final needed = <String, String>{
+    _folderOf('$_bundleFolder$_manifestName'): _manifestName,
+    for (final entry in entries) _folderOf('$_bundleFolder$entry'): entry,
+    for (final test in load.accepted) ...{
+      if (test.audioAsset case final audio?) _folderOf(audio): test.testId,
+      for (final group in test.groups)
+        if (group.passage?.image case final image?)
+          _folderOf(image): test.testId,
+      for (final question in test.questions)
+        for (final option in question.options)
+          if (option.image case final image?) _folderOf(image): test.testId,
+    },
+  };
+  return [
+    for (final MapEntry(key: folder, value: owner) in needed.entries)
+      if (!declared.contains(folder))
+        TopikContentIssue.error(
+          TopikContentRule.assets,
+          owner,
+          'folder $folder is not declared in pubspec.yaml flutter.assets',
+        ),
+  ];
+}
+
+String _folderOf(String path) => path.substring(0, path.lastIndexOf('/') + 1);
+
+/// The folder entries (ending in `/`) listed under `flutter: assets:`.
+Set<String> declaredAssetFoldersOf(String pubspecYaml) {
+  final folders = <String>{};
+  var inAssets = false;
+  for (final line in const LineSplitter().convert(pubspecYaml)) {
+    final trimmed = line.trim();
+    if (trimmed == 'assets:') {
+      inAssets = true;
+      continue;
+    }
+    if (!inAssets || trimmed.isEmpty || trimmed.startsWith('#')) continue;
+    if (!trimmed.startsWith('- ')) {
+      inAssets = false;
+      continue;
+    }
+    final value = trimmed.substring(2).split('#').first.trim();
+    if (value.endsWith('/')) folders.add(value);
+  }
+  return folders;
 }
 
 List<String> _manifestEntries(Directory root, List<TopikContentIssue> issues) {
