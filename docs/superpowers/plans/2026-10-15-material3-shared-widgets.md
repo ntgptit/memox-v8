@@ -776,21 +776,121 @@ Allowlist: JSON `[{ "file": "...", "rule": "M3L0x", "reason": "...", "owner": ".
 
 ### Task 6+: Fixes (appended by the controller after Task 5)
 
-Each fix task carries:
-- the finding IDs;
-- the root cause (file:line, mechanism);
-- the shared owner;
+Written by the controller from the verified findings in `docs/shared/design/m3-adoption-ledger.md` section 5 and the owner rulings of 2026-10-15 recorded there.
+
+**The ledger finding is the brief for its fix.** It gives:
+- the mechanism (file:line);
+- the expected value and its approved source;
 - the consumers;
-- the failing test to write first;
-- the expected values, read from the approved source;
-- the check-degrade list;
-- the check-similar query.
+- the similar sites;
+- the failing test to write first.
 
-Each task follows the skill's FIX workflow and `superpowers:systematic-debugging`, and ends with:
-- `dod_check.sh` green;
-- the ledger row set to `FIXED` with its test path.
+**Every fix task:**
+- follows the skill's FIX workflow and `superpowers:systematic-debugging`;
+- writes the failing test first and shows RED, then the fix at the named owner layer, then GREEN;
+- runs the tests of every consumer listed in the finding (check degrade) and the similar-site query (check similar), and writes both lists in its report;
+- sets the ledger finding to `FIXED` with its test path;
+- ends with `dod_check.sh` green;
+- does not regenerate goldens (Task Z does, once).
 
-Goldens are not regenerated per fix task.
+A golden-only failure caused by the intended visual change is expected and named in the report. Any other golden failure is a finding.
+
+A pinned test that encodes a value the owner overturned on 2026-10-15 (M3F-02 ruling O2, M3F-03 SW-REV-001) is corrected to the new value. Cite the owner ruling in the test name or comment. That is a correction, not a weakening.
+
+### Task 6: Theme foundation (ledger groups E, F; M3F-04, M3F-07, M3F-12, M3F-13, M3F-14, M3F-15)
+
+**Files:**
+- `lib/core/theme/app_theme.dart`
+- `lib/core/theme/app_component_themes.dart`
+- their tests in `test/core/theme/`
+- the feature tests whose glyph colour or density expectation changes
+
+Do, in `_build` and the slots:
+
+| Finding | Change |
+|---|---|
+| M3F-12 | `iconTheme` with colour `onSurfaceVariant` (owner 2026-10-15) and size `sizeIcon` |
+| M3F-13 | `hoverColor` = `onSurface @ opacityHover` and `focusColor` = `onSurface @ opacityFocus`, both themes |
+| M3F-14 | `visualDensity: VisualDensity.standard`, `materialTapTargetSize: MaterialTapTargetSize.padded` (never `platform:`) |
+| M3F-15 | the switch thumb stays `onPrimary` in every on state |
+| M3F-04 | the `chipTheme` icon colour reads `t.accent` |
+| M3F-07 | `iconButtonTheme` shape is `MxFocusRingBorder(base: CircleBorder(), ring, gap: strokeFocusGap)` on focus |
+
+For M3F-07, check that the ring is not clipped in `MxAppBar`, rows and `MxChipRow` (similar sites in the finding).
+
+### Task 7: Derived colours and the contrast gate (group B; M3F-02, M3F-03)
+
+**Files:**
+- `lib/shared/widgets/mx_spinner.dart`
+- `lib/shared/widgets/mx_button.dart`
+- `lib/shared/widgets/mx_filter_chip.dart`
+- `test/core/theme/token_contrast_test.dart`
+- the widget tests
+
+Do:
+- **M3F-02:** `MxSpinner` takes an optional `color`, replacing `isOnFill` (owner 2026-10-15). Remove `isOnFill` if no caller remains, and update every caller. `MxButton` passes each tone's own foreground.
+- **M3F-03:** the resting count drops the 0.6 alpha and uses `onSurfaceVariant`, with hierarchy carried by `labelSmall` (owner 2026-10-15).
+- **Gate:** add the rendered spinner pairs and the chip-count pair, light and dark, to the contrast gate.
+
+### Task 8: Focus indicators (group C; M3F-05, M3F-06)
+
+**Files:**
+- `lib/shared/widgets/mx_option_row.dart`
+- `lib/shared/widgets/mx_breadcrumb.dart`
+- `lib/shared/widgets/mx_bottom_nav.dart`, plus `mx_nav_rail.dart` if it shares `MxNavItem`
+- `lib/shared/widgets/mx_stepper.dart`
+- their tests
+
+Do:
+- **M3F-05:** `MxOptionRow` and `MxBreadcrumb` compose `MxRowInk`, which draws the ring. The nav cell draws a pill-shaped ring with the same token (`primary`, `strokeFocus`, M3C-49).
+- **M3F-06:** the stepper value becomes focusable, with the shared ring.
+
+No new shared primitive. If one seems needed, stop and report: it is an owner question.
+
+### Task 9: Semantics parity (group D; M3F-08, M3F-09, M3F-10, M3F-11)
+
+**Files:**
+- `lib/shared/widgets/mx_app_bar.dart`
+- `lib/shared/widgets/mx_bottom_nav.dart`
+- `lib/shared/widgets/mx_nav_rail.dart`
+- `lib/shared/widgets/mx_row_ink.dart`
+- `lib/features/transfer/.../import_source_option_widget.dart` (find it)
+- `lib/shared/widgets/mx_fab.dart`
+- their tests
+
+Do:
+- **M3F-08:** title `namesRoute: true`.
+- **M3F-09:** tab role and the "i of n" position (`SemanticsRole.tab`; index and count passed in).
+- **M3F-10:** `MxRowInk` takes `isSelected` and sets it on its own node (owner 2026-10-15). `ImportSourceOption` uses it.
+- **M3F-11:** `MxFab` sets `tooltip` equal to its semantic label, with no duplicate node.
+
+### Task 10: Input decorator states (group G; M3F-16)
+
+**Files:**
+- `lib/core/theme/app_surface_themes.dart` (`inputDecorationTheme`)
+- `lib/shared/widgets/mx_text_field.dart`
+- their tests
+
+Do:
+- Let the SDK resolver run (`WidgetStateInputBorder`, or pass the error to the decorator), so that error+hovered gives `onErrorContainer` at width 1.
+- The suffix glyph is `error` in error, and `onErrorContainer` when hovered.
+- Keep every other state as today. Pin each state in a test.
+- Check `MxCodeField` (a suspect in the finding) and report it.
+
+### Task 11: Row disabled and busy, layout constants (groups H, I; M3F-17, M3F-18, M3F-19)
+
+**Files:**
+- `lib/shared/widgets/mx_list_row.dart`
+- `lib/shared/widgets/mx_selectable_card_row.dart`
+- `lib/shared/widgets/mx_settings_row.dart`
+- `lib/shared/widgets/mx_study_top_bar.dart`
+- the two feature scroll widgets named in M3F-19
+- their tests
+
+Do:
+- **M3F-17:** a disabled or busy row blocks hit tests and taps on its tap target and trailing controls, and its semantics say enabled=false (owner 2026-10-15). Then check `MxOptionRow` and `MxActionSheetCommandRow`, the similar sites.
+- **M3F-18:** the study bar reads `sizeTrack`.
+- **M3F-19:** both bodies use `context.screenMargin`.
 
 ### Task Z: Documentation sync, goldens, final gates
 
