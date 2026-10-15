@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
@@ -169,6 +170,52 @@ void main() {
             .focusNode
             .hasFocus,
         isFalse,
+      );
+    });
+
+    testWidgets('a press ripples over the field, clipped to its stadium', (
+      tester,
+    ) async {
+      await pumpTrigger(tester, () {});
+      final field = tester.getRect(find.byType(TextField));
+      final inks = find.byWidgetPredicate(
+        (widget) => widget.runtimeType.toString() == '_InkFeatures',
+      );
+
+      final gesture = await tester.startGesture(field.center);
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(
+        tester.renderObject(inks.last),
+        paints..clipRRect(
+          rrect: RRect.fromRectAndRadius(
+            Offset.zero & field.size,
+            Radius.circular(const AppDimens().sizeSearch / 2),
+          ),
+        ),
+      );
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('hovering lays the hover state over the field', (tester) async {
+      await pumpTrigger(tester, () {});
+      final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await mouse.addPointer(location: Offset.zero);
+      addTearDown(mouse.removePointer);
+
+      await mouse.moveTo(tester.getCenter(find.byType(TextField)));
+      await tester.pumpAndSettle();
+      final inks = find.byWidgetPredicate(
+        (widget) => widget.runtimeType.toString() == '_InkFeatures',
+      );
+
+      expect(
+        tester.renderObject(inks.last),
+        paints..rrect(
+          color: Theme.of(tester.element(find.byType(MxSearchField)))
+              .hoverColor,
+        ),
       );
     });
 

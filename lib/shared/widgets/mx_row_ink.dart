@@ -14,6 +14,7 @@ class MxRowInk extends StatefulWidget {
     required this.onTap,
     required this.child,
     this.onLongPress,
+    this.borderRadius,
     this.isEnabled = true,
     this.shouldDimWhenDisabled = true,
   });
@@ -24,6 +25,10 @@ class MxRowInk extends StatefulWidget {
   /// row's own ink and in its TalkBack node (SW-REV-005).
   final VoidCallback? onLongPress;
   final Widget child;
+
+  /// The corners the ripple, the state layers and the focus ring follow; null
+  /// is the row's square edge. A pill-shaped control passes its own radius.
+  final BorderRadius? borderRadius;
   final bool isEnabled;
 
   /// False leaves the dim to the child, which dims only what is unavailable
@@ -70,10 +75,12 @@ class _MxRowInkState extends State<MxRowInk> {
       child: InkWell(
         onTap: onTap,
         onLongPress: widget.onLongPress,
+        borderRadius: widget.borderRadius,
         onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
         child: DecoratedBox(
           position: DecorationPosition.foreground,
           decoration: BoxDecoration(
+            borderRadius: widget.borderRadius,
             border: _hasFocus
                 ? Border.all(
                     color: context.colors.primary,

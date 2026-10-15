@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
@@ -165,6 +166,35 @@ void main() {
         matching: find.byIcon(AppIcons.check),
       ),
       findsOneWidget,
+    );
+  });
+
+  libraryTest('a hint keeps the window\'s screen margin at its sides', (
+    tester,
+    env,
+  ) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      WindowWidthScope(
+        width: 700,
+        child: _host(
+          const SessionFooterHintWidget(icon: AppIcons.check, text: 'Tap'),
+        ),
+      ),
+    );
+    final padding = tester.widget<Padding>(
+      find
+          .descendant(
+            of: find.byType(SessionFooterHintWidget),
+            matching: find.byType(Padding),
+          )
+          .first,
+    );
+
+    expect(
+      padding.padding.resolve(TextDirection.ltr).horizontal,
+      2 * const AppDimens().marginScreenMedium,
     );
   });
 

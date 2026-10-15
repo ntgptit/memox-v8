@@ -98,6 +98,98 @@ void main() {
     expect(fab.bottom, 800 - 24 - 20);
   });
 
+  group('the app bar ground when content scrolls under it', () {
+    final tall = [for (var i = 0; i < 30; i++) const SizedBox(height: 80)];
+    final listKey = GlobalKey();
+
+    MxAppShell shell() => MxAppShell(
+      appBar: const MxAppBar(title: 'Library', key: _barKey),
+      body: ListView(key: listKey, children: tall),
+    );
+
+    Color ground(WidgetTester tester) => tester
+        .widget<ColoredBox>(
+          find
+              .ancestor(
+                of: find.byKey(_barKey),
+                matching: find.byType(ColoredBox),
+              )
+              .first,
+        )
+        .color;
+
+    testWidgets('surface at rest, surfaceContainer once scrolled, and back', (
+      tester,
+    ) async {
+      await pumpMxPage(tester, shell());
+      expect(ground(tester), lightColorScheme.surface);
+
+      await tester.drag(find.byKey(listKey), const Offset(0, -300));
+      await tester.pumpAndSettle();
+      expect(ground(tester), lightColorScheme.surfaceContainer);
+
+      await tester.drag(find.byKey(listKey), const Offset(0, 1000));
+      await tester.pumpAndSettle();
+      expect(ground(tester), lightColorScheme.surface);
+    });
+
+    testWidgets('content that fits never scrolls under', (tester) async {
+      await pumpMxPage(
+        tester,
+        MxAppShell(
+          appBar: const MxAppBar(title: 'Library', key: _barKey),
+          body: ListView(children: const [SizedBox(height: 40)]),
+        ),
+      );
+      await tester.drag(find.byType(ListView), const Offset(0, -300));
+      await tester.pumpAndSettle();
+
+      expect(ground(tester), lightColorScheme.surface);
+    });
+
+    testWidgets('the colour eases in', (tester) async {
+      await pumpMxPage(tester, shell());
+      await tester.drag(find.byKey(listKey), const Offset(0, -300));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+      final midway = ground(tester);
+      expect(midway, isNot(lightColorScheme.surface));
+      expect(midway, isNot(lightColorScheme.surfaceContainer));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('reduced motion changes the colour at once', (tester) async {
+      await pumpMxPage(
+        tester,
+        Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: true),
+            child: shell(),
+          ),
+        ),
+      );
+      await tester.drag(find.byKey(listKey), const Offset(0, -300));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 1));
+
+      expect(ground(tester), lightColorScheme.surfaceContainer);
+    });
+
+    testWidgets('on a wide window the ground runs the full width while the '
+        'bar keeps the column', (tester) async {
+      await _pumpWide(tester, shell());
+      await tester.drag(find.byKey(listKey), const Offset(0, -300));
+      await tester.pumpAndSettle();
+      final band = find
+          .ancestor(of: find.byKey(_barKey), matching: find.byType(ColoredBox))
+          .first;
+
+      expect(tester.getSize(band).width, 1280);
+      expect(tester.getSize(find.byKey(_barKey)).width, lessThan(1280));
+      expect(ground(tester), lightColorScheme.surfaceContainer);
+    });
+  });
+
   group('the gesture inset is added once', () {
     double scrollTail(WidgetTester tester) => tester
         .widget<ListView>(find.byType(ListView))

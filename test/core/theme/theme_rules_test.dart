@@ -64,4 +64,31 @@ void main() {
     context = await contextOf(tester, buildLightTheme());
     expect(context.windowSize, WindowSize.expanded);
   });
+
+  testWidgets(
+    'a width scope sets the size class, whatever the MediaQuery says',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      tester.view.physicalSize = const Size(540, 800);
+      late BuildContext inside;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: buildLightTheme(),
+          home: WindowWidthScope(
+            width: 620,
+            child: Builder(
+              builder: (context) {
+                inside = context;
+                return const SizedBox();
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(inside.windowSize, WindowSize.medium);
+      expect(inside.screenMargin, inside.dimens.marginScreenMedium);
+    },
+  );
 }

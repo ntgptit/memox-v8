@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 
 /// The centred glyph and caption stating a turn's rule (kit
@@ -29,9 +30,9 @@ class SessionFooterHintWidget extends StatelessWidget {
     );
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        context.dimens.space16,
+        context.screenMargin,
         context.dimens.space8,
-        context.dimens.space16,
+        context.screenMargin,
         context.dimens.space16,
       ),
       child: Text.rich(

@@ -19,6 +19,35 @@ void main() {
     expect(find.byType(InkWell), findsNothing);
   });
 
+  testWidgets('a border radius shapes the ink and the focus ring', (
+    tester,
+  ) async {
+    final radius = BorderRadius.circular(24);
+    await pumpMx(
+      tester,
+      MxRowInk(
+        onTap: () {},
+        borderRadius: radius,
+        child: const SizedBox(width: 200, height: 48),
+      ),
+    );
+
+    expect(tester.widget<InkWell>(find.byType(InkWell)).borderRadius, radius);
+    expect(
+      (tester
+                  .widget<DecoratedBox>(
+                    find.descendant(
+                      of: find.byType(MxRowInk),
+                      matching: find.byType(DecoratedBox),
+                    ),
+                  )
+                  .decoration
+              as BoxDecoration)
+          .borderRadius,
+      radius,
+    );
+  });
+
   testWidgets('tappable: fires, and focus draws the 2px focus ring', (
     tester,
   ) async {

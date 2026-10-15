@@ -6,6 +6,7 @@
     {"name": "sizeListRow", "value": 56, "usage": "Minimum height of a one-line list row, as the Material 3 list item container. Content rows, settings rows, option rows and sheet commands share it."},
     {"name": "sizeListRowTwoLine", "value": 72, "usage": "Minimum height of a list row with a supporting line (subtitle or meta), as the Material 3 two-line list item container."},
     {"name": "sizeFab", "value": 56, "usage": "Floating action button, square, icon only, as the Material 3 FAB container."},
+    {"name": "breakpointCompactHeight", "value": 480, "usage": "Window height below which the window is compact in height (Material 3 window size classes): navigation is a bottom bar even when the width is medium or wider."},
     {"name": "sizeAppBar", "value": 64, "usage": "App bar height (48 + 2 x 8)."},
     {"name": "sizeIconInline", "value": 16, "usage": "Icon inside body text; the smallest icon."},
     {"name": "sizeIconCompact", "value": 20, "usage": "Dense rows, metadata, nav glyphs."},

@@ -54,6 +54,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
     this.sizeListRow = 56,
     this.sizeListRowTwoLine = 72,
     this.sizeFab = 56,
+    this.breakpointCompactHeight = 480,
     this.sizeAppBar = 64,
     this.sizeIconInline = 16,
     this.sizeIconCompact = 20,
@@ -125,6 +126,9 @@ class AppDimens extends ThemeExtension<AppDimens> {
 
   /// Floating action button, square, icon only, as the Material 3 FAB container.
   final double sizeFab;
+
+  /// Window height below which the window is compact in height (Material 3 window size classes): navigation is a bottom bar even when the width is medium or wider.
+  final double breakpointCompactHeight;
 
   /// App bar height (48 + 2 x 8).
   final double sizeAppBar;

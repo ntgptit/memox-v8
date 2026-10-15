@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/shared/widgets/mx_app_bar.dart';
 
 /// The column every screen is: top chrome, one scroll body and a bottom bar,
 /// with the FAB layered above. The app bar and footer are in-flow siblings of
@@ -74,6 +75,19 @@ class MxAppShell extends StatelessWidget {
     return isNarrow ? dimens.sizeContentMax : dimens.sizeContentMaxWide;
   }
 
+  /// [child] centred in the window, no wider than the shell's column.
+  Widget _inColumn(BuildContext context, Widget child) {
+    final width = _columnWidth(context);
+    return LayoutBuilder(
+      builder: (_, constraints) => Center(
+        child: SizedBox(
+          width: math.min(constraints.maxWidth, width),
+          child: child,
+        ),
+      ),
+    );
+  }
+
   Widget _scaffold(BuildContext context, Widget? appBar) {
     return Scaffold(
       backgroundColor: context.colors.surface,
@@ -84,32 +98,42 @@ class MxAppShell extends StatelessWidget {
       // bottom inset when a bottom nav owns it; the shell's own context would
       // hand that inset back to the body.
       body: Builder(
-        builder: (bodyContext) => LayoutBuilder(
-          builder: (_, constraints) => Center(
-            child: SizedBox(
-              width: math.min(constraints.maxWidth, _columnWidth(context)),
-              child: Column(
-                children: [
-                  ?appBar,
-                  Expanded(
-                    // The app bar owns the top inset; a footer owns the
-                    // bottom one.
-                    child: MediaQuery.removePadding(
-                      context: bodyContext,
-                      removeTop: appBar != null,
-                      removeBottom: footer != null,
-                      child: _NoticeLayer(
-                        notice: notice,
-                        child: appBar == null
-                            ? SafeArea(bottom: false, child: body)
-                            : body,
+        builder: (bodyContext) => _ScrolledUnderScope(
+          builder: (isScrolledUnder) => Column(
+            children: [
+              if (appBar != null)
+                _AppBarGround(
+                  // Only the app bar takes the scrolled-under ground; the
+                  // study bar paints its own.
+                  isScrolledUnder: isScrolledUnder && appBar is MxAppBar,
+                  child: _inColumn(context, appBar),
+                ),
+              Expanded(
+                child: _inColumn(
+                  context,
+                  Column(
+                    children: [
+                      Expanded(
+                        // The app bar owns the top inset; a footer owns the
+                        // bottom one.
+                        child: MediaQuery.removePadding(
+                          context: bodyContext,
+                          removeTop: appBar != null,
+                          removeBottom: footer != null,
+                          child: _NoticeLayer(
+                            notice: notice,
+                            child: appBar == null
+                                ? SafeArea(bottom: false, child: body)
+                                : body,
+                          ),
+                        ),
                       ),
-                    ),
+                      ?footer,
+                    ],
                   ),
-                  ?footer,
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -120,6 +144,79 @@ class MxAppShell extends StatelessWidget {
         dimens: context.dimens,
         columnMax: _columnWidth(context),
       ),
+    );
+  }
+}
+
+/// Tells [builder] whether the body's scroll has moved content under the app
+/// bar: its vertical scroll, not a nested or sideways one (Material 3: the
+/// bar steps from `surface` to `surfaceContainer`).
+class _ScrolledUnderScope extends StatefulWidget {
+  const _ScrolledUnderScope({required this.builder});
+
+  final Widget Function(bool isScrolledUnder) builder;
+
+  @override
+  State<_ScrolledUnderScope> createState() => _ScrolledUnderScopeState();
+}
+
+class _ScrolledUnderScopeState extends State<_ScrolledUnderScope> {
+  ScrollNotificationObserverState? _observer;
+  var _isScrolledUnder = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _observer?.removeListener(_onScroll);
+    _observer = ScrollNotificationObserver.maybeOf(context)
+      ?..addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _observer?.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _onScroll(ScrollNotification notification) {
+    if (notification is! ScrollUpdateNotification) return;
+    if (!defaultScrollNotificationPredicate(notification)) return;
+    final metrics = notification.metrics;
+    final isScrolledUnder = switch (metrics.axisDirection) {
+      AxisDirection.up => metrics.extentAfter > 0,
+      AxisDirection.down => metrics.extentBefore > 0,
+      AxisDirection.left || AxisDirection.right => _isScrolledUnder,
+    };
+    if (isScrolledUnder == _isScrolledUnder) return;
+    setState(() => _isScrolledUnder = isScrolledUnder);
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.builder(_isScrolledUnder);
+}
+
+/// The app bar's ground, full-bleed behind the capped column: `surface`, or
+/// `surfaceContainer` once content scrolls under it. The colour eases over
+/// `Durations.short4` unless the platform asks for reduced motion.
+class _AppBarGround extends StatelessWidget {
+  const _AppBarGround({required this.isScrolledUnder, required this.child});
+
+  final bool isScrolledUnder;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return TweenAnimationBuilder<Color?>(
+      tween: ColorTween(
+        end: isScrolledUnder ? colors.surfaceContainer : colors.surface,
+      ),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : Durations.short4,
+      curve: Easing.standard,
+      builder: (_, color, child) => ColoredBox(color: color!, child: child),
+      child: child,
     );
   }
 }

@@ -5,14 +5,22 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 
 /// Content bar (a back control and a deck/card name) or screen bar (a screen
-/// name). Both are `sizeAppBar` tall and set the title in `titleLarge`.
+/// name). Both are `sizeAppBar` tall, set the title in `titleLarge` and put
+/// their icon glyphs on the screen margin; the name says which screen the bar
+/// belongs to.
 enum MxAppBarDensity { content, screen }
 
 /// The top chrome: leading control, flexible title, trailing actions. The
 /// title is the only slot that gives up width; it ellipsises on one line.
 ///
-/// Placed in-flow by MxAppShell. It is `sizeAppBar` tall at minimum and grows only when
-/// text scaling makes the title taller (ruling R1).
+/// Placed in-flow by MxAppShell, which paints its ground (`surface`, or
+/// `surfaceContainer` once content scrolls under it) full-bleed behind it. It
+/// is `sizeAppBar` tall at minimum and grows only when text scaling makes the
+/// title taller (ruling R1).
+///
+/// The icon glyphs sit on the screen margin, in line with the body: the
+/// control's touch area reaches out past the margin by its inset. The leading
+/// control is `onSurface`, the trailing icons `onSurfaceVariant`.
 class MxAppBar extends StatelessWidget {
   const MxAppBar({
     super.key,
@@ -46,50 +54,73 @@ class MxAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isContent = density == MxAppBarDensity.content;
+    final dimens = context.dimens;
     final margin = context.screenMargin;
-    final side = isContent ? context.dimens.space8 : margin;
-    final endsOnText = actions.lastOrNull is MxButton;
+    // A control's touch area reaches past its glyph by this much, so the
+    // glyph, not the touch area, lands on the margin.
+    final glyphInset = (dimens.sizeControl - dimens.sizeIcon) / 2;
+    final endsOnIcon = actions.isNotEmpty && actions.last is! MxButton;
     final holdsField = titleWidget is MxSearchField;
-    return ColoredBox(
-      color: context.colors.surface,
-      child: SafeArea(
-        bottom: false,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: context.dimens.sizeAppBar),
-          child: Padding(
-            padding: EdgeInsetsDirectional.only(
-              // A bar without a leading control starts its title on the
-              // screen margin, in line with the body (critique 2026-09-30 part
-              // 3c-1).
-              start: leading == null ? margin : side,
-              top: holdsField ? context.dimens.space8 : 0,
-              end: endsOnText || holdsField ? margin : side,
-              bottom: holdsField ? context.dimens.space8 : 0,
-            ),
-            child: Row(
-              spacing: context.dimens.space4,
-              children: [
-                ?leading,
-                Expanded(
-                  child:
-                      titleWidget ??
-                      Semantics(
-                        header: true,
-                        child: Text(
-                          title!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: context.texts.titleLarge,
-                        ),
+    return SafeArea(
+      bottom: false,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: dimens.sizeAppBar),
+        child: Padding(
+          padding: EdgeInsetsDirectional.only(
+            // A bar without a leading control starts its title on the screen
+            // margin, in line with the body (critique 2026-09-30 part 3c-1).
+            start: leading == null ? margin : margin - glyphInset,
+            top: holdsField ? dimens.space8 : 0,
+            end: endsOnIcon && !holdsField ? margin - glyphInset : margin,
+            bottom: holdsField ? dimens.space8 : 0,
+          ),
+          child: Row(
+            spacing: dimens.space4,
+            children: [
+              ?leading,
+              Expanded(
+                child:
+                    titleWidget ??
+                    Semantics(
+                      header: true,
+                      child: Text(
+                        title!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.texts.titleLarge,
                       ),
+                    ),
+              ),
+              if (actions.isNotEmpty)
+                IconButtonTheme(
+                  data: _actionsTheme(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: dimens.space4,
+                    children: actions,
+                  ),
                 ),
-                ...actions,
-              ],
-            ),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  /// The ambient icon button, with the trailing icons in `onSurfaceVariant`.
+  IconButtonThemeData _actionsTheme(BuildContext context) {
+    final colors = context.colors;
+    final disabled = colors.onSurfaceVariant.withValues(
+      alpha: context.dimens.opacityDisabledContent,
+    );
+    final foreground = WidgetStateProperty.resolveWith(
+      (states) => states.contains(WidgetState.disabled)
+          ? disabled
+          : colors.onSurfaceVariant,
+    );
+    final ambient = IconButtonTheme.of(context).style ?? const ButtonStyle();
+    return IconButtonThemeData(
+      style: ambient.copyWith(foregroundColor: foreground),
     );
   }
 }

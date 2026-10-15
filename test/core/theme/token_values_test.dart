@@ -130,6 +130,7 @@ final _appOnly = <String, double Function(AppDimens)>{
   'sizeListRow': (d) => d.sizeListRow,
   'sizeListRowTwoLine': (d) => d.sizeListRowTwoLine,
   'sizeFab': (d) => d.sizeFab,
+  'breakpointCompactHeight': (d) => d.breakpointCompactHeight,
   'sizeAppBar': (d) => d.sizeAppBar,
   'sizeIconInline': (d) => d.sizeIconInline,
   'sizeIconCompact': (d) => d.sizeIconCompact,

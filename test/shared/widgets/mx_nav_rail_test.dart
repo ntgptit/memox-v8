@@ -50,7 +50,10 @@ Widget _rail({
 );
 
 Finder _item(String label) =>
-    find.ancestor(of: find.text(label), matching: find.byType(InkWell));
+    find.ancestor(of: find.text(label), matching: find.bySubtype<InkWell>());
+
+Finder _pill(String label) =>
+    find.descendant(of: _item(label), matching: find.byType(Ink));
 
 void main() {
   final scheme = lightColorScheme;
@@ -101,27 +104,12 @@ void main() {
       tester.widget<Icon>(find.byIcon(AppIcons.library)).color,
       scheme.onSurfaceVariant,
     );
-    final pill = tester.widget<DecoratedBox>(
-      find
-          .ancestor(
-            of: find.byIcon(AppIcons.studySelected),
-            matching: find.byType(DecoratedBox),
-          )
-          .first,
-    );
     expect(
-      (pill.decoration as ShapeDecoration).color,
+      (tester.widget<Ink>(_pill('Study')).decoration! as ShapeDecoration).color,
       scheme.secondaryContainer,
     );
     expect(
-      tester.getSize(
-        find
-            .ancestor(
-              of: find.byIcon(AppIcons.studySelected),
-              matching: find.byType(DecoratedBox),
-            )
-            .first,
-      ),
+      tester.getSize(_pill('Study')),
       Size(
         const AppDimens().sizeNavIndicatorWidth,
         const AppDimens().sizeNavIndicatorHeight,

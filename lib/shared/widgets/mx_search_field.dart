@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
+import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
 /// The library search input: a leading glyph, a single-line query, and a
@@ -102,9 +103,10 @@ class _MxSearchFieldState extends State<MxSearchField> {
     // decorator paints the full box and scaled text still grows it.
     final valueStyle = context.texts.labelMedium!;
     final lineHeight = valueStyle.fontSize! * valueStyle.height!;
+    final stadium = BorderRadius.circular(context.dimens.sizeSearch / 2);
     final edge = OutlineInputBorder(
       gapPadding: 0,
-      borderRadius: BorderRadius.circular(context.dimens.sizeSearch / 2),
+      borderRadius: stadium,
       borderSide: BorderSide.none,
     );
     final field = TextField(
@@ -166,10 +168,22 @@ class _MxSearchFieldState extends State<MxSearchField> {
       label: widget.hintText,
       excludeSemantics: true,
       onTap: onTap,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: IgnorePointer(child: field),
+      child: Stack(
+        children: [
+          IgnorePointer(child: field),
+          // Its own Material, above the filled field, so the ripple and the
+          // hover and pressed layers show over the search surface.
+          Positioned.fill(
+            child: Material(
+              type: MaterialType.transparency,
+              child: MxRowInk(
+                onTap: onTap,
+                borderRadius: stadium,
+                child: const SizedBox.expand(),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

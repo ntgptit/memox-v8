@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
@@ -12,9 +13,7 @@ import 'package:memox/shared/widgets/mx_search_field.dart';
 import '../../support/widget_harness.dart';
 
 void main() {
-  testWidgets('sizeAppBar tall on the page ground, below the status inset', (
-    tester,
-  ) async {
+  testWidgets('sizeAppBar tall, below the status inset', (tester) async {
     await pumpMx(
       tester,
       const MxAppBar(title: 'Library'),
@@ -216,24 +215,109 @@ void main() {
     );
   });
 
-  testWidgets('with a leading control the content bar keeps its 8 start', (
-    tester,
-  ) async {
-    await pumpMx(
-      tester,
-      MxAppBar(
-        title: 'Words',
-        density: MxAppBarDensity.content,
-        leading: MxIconButton(
-          icon: AppIcons.back,
-          semanticLabel: 'Back',
+  group('icon glyphs line up with the body margin', () {
+    Widget bar(MxAppBarDensity density) => MxAppBar(
+      title: 'Words',
+      density: density,
+      leading: MxIconButton(
+        icon: AppIcons.back,
+        semanticLabel: 'Back',
+        onPressed: () {},
+      ),
+      actions: [
+        MxIconButton(
+          icon: AppIcons.search,
+          semanticLabel: 'Search',
           onPressed: () {},
         ),
-      ),
+        MxIconButton(
+          icon: AppIcons.more,
+          semanticLabel: 'More',
+          onPressed: () {},
+        ),
+      ],
     );
+
+    for (final density in MxAppBarDensity.values) {
+      for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
+        testWidgets('${density.name} bar, ${width.toInt()} wide window: glyphs '
+            'sit on the $margin margin', (tester) async {
+          await pumpMx(
+            tester,
+            WindowWidthScope(width: width, child: bar(density)),
+          );
+          final barRect = tester.getRect(find.byType(MxAppBar));
+
+          expect(
+            tester.getTopLeft(find.byIcon(AppIcons.back)).dx - barRect.left,
+            margin,
+          );
+          expect(
+            barRect.right - tester.getTopRight(find.byIcon(AppIcons.more)).dx,
+            margin,
+          );
+        });
+      }
+    }
+
+    testWidgets('the leading icon is onSurface, the trailing ones '
+        'onSurfaceVariant', (tester) async {
+      await pumpMx(tester, bar(MxAppBarDensity.screen));
+      Color? glyph(IconData icon) =>
+          IconTheme.of(tester.element(find.byIcon(icon))).color;
+
+      expect(glyph(AppIcons.back), lightColorScheme.onSurface);
+      expect(glyph(AppIcons.search), lightColorScheme.onSurfaceVariant);
+      expect(glyph(AppIcons.more), lightColorScheme.onSurfaceVariant);
+    });
+
+    testWidgets('a disabled trailing icon dims onSurfaceVariant', (
+      tester,
+    ) async {
+      await pumpMx(
+        tester,
+        const MxAppBar(
+          title: 'Words',
+          actions: [
+            MxIconButton(
+              icon: AppIcons.search,
+              semanticLabel: 'Search',
+              onPressed: null,
+            ),
+          ],
+        ),
+      );
+
+      expect(
+        IconTheme.of(tester.element(find.byIcon(AppIcons.search))).color,
+        lightColorScheme.onSurfaceVariant.withValues(
+          alpha: const AppDimens().opacityDisabledContent,
+        ),
+      );
+    });
+
+    testWidgets('a bar without a leading control still starts its title on '
+        'the margin', (tester) async {
+      await pumpMx(tester, const MxAppBar(title: 'Library'));
+
+      expect(
+        tester.getTopLeft(find.text('Library')).dx,
+        tester.element(find.byType(MxAppBar)).screenMargin,
+      );
+    });
+  });
+
+  testWidgets('the bar paints no ground of its own; the shell does', (
+    tester,
+  ) async {
+    await pumpMx(tester, const MxAppBar(title: 'Library'));
+
     expect(
-      tester.getTopLeft(find.byType(MxIconButton)).dx,
-      const AppDimens().space8,
+      find.descendant(
+        of: find.byType(MxAppBar),
+        matching: find.byType(ColoredBox),
+      ),
+      findsNothing,
     );
   });
 }

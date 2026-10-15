@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -33,6 +34,25 @@ void main() {
     expect(bar.right - button.right, 16);
     expect(button.top - bar.top, 8);
     expect(bar.bottom - button.bottom, 16 + 20);
+  });
+
+  testWidgets('the sides follow the screen margin of the window: 24 from 600', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      WindowWidthScope(
+        width: 700,
+        child: MxFooterBar(
+          child: MxButton(label: 'Save', isBlock: true, onPressed: () {}),
+        ),
+      ),
+    );
+    final bar = tester.getRect(find.byType(MxFooterBar));
+    final button = tester.getRect(find.byType(MxButton));
+
+    expect(button.left - bar.left, 24);
+    expect(bar.right - button.right, 24);
   });
 
   testWidgets('surface fill with a 1px divider top border', (tester) async {
