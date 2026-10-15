@@ -13,7 +13,8 @@ final _probeKey = GlobalKey();
 const _glyphKey = Key('suffix-glyph');
 
 /// The painted left edge of the field at its vertical centre: the colour of
-/// the first pixel and how many pixels share it, blended over [ground].
+/// the first pixel and how many pixels share it, over the surface the
+/// probe's boundary paints behind the field.
 Future<({Color color, int width})> _paintedEdge(WidgetTester tester) async {
   final boundary = tester.renderObject<RenderRepaintBoundary>(
     find.byKey(_probeKey),
@@ -48,6 +49,27 @@ bool _sameColor(Color a, Color b) =>
     (a.g * 255 - b.g * 255).abs() <= 1 &&
     (a.b * 255 - b.b * 255).abs() <= 1;
 
+/// Every semantics node as label, hint, value, flags, actions and rect, in
+/// traversal order.
+List<String> _semanticsNodes(WidgetTester tester) {
+  final nodes = <String>[];
+  void visit(SemanticsNode node) {
+    final data = node.getSemanticsData();
+    nodes.add(
+      '${data.label}|${data.hint}|${data.value}|'
+      '${data.flagsCollection.toStrings().join(',')}|${data.actions}|'
+      '${data.rect}',
+    );
+    node.visitChildren((child) {
+      visit(child);
+      return true;
+    });
+  }
+
+  visit(tester.getSemantics(find.byType(Scaffold)));
+  return nodes;
+}
+
 typedef _Probe = ({
   String name,
   bool hasError,
@@ -59,6 +81,9 @@ typedef _Probe = ({
   Color Function(ColorScheme) glyph,
 });
 
+// Rest, hover and focus stay `onSurface`, not the SDK's `onSurfaceVariant`
+// (ruling): the live `MxIconButton` suffix (the search field's clear) keeps its
+// colour, and a plain `Icon` suffix has no consumer.
 Color _onSurfaceGlyph(ColorScheme s) => s.onSurface;
 Color _disabledEdge(ColorScheme s) => s.onSurface.withValues(alpha: 0.12);
 
@@ -322,5 +347,50 @@ void main() {
     final clean = await colour(hasError: false, isHovered: false);
     expect(await colour(hasError: true, isHovered: false), clean);
     expect(await colour(hasError: true, isHovered: true), clean);
+  });
+
+  testWidgets('an error adds one node, the announced message, and changes no '
+      'other: the empty error widget leaves nothing for TalkBack (M3F-16)', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    Future<List<String>> nodes({String? errorText}) async {
+      await pumpMx(
+        tester,
+        Align(
+          alignment: Alignment.topCenter,
+          child: SizedBox(
+            width: 300,
+            child: MxTextField(
+              label: 'Name',
+              hintText: 'Deck',
+              errorText: errorText,
+              trailing: const Icon(Icons.star),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      return _semanticsNodes(tester);
+    }
+
+    final clean = await nodes();
+    final failing = await nodes(errorText: 'Required');
+    final extra = failing.where((node) => !clean.contains(node)).toList();
+
+    // The field node keeps its label, hint, flags and actions (the hint is
+    // read with the label); the one new node is the message, a live region.
+    const fieldNode = 'Name\nDeck|||isTextField,hasEnabledState,isEnabled,';
+    expect(clean.where((node) => node.startsWith(fieldNode)), hasLength(1));
+    expect(failing.where((node) => node.startsWith(fieldNode)), hasLength(1));
+    expect(extra, hasLength(1));
+    expect(extra.single, startsWith('Required|'));
+    expect(extra.single, contains('isLiveRegion'));
+    expect(failing.length, clean.length + 1);
+    expect(
+      failing.where((node) => node.contains('isLiveRegion')),
+      hasLength(1),
+    );
+    handle.dispose();
   });
 }

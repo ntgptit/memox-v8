@@ -6,6 +6,7 @@ import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 
 import '../../support/focus_ring_expect.dart';
+import '../../support/theme_expect.dart';
 import '../../support/widget_harness.dart';
 
 const _valueKey = ValueKey('mx-stepper-value');
@@ -121,6 +122,12 @@ void main() {
     final decoration = tester
         .widget<InputDecorator>(find.byType(InputDecorator))
         .decoration;
+    // The box's own accent hairline is the typing indicator, and the only
+    // edge while typing.
+    final box = tester.widget<DecoratedBox>(find.byKey(_valueKey));
+    final edge = (box.decoration as BoxDecoration).border! as Border;
+    expect(edge.top.color, accentOf(lightColorScheme));
+    expect(edge.top.width, 1);
     expect(decoration.border, InputBorder.none);
     for (final border in [
       decoration.enabledBorder,
