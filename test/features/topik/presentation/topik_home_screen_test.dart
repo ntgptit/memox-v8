@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import 'dart:async';
 
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
@@ -11,6 +12,7 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/route_naming.dart';
 import '../../../support/topik_content_fixtures.dart';
 import '../../../support/topik_screen_fixtures.dart';
 
@@ -117,5 +119,25 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(findPlainText('Cấp 1–2 · Đọc, Nghe · 3 đề'), findsOneWidget);
+  });
+
+  libraryTest('the title names the route once, as a heading', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      TopikHomeScreen(onOpenLevel: (_) {}),
+      overrides: topikContentOverrides(topikScreenTests()),
+    );
+    await tester.pumpAndSettle();
+
+    final node = tester.getSemantics(find.text('TOPIK'));
+    expect(node.hasFlag(SemanticsFlag.namesRoute), isTrue);
+    expect(node.hasFlag(SemanticsFlag.isHeader), isTrue);
+    expect(routeNamingNodes(tester), 1);
+    handle.dispose();
   });
 }

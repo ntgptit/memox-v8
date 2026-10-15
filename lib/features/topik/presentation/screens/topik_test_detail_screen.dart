@@ -83,7 +83,9 @@ class _TopikTestDetailScreenState extends ConsumerState<TopikTestDetailScreen> {
       ],
       AsyncValue(:final value?) when value.test == null => [
         MxEmptyState(
-          icon: AppIcons.alert,
+          // Not an error: the test is not there, as a route that leads
+          // nowhere (RouteNotFoundScreen).
+          icon: AppIcons.searchOff,
           title: l10n.topikTestMissingTitle,
           tone: MxEmptyStateTone.neutral,
           actionLabel: l10n.topikBackToTests,

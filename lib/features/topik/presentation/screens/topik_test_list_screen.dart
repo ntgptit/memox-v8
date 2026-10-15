@@ -13,6 +13,7 @@ import 'package:memox/features/topik/presentation/providers/topik_test_list_choi
 import 'package:memox/features/topik/presentation/widgets/items/topik_test_row_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/overlays/topik_sort_sheet_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_test_list_header_widget.dart';
+import 'package:memox/features/topik/presentation/widgets/sections/topik_test_list_skeleton_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
 import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -25,7 +26,6 @@ import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_screen_scroll.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
-import 'package:memox/shared/widgets/mx_skeleton.dart';
 
 /// Screen 35 (UC-TOPIK-001): one level's tests of the chosen section, in
 /// the chosen order, each with its status, updated in place as attempts
@@ -66,12 +66,7 @@ class TopikTestListScreen extends ConsumerWidget {
         choice,
         onSort: () => unawaited(_sort(context, ref, choice.order)),
       ),
-      _ => [
-        MxCard(
-          isFullBleed: true,
-          child: MxSkeletonList(semanticLabel: l10n.topikLoadingTests),
-        ),
-      ],
+      _ => [TopikTestListSkeletonWidget(semanticLabel: l10n.topikLoadingTests)],
     };
     return MxAppShell(
       appBar: MxAppBar(
