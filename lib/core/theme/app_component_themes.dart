@@ -299,7 +299,9 @@ SwitchThemeData switchTheme(ThemeTokens t) {
 /// edge round and between the segments, the `labelLarge` label and an 18 check
 /// before the chosen one. The chosen label takes the accent colour and the
 /// others `onSurface`; tokens keep `secondaryContainer` off buttons, so no
-/// segment is filled. Disabled, the label is 38% and the edge 12%. State
+/// segment is filled: the background is set to transparent here, because a
+/// null slot falls back to the SDK default, which fills the chosen segment
+/// with `secondaryContainer`. Disabled, the label is 38% and the edge 12%. State
 /// layers are the label colour at the hover, pressed and focus opacities, and
 /// the focus ring rides on the shape, offset like a button's.
 SegmentedButtonThemeData segmentedButtonTheme(ThemeTokens t) {
@@ -323,6 +325,7 @@ SegmentedButtonThemeData segmentedButtonTheme(ThemeTokens t) {
       tapTargetSize: MaterialTapTargetSize.padded,
       elevation: const WidgetStatePropertyAll(0),
       textStyle: WidgetStatePropertyAll(t.texts.labelLarge),
+      backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
       foregroundColor: WidgetStateProperty.resolveWith(labelColor),
       iconColor: WidgetStateProperty.resolveWith(labelColor),
       overlayColor: WidgetStateProperty.resolveWith((states) {

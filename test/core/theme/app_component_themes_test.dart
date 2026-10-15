@@ -284,7 +284,16 @@ void main() {
           style.foregroundColor!.resolve({WidgetState.disabled}),
           scheme.onSurface.withValues(alpha: dimens.opacityDisabledContent),
         );
-        expect(style.backgroundColor, isNull);
+        // A null slot falls back to the SDK default, which fills the chosen
+        // segment with secondaryContainer: the slot must say transparent.
+        for (final states in [
+          <WidgetState>{},
+          chosen,
+          {WidgetState.disabled},
+          {WidgetState.disabled, WidgetState.selected},
+        ]) {
+          expect(style.backgroundColor!.resolve(states), Colors.transparent);
+        }
         expect(style.side!.resolve({})?.color, scheme.outline);
         expect(style.side!.resolve({})?.width, dimens.strokeHairline);
         expect(

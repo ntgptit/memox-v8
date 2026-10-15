@@ -51,22 +51,65 @@ void main() {
     expect(_check('30d'), findsNothing);
     expect(_labelColor(tester, '7d'), scheme.primary);
     expect(_labelColor(tester, '30d'), scheme.onSurface);
-    // Tokens keep secondaryContainer off buttons: a fill-less selected segment.
-    final style = _button(tester).style;
-    final theme = SegmentedButtonTheme.of(tester.element(_segment('7d')));
-    for (final states in [
-      <WidgetState>{},
-      {WidgetState.selected},
-    ]) {
-      expect(
-        (style?.backgroundColor ?? theme.style?.backgroundColor)?.resolve(
-          states,
-        ),
-        isNull,
-      );
-    }
     expect(tester.getSize(_check('7d')).width, _dimens.sizeIconButton);
   });
+
+  // What the segment paints, not what the theme declares: a slot left null
+  // falls back to the SDK default, which fills the chosen segment with
+  // secondaryContainer (tokens: never a button background).
+  Color? paintedFill(WidgetTester tester, String label) => tester
+      .widget<Material>(
+        find
+            .descendant(of: _segment(label), matching: find.byType(Material))
+            .first,
+      )
+      .color;
+
+  bool isUnfilled(Color? color) => color == null || color.a == 0;
+
+  for (final brightness in Brightness.values) {
+    testWidgets(
+      'no segment paints a fill, chosen or not (${brightness.name})',
+      (tester) async {
+        await pumpMx(tester, _tray(onSelected: (_) {}), brightness: brightness);
+
+        final scheme = brightness == Brightness.light
+            ? lightColorScheme
+            : darkColorScheme;
+        expect(paintedFill(tester, '7d'), isNot(scheme.secondaryContainer));
+        expect(isUnfilled(paintedFill(tester, '7d')), isTrue);
+        expect(isUnfilled(paintedFill(tester, '30d')), isTrue);
+      },
+    );
+
+    testWidgets('a disabled tray paints no fill either (${brightness.name})', (
+      tester,
+    ) async {
+      await pumpMx(tester, _tray(), brightness: brightness);
+
+      expect(isUnfilled(paintedFill(tester, '7d')), isTrue);
+      expect(isUnfilled(paintedFill(tester, '30d')), isTrue);
+    });
+
+    testWidgets('the stacked tray paints no fill (${brightness.name})', (
+      tester,
+    ) async {
+      await pumpMx(
+        tester,
+        _tray(
+          onSelected: (_) {},
+          segments: const [
+            MxSegment(value: _Range.week, label: 'Every day of the week'),
+            MxSegment(value: _Range.month, label: 'Every day of the month'),
+          ],
+        ),
+        brightness: brightness,
+      );
+
+      expect(isUnfilled(paintedFill(tester, 'Every day of the week')), isTrue);
+      expect(isUnfilled(paintedFill(tester, 'Every day of the month')), isTrue);
+    });
+  }
 
   testWidgets('a null selection draws no check: a choice still to make', (
     tester,
