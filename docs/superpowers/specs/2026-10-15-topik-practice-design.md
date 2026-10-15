@@ -175,7 +175,7 @@ code.
   to the UI for content.
 - **Gate:** a test in the suite validates every pack under `assets/topik/`, so an
   invalid pack cannot merge. `dart run tools/topik/topik_lint.dart [contentRoot] [bundleRoot]` runs the same
-  validator for the content repository and prints every broken rule.
+  validator for the content repository and prints every broken rule. The gate test also requires every folder holding a pack or a referenced asset to be declared in `pubspec.yaml`, because Flutter does not read asset subfolders.
 
 Rejected: a separate Python lint, which would be a second validator that drifts.
 
@@ -530,12 +530,13 @@ Tables are singular, like `card`, `deck` and `review_log`, and like the sync ent
 
 - `data/datasources/topik_content_asset_data_source.dart` reads `assets/topik/manifest.json`
   and each pack through `AssetBundle`, then runs `topikTestOf(json, origin: path)`,
-  `checkTopikTest` (asset existence from the `AssetManifest`) and `checkTopikCatalog`. Among
-  duplicate ids the first valid one wins. A rejected test is logged `topik.content_rejected`
+  `checkTopikTest` through the shared pipeline `topikContentOf`
+  (`data/mappers/topik_content_pack_mapper.dart`, asset existence from the `AssetManifest`).
+  Among duplicate ids the first valid one wins; the lint runs the same pipeline. A rejected test is logged `topik.content_rejected`
   with its id and first error rule, and left out.
 - `pubspec.yaml` lists every pack folder (asset folders are not recursive); a gate test checks
   that each folder holding a manifest entry or a referenced asset is declared.
-- `topikCatalogProvider` is `keepAlive` (owner approval 2026-10-15): the content never changes
+- `topikContentRepositoryProvider` is `keepAlive` and its implementation reads the packs once (a failed read is retried on the next call) (owner approval 2026-10-15): the content never changes
   while the app runs, and Phase B's packs would be re-parsed on every screen otherwise.
 
 ### 13.5 Domain, use cases, repositories
