@@ -8,12 +8,14 @@ import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/di/topik_audio_repository_provider.dart';
 import 'package:memox/features/topik/presentation/screens/topik_home_screen.dart';
+import 'package:memox/features/topik/presentation/screens/topik_summary_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_detail_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_list_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 import '../support/library_harness.dart';
+import '../support/topik_attempt_screen_fixtures.dart';
 import '../support/topik_fakes.dart';
 import '../support/topik_screen_fixtures.dart';
 
@@ -146,5 +148,31 @@ void main() {
     expect(find.byType(TopikAttemptScreen), findsOneWidget);
     await _tap(tester, find.byTooltip(_en.topikClose));
     expect(find.byType(TopikHomeScreen), findsOneWidget);
+  });
+
+  libraryTest('Submit on 37 replaces it with the summary; Done lands on the '
+      'test (UC-TOPIK-003 step 6)', (tester, env) async {
+    final tests = topikScreenTests();
+    final test96 = tests.firstWhere(
+      (t) =>
+          t.level == TopikLevel.topik2 &&
+          t.round == 96 &&
+          t.section == TopikSection.reading,
+    );
+    await topikSeedAttempt(
+      env,
+      test96,
+      answers: {for (final q in test96.questions) q.no: 1},
+    );
+    await pumpMemoxApp(tester, env, overrides: topikContentOverrides(tests));
+    await _go(tester, AppRoutes.topikTest(test96.testId));
+    await _tap(tester, find.text('#1'));
+    expect(find.byType(TopikAttemptScreen), findsOneWidget);
+
+    await _tap(tester, find.text(_en.topikSubmit));
+    expect(find.byType(TopikSummaryScreen), findsOneWidget);
+    expect(find.byType(TopikAttemptScreen), findsNothing);
+    await _tap(tester, find.text(_en.topikDone));
+    expect(find.byType(TopikTestDetailScreen), findsOneWidget);
   });
 }
