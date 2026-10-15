@@ -36,8 +36,9 @@ $$;
 -- line and the four functions together.
 select is(
   pg_temp.types_in(pg_temp.def('private.push_one'), $q$v_type not in \(([^)]*)\)$q$),
-  array['account_settings', 'card', 'card_schedule', 'deck', 'delete_batch', 'review_log', 'tag'],
-  'push_one accepts the seven synced entity types');
+  array['account_settings', 'card', 'card_schedule', 'deck', 'delete_batch', 'review_log', 'tag',
+    'topik_attempt'],
+  'push_one accepts the eight synced entity types');
 
 select is(
   pg_temp.types_in(pg_temp.def('private.current_change'), $q$p_type = '([a-z_]+)'$q$),
