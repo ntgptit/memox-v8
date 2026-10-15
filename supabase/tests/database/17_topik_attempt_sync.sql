@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(14);
+select plan(21);
 -- TOPIK spec 2026-10-15 §7.2, §13.3, BR-TOPIK-026, BR-TOPIK-028: submitted
 -- attempts sync insert-only with a final tombstone; the server checks
 -- integrity only.
@@ -36,6 +36,10 @@ create function public.t_change(p_id uuid) returns jsonb language sql as $$
   select c from jsonb_array_elements(public.sync_changes(0, 500)->'changes') c
   where c->>'entityType' = 'topik_attempt' and c->>'entityId' = p_id::text $$;
 
+-- The user's version counter; a refused push or an unseen delete leaves it as it was.
+create function public.t_version(p_user uuid) returns bigint language sql security definer as $$
+  select coalesce((select version from public.user_sync_version where user_id = p_user), 0) $$;
+
 set local role authenticated;
 select set_config('request.jwt.claims',
   '{"sub":"aaaaaaaa-0000-0000-0000-000000000001","role":"authenticated"}', true);
@@ -44,10 +48,12 @@ select is(public.t_push1(public.t_op(1, 'topik_attempt', public.t_uuid(1), 'upse
     public.t_attempt(public.t_uuid(1))))->>'status', 'applied', 'a submitted attempt is applied');
 select is(public.t_change(public.t_uuid(1))->'row'->'answers'->0->>'pointsEarned', '2',
   'it reads back with its answers');
+select set_config('t.v1', public.t_change(public.t_uuid(1))->>'serverVersion', true);
 select is(public.t_push1(public.t_op(2, 'topik_attempt', public.t_uuid(1), 'upsert',
-    public.t_attempt(public.t_uuid(1))))->>'serverVersion',
-  public.t_change(public.t_uuid(1))->>'serverVersion',
-  'sent again under a new op id it keeps its version');
+    public.t_attempt(public.t_uuid(1))))->>'serverVersion', current_setting('t.v1'),
+  'sent again under a new op id it keeps its first version');
+select set_config('t.top',
+  public.t_version('aaaaaaaa-0000-0000-0000-000000000001')::text, true);
 
 select is(public.t_push1(public.t_op(3, 'topik_attempt', public.t_uuid(2), 'upsert',
     public.t_attempt(public.t_uuid(2)) || '{"score": 3}'))->>'code', 'VALIDATION_FAILED',
@@ -61,11 +67,31 @@ select is(public.t_push1(public.t_op(5, 'topik_attempt', public.t_uuid(2), 'upse
 select is(public.t_push1(public.t_op(6, 'topik_attempt', public.t_uuid(2), 'upsert',
     public.t_attempt(public.t_uuid(2)) || '{"totalTimeMs": 1}'))->>'code',
   'VALIDATION_FAILED', 'a total time that is not the sum of the answers is refused');
+-- BR-TOPIK-028: each count and sum of the snapshot is checked against the answers.
+select is(public.t_push1(public.t_op(12, 'topik_attempt', public.t_uuid(2), 'upsert',
+    public.t_attempt(public.t_uuid(2)) || '{"questionCount": 3}'))->>'code',
+  'VALIDATION_FAILED', 'a question count that is not the number of answers is refused');
+select is(public.t_push1(public.t_op(13, 'topik_attempt', public.t_uuid(2), 'upsert',
+    public.t_attempt(public.t_uuid(2)) || '{"maxScore": 6}'))->>'code',
+  'VALIDATION_FAILED', 'a maximum that is not the sum of the points is refused');
+select is(public.t_push1(public.t_op(14, 'topik_attempt', public.t_uuid(2), 'upsert',
+    public.t_attempt(public.t_uuid(2)) || '{"correctCount": 0}'))->>'code',
+  'VALIDATION_FAILED', 'a correct count that does not match the answers is refused');
+select is(public.t_push1(public.t_op(15, 'topik_attempt', public.t_uuid(2), 'upsert',
+    public.t_attempt(public.t_uuid(2)) || '{"answeredCount": 2}'))->>'code',
+  'VALIDATION_FAILED', 'an answered count that does not match the answers is refused');
+select is(public.t_push1(public.t_op(16, 'topik_attempt', public.t_uuid(2), 'upsert',
+    jsonb_set(public.t_attempt(public.t_uuid(2)), '{answers,0,selectedIdx}', '5')))->>'code',
+  'VALIDATION_FAILED', 'an option outside 1-4 is refused');
 select ok(public.t_change(public.t_uuid(2)) is null, 'nothing of the refused attempt is stored');
+select is(public.t_version('aaaaaaaa-0000-0000-0000-000000000001')::text, current_setting('t.top'),
+  'the refused pushes take no version');
 
 select is(public.t_push1(public.t_op(7, 'topik_attempt', public.t_uuid(3), 'delete', null))->>'status',
   'applied', 'a delete of an attempt the server never saw is acknowledged');
 select ok(public.t_change(public.t_uuid(3)) is null, 'and leaves no tombstone');
+select is(public.t_version('aaaaaaaa-0000-0000-0000-000000000001')::text, current_setting('t.top'),
+  'nor takes a version');
 
 select is(public.t_push1(public.t_op(8, 'topik_attempt', public.t_uuid(1), 'delete', null))->>'status',
   'applied', 'a delete tombstones the attempt');
