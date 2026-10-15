@@ -210,6 +210,7 @@ every build and never dropped; an adapter reads them `as T`:
 | `card_schedule` | `cardId`, `schedulerType`, `schedulerVersion`, `generation` |
 | `review_log` | `id`, `cardId`, `sessionId`, `schedulerType`, `generation`, `kind`, `mode`, `action`, `answeredAt` |
 | `account_settings` | `updatedAt` |
+| `topik_attempt` | `id`, `testId`, `level`, `section`, `round`, `mode`, `status`, `startedAt`, `completedAt`, `updatedAt`, `totalTimeMs`, `currentQuestionNo`, `questionCount`, `maxScore`, `score`, `correctCount`, `answeredCount`, `contentVersion`, `answers` (each: `questionNo`, `timeSpentMs`, `correctIdx`, `points`, `pointsEarned`, `questionType`) |
 
 Every other key is optional: nullable columns read `as T?`, defaulted ones
 read `as T?` with the default (`deck.contentType`, `card.isFlagged`,
@@ -224,6 +225,7 @@ read `as T?` with the default (`deck.contentType`, `card.isFlagged`,
 | deck tree | `root_id` and `depth` are **server-derived**: the server ignores the client's values, computes them from `parent_id`, and on a move rewrites the whole live subtree in the same transaction, so a client's per-row operations may arrive in any order. It rejects a cycle (`DECK_TREE_CYCLE`), a subtree that would pass 10 levels (`DECK_TREE_TOO_DEEP`), and a missing, deleted or foreign parent (`DECK_PARENT_MISSING`). The root shape (a root holds decks and owns the scheduler) is validated as `VALIDATION_FAILED` |
 | `review_log` | Append-only. Insert-if-absent by `id`; an existing id is `applied` without change |
 | `card_schedule` | Derived (section 6) |
+| `topik_attempt` (with its answers) | Append-only with a final tombstone. Insert-if-absent by `id`; an existing id is `applied` without change; a delete tombstones it and an upsert onto the tombstone is refused (`ENTITY_TOMBSTONED`). Integrity only (BR-TOPIK-028): counts, sums and unique question numbers, else `VALIDATION_FAILED`. An attempt in progress never syncs (TOPIK spec 2026-10-15 §7.2) |
 | deletes and trash purge | `op: delete` sets `deleted_at` (a tombstone) and bumps `server_version`; children follow their foreign-key semantics on the server. Devices delete the row on pull. Trash `delete_batch_id` states sync as ordinary deck/card upserts. A purge tombstones only a row still at the version the device last acknowledged (4.1); a row changed since is refused with its live copy. A tombstone is final: a later upsert is refused with the tombstone (DEV-181, DEV-184) |
 | `study_session`, `study_queue_items`, `study_guess_options`, device settings (reminders, notifications) | Not synced |
 

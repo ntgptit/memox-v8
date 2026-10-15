@@ -83,6 +83,7 @@
     "sync_outbox_queries": [],
     "sync_review_log_queries": [],
     "sync_tag_queries": [],
+    "sync_topik_attempt_queries": ["topik"],
     "tag_queries": ["tags", "search", "transfer"],
     "topik_queries": ["topik"],
     "trash_queries": ["trash"]

@@ -510,7 +510,7 @@ Tables are singular, like `card`, `deck` and `review_log`, and like the sync ent
 
 ### 13.3 Sync, server
 
-- Migration `supabase/migrations/2026101X000000_topik_attempt_sync.sql`: `public.topik_attempt`
+- Migration `supabase/migrations/20261016000000_topik_attempt_sync.sql`: `public.topik_attempt`
   (`user_id` → `auth.users` `ON DELETE CASCADE`, `server_version` unique per user, `deleted_at`,
   `last_device_id`, checks mirroring Drift) and `public.topik_attempt_answer` (child, no
   version, `ON DELETE CASCADE`, as `card_tags`); RLS on, no policy, no client privilege.
