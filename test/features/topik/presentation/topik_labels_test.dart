@@ -22,32 +22,39 @@ TopikTestStatus _status({
 void main() {
   final en = lookupAppLocalizations(const Locale('en'));
   final vi = lookupAppLocalizations(const Locale('vi'));
+  String plain(String text) =>
+      text.replaceAll('\u00A0', ' ').replaceAll('\u2060', '');
 
   test('a status line for every case, in-progress first', () {
     expect(en.topikTestStatusLine(null), 'Not started');
-    expect(en.topikTestStatusLine(_status(hasInProgress: true)), 'In progress');
     expect(
-      en.topikTestStatusLine(_status(completedCount: 1, bestScore: 82)),
+      plain(en.topikTestStatusLine(_status(hasInProgress: true))),
+      'In progress',
+    );
+    expect(
+      plain(en.topikTestStatusLine(_status(completedCount: 1, bestScore: 82))),
       'Best 82 · 1 attempt',
     );
     expect(
-      en.topikTestStatusLine(
-        _status(hasInProgress: true, completedCount: 3, bestScore: 82),
+      plain(
+        en.topikTestStatusLine(
+          _status(hasInProgress: true, completedCount: 3, bestScore: 82),
+        ),
       ),
       'In progress · Best 82 · 3 attempts',
     );
     expect(
-      vi.topikTestStatusLine(_status(completedCount: 3, bestScore: 82)),
+      plain(vi.topikTestStatusLine(_status(completedCount: 3, bestScore: 82))),
       'Cao nhất 82 · 3 lượt',
     );
   });
 
   test('level names and scopes', () {
     expect(en.topikLevelName(TopikLevel.topik1), 'TOPIK I');
-    expect(
-      en.topikLevelScope(TopikLevel.topik2),
-      'Levels 3–6 · Reading, Listening',
-    );
+    // Grades and sections are separate terms, so the line can break
+    // between them (The Wrap Rule).
+    expect(en.topikLevelGrades(TopikLevel.topik2), 'Levels 3–6');
+    expect(en.topikBothSections, 'Reading, Listening');
   });
 
   test('every rejection reads in the local-first voice', () {
@@ -57,6 +64,13 @@ void main() {
     expect(
       en.topikRejectionMessage(TopikRejection.testUnavailable),
       "This test isn't available",
+    );
+  });
+
+  test('a meta line breaks only between whole terms (The Wrap Rule)', () {
+    expect(
+      en.topikTerms(['Levels 1–2', 'No tests yet']),
+      'Levels\u00A01\u2060–\u20602\u00A0· No\u00A0tests\u00A0yet',
     );
   });
 }

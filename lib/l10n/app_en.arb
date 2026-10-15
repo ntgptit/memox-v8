@@ -56,13 +56,17 @@
   "@topikLevel2": {
     "description": "TOPIK level name."
   },
-  "topikLevel1Scope": "Levels 1–2 · Reading, Listening",
-  "@topikLevel1Scope": {
-    "description": "Screen 34: what TOPIK I covers."
+  "topikLevel1Grades": "Levels 1–2",
+  "@topikLevel1Grades": {
+    "description": "Screen 34: the grades TOPIK I covers."
   },
-  "topikLevel2Scope": "Levels 3–6 · Reading, Listening",
-  "@topikLevel2Scope": {
-    "description": "Screen 34: what TOPIK II covers."
+  "topikLevel2Grades": "Levels 3–6",
+  "@topikLevel2Grades": {
+    "description": "Screen 34: the grades TOPIK II covers."
+  },
+  "topikBothSections": "Reading, Listening",
+  "@topikBothSections": {
+    "description": "Screen 34: the sections both levels have."
   },
   "topikTestCount": "{count, plural, =1{1 test} other{{count} tests}}",
   "@topikTestCount": {
