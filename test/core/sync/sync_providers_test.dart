@@ -70,7 +70,7 @@ void main() {
     );
   });
 
-  test('with the app overrides sync covers the seven tables, parent before '
+  test('with the app overrides sync covers the eight tables, parent before '
       'child (DEV-173)', () {
     final db = openTestDatabase();
     final container = ProviderContainer(
@@ -92,6 +92,7 @@ void main() {
       'card_schedule',
       'review_log',
       'account_settings',
+      'topik_attempt',
     ]);
     expect(container.read(syncCoordinatorProvider), isNotNull);
   });
