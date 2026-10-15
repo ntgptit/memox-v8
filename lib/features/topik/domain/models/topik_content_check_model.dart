@@ -39,20 +39,6 @@ List<TopikContentIssue> checkTopikTest(
   return issues;
 }
 
-/// A duplicate error for each test whose id an earlier one already has.
-List<TopikContentIssue> checkTopikCatalog(Iterable<TopikTest> tests) {
-  final seen = <String>{};
-  return [
-    for (final test in tests)
-      if (!seen.add(test.testId))
-        TopikContentIssue.error(
-          TopikContentRule.duplicate,
-          test.testId,
-          'another pack already has this test id',
-        ),
-  ];
-}
-
 typedef _Report = void Function(TopikContentRule rule, String detail);
 
 void _checkIdentity(TopikTest test, _Report error) {

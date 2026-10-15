@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:memox/features/topik/data/mappers/topik_test_mapper.dart';
-import 'package:memox/features/topik/domain/models/topik_content_check_model.dart';
+import 'package:memox/features/topik/data/mappers/topik_content_pack_mapper.dart';
 import 'package:memox/features/topik/domain/models/topik_content_issue_model.dart';
-import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 
 /// Checks TOPIK content packs the way the app does (BR-TOPIK-008).
 ///
@@ -31,26 +29,19 @@ TopikLintReport lintTopikContent({
   required Directory contentRoot,
   required Directory bundleRoot,
 }) {
-  final issues = <TopikContentIssue>[];
-  final entries = _manifestEntries(contentRoot, issues);
-  final tests = <TopikTest>[];
-  for (final entry in entries) {
-    final json = _decode(File('${contentRoot.path}/$entry'), entry, issues);
+  final fileIssues = <TopikContentIssue>[];
+  final files = <TopikPackFile>[];
+  for (final entry in _manifestEntries(contentRoot, fileIssues)) {
+    final json = _decode(File('${contentRoot.path}/$entry'), entry, fileIssues);
     if (json == null) continue;
-    final read = topikTestOf(json, origin: entry);
-    issues.addAll(read.issues);
-    final test = read.test;
-    if (test == null) continue;
-    tests.add(test);
-    issues.addAll(
-      checkTopikTest(
-        test,
-        assetExists: (path) => File('${bundleRoot.path}/$path').existsSync(),
-      ),
-    );
+    files.add((origin: entry, json: json));
   }
-  issues.addAll(checkTopikCatalog(tests));
-  return TopikLintReport(issues: issues, testCount: tests.length);
+  final load = topikContentOf(
+    files,
+    assetExists: (path) => File('${bundleRoot.path}/$path').existsSync(),
+    fileIssues: fileIssues,
+  );
+  return TopikLintReport(issues: load.issues, testCount: load.readCount);
 }
 
 List<String> _manifestEntries(Directory root, List<TopikContentIssue> issues) {

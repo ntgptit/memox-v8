@@ -222,13 +222,4 @@ void main() {
       );
     });
   });
-
-  test('a second test with the same id is a duplicate', () {
-    final first = _read(topikTestJson());
-    final second = _read(topikTestJson());
-    final other = _read(topikTestJson(section: TopikSection.listening));
-    final issues = checkTopikCatalog([first, other, second]);
-    expect(issues.single.rule, TopikContentRule.duplicate);
-    expect(issues.single.testId, 'topik2-96-reading');
-  });
 }
