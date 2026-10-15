@@ -206,6 +206,30 @@ các bước gốc. Ý nghĩa mức sẵn sàng, hồ sơ thực thi, chuẩn b�
 | IT-PLAT-006 | `features/deck/it-scenarios.md` | READY | `DEVICE-E2E` | — | SETUP-EMPTY | CLEAN-RESET | UC-DECK-001, UC-CARD-001, UC-STUDY-001 |
 | IT-PLAT-009 | `shared/testing/it-scenarios.md` | READY | `DEVICE-E2E` | — | SETUP-EMPTY | CLEAN-RESET | — |
 
+## Luyện đề TOPIK
+
+| ID | Tệp | Mức sẵn sàng | Profile | Dẫn xuất | Chuẩn bị | Dọn dẹp | Truy vết |
+|---|---|---|---|---|---|---|---|
+| IT-TOPIK-001 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-PACK | CLEAN-RESET | UC-TOPIK-001, BR-TOPIK-008 |
+| IT-TOPIK-002 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-HISTORY | CLEAN-RESET | UC-TOPIK-001, BR-TOPIK-009, BR-TOPIK-022 |
+| IT-TOPIK-003 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-PACK | CLEAN-RESET | UC-TOPIK-003, BR-TOPIK-001, BR-TOPIK-010 |
+| IT-TOPIK-004 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-FLOW` | — | SETUP-TOPIK-PACK | CLEAN-RESET | UC-TOPIK-003 A3, BR-TOPIK-012, BR-TOPIK-015 |
+| IT-TOPIK-005 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-FLOW` | — | SETUP-TOPIK-PACK | CLEAN-RESET | UC-TOPIK-003 A2, BR-TOPIK-010, BR-TOPIK-011 |
+| IT-TOPIK-006 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-PACK | CLEAN-RESET | BR-TOPIK-015 |
+| IT-TOPIK-007 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-PACK | CLEAN-RESET | UC-TOPIK-003 A1, BR-TOPIK-013, BR-TOPIK-014 |
+| IT-TOPIK-008 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-FLOW` | — | SETUP-TOPIK-PACK | CLEAN-RESET | BR-TOPIK-002, BR-TOPIK-013, BR-TOPIK-019 |
+| IT-TOPIK-009 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-PACK | CLEAN-RESET | BR-TOPIK-014 |
+| IT-TOPIK-010 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-HISTORY | CLEAN-RESET | UC-TOPIK-002 A2, BR-TOPIK-011 |
+| IT-TOPIK-011 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-FLOW` | — | SETUP-TOPIK-HISTORY | CLEAN-RESET | UC-TOPIK-002, BR-TOPIK-018, BR-TOPIK-021, BR-TOPIK-026 |
+| IT-TOPIK-012 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-HISTORY | CLEAN-RESET | UC-TOPIK-004, BR-TOPIK-023, BR-TOPIK-024, BR-TOPIK-025 |
+| IT-TOPIK-013 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-HISTORY | CLEAN-RESET | UC-TOPIK-005, BR-TOPIK-006, BR-TOPIK-010, BR-TOPIK-019 |
+| IT-TOPIK-014 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-PACK | CLEAN-RESET | BR-TOPIK-004, BR-TOPIK-017 |
+| IT-TOPIK-015 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-FLOW` | — | SETUP-TOPIK-HISTORY | CLEAN-RESET | BR-TOPIK-026, BR-TOPIK-028 |
+| IT-TOPIK-016 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-FLOW` | — | SETUP-TOPIK-HISTORY | CLEAN-RESET | BR-TOPIK-027 |
+| IT-TOPIK-017 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-FLOW` | — | SETUP-TOPIK-PACK | CLEAN-RESET | BR-TOPIK-026 |
+| IT-TOPIK-018 | `features/topik/it-scenarios.md` | KNOWN-GAP | `HOST-WIDGET` | — | SETUP-TOPIK-PACK | CLEAN-RESET | UC-TOPIK-003 A4 |
+| IT-TOPIK-019 | `features/topik/it-scenarios.md` | KNOWN-GAP | `DEVICE-E2E` | — | SETUP-TOPIK-PACK | CLEAN-RESET | BR-TOPIK-017 |
+
 ## Bất biến của danh mục
 
 - Mỗi tiêu đề `## IT-...` trong các file `it-scenarios.md` (`features/*/` và `shared/testing/`) MUST có đúng một dòng trong danh mục.
