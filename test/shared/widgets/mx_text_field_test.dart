@@ -17,9 +17,6 @@ InputDecoration _decoration(WidgetTester tester) =>
 Color _edge(InputBorder? border) =>
     (border! as OutlineInputBorder).borderSide.color;
 
-TextStyle _textOf(WidgetTester tester, String text) =>
-    tester.widget<Text>(find.text(text)).style!;
-
 void main() {
   final scheme = lightColorScheme;
   // The M3 disabled edge: onSurface at the container opacity.
