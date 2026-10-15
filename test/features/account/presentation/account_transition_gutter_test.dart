@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/auth/account_transition.dart';
 import 'package:memox/core/auth/auth_state.dart';
+import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/account/presentation/widgets/sections/account_transition_layer_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
@@ -9,7 +10,8 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import '../../../support/account_harness.dart';
 import '../../../support/library_harness.dart';
 
-// M3F-19: the running step, centred in its page, keeps the screen margin.
+// M3F-19: the running step, centred in its page, keeps the screen margin at
+// its sides and the space16 breathing room above and below.
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -50,6 +52,10 @@ void main() {
           .padding
           .resolve(TextDirection.ltr);
       expect((gutter.left, gutter.right), (margin, margin));
+      expect(
+        (gutter.top, gutter.bottom),
+        (const AppDimens().space16, const AppDimens().space16),
+      );
     });
   }
 }

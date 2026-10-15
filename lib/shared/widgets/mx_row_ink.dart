@@ -10,6 +10,12 @@ import 'package:memox/core/theme/theme_context.dart';
 /// inside the row keeps its own semantics node and its own tap. A row that is
 /// a choice says [isSelected], and the row's one node carries it with its
 /// label and tap.
+///
+/// A row with [isEnabled] false is blocked (M3F-17): it ignores every pointer,
+/// its own target and the controls inside it, and its semantics say it is
+/// disabled. The nodes stay in the tree, so TalkBack still reads the row and
+/// its controls, but their tap actions are gone. A busy row is passed here as
+/// disabled.
 class MxRowInk extends StatefulWidget {
   const MxRowInk({
     super.key,
@@ -32,6 +38,10 @@ class MxRowInk extends StatefulWidget {
   /// The corners the ripple, the state layers and the focus ring follow; null
   /// is the row's square edge. A pill-shaped control passes its own radius.
   final BorderRadius? borderRadius;
+
+  /// False blocks the row: no tap or long-press on it or on a control inside
+  /// it, and `enabled: false` in the semantics. The row is also dimmed, unless
+  /// [shouldDimWhenDisabled] is false.
   final bool isEnabled;
 
   /// False leaves the dim to the child, which dims only what is unavailable
@@ -39,7 +49,8 @@ class MxRowInk extends StatefulWidget {
   /// blocked.
   final bool shouldDimWhenDisabled;
 
-  /// Whether the row is the chosen one; null is a row with no selected state.
+  /// Whether the row is the chosen one, said on the row's own semantics node
+  /// (enabled, disabled or static); null is a row with no selected state.
   final bool? isSelected;
 
   @override

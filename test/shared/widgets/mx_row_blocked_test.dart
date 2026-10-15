@@ -182,6 +182,38 @@ void main() {
   );
 
   testWidgets(
+    'M3F-17: the toggle of a disabled settings row keeps its own node, its '
+    'label and its on state, with no tap action',
+    (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpMx(
+        tester,
+        _width(
+          MxSettingsRow(
+            label: 'Reminder',
+            isEnabled: false,
+            trailing: MxToggle(
+              isOn: true,
+              onChanged: (_) {},
+              semanticLabel: 'Daily reminder',
+            ),
+          ),
+        ),
+      );
+      expect(
+        tester.getSemantics(find.byType(MxToggle)),
+        isSemantics(
+          label: 'Daily reminder',
+          hasToggledState: true,
+          isToggled: true,
+          hasTapAction: false,
+        ),
+      );
+      handle.dispose();
+    },
+  );
+
+  testWidgets(
     'M3F-17: a disabled navigating settings row is a disabled button with no '
     'tap action',
     (tester) async {
