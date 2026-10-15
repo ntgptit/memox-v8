@@ -7,10 +7,10 @@ superseded_by:
 ---
 ## Rule
 
-Mọi đề MUST qua cùng một bộ kiểm tra (`TopikContentValidator`, thuần Dart trong domain) trước khi xuất hiện ở đâu:
+Mọi đề MUST qua cùng một bộ kiểm tra (`checkTopikTest` trong `lib/features/topik/domain/models/topik_content_check_model.dart`, thuần Dart) trước khi xuất hiện ở đâu:
 
 - **App:** đề vi phạm bất kỳ rule nào của BR-TOPIK-001…BR-TOPIK-007 hoặc thiếu file audio, ảnh MUST bị bỏ qua, ghi log cảnh báo kèm id đề và rule vi phạm đầu tiên, và không hiện trong danh sách nào. Các đề còn lại vẫn nạp. Nội dung lỗi MUST NOT làm app crash hay hiện màn lỗi.
-- **Gate:** một test duyệt mọi gói dưới `assets/topik/` bằng cùng bộ kiểm tra; gói vi phạm không merge được. `testId` trùng giữa hai file: file thứ hai bị loại.
+- **Gate:** `test/tools/topik_content_assets_test.dart` duyệt mọi gói dưới `assets/topik/` bằng cùng bộ kiểm tra qua `tools/topik/topik_lint.dart`; gói vi phạm không merge được. `testId` trùng giữa hai file: file thứ hai bị loại.
 
 **Enforced by:** rule
 **Liên quan:** BR-TOPIK-001, BR-TOPIK-002, BR-TOPIK-003, BR-TOPIK-004, BR-TOPIK-005, BR-TOPIK-006, BR-TOPIK-007

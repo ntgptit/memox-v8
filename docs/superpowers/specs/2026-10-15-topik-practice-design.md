@@ -77,7 +77,7 @@ lib/core/text/        duration formatter (D12)
 card from `lib/app/` the way it receives the account feature's `reauthNotice`, so
 `study` does not import `topik`.
 
-The validator (`TopikContentValidator`) is pure Dart in `domain/`. The app's
+The checker (`checkTopikTest`, `domain/models/topik_content_check_model.dart`) is pure Dart in `domain/`. The app's
 loader and the gate's lint run the same code (§4.3).
 
 ### 3.3 Use cases (MVP)
@@ -174,7 +174,7 @@ code.
   rule), and absent from every list; the other tests still load. Nothing throws
   to the UI for content.
 - **Gate:** a test in the suite validates every pack under `assets/topik/`, so an
-  invalid pack cannot merge. `dart run tools/topik/lint.dart <dir>` runs the same
+  invalid pack cannot merge. `dart run tools/topik/topik_lint.dart [contentRoot] [bundleRoot]` runs the same
   validator for the content repository and prints every broken rule.
 
 Rejected: a separate Python lint, which would be a second validator that drifts.
@@ -182,7 +182,7 @@ Rejected: a separate Python lint, which would be a second validator that drifts.
 ### 4.4 Question types
 
 The enums are the brief's §2.5 tables: `L1_*` (8 values), `R1_*` (8), `L2_*` (7),
-`R2_*` (14), each with the default question-number map used for the warning. Writing
+`R2_*` (13), each with the default question-number map used for the warning. Writing
 types are added in Phase C.
 
 ### 4.5 Fixtures

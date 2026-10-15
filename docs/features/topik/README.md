@@ -1,6 +1,6 @@
 ---
 feature: topik
-code: []
+code: [lib/features/topik/domain, lib/features/topik/data, tools/topik]
 depends_on: []
 ---
 ## Phạm vi
