@@ -1,6 +1,7 @@
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
 import 'package:memox/core/theme/theme_context.dart';
 
 /// A top-level destination: an outlined resting glyph, a filled selected one.
@@ -83,6 +84,8 @@ class MxBottomNav extends StatelessWidget {
 /// The pill grows in and fades in over `Durations.medium2` (at once when the
 /// platform asks for reduced motion). The whole cell is the tap target, and
 /// the ink is clipped to the pill, as the Material 3 navigation bar does.
+/// Keyboard focus draws the shared 2px `primary` ring around the pill,
+/// `strokeFocusGap` outside it ([MxFocusRingBorder]).
 class MxNavItem extends StatefulWidget {
   const MxNavItem({
     super.key,
@@ -107,6 +110,8 @@ class _MxNavItemState extends State<MxNavItem> {
   /// Locates the pill for the ink's rectangle.
   final _pillKey = GlobalKey();
 
+  var _hasFocus = false;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -121,6 +126,7 @@ class _MxNavItemState extends State<MxNavItem> {
       child: _PillInkWell(
         pillKey: _pillKey,
         onTap: widget.onTap,
+        onFocusChange: (hasFocus) => setState(() => _hasFocus = hasFocus),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -157,6 +163,24 @@ class _MxNavItemState extends State<MxNavItem> {
                       ),
                     ),
                     ?icon,
+                    if (_hasFocus)
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: DecoratedBox(
+                            key: const ValueKey('mx-nav-focus-ring'),
+                            decoration: ShapeDecoration(
+                              shape: MxFocusRingBorder(
+                                base: const StadiumBorder(),
+                                ring: BorderSide(
+                                  color: colors.primary,
+                                  width: dimens.strokeFocus,
+                                ),
+                                gap: dimens.strokeFocusGap,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -189,6 +213,7 @@ class _PillInkWell extends InkWell {
   const _PillInkWell({
     required this.pillKey,
     required super.onTap,
+    required super.onFocusChange,
     required super.child,
   }) : super(customBorder: const StadiumBorder());
 

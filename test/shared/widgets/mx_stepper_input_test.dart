@@ -1,8 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 
+import '../../support/focus_ring_expect.dart';
 import '../../support/widget_harness.dart';
 
 const _valueKey = ValueKey('mx-stepper-value');
@@ -165,5 +168,56 @@ void main() {
 
     await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
     handle.dispose();
+  });
+
+  // M3F-06: the number was a GestureDetector in a Semantics, so Tab skipped
+  // it. It now takes keyboard focus with the shared 2px primary ring.
+  for (final brightness in Brightness.values) {
+    final focusScheme = brightness == Brightness.light
+        ? lightColorScheme
+        : darkColorScheme;
+    testWidgets('M3F-06: Tab reaches the number, which draws the 2px primary '
+        'ring and opens on Enter (${brightness.name})', (tester) async {
+      await pumpMx(
+        tester,
+        _Bounded(onSubmitted: (_) {}),
+        brightness: brightness,
+      );
+      useKeyboardFocusHighlight();
+      expect(
+        tester.renderObject(find.byKey(_valueKey)),
+        isNot(paintsFocusRing(focusScheme.primary)),
+      );
+
+      await tabTo(tester, find.byKey(_valueKey));
+
+      expect(FocusManager.instance.primaryFocus?.hasFocus, isTrue);
+      expect(focusedRender(tester), paintsFocusRing(focusScheme.primary));
+      expect(find.byType(TextField), findsNothing);
+
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(find.byType(TextField), findsOneWidget);
+    });
+  }
+
+  testWidgets('M3F-06: a number that cannot be edited takes no focus', (
+    tester,
+  ) async {
+    await pumpMx(tester, const _Bounded());
+    useKeyboardFocusHighlight();
+    for (var i = 0; i < 4; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      expect(
+        find.descendant(
+          of: find.byElementPredicate(
+            (e) => e == FocusManager.instance.primaryFocus?.context,
+          ),
+          matching: find.byKey(_valueKey),
+        ),
+        findsNothing,
+      );
+    }
   });
 }

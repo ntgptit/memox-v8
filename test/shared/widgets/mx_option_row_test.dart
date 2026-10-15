@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 
+import '../../support/focus_ring_expect.dart';
 import '../../support/theme_expect.dart';
 
 import 'package:memox/shared/widgets/mx_option_row.dart';
@@ -239,5 +241,50 @@ void main() {
       isSemantics(hasEnabledState: true, isEnabled: false),
     );
     handle.dispose();
+  });
+
+  // M3F-05: the row was a bare InkWell, so a keyboard user saw only the
+  // theme's focus layer. MxRowInk draws the shared 2px primary ring.
+  for (final brightness in Brightness.values) {
+    final focusScheme = brightness == Brightness.light
+        ? lightColorScheme
+        : darkColorScheme;
+    testWidgets('M3F-05: a focused row draws the 2px primary ring '
+        '(${brightness.name})', (tester) async {
+      var taps = 0;
+      await pumpMx(
+        tester,
+        MxOptionRow(title: 'SM-2', isSelected: false, onSelected: () => taps++),
+        brightness: brightness,
+      );
+      useKeyboardFocusHighlight();
+      expect(
+        tester.renderObject(find.byType(MxOptionRow)),
+        isNot(paintsFocusRing(focusScheme.primary)),
+      );
+
+      await tabTo(tester, find.text('SM-2'));
+
+      expect(focusedRender(tester), paintsFocusRing(focusScheme.primary));
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      expect(taps, 1);
+    });
+  }
+
+  testWidgets('M3F-05: a row that cannot be picked takes no focus', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const MxOptionRow(title: 'SM-2', isSelected: false, onSelected: null),
+    );
+    useKeyboardFocusHighlight();
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+
+    expect(
+      tester.renderObject(find.byType(MxOptionRow)),
+      isNot(paintsFocusRing(lightColorScheme.primary)),
+    );
   });
 }
