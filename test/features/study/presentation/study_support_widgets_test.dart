@@ -10,6 +10,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
+import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
@@ -167,6 +168,58 @@ void main() {
       ),
       findsOneWidget,
     );
+  });
+
+  for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
+    libraryTest('M3F-19: at ${width.toInt()} wide the centred body keeps the '
+        '$margin screen margin at its sides', (tester, env) async {
+      const key = ValueKey('body');
+      await pumpLibraryScreen(
+        tester,
+        env,
+        WindowWidthScope(
+          width: width,
+          child: _host(
+            const StudyCentredScrollWidget(
+              children: [SizedBox(key: key, height: 40)],
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.getTopLeft(find.byKey(key)).dx, margin);
+      expect(360 - tester.getTopRight(find.byKey(key)).dx, margin);
+    });
+  }
+
+  libraryTest('M3F-18: the recall clock track is sizeTrack tall, from the '
+      'theme', (tester, env) async {
+    await pumpLibraryScreen(
+      tester,
+      env,
+      Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
+          return Theme(
+            data: theme.copyWith(
+              extensions: [
+                ...theme.extensions.values.where((e) => e is! AppDimens),
+                const AppDimens(sizeTrack: 10),
+              ],
+            ),
+            child: _host(
+              const RecallCountdownBarWidget(
+                caption: 'c',
+                remainingMs: 10000,
+                isTimedOut: false,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+
+    expect(tester.getSize(find.byType(FractionallySizedBox)).height, 10);
   });
 
   libraryTest('a hint keeps the window\'s screen margin at its sides', (

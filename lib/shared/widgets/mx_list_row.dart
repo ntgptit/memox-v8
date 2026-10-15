@@ -11,10 +11,11 @@ import 'package:memox/core/theme/theme_rules.dart';
 /// this is a piece of content. Its height is the Material 3 list item: 56
 /// with a title alone, 72 with a subtitle or meta.
 ///
-/// A disabled row dims its leading, title and end (chevron, trailing or
-/// spinner), never the subtitle or meta that says why, as MxSettingsRow and
-/// MxOptionRow do (critique 2026-09-30 part 3a, DEV-230). Dividers are the
-/// list's (`MxDividedColumn`, DEV-305).
+/// A disabled or busy row answers no tap, on its target or its trailing
+/// control, and is read as disabled. A disabled row dims its leading, title
+/// and end (chevron, trailing or spinner), never the subtitle or meta that
+/// says why, as MxSettingsRow and MxOptionRow do (critique 2026-09-30 part 3a,
+/// DEV-230). Dividers are the list's (`MxDividedColumn`, DEV-305).
 class MxListRow extends StatelessWidget {
   const MxListRow({
     super.key,
@@ -98,7 +99,8 @@ class MxListRow extends StatelessWidget {
     };
     return MxRowInk(
       onTap: onTap,
-      isEnabled: isEnabled,
+      // A busy row is blocked like a disabled one, without the dim.
+      isEnabled: isEnabled && !isBusy,
       shouldDimWhenDisabled: false,
       child: ConstrainedBox(
         constraints: BoxConstraints(

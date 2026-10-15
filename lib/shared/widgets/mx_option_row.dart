@@ -52,6 +52,10 @@ class MxOptionRow extends StatelessWidget {
         enabled: onSelected != null,
         child: MxRowInk(
           onTap: onSelected,
+          // A row that cannot be picked is blocked, trailing included; it
+          // dims only what `isDimmed` says.
+          isEnabled: onSelected != null,
+          shouldDimWhenDisabled: false,
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: description == null

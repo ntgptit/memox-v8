@@ -243,6 +243,29 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('M3F-17: a row that cannot be picked blocks its trailing '
+      'control and keeps the choice dimming rules', (tester) async {
+    var taps = 0;
+    await pumpMx(
+      tester,
+      MxOptionRow(
+        title: 'SM-2',
+        isSelected: false,
+        onSelected: null,
+        trailing: TextButton(
+          onPressed: () => taps++,
+          child: const Text('Info'),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Info'), warnIfMissed: false);
+    expect(taps, 0);
+    expect(
+      find.ancestor(of: find.text('SM-2'), matching: find.byType(Opacity)),
+      findsOneWidget,
+    );
+  });
+
   // M3F-05: the row was a bare InkWell, so a keyboard user saw only the
   // theme's focus layer. MxRowInk draws the shared 2px primary ring.
   for (final brightness in Brightness.values) {

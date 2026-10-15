@@ -124,6 +124,44 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('M3F-17: disabled blocks a control inside the row and keeps its '
+      'node, with and without a tap', (tester) async {
+    final handle = tester.ensureSemantics();
+    var inner = 0;
+    for (final onTap in <VoidCallback?>[() {}, null]) {
+      await pumpMx(
+        tester,
+        MxRowInk(
+          onTap: onTap,
+          isEnabled: false,
+          child: TextButton(onPressed: () => inner++, child: const Text('Go')),
+        ),
+      );
+      await tester.tap(find.text('Go'), warnIfMissed: false);
+      expect(inner, 0);
+      expect(
+        tester.getSemantics(find.text('Go')),
+        isSemantics(label: 'Go', hasTapAction: false),
+      );
+    }
+    handle.dispose();
+  });
+
+  testWidgets('M3F-17: an enabled static row leaves its controls live', (
+    tester,
+  ) async {
+    var inner = 0;
+    await pumpMx(
+      tester,
+      MxRowInk(
+        onTap: null,
+        child: TextButton(onPressed: () => inner++, child: const Text('Go')),
+      ),
+    );
+    await tester.tap(find.text('Go'));
+    expect(inner, 1);
+  });
+
   testWidgets(
     'shouldDimWhenDisabled false blocks taps without painting opacity',
     (tester) async {

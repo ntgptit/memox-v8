@@ -67,25 +67,31 @@ class _MxRowInkState extends State<MxRowInk> {
     );
   }
 
+  /// A disabled row stays in the semantics tree, says it is disabled, and
+  /// answers no pointer: its own target and the controls inside it (a trailing
+  /// button, a wide control) are inert, while TalkBack still reads them.
+  Widget _blocked(BuildContext context) {
+    final isTappable = widget.onTap != null;
+    final disabled = IgnorePointer(
+      child: Semantics(
+        container: isTappable,
+        button: isTappable,
+        enabled: false,
+        selected: widget.isSelected,
+        child: widget.child,
+      ),
+    );
+    if (!widget.shouldDimWhenDisabled) return disabled;
+    return Opacity(
+      opacity: context.dimens.opacityDisabledContent,
+      child: disabled,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final onTap = widget.onTap;
-    if (!widget.isEnabled) {
-      final disabled = onTap == null
-          ? _static()
-          : Semantics(
-              container: true,
-              button: true,
-              enabled: false,
-              selected: widget.isSelected,
-              child: widget.child,
-            );
-      if (!widget.shouldDimWhenDisabled) return disabled;
-      return Opacity(
-        opacity: context.dimens.opacityDisabledContent,
-        child: disabled,
-      );
-    }
+    if (!widget.isEnabled) return _blocked(context);
     if (onTap == null) return _static();
     return Semantics(
       container: true,

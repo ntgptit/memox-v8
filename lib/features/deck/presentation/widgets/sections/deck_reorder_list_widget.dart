@@ -13,6 +13,7 @@ import 'package:memox/l10n/failure_message.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_snackbar.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// A level's decks in drag-to-reorder mode (spec §6.1, ruling P2-L3). Each
 /// drop is one `ReorderDeckUseCase` call. The dropped order shows at once,
@@ -90,9 +91,9 @@ class _DeckReorderListWidgetState extends ConsumerState<DeckReorderListWidget> {
   Widget build(BuildContext context) => ReorderableListView.builder(
     buildDefaultDragHandles: false,
     padding: EdgeInsets.fromLTRB(
+      context.screenMargin,
       context.dimens.space16,
-      context.dimens.space16,
-      context.dimens.space16,
+      context.screenMargin,
       context.dimens.space24 + MediaQuery.paddingOf(context).bottom,
     ),
     itemCount: _order.length,
