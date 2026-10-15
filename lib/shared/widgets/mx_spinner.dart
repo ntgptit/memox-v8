@@ -18,15 +18,16 @@ class MxSpinner extends StatefulWidget {
   const MxSpinner({
     super.key,
     this.size = MxSpinnerSize.inline,
-    this.isOnFill = false,
+    this.color,
     this.semanticLabel,
   });
 
   final MxSpinnerSize size;
 
-  /// Inside a filled (primary or destructive) button: onPrimary, not primary
-  /// (ruling O2).
-  final bool isOnFill;
+  /// The ring colour. Null is the accent, for a spinner on a surface; a
+  /// spinner on a fill passes the foreground that fill is read with, so it
+  /// keeps its contrast (M3F-02).
+  final Color? color;
 
   /// What is in flight, for a screen reader (§9 row 61). Null keeps the
   /// spinner silent, as inside a button that already names its work.
@@ -51,7 +52,6 @@ class _MxSpinnerState extends State<MxSpinner>
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     final dimension = switch (widget.size) {
       MxSpinnerSize.inline => context.dimens.sizeIconInline,
       MxSpinnerSize.compact => context.dimens.sizeIconCompact,
@@ -64,7 +64,7 @@ class _MxSpinnerState extends State<MxSpinner>
         turns: _turns,
         child: CustomPaint(
           painter: _RingPainter(
-            color: widget.isOnFill ? colors.onPrimary : context.accentColor,
+            color: widget.color ?? context.accentColor,
             stroke: context.dimens.strokeIndicator,
           ),
         ),

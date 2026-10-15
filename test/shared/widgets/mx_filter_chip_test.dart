@@ -132,7 +132,10 @@ void main() {
     );
   });
 
-  testWidgets('the count sits at 60% resting and at full strength selected', (
+  // M3F-03 (owner 2026-10-15, supersedes SW-REV-001): the resting count is the
+  // unblended onSurfaceVariant, so it meets 4.5:1; labelSmall carries the
+  // quieter hierarchy.
+  testWidgets('the count is onSurfaceVariant resting and the label selected', (
     tester,
   ) async {
     await pumpMx(
@@ -146,7 +149,7 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text('12')).style!.color,
-      scheme.onSurfaceVariant.withValues(alpha: 0.6),
+      scheme.onSurfaceVariant,
     );
 
     await pumpMx(
@@ -163,6 +166,32 @@ void main() {
       scheme.onSecondaryContainer,
     );
   });
+
+  for (final brightness in Brightness.values) {
+    testWidgets('M3F-03: the resting count is 4.5:1 on the page and a card '
+        '(${brightness.name})', (tester) async {
+      await pumpMx(
+        tester,
+        MxFilterChip(
+          label: 'Due',
+          count: 12,
+          isSelected: false,
+          onSelected: (_) {},
+        ),
+        brightness: brightness,
+      );
+      final context = tester.element(find.text('12'));
+      final painted = tester.widget<Text>(find.text('12')).style!.color!;
+
+      for (final ground in [
+        Theme.of(context).scaffoldBackgroundColor,
+        context.mxColors.cardSurface,
+      ]) {
+        final ink = Color.alphaBlend(painted, ground);
+        expect(contrast(ink, ground), greaterThanOrEqualTo(4.5));
+      }
+    });
+  }
 
   testWidgets('a tap reports the flipped selection', (tester) async {
     bool? reported;

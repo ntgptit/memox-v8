@@ -338,12 +338,9 @@ class MxButton extends StatelessWidget {
             start: math.max(0, offCentre),
             end: math.max(0, -offCentre),
           ),
-          // Ruling O2: onPrimary inside a filled button, primary on the rest.
-          child: MxSpinner(
-            isOnFill:
-                tone == MxButtonTone.primary ||
-                tone == MxButtonTone.destructive,
-          ),
+          // The label's own foreground: the spinner replaces the label, so it
+          // is as legible on this fill as the label is (M3F-02).
+          child: MxSpinner(color: foreground),
         ),
       ],
     );

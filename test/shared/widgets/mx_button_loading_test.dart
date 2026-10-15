@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
+import '../../core/theme/token_source.dart' show contrast;
 import '../../support/widget_harness.dart';
 
 // MxButton while its work runs, and what TalkBack reads of it.
@@ -11,6 +12,17 @@ final _painted = find.descendant(
   of: find.byType(TextButton),
   matching: find.byType(Material),
 );
+
+// The painter is private to the spinner, so the ring colour is read untyped.
+Color _ringColor(WidgetTester tester) {
+  final paint = tester.widget<CustomPaint>(
+    find.descendant(
+      of: find.byType(MxSpinner),
+      matching: find.byType(CustomPaint),
+    ),
+  );
+  return (paint.painter! as dynamic).color as Color;
+}
 
 void main() {
   // Work in progress is not a control that cannot be used: a caller that
@@ -62,26 +74,37 @@ void main() {
     expect(taps, 0);
   });
 
-  testWidgets('loading: a filled button spins onPrimary, outline primary', (
-    tester,
-  ) async {
-    for (final (tone, isOnFill) in [
-      (MxButtonTone.primary, true),
-      (MxButtonTone.destructive, true),
-      (MxButtonTone.secondary, false),
-      (MxButtonTone.outline, false),
-    ]) {
-      await pumpMx(
-        tester,
-        MxButton(label: 'Save', tone: tone, isLoading: true, onPressed: () {}),
-      );
+  // M3F-02 (owner 2026-10-15, supersedes ruling O2): the spinner is drawn in
+  // the colour the tone paints its label with, so it is as legible as the
+  // label it replaces, on every fill and in both themes.
+  for (final brightness in Brightness.values) {
+    for (final tone in MxButtonTone.values) {
+      testWidgets('M3F-02: ${tone.name} spins in its foreground, 3:1 on its '
+          'fill (${brightness.name})', (tester) async {
+        await pumpMx(
+          tester,
+          MxButton(
+            label: 'Save',
+            tone: tone,
+            isLoading: true,
+            onPressed: () {},
+          ),
+          brightness: brightness,
+        );
+        final material = tester.widget<Material>(_painted.first);
+        final ground = Theme.of(tester.element(find.byType(MxSpinner)))
+            .scaffoldBackgroundColor;
+        final fill = Color.alphaBlend(
+          material.color ?? Colors.transparent,
+          ground,
+        );
+        final ring = _ringColor(tester);
 
-      expect(
-        tester.widget<MxSpinner>(find.byType(MxSpinner)).isOnFill,
-        isOnFill,
-      );
+        expect(contrast(ring, fill), greaterThanOrEqualTo(3));
+        expect(ring, material.textStyle!.color);
+      });
     }
-  });
+  }
 
   testWidgets('a loading button keeps its name for TalkBack', (tester) async {
     final handle = tester.ensureSemantics();
