@@ -7,7 +7,7 @@ import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_context_line_widget.dart';
 import 'package:memox/core/theme/app_icons.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
+import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/features/study/presentation/widgets/support/recall_countdown_bar_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
@@ -314,8 +314,8 @@ void main() {
       tester,
       env,
       _host(
-        StudyChoiceWidget(
-          tone: StudyChoiceTone.idle,
+        MxChoiceTile(
+          tone: MxChoiceTone.idle,
           isFaded: true,
           semanticsLabel: 'a',
           builder: (foreground) => const Text('a'),

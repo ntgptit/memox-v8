@@ -556,6 +556,8 @@
   "galleryTenTagsAtMostOn": "Mỗi thẻ có tối đa mười nhãn",
   "galleryDailyReminder": "Nhắc học hằng ngày",
   "gallerySeekBar": "Thanh tua",
+  "galleryChoiceIdle": "Một phương án",
+  "galleryChoiceSelected": "Phương án đã chọn",
   "galleryEightBox": "Tám hộp",
   "galleryCardsClimbEightBoxesEach": "Thẻ leo qua tám hộp, mỗi hộp một khoảng ôn dài hơn.",
   "gallerySm2": "SM-2",

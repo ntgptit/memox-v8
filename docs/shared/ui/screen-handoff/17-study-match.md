@@ -31,7 +31,7 @@ states.
 
 **Built (FE-A6 P3):** `StudyMatchWidget` in the session route's mode switch: the board's
 terms on the left and its meanings on the right, in their stored order, as
-`StudyChoiceWidget` tiles. Tap a term and a meaning, in either order; the pair is answered on that term
+`MxChoiceTile` tiles. Tap a term and a meaning, in either order; the pair is answered on that term
 through the session controller, on any pending pair of the board (BR-STUDY-049). Goldens:
 `test/features/study/presentation/goldens/study_match_{board,wrong}_*`.
 

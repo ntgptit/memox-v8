@@ -2968,6 +2968,14 @@
   "@gallerySeekBar": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "galleryChoiceIdle": "An option",
+  "@galleryChoiceIdle": {
+    "description": "Gallery: an idle MxChoiceTile."
+  },
+  "galleryChoiceSelected": "The chosen option",
+  "@galleryChoiceSelected": {
+    "description": "Gallery: a selected MxChoiceTile."
+  },
   "galleryEightBox": "Eight box",
   "@galleryEightBox": {
     "description": "Debug gallery: sample copy in the component showcase."
