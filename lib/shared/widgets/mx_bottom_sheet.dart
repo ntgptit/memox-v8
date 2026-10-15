@@ -52,7 +52,7 @@ class MxBottomSheet extends StatelessWidget {
   /// (a chip, a 16 inset); most sheets pass [title] instead.
   final Widget? header;
 
-  /// The sheet's head: the compact title 20 in, at most two lines, and
+  /// The sheet's head: the compact title 24 in, at most two lines, and
   /// [subtitle] under it in the note role (SW-REV-008). The title is a
   /// heading to TalkBack; it names the route on iOS only, since on Android
   /// the modal route's own "Dialog" label wins.
