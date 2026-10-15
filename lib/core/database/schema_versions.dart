@@ -8988,6 +8988,8 @@ final class Schema17 extends i0.VersionedSchema {
     cardSchedule,
     cardScheduleSyncInsert,
     cardScheduleSyncUpdate,
+    topikAttemptSyncComplete,
+    topikAttemptSyncDelete,
     syncRejection,
     idxDeleteBatchesDeleted,
     studySession,
@@ -9455,6 +9457,14 @@ final class Schema17 extends i0.VersionedSchema {
   final i1.Trigger cardScheduleSyncUpdate = i1.Trigger(
     'CREATE TRIGGER card_schedule_sync_update AFTER UPDATE ON card_schedule WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'card_schedule\', new.card_id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
     'card_schedule_sync_update',
+  );
+  final i1.Trigger topikAttemptSyncComplete = i1.Trigger(
+    'CREATE TRIGGER topik_attempt_sync_complete AFTER UPDATE OF status ON topik_attempt WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL AND old.status = \'in_progress\' AND new.status = \'completed\' BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'topik_attempt\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'topik_attempt_sync_complete',
+  );
+  final i1.Trigger topikAttemptSyncDelete = i1.Trigger(
+    'CREATE TRIGGER topik_attempt_sync_delete AFTER DELETE ON topik_attempt WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL AND old.status = \'completed\' BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'topik_attempt\', old.id, \'delete\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'topik_attempt_sync_delete',
   );
   late final Shape15 syncRejection = Shape15(
     source: i0.VersionedTable(

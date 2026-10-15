@@ -297,15 +297,17 @@ class AppDatabase extends _$AppDatabase {
       await m.addColumn(schema.appSettings, schema.appSettings.ttsAutoPlay);
     },
     from16To17: (m, schema) async {
-      // TOPIK spec 2026-10-15 §13.1: the attempt tables, their indexes and
-      // the triggers that keep a submitted attempt final. New tables: no row
-      // changes, no outbox seed.
+      // TOPIK spec 2026-10-15 §13.1: the attempt tables, their indexes, the
+      // triggers that keep a submitted attempt final and the capture
+      // triggers of §13.2. New tables: no row changes, no outbox seed.
       await m.createTable(schema.topikAttempt);
       await m.createTable(schema.topikAttemptAnswer);
       await m.createIndex(schema.idxTopikAttemptTestStarted);
       await m.createIndex(schema.idxTopikAttemptOneOpen);
       await m.createTrigger(schema.topikAttemptCompletedImmutable);
       await m.createTrigger(schema.topikAttemptAnswerCompletedImmutable);
+      await m.createTrigger(schema.topikAttemptSyncComplete);
+      await m.createTrigger(schema.topikAttemptSyncDelete);
     },
   );
 }

@@ -2457,6 +2457,14 @@ class DatabaseAtV17 extends GeneratedDatabase {
     'CREATE TRIGGER card_schedule_sync_update AFTER UPDATE ON card_schedule WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'card_schedule\', new.card_id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
     'card_schedule_sync_update',
   );
+  late final Trigger topikAttemptSyncComplete = Trigger(
+    'CREATE TRIGGER topik_attempt_sync_complete AFTER UPDATE OF status ON topik_attempt WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL AND old.status = \'in_progress\' AND new.status = \'completed\' BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'topik_attempt\', new.id, \'upsert\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'topik_attempt_sync_complete',
+  );
+  late final Trigger topikAttemptSyncDelete = Trigger(
+    'CREATE TRIGGER topik_attempt_sync_delete AFTER DELETE ON topik_attempt WHEN (SELECT value FROM sync_state WHERE name = \'applying_remote\') IS NULL AND old.status = \'completed\' BEGIN INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at) VALUES (lower(hex(randomblob(4)) || \'-\' || hex(randomblob(2)) || \'-4\' || substr(hex(randomblob(2)), 2) || \'-\' || substr(\'89ab\', 1 +(abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || \'-\' || hex(randomblob(6))), \'topik_attempt\', old.id, \'delete\', CAST(strftime(\'%s\', \'now\') AS INTEGER)) ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;END',
+    'topik_attempt_sync_delete',
+  );
   late final SyncRejection syncRejection = SyncRejection(this);
   late final Index idxDeleteBatchesDeleted = Index(
     'idx_delete_batches_deleted',
@@ -2568,6 +2576,8 @@ class DatabaseAtV17 extends GeneratedDatabase {
     cardSchedule,
     cardScheduleSyncInsert,
     cardScheduleSyncUpdate,
+    topikAttemptSyncComplete,
+    topikAttemptSyncDelete,
     syncRejection,
     idxDeleteBatchesDeleted,
     studySession,
@@ -2791,6 +2801,20 @@ class DatabaseAtV17 extends GeneratedDatabase {
       on: TableUpdateQuery.onTableName(
         'card_schedule',
         limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'topik_attempt',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'topik_attempt',
+        limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
     ),
