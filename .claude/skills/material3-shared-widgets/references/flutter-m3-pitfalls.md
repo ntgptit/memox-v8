@@ -226,12 +226,14 @@ Project values (what the app chose) are in the ledger, not here.
 - `material/theme_data.dart:467`..`:468` `focusColor` is black or white at 12% and `hoverColor` at 4%; `InkResponse` reads exactly those when its own colours are null (`material/ink_well.dart:1038`..`:1040`).
 - `material/theme_data.dart:412` and `:3252`..`:3256` `visualDensity` is compact on linux, macOS and windows, standard elsewhere; `:405`..`:408` `materialTapTargetSize` is `shrinkWrap` on those platforms.
 
-**Consequence** A theme that sets every component slot still leaks these defaults: a bare `Icon` is black 87% or pure white, an `InkWell` row hovers and focuses in grey, and the Web review lane renders 40 dp buttons.
+**Consequence** A theme that sets every component slot still leaks these defaults: a bare `Icon` is black 87% or pure white, an `InkWell` row hovers and focuses in grey, and a desktop or Web build renders compact density and shrunken tap targets.
 
 **Do**
 - List the ambient fields in the AUDIT (`iconTheme`, `hoverColor`, `focusColor`, `visualDensity`, `materialTapTargetSize`, `disabledColor`, `shadowColor`, `canvasColor`, `splashFactory`) next to the slots, and set them in the one `ThemeData` assembly.
 - Never set `platform:` to fix density (`M3L05`); set `visualDensity` itself.
-- Prove with a bare `Icon`, a bare `InkWell` hovered and focused, and the same widgets under `debugDefaultTargetPlatformOverride`. Ledger M3F-12, M3F-13, M3F-14.
+- Prove with a bare `Icon`, a bare `InkWell` hovered and focused, and the same widgets under `debugDefaultTargetPlatformOverride`.
+
+Project position: ledger M3F-12, M3F-13, M3F-14.
 
 ### 16. `showModalBottomSheet` pushes on the nearest navigator; dialogs on the root
 
@@ -241,7 +243,7 @@ Project values (what the app chose) are in the ledger, not here.
 
 **Consequence** Under a `StatefulShellRoute` the nearest navigator is the branch navigator inside the shell's body, so the barrier and the sheet stop above the bottom bar: the bar stays tappable, and a tab switch leaves the sheet in the old branch. A barrier test on `ModalRoute.barrierColor` cannot see it.
 
-**Do** Pin the navigator in the one adapter and test the barrier's rect against the shell's bar (hit-test a destination with the modal open). Ledger M3F-01.
+**Do** Choose the navigator in the one adapter, and test the barrier's rect against the shell's bar (hit-test a destination with the modal open) so the choice is deliberate. A sheet kept on the branch navigator is a decision to record as a conflict, not a default to leave. Project position: ledger M3C-52.
 
 ### 17. Explicit borders skip the input decorator's resolver
 
@@ -258,9 +260,11 @@ Project values (what the app chose) are in the ledger, not here.
 
 **SDK evidence** `material/switch.dart:2192`..`:2199` an on handle is `primaryContainer` when pressed, hovered or focused, `onPrimary` otherwise; the track is `primary`.
 
-**Consequence** In a palette where `primaryContainer` equals `primary` (this app's), the handle vanishes into the track on every press. A theme-field test that asserts the role name passes. Ledger M3F-15.
+**Consequence** In a palette where `primaryContainer` equals `primary`, the handle vanishes into the track on every press. A theme-field test that asserts the role name passes.
 
 **Do** Check the engaged pairs for 3:1 in the approved palette before copying an SDK state map, and pump a pressed switch.
+
+Project position: ledger M3F-15.
 
 ### 19. A custom replacement owes the semantics of the widget it replaces
 
@@ -269,9 +273,11 @@ Project values (what the app chose) are in the ledger, not here.
 - `material/navigation_bar.dart:293`..`:307` the bar is `SemanticsRole.tabBar` and each destination `SemanticsRole.tab`; `:1019`..`:1025` the label gains "Tab i of n"; `material/navigation_rail.dart:533` the rail has `indexLabel`.
 - `material/floating_action_button.dart:89` the `tooltip` slot.
 
-**Consequence** `MxAppBar`, `MxNavItem` and `MxFab` re-implement the paint and some semantics and drop the rest, and nothing in the spec rows lists it. Ledger M3F-08, M3F-09, M3F-11, M3U-01.
+**Consequence** A custom replacement re-implements the paint and some semantics and drops the rest, and nothing in the spec rows lists it.
 
 **Do** For each custom replacement list what the SDK widget publishes (route name, role and position, selected, tooltip, overlay style, state layers) and assert it with `SemanticsData` under `debugDefaultTargetPlatformOverride`.
+
+Project position: ledger M3F-08, M3F-09, M3F-11, M3U-01.
 
 ### 20. Probe recipes that work in this repo
 
@@ -281,4 +287,4 @@ Project values (what the app chose) are in the ledger, not here.
 - Platform: reset `debugDefaultTargetPlatformOverride` inside the test body; a teardown runs after the invariant check and fails the test.
 - Reduced motion: `tester.platformDispatcher.accessibilityFeaturesTestValue = FakeAccessibilityFeatures(disableAnimations: true)`.
 - Semantics: `tester.ensureSemantics()`, `tester.getSemantics(finder).getSemanticsData()` (`role`, `hasFlag`), or `rootSemanticsNode!.toStringDeep()` for the tree.
-- Probes live under `test/zz_probe/` (untracked) and are deleted before the commit.
+- Probes are throwaway test files, never tracked: delete them before the commit.

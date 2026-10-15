@@ -93,7 +93,7 @@ says what each step means for each workflow.
 - An `.adaptive` constructor.
 - A raw `AppBar` theme without `actionsIconTheme`.
 - Copying another auditor's candidate into the findings without reading its lines or probing it.
-- A bare `Icon`, `InkWell` or `Switch` left to `ThemeData` ambient defaults (pitfall 15).
+- A bare `Icon` or `InkWell` left to `ThemeData` ambient defaults (pitfall 15), or a `Switch` left to the SDK's engaged-handle map (pitfall 18).
 
 ## 6. Related skills
 
