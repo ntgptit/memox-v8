@@ -4,6 +4,7 @@ import '../tables/tags.drift';
 import '../tables/srs.drift';
 import '../tables/settings.drift';
 import '../tables/trash.drift';
+import '../tables/topik.drift';
 import '../tables/sync.drift';
 
 -- The outbox and sync state (app deck-sync spec §3, §5).
@@ -156,6 +157,18 @@ SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' ||
   substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
   'review_log', id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)
 FROM review_log ORDER BY answered_at, id
+ON CONFLICT (entity_type, entity_id) DO NOTHING;
+
+-- Submitted TOPIK attempts only: one in progress is bound to its device
+-- (BR-TOPIK-026), oldest submit first.
+seedTopikAttemptOutbox:
+INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+SELECT lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' ||
+  substr(hex(randomblob(2)), 2) || '-' ||
+  substr('89ab', 1 + (abs(random()) % 4), 1) ||
+  substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+  'topik_attempt', id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER)
+FROM topik_attempt WHERE status = 'completed' ORDER BY completed_at, id
 ON CONFLICT (entity_type, entity_id) DO NOTHING;
 
 -- The one settings row, under the fixed id the server knows it by
