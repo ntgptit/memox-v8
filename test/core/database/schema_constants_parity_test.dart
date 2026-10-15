@@ -11,6 +11,10 @@ import 'package:memox/features/study_mode/domain/models/match_mode.dart';
 import 'package:memox/features/study_mode/domain/models/recall_mode.dart';
 import 'package:memox/features/study_mode/domain/models/self_assess_mode.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
+import 'package:memox/features/topik/domain/models/topik_level_model.dart';
+import 'package:memox/features/topik/domain/models/topik_question_model.dart';
+import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 
 import '../../support/test_database.dart';
 
@@ -49,7 +53,7 @@ void main() {
     expect(matches, hasLength(1), reason: 'one `$pattern` in the SQL');
     return {
       for (final code in RegExp(
-        "'([a-z_]+)'",
+        "'([a-z0-9_]+)'",
       ).allMatches(matches.single.group(1)!))
         code.group(1)!,
     };
@@ -133,6 +137,43 @@ void main() {
           r'"current_mode" TEXT NOT NULL CHECK \(current_mode IN \(([^)]*)\)',
         ),
         {for (final mode in StudyMode.values) mode.code},
+      );
+    });
+
+    test('topik_attempt stores every TopikLevel, TopikSection, '
+        'TopikAttemptMode and TopikAttemptStatus code and no other', () {
+      final sql = tableSql['topik_attempt']!;
+      expect(
+        codesOf(sql, r'"level" TEXT NOT NULL CHECK \(level IN \(([^)]*)\)'),
+        {for (final level in TopikLevel.values) level.code},
+      );
+      expect(
+        codesOf(sql, r'"section" TEXT NOT NULL CHECK \(section IN \(([^)]*)\)'),
+        {for (final section in TopikSection.values) section.code},
+      );
+      expect(
+        codesOf(sql, r'"mode" TEXT NOT NULL CHECK \(mode IN \(([^)]*)\)'),
+        {for (final mode in TopikAttemptMode.values) mode.code},
+      );
+      expect(
+        codesOf(sql, r'"status" TEXT NOT NULL CHECK \(status IN \(([^)]*)\)'),
+        {for (final status in TopikAttemptStatus.values) status.code},
+      );
+    });
+
+    test('topik_attempt_answer options are topikOptionIdxs (BR-TOPIK-003)', () {
+      final sql = tableSql['topik_attempt_answer']!;
+      final range = {
+        for (var idx = 1; idx <= topikOptionIdxs.length; idx++) idx,
+      };
+      expect(topikOptionIdxs, range);
+      expect(
+        literalOf(sql, r'selected_idx BETWEEN 1 AND (\d+)'),
+        topikOptionIdxs.length,
+      );
+      expect(
+        literalOf(sql, r'correct_idx BETWEEN 1 AND (\d+)'),
+        topikOptionIdxs.length,
       );
     });
   });

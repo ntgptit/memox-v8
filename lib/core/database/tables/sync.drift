@@ -3,6 +3,7 @@ import 'deck.drift';
 import 'settings.drift';
 import 'srs.drift';
 import 'tags.drift';
+import 'topik.drift';
 import 'trash.drift';
 
 -- App deck-sync spec §3: one pending operation per synced row. A write
@@ -208,6 +209,33 @@ BEGIN
   INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
   VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
           'card_schedule', new.card_id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+-- TOPIK spec 2026-10-15 §7.2, §13.2 (BR-TOPIK-026): only a submitted attempt
+-- syncs. Submit (in_progress → completed) queues an upsert in the submit's own
+-- transaction; deleting a submitted attempt queues a final delete. A local
+-- insert is always in progress and the answers travel inside the attempt's
+-- row, so neither has a trigger: an attempt in progress never reaches the
+-- outbox. The adapter is registered by plan 3; until then the coordinator's
+-- push reads only registered types and leaves these rows queued.
+CREATE TRIGGER topik_attempt_sync_complete AFTER UPDATE OF status ON topik_attempt
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+  AND old.status = 'in_progress' AND new.status = 'completed'
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'topik_attempt', new.id, 'upsert', CAST(strftime('%s', 'now') AS INTEGER))
+  ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
+END;
+
+CREATE TRIGGER topik_attempt_sync_delete AFTER DELETE ON topik_attempt
+WHEN (SELECT value FROM sync_state WHERE name = 'applying_remote') IS NULL
+  AND old.status = 'completed'
+BEGIN
+  INSERT INTO sync_outbox (op_id, entity_type, entity_id, op, created_at)
+  VALUES (lower(hex(randomblob(4)) || '-' || hex(randomblob(2)) || '-4' || substr(hex(randomblob(2)), 2) || '-' || substr('89ab', 1 + (abs(random()) % 4), 1) || substr(hex(randomblob(2)), 2) || '-' || hex(randomblob(6))),
+          'topik_attempt', old.id, 'delete', CAST(strftime('%s', 'now') AS INTEGER))
   ON CONFLICT (entity_type, entity_id) DO UPDATE SET op_id = excluded.op_id, op = excluded.op;
 END;
 

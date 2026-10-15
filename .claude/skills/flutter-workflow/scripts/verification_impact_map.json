@@ -84,6 +84,7 @@
     "sync_review_log_queries": [],
     "sync_tag_queries": [],
     "tag_queries": ["tags", "search", "transfer"],
+    "topik_queries": ["topik"],
     "trash_queries": ["trash"]
   },
   "full_scope_prefixes": [

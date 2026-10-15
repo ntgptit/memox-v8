@@ -2,6 +2,10 @@ import 'package:memox/features/topik/domain/models/topik_question_type_model.dar
 import 'package:memox/features/topik/domain/models/topik_text_model.dart';
 
 /// One of a question's four choices, numbered 1–4 like ①–④ (BR-TOPIK-003).
+/// The option numbers of every question, ①–④ (BR-TOPIK-003). The schema's
+/// `selected_idx` and `correct_idx` CHECKs copy this range.
+const Set<int> topikOptionIdxs = {1, 2, 3, 4};
+
 final class TopikOption {
   const TopikOption({required this.idx, this.textKo, this.image});
 

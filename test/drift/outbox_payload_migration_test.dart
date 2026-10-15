@@ -42,7 +42,7 @@ void main() {
       );
     final db = AppDatabase(schema.newConnection());
     addTearDown(db.close);
-    await verifier.migrateAndValidate(db, 16);
+    await verifier.migrateAndValidate(db, 17);
 
     final kept = await db
         .customSelect(

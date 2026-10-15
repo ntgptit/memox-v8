@@ -19,6 +19,7 @@ part 'app_database.g.dart';
     'package:memox/core/database/tables/sync.drift',
     'package:memox/core/database/tables/ui_state.drift',
     'package:memox/core/database/tables/account.drift',
+    'package:memox/core/database/tables/topik.drift',
   },
 )
 class AppDatabase extends _$AppDatabase {
@@ -59,7 +60,7 @@ class AppDatabase extends _$AppDatabase {
   Future<void> ensureOpened() => executor.ensureOpen(this);
 
   @override
-  int get schemaVersion => 16;
+  int get schemaVersion => 17;
 
   /// Each step works on the schema of its own version (`schema_versions.dart`,
   /// generated from `drift_schemas/`), never on today's tables, and a shipped
@@ -294,6 +295,19 @@ class AppDatabase extends _$AppDatabase {
       // switch, each with its default. No row changes.
       await m.addColumn(schema.appSettings, schema.appSettings.ttsLanguage);
       await m.addColumn(schema.appSettings, schema.appSettings.ttsAutoPlay);
+    },
+    from16To17: (m, schema) async {
+      // TOPIK spec 2026-10-15 §13.1: the attempt tables, their indexes, the
+      // triggers that keep a submitted attempt final and the capture
+      // triggers of §13.2. New tables: no row changes, no outbox seed.
+      await m.createTable(schema.topikAttempt);
+      await m.createTable(schema.topikAttemptAnswer);
+      await m.createIndex(schema.idxTopikAttemptTestStarted);
+      await m.createIndex(schema.idxTopikAttemptOneOpen);
+      await m.createTrigger(schema.topikAttemptCompletedImmutable);
+      await m.createTrigger(schema.topikAttemptAnswerCompletedImmutable);
+      await m.createTrigger(schema.topikAttemptSyncComplete);
+      await m.createTrigger(schema.topikAttemptSyncDelete);
     },
   );
 }

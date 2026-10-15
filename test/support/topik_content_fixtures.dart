@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:memox/features/topik/data/mappers/topik_test_mapper.dart';
 import 'package:memox/features/topik/domain/models/topik_exam_layout_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_question_type_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
+import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 
 /// Synthetic TOPIK content (spec 2026-10-15 §4.5): structurally complete and
 /// valid for any level and section, with made-up text. It is test data, never
@@ -138,3 +140,18 @@ Map<String, Object?> groupJson(Map<String, Object?> test, String groupId) =>
     (test['groups']! as List<Object?>).cast<Map<String, Object?>>().firstWhere(
       (group) => group['groupId'] == groupId,
     );
+
+/// [topikTestJson] read into a [TopikTest], for tests of code that takes the
+/// content model. Answer of question n: `(n - 1) % 4 + 1`.
+TopikTest topikTestFixture({
+  TopikLevel level = TopikLevel.topik2,
+  TopikSection section = TopikSection.reading,
+  int round = 96,
+}) =>
+    topikTestOf(topikTestJson(level: level, section: section, round: round))
+        .test!;
+
+/// [json] (a [topikTestJson] broken or corrected in place) read into a
+/// [TopikTest]; fails the test when it does not read.
+TopikTest topikTestOfFixtureJson(Map<String, Object?> json) =>
+    topikTestOf(json).test!;
