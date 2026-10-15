@@ -80,6 +80,28 @@ void main() {
     },
   );
 
+  testWidgets('in the platform SnackBar a message alone spans the toast', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => buildMxSnackBar(
+          context,
+          message: 'Deck saved',
+        ).withAnimation(kAlwaysCompleteAnimation),
+      ),
+    );
+
+    // The SDK puts the content in an Expanded: the phone's 360 less the
+    // theme's 16 on each side, less the toast's own 16 on each side.
+    final toast = tester.getRect(find.byType(Material).last);
+    final content = tester.getRect(find.byType(MxSnackbarContent));
+    expect(toast.width, 360 - 2 * 16);
+    expect(content.left - toast.left, 16);
+    expect(toast.right - content.right, 16);
+  });
+
   testWidgets('a message alone has 14 above and below its line', (
     tester,
   ) async {
