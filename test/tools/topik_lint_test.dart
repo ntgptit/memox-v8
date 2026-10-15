@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/domain/models/topik_content_issue_model.dart';
@@ -172,4 +173,75 @@ flutter:
       'assets/topik/',
     });
   });
+
+  group('existence is exact, as in the app bundle (BR-TOPIK-008)', () {
+    // Windows and macOS file systems ignore case; the bundle does not.
+    TopikLintReport lintIgnoringCase() => IOOverrides.runZoned(
+      () => lintTopikContent(contentRoot: content, bundleRoot: bundle),
+      createFile: _CaseInsensitiveFile.new,
+    );
+
+    test('an audio file whose name differs only in case is missing', () {
+      File('${bundle.path}/$topikFixtureAudioAsset')
+          .renameSync('${bundle.path}/assets/topik/fixture/LISTENING.mp3');
+      writePack(
+        'listening.json',
+        topikTestJson(section: TopikSection.listening),
+      );
+      writeManifest(['listening.json']);
+      final report = lintIgnoringCase();
+      expect(report.issues.single.rule, TopikContentRule.assets);
+    });
+
+    test('a manifest entry whose name differs only in case is missing', () {
+      writePack('reading.json', topikTestJson());
+      writeManifest(['Reading.json']);
+      final report = lintIgnoringCase();
+      expect(report.testCount, 0);
+      expect(report.issues.single.testId, 'Reading.json');
+      expect(report.issues.single.detail, 'file not found');
+    });
+  });
 }
+
+/// A file as a case-insensitive file system (NTFS, APFS) sees it: a path
+/// whose name differs only in case resolves to the file that exists.
+final class _CaseInsensitiveFile implements File {
+  _CaseInsensitiveFile(this.path);
+
+  @override
+  final String path;
+
+  File? get _match {
+    final slash = path.lastIndexOf('/');
+    final folder = Directory(path.substring(0, slash));
+    if (!folder.existsSync()) return null;
+    final name = path.substring(slash + 1).toLowerCase();
+    for (final entry in folder.listSync()) {
+      final entryName = entry.path.substring(entry.path.lastIndexOf('/') + 1);
+      if (entryName.toLowerCase() == name) {
+        return IOOverrides.runWithIOOverrides(
+          () => File(entry.path),
+          _RealFiles(),
+        );
+      }
+    }
+    return null;
+  }
+
+  @override
+  bool existsSync() => _match != null;
+
+  @override
+  Uint8List readAsBytesSync() => _match!.readAsBytesSync();
+
+  @override
+  String readAsStringSync({Encoding encoding = utf8}) =>
+      _match!.readAsStringSync(encoding: encoding);
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+/// Overrides nothing: files made inside it are the real ones.
+final class _RealFiles extends IOOverrides {}

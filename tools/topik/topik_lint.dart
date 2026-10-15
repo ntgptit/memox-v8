@@ -33,14 +33,25 @@ TopikLintReport lintTopikContent({
   final fileIssues = <TopikContentIssue>[];
   final files = <TopikPackFile>[];
   final entries = _manifestEntries(contentRoot, fileIssues);
+  final packExists = _exactExistence(contentRoot);
   for (final entry in entries) {
+    if (!packExists(entry)) {
+      fileIssues.add(
+        TopikContentIssue.error(
+          TopikContentRule.shape,
+          entry,
+          'file not found',
+        ),
+      );
+      continue;
+    }
     final json = _decode(File('${contentRoot.path}/$entry'), entry, fileIssues);
     if (json == null) continue;
     files.add((origin: entry, json: json));
   }
   final load = topikContentOf(
     files,
-    assetExists: (path) => File('${bundleRoot.path}/$path').existsSync(),
+    assetExists: _exactExistence(bundleRoot),
     fileIssues: fileIssues,
   );
   final folderIssues = declaredAssetFolders == null
@@ -127,6 +138,30 @@ List<String> _manifestEntries(Directory root, List<TopikContentIssue> issues) {
     return const [];
   }
   return tests.cast<String>();
+}
+
+/// Whether a path below [root] names a file, compared by exact name as the
+/// app bundle compares it: a case-insensitive file system (Windows, macOS)
+/// would otherwise accept `Listening.mp3` for `listening.mp3`, which no device
+/// can load (BR-TOPIK-008).
+bool Function(String path) _exactExistence(Directory root) {
+  final namesByFolder = <String, Set<String>>{};
+  Set<String> namesIn(String folder) => namesByFolder.putIfAbsent(folder, () {
+    final directory = Directory('${root.path}/$folder');
+    if (!directory.existsSync()) return const {};
+    return {
+      for (final entity in directory.listSync())
+        if (entity is File)
+          entity.path.substring(
+            entity.path.lastIndexOf(Platform.pathSeparator) + 1,
+          ),
+    };
+  });
+  return (path) {
+    final slash = path.lastIndexOf('/');
+    return namesIn(path.substring(0, slash + 1))
+        .contains(path.substring(slash + 1));
+  };
 }
 
 Object? _decode(File file, String name, List<TopikContentIssue> issues) {
