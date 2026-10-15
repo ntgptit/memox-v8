@@ -44,6 +44,14 @@ const _seed = <String>[
   "INSERT INTO card_schedule (card_id, scheduler_type, scheduler_version, generation, current_box) VALUES ('c7', 'eight_box', 1, 1, 1), ('c8', 'eight_box', 1, 1, 1), ('c9', 'eight_box', 1, 1, 1)",
   // The settings row exists from the first open (BR-SETTINGS-001).
   "UPDATE app_settings SET updated_at = 0 WHERE id = 1",
+  // TOPIK (schema 17): T1 submitted with question 1 right (2 of 4 points),
+  // T2 in progress with question 1 chosen.
+  "INSERT INTO topik_attempt (id, test_id, level, section, round, mode, status, started_at, updated_at, total_time_ms, current_question_no, question_count, max_score, content_version) VALUES ('T1', 'topik2-96-reading', 'topik2', 'reading', 96, 'practice', 'in_progress', 0, 0, 0, 1, 2, 4, 1), ('T2', 'topik2-96-listening', 'topik2', 'listening', 96, 'practice', 'in_progress', 0, 0, 0, 1, 2, 4, 1)",
+  "INSERT INTO topik_attempt_answer (attempt_id, question_no) VALUES ('T1', 1), ('T1', 2), ('T2', 1), ('T2', 2)",
+  "UPDATE topik_attempt_answer SET selected_idx = 1, answered_at = 5, time_spent_ms = 3000 WHERE question_no = 1",
+  "UPDATE topik_attempt SET total_time_ms = 3000",
+  "UPDATE topik_attempt_answer SET correct_idx = 1, points = 2, points_earned = CASE WHEN selected_idx = 1 THEN 2 ELSE 0 END, question_type = 'R2_fill_blank' WHERE attempt_id = 'T1'",
+  "UPDATE topik_attempt SET status = 'completed', completed_at = 9, updated_at = 9, score = 2, correct_count = 1, answered_count = 1 WHERE id = 'T1'",
 ];
 
 /// Writes the schema accepts but the invariant must catch.
@@ -120,6 +128,14 @@ const _planted = <int, List<String>>{
     "INSERT INTO deck (id, name, parent_id, root_id, depth, content_type, delete_batch_id, sibling_position, created_at, updated_at) VALUES ('bad', 'x', 'A4', 'A', 3, 'unset', 'b3', 0, 0, 0)",
   ],
   37: ["UPDATE delete_batches SET root_item_id = 'c1' WHERE id = 'b2'"],
+  41: ["UPDATE topik_attempt SET total_time_ms = 1 WHERE id = 'T2'"],
+  42: [
+    "INSERT INTO topik_attempt (id, test_id, level, section, round, mode, status, started_at, completed_at, updated_at, current_question_no, question_count, max_score, content_version, score, correct_count, answered_count) VALUES ('bad', 'x', 'topik2', 'reading', 96, 'practice', 'completed', 0, 1, 1, 1, 1, 4, 1, 3, 1, 1)",
+    "INSERT INTO topik_attempt_answer (attempt_id, question_no, selected_idx, answered_at, correct_idx, points, points_earned, question_type) VALUES ('bad', 1, 1, 0, 1, 2, 2, 'R2_fill_blank')",
+  ],
+  43: [
+    "UPDATE topik_attempt_answer SET correct_idx = 1, points = 2, points_earned = 2, question_type = 'L2_picture' WHERE attempt_id = 'T2' AND question_no = 1",
+  ],
 };
 
 /// Writes a CHECK must refuse, so the invariant can never be broken.
@@ -157,10 +173,10 @@ void main() {
   });
   tearDown(() => db.close());
 
-  test('schema.md states invariants 1 to 40', () {
+  test('schema.md states invariants 1 to 43', () {
     expect(
       invariantQueries.keys,
-      unorderedEquals([for (var n = 1; n <= 40; n++) n]),
+      unorderedEquals([for (var n = 1; n <= 43; n++) n]),
     );
   });
 

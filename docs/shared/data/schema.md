@@ -58,6 +58,7 @@ Ba nguyên tắc chi phối cách chia bảng:
 ```
 app_settings (một dòng — mặc định tùy chọn học)
 account_state, account_transition (tối đa một dòng — tài khoản trên máy, schema 12)
+topik_attempt ──► topik_attempt_answer  (lượt làm đề TOPIK và đáp án từng câu, schema 17; đề là asset, không phải bảng)
 
 starter template (asset JSON, không phải bảng — Starter decks)
         │ sao chép một lần, không liên kết ghi ngược
@@ -603,7 +604,7 @@ Sơ đồ vẽ bằng skill `diagram-design`; nguồn sửa được là
 | Cột | Kiểu | Ghi chú |
 |---|---|---|
 | `op_id` | TEXT PK | UUID mới ở **mỗi** lần ghi; idempotency key khi push |
-| `entity_type` | TEXT NOT NULL | `deck` \| `delete_batch` \| `card` (schema 7) \| `tag` (schema 8) \| `account_settings` (schema 9, id là nil UUID) \| `card_schedule`, `review_log` (schema 10) |
+| `entity_type` | TEXT NOT NULL | `deck` \| `delete_batch` \| `card` (schema 7) \| `tag` (schema 8) \| `account_settings` (schema 9, id là nil UUID) \| `card_schedule`, `review_log` (schema 10) \| `topik_attempt` (schema 17) |
 | `entity_id` | TEXT NOT NULL | `UNIQUE (entity_type, entity_id)`: một thao tác chờ cho mỗi hàng |
 | `op` | TEXT NOT NULL | `upsert` \| `delete` |
 | `created_at` | DATETIME NOT NULL | lần ghi chờ đầu tiên; giữ nguyên khi hàng được ghi lại, nên cha luôn đi trước con |
@@ -636,6 +637,9 @@ khi đổi `card_limit`, `new_card_order`, `theme_mode`, `language` hoặc, từ
 `log_sql_statements`; nhắc học ở lại trên máy), từ schema 10 `review_log` (chỉ khi thêm) và `card_schedule` (khi thêm hoặc sửa;
 không bao giờ xếp lệnh xoá, vì lịch và review đi theo card) ghi outbox trong cùng transaction với mọi
 lần ghi, kể cả CTE, cascade và purge, trừ khi có `applying_remote` (dữ liệu từ server).
+Từ schema 17, `topik_attempt` xếp `upsert` khi lượt chuyển `in_progress` → `completed`
+và `delete` khi xoá một lượt đã nộp; lượt dở và đáp án không bao giờ vào outbox
+(BR-TOPIK-026).
 Liên kết card–tag đi cùng card (trường `tagIds`), nên trigger trên `card_tags` xếp
 card vào outbox; riêng liên kết bị xoá theo chính card thì không, để lệnh xoá card giữ
 nguyên. `deck.server_version`, `delete_batches.server_version`, `card.server_version`
@@ -700,6 +704,58 @@ phải ai đang đăng nhập. Không hoặc một dòng (`CHECK (id = 1)`) cho 
 | `stage` | TEXT NOT NULL | `started` \| `sourcePushed` \| `claimed` \| `targetSignedIn` \| `merged` \| `localCleared` \| `targetPulled` \| `acknowledged` \| `serverDeleted` \| `signedOut` \| `newAnon` |
 | `created_at` | DATETIME NOT NULL | UTC |
 | `updated_at` | DATETIME NOT NULL | UTC |
+
+## `topik_attempt`
+
+Schema 17. Một lượt làm một đề TOPIK ([ADR-023](../decisions/ADR-023-luyen-de-topik.md),
+[spec](../../superpowers/specs/2026-10-15-topik-practice-design.md) §7.1, §13.1). Đề là
+asset đóng gói, nên `test_id` không có FK. Lượt dở gắn với máy; lượt đã nộp bất biến
+(trigger `topik_attempt_completed_immutable` chặn mọi cột trừ `server_version`) và đồng
+bộ (BR-TOPIK-010, BR-TOPIK-026).
+
+| Cột | Kiểu | Ghi chú |
+|---|---|---|
+| `id` | TEXT PK | UUID v7 |
+| `test_id` | TEXT NOT NULL | `testId` của đề, ví dụ `topik2-96-reading` |
+| `level` | TEXT NOT NULL | `topik1` \| `topik2` |
+| `section` | TEXT NOT NULL | `listening` \| `reading` |
+| `round` | INTEGER NOT NULL | kỳ thi (회차), > 0 |
+| `mode` | TEXT NOT NULL | `practice`; `exam` ở Phase B (BR-TOPIK-032) |
+| `status` | TEXT NOT NULL | `in_progress` \| `completed` (BR-TOPIK-010) |
+| `started_at` | DATETIME NOT NULL | UTC |
+| `completed_at` | DATETIME NULL | UTC; có đúng khi `completed` |
+| `updated_at` | DATETIME NOT NULL | lần ghi cuối; "hoạt động gần nhất" (BR-TOPIK-022) |
+| `total_time_ms` | INTEGER NOT NULL | Σ `time_spent_ms` của các đáp án (BR-TOPIK-015) |
+| `current_question_no` | INTEGER NOT NULL | câu đang hiện; thời gian cộng cho câu này |
+| `question_count` | INTEGER NOT NULL | số câu, ghi lúc bắt đầu |
+| `max_score` | INTEGER NOT NULL | Σ điểm các câu (100), ghi lúc bắt đầu, chốt lại lúc nộp |
+| `score` | INTEGER NULL | bản chốt: Σ `points_earned`; NULL khi đang làm |
+| `correct_count` | INTEGER NULL | bản chốt; NULL khi đang làm |
+| `answered_count` | INTEGER NULL | bản chốt; NULL khi đang làm |
+| `content_version` | INTEGER NOT NULL | phiên bản nội dung lúc bắt đầu, rồi lúc chấm (BR-TOPIK-019) |
+| `server_version` | INTEGER NULL | version server đã xác nhận; luôn NULL khi đang làm |
+
+Index: `idx_topik_attempt_test_started` trên `(test_id, started_at)` cho History và
+lượt gần đây; `idx_topik_attempt_one_open` UNIQUE trên `(test_id)` `WHERE status =
+'in_progress'`: mỗi đề nhiều nhất một lượt dở trên một máy (BR-TOPIK-011).
+
+## `topik_attempt_answer`
+
+Schema 17. Một hàng mỗi câu, tạo lúc bắt đầu; chọn đáp án và thời gian là UPDATE. Bản chốt điền
+lúc nộp (BR-TOPIK-013); sau đó trigger `topik_attempt_answer_completed_immutable` chặn
+mọi thay đổi.
+
+| Cột | Kiểu | Ghi chú |
+|---|---|---|
+| `attempt_id` | TEXT NOT NULL | → `topik_attempt(id)` ON DELETE CASCADE; PK cùng `question_no` |
+| `question_no` | INTEGER NOT NULL | số câu thật (TOPIK I đọc bắt đầu từ 31) |
+| `selected_idx` | INTEGER NULL | ①–④ là 1–4; NULL khi chưa chọn (BR-TOPIK-003, BR-TOPIK-012) |
+| `time_spent_ms` | INTEGER NOT NULL | thời gian cộng dồn của câu (BR-TOPIK-015) |
+| `answered_at` | DATETIME NULL | lần chọn cuối; có đúng khi `selected_idx` có |
+| `correct_idx` | INTEGER NULL | bản chốt: đáp án đúng lúc nộp |
+| `points` | INTEGER NULL | bản chốt: điểm của câu |
+| `points_earned` | INTEGER NULL | bản chốt: `points` khi đúng, ngược lại 0 (CHECK) |
+| `question_type` | TEXT NULL | bản chốt: mã dạng câu; không CHECK để lượt từ bản app mới hơn vẫn đồng bộ về |
 
 ## Bất biến — phải kiểm tra được bằng query
 
@@ -1076,6 +1132,37 @@ WHERE kind = 'relearning'
   AND (previous_box IS NOT next_box
     OR previous_ease_factor IS NOT next_ease_factor
     OR previous_interval_days IS NOT next_interval_days);
+```
+
+### TOPIK
+
+```sql
+-- 41. Lượt có số câu, tổng thời gian hay câu hiện tại không khớp các đáp án của nó
+--     (BR-TOPIK-012, BR-TOPIK-015)
+--     Mọi trạng thái: bắt đầu tạo đủ một hàng mỗi câu, và mọi lần ghi thời gian
+--     cộng cùng một khoảng vào câu và vào tổng trong một transaction.
+SELECT t.id FROM topik_attempt t
+WHERE t.question_count <> (SELECT COUNT(*) FROM topik_attempt_answer a WHERE a.attempt_id = t.id)
+   OR t.total_time_ms <> (SELECT COALESCE(SUM(a.time_spent_ms), 0) FROM topik_attempt_answer a WHERE a.attempt_id = t.id)
+   OR NOT EXISTS (SELECT 1 FROM topik_attempt_answer a
+                  WHERE a.attempt_id = t.id AND a.question_no = t.current_question_no);
+
+-- 42. Lượt đã nộp có bản chốt không khớp các đáp án (BR-TOPIK-013)
+SELECT t.id FROM topik_attempt t
+WHERE t.status = 'completed'
+  AND (t.score <> (SELECT SUM(a.points_earned) FROM topik_attempt_answer a WHERE a.attempt_id = t.id)
+    OR t.max_score <> (SELECT SUM(a.points) FROM topik_attempt_answer a WHERE a.attempt_id = t.id)
+    OR t.correct_count <> (SELECT COUNT(*) FROM topik_attempt_answer a
+                           WHERE a.attempt_id = t.id AND a.selected_idx = a.correct_idx)
+    OR t.answered_count <> (SELECT COUNT(*) FROM topik_attempt_answer a
+                            WHERE a.attempt_id = t.id AND a.selected_idx IS NOT NULL));
+
+-- 43. Đáp án có bản chốt khi lượt còn dở, hoặc thiếu bản chốt khi lượt đã nộp
+--     (BR-TOPIK-013)
+--     CHECK của một hàng không nhìn được trạng thái của lượt.
+SELECT a.attempt_id FROM topik_attempt_answer a
+JOIN topik_attempt t ON t.id = a.attempt_id
+WHERE (t.status = 'completed') <> (a.correct_idx IS NOT NULL);
 ```
 
 ---

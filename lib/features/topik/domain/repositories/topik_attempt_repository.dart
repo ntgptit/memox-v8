@@ -6,8 +6,8 @@ import 'package:memox/features/topik/domain/models/topik_test_status_model.dart'
 
 /// The attempts on this device (spec §5, §13.5). The one implementation is
 /// `TopikAttemptRepositoryImpl`; the contract keeps domain free of Drift and
-/// lets tests substitute a fake (ADR-010). Every write is one transaction and
-/// a refusal writes nothing. `elapsedMs` is the time since the last write;
+/// lets tests substitute a fake (ADR-010). Every write is atomic and a refusal
+/// writes nothing. `elapsedMs` is the time since the last write;
 /// it is added to the attempt's current question before anything else
 /// (BR-TOPIK-015), and a negative value is an `ArgumentError`.
 abstract interface class TopikAttemptRepository {
@@ -31,7 +31,7 @@ abstract interface class TopikAttemptRepository {
   });
 
   /// Start new, confirmed: the attempt of [test] in progress, if any, is
-  /// deleted with its answers and a new one started, in one transaction
+  /// deleted with its answers and a new one started, as one write
   /// (BR-TOPIK-011).
   Future<TopikAttempt> replaceInProgressAndStart(
     TopikTest test, {
@@ -68,7 +68,7 @@ abstract interface class TopikAttemptRepository {
 
   /// Records the last time, scores the attempt against [test] (the content
   /// at submit), snapshots every answer and completes the attempt, queued
-  /// for sync in the same transaction (BR-TOPIK-013, BR-TOPIK-026).
+  /// for sync by the same write (BR-TOPIK-013, BR-TOPIK-026).
   /// notFound, attemptCompleted, contentMismatch (BR-TOPIK-019).
   Future<Outcome<TopikAttempt, TopikRejection>> submit({
     required String attemptId,
