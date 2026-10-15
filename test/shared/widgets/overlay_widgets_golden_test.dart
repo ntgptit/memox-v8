@@ -160,42 +160,46 @@ void main() {
     );
   });
 
-  testWidgets('MxDeckPickerSheet with targets and with none', (tester) async {
+  // One sheet per board: two content-sized sheets stacked do not fit the 768
+  // of the 360 x 800 board once a list row is 56 / 72 tall (Material 3).
+  testWidgets('MxDeckPickerSheet with targets', (tester) async {
     await expectThemedGoldens(
       tester,
       'mx_deck_picker',
-      Column(
-        spacing: 16,
-        children: [
-          MxDeckPickerSheet(
-            title: 'Move to deck',
-            rule:
-                'Cards keep their progress. Decks that hold other decks '
-                'are not offered.',
-            candidates: [
-              MxPickerCandidate(label: 'Kana', onTap: () {}),
-              MxPickerCandidate(label: 'Kanji N5', onTap: () {}),
-              MxPickerCandidate(
-                label: 'Grammar',
-                reason: 'Holds other decks',
-                isEnabled: false,
-                onTap: () {},
-              ),
-            ],
-            dismissLabel: 'Cancel',
-            onDismiss: () {},
-            emptyTitle: 'Nowhere to move',
-          ),
-          MxDeckPickerSheet(
-            title: 'Move to deck',
-            rule: 'Cards keep their progress.',
-            candidates: const [],
-            dismissLabel: 'OK',
-            onDismiss: () {},
-            emptyTitle: 'Nowhere to move',
-            emptyBody: 'Create another deck first.',
+      MxDeckPickerSheet(
+        title: 'Move to deck',
+        rule:
+            'Cards keep their progress. Decks that hold other decks '
+            'are not offered.',
+        candidates: [
+          MxPickerCandidate(label: 'Kana', onTap: () {}),
+          MxPickerCandidate(label: 'Kanji N5', onTap: () {}),
+          MxPickerCandidate(
+            label: 'Grammar',
+            reason: 'Holds other decks',
+            isEnabled: false,
+            onTap: () {},
           ),
         ],
+        dismissLabel: 'Cancel',
+        onDismiss: () {},
+        emptyTitle: 'Nowhere to move',
+      ),
+    );
+  });
+
+  testWidgets('MxDeckPickerSheet with none', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_deck_picker_empty',
+      MxDeckPickerSheet(
+        title: 'Move to deck',
+        rule: 'Cards keep their progress.',
+        candidates: const [],
+        dismissLabel: 'OK',
+        onDismiss: () {},
+        emptyTitle: 'Nowhere to move',
+        emptyBody: 'Create another deck first.',
       ),
     );
   });
