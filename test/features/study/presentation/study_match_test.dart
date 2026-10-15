@@ -39,10 +39,7 @@ Future<String> _match(LibraryEnv env) =>
 
 MxChoiceTile _tile(WidgetTester tester, String text) =>
     tester.widget<MxChoiceTile>(
-      find.ancestor(
-        of: find.text(text),
-        matching: find.byType(MxChoiceTile),
-      ),
+      find.ancestor(of: find.text(text), matching: find.byType(MxChoiceTile)),
     );
 
 Color? _groundOf(WidgetTester tester, String text) =>

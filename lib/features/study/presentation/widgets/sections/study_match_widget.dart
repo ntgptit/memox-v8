@@ -275,9 +275,7 @@ class _Tile extends StatelessWidget {
                   size: context.dimens.sizeIconInline,
                 ),
                 child: Icon(
-                  tone == MxChoiceTone.right
-                      ? AppIcons.check
-                      : AppIcons.close,
+                  tone == MxChoiceTone.right ? AppIcons.check : AppIcons.close,
                 ),
               ),
             Flexible(

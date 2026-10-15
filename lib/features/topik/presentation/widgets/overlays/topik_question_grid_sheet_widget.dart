@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
@@ -72,36 +74,56 @@ class TopikQuestionGridSheetWidget extends StatelessWidget {
           dimens.space24,
           dimens.space16,
         ),
-        child: Wrap(
-          spacing: dimens.space8,
-          runSpacing: dimens.space8,
-          children: [
-            for (final no in questionNos)
-              _GridCell(
-                no: no,
-                isAnswered: answered.contains(no),
-                isCurrent: no == current,
-                onTap: () => Navigator.of(context).pop(TopikGridQuestion(no)),
-              ),
-          ],
+        // As many control-wide columns as fit, then the cells share the
+        // row, so the grid fills the sheet edge to edge (impeccable after
+        // 6b).
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final gap = dimens.space8;
+            final columns = max(
+              1,
+              ((constraints.maxWidth + gap) / (dimens.sizeControl + gap))
+                  .floor(),
+            );
+            final side = (constraints.maxWidth - gap * (columns - 1)) / columns;
+            return Wrap(
+              spacing: gap,
+              runSpacing: gap,
+              children: [
+                for (final no in questionNos)
+                  _GridCell(
+                    no: no,
+                    side: side,
+                    isAnswered: answered.contains(no),
+                    isCurrent: no == current,
+                    onTap: () =>
+                        Navigator.of(context).pop(TopikGridQuestion(no)),
+                  ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
 
-/// A question's cell: a control square; answered in the accent tinted over
-/// the sheet, blank neutral, the current one with a primary edge. One
-/// TalkBack node with its state, selected when current.
+/// A question's cell: a square of [side]; answered in the accent tinted over
+/// the sheet, blank with a hairline edge only, the current one with a primary
+/// edge. One TalkBack node with its state, selected when current.
 class _GridCell extends StatelessWidget {
   const _GridCell({
     required this.no,
+    required this.side,
     required this.isAnswered,
     required this.isCurrent,
     required this.onTap,
   });
 
   final int no;
+
+  /// The cell's width and height: at least a control.
+  final double side;
   final bool isAnswered;
   final bool isCurrent;
   final VoidCallback onTap;
@@ -123,19 +145,27 @@ class _GridCell extends StatelessWidget {
             : l10n.topikQuestionBlank(no),
         excludeSemantics: true,
         child: SizedBox.square(
-          dimension: dimens.sizeControl,
+          dimension: side,
           child: DecoratedBox(
             decoration: BoxDecoration(
+              // Answered is a tinted ground; blank has no ground and a
+              // hairline edge, as a chip at rest, so the two differ in both
+              // modes (impeccable after 6b: two grounds read alike in dark).
               color: isAnswered
                   ? accent.tintOver(MxTintBase.of(context))
-                  : colors.surfaceContainerHighest,
-              borderRadius: radius,
-              border: isCurrent
-                  ? Border.all(
-                      color: colors.primary,
-                      width: dimens.strokeControl,
-                    )
                   : null,
+              borderRadius: radius,
+              border: switch ((isCurrent, isAnswered)) {
+                (true, _) => Border.all(
+                  color: colors.primary,
+                  width: dimens.strokeControl,
+                ),
+                (false, false) => Border.all(
+                  color: colors.outlineVariant,
+                  width: dimens.strokeHairline,
+                ),
+                (false, true) => null,
+              },
             ),
             child: Center(
               child: Text(

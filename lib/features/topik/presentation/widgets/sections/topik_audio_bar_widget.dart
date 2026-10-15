@@ -83,33 +83,46 @@ class _TopikAudioBarWidgetState extends ConsumerState<TopikAudioBarWidget> {
       topikClockText(ms.round()),
       topikClockText(lengthMs),
     );
-    return Row(
-      spacing: context.dimens.space4,
+    // Two lines, so the seek bar has the width of the pane at 360 dp: play
+    // and the bar, then the time and the speed (impeccable after 6b).
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        MxIconButton(
-          icon: isPlaying ? AppIcons.pause : AppIcons.study,
-          semanticLabel: isPlaying ? l10n.topikPause : l10n.topikPlay,
-          onPressed: isReady ? () => unawaited(_audio.toggle()) : null,
+        Row(
+          spacing: context.dimens.space4,
+          children: [
+            MxIconButton(
+              icon: isPlaying ? AppIcons.pause : AppIcons.study,
+              semanticLabel: isPlaying ? l10n.topikPause : l10n.topikPlay,
+              onPressed: isReady ? () => unawaited(_audio.toggle()) : null,
+            ),
+            Expanded(
+              child: MxSlider(
+                value: positionMs,
+                max: isReady ? lengthMs.toDouble() : 0,
+                onChanged: (ms) => setState(() => _dragMs = ms),
+                onChangeEnd: _seek,
+                semanticLabel: l10n.topikAudioPosition,
+                semanticFormatter: timeOf,
+              ),
+            ),
+          ],
         ),
-        Expanded(
-          child: MxSlider(
-            value: positionMs,
-            max: isReady ? lengthMs.toDouble() : 0,
-            onChanged: (ms) => setState(() => _dragMs = ms),
-            onChangeEnd: _seek,
-            semanticLabel: l10n.topikAudioPosition,
-            semanticFormatter: timeOf,
-          ),
-        ),
-        Text(
-          timeOf(positionMs),
-          style: context.texts.labelSmall?.copyWith(
-            color: context.colors.onSurfaceVariant,
-          ),
-        ),
-        MxChipTrigger(
-          label: l10n.topikSpeed(l10n.topikSpeedText(audio.speed)),
-          onPressed: () => unawaited(_pickSpeed(audio.speed)),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                timeOf(positionMs),
+                style: context.texts.labelSmall?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
+              ),
+            ),
+            MxChipTrigger(
+              label: l10n.topikSpeed(l10n.topikSpeedText(audio.speed)),
+              onPressed: () => unawaited(_pickSpeed(audio.speed)),
+            ),
+          ],
         ),
       ],
     );

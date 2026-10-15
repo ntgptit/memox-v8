@@ -196,7 +196,7 @@ class _TopikAttemptScreenState extends ConsumerState<TopikAttemptScreen> {
     final group = test.groups.firstWhere((g) => g.groupId == question.groupId);
     final selected = {
       for (final answer in view.detail.answers)
-        if (answer.selectedIdx case final idx?) answer.questionNo: idx,
+        answer.questionNo: ?answer.selectedIdx,
     };
     final isScriptShown =
         _scriptChoice[group.groupId] ?? selected.containsKey(question.no);

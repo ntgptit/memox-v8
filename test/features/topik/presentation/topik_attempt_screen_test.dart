@@ -14,7 +14,9 @@ import 'package:memox/features/topik/domain/usecases/submit_topik_attempt_use_ca
 import 'package:memox/features/topik/presentation/providers/answer_topik_question_use_case_provider.dart';
 import 'package:memox/features/topik/presentation/providers/submit_topik_attempt_use_case_provider.dart';
 import 'package:memox/features/topik/presentation/screens/topik_attempt_screen.dart';
+import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
+import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 
 import '../../../support/library_harness.dart';
@@ -282,6 +284,16 @@ void main() {
     await tester.tap(find.text('Submit'));
     await tester.pump();
     expect(find.byType(MxSpinner), findsOneWidget);
+    expect(
+      tester.widget<MxIconButton>(find.byType(MxIconButton).last).onPressed,
+      isNull,
+    );
+    expect(
+      tester
+          .widget<MxButton>(find.widgetWithText(MxButton, 'Questions'))
+          .onPressed,
+      isNull,
+    );
     await tester.tap(find.byType(MxSpinner), warnIfMissed: false);
     await tester.binding.handlePopRoute();
     await tester.pump();
