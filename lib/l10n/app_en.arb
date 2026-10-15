@@ -229,6 +229,18 @@
     },
     "description": "A whole percent."
   },
+  "topikCorrectOfTotal": "{correct} / {count} correct",
+  "@topikCorrectOfTotal": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "A completed attempt's correct answers of its questions (BR-TOPIK-021)."
+  },
   "topikOfTotal": "{part} / {total}",
   "@topikOfTotal": {
     "placeholders": {

@@ -6,7 +6,8 @@ import 'package:memox/l10n/duration_text.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_list_row.dart';
 
-/// A recent attempt (BR-TOPIK-021): "#n", when, the score and how long; an
+/// A recent attempt (BR-TOPIK-021): "#n", when, the score, the correct
+/// answers and how long; an
 /// attempt in progress reads "In progress" and continues.
 class TopikRecentAttemptRowWidget extends StatelessWidget {
   const TopikRecentAttemptRowWidget({
@@ -29,6 +30,10 @@ class TopikRecentAttemptRowWidget extends StatelessWidget {
         l10n.topikStatusInProgress
       else ...[
         l10n.topikOfTotal(score, attempt.maxScore),
+        l10n.topikCorrectOfTotal(
+          attempt.correctCount ?? 0,
+          attempt.questionCount,
+        ),
         l10n.duration(attempt.totalTimeMs),
       ],
     ]);

@@ -1,10 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
 import 'package:memox/features/topik/domain/repositories/topik_attempt_repository.dart';
+import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/domain/usecases/delete_topik_attempt_use_case.dart';
+import 'package:memox/features/topik/domain/usecases/start_topik_attempt_use_case.dart';
 import 'package:memox/features/topik/presentation/providers/delete_topik_attempt_use_case_provider.dart';
+import 'package:memox/features/topik/presentation/providers/start_topik_attempt_use_case_provider.dart';
+import 'package:memox/features/topik/presentation/providers/topik_test_detail_provider.dart';
+import 'package:memox/features/topik/presentation/providers/watch_topik_test_detail_use_case_provider.dart';
+import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_detail_screen.dart';
@@ -12,7 +21,9 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/route_naming.dart';
 import '../../../support/topik_content_fixtures.dart';
+import '../../../support/topik_fakes.dart';
 import '../../../support/topik_screen_fixtures.dart';
 
 /// The attempt store with a delete that fails, as a locked database does.
@@ -170,32 +181,52 @@ void main() {
     expect(find.byType(SnackBar), findsNothing);
   });
 
-  libraryTest('History: delete asks, then removes the row and renumbers '
-      '(BR-TOPIK-018, -021)', (tester, env) async {
-    await topikSeedCompleted(env, test, startedAt: libraryToday);
-    await topikSeedCompleted(
-      env,
-      test,
-      startedAt: libraryToday.add(const Duration(days: 1)),
-    );
+  libraryTest('History: delete asks, then removes the row, renumbers the '
+      'later ones and recomputes the progress (BR-TOPIK-018, -021)', (
+    tester,
+    env,
+  ) async {
+    for (final day in [0, 1, 2]) {
+      await topikSeedCompleted(
+        env,
+        test,
+        startedAt: libraryToday.add(Duration(days: day)),
+        correct: 20 + day,
+      );
+    }
     final taps = _Taps();
     await pump(tester, env, taps);
+    expect(find.text('3 / 3'), findsOneWidget);
     await tester.tap(find.text('History'));
     await tester.pumpAndSettle();
-    expect(find.text('#2'), findsOneWidget);
+    expect(find.text('#3'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Delete attempt').last);
+    // Newest first: #3, #2, #1. Cancel leaves #2 in place.
+    await tester.tap(find.byTooltip('Delete attempt').at(1));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
-    expect(find.text('#2'), findsOneWidget);
+    expect(find.text('#3'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Delete attempt').first);
+    await tester.tap(find.byTooltip('Delete attempt').at(1));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();
-    expect(find.text('#2'), findsNothing);
-    expect(find.text('#1'), findsOneWidget);
+    // The attempt with 22 right was #3; it is #2 now, and #3 is gone.
+    expect(find.text('#3'), findsNothing);
+    expect(find.text('#2'), findsOneWidget);
+    expect(
+      findPlainTextContaining('22 / ${test.questions.length} correct'),
+      findsOneWidget,
+    );
+    expect(
+      findPlainTextContaining('21 / ${test.questions.length} correct'),
+      findsNothing,
+    );
+
+    await tester.tap(find.text('Overview'));
+    await tester.pumpAndSettle();
+    expect(find.text('2 / 2'), findsOneWidget);
   });
 
   libraryTest('History: Summary, Review and Continue open their screens', (
@@ -267,5 +298,153 @@ void main() {
 
     expect(find.text('#1'), findsOneWidget);
     expect(find.byType(SnackBar), findsOneWidget);
+  });
+
+  libraryTest('a completed row shows the score and the correct answers, '
+      'on Overview and in History (BR-TOPIK-021, spec §6.2)', (
+    tester,
+    env,
+  ) async {
+    final done = await topikSeedCompleted(
+      env,
+      test,
+      startedAt: libraryToday,
+      correct: 25,
+    );
+    final taps = _Taps();
+    await pump(tester, env, taps);
+    final score = '${done.score} / ${done.maxScore}';
+    final correct = '25 / ${test.questions.length} correct';
+
+    expect(findPlainTextContaining(score), findsOneWidget);
+    expect(findPlainTextContaining(correct), findsOneWidget);
+    await tester.tap(find.text('History'));
+    await tester.pumpAndSettle();
+    expect(findPlainTextContaining(score), findsOneWidget);
+    expect(findPlainTextContaining(correct), findsOneWidget);
+  });
+
+  libraryTest('a recent row opens Summary when completed and the attempt '
+      'when in progress (BR-TOPIK-021)', (tester, env) async {
+    final done = await topikSeedCompleted(env, test, startedAt: libraryToday);
+    final open = await topikSeedInProgress(
+      env,
+      test,
+      startedAt: libraryToday.add(const Duration(hours: 1)),
+    );
+    final taps = _Taps();
+    await pump(tester, env, taps);
+
+    await tester.tap(find.text('#1'));
+    await tester.tap(find.text('#2'));
+    expect(taps.summaries, [done.id]);
+    expect(taps.attempts, [open.id]);
+  });
+
+  libraryTest('an error after the test loaded drops the FAB and the title '
+      '(States: error, The Content Gate Rule)', (tester, env) async {
+    await topikSeedCompleted(env, test, startedAt: libraryToday);
+    final taps = _Taps();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(taps),
+      overrides: [
+        ...topikContentOverrides([test]),
+        topikTestDetailProvider(test.testId).overrideWith((ref) {
+          // The store's stream reads the test, then fails, as a locked
+          // database does.
+          final out = StreamController<TopikTestDetail>();
+          final read = ref.watch(watchTopikTestDetailUseCaseProvider);
+          final sub = read(test.testId).listen((detail) {
+            out
+              ..add(detail)
+              ..addError(const DatabaseLockedFailure(cause: 'locked'));
+          });
+          ref.onDispose(() {
+            unawaited(sub.cancel());
+            unawaited(out.close());
+          });
+          return out.stream;
+        }),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MxErrorState), findsOneWidget);
+    expect(find.byType(MxFab), findsNothing);
+    expect(find.text(test.titleKo), findsNothing);
+  });
+
+  libraryTest('error: Retry reads the test again (States: error to loaded)', (
+    tester,
+    env,
+  ) async {
+    var reads = 0;
+    final taps = _Taps();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(taps),
+      overrides: [
+        ...topikContentOverrides([test]),
+        topikTestDetailProvider(test.testId).overrideWith((ref) {
+          reads++;
+          if (reads == 1) {
+            return Stream<TopikTestDetail>.error(StateError('read'));
+          }
+          return ref.watch(watchTopikTestDetailUseCaseProvider)(test.testId);
+        }),
+      ],
+    );
+    await tester.pumpAndSettle();
+    expect(find.text("Couldn't load this test"), findsOneWidget);
+    expect(find.text('Nothing was lost. Try again.'), findsOneWidget);
+
+    await tester.tap(find.text('Retry'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MxErrorState), findsNothing);
+    expect(find.text('No attempts yet'), findsOneWidget);
+  });
+
+  libraryTest('a start refused because the test left says so '
+      '(BR-TOPIK-019)', (tester, env) async {
+    await topikSeedCompleted(env, test, startedAt: libraryToday);
+    final taps = _Taps();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      screen(taps),
+      overrides: [
+        ...topikContentOverrides([test]),
+        // The content changed after the screen read it: no test to start.
+        startTopikAttemptUseCaseProvider.overrideWith(
+          (ref) => StartTopikAttemptUseCase(
+            FakeTopikContentRepository([]),
+            TopikAttemptRepositoryImpl(env.db),
+          ),
+        ),
+      ],
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(MxFab));
+    await tester.pumpAndSettle();
+    expect(taps.attempts, isEmpty);
+    expect(find.text("This test isn't available"), findsOneWidget);
+  });
+
+  libraryTest('the test title names the route once, as a heading', (
+    tester,
+    env,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pump(tester, env, _Taps());
+
+    final node = tester.getSemantics(find.text(test.titleKo));
+    expect(node.hasFlag(SemanticsFlag.namesRoute), isTrue);
+    expect(node.hasFlag(SemanticsFlag.isHeader), isTrue);
+    expect(routeNamingNodes(tester), 1);
+    handle.dispose();
   });
 }

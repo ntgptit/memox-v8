@@ -9,8 +9,9 @@ import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 
-/// One attempt in History (critique F1): "#n" with its status badge, then
-/// when, "{correct}/{count}" and how long, then its actions as small outline
+/// One attempt in History (critique F1, BR-TOPIK-021): "#n" with its status
+/// badge, then when, "{score} / {max}", "{correct} / {count} correct" and how
+/// long, then its actions as small outline
 /// buttons (never primary: one row of many, The One Accent Rule) and the
 /// delete button at the end.
 class TopikHistoryRowWidget extends StatelessWidget {
@@ -37,8 +38,13 @@ class TopikHistoryRowWidget extends StatelessWidget {
     final isCompleted = attempt.isCompleted;
     final meta = l10n.topikTerms([
       l10n.topikDateTime(attempt.startedAt),
-      if (isCompleted)
-        l10n.topikOfTotal(attempt.correctCount ?? 0, attempt.questionCount),
+      if (isCompleted) ...[
+        l10n.topikOfTotal(attempt.score ?? 0, attempt.maxScore),
+        l10n.topikCorrectOfTotal(
+          attempt.correctCount ?? 0,
+          attempt.questionCount,
+        ),
+      ],
       l10n.duration(attempt.totalTimeMs),
     ]);
     return Padding(

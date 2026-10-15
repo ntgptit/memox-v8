@@ -49,6 +49,7 @@
   "topikAverage": "Trung bình",
   "topikCompleted": "Đã nộp",
   "topikPercent": "{value}%",
+  "topikCorrectOfTotal": "đúng {correct} / {count}",
   "topikOfTotal": "{part} / {total}",
   "topikLastActivity": "Lần gần nhất {ago} · {duration}",
   "topikScoresNote": "Điểm chỉ tính các lượt đã nộp",

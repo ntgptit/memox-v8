@@ -65,7 +65,10 @@ class _TopikTestDetailScreenState extends ConsumerState<TopikTestDetailScreen> {
     final l10n = context.l10n;
     final detailProvider = topikTestDetailProvider(widget.testId);
     final async = ref.watch(detailProvider);
-    final detail = async.value;
+    // Content only from data: on an error Riverpod keeps the last value,
+    // and the error state has neither the FAB nor the test's title
+    // (The Content Gate Rule).
+    final detail = async.hasError ? null : async.value;
     final test = detail?.test;
     final now = ref.watch(dayClockProvider).now();
     // Watched so the controller lives as long as the screen: its busy flag
