@@ -134,4 +134,56 @@ void main() {
     );
     handle.dispose();
   });
+
+  group('a loading spinner sits on the centre of the whole button', () {
+    // The padding beside a glyph is asymmetric (start 16, end 24 for filled
+    // and outlined), so the content box is not centred on the button.
+    for (final direction in TextDirection.values) {
+      for (final size in [
+        MxButtonSize.regular,
+        MxButtonSize.small,
+        MxButtonSize.chip,
+        MxButtonSize.study,
+      ]) {
+        for (final tone in [
+          MxButtonTone.primary,
+          MxButtonTone.outline,
+          MxButtonTone.text,
+        ]) {
+          for (final isBlock in [false, true]) {
+            testWidgets(
+              '${tone.name} ${size.name} with an icon, ${direction.name}'
+              '${isBlock ? ', block' : ''}',
+              (tester) async {
+                await pumpMx(
+                  tester,
+                  Directionality(
+                    textDirection: direction,
+                    child: MxButton(
+                      label: 'Start studying',
+                      icon: Icons.play_arrow,
+                      tone: tone,
+                      size: size,
+                      isBlock: isBlock,
+                      isLoading: true,
+                      onPressed: () {},
+                    ),
+                  ),
+                );
+
+                expect(
+                  tester.getCenter(find.byType(MxSpinner)).dx,
+                  closeTo(tester.getCenter(_painted.first).dx, 0.01),
+                );
+                expect(
+                  tester.getCenter(find.byType(MxSpinner)).dy,
+                  closeTo(tester.getCenter(_painted.first).dy, 0.01),
+                );
+              },
+            );
+          }
+        }
+      }
+    }
+  });
 }

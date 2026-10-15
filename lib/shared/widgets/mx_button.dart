@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_chip_style.dart';
@@ -321,15 +323,27 @@ class MxButton extends StatelessWidget {
           );
     if (!isLoading) return body;
 
+    // The content box sits between the start and end padding, which differ
+    // beside a glyph, so its centre is off the button's by half the
+    // difference. Padding the spinner on the short side by the whole
+    // difference moves it back by that half, in either text direction.
+    final offCentre = geometry.end - geometry.start;
     // The hidden label holds the width the button already had.
     return Stack(
       alignment: Alignment.center,
       children: [
         Visibility.maintain(visible: false, child: body),
-        // Ruling O2: onPrimary inside a filled button, primary on the rest.
-        MxSpinner(
-          isOnFill:
-              tone == MxButtonTone.primary || tone == MxButtonTone.destructive,
+        Padding(
+          padding: EdgeInsetsDirectional.only(
+            start: math.max(0, offCentre),
+            end: math.max(0, -offCentre),
+          ),
+          // Ruling O2: onPrimary inside a filled button, primary on the rest.
+          child: MxSpinner(
+            isOnFill:
+                tone == MxButtonTone.primary ||
+                tone == MxButtonTone.destructive,
+          ),
         ),
       ],
     );
