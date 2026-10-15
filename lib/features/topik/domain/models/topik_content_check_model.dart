@@ -259,7 +259,7 @@ void _checkAssets(
       for (final option in question.options) ?option.image,
   };
   for (final path in paths) {
-    if (!assetExists(path))
-      error(TopikContentRule.assets, 'missing file $path');
+    if (assetExists(path)) continue;
+    error(TopikContentRule.assets, 'missing file $path');
   }
 }
