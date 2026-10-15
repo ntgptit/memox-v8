@@ -56,18 +56,24 @@ Taking a test in Practice mode (UC-TOPIK-003, BR-TOPIK-010…BR-TOPIK-017, BR-TO
 | submitConfirm | Keep answering | answering | BR-TOPIK-014. VERIFIED same test |
 | submitConfirm / answering (no blank) | Submit | submitting → 38 (replaces 37) | BR-TOPIK-013. VERIFIED same test, `::with every question answered, Submit does not ask`; route 38 is plan 6c's |
 | submitting | second tap / Back | no effect | BR-TOPIK-014. VERIFIED `::while submitting, a second tap and Back do nothing (BR-TOPIK-014)`, `topik_attempt_controller_test.dart::a second submit, and every answer after one, is ignored (BR-TOPIK-014)` |
-| submitting | submit refused (the test left) | answering + snackbar; the person goes on | BR-TOPIK-019. VERIFIED `topik_attempt_controller_test.dart::a refused submit lets the person go on` (controller); the snackbar is the shared refusal path of `::a choice that is not saved…` |
+| submitting | submit refused (the test left) | answering + snackbar naming why; the person goes on | BR-TOPIK-019. VERIFIED `::a submit refused because the test left says so and lets the person go on (BR-TOPIK-019)`, `topik_attempt_controller_test.dart::a refused submit lets the person go on` |
+| submitting | the write fails (a database `Failure`) | answering + snackbar in the failure's own words | UC-TOPIK-003 E4. UNVERIFIED on the screen: the same `on Failure` path as the failed pick below, with the failure's message; no test fails a submit write |
+| grid | Submit | as Submit in the footer (submitConfirm when blanks remain) | BR-TOPIK-013. VERIFIED `::the grid's Submit submits like the footer's` |
 | answeringListening | play fails | audioError | BR-TOPIK-017. VERIFIED `::audio that fails is a warning; answering still works (BR-TOPIK-017)`, `topik_audio_bar_test.dart::a clip that fails is a warning; Retry loads it again` |
 | audioError | Retry | answeringListening | BR-TOPIK-017. VERIFIED `topik_audio_bar_test.dart::a clip that fails is a warning; Retry loads it again` |
 | answering | the script toggle, or answering the question | scriptShown; the person's own hide wins | Spec §5.5, D15. VERIFIED `::the script shows once the question is answered, or by its toggle (spec §5.5, D15)` |
 | answering | Hide passage / Show passage | collapsed / answering | Critique F5. VERIFIED `topik_attempt_widgets_test.dart::the group pane: instruction, passage; collapsed it keeps the instruction on one line` |
+| collapsed | move to a group with nothing to hide (no passage, no script) | answering: its instruction whole, no toggle; the collapse comes back on the next group with material | Final review 6b #1. VERIFIED `topik_attempt_widgets_test.dart::a collapse carried into a group with nothing to hide keeps its whole instruction (final review 6b #1)` |
 | any | attempt deleted | attemptMissing; Back to the test leaves | UC-TOPIK-003 E2. VERIFIED `::the attempt deleted elsewhere: missing, and Back to the test leaves (UC-TOPIK-003 E2)` |
 | any | account switched | attemptMissing | UC-TOPIK-003 E2, BR-TOPIK-027. UNVERIFIED on this screen: the switch clears the store (`LocalDataReset`) and the stream emits null, the path the delete row exercises; no screen test drives a switch |
 | loading | test no longer valid | contentMissing | BR-TOPIK-019. VERIFIED `::the test changed: the attempt offers Delete, which leaves (BR-TOPIK-019)` |
 | contentMissing | Delete attempt, confirmed | the attempt deleted; leaves | BR-TOPIK-019. VERIFIED same test |
 | loading | the attempt is submitted (a link) | submitted; See summary → 38 | Plan 6b. VERIFIED `::a link to a submitted attempt offers its summary` |
-| loading | the read fails | error; Retry → loading | Plan 6b. VERIFIED `::a read that fails: Retry reads again; Close stays` |
-| any | write fails | same state + snackbar "Your choice wasn't saved. Try again.", the choice not shown as saved | UC-TOPIK-003 E4. VERIFIED `::a choice that is not saved says so and is not shown as chosen (UC-TOPIK-003 E4)` |
+| loading | the read fails | error | Plan 6b. VERIFIED `::a read that fails: Retry reads again; Close stays` |
+| answering | the read fails mid-attempt | error: no footer, no grid, Close stays | The Content Gate Rule. VERIFIED `::a read that fails mid-attempt shows the error, with no footer (The Content Gate Rule)` |
+| error | Retry | error with Retry spinning, then the state the read gives | Plan 6b. VERIFIED `::a read that fails: Retry reads again; Close stays` |
+| any | a pick fails to save | same state + snackbar "Your choice wasn't saved. Try again.", the choice not shown as saved | UC-TOPIK-003 E4. VERIFIED `::a choice that is not saved says so and is not shown as chosen (UC-TOPIK-003 E4)` |
+| answering | a move fails to save | same question + snackbar in the failure's own words | UC-TOPIK-003 E4. UNVERIFIED on the screen: the same `on Failure` path as the failed pick; no test fails a move |
 | any | language changes | same question, relabelled; answers and time kept | UC-TOPIK-003 A4. VERIFIED for the labels (`::in Vietnamese: the same question, relabelled; the Korean stays (UC-TOPIK-003 A4)`, pumped in Vietnamese); a live switch rebuilds from the same stream, no test drives it |
 
 ## Accessibility
@@ -90,7 +96,7 @@ Taking a test in Practice mode (UC-TOPIK-003, BR-TOPIK-010…BR-TOPIK-017, BR-TO
 - **Plan 6b (F2):** the top bar's track is the position, as its counter; answered versus blank lives in the grid.
 - **Plan 6b (F3):** stem and options are `bodyLarge` (content read like the passage), not the Tile-body role of a study option (owner question Q-P6b-3).
 - **Plan 6b (F4):** the selected option's primary fill is a state of the choice surface, not a second action.
-- **Plan 6b (F5):** the collapse control is a text button: `AppIcons` has no chevron-up (owner question Q-P6b-4); collapsing keeps the audio bar, so audio is never stopped by a collapse.
+- **Plan 6b (F5):** the collapse control is a text button: `AppIcons` has no chevron-up (owner question Q-P6b-4); collapsing keeps the audio bar, so audio is never stopped by a collapse; a group with nothing to hide ignores the collapse (final review 6b #1).
 - **Plan 6b (F6):** the audio time has no tabular figures (The Twelve Roles Rule); the speed is a sheet of `MxOptionRow`s.
 - **Plan 6b (F7):** grid cells fill the sheet's width; answered tinted, blank edged, current with a primary edge.
 - **Plan 6b (F8):** loading, error and the gone states have no footer or grid; Close stays.

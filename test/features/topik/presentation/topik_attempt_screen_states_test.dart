@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/presentation/providers/topik_attempt_provider.dart';
+import 'package:memox/features/topik/presentation/providers/watch_topik_attempt_use_case_provider.dart';
 import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 
@@ -198,5 +202,39 @@ void main() {
     expect(find.text('2. ${reading.questions[1].stemKo}'), findsOneWidget);
     expect(find.text('Câu sau'), findsOneWidget);
     expect(find.text('② 보기 2'), findsOneWidget);
+  });
+
+  libraryTest('a read that fails mid-attempt shows the error, with no footer '
+      '(The Content Gate Rule)', (tester, env) async {
+    final attempt = await topikSeedAttempt(env, reading);
+    await pumpTopikAttempt(
+      tester,
+      env,
+      attempt.id,
+      catalog: [reading],
+      overrides: [
+        topikAttemptProvider(attempt.id).overrideWith((ref) {
+          // The store reads the attempt, then fails, as a locked database
+          // does.
+          final out = StreamController<TopikAttemptView?>();
+          final read = ref.watch(watchTopikAttemptUseCaseProvider);
+          final sub = read(attempt.id).listen((view) {
+            out
+              ..add(view)
+              ..addError(const DatabaseLockedFailure(cause: 'locked'));
+          });
+          ref.onDispose(() {
+            unawaited(sub.cancel());
+            unawaited(out.close());
+          });
+          return out.stream;
+        }),
+      ],
+    );
+
+    expect(find.byType(MxErrorState), findsOneWidget);
+    expect(find.text('Next'), findsNothing);
+    expect(find.text('Questions'), findsNothing);
+    expect(find.byTooltip('Close'), findsOneWidget);
   });
 }

@@ -46,6 +46,10 @@ class TopikGroupPaneWidget extends StatelessWidget {
     final dimens = context.dimens;
     final ground = context.colors.surfaceContainerLow;
     final hasMaterial = group.passage != null || group.script != null;
+    // The screen keeps one collapse for the whole attempt; a group with
+    // nothing to hide shows its instruction whole, or a collapse carried
+    // into it would cut the task's words with no way to open them.
+    final isShut = isCollapsed && hasMaterial;
     return MxTintBase(
       color: ground,
       child: ColoredBox(
@@ -65,8 +69,8 @@ class TopikGroupPaneWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       group.instructionKo,
-                      maxLines: isCollapsed ? 1 : null,
-                      overflow: isCollapsed ? TextOverflow.ellipsis : null,
+                      maxLines: isShut ? 1 : null,
+                      overflow: isShut ? TextOverflow.ellipsis : null,
                       style: context.texts.bodyMedium?.copyWith(
                         color: context.colors.onSurfaceVariant,
                       ),
@@ -84,7 +88,7 @@ class TopikGroupPaneWidget extends StatelessWidget {
                 ],
               ),
               if (audio case final clip?) TopikAudioBarWidget(clip: clip),
-              if (!isCollapsed) ..._material(context),
+              if (!isShut) ..._material(context),
             ],
           ),
         ),

@@ -325,4 +325,69 @@ void main() {
     expect(find.text("Your choice wasn't saved. Try again."), findsOneWidget);
     expect(topikOptionTile(tester, '③ 보기 3').tone, MxChoiceTone.idle);
   });
+
+  libraryTest('a submit refused because the test left says so and lets the '
+      'person go on (BR-TOPIK-019)', (tester, env) async {
+    final attempt = await topikSeedAttempt(
+      env,
+      reading,
+      currentNo: 50,
+      answers: {for (final question in reading.questions) question.no: 2},
+    );
+    final exits = await pumpTopikAttempt(
+      tester,
+      env,
+      attempt.id,
+      catalog: [reading],
+      overrides: [
+        // The content changed after the screen read it: nothing to score.
+        submitTopikAttemptUseCaseProvider.overrideWith(
+          (ref) => SubmitTopikAttemptUseCase(
+            FakeTopikContentRepository([]),
+            TopikAttemptRepositoryImpl(env.db),
+          ),
+        ),
+      ],
+    );
+
+    await tester.tap(find.text('Submit'));
+    await tester.pumpAndSettle();
+    expect(find.text("This test isn't available"), findsOneWidget);
+    expect(exits.submitted, isEmpty);
+    expect(
+      (await topikStoredAttempt(tester, env, attempt.id)).attempt.isCompleted,
+      isFalse,
+    );
+
+    await tester.tap(find.text('③ 보기 3'));
+    await tester.pumpAndSettle();
+    expect(topikOptionTile(tester, '③ 보기 3').tone, MxChoiceTone.selected);
+  });
+
+  libraryTest("the grid's Submit submits like the footer's", (
+    tester,
+    env,
+  ) async {
+    final attempt = await topikSeedAttempt(
+      env,
+      reading,
+      answers: {for (final question in reading.questions) question.no: 4},
+    );
+    final exits = await pumpTopikAttempt(
+      tester,
+      env,
+      attempt.id,
+      catalog: [reading],
+    );
+
+    await tester.tap(find.text('Questions'));
+    await tester.pumpAndSettle();
+    // The sheet's Submit, over the footer's (the last pick made 50 current).
+    await tester.tap(find.text('Submit').last);
+    // The sheet closes, then the submit holds the screen (it never settles).
+    for (var frame = 0; frame < 3; frame++) {
+      await tester.pump(const Duration(seconds: 1));
+    }
+    expect(exits.submitted, [attempt.id]);
+  });
 }

@@ -256,4 +256,29 @@ void main() {
     expect(picks.last, isA<TopikGridSubmit>());
     handle.dispose();
   });
+
+  libraryTest('a collapse carried into a group with nothing to hide keeps '
+      'its whole instruction (final review 6b #1)', (tester, env) async {
+    final json = topikTestJson();
+    groupJson(json, 'g1')['passage'] = null;
+    final group = topikTestOfFixtureJson(json).groups.first;
+    await host(
+      tester,
+      env,
+      TopikGroupPaneWidget(
+        group: group,
+        audio: null,
+        isCollapsed: true,
+        isScriptShown: false,
+        onToggleCollapsed: () {},
+        onToggleScript: () {},
+      ),
+    );
+
+    expect(
+      tester.widget<Text>(find.text(group.instructionKo)).maxLines,
+      isNull,
+    );
+    expect(find.text('Show passage'), findsNothing);
+  });
 }
