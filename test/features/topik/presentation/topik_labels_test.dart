@@ -1,6 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
+import 'package:memox/features/topik/domain/models/topik_question_type_model.dart';
+import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
+import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_test_status_model.dart';
 import 'package:memox/features/topik/presentation/widgets/support/topik_labels_widget.dart';
@@ -85,5 +88,25 @@ void main() {
       [for (var idx = 1; idx <= 4; idx++) topikCircled(idx)].join(),
       '①②③④',
     );
+  });
+
+  test('screen 38 names: every type, filter and status in both languages', () {
+    for (final type in TopikQuestionType.values) {
+      expect(en.topikTypeName(type), isNotEmpty, reason: type.name);
+      expect(vi.topikTypeName(type), isNotEmpty, reason: type.name);
+    }
+    expect(
+      en.topikTypeName(TopikQuestionType.r2SentenceInsert),
+      'Where the sentence goes',
+    );
+    expect(
+      [for (final f in TopikAnswerFilter.values) en.topikFilterName(f)],
+      ['All', 'Wrong', 'Unanswered', 'Correct'],
+    );
+    expect(
+      en.topikAnswerStatusName(TopikAnswerStatus.unanswered),
+      'Unanswered',
+    );
+    expect(en.topikFilterEmpty(TopikAnswerFilter.wrong), 'No wrong answers');
   });
 }

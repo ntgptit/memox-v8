@@ -1,5 +1,8 @@
 import 'package:intl/intl.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
+import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
+import 'package:memox/features/topik/domain/models/topik_attempt_summary_model.dart';
+import 'package:memox/features/topik/domain/models/topik_question_type_model.dart';
 import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
@@ -92,6 +95,65 @@ extension TopikLabels on AppLocalizations {
   /// translated: this is the content's own vi or en text).
   String topikText(TopikText text) =>
       localeName.startsWith('vi') ? text.vi : text.en;
+
+  /// A question type's short name (screen 38's By question type).
+  String topikTypeName(TopikQuestionType type) => switch (type) {
+    TopikQuestionType.l1AnswerQuestion => topikTypeAnswerQuestion,
+    TopikQuestionType.l1NextUtterance ||
+    TopikQuestionType.l2NextUtterance => topikTypeNextUtterance,
+    TopikQuestionType.l1Place => topikTypePlace,
+    TopikQuestionType.l1Topic || TopikQuestionType.r1Topic => topikTypeTopic,
+    TopikQuestionType.l1Picture => topikTypePicture,
+    TopikQuestionType.l1MatchContent ||
+    TopikQuestionType.r1MatchContent ||
+    TopikQuestionType.l2MatchContent ||
+    TopikQuestionType.r2MatchContent => topikTypeSameContent,
+    TopikQuestionType.l1MainIdea ||
+    TopikQuestionType.r1MainIdea ||
+    TopikQuestionType.l2MainIdea => topikTypeMainIdea,
+    TopikQuestionType.l1Paired ||
+    TopikQuestionType.r1Paired ||
+    TopikQuestionType.l2Paired ||
+    TopikQuestionType.r2Paired => topikTypePaired,
+    TopikQuestionType.r1FillBlank => topikTypeFillBlank,
+    TopikQuestionType.r1NotMatch => topikTypeNotSame,
+    TopikQuestionType.r1Ordering ||
+    TopikQuestionType.r2Ordering => topikTypeOrdering,
+    TopikQuestionType.r1LongPaired ||
+    TopikQuestionType.r2LongPaired => topikTypeLongPassage,
+    TopikQuestionType.l2PictureGraph => topikTypePictureGraph,
+    TopikQuestionType.l2NextAction => topikTypeNextAction,
+    TopikQuestionType.l2PairedAdvanced => topikTypePairedAdvanced,
+    TopikQuestionType.r2GrammarBlank => topikTypeGrammarBlank,
+    TopikQuestionType.r2SimilarExpression => topikTypeSimilarExpression,
+    TopikQuestionType.r2AdTopic => topikTypeAdTopic,
+    TopikQuestionType.r2ParagraphBlank => topikTypeParagraphBlank,
+    TopikQuestionType.r2Headline => topikTypeHeadline,
+    TopikQuestionType.r2ComplexBlank => topikTypeComplexBlank,
+    TopikQuestionType.r2MatchContentMid => topikTypeSameContentMid,
+    TopikQuestionType.r2Theme => topikTypeTheme,
+    TopikQuestionType.r2SentenceInsert => topikTypeSentenceInsert,
+  };
+
+  String topikFilterName(TopikAnswerFilter filter) => switch (filter) {
+    TopikAnswerFilter.all => topikFilterAll,
+    TopikAnswerFilter.wrong => topikWrong,
+    TopikAnswerFilter.unanswered => topikUnanswered,
+    TopikAnswerFilter.correct => topikCorrect,
+  };
+
+  String topikAnswerStatusName(TopikAnswerStatus status) => switch (status) {
+    TopikAnswerStatus.correct => topikCorrect,
+    TopikAnswerStatus.wrong => topikWrong,
+    TopikAnswerStatus.unanswered => topikUnanswered,
+  };
+
+  /// What a filter with no question says (screen 38's filterEmpty).
+  String topikFilterEmpty(TopikAnswerFilter filter) => switch (filter) {
+    TopikAnswerFilter.wrong => topikNoWrong,
+    TopikAnswerFilter.unanswered => topikNoUnanswered,
+    TopikAnswerFilter.correct || TopikAnswerFilter.all => topikNoCorrect,
+  };
 }
 
 /// An audio position as minutes and seconds, "1:33" (spec §5.5); the

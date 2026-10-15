@@ -44,6 +44,10 @@ void main() {
     expect(AppRoutes.topikAttempt('a1'), '/study/topik/attempt/a1');
     expect(AppRoutes.topikSummary('a1'), '/study/topik/attempt/a1/summary');
     expect(AppRoutes.topikReview('a1'), '/study/topik/attempt/a1/review');
+    expect(
+      AppRoutes.topikReview('a1', questionNo: 31),
+      '/study/topik/attempt/a1/review?q=31',
+    );
   });
 
   libraryTest('Study home → TOPIK → a level → a test under the tab bar; Back '
