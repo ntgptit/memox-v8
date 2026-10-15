@@ -43,7 +43,7 @@ bar is gone while it is open.
 | fileSelected | no golden | no golden | The source options give way to the chip (K1). |
 | badEncoding | no golden | no golden | Read is locked (E1) and the caption says to choose another file; pasted text says to edit it. |
 | emptySheet | no golden | no golden | One copy for a file, a sheet or text with no row (E2); another sheet can still be chosen (A2). |
-| parsing | no golden | no golden | "Reading your file…" in the source area. The two source options take no tap meanwhile and keep announcing the selected one (M3F-10). |
+| parsing | no golden | no golden | "Reading your file…" in the source area. The two source options take no tap meanwhile: each is announced as disabled (one node, not dimmed) and the chosen one keeps its selected state (M3F-10). |
 | mapping | `import_mapping_light.png` | `import_mapping_dark.png` | Only canonical header names map by themselves (D2); headers such as `term`/`meaning` stay unmapped. |
 | mappingNoHeader | `import_mapping_no_header_light.png` | `import_mapping_no_header_dark.png` | "First row is a header" off: each column shows its first value under "Column {A}" (critique 2026-09-30 part 1). |
 | mappingIncomplete | no golden | no golden | The error is a banner of its own, not a red border (K3). The "mapped for you" note shows only once the mapping is complete. |

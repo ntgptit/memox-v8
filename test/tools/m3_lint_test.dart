@@ -50,6 +50,7 @@ void main() {
     final violations = await _lint('tools/m3_lint/fixtures/negative');
     const expected = {
       'm3l01_overlay_bypass.dart': 7,
+      'm3l01_overlay_route_subclass.dart': 3,
       'm3l02_cupertino_adaptive.dart': 17,
       'm3l04_literal_barrier.dart': 5,
       'm3l05_theme_platform.dart': 2,
@@ -92,6 +93,79 @@ void main() {
     final file = File('${Directory.systemTemp.createTempSync().path}/a.json')
       ..writeAsStringSync('[{"file":"lib/x.dart","rule":"M3L01"}]');
     expect(() => loadAllowlist(file.path), throwsFormatException);
+  });
+
+  group('allowlist review date', () {
+    const violation = M3Violation(
+      rule: 'M3L01',
+      path: 'lib/x.dart',
+      line: 1,
+      message: 'm',
+    );
+    AllowEntry entry(String review) => AllowEntry(
+      file: 'lib/x.dart',
+      rule: 'M3L01',
+      reason: 'r',
+      owner: 'o',
+      review: review,
+    );
+
+    test('an entry whose review day has passed is reported as M3L00', () {
+      final result = applyAllowlist(
+        [violation],
+        [entry('2026-10-14')],
+        today: DateTime(2026, 10, 15),
+      );
+      expect(result.map((v) => v.rule), ['M3L00']);
+      expect(result.single.message, contains('expired'));
+      expect(result.single.message, contains('2026-10-14'));
+    });
+
+    test('an entry reviewed today or later stays silent', () {
+      for (final review in ['2026-10-15', '2027-04-15']) {
+        final result = applyAllowlist(
+          [violation],
+          [entry(review)],
+          today: DateTime(2026, 10, 15),
+        );
+        expect(result, isEmpty, reason: review);
+      }
+    });
+
+    test('a date that is not strictly YYYY-MM-DD is rejected', () {
+      final dir = Directory.systemTemp.createTempSync();
+      for (final review in [
+        '2027-4-15',
+        '2027/04/15',
+        '20270415',
+        '2027-04-15T00:00:00',
+        '2027-02-30',
+        '2027-13-01',
+        ' 2027-04-15',
+      ]) {
+        final file = File('${dir.path}/a.json')
+          ..writeAsStringSync(
+            '[{"file":"lib/x.dart","rule":"M3L01","reason":"r",'
+            '"owner":"o","review":"$review"}]',
+          );
+        expect(
+          () => loadAllowlist(file.path),
+          throwsFormatException,
+          reason: review,
+        );
+      }
+    });
+
+    test('the committed allowlist loads and has not expired', () {
+      final entries = loadAllowlist('tools/m3_lint/allowlist.json');
+      expect(entries, isNotEmpty);
+      final result = applyAllowlist(
+        const [],
+        entries,
+        today: DateTime(2026, 10, 15),
+      );
+      expect(result.where((v) => v.message.contains('expired')), isEmpty);
+    });
   });
 
   test('an allowlist entry that suppresses nothing is reported', () async {

@@ -29,6 +29,10 @@ class ImportSourceOptionWidget extends StatelessWidget {
       isSelected: isSelected,
       child: MxRowInk(
         onTap: onSelected,
+        // No tap while a file is read: the option says it is disabled, keeps
+        // its selected state and is not dimmed.
+        isEnabled: onSelected != null,
+        shouldDimWhenDisabled: false,
         isSelected: isSelected,
         child: Padding(
           padding: EdgeInsets.all(context.dimens.space12),

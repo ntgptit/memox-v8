@@ -131,6 +131,27 @@ void main() {
     });
   }
 
+  testWidgets('M3F-08: the theme platform decides, as in the SDK AppBar', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      Builder(
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+          child: const MxAppBar(title: 'Library'),
+        ),
+      ),
+    );
+    expect(
+      tester.getSemantics(find.text('Library')),
+      isSemantics(label: 'Library', isHeader: true, namesRoute: false),
+    );
+    expect(routeNamingNodes(tester), 0);
+    handle.dispose();
+  });
+
   testWidgets(
     'a title widget takes the title slot between leading and actions',
     (tester) async {

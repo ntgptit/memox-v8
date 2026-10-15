@@ -20,11 +20,11 @@ export PATH=/root/.flutter-sdk/3.47.5/flutter/bin:$PATH
 
 - **Command:** `dart run tools/m3_lint/m3_lint.dart` (about 80 s on `lib/`). Exit 1 on a hit, 2 on a malformed allowlist entry or an unresolved import. `dod_check.sh` runs it; its own tests are `test/tools/m3_lint_test.dart`.
 - **Rules:**
-  - `M3L00`: a stale allowlist entry (file, rule id, reason, owner, review date). The allowlist is `tools/m3_lint/allowlist.json`: today two entries, both the one overlay adapter `mx_dialog.dart` (M3L01, M3L04).
-  - `M3L01`: overlay route bypass (`DialogRoute`, `RawDialogRoute`, `ModalBottomSheetRoute`, `showGeneralDialog`, `showRawDialog`, low-level `ModalRoute` or `PopupRoute`).
+  - `M3L00`: a stale allowlist entry, or one whose review date has passed (file, rule id, reason, owner and a strict `YYYY-MM-DD` review date; a malformed date exits 2). The allowlist is `tools/m3_lint/allowlist.json`: today two entries, both the one overlay adapter `mx_dialog.dart` (M3L01, M3L04).
+  - `M3L01`: overlay route bypass (`DialogRoute`, `RawDialogRoute`, `ModalBottomSheetRoute`, `showGeneralDialog`, `showRawDialog`, a class that extends or implements `ModalRoute`, `PopupRoute` or one of the overlay routes).
   - `M3L02`: `showAdaptiveDialog`, Cupertino modals and controls, `.adaptive` constructors.
   - `M3L03`: `Scaffold.drawerScrimColor`.
-  - `M3L04`: `barrierColor`, `modalBarrierColor`, `surfaceTintColor` arguments outside the theme owners.
+  - `M3L04`: `barrierColor`, `modalBarrierColor`, `scrimColor`, `surfaceTintColor` arguments, with any value, on any callee outside the theme owners.
   - `M3L05`: `ThemeData(platform:)`.
   - `M3L06`: seed schemes (`ColorScheme.fromSeed`, `colorSchemeSeed`).
   - `M3L07`: `AppBarTheme` with `iconTheme` or `foregroundColor` and no `actionsIconTheme`.

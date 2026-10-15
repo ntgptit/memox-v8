@@ -110,7 +110,7 @@ AllowEntry _entryFrom(int index, Object? raw) {
   }
 
   final review = field('review');
-  if (DateTime.tryParse(review) == null) {
+  if (!_isStrictDate(review)) {
     throw FormatException(
       'allowlist entry $index: "review" is not a YYYY-MM-DD date',
     );
@@ -124,12 +124,28 @@ AllowEntry _entryFrom(int index, Object? raw) {
   );
 }
 
+final RegExp _datePattern = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+
+/// True for exactly `YYYY-MM-DD` naming a real calendar day.
+bool _isStrictDate(String text) {
+  if (!_datePattern.hasMatch(text)) return false;
+  final parsed = DateTime.tryParse(text);
+  return parsed != null && _dayOf(parsed) == text;
+}
+
+String _dayOf(DateTime date) =>
+    '${date.year.toString().padLeft(4, '0')}-'
+    '${date.month.toString().padLeft(2, '0')}-'
+    '${date.day.toString().padLeft(2, '0')}';
+
 /// Lints [absolutePaths] and returns the violations the [allowlist] does not
-/// cover, plus one M3L00 per allowlist entry that covered nothing.
+/// cover, plus one M3L00 per allowlist entry that covered nothing and one per
+/// entry whose review date is before [today] (the current day by default).
 Future<List<M3Violation>> lintPaths(
   List<String> absolutePaths, {
   required String root,
   required List<AllowEntry> allowlist,
+  DateTime? today,
 }) async {
   final found = <M3Violation>[];
   final collection = AnalysisContextCollection(
@@ -155,7 +171,7 @@ Future<List<M3Violation>> lintPaths(
   } finally {
     await collection.dispose();
   }
-  return applyAllowlist(found, allowlist);
+  return applyAllowlist(found, allowlist, today: today);
 }
 
 // `dart run` finds its SDK by itself; `flutter test` runs inside
@@ -202,11 +218,14 @@ String _slashes(String path) => path.replaceAll(r'\', '/');
 
 /// Drops the violations an entry covers (same file and rule, whatever the
 /// separator the entry was written with) and adds an M3L00 per entry that
-/// covered nothing.
+/// covered nothing, and one per entry whose `review` day is before [today]
+/// (the current day by default; an entry reviewed today is still valid).
 List<M3Violation> applyAllowlist(
   List<M3Violation> found,
-  List<AllowEntry> allowlist,
-) {
+  List<AllowEntry> allowlist, {
+  DateTime? today,
+}) {
+  final day = _dayOf(today ?? DateTime.now());
   bool covers(AllowEntry e, M3Violation v) =>
       _slashes(e.file) == v.path && e.rule == v.rule;
   final kept = [
@@ -223,7 +242,19 @@ List<M3Violation> applyAllowlist(
           message: 'stale allowlist entry for ${e.rule}',
         ),
   ];
-  return [...kept, ...stale];
+  final expired = [
+    for (final e in allowlist)
+      if (e.review.compareTo(day) < 0)
+        M3Violation(
+          rule: 'M3L00',
+          path: e.file,
+          line: 0,
+          message:
+              'allowlist entry for ${e.rule} expired: review was due '
+              '${e.review}',
+        ),
+  ];
+  return [...kept, ...stale, ...expired];
 }
 
 /// What an invocation resolved to: the Flutter class that owns it (if any)
@@ -279,7 +310,11 @@ class _M3Visitor extends RecursiveAstVisitor<void> {
     for (final type in supers) {
       final element = type.element;
       if (!_fromFlutter(element)) continue;
-      if (!_overlayBaseRoutes.contains(element?.name)) continue;
+      final name = element?.name;
+      if (!_overlayBaseRoutes.contains(name) &&
+          !_overlayRoutes.contains(name)) {
+        continue;
+      }
       _report(
         'M3L01',
         type.offset,

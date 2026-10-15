@@ -19,7 +19,7 @@ The higher source wins. A fact in a lower source never changes a higher one.
 |---|---|
 | 1 | Approved decisions: ADRs, `PRODUCT.md`, owner rulings, screen detail files |
 | 2 | `design/tokens.json`, `design/app_tokens.json`, `DESIGN.md` and flutter-theme-design |
-| 3 | Flutter SDK pinned in `.fvmrc`, with its source under `/root/.flutter-sdk/<version>/flutter/packages/flutter/lib/src/` |
+| 3 | Flutter SDK resolved from `.fvmrc`, with its source under that SDK's `packages/flutter/lib/src/` (for example `/root/.flutter-sdk/<version>/flutter/packages/flutter/lib/src/` in the Linux container) |
 | 4 | `docs/shared/design/m3-shared-widget-spec-v2.6.1.md` |
 | 5 | Conventions |
 
