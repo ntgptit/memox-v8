@@ -191,12 +191,6 @@ void main() {
         ),
       ),
     );
-    FocusManager.instance.highlightStrategy =
-        FocusHighlightStrategy.alwaysTraditional;
-    addTearDown(
-      () => FocusManager.instance.highlightStrategy =
-          FocusHighlightStrategy.automatic,
-    );
     for (var i = 0; i < 3; i++) {
       final painted = find
           .descendant(

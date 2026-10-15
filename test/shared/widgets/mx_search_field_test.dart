@@ -251,4 +251,60 @@ void main() {
       semantics.dispose();
     });
   });
+
+  // M3F-13: a filled enabled decorator blends ThemeData.hoverColor into its
+  // fill, so the search surface now hovers at the token layer.
+  for (final brightness in Brightness.values) {
+    testWidgets('M3F-13: a hovered search field blends onSurface at '
+        'opacityHover over the search surface ($brightness)', (tester) async {
+      await pumpMx(
+        tester,
+        SizedBox(
+          width: 328,
+          child: MxSearchField(
+            controller: controller,
+            hintText: 'Search decks and cards',
+            clearLabel: 'Clear search',
+          ),
+        ),
+        brightness: brightness,
+      );
+      final context = tester.element(find.byType(MxSearchField));
+      // The decorator paints its fill with the hover colour blended in.
+      PaintPattern paintsFill(Color color) =>
+          paints..something((name, arguments) {
+            if (name != #drawRRect && name != #drawPath) return false;
+            final paint = arguments.whereType<Paint>().first;
+            return paint.style == PaintingStyle.fill &&
+                paint.color.toARGB32() == color.toARGB32();
+          });
+      final painter = tester.renderObject(
+        find
+            .descendant(
+              of: find.byType(InputDecorator),
+              matching: find.byType(CustomPaint),
+            )
+            .first,
+      );
+
+      expect(painter, paintsFill(context.mxColors.searchSurface));
+      final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await mouse.addPointer(location: Offset.zero);
+      addTearDown(mouse.removePointer);
+      await mouse.moveTo(tester.getCenter(find.byType(TextField)));
+      await tester.pumpAndSettle();
+
+      expect(
+        painter,
+        paintsFill(
+          Color.alphaBlend(
+            context.colors.onSurface.withValues(
+              alpha: context.dimens.opacityHover,
+            ),
+            context.mxColors.searchSurface,
+          ),
+        ),
+      );
+    });
+  }
 }
