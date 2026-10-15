@@ -64,7 +64,7 @@ lib/features/topik/
   domain/failures/      TopikRejection (Outcome reasons)
   domain/usecases/      one use case per interaction (§3.3)
   data/datasources/     content asset data source, attempt DAO, sync DAO
-  data/mappers/         content JSON → models (calls the domain validator), rows ↔ models
+  data/mappers/         content JSON → models (shape and language rules), rows ↔ models
   data/repositories/    *_repository_impl.dart
   di/                   repository providers
   presentation/         screens 34–39, controllers, states, providers, widgets
@@ -329,14 +329,14 @@ named when no type has two questions or every type is at 100%.
 
 ### 7.1 Tables (schema v16 → v17, create only)
 
-`topik_attempts`: `id` (UUID v7), `test_id`, `level`, `section`, `round`, `mode`
+`topik_attempt`: `id` (UUID v7), `test_id`, `level`, `section`, `round`, `mode`
 (`practice`; `exam` added with Phase B), `status` (`in_progress`, `completed`),
 `started_at`, `completed_at` (null while in progress), `updated_at`,
 `total_time_ms`, `current_question_no`, `score`, `max_score`, `correct_count`,
 `answered_count`, `question_count` (snapshot columns null while in progress except
 `question_count` and `max_score`), `content_version`, `server_version`.
 
-`topik_attempt_answers`: `attempt_id` (FK → `topik_attempts`, `ON DELETE
+`topik_attempt_answer`: `attempt_id` (FK → `topik_attempt`, `ON DELETE
 CASCADE`), `question_no`, `selected_idx` (1–4 or null), `time_spent_ms`,
 `answered_at`, snapshot `correct_idx`, `points`, `points_earned`,
 `question_type` (null while in progress). Primary key (`attempt_id`,
@@ -460,3 +460,129 @@ published NIIED source.
 | Goldens and Hangul | `flutter_test_config.dart` loads Noto Sans KR, but older golden tests avoid Hangul. Probed before the first TOPIK golden; the result is recorded in the plan. |
 | Copyright | NIIED publishes the papers for study; MemoX is a personal app (`PRODUCT.md`). Recorded in ADR-023. |
 | New dependency for audio | Proposed with its reasons in the engineering design (deliverable 4) and approved by the owner before it enters `pubspec.yaml`. |
+
+## 13. Engineering design (deliverable 4, owner approval 2026-10-15)
+
+### 13.1 Local schema v16 → v17
+
+Tables are singular, like `card`, `deck` and `review_log`, and like the sync entity type
+(this replaces the plural names of the first draft of §7.1).
+
+- `topik_attempt`: `id TEXT PRIMARY KEY` (UUID v7), `test_id`, `level`, `section`, `round`,
+  `mode` (`CHECK IN ('practice')`), `status` (`CHECK IN ('in_progress', 'completed')`),
+  `started_at`, `completed_at`, `updated_at` (`DATETIME`, UTC), `total_time_ms`,
+  `current_question_no`, `question_count`, `max_score`, snapshot `score`, `correct_count`,
+  `answered_count` (null exactly while `in_progress`, by `CHECK`), `content_version`,
+  `server_version INTEGER NULL`. Index `idx_topik_attempt_test_started (test_id, started_at)`.
+- `topik_attempt_answer`: primary key (`attempt_id` → `topik_attempt` `ON DELETE CASCADE`,
+  `question_no`), `selected_idx` (`CHECK` 1–4 or null), `time_spent_ms`, `answered_at`,
+  snapshot `correct_idx`, `points`, `points_earned`, `question_type`.
+- Start inserts the attempt and one answer row per question (`selected_idx` null, time 0) in
+  one transaction; answering and time are updates only.
+- Immutability is enforced in the database, as `review_log_append_only` does: a
+  `BEFORE UPDATE` trigger on `topik_attempt` aborts when the old row is `completed` and any
+  column other than `server_version` changes; a `BEFORE UPDATE` trigger on
+  `topik_attempt_answer` aborts when its attempt is `completed`.
+- Migration `from16To17`: `m.createTable` and `m.createTrigger` only; no outbox seed (the
+  tables are new). Snapshot `drift_schemas/drift_schema_v17.json`, `schema_versions.dart`, and
+  `test/drift/migration_test.dart` targets move to 17.
+- Rollback: drop both tables and their triggers; `DELETE FROM sync_outbox WHERE entity_type =
+  'topik_attempt'`.
+- `LocalDataReset` deletes `topik_attempt` (answers cascade) and lists both tables in
+  `markTablesUpdated`; `local_data_reset_test` seeds and checks them.
+
+### 13.2 Sync, client
+
+- `lib/features/topik/data/datasources/topik_attempt_sync_dao.dart`, `TopikAttemptSyncDao`,
+  registered last in `appSyncAdaptersOf`; queries in `queries/sync_topik_attempt_queries.drift`.
+- Triggers, each with the `applying_remote` guard: an update from `in_progress` to
+  `completed` enqueues an `upsert`; a delete `WHEN old.status = 'completed'` enqueues a
+  `delete`. No insert trigger (a local insert is always `in_progress`) and no trigger on
+  answers, so an in-progress attempt never reaches the outbox — the coordinator would push a
+  `readRow == null` entry as a delete.
+- `readRow`: the attempt in camelCase plus `answers: [...]`; times without fractions, as the
+  other adapters write them. `upsertFromServer`: `INSERT OR IGNORE` the attempt, then the
+  answers only when the attempt was new. `deleteFromServer`: a plain delete, a no-op for an
+  unknown id. `markAcknowledged`: `server_version` only.
+- `SyncStore.markAllPending` gains `seedTopikAttemptOutbox … WHERE status = 'completed'`.
+- Registering the type changes `pull_entity_types`, so every existing install re-pulls from
+  zero once (accepted by the owner).
+
+### 13.3 Sync, server
+
+- Migration `supabase/migrations/2026101X000000_topik_attempt_sync.sql`: `public.topik_attempt`
+  (`user_id` → `auth.users` `ON DELETE CASCADE`, `server_version` unique per user, `deleted_at`,
+  `last_device_id`, checks mirroring Drift) and `public.topik_attempt_answer` (child, no
+  version, `ON DELETE CASCADE`, as `card_tags`); RLS on, no policy, no client privilege.
+- `private.topik_attempt_upsert`: insert-only; the same id of the same user is idempotent,
+  another user's id raises `SYNC_ENTITY_CONFLICT`, an upsert onto a tombstone is refused
+  (`ENTITY_TOMBSTONED`). Integrity (BR-TOPIK-028) over `jsonb_array_elements(r->'answers')`,
+  raising `VALIDATION_FAILED`. `topik_attempt_delete`: a final tombstone as `tag_delete`, the
+  answers deleted physically. `topik_attempt_change` for pulls.
+- The four dispatch functions are rewritten in full with the literal forms
+  `supabase/tests/database/15_sync_entity_dispatch.sql` parses; `merge_user_data` moves the
+  new tables; pgTAP `01`, `12` and `15` are updated and `17_topik_attempt_sync.sql` added
+  (idempotency, tombstone, each integrity check, the previous wire still applied).
+- The server-sync spec's contract-key and conflict tables gain the type ("append-only with a
+  final tombstone").
+
+### 13.4 Content loading
+
+- `data/datasources/topik_content_asset_data_source.dart` reads `assets/topik/manifest.json`
+  and each pack through `AssetBundle`, then runs `topikTestOf(json, origin: path)`,
+  `checkTopikTest` (asset existence from the `AssetManifest`) and `checkTopikCatalog`. Among
+  duplicate ids the first valid one wins. A rejected test is logged `topik.content_rejected`
+  with its id and first error rule, and left out.
+- `pubspec.yaml` lists every pack folder (asset folders are not recursive); a gate test checks
+  that each folder holding a manifest entry or a referenced asset is declared.
+- `topikCatalogProvider` is `keepAlive` (owner approval 2026-10-15): the content never changes
+  while the app runs, and Phase B's packs would be re-parsed on every screen otherwise.
+
+### 13.5 Domain, use cases, repositories
+
+- Contracts `TopikContentRepository` (`catalog()`) and `TopikAttemptRepository` (reads
+  `watchAttemptsOfTest`, `watchAttempt`, `watchTestStatuses`; writes `start` →
+  `Outcome<…, TopikRejection>` with `inProgressExists`, `replaceInProgressAndStart`, `answer`,
+  `move`, `recordTime`, `submit`, `delete`, each in `mappedTransaction`).
+- Pure functions: `scoreTopikAttempt(test, answers)` (§5.3) and the statistics of §6.
+- One use case per interaction (§3.3), `DayClock` for the time.
+
+### 13.6 Presentation state
+
+- `topikAttemptControllerProvider(attemptId)`: `@riverpod`, auto-dispose family. It holds the
+  attempt, the test, the current question and `currentSince`. Time comes from events, not a
+  ticking timer: on an answer, a move, a background transition or leaving, `clock.now() −
+  currentSince` is added to the current question and written. The screen's
+  `AppLifecycleListener` calls `pause()` and `resume()`. Double submit is guarded and every
+  write after an `await` checks `ref.mounted`.
+- Screens 34–36, 38 and 39 read stream providers, as `progress` does.
+
+### 13.7 Navigation
+
+`AppRoutes`: `topik = '/study/topik'`, `topikLevel(level)`, `topikTest(testId)` in the Study
+branch; `topikAttempt(id)`, its `summary` and `review` (`?q=`) on the root navigator. Study
+home gains one optional slot, `Widget? practiceEntry`, which `lib/app/` fills with the topik
+feature's entry card, so `study` never imports `topik` (as `reauthNotice`). Its place on the
+screen is decided in the design mapping.
+
+### 13.8 Audio
+
+- Dependency `just_audio ^0.10.6` (owner approval 2026-10-15): `ClippingAudioSource` plays
+  exactly `[startMs, endMs)` natively, plus `setSpeed`, seek and asset playback; Flutter
+  ≥ 3.27; its dependencies fit `uuid ^4`. Rejected: `audioplayers` 6.8.1, which has no
+  clipping.
+- Inside the topik feature (owner approval 2026-10-15): an interface in `domain/` (file name
+  per the guard's suffix rule), one door file in `data/datasources/` that alone imports
+  `just_audio` (a guard rule `audio_plugin_has_one_door`, as for `flutter_tts`), its provider
+  in `di/`, and a fake for tests. It moves to `lib/core/` when a second feature needs audio.
+
+### 13.9 Phase 2 plans
+
+1. Content loading, `pubspec` folders, catalog.
+2. Drift v17, attempt repository, `LocalDataReset`.
+3. Sync adapter, Supabase migration, pgTAP.
+4. Scoring, statistics, use cases, the shared duration formatter.
+5. Audio player.
+6. Screens 13 (entry), 34, 35, 36, 37, 38, 39, each through CLAUDE.md's screen workflow.
+7. The round-96 pack, once the files arrive.
+
