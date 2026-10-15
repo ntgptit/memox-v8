@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/app/gallery/gallery_section.dart';
+import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
@@ -11,6 +12,7 @@ import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -35,6 +37,7 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
   var _theme = 2;
   var _cards = 20;
   var _seekPosition = 40.0;
+  var _choice = 1;
 
   @override
   void dispose() {
@@ -103,6 +106,24 @@ class _GalleryInputsSectionState extends State<GalleryInputsSection> {
         onChanged: (value) => setState(() => _seekPosition = value),
         semanticLabel: context.l10n.gallerySeekBar,
       ),
+      for (final (index, label) in [
+        context.l10n.galleryChoiceIdle,
+        context.l10n.galleryChoiceSelected,
+      ].indexed)
+        MxChoiceTile(
+          tone: index == _choice ? MxChoiceTone.selected : MxChoiceTone.idle,
+          isSelected: index == _choice,
+          semanticsLabel: label,
+          padding: EdgeInsets.symmetric(
+            horizontal: context.dimens.space16,
+            vertical: context.dimens.space12,
+          ),
+          onTap: () => setState(() => _choice = index),
+          builder: (foreground) => Text(
+            label,
+            style: context.texts.bodyLarge?.copyWith(color: foreground),
+          ),
+        ),
       MxDividedColumn(
         children: [
           MxOptionRow(

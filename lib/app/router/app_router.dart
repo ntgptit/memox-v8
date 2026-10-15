@@ -216,7 +216,7 @@ GoRouter buildAppRouter({
                   practiceEntry: topikPracticeEntry(context),
                 ),
                 // Screens 34–36 keep the tab bar (TOPIK spec §8).
-                routes: [topikRoute()],
+                routes: [topikRoute(rootNavigator)],
               ),
             ],
           ),

@@ -7,7 +7,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
+import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
@@ -37,12 +37,9 @@ StudySessionScreen _screen(String id) => StudySessionScreen(
 Future<String> _match(LibraryEnv env) =>
     openFiveDueReview(env.db, env.decks, libraryToday, StudyMode.match);
 
-StudyChoiceWidget _tile(WidgetTester tester, String text) =>
-    tester.widget<StudyChoiceWidget>(
-      find.ancestor(
-        of: find.text(text),
-        matching: find.byType(StudyChoiceWidget),
-      ),
+MxChoiceTile _tile(WidgetTester tester, String text) =>
+    tester.widget<MxChoiceTile>(
+      find.ancestor(of: find.text(text), matching: find.byType(MxChoiceTile)),
     );
 
 Color? _groundOf(WidgetTester tester, String text) =>
@@ -52,7 +49,7 @@ Color? _groundOf(WidgetTester tester, String text) =>
                       .descendant(
                         of: find.ancestor(
                           of: find.text(text),
-                          matching: find.byType(StudyChoiceWidget),
+                          matching: find.byType(MxChoiceTile),
                         ),
                         matching: find.byType(DecoratedBox),
                       )
@@ -101,8 +98,8 @@ void main() {
     await _pair(tester, 'term 1', 'apple');
     await tester.pumpAndSettle();
 
-    expect(_tile(tester, 'term 1').tone, StudyChoiceTone.right);
-    expect(_tile(tester, 'apple').tone, StudyChoiceTone.right);
+    expect(_tile(tester, 'term 1').tone, MxChoiceTone.right);
+    expect(_tile(tester, 'apple').tone, MxChoiceTone.right);
     expect(
       find.bySemanticsLabel(
         _en.studyMatchTileMatched(_en.studyMatchTerm('term 1')),
@@ -127,19 +124,19 @@ void main() {
 
     await _pair(tester, 'term 1', 'banana');
 
-    expect(_tile(tester, 'term 1').tone, StudyChoiceTone.wrong);
-    expect(_tile(tester, 'banana').tone, StudyChoiceTone.wrong);
+    expect(_tile(tester, 'term 1').tone, MxChoiceTone.wrong);
+    expect(_tile(tester, 'banana').tone, MxChoiceTone.wrong);
     // M3-F1: a wrong tile carries the cross, as a wrong Guess option does.
     expect(
       find.descendant(
-        of: find.byType(StudyChoiceWidget),
+        of: find.byType(MxChoiceTile),
         matching: find.byIcon(AppIcons.close),
       ),
       findsNWidgets(2),
     );
     // The same cards' other sides are not part of the wrong pair.
-    expect(_tile(tester, 'term 2').tone, StudyChoiceTone.idle);
-    expect(_tile(tester, 'apple').tone, StudyChoiceTone.idle);
+    expect(_tile(tester, 'term 2').tone, MxChoiceTone.idle);
+    expect(_tile(tester, 'apple').tone, MxChoiceTone.idle);
     expect(find.textContaining(_en.studyMatchHintWrong), findsOneWidget);
     expect(_hintIcon(tester), AppIcons.repeat);
     expect(
@@ -150,8 +147,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pumpAndSettle();
 
-    expect(_tile(tester, 'term 1').tone, StudyChoiceTone.idle);
-    expect(_tile(tester, 'banana').tone, StudyChoiceTone.idle);
+    expect(_tile(tester, 'term 1').tone, MxChoiceTone.idle);
+    expect(_tile(tester, 'banana').tone, MxChoiceTone.idle);
     expect(find.textContaining(_en.studyMatchHint), findsOneWidget);
     expect(_hintIcon(tester), AppIcons.info);
     expect(await turnKindsOf(env.db, 'ST-01'), hasLength(1));
@@ -166,14 +163,14 @@ void main() {
 
     await tester.tap(find.text('apple'));
     await tester.pump();
-    expect(_tile(tester, 'apple').tone, StudyChoiceTone.selected);
+    expect(_tile(tester, 'apple').tone, MxChoiceTone.selected);
 
     await tester.tap(find.text('term 1'));
     await tester.pump();
     await tester.pump();
 
-    expect(_tile(tester, 'term 1').tone, StudyChoiceTone.right);
-    expect(_tile(tester, 'apple').tone, StudyChoiceTone.right);
+    expect(_tile(tester, 'term 1').tone, MxChoiceTone.right);
+    expect(_tile(tester, 'apple').tone, MxChoiceTone.right);
     expect(await turnKindsOf(env.db, 'ST-01'), isNotEmpty);
   });
 
@@ -186,8 +183,8 @@ void main() {
     await tester.tap(find.text('banana'));
     await tester.pump();
 
-    expect(_tile(tester, 'apple').tone, StudyChoiceTone.idle);
-    expect(_tile(tester, 'banana').tone, StudyChoiceTone.selected);
+    expect(_tile(tester, 'apple').tone, MxChoiceTone.idle);
+    expect(_tile(tester, 'banana').tone, MxChoiceTone.selected);
     expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
   });
 
@@ -203,8 +200,8 @@ void main() {
     await tester.tap(find.text('term 2'));
     await tester.pump();
 
-    expect(_tile(tester, 'term 1').tone, StudyChoiceTone.idle);
-    expect(_tile(tester, 'term 2').tone, StudyChoiceTone.selected);
+    expect(_tile(tester, 'term 1').tone, MxChoiceTone.idle);
+    expect(_tile(tester, 'term 2').tone, MxChoiceTone.selected);
     expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
   });
 
@@ -222,15 +219,15 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(_tile(tester, 'term 2').tone, StudyChoiceTone.wrong);
-    expect(_tile(tester, 'apple').tone, StudyChoiceTone.wrong);
+    expect(_tile(tester, 'term 2').tone, MxChoiceTone.wrong);
+    expect(_tile(tester, 'apple').tone, MxChoiceTone.wrong);
     expect(await turnKindsOf(env.db, 'ST-02'), isNotEmpty);
     expect(await turnKindsOf(env.db, 'ST-01'), isEmpty);
 
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pumpAndSettle();
-    expect(_tile(tester, 'apple').tone, StudyChoiceTone.idle);
-    expect(_tile(tester, 'term 2').tone, StudyChoiceTone.idle);
+    expect(_tile(tester, 'apple').tone, MxChoiceTone.idle);
+    expect(_tile(tester, 'term 2').tone, MxChoiceTone.idle);
   });
 
   libraryTest('idle meanings are recessed, idle terms raised (R3)', (
@@ -366,11 +363,11 @@ void main() {
 
     await tester.tap(find.text('term 6'));
     await tester.pump();
-    expect(_tile(tester, 'term 6').tone, StudyChoiceTone.selected);
+    expect(_tile(tester, 'term 6').tone, MxChoiceTone.selected);
 
     await tester.tap(find.text('fig'));
     await tester.pumpAndSettle();
-    expect(_tile(tester, 'term 6').tone, StudyChoiceTone.right);
+    expect(_tile(tester, 'term 6').tone, MxChoiceTone.right);
   });
 
   libraryTest('a wrong pair carried into round 2 is asked there, and the '
@@ -432,7 +429,7 @@ void main() {
       find.descendant(
         of: find.ancestor(
           of: find.text('term 1'),
-          matching: find.byType(StudyChoiceWidget),
+          matching: find.byType(MxChoiceTile),
         ),
         matching: find.byType(TweenAnimationBuilder<Decoration>),
       ),

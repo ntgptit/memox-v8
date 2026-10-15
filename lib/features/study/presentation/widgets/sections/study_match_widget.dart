@@ -8,7 +8,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
+import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_whole_word_text_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -213,15 +213,15 @@ class _StudyMatchWidgetState extends State<StudyMatchWidget> {
 
   /// [isInHeldPair] is the column's own side of the pair on hold: a card
   /// has a term tile and a meaning tile, and only the tapped ones flash.
-  StudyChoiceTone _toneOf(
+  MxChoiceTone _toneOf(
     MatchTile tile, {
     required bool isSelected,
     required bool isInHeldPair,
   }) {
-    if (tile.isMatched) return StudyChoiceTone.right;
-    if (_isWrongPair && isInHeldPair) return StudyChoiceTone.wrong;
-    if (isSelected) return StudyChoiceTone.selected;
-    return StudyChoiceTone.idle;
+    if (tile.isMatched) return MxChoiceTone.right;
+    if (_isWrongPair && isInHeldPair) return MxChoiceTone.wrong;
+    if (isSelected) return MxChoiceTone.selected;
+    return MxChoiceTone.idle;
   }
 }
 
@@ -239,7 +239,7 @@ class _Tile extends StatelessWidget {
 
   final MatchTile tile;
   final String label;
-  final StudyChoiceTone tone;
+  final MxChoiceTone tone;
   final double order;
   final bool isTerm;
   final VoidCallback onTap;
@@ -247,15 +247,15 @@ class _Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return StudyChoiceWidget(
+    return MxChoiceTile(
       tone: tone,
-      isSelected: tone == StudyChoiceTone.selected,
+      isSelected: tone == MxChoiceTone.selected,
       isRecessed: !isTerm,
       semanticsLabel: switch (tone) {
-        StudyChoiceTone.right => l10n.studyMatchTileMatched(label),
-        StudyChoiceTone.selected => l10n.studyMatchTileSelected(label),
-        StudyChoiceTone.wrong => l10n.studyMatchTileWrong(label),
-        StudyChoiceTone.idle => label,
+        MxChoiceTone.right => l10n.studyMatchTileMatched(label),
+        MxChoiceTone.selected => l10n.studyMatchTileSelected(label),
+        MxChoiceTone.wrong => l10n.studyMatchTileWrong(label),
+        MxChoiceTone.idle => label,
       },
       sortKey: OrdinalSortKey(order),
       padding: EdgeInsets.symmetric(
@@ -268,16 +268,14 @@ class _Tile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           spacing: context.dimens.space4,
           children: [
-            if (tone == StudyChoiceTone.right || tone == StudyChoiceTone.wrong)
+            if (tone == MxChoiceTone.right || tone == MxChoiceTone.wrong)
               IconTheme(
                 data: IconThemeData(
                   color: foreground,
                   size: context.dimens.sizeIconInline,
                 ),
                 child: Icon(
-                  tone == StudyChoiceTone.right
-                      ? AppIcons.check
-                      : AppIcons.close,
+                  tone == MxChoiceTone.right ? AppIcons.check : AppIcons.close,
                 ),
               ),
             Flexible(

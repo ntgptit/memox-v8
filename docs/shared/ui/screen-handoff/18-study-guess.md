@@ -30,7 +30,7 @@ Not captured: the pre-tap idle appearance of the five options is an
 interaction inside `default`, not a separate capture.
 
 **Built (FE-A6 P3):** `StudyGuessWidget` in the session route's mode switch: the prompt
-face ("What is this?" in flow) over five `StudyChoiceWidget` rows lettered A–E. Once the
+face ("What is this?" in flow) over five `MxChoiceTile` rows lettered A–E. Once the
 pick's write commits, the pick and the right option (found by card id, BR-STUDY-041)
 take their tones, the rest fade, and the outcome is announced; the turn is held for
 1200 ms or until a tap. Goldens:

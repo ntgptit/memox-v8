@@ -9,7 +9,7 @@ import 'package:memox/features/study/domain/models/study_session_view_model.dart
 import 'package:memox/features/study/domain/models/turn_result_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_centred_scroll_widget.dart';
-import 'package:memox/features/study/presentation/widgets/support/study_choice_widget.dart';
+import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_face_card_widget.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
@@ -208,14 +208,14 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
     final letter = String.fromCharCode(_letterA + index);
     final label = l10n.studyGuessOption(letter, option.meaning);
     final tone = _toneOf(option);
-    final isInPlay = !_isAnswered || tone != StudyChoiceTone.idle;
-    return StudyChoiceWidget(
+    final isInPlay = !_isAnswered || tone != MxChoiceTone.idle;
+    return MxChoiceTile(
       tone: tone,
       isFaded: !isInPlay,
       semanticsLabel: switch (tone) {
-        StudyChoiceTone.right => l10n.studyGuessOptionRight(label),
-        StudyChoiceTone.wrong => l10n.studyGuessOptionWrong(label),
-        StudyChoiceTone.idle || StudyChoiceTone.selected => label,
+        MxChoiceTone.right => l10n.studyGuessOptionRight(label),
+        MxChoiceTone.wrong => l10n.studyGuessOptionWrong(label),
+        MxChoiceTone.idle || MxChoiceTone.selected => label,
       },
       padding: EdgeInsets.symmetric(
         horizontal: context.dimens.space16,
@@ -234,14 +234,14 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
               style: context.texts.bodySmall?.copyWith(color: foreground),
             ),
           ),
-          if (tone == StudyChoiceTone.right || tone == StudyChoiceTone.wrong)
+          if (tone == MxChoiceTone.right || tone == MxChoiceTone.wrong)
             IconTheme(
               data: IconThemeData(
                 color: foreground,
                 size: context.dimens.sizeIconInline,
               ),
               child: Icon(
-                tone == StudyChoiceTone.right ? AppIcons.check : AppIcons.close,
+                tone == MxChoiceTone.right ? AppIcons.check : AppIcons.close,
               ),
             ),
         ],
@@ -249,11 +249,11 @@ class _StudyGuessWidgetState extends State<StudyGuessWidget> {
     );
   }
 
-  StudyChoiceTone _toneOf(GuessOption option) {
-    if (!_isAnswered) return StudyChoiceTone.idle;
-    if (option.cardId == widget.item.cardId) return StudyChoiceTone.right;
-    if (option.cardId == widget.chosenCardId) return StudyChoiceTone.wrong;
-    return StudyChoiceTone.idle;
+  MxChoiceTone _toneOf(GuessOption option) {
+    if (!_isAnswered) return MxChoiceTone.idle;
+    if (option.cardId == widget.item.cardId) return MxChoiceTone.right;
+    if (option.cardId == widget.chosenCardId) return MxChoiceTone.wrong;
+    return MxChoiceTone.idle;
   }
 }
 

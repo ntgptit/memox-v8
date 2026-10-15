@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/database/app_database.dart' show AppDatabase;
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
+import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_catalog_model.dart';
 import 'package:memox/features/topik/domain/models/topik_views_model.dart';
 import 'package:memox/features/topik/domain/usecases/answer_topik_question_use_case.dart';
@@ -250,4 +251,29 @@ void main() {
       isNull,
     );
   });
+
+  test(
+    'the attempt view says when its content is missing (BR-TOPIK-019)',
+    () async {
+      final attempt = topikOk(
+        await StartTopikAttemptUseCase(catalog, attempts)(content.testId),
+      );
+      final watch = WatchTopikAttemptUseCase(catalog, attempts);
+
+      final view = (await watch(attempt.id).first)!;
+      expect(view.isContentMissing, isFalse);
+      // The test's questions are no longer the attempt's (a content change the
+      // validator lets through would show this way).
+      final fewer = TopikAttemptView(
+        detail: TopikAttemptDetail(
+          attempt: view.detail.attempt,
+          answers: view.detail.answers.skip(1).toList(),
+        ),
+        test: view.test,
+      );
+      expect(fewer.isContentMissing, isTrue);
+      catalog.tests = [];
+      expect((await watch(attempt.id).first)!.isContentMissing, isTrue);
+    },
+  );
 }

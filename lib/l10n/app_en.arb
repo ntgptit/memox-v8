@@ -366,6 +366,178 @@
   "@topikRefused": {
     "description": "A refused command with no more specific message."
   },
+  "topikClose": "Close",
+  "@topikClose": {
+    "description": "Screen 37: leaves the attempt; nothing is lost (BR-TOPIK-010)."
+  },
+  "topikShowScript": "Show script",
+  "@topikShowScript": {
+    "description": "Screen 37: shows a listening group's script and its translation."
+  },
+  "topikHideScript": "Hide script",
+  "@topikHideScript": {
+    "description": "Screen 37: hides the script again."
+  },
+  "topikShowPassage": "Show passage",
+  "@topikShowPassage": {
+    "description": "Screen 37: expands the group pane."
+  },
+  "topikHidePassage": "Hide passage",
+  "@topikHidePassage": {
+    "description": "Screen 37: collapses the group pane to its instruction."
+  },
+  "topikPlay": "Play",
+  "@topikPlay": {
+    "description": "Screen 37: the audio bar's play button."
+  },
+  "topikPause": "Pause",
+  "@topikPause": {
+    "description": "Screen 37: the audio bar's pause button."
+  },
+  "topikAudioPosition": "Audio position",
+  "@topikAudioPosition": {
+    "description": "Screen 37: the seek bar's label."
+  },
+  "topikClockOfTotal": "{position} / {length}",
+  "@topikClockOfTotal": {
+    "placeholders": {
+      "position": {
+        "type": "String"
+      },
+      "length": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 37: where the audio is, of its length, as 0:42 / 1:33."
+  },
+  "topikSpeed": "{speed}×",
+  "@topikSpeed": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 37: a playback speed, as 1× or 0.75×."
+  },
+  "topikPlaybackSpeed": "Playback speed",
+  "@topikPlaybackSpeed": {
+    "description": "Screen 37: the speed sheet's title and the speed chip's label."
+  },
+  "topikAudioFailed": "Couldn't play this audio",
+  "@topikAudioFailed": {
+    "description": "Screen 37: the audio banner's title (BR-TOPIK-017)."
+  },
+  "topikAudioFailedBody": "Your answers are safe.",
+  "@topikAudioFailedBody": {
+    "description": "Screen 37: the audio banner says first that nothing was lost."
+  },
+  "topikPrevious": "Previous",
+  "@topikPrevious": {
+    "description": "Screen 37: the previous question."
+  },
+  "topikNext": "Next",
+  "@topikNext": {
+    "description": "Screen 37: the next question."
+  },
+  "topikQuestions": "Questions",
+  "@topikQuestions": {
+    "description": "Screen 37: opens the question grid, and the grid sheet's title."
+  },
+  "topikSubmit": "Submit",
+  "@topikSubmit": {
+    "description": "Screen 37: submits the attempt (BR-TOPIK-013)."
+  },
+  "topikQuestionAnswered": "Question {no}, answered",
+  "@topikQuestionAnswered": {
+    "placeholders": {
+      "no": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 37: a grid cell to TalkBack."
+  },
+  "topikQuestionBlank": "Question {no}, not answered",
+  "@topikQuestionBlank": {
+    "placeholders": {
+      "no": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 37: a grid cell to TalkBack."
+  },
+  "topikQuestionStem": "{no}. {stem}",
+  "@topikQuestionStem": {
+    "placeholders": {
+      "no": {
+        "type": "int"
+      },
+      "stem": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 37: the real question number, then its Korean stem."
+  },
+  "topikOptionLabel": "Option {number}, {text}",
+  "@topikOptionLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 37: an option to TalkBack; selected is said by its state."
+  },
+  "topikUnansweredTitle": "{count, plural, =1{1 question unanswered} other{{count} questions unanswered}}",
+  "@topikUnansweredTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 37: the submit confirm's title (BR-TOPIK-014)."
+  },
+  "topikUnansweredBody": "Unanswered questions score 0. Submit anyway?",
+  "@topikUnansweredBody": {
+    "description": "Screen 37: the submit confirm's body."
+  },
+  "topikKeepAnswering": "Keep answering",
+  "@topikKeepAnswering": {
+    "description": "Screen 37: the submit confirm's cancel."
+  },
+  "topikBackToTest": "Back to the test",
+  "@topikBackToTest": {
+    "description": "Screen 37: leaves an attempt that is gone."
+  },
+  "topikContentChangedTitle": "This test changed and can't be continued",
+  "@topikContentChangedTitle": {
+    "description": "Screen 37: the attempt's test is gone or changed (BR-TOPIK-019)."
+  },
+  "topikSubmittedTitle": "This attempt was submitted",
+  "@topikSubmittedTitle": {
+    "description": "Screen 37: a link to an attempt already submitted."
+  },
+  "topikSeeSummary": "See summary",
+  "@topikSeeSummary": {
+    "description": "Screen 37: opens a submitted attempt's summary."
+  },
+  "topikChoiceNotSaved": "Your choice wasn't saved. Try again.",
+  "@topikChoiceNotSaved": {
+    "description": "Screen 37: an answer the database refused (UC-TOPIK-003 E4)."
+  },
+  "topikPicture": "Picture",
+  "@topikPicture": {
+    "description": "Screen 37: a passage or option picture to TalkBack."
+  },
+  "topikLoadingAttempt": "Loading the attempt",
+  "@topikLoadingAttempt": {
+    "description": "Screen 37: what the skeleton is."
+  },
+  "topikAttemptErrorTitle": "Couldn't load this attempt",
+  "@topikAttemptErrorTitle": {
+    "description": "Screen 37: load error title."
+  },
   "commonOpenTrash": "Open Trash",
   "@commonOpenTrash": {
     "description": "Opens screen 06, the Trash: the Library app bar, the gone states and the Trash toasts (FE-B1 D1, D4, D11)."
@@ -2967,6 +3139,14 @@
   "gallerySeekBar": "Seek bar",
   "@gallerySeekBar": {
     "description": "Debug gallery: sample copy in the component showcase."
+  },
+  "galleryChoiceIdle": "An option",
+  "@galleryChoiceIdle": {
+    "description": "Gallery: an idle MxChoiceTile."
+  },
+  "galleryChoiceSelected": "The chosen option",
+  "@galleryChoiceSelected": {
+    "description": "Gallery: a selected MxChoiceTile."
   },
   "galleryEightBox": "Eight box",
   "@galleryEightBox": {

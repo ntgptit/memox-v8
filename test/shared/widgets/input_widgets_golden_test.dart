@@ -12,6 +12,7 @@ import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/shared/widgets/mx_choice_tile.dart';
 import 'package:memox/shared/widgets/mx_slider.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
@@ -262,6 +263,39 @@ void main() {
               onChanged: null,
               semanticLabel: 'Audio position',
             ),
+          ],
+        ),
+      ),
+    );
+  });
+
+  testWidgets('MxChoiceTile: idle, selected, right, wrong, faded', (
+    tester,
+  ) async {
+    Widget tile(MxChoiceTone tone, String text, {bool isFaded = false}) =>
+        MxChoiceTile(
+          tone: tone,
+          isFaded: isFaded,
+          semanticsLabel: text,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          onTap: () {},
+          builder: (foreground) =>
+              Text(text, style: TextStyle(color: foreground, fontSize: 16)),
+        );
+    await expectThemedGoldens(
+      tester,
+      'mx_choice_tile',
+      SizedBox(
+        width: 320,
+        child: Column(
+          spacing: 8,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            tile(MxChoiceTone.idle, '① 보기 1'),
+            tile(MxChoiceTone.selected, '② 보기 2'),
+            tile(MxChoiceTone.right, '③ 보기 3'),
+            tile(MxChoiceTone.wrong, '④ 보기 4'),
+            tile(MxChoiceTone.idle, '보기', isFaded: true),
           ],
         ),
       ),

@@ -4,15 +4,17 @@ import 'package:memox/core/theme/color_tint.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_tint_base.dart';
 
-/// How a choice reads in the round: untouched, picked, answered right or wrong.
-enum StudyChoiceTone { idle, selected, right, wrong }
+/// How a choice reads: untouched, picked, answered right or wrong.
+enum MxChoiceTone { idle, selected, right, wrong }
 
-/// A toned, tappable surface of the round-based modes: a Guess option
-/// (screen 18) or a Match tile (screen 17). Study-local, as the kit keeps
-/// them: they speak session vocabulary. It is at least 48 tall, carries its
-/// state in one semantics node, and fades when it is out of play.
-class StudyChoiceWidget extends StatelessWidget {
-  const StudyChoiceWidget({
+/// A toned, tappable answer surface: a Guess option (screen 18), a Match
+/// tile (screen 17), a TOPIK option (screen 37, idle and selected only,
+/// BR-TOPIK-016). It is at least a control tall, carries its label and state
+/// in one semantics node, and fades when it is out of play. Promoted from
+/// the study feature when TOPIK became its second user (owner brief
+/// 2026-10-15); its look did not change.
+class MxChoiceTile extends StatelessWidget {
+  const MxChoiceTile({
     super.key,
     required this.tone,
     required this.builder,
@@ -25,7 +27,7 @@ class StudyChoiceWidget extends StatelessWidget {
     this.onTap,
   });
 
-  final StudyChoiceTone tone;
+  final MxChoiceTone tone;
 
   /// The content, drawn in the tone's foreground.
   final Widget Function(Color foreground) builder;
@@ -99,10 +101,10 @@ class StudyChoiceWidget extends StatelessWidget {
 
   /// The content colour of [tone].
   Color _foreground(BuildContext context) => switch (tone) {
-    StudyChoiceTone.idle => context.colors.onSurface,
-    StudyChoiceTone.selected => context.colors.onPrimary,
-    StudyChoiceTone.right => context.mxColors.success,
-    StudyChoiceTone.wrong => context.colors.error,
+    MxChoiceTone.idle => context.colors.onSurface,
+    MxChoiceTone.selected => context.colors.onPrimary,
+    MxChoiceTone.right => context.mxColors.success,
+    MxChoiceTone.wrong => context.colors.error,
   };
 
   /// The surface of [tone]: the card ground at rest, the primary fill when
@@ -117,13 +119,13 @@ class StudyChoiceWidget extends StatelessWidget {
     // At rest the edge is the fill itself, so the tone eases in without a
     // border appearing from nothing.
     final (Color fill, Color edge) = switch (tone) {
-      StudyChoiceTone.idle => (rest, rest),
-      StudyChoiceTone.selected => (colors.primary, colors.primary),
-      StudyChoiceTone.right => (
+      MxChoiceTone.idle => (rest, rest),
+      MxChoiceTone.selected => (colors.primary, colors.primary),
+      MxChoiceTone.right => (
         context.mxColors.success.tintOver(MxTintBase.of(context)),
         context.mxColors.success,
       ),
-      StudyChoiceTone.wrong => (
+      MxChoiceTone.wrong => (
         colors.error.tintOver(MxTintBase.of(context)),
         colors.error,
       ),

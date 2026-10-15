@@ -5,6 +5,7 @@ import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 import 'package:memox/features/topik/domain/models/topik_test_status_model.dart';
+import 'package:memox/features/topik/domain/models/topik_text_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 const String _nonBreakingSpace = '\u00A0';
@@ -81,4 +82,29 @@ extension TopikLabels on AppLocalizations {
   /// "Oct 15, 09:30" in the UI language, local time.
   String topikDateTime(DateTime at) =>
       DateFormat.MMMd(localeName).add_Hm().format(at.toLocal());
+
+  /// A playback speed with no trailing zero, in the UI language: "1",
+  /// "0.75" ("0,75" in Vietnamese).
+  String topikSpeedText(double speed) =>
+      NumberFormat('0.##', localeName).format(speed);
+
+  /// A translation of the content in the UI language (Korean is never
+  /// translated: this is the content's own vi or en text).
+  String topikText(TopikText text) =>
+      localeName.startsWith('vi') ? text.vi : text.en;
 }
+
+/// An audio position as minutes and seconds, "1:33" (spec §5.5); the
+/// seconds are cut, not rounded, so the clock never runs ahead.
+String topikClockText(int ms) {
+  final seconds = ms ~/ Duration.millisecondsPerSecond;
+  final minutes = seconds ~/ Duration.secondsPerMinute;
+  final rest = seconds % Duration.secondsPerMinute;
+  return '$minutes:${rest.toString().padLeft(2, '0')}';
+}
+
+/// "①" to "④", the option numbers of the paper (spec §6.4).
+String topikCircled(int idx) => String.fromCharCode(_circledZero + idx);
+
+/// The code point before "①".
+const int _circledZero = 0x245F;
