@@ -1,6 +1,7 @@
 import 'package:memox/core/database/app_database.dart'
     show AppDatabase, TopikAttemptAnswerRow, TopikAttemptRow;
 import 'package:memox/core/database/mapped_transaction.dart';
+import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/id/new_id.dart';
 import 'package:memox/features/topik/data/datasources/topik_attempt_dao.dart';
@@ -27,16 +28,37 @@ final class TopikAttemptRepositoryImpl implements TopikAttemptRepository {
   final DateTime Function() _now;
 
   @override
-  Stream<List<TopikAttempt>> watchAttemptsOfTest(String testId) =>
-      throw UnimplementedError('Task 5');
+  Stream<List<TopikAttempt>> watchAttemptsOfTest(String testId) => _dao
+      .watchAttemptRowsOf(testId)
+      .map((rows) => [for (final row in rows) topikAttemptOf(row)])
+      .mapDatabaseErrors();
 
   @override
-  Stream<TopikAttemptDetail?> watchAttempt(String attemptId) =>
-      throw UnimplementedError('Task 5');
+  Stream<TopikAttemptDetail?> watchAttempt(String attemptId) => _dao
+      .attemptChanges()
+      .asyncMap(
+        (_) => _db.transaction(() async {
+          final row = await _dao.attemptRow(attemptId);
+          if (row == null) return null;
+          return TopikAttemptDetail(
+            attempt: topikAttemptOf(row),
+            answers: [
+              for (final answer in await _dao.answerRows(attemptId))
+                topikAttemptAnswerOf(answer),
+            ],
+          );
+        }),
+      )
+      .mapDatabaseErrors();
 
   @override
-  Stream<Map<String, TopikTestStatus>> watchTestStatuses() =>
-      throw UnimplementedError('Task 5');
+  Stream<Map<String, TopikTestStatus>> watchTestStatuses() => _dao
+      .watchAllAttemptRows()
+      .map(
+        (rows) =>
+            topikTestStatusesOf([for (final row in rows) topikAttemptOf(row)]),
+      )
+      .mapDatabaseErrors();
 
   @override
   Future<Outcome<TopikAttempt, TopikRejection>> start(
