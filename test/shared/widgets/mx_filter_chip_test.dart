@@ -4,9 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/focus_ring_border.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 
+import '../../core/theme/token_source.dart' show contrast;
 import '../../support/widget_harness.dart';
+import '../../support/theme_expect.dart';
 
 final _painted = find.descendant(
   of: find.byType(TextButton),
@@ -268,4 +271,26 @@ void main() {
       TextOverflow.ellipsis,
     );
   });
+
+  // M3F-04: the glyph read `primary`, 2.38:1 on the dark card ground.
+  for (final brightness in Brightness.values) {
+    testWidgets('M3F-04: the leading glyph is the accent, 3:1 on a card '
+        '($brightness)', (tester) async {
+      await pumpMx(
+        tester,
+        MxFilterChip(
+          label: 'Tags',
+          icon: AppIcons.filter,
+          isSelected: false,
+          onSelected: (_) {},
+        ),
+        brightness: brightness,
+      );
+      final context = tester.element(find.byIcon(AppIcons.filter));
+      final glyph = IconTheme.of(context).color!;
+
+      expect(glyph, accentOf(context.colors));
+      expect(contrast(glyph, context.mxColors.cardSurface), greaterThan(3));
+    });
+  }
 }
