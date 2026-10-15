@@ -21,7 +21,7 @@ Project values (what the app chose) are in the ledger, not here.
 **Do**
 - Give the theme a `WidgetStateColor` for `backgroundColor` if the scrolled-under step is wanted.
 - Prove it by scrolling a real `Scaffold` under the production theme and reading the painted colour.
-- Lint: `M3L08` (planned; ledger DSD-34).
+- Lint: `M3L08` (ledger DSD-34).
 
 ### 2. AppBar action icons: precedence and `foregroundColor`
 
@@ -35,7 +35,7 @@ Project values (what the app chose) are in the ledger, not here.
 - A theme `iconTheme` set without `actionsIconTheme` also recolours the actions (it ranks above the default).
 
 **Do**
-- Set `actionsIconTheme` whenever a theme sets `iconTheme` or `foregroundColor` (`M3L07`, planned).
+- Set `actionsIconTheme` whenever a theme sets `iconTheme` or `foregroundColor` (`M3L07`).
 - Test both slots (leading and actions) against the rendered `IconTheme`, not the theme object.
 
 ### 3. `ColorScheme.surfaceTint` falls back to `primary`
@@ -63,8 +63,8 @@ Project values (what the app chose) are in the ledger, not here.
 - A direct `DialogRoute` or `ModalBottomSheetRoute` skips the theme entirely.
 
 **Do**
-- Set the barrier in the dialog and sheet themes only; pass no `barrierColor` to the standard helpers (`M3L04`, planned).
-- Prove the barrier on the pushed route: `ModalRoute.barrierColor` (the production-root overlay barrier test, Task 4, planned).
+- Set the barrier in the dialog and sheet themes only; pass no `barrierColor` to the standard helpers (`M3L04`).
+- Prove the barrier on the pushed route: `ModalRoute.barrierColor` (`test/app/m3_overlay_barrier_test.dart`).
 
 ### 5. `showGeneralDialog` and `RawDialogRoute` take no theme barrier
 
@@ -79,7 +79,7 @@ Project values (what the app chose) are in the ledger, not here.
 
 **Do**
 - A wrapper around `showGeneralDialog` must read the dialog theme's barrier and pass it (the repo has exactly one such wrapper: ledger DSD-35).
-- Everything else uses the wrapper. Lint: `M3L01` (planned), which lists `showRawDialog`.
+- Everything else uses the wrapper. Lint: `M3L01`, which lists `showRawDialog`.
 
 ### 6. The Drawer scrim is not a route barrier
 
@@ -94,7 +94,7 @@ Project values (what the app chose) are in the ledger, not here.
 - A `Scaffold.drawerScrimColor` silently overrides `DrawerThemeData.scrimColor`.
 
 **Do**
-- Set the scrim in `DrawerThemeData`; ban `drawerScrimColor` (`M3L03`, planned).
+- Set the scrim in `DrawerThemeData`; ban `drawerScrimColor` (`M3L03`).
 - Test the Drawer by reading the painted `ColoredBox` colour while open, not by a route probe.
 - This project has no Drawer today (ledger DSD-02); the rule is a fence.
 
@@ -111,7 +111,7 @@ Project values (what the app chose) are in the ledger, not here.
 - The `ThemeData(platform:)` argument is the other half: it switches every adaptive widget at once.
 
 **Do**
-- Ban `showAdaptiveDialog`, Cupertino modals and `.adaptive` constructors statically (`M3L02`), and `ThemeData(platform:)` (`M3L05`) (both planned).
+- Ban `showAdaptiveDialog`, Cupertino modals and `.adaptive` constructors statically (`M3L02`), and `ThemeData(platform:)` (`M3L05`).
 - iOS runtime lanes are NOT_APPLICABLE here (ledger DSD-39).
 
 ### 8. SearchBar and SearchView default to elevation 6
@@ -218,3 +218,67 @@ Project values (what the app chose) are in the ledger, not here.
 **Do**
 - Treat it as supplementary and non-gating in this project (ledger M3C-30, owner FE-C1 2026-09-28): run it for observation, never as a required check. The gate is `test/core/theme/token_contrast_test.dart`.
 - Large-text allowance at 3:1 is the project's WCAG 2.2 AA reading (ledger M3C-13).
+
+### 15. `ThemeData` ambient fields are not slots, and the SDK fills them
+
+**SDK evidence**
+- `material/theme_data.dart:526`..`:528` `iconTheme` defaults to `kDefaultIconDarkColor` (`0xDD000000`, `material/constants.dart:69`) or white; `Theme` publishes it as the ambient `IconTheme` (`material/theme.dart:147`).
+- `material/theme_data.dart:467`..`:468` `focusColor` is black or white at 12% and `hoverColor` at 4%; `InkResponse` reads exactly those when its own colours are null (`material/ink_well.dart:1038`..`:1040`).
+- `material/theme_data.dart:412` and `:3252`..`:3256` `visualDensity` is compact on linux, macOS and windows, standard elsewhere; `:405`..`:408` `materialTapTargetSize` is `shrinkWrap` on those platforms.
+
+**Consequence** A theme that sets every component slot still leaks these defaults: a bare `Icon` is black 87% or pure white, an `InkWell` row hovers and focuses in grey, and the Web review lane renders 40 dp buttons.
+
+**Do**
+- List the ambient fields in the AUDIT (`iconTheme`, `hoverColor`, `focusColor`, `visualDensity`, `materialTapTargetSize`, `disabledColor`, `shadowColor`, `canvasColor`, `splashFactory`) next to the slots, and set them in the one `ThemeData` assembly.
+- Never set `platform:` to fix density (`M3L05`); set `visualDensity` itself.
+- Prove with a bare `Icon`, a bare `InkWell` hovered and focused, and the same widgets under `debugDefaultTargetPlatformOverride`. Ledger M3F-12, M3F-13, M3F-14.
+
+### 16. `showModalBottomSheet` pushes on the nearest navigator; dialogs on the root
+
+**SDK evidence**
+- `material/bottom_sheet.dart:1301` `useRootNavigator = false`; `:1315` the route goes to `Navigator.of(context, rootNavigator: useRootNavigator)`.
+- `widgets/routes.dart:2768` `showGeneralDialog` has `useRootNavigator = true`.
+
+**Consequence** Under a `StatefulShellRoute` the nearest navigator is the branch navigator inside the shell's body, so the barrier and the sheet stop above the bottom bar: the bar stays tappable, and a tab switch leaves the sheet in the old branch. A barrier test on `ModalRoute.barrierColor` cannot see it.
+
+**Do** Pin the navigator in the one adapter and test the barrier's rect against the shell's bar (hit-test a destination with the modal open). Ledger M3F-01.
+
+### 17. Explicit borders skip the input decorator's resolver
+
+**SDK evidence**
+- `material/input_decorator.dart:2364`..`:2370` an explicit `enabledBorder`, `errorBorder`, `focusedBorder` is used as given; only a null border reaches `_getDefaultBorder`, where the hover steps live (`:5997`..`:6008`: hover `onSurface`, error plus hover `onErrorContainer`).
+- `:2069` and `:2253`..`:2255` the decorator's `error` state comes from `errorText` or `error` only.
+- `:2163`..`:2170` the suffix icon colour is `decoration.suffixIconColor`, then the ambient `IconButtonTheme` foreground, then the default (`:6037`..`:6046` has the `error` branch), so an `iconButtonTheme` foreground that ignores `error` wins.
+
+**Consequence** A theme of fixed borders, and a field that draws its error by hand without passing `errorText`, lose error plus hover and the suffix glyph's error colour. Ledger M3F-16.
+
+**Do** Let the resolver run (`border` as a `WidgetStateInputBorder`), pass the error to the decorator, and test hovered and error states with a mouse gesture.
+
+### 18. An engaged switch handle takes `primaryContainer`
+
+**SDK evidence** `material/switch.dart:2192`..`:2199` an on handle is `primaryContainer` when pressed, hovered or focused, `onPrimary` otherwise; the track is `primary`.
+
+**Consequence** In a palette where `primaryContainer` equals `primary` (this app's), the handle vanishes into the track on every press. A theme-field test that asserts the role name passes. Ledger M3F-15.
+
+**Do** Check the engaged pairs for 3:1 in the approved palette before copying an SDK state map, and pump a pressed switch.
+
+### 19. A custom replacement owes the semantics of the widget it replaces
+
+**SDK evidence**
+- `material/app_bar.dart:1067`..`:1080` the title is `namesRoute` on Android, Fuchsia, Linux and Windows; `:1229` the `AppBar` publishes a `SystemUiOverlayStyle`.
+- `material/navigation_bar.dart:293`..`:307` the bar is `SemanticsRole.tabBar` and each destination `SemanticsRole.tab`; `:1019`..`:1025` the label gains "Tab i of n"; `material/navigation_rail.dart:533` the rail has `indexLabel`.
+- `material/floating_action_button.dart:89` the `tooltip` slot.
+
+**Consequence** `MxAppBar`, `MxNavItem` and `MxFab` re-implement the paint and some semantics and drop the rest, and nothing in the spec rows lists it. Ledger M3F-08, M3F-09, M3F-11, M3U-01.
+
+**Do** For each custom replacement list what the SDK widget publishes (route name, role and position, selected, tooltip, overlay style, state layers) and assert it with `SemanticsData` under `debugDefaultTargetPlatformOverride`.
+
+### 20. Probe recipes that work in this repo
+
+- Pixels: wrap the pumped tree in a `RepaintBoundary` (above `MaterialApp`, because ink paints on the `Material`), `boundary.toImage()` inside `tester.runAsync`, read `toByteData()`; set `tester.view.devicePixelRatio = 1` so a pixel is a logical pixel.
+- Pointer: keep one `TestGesture` per test (`createGesture(kind: mouse)`, `addPointer`, `moveTo`); call `removePointer` before adding another, or the mouse tracker asserts. A hover on a `Switch` did not register in the harness; resolve its theme for that state instead.
+- Keyboard focus: `sendKeyEvent(LogicalKeyboardKey.tab)` switches to traditional highlight mode, which `InkWell` needs to paint a focus layer.
+- Platform: reset `debugDefaultTargetPlatformOverride` inside the test body; a teardown runs after the invariant check and fails the test.
+- Reduced motion: `tester.platformDispatcher.accessibilityFeaturesTestValue = FakeAccessibilityFeatures(disableAnimations: true)`.
+- Semantics: `tester.ensureSemantics()`, `tester.getSemantics(finder).getSemanticsData()` (`role`, `hasFlag`), or `rootSemanticsNode!.toStringDeep()` for the tree.
+- Probes live under `test/zz_probe/` (untracked) and are deleted before the commit.

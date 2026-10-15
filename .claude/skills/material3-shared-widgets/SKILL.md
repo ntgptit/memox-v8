@@ -92,6 +92,8 @@ says what each step means for each workflow.
 - `Colors.black54` or any guessed scrim.
 - An `.adaptive` constructor.
 - A raw `AppBar` theme without `actionsIconTheme`.
+- Copying another auditor's candidate into the findings without reading its lines or probing it.
+- A bare `Icon`, `InkWell` or `Switch` left to `ThemeData` ambient defaults (pitfall 15).
 
 ## 6. Related skills
 
