@@ -32,6 +32,7 @@ fails until it does.
 | `file_picker` | 13.x | Picks the file to import. |
 | `share_plus` | 13.x | Hands an export to the platform share sheet. |
 | `flutter_tts` | 4.x | Reads a card's term through the device's TTS engine; one door in `lib/core/speech/` (study speech spec D1). |
+| `just_audio` | 0.10.x | Plays a TOPIK listening group's range `[startMs, endMs)` of a bundled section file through `ClippingAudioSource`, with seek and speed (TOPIK spec §13.8; owner 2026-10-15). Imported only by `plugin_topik_audio_player_data_source.dart` (guard `topik_audio_plugin_has_one_door`). Brings `audio_session` and `rxdart` transitively; neither is imported. |
 | `dio` | 5.x | The one HTTP client (ADR-012): `lib/core/network/`, with timeouts and the request-ID interceptor. |
 | `retrofit` | 4.x | An interface per endpoint group over the shared `Dio` (ADR-012); `SyncApi` is the first. |
 | `json_annotation` | 4.x | Annotations for the `json_serializable` DTOs (ADR-012), such as `lib/core/sync/sync_models.dart`. |

@@ -584,6 +584,18 @@ screen is decided in the design mapping.
   active track `primary`, inactive track `surfaceContainerHighest` set explicitly (the M3
   spec leaves it `D=Check`; this matches `MxLinearProgress`), a ledger row in
   `docs/shared/design/m3-adoption-ledger.md`, tests for every state and light and dark goldens.
+- Built (plan 5): `TopikAudioRepository` and `topik_audio_model.dart` (domain);
+  `TopikAudioPlayerDataSource` with its door `PluginTopikAudioPlayerDataSource` and
+  `TopikAudioRepositoryImpl` (data); `topikAudioRepositoryProvider` (di); the guard rule is
+  `memox_v8.architecture.topik_audio_plugin_has_one_door`. A playback failure, at load or
+  later (just_audio 0.10 reports the later ones only on `errorStream`), is the `failed`
+  state with one `topik.audio_failed` warning; a load overtaken by another group, or still
+  pending when the player goes, changes nothing and logs nothing. Another group pauses the
+  previous one (the plugin keeps playing across a new source); stop returns to the start;
+  a clip that ends is paused, so a drag does not restart it. The door's provider owns the
+  door. Tests run the real `AudioPlayer` over its channels
+  (`test/support/fake_just_audio_platform.dart`); copying a bundled asset to the cache
+  file and audio focus stay UNVERIFIED (device). `MxSlider` with `sliderTheme`.
 
 ### 13.9 Phase 2 plans
 

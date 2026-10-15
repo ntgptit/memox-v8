@@ -2630,6 +2630,10 @@
   "@galleryDailyReminder": {
     "description": "Debug gallery: sample copy in the component showcase."
   },
+  "gallerySeekBar": "Seek bar",
+  "@gallerySeekBar": {
+    "description": "Debug gallery: sample copy in the component showcase."
+  },
   "galleryEightBox": "Eight box",
   "@galleryEightBox": {
     "description": "Debug gallery: sample copy in the component showcase."

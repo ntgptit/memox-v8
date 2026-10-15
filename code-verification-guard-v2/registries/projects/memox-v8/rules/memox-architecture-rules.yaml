@@ -289,6 +289,26 @@ rules:
       - memox-v8
       - architecture
 
+  # TOPIK spec §13.8: the audio plugin is reached through one door, so a
+  # failing file is a state in one place and tests fake one interface.
+  - id: memox_v8.architecture.topik_audio_plugin_has_one_door
+    type: regex
+    severity: error
+    enabled: true
+    message: >-
+      Import `just_audio` only in
+      `lib/features/topik/data/datasources/plugin_topik_audio_player_data_source.dart`;
+      go through `TopikAudioRepository` instead.
+    scopes:
+      - dart_lib
+    exclude:
+      - lib/features/topik/data/datasources/plugin_topik_audio_player_data_source.dart
+    patterns:
+      - "^\\s*import\\s+'package:just_audio/"
+    tags:
+      - memox-v8
+      - architecture
+
   # Auth spec §5: the SDKs of identity, sync and secrets are reached through
   # their door files only, so no Supabase or Google type leaks into a
   # feature (core-auth plan rulings 18-19; test/architecture/sdk_door_test.dart).

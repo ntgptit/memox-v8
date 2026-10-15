@@ -12,6 +12,7 @@ import 'package:memox/shared/widgets/mx_option_row.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
+import 'package:memox/shared/widgets/mx_slider.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -230,6 +231,39 @@ void main() {
           stepper(isBusy: true),
           stepper(isEnabled: false),
         ],
+      ),
+    );
+  });
+
+  testWidgets('MxSlider: at a value, at the start, disabled', (tester) async {
+    await expectThemedGoldens(
+      tester,
+      'mx_slider',
+      SizedBox(
+        width: 320,
+        child: Column(
+          spacing: 8,
+          children: [
+            MxSlider(
+              value: 40,
+              max: 100,
+              onChanged: (_) {},
+              semanticLabel: 'Audio position',
+            ),
+            MxSlider(
+              value: 0,
+              max: 100,
+              onChanged: (_) {},
+              semanticLabel: 'Audio position',
+            ),
+            const MxSlider(
+              value: 40,
+              max: 100,
+              onChanged: null,
+              semanticLabel: 'Audio position',
+            ),
+          ],
+        ),
       ),
     );
   });
