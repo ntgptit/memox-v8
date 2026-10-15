@@ -1,0 +1,28 @@
+import '../tables/topik.drift';
+
+-- Sync of topik_attempt (TOPIK spec 2026-10-15 §13.2). A submitted attempt
+-- is an immutable record: a pulled one is inserted once, and only
+-- server_version ever changes after that (topik_attempt_completed_immutable).
+
+-- The attempt :id when it is submitted; one in progress never syncs.
+syncTopikAttemptRow(:id AS TEXT):
+SELECT * FROM topik_attempt WHERE id = :id AND status = 'completed';
+
+syncTopikAttemptAnswers(:attempt_id AS TEXT):
+SELECT * FROM topik_attempt_answer WHERE attempt_id = :attempt_id
+ORDER BY question_no;
+
+syncTopikAttemptExists(:id AS TEXT):
+SELECT EXISTS (SELECT 1 FROM topik_attempt WHERE id = :id);
+
+insertSyncedTopikAttempt: INSERT INTO topik_attempt $row;
+
+insertSyncedTopikAnswer: INSERT INTO topik_attempt_answer $row;
+
+-- A tombstone; the answers go by cascade.
+deleteSyncedTopikAttempt(:id AS TEXT):
+DELETE FROM topik_attempt WHERE id = :id;
+
+acknowledgeTopikAttempt(:id AS TEXT, :server_version AS INTEGER):
+UPDATE topik_attempt SET server_version = :server_version
+WHERE id = :id AND status = 'completed';
