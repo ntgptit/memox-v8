@@ -32,6 +32,324 @@
   "@commonUndo": {
     "description": "Snackbar action that reverses the last move to the Trash (BR-TRASH-008)."
   },
+  "topikTitle": "TOPIK",
+  "@topikTitle": {
+    "description": "Screen handoff 34 (DEV-394): app bar title."
+  },
+  "topikSubtitle": "한국어능력시험",
+  "@topikSubtitle": {
+    "description": "Screen handoff 34: the exam's Korean name, under the title."
+  },
+  "topikPractice": "Practice",
+  "@topikPractice": {
+    "description": "Screens 13 and 34: the section that holds the TOPIK entry and the levels."
+  },
+  "topikEntryTitle": "TOPIK past papers",
+  "@topikEntryTitle": {
+    "description": "Screen 13: the row that opens TOPIK."
+  },
+  "topikLevel1": "TOPIK I",
+  "@topikLevel1": {
+    "description": "TOPIK level name."
+  },
+  "topikLevel2": "TOPIK II",
+  "@topikLevel2": {
+    "description": "TOPIK level name."
+  },
+  "topikLevel1Scope": "Levels 1–2 · Reading, Listening",
+  "@topikLevel1Scope": {
+    "description": "Screen 34: what TOPIK I covers."
+  },
+  "topikLevel2Scope": "Levels 3–6 · Reading, Listening",
+  "@topikLevel2Scope": {
+    "description": "Screen 34: what TOPIK II covers."
+  },
+  "topikTestCount": "{count, plural, =1{1 test} other{{count} tests}}",
+  "@topikTestCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "How many tests."
+  },
+  "topikNoTestsYet": "No tests yet",
+  "@topikNoTestsYet": {
+    "description": "Screen 34: a level without a valid test (BR-TOPIK-008)."
+  },
+  "topikErrorTitle": "Couldn't load the tests",
+  "@topikErrorTitle": {
+    "description": "Screens 34, 35: load error title."
+  },
+  "topikErrorBody": "Nothing was lost. Try again.",
+  "@topikErrorBody": {
+    "description": "Screens 34–36: load error body; says first that nothing was lost."
+  },
+  "topikLoadingTests": "Loading tests",
+  "@topikLoadingTests": {
+    "description": "Screens 34, 35: what the skeleton is."
+  },
+  "topikReading": "Reading",
+  "@topikReading": {
+    "description": "TOPIK section name."
+  },
+  "topikListening": "Listening",
+  "@topikListening": {
+    "description": "TOPIK section name."
+  },
+  "topikTestsHeaderBody": "Past papers published by NIIED.",
+  "@topikTestsHeaderBody": {
+    "description": "Screen 35: what the list is."
+  },
+  "topikOrderNewest": "Newest round",
+  "@topikOrderNewest": {
+    "description": "Screen 35 sort."
+  },
+  "topikOrderOldest": "Oldest round",
+  "@topikOrderOldest": {
+    "description": "Screen 35 sort."
+  },
+  "topikOrderRecent": "Recent activity",
+  "@topikOrderRecent": {
+    "description": "Screen 35 sort."
+  },
+  "topikSortTitle": "Sort tests",
+  "@topikSortTitle": {
+    "description": "Screen 35: the sort sheet's title."
+  },
+  "topikTagExplanation": "Explanation",
+  "@topikTagExplanation": {
+    "description": "Screen 35: a test carries explanations (BR-TOPIK-009)."
+  },
+  "topikTagTranslation": "Translation",
+  "@topikTagTranslation": {
+    "description": "Screen 35: a test carries translations."
+  },
+  "topikTagWords": "Words",
+  "@topikTagWords": {
+    "description": "Screen 35: a test carries words."
+  },
+  "topikTagGrammar": "Grammar",
+  "@topikTagGrammar": {
+    "description": "Screen 35: a test carries grammar."
+  },
+  "topikTagScript": "Script",
+  "@topikTagScript": {
+    "description": "Screen 35: a listening test carries its script."
+  },
+  "topikRoundNumber": "#{round}",
+  "@topikRoundNumber": {
+    "placeholders": {
+      "round": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 35: a test's round badge."
+  },
+  "topikStatusNotStarted": "Not started",
+  "@topikStatusNotStarted": {
+    "description": "Screen 35: a test never attempted."
+  },
+  "topikStatusInProgress": "In progress",
+  "@topikStatusInProgress": {
+    "description": "Screens 35, 36: an attempt in progress."
+  },
+  "topikStatusBest": "Best {score}",
+  "@topikStatusBest": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 35: the best score of a test."
+  },
+  "topikAttemptCount": "{count, plural, =1{1 attempt} other{{count} attempts}}",
+  "@topikAttemptCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 35: how many completed attempts."
+  },
+  "topikSectionEmpty": "No tests yet for this section",
+  "@topikSectionEmpty": {
+    "description": "Screen 35: no valid test in the section (UC-TOPIK-001 A1)."
+  },
+  "topikTestSubtitle": "{level} · {section}",
+  "@topikTestSubtitle": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      },
+      "section": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 36: under the test's title."
+  },
+  "topikOverview": "Overview",
+  "@topikOverview": {
+    "description": "Screen 36 tray."
+  },
+  "topikHistory": "History",
+  "@topikHistory": {
+    "description": "Screen 36 tray."
+  },
+  "topikOverallProgress": "Overall progress",
+  "@topikOverallProgress": {
+    "description": "Screen 36: the progress card's header."
+  },
+  "topikAccuracy": "Accuracy",
+  "@topikAccuracy": {
+    "description": "Screen 36 figure."
+  },
+  "topikBest": "Best",
+  "@topikBest": {
+    "description": "Screen 36 figure."
+  },
+  "topikAverage": "Average",
+  "@topikAverage": {
+    "description": "Screen 36 figure."
+  },
+  "topikCompleted": "Completed",
+  "@topikCompleted": {
+    "description": "Screen 36 figure and badge."
+  },
+  "topikPercent": "{value}%",
+  "@topikPercent": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    },
+    "description": "A whole percent."
+  },
+  "topikOfTotal": "{part} / {total}",
+  "@topikOfTotal": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36: a part of a whole, as 3 / 5."
+  },
+  "topikLastActivity": "Last activity {ago} · {duration}",
+  "@topikLastActivity": {
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 36: when and how long in all."
+  },
+  "topikScoresNote": "Scores use completed tests only",
+  "@topikScoresNote": {
+    "description": "Screen 36 footnote (BR-TOPIK-020)."
+  },
+  "topikNoAttemptsTitle": "No attempts yet",
+  "@topikNoAttemptsTitle": {
+    "description": "Screen 36 empty state."
+  },
+  "topikNoAttemptsBody": "Each attempt is saved as you answer.",
+  "@topikNoAttemptsBody": {
+    "description": "Screen 36 empty state."
+  },
+  "topikStart": "Start",
+  "@topikStart": {
+    "description": "Screen 36: start an attempt."
+  },
+  "topikRecentAttempts": "Recent attempts",
+  "@topikRecentAttempts": {
+    "description": "Screen 36 header."
+  },
+  "topikAttemptNumber": "#{number}",
+  "@topikAttemptNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 36: an attempt's number."
+  },
+  "topikSummary": "Summary",
+  "@topikSummary": {
+    "description": "Screen 36 action."
+  },
+  "topikReview": "Review",
+  "@topikReview": {
+    "description": "Screen 36 action."
+  },
+  "topikContinue": "Continue",
+  "@topikContinue": {
+    "description": "Screen 36 action."
+  },
+  "topikDeleteAttempt": "Delete attempt",
+  "@topikDeleteAttempt": {
+    "description": "Screen 36: the delete button's label."
+  },
+  "topikDeleteTitle": "Delete this attempt?",
+  "@topikDeleteTitle": {
+    "description": "Screen 36 delete confirm."
+  },
+  "topikDeleteBody": "Its answers are deleted too. This can't be undone.",
+  "@topikDeleteBody": {
+    "description": "Screen 36 delete confirm."
+  },
+  "topikDelete": "Delete",
+  "@topikDelete": {
+    "description": "Screen 36 delete confirm."
+  },
+  "topikContinueTitle": "You have an attempt in progress",
+  "@topikContinueTitle": {
+    "description": "Screen 36 dialog (BR-TOPIK-011)."
+  },
+  "topikContinueBody": "Continue where you left off, or start again.",
+  "@topikContinueBody": {
+    "description": "Screen 36 dialog."
+  },
+  "topikStartNew": "Start new",
+  "@topikStartNew": {
+    "description": "Screen 36 dialog."
+  },
+  "topikStartNewTitle": "Start a new attempt?",
+  "@topikStartNewTitle": {
+    "description": "Screen 36 second confirm."
+  },
+  "topikStartNewBody": "The attempt in progress and its answers are deleted.",
+  "@topikStartNewBody": {
+    "description": "Screen 36 second confirm."
+  },
+  "topikTestMissingTitle": "This test isn't available",
+  "@topikTestMissingTitle": {
+    "description": "Screen 36: unknown or invalid test (UC-TOPIK-002 E1)."
+  },
+  "topikBackToTests": "Back to tests",
+  "@topikBackToTests": {
+    "description": "Screen 36 missing state action."
+  },
+  "topikDetailErrorTitle": "Couldn't load this test",
+  "@topikDetailErrorTitle": {
+    "description": "Screen 36 load error title."
+  },
+  "topikLoadingTest": "Loading the test",
+  "@topikLoadingTest": {
+    "description": "Screen 36: what the skeleton is."
+  },
+  "topikAttemptMissing": "This attempt isn't here any more",
+  "@topikAttemptMissing": {
+    "description": "A refused command on a deleted attempt."
+  },
+  "topikRefused": "That didn't go through. Nothing was lost.",
+  "@topikRefused": {
+    "description": "A refused command with no more specific message."
+  },
   "commonOpenTrash": "Open Trash",
   "@commonOpenTrash": {
     "description": "Opens screen 06, the Trash: the Library app bar, the gone states and the Trash toasts (FE-B1 D1, D4, D11)."
