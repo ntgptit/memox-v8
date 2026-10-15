@@ -32,7 +32,7 @@ Thuật ngữ:
 | Tổng kết lượt (màn 38) | UC-TOPIK-004 |
 | Ôn lại câu (màn 39) | UC-TOPIK-005 |
 
-Màn 34–39 chưa xây; detail file của chúng được viết cùng design mapping.
+Màn 34–39 đã shape, chưa xây: [34](../../shared/ui/screen-handoff/34-topik-home.md) · [35](../../shared/ui/screen-handoff/35-topik-test-list.md) · [36](../../shared/ui/screen-handoff/36-topik-test-detail.md) · [37](../../shared/ui/screen-handoff/37-topik-attempt.md) · [38](../../shared/ui/screen-handoff/38-topik-summary.md) · [39](../../shared/ui/screen-handoff/39-topik-review.md); lối vào ở ruling của [màn 13](../../shared/ui/screen-handoff/13-study-home.md).
 
 ## Không thuộc phạm vi
 
