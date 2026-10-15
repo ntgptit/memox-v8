@@ -79,8 +79,8 @@ and reads those; it does not rebuild the colour, text or radius the theme has.
 
 ```bash
 python3 tools/design/check.py          # generated code in sync, no removed name left
-grep -rnE 'Colors\.[a-z]|Color\(0x' lib/features lib/shared
-grep -rn 'TextStyle(' lib/features
+rg -n 'Colors\.[a-z]|Color\(0x' lib/features lib/shared
+rg -nF 'TextStyle(' lib/features
 ```
 
 Hits in `lib/core/theme/` are expected; anywhere else they are the defect.
