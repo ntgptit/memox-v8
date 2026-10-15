@@ -12,6 +12,33 @@ abstract final class AppRoutes {
   /// A study session, full screen on the root navigator (FE-A6 D2).
   static const String studySessionPath = '$study/session/:$sessionIdParam';
 
+  /// TOPIK home (screen 34), relative to [study]; screens 34–36 keep the
+  /// tab bar (detail files 34–36).
+  static const String topikChild = 'topik';
+  static const String topik = '$study/$topikChild';
+
+  /// The path parameter that names a TOPIK level (`topik1`, `topik2`).
+  static const String topikLevelParam = 'level';
+
+  /// A level's test list (screen 35), relative to [topik].
+  static const String topikLevelChild = ':$topikLevelParam';
+  static String topikLevel(String level) => '$topik/$level';
+
+  /// The path parameter that names a TOPIK test.
+  static const String topikTestIdParam = 'testId';
+
+  /// A test's detail (screen 36), relative to [topik].
+  static const String topikTestChild = 'test/:$topikTestIdParam';
+  static String topikTest(String testId) => '$topik/test/$testId';
+
+  /// An attempt (screen 37), its Summary (38) and its Review (39): routes of
+  /// plans 6b and 6c; screen 36 already leads there.
+  static String topikAttempt(String attemptId) => '$topik/attempt/$attemptId';
+  static String topikSummary(String attemptId) =>
+      '${topikAttempt(attemptId)}/summary';
+  static String topikReview(String attemptId) =>
+      '${topikAttempt(attemptId)}/review';
+
   /// The theme (screen 25), relative to [settings]: a full-screen page on
   /// the root navigator, as the kit draws it (FE-A3 D2).
   static const String settingsThemeChild = 'theme';

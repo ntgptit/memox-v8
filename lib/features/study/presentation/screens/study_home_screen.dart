@@ -39,6 +39,7 @@ class StudyHomeScreen extends ConsumerWidget {
     required this.onOpenStarterDecks,
     required this.onOpenSync,
     this.reauthNotice,
+    this.practiceEntry,
   });
 
   final ValueChanged<String> onOpenSession;
@@ -52,6 +53,11 @@ class StudyHomeScreen extends ConsumerWidget {
   /// The account feature's notice for an expired sign-in (account UI spec
   /// §5.7), which `app/` composes; it takes the slot over the sync notice.
   final Widget? reauthNotice;
+
+  /// The practice entry `app/` composes (TOPIK, ADR-023): `study` does not
+  /// import the feature that fills it. Shown under the content in every
+  /// state with data, absent while loading and on error (detail file 13).
+  final Widget? practiceEntry;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -131,6 +137,10 @@ class StudyHomeScreen extends ConsumerWidget {
         SizedBox(height: context.dimens.space16),
       ],
       body,
+      if (practiceEntry case final entry?) ...[
+        SizedBox(height: context.dimens.space16),
+        entry,
+      ],
     ];
   }
 

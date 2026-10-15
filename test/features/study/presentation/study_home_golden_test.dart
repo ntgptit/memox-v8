@@ -14,12 +14,14 @@ import 'package:memox/features/study/domain/models/study_home_model.dart';
 import 'package:memox/features/study/presentation/providers/study_home_provider.dart';
 import 'package:memox/features/study/presentation/screens/study_home_screen.dart';
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
+import 'package:memox/features/topik/presentation/widgets/items/topik_practice_entry_widget.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/golden_harness.dart';
 import '../../../support/library_harness.dart';
 import '../../../support/sync_fakes.dart';
+import '../../../support/topik_screen_fixtures.dart';
 
 // Screen 13 (FE-A8 P6) against the kit's frames: its decks, with the Korean
 // name in Vietnamese (goldens render Latin and Vietnamese only).
@@ -34,6 +36,8 @@ StudyHomeScreen _screen() => StudyHomeScreen(
   onOpenLibrary: () {},
   onOpenStarterDecks: () {},
   onOpenSync: () {},
+  // The TOPIK entry `app/` composes into the slot (detail file 13, DEV-394).
+  practiceEntry: TopikPracticeEntryWidget(onOpen: () {}),
 );
 
 final _overdue = DateTime(2026, 9, 20);
@@ -127,7 +131,10 @@ void main() {
           env,
           _screen(),
           brightness,
-          overrides: overrides,
+          overrides: [
+            ...topikContentOverrides(topikScreenTests()),
+            ...overrides,
+          ],
         );
         await expectBoundaryGolden(
           tester,

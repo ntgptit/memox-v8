@@ -31,25 +31,27 @@ BR-TOPIK-009, BR-TOPIK-022). Shape: the [TOPIK spec](../../../superpowers/specs/
 | loading | `topik_list_loading_light.png` | `topik_list_loading_dark.png` | Header skeleton and `MxSkeletonRow`s. |
 | error | `topik_list_error_light.png` | `topik_list_error_dark.png` | `MxErrorState` with Retry. |
 
-**Not built yet (status `shaped`).** Goldens are the planned names under `test/features/topik/presentation/goldens/`; every transition's evidence is the rule it implements and the widget or controller test the screen's plan adds. Each row turns `VERIFIED` only with an executed test.
+**Built (plan 6a, 2026-10-15).** Every state has its light and dark golden under `test/features/topik/presentation/goldens/`. A transition is VERIFIED by the executed test it names (`topik_test_list_screen_test.dart`, `test/app/topik_routes_test.dart`); a row no test executes says UNVERIFIED and why.
 
 ## Transitions
 
 | From | Event | To | Evidence |
 |---|---|---|---|
-| reading | tap Listening | listening | UC-TOPIK-001 step 3 |
-| any loaded | pick a sort | same section, re-sorted | BR-TOPIK-022 |
-| any loaded | attempt submitted, deleted or synced elsewhere | status updates in place | UC-TOPIK-001 A2 |
-| any loaded | tap a row | 36 | UC-TOPIK-001 step 5 |
-| loading | read fails | error | UC-TOPIK-001 E1 |
-| error | Retry | loading | UC-TOPIK-001 E1 |
-| reading / listening | no valid test | empty | UC-TOPIK-001 A1 |
+| reading | tap Listening | listening | UC-TOPIK-001 step 3. VERIFIED `topik_test_list_screen_test.dart::Listening shows its tests; the choice is per screen` |
+| any loaded | pick a sort | same section, re-sorted | BR-TOPIK-022. VERIFIED `::the sort sheet re-orders the rows` |
+| any loaded | attempt submitted, deleted or synced elsewhere | status updates in place | UC-TOPIK-001 A2. VERIFIED for a submit `::a submitted attempt updates the status in place (A2)`; a delete or a sync reaches the same stream (`topik_use_cases_test.dart::the catalog and the detail follow every later write`) |
+| any loaded | tap a row | 36 | UC-TOPIK-001 step 5. VERIFIED `::a row opens its test`, `topik_routes_test.dart::Study home → TOPIK → …` |
+| loading | read fails | error | UC-TOPIK-001 E1. VERIFIED `::a failed read says nothing was lost; Retry reads again, and the section tray stays` |
+| error | Retry | loading | UC-TOPIK-001 E1. VERIFIED same test |
+| reading / listening | no valid test | empty | UC-TOPIK-001 A1. VERIFIED `::a section with no test is a calm empty state with no sort (A1, The Content Gate Rule)` |
 
 ## Rulings
 
 - **Brief 2026-10-15:** the section switch is `MxSegmentedTray`, as the 7/30 switch on screen 22.
 - **Brief 2026-10-15:** the status is the row's second meta line, not a badge: a row states its number once (DESIGN.md, Do's).
 - The selected section and sort live in the screen's provider and reset when the screen closes.
+- **Plan 6a (2026-10-15):** the header (count and sort) shows only with tests; the section tray stays in every state (The Content Gate Rule, critique F4). The count and the sort share the first line; the description reads full width under them.
+- **Plan 6a:** the round badge is neutral (The One Accent Rule); the Korean title is content and may end in an ellipsis (critique F7); tags and status are glued terms (The Wrap Rule).
 
 ## Copy
 
