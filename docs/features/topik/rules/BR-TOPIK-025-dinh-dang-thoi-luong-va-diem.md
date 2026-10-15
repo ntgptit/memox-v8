@@ -7,7 +7,7 @@ superseded_by:
 ---
 ## Rule
 
-Thời lượng MUST hiện đến giây, không bao giờ mili giây, qua formatter dùng chung trong `lib/core/text/` (chủ dự án chốt 2026-10-15): `42s`, `3m 05s`, `1h 02m 11s`, theo ngôn ngữ giao diện. Điểm MUST hiện đủ `score / max_score` (ví dụ `96 / 100`), không bị cắt.
+Thời lượng MUST hiện đến giây, không bao giờ mili giây, qua formatter dùng chung trong `lib/core/text/` (chủ dự án chốt 2026-10-15): `42s`, `3m 05s`, `1h 02m 11s`, theo ngôn ngữ giao diện (tiếng Việt: `42 giây`, `3 phút 05 giây`, `1 giờ 02 phút 11 giây`). Phần lẻ dưới một giây bị cắt. Code: `DurationParts` (`lib/core/text/duration_parts.dart`) tách giờ, phút, giây; chữ nằm trong `lib/l10n/duration_text.dart`, như `relative_time.dart`. Điểm MUST hiện đủ `score / max_score` (ví dụ `96 / 100`), không bị cắt.
 
 **Enforced by:** rule + UI
 **Liên quan:** BR-TOPIK-015, BR-TOPIK-020, BR-TOPIK-023

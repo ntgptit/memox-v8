@@ -1475,6 +1475,42 @@
     },
     "description": "How long ago, a year or more."
   },
+  "commonDurationSeconds": "{seconds}s",
+  "@commonDurationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    },
+    "description": "A duration under a minute (BR-TOPIK-025)."
+  },
+  "commonDurationMinutes": "{minutes}m {seconds}s",
+  "@commonDurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    },
+    "description": "A duration under an hour; seconds is two digits (BR-TOPIK-025)."
+  },
+  "commonDurationHours": "{hours}h {minutes}m {seconds}s",
+  "@commonDurationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "String"
+      }
+    },
+    "description": "A duration of an hour or more; minutes and seconds are two digits (BR-TOPIK-025)."
+  },
   "trashWasIn": "Was in {path}",
   "@trashWasIn": {
     "placeholders": {

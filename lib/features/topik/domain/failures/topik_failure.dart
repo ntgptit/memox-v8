@@ -21,4 +21,9 @@ enum TopikRejection {
   /// The content given is not the attempt's test, or no longer has the
   /// attempt's questions (BR-TOPIK-019).
   contentMismatch,
+
+  /// The attempt's test is no longer in the catalog, or no longer valid:
+  /// it cannot start, continue or be submitted; it can be deleted
+  /// (BR-TOPIK-019).
+  testUnavailable,
 }
