@@ -8,12 +8,15 @@ import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
 import 'package:memox/features/topik/di/topik_audio_repository_provider.dart';
 import 'package:memox/features/topik/presentation/screens/topik_home_screen.dart';
+import 'package:memox/features/topik/presentation/screens/topik_review_screen.dart';
+import 'package:memox/features/topik/presentation/screens/topik_summary_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_detail_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_list_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
 import '../support/library_harness.dart';
+import '../support/topik_attempt_screen_fixtures.dart';
 import '../support/topik_fakes.dart';
 import '../support/topik_screen_fixtures.dart';
 
@@ -44,6 +47,10 @@ void main() {
     expect(AppRoutes.topikAttempt('a1'), '/study/topik/attempt/a1');
     expect(AppRoutes.topikSummary('a1'), '/study/topik/attempt/a1/summary');
     expect(AppRoutes.topikReview('a1'), '/study/topik/attempt/a1/review');
+    expect(
+      AppRoutes.topikReview('a1', questionNo: 31),
+      '/study/topik/attempt/a1/review?q=31',
+    );
   });
 
   libraryTest('Study home → TOPIK → a level → a test under the tab bar; Back '
@@ -142,5 +149,55 @@ void main() {
     expect(find.byType(TopikAttemptScreen), findsOneWidget);
     await _tap(tester, find.byTooltip(_en.topikClose));
     expect(find.byType(TopikHomeScreen), findsOneWidget);
+  });
+
+  libraryTest('Submit on 37 replaces it with the summary; Done lands on the '
+      'test (UC-TOPIK-003 step 6)', (tester, env) async {
+    final tests = topikScreenTests();
+    final test96 = tests.firstWhere(
+      (t) =>
+          t.level == TopikLevel.topik2 &&
+          t.round == 96 &&
+          t.section == TopikSection.reading,
+    );
+    await topikSeedAttempt(
+      env,
+      test96,
+      answers: {for (final q in test96.questions) q.no: 1},
+    );
+    await pumpMemoxApp(tester, env, overrides: topikContentOverrides(tests));
+    await _go(tester, AppRoutes.topikTest(test96.testId));
+    await _tap(tester, find.text('#1'));
+    expect(find.byType(TopikAttemptScreen), findsOneWidget);
+
+    await _tap(tester, find.text(_en.topikSubmit));
+    expect(find.byType(TopikSummaryScreen), findsOneWidget);
+    expect(find.byType(TopikAttemptScreen), findsNothing);
+    await _tap(tester, find.text(_en.topikDone));
+    expect(find.byType(TopikTestDetailScreen), findsOneWidget);
+  });
+
+  libraryTest('from the summary a row opens Review at its question; Back '
+      'returns to the summary (UC-TOPIK-004 step 7)', (tester, env) async {
+    final tests = topikScreenTests();
+    final done = await topikSeedSubmitted(env, tests.first);
+    await pumpMemoxApp(tester, env, overrides: topikContentOverrides(tests));
+    await _go(tester, AppRoutes.topikSummary(done.id));
+    expect(find.byType(TopikSummaryScreen), findsOneWidget);
+
+    // The rows sit below the hero, the figures and the chart.
+    await tester.scrollUntilVisible(
+      find.text(_en.topikQuestionTitle(33)),
+      300,
+      scrollable: find.byWidgetPredicate(
+        (widget) =>
+            widget is Scrollable && widget.axisDirection == AxisDirection.down,
+      ),
+    );
+    await _tap(tester, find.text(_en.topikQuestionTitle(33)));
+    expect(find.byType(TopikReviewScreen), findsOneWidget);
+    expect(find.text(_en.topikReviewTitle(33, 70)), findsOneWidget);
+    await _tap(tester, find.byTooltip(_en.commonBack));
+    expect(find.byType(TopikSummaryScreen), findsOneWidget);
   });
 }

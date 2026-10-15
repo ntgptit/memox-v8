@@ -7,6 +7,8 @@ import 'package:memox/app/router/route_not_found_screen.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/presentation/screens/topik_attempt_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_home_screen.dart';
+import 'package:memox/features/topik/presentation/screens/topik_review_screen.dart';
+import 'package:memox/features/topik/presentation/screens/topik_summary_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_detail_screen.dart';
 import 'package:memox/features/topik/presentation/screens/topik_test_list_screen.dart';
 import 'package:memox/features/topik/presentation/widgets/items/topik_practice_entry_widget.dart';
@@ -20,6 +22,38 @@ GoRoute topikRoute(GlobalKey<NavigatorState> rootNavigator) => GoRoute(
         unawaited(context.push(AppRoutes.topikLevel(level.code))),
   ),
   routes: [
+    // A submitted attempt's result (spec §8): Submit replaces 37 with it,
+    // so Done and Back land on 36.
+    GoRoute(
+      path: AppRoutes.topikSummaryChild,
+      parentNavigatorKey: rootNavigator,
+      builder: (context, state) {
+        final id = state.pathParameters[AppRoutes.topikAttemptIdParam]!;
+        return TopikSummaryScreen(
+          attemptId: id,
+          onReview: (no) => unawaited(
+            context.push(AppRoutes.topikReview(id, questionNo: no)),
+          ),
+          onDone: () => _leave(context),
+        );
+      },
+    ),
+    // An attempt's Review (spec §8): `?q=` opens a question.
+    GoRoute(
+      path: AppRoutes.topikReviewChild,
+      parentNavigatorKey: rootNavigator,
+      builder: (context, state) {
+        final id = state.pathParameters[AppRoutes.topikAttemptIdParam]!;
+        return TopikReviewScreen(
+          attemptId: id,
+          initialQuestionNo: int.tryParse(
+            state.uri.queryParameters[AppRoutes.topikReviewQuestionParam] ?? '',
+          ),
+          onBack: () => _leave(context),
+          onBackToSummary: () => context.go(AppRoutes.topikSummary(id)),
+        );
+      },
+    ),
     // A full-screen task above the shell (spec §8): no tab bar.
     GoRoute(
       path: AppRoutes.topikAttemptChild,

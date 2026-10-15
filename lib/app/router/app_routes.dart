@@ -37,13 +37,26 @@ abstract final class AppRoutes {
   /// An attempt (screen 37), relative to [topik]; on the root navigator.
   static const String topikAttemptChild = 'attempt/:$topikAttemptIdParam';
 
-  /// An attempt (screen 37), its Summary (38) and its Review (39); 38 and
-  /// 39 are plan 6c's routes, and land on the not-found screen until then.
+  /// A submitted attempt's Summary (screen 38), relative to [topik]; on the
+  /// root navigator, beside the attempt so Submit can replace 37 with it.
+  static const String topikSummaryChild =
+      'attempt/:$topikAttemptIdParam/summary';
+
+  /// An attempt's Review (screen 39), relative to [topik]; `?q=` opens a
+  /// question.
+  static const String topikReviewChild = 'attempt/:$topikAttemptIdParam/review';
+
+  /// The query parameter that names the question Review opens.
+  static const String topikReviewQuestionParam = 'q';
+
+  /// An attempt (screen 37), its Summary (38) and its Review (39).
   static String topikAttempt(String attemptId) => '$topik/attempt/$attemptId';
   static String topikSummary(String attemptId) =>
       '${topikAttempt(attemptId)}/summary';
-  static String topikReview(String attemptId) =>
-      '${topikAttempt(attemptId)}/review';
+  static String topikReview(String attemptId, {int? questionNo}) =>
+      questionNo == null
+      ? '${topikAttempt(attemptId)}/review'
+      : '${topikAttempt(attemptId)}/review?$topikReviewQuestionParam=$questionNo';
 
   /// The theme (screen 25), relative to [settings]: a full-screen page on
   /// the root navigator, as the kit draws it (FE-A3 D2).

@@ -102,3 +102,36 @@ MxChoiceTile topikOptionTile(WidgetTester tester, String text) => tester.widget(
 /// The test clock moved on by [seconds].
 void topikWait(LibraryEnv env, int seconds) =>
     env.clock.current = env.clock.current.add(Duration(seconds: seconds));
+
+/// A submitted attempt of [test] with [answers] (question → option) chosen
+/// in that order; each answer gives the question before it a different time,
+/// so the chart has varied bars.
+Future<TopikAttempt> topikSeedSubmitted(
+  LibraryEnv env,
+  TopikTest test, {
+  Map<int, int> answers = const {},
+}) async {
+  final store = TopikAttemptRepositoryImpl(env.db);
+  final attempt = topikOk(await store.start(test, now: libraryToday));
+  var stepMs = 20000;
+  for (final MapEntry(key: no, value: idx) in answers.entries) {
+    topikOk(
+      await store.answer(
+        attemptId: attempt.id,
+        questionNo: no,
+        selectedIdx: idx,
+        elapsedMs: stepMs,
+        now: libraryToday,
+      ),
+    );
+    stepMs = stepMs % 150000 + 35000;
+  }
+  return topikOk(
+    await store.submit(
+      attemptId: attempt.id,
+      test: test,
+      elapsedMs: 45000,
+      now: libraryToday.add(const Duration(minutes: 50)),
+    ),
+  );
+}

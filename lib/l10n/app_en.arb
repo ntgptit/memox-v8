@@ -534,6 +534,314 @@
   "@topikLoadingAttempt": {
     "description": "Screen 37: what the skeleton is."
   },
+  "topikTypeAnswerQuestion": "Answer the question",
+  "@topikTypeAnswerQuestion": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeNextUtterance": "Next line",
+  "@topikTypeNextUtterance": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypePlace": "Where it happens",
+  "@topikTypePlace": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeTopic": "What it's about",
+  "@topikTypeTopic": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypePicture": "Matching picture",
+  "@topikTypePicture": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeSameContent": "Same content",
+  "@topikTypeSameContent": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeMainIdea": "Main idea",
+  "@topikTypeMainIdea": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypePaired": "Paired questions",
+  "@topikTypePaired": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeFillBlank": "Fill the blank",
+  "@topikTypeFillBlank": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeNotSame": "Not the same",
+  "@topikTypeNotSame": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeOrdering": "Sentence order",
+  "@topikTypeOrdering": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeLongPassage": "Long passage",
+  "@topikTypeLongPassage": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypePictureGraph": "Picture or graph",
+  "@topikTypePictureGraph": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeNextAction": "Next action",
+  "@topikTypeNextAction": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypePairedAdvanced": "Paired, advanced",
+  "@topikTypePairedAdvanced": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeGrammarBlank": "Grammar blank",
+  "@topikTypeGrammarBlank": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeSimilarExpression": "Similar expression",
+  "@topikTypeSimilarExpression": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeAdTopic": "What the ad is for",
+  "@topikTypeAdTopic": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeParagraphBlank": "Paragraph blank",
+  "@topikTypeParagraphBlank": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeHeadline": "Headline",
+  "@topikTypeHeadline": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeComplexBlank": "Complex blank",
+  "@topikTypeComplexBlank": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeSameContentMid": "Same content, mid-length",
+  "@topikTypeSameContentMid": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeTheme": "Main theme",
+  "@topikTypeTheme": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikTypeSentenceInsert": "Where the sentence goes",
+  "@topikTypeSentenceInsert": {
+    "description": "Screen 38: a question type's name (BR-TOPIK-005, -024)."
+  },
+  "topikHideAnswers": "Hide answers",
+  "@topikHideAnswers": {
+    "description": "Screen 38: the eye hides the right answers."
+  },
+  "topikShowAnswers": "Show answers",
+  "@topikShowAnswers": {
+    "description": "Screen 38: the eye shows them again."
+  },
+  "topikAnswered": "Answered",
+  "@topikAnswered": {
+    "description": "Screen 38: a figure."
+  },
+  "topikUnanswered": "Unanswered",
+  "@topikUnanswered": {
+    "description": "Screens 38, 39: a figure, a filter and a status."
+  },
+  "topikLongest": "Longest",
+  "@topikLongest": {
+    "description": "Screen 38: a figure with no question."
+  },
+  "topikLongestOf": "Longest · Q{no}",
+  "@topikLongestOf": {
+    "placeholders": {
+      "no": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 38: the figure's label, with the question that took longest."
+  },
+  "topikFilterAll": "All",
+  "@topikFilterAll": {
+    "description": "Screens 38, 39: a filter."
+  },
+  "topikWrong": "Wrong",
+  "@topikWrong": {
+    "description": "Screens 38, 39: a filter and a status."
+  },
+  "topikCorrect": "Correct",
+  "@topikCorrect": {
+    "description": "Screens 38, 39: a filter and a status."
+  },
+  "topikTimePerQuestion": "Time per question",
+  "@topikTimePerQuestion": {
+    "description": "Screen 38: the chart's header."
+  },
+  "topikBarLabel": "Question {no}, {status}, {duration}",
+  "@topikBarLabel": {
+    "placeholders": {
+      "no": {
+        "type": "int"
+      },
+      "status": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 38: a bar of the chart to TalkBack."
+  },
+  "topikQuestionTitle": "Question {no}",
+  "@topikQuestionTitle": {
+    "placeholders": {
+      "no": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 38: an answer row."
+  },
+  "topikYourAnswer": "Your answer {option}",
+  "@topikYourAnswer": {
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    },
+    "description": "Screens 38, 39: the option the person chose, as ①–④."
+  },
+  "topikRightAnswer": "Right answer {option}",
+  "@topikRightAnswer": {
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    },
+    "description": "Screens 38, 39: the right option, as ①–④."
+  },
+  "topikNotAnswered": "Not answered",
+  "@topikNotAnswered": {
+    "description": "Screens 38, 39: a question left blank."
+  },
+  "topikAnswers": "Answers",
+  "@topikAnswers": {
+    "description": "Screen 38: the rows' header."
+  },
+  "topikByType": "By question type",
+  "@topikByType": {
+    "description": "Screen 38: the type section's title."
+  },
+  "topikWeakest": "Weakest",
+  "@topikWeakest": {
+    "description": "Screen 38: the weakest type's badge (BR-TOPIK-024)."
+  },
+  "topikReviewAnswers": "Review answers",
+  "@topikReviewAnswers": {
+    "description": "Screen 38: opens Review."
+  },
+  "topikDone": "Done",
+  "@topikDone": {
+    "description": "Screens 38, 39: leaves."
+  },
+  "topikNoWrong": "No wrong answers",
+  "@topikNoWrong": {
+    "description": "Screen 38: the Wrong filter with nothing."
+  },
+  "topikNoUnanswered": "No unanswered questions",
+  "@topikNoUnanswered": {
+    "description": "Screen 38: the Unanswered filter with nothing."
+  },
+  "topikNoCorrect": "No correct answers yet",
+  "@topikNoCorrect": {
+    "description": "Screen 38: the Correct filter with nothing."
+  },
+  "topikSummaryErrorTitle": "Couldn't load this summary",
+  "@topikSummaryErrorTitle": {
+    "description": "Screen 38: load error title."
+  },
+  "topikLoadingSummary": "Loading the summary",
+  "@topikLoadingSummary": {
+    "description": "Screen 38: what the skeleton is."
+  },
+  "topikScoreLabel": "Score {score} of {max}, {correct} of {count} correct",
+  "@topikScoreLabel": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "correct": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 38: the hero's score and donut to TalkBack."
+  },
+  "topikReviewTitle": "Review · {no} / {last}",
+  "@topikReviewTitle": {
+    "placeholders": {
+      "no": {
+        "type": "int"
+      },
+      "last": {
+        "type": "int"
+      }
+    },
+    "description": "Screen 39: the title with the real question numbers."
+  },
+  "topikOptionReviewLabel": "Option {number}, {text}, {state}",
+  "@topikOptionReviewLabel": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      },
+      "state": {
+        "type": "String"
+      }
+    },
+    "description": "Screen 39: an option with its state to TalkBack."
+  },
+  "topikRightState": "the right answer",
+  "@topikRightState": {
+    "description": "Screen 39: an option's state."
+  },
+  "topikYourWrongState": "your answer, wrong",
+  "@topikYourWrongState": {
+    "description": "Screen 39: an option's state."
+  },
+  "topikUpdatedTitle": "This test was updated after this attempt",
+  "@topikUpdatedTitle": {
+    "description": "Screen 39: the content banner (BR-TOPIK-019)."
+  },
+  "topikUpdatedBody": "Your score stays as it was.",
+  "@topikUpdatedBody": {
+    "description": "Screen 39: the content banner's body."
+  },
+  "topikReviewUnavailableTitle": "Review isn't available for this test",
+  "@topikReviewUnavailableTitle": {
+    "description": "Screen 39: the test is gone (BR-TOPIK-019)."
+  },
+  "topikReviewUnavailableBody": "Your score is still in the summary.",
+  "@topikReviewUnavailableBody": {
+    "description": "Screen 39: the test is gone; nothing was lost."
+  },
+  "topikBackToSummary": "Back to summary",
+  "@topikBackToSummary": {
+    "description": "Screen 39: leaves to 38."
+  },
+  "topikReviewErrorTitle": "Couldn't load this review",
+  "@topikReviewErrorTitle": {
+    "description": "Screen 39: load error title."
+  },
+  "topikLoadingReview": "Loading the review",
+  "@topikLoadingReview": {
+    "description": "Screen 39: what the skeleton is."
+  },
   "topikAttemptErrorTitle": "Couldn't load this attempt",
   "@topikAttemptErrorTitle": {
     "description": "Screen 37: load error title."
