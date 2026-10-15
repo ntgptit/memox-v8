@@ -575,6 +575,12 @@ screen is decided in the design mapping.
   per the guard's suffix rule), one door file in `data/datasources/` that alone imports
   `just_audio` (a guard rule `audio_plugin_has_one_door`, as for `flutter_tts`), its provider
   in `di/`, and a fake for tests. It moves to `lib/core/` when a second feature needs audio.
+- The seek bar is a new shared `MxSlider` (owner 2026-10-15, after PR #283): the guard bans a
+  raw `Slider` in feature code. It is built through the `material3-shared-widgets` BUILD
+  workflow and the flutter-theme-design admission rule: `sliderTheme` in `lib/core/theme`,
+  active track `primary`, inactive track `surfaceContainerHighest` set explicitly (the M3
+  spec leaves it `D=Check`; this matches `MxLinearProgress`), a ledger row in
+  `docs/shared/design/m3-adoption-ledger.md`, tests for every state and light and dark goldens.
 
 ### 13.9 Phase 2 plans
 
@@ -582,7 +588,20 @@ screen is decided in the design mapping.
 2. Drift v17, attempt repository, `LocalDataReset`.
 3. Sync adapter, Supabase migration, pgTAP.
 4. Scoring, statistics, use cases, the shared duration formatter.
-5. Audio player.
+5. Audio player and the shared `MxSlider`.
 6. Screens 13 (entry), 34, 35, 36, 37, 38, 39, each through CLAUDE.md's screen workflow.
 7. The round-96 pack, once the files arrive.
 
+### 13.10 Material 3 conformance (PR #283, merged 2026-10-15)
+
+- Shared widgets this feature adds or promotes (`MxChoiceTile` from `StudyChoiceWidget`,
+  `MxSlider`) go through the `material3-shared-widgets` BUILD workflow: its twelve steps, a
+  ledger row, `tools/m3_lint` clean, every state tested, goldens in light and dark at 360 dp,
+  and the golden review. The study goldens must not change when `MxChoiceTile` moves.
+- The topik widgets (`TopikTwoPaneLayout`, `TopikAudioBar`, `TopikQuestionGrid`,
+  `TopikQuestionBarChart`, `TopikScoreDonut`) use no raw Material component and no bare
+  `Icon` or `InkWell`: a tappable cell or bar is an `MxRowInk`, a glyph an `MxIconButton` or
+  `MxIconTile`. Each publishes the semantics of what it replaces (button, selected, position,
+  tooltip) and a test asserts them (pitfall 19).
+- Bodies and bars at the screen edge read `context.screenMargin`; filter counts use
+  `MxFilterChip`'s count slot.

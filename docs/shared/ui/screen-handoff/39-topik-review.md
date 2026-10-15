@@ -15,9 +15,9 @@ Each question of a submitted attempt with the right answer and the supporting co
 | Region | Widget | Design |
 |---|---|---|
 | App bar | `MxAppBar` | "Review · {no} / {last}". |
-| Filters | `MxChipRow` of `MxFilterChip`s | All · Wrong · Unanswered · Correct; Previous and Next walk the filtered questions. |
+| Filters | `MxChipRow` of `MxFilterChip`s | All · Wrong · Unanswered · Correct, counts in the chip's count slot; Previous and Next walk the filtered questions. |
 | Content banner | `MxInlineBanner` (warning) | Only when the content changed after the attempt (BR-TOPIK-019). |
-| Group material | as on 37 | Instruction, passage or picture, audio bar (Practice controls) and the script with its translation, shown open. |
+| Group material | as on 37 | Instruction, passage or picture, audio bar with the shared `MxSlider` (Practice controls) and the script with its translation, shown open. |
 | Question | stem + four `MxChoiceTile`s | The right option in its right state; the user's wrong choice in its wrong state; an unanswered question marks only the right option and says "Not answered". Nothing is tappable to change (BR-TOPIK-010). |
 | Supporting content | `MxSection`s | Explanation · Translation · Words (Korean, part of speech, meaning) · Grammar (pattern, meaning), in the UI language; a section without data is absent (A2). |
 | Footer | `MxFooterBar` | "Previous" (outline) · "Next" (primary); on the last filtered question "Next" becomes "Done". |
