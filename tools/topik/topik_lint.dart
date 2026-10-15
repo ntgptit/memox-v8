@@ -37,7 +37,7 @@ TopikLintReport lintTopikContent({
   for (final entry in entries) {
     final json = _decode(File('${contentRoot.path}/$entry'), entry, issues);
     if (json == null) continue;
-    final read = topikTestOf(json);
+    final read = topikTestOf(json, origin: entry);
     issues.addAll(read.issues);
     final test = read.test;
     if (test == null) continue;
@@ -82,7 +82,9 @@ Object? _decode(File file, String name, List<TopikContentIssue> issues) {
     return null;
   }
   try {
-    return jsonDecode(file.readAsStringSync());
+    // Decoded here, not by readAsStringSync, so bytes that are not UTF-8
+    // are a FormatException like malformed JSON, not a crash.
+    return jsonDecode(utf8.decode(file.readAsBytesSync()));
   } on FormatException catch (error) {
     issues.add(
       TopikContentIssue.error(

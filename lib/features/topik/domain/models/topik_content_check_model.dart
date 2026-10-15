@@ -192,8 +192,11 @@ void _checkGroups(TopikTest test, _Report error) {
         if (question.groupId == group.groupId) question.no,
     };
     if (members.isEmpty && group.questionNos.isEmpty) continue;
-    if (members.length != group.questionNos.length ||
-        !members.containsAll(group.questionNos)) {
+    // Equal as sets and without a repeat: `[49, 49]` is not `{49, 50}`.
+    final listed = group.questionNos.toSet();
+    if (listed.length != group.questionNos.length ||
+        listed.length != members.length ||
+        !members.containsAll(listed)) {
       error(
         TopikContentRule.groups,
         'group ${group.groupId} lists ${group.questionNos}; its questions are $members',

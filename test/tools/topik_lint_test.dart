@@ -81,6 +81,25 @@ void main() {
     ]);
   });
 
+  test('a listed file that is not UTF-8 fails with its path', () {
+    File('${content.path}/bad.json').writeAsBytesSync([0xff, 0xfe, 0x7b, 0x80]);
+    writePack('fine.json', topikTestJson());
+    writeManifest(['bad.json', 'fine.json']);
+    final report = lint();
+    expect(report.testCount, 1);
+    expect(report.issues.single.testId, 'bad.json');
+  });
+
+  test('a pack without a test id is named by its file', () {
+    writePack('nameless.json', topikTestJson()..remove('testId'));
+    writeManifest(['nameless.json']);
+    final report = lint();
+    expect(report.passes, isFalse);
+    expect(report.issues.map((issue) => issue.testId).toSet(), {
+      'nameless.json',
+    });
+  });
+
   test('two packs with one test id fail on duplicate', () {
     writePack('a.json', topikTestJson());
     writePack('b.json', topikTestJson());

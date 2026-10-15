@@ -125,6 +125,12 @@ void main() {
       expect(_errorRules(_check(json)), [TopikContentRule.groups]);
     });
 
+    test('a group listing one question twice and missing its partner', () {
+      final json = topikTestJson();
+      groupJson(json, 'g49-50')['questionNos'] = [49, 49];
+      expect(_errorRules(_check(json)), [TopikContentRule.groups]);
+    });
+
     test('a question whose group does not exist', () {
       final json = topikTestJson();
       questionJson(json, 4)['groupId'] = 'nope';

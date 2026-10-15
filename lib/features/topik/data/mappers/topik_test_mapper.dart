@@ -15,8 +15,9 @@ typedef TopikTestRead = ({TopikTest? test, List<TopikContentIssue> issues});
 /// problems — a missing field, a wrong type, an unknown code, a translation
 /// without both languages (BR-TOPIK-006) — are collected with their path, all
 /// of them, instead of thrown. The cross-field rules are `checkTopikTest`'s.
-TopikTestRead topikTestOf(Object? json) {
-  final reader = _Reader();
+/// [origin] names the file in issues found before a test id is read.
+TopikTestRead topikTestOf(Object? json, {String origin = '?'}) {
+  final reader = _Reader(origin);
   if (json is! Map<String, Object?>) {
     reader.fail(TopikContentRule.shape, r'$', 'is not an object');
     return (test: null, issues: reader.issues);
@@ -27,14 +28,17 @@ TopikTestRead topikTestOf(Object? json) {
 }
 
 final class _Reader {
+  _Reader(this._origin) : _testId = _origin;
+
+  final String _origin;
   final List<TopikContentIssue> issues = [];
-  String _testId = '?';
+  String _testId;
 
   void fail(TopikContentRule rule, String path, String what) =>
       issues.add(TopikContentIssue.error(rule, _testId, '$path: $what'));
 
   TopikTest? test(Map<String, Object?> json) {
-    _testId = _textOrNull(json['testId']) ?? '?';
+    _testId = _textOrNull(json['testId']) ?? _origin;
     final schemaVersion = integer(json, 'schemaVersion', r'$');
     final contentVersion = integer(json, 'contentVersion', r'$');
     final testId = text(json, 'testId', r'$');
