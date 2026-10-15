@@ -8,6 +8,7 @@ import 'package:memox/features/monitoring/presentation/widgets/sections/monitori
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 
 /// The Server tab: the search field and the filters above the list, which
 /// alone scrolls. The search field's text is the screen's, so a reset of
@@ -53,9 +54,9 @@ class MonitoringServerTabWidget extends ConsumerWidget {
       children: [
         Padding(
           padding: EdgeInsets.fromLTRB(
-            context.dimens.space16,
+            context.screenMargin,
             context.dimens.space12,
-            context.dimens.space16,
+            context.screenMargin,
             context.dimens.space8,
           ),
           child: MxSearchField(

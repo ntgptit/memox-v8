@@ -159,6 +159,28 @@ void main() {
     expect(tester.getRect(_switch()), before);
   });
 
+  // M3F-15: the SDK maps an engaged on handle to primaryContainer, which
+  // equals the primary track in this palette: the handle vanished.
+  testWidgets('M3F-15: a pressed on switch keeps its onPrimary handle', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      MxToggle(isOn: true, onChanged: (_) {}, semanticLabel: 'Reminders'),
+    );
+    final press = await tester.startGesture(tester.getCenter(_switch()));
+    await tester.pumpAndSettle();
+
+    expect(
+      _painted(tester),
+      paints
+        ..rrect(color: scheme.primary, style: PaintingStyle.fill)
+        ..rrect(color: Colors.transparent, style: PaintingStyle.stroke)
+        ..rrect(color: scheme.onPrimary),
+    );
+    await press.up();
+  });
+
   testWidgets('a focused toggle drops its ring when it is rebuilt disabled', (
     tester,
   ) async {

@@ -40,8 +40,6 @@ class MxStudyTopBar extends StatelessWidget {
   /// Leaving mid-session is the screen's decision; this bar only reports it.
   final VoidCallback onClose;
 
-  static const double _trackHeight = 4;
-
   /// The share of the bar's width the mode chip may take (FE-A6 P3 T1).
   static const double _badgeShare = 0.4;
 
@@ -63,6 +61,7 @@ class MxStudyTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final accentColor = colors.primary;
+    final trackHeight = context.dimens.sizeTrack;
     // The badge text is ink: primaryInk on the primary tint.
     final accentInk = context.accentColor;
     final duration = MediaQuery.disableAnimationsOf(context)
@@ -115,9 +114,9 @@ class MxStudyTopBar extends StatelessWidget {
                   ),
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(_trackHeight / 2),
+                      borderRadius: BorderRadius.circular(trackHeight / 2),
                       child: SizedBox(
-                        height: _trackHeight,
+                        height: trackHeight,
                         child: ColoredBox(
                           color: MasteryRamp.track(colors),
                           child: Align(

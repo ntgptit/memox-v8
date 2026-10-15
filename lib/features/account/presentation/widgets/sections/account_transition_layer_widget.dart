@@ -10,6 +10,7 @@ import 'package:memox/core/logging/app_logger.dart';
 import 'package:memox/core/sync/di/sync_providers.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/account/presentation/providers/unsent_count_provider.dart';
 import 'package:memox/features/account/presentation/controllers/sign_in_controller.dart';
 import 'package:memox/features/account/presentation/states/account_step_state.dart';
@@ -223,7 +224,10 @@ class _Progress extends StatelessWidget {
         SliverFillRemaining(
           hasScrollBody: false,
           child: Padding(
-            padding: EdgeInsets.all(context.dimens.space16),
+            padding: EdgeInsets.symmetric(
+              horizontal: context.screenMargin,
+              vertical: context.dimens.space16,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -124,6 +124,44 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('M3F-17: disabled blocks a control inside the row and keeps its '
+      'node, with and without a tap', (tester) async {
+    final handle = tester.ensureSemantics();
+    var inner = 0;
+    for (final onTap in <VoidCallback?>[() {}, null]) {
+      await pumpMx(
+        tester,
+        MxRowInk(
+          onTap: onTap,
+          isEnabled: false,
+          child: TextButton(onPressed: () => inner++, child: const Text('Go')),
+        ),
+      );
+      await tester.tap(find.text('Go'), warnIfMissed: false);
+      expect(inner, 0);
+      expect(
+        tester.getSemantics(find.text('Go')),
+        isSemantics(label: 'Go', hasTapAction: false),
+      );
+    }
+    handle.dispose();
+  });
+
+  testWidgets('M3F-17: an enabled static row leaves its controls live', (
+    tester,
+  ) async {
+    var inner = 0;
+    await pumpMx(
+      tester,
+      MxRowInk(
+        onTap: null,
+        child: TextButton(onPressed: () => inner++, child: const Text('Go')),
+      ),
+    );
+    await tester.tap(find.text('Go'));
+    expect(inner, 1);
+  });
+
   testWidgets(
     'shouldDimWhenDisabled false blocks taps without painting opacity',
     (tester) async {
@@ -167,6 +205,95 @@ void main() {
     expect(
       tester.getSemantics(find.text('Row')),
       isSemantics(hasTapAction: true, hasLongPressAction: true),
+    );
+    handle.dispose();
+  });
+
+  // M3F-10: a row that is a choice says so on its own node, so a consumer
+  // needs no Semantics of its own around the row.
+  for (final isSelected in [true, false]) {
+    testWidgets('M3F-10: isSelected $isSelected is on the row node with its '
+        'label and tap', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpMx(
+        tester,
+        MxRowInk(
+          onTap: () {},
+          isSelected: isSelected,
+          child: const SizedBox(width: 200, height: 56, child: Text('Row')),
+        ),
+      );
+
+      expect(
+        tester.getSemantics(find.text('Row')),
+        isSemantics(
+          label: 'Row',
+          isButton: true,
+          isSelected: isSelected,
+          hasSelectedState: true,
+          hasTapAction: true,
+        ),
+      );
+      handle.dispose();
+    });
+  }
+
+  testWidgets('M3F-10: a disabled selected row keeps the selected state', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      MxRowInk(
+        onTap: () {},
+        isEnabled: false,
+        isSelected: true,
+        child: const Text('Row'),
+      ),
+    );
+
+    expect(
+      tester.getSemantics(find.text('Row')),
+      isSemantics(
+        label: 'Row',
+        isButton: true,
+        isSelected: true,
+        hasSelectedState: true,
+        hasEnabledState: true,
+        isEnabled: false,
+      ),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('M3F-10: a static selected row still says it is selected', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(
+      tester,
+      const MxRowInk(onTap: null, isSelected: true, child: Text('Row')),
+    );
+
+    expect(
+      tester.getSemantics(find.text('Row')),
+      isSemantics(label: 'Row', isSelected: true, hasSelectedState: true),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('M3F-10: no isSelected means no selected state', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, MxRowInk(onTap: () {}, child: const Text('Row')));
+
+    expect(
+      tester.getSemantics(find.text('Row')),
+      isSemantics(
+        label: 'Row',
+        isButton: true,
+        hasSelectedState: false,
+        hasTapAction: true,
+      ),
     );
     handle.dispose();
   });

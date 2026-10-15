@@ -11,6 +11,7 @@ import 'package:memox/shared/widgets/mx_dialog.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 
 import '../../../support/account_harness.dart';
+import '../../../support/field_edge_expect.dart';
 import '../../../support/library_harness.dart';
 
 // Screen 30's layout balance (spec 2026-10-05-sign-in-layout-balance, DEV-166).
@@ -38,10 +39,7 @@ void main() {
     final decoration = tester
         .widget<InputDecorator>(find.byType(InputDecorator))
         .decoration;
-    expect(
-      (decoration.enabledBorder! as OutlineInputBorder).borderSide.color,
-      lightColorScheme.outline,
-    );
+    expect(edgeIn(decoration, {}).borderSide.color, lightColorScheme.outline);
   });
 
   accountTest('the way-out dialog leaves 24 dp between its banner and the '

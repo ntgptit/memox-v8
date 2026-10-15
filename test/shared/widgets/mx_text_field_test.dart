@@ -8,14 +8,17 @@ import '../../support/theme_expect.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
+import '../../support/field_edge_expect.dart';
 import '../../support/widget_harness.dart';
 
 /// The decoration the field paints: its own, with the theme's defaults.
 InputDecoration _decoration(WidgetTester tester) =>
     tester.widget<InputDecorator>(find.byType(InputDecorator)).decoration;
 
-Color _edge(InputBorder? border) =>
-    (border! as OutlineInputBorder).borderSide.color;
+Color _edge(OutlineInputBorder border) => border.borderSide.color;
+
+OutlineInputBorder _in(WidgetTester tester, Set<WidgetState> states) =>
+    edgeIn(_decoration(tester), states);
 
 void main() {
   final scheme = lightColorScheme;
@@ -65,14 +68,14 @@ void main() {
       'disabled (DEV-166)', (tester) async {
     final rest = scheme.outline;
     await pumpMx(tester, const SizedBox(width: 300, child: MxTextField()));
-    expect(_edge(_decoration(tester).enabledBorder), rest);
-    expect(_edge(_decoration(tester).focusedBorder), accentOf(scheme));
+    expect(_edge(_in(tester, {})), rest);
+    expect(_edge(_in(tester, {WidgetState.focused})), accentOf(scheme));
 
     await pumpMx(
       tester,
       const SizedBox(width: 300, child: MxTextField(isEnabled: false)),
     );
-    expect(_edge(_decoration(tester).disabledBorder), ghost);
+    expect(_edge(_in(tester, {WidgetState.disabled})), ghost);
   });
 
   testWidgets('every edged variant rests on the outline', (tester) async {
@@ -85,11 +88,7 @@ void main() {
         tester,
         SizedBox(width: 300, child: MxTextField(variant: variant)),
       );
-      expect(
-        _edge(_decoration(tester).enabledBorder),
-        scheme.outline,
-        reason: '$variant',
-      );
+      expect(_edge(_in(tester, {})), scheme.outline, reason: '$variant');
     }
   });
 
@@ -104,8 +103,12 @@ void main() {
       ),
     );
 
-    expect(_edge(_decoration(tester).enabledBorder), scheme.error);
-    expect(_edge(_decoration(tester).focusedBorder), scheme.error);
+    expect(_decoration(tester).error, isNotNull);
+    expect(_edge(_in(tester, {WidgetState.error})), scheme.error);
+    expect(
+      _edge(_in(tester, {WidgetState.error, WidgetState.focused})),
+      scheme.error,
+    );
     expect(find.byType(MxFieldMessage), findsOneWidget);
     expect(
       tester.getTopLeft(find.byType(MxFieldMessage)).dy,
@@ -165,7 +168,7 @@ void main() {
       expect(tester.getSize(find.byType(TextField)).height, 56);
       final decoration = _decoration(tester);
       expect(decoration.fillColor, isNull);
-      final edge = decoration.enabledBorder! as OutlineInputBorder;
+      final edge = edgeIn(decoration, {});
       expect(edge.borderSide.color, scheme.outline);
       expect(edge.borderRadius, BorderRadius.circular(12));
       final style = tester.widget<EditableText>(find.byType(EditableText));

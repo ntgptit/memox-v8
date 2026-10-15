@@ -4,9 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/focus_ring_border.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 
+import '../../core/theme/token_source.dart' show contrast;
 import '../../support/widget_harness.dart';
+import '../../support/theme_expect.dart';
 
 final _painted = find.descendant(
   of: find.byType(TextButton),
@@ -129,7 +132,10 @@ void main() {
     );
   });
 
-  testWidgets('the count sits at 60% resting and at full strength selected', (
+  // M3F-03 (owner 2026-10-15, supersedes SW-REV-001): the resting count is the
+  // unblended onSurfaceVariant, so it meets 4.5:1; labelSmall carries the
+  // quieter hierarchy.
+  testWidgets('the count is onSurfaceVariant resting and the label selected', (
     tester,
   ) async {
     await pumpMx(
@@ -143,7 +149,7 @@ void main() {
     );
     expect(
       tester.widget<Text>(find.text('12')).style!.color,
-      scheme.onSurfaceVariant.withValues(alpha: 0.6),
+      scheme.onSurfaceVariant,
     );
 
     await pumpMx(
@@ -160,6 +166,32 @@ void main() {
       scheme.onSecondaryContainer,
     );
   });
+
+  for (final brightness in Brightness.values) {
+    testWidgets('M3F-03: the resting count is 4.5:1 on the page and a card '
+        '(${brightness.name})', (tester) async {
+      await pumpMx(
+        tester,
+        MxFilterChip(
+          label: 'Due',
+          count: 12,
+          isSelected: false,
+          onSelected: (_) {},
+        ),
+        brightness: brightness,
+      );
+      final context = tester.element(find.text('12'));
+      final painted = tester.widget<Text>(find.text('12')).style!.color!;
+
+      for (final ground in [
+        Theme.of(context).scaffoldBackgroundColor,
+        context.mxColors.cardSurface,
+      ]) {
+        final ink = Color.alphaBlend(painted, ground);
+        expect(contrast(ink, ground), greaterThanOrEqualTo(4.5));
+      }
+    });
+  }
 
   testWidgets('a tap reports the flipped selection', (tester) async {
     bool? reported;
@@ -268,4 +300,26 @@ void main() {
       TextOverflow.ellipsis,
     );
   });
+
+  // M3F-04: the glyph read `primary`, 2.38:1 on the dark card ground.
+  for (final brightness in Brightness.values) {
+    testWidgets('M3F-04: the leading glyph is the accent, 3:1 on a card '
+        '($brightness)', (tester) async {
+      await pumpMx(
+        tester,
+        MxFilterChip(
+          label: 'Tags',
+          icon: AppIcons.filter,
+          isSelected: false,
+          onSelected: (_) {},
+        ),
+        brightness: brightness,
+      );
+      final context = tester.element(find.byIcon(AppIcons.filter));
+      final glyph = IconTheme.of(context).color!;
+
+      expect(glyph, accentOf(context.colors));
+      expect(contrast(glyph, context.mxColors.cardSurface), greaterThan(3));
+    });
+  }
 }

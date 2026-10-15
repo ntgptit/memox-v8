@@ -7,6 +7,8 @@ import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 
+import '../../support/theme_expect.dart';
+
 // The Material component themes carry the Design System defaults, so a raw
 // Material widget, or one the framework builds, looks like MemoX. Sizes and
 // colours are read from the tokens, never restated.
@@ -109,50 +111,6 @@ void main() {
         );
       });
 
-      test(
-        'fields: outlined with no fill, outline at rest, primary focus ring, '
-        'a 12% disabled edge, no label gap',
-        () {
-          final fields = theme.inputDecorationTheme;
-          expect(fields.filled, isNot(isTrue));
-          expect(fields.fillColor, isNull);
-          final edge = fields.enabledBorder! as OutlineInputBorder;
-          expect(edge.borderSide.color, scheme.outline);
-          expect(edge.gapPadding, 0);
-          expect(edge.borderRadius, BorderRadius.circular(dimens.radiusMd));
-          final focused = fields.focusedBorder! as OutlineInputBorder;
-          expect(focused.borderSide.color, scheme.primary);
-          expect(focused.borderSide.width, dimens.strokeFocus);
-          expect(
-            (fields.errorBorder! as OutlineInputBorder).borderSide.color,
-            scheme.error,
-          );
-          final focusedError = fields.focusedErrorBorder! as OutlineInputBorder;
-          expect(focusedError.borderSide.color, scheme.error);
-          expect(focusedError.borderSide.width, dimens.strokeFocus);
-          expect(
-            (fields.disabledBorder! as OutlineInputBorder).borderSide.color,
-            scheme.onSurface.withValues(alpha: dimens.opacityDisabledContainer),
-          );
-          expect(
-            fields.contentPadding,
-            const EdgeInsets.symmetric(horizontal: 16),
-          );
-          final hint = WidgetStateProperty.resolveAs(
-            fields.hintStyle!,
-            <WidgetState>{},
-          );
-          expect(hint.fontSize, theme.textTheme.bodyLarge!.fontSize);
-          expect(hint.color, scheme.onSurfaceVariant);
-          expect(
-            WidgetStateProperty.resolveAs(fields.hintStyle!, {
-              WidgetState.disabled,
-            }).color,
-            scheme.onSurface.withValues(alpha: dimens.opacityDisabledContent),
-          );
-        },
-      );
-
       test('navigation: bar and rail sizes, the secondary-container pill', () {
         expect(theme.navigationBarTheme.height, dimens.sizeNav);
         expect(theme.navigationBarTheme.backgroundColor, scheme.surface);
@@ -204,7 +162,9 @@ void main() {
         expect(chip.labelStyle!.color, scheme.onSurfaceVariant);
         expect(chip.secondaryLabelStyle!.color, scheme.onSecondaryContainer);
         expect(chip.checkmarkColor, scheme.onSecondaryContainer);
-        expect(chip.iconTheme!.color, scheme.primary);
+        // M3F-04: the glyph reads the accent, as every other glyph slot does
+        // (`primary` is 3.01:1 on the dark page, 2.38:1 on a card).
+        expect(chip.iconTheme!.color, accentOf(scheme));
         expect(chip.iconTheme!.size, dimens.sizeIconButton);
         expect(chip.padding, EdgeInsets.all(dimens.space8));
         expect(
@@ -224,9 +184,11 @@ void main() {
 
         expect(sw.thumbColor!.resolve(on), scheme.onPrimary);
         expect(sw.thumbColor!.resolve(off), scheme.outline);
+        // M3F-15: the engaged on handle stays onPrimary; primaryContainer
+        // equals the primary track in this palette and hid the handle.
         expect(
           sw.thumbColor!.resolve({...on, WidgetState.pressed}),
-          scheme.primaryContainer,
+          scheme.onPrimary,
         );
         expect(
           sw.thumbColor!.resolve({WidgetState.focused}),

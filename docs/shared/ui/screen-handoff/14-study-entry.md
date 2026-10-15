@@ -63,6 +63,7 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 
 ## Accessibility
 
+- The app bar's `titleWidget` is the deck header, so the route has no name for TalkBack: `MxAppBar` names the route only through its `title` (M3F-08, open as DEV-393).
 - TalkBack reads the app bar, the breadcrumb, the hero (overline, then "New: {n}", "Due: {n}" — each stat tile is one node), the overdue note, then the rows and the footer. The resume banner's pulse dot is decorative.
 - Single-line text that ellipsizes keeps line-height 1.5 for stacked marks (UI-base §9 row 102). Touch targets are at least 48 × 48.
 - While a session opens, the locked footer and options stay in the reading order and read as disabled.

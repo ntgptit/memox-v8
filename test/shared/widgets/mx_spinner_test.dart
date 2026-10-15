@@ -52,22 +52,24 @@ void main() {
     expect(tester.getSize(find.byType(MxSpinner)), const Size.square(16));
   });
 
-  testWidgets('a 2px ring: the accent on a surface, onPrimary on a fill', (
-    tester,
-  ) async {
-    await pumpMx(tester, const MxSpinner());
-    expect(
-      _ring(tester),
-      paints..arc(
-        color: accentOf(scheme),
-        strokeWidth: 2,
-        style: PaintingStyle.stroke,
-      ),
-    );
+  testWidgets(
+    'a 2px ring: the accent by default, the given colour when one is passed',
+    (tester) async {
+      await pumpMx(tester, const MxSpinner());
+      expect(
+        _ring(tester),
+        paints..arc(
+          color: accentOf(scheme),
+          strokeWidth: 2,
+          style: PaintingStyle.stroke,
+        ),
+      );
 
-    await pumpMx(tester, const MxSpinner(isOnFill: true));
-    expect(_ring(tester), paints..arc(color: scheme.onPrimary));
-  });
+      // M3F-02 (owner 2026-10-15) replaced the isOnFill flag with a colour.
+      await pumpMx(tester, MxSpinner(color: scheme.onError));
+      expect(_ring(tester), paints..arc(color: scheme.onError));
+    },
+  );
 
   testWidgets('a quarter turn every 0.2s, also under reduced motion (O1)', (
     tester,

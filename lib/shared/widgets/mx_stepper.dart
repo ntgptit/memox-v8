@@ -7,6 +7,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
+import 'package:memox/shared/widgets/mx_row_ink.dart';
 import 'package:memox/shared/widgets/mx_spinner.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
@@ -22,8 +23,9 @@ const Duration mxStepperRepeatInterval = Duration(milliseconds: 80);
 /// button's callback and it stops without a separate look.
 ///
 /// Holding − or + repeats the step (FE-A3 D6). With [onValueSubmitted], a
-/// tap on the number turns it into a digits-only field; Done or leaving the
-/// field hands the text back, and the caller parses and validates it.
+/// tap on the number turns it into a digits-only field (Enter or Space does
+/// too, once Tab has reached it); Done or leaving the field hands the text
+/// back, and the caller parses and validates it.
 class MxStepper extends StatefulWidget {
   const MxStepper({
     super.key,
@@ -220,9 +222,11 @@ class _MxStepperState extends State<MxStepper> {
           : SemanticsValidationResult.none,
       onTap: _canEdit ? _edit : null,
       onTapHint: _canEdit ? widget.editHint : null,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      // The tap target is the focus target: Tab reaches it, Enter or Space
+      // edits, and the shared row ring marks it (M3F-06).
+      child: MxRowInk(
         onTap: _canEdit ? _edit : null,
+        borderRadius: BorderRadius.circular(context.dimens.radiusMd),
         // The box stays button-small; the tap target is a full one.
         child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: context.dimens.sizeControl),

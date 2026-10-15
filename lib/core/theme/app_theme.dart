@@ -44,6 +44,19 @@ ThemeData _build({
     // foreground at the pressed overlay, not Material's grey (SW-REV-007).
     splashColor: tokens.onSurfaceAt(tokens.dimens.opacityPressed),
     highlightColor: tokens.onSurfaceAt(tokens.dimens.opacityPressed),
+    // The hover and focus layers of the same rows: the tokens' state layers,
+    // not the SDK's black or white at 4% and 12% (M3F-13).
+    hoverColor: tokens.onSurfaceAt(tokens.dimens.opacityHover),
+    focusColor: tokens.onSurfaceAt(tokens.dimens.opacityFocus),
+    // A glyph with no IconTheme ancestor is a supporting icon (M3F-12).
+    iconTheme: IconThemeData(
+      color: scheme.onSurfaceVariant,
+      size: tokens.dimens.sizeIcon,
+    ),
+    // Set, never left to the platform, which makes linux, windows and macOS
+    // compact; `platform:` would change far more (M3F-14).
+    visualDensity: VisualDensity.standard,
+    materialTapTargetSize: MaterialTapTargetSize.padded,
     extensions: [mx, tokens.dimens],
     cardTheme: cardTheme(tokens),
     searchBarTheme: searchBarTheme(tokens),

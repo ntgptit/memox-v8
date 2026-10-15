@@ -4,14 +4,12 @@ import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
 
+import '../../support/field_edge_expect.dart';
 import '../../support/widget_harness.dart';
 
 /// The decoration the field paints: its own, with the theme's defaults.
 InputDecoration _decoration(WidgetTester tester) =>
     tester.widget<InputDecorator>(find.byType(InputDecorator)).decoration;
-
-Color _edge(InputBorder? border) =>
-    (border! as OutlineInputBorder).borderSide.color;
 
 TextStyle _textOf(WidgetTester tester, String text) =>
     tester.widget<Text>(find.text(text)).style!;
@@ -44,7 +42,10 @@ void main() {
       findsNothing,
     );
     expect(tester.widget<TextField>(find.byType(TextField)).enabled, isFalse);
-    expect(_edge(_decoration(tester).disabledBorder), ghost);
+    expect(
+      edgeIn(_decoration(tester), {WidgetState.disabled}).borderSide.color,
+      ghost,
+    );
     final content = scheme.onSurface.withValues(alpha: 0.38);
     expect(_textOf(tester, 'Name').color, content);
     expect(_textOf(tester, 'Shown on the card').color, content);

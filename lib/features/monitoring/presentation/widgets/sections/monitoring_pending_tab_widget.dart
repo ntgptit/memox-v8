@@ -53,9 +53,9 @@ class MonitoringPendingTabWidget extends ConsumerWidget {
         if (state.logs.value case final logs? when logs.total > 0)
           Padding(
             padding: EdgeInsets.fromLTRB(
-              context.dimens.space16,
+              context.screenMargin,
               context.dimens.space12,
-              context.dimens.space16,
+              context.screenMargin,
               0,
             ),
             child: MxNote(text: l10n.monitoringPendingNote),

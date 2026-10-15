@@ -9,7 +9,7 @@ and tag names (FE-A10, [spec](../../../superpowers/specs/2026-09-26-library-sear
 
 | Region | Widget | Design |
 |---|---|---|
-| App bar | `MxAppBar` with its title-widget slot | Back, then `MxSearchField` (focused on entry), hint "Search decks, cards, tags". No title. |
+| App bar | `MxAppBar` with its title-widget slot | Back, then `MxSearchField` (focused on entry), hint "Search decks, cards, tags". No title, so the route has no name for TalkBack: `MxAppBar` names the route only through its `title` (M3F-08, open as DEV-393). |
 | Empty query | label, `MxCard` of `MxListRow`s, `MxNote` | No query runs (BR-SEARCH-003). "SEARCH FINDS"; three read-only hint rows: "a deck name" / "TOPIK, Học qua phim", "a card term or meaning" / "학생, học sinh, homework", "a tag name" / "verb, Học"; note "Case does not matter, accents do: “hoc” will not find “học”. Examples, hints and pronunciation are not searched." |
 | Searching | label, skeleton groups | "Searching…" (no query: the field shows it, and user data is never upper-cased), then two groups, each a short header bar and three skeleton rows inside an `MxCard`. |
 | Results | group headers, `MxCard`s of `MxListRow`s | No header repeats the query (critique 2026-09-30 part 2); group **Decks** then group **Cards** (BR-SEARCH-005), a group with no row has no header; each header counts the rows loaded, "{n}+" on the last group while another page follows. Deck row: tile by content type, name with the match emphasised, "{path} · holds cards / sub-decks / empty", chevron. Card row: card tile, "{front} · {back}" with the match emphasised in the face that holds it, a sub-line with the matched tag's `MxTagChip` when the card was found by a tag only, then the deck path; chevron; opens the card detail. |

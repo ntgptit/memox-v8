@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/core/theme/app_icons.dart';
+import 'package:memox/core/theme/theme_rules.dart';
 import 'package:memox/features/deck/domain/failures/deck_failure.dart';
 import 'package:memox/features/deck/domain/models/deck_placement_model.dart';
 import 'package:memox/features/deck/domain/repositories/deck_repository.dart';
@@ -174,6 +175,30 @@ void main() {
     expect(await _rootOrder(env), ['B', 'A', 'C']);
     expect(_shownOrder(tester), ['B', 'A', 'C']);
   });
+
+  for (final (width, margin) in [(360.0, 16.0), (700.0, 24.0)]) {
+    libraryTest('M3F-19: at ${width.toInt()} wide the reorder rows start on '
+        'the $margin screen margin', (tester, env) async {
+      for (final name in ['A', 'B']) {
+        await env.decks.root(name);
+      }
+      await pumpLibraryScreen(
+        tester,
+        env,
+        WindowWidthScope(width: width, child: deckScreen()),
+      );
+      await _startReorder(tester);
+
+      expect(
+        tester.getTopLeft(find.byType(DeckReorderRowWidget).first).dx,
+        margin,
+      );
+      expect(
+        360 - tester.getTopRight(find.byType(DeckReorderRowWidget).first).dx,
+        margin,
+      );
+    });
+  }
 
   libraryTest('each row offers TalkBack move actions (D7)', (
     tester,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/mx_colors_extension.g.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
@@ -7,6 +9,8 @@ import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 
+import '../../support/focus_ring_expect.dart';
+import '../../support/paint_clip.dart';
 import '../../support/widget_harness.dart';
 
 const _destinations = [
@@ -276,12 +280,156 @@ void main() {
     expect(picked, 2);
     expect(
       tester.getSemantics(find.text('Library')),
-      isSemantics(label: 'Library', isSelected: true, isButton: true),
+      // M3F-09: the label now ends with the destination's position.
+      isSemantics(
+        label: 'Library\nTab 1 of 4',
+        isSelected: true,
+        isButton: true,
+      ),
     );
+    handle.dispose();
+  });
+
+  // M3F-09: the SDK NavigationBar gives each destination the tab role and
+  // "Tab i of n", and the bar the tab bar role. Selected and button stay.
+  testWidgets('M3F-09: each destination is a tab named with its position', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _nav(selected: 1));
+
+    expect(
+      tester.getSemantics(find.text('Study')),
+      isSemantics(
+        label: 'Study\nTab 2 of 4',
+        role: SemanticsRole.tab,
+        isButton: true,
+        isSelected: true,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+    expect(
+      tester.getSemantics(find.text('Settings')),
+      isSemantics(
+        label: 'Settings\nTab 4 of 4',
+        role: SemanticsRole.tab,
+        isButton: true,
+        isSelected: false,
+        hasSelectedState: true,
+        hasTapAction: true,
+      ),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('M3F-09: the bar is a tab bar whose children are the tabs', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpMx(tester, _nav());
+
+    final bar = tester.getSemantics(
+      find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.role == SemanticsRole.tabBar,
+      ),
+    );
+    expect(bar.getSemanticsData().role, SemanticsRole.tabBar);
+    var tabs = 0;
+    bar.visitChildren((child) {
+      expect(child.getSemanticsData().role, SemanticsRole.tab);
+      tabs++;
+      return true;
+    });
+    expect(tabs, _destinations.length);
+    expect(tester.takeException(), isNull);
     handle.dispose();
   });
 
   test('selectedIndex outside the destinations is rejected', () {
     expect(() => _nav(selected: 4), throwsAssertionError);
+  });
+
+  // M3F-05: the cell's InkWell drew only the theme's focus layer on the pill,
+  // 1.3:1 against the bar. The ring is `MxFocusRingBorder` on the pill's
+  // stadium, `strokeFocusGap` outside it, as the toggle's is on its track.
+  for (final brightness in Brightness.values) {
+    final focusScheme = brightness == Brightness.light
+        ? lightColorScheme
+        : darkColorScheme;
+    // Library is the selected destination, Study is not.
+    for (final label in ['Library', 'Study']) {
+      testWidgets('M3F-05: the focused $label pill draws the 2px primary '
+          'ring (${brightness.name})', (tester) async {
+        int? picked;
+        await pumpMx(
+          tester,
+          _nav(onSelected: (i) => picked = i),
+          brightness: brightness,
+        );
+        useKeyboardFocusHighlight();
+        expect(
+          tester.renderObject(find.byType(MxBottomNav)),
+          isNot(paintsFocusRing(focusScheme.primary)),
+        );
+
+        await tabTo(tester, find.text(label));
+
+        expect(focusedRender(tester), paintsFocusRing(focusScheme.primary));
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        expect(picked, label == 'Library' ? 0 : 1);
+      });
+    }
+  }
+
+  testWidgets('M3F-05: the ring hugs the pill, offset by strokeFocusGap, and '
+      'no clip cuts it', (tester) async {
+    const dimens = AppDimens();
+    await pumpMx(tester, _nav());
+    useKeyboardFocusHighlight();
+    await tabTo(tester, find.text('Study'));
+
+    final cell = tester.getRect(
+      find.ancestor(
+        of: find.text('Study'),
+        matching: find.bySubtype<InkWell>(),
+      ),
+    );
+    final pill = tester.getRect(_pill('Study'));
+    final pillWidth = dimens.sizeNavIndicatorWidth;
+    final pillHeight = dimens.sizeNavIndicatorHeight;
+    // The ring's centre line: the gap and half the stroke outside the pill.
+    final reach = dimens.strokeFocusGap + dimens.strokeFocus / 2;
+    final ringCentre = Rect.fromCenter(
+      center: pill.center - cell.topLeft,
+      width: pillWidth + 2 * reach,
+      height: pillHeight + 2 * reach,
+    );
+    expect(
+      focusedRender(tester),
+      paints..something((name, arguments) {
+        final paint = arguments.whereType<Paint>().firstOrNull;
+        if (name != #drawPath || paint == null) return false;
+        if (paint.color.toARGB32() != lightColorScheme.primary.toARGB32()) {
+          return false;
+        }
+        final bounds = (arguments[0] as Path).getBounds();
+        return (bounds.left - ringCentre.left).abs() < 0.01 &&
+            (bounds.top - ringCentre.top).abs() < 0.01 &&
+            (bounds.right - ringCentre.right).abs() < 0.01 &&
+            (bounds.bottom - ringCentre.bottom).abs() < 0.01;
+      }),
+    );
+    expect(
+      clipsAway(
+        tester,
+        find.ancestor(
+          of: find.text('Study'),
+          matching: find.bySubtype<InkWell>(),
+        ),
+        pill.inflate(dimens.strokeFocusGap + dimens.strokeFocus),
+      ),
+      isFalse,
+    );
   });
 }

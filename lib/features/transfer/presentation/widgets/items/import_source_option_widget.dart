@@ -24,31 +24,32 @@ class ImportSourceOptionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      selected: isSelected,
-      button: true,
-      child: MxCard(
-        isFullBleed: true,
+    return MxCard(
+      isFullBleed: true,
+      isSelected: isSelected,
+      child: MxRowInk(
+        onTap: onSelected,
+        // No tap while a file is read: the option says it is disabled, keeps
+        // its selected state and is not dimmed.
+        isEnabled: onSelected != null,
+        shouldDimWhenDisabled: false,
         isSelected: isSelected,
-        child: MxRowInk(
-          onTap: onSelected,
-          child: Padding(
-            padding: EdgeInsets.all(context.dimens.space12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: context.dimens.space4,
-              children: [
-                MxIconTile(icon: icon),
-                SizedBox(height: context.dimens.space4),
-                Text(label, style: context.texts.titleMedium),
-                Text(
-                  hint,
-                  style: context.texts.bodyMedium?.copyWith(
-                    color: context.colors.onSurfaceVariant,
-                  ),
+        child: Padding(
+          padding: EdgeInsets.all(context.dimens.space12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: context.dimens.space4,
+            children: [
+              MxIconTile(icon: icon),
+              SizedBox(height: context.dimens.space4),
+              Text(label, style: context.texts.titleMedium),
+              Text(
+                hint,
+                style: context.texts.bodyMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
