@@ -11,7 +11,6 @@ import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 const int _schemaVersion = 1;
 const String _format = 'pbt';
 const String _publisher = 'NIIED';
-const Set<int> _optionIdxs = {1, 2, 3, 4};
 
 /// Every cross-field problem of [test] (spec 2026-10-15 §4.2). Shape and
 /// language problems were already reported by the mapper. [assetExists]
@@ -107,8 +106,8 @@ void _checkPoints(TopikTest test, _Report error) {
 
 void _checkOptions(TopikQuestion question, _Report error) {
   final idxs = [for (final option in question.options) option.idx];
-  if (idxs.length != _optionIdxs.length ||
-      !idxs.toSet().containsAll(_optionIdxs)) {
+  if (idxs.length != topikOptionIdxs.length ||
+      !idxs.toSet().containsAll(topikOptionIdxs)) {
     error(
       TopikContentRule.options,
       'question ${question.no} needs options 1–4 once each',
@@ -122,7 +121,7 @@ void _checkOptions(TopikQuestion question, _Report error) {
       'question ${question.no} has an option with no text or image',
     );
   }
-  if (!_optionIdxs.contains(question.answerIdx)) {
+  if (!topikOptionIdxs.contains(question.answerIdx)) {
     error(
       TopikContentRule.options,
       'question ${question.no} answerIdx must be 1–4',
