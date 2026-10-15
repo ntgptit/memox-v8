@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/core/theme/focus_ring_border.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
@@ -11,7 +12,7 @@ import '../../support/widget_harness.dart';
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('a floating inverse toast: radius 12, 16 sides', (tester) async {
+  testWidgets('a floating inverse toast: radiusXs, 16 sides', (tester) async {
     late SnackBar bar;
     late SnackBarThemeData theme;
     await pumpMx(
@@ -30,13 +31,13 @@ void main() {
     expect(bar.behavior ?? theme.behavior, SnackBarBehavior.floating);
     expect(
       ((bar.shape ?? theme.shape)! as RoundedRectangleBorder).borderRadius,
-      BorderRadius.circular(12),
+      BorderRadius.circular(const AppDimens().radiusXs),
     );
     expect(
       bar.margin ?? theme.insetPadding,
       const EdgeInsets.fromLTRB(16, 0, 16, 16),
     );
-    // The message carries the 10 vertical padding itself.
+    // The message carries the 14 vertical padding itself.
     expect(bar.padding, const EdgeInsets.symmetric(horizontal: 16));
   });
 
@@ -78,6 +79,84 @@ void main() {
       await expectAccessibleTargets(tester);
     },
   );
+
+  testWidgets('a message alone has 14 above and below its line', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      const SizedBox(width: 328, child: MxSnackbarContent(message: 'Saved')),
+    );
+    final message = tester.getRect(find.text('Saved'));
+    final content = tester.getRect(find.byType(MxSnackbarContent));
+
+    expect(message.top - content.top, 14);
+    expect(content.bottom - message.bottom, 14);
+  });
+
+  group('an action wider than 25% of the toast goes on its own line', () {
+    // The toast is the content (328) and its 16 sides: 360 wide.
+    Future<void> pumpAction(WidgetTester tester, String label) => pumpMx(
+      tester,
+      SizedBox(
+        width: 328,
+        child: MxSnackbarContent(
+          message: 'Moved to Trash',
+          actionLabel: label,
+          onAction: () {},
+        ),
+      ),
+    );
+
+    testWidgets('a short label stays beside the message', (tester) async {
+      await pumpAction(tester, 'Undo');
+
+      expect(
+        tester.getCenter(find.byType(TextButton)).dy,
+        tester.getCenter(find.text('Moved to Trash')).dy,
+      );
+    });
+
+    testWidgets('a long label drops under the message, at the end', (
+      tester,
+    ) async {
+      await pumpAction(tester, 'Open the trash');
+      final button = tester.getRect(find.byType(TextButton));
+      final message = tester.getRect(find.text('Moved to Trash'));
+
+      expect(button.top, greaterThanOrEqualTo(message.bottom));
+      expect(
+        button.right,
+        tester.getRect(find.byType(MxSnackbarContent)).right,
+      );
+      expect(
+        message.top - tester.getRect(find.byType(MxSnackbarContent)).top,
+        14,
+      );
+      await expectAccessibleTargets(tester);
+    });
+  });
+
+  testWidgets('the action\'s focus ring is inversePrimary on the toast', (
+    tester,
+  ) async {
+    await pumpMx(
+      tester,
+      SizedBox(
+        width: 328,
+        child: MxSnackbarContent(
+          message: 'Moved to Trash',
+          actionLabel: 'Undo',
+          onAction: () {},
+        ),
+      ),
+    );
+    final style = tester.widget<TextButton>(find.byType(TextButton)).style!;
+    final focused =
+        style.shape!.resolve({WidgetState.focused})! as MxFocusRingBorder;
+
+    expect(focused.ring.color, scheme.inversePrimary);
+  });
 
   testWidgets('Undo hides the toast and calls onAction once (RF5)', (
     tester,
@@ -126,7 +205,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // The action's 48 target sits inside the toast instead of adding the
-    // message's 10 + 10 around it.
+    // message's 14 + 14 around it.
     expect(
       tester
           .getSize(

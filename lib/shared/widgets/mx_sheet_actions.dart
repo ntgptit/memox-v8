@@ -80,7 +80,7 @@ class MxSheetActions extends StatelessWidget {
   final bool isConfirmLoading;
 
   /// The sheet form: a ghost rule on top and 8 16 16 padding, instead of
-  /// the dialog's 16 all round.
+  /// the dialog's 24 on the sides and below (the theme's actionsPadding).
   final bool isInSheet;
   final List<Widget> children;
 
@@ -127,10 +127,9 @@ class MxSheetActions extends StatelessWidget {
             ),
           );
     if (!isInSheet) {
-      // A dialog's pair, 16 in on the edge its title and body share
-      // (DEV-166).
+      // A dialog's pair, on the edge its title and body share (DEV-166).
       return Padding(
-        padding: EdgeInsets.all(context.dimens.space16),
+        padding: DialogTheme.of(context).actionsPadding!,
         child: row,
       );
     }

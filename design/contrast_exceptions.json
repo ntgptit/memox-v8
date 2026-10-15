@@ -16,25 +16,25 @@
       "pair": "accent on its tint over surfaceContainerHigh",
       "mode": "light",
       "ratio": 4.42,
-      "reason": "A tint is laid over the ground directly beneath it (DESIGN.md Tint Rule, MxTintBase): the sheet or dialog surface. Over that darker ground the light accent tint and its accent text fall just short of 4.5:1. The values are the Design System's (design/tokens.json); the owner accepted this gap on DEV-372 and fixes it in the Design System, not in code."
+      "reason": "A tint is laid over the ground directly beneath it (DESIGN.md Tint Rule, MxTintBase): the dialog surface (a sheet sits on the lighter surfaceContainerLow and meets the floor). Over that darker ground the light accent tint and its accent text fall just short of 4.5:1. The values are the Design System's (design/tokens.json); the owner accepted this gap on DEV-372 and fixes it in the Design System, not in code."
     },
     {
       "pair": "success on its tint over surfaceContainerHigh",
       "mode": "light",
       "ratio": 4.42,
-      "reason": "A tint is laid over the ground directly beneath it (DESIGN.md Tint Rule, MxTintBase): the sheet or dialog surface. Over that darker ground the light success tint and its success text fall just short of 4.5:1. The values are the Design System's (design/tokens.json); the owner accepted this gap on DEV-372 and fixes it in the Design System, not in code."
+      "reason": "A tint is laid over the ground directly beneath it (DESIGN.md Tint Rule, MxTintBase): the dialog surface (a sheet sits on the lighter surfaceContainerLow and meets the floor). Over that darker ground the light success tint and its success text fall just short of 4.5:1. The values are the Design System's (design/tokens.json); the owner accepted this gap on DEV-372 and fixes it in the Design System, not in code."
     },
     {
       "pair": "warning on its tint over surfaceContainerHigh",
       "mode": "light",
       "ratio": 4.46,
-      "reason": "A tint is laid over the ground directly beneath it (DESIGN.md Tint Rule, MxTintBase): the sheet or dialog surface. Over that darker ground the light warning tint and its warning text fall just short of 4.5:1. The values are the Design System's (design/tokens.json); the owner accepted this gap on DEV-372 and fixes it in the Design System, not in code."
+      "reason": "A tint is laid over the ground directly beneath it (DESIGN.md Tint Rule, MxTintBase): the dialog surface (a sheet sits on the lighter surfaceContainerLow and meets the floor). Over that darker ground the light warning tint and its warning text fall just short of 4.5:1. The values are the Design System's (design/tokens.json); the owner accepted this gap on DEV-372 and fixes it in the Design System, not in code."
     },
     {
       "pair": "error on its tint over surfaceContainerHigh",
       "mode": "light",
       "ratio": 4.27,
-      "reason": "A tint is laid over the ground directly beneath it (DESIGN.md Tint Rule, MxTintBase): the sheet or dialog surface. Over that darker ground the light error tint and its error text fall just short of 4.5:1. The values are the Design System's (design/tokens.json); the owner accepted this gap on DEV-372 and fixes it in the Design System, not in code."
+      "reason": "A tint is laid over the ground directly beneath it (DESIGN.md Tint Rule, MxTintBase): the dialog surface (a sheet sits on the lighter surfaceContainerLow and meets the floor). Over that darker ground the light error tint and its error text fall just short of 4.5:1. The values are the Design System's (design/tokens.json); the owner accepted this gap on DEV-372 and fixes it in the Design System, not in code."
     }
   ]
 }

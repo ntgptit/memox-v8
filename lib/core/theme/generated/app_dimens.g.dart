@@ -63,7 +63,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
     this.strokeControl = 2,
     this.strokeIndicator = 2,
     this.opacityMuted = 0.7,
-    this.opacityScrim = 0.45,
+    this.opacityScrim = 0.32,
   });
 
   final double space4;
@@ -151,7 +151,7 @@ class AppDimens extends ThemeExtension<AppDimens> {
   /// Readable content that steps back: an answered choice out of play, a footer caption.
   final double opacityMuted;
 
-  /// Alpha of the scrim behind a dialog or a bottom sheet. The value from before the Indigo palette: Indigo raised it together with its tinted scrim colour, and the Design System replaced both (ADR-022).
+  /// Alpha of the scrim behind a dialog or a bottom sheet: the Material 3 scrim, 32%. The Design System defines the scrim colour, not its opacity (ADR-022).
   final double opacityScrim;
 
   @override

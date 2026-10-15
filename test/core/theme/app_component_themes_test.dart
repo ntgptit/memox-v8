@@ -305,25 +305,6 @@ void main() {
         expect(focused.gap, dimens.strokeFocusGap);
       });
 
-      test('dialog, sheet and snack bar carry their tokens', () {
-        expect(theme.dialogTheme.backgroundColor, scheme.surfaceContainerHigh);
-        expect(
-          (theme.dialogTheme.shape! as RoundedRectangleBorder).borderRadius,
-          BorderRadius.circular(dimens.radiusXl),
-        );
-        expect(
-          theme.dialogTheme.barrierColor,
-          scheme.scrim.withValues(alpha: dimens.opacityScrim),
-        );
-        expect(
-          (theme.bottomSheetTheme.shape! as RoundedRectangleBorder)
-              .borderRadius,
-          BorderRadius.vertical(top: Radius.circular(dimens.radiusXl)),
-        );
-        expect(theme.snackBarTheme.backgroundColor, scheme.inverseSurface);
-        expect(theme.snackBarTheme.actionTextColor, scheme.inversePrimary);
-      });
-
       testWidgets(
         'raw buttons are full-radius and at least the button height',
         (tester) async {

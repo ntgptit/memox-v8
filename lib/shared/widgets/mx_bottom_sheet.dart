@@ -31,7 +31,8 @@ Future<T?> showMxBottomSheet<T>(
 ///   O12);
 /// - the fill runs under the gesture bar, and the content stays above it.
 ///
-/// It is a Material, so the ripple of a row inside is visible.
+/// It is a Material, so the ripple of a row inside is visible. Its surface,
+/// elevation (1, no drawn shadow) and drag handle are the theme's sheet.
 class MxBottomSheet extends StatelessWidget {
   const MxBottomSheet({
     super.key,
@@ -71,18 +72,11 @@ class MxBottomSheet extends StatelessWidget {
   final bool isHeld;
 
   static const double _maxHeightShare = 0.85;
-  static const double _grabberWidth = 36;
-  static const double _grabberHeight = 4;
-
-  /// The Design System defines no shadow for a sheet; Material's own
-  /// elevation casts it, the same in light and dark.
-  static const double _elevation = 3;
-
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     final sheets = Theme.of(context).bottomSheetTheme;
     final shape = sheets.shape! as RoundedRectangleBorder;
+    final handle = sheets.dragHandleSize!;
     // A field inside keeps above the keyboard (§9 row 64): the sheet sits on
     // the IME inset and caps itself within what is left.
     final inset = MediaQuery.viewInsetsOf(context).bottom;
@@ -93,11 +87,11 @@ class MxBottomSheet extends StatelessWidget {
       ),
       child: MxTintBase(
         // What the sheet holds is tinted over its own ground.
-        color: sheets.backgroundColor ?? context.colors.surfaceContainerHigh,
+        color: sheets.backgroundColor ?? context.colors.surfaceContainerLow,
         child: Material(
           color: sheets.backgroundColor,
-          elevation: _elevation,
-          shadowColor: colors.shadow,
+          elevation: sheets.modalElevation!,
+          shadowColor: sheets.shadowColor,
           shape: shape,
           clipBehavior: Clip.antiAlias,
           child: SafeArea(
@@ -109,29 +103,27 @@ class MxBottomSheet extends StatelessWidget {
                 if (hasGrabber)
                   // Material's drag-handle semantics: a screen reader can
                   // dismiss by the grabber (§9 row 65).
-                  Semantics(
-                    key: const ValueKey('mx-sheet-grabber'),
-                    container: true,
-                    button: true,
-                    label: MaterialLocalizations.of(context)
-                        .modalBarrierDismissLabel,
-                    onTap: () => Navigator.of(context).maybePop(),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        top: context.dimens.space8,
-                        bottom: context.dimens.space4,
-                      ),
-                      child: Center(
-                        child: SizedBox(
-                          width: _grabberWidth,
-                          height: _grabberHeight,
-                          child: DecoratedBox(
-                            // Variant ink, 3:1 on the sheet; the kit's
-                            // outlineVariant is 1.30 (FE-C1).
-                            decoration: BoxDecoration(
-                              color: colors.onSurfaceVariant,
-                              borderRadius: BorderRadius.circular(
-                                _grabberHeight / 2,
+                  Center(
+                    child: Semantics(
+                      key: const ValueKey('mx-sheet-grabber'),
+                      container: true,
+                      button: true,
+                      label: MaterialLocalizations.of(context)
+                          .modalBarrierDismissLabel,
+                      onTap: () => Navigator.of(context).maybePop(),
+                      child: SizedBox.square(
+                        dimension: context.dimens.sizeControl,
+                        child: Center(
+                          child: SizedBox.fromSize(
+                            size: handle,
+                            child: DecoratedBox(
+                              // Variant ink, 3:1 on the sheet; the kit's
+                              // outlineVariant is 1.30 (FE-C1).
+                              decoration: BoxDecoration(
+                                color: sheets.dragHandleColor,
+                                borderRadius: BorderRadius.circular(
+                                  handle.height / 2,
+                                ),
                               ),
                             ),
                           ),

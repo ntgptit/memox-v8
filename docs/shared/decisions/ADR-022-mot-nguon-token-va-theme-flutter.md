@@ -51,6 +51,7 @@ màu, chữ, kích thước và bố cục, nên cả hai vấn đề phải gi�
   giá trị.
 - Bóng của dialog, sheet, FAB và thông báo nổi là elevation của Material, giống nhau ở
   hai chế độ, vì Design System không định nghĩa bóng và widget không được rẽ nhánh theo
-  `brightness`.
+  `brightness`. Dialog và sheet giữ giá trị elevation của Material 3 nhưng `shadowColor`
+  trong suốt, đúng như Material 3 (chủ sở hữu quyết định 2026-10-14).
 - `*.g.dart` trong `lib/core/theme/generated/` được commit (khác các `*.g.dart` của
   build_runner) và `check_generated.py` miễn thư mục này.

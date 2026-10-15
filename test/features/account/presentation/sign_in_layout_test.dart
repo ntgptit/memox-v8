@@ -44,7 +44,7 @@ void main() {
     );
   });
 
-  accountTest('the way-out dialog leaves 16 dp between its banner and the '
+  accountTest('the way-out dialog leaves 24 dp between its banner and the '
       'actions, as a dialog without a note does (2026-10-05 L3)', (
     tester,
     env,
@@ -78,7 +78,7 @@ void main() {
     );
     expect(
       tester.getTopLeft(cancel).dy - tester.getBottomLeft(painted).dy,
-      closeTo(16, 0.5),
+      closeTo(24, 0.5),
     );
   });
 

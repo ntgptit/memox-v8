@@ -4,6 +4,7 @@ import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/theme/generated/color_schemes.g.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_tint_base.dart';
 
 import '../../support/widget_harness.dart';
 
@@ -21,8 +22,8 @@ Widget _rows(int count) => Column(
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('surface: the high container, radiusXl on top, a Material '
-      'elevation', (tester) async {
+  testWidgets('surface: the low container, radiusXl on top, elevation 1 '
+      'with no shadow', (tester) async {
     await pumpMx(tester, MxBottomSheet(child: _rows(2)));
     final surface = tester.widget<Material>(
       find
@@ -33,15 +34,35 @@ void main() {
           .first,
     );
 
-    expect(surface.color, scheme.surfaceContainerHigh);
+    expect(surface.color, scheme.surfaceContainerLow);
     expect(
       (surface.shape! as RoundedRectangleBorder).borderRadius,
       BorderRadius.vertical(top: Radius.circular(const AppDimens().radiusXl)),
     );
-    expect(surface.elevation, greaterThan(0));
+    expect(surface.elevation, 1);
+    expect(surface.shadowColor, Colors.transparent);
   });
 
-  testWidgets('a 36×4 onSurfaceVariant grabber, 8 above and 4 below '
+  testWidgets('what the sheet holds is tinted over the low container', (
+    tester,
+  ) async {
+    late Color base;
+    await pumpMx(
+      tester,
+      MxBottomSheet(
+        child: Builder(
+          builder: (context) {
+            base = MxTintBase.of(context);
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+
+    expect(base, scheme.surfaceContainerLow);
+  });
+
+  testWidgets('a 32×4 onSurfaceVariant handle centred in a 48×48 target '
       '(FE-C1)', (tester) async {
     await pumpMx(tester, MxBottomSheet(child: _rows(1)));
     final bar = find.descendant(
@@ -49,12 +70,13 @@ void main() {
       matching: find.byType(DecoratedBox),
     );
 
-    expect(tester.getSize(bar), const Size(36, 4));
+    expect(tester.getSize(bar), const Size(32, 4));
     expect(
       (tester.widget<DecoratedBox>(bar).decoration as BoxDecoration).color,
       scheme.onSurfaceVariant,
     );
-    expect(tester.getSize(find.byKey(_grabberKey)).height, 16);
+    expect(tester.getSize(find.byKey(_grabberKey)), const Size(48, 48));
+    expect(tester.getCenter(bar), tester.getCenter(find.byKey(_grabberKey)));
 
     await pumpMx(tester, MxBottomSheet(hasGrabber: false, child: _rows(1)));
     expect(find.byKey(_grabberKey), findsNothing);

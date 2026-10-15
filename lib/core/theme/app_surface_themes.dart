@@ -128,33 +128,68 @@ ProgressIndicatorThemeData progressIndicatorTheme(ThemeTokens t) =>
       borderRadius: t.radius(t.dimens.sizeTrack / 2),
     );
 
+/// Material 3's dialog elevation. Its shadow is not drawn (the theme's
+/// shadow colour is transparent), as in Material 3.
+const double _dialogElevation = 6;
+
+/// Material 3's minimum dialog width.
+const double _dialogMinWidth = 280;
+
+/// Material 3's sheet elevation, for the resting and the modal sheet alike.
+const double _sheetElevation = 1;
+
+/// Material 3's drag handle: 32 wide and 4 tall.
+const Size _dragHandleSize = Size(32, 4);
+
+/// Material 3's plain tooltip height, the least it is.
+const double _tooltipMinHeight = 24;
+
+/// The share of the toast's width an action may take beside the message;
+/// a wider one goes on its own line (Material 3, the SDK default).
+const double _snackBarActionOverflowThreshold = 0.25;
+
+/// Dialog: Material 3 text roles, 24 all round and a 280 minimum width. The
+/// elevation is kept, the shadow transparent.
 DialogThemeData dialogTheme(ThemeTokens t) => DialogThemeData(
   backgroundColor: t.scheme.surfaceContainerHigh,
   surfaceTintColor: Colors.transparent,
-  elevation: 0,
+  shadowColor: Colors.transparent,
+  elevation: _dialogElevation,
   shape: RoundedRectangleBorder(borderRadius: t.radius(t.dimens.radiusXl)),
   barrierColor: t.scrim,
-  titleTextStyle: t.texts.titleSmall?.copyWith(color: t.scheme.onSurface),
+  titleTextStyle: t.texts.headlineSmall?.copyWith(color: t.scheme.onSurface),
   contentTextStyle: t.texts.bodyMedium?.copyWith(
     color: t.scheme.onSurfaceVariant,
   ),
+  actionsPadding: EdgeInsets.fromLTRB(
+    t.dimens.space24,
+    0,
+    t.dimens.space24,
+    t.dimens.space24,
+  ),
+  constraints: const BoxConstraints(minWidth: _dialogMinWidth),
   insetPadding: EdgeInsets.symmetric(
     horizontal: t.dimens.space24,
     vertical: t.dimens.space24,
   ),
 );
 
+/// Sheet: the low container at elevation 1 with no drawn shadow, and
+/// Material 3's drag handle.
 BottomSheetThemeData bottomSheetTheme(ThemeTokens t) => BottomSheetThemeData(
-  backgroundColor: t.scheme.surfaceContainerHigh,
-  modalBackgroundColor: t.scheme.surfaceContainerHigh,
+  backgroundColor: t.scheme.surfaceContainerLow,
+  modalBackgroundColor: t.scheme.surfaceContainerLow,
   surfaceTintColor: Colors.transparent,
-  elevation: 0,
-  modalElevation: 0,
+  shadowColor: Colors.transparent,
+  elevation: _sheetElevation,
+  modalElevation: _sheetElevation,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.vertical(
       top: Radius.circular(t.dimens.radiusXl),
     ),
   ),
+  dragHandleColor: t.scheme.onSurfaceVariant,
+  dragHandleSize: _dragHandleSize,
   modalBarrierColor: t.scrim,
 );
 
@@ -162,7 +197,7 @@ SnackBarThemeData snackBarTheme(ThemeTokens t) => SnackBarThemeData(
   backgroundColor: t.scheme.inverseSurface,
   actionTextColor: t.scheme.inversePrimary,
   behavior: SnackBarBehavior.floating,
-  shape: RoundedRectangleBorder(borderRadius: t.radius(t.dimens.radiusMd)),
+  shape: RoundedRectangleBorder(borderRadius: t.radius(t.dimens.radiusXs)),
   insetPadding: EdgeInsets.fromLTRB(
     t.dimens.marginScreen,
     0,
@@ -172,6 +207,7 @@ SnackBarThemeData snackBarTheme(ThemeTokens t) => SnackBarThemeData(
   contentTextStyle: t.texts.bodyMedium?.copyWith(
     color: t.scheme.onInverseSurface,
   ),
+  actionOverflowThreshold: _snackBarActionOverflowThreshold,
   // Flat: the inverse surface sets it apart; only cards, dialogs, sheets and
   // the FAB are raised (SW-REV-007).
   elevation: 0,
@@ -183,4 +219,9 @@ TooltipThemeData tooltipTheme(ThemeTokens t) => TooltipThemeData(
     borderRadius: t.radius(t.dimens.radiusXs),
   ),
   textStyle: t.texts.bodySmall?.copyWith(color: t.scheme.onInverseSurface),
+  constraints: const BoxConstraints(minHeight: _tooltipMinHeight),
+  padding: EdgeInsets.symmetric(
+    horizontal: t.dimens.space8,
+    vertical: t.dimens.space4,
+  ),
 );

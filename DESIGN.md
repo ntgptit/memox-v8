@@ -253,7 +253,7 @@ A violet-indigo accent on a neutral field, a green that only ever means progress
 ### Neutral
 - **Page** (`surface`): the screen, the app bar, the bottom bar and the rail.
 - **Card** (`cardSurface`): cards and the rows that are cards. **Search** (`searchSurface`): the search field. **Tile** (`tileSurface`): the deck tile behind its glyph (`context.deckIconColor`).
-- **Containers** (`surfaceContainerLow` … `surfaceContainerHighest`): the field fill, the recessed study face, the secondary button, tracks, skeletons. Dialogs and sheets are `surfaceContainerHigh`.
+- **Containers** (`surfaceContainerLow` … `surfaceContainerHighest`): the field fill, the recessed study face, the secondary button, tracks, skeletons. A dialog is `surfaceContainerHigh`; a bottom sheet is `surfaceContainerLow`, as in Material 3.
 - **Text** (`onSurface`, `onSurfaceVariant`): primary and secondary text.
 - **Edges** (`outline`, `outlineVariant`, `divider`): `outline` for every control edge at rest (fields, the outline button, code slots; the unchecked radio ring and checkbox box are `onSurfaceVariant`, as Material 3 draws them), `outlineVariant` for an inner rule and a disabled edge, `divider` for list and chrome hairlines.
 - **Inverse** (`inverseSurface`, `onInverseSurface`, `inversePrimary`): the snackbar and the tooltip.
@@ -289,7 +289,7 @@ A violet-indigo accent on a neutral field, a green that only ever means progress
 - **Tile term** (`headlineSmall`, `term-tile`): a word inside a match tile.
 - **Section title** (`titleLarge`, `title-section`): screen and section headings, the app bar title.
 - **Card title** (`titleMedium`, `title-card`): card titles and compact stats.
-- **Item title** (`titleSmall`, `title-item`): list and settings rows, dialog and sheet titles.
+- **Item title** (`titleSmall`, `title-item`): list and settings rows and sheet titles (a dialog title is `headlineSmall`, as in Material 3).
 - **Content** (`bodyLarge`, `body-content`): a card's meaning, a study passage.
 - **Body** (`bodyMedium`, `body`): default running text, field text, notes.
 - **Tile body** (`bodySmall`, `body-tile`): a meaning inside a match tile, a study option.
@@ -329,14 +329,14 @@ Touch targets are `sizeControl` for every interactive control, whatever its pain
 
 ## Elevation & Depth
 
-Tonal, not shadowed. Cards and the search field are raised by their surface roles alone (`shadow-raised` is none in both themes); they have no border and no shadow. The surfaces that float above the page (dialogs, bottom sheets, the FAB, the floating notice) take Material's own elevation, the same in both themes, since the Design System defines no shadow for them. The scrim behind a dialog or a sheet is `scrim` at `opacityScrim`.
+Tonal, not shadowed. Cards and the search field are raised by their surface roles alone (`shadow-raised` is none in both themes); they have no border and no shadow. The surfaces that float above the page (dialogs, bottom sheets, the FAB, the floating notice) take Material's own elevation, the same in both themes, since the Design System defines no shadow for them. A dialog keeps the Material 3 dialog elevation and a sheet the Material 3 sheet elevation, but as in Material 3 neither draws a shadow (the theme's `shadowColor` is transparent): the surface role sets them apart. The snackbar is flat. The scrim behind a dialog or a sheet is `scrim` at `opacityScrim`, the Material 3 scrim alpha.
 
 ### Named Rules
 **The Tone Before Shadow Rule.** Group with tone first; a surface that does not float never casts a shadow and never draws an edge.
 
 ## Shapes
 
-The Material 3 shape scale: `radiusMd` for cards, fields, notes, banners and snackbars; `radiusXs` for small marks and tooltips; `radiusCheckbox` for the checkbox corner; `radiusSm` for chips and the smallest tiles; `radiusLg` for the larger tiles; `radiusXl` for surfaces that float (dialogs, the sheet's top corners). A full radius (a `StadiumBorder`) for buttons, the search field, badges, the navigation indicator, toggle tracks and progress tracks. Hairlines are `strokeHairline`; the focus ring is `strokeFocus`, in `primary`, drawn `strokeFocusGap` outside a button's container so it shows on any fill; radio and checkbox controls use `strokeControl`: a radio is a `sizeSelectionControl` ring, selected it keeps the ring and adds a `sizeRadioDot` dot in the accent colour; a checkbox is a `sizeSelectionControl` box with a `radiusCheckbox` corner.
+The Material 3 shape scale: `radiusMd` for cards, fields, notes and banners; `radiusXs` for small marks, snackbars and tooltips; `radiusCheckbox` for the checkbox corner; `radiusSm` for chips and the smallest tiles; `radiusLg` for the larger tiles; `radiusXl` for surfaces that float (dialogs, the sheet's top corners). A full radius (a `StadiumBorder`) for buttons, the search field, badges, the navigation indicator, toggle tracks and progress tracks. Hairlines are `strokeHairline`; the focus ring is `strokeFocus`, in `primary`, drawn `strokeFocusGap` outside a button's container so it shows on any fill; radio and checkbox controls use `strokeControl`: a radio is a `sizeSelectionControl` ring, selected it keeps the ring and adds a `sizeRadioDot` dot in the accent colour; a checkbox is a `sizeSelectionControl` box with a `radiusCheckbox` corner.
 
 ## Components
 
@@ -349,7 +349,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 
 ### Containers
 - **MxCard**: `cardSurface` at `radiusMd`, no edge, no shadow, `space24` inside (`space16` when compact, two to a row). Tones: hero (the accent tint), warning, success and danger (each its role tinted over the surface), recessed (`surfaceContainerLow`). `isSelected` draws a `primary` edge at `strokeControl`.
-- **MxDialog** and **MxBottomSheet**: `surfaceContainerHigh`, `radiusXl`, Material elevation, the theme's scrim. A dialog centres in the room the keyboard leaves and scrolls its text when that room is short; a held dialog or sheet refuses Back and the scrim while its work runs. A sheet's `title` and `subtitle` draw the shared head (`titleSmall`, then the variant `bodyMedium`), the title a heading to TalkBack. `showMxConfirm` asks a yes/no question.
+- **MxDialog** and **MxBottomSheet**: `radiusXl`, the theme's scrim, Material elevation without a drawn shadow. A dialog is `surfaceContainerHigh` and reads the theme's dialog like Material 3's AlertDialog: `space24` all round, the title in `headlineSmall` over `onSurface`, the body in `bodyMedium` over `onSurfaceVariant`, `space16` between them, `space24` between the text and the action pair, and never narrower than the theme's minimum width. A sheet is `surfaceContainerLow` (what it holds is tinted over that ground, The Tint Rule) and opens on Material 3's drag handle, a small bar in `onSurfaceVariant` centred in a `sizeControl` target. A dialog centres in the room the keyboard leaves and scrolls its text when that room is short; a held dialog or sheet refuses Back and the scrim while its work runs. A sheet's `title` and `subtitle` draw the shared head (`titleSmall`, then the variant `bodyMedium`), the title a heading to TalkBack. `showMxConfirm` asks a yes/no question.
 - **MxSection** (overline plus card; its note is an `MxNote.hint`), **MxDividedColumn** (rows with a hairline between them, none after the last: the one owner of list dividers), **MxNote** (one calm info line; `MxNote.hint` is the footnote form under a card, a section or an empty state), **MxDashedNote**, **MxFooterBar** (the in-flow commit bar; its caption fits one line on the narrowest supported phone in English and Vietnamese, as `test/l10n/footer_caption_length_test.dart` asserts), **MxScrollFade** (a fade over the edge of a scroll view while more lies past it), **MxTwoColumns**.
 
 ### Inputs
@@ -364,7 +364,7 @@ Calm and exact. All widgets are `Mx*` in `lib/shared/widgets/`; they hold no cop
 - **MxStudyTopBar**, **MxBreadcrumb** (a deep path fades its start edge; its hidden ancestors stay reachable buttons to TalkBack), **MxAppShell**, **MxScreenScroll**.
 
 ### Feedback and Status
-- **MxSnackbar** (inverse surface, one optional action), **MxFloatingNotice** (the warning tint, floating over a screen that does not own the problem), **MxInlineBanner** (warning or danger, its tint with its role's glyph and title), **MxEmptyState** (tones primary, neutral, success, warning, danger; each tone's tile is its tint with the role's glyph), **MxErrorState** (an inline load failure with Retry, its title a live region; a gone item is an `MxEmptyState` in the neutral tone), **MxSpinner**, the **MxSkeleton** family, **MxBadge**, **MxStatusBadge**.
+- **MxSnackbar** (inverse surface, `radiusXs`, one optional action; the message has `space16` at the sides and 14 above and below, and an action wider than a quarter of the toast goes on its own line under the message, at the end; the action's focus ring is `inversePrimary`), **MxFloatingNotice** (the warning tint, floating over a screen that does not own the problem), **MxInlineBanner** (warning or danger, its tint with its role's glyph and title), **MxEmptyState** (tones primary, neutral, success, warning, danger; each tone's tile is its tint with the role's glyph), **MxErrorState** (an inline load failure with Retry, its title a live region; a gone item is an `MxEmptyState` in the neutral tone), **MxSpinner**, the **MxSkeleton** family, **MxBadge**, **MxStatusBadge**.
 
 ### Study-specific
 - **MxMasteryDonut**, **MxLinearProgress** (`sizeTrack` tall, full radius, a `surfaceContainerHighest` track, the `successContainer` fill) and the single **MasteryRamp**: the lowest band in `warning`, the middle in the accent, the top in `successContainer`, a flat fill and never a gradient; a label beside or inside a fill takes `MasteryRamp.foreground`, never the fill.

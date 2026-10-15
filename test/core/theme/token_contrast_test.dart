@@ -86,16 +86,19 @@ List<_Pair> _pairs(String mode) {
   // card or sheet it sits on, and its check against the fill. Non-text, 3:1.
   for (final (ground, where) in [
     (card, 'cardSurface'),
+    (c('surfaceContainerLow'), 'surfaceContainerLow'),
     (c('surfaceContainerHigh'), 'surfaceContainerHigh'),
   ]) {
     add('checkbox fill (accent) on $where', accent, ground, _nonText);
   }
   add('checkbox check (onAccent) on fill (accent)', onAccent, accent, _nonText);
   // A tint is laid over the ground directly beneath it (MxTintBase): the
-  // page, a card, or a sheet or dialog.
+  // page, a card, a sheet (surfaceContainerLow) or a dialog
+  // (surfaceContainerHigh).
   for (final (base, where) in [
     (surface, 'surface'),
     (card, 'cardSurface'),
+    (c('surfaceContainerLow'), 'surfaceContainerLow'),
     (c('surfaceContainerHigh'), 'surfaceContainerHigh'),
   ]) {
     for (final (name, ink) in [

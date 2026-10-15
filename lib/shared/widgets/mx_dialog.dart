@@ -73,9 +73,11 @@ Future<bool> showMxConfirm(
     ) ??
     false;
 
-/// The centred modal for confirmations and short forms. The text sits 20 in
-/// (ruling O5) and scrolls if it outgrows the screen; [actions], usually
-/// MxSheetActions, stay below it.
+/// The centred modal for confirmations and short forms, as Material 3's
+/// AlertDialog: the text sits 24 in, the title over the body 16 apart, and
+/// scrolls if it outgrows the screen; [actions], usually MxSheetActions, stay
+/// below it, 24 under the text. Title and body read the theme's dialog
+/// (headlineSmall in onSurface, bodyMedium in onSurfaceVariant).
 class MxDialog extends StatelessWidget {
   const MxDialog({
     super.key,
@@ -103,14 +105,10 @@ class MxDialog extends StatelessWidget {
   static const double _mediumWidth = 320;
   static const double _smallWidth = 300;
 
-  /// The Design System defines no shadow for a dialog; Material's own
-  /// elevation casts it, the same in light and dark.
-  static const double _elevation = 6;
-
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-    // The surface and radius are the theme's dialog (spec §4.6).
+    // The surface, radius, elevation and text roles are the theme's dialog
+    // (spec §4.6).
     final dialogs = DialogTheme.of(context);
     final shape = dialogs.shape! as RoundedRectangleBorder;
     final hasText = title != null || body != null || content != null;
@@ -121,7 +119,7 @@ class MxDialog extends StatelessWidget {
           vertical: context.dimens.space24,
         ),
         child: ConstrainedBox(
-          constraints: BoxConstraints(
+          constraints: dialogs.constraints!.copyWith(
             maxWidth: switch (width) {
               MxDialogWidth.large => _largeWidth,
               MxDialogWidth.medium => _mediumWidth,
@@ -134,8 +132,8 @@ class MxDialog extends StatelessWidget {
                 dialogs.backgroundColor ?? context.colors.surfaceContainerHigh,
             child: Material(
               color: dialogs.backgroundColor,
-              elevation: _elevation,
-              shadowColor: colors.shadow,
+              elevation: dialogs.elevation!,
+              shadowColor: dialogs.shadowColor,
               shape: shape,
               clipBehavior: Clip.antiAlias,
               child: Column(
@@ -145,30 +143,18 @@ class MxDialog extends StatelessWidget {
                   if (hasText)
                     Flexible(
                       child: SingleChildScrollView(
-                        // The text sits on the action pair's 16 edge, so
-                        // the pair keeps its width (DEV-166, The Short
-                        // Label Rule).
-                        padding: actions == null
-                            ? EdgeInsets.fromLTRB(
-                                context.dimens.space16,
-                                context.dimens.space24,
-                                context.dimens.space16,
-                                context.dimens.space24,
-                              )
-                            : EdgeInsetsDirectional.only(
-                                start: context.dimens.space16,
-                                end: context.dimens.space16,
-                                top: context.dimens.space24,
-                              ),
+                        // The text sits on the action pair's edge
+                        // (DEV-166); the pair is 24 below it.
+                        padding: EdgeInsets.all(context.dimens.space24),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: context.dimens.space8,
+                          spacing: context.dimens.space16,
                           children: [
                             if (title case final text?)
-                              Text(text, style: context.texts.titleSmall),
+                              Text(text, style: dialogs.titleTextStyle),
                             if (body case final text?)
-                              Text(text, style: context.texts.bodyMedium),
+                              Text(text, style: dialogs.contentTextStyle),
                             ?content,
                           ],
                         ),

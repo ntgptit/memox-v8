@@ -50,8 +50,9 @@ final class ThemeTokens {
 /// the [shape] given),
 /// [padding] on the sides (24 by default), the `labelLarge` label, an 18 glyph,
 /// state layers and the focus ring. A focused one draws the ring in `primary`
-/// 2 outside its container ([MxFocusRingBorder]), so it shows on a `primary`
-/// fill too. A disabled one follows the Design System's disabled opacities.
+/// (or [ringColor], for a button on a surface where `primary` is not seen,
+/// as the toast's) 2 outside its container ([MxFocusRingBorder]), so it shows
+/// on a `primary` fill too. A disabled one follows the Design System's disabled opacities.
 /// `MxButton` builds its other tones from this too, so they never restyle a
 /// button.
 ButtonStyle buttonStyle(
@@ -61,6 +62,7 @@ ButtonStyle buttonStyle(
   BorderSide? edge,
   double? padding,
   OutlinedBorder shape = const StadiumBorder(),
+  Color? ringColor,
 }) {
   final dimens = t.dimens;
   return ButtonStyle(
@@ -73,7 +75,10 @@ ButtonStyle buttonStyle(
       (states) => MxFocusRingBorder(
         base: shape,
         ring: states.contains(WidgetState.focused)
-            ? BorderSide(color: t.scheme.primary, width: dimens.strokeFocus)
+            ? BorderSide(
+                color: ringColor ?? t.scheme.primary,
+                width: dimens.strokeFocus,
+              )
             : BorderSide.none,
         gap: dimens.strokeFocusGap,
       ),

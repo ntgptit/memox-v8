@@ -11,11 +11,12 @@ import 'package:memox/shared/widgets/mx_text_field.dart';
 
 import '../../support/widget_harness.dart';
 
-Material _surface(WidgetTester tester) => tester.widget<Material>(
-  find
-      .descendant(of: find.byType(MxDialog), matching: find.byType(Material))
-      .first,
-);
+final _surfaceFinder = find
+    .descendant(of: find.byType(MxDialog), matching: find.byType(Material))
+    .first;
+
+Material _surface(WidgetTester tester) =>
+    tester.widget<Material>(_surfaceFinder);
 
 Widget _still(Widget child) => Builder(
   builder: (context) => MediaQuery(
@@ -27,7 +28,7 @@ Widget _still(Widget child) => Builder(
 void main() {
   final scheme = lightColorScheme;
 
-  testWidgets('the high container at radiusXl with a Material elevation', (
+  testWidgets('the high container at radiusXl, elevation 6 with no shadow', (
     tester,
   ) async {
     await pumpMx(tester, const MxDialog(title: 'Delete deck?'));
@@ -37,7 +38,8 @@ void main() {
       (_surface(tester).shape! as RoundedRectangleBorder).borderRadius,
       BorderRadius.circular(const AppDimens().radiusXl),
     );
-    expect(_surface(tester).elevation, greaterThan(0));
+    expect(_surface(tester).elevation, 6);
+    expect(_surface(tester).shadowColor, Colors.transparent);
   });
 
   testWidgets(
@@ -64,8 +66,8 @@ void main() {
   );
 
   testWidgets(
-    'titleSmall over a bodyMedium body, space16 in and space24 down, on '
-    'the action pair\'s edge (DEV-166); the route is named',
+    'headlineSmall over a bodyMedium body 16 below, space24 all round, the '
+    'text on the action pair\'s edge (DEV-166); the route is named',
     (tester) async {
       final handle = tester.ensureSemantics();
       await pumpMx(
@@ -74,17 +76,29 @@ void main() {
       );
       final surface = tester.getTopLeft(find.byType(Material).last);
 
+      final title = tester.widget<Text>(find.text('Delete deck?')).style!;
+      final body = tester.widget<Text>(find.text('Its cards move to Trash.'));
+      final texts = tester.element(find.text('Delete deck?')).texts;
       expect(
-        tester.widget<Text>(find.text('Delete deck?')).style,
-        tester.element(find.text('Delete deck?')).texts.titleSmall,
+        (title.fontSize, title.height, title.color),
+        (
+          texts.headlineSmall!.fontSize,
+          texts.headlineSmall!.height,
+          scheme.onSurface,
+        ),
       );
       expect(
-        tester.widget<Text>(find.text('Its cards move to Trash.')).style!.color,
-        scheme.onSurface,
+        (body.style!.fontSize, body.style!.color),
+        (texts.bodyMedium!.fontSize, scheme.onSurfaceVariant),
       );
       expect(
         tester.getTopLeft(find.text('Delete deck?')) - surface,
-        Offset(const AppDimens().space16, const AppDimens().space24),
+        Offset(const AppDimens().space24, const AppDimens().space24),
+      );
+      expect(
+        tester.getTopLeft(find.text('Its cards move to Trash.')).dy -
+            tester.getBottomLeft(find.text('Delete deck?')).dy,
+        const AppDimens().space16,
       );
       expect(
         tester.getSemantics(find.byType(MxDialog)),
@@ -157,8 +171,8 @@ void main() {
     );
   });
 
-  testWidgets('the title, the body and the action pair share one 16 edge '
-      '(DEV-166)', (tester) async {
+  testWidgets('the title, the body and the action pair share one 24 edge, '
+      'the pair 24 under the body (DEV-166)', (tester) async {
     await pumpMx(
       tester,
       MxDialog(
@@ -175,6 +189,18 @@ void main() {
     final edge = tester.getTopLeft(find.text('Delete deck?')).dx;
     expect(tester.getTopLeft(find.text('Its cards move to Trash.')).dx, edge);
     expect(tester.getTopLeft(find.widgetWithText(MxButton, 'Cancel')).dx, edge);
+    expect(edge - tester.getTopLeft(_surfaceFinder).dx, 24);
+    expect(
+      tester.getTopLeft(find.widgetWithText(MxButton, 'Cancel')).dy -
+          tester.getBottomLeft(find.text('Its cards move to Trash.')).dy,
+      24,
+    );
+    // The pair is 24 above the dialog's bottom edge too.
+    expect(
+      tester.getBottomLeft(_surfaceFinder).dy -
+          tester.getBottomLeft(find.widgetWithText(MxButton, 'Cancel')).dy,
+      24,
+    );
   });
 
   // SW-REV-002: showGeneralDialog does not pad for the keyboard, as

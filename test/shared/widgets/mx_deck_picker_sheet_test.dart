@@ -47,10 +47,10 @@ void main() {
             .fontSize,
         texts.bodyMedium!.fontSize,
       );
-      // The grabber block is 8 + 4 + 4 = 16, then the head's 4.
+      // The handle's 48 target, then the head's 4.
       expect(
         tester.getTopLeft(find.text('Move to deck')) - sheet,
-        Offset(const AppDimens().space24, 20),
+        Offset(const AppDimens().space24, 52),
       );
     },
   );
@@ -136,7 +136,7 @@ void main() {
     expect(find.byType(MxSkeletonList), findsOneWidget);
     expect(
       tester.getTopLeft(find.text('Move to deck')) - sheet,
-      Offset(const AppDimens().space24, 20),
+      Offset(const AppDimens().space24, 52),
     );
   });
 

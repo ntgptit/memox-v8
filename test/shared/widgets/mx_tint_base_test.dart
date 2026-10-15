@@ -82,18 +82,26 @@ void main() {
         expect(MxTintBase.of(context), cardGround);
       });
 
-      for (final (name, overlay) in [
-        ('sheet', const MxBottomSheet(child: MxBadge(label: '4 due'))),
-        ('dialog', const MxDialog(content: MxBadge(label: '4 due'))),
+      for (final (name, overlay, ground) in [
+        (
+          'sheet',
+          const MxBottomSheet(child: MxBadge(label: '4 due')),
+          (BuildContext c) => c.colors.surfaceContainerLow,
+        ),
+        (
+          'dialog',
+          const MxDialog(content: MxBadge(label: '4 due')),
+          (BuildContext c) => c.colors.surfaceContainerHigh,
+        ),
       ]) {
         testWidgets('inside a $name a tint is over its ground', (tester) async {
           await pumpMx(tester, overlay, brightness: brightness);
           final context = _context(tester);
 
-          expect(MxTintBase.of(context), context.colors.surfaceContainerHigh);
+          expect(MxTintBase.of(context), ground(context));
           expect(
             _badgeFill(tester),
-            context.accentColor.tintOver(context.colors.surfaceContainerHigh),
+            context.accentColor.tintOver(ground(context)),
           );
         });
       }

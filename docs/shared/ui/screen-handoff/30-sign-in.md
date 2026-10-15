@@ -64,7 +64,7 @@ the whole page.
 | Title | `compactTitle` | "{email} already has an account" or "This Google account is already in use" (plan ruling 12). |
 | Choices | `MxOptionRow` × 2 | "Merge into the account" (selected) · "Your {n} decks and {m} cards join it." (or "This phone's decks and cards join it." when the count failed); "Discard this phone's data" · "They're removed from this phone. The account's decks come down instead." |
 | Warning | `MxInlineBanner` (danger) | "This phone's decks and progress go for good." Only while Discard is chosen (plan ruling 14). |
-| Footer | `MxSheetActions` | Cancel · "Continue" (primary) or "Discard data" (destructive), an even pair (L2) on one row (The Footer Pair Rule, DEV-169; it was "Discard and continue"). The title starts 16 in, the edge of the rows and the banner (L4). |
+| Footer | `MxSheetActions` | Cancel · "Continue" (primary) or "Discard data" (destructive), an even pair (L2) on one row (The Footer Pair Rule, DEV-169; it was "Discard and continue"). The title starts 24 in, the edge of the banner and of the action pair (L4; the Material 3 dialog padding). |
 
 A phone with no live deck skips the sheet and moves at once (R6).
 
