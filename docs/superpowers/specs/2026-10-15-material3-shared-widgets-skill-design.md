@@ -143,7 +143,7 @@ signs a change.
 |---|---|
 | AST rules for overlay bypass, Cupertino/adaptive bans, `Scaffold.drawerScrimColor`, literal `barrierColor`/`modalBarrierColor`/`surfaceTintColor` outside theme owners, `ThemeData(platform:)`, `ColorScheme.fromSeed`/`colorSchemeSeed`, an AppBarTheme that sets `iconTheme`/`foregroundColor` without `actionsIconTheme`, AppBarTheme `backgroundColor` as a plain `Color` | ADOPT: `tools/m3_lint` with positive and negative fixtures, aliased imports and `Navigator.restorablePush` builders. `showRawDialog` only if it exists in 3.47.5. |
 | Raw design values (`Colors.*`, `Color(0x…)`, `EdgeInsets` numbers, radius and font-size literals) | Reuse the existing guard rules and `tools/design/check.py`. The ledger maps each spec bullet to the rule that already enforces it, and records any real gap. |
-| 45-role comparison against an independent fixture + separate `surfaceTint` assertion | ADOPT. The fixture is read from `design/tokens.json`, the approved export, not from `AppTheme`. It is observed through the production app root in light and dark. |
+| 45-role comparison against an independent fixture + separate `surfaceTint` assertion | ADOPT. The fixture is read from `design/tokens.json`, the approved export, not from `AppTheme`. It is observed through the production app root in light and dark. The `surfaceTint` assertion checks the approved token (DSD-27 is a CONFLICT), not `transparent`. |
 | Effective AppBar normal vs scrolled-under Material through the production root | ADOPT, on a real scrolling route. |
 | Dialog and sheet `ModalRoute.barrierColor`; Drawer scrim | ADOPT for routes the app uses. Drawer only if a `Drawer` exists. |
 | SearchBar and SearchView effective elevation, tint and divider | ADOPT if `SearchAnchor`/`SearchBar` is used, otherwise N/A. |
@@ -156,15 +156,6 @@ signs a change.
 
 ## 8. Known decisions entering the audit (to verify, not assumed)
 
-- **DSD-02, palette and scrim.**
-  - Evidence so far:
-    - `tokens.json` holds the approved light and dark roles (ADR-022);
-    - `app_tokens.json` `opacityScrim` 0.32 shipped under the owner's 2026-10-14 ruling and was merged in pull request 281 of `ntgptit/memox-v8`.
-  - Still to check:
-    - all 45 roles are written out;
-    - `scrim` is opaque;
-    - the barrier is built once and installed in the dialog, sheet and drawer themes.
-  - Status changes only on that evidence.
 - **DSD-23, SDK pin.**
   - Evidence: `.fvmrc` pins 3.47.5.
   - Status: partially resolved.
@@ -174,7 +165,16 @@ signs a change.
     - the TabBar divider;
     - `showRawDialog` availability.
 - **DSD-32, high contrast.** BLOCKED; no decision in the repo.
-- **DSD-27, `surfaceTint`.** The generated schemes do not declare it, so the SDK falls back to `primary`. This is a candidate ADOPT: generate `surfaceTint: transparent`. It does not conflict with `tokens.json`; the audit confirms whether anything visual changes.
+- **DSD-27, `surfaceTint`.** CONFLICT, KEEP_EXISTING.
+  - `design/tokens.json` approves `surfaceTint` = `#564bcb` ("Elevation tint. Mirrors `primary`.").
+  - The generated schemes write it out (`color_schemes.g.dart:52`, `:102`).
+  - The gate therefore asserts the approved value, not `transparent`.
+  - Component themes that set `surfaceTintColor: transparent` stay as they are; the audit checks every elevated Material that lacks one.
+- **DSD-02, palette and scrim.** Resolved by repo evidence, as far as read so far:
+  - `tokens.json` declares all 45 roles;
+  - `scrim` is opaque `#000000` in light and dark;
+  - `app_tokens.json` `opacityScrim` 0.32 builds `ThemeTokens.scrim` once (`app_component_themes.dart:42`).
+  - The audit still verifies the route and drawer wiring.
 - **Known CONFLICTs, already approved project values:**
   - text field radius 12 vs spec 4;
   - app bar title 20/600 vs `titleLarge`;
