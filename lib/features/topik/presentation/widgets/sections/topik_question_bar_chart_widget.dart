@@ -56,7 +56,8 @@ class TopikQuestionBarChartWidget extends StatelessWidget {
         // and the legend says it on screen (wireframe 38).
         MxChartLegend(
           series: [
-            for (final status in TopikAnswerStatus.values)
+            // In the filter chips' order: Wrong, Unanswered, Correct.
+            for (final status in _legendOrder)
               MxBarSeries(
                 label: l10n.topikAnswerStatusName(status),
                 color: _statusColour(context, status),
@@ -67,6 +68,12 @@ class TopikQuestionBarChartWidget extends StatelessWidget {
     );
   }
 }
+
+const _legendOrder = [
+  TopikAnswerStatus.wrong,
+  TopikAnswerStatus.unanswered,
+  TopikAnswerStatus.correct,
+];
 
 /// The fill of a bar of [status], shared by the bars and the legend.
 Color _statusColour(BuildContext context, TopikAnswerStatus status) =>

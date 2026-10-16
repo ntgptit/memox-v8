@@ -107,13 +107,14 @@ void main() {
 
     final legend = find.byType(MxChartLegend);
     expect(legend, findsOneWidget);
-    for (final label in ['Correct', 'Wrong', 'Unanswered']) {
-      expect(
-        find.descendant(of: legend, matching: find.text(label)),
-        findsOneWidget,
-        reason: label,
-      );
-    }
+    // In the filter chips' order (audit 2026-10-16).
+    final labels = tester
+        .widgetList<Text>(
+          find.descendant(of: legend, matching: find.byType(Text)),
+        )
+        .map((text) => text.data)
+        .toList();
+    expect(labels, ['Wrong', 'Unanswered', 'Correct']);
   });
 
   libraryTest('the figures: accuracy, answered, unanswered, and the longest '
