@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/deck/domain/entities/deck_entity.dart';
 import 'package:memox/features/deck/presentation/widgets/items/deck_row_widget.dart';
@@ -302,7 +303,11 @@ void main() {
 
     expect(find.byType(DeckSummaryCardWidget), findsOneWidget);
     expect(
-      find.text(_en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1))),
+      find.text(
+        metaLine(
+          _en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1)),
+        ),
+      ),
       findsOneWidget,
     );
     // The summary card states the count; the header names the list
@@ -421,7 +426,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text(_en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1))),
+      find.text(
+        metaLine(
+          _en.deckRowMeta(_en.deckSubDeckCount(2), _en.deckCardCount(1)),
+        ),
+      ),
       findsOneWidget,
     );
     expect(find.text(_en.libraryDueDecksHeader.toUpperCase()), findsOneWidget);

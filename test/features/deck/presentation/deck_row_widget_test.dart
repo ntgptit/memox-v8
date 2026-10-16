@@ -91,7 +91,7 @@ void main() {
     await pump(tester, env, _tile(subDecks: 0, cards: 0, overdue: 0, today: 0));
 
     expect(find.byType(MxBadge), findsNothing);
-    expect(find.text(_en.deckRowEmpty), findsOneWidget);
+    expect(find.text(metaDots(_en.deckRowEmpty)), findsOneWidget);
   });
 
   libraryTest('the mastery bar fills to the mastered share and the row says '

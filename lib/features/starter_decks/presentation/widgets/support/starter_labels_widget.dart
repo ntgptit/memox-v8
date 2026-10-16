@@ -1,9 +1,7 @@
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/starter_decks/domain/models/starter_library_entry_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
-
-/// Between the facts of a template's line (kit 03).
-const String starterFactSeparator = ' · ';
 
 /// The content source every fixture template of the build names
 /// (BR-STARTER-010).
@@ -42,10 +40,12 @@ String starterSchedulerDescription(AppLocalizations l10n, SchedulerType type) =>
     };
 
 /// "{front} · {back} · {n} cards · {m} sub-decks · {source}" (kit 03).
-String starterEntryFacts(AppLocalizations l10n, StarterLibraryEntry entry) => [
-  starterLanguageName(l10n, entry.frontLanguage),
-  starterLanguageName(l10n, entry.backLanguage),
-  l10n.starterCardCount(entry.cardCount),
-  l10n.starterSubDeckCount(entry.subDeckCount),
-  starterSourceName(l10n, entry.contentSource),
-].join(starterFactSeparator);
+/// Short terms, so it breaks only between them (The Wrap Rule).
+String starterEntryFacts(AppLocalizations l10n, StarterLibraryEntry entry) =>
+    metaTerms([
+      starterLanguageName(l10n, entry.frontLanguage),
+      starterLanguageName(l10n, entry.backLanguage),
+      l10n.starterCardCount(entry.cardCount),
+      l10n.starterSubDeckCount(entry.subDeckCount),
+      starterSourceName(l10n, entry.contentSource),
+    ]);

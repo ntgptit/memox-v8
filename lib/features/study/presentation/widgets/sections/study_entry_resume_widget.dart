@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_home_model.dart';
@@ -44,14 +45,17 @@ class StudyEntryResumeWidget extends StatelessWidget {
           MxDotOverline(label: l10n.studyEntryResumeOverline),
           SizedBox(height: context.dimens.space8),
           Text(
-            progress == null
-                ? l10n.studyEntryResumeLineNoProgress(kind, mode)
-                : l10n.studyEntryResumeLine(
-                    kind,
-                    mode,
-                    progress.completed,
-                    progress.total,
-                  ),
+            // Short terms: they break only between them (The Wrap Rule).
+            metaLine(
+              progress == null
+                  ? l10n.studyEntryResumeLineNoProgress(kind, mode)
+                  : l10n.studyEntryResumeLine(
+                      kind,
+                      mode,
+                      progress.completed,
+                      progress.total,
+                    ),
+            ),
             style: context.texts.titleSmall,
           ),
           if (progress != null && progress.total > 0) ...[

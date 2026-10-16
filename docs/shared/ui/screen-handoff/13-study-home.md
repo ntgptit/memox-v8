@@ -68,6 +68,7 @@ Every state above is built.
 - **Account UI spec R2, B5:** the re-auth notice takes the slot over the sync notice.
 - **SB-U1 (sync status spec R2, UI-base row 143):** a floating sync notice shows under the sync status rules (ADR-015).
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** "Continue studying" and "Waiting for you" are eyebrows; Waiting for you no longer borrows the Required style, and its glyph follows the eyebrow's colour.
+- **Owner 2026-10-16 (Q-P6-4):** the resume banner's line ("{kind} · {mode} · {done} of {total} cards") wraps only between its terms (`lib/l10n/meta_line.dart`).
 
 ## Accessibility
 

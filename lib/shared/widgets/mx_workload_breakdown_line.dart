@@ -83,7 +83,6 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
   static const String _space = ' ';
 
   // A wrapping line breaks only between terms (The Wrap Rule, meta_line).
-  static const String _gluedDot = '\u00A0·';
 
   String _termText(String label) => canWrap ? wholeTerm(label) : label;
 
@@ -108,7 +107,9 @@ class MxWorkloadBreakdownLine extends StatelessWidget {
           color: context.colors.onSurfaceVariant,
         ),
         children: [
-          if (isFallbackShown) TextSpan(text: fallback),
+          // "1,248 cards · nothing due" is a line of terms too.
+          if (isFallbackShown)
+            TextSpan(text: canWrap ? metaLine(fallback) : fallback),
           for (final (index, (count, label, ink, _)) in terms.indexed) ...[
             if (index > 0 || isFallbackShown)
               TextSpan(text: canWrap ? metaTermSeparator : _separator),
@@ -190,9 +191,7 @@ class _GlyphStatement extends StatelessWidget {
                               : null,
                         ),
                         if (index < terms.length - 1)
-                          const TextSpan(
-                            text: MxWorkloadBreakdownLine._gluedDot,
-                          ),
+                          const TextSpan(text: metaTermDot),
                       ],
                     ),
                   ),

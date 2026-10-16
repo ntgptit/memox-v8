@@ -25,4 +25,12 @@ void main() {
   test('one term is glued, with no separator', () {
     expect(metaLine('420 cards'), '420\u00A0cards');
   });
+
+  test('a line of phrases keeps its words breakable, each dot glued to the '
+      'phrase before it', () {
+    expect(
+      metaDots('Empty · add cards or a sub-deck'),
+      'Empty\u00A0· add cards or a sub-deck',
+    );
+  });
 }

@@ -49,7 +49,7 @@ void main() {
 
     expect(find.byIcon(AppIcons.folder), findsOneWidget);
     expect(find.byIcon(AppIcons.library), findsNothing);
-    expect(find.text(_en.deckRowEmpty), findsOneWidget);
+    expect(find.text(metaDots(_en.deckRowEmpty)), findsOneWidget);
     expect(find.byIcon(AppIcons.dragHandle), findsOneWidget);
   });
 

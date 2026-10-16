@@ -39,4 +39,16 @@ void main() {
   test('a deck of cards: one whole term', () {
     expect(deckTileMeta(_tile(subDecks: 0, cards: 420), _en), '420\u00A0cards');
   });
+
+  // metaLine splits at " · ": a translation that joined the two counts any
+  // other way would glue the whole line into one unbreakable term.
+  test('every language joins the two counts with " · "', () {
+    for (final locale in AppLocalizations.supportedLocales) {
+      expect(
+        lookupAppLocalizations(locale).deckRowMeta('A', 'B'),
+        'A · B',
+        reason: '$locale',
+      );
+    }
+  });
 }
