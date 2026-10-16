@@ -79,25 +79,44 @@ revoke all on sequence public.topik_catalog_version_seq from public, anon, authe
 -- Immutability triggers
 -- ============================================================================
 
+-- The foreign keys to auth.users are `on delete set null`; Postgres carries
+-- that out as an UPDATE of the referencing row, so the one UPDATE allowed is
+-- the one that only nulls that column (account_delete must keep working).
+-- Row triggers do not fire on TRUNCATE, so each table has a statement trigger
+-- on the same function.
 create function private.topik_version_immutable() returns trigger
 language plpgsql set search_path = '' as $$
 begin
+  if tg_op = 'UPDATE' and new.published_by is null
+     and (to_jsonb(new) - 'published_by') = (to_jsonb(old) - 'published_by') then
+    return new;
+  end if;
   raise exception 'topik_test_version is immutable once published';
 end
 $$;
 create trigger topik_test_version_immutable
 before update or delete on public.topik_test_version
 for each row execute function private.topik_version_immutable();
+create trigger topik_test_version_no_truncate
+before truncate on public.topik_test_version
+for each statement execute function private.topik_version_immutable();
 
 create function private.topik_audit_append_only() returns trigger
 language plpgsql set search_path = '' as $$
 begin
+  if tg_op = 'UPDATE' and new.actor is null
+     and (to_jsonb(new) - 'actor') = (to_jsonb(old) - 'actor') then
+    return new;
+  end if;
   raise exception 'topik_master_audit is append-only';
 end
 $$;
 create trigger topik_master_audit_append_only
 before update or delete on public.topik_master_audit
 for each row execute function private.topik_audit_append_only();
+create trigger topik_master_audit_no_truncate
+before truncate on public.topik_master_audit
+for each statement execute function private.topik_audit_append_only();
 
 -- ============================================================================
 -- Function privileges (keep last)
