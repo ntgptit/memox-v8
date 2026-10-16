@@ -128,3 +128,26 @@ class TestReportTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TimingsTest(unittest.TestCase):
+    """The per-file times bundle_tests.py balances the next run with."""
+
+    def test_each_file_records_the_time_of_its_tests_merged_into_earlier_ones(self) -> None:
+        import tempfile
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "timings.json"
+            path.write_text(json.dumps({"test/old_test.dart": 7}), encoding="utf-8")
+            test_report.write_timings(test_report.summarise(_RECORDED, _ROOT), path)
+            self.assertEqual(
+                {"test/old_test.dart": 7, "test/a_test.dart": 3100},
+                json.loads(path.read_text(encoding="utf-8")),
+            )
+
+    def test_an_unreadable_timings_file_is_replaced_not_fatal(self) -> None:
+        import tempfile
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "timings.json"
+            path.write_text("{torn", encoding="utf-8")
+            test_report.write_timings(test_report.summarise(_RECORDED, _ROOT), path)
+            self.assertEqual({"test/a_test.dart": 3100}, json.loads(path.read_text(encoding="utf-8")))

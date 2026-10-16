@@ -79,6 +79,38 @@ class _FixtureRepoCase(unittest.TestCase):
         return found
 
 
+class WeightedPartitionTest(unittest.TestCase):
+    """With the last run's per-file times, the slowest files spread out first
+    (longest processing time first), so one bundle is not left holding the
+    heavy ones; without them, files are dealt in turn as before."""
+
+    def test_known_times_balance_the_bundles(self) -> None:
+        files = [f"test/f{index}_test.dart" for index in range(6)]
+        weights = dict(zip(files, [90, 10, 10, 10, 10, 50]))
+        buckets = bundle_tests.partition(files, 2, weights)
+        loads = sorted(sum(weights[path] for path in bucket) for bucket in buckets)
+        self.assertEqual([90, 90], loads)
+
+    def test_without_times_files_are_dealt_in_turn(self) -> None:
+        files = [f"test/f{index}_test.dart" for index in range(5)]
+        self.assertEqual(
+            [files[0::2], files[1::2]], bundle_tests.partition(files, 2)
+        )
+
+    def test_a_file_with_no_time_weighs_the_median(self) -> None:
+        files = ["test/a_test.dart", "test/b_test.dart", "test/new_test.dart"]
+        buckets = bundle_tests.partition(files, 2, {"test/a_test.dart": 10, "test/b_test.dart": 30})
+        self.assertEqual(sorted(len(bucket) for bucket in buckets), [1, 2])
+        self.assertIn(["test/b_test.dart"], buckets)
+
+    def test_the_same_times_give_the_same_bundles(self) -> None:
+        files = [f"test/f{index}_test.dart" for index in range(9)]
+        weights = {path: 5 for path in files}
+        self.assertEqual(
+            bundle_tests.partition(files, 4, weights), bundle_tests.partition(files, 4, weights)
+        )
+
+
 class BundleTestsTest(_FixtureRepoCase):
     def test_every_runnable_file_is_bundled_once_and_goldens_are_left_out(self) -> None:
         files = {f"test/a/f{index}_test.dart": _PLAIN for index in range(5)}
