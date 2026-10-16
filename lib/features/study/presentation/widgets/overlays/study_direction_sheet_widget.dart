@@ -3,6 +3,7 @@ import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/study_mode/domain/models/question_direction_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
@@ -63,7 +64,9 @@ class _StudyDirectionSheetWidgetState extends State<StudyDirectionSheetWidget> {
               context.dimens.space16,
               context.dimens.space12,
             ),
-            child: MxNote(text: l10n.studyDirectionNote),
+            // Prose with a list of grades: each dot stays on the word before it
+            // (The Wrap Rule).
+            child: MxNote(text: metaDots(l10n.studyDirectionNote)),
           ),
           MxDividedColumn(
             children: [

@@ -59,7 +59,7 @@ Goldens: `test/features/tags/presentation/goldens/tags_{loaded,loading,empty,sea
 - Dialogs quote tag names, carry no glyph and are left-aligned (`MxDialog`); toasts are one sentence (`MxSnackbarContent`).
 - **Critique 2026-09-30 part 2 (spec `2026-10-01-critique-fixes-part2-typography-design.md`):** the rename dialog's "New name" is a field label in sentence case.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** with no tags at all the screen shows only the empty state (no search field, no header); when tags exist and a search finds none, the field and "No matches" stay; the delete dialog's reassurance is a neutral `MxNote`, not a success card.
-- **Q-C-1 (owner, 2026-10-16):** the tag sheet's delete hint and the rename dialog's length hint keep each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
+- **Q-C-1 (owner, 2026-10-16):** the tag sheet's delete hint (capped at two lines, where `metaDots`, never `metaLine`, is allowed; 06) and the rename dialog's length hint keep each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

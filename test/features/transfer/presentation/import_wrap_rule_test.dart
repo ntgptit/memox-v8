@@ -24,7 +24,7 @@ void main() {
       ),
     );
 
-    expect(find.text(metaDots(_en.importRowBlank)), findsWidgets);
+    expect(find.text(metaDots(_en.importRowBlank)), findsOneWidget);
   });
 
   libraryTest('a deck with no row to write says it makes no deck', (

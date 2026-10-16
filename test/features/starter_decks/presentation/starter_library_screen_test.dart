@@ -111,7 +111,8 @@ void main() {
         metaLine('Tiếng Hàn · Chữ Latinh · 60 thẻ · 2 deck con · Dữ liệu mẫu'),
       ),
     );
-    expect(find.textContaining('Development fixture'), findsNothing);
+    // \s also matches the no-break spaces of a glued line.
+    expect(find.textContaining(RegExp(r'Development\sfixture')), findsNothing);
   });
 
   libraryTest('choose: the sheet preselects the suggested scheduler; the one '

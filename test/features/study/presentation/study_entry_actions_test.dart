@@ -89,12 +89,16 @@ void main() {
       find.widgetWithText(MxOptionRow, _en.studyDirectionTermFirst),
     );
     expect(termFirst.isSelected, isTrue);
-    expect(find.text(_en.studyDirectionNote), findsOneWidget);
+    // A note of prose: its dots stay on the word before them (Wrap Rule).
+    expectBreaksOnlyBetweenWords(
+      tester,
+      find.text(metaDots(_en.studyDirectionNote)),
+    );
     // The lock leads, above the options (BR-MODE-017; critique 2026-09-30
     // part 3c-1).
     expect(_en.studyDirectionNote, startsWith("The direction can't change"));
     expect(
-      tester.getTopLeft(find.text(_en.studyDirectionNote)).dy,
+      tester.getTopLeft(find.text(metaDots(_en.studyDirectionNote))).dy,
       lessThan(tester.getTopLeft(find.text(_en.studyDirectionTermFirst)).dy),
     );
 

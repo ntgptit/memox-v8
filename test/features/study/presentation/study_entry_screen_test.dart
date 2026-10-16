@@ -24,6 +24,7 @@ import 'package:memox/shared/widgets/mx_stat_tile.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/wrap_rule.dart';
 
 // UC-STUDY-001 steps 1–4 on screen 14; IT-STUDY-001, IT-STUDY-004.
 
@@ -194,7 +195,8 @@ void main() {
     expect(find.text(_en.studyEntryLearnTitle), findsOneWidget);
     expect(find.textContaining(_en.studyEntryLearnStagesSm2), findsOneWidget);
     // The stages are a phrase; the count's terms stay whole (Wrap Rule).
-    expect(
+    expectBreaksOnlyBetweenWords(
+      tester,
       find.text(
         metaDots(
           _en.studyEntryLearnLine(
@@ -203,7 +205,6 @@ void main() {
           ),
         ),
       ),
-      findsOneWidget,
     );
     // Only new cards: the footer offers Learn, the row does not (critique
     // 2026-09-30 part 3d-1, D2).
