@@ -18,6 +18,7 @@ import 'package:memox/shared/widgets/mx_action_pair.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/widget_harness.dart';
 
 // The import screen over the real backend and a fake picker (UC-TRANSFER-001,
 // IT-NAV-012, IT-CARD-014).
@@ -54,8 +55,7 @@ Future<void> _pump(
 );
 
 Future<void> _tap(WidgetTester tester, String label) async {
-  await tester.ensureVisible(find.text(label).last);
-  await tester.tap(find.text(label).last);
+  await tapVisible(tester, find.text(label).last);
   await tester.pumpAndSettle();
 }
 

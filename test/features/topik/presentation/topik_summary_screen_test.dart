@@ -14,6 +14,7 @@ import '../../../support/library_harness.dart';
 import '../../../support/topik_attempt_screen_fixtures.dart';
 import '../../../support/topik_content_fixtures.dart';
 import '../../../support/topik_screen_fixtures.dart';
+import '../../../support/widget_harness.dart';
 
 final class _Exits {
   final reviews = <int?>[];
@@ -127,15 +128,13 @@ void main() {
     await reveal(tester, find.text('No wrong answers'));
     final unanswered = find.widgetWithText(MxFilterChip, 'Unanswered');
     await reveal(tester, unanswered, delta: -300);
-    await tester.ensureVisible(unanswered);
-    await tester.tap(unanswered);
+    await tapVisible(tester, unanswered);
     await tester.pumpAndSettle();
     expect(find.text('No unanswered questions'), findsOneWidget);
 
     // Another filter with rows leaves the empty state (filterEmpty → loaded).
     final all = find.widgetWithText(MxFilterChip, 'All');
-    await tester.ensureVisible(all);
-    await tester.tap(all);
+    await tapVisible(tester, all);
     await tester.pumpAndSettle();
     expect(find.text('No unanswered questions'), findsNothing);
     await reveal(tester, find.text('Question 1'));
@@ -155,8 +154,7 @@ void main() {
     ]) {
       final filter = find.widgetWithText(MxFilterChip, chip);
       await reveal(tester, filter);
-      await tester.ensureVisible(filter);
-      await tester.tap(filter);
+      await tapVisible(tester, filter);
       await tester.pumpAndSettle();
       expect(find.text(empty), findsOneWidget);
     }

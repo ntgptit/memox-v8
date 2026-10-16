@@ -327,7 +327,8 @@ void main() {
 
     await tester.tap(_button(_en.studyEntryReviewCta(5)));
     await tester.pump();
-    await tester.tap(find.text(_en.cardModeGuess));
+    // The rows are locked while the start runs: the tap is meant to miss.
+    await tester.tap(find.text(_en.cardModeGuess), warnIfMissed: false);
     await tester.pump();
 
     expect(

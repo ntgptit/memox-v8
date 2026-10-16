@@ -64,8 +64,9 @@ void main() {
       lessThan(tester.getTopLeft(find.text('meokda · eat')).dy),
     );
 
-    // A deck cannot join a selection of cards.
-    await _tap(tester, find.text('Basics'));
+    // A deck cannot join a selection of cards: its row ignores the tap.
+    await tester.tap(find.text('Basics'), warnIfMissed: false);
+    await tester.pumpAndSettle();
     expect(find.text(_en.trashCardsSelected(1)), findsOneWidget);
 
     // One label for one action, as on Card list (owner 2026-10-08).

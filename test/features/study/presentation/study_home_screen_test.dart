@@ -302,7 +302,8 @@ void main() {
     await pumpLibraryScreen(tester, env, _screen(taps));
     await _settle(tester);
 
-    await tester.tap(find.text('Empty'));
+    // A deck with no card is disabled: the tap is meant to miss.
+    await tester.tap(find.text('Empty'), warnIfMissed: false);
     await tester.tap(find.text('Spanish'));
     await tester.tap(find.text(_en.studyHomeLibrary));
     expect(taps.decks, [spanish]);

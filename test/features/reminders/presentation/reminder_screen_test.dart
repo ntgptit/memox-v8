@@ -307,7 +307,8 @@ void main() {
 
   libraryTest('off: the time row is disabled', (tester, env) async {
     await pumpReminderScreen(tester, env);
-    await tester.tap(find.text('20:00'));
+    // The row is disabled and ignores pointers: the tap is meant to miss.
+    await tester.tap(find.text('20:00'), warnIfMissed: false);
     await settleReminderScreen(tester);
     expect(find.text(_en.reminderTimeDialogTitle), findsNothing);
   });

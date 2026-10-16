@@ -175,7 +175,12 @@ void main() {
     await tester.pump();
     expect(find.byType(MxOptionRow), findsNWidgets(2));
     // A drag down does not close it either (final review #1).
-    await tester.drag(find.byType(MxOptionRow).first, const Offset(0, 500));
+    // The locked rows ignore pointers; the drag lands on the sheet behind.
+    await tester.drag(
+      find.byType(MxOptionRow).first,
+      const Offset(0, 500),
+      warnIfMissed: false,
+    );
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(MxOptionRow), findsNWidgets(2));
 

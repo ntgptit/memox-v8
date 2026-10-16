@@ -103,9 +103,12 @@ void main() {
       lessThanOrEqualTo(800 * 0.85),
     );
     final before = tester.getTopLeft(find.byKey(const ValueKey('row-10'))).dy;
+    // The row is an empty box with nothing to hit; the drag lands on the
+    // list around it, which is what scrolls.
     await tester.drag(
       find.byKey(const ValueKey('row-2')),
       const Offset(0, -300),
+      warnIfMissed: false,
     );
     await tester.pump();
     expect(

@@ -7,6 +7,7 @@ import 'package:memox/shared/widgets/mx_chip_trigger.dart';
 
 import 'library_harness.dart';
 import 'monitoring_fakes.dart';
+import 'widget_harness.dart';
 
 List<Override> monitoringOverrides(FakeMonitoringRepository repository) => [
   monitoringRepositoryProvider.overrideWithValue(repository),
@@ -54,7 +55,6 @@ Future<void> tapMonitoringChip(WidgetTester tester, String label) async {
     of: find.byType(MxChipTrigger),
     matching: find.textContaining(label),
   );
-  await tester.ensureVisible(chip);
-  await tester.tap(chip);
+  await tapVisible(tester, chip);
   await tester.pumpAndSettle();
 }

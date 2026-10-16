@@ -11,6 +11,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import '../../../../../support/deck_fixtures.dart';
 import '../../../../../support/library_harness.dart';
 import '../../../../screen_audit.dart';
+import '../../../../../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -72,8 +73,7 @@ void main() {
           _en.importReadAction,
           _en.importPreviewAction,
         ]) {
-          await tester.ensureVisible(find.text(label).last);
-          await tester.tap(find.text(label).last);
+          await tapVisible(tester, find.text(label).last);
           await tester.pumpAndSettle();
         }
       },

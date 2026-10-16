@@ -142,6 +142,8 @@ Future<void> _typeExample(WidgetTester tester, String example) async {
   final hint = find.text(l10n.cardExampleHint);
   if (hint.evaluate().isEmpty) {
     await tester.ensureVisible(find.byType(CardAddDetailsWidget));
+    // A tap right after ensureVisible aims at the pre-scroll layout.
+    await tester.pump();
     await tester.tap(find.byType(CardAddDetailsWidget));
     await tester.pump(const Duration(milliseconds: 400));
   }
@@ -151,6 +153,8 @@ Future<void> _typeExample(WidgetTester tester, String example) async {
     matching: find.byType(EditableText),
   );
   await tester.ensureVisible(field);
+  // A tap right after ensureVisible aims at the pre-scroll layout.
+  await tester.pump();
   await tester.tap(field);
   await tester.pump(const Duration(milliseconds: 300));
   await tester.enterText(field, example);
