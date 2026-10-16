@@ -174,12 +174,15 @@ begin
     v_issues := array_append(v_issues, 'points');
   end if;
   -- options: BR-TOPIK-003
+  -- jsonb_array_elements only runs when options is an array (a scalar raises 22023);
+  -- the case is what guarantees it, not the order of the or.
   if exists (select 1 from jsonb_array_elements(v_questions) q
-             where jsonb_typeof(q->'options') is distinct from 'array'
-                or (select coalesce(array_agg((o->>'idx')::integer order by (o->>'idx')::integer), '{}')
-                    from jsonb_array_elements(q->'options') o) <> '{1,2,3,4}'::integer[]
-                or exists (select 1 from jsonb_array_elements(q->'options') o
-                           where coalesce(o->>'textKo', '') = '' and coalesce(o->>'image', '') = '')
+             where case when jsonb_typeof(q->'options') = 'array' then
+                          (select coalesce(array_agg((o->>'idx')::integer order by (o->>'idx')::integer), '{}')
+                           from jsonb_array_elements(q->'options') o) <> '{1,2,3,4}'::integer[]
+                          or exists (select 1 from jsonb_array_elements(q->'options') o
+                                     where coalesce(o->>'textKo', '') = '' and coalesce(o->>'image', '') = '')
+                        else true end
                 or coalesce((q->>'answerIdx')::integer, 0) not between 1 and 4) then
     v_issues := array_append(v_issues, 'options');
   end if;
@@ -213,9 +216,9 @@ begin
     v_issues := array_append(v_issues, 'languages');
   end if;
   return v_issues;
-exception when others then
-  -- A JSON that is not the shape at all (a wrong type in a field) is an identity
-  -- and metadata failure, never an error to the caller.
+exception when data_exception then
+  -- SQLSTATE class 22 (a bad cast, a scalar where an array was expected): a wrongly
+  -- typed field is an identity and metadata failure; anything else is a bug and raises.
   return array['identity', 'metadata'];
 end
 $$;
