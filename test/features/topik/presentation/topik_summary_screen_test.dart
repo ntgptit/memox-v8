@@ -150,7 +150,7 @@ void main() {
     await pump(tester, env, zero.id);
 
     for (final (chip, empty) in [
-      ('Correct', 'No correct answers yet'),
+      ('Correct', 'No correct answers'),
       ('Wrong', 'No wrong answers'),
     ]) {
       final filter = find.widgetWithText(MxFilterChip, chip);

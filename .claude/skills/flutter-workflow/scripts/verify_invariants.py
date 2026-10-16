@@ -155,6 +155,24 @@ def batch(con, id, item_type, root_item_id, deleted_at):
         root_item_id=root_item_id, deleted_at=deleted_at)
 
 
+def guess_option(con, slot, option_card_id, card_id="c1"):
+    ins(con, "study_guess_options", session_id="s1", mode="guess", round=1,
+        card_id=card_id, slot=slot, option_card_id=option_card_id)
+
+
+def topik_attempt(con, id, status, **extra):
+    fields = dict(id=id, test_id="topik1-96-reading", level="topik1",
+                  section="reading", round=96, mode="practice", status=status,
+                  started_at="t", updated_at="t", content_version=1)
+    fields.update(extra)
+    ins(con, "topik_attempt", **fields)
+
+
+def topik_answer(con, attempt_id, question_no, time_spent_ms, **extra):
+    ins(con, "topik_attempt_answer", attempt_id=attempt_id,
+        question_no=question_no, time_spent_ms=time_spent_ms, **extra)
+
+
 def fresh():
     con = sqlite3.connect(":memory:")
     con.executescript(SCHEMA)
@@ -176,6 +194,21 @@ def good(con):
     answer(con, "h1")
     queue(con, "browse", "c1", 0)
     queue(con, "match", "c1", 0, answers_in_session=2)
+    # A guess question on `c1`: two options, exactly one of them `c1` itself.
+    guess_option(con, 0, "c1")
+    guess_option(con, 1, "cz")
+    # TOPIK: `ta` submitted (question 31 right for 4 points, 32 blank worth 3),
+    # `tb` in progress with one answer and no snapshot (BR-TOPIK-013, -015).
+    topik_attempt(con, "ta", "completed", completed_at="t", total_time_ms=3000,
+                  current_question_no=32, question_count=2, max_score=7,
+                  score=4, correct_count=1, answered_count=1)
+    topik_answer(con, "ta", 31, 1000, selected_idx=1, answered_at="t",
+                 correct_idx=1, points=4, points_earned=4, question_type="r1_topic")
+    topik_answer(con, "ta", 32, 2000, correct_idx=2, points=3, points_earned=0,
+                 question_type="r1_topic")
+    topik_attempt(con, "tb", "in_progress", total_time_ms=500,
+                  current_question_no=31, question_count=1, max_score=4)
+    topik_answer(con, "tb", 31, 500, selected_idx=2, answered_at="t")
 
 
 def chain_below_a(con):
@@ -243,6 +276,22 @@ BAD = {
                    c.execute("UPDATE deck SET delete_batch_id = 'bt4' WHERE id = 'a'"),
                    c.execute("UPDATE deck SET delete_batch_id = 'bt5' WHERE id = 'b'")),
     37: lambda c: batch(c, "bt6", "deck", "nosuchdeck", "t2"),
+    # ---- Study modes ----------------------------------------------------
+    # A hint shown on a `match` question: only `fill` has a hint (BR-STUDY-028).
+    38: lambda c: queue(c, "match", "c1", 7, status="pending", hint_shown=1),
+    # A meaning slot on a `browse` row: only `match` has one (BR-STUDY-049).
+    39: lambda c: queue(c, "browse", "c1", 8, status="pending", meaning_slot=0),
+    # A guess question with no correct option (BR-STUDY-037).
+    40: lambda c: c.execute("UPDATE study_guess_options SET option_card_id = 'cy' "
+                            "WHERE option_card_id = 'c1'"),
+    # ---- TOPIK -------------------------------------------------------------
+    # The total no longer the sum of the questions' times (BR-TOPIK-015).
+    41: lambda c: c.execute("UPDATE topik_attempt SET total_time_ms = 1 WHERE id = 'tb'"),
+    # A snapshot score that is not the sum of the points earned (BR-TOPIK-013).
+    42: lambda c: c.execute("UPDATE topik_attempt SET score = 0 WHERE id = 'ta'"),
+    # A snapshot on an answer of an attempt still in progress (BR-TOPIK-013).
+    43: lambda c: c.execute("UPDATE topik_attempt_answer SET correct_idx = 2 "
+                            "WHERE attempt_id = 'tb'"),
 }
 
 

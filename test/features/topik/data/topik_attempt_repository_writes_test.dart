@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/core/database/app_database.dart';
+import 'package:memox/core/database/app_database.dart' show AppDatabase;
+import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/topik/data/repositories/topik_attempt_repository_impl.dart';
 import 'package:memox/features/topik/domain/failures/topik_failure.dart';
+import 'package:memox/features/topik/domain/models/topik_attempt_model.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
@@ -62,6 +64,30 @@ void main() {
         TopikRejection.inProgressExists,
       );
       expect(await db.select(db.topikAttempt).get(), hasLength(1));
+    });
+
+    test('two Starts at once leave one attempt in progress; the other is '
+        'refused (BR-TOPIK-011)', () async {
+      final outcomes = await Future.wait([
+        repository.start(_test),
+        repository.start(_test),
+      ]);
+      final started = outcomes.whereType<Ok<TopikAttempt, TopikRejection>>();
+      expect(started, hasLength(1));
+      expect(
+        outcomes.whereType<Rejected<TopikAttempt, TopikRejection>>().map(
+          (outcome) => outcome.reason,
+        ),
+        [TopikRejection.inProgressExists],
+      );
+      final open = await db
+          .customSelect(
+            "SELECT id FROM topik_attempt WHERE status = 'in_progress'",
+          )
+          .get();
+      expect(open.map((row) => row.read<String>('id')), [
+        started.single.value.id,
+      ]);
     });
 
     test('Start new replaces the attempt in progress in one transaction '
@@ -187,17 +213,36 @@ void main() {
       );
     });
 
-    test('negative elapsed time is a programming error', () async {
+    test('negative elapsed time is a programming error on every timed '
+        'write, which then writes nothing', () async {
       final attempt = topikOk(await repository.start(_test));
-      await expectLater(
-        repository.answer(
+      final writes = <String, Future<Object?> Function()>{
+        'answer': () => repository.answer(
           attemptId: attempt.id,
           questionNo: 1,
           selectedIdx: 1,
           elapsedMs: -1,
         ),
-        throwsArgumentError,
-      );
+        'move': () => repository.move(
+          attemptId: attempt.id,
+          toQuestionNo: 2,
+          elapsedMs: -1,
+        ),
+        'recordTime': () =>
+            repository.recordTime(attemptId: attempt.id, elapsedMs: -1),
+        'submit': () => repository.submit(
+          attemptId: attempt.id,
+          test: _test,
+          elapsedMs: -1,
+        ),
+      };
+      for (final MapEntry(key: name, value: write) in writes.entries) {
+        await expectLater(write(), throwsArgumentError, reason: name);
+      }
+      final row = (await topikAttemptRow(db, attempt.id))!;
+      expect(row.totalTimeMs, 0);
+      expect(row.currentQuestionNo, 1);
+      expect(row.status, 'in_progress');
     });
   });
 

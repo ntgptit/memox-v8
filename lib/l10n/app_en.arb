@@ -749,7 +749,7 @@
   "@topikNoUnanswered": {
     "description": "Screen 38: the Unanswered filter with nothing."
   },
-  "topikNoCorrect": "No correct answers yet",
+  "topikNoCorrect": "No correct answers",
   "@topikNoCorrect": {
     "description": "Screen 38: the Correct filter with nothing."
   },

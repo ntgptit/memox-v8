@@ -5,6 +5,7 @@ import 'package:memox/features/topik/domain/failures/topik_failure.dart';
 import 'package:memox/features/topik/domain/models/topik_attempt_status_model.dart';
 import 'package:memox/features/topik/domain/models/topik_level_model.dart';
 import 'package:memox/features/topik/domain/models/topik_section_model.dart';
+import 'package:memox/features/topik/domain/models/topik_test_model.dart';
 
 import '../../../support/test_database.dart';
 import '../../../support/topik_attempt_fixtures.dart';
@@ -145,6 +146,40 @@ void main() {
           await repository.submit(
             attemptId: attempt.id,
             test: other,
+            elapsedMs: 100,
+          ),
+        ),
+        TopikRejection.contentMismatch,
+      );
+      final row = (await topikAttemptRow(db, attempt.id))!;
+      expect(row.status, 'in_progress');
+      expect(row.totalTimeMs, 0);
+    });
+
+    test('refuses the same test id with other question numbers and writes '
+        'nothing (BR-TOPIK-019)', () async {
+      final attempt = topikOk(await repository.start(_test));
+      final renumbered = TopikTest(
+        schemaVersion: _test.schemaVersion,
+        contentVersion: _test.contentVersion + 1,
+        testId: _test.testId,
+        level: _test.level,
+        round: _test.round,
+        section: _test.section,
+        format: _test.format,
+        form: _test.form,
+        titleKo: _test.titleKo,
+        officialTimeLimitSec: _test.officialTimeLimitSec,
+        source: _test.source,
+        groups: _test.groups,
+        questions: _test.questions.skip(1).toList(),
+        audioAsset: _test.audioAsset,
+      );
+      expect(
+        topikReason(
+          await repository.submit(
+            attemptId: attempt.id,
+            test: renumbered,
             elapsedMs: 100,
           ),
         ),

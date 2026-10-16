@@ -153,7 +153,7 @@
   "topikDone": "Xong",
   "topikNoWrong": "Không có câu sai",
   "topikNoUnanswered": "Không có câu bỏ trống",
-  "topikNoCorrect": "Chưa có câu đúng",
+  "topikNoCorrect": "Không có câu đúng",
   "topikSummaryErrorTitle": "Không tải được tổng kết",
   "topikLoadingSummary": "Đang tải tổng kết",
   "topikScoreLabel": "Điểm {score} trên {max}, đúng {correct} trên {count} câu",

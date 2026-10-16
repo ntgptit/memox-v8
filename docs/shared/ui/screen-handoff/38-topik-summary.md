@@ -90,6 +90,6 @@ BR-TOPIK-019, BR-TOPIK-023…BR-TOPIK-025). Shape: the [TOPIK spec](../../../sup
 - Rows: "Question {no}" · "Your answer {option}" · "Right answer {option}" · "Not answered" · badges "Correct" · "Wrong" · "Unanswered".
 - Types: "By question type" · "{correct} / {total}" · "Weakest".
 - Footer: "Done" · "Review answers".
-- Empty filter: "No wrong answers" · "No unanswered questions" · "No correct answers yet".
+- Empty filter: "No wrong answers" · "No unanswered questions" · "No correct answers".
 - Missing: "This attempt isn't here any more" · "Back to the test".
 - Error: "Couldn't load this summary" · the failure's body · "Retry". Loading: "Loading the summary" (TalkBack).

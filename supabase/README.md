@@ -19,6 +19,14 @@ Mailpit). A PR that changes `lib/core/auth/`, `lib/features/account/` or
 `supabase/migrations/` runs it. `supabase/templates/` holds the three code templates;
 the real project's are set by hand to the same text (step 3 below).
 
+In a claude.ai cloud container Docker runs, but its proxy refuses the CLI's default
+image registry (Amazon ECR). Pull the same images from Docker Hub instead by
+prefixing each command:
+
+    SUPABASE_INTERNAL_IMAGE_REGISTRY=docker.io npx supabase db start
+    SUPABASE_INTERNAL_IMAGE_REGISTRY=docker.io npx supabase test db
+    SUPABASE_INTERNAL_IMAGE_REGISTRY=docker.io bash tools/supabase/run_auth_it.sh
+
 Without Docker (a cloud container), `bash tools/supabase/local_pgtap.sh` runs the same
 migrations and tests on a local Postgres 16 with pgTAP (`apt-get install
 postgresql-16-pgtap`), with a shim for the Supabase roles and `auth.uid()`. It is a
