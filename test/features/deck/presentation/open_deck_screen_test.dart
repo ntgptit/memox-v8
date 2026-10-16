@@ -159,8 +159,7 @@ void main() {
       deckScreen(deckId: words.id, onImportCards: imported.add),
     );
 
-    await tester.ensureVisible(_unsetButton(_en.deckUnsetImport));
-    await tester.tap(_unsetButton(_en.deckUnsetImport));
+    await tapVisible(tester, _unsetButton(_en.deckUnsetImport));
     expect(imported, [words.id]);
   });
 

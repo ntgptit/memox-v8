@@ -21,8 +21,12 @@ class ConsoleReporter:
         self.show_fix_hint = show_fix_hint
 
     def progress(self, completed_rules: int, total_rules: int, rule_id: str) -> None:
-        """Print rule execution progress."""
-        if total_rules <= 0:
+        """Print rule execution progress, to a terminal only.
+
+        Captured output (a gate, a log, CI) would get one line per rule on
+        every run, ahead of the violations it is read for.
+        """
+        if total_rules <= 0 or not self.console.is_terminal:
             return
 
         percent = int((completed_rules / total_rules) * Defaults.PERCENT_COMPLETE)

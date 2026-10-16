@@ -396,7 +396,9 @@ void main() {
       await tester.pump();
       expect(find.byType(MxSelectionCheckbox), findsNWidgets(3));
 
-      await _bulk(tester, _en.cardDelete);
+      // A disabled command ignores pointers, so the tap is meant to miss.
+      await tester.tap(find.text(_en.cardDelete), warnIfMissed: false);
+      await tester.pumpAndSettle();
       expect(find.byType(MxDialog), findsNothing);
       final delete = tester.getSemantics(find.text(_en.cardDelete));
       expect(delete.hasFlag(SemanticsFlag.isButton), isTrue);

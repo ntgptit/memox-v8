@@ -18,6 +18,7 @@ import '../../../support/topik_attempt_screen_fixtures.dart';
 import '../../../support/topik_content_fixtures.dart';
 import '../../../support/topik_fakes.dart';
 import '../../../support/topik_screen_fixtures.dart';
+import '../../../support/widget_harness.dart';
 
 final class _Exits {
   var backs = 0;
@@ -130,8 +131,7 @@ void main() {
     expect(find.text('Review · 5 / 50'), findsOneWidget);
 
     final unanswered = find.widgetWithText(MxFilterChip, 'Unanswered');
-    await tester.ensureVisible(unanswered);
-    await tester.tap(unanswered);
+    await tapVisible(tester, unanswered);
     await tester.pumpAndSettle();
     expect(find.text('Review · 4 / 50'), findsOneWidget);
   });

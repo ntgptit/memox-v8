@@ -1101,13 +1101,89 @@ PLAN_FIELDS = frozenset({
 
 class GateRunsTheHookTestsTest(unittest.TestCase):
     """The design-token hook exits 0 on any error, so a hook that has stopped
-    working looks like a clean file; its tests are what notice, and the gate
-    runs them in every mode."""
+    working looks like a clean file; its tests are what notice. The full gate
+    runs them, and so does every `--changed` plan that reaches a hook or the
+    guard (such a plan is the full suite: see
+    `test_every_path_a_scoped_out_check_reads_selects_the_full_suite`)."""
 
     def test_the_gate_runs_the_hook_tests(self) -> None:
         script = (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
         self.assertIn('HOOK_TESTS="$REPO_ROOT/.claude/hooks/tests"', script)
         self.assertIn("-m unittest discover -s '$HOOK_TESTS' -p 'test_*.py'", script)
+
+
+class ScopedOutChecksAreFullScopeTest(unittest.TestCase):
+    """The safety property of `dod_check.sh --changed`, against the committed
+    impact map: on a plan narrower than the full suite the gate leaves out the
+    guard's and the hooks' own tests and lints only the changed `lib/` files.
+    That is sound only while every path those checks read selects the full
+    suite."""
+
+    def test_every_path_a_scoped_out_check_reads_selects_the_full_suite(self) -> None:
+        module = _load("build_verification_plan")
+        impact_map = module.ImpactMap.load(SCRIPTS / "verification_impact_map.json")
+        with tempfile.TemporaryDirectory() as temp:
+            root = _fixture_repo(Path(temp) / "repo", "test/a_test.dart")
+            for path in (
+                ".claude/hooks/check_design_tokens.py",
+                ".claude/settings.json",
+                "code-verification-guard-v2/code_verification_guard/reporters/console_reporter.py",
+                "code-verification-guard-v2/registries/projects/memox-v8/rules/memox-design-token-rules.yaml",
+                # Markdown too: the ruleset contract test reads every file there.
+                "code-verification-guard-v2/registries/projects/memox-v8/rules/README.md",
+                ".claude/hooks/check_test_command.py",
+                "tools/m3_lint/m3_rules.dart",
+                "tools/m3_lint/allowlist.json",
+                "tools/design/removed_symbols.json",
+                "lib/core/theme/app_theme.dart",
+            ):
+                with self.subTest(path=path):
+                    plan = module.build_plan(
+                        [path], root=root, impact_map=impact_map, force_full=False
+                    )
+                    self.assertTrue(plan.full_suite)
+
+
+class GateScopesAChangedRunTest(unittest.TestCase):
+    """What `--changed` leaves out, and that only a narrow plan leaves it out."""
+
+    @staticmethod
+    def _gate() -> str:
+        return (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
+
+    def test_scoping_follows_the_plans_full_suite_field(self) -> None:
+        self.assertIn('[[ "$(read_plan_bool full_suite)" == "1" ]] || SCOPED=1', self._gate())
+
+    def test_the_full_gate_lints_the_whole_tree(self) -> None:
+        self.assertIn(
+            'plan m3_lint "Material 3 AST rules (tools/m3_lint)" "dart run tools/m3_lint/m3_lint.dart"',
+            self._gate(),
+        )
+
+    def test_each_scoped_out_check_is_named_in_the_summary(self) -> None:
+        gate = self._gate()
+        for check in ("hook tests:", "m3_lint:", "guard self-tests:"):
+            with self.subTest(check=check):
+                self.assertIn(f'SCOPED_OUT+=("{check}', gate)
+
+
+class GatePrintsFailuresTest(unittest.TestCase):
+    """A passing step prints one line; a failed one prints its whole log."""
+
+    @staticmethod
+    def _gate() -> str:
+        return (SCRIPTS / "dod_check.sh").read_text(encoding="utf-8")
+
+    def test_packages_resolve_once_and_no_step_resolves_them_again(self) -> None:
+        gate = self._gate()
+        self.assertEqual(1, gate.count("flutter pub get >"))
+        self.assertIn('"flutter analyze --no-fatal-infos --no-pub"', gate)
+        self.assertIn("MEMOX_NO_PUB=1 bash '$RUN_TESTS'", gate)
+
+    def test_every_log_is_kept_and_a_failed_one_is_printed(self) -> None:
+        gate = self._gate()
+        self.assertIn('LOG_DIR="$REPO_ROOT/.dart_tool/dod_check_logs"', gate)
+        self.assertIn('step "✗ ${LABELS[$i]} (${secs}s)"', gate)
 
 
 class GateReadsThePlanTest(unittest.TestCase):

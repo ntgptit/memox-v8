@@ -79,3 +79,17 @@ def test_json_reporter_includes_class_name_and_suggested_fix(capsys) -> None:
     assert payload[0]["class_name"] == "MxButton"
     assert payload[0]["fix_hint"] == "Add a Dart doc block."
     assert payload[0]["suggested_fix"] == "Add a Dart doc block."
+
+
+def test_console_reporter_prints_progress_only_to_a_terminal() -> None:
+    """Captured by a gate or a log, one line per rule was 92 lines on every run."""
+    piped = StringIO()
+    reporter = ConsoleReporter()
+    reporter.console = Console(file=piped, force_terminal=False, color_system=None)
+    reporter.progress(1, 92, "common.no_trailing_whitespace")
+    assert piped.getvalue() == ""
+
+    terminal = StringIO()
+    reporter.console = Console(file=terminal, force_terminal=True, color_system=None)
+    reporter.progress(1, 92, "common.no_trailing_whitespace")
+    assert "Running rules:" in terminal.getvalue()

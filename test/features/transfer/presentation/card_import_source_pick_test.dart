@@ -12,6 +12,7 @@ import 'package:memox/shared/widgets/mx_empty_state.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/widget_harness.dart';
 
 // Screen 11's source step picks a file from its "Choose a file" card; the
 // empty state below carries no second button (critique 2026-10-02, F9).
@@ -47,8 +48,7 @@ Future<int Function()> _pump(
 }
 
 Future<void> _tap(WidgetTester tester, String label) async {
-  await tester.ensureVisible(find.text(label).last);
-  await tester.tap(find.text(label).last);
+  await tapVisible(tester, find.text(label).last);
   await tester.pumpAndSettle();
 }
 

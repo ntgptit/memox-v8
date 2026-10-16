@@ -15,7 +15,8 @@ Each layer answers one question; none takes over another's.
 | ECC skills | What does good practice look like here? | reference knowledge only (see [docs/agent/vendored-ecc.md](docs/agent/vendored-ecc.md); `diagram-design`: [docs/agent/vendored-diagram-design.md](docs/agent/vendored-diagram-design.md)) |
 
 - **Superpowers is the sole process controller.** Nothing else plans,
-  sequences or gates work, and no other layer repeats its methodology.
+  sequences or gates work, and no other layer repeats its methodology. How
+  much of it a change takes is set by [Sizing the work](#sizing-the-work).
 - **Impeccable judges UI against `DESIGN.md`, not against its own taste.**
   `DESIGN.md` is the design authority ([UI source of truth](#project-invariants)).
   Impeccable checks the work against it and against the quality floor.
@@ -34,7 +35,27 @@ Each layer answers one question; none takes over another's.
   one confirmation: if it finds something, fix it in one batch and report what
   it found to the owner; never run a further audit.
 
+### Sizing the work
+
+The ceremony around a change follows its size; the bars of
+[Fixing bugs and improving](#fixing-bugs-and-improving) and the full gate
+before the PR hold at every tier. Take the highest tier the change reaches,
+and write the tier and why on the issue; when unsure, ask the owner.
+
+| | Tier 0: small | Tier 1: medium | Tier 2: large |
+|---|---|---|---|
+| Reaches | docs, tooling, config, renames; no app behaviour changes | a bug or an improvement in one screen or one shared widget | a new screen, feature or spec; a schema or RPC change |
+| Brainstorm and plan | none | the scope and a short plan on the issue; executed inline | `brainstorming`, then `writing-plans`, executed as the owner chooses |
+| Impeccable | none (no UI) | critique and audit the states the change reaches, and every state whose golden changed | [a screen's workflow](#a-screens-workflow) |
+| Review | the agent reads its own diff | one final whole-branch review | a task review per task, then the final whole-branch review |
+
+- A change under `lib/core/`, `lib/shared/`, the theme, the schema or an RPC
+  is Tier 1 at least.
+- A bug at any tier goes through `superpowers:systematic-debugging`.
+
 ### A screen's workflow
+
+Tier 2 work on a screen:
 
 1. Read the screen's detail file (its States and Transitions tables), its
    goldens and `DESIGN.md`.
@@ -86,6 +107,13 @@ relevant paths and types, and every reference found before a change
   suite. Goldens run after it, in the Linux container only
   (`bash .claude/skills/flutter-workflow/scripts/run_goldens.sh`, `--update`
   to rewrite them); on Windows run the gate alone and never `--update-goldens`.
+- **Check the narrow thing while working; run the full gate once.** Between
+  edits, and in each task of a plan, run `run_tests.sh` on the tests the
+  change touches, or `dod_check.sh --changed` (the static checks and the tests
+  the diff reaches). Run `dod_check.sh` with no flag once, on the final tree,
+  before the commit that goes into the PR; a second run on an unchanged tree
+  answers from its pass stamp. A passing step prints one line; its log is in
+  `.dart_tool/dod_check_logs/`.
 - Part of the suite runs through
   `bash .claude/skills/flutter-workflow/scripts/run_tests.sh <file|dir>…`
   (bundled, failures only), once; `flutter test` on a directory or the whole
@@ -263,9 +291,10 @@ maintainability. Speed and tokens come last and never buy back a higher bar.
   checks pass; `BLOCKED` when a named limit (access, device, owner decision)
   stops verification; `UNRESOLVED` when the cause or the fix is not proven. An
   unproven fix is never reported as fixed.
-- **The final whole-branch review checks these bars** against the diff, the
-  tests and the commands actually run, never against the agent's own account
-  of them. When the change touches a screen or its state, the reviewer
+- **The final whole-branch review checks these bars** (at Tier 0, the
+  agent's own read of its diff; [Sizing the work](#sizing-the-work)) against
+  the diff, the tests and the commands actually run, never against the
+  agent's own account of them. When the change touches a screen or its state, the reviewer
   rebuilds the states and transitions from the code and compares them with
   the screen's tables.
 - Moving a fix down to its shared owner and fixing same-cause hits are in

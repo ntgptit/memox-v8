@@ -10,6 +10,7 @@ import 'package:memox/features/transfer/presentation/widgets/sections/import_res
 import 'package:memox/l10n/generated/app_localizations.dart';
 
 import '../../../support/library_harness.dart';
+import '../../../support/widget_harness.dart';
 
 // Screen 11's result names every row it skipped and why (critique
 // 2026-10-02, F4; UC-TRANSFER-001 step 8).
@@ -60,8 +61,7 @@ void main() {
     expect(find.text('dup 7'), findsNothing);
 
     final showAll = find.text(_en.importSkippedShowAll(7));
-    await tester.ensureVisible(showAll);
-    await tester.tap(showAll);
+    await tapVisible(tester, showAll);
     await tester.pumpAndSettle();
 
     expect(find.byType(ImportPreviewRowWidget), findsNWidgets(7));

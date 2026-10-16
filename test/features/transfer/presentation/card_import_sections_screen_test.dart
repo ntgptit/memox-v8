@@ -14,6 +14,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/widget_harness.dart';
 
 // The import screen over a workbook whose first sheet is blank and over
 // files split by * rows (spec 2026-10-08 S6, U2, U3, U6, U7), on the real
@@ -51,8 +52,7 @@ Future<void> _pump(
 );
 
 Future<void> _tap(WidgetTester tester, String label) async {
-  await tester.ensureVisible(find.text(label).last);
-  await tester.tap(find.text(label).last);
+  await tapVisible(tester, find.text(label).last);
   await tester.pumpAndSettle();
 }
 

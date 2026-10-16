@@ -14,6 +14,7 @@ import 'package:memox/shared/widgets/mx_button.dart';
 
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/widget_harness.dart';
 
 // The result of an import split by * rows lists the decks it wrote to and
 // leads back to the deck (spec 2026-10-08 U8).
@@ -21,8 +22,7 @@ import '../../../support/library_harness.dart';
 final _en = lookupAppLocalizations(const Locale('en'));
 
 Future<void> _tap(WidgetTester tester, String label) async {
-  await tester.ensureVisible(find.text(label).last);
-  await tester.tap(find.text(label).last);
+  await tapVisible(tester, find.text(label).last);
   await tester.pumpAndSettle();
 }
 

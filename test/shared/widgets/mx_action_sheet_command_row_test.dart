@@ -167,7 +167,8 @@ void main() {
         isEnabled: false,
       ),
     );
-    await tester.tap(find.text('Study this deck'));
+    // A disabled command ignores pointers: the tap is meant to miss.
+    await tester.tap(find.text('Study this deck'), warnIfMissed: false);
 
     expect(taps, 0);
     expect(find.byType(Opacity), findsWidgets);

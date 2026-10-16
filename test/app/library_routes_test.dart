@@ -6,12 +6,14 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_bottom_nav.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_selection_checkbox.dart';
 import 'package:memox/features/search/presentation/controllers/search_screen_controller.dart';
 
 import '../support/card_fixtures.dart';
 import '../support/deck_fixtures.dart';
 import '../support/library_harness.dart';
+import '../support/widget_harness.dart';
 
 final _en = lookupAppLocalizations(const Locale('en'));
 
@@ -89,7 +91,7 @@ void main() {
   ) async {
     await _seed(env);
     await pumpMemoxApp(tester, env);
-    await _tap(tester, find.text(_en.searchFieldHint));
+    await _tap(tester, find.byType(MxSearchField));
     await tester.enterText(find.byType(EditableText), 'verb');
     await tester.pump(searchDebounce);
     await tester.pumpAndSettle();
@@ -238,10 +240,11 @@ void main() {
       await pumpMemoxApp(tester, env);
       await _tap(tester, find.text('Korean'));
       await _tap(tester, find.text('Words'));
-      await tester.ensureVisible(
+      await tapVisible(
+        tester,
         find.widgetWithText(MxButton, _en.deckUnsetImport),
       );
-      await _tap(tester, find.widgetWithText(MxButton, _en.deckUnsetImport));
+      await tester.pumpAndSettle();
 
       expect(_barTitle(_en.importTitle), findsOneWidget);
       expect(find.byType(MxBottomNav), findsNothing);

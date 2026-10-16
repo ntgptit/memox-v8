@@ -6,6 +6,13 @@
 #            non-golden host suite); the same targets `flutter test` takes
 #   MEMOX_TEST_BUNDLES=<n>  bundles (default: one per core, at most 8);
 #            0 runs the targets file by file, as before 2026-10-02
+#   MEMOX_NO_PUB=1  skip the `flutter pub get` this script runs first; the
+#            caller has run it (dod_check.sh runs it once for every step)
+#
+# **`pub get` once, quietly, then `--no-pub`.** `flutter test` resolves the
+# packages itself and prints all 58 outdated ones on every run, and three
+# `flutter` commands started together by the gate each did it again and
+# waited on one another's lock. Its output is shown only when it fails.
 #
 # **Why not `flutter test <dir>`.** It compiles every file on its own and
 # starts a process for each: `test/features` took about 4 minutes that way
@@ -45,11 +52,22 @@ RC_FILE="$BUNDLE_RUN_DIR/rc"
 mkdir -p "$BUNDLE_RUN_DIR"
 trap '[[ "$(cat "$RC_FILE" 2>/dev/null || echo 0)" == "0" ]] && rm -rf "${REPO_ROOT:?}/${BUNDLE_RUN_DIR:?}"' EXIT
 
+# Called right before `flutter test`, after the targets are known to name a
+# test, so a bad target still fails at once.
+pub_get_once() {
+  [[ "${MEMOX_NO_PUB:-0}" == "1" ]] && return 0
+  flutter pub get >"$BUNDLE_RUN_DIR/pub_get.log" 2>&1 && return 0
+  cat "$BUNDLE_RUN_DIR/pub_get.log"
+  echo "run_tests: flutter pub get failed" >&2
+  exit 1
+}
+
 # Without python there is no bundler and no report: the targets run file by
 # file, which is slower but still the same tests.
 if [[ "${MEMOX_TEST_BUNDLES:-}" == "0" || -z "$PY" ]]; then
   echo "host tests: ${TARGETS[*]}, file by file"
-  TZ=UTC flutter test --exclude-tags golden -r failures-only \
+  pub_get_once
+  TZ=UTC flutter test --no-pub --exclude-tags golden -r failures-only \
     --file-reporter "json:$TEST_REPORT" "${TARGETS[@]}"
 else
   if ! listed="$("$PY" "$SCRIPTS/bundle_tests.py" --root "$REPO_ROOT" --out "$BUNDLE_RUN_DIR" "${TARGETS[@]}")"; then
@@ -63,7 +81,8 @@ else
     echo "run_tests: ${TARGETS[*]} name no runnable host test" >&2
     exit 1
   fi
-  TZ=UTC flutter test -j "${#bundles[@]}" --exclude-tags golden -r failures-only \
+  pub_get_once
+  TZ=UTC flutter test --no-pub -j "${#bundles[@]}" --exclude-tags golden -r failures-only \
     --file-reporter "json:$TEST_REPORT" "${bundles[@]}"
 fi
 rc=$?

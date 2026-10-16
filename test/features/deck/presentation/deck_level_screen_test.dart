@@ -10,6 +10,7 @@ import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
+import 'package:memox/shared/widgets/mx_search_field.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_due_strip_widget.dart';
 import 'package:memox/shared/widgets/mx_dialog.dart';
@@ -306,7 +307,7 @@ void main() {
       deckScreen(onSearch: () => searches++),
     );
 
-    await tester.tap(find.text(_en.searchFieldHint));
+    await tester.tap(find.byType(MxSearchField));
     expect(searches, 1);
   });
 

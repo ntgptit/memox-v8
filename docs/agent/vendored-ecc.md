@@ -1,6 +1,6 @@
 # Vendored ECC skills
 
-`.claude/skills/` holds 19 skills copied, unchanged, from
+`.claude/skills/` holds 9 skills copied, unchanged, from
 [affaan-m/ECC](https://github.com/affaan-m/ECC) (MIT) at commit
 `bf70150eb2df8070024e5bdf08e4aa08959e2735`:
 
@@ -9,7 +9,6 @@
 | Flutter/Dart | `dart-flutter-patterns`, `flutter-dart-code-review` |
 | Java/Spring | `java-coding-standards`, `jpa-patterns`, `springboot-patterns`, `springboot-security`, `springboot-tdd`, `springboot-verification` |
 | Security | `security-review` |
-| Mobile | `android-clean-architecture`, `compose-multiplatform-patterns`, `kotlin-coroutines-flows`, `swiftui-patterns`, `swift-concurrency-6-2`, `swift-actor-persistence`, `swift-protocol-di-testing`, `react-native-patterns`, `foundation-models-on-device`, `liquid-glass-design` |
 
 - **Reference material, not process.** When one conflicts with `CLAUDE.md`,
   `CLAUDE.md` wins: Superpowers and Impeccable own the workflows. The same
@@ -27,5 +26,14 @@
 - **Not vendored:** `ios-icon-gen` ships executable scripts, and
   `security-scan` runs the npm package `ecc-agentshield`. Both run third-party
   code.
+- **Removed 2026-10-16:** the native and other-framework mobile skills
+  (`android-clean-architecture`, `compose-multiplatform-patterns`,
+  `kotlin-coroutines-flows`, `swiftui-patterns`, `swift-concurrency-6-2`,
+  `swift-actor-persistence`, `swift-protocol-di-testing`,
+  `react-native-patterns`, `foundation-models-on-device`,
+  `liquid-glass-design`). MemoX is Flutter only, and each listed skill sat in
+  every session's skill list, where it cost context and could be picked by
+  mistake. Re-vendor one from the commit above if the app ever grows native
+  code that needs it.
 - **To update:** copy the new versions from a pinned ECC commit, review the
   diff, and update the commit above.

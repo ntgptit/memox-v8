@@ -141,13 +141,25 @@ String _dayOf(DateTime date) =>
 /// Lints [absolutePaths] and returns the violations the [allowlist] does not
 /// cover, plus one M3L00 per allowlist entry that covered nothing and one per
 /// entry whose review date is before [today] (the current day by default).
+///
+/// [partial] says [absolutePaths] are some of `lib/`, not all of it (the
+/// changed files of `dod_check.sh --changed`): an entry is then stale only when
+/// its file was linted, because an entry for a file left out covers nothing
+/// here without being stale. Expiry is checked for every entry either way.
 Future<List<M3Violation>> lintPaths(
   List<String> absolutePaths, {
   required String root,
   required List<AllowEntry> allowlist,
   DateTime? today,
+  bool partial = false,
 }) async {
+  final linted = partial
+      ? {for (final path in absolutePaths) relativeToRoot(path, root)}
+      : null;
   final found = <M3Violation>[];
+  if (absolutePaths.isEmpty) {
+    return applyAllowlist(found, allowlist, today: today, linted: linted);
+  }
   final collection = AnalysisContextCollection(
     includedPaths: absolutePaths,
     resourceProvider: PhysicalResourceProvider.INSTANCE,
@@ -171,7 +183,7 @@ Future<List<M3Violation>> lintPaths(
   } finally {
     await collection.dispose();
   }
-  return applyAllowlist(found, allowlist, today: today);
+  return applyAllowlist(found, allowlist, today: today, linted: linted);
 }
 
 // `dart run` finds its SDK by itself; `flutter test` runs inside
@@ -220,10 +232,13 @@ String _slashes(String path) => path.replaceAll(r'\', '/');
 /// separator the entry was written with) and adds an M3L00 per entry that
 /// covered nothing, and one per entry whose `review` day is before [today]
 /// (the current day by default; an entry reviewed today is still valid).
+/// [linted] (root-relative, `/` separators) limits the stale check to the
+/// entries of those files; null means the whole of `lib/` was linted.
 List<M3Violation> applyAllowlist(
   List<M3Violation> found,
   List<AllowEntry> allowlist, {
   DateTime? today,
+  Set<String>? linted,
 }) {
   final day = _dayOf(today ?? DateTime.now());
   bool covers(AllowEntry e, M3Violation v) =>
@@ -234,7 +249,8 @@ List<M3Violation> applyAllowlist(
   ];
   final stale = [
     for (final e in allowlist)
-      if (!found.any((v) => covers(e, v)))
+      if ((linted == null || linted.contains(_slashes(e.file))) &&
+          !found.any((v) => covers(e, v)))
         M3Violation(
           rule: 'M3L00',
           path: e.file,

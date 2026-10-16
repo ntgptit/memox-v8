@@ -14,6 +14,7 @@ import 'package:memox/l10n/generated/app_localizations.dart';
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
 import '../../../support/library_harness.dart';
+import '../../../support/widget_harness.dart';
 
 // Screen 11's layout: the duplicates toggle before the rows, one surface at
 // the source (critique 2026-09-30 part 3d-2, E10).
@@ -46,8 +47,7 @@ Future<void> _pump(
 );
 
 Future<void> _tap(WidgetTester tester, String label) async {
-  await tester.ensureVisible(find.text(label).last);
-  await tester.tap(find.text(label).last);
+  await tapVisible(tester, find.text(label).last);
   await tester.pumpAndSettle();
 }
 

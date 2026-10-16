@@ -112,3 +112,14 @@ Future<void> pumpMxWide(
     ),
   );
 }
+
+/// Scrolls [finder] into view, lays the scroll out, then taps it.
+///
+/// `ensureVisible` only moves the scroll position; until a frame runs, the
+/// widget is still laid out where it was, so a tap straight after it aims at
+/// the old spot, often under a pinned bar, and misses.
+Future<void> tapVisible(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pump();
+  await tester.tap(finder);
+}

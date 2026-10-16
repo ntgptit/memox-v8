@@ -100,6 +100,11 @@ without re-checking.
 .claude/skills/flutter-workflow/scripts/dod_check.sh
 ```
 
+While the work is in progress, check only what the change reaches:
+`run_tests.sh <file|dir>…` for its tests, or `dod_check.sh --changed`. The full
+run above happens once, on the final tree, before the commit that goes into
+the PR.
+
 The script covers format, analyze, tests and layer boundaries. Everything under
 Scope, UI and Paperwork needs a human to look — those are also where the real
 defects hide, so do not let a green script stand in for that review.
