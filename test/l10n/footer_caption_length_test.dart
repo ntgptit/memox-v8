@@ -6,8 +6,9 @@ import 'package:memox/features/study/presentation/widgets/support/study_labels_w
 import 'package:memox/features/study_mode/domain/models/study_mode.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 
-// Every MxFooterBar caption stays on one line at a 360dp phone, in English
-// and Vietnamese (owner 2026-10-05, DESIGN.md MxFooterBar). A caption the
+// Every MxFooterBar caption, and Recall's countdown captions, stays on one
+// line at a 360dp phone, in English and Vietnamese (owner 2026-10-05,
+// DESIGN.md MxFooterBar). A caption the
 // footer glues (The Wrap Rule) is measured as the footer shows it, through
 // the same function.
 
@@ -42,6 +43,9 @@ Map<String, String> _captions(AppLocalizations l10n) => {
   'importCaptionProblemFile': l10n.importCaptionProblemFile,
   'importCaptionProblemPaste': l10n.importCaptionProblemPaste,
   'importCaptionNothingToImport': l10n.importCaptionNothingToImport,
+  // Import has no cap on decks: 9999 stands for "as many as a file holds".
+  'importCaptionChooseDecks': l10n.importCaptionChooseDecks(9999),
+  'importCaptionFixDeckName': l10n.importCaptionFixDeckName,
 };
 
 void main() {
