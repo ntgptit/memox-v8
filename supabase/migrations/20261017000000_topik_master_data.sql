@@ -571,30 +571,31 @@ grant execute on function public.topik_admin_publish(text, integer, text), publi
 
 -- BR-TOPIK-009: the content tags of a stored test, the five names and the rules
 -- of TopikTestModel.contentTags (a JSON null is no content; an empty list is no
--- content; a blank script is no content), sorted by name.
+-- content; a blank script is no content), sorted by name. A questions or groups
+-- that is not an array counts as empty, so one malformed row cannot break the read.
 create function private.topik_tags(p_json jsonb) returns jsonb
 language sql immutable set search_path = '' as $$
   select coalesce(jsonb_agg(t order by t), '[]'::jsonb) from (
     select 'explanation' as t
-    where exists (select 1 from jsonb_array_elements(coalesce(p_json->'questions', '[]'::jsonb)) q
+    where exists (select 1 from jsonb_array_elements(case when jsonb_typeof(p_json->'questions') = 'array' then p_json->'questions' else '[]'::jsonb end) q
       where jsonb_typeof(q->'explanation') in ('object', 'string'))
     union all
     select 'translation'
-    where exists (select 1 from jsonb_array_elements(coalesce(p_json->'questions', '[]'::jsonb)) q
+    where exists (select 1 from jsonb_array_elements(case when jsonb_typeof(p_json->'questions') = 'array' then p_json->'questions' else '[]'::jsonb end) q
         where jsonb_typeof(q->'translation') in ('object', 'string'))
-      or exists (select 1 from jsonb_array_elements(coalesce(p_json->'groups', '[]'::jsonb)) g
+      or exists (select 1 from jsonb_array_elements(case when jsonb_typeof(p_json->'groups') = 'array' then p_json->'groups' else '[]'::jsonb end) g
         where jsonb_typeof(g->'scriptTranslation') in ('object', 'string'))
     union all
     select 'words'
-    where exists (select 1 from jsonb_array_elements(coalesce(p_json->'questions', '[]'::jsonb)) q
+    where exists (select 1 from jsonb_array_elements(case when jsonb_typeof(p_json->'questions') = 'array' then p_json->'questions' else '[]'::jsonb end) q
       where jsonb_typeof(q->'words') = 'array' and jsonb_array_length(q->'words') > 0)
     union all
     select 'grammars'
-    where exists (select 1 from jsonb_array_elements(coalesce(p_json->'questions', '[]'::jsonb)) q
+    where exists (select 1 from jsonb_array_elements(case when jsonb_typeof(p_json->'questions') = 'array' then p_json->'questions' else '[]'::jsonb end) q
       where jsonb_typeof(q->'grammars') = 'array' and jsonb_array_length(q->'grammars') > 0)
     union all
     select 'script'
-    where exists (select 1 from jsonb_array_elements(coalesce(p_json->'groups', '[]'::jsonb)) g
+    where exists (select 1 from jsonb_array_elements(case when jsonb_typeof(p_json->'groups') = 'array' then p_json->'groups' else '[]'::jsonb end) g
       where jsonb_typeof(g->'script') = 'string' and btrim(g->>'script') <> '')
   ) x
 $$;
@@ -662,6 +663,48 @@ $$;
 revoke all on function public.topik_catalog(bigint), public.topik_test_content(text, integer)
   from public, anon, authenticated;
 grant execute on function public.topik_catalog(bigint), public.topik_test_content(text, integer) to authenticated;
+
+-- ============================================================================
+-- Media: the private bucket and its policies (§6.4)
+-- ============================================================================
+
+-- Media in a private bucket. Storage authorises through policies on
+-- storage.objects, the one place a policy exists (ADR-024 #7, owner O1); the
+-- policies call two security-definer helpers so they can read our tables.
+insert into storage.buckets (id, name, public)
+values ('topik-media', 'topik-media', false)
+on conflict (id) do nothing;
+
+-- Writing media is the admin's.
+create function public.topik_media_can_write(p_name text) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select private.is_admin()
+$$;
+
+-- Reading: an admin reads anything; a user reads an object whose first two path
+-- segments, {test_id}/{content_version}, name a published test's current version.
+-- Any object under such a prefix reads (deliberate); the version must match as written.
+create function public.topik_media_can_read(p_name text) returns boolean
+language sql stable security definer set search_path = '' as $$
+  select auth.uid() is not null and (private.is_admin() or exists (
+    select 1 from public.topik_publication p
+    where p.status = 'published'
+      and p.test_id = split_part(p_name, '/', 1)
+      and p.current_version::text = split_part(p_name, '/', 2)))
+$$;
+revoke all on function public.topik_media_can_write(text), public.topik_media_can_read(text)
+  from public, anon, authenticated;
+grant execute on function public.topik_media_can_write(text), public.topik_media_can_read(text) to authenticated;
+
+create policy topik_media_read on storage.objects for select to authenticated
+  using (bucket_id = 'topik-media' and public.topik_media_can_read(name));
+create policy topik_media_insert on storage.objects for insert to authenticated
+  with check (bucket_id = 'topik-media' and public.topik_media_can_write(name));
+create policy topik_media_update on storage.objects for update to authenticated
+  using (bucket_id = 'topik-media' and public.topik_media_can_write(name))
+  with check (bucket_id = 'topik-media' and public.topik_media_can_write(name));
+create policy topik_media_delete on storage.objects for delete to authenticated
+  using (bucket_id = 'topik-media' and public.topik_media_can_write(name));
 
 -- ============================================================================
 -- Function privileges (keep last)

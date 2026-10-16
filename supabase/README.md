@@ -169,6 +169,10 @@ fails.
    key, or its signer cannot be read; without a key it only warns.
    `flutter run` on your machine keeps the debug key.
 
+The TOPIK media bucket `topik-media` and its policies need nothing by hand: they
+are in the migration (the hosted ownership of the Storage tables is proven only by
+the `db push` after merge; the local stub cannot prove it).
+
 After setup, run the device check (auth spec §9.1) and record its results
 there.
 
@@ -185,6 +189,12 @@ there.
   `UNAUTHORIZED`, never a row-by-row rejection (DEV-192).
   Tables have RLS on, no policy and no client privilege; helpers live in the
   unexposed `private` schema.
+- TOPIK Master Data (ADR-024) is reached through `topik_admin_*` (an admin),
+  `topik_catalog` and `topik_test_content` (everyone). Its media sits in the
+  private bucket `topik-media`; Storage authorises through four policies on
+  `storage.objects`, the one exception to "no policy" (owner, 2026-10-16, O1),
+  each calling `topik_media_can_read` / `topik_media_can_write`, which are
+  granted to `authenticated` only to serve those policies.
 - A new synced entity type changes four functions in one migration:
   `private.push_one` (its accepted list), `private.apply_operation` (upsert,
   and delete unless the type is never deleted), `private.current_change` and

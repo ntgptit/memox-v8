@@ -1,7 +1,7 @@
 -- supabase/tests/database/18_topik_master_data.sql
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(194);
+select plan(224);
 -- ADR-024, spec 2026-10-16 §5: Master Data tables behind RLS with no policy; a
 -- published version and the audit log are immutable.
 
@@ -490,6 +490,8 @@ select is(private.topik_tags('{"questions": [{"explanation": {"vi": "a", "en": "
 -- Paging (500 a page). Seeded as postgres with direct inserts (the shape check
 -- would make 500 publishes slow), inside a savepoint: the version table forbids
 -- DELETE, so the seed is rolled back instead.
+-- pgTAP's result rows recorded inside this savepoint are rolled back with it, so a
+-- failure here still prints `not ok` but is not counted by finish().
 savepoint paging;
 insert into public.topik_test_version (test_id, content_version, json, checksum)
 values ('topik2-2000-reading', 1,
@@ -535,6 +537,99 @@ rollback to savepoint paging;
 set local role authenticated;
 select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
 select is(jsonb_array_length(public.topik_catalog(0)->'entries'), 3, 'the seed is gone again');
+reset role;
+
+-- BR-TOPIK-009: a malformed stored row must not break the whole catalog read.
+select is(private.topik_tags('{"questions": 1}'::jsonb), '[]'::jsonb, 'a non-array questions is no content');
+
+-- ============================================================================
+-- Media bucket and its policies (Task 6)
+-- ============================================================================
+-- State here: topik1-96-reading is published at version 5 (1-5 exist), topik1-96-listening at 1,
+-- topik2-96-listening is retired, topik2-96-reading has no publication.
+reset role;
+select is((select public from storage.buckets where id = 'topik-media'), false, 'the media bucket is private');
+select is((select count(*) from pg_policies where schemaname = 'storage' and tablename = 'objects'
+  and policyname like 'topik_media_%'), 4::bigint, 'four policies on the bucket');
+select ok((select bool_and(roles = '{authenticated}'::name[]) from pg_policies
+  where schemaname = 'storage' and tablename = 'objects' and policyname like 'topik_media_%'),
+  'each policy is for authenticated only');
+select ok((select bool_and(coalesce(qual, '') || coalesce(with_check, '') like '%bucket_id = ''topik-media''%')
+  from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname like 'topik_media_%'),
+  'each policy is limited to the media bucket');
+select ok(not has_function_privilege('anon', 'public.topik_media_can_read(text)', 'execute')
+  and not has_function_privilege('anon', 'public.topik_media_can_write(text)', 'execute'),
+  'anon cannot call the helpers');
+
+-- Rows an UPDATE or DELETE touched (a data-modifying WITH is not allowed in a subquery).
+create function public.t_rows(p_sql text) returns bigint language plpgsql as $$
+declare n bigint;
+begin execute p_sql; get diagnostics n = row_count; return n; end $$;
+
+-- Objects are written by the storage service: postgres here.
+insert into storage.objects (bucket_id, name) values
+  ('topik-media', 'topik1-96-reading/5/picture.png'),
+  ('topik-media', 'topik1-96-reading/4/picture.png'),
+  ('topik-media', 'topik2-96-reading/1/picture.png'),
+  ('topik-media', 'topik2-96-listening/1/listening.mp3'),
+  ('topik-media', 'topik1-96-listening/1/listening.mp3'),
+  ('other', 'topik1-96-reading/5/picture.png');
+
+set local role authenticated;
+select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
+select ok(public.topik_media_can_write('topik2-96-listening/1/listening.mp3'), 'an admin may write');
+select public.t_as('bbbbbbbb-0000-0000-0000-000000000002');
+select ok(not public.topik_media_can_write('topik2-96-listening/1/listening.mp3'), 'a user may not write');
+select ok(public.topik_media_can_read('topik1-96-reading/5/picture.png'), 'a user may read the current version''s objects');
+select ok(not public.topik_media_can_read('topik1-96-reading/4/picture.png'), 'not a superseded version''s');
+select ok(not public.topik_media_can_read('topik2-96-reading/1/picture.png'), 'not an unpublished test''s');
+select ok(not public.topik_media_can_read('topik2-96-listening/1/listening.mp3'), 'not a retired test''s');
+-- Review Focus 4: a stray object under a published prefix is readable; deliberate.
+select ok(public.topik_media_can_read('topik1-96-reading/5/anything.bin'), 'any object under a published prefix reads');
+select ok(not public.topik_media_can_read('topik1-96-reading/05/picture.png'), 'the version must match as written');
+select ok(not public.topik_media_can_read('a.mp3'), 'an object outside a test prefix does not read');
+
+-- The policies: a user sees only the current published versions' objects, of the media bucket.
+select is((select array_agg(name order by name) from storage.objects where bucket_id = 'topik-media'),
+  '{topik1-96-listening/1/listening.mp3,topik1-96-reading/5/picture.png}'::text[],
+  'a user sees only the published current versions'' objects');
+select is((select count(*) from storage.objects where bucket_id = 'other'), 0::bigint,
+  'and nothing of another bucket');
+select throws_like($$insert into storage.objects (bucket_id, name) values ('topik-media', 'topik1-96-reading/5/user.png')$$,
+  '%row-level security%', 'a user cannot insert');
+select is(public.t_rows($$update storage.objects set name = name || 'x' where bucket_id = 'topik-media'
+    and name = 'topik1-96-reading/5/picture.png'$$), 0::bigint,
+  'a user cannot update, even what they read');
+select is(public.t_rows($$delete from storage.objects where bucket_id = 'topik-media'
+    and name = 'topik1-96-reading/5/picture.png'$$), 0::bigint,
+  'a user cannot delete, even what they read');
+reset role;
+select is((select count(*) from storage.objects where bucket_id = 'topik-media' and name like 'topik%/%/%'), 5::bigint,
+  'the five media objects are all still there');
+
+-- The admin reads and writes anything in the media bucket, and only there.
+set local role authenticated;
+select public.t_as('aaaaaaaa-0000-0000-0000-000000000001');
+select is((select count(*) from storage.objects where bucket_id = 'topik-media' and name like 'topik%/%/%'), 5::bigint,
+  'an admin reads every object of the bucket, published or not');
+select is((select count(*) from storage.objects where bucket_id = 'other'), 0::bigint, 'but nothing of another bucket');
+select lives_ok($$insert into storage.objects (bucket_id, name) values ('topik-media', 'topik2-96-reading/1/admin.png')$$,
+  'an admin inserts into the bucket');
+select throws_like($$insert into storage.objects (bucket_id, name) values ('other', 'admin.png')$$,
+  '%row-level security%', 'not into another bucket');
+select is(public.t_rows($$update storage.objects set name = 'topik2-96-reading/2/admin.png' where bucket_id = 'topik-media'
+    and name = 'topik2-96-reading/1/admin.png'$$), 1::bigint, 'an admin updates');
+select throws_like($$update storage.objects set bucket_id = 'other' where bucket_id = 'topik-media'
+    and name = 'topik2-96-reading/2/admin.png'$$, '%row-level security%', 'but cannot move an object out of the bucket');
+select is(public.t_rows($$delete from storage.objects where bucket_id = 'topik-media'
+    and name = 'topik2-96-reading/2/admin.png'$$), 1::bigint, 'an admin deletes');
+reset role;
+
+-- anon has no policy.
+set local role anon;
+select is((select count(*) from storage.objects), 0::bigint, 'anon sees no object');
+select throws_like($$insert into storage.objects (bucket_id, name) values ('topik-media', 'anon.png')$$,
+  '%row-level security%', 'anon cannot insert');
 reset role;
 
 select * from finish();

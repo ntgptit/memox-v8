@@ -31,7 +31,7 @@ select is(
        'account_merge_ack', 'account_delete', 'topik_admin_list', 'topik_admin_draft_get', 'topik_admin_draft_save',
        'topik_admin_draft_delete', 'topik_admin_audit', 'topik_admin_publish', 'topik_admin_retire',
        'topik_admin_unretire', 'topik_admin_rollback', 'topik_admin_versions', 'topik_admin_version_get',
-       'topik_catalog', 'topik_test_content')),
+       'topik_catalog', 'topik_test_content', 'topik_media_can_write', 'topik_media_can_read')),
   null, 'a signed-in user can execute only the listed RPCs in public');
 set local role anon;
 select is(public.ping(), 'ok', 'anon can ping');
