@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/app/router/study_route_screens.dart';
 import 'package:memox/core/error/outcome.dart';
 import 'package:memox/features/search/presentation/screens/library_search_screen.dart';
 import 'package:memox/features/study/domain/failures/study_failure.dart';
-import 'package:memox/features/study/presentation/screens/study_entry_screen.dart';
 import 'package:memox/features/study/presentation/screens/study_session_screen.dart';
 
 import '../support/card_fixtures.dart';
@@ -22,23 +22,15 @@ void main() {
       'deck', (tester, env) async {
     final handle = tester.ensureSemantics();
     final root = await env.decks.root('Korean');
+    // As the router composes it: the deck feature's header as the title.
     await pumpLibraryScreen(
       tester,
       env,
-      StudyEntryScreen(
-        deckId: root.id,
-        title: const Text('Korean'),
-        breadcrumb: const SizedBox.shrink(),
-        onOpenSession: (_) {},
-      ),
+      Builder(builder: (context) => studyEntryScreen(context, root.id)),
     );
     await tester.pumpAndSettle();
 
-    expect(routeNamingNodes(tester), 1);
-    expect(
-      tester.getSemantics(find.text('Korean')),
-      isSemantics(label: 'Korean', namesRoute: true),
-    );
+    expect(routeNames(tester), ['Korean']);
     handle.dispose();
   });
 
@@ -52,7 +44,25 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(routeNamingNodes(tester), 1);
+    expect(routeNames(tester), ['Search decks, cards, tags']);
+    handle.dispose();
+  });
+
+  libraryTest('screen 04 opened with a term, as Find cards opens it, still '
+      'names its route with its field', (tester, env) async {
+    final handle = tester.ensureSemantics();
+    await pumpLibraryScreen(
+      tester,
+      env,
+      LibrarySearchScreen(
+        onOpenDeck: (_) {},
+        onOpenCard: (_) {},
+        initialQuery: 'verbs',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(routeNames(tester), ['Search decks, cards, tags']);
     handle.dispose();
   });
 
@@ -81,7 +91,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(routeNamingNodes(tester), 1);
+    expect(routeNames(tester), ['Browse']);
     handle.dispose();
   });
 
@@ -94,7 +104,7 @@ void main() {
     final attempt = await topikSeedAttempt(env, reading);
     await pumpTopikAttempt(tester, env, attempt.id, catalog: [reading]);
 
-    expect(routeNamingNodes(tester), 1);
+    expect(routeNames(tester), ['Practice']);
     handle.dispose();
   });
 }

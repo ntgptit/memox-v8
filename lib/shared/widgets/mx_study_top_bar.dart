@@ -107,6 +107,9 @@ class MxStudyTopBar extends StatelessWidget {
                         child: MxRouteName(
                           child: Text(
                             modeLabel.toUpperCase(),
+                            // Read as written, not as capitals a speech
+                            // engine may spell out.
+                            semanticsLabel: modeLabel,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: context.texts.labelSmall?.copyWith(

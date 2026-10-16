@@ -49,7 +49,7 @@ void main() {
       final count = routeNamingNodes(tester);
       debugDefaultTargetPlatformOverride = null;
 
-      expect(node, isSemantics(label: 'REVIEW', namesRoute: announces));
+      expect(node, isSemantics(label: 'Review', namesRoute: announces));
       expect(count, announces ? 1 : 0);
       handle.dispose();
     });

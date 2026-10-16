@@ -11,6 +11,7 @@ import 'package:memox/features/account/presentation/widgets/overlays/merge_choic
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/shared/widgets/mx_route_name.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_footer_bar.dart';
@@ -208,9 +209,8 @@ class _SignInFormWidgetState extends ConsumerState<SignInFormWidget> {
             ),
             SizedBox(height: context.dimens.space4),
           ],
-          Semantics(
-            header: true,
-            namesRoute: true,
+          MxRouteName(
+            isHeader: true,
             child: Text(
               isReauth ? l10n.accountReauthTitle : l10n.accountSignIn,
               style: context.texts.titleLarge,

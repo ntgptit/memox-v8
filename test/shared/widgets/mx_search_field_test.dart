@@ -68,6 +68,26 @@ void main() {
     },
   );
 
+  // DEV-393 review: a field holding a query lost its name (only its value
+  // was read), and so did the route it names on screen 04.
+  testWidgets('the hint names the field, empty or holding a query, once', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pump(tester);
+    // The text field's own node, where the hint and the value are read.
+    final field = find.byType(EditableText);
+    expect(tester.getSemantics(field).label, 'Search decks and cards');
+
+    controller.text = 'verbs';
+    // Once the hint has faded out (it adds an empty line while it fades).
+    await tester.pumpAndSettle();
+    final node = tester.getSemantics(field);
+    expect(node.label, 'Search decks and cards');
+    expect(node.value, 'verbs');
+    handle.dispose();
+  });
+
   testWidgets('no clear button until there is a query', (tester) async {
     await pump(tester);
     expect(find.byTooltip('Clear search'), findsNothing);
