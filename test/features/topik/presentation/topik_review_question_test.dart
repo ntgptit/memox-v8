@@ -99,6 +99,10 @@ void main() {
             en: 'a planning meeting',
           ),
         ),
+        TopikWord(
+          ko: '회의',
+          meaning: TopikText(vi: 'cuộc họp', en: 'a meeting'),
+        ),
       ],
       grammars: const [
         TopikGrammar(
@@ -121,6 +125,8 @@ void main() {
       find.text('기획\u00A0회의\u00A0· n\u00A0· a planning meeting'),
       findsOneWidget,
     );
+    // No part of speech: one separator, never an empty term.
+    expect(find.text('회의\u00A0· a meeting'), findsOneWidget);
     expect(
       find.text('-(으)ㄹ\u00A0수\u00A0있다\u00A0· can do something'),
       findsOneWidget,
