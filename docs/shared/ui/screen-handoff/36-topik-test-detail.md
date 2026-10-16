@@ -17,9 +17,9 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 |---|---|---|
 | App bar | `MxAppBar` | The Korean title, one line, with "{Level} · {Section}" as subtitle. |
 | Switch | `MxSegmentedTray` | Overview · History. |
-| Overall Progress | `MxCard` | A 2×2 grid of `MxStatTile`s: Accuracy, Best, Average, "{completed} / {sessions}" Completed; a meta line "Last activity {ago} · {total time}"; `MxNote.hint` "Scores use completed tests only". No attempt: the card becomes an `MxEmptyState` (primary) "No attempts yet" with "Start" (BR-TOPIK-020). |
+| Overall Progress | `MxCard` | A 3×2 grid of boxed `MxStatTile`s: Accuracy · Completion, Best · Average, Sessions · Completed (BR-TOPIK-020's six figures); a meta line "Last activity {ago} · {total time}"; `MxNote.hint` "Scores use completed tests only". No attempt: the card becomes an `MxEmptyState` (primary) "No attempts yet" with "Start" (BR-TOPIK-020). |
 | Recent attempts | `MxListSectionHeader` + `MxCard` of `MxListRow`s | At most five: "#{n}", date and time, "{score} / {max}", "{correct} / {count} correct" and duration (BR-TOPIK-021); an in-progress row reads "In progress" and continues the attempt. |
-| History | `MxCard` of `MxListRow`s | Every attempt, newest first: "#{n}" · `MxBadge` Completed or In progress · date and time · "{score} / {max}" · "{correct} / {count} correct" · duration (BR-TOPIK-021); actions small `MxButton`s "Summary" and "Review" (completed) or "Continue" (in progress); a trailing delete `MxIconButton` → `showMxConfirm`. |
+| History | `MxListSectionHeader` "{n} attempts" + `MxCard` of `MxListRow`s | Every attempt, newest first: "#{n}" · `MxBadge` Completed or In progress · date and time · "{score} / {max}" · "{correct} / {count} correct" · duration (BR-TOPIK-021); actions small `MxButton`s "Summary" and "Review" (completed) or "Continue" (in progress); a trailing delete `MxIconButton` → `showMxConfirm`. |
 | Start | `MxFab` "+" | Starts an attempt; with one in progress, an `MxDialog`: "Continue" (primary) or "Start new", which asks once more before it deletes the attempt in progress (BR-TOPIK-011). Absent while loading and on error (The Content Gate Rule). |
 
 ## States
@@ -72,6 +72,7 @@ BR-TOPIK-018, BR-TOPIK-020, BR-TOPIK-021). Shape: the [TOPIK spec](../../../supe
 - **Owner 2026-10-16 (Q-P6-2):** the level and section line is `MxAppBar.subtitle`, read with the title in one heading node that names the route.
 - **Owner 2026-10-16 (Q-P6-5):** a figure with nothing to show is a dash on screen and reads "None yet" to TalkBack (`MxStatTile.semanticValue`); a bare dash reads "en dash".
 - **Q-C-1 (owner, 2026-10-16):** Overall Progress' last activity line ("Last activity 2 days ago · 1h 20m") wraps only between whole terms (`metaLine`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
+- **Wireframe pass (owner, 2026-10-16):** Overall Progress shows Completion and Sessions as figures of their own, as BR-TOPIK-020 lists them (it had folded them into "{completed} / {sessions}"); History is headed by its count, as Overview's lists are. The wireframe's accuracy ring, Score Trend, Needs Review, Bookmarks, Notes and the Words tab are Phase B (ADR-023) and stay absent; its bottom tabs stay the segmented switch.
 
 ## Copy
 

@@ -224,6 +224,14 @@
   "@topikCompleted": {
     "description": "Screen 36 figure and badge."
   },
+  "topikSessions": "Sessions",
+  "@topikSessions": {
+    "description": "Screen 36 figure: attempts of the test, in any state (BR-TOPIK-020)."
+  },
+  "topikCompletion": "Completion",
+  "@topikCompletion": {
+    "description": "Screen 36 figure: submitted attempts as a share of all attempts (BR-TOPIK-020)."
+  },
   "topikPercent": "{value}%",
   "@topikPercent": {
     "placeholders": {

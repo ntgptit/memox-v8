@@ -13,6 +13,7 @@ import 'package:memox/features/topik/presentation/widgets/sections/topik_score_d
 import 'package:memox/features/topik/presentation/widgets/sections/topik_summary_figures_widget.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_type_stats_widget.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_chart_legend.dart';
 import 'package:memox/shared/widgets/mx_filter_chip.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
@@ -84,6 +85,35 @@ void main() {
       const TopikScoreDonutWidget(correct: 48, total: 50),
     );
     expect(find.text('48 / 50'), findsOneWidget);
+    // Beside "96 / 100" the ring's figure says what it counts (wireframe).
+    expect(
+      find.descendant(
+        of: find.byType(TopikScoreDonutWidget),
+        matching: find.text('Correct'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  libraryTest('the time chart names what each colour means', (
+    tester,
+    env,
+  ) async {
+    await host(
+      tester,
+      env,
+      TopikQuestionBarChartWidget(answers: answers, onOpen: (_) {}),
+    );
+
+    final legend = find.byType(MxChartLegend);
+    expect(legend, findsOneWidget);
+    for (final label in ['Correct', 'Wrong', 'Unanswered']) {
+      expect(
+        find.descendant(of: legend, matching: find.text(label)),
+        findsOneWidget,
+        reason: label,
+      );
+    }
   });
 
   libraryTest('the figures: accuracy, answered, unanswered, and the longest '

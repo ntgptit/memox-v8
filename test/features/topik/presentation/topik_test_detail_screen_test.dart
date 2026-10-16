@@ -19,6 +19,7 @@ import 'package:memox/features/topik/data/repositories/topik_attempt_repository_
 import 'package:memox/features/topik/presentation/screens/topik_test_detail_screen.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_fab.dart';
+import 'package:memox/shared/widgets/mx_stat_tile.dart';
 
 import '../../../support/library_harness.dart';
 import '../../../support/route_naming.dart';
@@ -44,6 +45,13 @@ final class _Taps {
 }
 
 // Screen 36 (UC-TOPIK-002, BR-TOPIK-011, -018, -020, -021).
+/// The value of Overall Progress' figure [label] (BR-TOPIK-020).
+String _figure(WidgetTester tester, String label) => tester
+    .widget<MxStatTile>(
+      find.byWidgetPredicate((w) => w is MxStatTile && w.label == label),
+    )
+    .value;
+
 void main() {
   final test = topikTestFixture();
 
@@ -97,7 +105,8 @@ void main() {
     await pump(tester, env, taps);
 
     expect(find.text('ACCURACY'), findsOneWidget);
-    expect(find.text('2 / 2'), findsOneWidget);
+    expect(_figure(tester, 'Sessions'), '2');
+    expect(_figure(tester, 'Completed'), '2');
     expect(find.text('#2'), findsOneWidget);
     expect(find.text('#1'), findsOneWidget);
     expect(find.byType(MxFab), findsOneWidget);
@@ -196,7 +205,8 @@ void main() {
     }
     final taps = _Taps();
     await pump(tester, env, taps);
-    expect(find.text('3 / 3'), findsOneWidget);
+    expect(_figure(tester, 'Sessions'), '3');
+    expect(_figure(tester, 'Completed'), '3');
     await tester.tap(find.text('History'));
     await tester.pumpAndSettle();
     expect(find.text('#3'), findsOneWidget);
@@ -226,7 +236,8 @@ void main() {
 
     await tester.tap(find.text('Overview'));
     await tester.pumpAndSettle();
-    expect(find.text('2 / 2'), findsOneWidget);
+    expect(_figure(tester, 'Sessions'), '2');
+    expect(_figure(tester, 'Completed'), '2');
   });
 
   libraryTest('History: Summary, Review and Continue open their screens', (
@@ -322,6 +333,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(findPlainTextContaining(score), findsOneWidget);
     expect(findPlainTextContaining(correct), findsOneWidget);
+    // The list is headed by its count, as Overview's lists are.
+    expect(find.text('1 ATTEMPT'), findsOneWidget);
   });
 
   libraryTest('a recent row opens Summary when completed and the attempt '

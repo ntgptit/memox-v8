@@ -3,15 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:memox/core/theme/mastery_ramp.dart';
 import 'package:memox/core/theme/theme_context.dart';
-
-/// One series of an MxStackedDayBars: its legend label and its fill.
-@immutable
-final class MxBarSeries {
-  const MxBarSeries({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-}
+import 'package:memox/shared/widgets/mx_chart_legend.dart';
 
 /// One day of an MxStackedDayBars: the [top] series stacked over the [base]
 /// series, a short label under the bar, and the whole day in words for
@@ -61,7 +53,6 @@ class MxStackedDayBars extends StatelessWidget {
 
   static const double _chartHeight = 78;
   static const double _emptyHeight = 2;
-  static const double _legendDot = 6;
 
   @override
   Widget build(BuildContext context) {
@@ -106,13 +97,7 @@ class MxStackedDayBars extends StatelessWidget {
           ),
         ),
         SizedBox(height: context.dimens.space12),
-        ExcludeSemantics(
-          child: Wrap(
-            spacing: context.dimens.space12,
-            runSpacing: context.dimens.space4,
-            children: [_legend(context, top), _legend(context, base)],
-          ),
-        ),
+        MxChartLegend(series: [top, base]),
       ],
     );
   }
@@ -158,23 +143,5 @@ class MxStackedDayBars extends StatelessWidget {
         );
       },
     ),
-  );
-
-  Widget _legend(BuildContext context, MxBarSeries series) => Row(
-    mainAxisSize: MainAxisSize.min,
-    spacing: context.dimens.space4,
-    children: [
-      Container(
-        width: _legendDot,
-        height: _legendDot,
-        decoration: BoxDecoration(color: series.color, shape: BoxShape.circle),
-      ),
-      Text(
-        series.label,
-        style: context.texts.labelSmall?.copyWith(
-          color: context.colors.onSurfaceVariant,
-        ),
-      ),
-    ],
   );
 }

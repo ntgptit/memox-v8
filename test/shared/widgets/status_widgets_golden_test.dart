@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
+import 'package:memox/shared/widgets/mx_chart_legend.dart';
 import 'package:memox/shared/widgets/mx_dashed_note.dart';
 import 'package:memox/shared/widgets/mx_mastery_donut.dart';
 import 'package:memox/shared/widgets/mx_stacked_day_bars.dart';

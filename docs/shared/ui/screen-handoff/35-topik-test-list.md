@@ -53,6 +53,7 @@ BR-TOPIK-009, BR-TOPIK-022). Shape: the [TOPIK spec](../../../superpowers/specs/
 - **Plan 6a (2026-10-15):** the header (count and sort) shows only with tests; the section tray stays in every state (The Content Gate Rule, critique F4). The count and the sort share the first line; the description reads full width under them.
 - **Plan 6a:** the round badge is neutral (The One Accent Rule); the Korean title is content and may end in an ellipsis (critique F7); tags and status are glued terms (The Wrap Rule).
 - **Owner 2026-10-16 (Q-P6-3):** Reading is `AppIcons.book`, Listening `AppIcons.headphones`, in the header and the empty state (they were the stand-ins `fileText` and `speak`).
+- **Wireframe pass (owner, 2026-10-16):** nothing missing in scope. The header's "Reading" and "{n} tests" chips repeat the switch and the title; tags stay a meta line (The Wrap Rule); Writing is Phase C.
 
 ## Copy
 
