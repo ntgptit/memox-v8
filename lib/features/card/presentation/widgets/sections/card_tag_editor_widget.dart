@@ -7,6 +7,7 @@ import 'package:memox/features/card/presentation/widgets/items/card_removable_ta
 import 'package:memox/features/card/presentation/widgets/support/card_rejection_message_widget.dart';
 import 'package:memox/features/tags/domain/entities/tag_entity.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_text_field.dart';
@@ -138,7 +139,12 @@ class CardTagEditorWidgetState extends State<CardTagEditorWidget> {
                 Text(l10n.cardTags, style: context.texts.labelMedium),
                 Flexible(
                   child: Text(
-                    l10n.cardTagsMeta(widget.tags.length, TagEntity.maxPerCard),
+                    metaLine(
+                      l10n.cardTagsMeta(
+                        widget.tags.length,
+                        TagEntity.maxPerCard,
+                      ),
+                    ),
                     style: context.texts.bodyMedium?.copyWith(
                       color: context.colors.onSurfaceVariant,
                     ),

@@ -14,6 +14,7 @@ import 'package:memox/features/card/presentation/widgets/sections/card_detail_co
 import 'package:memox/features/card/presentation/widgets/sections/card_schedule_widget.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 
 import '../../../support/card_fixtures.dart';
 import '../../../support/deck_fixtures.dart';
@@ -189,7 +190,10 @@ void main() {
       find.text(DateFormat.yMMMd('en').format(DateTime(2026, 9, 28))),
       findsOneWidget,
     );
-    expect(find.textContaining(_en.cardSchedulerEightBox), findsOneWidget);
+    expect(
+      find.textContaining(wholeTerm(_en.cardSchedulerEightBox)),
+      findsOneWidget,
+    );
     expect(find.text(_en.cardFactEase), findsNothing);
   });
 

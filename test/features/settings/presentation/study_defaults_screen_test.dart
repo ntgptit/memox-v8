@@ -11,6 +11,7 @@ import 'package:memox/features/settings/presentation/controllers/settings_contro
 import 'package:memox/features/settings/presentation/providers/app_settings_provider.dart';
 import 'package:memox/features/settings/presentation/screens/study_defaults_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_segmented_tray.dart';
@@ -183,7 +184,9 @@ void main() {
     expect(find.text(_en.settingsSpeechLanguage), findsOneWidget);
     expect(
       find.text(
-        _en.settingsSpeechLanguageValue(_en.speechLanguageName('enUs')),
+        metaDots(
+          _en.settingsSpeechLanguageValue(_en.speechLanguageName('enUs')),
+        ),
       ),
       findsOneWidget,
     );
@@ -206,7 +209,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(MxBottomSheet), findsOneWidget);
     // A language the device lacks says so and stays selectable (D5).
-    expect(find.text(_en.settingsSpeechLanguageMissing), findsNWidgets(8));
+    expect(
+      find.text(metaDots(_en.settingsSpeechLanguageMissing)),
+      findsNWidgets(8),
+    );
 
     await tester.tap(find.text(_en.speechLanguageName('viVn')));
     await tester.pumpAndSettle();
@@ -214,7 +220,9 @@ void main() {
     expect(find.byType(MxBottomSheet), findsNothing);
     expect(
       find.text(
-        _en.settingsSpeechLanguageValue(_en.speechLanguageName('viVn')),
+        metaDots(
+          _en.settingsSpeechLanguageValue(_en.speechLanguageName('viVn')),
+        ),
       ),
       findsOneWidget,
     );

@@ -6,6 +6,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
 import 'package:memox/core/speech/speech_language.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
 import 'package:memox/shared/widgets/mx_stepper.dart';
@@ -76,7 +77,9 @@ void main() {
     );
     expect(
       find.text(
-        _en.studyOptionsFollowing(20, _en.studyOptionsOrderCreatedShort),
+        metaLine(
+          _en.studyOptionsFollowing(20, _en.studyOptionsOrderCreatedShort),
+        ),
       ),
       findsOneWidget,
     );
@@ -319,7 +322,9 @@ void main() {
     expect(find.text(_en.settingsSpeechLanguage), findsOneWidget);
     expect(
       find.text(
-        _en.studyOptionsSpeechLanguageValue(_en.speechLanguageName('enUs')),
+        metaDots(
+          _en.studyOptionsSpeechLanguageValue(_en.speechLanguageName('enUs')),
+        ),
       ),
       findsOneWidget,
     );
@@ -329,6 +334,7 @@ void main() {
 
     await tester.tap(find.bySemanticsLabel(_en.studyOptionsUseAppDefaults));
     await tester.pumpAndSettle();
+    expect(find.text(metaDots(_en.studyOptionsOwn)), findsOneWidget);
     await tester.tap(find.text(_en.settingsSpeechLanguage));
     await tester.pumpAndSettle();
     expect(find.byType(MxBottomSheet), findsOneWidget);

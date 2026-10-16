@@ -18,6 +18,7 @@ import 'package:memox/features/deck/domain/models/deck_view_model.dart';
 import 'package:memox/features/deck/presentation/providers/deck_view_provider.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -153,7 +154,7 @@ void main() {
       await add('Verb');
       await add('verb');
       expect(find.bySemanticsLabel(_en.cardTagRemove('Verb')), findsOneWidget);
-      expect(find.text(_en.cardTagsMeta(1, 10)), findsOneWidget);
+      expect(find.text(metaLine(_en.cardTagsMeta(1, 10))), findsOneWidget);
 
       for (var i = 0; i < 9; i++) {
         await add('tag $i');
@@ -329,7 +330,10 @@ void main() {
     );
 
     expect(find.textContaining(_en.cardAddDetails), findsOneWidget);
-    expect(find.textContaining(_en.cardAddDetailsFields), findsOneWidget);
+    expect(
+      find.textContaining(metaLine(_en.cardAddDetailsFields)),
+      findsOneWidget,
+    );
     // A plus, not the sparkle, which implies AI (critique 2026-09-30 3a).
     final disclosure = find.byType(CardAddDetailsWidget);
     expect(
@@ -345,7 +349,7 @@ void main() {
       find.bySemanticsLabel(
         RegExp(
           '${RegExp.escape(_en.cardAddDetails)}.*'
-          '${RegExp.escape(_en.cardAddDetailsFields)}',
+          '${RegExp.escape(metaLine(_en.cardAddDetailsFields))}',
           dotAll: true,
         ),
       ),

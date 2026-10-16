@@ -11,6 +11,7 @@ import 'package:memox/features/study/presentation/widgets/sections/study_browse_
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study_mode/domain/models/study_answer_model.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 
@@ -101,7 +102,7 @@ void main() {
     );
     expect(find.textContaining(RegExp(r'^back ')), findsOneWidget);
     expect(find.byType(ElevatedButton), findsNothing);
-    expect(find.textContaining(_en.studyBrowseHint), findsOneWidget);
+    expect(find.textContaining(metaDots(_en.studyBrowseHint)), findsOneWidget);
   });
 
   libraryTest('left advances one stop; right looks back without writing; '

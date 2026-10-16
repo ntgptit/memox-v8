@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/srs/domain/models/review_kind_model.dart';
@@ -90,7 +91,9 @@ final class _FlakyHistory implements CardRepository {
 /// Scrolls to the end-of-history line, which follows the oldest answer.
 Future<void> _scrollToEnd(WidgetTester tester) async {
   await tester.scrollUntilVisible(
-    find.text(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
+    find.text(
+      metaLine(_en.cardHistoryEnd(DateFormat.yMMMd('en').format(_addedAt))),
+    ),
     500,
     scrollable: _scrollable,
   );
@@ -211,9 +214,11 @@ void main() {
     await tester.pumpAndSettle();
 
     final current = find.text(
-      _en.cardHistoryCycle(2, _en.cardSchedulerEightBox),
+      metaLine(_en.cardHistoryCycle(2, _en.cardSchedulerEightBox)),
     );
-    final earlier = find.text(_en.cardHistoryCycle(1, _en.cardSchedulerSm2));
+    final earlier = find.text(
+      metaLine(_en.cardHistoryCycle(1, _en.cardSchedulerSm2)),
+    );
     expect(current, findsOneWidget);
     expect(earlier, findsOneWidget);
     expect(

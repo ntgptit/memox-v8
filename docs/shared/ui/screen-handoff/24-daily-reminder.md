@@ -71,6 +71,7 @@ turns the reminder on.
 - **UI-base ruling O3 (spec D10):** loading is `MxSkeletonList`.
 - The note is the section's `MxNote.hint` footnote (critique 2026-09-30); the time button is a small `MxButton`.
 - "What it says" is built from the notification's own strings, in en and vi, so it matches what is shown.
+- **Q-C-1 (owner, 2026-10-16):** the reminder hints keep each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Accessibility
 

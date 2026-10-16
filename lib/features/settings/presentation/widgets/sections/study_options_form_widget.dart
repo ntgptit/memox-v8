@@ -10,6 +10,7 @@ import 'package:memox/features/settings/presentation/states/study_options_state.
 import 'package:memox/features/settings/presentation/widgets/overlays/speech_language_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_field_message.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
 import 'package:memox/shared/widgets/mx_note.dart';
@@ -104,11 +105,13 @@ class StudyOptionsFormWidget extends ConsumerWidget {
               label: l10n.studyOptionsUseAppDefaults,
               icon: AppIcons.studyOptions,
               subtitle: form.isUsingAppDefaults
-                  ? l10n.studyOptionsFollowing(
-                      options.cardLimit,
-                      studyOptionsOrderName(l10n, options.newCardOrder),
+                  ? metaLine(
+                      l10n.studyOptionsFollowing(
+                        options.cardLimit,
+                        studyOptionsOrderName(l10n, options.newCardOrder),
+                      ),
                     )
-                  : l10n.studyOptionsOwn,
+                  : metaDots(l10n.studyOptionsOwn),
               trailing: MxToggle(
                 isOn: form.isUsingAppDefaults,
                 semanticLabel: l10n.studyOptionsUseAppDefaults,
@@ -208,8 +211,10 @@ class StudyOptionsFormWidget extends ConsumerWidget {
             // 2026-10-07).
             MxSettingsRow(
               label: l10n.settingsSpeechLanguage,
-              subtitle: l10n.studyOptionsSpeechLanguageValue(
-                l10n.speechLanguageName(options.speechLanguage.name),
+              subtitle: metaDots(
+                l10n.studyOptionsSpeechLanguageValue(
+                  l10n.speechLanguageName(options.speechLanguage.name),
+                ),
               ),
               icon: AppIcons.voice,
               onTap: !isEditable

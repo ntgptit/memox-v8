@@ -6,6 +6,7 @@ import 'package:memox/features/settings/domain/models/study_options_model.dart';
 import 'package:memox/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:memox/features/settings/presentation/widgets/overlays/speech_language_sheet_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_section.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 import 'package:memox/shared/widgets/mx_toggle.dart';
@@ -52,8 +53,10 @@ class SettingsSpeechSectionWidget extends ConsumerWidget {
         // a label (critique 2026-10-07).
         MxSettingsRow(
           label: l10n.settingsSpeechLanguage,
-          subtitle: l10n.settingsSpeechLanguageValue(
-            l10n.speechLanguageName(stored.speechLanguage.name),
+          subtitle: metaDots(
+            l10n.settingsSpeechLanguageValue(
+              l10n.speechLanguageName(stored.speechLanguage.name),
+            ),
           ),
           icon: AppIcons.voice,
           onTap: () async {

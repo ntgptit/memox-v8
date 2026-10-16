@@ -76,7 +76,10 @@ void main() {
       env,
       _screen(leaf, onOpen: (id) => opened = id),
     );
-    expect(find.text(_en.studyEntryReviewCaption(3, 3)), findsOneWidget);
+    expect(
+      find.text(metaLine(_en.studyEntryReviewCaption(3, 3))),
+      findsOneWidget,
+    );
 
     await tester.tap(_button(_en.studyEntryReviewCta(3)));
     await tester.pumpAndSettle();
@@ -295,11 +298,12 @@ void main() {
         tester.widget<MxOptionRow>(find.widgetWithText(MxOptionRow, mode));
     expect(row(_en.cardModeMatch).isSelected, isTrue);
     expect(
-      find.text(_en.studyEntryModeCaption(_en.cardModeMatch)),
+      find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeMatch))),
       findsOneWidget,
     );
     // The start button states the count (R5, critique 2026-09-30 part 3b).
-    expect(find.textContaining('5 due cards ·'), findsNothing);
+    // \s also matches the no-break spaces of a glued line.
+    expect(find.textContaining(RegExp(r'5\sdue\scards\s·')), findsNothing);
 
     await tester.tap(find.text(_en.cardModeGuess));
     await tester.pump();
@@ -307,7 +311,7 @@ void main() {
     expect(row(_en.cardModeGuess).isSelected, isTrue);
     expect(row(_en.cardModeMatch).isSelected, isFalse);
     expect(
-      find.text(_en.studyEntryModeCaption(_en.cardModeGuess)),
+      find.text(metaLine(_en.studyEntryModeCaption(_en.cardModeGuess))),
       findsOneWidget,
     );
 

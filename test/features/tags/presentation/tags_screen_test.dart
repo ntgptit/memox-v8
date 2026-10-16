@@ -7,6 +7,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/tags/presentation/screens/tags_screen.dart';
 import 'package:memox/features/tags/presentation/widgets/overlays/tag_rename_dialog_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
@@ -138,7 +139,7 @@ void main() {
 
     expect(find.text('động từ · 46'), findsOneWidget);
     expect(find.text(_en.tagsFindCardsHint('động từ')), findsOneWidget);
-    expect(find.text(_en.tagsDeleteHint(46)), findsOneWidget);
+    expect(find.text(metaDots(_en.tagsDeleteHint(46))), findsOneWidget);
     await tester.tap(find.text(_en.tagsFindCards));
     await tester.pumpAndSettle();
     expect(found, 'động từ');
@@ -177,7 +178,7 @@ void main() {
     );
     expect(find.text('động từ · 46'), findsOneWidget);
     expect(find.text('ngữ pháp · 77'), findsOneWidget);
-    expect(find.text(_en.tagsLengthUnique(8, 50)), findsOneWidget);
+    expect(find.text(metaDots(_en.tagsLengthUnique(8, 50))), findsOneWidget);
     expect(_confirm(tester, _en.tagsMergeConfirm).tone, MxButtonTone.warning);
 
     await tester.tap(find.text(_en.tagsMergeConfirm));

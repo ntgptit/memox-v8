@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/topik/domain/models/topik_test_progress_model.dart';
 import 'package:memox/features/topik/presentation/widgets/sections/topik_progress_card_widget.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_stat_tile.dart';
+import 'package:memox/l10n/duration_text.dart';
+import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/relative_time.dart';
 
 import '../../../support/library_harness.dart';
 
@@ -81,6 +85,19 @@ void main() {
     );
 
     expect(tile(tester, 'Best'), matchesSemantics(label: 'Best', value: '72'));
+    // Short terms: the line breaks only between them (The Wrap Rule).
+    final en = lookupAppLocalizations(const Locale('en'));
+    expect(
+      find.text(
+        metaLine(
+          en.topikLastActivity(
+            en.ago(DateTime.utc(2026, 10, 15), DateTime.utc(2026, 10, 16)),
+            en.duration(60000),
+          ),
+        ),
+      ),
+      findsOneWidget,
+    );
     handle.dispose();
   });
 }

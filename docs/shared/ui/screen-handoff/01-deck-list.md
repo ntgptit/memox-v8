@@ -104,6 +104,7 @@ Other goldens: `library_reorder_light.png` / `library_reorder_dark.png` (reorder
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the recent sort is labelled "Date added" (vi "Ngày tạo") with the hint "Newest first"; the search field is hidden while decks are reordered, as the summary, the due strip and the sort pill are, and returns with Done.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the due strip's breakdown is overdue · today, the two halves of its total; New stays on each deck row (BR-STUDY-068).
 - **Owner 2026-10-16 (Q-P6-4):** the summary card's "N sub-decks · N cards" uses the same `deckStructureLine` as the rows, and the breakdown's fallback ("N cards · nothing due") is glued when it wraps, so neither splits a count from its noun; the empty row line keeps its words breakable with each dot on the word before it (`metaDots`).
+- **Q-C-1 (owner, 2026-10-16):** the action sheet's hints (Study options, a locked Review algorithm) keep each dot on the phrase before it and wrap as words (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Pending
 

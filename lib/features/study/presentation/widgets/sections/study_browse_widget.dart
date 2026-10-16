@@ -6,6 +6,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/study/domain/models/study_session_view_model.dart';
 import 'package:memox/features/study/presentation/widgets/support/session_footer_hint_widget.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_cta_row_widget.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_scroll_fade.dart';
 import 'package:memox/features/study/presentation/widgets/support/study_speak_button_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
@@ -146,7 +147,7 @@ class _StudyBrowseWidgetState extends State<StudyBrowseWidget> {
         ),
         SessionFooterHintWidget(
           icon: AppIcons.swipe,
-          text: l10n.studyBrowseHint,
+          text: metaDots(l10n.studyBrowseHint),
         ),
       ],
     );

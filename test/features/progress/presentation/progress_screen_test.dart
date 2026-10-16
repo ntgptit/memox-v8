@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/core/error/failure.dart';
 import 'package:memox/core/theme/app_icons.dart';
@@ -70,14 +70,14 @@ void main() {
     await _settle(tester);
 
     expect(find.text('17'), findsOneWidget);
-    expect(find.text(_en.progressTodaySplit(5, 12)), findsOneWidget);
+    expect(find.text(metaDots(_en.progressTodaySplit(5, 12))), findsOneWidget);
     expect(find.text(_en.progressStreakDays(4)), findsOneWidget);
     expect(find.text(_en.progressStreakIncludesToday), findsOneWidget);
     // The segment states the range and Today the once-a-day rule; the list
     // header and the footer do not repeat them (critique 2026-09-30 part 3b).
     expect(find.text(_en.progressByDeck.toUpperCase()), findsOneWidget);
     expect(find.textContaining('LAST 7 DAYS'), findsNothing);
-    expect(find.text(_en.progressFooter), findsOneWidget);
+    expect(find.text(metaDots(_en.progressFooter)), findsOneWidget);
     expect(find.textContaining('counts once'), findsOneWidget);
     // Critique 2026-09-30: Today's figure is stated once, in the Today card.
     expect(find.text(_en.progressToday.toUpperCase()), findsOneWidget);

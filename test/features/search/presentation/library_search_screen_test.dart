@@ -15,6 +15,7 @@ import 'package:memox/features/search/presentation/widgets/items/search_card_hit
 import 'package:memox/features/search/presentation/widgets/items/search_deck_hit_row_widget.dart';
 import 'package:memox/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
@@ -158,7 +159,7 @@ void main() {
     expect(find.widgetWithText(MxBadge, '1'), findsNWidgets(2));
     expect(find.byType(SearchDeckHitRowWidget), findsOneWidget);
     expect(find.byType(SearchCardHitRowWidget), findsOneWidget);
-    expect(find.text(_en.searchFooter), findsOneWidget);
+    expect(find.text(metaDots(_en.searchFooter)), findsOneWidget);
     expect(find.text(_en.searchLoadMore), findsNothing);
   });
 

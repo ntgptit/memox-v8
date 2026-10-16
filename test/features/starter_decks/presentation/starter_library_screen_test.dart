@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/core/theme/theme_rules.dart';
 
@@ -10,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/features/srs/domain/models/scheduler_type_model.dart';
 import 'package:memox/features/starter_decks/presentation/screens/starter_library_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
@@ -136,7 +136,14 @@ void main() {
       find.widgetWithText(MxOptionRow, 'SM-2'),
     );
     expect(sm2.isSelected, isTrue);
-    expect(sm2.description, _en.starterSuggested(_en.starterSm2Description));
+    expect(
+      sm2.description,
+      metaDots(_en.starterSuggested(_en.starterSm2Description)),
+    );
+    final eightBox = tester.widget<MxOptionRow>(
+      find.widgetWithText(MxOptionRow, 'Eight boxes'),
+    );
+    expect(eightBox.description, metaDots(_en.starterEightBoxDescription));
 
     await tester.tap(find.text('Eight boxes').last);
     await tester.pump();

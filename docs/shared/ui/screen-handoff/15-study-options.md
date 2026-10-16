@@ -62,6 +62,7 @@ Goldens: `test/features/settings/presentation/goldens/study_options_{override,de
 - **M3 review 2026-09-28 E1, E2:** new-card order is one `MxSettingsRow` + `MxSegmentedTray`, with icons on every row.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** a failed save shows a danger banner, "Not saved", at the top of the page; the footer keeps Retry save and its local-only caption.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** a failed save's "Not saved" banner and the footer's "Retry save" stay through edits until a save succeeds (the banner's values are the deck's stored ones, so they stay true while the person edits).
+- **Q-C-1 (owner, 2026-10-16):** "Following Settings · 20 cards, in creation order" wraps only between whole terms (`metaLine`); the own-options and speech language hints keep each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

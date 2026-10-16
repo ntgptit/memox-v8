@@ -91,6 +91,7 @@ The goldens are in `test/features/card/presentation/goldens/`.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the add FAB steps aside while search is open; a failed bulk flag's banner offers Retry, repeating the same cards and choice.
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** while a failed bulk flag's Retry runs, the banner stays and Retry shows the button's loading state; the bulk bar ignores taps meanwhile. A failure keeps the banner; success clears the selection as before.
 - **Critique 2026-10-02 (spec `2026-10-02-critique2-fixes-design.md`):** the flag is plain text colour (`onSurface`), the filled glyph carrying the state as in the editor and the detail; E-L2 is superseded (F6).
+- **Q-C-1 (owner, 2026-10-16):** the tag filter sheet's subtitle ("N chosen · cards with any of them") keeps each dot on the phrase before it (`metaDots`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

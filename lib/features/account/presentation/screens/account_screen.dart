@@ -11,6 +11,7 @@ import 'package:memox/features/account/presentation/widgets/overlays/account_con
 import 'package:memox/features/account/presentation/widgets/sections/account_reauth_banner_widget.dart';
 import 'package:memox/features/account/presentation/widgets/support/account_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/shared/widgets/mx_app_shell.dart';
 import 'package:memox/shared/widgets/mx_icon_button.dart';
@@ -112,7 +113,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
               ),
               command(
                 l10n.accountSignOut,
-                l10n.accountSignOutHint,
+                metaDots(l10n.accountSignOutHint),
                 AppIcons.signOut,
                 _signOut,
               ),

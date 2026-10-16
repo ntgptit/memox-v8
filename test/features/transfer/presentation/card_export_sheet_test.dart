@@ -16,6 +16,7 @@ import 'package:memox/features/transfer/presentation/providers/build_export_use_
 import 'package:memox/features/transfer/presentation/states/card_export_state.dart';
 import 'package:memox/features/transfer/presentation/widgets/overlays/card_export_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
@@ -117,6 +118,10 @@ void main() {
       expect(find.text(_en.exportRecommended), findsOneWidget);
       final csv = find.widgetWithText(MxOptionRow, _en.exportFormatCsv);
       expect(tester.widget<MxOptionRow>(csv).isSelected, isTrue);
+      expect(
+        tester.widget<MxOptionRow>(csv).description,
+        metaDots(_en.exportFormatCsvBody),
+      );
 
       await _tap(tester, _button(_en.exportAction));
 

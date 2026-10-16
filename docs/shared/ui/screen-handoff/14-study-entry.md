@@ -86,6 +86,7 @@ the toast "This deck no longer exists" (UC-STUDY-001 E1). Goldens:
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** with only new cards, Learn is offered by the footer alone; the Learn row keeps its button when a review leads the footer (D2).
 - **Critique 2026-09-30 part 3d-2 (spec `2026-10-01-critique-fixes-part3d2-design.md`):** the hero is a plain `MxCard` (a summary, not a door; DESIGN.md "a hero leads somewhere tappable"); its tiles and lines are unchanged.
 - **Owner 2026-10-16 (Q-P6-4):** the resume line ("{kind} · {mode} · {done} of {total} cards") wraps only between its terms (`lib/l10n/meta_line.dart`).
+- **Q-C-1 (owner, 2026-10-16):** the Learn line keeps its stages a phrase and its count whole terms ("20 of 120 new · in creation order"), and the footer's caption wraps only between whole terms (`metaLine`) (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

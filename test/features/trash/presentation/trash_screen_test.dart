@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memox/core/theme/generated/app_dimens.g.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_empty_state.dart';
 import 'package:memox/shared/widgets/mx_app_bar.dart';
 import 'package:memox/features/trash/presentation/providers/trash_entries_provider.dart';
@@ -139,11 +140,14 @@ void main() {
     await tester.tap(find.byTooltip(_en.trashEntryActions('meokda · eat')));
     await tester.pumpAndSettle();
     expect(
-      find.text(_en.trashCardActionsMeta(_en.commonAgoMinutes(4), 'Words')),
+      find.text(
+        metaDots(_en.trashCardActionsMeta(_en.commonAgoMinutes(4), 'Words')),
+      ),
       findsOneWidget,
     );
     expect(find.text(_en.trashRestore), findsOneWidget);
     expect(find.text(_en.trashDeletePermanently), findsOneWidget);
+    expect(find.text(metaDots(_en.trashDeletePermanentlyHint)), findsOneWidget);
   });
 
   libraryTest('a row is one TalkBack node with every fact (spec D15)', (

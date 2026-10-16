@@ -5,6 +5,7 @@ import 'package:memox/core/speech/speech_language.dart';
 import 'package:memox/core/theme/app_theme.dart';
 import 'package:memox/features/settings/presentation/widgets/overlays/speech_language_sheet_widget.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_bottom_sheet.dart';
 import 'package:memox/shared/widgets/mx_option_row.dart';
 
@@ -62,7 +63,10 @@ void main() {
       find.widgetWithText(MxOptionRow, _en.speechLanguageName('enUs')),
     );
     expect(selected.isSelected, isTrue);
-    expect(find.text(_en.settingsSpeechLanguageMissing), findsNWidgets(8));
+    expect(
+      find.text(metaDots(_en.settingsSpeechLanguageMissing)),
+      findsNWidgets(8),
+    );
     final korean = tester.widget<MxOptionRow>(
       find.widgetWithText(MxOptionRow, _en.speechLanguageName('koKr')),
     );
@@ -118,6 +122,9 @@ void main() {
   testWidgets('an engine that cannot say marks nothing', (tester) async {
     await _open(tester, available: null);
 
-    expect(find.text(_en.settingsSpeechLanguageMissing), findsNothing);
+    expect(
+      find.text(metaDots(_en.settingsSpeechLanguageMissing)),
+      findsNothing,
+    );
   });
 }

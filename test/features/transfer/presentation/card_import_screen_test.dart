@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_breadcrumb.dart';
 import 'package:memox/features/deck/presentation/widgets/sections/deck_context_header_widget.dart';
@@ -76,8 +77,10 @@ void main() {
     );
 
     expect(find.text(_en.importPickTitle), findsOneWidget);
+    expect(find.text(metaDots(_en.importSourceFileHint)), findsOneWidget);
     await _tap(tester, _en.importSourceFile);
     expect(find.text('vocab.csv'), findsOneWidget);
+    expect(find.text(metaLine(_en.importFileReady('CSV'))), findsOneWidget);
 
     await _tap(tester, _en.importReadAction);
     expect(find.text(_en.importHeaderToggle), findsOneWidget);
@@ -386,9 +389,15 @@ void main() {
     );
     await _tap(tester, _en.importSourceFile);
     await _tap(tester, _en.importReadAction);
-    expect(find.text(_en.importFileRead('CSV', 2, 2)), findsOneWidget);
+    expect(
+      find.text(metaLine(_en.importFileRead('CSV', 2, 2))),
+      findsOneWidget,
+    );
 
     await _tap(tester, _en.importHeaderToggle);
-    expect(find.text(_en.importFileRead('CSV', 3, 2)), findsOneWidget);
+    expect(
+      find.text(metaLine(_en.importFileRead('CSV', 3, 2))),
+      findsOneWidget,
+    );
   });
 }

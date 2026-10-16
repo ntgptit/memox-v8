@@ -5,6 +5,7 @@ import 'package:memox/features/search/presentation/widgets/items/search_card_hit
 import 'package:memox/features/search/presentation/widgets/items/search_deck_hit_row_widget.dart';
 import 'package:memox/features/search/presentation/widgets/items/search_load_more_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_badge.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
@@ -97,7 +98,7 @@ class SearchResultsWidget extends StatelessWidget {
         ],
         SizedBox(height: context.dimens.space12),
         Text(
-          l10n.searchFooter,
+          metaDots(l10n.searchFooter),
           textAlign: TextAlign.center,
           style: context.texts.labelSmall?.copyWith(
             color: context.colors.onSurfaceVariant,

@@ -8,6 +8,7 @@ import 'package:memox/features/reminders/domain/models/reminder_status_model.dar
 import 'package:memox/features/reminders/presentation/providers/reminder_status_provider.dart';
 import 'package:memox/features/reminders/presentation/screens/reminder_screen.dart';
 import 'package:memox/l10n/generated/app_localizations.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_button.dart';
 import 'package:memox/shared/widgets/mx_error_state.dart';
 import 'package:memox/shared/widgets/mx_inline_banner.dart';
@@ -31,8 +32,8 @@ void main() {
   ) async {
     final s = await pumpReminderScreen(tester, env);
 
-    expect(find.text(_en.reminderOffHint), findsOneWidget);
-    expect(find.text(_en.reminderTimeOffHint), findsOneWidget);
+    expect(find.text(metaDots(_en.reminderOffHint)), findsOneWidget);
+    expect(find.text(metaDots(_en.reminderTimeOffHint)), findsOneWidget);
     expect(find.text(_en.reminderNote), findsOneWidget);
     expect(find.text(_en.reminderPreviewNothingDue), findsOneWidget);
     expect(tester.widget<MxToggle>(find.byType(MxToggle)).isOn, isFalse);
@@ -53,8 +54,8 @@ void main() {
         s.platform.calls.where((c) => c == PlatformCall.requestPermission),
         hasLength(1),
       );
-      expect(find.text(_en.reminderOnHint), findsOneWidget);
-      expect(find.text(_en.reminderTimeOnHint), findsOneWidget);
+      expect(find.text(metaDots(_en.reminderOnHint)), findsOneWidget);
+      expect(find.text(metaDots(_en.reminderTimeOnHint)), findsOneWidget);
       expect(find.text('20:00'), findsOneWidget);
     },
   );
@@ -93,14 +94,14 @@ void main() {
 
     expect(find.text(_en.reminderDeniedTitle), findsOneWidget);
     expect(find.text(_en.reminderDeniedBody), findsOneWidget);
-    expect(find.text(_en.reminderDeniedHint), findsOneWidget);
+    expect(find.text(metaDots(_en.reminderDeniedHint)), findsOneWidget);
     expect(tester.widget<MxToggle>(find.byType(MxToggle)).isOn, isFalse);
 
     s.platform.permission = ReminderPermission.granted;
     await tester.tap(find.text(_en.reminderTryAgain));
     await settleReminderScreen(tester);
     expect(find.byType(MxInlineBanner), findsNothing);
-    expect(find.text(_en.reminderOnHint), findsOneWidget);
+    expect(find.text(metaDots(_en.reminderOnHint)), findsOneWidget);
   });
 
   libraryTest('permDenied: Try again outlined, then Open system settings '
@@ -212,7 +213,7 @@ void main() {
     platform.refusing.clear();
     await tester.tap(find.text(_en.commonRetry));
     await settleReminderScreen(tester);
-    expect(find.text(_en.reminderOnHint), findsOneWidget);
+    expect(find.text(metaDots(_en.reminderOnHint)), findsOneWidget);
   });
 
   libraryTest(
@@ -224,7 +225,7 @@ void main() {
       await tapReminderToggle(tester);
 
       expect(find.text(_en.reminderMayStillShow), findsOneWidget);
-      expect(find.text(_en.reminderOffHint), findsOneWidget);
+      expect(find.text(metaDots(_en.reminderOffHint)), findsOneWidget);
       s.platform.refusing.clear();
       final writes = s.store.writes;
       await tester.tap(find.text(_en.reminderTryAgain));
@@ -267,7 +268,7 @@ void main() {
     s.store.isFailing = false;
     await tester.tap(find.text(_en.commonRetry));
     await settleReminderScreen(tester);
-    expect(find.text(_en.reminderOnHint), findsOneWidget);
+    expect(find.text(metaDots(_en.reminderOnHint)), findsOneWidget);
   });
 
   libraryTest('loading: the list skeleton', (tester, env) async {

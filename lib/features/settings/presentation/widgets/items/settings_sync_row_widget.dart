@@ -3,6 +3,7 @@ import 'package:memox/core/sync/sync_status.dart';
 import 'package:memox/core/theme/app_icons.dart';
 import 'package:memox/features/settings/presentation/widgets/support/sync_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 import 'package:memox/shared/widgets/mx_settings_row.dart';
 
@@ -26,7 +27,7 @@ class SettingsSyncRowWidget extends StatelessWidget {
     final l10n = context.l10n;
     return MxSettingsRow(
       label: l10n.settingsSync,
-      subtitle: syncStatusLine(l10n, status, now),
+      subtitle: metaDots(syncStatusLine(l10n, status, now)),
       icon: AppIcons.sync,
       iconTone: switch (status) {
         _ when syncNeedsAttention(status) => MxIconTileTone.warning,

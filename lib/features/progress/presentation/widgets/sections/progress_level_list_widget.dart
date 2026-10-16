@@ -5,6 +5,7 @@ import 'package:memox/features/progress/domain/models/progress_level_model.dart'
 import 'package:memox/features/progress/presentation/providers/progress_range_provider.dart';
 import 'package:memox/features/progress/presentation/widgets/items/progress_deck_row_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_divided_column.dart';
 import 'package:memox/shared/widgets/mx_list_section_header.dart';
@@ -72,7 +73,7 @@ class ProgressLevelListWidget extends ConsumerWidget {
         ],
         SizedBox(height: context.dimens.space16),
         Text(
-          l10n.progressFooter,
+          metaDots(l10n.progressFooter),
           textAlign: TextAlign.center,
           style: context.texts.labelSmall?.copyWith(
             color: context.colors.onSurfaceVariant,

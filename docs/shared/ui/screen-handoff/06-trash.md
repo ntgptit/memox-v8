@@ -72,7 +72,8 @@ Goldens: `test/features/trash/presentation/goldens/trash_{all,actions,restore_ta
 - **Owner 2026-09-26, BR-TRASH-011:** while selecting, the note hides, the other kind dims to 0.38, and "Cards and decks can't be selected together." shows.
 - **Critique 2026-09-30:** the retention note has a close button ("Hide this note"); once hidden it stays hidden on this device (`dismissed_note`). The kind-lock note is not dismissible.
 - **Critique 2026-09-30 part 3d-1 (spec `2026-10-01-critique-fixes-part3d1-design.md`):** the kind-lock note and the purge-blocked banners sit above the list, under the retention note (D4).
-- **Owner 2026-10-16 (Q-P6-4), executor ruling:** an entry's meta stays unglued. It is capped at two lines, and gluing its terms (whole terms, or whole terms with a breakable "deleted {ago}") pushed it past the cap, so it ellipsized (`trash_screen_test.dart::a long meta line wraps to two lines instead of ellipsizing`); a lost fact costs more than a count on its own line. Open in owner question Q-C-1.
+- **Owner 2026-10-16 (Q-P6-4), executor ruling:** an entry's meta stays unglued. It is capped at two lines, and gluing its terms (whole terms, or whole terms with a breakable "deleted {ago}") pushed it past the cap, so it ellipsized (`trash_screen_test.dart::a long meta line wraps to two lines instead of ellipsizing`); a lost fact costs more than a count on its own line. Settled by Q-C-1 below.
+- **Q-C-1 (owner, 2026-10-16):** the actions sheet's subtitle (it holds the parent's name) and the Delete permanently hint keep each dot on the phrase before it (`metaDots`); the entry meta stays unglued, as ruled above, and so does any line capped with an ellipsis (The Wrap Rule; `lib/l10n/meta_line.dart`).
 
 ## Copy
 

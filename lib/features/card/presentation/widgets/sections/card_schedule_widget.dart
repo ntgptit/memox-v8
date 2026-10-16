@@ -6,6 +6,7 @@ import 'package:memox/core/theme/theme_context.dart';
 import 'package:memox/features/card/domain/models/card_detail_model.dart';
 import 'package:memox/features/card/presentation/widgets/support/card_history_labels_widget.dart';
 import 'package:memox/l10n/l10n_context.dart';
+import 'package:memox/l10n/meta_line.dart';
 import 'package:memox/shared/widgets/mx_card.dart';
 import 'package:memox/shared/widgets/mx_icon_tile.dart';
 
@@ -91,9 +92,11 @@ class CardScheduleWidget extends StatelessWidget {
     return _Fact(
       icon: AppIcons.scheduler,
       label: l10n.cardFactScheduler,
-      value: l10n.cardFactSchedulerValue(
-        l10n.cardScheduler(detail.schedulerType),
-        detail.schedule.generation,
+      value: metaLine(
+        l10n.cardFactSchedulerValue(
+          l10n.cardScheduler(detail.schedulerType),
+          detail.schedule.generation,
+        ),
       ),
     );
   }
